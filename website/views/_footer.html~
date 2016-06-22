@@ -1,0 +1,41 @@
+</body>
+
+<a tabindex="0" class="btn btn-small"
+   id="helpButton"
+   role="button"
+   data-toggle="popover"
+   data-trigger="focus"
+   data-placement="left"
+   title="keyboard shortcuts"
+   data-html="true"
+   data-content="<table border=1>
+                 <tr><td><center>key</center></td><td><center>shortcut</center></td></tr>
+                 <tr><td><center>n</center></td><td><center>move to next TF</center></td></tr>
+                 <tr><td><center>p</center></td><td>move to previous TF</center></td></tr>
+
+                 <tr><td><center>q</center></td><td><center>move to left main tab</center></td></tr>
+                 <tr><td><center>w</center></td><td><center>move to right main tab</center></td></tr>
+
+                 <tr><td><center>a</center></td><td><center>move to left sub tab</center></td></tr>
+                 <tr><td><center>s</center></td><td><center>move to right sub tab</center></td></tr>
+
+                 <tr><td><center>z</center></td><td><center>move to left sub sub tab</center></td></tr>
+                 <tr><td><center>x</center></td><td><center>move to right sub sub tab</center></td></tr>
+                 </table>
+                 ">
+  Help
+</a>
+
+<!--<div class="navbar navbar-default navbar-fixed-bottom" id="bottom-bar">-->
+<!-- <div class="container" style="bottom: 0;">
+  <div class="row">
+    <div class="col-md-6 text-center">
+      {{ hh.Img(version, "static/umassmed.small.png", "umass logo") }}
+    </div>
+    <div class="col-md-6 text-center">
+      {{ hh.Img(version, "static/ENCODE_logo.small.png", "ENCODE logo") }}
+    </div>
+  </div>
+</div> -->
+
+</html>

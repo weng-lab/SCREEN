@@ -1,0 +1,176 @@
+{% macro dropdown(idd, items) -%}
+<select id="{{idd}}">
+  {% for selected, item in items -%}
+  {% if selected -%}
+  <option selected="selected">{{item}}</option>
+  {% else -%}
+  <option>{{item}}</option>
+  {% endif -%}
+  {% endfor -%}
+</select>
+{% endmacro -%}
+
+{% macro dropdownMatrix(idd, items) -%}
+<select id="{{idd}}">
+  <option>All</option>
+  {% for e, idxs in items -%}
+  <option data-rowIdxs="[{{ idxs }}]">{{ e }}</option>
+  {% endfor -%}
+</select>
+{% endmacro -%}
+
+{% macro css(url) -%}
+<link rel="stylesheet" href="{{url}}">
+{% endmacro -%}
+
+{% macro js(url) -%}
+<script src={{url}}></script>
+{% endmacro -%}
+
+{% macro cssVer(version, url) -%}
+<link rel="stylesheet" href="/{{version}}/{{url}}">
+{% endmacro -%}
+
+{% macro jsVer(version, url) -%}
+<script src=/{{version}}/{{url}}></script>
+{% endmacro -%}
+
+{% macro Link(version, url) -%}
+<link rel="icon" type="image/png" href="/{{version}}/{{url}}">
+{% endmacro -%}
+
+{% macro Href(version, url, desc, class) -%}
+{% if class -%}
+<a class="{{class}}" href="/{{version}}/{{url}}">{{desc}}</a>
+{% else -%}
+<a href="/{{version}}/{{url}}">{{desc}}</a>
+{% endif -%}
+{% endmacro -%}
+
+{% macro HrefBlank(version, url, desc) -%}
+{% if "download" == desc -%}
+<a href="/{{version}}/{{url}}" target="_blank" download>{{desc}}</a>
+{% else -%}
+<a href="/{{version}}/{{url}}" target="_blank">{{desc}}</a>
+{% endif -%}
+{% endmacro -%}
+
+{% macro HrefID(version, url, desc, id) -%}
+<a id="{{id}}" href="/{{version}}/{{url}}">{{desc}}</a>
+{% endmacro -%}
+
+{% macro Img(version, src, alt) -%}
+<img src="/{{version}}/{{src}}" alt="{{alt}}">
+{% endmacro -%}
+
+{% macro ImgSquare(version, src, alt, size) -%}
+<img width={{size}} height={{size}} src="/{{version}}/{{src}}" alt="{{alt}}">
+{% endmacro -%}
+
+{% macro ImgWH(version, src, alt, w, h) -%}
+<img width={{w}} height={{h}} src="/{{version}}/{{src}}" alt="{{alt}}">
+{% endmacro -%}
+
+{% macro ImgW(version, src, alt, w) -%}
+<img width={{w}} src="/{{version}}/{{src}}" alt="{{alt}}">
+{% endmacro -%}
+
+{% macro TabActive(idx, sw_offset = 0) -%}
+{% if 0 == idx and 0 == sw_offset -%}
+active
+{% endif -%}
+{% endmacro -%}
+
+{% macro IsActiveMatch(left, right) -%}
+{% if left == right -%}
+active
+{% else -%}
+""
+{% endif -%}
+{% endmacro -%}
+
+{% macro InfoBoxLink(info) -%}
+{% if info.url -%}
+    <tr class="">
+      <th style="background-color: #F4F190; padding-left: 3px; padding-right: 3px;">{{info.title}}
+      </th>
+      <td style="padding-left: 3px; padding-right: 3px; border-spacing: 0 1em;">
+        <span class="plainlinks">
+          <a href="{{info.url}}" class="external text" title="{{info.url}}" rel="nofollow" target="_blank">{{info.factor}}</a>
+        </span>
+      </td>
+    </tr>
+{% endif -%}
+{% endmacro -%}
+
+{% macro InfoBoxLinkMulti(infos) -%}
+    {% if infos -%}
+    <tr class="">
+      <th style="background-color: #F4F190; padding-left: 3px; padding-right: 3px;">{{infos[0].title}}
+      </th>
+      <td style="padding-left: 3px; padding-right: 3px; border-spacing: 0 1em;">
+        {% for info in infos -%}
+        <span class="plainlinks">
+          <a href="{{info.url}}" class="external text" title="{{info.url}}" rel="nofollow" target="_blank">{{info.factor}}</a>
+        </span>
+        {% endfor -%}
+      </td>
+    </tr>
+    {% endif -%}
+{% endmacro -%}
+
+{% macro HeatMapImg(m_offset, idx, hd) -%}
+    <a href="{{hd.makeUrlBig()}}"  target="_blank">
+      {% if 0 == m_offset and 0 == idx %}
+      <img src="{{hd.makeUrlSmall()}}" alt="small heat map img">
+      {% else %}
+      <img class="lazy" data-original="{{hd.makeUrlSmall()}}" alt="small heat map img">
+      {% endif %}
+    </a>
+{% endmacro -%}
+
+{% macro LogoImg(hd) -%}
+    <a href="{{hd.makeUrlBig()}}"  target="_blank"><img src="{{hd.makeUrlSmall()}}" alt="small logo img"></a>
+{% endmacro -%}
+
+{% macro searchResultImg(tf, cell_line, logourlbig, logourlsmall) -%}
+    <div class="tf_search_result">
+      <a href="{{logourlbig}}" target="_blank">
+	<img src="{{logourlsmall}}" alt="search result logo">
+      </a><br>
+      <a href="/chipseq/tf/{{tf}}">{{tf}}</a> in {{cell_line}}<br>
+    </div>
+{% endmacro -%}
+
+{% macro HeatMapRows(idx, hds, cell) -%}
+    {% for hd in hds -%}
+<tr><{{cell}}><p class="heatmapNotes">{{hd.cellType}}<br>{{hd.lab}}<br>{{hd.otherMark}}<br>{{Encode(hd.otherEncodeID)}}<br>{{hd.pcorrStr()}}</{{cell}}>
+  <{{cell}}>{{HeatMapImg(0, idx, hd)}}</{{cell}}></tr>
+{% endfor -%}
+{% endmacro -%}
+
+{% macro Encode(eid) -%}
+<a href="https://www.encodeproject.org/experiments/{{eid}}/" target="_blank">{{eid}}</a>
+{% endmacro -%}
+
+{% macro Notes(p) -%}
+<div style="clear: both;">
+  <hr>
+  <h3>Notes</h3>
+  <p>{{p}}
+</div>
+{% endmacro -%}
+
+{% macro GreyMotif(m) -%}
+{% if not m.show() -%}
+grey
+{% endif -%}
+{% endmacro -%}
+
+{% macro MainTabActive(func, target) -%}
+{% if func == target -%}
+active
+{% endif -%}
+{% endmacro -%}
+
+
