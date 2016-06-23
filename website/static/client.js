@@ -11,7 +11,7 @@ var setupSocket = function() {
         isopen = true;
     }
 
-    socket.onmessage = function(e) {
+    socket.onmessage = (typeof socket_message_handler === 'function' ? socket_message_handler : function(e) {
         console.log("Text message received: " + e.data);
     }
 

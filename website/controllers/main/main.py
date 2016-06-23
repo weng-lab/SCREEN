@@ -20,4 +20,4 @@ class MainController:
 
     def TestQuery(self):
         pageInfo = PageInfoMain(self.es, self.version)
-        return self.t('main/test_els', **pageInfo.wholePage())
+        return self.t('main/test_els', **pageInfo.testqueryPage())

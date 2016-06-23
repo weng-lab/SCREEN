@@ -1,0 +1,35 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container text-center">
+        <br>
+        <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
+        <br>
+        <input type="text" size="125" name="q" id="q">
+        <a class="btn btn-primary btn-lg" href="#" role="button">Search</a>
+        <br>
+        </i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
+      </div>
+    </div>
+
+    <div class="container" style="width:100%">
+      <!-- Example row of columns -->
+      <div class="row" style="width:100%">
+        <div class="col-md-4" style="background-color:080808;">
+          <h2>Facets</h2>
+        </div>
+        <div class="col-md-8">
+          <h2>Results</h2>
+       </div>
+      </div> 
+
+      <hr>
+
+      <footer>
+        <p>&copy; 2015 Company, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+
+{% include '_header.html' -%}
