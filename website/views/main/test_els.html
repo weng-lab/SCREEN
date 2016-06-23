@@ -1,16 +1,13 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
-<script src="/ver4/main/search/static/elasticsearch/core.js"></script>
-<script src="client.js"></script>
-<script>
-
-  console.log(sendText(JSON.stringify(searchquery.eso)));
-  searchquery.set_coordinate_filter("chr1", 1000000, 2000000);
-  console.log(sendText(JSON.stringify(searchquery.eso)));
-  searchquery.set_cell_line_filter("GM12878");
-  console.log(sendText(JSON.stringify(searchquery.eso)));
-
+<script type="text/javascript">
+  var webSocketUrl = "ws://127.0.0.1:9000";
 </script>
+
+<script src="/ver4/search/static/client.js"></script>
+<script src="/ver4/search/static/elasticsearch/core.js"></script>
+
+<button onclick='play();'>Send Text Message</button>
 
 {% include '_footer.html' -%}
