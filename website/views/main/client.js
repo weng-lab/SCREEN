@@ -31,9 +31,9 @@ window.onload = function() {
     }
 };
 
-function sendText() {
+function sendText(a = null) {
     if (isopen) {
-        var a = "{'a' : 1234}";
+	if (a == null) a = "{'a' : 1234}";
         socket.send(a);
         console.log("Text message sent.");
     } else {

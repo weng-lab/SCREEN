@@ -17,3 +17,7 @@ class MainController:
     def Overlap(self, chrom, start, end):
         pageInfo = PageInfoMain(self.es, self.version)
         return self.t('main/query', **pageInfo.overlapPage(chrom, start, end))
+
+    def TestQuery(self):
+        pageInfo = PageInfoMain(self.es, self.version)
+        return self.t('main/test_els', **pageInfo.wholePage())

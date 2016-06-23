@@ -59,7 +59,7 @@ var searchquery = {
 	this.eso.aggs.end.histogram.interval = this.eso.aggs.start.histogram.interval;
     },
 
-    add_cell_line_filter: function(cell_line) {
+    set_cell_line_filter: function(cell_line) {
 	this.eso.query.bool.must.push({"match": {"ranks.dnase.name", cell_line}});
 	delete this.eso.aggs.cell_lines;
     },
