@@ -1,0 +1,8 @@
+html, body {
+    height: 100%
+}
+
+.jumbotron {
+    padding-top: 48px;
+    padding-bottom: 18px;
+}
