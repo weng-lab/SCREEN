@@ -3,6 +3,7 @@
    <head>
      <script type="text/javascript">
        var webSocketUrl = "ws://127.0.0.1:9000";
+       var overlap = {'chrom' : 'chr1', 'start' : 90, 'end' : 2000000 };
      </script>
      <script src="client.js"></script>
    </head>
@@ -10,7 +11,7 @@
       <p>Open your browser's JavaScript console to see what's happening (hit F12).</p>
 
 
-      <button onclick='sendText("hi");'>Send Text Message</button>
+      <button onclick='sendText(JSON.stringify(overlap));'>Send Text Message</button>
 
    </body>
 </html>
