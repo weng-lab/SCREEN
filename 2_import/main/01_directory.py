@@ -1,9 +1,11 @@
+#!/usr/bin/env python
+
 import os, sys
 import requests
 import argparse
 
 sys.path.append("../../common")
-import elasticsearch
+from elastic_search_wrapper import ElasticSearchWrapper
 
 def parseargs():
     parser = argparse.ArgumentParser()
@@ -18,13 +20,16 @@ def main():
     if not os.path.exists(args.rootpath):
         print("directory %s not found" % args.rootpath)
         sys.exit(0)
+
     for subdir, _dirs, filenames in os.walk(args.rootpath):
         for fnp in [os.path.join(subdir, f) for f in filenames]:
             if fnp.endswith("~"): continue
             dfnp = fnp.replace(args.rootpath, "")
-            if dfnp.endswith(".json"): dfnp = dfnp[:-5]
+            if dfnp.endswith(".json"):
+                dfnp = dfnp[:-5]
+            print(dfnp)
             try:
-                r = elasticsearch.index(fnp, "http://%s:%d/%s" % (args.elasticsearch_server,
+                r = ElasticSearchWrapper.index(fnp, "http://%s:%d/%s" % (args.elasticsearch_server,
                                                                   args.elasticsearch_port,
                                                                   dfnp))
                 if args.debug:
@@ -38,7 +43,9 @@ def main():
                 if args.debug:
                     e = sys.exc_info()[:2]
                     print(e[0])
-                    if hasattr(e, "message"): e.message
+                    if hasattr(e, "message"):
+                        print e.message
+                    raise
     return 0
 
 if __name__ == "__main__":

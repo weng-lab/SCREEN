@@ -2,9 +2,8 @@ import sys, os
 import requests
 import json
 
-sys.path.append("../common")
-sys.path.append("../../common")
-import elasticsearch
+from elasticsearch import Elasticsearch
+es = Elasticsearch()
 
 class PageInfoMain:
     def __init__(self, DBCONN, version):
@@ -20,8 +19,8 @@ class PageInfoMain:
         pageinfo = self.wholePage()
         print(q)
         try:
-            queryresults = elasticsearch.query(json.loads(q), url).content
+            res = es.search(index="regulatory_elements", body=json.loads(q))
         except:
-            queryresults = None
-        pageinfo.update({"queryresults": queryresults})
+            res = None
+        pageinfo.update({"queryresults": res})
         return pageinfo
