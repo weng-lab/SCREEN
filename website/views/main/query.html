@@ -1,0 +1,36 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+
+<div class="container-fluid" align="center">
+
+  <pre>{{queryresults}}</pre>
+  
+  <form action="" method="post">
+    <h3>Enter ElasticSearch query:</h3>
+    URL: <input type="text" size="110" value="http://127.0.0.1:9200/" name="url"><br>
+    <textarea rows="6" cols="125" name="q">
+    </textarea><br>
+    <input type="submit" value="submit">
+  </form>
+  
+<!--
+    <div class="col-md-3">
+      <div class="panel-group">
+        <div class="panel panel-primary">
+          <div class="panel-heading">ChIP-seq</div>
+          <div class="panel-body">
+            <a href="../chipseq/tf/">
+              <button type="button" class="btn btn-info">Transcription Factors</button>
+            </a>
+            <a href="../chipseq/histone/">
+              <button type="button" class="btn btn-info">Histone</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+
+</body>
+
+</html>
