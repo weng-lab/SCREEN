@@ -4,9 +4,12 @@ import cherrypy, os, sys, argparse
 
 import psycopg2, psycopg2.pool
 
+from app_main import MainAppRunner
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from dbs import DBS
+from utils import Utils
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
@@ -18,6 +21,7 @@ class RegElmVizWebsite(object):
 
         cacheDir = os.path.realpath(os.path.join(os.path.dirname(__file__),
                                                  "cache"))
+        Utils.mkdir_p(cacheDir)
 
         cherrypy.config.update({
                 'server.socket_host': '0.0.0.0',
@@ -27,10 +31,6 @@ class RegElmVizWebsite(object):
                 'tools.sessions.storage_path': cacheDir,
                 'tools.sessions.locking': 'early',
                 })
-
-        
-        # import after adding "protect" tool
-        from app_main import MainAppRunner
 
         self.DBCONNs = {}
         for species in ["human", "mouse"]:
@@ -56,7 +56,6 @@ class RegElmVizWebsite(object):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_true", default=False)
-    parser.add_argument('--audience', default="")
     parser.add_argument('--port', default=8000, type=int)
     return parser.parse_args()
 
