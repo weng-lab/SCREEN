@@ -6,3 +6,7 @@ html, body {
     padding-top: 48px;
     padding-bottom: 18px;
 }
+
+div.result_row {
+    width: 100%;
+}

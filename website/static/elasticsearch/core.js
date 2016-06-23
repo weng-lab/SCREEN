@@ -15,7 +15,7 @@ function Query() {
 
     this.eso = {
 	"aggs": {
-	    "chrom": {"terms": {"field": "position.chrom"}},
+	    "chromosome": {"terms": {"field": "position.chrom"}},
 	    "start": {"histogram": {"field": "position.start",
 				    "interval": 2000000}},
 	    "end": {"histogram": {"field": "position.end",
@@ -60,7 +60,6 @@ Query.prototype.set_coordinate_filter = function(chrom, start, end) {
 	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
 	this.eso.query.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
 	this.eso.query.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
-	delete this.eso.aggs.chrom;
 	this.eso.aggs.start.histogram.interval = (end - start) / HISTOGRAM_BINS;
 	this.eso.aggs.end.histogram.interval = this.eso.aggs.start.histogram.interval;
 };

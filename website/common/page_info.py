@@ -13,6 +13,13 @@ class PageInfoMain:
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version}
 
+    def testqueryPage(self):
+        retval = self.wholePage()
+        retval.update({"facetlist": [{"id": "cell_line", "name": "cell line", "type": "list"},
+                                     {"id": "chromosome", "name": "chromosome", "type": "list"},
+                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates"}] })
+        return retval
+    
     def queryPage(self, q, url):
         pageinfo = self.wholePage()
         try:

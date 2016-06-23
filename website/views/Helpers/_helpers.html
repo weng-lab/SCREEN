@@ -1,3 +1,36 @@
+{% macro facetbox(facet) -%}
+{% if facet.type == "list" -%}
+{{facet_listbox(facet)}}
+{% elif facet.type == "slider" -%}
+{{facet_sliderbox(facet)}}
+{% endif -%}
+{% endmacro -%}
+
+{% macro facet_listbox(facet) -%}
+<div class="panel-group">
+  <div class="panel panel-primary">
+    <div class="panel-heading">{{facet.name}}</div>
+    <div class="panel-body" id="{{facet.id}}_facet_container">
+    </div>
+  </div>
+</div>
+{% endmacro -%}
+
+{% macro facet_sliderbox(facet) -%}
+<div class="panel-group">
+  <div class="panel panel-primary">
+    <div class="panel-heading">{{facet.name}}</div>
+    <div class="panel-body" id="{{facet.id}}_filter_container">
+      <p>
+	<label for="chr_range">{{facet.label_text}}:</label>
+	<input type="text" id="{{facet.id}}_textbox" style="border:1;font-weight:bold;">
+      </p>
+      <div id="{{facet.id}}_range_slider"></div>
+    </div>
+  </div>
+</div>
+{% endmacro -%}
+
 {% macro dropdown(idd, items) -%}
 <select id="{{idd}}">
   {% for selected, item in items -%}
