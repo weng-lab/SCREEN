@@ -33,6 +33,11 @@ class MyServerProtocol(WebSocketServerProtocol):
         j = json.loads(payload)
 
         regElements = RegElements(es)
+
+        if "aggs" in j and "query" in j:
+            self.sendMessage(es.search(body=j, index="regulatory_elements2"))
+            return
+        
         try:
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
         except:
