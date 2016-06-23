@@ -35,7 +35,7 @@ class MyServerProtocol(WebSocketServerProtocol):
         regElements = RegElements(es)
 
         if "aggs" in j and "query" in j:
-            self.sendMessage(es.search(body=j, index="regulatory_elements2"))
+            self.sendMessage(json.dumps(es.search(body=j, index="regulatory_elements2")))
             return
         
         try:
