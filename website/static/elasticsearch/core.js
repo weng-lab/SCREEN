@@ -1,13 +1,13 @@
 var POSITION_CHROM   = 0;
-var POSITION_START   = 1;
-var POSITION_END     = 2;
-var NEAREST_GENE_ALL = 3;
-var NEAREST_GENE_PC  = 4;
-var DNASE_RANKS      = 5;
-var PROMOTER_RANKS   = 6;
-var ENHANCER_RANKS   = 7;
-var CTCF_RANKS       = 8;
-var CONSERVATION_RNK = 9;
+var POSITION_START   = 0;
+var POSITION_END     = 1;
+var NEAREST_GENE_ALL = 2;
+var NEAREST_GENE_PC  = 3;
+var DNASE_RANKS      = 4;
+var PROMOTER_RANKS   = 5;
+var ENHANCER_RANKS   = 6;
+var CTCF_RANKS       = 7;
+var CONSERVATION_RNK = 8;
 
 var HISTOGRAM_BINS   = 50;
 
@@ -39,7 +39,13 @@ function Query() {
 	"query": {
 	    "bool": {
 		"must": [
-		    {}, // position.chrom
+		    {} // position.chrom
+		]
+	    }
+	},
+	"post_filter": {
+	    "bool": {
+		"must": [
 		    {}, // position.start
 		    {}, // position.end
 		    {}, // nearest-gene-all.distance
@@ -58,25 +64,23 @@ function Query() {
 
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
 	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
-	this.eso.query.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
-	this.eso.query.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
+	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
+	this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
 	this.eso.aggs.start.histogram.interval = (end - start) / HISTOGRAM_BINS;
 	this.eso.aggs.end.histogram.interval = this.eso.aggs.start.histogram.interval;
 };
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
-	this.eso.query.bool.must.push({"match": {"ranks.dnase.name" : cell_line}});
-	delete this.eso.aggs.cell_lines;
+    this.eso.query.bool.must.push({"exists": {"field": "ranks.dnase." + cell_line}});
 };
 
-Query.prototype.set_bounded_filter_generic = function(lbound, ubound, filter_idx, filter_field, agg_name) {
-    this.eso.query.bool.must[filter_idx] = {"range":
-					    {filter_field: {"gte": +lbound,
-					                    "lte": +ubound}
-                                            }
-					   };
-    this.eso.aggs[agg_name].histogram.interval = (ubound / lbound) / HISTOGRAM_BINS;
-};
+Query.prototype.set_bounded_filter_generic = function(lbound, ubound, filter_idx, filter_field) {
+    this.eso.post_filter.bool.must[filter_idx] = {"range":
+						  {filter_field: {"gte": +lbound,
+								  "lte": +ubound}
+						  }
+						 };
+}
 
 Query.prototype.set_gene_distance_filter = function(lbound, ubound) {
     this.set_bounded_filter_generic(lbound, ubound, NEAREST_GENE_ALL, "nearest-gene-all.distance", "gene_distance");
