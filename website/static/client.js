@@ -1,7 +1,7 @@
 var socket = null;
 var isopen = false;
 
-window.onload = function() {
+var setupSocket = function() {
 
     socket = new WebSocket(webSocketUrl);
     socket.binaryType = "arraybuffer";
@@ -29,4 +29,16 @@ function sendText(s) {
     } else {
         console.log("Connection not opened.")
     }
+};
+
+function play(){
+    console.log(sendText(JSON.stringify(searchquery.eso)));
+    searchquery.set_coordinate_filter("chr1", 1000000, 2000000);
+    console.log(sendText(JSON.stringify(searchquery.eso)));
+    searchquery.set_cell_line_filter("GM12878");
+    console.log(sendText(JSON.stringify(searchquery.eso)));
+};
+
+window.onload = function() {
+    setupSocket();
 };
