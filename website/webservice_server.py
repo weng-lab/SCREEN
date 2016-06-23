@@ -1,14 +1,20 @@
 #!/usr/bin/env python
 
-import sys
+import sys, json
 
 from twisted.python import log
 from twisted.internet import reactor
 
+from elasticsearch import Elasticsearch
+
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 
+from models.regelm import RegElements
+
 # from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
+
+es = Elasticsearch()
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -20,15 +26,30 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         if isBinary:
-            print("Binary message received: {0} bytes".format(len(payload)))
-        else:
-            print("Text message received: {0}".format(payload.decode('utf8')))
+            self.sendMessage("not supported", False)
+            return
 
-        # echo back message verbatim
-        self.sendMessage(payload, isBinary)
+        payload = payload.decode('utf8')
+        j = json.loads(payload)
+
+        regElements = RegElements(es)
+        try:
+            ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
+        except:
+            ret = { "status" : "",
+                    "err" : 1}
+        self.sendMessage(json.dumps(ret), False)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dev', action="store_true", default=False)
+    parser.add_argument('--port', default=9000, type=int)
+    parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
+    parser.add_argument('--elasticsearch_port', type=int, default=9200)
+    return parser.parse_args()
 
 def main():
     log.startLogging(sys.stdout)
