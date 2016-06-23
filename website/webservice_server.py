@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import sys, json
 
 from twisted.python import log
 from twisted.internet import reactor
@@ -20,12 +20,12 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         if isBinary:
-            print("Binary message received: {0} bytes".format(len(payload)))
-        else:
-            print("Text message received: {0}".format(payload.decode('utf8')))
+            raise Exception("not supported")
 
-        # echo back message verbatim
-        self.sendMessage(payload, isBinary)
+        print("Text message received: {0}".format(payload.decode('utf8')))
+        ret = { "status" : "",
+                "err" : 1}
+        self.sendMessage(json.dumps(ret), False)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
