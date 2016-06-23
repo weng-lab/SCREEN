@@ -2,7 +2,7 @@
 
 import cherrypy, jinja2, os, sys
 
-from controllers.main.index import MainController
+from controllers.main.main import MainController
 
 from timeit import default_timer as timer
 
@@ -10,9 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, DBCONN, version):
+    def __init__(self, viewDir, es, version):
         self.templates = Templates(viewDir)
-        self.mc = MainController(self.templates, DBCONN, version)
+        self.mc = MainController(self.templates, es, version)
 
     @cherrypy.expose
     def index(self):
@@ -22,9 +22,13 @@ class MainApp():
     def query(self, q=None, url=None):
         return self.mc.Query(q, url)
 
+    @cherrypy.expose
+    def overlap(self, chrom, start, end):
+        return self.mc.Overlap(chrom, int(start), int(end))
+
 class MainAppRunner:
-    def __init__(self, DBCONN, devMode):
-        version = '/'.join(["search"])
+    def __init__(self, es, devMode):
+        version = '/'.join(["ver4", "search"])
 
         d = os.path.dirname(__file__)
         staticDir = os.path.abspath(os.path.join(d, "static"))
@@ -37,6 +41,6 @@ class MainAppRunner:
                 }
             }
 
-        server = MainApp(viewDir, DBCONN, version)
+        server = MainApp(viewDir, es, version)
 
         cherrypy.tree.mount(server, "/" + version, config = config)
