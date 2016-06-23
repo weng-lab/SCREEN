@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys
 import requests
 import argparse
+import json
+import ijson
+from elasticsearch import Elasticsearch
 
-sys.path.append("../../common")
-from elastic_search_wrapper import ElasticSearchWrapper
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from utils import Utils
+from files_and_paths import Dirs, Tools, Genome, Datasets
 
 def parseargs():
     parser = argparse.ArgumentParser()
@@ -17,34 +22,30 @@ def parseargs():
 
 def main():
     args = parseargs()
-    if not os.path.exists(args.rootpath):
-        print("directory %s not found" % args.rootpath)
-        sys.exit(0)
+    es = Elasticsearch([args.elasticsearch_server],
+                       port = args.elasticsearch_port)
 
-    for subdir, _dirs, filenames in os.walk(args.rootpath):
-        for fnp in [os.path.join(subdir, f) for f in filenames]:
-            if fnp.endswith("~"): continue
-            dfnp = fnp.replace(args.rootpath, "")
-            if dfnp.endswith(".json"):
-                dfnp = dfnp[:-5]
-            print(dfnp)
+    fn = 'test-registry-human.json'
+    d = os.path.join(Dirs.encyclopedia, "Version-4")
+    fnp = os.path.join(d, fn)
+
+    with open(fnp) as f:
+        for idx, doc in enumerate(ijson.items(f, "item")):
             try:
-                r = ElasticSearchWrapper.index(fnp, "http://%s:%d/%s" % (args.elasticsearch_server,
-                                                                  args.elasticsearch_port,
-                                                                  dfnp))
+                res = es.index(index="regulatory_elements2", doc_type="element", body=doc)
+
                 if args.debug:
-                    print("index succeeded for %s: HTTP response content was:\n%s" % (fnp, r.content))
+                    print("index succeeded for %s: HTTP response content was:\n%s" % (fnp, res))
                 else:
-                    print("indexed %s at %s" % (fnp, "http://%s:%d/%s" % (args.elasticsearch_server,
-                                                                          args.elasticsearch_port,
-                                                                          fnp.replace(args.rootpath, ""))))
+                    if 0 == idx % 1000:
+                        print(idx)
             except:
                 print("error indexing file %s; check that the file's JSON is valid and elasticsearch is running" % fnp)
                 if args.debug:
                     e = sys.exc_info()[:2]
                     print(e[0])
                     if hasattr(e, "message"):
-                        print e.message
+                        print(e.message)
                     raise
     return 0
 
