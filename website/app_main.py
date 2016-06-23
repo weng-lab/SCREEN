@@ -10,17 +10,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, DBCONN, species, version):
+    def __init__(self, viewDir, DBCONN, version):
         self.templates = Templates(viewDir)
-        self.mc = MainController(self.templates, DBCONN, species, version)
+        self.mc = MainController(self.templates, DBCONN, version)
 
     @cherrypy.expose
     def index(self):
         return self.mc.Index()
 
 class MainAppRunner:
-    def __init__(self, DBCONN, devMode, species):
-        version = '/'.join([species, "main"])
+    def __init__(self, DBCONN, devMode):
+        version = '/'.join(["search"])
 
         d = os.path.dirname(__file__)
         staticDir = os.path.abspath(os.path.join(d, "static"))
@@ -33,6 +33,6 @@ class MainAppRunner:
                 }
             }
 
-        server = MainApp(viewDir, DBCONN, species, version)
+        server = MainApp(viewDir, DBCONN, version)
 
         cherrypy.tree.mount(server, "/" + version, config = config)
