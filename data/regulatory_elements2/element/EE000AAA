@@ -1,17 +1,22 @@
 {
 	"confidence": 324.0,
-   	"ctcf-rank": [
+	"ranks": {
+	   	"ctcf": [
         ],
-        "dnase-rank": [{"name": "GM12878",
+	"conservation": 10,
+        	 "dnase": [{"name": "GM12878",
 		        "eid": "ENCFF001CUH",
 			"value": 177},
 			{"name": "K562",
 			"eid": "ENCFF001DPD",
 			"value": 270}
-        ],
+        		],
+	        "enhancer": [
+        	],
+	        "promoter": [
+        	]
+	}
         "accession": "EEXXXXXX",
-        "enhancer-rank": [
-        ],
         "nearest-gene-all": {
             "distance:": 887,
             "gene-id:": "ENSG00000217801.5"
@@ -25,7 +30,5 @@
             "end": 1000935,
             "start": 1000785
         },
-        "promoter-rank": [
-        ],
         "stam_id:": "DHS.v01.hg.759"
 }
