@@ -10,3 +10,7 @@ class MainController:
     def Index(self):
         pageInfo = PageInfoMain(self.DBCONN, self.species, self.version)
         return self.t('main/index', **pageInfo.wholePage())
+
+    def Query(self, q, url):
+        pageInfo = PageInfoMain(self.DBCONN, self.species, self.version)
+        return self.t('main/query', **pageInfo.queryPage(q, url))

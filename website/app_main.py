@@ -16,6 +16,10 @@ class MainApp():
     def index(self):
         return self.mc.Index()
 
+    @cherrypy.expose
+    def query(self, q=None, url=None):
+        return self.mc.Query(q, url)
+
 class MainAppRunner:
     def __init__(self, DBCONN, devMode, species):
         version = '/'.join([species, "main"])
