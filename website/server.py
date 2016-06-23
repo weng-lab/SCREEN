@@ -32,12 +32,9 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
-        self.DBCONNs = {}
-        for species in ["human", "mouse"]:
-            dbs = None
-            DBCONN = None #psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
-            self.DBCONNs[species] = DBCONN
-            MainAppRunner(DBCONN, self.devMode, species)
+        dbs = None
+        DBCONN = None #psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+        MainAppRunner(DBCONN, self.devMode)
 
     def start(self):
         if self.devMode:

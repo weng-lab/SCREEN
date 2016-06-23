@@ -1,17 +1,11 @@
 import sys, os
 
 class PageInfoMain:
-    def __init__(self, DBCONN, species, version):
+    def __init__(self, DBCONN, version):
         self.DBCONN = DBCONN
-        self.species = species
         self.version = version
 
     def wholePage(self):
-        humanVersion = self.version.replace("mouse", "human")
-        mouseVersion = self.version.replace("human", "mouse")
-        return {"page": {"species" : self.species,
-                         "version" : self.version,
-                         "humanVersion" : humanVersion,
-                         "mouseVersion" : mouseVersion,
+        return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version }
