@@ -1,26 +1,34 @@
 import sys, os
-import requests
-import json
 
-from elasticsearch import Elasticsearch
-es = Elasticsearch()
+from models.regelm import RegElements
 
 class PageInfoMain:
-    def __init__(self, DBCONN, version):
-        self.DBCONN = DBCONN
+    def __init__(self, es, version):
+        self.es = es
         self.version = version
+        self.regElements = RegElements(es)
 
     def wholePage(self):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
-                "version" : self.version }
+                "version" : self.version}
 
     def queryPage(self, q, url):
         pageinfo = self.wholePage()
-        print(q)
         try:
-            res = es.search(index="regulatory_elements", body=json.loads(q))
+            res = self.regElements.query(q)
         except:
             res = None
+            raise
+        pageinfo.update({"queryresults": res})
+        return pageinfo
+
+    def overlapPage(self, chrom, start, end):
+        pageinfo = self.wholePage()
+        try:
+            res = self.regElements.overlap(chrom, start, end)
+        except:
+            res = None
+            raise
         pageinfo.update({"queryresults": res})
         return pageinfo
