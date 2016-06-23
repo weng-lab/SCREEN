@@ -3,6 +3,7 @@
 import cherrypy, os, sys, argparse
 
 import psycopg2, psycopg2.pool
+from elasticsearch import Elasticsearch
 
 from app_main import MainAppRunner
 
@@ -32,9 +33,9 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
-        dbs = None
-        DBCONN = None #psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
-        MainAppRunner(DBCONN, self.devMode)
+        self.es = Elasticsearch([args.elasticsearch_server],
+                                port = args.elasticsearch_port)
+        MainAppRunner(self.es, self.devMode)
 
     def start(self):
         if self.devMode:
@@ -54,6 +55,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
+    parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
+    parser.add_argument('--elasticsearch_port', type=int, default=9200)
     return parser.parse_args()
 
 def main():
