@@ -11,7 +11,7 @@ var CTCF_RANKS       = 8;
 var HISTOGRAM_BINS   = 50;
 
 var searchquery = {
-    
+
     "eso": {
 	"aggs": {
 	    "chrom": {"terms": {"field": "position.chrom"}},
@@ -29,9 +29,9 @@ var searchquery = {
 	    "promoter_ranks": {"histogram": {"field": "ranks.promoter.name",
 					     "interval": 500}},
 	    "enhancer_ranks": {"histogram": {"field": "ranks.enhancer.name",
-					  "interval": 500}},	    
+					     "interval": 500}},
 	    "ctcf_ranks": {"histogram": {"field": "ranks.ctcf.name",
-					  "interval": 500}}
+					 "interval": 500}}
 	},
 	"query": {
 	    "bool": {
@@ -49,7 +49,7 @@ var searchquery = {
 	    }
 	}
     }
-    
+
     set_coordinate_filter: function(chrom, start, end) {
 	this.eso.query.bool.must[POISITION_CHROM] = {"match" : { "position.chrom" : chrom } };
 	this.eso.query.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
@@ -66,14 +66,14 @@ var searchquery = {
 
     set_bounded_filter_generic: function(lbound, ubound, filter_idx, filter_field, agg_name) {
 	this.eso.query.bool.must[filter_idx] = {"range":
-					    {filter_field:
-					     {"gte": +lbound},
-					     {"lte": +ubound}
-					    }
-					   };
+					        {filter_field:
+					         {"gte": +lbound},
+					         {"lte": +ubound}
+					        }
+					       };
 	this.eso.aggs[agg_name].histogram.interval = (ubound / lbound) / HISTOGRAM_BINS;
     },
-    
+
     set_gene_distance_filter: function(lbound, ubound) {
 	this.set_bounded_filter_generic(lbound, ubound, NEAREST_GENE_ALL, "nearest-gene-all.distance", "gene_distance");
     },
@@ -97,5 +97,5 @@ var searchquery = {
     set_ctcf_rank_filter: function(lbound, ubound) {
 	this.set_bounded_filter_generic(lbound, ubound, CTCF_RANK, "ranks.ctcf.value", "ctcf_ranks");
     }
-    
+
 };
