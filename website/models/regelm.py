@@ -15,9 +15,10 @@ class RegElements:
                       "must" : [
                           {"match" : { "position.chrom" : chrom } },
                           {"range" : { "position.start" : { "lte" : end } } },
-                          {"range" : { "position.end" : { "gte" : start } } } ]
-                      }
+                          {"range" : { "position.end" : { "gte" : start } } }
+                      ]
                   }
               }
+        }
 
         return self.es.search(index = self.index, body = q)
