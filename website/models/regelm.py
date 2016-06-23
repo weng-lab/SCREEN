@@ -2,7 +2,7 @@ import os, sys, json
 
 class RegElements:
     def __init__(self, es):
-        self.index = "regulatory_elements"
+        self.index = "regulatory_elements2"
         self.es = es
 
     def query(self, q):
