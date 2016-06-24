@@ -6,7 +6,24 @@ class RegElements:
         self.es = es
 
     def query(self, q):
-        return self.es.search(index = self.index, body = json.loads(q))
+        raw_results = self.es.search(index = self.index, body = json.loads(q))
+        retval = {}
+        for key, agg in raw_results["aggregations"].iteritems():
+            if type(agg["buckets"][0]["key"]) is int:
+                retval["aggs"][key] = {"type": "histogram",
+                                       "key": key
+                                       "minvalue": agg["buckets"][0]["key"],
+                                       "maxvalue": agg["buckets"][-1]["key"],
+                                       "valuepairs": [] }
+            elif type(bucket["key"]) is str:
+                retval["aggs"][key] = {"type": "list",
+                                       "key": key,
+                                       "valuepairs": [] }
+            for bucket in agg["buckets"]:
+                retval["aggs"][key]["valuepairs"].append((bucket["key"], bucket["doc_count"]))
+        retval["results"] = raw_results["hits"]
+        return retval
+                                       
 
     def overlap(self, chrom, start, end):
         q = { "sort": [ {"position.start": "asc"} ],
