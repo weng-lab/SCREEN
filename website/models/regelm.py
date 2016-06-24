@@ -11,7 +11,7 @@ class RegElements:
         for key, agg in raw_results["aggregations"].iteritems():
             if type(agg["buckets"][0]["key"]) is int:
                 retval["aggs"][key] = {"type": "histogram",
-                                       "key": key
+                                       "key": key,
                                        "minvalue": agg["buckets"][0]["key"],
                                        "maxvalue": agg["buckets"][-1]["key"],
                                        "datapairs": [] }
