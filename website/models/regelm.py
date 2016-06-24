@@ -14,11 +14,11 @@ class RegElements:
                                        "key": key
                                        "minvalue": agg["buckets"][0]["key"],
                                        "maxvalue": agg["buckets"][-1]["key"],
-                                       "valuepairs": [] }
+                                       "datapairs": [] }
             elif type(bucket["key"]) is str:
                 retval["aggs"][key] = {"type": "list",
                                        "key": key,
-                                       "valuepairs": [] }
+                                       "datapairs": [] }
             for bucket in agg["buckets"]:
                 retval["aggs"][key]["valuepairs"].append((bucket["key"], bucket["doc_count"]))
         retval["results"] = raw_results["hits"]
