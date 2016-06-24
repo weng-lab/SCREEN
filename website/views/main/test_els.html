@@ -5,13 +5,18 @@
   var webSocketUrl = "ws://127.0.0.1:9000";
 
   function socket_message_handler(e) {
+      console.log("received " + e.data);
       results = JSON.parse(e.data);
-      for (for aggname in results["aggs"]) {
+      for (aggname in results["aggs"]) {
           if (results["aggs"][aggname]["type"] == "list") {
               process_agglist(aggname, results["aggs"][aggname]);
-          } elseif (results["aggs"][aggname]["type"] == "histogramp") {
+          } else if (results["aggs"][aggname]["type"] == "histogramp") {
               process_histogram_result(aggname, results["aggs"][aggname]);
           }
+      }
+      document.getElementById("searchresults_div").innerHTML = "<strong>" + results.results.total + " results</strong><br><br>";
+      for (var i = 0; i < 10 && i < results.results.total; i++) {
+          document.getElementById("searchresults_div").innerHTML += results.results.hits[i]._source.accession + "<br>";
       }
   }
   
@@ -20,6 +25,7 @@
 <script src="/ver4/search/static/client.js"></script>
 <script src="/ver4/search/static/elasticsearch/core.js"></script>
 <script src="/ver4/search/static/constants/hg19.js"></script>
+<script src="/ver4/search/static/searchresults.js"></script>
 <script src="/ver4/search/static/controls/range_slider.js"></script>
 
 <div class="container" style="width:100%">
@@ -37,6 +43,8 @@
     <div class="col-md-10">
       <h2>Results</h2>
       <button onclick='play();'>Construct base results</button>
+      <div id="searchresults_div">
+      </div>
     </div>
   </div>
 </div>
@@ -48,8 +56,27 @@
       searchquery.set_coordinate_filter("chr1", coordinates[0], coordinates[1]);
       sendText(JSON.stringify(searchquery.eso));
   }
+
+  function rank_filter_generic(id, fptr)
+  {
+      var ranks = document.getElementById(id).value.split(" - ");
+      fptr.call(searchquery, ranks[0], ranks[1]);
+      sendText(JSON.stringify(searchquery.eso));
+  }
+  
+  function update_dnase_rank_filter() {rank_filter_generic("dnase_rank_textbox", searchquery.set_dnase_rank_filter);}
+  function update_ctcf_rank_filter() {rank_filter_generic("ctcf_rank_textbox", searchquery.set_ctcf_rank_filter);}
+  function update_promoter_rank_filter() {rank_filter_generic("promoter_rank_textbox", searchquery.set_promoter_rank_filter);}
+  function update_enhancer_rank_filter() {rank_filter_generic("enhancer_rank_textbox", searchquery.set_enhancer_rank_filter);}
+  function update_conservation_filter() {rank_filter_generic("conservation_textbox", searchquery.set_conservation_filter);}
   
   create_range_slider("coordinates_range_slider", chromosome_lengths["chr1"], document.getElementById("coordinates_textbox"), update_coordinate_filter);
+  create_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter);
+  create_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter);
+  create_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter);
+  create_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter);
+  create_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter);
+  
   
 </script>
 

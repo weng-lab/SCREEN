@@ -9,17 +9,17 @@ var setupSocket = function() {
     socket.onopen = function() {
         console.log("Connected!");
         isopen = true;
-    }
+    };
 
     socket.onmessage = (typeof socket_message_handler === 'function' ? socket_message_handler : function(e) {
         console.log("Text message received: " + e.data);
-    }
+    });
 
     socket.onclose = function(e) {
         console.log("Connection closed.");
         socket = null;
         isopen = false;
-    }
+    };
 };
 
 function sendText(s) {
@@ -32,11 +32,8 @@ function sendText(s) {
 };
 
 function play(){
-    console.log(sendText(JSON.stringify(searchquery.eso)));
-    searchquery.set_coordinate_filter("chr1", 1000000, 2000000);
-    console.log(sendText(JSON.stringify(searchquery.eso)));
     searchquery.set_cell_line_filter("GM12878");
-    console.log(sendText(JSON.stringify(searchquery.eso)));
+    sendText(JSON.stringify(searchquery.eso));
 };
 
 window.onload = function() {
