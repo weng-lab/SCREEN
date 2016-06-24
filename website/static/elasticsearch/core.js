@@ -11,8 +11,32 @@ var CONSERVATION_RNK = 8;
 
 var HISTOGRAM_BINS   = 50;
 
+function rank_aggs(cell_line) {
+
+    return {
+	"dnase_ranks": {"histogram": {"field": "ranks.dnase." + cell_line + ".rank",
+				      "interval": 500,
+				      "min_doc_count": 1}},
+	"promoter_ranks": {"histogram": {"field": "ranks.promoter." + cell_line + ".rank",
+					 "interval": 500,
+					 "min_doc_count": 1}},
+	"enhancer_ranks": {"histogram": {"field": "ranks.enhancer." + cell_line + ".rank",
+					 "interval": 500,
+					 "min_doc_count": 1}},
+	"ctcf_ranks": {"histogram": {"field": "ranks.ctcf." + cell_line + ".rank",
+				     "interval": 500,
+				     "min_doc_count": 1}},
+	"conservation": {"histogram": {"field": "ranks.conservation",
+				       "interval": 10,
+				       "min_doc_count": 1}}
+    };
+    
+};
+
 function Query() {
 
+    this.cell_line = "";
+    
     this.eso = {
 	"aggs": {
 	    "chromosome": {"terms": {"field": "position.chrom"}},
@@ -28,22 +52,7 @@ function Query() {
 	    "pcgene_distance": {"histogram": {"field": "nearest-gene-pc.distance",
 					      "interval": 50000,
 					      "min_doc_count": 1}},
-	    "cell_lines": {"terms": {"field": "ranks.dnase.name"}},
-	    "dnase_ranks": {"histogram": {"field": "ranks.dnase.name",
-					  "interval": 500,
-					  "min_doc_count": 1}},
-	    "promoter_ranks": {"histogram": {"field": "ranks.promoter.name",
-					     "interval": 500,
-					     "min_doc_count": 1}},
-	    "enhancer_ranks": {"histogram": {"field": "ranks.enhancer.name",
-					     "interval": 500,
-					     "min_doc_count": 1}},
-	    "ctcf_ranks": {"histogram": {"field": "ranks.ctcf.name",
-					 "interval": 500,
-					 "min_doc_count": 1}},
-	    "conservation": {"histogram": {"field": "ranks.conservation",
-					   "interval": 10,
-					   "min_doc_count": 1}}
+	    "cell_lines": {"terms": {"field": "ranks.dnase"}}
 	},
 	"query": {
 	    "bool": {
@@ -71,6 +80,12 @@ function Query() {
 
 };
 
+Query.prototype.add_aggregations = function(aggdict) {
+    for (agg in aggdict) {
+	this.eso.aggs[agg] = aggdict[agg];
+    }
+};
+
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
 	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
 	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
@@ -81,42 +96,42 @@ Query.prototype.set_coordinate_filter = function(chrom, start, end) {
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
     this.eso.query.bool.must.push({"exists": {"field": "ranks.dnase." + cell_line}});
+    this.add_aggregations(rank_aggs(cell_line));
+    this.cell_line = cell_line;
 };
-
-Query.prototype.set_bounded_filter_generic = function(lbound, ubound, filter_idx, filter_field) {
-    this.eso.post_filter.bool.must[filter_idx] = {"range":
-						  {filter_field: {"gte": +lbound,
-								  "lte": +ubound}
-						  }
-						 };
-}
 
 Query.prototype.set_gene_distance_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, NEAREST_GENE_ALL, "nearest-gene-all.distance", "gene_distance");
+    this.set_filter_generic(lbound, ubound, NEAREST_GENE_ALL, "nearest-gene-all.distance");
 };
 
+Query.prototype.set_filter_generic = function(lbound, ubound, i, name) {
+    this.eso.post_filter.bool.must[i]["range"] = {};
+    this.eso.post_filter.bool.must[i]["range"][name] = {"gte": +lbound,
+							"lte": +ubound};
+}
+
 Query.prototype.set_pcgene_distance_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, NEAREST_GENE_PC, "nearest-gene-pc.distance", "pcgene_distance");
+    this.set_filter_generic(lbound, ubound, NEAREST_GENE_PC, "nearest-gene-pc.distance");
 };
 
 Query.prototype.set_dnase_rank_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, DNASE_RANK, "ranks.dnase.value", "dnase_ranks");
+    this.set_filter_generic(lbound, ubound, DNASE_RANKS, "ranks.dnase." + this.cell_line + ".rank");
 };
 
 Query.prototype.set_promoter_rank_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, PROMOTER_RANK, "ranks.promoter.value", "promoter_ranks");
+    this.set_filter_generic(lbound, ubound, PROMOTER_RANKS, "ranks.promoter." + this.cell_line + ".rank");
 };
 
 Query.prototype.set_enhancer_rank_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, ENHANCER_RANK, "ranks.enhancer.value", "enhancer_ranks");
+    this.set_filter_generic(lbound, ubound, ENHANCER_RANKS, "ranks.enhancer." + this.cell_line + ".rank");
 };
 
 Query.prototype.set_ctcf_rank_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, CTCF_RANK, "ranks.ctcf.value", "ctcf_ranks");
+    this.set_filter_generic(lbound, ubound, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");
 };
 
 Query.prototype.set_conservation_filter = function(lbound, ubound) {
-    this.set_bounded_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation", "conservation");
+    this.set_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation");
 };
 
 searchquery = new Query();
