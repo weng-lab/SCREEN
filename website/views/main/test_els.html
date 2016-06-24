@@ -6,12 +6,11 @@
 
   function socket_message_handler(e) {
       results = JSON.parse(e.data);
-      for (var i = 0; i < searchquery.aggs.length; i++) {		      
-          if (results["aggregations"].hasOwnProperty(searchquery.aggs[i])) {
-		clear_facetlist(searchquery.aggs[i]);
-  	        for (var j = 0; j < results["aggregations"][searchquery.aggs[i]].buckets.length; j++) {
-			add_filterresult(searchquery.aggs[i], result["aggregations"][searchquery.aggs[i]].buckets[j]);
-		}
+      for (for aggname in results["aggs"]) {
+          if (results["aggs"][aggname]["type"] == "list") {
+              process_agglist(aggname, results["aggs"][aggname]);
+          } elseif (results["aggs"][aggname]["type"] == "histogramp") {
+              process_histogram_result(aggname, results["aggs"][aggname]);
           }
       }
   }
