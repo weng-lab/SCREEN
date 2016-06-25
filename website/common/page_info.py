@@ -15,14 +15,13 @@ class PageInfoMain:
 
     def testqueryPage(self):
         retval = self.wholePage()
-        retval.update({"facetlist": [{"id": "cell_line", "name": "cell line", "type": "list"},
-                                     {"id": "chromosome", "name": "chromosome", "type": "list"},
-                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates"},
-                                     {"id": "dnase_rank", "name": "dnase rank", "type": "slider", "label_text": "rank"},
-                                     {"id": "ctcf_rank", "name": "ctcf rank", "type": "slider", "label_text": "rank"},
-                                     {"id": "promoter_rank", "name": "promoter rank", "type": "slider", "label_text": "rank"},
-                                     {"id": "enhancer_rank", "name": "enhancer rank", "type": "slider", "label_text": "rank"},
-                                     {"id": "conservation", "name": "conservation", "type": "slider", "label_text": "score"} ] })
+        retval.update({"facetlist": [{"id": "chromosome", "name": "chromosome", "type": "list", "visible": True},
+                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates", "visible": False},
+                                     {"id": "dnase_rank", "name": "dnase rank", "type": "slider", "label_text": "rank", "visible": True},
+                                     {"id": "ctcf_rank", "name": "ctcf rank", "type": "slider", "label_text": "rank", "visible": True},
+                                     {"id": "promoter_rank", "name": "promoter rank", "type": "slider", "label_text": "rank", "visible": True},
+                                     {"id": "enhancer_rank", "name": "enhancer rank", "type": "slider", "label_text": "rank", "visible": True},
+                                     {"id": "conservation", "name": "conservation", "type": "slider", "label_text": "score", "visible": True} ] })
         return retval
     
     def queryPage(self, q, url):

@@ -7,7 +7,11 @@
 {% endmacro -%}
 
 {% macro facet_listbox(facet) -%}
-<div class="panel-group">
+{% if facet.visible -%}
+<div class="panel-group" id="{{facet.id}}_facet_panel">
+{% else -%}
+<div class="panel-group" style="display:none;" id="{{facet.id}}_facet_panel">
+{% endif -%}
   <div class="panel panel-primary">
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_facet_container">
@@ -17,7 +21,11 @@
 {% endmacro -%}
 
 {% macro facet_sliderbox(facet) -%}
-<div class="panel-group">
+{% if facet.visible -%}
+<div class="panel-group" id="{{facet.id}}_facet_panel">
+{% else -%}
+<div class="panel-group" style="display:none;" id="{{facet.id}}_facet_panel">
+{% endif -%}
   <div class="panel panel-primary">
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_filter_container">

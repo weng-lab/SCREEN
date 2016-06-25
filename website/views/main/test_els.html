@@ -2,8 +2,16 @@
 {% import 'Helpers/_helpers.html' as hh -%}
 
 <script type="text/javascript">
+  
   var webSocketUrl = "ws://127.0.0.1:9000";
 
+  var facet_link_handlers = {
+      "chromosome": function(chr) {
+          searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
+          create_range_slider("coordinates_range_slider", chromosome_lengths[chr], document.getElementById("coordinates_textbox"), update_coordinate_filter);
+      }
+  };
+  
   function socket_message_handler(e) {
       console.log("received " + e.data);
       results = JSON.parse(e.data);
@@ -14,11 +22,15 @@
               process_histogram_result(aggname, results["aggs"][aggname]);
           }
       }
+      if (searchquery.has_chromosome_filter()) document.getElementById("coordinates_facet_panel").style.display = "block";
       document.getElementById("searchresults_div").innerHTML = "<strong>" + results.results.total + " results</strong><br><br>";
       for (var i = 0; i < 10 && i < results.results.total; i++) {
           document.getElementById("searchresults_div").innerHTML += results.results.hits[i]._source.accession + "<br>";
       }
-  }
+  }				    
+
+  
+				    
   
 </script>
 
@@ -53,7 +65,7 @@
   function update_coordinate_filter()
   {
       var coordinates = document.getElementById("coordinates_textbox").value.split(" - ");
-      searchquery.set_coordinate_filter("chr1", coordinates[0], coordinates[1]);
+      searchquery.set_coordinate_filter(searchquery.chromosome, coordinates[0], coordinates[1]);
       sendText(JSON.stringify(searchquery.eso));
   }
 
@@ -70,7 +82,6 @@
   function update_enhancer_rank_filter() {rank_filter_generic("enhancer_rank_textbox", searchquery.set_enhancer_rank_filter);}
   function update_conservation_filter() {rank_filter_generic("conservation_textbox", searchquery.set_conservation_filter);}
   
-  create_range_slider("coordinates_range_slider", chromosome_lengths["chr1"], document.getElementById("coordinates_textbox"), update_coordinate_filter);
   create_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter);
   create_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter);
   create_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter);
