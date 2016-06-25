@@ -13,11 +13,12 @@ class ESBulkImporter:
         self.unzip_on_fly = unzip_on_fly
         
     def do_import(self, fnp, index, doc_type = "default", purge_existing = True, verbose = True):
-        cmds = ["esbulk", fnp, "-server", self.server,
+        cmds = ["esbulk", "-server", self.server,
                 "-index", index, "-type", doc_type]
         if purge_existing: cmds.append("-purge")
         if verbose: cmds.append("-verbose")
         if self.n_workers != 4: cmds += ["-w", str(self.n_workers)]
         if self.batch_size != 1000: cmds += ["-size", str(self.batch_size)]
         if self.unzip_on_fly: cmds.append("-z")
+        cmds.append(fnp)
         Utils.runCmds(cmds, verbose=verbose)
