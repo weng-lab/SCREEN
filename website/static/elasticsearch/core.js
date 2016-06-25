@@ -36,6 +36,7 @@ function rank_aggs(cell_line) {
 function Query() {
 
     this.cell_line = "";
+    this.chromosome = "";
     
     this.eso = {
 	"aggs": {
@@ -86,12 +87,20 @@ Query.prototype.add_aggregations = function(aggdict) {
     }
 };
 
+Query.prototype.set_chromosome_filter = function(chr) {
+    this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chr } };
+    this.chromosome = chr;
+};
+
+Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};
+
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
-	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
-	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
-	this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
-	this.eso.aggs.start.histogram.interval = (end - start) / HISTOGRAM_BINS;
-	this.eso.aggs.end.histogram.interval = this.eso.aggs.start.histogram.interval;
+    this.chromosome = chrom;
+    this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
+    this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
+    this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
+    this.eso.aggs.start.histogram.interval = (end - start) / HISTOGRAM_BINS;
+    this.eso.aggs.end.histogram.interval = this.eso.aggs.start.histogram.interval;
 };
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
