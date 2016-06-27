@@ -7,12 +7,14 @@ from elasticsearch import Elasticsearch
 
 from app_main import MainAppRunner
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
+from elastic_search_wrapper import ElasticSearchWrapper
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
-sys.path.append("../common")
 from templates import Templates
 from dbs import DBS
 from utils import Utils
-from elastic_search_wrapper import ElasticSearchWrapper
+
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
