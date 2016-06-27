@@ -30,10 +30,11 @@
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_filter_container">
       <p>
-	<label for="chr_range">{{facet.label_text}}:</label>
+	<label for="{{facet.id}}_textbox">{{facet.label_text}}:</label>
 	<input type="text" id="{{facet.id}}_textbox" style="border:1;font-weight:bold;">
       </p>
-      <div id="{{facet.id}}_range_slider"></div>
+      <div style="width:90%;height:20px;" id="{{facet.id}}_histogram"></div>
+      <div style="width:90%" id="{{facet.id}}_range_slider"></div>
     </div>
   </div>
 </div>

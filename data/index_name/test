@@ -1,0 +1,7 @@
+{
+    "item": {
+        "item-name": {"subname": "name"},
+        "item-value": "value"
+    },
+    "other_field": "other_value"
+}

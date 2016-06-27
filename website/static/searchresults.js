@@ -1,9 +1,11 @@
 function process_histogram_result(control_prefix, result)
 {
     $( "#" + control_prefix + "_range_slider" ).slider( "option", "min", result["minvalue"] );
-    $( "#" + control_prefix + "_range_slider" ).slider( "option", "max", result["maxvalue"] + searchquery["aggs"][control_prefix]["histogram"]["interval"] - 1);
-    searchquery["aggs"][control_prefix]["histogram"]["interval"] = Math.round((result["maxvalue"] - result["minvalue"]) / 50);
-    // draw_histogram(result["datapairs"])
+    $( "#" + control_prefix + "_range_slider" ).slider( "option", "max", result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1);
+    coordinates = document.getElementById(control_prefix + "_textbox").value.split(" - ");
+    histogram_div = document.getElementById(control_prefix + "_histogram");
+    clear_div_contents(histogram_div);
+    return create_histogram(histogram_div, result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]}, {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
 }
 
 function process_agglist(facetbox_id, agglist)
@@ -19,8 +21,13 @@ function clear_facetlist(facetbox_id)
 {
     var facetbox_div = document.getElementById(facetbox_id + "_facet_container");
     if (!facetbox_div) return;
-    while (facetbox_div.firstChild) {
-	facetbox_div.removeChild(facetbox_div.firstChild);
+    clear_div_contents(facetbox_div);
+}
+
+function clear_div_contents(_div)
+{
+    while (_div.firstChild) {
+	_div.removeChild(_div.firstChild);
     }
 }
 

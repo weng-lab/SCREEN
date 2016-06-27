@@ -1,0 +1,7 @@
+{
+    "item": {
+        "item-name": "name",
+        "item-value": "value"
+    },
+    "other_field": "other_value"
+}

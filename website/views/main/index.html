@@ -7,8 +7,10 @@
         <br>
         <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
         <br>
-        <input type="text" size="125" name="q" id="q">
-        <a class="btn btn-primary btn-lg" href="#" role="button">Search</a>
+	<form action="search" method="get" id="searchform">
+          <input type="text" size="125" name="q" id="q">
+          <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
+	</form>
         <br>
         </i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
       </div>

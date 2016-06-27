@@ -1,0 +1,98 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+
+<script type="text/javascript">
+  
+  var webSocketUrl = "ws://127.0.0.1:9000";
+
+  var facet_link_handlers = {
+      "chromosome": function(chr) {
+          searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
+          create_range_slider("coordinates_range_slider", chromosome_lengths[chr], document.getElementById("coordinates_textbox"), update_coordinate_filter);
+      }
+  };
+  
+  function socket_message_handler(e) {
+      console.log("received " + e.data);
+      results = JSON.parse(e.data);
+      for (aggname in results["aggs"]) {
+          if (results["aggs"][aggname]["type"] == "list") {
+              process_agglist(aggname, results["aggs"][aggname]);
+          } else if (results["aggs"][aggname]["type"] == "histogramp") {
+              process_histogram_result(aggname, results["aggs"][aggname]);
+          }
+      }
+      if (searchquery.has_chromosome_filter()) document.getElementById("coordinates_facet_panel").style.display = "block";
+      document.getElementById("searchresults_div").innerHTML = "<strong>" + results.results.total + " results</strong><br><br>";
+      for (var i = 0; i < 10 && i < results.results.total; i++) {
+          document.getElementById("searchresults_div").innerHTML += results.results.hits[i]._source.accession + "<br>";
+      }
+  }				    
+
+  
+				    
+  
+</script>
+
+<script src="/ver4/search/static/client.js"></script>
+<script src="/ver4/search/static/elasticsearch/core.js"></script>
+<script src="/ver4/search/static/constants/hg19.js"></script>
+<script src="/ver4/search/static/searchresults.js"></script>
+<script src="/ver4/search/static/controls/range_slider.js"></script>
+
+<div class="container" style="width:100%">
+  <br><br>
+  <!-- Example row of columns -->
+  <div class="row" style="width:100%">
+    <div class="col-md-2" id="facets-container">
+
+      <br>
+      {% for facet in facetlist -%}
+      {{hh.facetbox(facet)}}
+      {% endfor -%}
+      
+    </div>
+    <div class="col-md-10">
+      <h2>Results</h2>
+      <button onclick='play();'>Construct base results</button>
+      <div id="searchresults_div">
+	<strong>{{queryresults["results"]["total"]}} results</strong><br><br>
+	{% for result in queryresults["results"]["hits"] -%}
+	{{result["_source"]["accession"]}}<br>
+	{% endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" language="javascript">
+  
+  function update_coordinate_filter()
+  {
+      var coordinates = document.getElementById("coordinates_textbox").value.split(" - ");
+      searchquery.set_coordinate_filter(searchquery.chromosome, coordinates[0], coordinates[1]);
+      sendText(JSON.stringify(searchquery.eso));
+  }
+
+  function rank_filter_generic(id, fptr)
+  {
+      var ranks = document.getElementById(id).value.split(" - ");
+      fptr.call(searchquery, ranks[0], ranks[1]);
+      sendText(JSON.stringify(searchquery.eso));
+  }
+  
+  function update_dnase_rank_filter() {rank_filter_generic("dnase_rank_textbox", searchquery.set_dnase_rank_filter);}
+  function update_ctcf_rank_filter() {rank_filter_generic("ctcf_rank_textbox", searchquery.set_ctcf_rank_filter);}
+  function update_promoter_rank_filter() {rank_filter_generic("promoter_rank_textbox", searchquery.set_promoter_rank_filter);}
+  function update_enhancer_rank_filter() {rank_filter_generic("enhancer_rank_textbox", searchquery.set_enhancer_rank_filter);}
+  function update_conservation_filter() {rank_filter_generic("conservation_textbox", searchquery.set_conservation_filter);}
+  
+  create_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter);
+  create_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter);
+  create_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter);
+  create_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter);
+  create_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter);
+  
+  
+</script>
+
+{% include '_footer.html' -%}

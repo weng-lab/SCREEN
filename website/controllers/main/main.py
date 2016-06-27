@@ -10,9 +10,13 @@ class MainController:
         pageInfo = PageInfoMain(self.es, self.version)
         return self.t('main/index', **pageInfo.wholePage())
 
-    def Query(self, q, url):
+    def RawQuery(self, q, url):
         pageInfo = PageInfoMain(self.es, self.version)
-        return self.t('main/query', **pageInfo.queryPage(q, url))
+        return self.t('main/query', **pageInfo.rawQueryPage(q, url))
+
+    def Query(self, q):
+        pageInfo = PageInfoMain(self.es, self.version)
+        return self.t('main/search', **pageInfo.queryPage(q))
 
     def Overlap(self, chrom, start, end):
         pageInfo = PageInfoMain(self.es, self.version)

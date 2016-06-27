@@ -1,4 +1,0 @@
-function add_histogram(divid, range, dimensions, data)
-{
-
-    
