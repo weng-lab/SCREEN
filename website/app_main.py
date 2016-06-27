@@ -20,7 +20,7 @@ class MainApp():
 
     @cherrypy.expose
     def query(self, q=None, url=None):
-        return self.mc.Query(q, url)
+        return self.mc.RawQuery(q, url)
 
     @cherrypy.expose
     def overlap(self, chrom, start, end):
@@ -29,6 +29,10 @@ class MainApp():
     @cherrypy.expose
     def testsearch(self):
         return self.mc.TestQuery()
+
+    @cherrypy.expose
+    def search(self, q):
+        return self.mc.Query(q)
 
 class MainAppRunner:
     def __init__(self, es, devMode):

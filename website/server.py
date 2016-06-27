@@ -8,9 +8,11 @@ from elasticsearch import Elasticsearch
 from app_main import MainAppRunner
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append("../common")
 from templates import Templates
 from dbs import DBS
 from utils import Utils
+from elastic_search_wrapper import ElasticSearchWrapper
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
@@ -33,8 +35,8 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
-        self.es = Elasticsearch([args.elasticsearch_server],
-                                port = args.elasticsearch_port)
+        self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
+                                                     #port = args.elasticsearch_port))
         MainAppRunner(self.es, self.devMode)
 
     def start(self):

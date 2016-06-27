@@ -24,7 +24,17 @@ class PageInfoMain:
                                      {"id": "conservation", "name": "conservation", "type": "slider", "label_text": "score", "visible": True} ] })
         return retval
     
-    def queryPage(self, q, url):
+    def rawQueryPage(self, q, url):
+        pageinfo = self.wholePage()
+        try:
+            res = self.regElements.rawquery(q)
+        except:
+            res = None
+            raise
+        pageinfo.update({"queryresults": res})
+        return pageinfo
+
+    def queryPage(self, q):
         pageinfo = self.wholePage()
         try:
             res = self.regElements.query(q)
