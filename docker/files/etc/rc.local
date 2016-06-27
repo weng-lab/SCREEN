@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+# start postgres
+/usr/sbin/service postgresql start
+
+# start cherrypy...
+touch /var/log/cherrypy.log && chown cherrypy:cherrypy /var/log/cherrypy.log && \
+	su cherrypy -c '/usr/bin/nohup /data/cherrypy/regElmViz/website/run_prod.sh > /var/log/cherrypy.log 2>&1 &'
+
+# exit with a straight face :-|
+exit 0
