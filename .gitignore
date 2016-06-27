@@ -90,4 +90,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
+*.pyc
+TAGS
 \#*
+.\#*
+*.core
+.Rhistory
+Rplots.pdf
