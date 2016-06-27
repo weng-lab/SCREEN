@@ -3,9 +3,9 @@
 # this assumes ""${NAME}"" is disposable!
 # runs ${IMAGE} with external file systems mounted in.
 
-export IMAGE="factorbook/vanilla:v1.4"
-export NAME="v3-factorbook"
-export BASE="/data/docker/v3.factorbook"
+export IMAGE="regElmViz/vanilla:v4.0"
+export NAME="v4-regElmViz"
+export BASE="/data/docker/v4-regElmViz"
 
 if [ "X$1" != "Xyes" ]; then
 	echo
@@ -22,17 +22,19 @@ fi
 docker stop "${NAME}"
 docker rm "${NAME}"
 docker run \
-	-v "${BASE}/data:/data" \
-	-v "${BASE}/var/lib/postgresql:/var/lib/postgresql" \
-        -v "${BASE}/var/log:/var/log" \
-        -v "${BASE}/etc/postgresql:/etc/postgresql" \
-        -v "${BASE}/home:/home" \
-	-p 127.0.0.1:8012:8000 \
-	-p 127.0.0.1:8032:22 \
-	-d --restart=always \
-	-m 32G \
-	--cpuset="50-57" \
-	--hostname="${NAME}" \
-	--name="${NAME}" "${IMAGE}"
+       -v "/nfs/0_metadata@bib5/encyclopedia:/nfs/0_metadata@bib5/encyclopedia:ro" \
+       -v "${BASE}/data:/data" \
+       -v "${BASE}/var/lib/postgresql:/var/lib/postgresql" \
+       -v "${BASE}/var/log:/var/log" \
+       -v "${BASE}/etc/postgresql:/etc/postgresql" \
+       -v "${BASE}/home:/home" \
+       -v "${BASE}/etc/ssh:/etc/ssh" \
+       -p 127.0.0.1:8013:8000 \
+       -p 127.0.0.1:8033:22 \
+       -d --restart=always \
+       -m 32G \
+       --cpuset="58-62" \
+       --hostname="${NAME}" \
+       --name="${NAME}" "${IMAGE}"
 
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' "${NAME}"
