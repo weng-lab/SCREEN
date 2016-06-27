@@ -44,7 +44,7 @@ class ElasticSearchWrapper:
 
     def __init__(self, es):
         self.es = es
-    
+
     @staticmethod
     def default_url(uri):
         return "http://%s:%d/%s" % (default_server, default_port, uri)
@@ -63,7 +63,7 @@ class ElasticSearchWrapper:
 
     def put_settings(self, index, body):
         self.es.put_settings(index=index, body=body)
-    
+
     def search(self, index, body):
         return self.es.search(index=index, body=body)
 
