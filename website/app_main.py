@@ -27,7 +27,7 @@ class MainApp():
         return self.mc.Overlap(chrom, int(start), int(end))
 
     @cherrypy.expose
-    def testsearch(self):
+    def testsearch(self, *args, **kwargs):
         return self.mc.TestQuery()
 
     @cherrypy.expose

@@ -29,7 +29,7 @@ function socket_message_handler(e) {
     var elements = ["accession", "confidence", "genes", "genome", "position", "ranks"];
     var rtable = $("#searchresults_div");
     var html = "<strong>" + results.results.total + " results</strong><br><br>";
-    html += '<table class="table">';
+    html += '<table class="table table-condensed">';
 
     html += "<thead>";
     $.each(elements, function(i, v) {
