@@ -3,7 +3,10 @@ var histograms = {};
 
 var facet_link_handlers = {
     "chromosome": function(chr) {
-        create_range_slider("coordinates_range_slider", chromosome_lengths[chr], document.getElementById("coordinates_textbox"), update_coordinate_filter);
+        create_range_slider("coordinates_range_slider",
+                            chromosome_lengths[chr],
+                            document.getElementById("coordinates_textbox"),
+                            update_coordinate_filter);
         searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
     }
 };
@@ -15,7 +18,11 @@ function socket_message_handler(e) {
     {
         document.getElementById("coordinates_facet_panel").style.display = "block";
         clear_div_contents(document.getElementById("coordinates_range_slider"));
-        create_range_slider("coordinates_range_slider", 2000000, document.getElementById("coordinates_textbox"), update_coordinate_filter, update_coordinate_histogram_selection);
+        create_range_slider("coordinates_range_slider",
+                            2000000,
+                            document.getElementById("coordinates_textbox"),
+                            update_coordinate_filter,
+                            update_coordinate_histogram_selection);
     }
 
     for (aggname in results["aggs"]) {

@@ -1,7 +1,7 @@
 var socket = null;
 var isopen = false;
 
-var setupSocket = function() {
+var setupSocket = function(fonopen) {
 
     socket = new WebSocket(webSocketUrl);
     socket.binaryType = "arraybuffer";
@@ -9,6 +9,7 @@ var setupSocket = function() {
     socket.onopen = function() {
         console.log("Connected!");
         isopen = true;
+        fonopen();
     };
 
     socket.onmessage = (typeof socket_message_handler === 'function' ? socket_message_handler : function(e) {
@@ -37,5 +38,5 @@ function play(){
 };
 
 window.onload = function() {
-    setupSocket();
+    //setupSocket();
 };
