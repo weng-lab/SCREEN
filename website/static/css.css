@@ -10,3 +10,7 @@ html, body {
 div.result_row {
     width: 100%;
 }
+
+.searchbox {
+    padding: 10px;
+}

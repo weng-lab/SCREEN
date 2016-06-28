@@ -4,7 +4,7 @@ class RegElements:
     def __init__(self, es):
         self.index = "regulatory_elements"
         self.es = es
-        
+
     @staticmethod
     def process_for_javascript(raw_results):
         retval = {"aggs": {}}
