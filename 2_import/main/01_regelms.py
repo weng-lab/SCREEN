@@ -25,14 +25,16 @@ def main():
 
     fn = 'test-registry-human.json'
     d = os.path.join(Dirs.encyclopedia, "Version-4")
+    d = "/home/mjp/Version-4"
     fnp = os.path.join(d, fn)
 
     try:
         importer.do_import(fnp, "regulatory_elements", doc_type="element")
     except:
-        if args.debug: raise
+        if args.debug:
+            raise
         return 1
-        
+
     return 0
 
 if __name__ == "__main__":

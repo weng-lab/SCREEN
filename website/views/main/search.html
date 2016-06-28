@@ -2,8 +2,8 @@
 {% import 'Helpers/_helpers.html' as hh -%}
 
 <script type="text/javascript">
-  
-  var webSocketUrl = "ws://127.0.0.1:9000";
+
+  var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 
   var facet_link_handlers = {
       "chromosome": function(chr) {
@@ -11,7 +11,7 @@
           create_range_slider("coordinates_range_slider", chromosome_lengths[chr], document.getElementById("coordinates_textbox"), update_coordinate_filter);
       }
   };
-  
+
   function socket_message_handler(e) {
       console.log("received " + e.data);
       results = JSON.parse(e.data);
@@ -27,11 +27,11 @@
       for (var i = 0; i < 10 && i < results.results.total; i++) {
           document.getElementById("searchresults_div").innerHTML += results.results.hits[i]._source.accession + "<br>";
       }
-  }				    
+  }
 
-  
-				    
-  
+
+
+
 </script>
 
 <script src="/ver4/search/static/client.js"></script>
@@ -50,7 +50,7 @@
       {% for facet in facetlist -%}
       {{hh.facetbox(facet)}}
       {% endfor -%}
-      
+
     </div>
     <div class="col-md-10">
       <h2>Results</h2>
@@ -65,7 +65,7 @@
   </div>
 </div>
 <script type="text/javascript" language="javascript">
-  
+
   function update_coordinate_filter()
   {
       var coordinates = document.getElementById("coordinates_textbox").value.split(" - ");
@@ -79,20 +79,20 @@
       fptr.call(searchquery, ranks[0], ranks[1]);
       sendText(JSON.stringify(searchquery.eso));
   }
-  
+
   function update_dnase_rank_filter() {rank_filter_generic("dnase_rank_textbox", searchquery.set_dnase_rank_filter);}
   function update_ctcf_rank_filter() {rank_filter_generic("ctcf_rank_textbox", searchquery.set_ctcf_rank_filter);}
   function update_promoter_rank_filter() {rank_filter_generic("promoter_rank_textbox", searchquery.set_promoter_rank_filter);}
   function update_enhancer_rank_filter() {rank_filter_generic("enhancer_rank_textbox", searchquery.set_enhancer_rank_filter);}
   function update_conservation_filter() {rank_filter_generic("conservation_textbox", searchquery.set_conservation_filter);}
-  
+
   create_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter);
   create_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter);
   create_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter);
   create_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter);
   create_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter);
-  
-  
+
+
 </script>
 
 {% include '_footer.html' -%}
