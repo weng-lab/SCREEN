@@ -45,7 +45,7 @@ function socket_message_handler(e) {
             if("genes" == v){
                 html += "<td>" + "" + "</td>";
             }else if("ranks" == v){
-                html += "<td>" + "" + "</td>";
+                html += "<td>" + r["ranks"]["dnase"]["K562"]["rank"] + "</td>";
             }else if("position" == v){
                 var p = r["position"]
                 html += "<td>" + p["chrom"] + ":" + p["start"] + "-" + p["end"] + "</td>";
