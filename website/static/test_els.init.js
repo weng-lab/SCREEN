@@ -11,6 +11,7 @@ var facet_link_handlers = {
     },
     "cell_line": function(cell_line) {
 	searchquery.set_cell_line_filter(cell_line);
+	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, -1]]});
 	perform_search();
     }
 };
@@ -42,7 +43,7 @@ function reset_range_slider(div_id, max, textbox_el, stopf, slidef)
     create_range_slider(div_id, max, textbox_el, stopf, slidef);
 }
 
-function reset_rank_sliders()
+function reset_rank_sliders(agg_results)
 {
     reset_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter, update_dnase_histogram_selection);
     reset_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter, update_ctcf_histogram_selection);
@@ -54,7 +55,6 @@ function reset_rank_sliders()
 function handle_query_results(results)
 {
 
-    toggle_display(document.getElementById("cell_line_facet_panel"), !searchquery.has_cell_line_filter());
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
     
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
@@ -94,7 +94,7 @@ function handle_query_results(results)
 
         var r = results.results.hits[i]._source;
         html += "<tr>";
-        $.each(elements, function(i, v) {
+	$.each(elements, function(i, v) {
             if("genes" == v){
                 html += "<td>" + "" + "</td>";
             }else if("ranks" == v){

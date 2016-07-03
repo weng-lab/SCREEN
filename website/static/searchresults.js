@@ -1,7 +1,15 @@
 function process_histogram_result(control_prefix, result)
 {
-    $( "#" + control_prefix + "_range_slider" ).slider( "option", "min", result["minvalue"] );
-    $( "#" + control_prefix + "_range_slider" ).slider( "option", "max", result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1);
+    var slider = $("#" + control_prefix + "_range_slider");
+    var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
+    var needs_reset = (slider.slider("option", "max") != nmax);
+    slider.slider("option", "min", result["minvalue"]);
+    slider.slider( "option", "max", nmax);
+    if (needs_reset)
+    {
+	slider.slider("values", [0, slider.slider("option", "max")]);
+	document.getElementById(control_prefix + "_textbox").value = "0 - " + slider.slider("option", "max");
+    }
     coordinates = document.getElementById(control_prefix + "_textbox").value.split(" - ");
     histogram_div = document.getElementById(control_prefix + "_histogram");
     clear_div_contents(histogram_div);
