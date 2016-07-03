@@ -44,16 +44,16 @@ class ElasticSearchWrapper:
 
     def __init__(self, es):
         self.es = es
+        self.search = self.es.search
 
     @staticmethod
     def default_url(uri):
         return "http://%s:%d/%s" % (default_server, default_port, uri)
-
+    
     @staticmethod
     def index(fnp, url):
         with open(fnp, "rb") as f:
             data = json.loads(f.read())
-        print url
         return requests.put(url, headers=put_headers, data=json.dumps(data))
 
     @staticmethod
@@ -61,12 +61,23 @@ class ElasticSearchWrapper:
         if q is None: return None
         return requests.get(url, headers=get_headers, data=json.dumps(q))
 
-    def put_settings(self, index, body):
-        self.es.put_settings(index=index, body=body)
-
-    def search(self, index, body):
-        return self.es.search(index=index, body=body)
-
+    def get_field_mapping(self, index, doc_type, field):
+        path = field.split(".")
+        result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
+        result = json.loads(result.content)[index]["mappings"][doc_type]["properties"]
+        for subfield in path:
+            if subfield in result and "properties" in result[subfield]:
+                result = result[subfield]["properties"]
+            else:
+                result = None
+                break
+        return {"type": "enumeration",
+                "datapairs": [(k, -1) for k, v in result.iteritems()] if result is not None else [] }
+    
+    def get_cell_line_list(self):
+        jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
+        return [k for k, v in jobj.iteritems()]
+    
     def resolve_gene_aliases(self, q):
         query = dict(_fuzzy_gene_search)
         query["query"]["match"]["_all"]["query"] = q
