@@ -33,7 +33,7 @@ function sendText(s) {
 };
 
 function play(){
-    searchquery.set_cell_line_filter("GM12878");
+    request_cell_lines();
     sendText(JSON.stringify(searchquery.eso));
 };
 

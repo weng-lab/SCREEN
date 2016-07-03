@@ -26,6 +26,7 @@ function clear_facetlist(facetbox_id)
 
 function clear_div_contents(_div)
 {
+    if (!_div) return;
     while (_div.firstChild) {
 	_div.removeChild(_div.firstChild);
     }
@@ -52,7 +53,7 @@ function add_filterresult(id, result)
 
     var name_span = document.createElement("span");
     var rght_span = document.createElement("span");
-    var rght_text = document.createTextNode("(" + result[1] + ")");
+    var rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
     var name_text = document.createTextNode(result[0]);
     name_span.appendChild(name_text);
     rght_span.className = "pull-right";

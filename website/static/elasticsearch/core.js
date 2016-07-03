@@ -11,6 +11,12 @@ var CONSERVATION_RNK = 8;
 
 var HISTOGRAM_BINS   = 100;
 
+var cell_line_request = {"action": "enumerate",
+			 "index": "regulatory_elements",
+			 "doc_type": "element",
+			 "name": "cell_line",
+			 "field": "ranks.dnase"};
+
 function rank_aggs(cell_line) {
 
     return {
@@ -91,6 +97,8 @@ Query.prototype.set_chromosome_filter = function(chr) {
 
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};
 
+Query.prototype.has_cell_line_filter = function() {return this.cell_line != ""};
+
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
     this.chromosome = chrom;
     this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
@@ -139,3 +147,13 @@ Query.prototype.set_conservation_filter = function(lbound, ubound) {
 };
 
 searchquery = new Query();
+
+function perform_search()
+{
+    sendText(JSON.stringify(searchquery.eso));
+};
+
+function request_cell_lines()
+{
+    sendText(JSON.stringify(cell_line_request));
+};
