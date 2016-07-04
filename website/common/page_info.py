@@ -15,13 +15,14 @@ class PageInfoMain:
 
     def testqueryPage(self):
         retval = self.wholePage()
-        retval.update({"facetlist": [{"id": "chromosome", "name": "chromosome", "type": "list", "visible": True},
-                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates", "visible": False},
-                                     {"id": "dnase_rank", "name": "dnase rank", "type": "slider", "label_text": "rank", "visible": True},
-                                     {"id": "ctcf_rank", "name": "ctcf rank", "type": "slider", "label_text": "rank", "visible": True},
-                                     {"id": "promoter_rank", "name": "promoter rank", "type": "slider", "label_text": "rank", "visible": True},
-                                     {"id": "enhancer_rank", "name": "enhancer rank", "type": "slider", "label_text": "rank", "visible": True},
-                                     {"id": "conservation", "name": "conservation", "type": "slider", "label_text": "score", "visible": True} ] })
+        retval.update({"facetlist": [{"id": "cell_line", "name": "cell line", "type": "list", "visible": True},
+                                     {"id": "chromosome", "name": "chromosome", "type": "list", "visible": True},
+                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates", "visible": False} ],
+                       "ranklist": [{"id": "dnase_rank", "name": "DNase"},
+                                    {"id": "ctcf_rank", "name": "CTCF"},
+                                    {"id": "promoter_rank", "name": "promoter"},
+                                    {"id": "enhancer_rank", "name": "enhancer"},
+                                    {"id": "conservation", "name": "conservation"}] })
         return retval
     
     def rawQueryPage(self, q, url):
