@@ -7,14 +7,19 @@ var setupSocket = function(fonopen) {
     socket.binaryType = "arraybuffer";
 
     socket.onopen = function() {
-        console.log("Connected!");
+        console.log("Connected to " + webSocketUrl);
         isopen = true;
         fonopen();
     };
 
-    socket.onmessage = (typeof socket_message_handler === 'function' ? socket_message_handler : function(e) {
-        console.log("Text message received: " + e.data);
-    });
+    socket.onmessage = function(e){
+        console.log("Text message received");
+	if(typeof socket_message_handler === 'function'){
+	    socket_message_handler(e);
+	} else {
+            console.log(e.data);
+	}
+    };
 
     socket.onclose = function(e) {
         console.log("Connection closed.");
