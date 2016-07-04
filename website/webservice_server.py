@@ -5,16 +5,18 @@ import sys, json
 from twisted.python import log
 from twisted.internet import reactor
 
+sys.path.append("../common")
+
+from elastic_search_wrapper import ElasticSearchWrapper
 from elasticsearch import Elasticsearch
 
-from autobahn.twisted.websocket import WebSocketServerProtocol, \
-    WebSocketServerFactory
+from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 
 from models.regelm import RegElements
 
 # from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
 
-es = Elasticsearch()
+es = ElasticSearchWrapper(Elasticsearch())
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -34,6 +36,12 @@ class MyServerProtocol(WebSocketServerProtocol):
 
         regElements = RegElements(es)
 
+        if "action" in j and j["action"] == "enumerate":
+            raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
+            raw_results.update({"name": j["name"]})
+            self.sendMessage(json.dumps(raw_results))
+            return
+        
         if "aggs" in j and "query" in j:
             raw_results = es.search(body=j, index="regulatory_elements")
             processed_results = RegElements.process_for_javascript(raw_results)

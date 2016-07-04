@@ -8,22 +8,68 @@ var facet_link_handlers = {
                             document.getElementById("coordinates_textbox"),
                             update_coordinate_filter);
         searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
+    },
+    "cell_line": function(cell_line) {
+	searchquery.set_cell_line_filter(cell_line);
+	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, -1]]});
+	perform_search();
     }
 };
 
+function toggle_display(el, sh)
+{
+    el.style.display = (sh ? "block" : "none");
+}
+
 function socket_message_handler(e) {
-    //console.log("received " + e.data);
+
     results = JSON.parse(e.data);
+
+    if (results["type"] == "enumeration")
+	handle_enumeration(results);
+    else if (results["type"] == "query_results")
+	handle_query_results(results);
+
+}
+
+function handle_enumeration(results)
+{
+    process_agglist(results["name"], results);
+}
+
+function reset_range_slider(div_id, max, textbox_el, stopf, slidef)
+{
+    clear_div_contents(document.getElementById(div_id));
+    create_range_slider(div_id, max, textbox_el, stopf, slidef);
+}
+
+function reset_rank_sliders(agg_results)
+{
+    reset_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter, update_dnase_histogram_selection);
+    reset_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter, update_ctcf_histogram_selection);
+    reset_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter, update_promoter_histogram_selection);
+    reset_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter, update_enhancer_histogram_selection);
+    reset_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter, update_conservation_histogram_selection);
+}
+
+function handle_query_results(results)
+{
+
+    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
+    
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
     {
-        document.getElementById("coordinates_facet_panel").style.display = "block";
-        clear_div_contents(document.getElementById("coordinates_range_slider"));
-        create_range_slider("coordinates_range_slider",
-                            2000000,
-                            document.getElementById("coordinates_textbox"),
-                            update_coordinate_filter,
-                            update_coordinate_histogram_selection);
+        reset_range_slider("coordinates_range_slider",
+                           2000000,
+                           document.getElementById("coordinates_textbox"),
+                           update_coordinate_filter,
+                           update_coordinate_histogram_selection);
+	document.getElementById("coordinates_facet_panel").style.display = "block";
     }
+
+    if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
+	reset_rank_sliders();
+    toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
 
     for (aggname in results["aggs"]) {
         if (results["aggs"][aggname]["type"] == "list") {
@@ -45,10 +91,10 @@ function socket_message_handler(e) {
     html += "</thead>";
 
     for (var i = 0; i < 10 && i < results.results.total; i++) {
-        //console.log(results.results.hits[i]._source);
+
         var r = results.results.hits[i]._source;
         html += "<tr>";
-        $.each(elements, function(i, v) {
+	$.each(elements, function(i, v) {
             if("genes" == v){
                 html += "<td>" + "" + "</td>";
             }else if("ranks" == v){
@@ -61,6 +107,8 @@ function socket_message_handler(e) {
             }
         });
         html += "</tr>";
+	
     }
     rtable.html(html);
+    
 }
