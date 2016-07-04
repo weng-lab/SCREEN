@@ -3,15 +3,24 @@ var histograms = {};
 
 var facet_link_handlers = {
     "chromosome": function(chr) {
-        create_range_slider("coordinates_range_slider",
-                            chromosome_lengths[chr],
-                            document.getElementById("coordinates_textbox"),
-                            update_coordinate_filter);
-        searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
+	if (searchquery.chromosome != chr)
+	{
+            create_range_slider("coordinates_range_slider",
+				chromosome_lengths[chr],
+				document.getElementById("coordinates_textbox"),
+				update_coordinate_filter,
+				update_coordinate_histogram_selection);
+            searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
+	}
+	else
+	    searchquery.set_coordinate_filter("", 0, 0);
     },
     "cell_line": function(cell_line) {
 	searchquery.set_cell_line_filter(cell_line);
-	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, -1]]});
+	if (searchquery.cell_line == "")
+	    request_cell_lines();
+	else
+	    process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, "x"]]});
 	perform_search();
     }
 };

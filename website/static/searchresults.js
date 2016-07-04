@@ -20,6 +20,7 @@ function process_agglist(facetbox_id, agglist)
 {
     clear_facetlist(facetbox_id);
     if (agglist.datapairs == null) return;
+    if (agglist.datapairs.length == 1) agglist.datapairs[0][1] = "x";
     for (var i = 0; i < agglist.datapairs.length; i++) {
 	add_filterresult(facetbox_id, agglist.datapairs[i]);
     }
@@ -61,7 +62,15 @@ function add_filterresult(id, result)
 
     var name_span = document.createElement("span");
     var rght_span = document.createElement("span");
-    var rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
+    var rght_text;
+    if (result[1] == "x")
+    {
+	n_div.className = "result_row_selected"
+	rght_text = document.createElement("img");
+	rght_text.src = "/ver4/search/static/x.png";
+    }
+    else
+	rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
     var name_text = document.createTextNode(result[0]);
     name_span.appendChild(name_text);
     rght_span.className = "pull-right";

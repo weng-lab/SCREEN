@@ -11,6 +11,12 @@ div.result_row {
     width: 100%;
 }
 
+div.result_row_selected {
+    width: 100%;
+    background-color: #e4e4ff;
+    padding: 4px;
+}
+
 .searchbox {
     padding: 10px;
 }
