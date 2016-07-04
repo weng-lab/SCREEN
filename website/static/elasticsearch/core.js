@@ -33,7 +33,7 @@ function rank_aggs(cell_line) {
 				     "interval": 500,
 				     "min_doc_count": 1}},
 	"conservation": {"histogram": {"field": "ranks.conservation",
-				       "interval": 10,
+				       "interval": 500,
 				       "min_doc_count": 1}}
     };
     
@@ -84,6 +84,14 @@ function Query() {
 
 };
 
+function array_remove(array, element)
+{
+    for (i in array) {
+	if (array[i] == element) array.splice(index, 1);
+    }
+    return array;
+}
+
 Query.prototype.add_aggregations = function(aggdict) {
     for (agg in aggdict) {
 	this.eso.aggs[agg] = aggdict[agg];
@@ -100,16 +108,46 @@ Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""
 Query.prototype.has_cell_line_filter = function() {return this.cell_line != ""};
 
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
-    this.chromosome = chrom;
-    this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
-    this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
-    this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
+    if (chrom != "")
+    {
+	this.chromosome = chrom;
+	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
+	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
+	this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
+    }
+    else
+    {
+	this.chromosome = "";
+	this.eso.query.bool.must[POSITION_CHROM] = {};
+	this.eso.post_filter.bool.must[POSITION_START] = {};
+	this.eso.post_filter.bool.must[POSITION_END] = {};
+    }
+};
+
+Query.prototype.remove_aggregations = function(aggdict) {
+    for (agg in aggdict) {
+	array_remove(this.eso.aggs, aggdict[agg]);
+    }
+};
+
+Query.prototype.remove_rank_filters = function() {
+    for (var i = 4; i <= 8; i++) this.eso.post_filter.bool.must[i] = {};
 };
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
-    this.eso.query.bool.must.push({"exists": {"field": "ranks.dnase." + cell_line}});
-    this.add_aggregations(rank_aggs(cell_line));
-    this.cell_line = cell_line;
+    if (this.cell_line == "")
+    {
+	this.eso.query.bool.must.push({"exists": {"field": "ranks.dnase." + cell_line}});
+	this.add_aggregations(rank_aggs(cell_line));
+	this.cell_line = cell_line;
+    }
+    else
+    {
+	array_remove(this.eso.query.bool.must, {"exists": {"field": "ranks.dnase." + cell_line}});
+	this.remove_aggregations(rank_aggs(cell_line));
+	this.cell_line = "";
+	this.remove_rank_filters();
+    }
 };
 
 Query.prototype.set_gene_distance_filter = function(lbound, ubound) {
