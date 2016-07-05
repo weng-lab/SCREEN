@@ -36,11 +36,25 @@ _textsearch_fields = ["genes.nearest-all.gene-id",
                       "genome",
                       "position.chrom" ]
 
-_fuzzy_gene_search = {"query":
-                      {"bool":
-                       {"match": {"_all": {"fuzziness": 1,
-                                                   "query": "",
-                                                   "operator": "and" }}}}}
+_or_query = {"query": {"bool": {"should": [] }}}
+
+class or_query:
+    basequery = {"query": {"bool": {"should": [] }}}
+
+    def __init__(self):
+        self.query_obj = dict(or_query.basequery)
+
+    def append_fuzzy_match(self, field, value, fuzziness=1):
+        self.query_obj["query"]["bool"]["should"].append({"match": {field: {"fuzziness": fuzziness,
+                                                                            "query": value,
+                                                                            "operator": "and" }}})
+
+    def append_exact_match(self, field, value):
+        self.query_obj["query"]["bool"]["should"].append({"match": {field: value}})
+
+    def reset(self):
+        self.query_obj["query"]["bool"]["should"] = []
+        
 
 class ElasticSearchWrapper:
 
@@ -81,12 +95,37 @@ class ElasticSearchWrapper:
         return [k for k, v in jobj.iteritems()]
     
     def resolve_gene_aliases(self, q):
-        query = dict(_fuzzy_gene_search)
-        query["query"]["match"]["_all"]["query"] = q
-        print(query)
-        raw_results = self.es.search(index = "gene_aliases", body = query)
-        if raw_results["hits"]["total"] == 0: return []
-        return [raw_results["hits"]["hits"][0]["_source"]["ensemblid"]]
+        query = or_query()
+        fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID",
+                  "UCSC_ID", "RefSeq_ID"]
+        
+        # first round: exact matches on any of the IDs or the friendly name
+        for field in fields:
+            query.append_exact_match(field, q)
+        print(query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        print(raw_results)
+        if raw_results["hits"]["total"] > 0:
+            return [raw_results["hits"]["hits"][0]["_source"]["ensemblid"]]
+
+        # second round: fuzzy matches, fuzziness 1
+        query.reset()
+        for field in fields:
+            query.append_fuzzy_match(field, q)
+        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] > 0:
+            return [raw_results["hits"]["hits"][0]["_source"]["ensemblid"]]
+
+        # third round: fuzzy matches, fuzziness 2
+        query.reset()
+        for field in fields:
+            query.append_fuzzy_match(field, q, fuzziness=2)
+        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] > 0:
+            return [raw_results["hits"]["hits"][0]["_source"]["ensemblid"]]
+
+        return []
+        
 
     def build_from_usersearch(self, q):
         retval = {"aggs": _base_aggregations,

@@ -1,6 +1,8 @@
+from __future__ import print_function
 import json
 import sys
 import os
+import requests
 
 sys.path.append("../../../metadata/utils")
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -29,8 +31,17 @@ def main():
                            "Vega_ID": line[16],
                            "UCSC_ID": line[17],
                            "mouse_genome_ID": line[18] }
+                if geneobj["ensemblid"].strip() == "": continue
+                try:
+                    result = requests.get("http://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000121410",
+                                          allow_redirects = False)
+                except:
+                    print("unable to get chromosome region for %s; skipping" % geneobj["ensemblid"])
+                geneobj["coordinates"] = result.headers["Location"].split("r=")[1]
                 o.write(json.dumps(geneobj) + "\n")
-    print("wrote %d gene objects" % i)
+                print("working with item %d\r" % i)
+                sys.stdout.flush()
+    print("wrote %d gene objects" % i, end="")
     return 0
 
 if __name__ == "__main__":
