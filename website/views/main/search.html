@@ -57,6 +57,12 @@
       <button onclick='play();'>Construct base results</button>
       <div id="searchresults_div">
 	<strong>{{queryresults["results"]["total"]}} results</strong><br><br>
+	{% if suggestions|length > 0 -%}
+	Including results for
+	{% for suggestion in suggestions -%}
+	<strong>{{suggestion["_source"]["approved_symbol"]}}</strong>&nbsp;
+	{% endfor -%}<br><br>
+	{% endif -%}
 	{% for result in queryresults["results"]["hits"] -%}
 	{{result["_source"]["accession"]}}<br>
 	{% endfor -%}

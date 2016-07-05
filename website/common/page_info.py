@@ -38,11 +38,12 @@ class PageInfoMain:
     def queryPage(self, q):
         pageinfo = self.wholePage()
         try:
-            res = self.regElements.query(q)
+            suggestions, res = self.regElements.query(q)
         except:
             res = None
             raise
-        pageinfo.update({"queryresults": res})
+        pageinfo.update({"queryresults": res,
+                         "suggestions": suggestions})
         return pageinfo
 
     def overlapPage(self, chrom, start, end):
