@@ -40,10 +40,7 @@ class RegElements:
 
     def query(self, q):
         query = self.es.build_from_usersearch(q)
-        print(self.index)
-        print(query)
         raw_results = self.es.search(index = self.index, body = query)
-        print(raw_results)
         return RegElements.process_for_javascript(raw_results)
 
     def overlap(self, chrom, start, end):
