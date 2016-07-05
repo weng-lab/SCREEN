@@ -39,9 +39,9 @@ class RegElements:
         return RegElements.process_for_javascript(raw_results)
 
     def query(self, q):
-        query = self.es.build_from_usersearch(q)
+        suggestions, query = self.es.build_from_usersearch(q)
         raw_results = self.es.search(index = self.index, body = query)
-        return RegElements.process_for_javascript(raw_results)
+        return (suggestions, RegElements.process_for_javascript(raw_results))
 
     def overlap(self, chrom, start, end):
         q = { "sort": [ {"position.start": "asc"} ],
