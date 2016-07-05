@@ -1,0 +1,20 @@
+.ui-slider .ui-slider-handle {
+    height: 0.7em;
+    width: 0.7em;
+}
+
+.ui-slider-horizontal .ui-slider-handle {
+    top: -0.25em;
+    border-color: #444444;
+}
+
+.ui-corner-all {
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+.ui-slider-horizontal {
+    height: 0.35em;
+}

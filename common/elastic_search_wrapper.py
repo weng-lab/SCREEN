@@ -36,9 +36,11 @@ _textsearch_fields = ["genes.nearest-all.gene-id",
                       "genome",
                       "position.chrom" ]
 
-_fuzzy_gene_search = {"query": {"match": {"_all": {"fuzziness": 1,
+_fuzzy_gene_search = {"query":
+                      {"bool":
+                       {"match": {"_all": {"fuzziness": 1,
                                                    "query": "",
-                                                   "operator": "and" }}}}
+                                                   "operator": "and" }}}}}
 
 class ElasticSearchWrapper:
 
