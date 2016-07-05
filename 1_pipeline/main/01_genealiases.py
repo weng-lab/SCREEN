@@ -33,7 +33,7 @@ def main():
                            "mouse_genome_ID": line[18] }
                 if geneobj["ensemblid"].strip() == "": continue
                 try:
-                    result = requests.get("http://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000121410",
+                    result = requests.get("http://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=%s" % geneobj["ensemblid"],
                                           allow_redirects = False)
                 except:
                     print("unable to get chromosome region for %s; skipping" % geneobj["ensemblid"])
