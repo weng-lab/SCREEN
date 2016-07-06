@@ -1,10 +1,12 @@
 import sys, os
 
 from models.regelm import RegElements
+from parse_search import ParseSearch
 
 class PageInfoMain:
-    def __init__(self, es, version):
+    def __init__(self, es, DBCONN, version):
         self.es = es
+        self.DBCONN = DBCONN
         self.version = version
         self.regElements = RegElements(es)
 
@@ -13,8 +15,17 @@ class PageInfoMain:
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version}
 
-    def testqueryPage(self):
+    def testqueryPage(self, args, kwargs):
         retval = self.wholePage()
+        print("args", args)
+        print("kwargs", kwargs)
+        if "q" in kwargs:
+            p = ParseSearch(self.DBCONN, kwargs["q"])
+            try:
+                p.parse()
+            except:
+                raise
+                print("could not parse " + kwargs["q"])
         retval.update({"facetlist": [{"id": "cell_line",
                                       "name": "cell types",
                                       "type": "list",
