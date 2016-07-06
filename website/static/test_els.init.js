@@ -90,6 +90,7 @@ function handle_query_results(results)
 
     var rtable = $("#searchresults_table");
     rtable.DataTable( {
+	destroy: true,
         "processing": true,
         "data": results.results.hits,
         "columns": [
