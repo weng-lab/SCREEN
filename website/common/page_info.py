@@ -19,14 +19,13 @@ class PageInfoMain:
         retval = self.wholePage()
         print("args", args)
         print("kwargs", kwargs)
+        retval.update({"parsed" : ""})
+        
         if "q" in kwargs:
             p = ParseSearch(self.DBCONN, kwargs["q"])
-            try:
-                parsed = p.parse()
-            except:
-                parsed = {"cellType" : None, "coord" : None}
-                print("could not parse " + kwargs["q"])
-        retval.update({"parsed" : json.dumps(parsed)})
+            parsed = p.parse()
+            retval.update({"parsed" : json.dumps(parsed)})
+            
         retval.update({"facetlist": [{"id": "cell_line",
                                       "name": "cell types",
                                       "type": "list",
