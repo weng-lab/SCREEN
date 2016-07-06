@@ -64,7 +64,7 @@ function reset_rank_sliders(agg_results)
 
 function handle_query_results(results)
 {
-    
+
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
     {
         reset_range_slider("coordinates_range_slider",
@@ -83,7 +83,7 @@ function handle_query_results(results)
     }
 
     toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
-    
+
     for (aggname in results["aggs"]) {
         if (results["aggs"][aggname]["type"] == "list") {
             process_agglist(aggname, results["aggs"][aggname]);
@@ -95,6 +95,9 @@ function handle_query_results(results)
     var rtable = $("#searchresults_table");
     rtable.DataTable( {
 	destroy: true,
+        "language": {
+            "thousands": ","
+        },
         "processing": true,
         "data": results.results.hits,
         "columns": [
@@ -110,5 +113,5 @@ function handle_query_results(results)
 		  [4, "asc"]
 		 ]
     } );
-    
+
 }

@@ -36,14 +36,14 @@ function rank_aggs(cell_line) {
 				       "interval": 500,
 				       "min_doc_count": 1}}
     };
-    
+
 };
 
 function Query() {
 
     this.cell_line = "";
     this.chromosome = "";
-    
+
     this.eso = {
 	"aggs": {
 	    "chromosome": {"terms": {"field": "position.chrom"}},
