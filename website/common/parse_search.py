@@ -21,8 +21,10 @@ class ParseSearch:
 
         self.assembly = "hg19"
 
-        self.cellTypes = ["hela-s3", "k562", "gm12878"]
-        
+        self.cellTypes = {"hela-s3" : "HeLa-S3",
+                          "k562" : "K562",
+                          "gm12878" : "GM12878"}
+                
     def _sanitize(self):
         # TODO: add more here!
         return self.rawInput[:2048]
@@ -34,31 +36,38 @@ class ParseSearch:
 
         coord = None
         cellType = None
-        
-        for t in toks:
-            if t in self.cellTypes:
-                cellType = t
-                continue
-            elif t.startswith("chr"):
-                # coordinate
-                coord = Coord.parse(t)
-                continue
-            elif t.startswith("rs"):
-                if re.search(r"rs\d+", t):
-                    # SNP
+
+        try:
+            for t in toks:
+                print(t)
+                if t in self.cellTypes:
+                    cellType = self.cellTypes[t]
+                    continue
+                elif t.startswith("chr"):
+                    # coordinate
+                    coord = Coord.parse(t)
+                    continue
+                elif t.startswith("rs"):
                     coord = self.parseSnp(t)
                     continue
-            else:
-                coord = self.parseGene(t)
+                else:
+                    coord = self.parseGene(t)
+        except:
+            raise
+            print("could not parse " + s)
 
         print(coord, cellType)
-        return {"cellType" : cellType, "coord" : {"chrom" : coord.chrom,
-                                                  "start" : coord.start,
-                                                  "end" : coord.end}
-                }
+        ret = {"cellType" : None, "coord" : None}
+        if cellType:
+            ret.update({"cellType" : cellType})
+        if coord:
+            ret.update({"coord" : {"chrom" : coord.chrom,
+                                   "start" : coord.start,
+                                   "end" : coord.end}})
+        return ret
         
     def parseSnp(self, t):
-        snps = self.dbsnps.lookup(self.assembly, t)
+        snps = self.dbSnps.lookup(self.assembly, t)
         if not snps:
             return None
 
