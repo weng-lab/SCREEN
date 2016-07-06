@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, json
 
 from models.regelm import RegElements
 from parse_search import ParseSearch
@@ -22,10 +22,11 @@ class PageInfoMain:
         if "q" in kwargs:
             p = ParseSearch(self.DBCONN, kwargs["q"])
             try:
-                p.parse()
+                parsed = p.parse()
             except:
-                raise
+                parsed = {"cellType" : None, "coord" : None}
                 print("could not parse " + kwargs["q"])
+        retval.update({"parsed" : json.dumps(parsed)})
         retval.update({"facetlist": [{"id": "cell_line",
                                       "name": "cell types",
                                       "type": "list",
