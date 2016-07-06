@@ -45,13 +45,11 @@ function play(parsed){
 
     if(ct){
 	searchquery.set_cell_line_filter(parsed["cellType"]);
+    } else {
+	request_cell_lines();
     }
     if(coord){
 	searchquery.set_coordinate_filter(coord["chrom"], coord["start"], coord["end"]);
-    }
-    if(!ct && !coord){
-	console.log("everything");
-	request_cell_lines();
     }
     sendText(JSON.stringify(searchquery.eso));
 };
