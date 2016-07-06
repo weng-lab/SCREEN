@@ -10,8 +10,9 @@ from dbsnps import dbSnps
 from genes import LookupGenes
 
 class ParseSearch:
-    def __init__(self, DBCONN, rawInput):
-        self.rawInput = rawInput
+    def __init__(self, DBCONN, rawInput, es):
+        self.es = es
+        self.rawInput = es.gene_aliases_to_coordinates(rawInput)
         self.DBCONN = DBCONN
         self.dbSnps = dbSnps(DBCONN)
         self.genes = LookupGenes(DBCONN)
