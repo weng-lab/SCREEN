@@ -101,7 +101,10 @@ function handle_query_results(results)
 	    { "data": "_source.position.start" },
 	    { "data": "_source.position.end" }
         ],
-	"order": [[ 1, "desc" ]]
+	"order": [[ 1, "desc" ],
+		  [3, "asc"],
+		  [4, "asc"]
+		 ]
     } );
     
 }
