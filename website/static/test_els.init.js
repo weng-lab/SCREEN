@@ -88,36 +88,18 @@ function handle_query_results(results)
         }
     }
 
-    var elements = ["accession", "confidence", "genes", "genome", "position", "ranks"];
-    var rtable = $("#searchresults_div");
-    var html = "<strong>" + results.results.total + " results</strong><br><br>";
-    html += '<table class="table table-condensed">';
-
-    html += "<thead>";
-    $.each(elements, function(i, v) {
-        html += "<th>" + v + "</th>";
-    });
-    html += "</thead>";
-
-    for (var i = 0; i < 10 && i < results.results.total; i++) {
-
-        var r = results.results.hits[i]._source;
-        html += "<tr>";
-	$.each(elements, function(i, v) {
-            if("genes" == v){
-                html += "<td>" + "" + "</td>";
-            }else if("ranks" == v){
-                html += "<td>" + r["ranks"]["dnase"]["K562"]["rank"] + "</td>";
-            }else if("position" == v){
-                var p = r["position"]
-                html += "<td>" + p["chrom"] + ":" + p["start"] + "-" + p["end"] + "</td>";
-            }else {
-                html += "<td>" + String(r[v]) + "</td>";
-            }
-        });
-        html += "</tr>";
-	
-    }
-    rtable.html(html);
+    var rtable = $("#searchresults_table");
+    rtable.DataTable( {
+        "processing": true,
+        "data": results.results.hits,
+        "columns": [
+	    { "data": "_source.accession" },
+	    { "data": "_source.confidence" },
+	    { "data": "_source.genome" },
+            { "data": "_source.position.chrom" },
+	    { "data": "_source.position.start" },
+	    { "data": "_source.position.end" }
+        ]
+    } );
     
 }
