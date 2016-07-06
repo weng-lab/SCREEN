@@ -46,10 +46,11 @@ function handle_enumeration(results)
     process_agglist(results["name"], results);
 }
 
-function reset_range_slider(div_id, max, textbox_el, stopf, slidef)
+function reset_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range=null)
 {
     clear_div_contents(document.getElementById(div_id));
-    create_range_slider(div_id, max, textbox_el, stopf, slidef);
+    create_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range);
+    if (selection_range != null) textbox_el.value = selection_range[0] + " - " + selction_range[1];
 }
 
 function reset_rank_sliders(agg_results)
@@ -70,7 +71,8 @@ function handle_query_results(results)
                            2000000,
                            document.getElementById("coordinates_textbox"),
                            update_coordinate_filter,
-                           update_coordinate_histogram_selection);
+                           update_coordinate_histogram_selection,
+			   searchquery.get_coordinate_selection_range());
     }
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
@@ -79,9 +81,9 @@ function handle_query_results(results)
 	reset_rank_sliders();
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
-	
-    toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
 
+    toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
+    
     for (aggname in results["aggs"]) {
         if (results["aggs"][aggname]["type"] == "list") {
             process_agglist(aggname, results["aggs"][aggname]);
