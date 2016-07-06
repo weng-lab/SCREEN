@@ -103,6 +103,12 @@ Query.prototype.set_chromosome_filter = function(chr) {
     this.chromosome = chr;
 };
 
+Query.prototype.get_coordinate_selection_range = function() {
+    if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
+    return [this.eso.post_filter.bool.must[POSITION_END].range["position.start"].gte,
+	    this.eso.post_filter.bool.must[POSITION_START].range["position.end"].lte];
+};
+
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};
 
 Query.prototype.has_cell_line_filter = function() {return this.cell_line != ""};
