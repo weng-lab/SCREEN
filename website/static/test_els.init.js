@@ -50,7 +50,7 @@ function reset_range_slider(div_id, max, textbox_el, stopf, slidef, selection_ra
 {
     clear_div_contents(document.getElementById(div_id));
     create_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range);
-    if (selection_range != null) textbox_el.value = selection_range[0] + " - " + selction_range[1];
+    if (selection_range != null) textbox_el.value = selection_range[0] + " - " + selection_range[1];
 }
 
 function reset_rank_sliders(agg_results)
