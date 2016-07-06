@@ -23,7 +23,7 @@ def main():
     args = parseargs()
     importer = ESBulkImporter(args.elasticsearch_server, args.elasticsearch_port)
 
-    fn = 'regulatory-element-registry-hg19.V1.json.gz'
+    fn = 'regulatory-element-registry-hg19.V2.json.gz'
     d = os.path.join(Dirs.encyclopedia, "Version-4")
     fnp = os.path.join(d, fn)
 
