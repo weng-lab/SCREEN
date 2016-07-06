@@ -63,8 +63,6 @@ function reset_rank_sliders(agg_results)
 
 function handle_query_results(results)
 {
-
-    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
     
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
     {
@@ -73,8 +71,8 @@ function handle_query_results(results)
                            document.getElementById("coordinates_textbox"),
                            update_coordinate_filter,
                            update_coordinate_histogram_selection);
-	document.getElementById("coordinates_facet_panel").style.display = "block";
     }
+    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
     {
