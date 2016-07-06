@@ -31,27 +31,27 @@ class MyServerProtocol(WebSocketServerProtocol):
             self.sendMessage("not supported", False)
             return
 
-        payload = payload.decode('utf8')
-        j = json.loads(payload)
-
-        regElements = RegElements(es)
-
-        if "action" in j and j["action"] == "enumerate":
-            raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
-            raw_results.update({"name": j["name"]})
-            self.sendMessage(json.dumps(raw_results))
-            return
-        
-        if "aggs" in j and "query" in j:
-            raw_results = es.search(body=j, index="regulatory_elements")
-            processed_results = RegElements.process_for_javascript(raw_results)
-            self.sendMessage(json.dumps(processed_results))
-            return
-        
         try:
+            payload = payload.decode('utf8')
+            j = json.loads(payload)
+            regElements = RegElements(es)
+
+            if "action" in j and j["action"] == "enumerate":
+                raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
+                raw_results.update({"name": j["name"]})
+                self.sendMessage(json.dumps(raw_results))
+                return
+
+            if "aggs" in j and "query" in j:
+                raw_results = es.search(body=j, index="regulatory_elements")
+                processed_results = RegElements.process_for_javascript(raw_results)
+                self.sendMessage(json.dumps(processed_results))
+                return
+
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
+
         except:
-            ret = { "status" : "",
+            ret = { "status" : "error",
                     "err" : 1}
         self.sendMessage(json.dumps(ret), False)
 
