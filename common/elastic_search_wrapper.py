@@ -38,6 +38,9 @@ _textsearch_fields = ["genes.nearest-all.gene-id",
 
 _or_query = {"query": {"bool": {"should": [] }}}
 
+_gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID",
+                      "UCSC_ID", "RefSeq_ID"]
+
 class or_query:
     basequery = {"query": {"bool": {"should": [] }}}
 
@@ -93,52 +96,52 @@ class ElasticSearchWrapper:
     def get_cell_line_list(self):
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
-    
-    def resolve_gene_aliases(self, q):
+
+    def run_gene_query(fields, fuzziness, field_to_return=""):
         query = or_query()
         query.reset()
-        fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID",
-                  "UCSC_ID", "RefSeq_ID"]
+        for field in fields:
+            query.append_fuzzy_match("approved_symbol", q, fuzziness=fuzziness)
+        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] <= 0: return []
+        if field_to_return != "":
+            results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
+        else:
+            results = [r["_source"] for r in raw_results["hits"]["hits"]]
+        return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
+                results])
+
+    def gene_aliases_to_coordinates(self, q):
+        suggestions, raw_results = run_gene_query(_gene_alias_fields, 0)
+        if len(raw_results) == 0: return q
+        for field in _gene_alias_fields:
+            q = q.replace(raw_results[field], raw_results["coordinates"])
+        return q
+    
+    def resolve_gene_aliases(self, q):
         
         # first round: exact matches on any of the IDs or the friendly name
-        for field in fields:
-            query.append_exact_match(field, q)
-        print(query.query_obj)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        suggestions, raw_results = run_gene_query(_gene_alias_fields, 0, "ensemblid")
         if raw_results["hits"]["total"] > 0:
-            return ([], [r["_source"]["ensemblid"] for r in raw_results["hits"]["hits"]])
+            return (suggestions, raw_results)
 
         # second round: symbol only, fuzziness 1
-        query.reset()
-        query.append_fuzzy_match("approved_symbol", q)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        suggestions, raw_results = run_gene_query(["approved_symbol"], 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
-            return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
-                    [r["_source"]["ensemblid"] for r in raw_results["hits"]["hits"]])
+            return (suggestions, raw_results)
         
         # third round: fuzzy matches, fuzziness 1
-        query.reset()
-        for field in fields:
-            query.append_fuzzy_match(field, q)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
-        print("found %d results" % raw_results["hits"]["total"])
-        print(raw_results)
+        suggestions, raw_results = run_gene_query(_gene_alias_fields, 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
-            return ([],
-                    [r["_source"]["ensemblid"] for r in raw_results["hits"]["hits"]])
+            return ([], raw_results) # the suggestions list will likely be too long to display for this query
 
         # fourth round: fuzzy matches, fuzziness 2
-        query.reset()
-        for field in fields:
-            query.append_fuzzy_match(field, q, fuzziness=2)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        suggestions, raw_results = run_gene_query(_gene_alias_fields, 2, "ensemblid")
         if raw_results["hits"]["total"] > 0:
-            return ([],
-                    [r["_source"]["ensemblid"] for r in raw_results["hits"]["hits"]])
+            return ([], raw_results)
 
         return ([], [])
         
-
     def build_from_usersearch(self, q):
         retval = {"aggs": _base_aggregations,
                   "query": {"bool": {"should": []}}}
