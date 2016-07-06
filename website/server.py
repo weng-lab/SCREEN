@@ -15,7 +15,6 @@ from templates import Templates
 from dbs import DBS
 from utils import Utils
 
-
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
 
@@ -37,9 +36,18 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
+        if args.local:
+            dbs = DBS.localRegElmViz()
+        else:
+            dbs = DBS.pgdsn("regElmViz")
+        dbs["application_name"] = os.path.realpath(__file__)
+
+        import psycopg2.pool
+        self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+        
         self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
                                                      #port = args.elasticsearch_port))
-        MainAppRunner(self.es, self.devMode)
+        MainAppRunner(self.es, self.DBCONN, self.devMode)
 
     def start(self):
         if self.devMode:
@@ -58,6 +66,7 @@ class RegElmVizWebsite(object):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_true", default=False)
+    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
