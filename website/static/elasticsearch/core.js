@@ -104,9 +104,9 @@ Query.prototype.set_chromosome_filter = function(chr) {
 };
 
 Query.prototype.get_coordinate_selection_range = function() {
-    if (this.eso.query.bool.must[POSITION_END] == {}) return null;
-    return [this.eso.query.bool.must[POSITION_END].range["position.start"].gte,
-	    this.eso.query.bool.must[POSITION_START].range["position.end"].lte];
+    if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
+    return [this.eso.post_filter.bool.must[POSITION_END].range["position.start"].gte,
+	    this.eso.post_filter.bool.must[POSITION_START].range["position.end"].lte];
 };
 
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};
