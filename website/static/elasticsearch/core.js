@@ -36,14 +36,14 @@ function rank_aggs(cell_line) {
 				       "interval": 500,
 				       "min_doc_count": 1}}
     };
-    
+
 };
 
 function Query() {
 
     this.cell_line = "";
     this.chromosome = "";
-    
+
     this.eso = {
 	"aggs": {
 	    "chromosome": {"terms": {"field": "position.chrom"}},
@@ -105,8 +105,9 @@ Query.prototype.set_chromosome_filter = function(chr) {
 
 Query.prototype.get_coordinate_selection_range = function() {
     if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
-    return [this.eso.post_filter.bool.must[POSITION_END].range["position.end"].gte,
-	    this.eso.post_filter.bool.must[POSITION_START].range["position.start"].lte];
+    if (typeof this.eso.post_filter.bool.must[POSITION_END].range["position.start"] == 'undefined') return null;
+    return [this.eso.post_filter.bool.must[POSITION_END].range["position.start"].gte,
+	    this.eso.post_filter.bool.must[POSITION_START].range["position.end"].lte];
 };
 
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};

@@ -16,7 +16,7 @@ class ParseSearch:
         self.DBCONN = DBCONN
         self.dbSnps = dbSnps(DBCONN)
         self.genes = LookupGenes(DBCONN)
-             
+
         self.halfWindow = 7500
         self.userErrMsg = ""
 
@@ -25,11 +25,11 @@ class ParseSearch:
         self.cellTypes = {"hela-s3" : "HeLa-S3",
                           "k562" : "K562",
                           "gm12878" : "GM12878"}
-                
+
     def _sanitize(self):
         # TODO: add more here!
         return self.rawInput[:2048]
-    
+
     def parse(self):
         s = self._sanitize()
         toks = s.split()
@@ -66,7 +66,7 @@ class ParseSearch:
                                    "start" : coord.start,
                                    "end" : coord.end}})
         return ret
-        
+
     def parseSnp(self, t):
         snps = self.dbSnps.lookup(self.assembly, t)
         if not snps:
