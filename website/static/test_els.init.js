@@ -77,7 +77,11 @@ function handle_query_results(results)
     }
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
+    {
 	reset_rank_sliders();
+	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, "x"]]});
+    }
+	
     toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
 
     for (aggname in results["aggs"]) {

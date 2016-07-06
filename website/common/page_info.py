@@ -22,7 +22,7 @@ class PageInfoMain:
         retval.update({"parsed" : ""})
         
         if "q" in kwargs:
-            p = ParseSearch(self.DBCONN, kwargs["q"])
+            p = ParseSearch(self.DBCONN, kwargs["q"], self.es)
             parsed = p.parse()
             retval.update({"parsed" : json.dumps(parsed)})
             
