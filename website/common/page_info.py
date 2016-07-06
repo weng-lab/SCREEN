@@ -15,9 +15,19 @@ class PageInfoMain:
 
     def testqueryPage(self):
         retval = self.wholePage()
-        retval.update({"facetlist": [{"id": "cell_line", "name": "cell line", "type": "list", "visible": True},
-                                     {"id": "chromosome", "name": "chromosome", "type": "list", "visible": True},
-                                     {"id": "coordinates", "name": "coordinates", "type": "slider", "label_text": "coordinates", "visible": False} ],
+        retval.update({"facetlist": [{"id": "cell_line",
+                                      "name": "cell types",
+                                      "type": "list",
+                                      "visible": True},
+                                     {"id": "chromosome",
+                                      "name": "chromosome",
+                                      "type": "list",
+                                      "visible": True},
+                                     {"id": "coordinates",
+                                      "name": "coordinates",
+                                      "type": "slider",
+                                      "label_text": "coordinates",
+                                      "visible": False} ],
                        "ranklist": [{"id": "dnase_rank", "name": "DNase"},
                                     {"id": "ctcf_rank", "name": "CTCF"},
                                     {"id": "promoter_rank", "name": "promoter"},
