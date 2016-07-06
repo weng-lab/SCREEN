@@ -97,22 +97,22 @@ class ElasticSearchWrapper:
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
 
-    def run_gene_query(fields, fuzziness, field_to_return=""):
+    def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
         query = or_query()
         query.reset()
         for field in fields:
-            query.append_fuzzy_match("approved_symbol", q, fuzziness=fuzziness)
+            query.append_fuzzy_match(field, q, fuzziness=fuzziness)
         raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
-        if raw_results["hits"]["total"] <= 0: return []
+        if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
             results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
         else:
             results = [r["_source"] for r in raw_results["hits"]["hits"]]
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
-                results])
+                results)
 
     def gene_aliases_to_coordinates(self, q):
-        suggestions, raw_results = run_gene_query(_gene_alias_fields, 0)
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 0)
         if len(raw_results) == 0: return q
         for field in _gene_alias_fields:
             q = q.replace(raw_results[field], raw_results["coordinates"])
@@ -121,22 +121,22 @@ class ElasticSearchWrapper:
     def resolve_gene_aliases(self, q):
         
         # first round: exact matches on any of the IDs or the friendly name
-        suggestions, raw_results = run_gene_query(_gene_alias_fields, 0, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 0, "ensemblid")
         if raw_results["hits"]["total"] > 0:
             return (suggestions, raw_results)
 
         # second round: symbol only, fuzziness 1
-        suggestions, raw_results = run_gene_query(["approved_symbol"], 1, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(["approved_symbol"], q, 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
             return (suggestions, raw_results)
         
         # third round: fuzzy matches, fuzziness 1
-        suggestions, raw_results = run_gene_query(_gene_alias_fields, 1, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
             return ([], raw_results) # the suggestions list will likely be too long to display for this query
 
         # fourth round: fuzzy matches, fuzziness 2
-        suggestions, raw_results = run_gene_query(_gene_alias_fields, 2, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 2, "ensemblid")
         if raw_results["hits"]["total"] > 0:
             return ([], raw_results)
 
