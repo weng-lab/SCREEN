@@ -105,6 +105,7 @@ Query.prototype.set_chromosome_filter = function(chr) {
 
 Query.prototype.get_coordinate_selection_range = function() {
     if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
+    if (typeof this.eso.post_filter.bool.must[POSITION_END].range["position.start"] == 'undefined') return null;
     return [this.eso.post_filter.bool.must[POSITION_END].range["position.start"].gte,
 	    this.eso.post_filter.bool.must[POSITION_START].range["position.end"].lte];
 };
