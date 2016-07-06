@@ -100,7 +100,8 @@ function handle_query_results(results)
             { "data": "_source.position.chrom" },
 	    { "data": "_source.position.start" },
 	    { "data": "_source.position.end" }
-        ]
+        ],
+	"order": [[ 1, "desc" ]]
     } );
     
 }
