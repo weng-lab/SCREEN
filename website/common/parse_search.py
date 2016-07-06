@@ -34,6 +34,7 @@ class ParseSearch:
 
         coord = None
         cellType = None
+        
         for t in toks:
             if t in self.cellTypes:
                 cellType = t
@@ -51,7 +52,11 @@ class ParseSearch:
                 coord = self.parseGene(t)
 
         print(coord, cellType)
-                
+        return {"cellType" : cellType, "coord" : {"chrom" : coord.chrom,
+                                                  "start" : coord.start,
+                                                  "end" : coord.end}
+                }
+        
     def parseSnp(self, t):
         snps = self.dbsnps.lookup(self.assembly, t)
         if not snps:
