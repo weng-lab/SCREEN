@@ -57,7 +57,6 @@ class or_query:
 
     def reset(self):
         self.query_obj["query"]["bool"]["should"] = []
-        
 
 class ElasticSearchWrapper:
 
@@ -68,7 +67,7 @@ class ElasticSearchWrapper:
     @staticmethod
     def default_url(uri):
         return "http://%s:%d/%s" % (default_server, default_port, uri)
-    
+
     @staticmethod
     def index(fnp, url):
         with open(fnp, "rb") as f:
@@ -92,7 +91,7 @@ class ElasticSearchWrapper:
                 break
         return {"type": "enumeration",
                 "datapairs": [(k, -1) for k, v in result.iteritems()] if result is not None else [] }
-    
+
     def get_cell_line_list(self):
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
@@ -117,9 +116,8 @@ class ElasticSearchWrapper:
         for field in _gene_alias_fields:
             q = q.replace(raw_results[field], raw_results["coordinates"])
         return q
-    
+
     def resolve_gene_aliases(self, q):
-        
         # first round: exact matches on any of the IDs or the friendly name
         suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 0, "ensemblid")
         if raw_results["hits"]["total"] > 0:
@@ -129,7 +127,7 @@ class ElasticSearchWrapper:
         suggestions, raw_results = self.run_gene_query(["approved_symbol"], q, 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
             return (suggestions, raw_results)
-        
+
         # third round: fuzzy matches, fuzziness 1
         suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 1, "ensemblid")
         if raw_results["hits"]["total"] > 0:
@@ -141,7 +139,7 @@ class ElasticSearchWrapper:
             return ([], raw_results)
 
         return ([], [])
-        
+
     def build_from_usersearch(self, q):
         retval = {"aggs": _base_aggregations,
                   "query": {"bool": {"should": []}}}
