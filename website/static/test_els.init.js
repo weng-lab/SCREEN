@@ -46,10 +46,11 @@ function handle_enumeration(results)
     process_agglist(results["name"], results);
 }
 
-function reset_range_slider(div_id, max, textbox_el, stopf, slidef)
+function reset_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range=null)
 {
     clear_div_contents(document.getElementById(div_id));
-    create_range_slider(div_id, max, textbox_el, stopf, slidef);
+    create_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range);
+    if (selection_range != null) textbox_el.value = selection_range[0] + " - " + selection_range[1];
 }
 
 function reset_rank_sliders(agg_results)
@@ -64,20 +65,23 @@ function reset_rank_sliders(agg_results)
 function handle_query_results(results)
 {
 
-    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
-    
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
     {
         reset_range_slider("coordinates_range_slider",
                            2000000,
                            document.getElementById("coordinates_textbox"),
                            update_coordinate_filter,
-                           update_coordinate_histogram_selection);
-	document.getElementById("coordinates_facet_panel").style.display = "block";
+                           update_coordinate_histogram_selection,
+			   searchquery.get_coordinate_selection_range());
     }
+    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
+    {
 	reset_rank_sliders();
+	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
+    }
+
     toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
 
     for (aggname in results["aggs"]) {
@@ -91,6 +95,9 @@ function handle_query_results(results)
     var rtable = $("#searchresults_table");
     rtable.DataTable( {
 	destroy: true,
+        "language": {
+            "thousands": ","
+        },
         "processing": true,
         "data": results.results.hits,
         "columns": [
@@ -106,5 +113,5 @@ function handle_query_results(results)
 		  [4, "asc"]
 		 ]
     } );
-    
+
 }
