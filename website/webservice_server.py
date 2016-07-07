@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import sys, json
+import os, sys, json
 
 from twisted.python import log
 from twisted.internet import reactor
 
-sys.path.append("../common")
-
+sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
+
 from elasticsearch import Elasticsearch
 
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
