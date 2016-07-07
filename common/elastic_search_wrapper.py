@@ -139,7 +139,9 @@ class ElasticSearchWrapper:
         if assembly != "":
             query.append_exact_match("assembly", assembly)
         query.append_fuzzy_match("accession", q, fuzziness=fuzziness)
+        print("@ElasticSearchWrapper.run_snp_query(%s, %d, %s, %s)" % (q, fuzziness, assembly, field_to_return))
         raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        print "    raw_results=", raw_results
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
             results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
@@ -159,7 +161,9 @@ class ElasticSearchWrapper:
         return (suggestions, retval)
 
     def snp_aliases_to_coordinates(self, q):
+        print("@ElasticSearchWrapper.snp_aliases_to_coordinates(%s)" % q)
         suggestions, raw_results = self.resolve_snp_aliases(q)
+        print("    raw_results=", raw_results)
         retval = []
         if len(raw_results) == 0: return (suggestions, retval)
         for result in raw_results:
@@ -192,7 +196,9 @@ class ElasticSearchWrapper:
 
     def resolve_snp_aliases(self, q):
         for i in range(0, 3):
+            print("@ElasticSearchWrapper.resolve_snp_aliases(%s):fuzziness=%d" % (q, i))
             suggestions, results = self.run_snp_query(q, i, field_to_return="accession")
+            print "    results=", results
             if len(results) > 0:
                 return (suggestions, results)
         return ([], [])

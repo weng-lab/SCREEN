@@ -11,6 +11,7 @@ def main():
     infnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.tsv")
     outfnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.lsj")
     i = -1
+    skipped = 0
     with open(infnp, "r") as f:
         with open(outfnp, "wb") as o:
             for line in f:
@@ -31,7 +32,9 @@ def main():
                            "Vega_ID": line[16],
                            "UCSC_ID": line[17],
                            "mouse_genome_ID": line[18] }
-                if geneobj["ensemblid"].strip() == "": continue
+                if geneobj["ensemblid"].strip() == "":
+                    skipped += 1
+                    continue
                 try:
                     result = requests.get("http://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=%s" % geneobj["ensemblid"],
                                           allow_redirects = False)
@@ -39,9 +42,7 @@ def main():
                     print("unable to get chromosome region for %s; skipping" % geneobj["ensemblid"])
                 geneobj["coordinates"] = result.headers["Location"].split("r=")[1]
                 o.write(json.dumps(geneobj) + "\n")
-                print("working with item %d\r" % i)
-                sys.stdout.flush()
-    print("wrote %d gene objects" % i, end="")
+    print("wrote %d gene objects less %d skipped" % (i, skipped), end="")
     return 0
 
 if __name__ == "__main__":
