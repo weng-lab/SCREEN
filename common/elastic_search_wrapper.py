@@ -154,6 +154,7 @@ class ElasticSearchWrapper:
         if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
             for result in raw_results:
+                print "!", result
                 if result[field] in q:
                     retval.append((result[field], result["coordinates"]))
         return (suggestions, retval)
@@ -169,22 +170,22 @@ class ElasticSearchWrapper:
 
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
-        suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0, "ensemblid")
+        suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0)
         if len(results) > 0:
             return (suggestions, results)
 
         # second round: symbol only, fuzziness 1
-        suggestions, results = self.run_gene_query(["approved_symbol"], q, 1, "ensemblid")
+        suggestions, results = self.run_gene_query(["approved_symbol"], q, 1)
         if len(results) > 0:
             return (suggestions, results)
 
         # third round: fuzzy matches, fuzziness 1
-        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 1, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 1)
         if len(results) > 0:
             return ([], results) # the suggestions list will likely be too long to display for this query
 
         # fourth round: fuzzy matches, fuzziness 2
-        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 2, "ensemblid")
+        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 2)
         if len(results) > 0:
             return ([], results)
 
@@ -192,7 +193,7 @@ class ElasticSearchWrapper:
 
     def resolve_snp_aliases(self, q):
         for i in range(0, 3):
-            suggestions, results = self.run_snp_query(q, i, field_to_return="accession")
+            suggestions, results = self.run_snp_query(q, i)
             if len(results) > 0:
                 return (suggestions, results)
         return ([], [])

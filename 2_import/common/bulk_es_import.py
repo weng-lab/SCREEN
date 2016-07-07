@@ -1,4 +1,5 @@
 import argparse
+import sys
 sys.path.append("../../common")
 from es_bulk_importer import ESBulkImporter
 
@@ -6,6 +7,8 @@ class executable_importer:
 
     def __init__(self, fnp, index, doc_type):
         self.fnp = fnp
+        self.index = index
+        self.doc_type = doc_type
         self._init_argparser()
     
     def _init_argparser(self):
@@ -19,7 +22,7 @@ class executable_importer:
         args = self.parser.parse_args()
         importer = ESBulkImporter(args.elasticsearch_server, args.elasticsearch_port)
         try:
-            importer.do_import(fnp, index, doc_type=doc_type)
+            importer.do_import(self.fnp, self.index, doc_type=self.doc_type)
         except:
             if args.debug: raise
             return 1

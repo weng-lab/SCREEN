@@ -22,7 +22,7 @@ def main():
                 lines = [line for line in f]
                 for line in lines[1:]:
                     line = line.split(",")
-                    snpobj = {"accession": line[3],
+                    snpobj = {"accession": line[3].strip(),
                                "coordinates": "%s:%s-%s" % (line[0], line[1], line[2]),
                                "assembly": assembly }
                     o.write(json.dumps(snpobj) + "\n")
