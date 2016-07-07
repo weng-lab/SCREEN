@@ -4,9 +4,8 @@ from models.regelm import RegElements
 from parse_search import ParseSearch
 
 class PageInfoMain:
-    def __init__(self, es, DBCONN, version):
+    def __init__(self, es, version):
         self.es = es
-        self.DBCONN = DBCONN
         self.version = version
         self.regElements = RegElements(es)
 
@@ -22,7 +21,7 @@ class PageInfoMain:
         retval.update({"parsed" : ""})
 
         if "q" in kwargs:
-            p = ParseSearch(self.DBCONN, kwargs["q"], self.es)
+            p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
             retval.update({"parsed" : json.dumps(parsed)})
 
