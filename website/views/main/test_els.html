@@ -32,22 +32,16 @@
 	<table id="searchresults_table">
           <thead>
 	    <tr>
-	      <th>Accession</th>
-	      <th>Confidence</th>
-	      <th>Genome</th>
-	      <th>Chr</th>
-	      <th>Start</th>
-	      <th>End</th>
+              {% for tc in tableCols -%}
+	      <th>{{tc-}}</th>
+              {% endfor -%}
 	    </tr>
 	  </thead>
 	  <tfoot>
 	    <tr>
-	      <th>Accession</th>
-	      <th>Confidence</th>
-	      <th>Genome</th>
-	      <th>Chr</th>
-	      <th>Start</th>
-	      <th>End</th>
+              {% for tc in tableCols -%}
+	      <th>{{tc-}}</th>
+              {% endfor -%}
 	    </tr>
 	  </tfoot>
 	</table>

@@ -29,9 +29,6 @@
       }
   }
 
-
-
-
 </script>
 
 <script src="/ver4/search/static/client.js"></script>
@@ -45,13 +42,12 @@
   <!-- Example row of columns -->
   <div class="row" style="width:100%">
     <div class="col-md-2" id="facets-container">
-
       <br>
       {% for facet in facetlist -%}
       {{hh.facetbox(facet)}}
       {% endfor -%}
-
     </div>
+
     <div class="col-md-10">
       <h2>Results</h2>
       <button onclick='play();'>Construct base results</button>

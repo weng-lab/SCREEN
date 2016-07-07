@@ -41,9 +41,9 @@ class ParseSearch:
         coord = None
         cellType = None
 
-        gene_suggestions, gene_results = es.gene_aliases_to_coordinates(s)
+        gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
-        snp_suggestions, snp_results = es.snp_aliases_to_coordinates(s)
+        snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
         
         try:
@@ -62,11 +62,6 @@ class ParseSearch:
                     # coordinate
                     coord = Coord.parse(t)
                     continue
-                elif t.startswith("rs"):
-                    coord = self.parseSnp(t)
-                    continue
-                else:
-                    coord = self.parseGene(t)
         except:
             raise
             print("could not parse " + s)
