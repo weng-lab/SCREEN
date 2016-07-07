@@ -9,10 +9,13 @@ from coord import Coord
 from dbsnps import dbSnps
 from genes import LookupGenes
 
+def _unpack_tuple_array(a):
+    return ([i[0] for i in a], [i[1] for i in a])
+
 class ParseSearch:
     def __init__(self, DBCONN, rawInput, es):
         self.es = es
-        self.rawInput = es.gene_aliases_to_coordinates(rawInput)
+        self.rawInput = rawInput
         self.DBCONN = DBCONN
         self.dbSnps = dbSnps(DBCONN)
         self.genes = LookupGenes(DBCONN)
@@ -29,7 +32,7 @@ class ParseSearch:
     def _sanitize(self):
         # TODO: add more here!
         return self.rawInput[:2048]
-
+    
     def parse(self):
         s = self._sanitize()
         toks = s.split()
@@ -38,10 +41,21 @@ class ParseSearch:
         coord = None
         cellType = None
 
+        gene_suggestions, gene_results = es.gene_aliases_to_coordinates(s)
+        gene_toks, gene_coords = _unpack_tuple_array(gene_results)
+        snp_suggestions, snp_results = es.snp_aliases_to_coordinates(s)
+        snp_toks, snp_coords = _unpack_tuple_array(snp_results)
+        
         try:
             for t in toks:
                 print(t)
-                if t in self.cellTypes:
+                if t in gene_toks:
+                    coord = Coord.parse(gene_coords[gene_toks.index(t)])
+                    continue
+                elif t in snp_toks:
+                    coord = Coord.parse(snp_coords[snp_toks.index(t)]).resize(self.halfWindow)
+                    continue
+                elif t in self.cellTypes:
                     cellType = self.cellTypes[t]
                     continue
                 elif t.startswith("chr"):
@@ -66,36 +80,3 @@ class ParseSearch:
                                    "start" : coord.start,
                                    "end" : coord.end}})
         return ret
-
-    def parseSnp(self, t):
-        snps = self.dbSnps.lookup(self.assembly, t)
-        if not snps:
-            return None
-
-        if len(snps) > 1:
-            # TODO: subselect?
-            return None
-
-        snp = snps[0]
-        c = Coord(snp[0], snp[1], snp[2])
-        c.resize(self.halfWindow)
-        return c
-
-    def parseGene(self, t):
-        genes = self.genes.lookup(self.assembly, t)
-        if not genes:
-            genes = self.genes.fuzzy_lookup(self.assembly, t)
-            if not genes:
-                self.userErrMsg = "'{loci}' not found".format(loci=t)
-            else:
-                self.userErrMsg = "'{loci}' not found; potential matches: {genes}".format(loci=t, genes=", ".join(sorted(genes)))
-            return None
-
-        if len(genes) > 1:
-            self.userErrMsg = "Multiple genomic positions found; using first found..."
-            return None
-
-        gene = genes[0]
-        c = Coord(gene[0], gene[1], gene[2])
-        c.resize(self.halfWindow)
-        return c

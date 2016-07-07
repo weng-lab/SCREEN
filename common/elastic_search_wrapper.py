@@ -1,6 +1,7 @@
 import requests
 import json
 import elasticsearch
+from copy import copy
 
 get_headers = {}
 put_headers = {}
@@ -36,16 +37,18 @@ _textsearch_fields = ["genes.nearest-all.gene-id",
                       "genome",
                       "position.chrom" ]
 
-_or_query = {"query": {"bool": {"should": [] }}}
+_or_query = 
+
+_and_query = {"query": {"bool": {"must": []}}}
 
 _gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID",
                       "UCSC_ID", "RefSeq_ID"]
 
 class or_query:
     basequery = {"query": {"bool": {"should": [] }}}
-
+    
     def __init__(self):
-        self.query_obj = dict(or_query.basequery)
+        self.query_obj = copy(or_query.basequery)
 
     def append_fuzzy_match(self, field, value, fuzziness=1):
         self.query_obj["query"]["bool"]["should"].append({"match": {field: {"fuzziness": fuzziness,
@@ -57,6 +60,32 @@ class or_query:
 
     def reset(self):
         self.query_obj["query"]["bool"]["should"] = []
+
+class and_query:
+    basequery = {"query": {"bool": {"must": [] }}}
+
+    def __init__(self):
+        self.query_obj = copy(and_query.basequery)
+
+    def append_fuzzy_match(self, field, value, fuzziness=1):
+        self.query_obj["query"]["bool"]["must"].append({"match": {field: {"fuzziness": fuzziness,
+                                                                          "query": value,
+                                                                          "operator": "and" }}})
+
+    def append_exact_match(self, field, value):
+        self.query_obj["query"]["bool"]["must"].append({"match": {field: value}})
+
+    def reset(self):
+        self.query_obj["query"]["bool"]["must"] = []
+    
+def snp_query(accession, assembly="", fuzziness=0):
+    retval = copy(_snp_query)
+    if assembly != "":
+        retval.query.bool.must.assembly = assembly
+    else:
+        retval.query.bool.must.remove
+    retval.query.bool.must.accession = accession
+    return retval
 
 class ElasticSearchWrapper:
 
@@ -98,7 +127,6 @@ class ElasticSearchWrapper:
 
     def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
         query = or_query()
-        query.reset()
         for field in fields:
             query.append_fuzzy_match(field, q, fuzziness=fuzziness)
         raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
@@ -110,12 +138,38 @@ class ElasticSearchWrapper:
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
                 results)
 
+    def run_snp_query(self, q, fuzziness, assembly="", field_to_return=""):
+        query = and_query()
+        if assembly != "":
+            query.append_exact_match("assembly", assembly)
+        query.append_fuzzy_match("accession", q, fuzziness=fuzziness)
+        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] <= 0: return ([], [])
+        if field_to_return != "":
+            results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
+        else:
+            results = [r["_source"] for r in raw_results["hits"]["hits"]]
+        return ([r for r in raw_results["hits"]["hits"] if r["_source"]["accession"] not in q],
+                results)
+    
     def gene_aliases_to_coordinates(self, q):
-        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 0)
-        if len(raw_results) == 0: return q
+        suggestions, raw_results = self.resolve_gene_aliases(q)
+        retval = []
+        if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
-            q = q.replace(raw_results[field], raw_results["coordinates"])
-        return q
+            for result in raw_results:
+                if result[field] in q:
+                    retval.append((result[field], result["coordinates"]))
+        return (suggestions, retval)
+
+    def snp_aliases_to_coordinates(self, q):
+        suggestions, raw_results = self.resolve_snp_aliases(q)
+        retval = []
+        if len(raw_results) == 0: return (suggestions, retval)
+        for result in raw_results:
+            if result["accession"] in q:
+                retval.append((result["accession"], result["coordinates"]))
+        return (suggestions, retval)
 
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
@@ -138,6 +192,13 @@ class ElasticSearchWrapper:
         if len(results) > 0:
             return ([], results)
 
+        return ([], [])
+
+    def resolve_snp_aliases(self, q):
+        for i in range(0, 3):
+            suggestions, results = self.run_snp_query(q, i, field_to_return="accession")
+            if len(results) > 0:
+                return (suggestions, results)
         return ([], [])
 
     def build_from_usersearch(self, q):

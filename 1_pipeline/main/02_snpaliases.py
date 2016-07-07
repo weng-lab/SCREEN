@@ -11,8 +11,8 @@ def main():
     encyclopedia_dir = os.path.join(Dirs.encyclopedia, "Version-4")
     
     component_fnps = [("mm9", os.path.join(Dirs.dbsnps, "snps128common.mm9.csv")),
-                      ("mm10", os.path.join(Dirs.dbsnps, "snps144common.mm10.csv")),
-                      ("hg19", os.path.join(Dirs.dbsnps, "snps146common.hg19.csv"))]
+                      ("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
+                      ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     outfnp = os.path.join(encyclopedia_dir, "snplist.lsj")
     
     with open(outfnp, "wb") as o:

@@ -8,7 +8,7 @@ from bulk_es_import import executable_importer
 from files_and_paths import Dirs
 
 def main():
-    fnp = os.path.join(Dirs.encyclopedia, "Version-4", "snplist.tsj")
+    fnp = os.path.join(Dirs.encyclopedia, "Version-4", "snplist.lsj")
     importer = executable_importer(fnp, "snp_aliases", "snp")
     return importer.exe()
 
