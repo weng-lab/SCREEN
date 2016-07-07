@@ -11,7 +11,6 @@ from elastic_search_wrapper import ElasticSearchWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
-from dbs import DBS
 from utils import Utils
 
 class RegElmVizWebsite(object):
@@ -34,12 +33,6 @@ class RegElmVizWebsite(object):
                 'tools.sessions.storage_path': cacheDir,
                 'tools.sessions.locking': 'early',
                 })
-
-        if args.local:
-            dbs = DBS.localRegElmViz()
-        else:
-            dbs = DBS.pgdsn("regElmViz")
-        dbs["application_name"] = os.path.realpath(__file__)
 
         self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
                                                      #port = args.elasticsearch_port))
