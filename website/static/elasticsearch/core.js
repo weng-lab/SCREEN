@@ -45,6 +45,8 @@ function Query() {
     this.chromosome = "";
     
     this.eso = {
+	"from": 0,
+	"size": 10,
 	"aggs": {
 	    "chromosome": {"terms": {"field": "position.chrom"}},
 	    "coordinates": {"histogram": {"field": "position.start",
@@ -102,6 +104,10 @@ Query.prototype.set_chromosome_filter = function(chr) {
     this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chr } };
     this.chromosome = chr;
 };
+
+Query.prototype.set_num_results = function(n) {this.eso.size = n;};
+
+Query.prototype.set_first_result_index = function(i) {this.eso.from = i;};
 
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};
 
