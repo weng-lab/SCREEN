@@ -1,6 +1,11 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
+<script>{% include 'test_els.init.js' -%}</script>
+
+<script src="/ver4/search/static/client.js"></script>
+<script src="/ver4/search/static/elasticsearch/core.js"></script>
+
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container text-center">
@@ -8,7 +13,7 @@
         <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
         <br>
 	<form action="testsearch" method="get" id="searchform">
-          <input class="searchbox" type="text" size="125" name="q" id="q" value="GM12878 chr1:1000-23000000">
+          <input class="searchbox" type="text" size="125" name="q" id="q" value="GM12878 chr1:1000-23000000" onkeyup="javsacript:request_suggestions(document.all.q.value);">
           <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
 	</form>
         <br>

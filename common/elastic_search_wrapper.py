@@ -37,10 +37,6 @@ _textsearch_fields = ["genes.nearest-all.gene-id",
                       "genome",
                       "position.chrom" ]
 
-_or_query = 
-
-_and_query = {"query": {"bool": {"must": []}}}
-
 _gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID",
                       "UCSC_ID", "RefSeq_ID"]
 
@@ -200,6 +196,44 @@ class ElasticSearchWrapper:
             if len(results) > 0:
                 return (suggestions, results)
         return ([], [])
+
+    def get_gene_suggestions(self, q):
+        query = or_query()
+        for fuzziness in range(0, 3):
+            for field in _gene_alias_fields:
+                query.append({"match_phrase_prefix": {field: q,
+                                                      "fuzziness": fuzziness}})
+            raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+            if raw_results["hits"]["total"] > 0:
+                return self._process_gene_suggestions(raw_results, q)
+            query.reset()
+        return []
+
+    def _process_gene_suggestions(self, raw_results, q):
+        retval = []
+        for result in raw_results["hits"]["hits"]:
+            for field in _gene_alias_fields:
+                if q in result["_source"][field]:
+                    retval.append(result["_source"][field])
+        return retval
+
+    def _process_snp_suggestions(self, raw_results, q):
+        retval = []
+        for result in raw_results["hits"]["hits"]:
+            if q in result["_source"]["accession"]:
+                retval.append(result["_source"]["accession"])
+        return retval
+    
+    def get_snp_suggestions(self, q):
+        query = or_query()
+        for fuzziness in range(0, 3):
+            query.append({"match_phrase_prefix": {field: q,
+                                                  "fuzziness": fuzziness}})
+            raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+            if raw_results["hits"]["total"] > 0:
+                return self._process_snp_suggestions(raw_results, q)
+            query.reset()
+        return []
 
     def build_from_usersearch(self, q):
         retval = {"aggs": _base_aggregations,
