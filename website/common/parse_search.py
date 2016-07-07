@@ -6,19 +6,14 @@ import nltk
 #print tokens
 
 from coord import Coord
-from dbsnps import dbSnps
-from genes import LookupGenes
 
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
 
 class ParseSearch:
-    def __init__(self, DBCONN, rawInput, es):
+    def __init__(self, rawInput, es):
         self.es = es
         self.rawInput = rawInput
-        self.DBCONN = DBCONN
-        self.dbSnps = dbSnps(DBCONN)
-        self.genes = LookupGenes(DBCONN)
 
         self.halfWindow = 7500
         self.userErrMsg = ""
@@ -32,7 +27,7 @@ class ParseSearch:
     def _sanitize(self):
         # TODO: add more here!
         return self.rawInput[:2048]
-    
+
     def parse(self):
         s = self._sanitize()
         toks = s.split()
@@ -45,7 +40,7 @@ class ParseSearch:
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
         snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
-        
+
         try:
             for t in toks:
                 print(t)
@@ -65,7 +60,7 @@ class ParseSearch:
             coord.resize(self.halfWindow)
         if len(gene_coords) > 0:
             coord = Coord.parse(gene_coords[-1])
-            
+
         print(coord, cellType)
         ret = {"cellType" : None, "coord" : None}
         if cellType:
