@@ -2,7 +2,6 @@
 
 import cherrypy, os, sys, argparse
 
-import psycopg2, psycopg2.pool
 from elasticsearch import Elasticsearch
 
 from app_main import MainAppRunner
@@ -12,7 +11,6 @@ from elastic_search_wrapper import ElasticSearchWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
-from dbs import DBS
 from utils import Utils
 
 class RegElmVizWebsite(object):
@@ -36,18 +34,9 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
-        if args.local:
-            dbs = DBS.localRegElmViz()
-        else:
-            dbs = DBS.pgdsn("regElmViz")
-        dbs["application_name"] = os.path.realpath(__file__)
-
-        import psycopg2.pool
-        self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
-        
         self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
                                                      #port = args.elasticsearch_port))
-        MainAppRunner(self.es, self.DBCONN, self.devMode)
+        MainAppRunner(self.es, self.devMode)
 
     def start(self):
         if self.devMode:
