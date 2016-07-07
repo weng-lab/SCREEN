@@ -38,7 +38,7 @@ function rank_aggs(cell_line) {
 	"ctcf_rank": {"histogram": {"field": "ranks.ctcf." + cell_line + ".rank",
 				     "interval": 500,
 				     "min_doc_count": 1}},
-	"conservation": {"histogram": {"field": "ranks.conservation",
+	"conservation": {"histogram": {"field": "ranks.conservation.rank",
 				       "interval": 500,
 				       "min_doc_count": 1}}
     };
