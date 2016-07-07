@@ -43,23 +43,13 @@ class ParseSearch:
 
         gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
-        print("@ParseSearch.parse()")
         snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
-        print "    snp_results=", snp_results
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
-        print "    snp_toks=", snp_toks
-        print "    snp_coords=", snp_coords
         
         try:
             for t in toks:
                 print(t)
-                if t in gene_toks:
-                    coord = Coord.parse(gene_coords[gene_toks.index(t)])
-                    continue
-                elif t in snp_toks:
-                    coord = Coord.parse(snp_coords[snp_toks.index(t)]).resize(self.halfWindow)
-                    continue
-                elif t in self.cellTypes:
+                if t in self.cellTypes:
                     cellType = self.cellTypes[t]
                     continue
                 elif t.startswith("chr"):
@@ -70,6 +60,11 @@ class ParseSearch:
             raise
             print("could not parse " + s)
 
+        if len(snp_coords) > 0:
+            coord = Coord.parse(snp_coords[-1]).resize(self.halfWindow)
+        if len(gene_coords) > 0:
+            coord = Coord.parse(gene_coords[-1])
+            
         print(coord, cellType)
         ret = {"cellType" : None, "coord" : None}
         if cellType:
