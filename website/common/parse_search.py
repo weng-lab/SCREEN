@@ -43,8 +43,12 @@ class ParseSearch:
 
         gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
+        print("@ParseSearch.parse()")
         snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
+        print "    snp_results=", snp_results
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
+        print "    snp_toks=", snp_toks
+        print "    snp_coords=", snp_coords
         
         try:
             for t in toks:
