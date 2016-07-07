@@ -33,7 +33,8 @@ function toggle_display(el, sh)
 function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
-
+    console.log(e.data);
+    
     if (results["type"] == "enumeration")
 	handle_enumeration(results);
     else if (results["type"] == "query_results")
