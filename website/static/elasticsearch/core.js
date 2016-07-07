@@ -117,9 +117,8 @@ Query.prototype.set_first_result_index = function(i) {this.eso.from = i;};
 
 Query.prototype.get_coordinate_selection_range = function() {
     if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
-    if (typeof this.eso.post_filter.bool.must[POSITION_END].range["position.start"] == 'undefined') return null;
-    return [this.eso.post_filter.bool.must[POSITION_END].range["position.start"].gte,
-	    this.eso.post_filter.bool.must[POSITION_START].range["position.end"].lte];
+    return [this.eso.post_filter.bool.must[POSITION_END].range["position.end"].gte,
+	    this.eso.post_filter.bool.must[POSITION_START].range["position.start"].lte];
 };
 
 Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""};

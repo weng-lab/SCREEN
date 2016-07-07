@@ -19,8 +19,10 @@ class Coord:
         try:
             toks = loci.split(':')
             chrom = toks[0]
-            start = toks[1].split('-')[0]
-            end = toks[1].split('-')[1]
+            start = int(toks[1].split('-')[0])
+            end = int(toks[1].split('-')[1])
+            print "!", chrom
+            if not chrom.startswith("chr"): chrom = "chr" + chrom
             return cls(chrom, start, end)
         except:
             return None

@@ -60,6 +60,8 @@ class ParseSearch:
             raise
             print("could not parse " + s)
 
+        print(gene_coords)
+            
         if len(snp_coords) > 0:
             coord = Coord.parse(snp_coords[-1])
             coord.resize(self.halfWindow)
