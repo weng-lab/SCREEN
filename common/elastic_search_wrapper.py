@@ -119,24 +119,24 @@ class ElasticSearchWrapper:
 
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
-        suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 0, "ensemblid")
-        if raw_results["hits"]["total"] > 0:
-            return (suggestions, raw_results)
+        suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0, "ensemblid")
+        if len(results) > 0:
+            return (suggestions, results)
 
         # second round: symbol only, fuzziness 1
-        suggestions, raw_results = self.run_gene_query(["approved_symbol"], q, 1, "ensemblid")
-        if raw_results["hits"]["total"] > 0:
-            return (suggestions, raw_results)
+        suggestions, results = self.run_gene_query(["approved_symbol"], q, 1, "ensemblid")
+        if len(results) > 0:
+            return (suggestions, results)
 
         # third round: fuzzy matches, fuzziness 1
         suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 1, "ensemblid")
-        if raw_results["hits"]["total"] > 0:
-            return ([], raw_results) # the suggestions list will likely be too long to display for this query
+        if len(results) > 0:
+            return ([], results) # the suggestions list will likely be too long to display for this query
 
         # fourth round: fuzzy matches, fuzziness 2
         suggestions, raw_results = self.run_gene_query(_gene_alias_fields, q, 2, "ensemblid")
-        if raw_results["hits"]["total"] > 0:
-            return ([], raw_results)
+        if len(results) > 0:
+            return ([], results)
 
         return ([], [])
 
@@ -150,6 +150,7 @@ class ElasticSearchWrapper:
         for term in parts:
             retval["query"]["bool"]["should"].append({"exists": {"field": "ranks.dnase." + term}})
         for gene_id in [str(g) for g in gene_ids]:
+            print gene_id
             retval["query"]["bool"]["should"].append({"match_phrase_prefix": {"genes.nearest-all.gene-id": gene_id}})
             retval["query"]["bool"]["should"].append({"match_phrase_prefix": {"genes.nearest-pc.gene-id": gene_id}})
         return (suggestions, retval)
