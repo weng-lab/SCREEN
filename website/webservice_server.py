@@ -36,11 +36,20 @@ class MyServerProtocol(WebSocketServerProtocol):
             j = json.loads(payload)
             regElements = RegElements(es)
 
-            if "action" in j and j["action"] == "enumerate":
-                raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
-                raw_results.update({"name": j["name"]})
-                self.sendMessage(json.dumps(raw_results))
-                return
+            if "action" in j:
+                if j["action"] == "enumerate":
+                    raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
+                    raw_results.update({"name": j["name"]})
+                    self.sendMessage(json.dumps(raw_results))
+                    return
+                elif j["action"] == "suggest":
+                    gene_results = es.get_gene_suggestions(j["q"])
+                    snp_results = es.get_snp_suggestions(j["q"])
+                    output = {"type": "suggestions",
+                              "gene_suggestions": gene_results,
+                              "snp_suggestions": snp_results}
+                    self.sendMessage(json.dumps(output))
+                    return
 
             if "aggs" in j and "query" in j:
                 raw_results = es.search(body=j, index="regulatory_elements")

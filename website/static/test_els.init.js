@@ -38,7 +38,14 @@ function socket_message_handler(e) {
 	handle_enumeration(results);
     else if (results["type"] == "query_results")
 	handle_query_results(results);
+    else if (results["type"] == "suggestions")
+	handle_autocomplete_suggestions(results);
 
+}
+
+function handle_autocomplete_suggestions(results)
+{
+    // TODO: handle suggestions
 }
 
 function handle_enumeration(results)

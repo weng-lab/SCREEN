@@ -17,6 +17,12 @@ var cell_line_request = {"action": "enumerate",
 			 "name": "cell_line",
 			 "field": "ranks.dnase"};
 
+function autocomplete_query(q)
+{
+    return {"action": "suggest",
+	    "q": q};
+};
+
 function rank_aggs(cell_line) {
 
     return {
@@ -207,4 +213,9 @@ function perform_search()
 function request_cell_lines()
 {
     sendText(JSON.stringify(cell_line_request));
+};
+
+function request_suggestions(q)
+{
+    sendText(JSON.stringify(autocomplete_query(q)));
 };
