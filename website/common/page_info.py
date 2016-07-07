@@ -20,13 +20,19 @@ class PageInfoMain:
         print("args", args)
         print("kwargs", kwargs)
         retval.update({"parsed" : ""})
-        
+
         if "q" in kwargs:
             p = ParseSearch(self.DBCONN, kwargs["q"], self.es)
             parsed = p.parse()
             retval.update({"parsed" : json.dumps(parsed)})
-            
-        retval.update({"facetlist": [{"id": "cell_line",
+
+        retval.update({"tableCols" : ["Accession",
+	                              "Confidence",
+	                              "Genome",
+	                              "Chr",
+	                              "Start",
+	                              "End"],
+                       "facetlist": [{"id": "cell_line",
                                       "name": "cell types",
                                       "type": "list",
                                       "visible": True},
@@ -45,7 +51,7 @@ class PageInfoMain:
                                     {"id": "enhancer_rank", "name": "enhancer"},
                                     {"id": "conservation", "name": "conservation"}] })
         return retval
-    
+
     def rawQueryPage(self, q, url):
         pageinfo = self.wholePage()
         try:
