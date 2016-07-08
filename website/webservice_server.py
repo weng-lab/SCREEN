@@ -60,6 +60,7 @@ class MyServerProtocol(WebSocketServerProtocol):
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
         except:
+            raise
             ret = { "status" : "error",
                     "err" : 1}
         self.sendMessage(json.dumps(ret), False)

@@ -54,6 +54,9 @@ class or_query:
     def append_exact_match(self, field, value):
         self.query_obj["query"]["bool"]["should"].append({"match": {field: value}})
 
+    def append(self, obj):
+        self.query_obj["query"]["bool"]["should"].append(obj)
+
     def reset(self):
         self.query_obj["query"]["bool"]["should"] = []
 
@@ -73,6 +76,9 @@ class and_query:
 
     def reset(self):
         self.query_obj["query"]["bool"]["must"] = []
+
+    def append(self, obj):
+        self.query_obj["query"]["bool"]["must"].append(obj)
     
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
@@ -206,14 +212,13 @@ class ElasticSearchWrapper:
 
     def get_gene_suggestions(self, q):
         query = or_query()
-        for fuzziness in range(0, 3):
-            for field in _gene_alias_fields:
-                query.append({"match_phrase_prefix": {field: q,
-                                                      "fuzziness": fuzziness}})
-            raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
-            if raw_results["hits"]["total"] > 0:
-                return self._process_gene_suggestions(raw_results, q)
-            query.reset()
+        for field in _gene_alias_fields:
+            query.append({"match_phrase_prefix": {field: q}})
+            print(query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] > 0:
+            return self._process_gene_suggestions(raw_results, q)
+        query.reset()
         return []
 
     def _process_gene_suggestions(self, raw_results, q):
@@ -233,13 +238,11 @@ class ElasticSearchWrapper:
     
     def get_snp_suggestions(self, q):
         query = or_query()
-        for fuzziness in range(0, 3):
-            query.append({"match_phrase_prefix": {field: q,
-                                                  "fuzziness": fuzziness}})
-            raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
-            if raw_results["hits"]["total"] > 0:
-                return self._process_snp_suggestions(raw_results, q)
-            query.reset()
+        query.append({"match_phrase_prefix": {"accession": q}})
+        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        if raw_results["hits"]["total"] > 0:
+            return self._process_snp_suggestions(raw_results, q)
+        query.reset()
         return []
 
     def build_from_usersearch(self, q):
