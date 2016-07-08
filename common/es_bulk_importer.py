@@ -17,7 +17,7 @@ class ESBulkImporter:
                   purge_existing = True, verbose = True, unzip_on_fly = False):
         if fnp.endswith(".gz"):
             unzip_on_fly = True
-        cmds = ["esbulk", "-server", self.server,
+        cmds = ["/usr/sbin/esbulk", "-server", self.server,
                 "-index", index, "-type", doc_type]
         if purge_existing: cmds.append("-purge")
         if verbose: cmds.append("-verbose")
