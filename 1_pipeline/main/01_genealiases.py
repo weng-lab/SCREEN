@@ -58,7 +58,7 @@ def main():
                     geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
                 o.write(json.dumps(geneobj) + "\n")
                 
-    print("wrote %d gene objects less %d skipped" % (i, skipped), end="")
+    print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
 
 if __name__ == "__main__":
