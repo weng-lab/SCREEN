@@ -89,6 +89,10 @@ function handle_query_results(results)
 	reset_rank_sliders();
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
+    else if (!searchquery.has_cell_line_filter())
+    {
+	create_rank_heatmap(results, cell_lines);
+    }
 
     toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
 
