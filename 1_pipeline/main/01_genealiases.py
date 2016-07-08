@@ -6,12 +6,31 @@ import requests
 
 sys.path.append("../../../metadata/utils")
 from files_and_paths import Dirs, Tools, Genome, Datasets
+from get_tss import Genes
+
+_gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
+
+def get_gene_map(assembly="hg19"):
+    if assembly not in _gene_files:
+        print("WARNING: cannot get gene coordinates for assembly %s: no gene file found" % assembly)
+        return
+    fnp, filetype = _gene_files[assembly]
+    ggff = Genes(fnp, filetype)
+    retval = {}
+    for gene in ggff.getGenes():
+        retval[gene.genename_] = "%s:%s-%s" % (gene.chr_, gene.start_, gene.end_)
+    return retval
 
 def main():
     infnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.tsv")
     outfnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.lsj")
     i = -1
     skipped = 0
+
+    print("getting gene coordinates...")
+    hg19_genes = get_gene_map("hg19")
+
+    print("processing genelist...")
     with open(infnp, "r") as f:
         with open(outfnp, "wb") as o:
             for line in f:
@@ -20,7 +39,7 @@ def main():
                 line = line.strip().split("\t")
                 while len(line) < 19:
                     line.append("")
-                geneobj = {"ensemblid": line[9],
+                geneobj = {"ensemblid": line[9].strip(),
                            "HGNC_ID": line[0],
                            "approved_symbol": line[1],
                            "approved_name": line[2],
@@ -32,17 +51,14 @@ def main():
                            "Vega_ID": line[16],
                            "UCSC_ID": line[17],
                            "mouse_genome_ID": line[18] }
-                if geneobj["ensemblid"].strip() == "":
+                if geneobj["ensemblid"] == "":
                     skipped += 1
                     continue
-                try:
-                    result = requests.get("http://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=%s" % geneobj["ensemblid"],
-                                          allow_redirects = False)
-                except:
-                    print("unable to get chromosome region for %s; skipping" % geneobj["ensemblid"])
-                geneobj["coordinates"] = result.headers["Location"].split("r=")[1]
+                if geneobj["approved_symbol"] in hg19_genes:
+                    geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
                 o.write(json.dumps(geneobj) + "\n")
-    print("wrote %d gene objects less %d skipped" % (i, skipped), end="")
+                
+    print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
 
 if __name__ == "__main__":
