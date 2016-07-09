@@ -23,7 +23,7 @@ var defaultlayout = {
     
 };
 
-function finish_heatmap(ndata, destination_div, chart_layout)
+function create_heatmap(ndata, destination_div, chart_layout)
 {
 
     var data = ndata.data;
@@ -47,7 +47,7 @@ function finish_heatmap(ndata, destination_div, chart_layout)
 	.range(chart_layout.colors);
     
     var svg = d3.select("#" + destination_div).append("svg")
-	.attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right)
+	.attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right + 50)
 	.attr("height", chart_layout.height + chart_layout.margin.top + chart_layout.margin.bottom)
 	.append("g")
 	.attr("transform", "translate(" + chart_layout.margin.left + "," + chart_layout.margin.top + ")")
@@ -105,10 +105,10 @@ function finish_heatmap(ndata, destination_div, chart_layout)
 	    
 	    //Update the tooltip position and value
 	    d3.select("#tooltip")
-		.style("left", (d3.event.pageX+10) + "px")
-		.style("top", (d3.event.pageY-10) + "px")
+		.style("left", d + "px")
+		.style("top", d + "px")
 		.select("#value")
-		.text("lables:" + chart_layout.rows.labels[d.row-1] + "," + chart_layout.cols.labels[d.col-1] + "\ndata:" + d.value + "\nrow-col-idx:" + d.col + "," + d.row + "\ncell-xy " + this.x.baseVal.value + ", " + this.y.baseVal.value);  
+		.text(chart_layout.cols.labels[d.col-1] + " in " + chart_layout.rows.labels[d.row-1] + "\nrank:" + d.value);  
 	    //Show the tooltip
 	    d3.select("#tooltip").classed("hidden", false);
 	})
@@ -119,9 +119,15 @@ function finish_heatmap(ndata, destination_div, chart_layout)
 	    d3.select("#tooltip").classed("hidden", true);
 	})
     ;
+
+    var legend_labels = [0];
+    for (var i = 1; i < 9; i++) {
+	legend_labels.push("");
+    }
+    legend_labels.push(chart_layout.range[1]);
     
     var legend = svg.selectAll(".legend")
-	.data([0,1,2,3,4,5,6,7,8,9,10])
+	.data(legend_labels)
 	.enter().append("g")
 	.attr("class", "legend");
     
