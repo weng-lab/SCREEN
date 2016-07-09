@@ -108,7 +108,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 		.style("left", d + "px")
 		.style("top", d + "px")
 		.select("#value")
-		.text(chart_layout.cols.labels[d.col-1] + " in " + chart_layout.rows.labels[d.row-1] + "\nrank:" + d.value);  
+		.text(chart_layout.cols.labels[d.col-1] + " in " + chart_layout.rows.labels[d.row-1] + "\nrank:" + d.ovalue);  
 	    //Show the tooltip
 	    d3.select("#tooltip").classed("hidden", false);
 	})
@@ -120,11 +120,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	})
     ;
 
-    var legend_labels = [0];
-    for (var i = 1; i < 9; i++) {
-	legend_labels.push("");
-    }
-    legend_labels.push(chart_layout.range[1]);
+    var legend_labels = ["1", "", "", "", "", "", "", "", "", "max"];
     
     var legend = svg.selectAll(".legend")
 	.data(legend_labels)
