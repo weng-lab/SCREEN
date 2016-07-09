@@ -2,6 +2,7 @@
 {% import 'Helpers/_helpers.html' as hh -%}
 {{ hh.cssVer(version, "static/controls/histogram.css") }}
 {{ hh.cssVer(version, "static/controls/range_slider.css") }}
+{{ hh.cssVer(version, "static/controls/heatmap.css") }}
 
 <script>{% include 'test_els.init.js' -%}</script>
 
@@ -11,6 +12,7 @@
 <script src="/ver4/search/static/searchresults.js"></script>
 <script src="/ver4/search/static/controls/range_slider.js"></script>
 <script src="/ver4/search/static/controls/histogram.js"></script>
+<script src="/ver4/search/static/controls/heatmap.js"></script>
 
 <div class="container" style="width:100%">
   <br><br>
@@ -47,7 +49,14 @@
 	</table>
       </div>
       <div id="d3_div">
-	<div class="col-md-3" id="heatmap_div"></div>
+	<div class="col-md-3" id="heatmap_container">
+	  <select id="heatmap_dropdown">
+	    {% for rank in ranklist -%}
+	    <option value="{{rank.id}}">{{rank.name}}</option>
+	    {% endfor -%}
+	  </select>
+	  <div style="width:100%" id="rank_heatmap">
+	</div>
       </div>
     </div>
   </div>

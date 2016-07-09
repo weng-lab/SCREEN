@@ -1,5 +1,6 @@
 var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 var histograms = {};
+var enumerations = {};
 
 var facet_link_handlers = {
     "chromosome": function(chr) {
@@ -51,6 +52,7 @@ function handle_autocomplete_suggestions(results)
 
 function handle_enumeration(results)
 {
+    enumerations[results["name"]] = results.datapairs;
     process_agglist(results["name"], results);
 }
 
@@ -68,6 +70,35 @@ function reset_rank_sliders(agg_results)
     reset_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter, update_promoter_histogram_selection);
     reset_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter, update_enhancer_histogram_selection);
     reset_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter, update_conservation_histogram_selection);
+}
+
+function create_rank_heatmap(results, rank, cell_line_datapairs)
+{
+
+    var data = {
+	"col_labels": [],
+	"row_labels": [],
+	"data": []
+    };
+
+    defaultlayout.range = [0, results.aggs[rank].max_value];
+    
+    for (i in cell_line_datapairs) {
+	data.col_labels.push(cell_line_datapairs[i][0]);
+	for (j in results.results.hits) {
+	    data.data.push({"col_id": i,
+			    "row_id": j,
+			    "value": results.results.hits[j]._source.ranks[rank][cell_line_datapairs[i][0]].rank
+			   });
+	}
+    }
+
+    for (i in results.results.hits) {
+	data.row_labels.push(results.results.hits[i]._source.accession);
+    }
+
+    create_heatmap(data, "ranks_heatmap", defaultlayout);
+    
 }
 
 function handle_query_results(results)
@@ -89,12 +120,13 @@ function handle_query_results(results)
 	reset_rank_sliders();
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
-    else if (!searchquery.has_cell_line_filter())
+    else
     {
-	create_rank_heatmap(results, cell_lines);
+	create_rank_heatmap(results, document.getElementById("heatmap_dropdown").value, enumerations["cell_line"]);
     }
 
     toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
+    toggle_display(document.getElementById("heatmap_container"), !searchquery.has_cell_line_filter());
 
     for (aggname in results["aggs"]) {
         if (results["aggs"][aggname]["type"] == "list") {
