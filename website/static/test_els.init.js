@@ -2,6 +2,8 @@ var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 var histograms = {};
 var enumerations = {};
 
+var last_results = null;
+
 var facet_link_handlers = {
     "chromosome": function(chr) {
 	if (searchquery.chromosome != chr)
@@ -76,34 +78,40 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
 {
 
     var data = {
-	"col_labels": [],
-	"row_labels": [],
+	"collabels": [],
+	"rowlabels": [],
 	"data": []
     };
 
-    defaultlayout.range = [0, results.aggs[rank].max_value];
+    var trimmed_rank = rank.split("_")[0];
     
-    for (i in cell_line_datapairs) {
-	data.col_labels.push(cell_line_datapairs[i][0]);
-	for (j in results.results.hits) {
-	    data.data.push({"col_id": i,
-			    "row_id": j,
-			    "value": results.results.hits[j]._source.ranks[rank][cell_line_datapairs[i][0]].rank
+    defaultlayout.range = [0, 0];
+    
+    for (var i = 0; i < cell_line_datapairs.length; i++) {
+	data.rowlabels.push(cell_line_datapairs[i][0]);
+	for (var j = 0; j < results.results.hits.length; j++) {
+	    data.data.push({"col": j + 1,
+			    "row": i + 1,
+			    "value": results.results.hits[j]._source.ranks[trimmed_rank][cell_line_datapairs[i][0]].rank
 			   });
+	    if (data.data[data.data.length - 1].value > defaultlayout.range[1])
+		defaultlayout.range[1] = data.data[data.data.length - 1].value;
 	}
     }
 
     for (i in results.results.hits) {
-	data.row_labels.push(results.results.hits[i]._source.accession);
+	data.collabels.push(results.results.hits[i]._source.accession);
     }
 
-    create_heatmap(data, "ranks_heatmap", defaultlayout);
+    create_heatmap(data, "rank_heatmap", defaultlayout);
     
 }
 
 function handle_query_results(results)
 {
 
+    last_results = results;
+    
     if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
     {
         reset_range_slider("coordinates_range_slider",
@@ -122,6 +130,7 @@ function handle_query_results(results)
     }
     else
     {
+	clear_div_contents(document.getElementById("rank_heatmap"));
 	create_rank_heatmap(results, document.getElementById("heatmap_dropdown").value, enumerations["cell_line"]);
     }
 
