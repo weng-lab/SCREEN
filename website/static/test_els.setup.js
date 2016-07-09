@@ -32,3 +32,7 @@ function update_conservation_histogram_selection() {update_histogram(histograms[
 function update_coordinate_histogram_selection() {update_histogram(histograms["coordinates"], "coordinates");}
 
 create_range_slider("coordinates_range_slider", 2000000, document.getElementById("coordinates_textbox"), update_coordinate_filter, update_coordinate_histogram_selection);
+
+$("#heatmap_dropdown").on("change", function(e) {
+    create_rank_heatmap(this.value);
+});

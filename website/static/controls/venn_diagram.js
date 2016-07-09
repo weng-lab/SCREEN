@@ -860,7 +860,7 @@ function create_venn_diagram(destination_div, data)
 		.style("stroke-opacity", 1);
 	    
 	    tooltip.transition().style("opacity", .9);
-	    tooltip.text(d.size + " users");
+	    tooltip.text(d.size);
 	})
 	.on("mouseout", function(d, i) {
 	    d3.select(this).transition()

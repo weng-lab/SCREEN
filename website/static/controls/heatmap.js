@@ -43,7 +43,7 @@ function finish_heatmap(ndata, destination_div, chart_layout)
     chart_layout.legendElementWidth = chart_layout.cellSize;
     
     var colorScale = d3.scale.quantile()
-	.domain([ 0, 10])
+	.domain(chart_layout.range)
 	.range(chart_layout.colors);
     
     var svg = d3.select("#" + destination_div).append("svg")
