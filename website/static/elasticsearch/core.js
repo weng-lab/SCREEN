@@ -54,7 +54,8 @@ function Query() {
 	"from": 0,
 	"size": 10,
 	"aggs": {
-	    "chromosome": {"terms": {"field": "position.chrom"}},
+	    "chromosome": {"terms": {"field": "position.chrom",
+				     "size": 100}},
 	    "coordinates": {"histogram": {"field": "position.start",
 					  "interval": 2000000,
 					  "min_doc_count": 1}},

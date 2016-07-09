@@ -84,10 +84,13 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
     };
 
     var trimmed_rank = rank.split("_")[0];
+    var maxes = [];
+    var normalization_factor;
     
     defaultlayout.range = [0, 0];
     
     for (var i = 0; i < cell_line_datapairs.length; i++) {
+	maxes.push(0);
 	data.rowlabels.push(cell_line_datapairs[i][0]);
 	for (var j = 0; j < results.results.hits.length; j++) {
 	    data.data.push({"col": j + 1,
@@ -96,9 +99,20 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
 			   });
 	    if (data.data[data.data.length - 1].value > defaultlayout.range[1])
 		defaultlayout.range[1] = data.data[data.data.length - 1].value;
+	    if (data.data[data.data.length - 1].value > maxes[i])
+		maxes[i] = data.data[data.data.length - 1].value;
 	}
     }
 
+    var _max = Math.max(...maxes);
+    for (var i = 0; i < cell_line_datapairs.length; i++) {
+	normalization_factor = maxes[i] / _max;
+	for (var j = 0; j < results.results.hits.length; j++) {
+	    data.data[results.results.hits.length * i + j].ovalue = data.data[results.results.hits.length * i + j].value + "/" + maxes[i];
+	    data.data[results.results.hits.length * i + j].value /= normalization_factor;
+	}
+    }
+    
     for (i in results.results.hits) {
 	data.collabels.push(results.results.hits[i]._source.accession);
     }
@@ -128,7 +142,7 @@ function handle_query_results(results)
 	reset_rank_sliders();
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
-    else
+    else if (!searchquery.has_cell_line_filter())
     {
 	clear_div_contents(document.getElementById("rank_heatmap"));
 	create_rank_heatmap(results, document.getElementById("heatmap_dropdown").value, enumerations["cell_line"]);
