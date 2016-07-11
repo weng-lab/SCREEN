@@ -31,6 +31,10 @@ class MainApp():
         return self.mc.TestQuery(args, kwargs)
 
     @cherrypy.expose
+    def hexplot(self, *args, **kwargs):
+        return self.mc.HexplotView(args, kwargs)
+
+    @cherrypy.expose
     def search(self, q):
         return self.mc.Query(q)
 
