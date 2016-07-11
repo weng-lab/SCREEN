@@ -9,6 +9,9 @@
       "chromosome": function(chr) {
           searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
           create_range_slider("coordinates_range_slider", chromosome_lengths[chr], document.getElementById("coordinates_textbox"), update_coordinate_filter);
+      },
+      "assembly": function(assembly) {
+          searchquery.set_assembly_filter(assembly);
       }
   };
 
