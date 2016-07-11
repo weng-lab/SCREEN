@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
 
 from elasticsearch import Elasticsearch
+from autocomplete import Autocompleter
 
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 
@@ -17,6 +18,7 @@ from models.regelm import RegElements
 # from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
 
 es = ElasticSearchWrapper(Elasticsearch())
+ac = Autocompleter(es)
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -43,11 +45,11 @@ class MyServerProtocol(WebSocketServerProtocol):
                     self.sendMessage(json.dumps(raw_results))
                     return
                 elif j["action"] == "suggest":
-                    gene_results = es.get_gene_suggestions(j["q"])
-                    snp_results = es.get_snp_suggestions(j["q"])
                     output = {"type": "suggestions",
-                              "gene_suggestions": gene_results,
-                              "snp_suggestions": snp_results}
+                              "callback": j["callback"]}
+                    for index in j["indeces"]:
+                        if ac.recognizes_index(index):
+                            output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
                     self.sendMessage(json.dumps(output))
                     return
 

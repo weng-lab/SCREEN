@@ -126,6 +126,28 @@ class ElasticSearchWrapper:
     def get_cell_line_list(self):
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
+    
+    def gene_aliases_to_coordinates(self, q):
+        suggestions, raw_results = self.resolve_gene_aliases(q)
+        retval = []
+        if len(raw_results) == 0: return (suggestions, retval)
+        for field in _gene_alias_fields:
+            for result in raw_results:
+                print "!", result
+                if result[field] in q:
+                    retval.append((result[field], result["coordinates"]))
+        return (suggestions, retval)
+
+    def snp_aliases_to_coordinates(self, q):
+        print("@ElasticSearchWrapper.snp_aliases_to_coordinates(%s)" % q)
+        suggestions, raw_results = self.resolve_snp_aliases(q)
+        print("    raw_results=", raw_results)
+        retval = []
+        if len(raw_results) == 0: return (suggestions, retval)
+        for result in raw_results:
+            if result["accession"] in q:
+                retval.append((result["accession"], result["coordinates"]))
+        return (suggestions, retval)
 
     def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
         query = or_query()
@@ -156,28 +178,6 @@ class ElasticSearchWrapper:
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["accession"] not in q],
                 results)
     
-    def gene_aliases_to_coordinates(self, q):
-        suggestions, raw_results = self.resolve_gene_aliases(q)
-        retval = []
-        if len(raw_results) == 0: return (suggestions, retval)
-        for field in _gene_alias_fields:
-            for result in raw_results:
-                print "!", result
-                if result[field] in q:
-                    retval.append((result[field], result["coordinates"]))
-        return (suggestions, retval)
-
-    def snp_aliases_to_coordinates(self, q):
-        print("@ElasticSearchWrapper.snp_aliases_to_coordinates(%s)" % q)
-        suggestions, raw_results = self.resolve_snp_aliases(q)
-        print("    raw_results=", raw_results)
-        retval = []
-        if len(raw_results) == 0: return (suggestions, retval)
-        for result in raw_results:
-            if result["accession"] in q:
-                retval.append((result["accession"], result["coordinates"]))
-        return (suggestions, retval)
-
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
         suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0)
@@ -209,41 +209,6 @@ class ElasticSearchWrapper:
             if len(results) > 0:
                 return (suggestions, results)
         return ([], [])
-
-    def get_gene_suggestions(self, q):
-        query = or_query()
-        for field in _gene_alias_fields:
-            query.append({"match_phrase_prefix": {field: q}})
-            print(query.query_obj)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
-        if raw_results["hits"]["total"] > 0:
-            return self._process_gene_suggestions(raw_results, q)
-        query.reset()
-        return []
-
-    def _process_gene_suggestions(self, raw_results, q):
-        retval = []
-        for result in raw_results["hits"]["hits"]:
-            for field in _gene_alias_fields:
-                if q in result["_source"][field]:
-                    retval.append(result["_source"][field])
-        return retval
-
-    def _process_snp_suggestions(self, raw_results, q):
-        retval = []
-        for result in raw_results["hits"]["hits"]:
-            if q in result["_source"]["accession"]:
-                retval.append(result["_source"]["accession"])
-        return retval
-    
-    def get_snp_suggestions(self, q):
-        query = or_query()
-        query.append({"match_phrase_prefix": {"accession": q}})
-        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
-        if raw_results["hits"]["total"] > 0:
-            return self._process_snp_suggestions(raw_results, q)
-        query.reset()
-        return []
 
     def build_from_usersearch(self, q):
         retval = {"aggs": _base_aggregations,
