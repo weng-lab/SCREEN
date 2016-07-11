@@ -2,6 +2,7 @@ import sys, os, json
 
 from models.regelm import RegElements
 from parse_search import ParseSearch
+import subprocess
 
 class PageInfoMain:
     def __init__(self, es, version):
@@ -14,6 +15,25 @@ class PageInfoMain:
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version}
 
+    def hexplotPage(self, args, kwargs):
+        retval = {"page": {"version": self.version,
+                           "title": "hexplot view - Regulatory Element Visualizer"},
+                  "version": self.version}
+        if len(args) < 1: return retval
+        if "rankA" not in kwargs or "rankB" not in kwargs: return retval
+        print(subprocess.check_output("ls", shell=True))
+        fnps = [os.path.join(os.path.dirname(__file__), "../static/hexplot_data/%s/%s_x_%s.png" % (args[0], kwargs["rankA"], kwargs["rankB"])),
+                os.path.join(os.path.dirname(__file__), "../static/hexplot_data/%s/%s_x_%s.png" % (args[0], kwargs["rankB"], kwargs["rankA"]))]
+        print(fnps)
+        for path in fnps:
+            if os.path.exists(path):
+                retval["imgpath"] = os.path.join("/%s" % self.version, "static", path.split("static/")[1])
+                retval["page"]["title"] = "%s vs %s in %s - Regulatory Element Visualizer" % (kwargs["rankA"], kwargs["rankB"], args[0])
+        retval["cell_line"] = args[0]
+        retval["rankA"] = kwargs["rankA"]
+        retval["rankB"] = kwargs["rankB"]
+        return retval
+    
     def testqueryPage(self, args, kwargs):
         retval = self.wholePage()
         print("args", args)
