@@ -1,4 +1,6 @@
 var POSITION_CHROM   = 0;
+var ASSEMBLY = 0;
+
 var POSITION_START   = 0;
 var POSITION_END     = 1;
 var NEAREST_GENE_ALL = 2;
@@ -49,6 +51,7 @@ function Query() {
 
     this.cell_line = "";
     this.chromosome = "";
+    this.assembly = "";
 
     this.eso = {
 	"from": 0,
@@ -65,12 +68,14 @@ function Query() {
 	    "pcgene_distance": {"histogram": {"field": "gene.nearest-pc.distance",
 					      "interval": 50000,
 					      "min_doc_count": 1}},
-	    "cell_lines": {"terms": {"field": "ranks.dnase"}}
+	    "cell_lines": {"terms": {"field": "ranks.dnase"}},
+	    "assembly": {"terms": {"field": "genome"}}
 	},
 	"query": {
 	    "bool": {
 		"must": [
-		    {} // position.chrom
+		    {}, // position.chrom
+		    {}  // assembly
 		]
 	    }
 	},
@@ -110,6 +115,11 @@ Query.prototype.add_aggregations = function(aggdict) {
 Query.prototype.set_chromosome_filter = function(chr) {
     this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chr } };
     this.chromosome = chr;
+};
+
+Query.prototype.set_assembly_filter = function(assembly) {
+    this.eso.query.bool.must[ASSEMBLY] = {"match": {"genome": assembly}};
+    this.assembly = assembly;
 };
 
 Query.prototype.set_num_results = function(n) {this.eso.size = n;};
