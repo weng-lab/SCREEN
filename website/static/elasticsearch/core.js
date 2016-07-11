@@ -118,8 +118,16 @@ Query.prototype.set_chromosome_filter = function(chr) {
 };
 
 Query.prototype.set_assembly_filter = function(assembly) {
-    this.eso.query.bool.must[ASSEMBLY] = {"match": {"genome": assembly}};
-    this.assembly = assembly;
+    if (assembly != this.assembly)
+    {
+	this.eso.query.bool.must[ASSEMBLY] = {"match": {"genome": assembly}};
+	this.assembly = assembly;
+    }
+    else
+    {
+	this.eso.query.bool.must[ASSEMBLY] = {};
+	this.assembly = "";
+    }
 };
 
 Query.prototype.set_num_results = function(n) {this.eso.size = n;};
