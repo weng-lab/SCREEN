@@ -19,10 +19,16 @@ var cell_line_request = {"action": "enumerate",
 			 "name": "cell_line",
 			 "field": "ranks.dnase"};
 
-function autocomplete_query(q)
+var autocomplete_callbacks = {};
+
+function autocomplete_query(q, indeces, callback_f)
 {
+    var ctime = (new Date()).getTime();
+    autocomplete_callbacks[ctime] = callback_f;
     return {"action": "suggest",
-	    "q": q};
+	    "indeces": indeces,
+	    "q": q,
+	    "callback": ctime};
 };
 
 function rank_aggs(cell_line) {
@@ -233,7 +239,7 @@ function request_cell_lines()
     sendText(JSON.stringify(cell_line_request));
 };
 
-function request_suggestions(q)
+function request_suggestions(q, indeces, callback_f)
 {
-    sendText(JSON.stringify(autocomplete_query(q)));
+    sendText(JSON.stringify(autocomplete_query(q, indeces, callback_f)));
 };
