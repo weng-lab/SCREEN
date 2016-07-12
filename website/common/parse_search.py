@@ -35,6 +35,7 @@ class ParseSearch:
 
         coord = None
         cellType = None
+        ret = {"cellType" : None, "coord" : None, "range_preset": None}
 
         gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
@@ -56,7 +57,14 @@ class ParseSearch:
             print("could not parse " + s)
 
         print(gene_coords)
-            
+
+        if "promoter" in toks:
+            ret["range_preset"] = "promoter"
+        elif "enhancer" in toks:
+            ret["range_preset"] = "enhancer"
+        elif "insulator" in toks:
+            ret["range_preset"] = "insulator"
+        
         if len(snp_coords) > 0:
             coord = Coord.parse(snp_coords[-1])
             coord.resize(self.halfWindow)
@@ -64,7 +72,6 @@ class ParseSearch:
             coord = Coord.parse(gene_coords[-1])
 
         print(coord, cellType)
-        ret = {"cellType" : None, "coord" : None}
         if cellType:
             ret.update({"cellType" : cellType})
         if coord:
