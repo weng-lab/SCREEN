@@ -68,10 +68,10 @@ class PageInfoMain:
                                       "type": "slider",
                                       "label_text": "coordinates",
                                       "visible": False} ],
-                       "ranklist": [{"id": "dnase_rank", "name": "DNase"},
-                                    {"id": "ctcf_rank", "name": "CTCF"},
-                                    {"id": "promoter_rank", "name": "promoter"},
-                                    {"id": "enhancer_rank", "name": "enhancer"},
+                       "ranklist": [{"id": "dnase", "name": "DNase"},
+                                    {"id": "ctcf", "name": "CTCF"},
+                                    {"id": "promoter", "name": "promoter"},
+                                    {"id": "enhancer", "name": "enhancer"},
                                     {"id": "conservation", "name": "conservation"}] })
         return retval
 

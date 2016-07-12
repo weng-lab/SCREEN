@@ -1,19 +1,39 @@
+function ae(a1, a2)
+{
+    if (a1.length != a2.length) return false;
+    for (i in a1) if (a1[i] != a2[i]) return false;
+    return true;
+}
+
 function process_histogram_result(control_prefix, result)
 {
-    var slider = $("#" + control_prefix + "_range_slider");
+    
+    if (!(control_prefix in GUI.facets)) {
+	console.log(control_prefix + " is not in the facets list");
+	return;
+    }
+
+    var range_facet = GUI.facets[control_prefix];
+    if (!range_facet) {
+	console.log(control_prefix + " is in facet list but does not appear to be a range slider");
+	return;
+    }
+    
     var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
-    var needs_reset = (slider.slider("option", "max") != nmax
-		       && document.getElementById(control_prefix + "_textbox").value == "0 - " + slider.slider("option", "max"));
-    slider.slider("option", "min", result["minvalue"]);
-    slider.slider( "option", "max", nmax);
-    if (needs_reset)
-	document.getElementById(control_prefix + "_textbox").value = "0 - " + slider.slider("option", "max");
-    values = document.getElementById(control_prefix + "_textbox").value.split(" - ");
-    slider.slider("values", [+values[0], +values[1]]);
-    coordinates = document.getElementById(control_prefix + "_textbox").value.split(" - ");
-    histogram_div = document.getElementById(control_prefix + "_histogram");
-    clear_div_contents(histogram_div);
-    return create_histogram(histogram_div, result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]}, {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    var nrange = [result["minvalue"], nmax];
+    if (!ae(nrange, range_facet.range_slider.get_range())) {
+	range_facet.range_slider.set_range(...nrange);
+	range_facet.range_slider.set_selection_range(...nrange);
+    }
+    
+    coordinates = range_facet.range_slider.get_selection_range();
+    if (range_facet.histogram)
+	range_facet.histogram.reset(result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
+				    {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    else
+	range_facet.histogram = create_histogram(document.getElementById(control_prefix + "_histogram"), result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
+						 {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    
 }
 
 function process_agglist(facetbox_id, agglist)

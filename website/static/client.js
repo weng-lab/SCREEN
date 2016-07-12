@@ -1,6 +1,21 @@
 var socket = null;
 var isopen = false;
 
+var range_preset_handlers = {
+    "promoter": function() {
+	searchquery.set_promoter_filter_preset();
+	GUI.refresh();
+    },
+    "enhancer": function() {
+	searchquery.set_enhancer_filter_preset();
+	GUI.refresh();
+    },
+    "insulator": function() {
+	searchquery.set_insulator_filter_preset();
+	GUI.refresh();
+    }
+};
+
 var setupSocket = function(fonopen, fargs) {
 
     socket = new WebSocket(webSocketUrl);
@@ -42,6 +57,7 @@ function play(parsed){
     console.log(parsed);
     var ct = parsed["cellType"];
     var coord = parsed["coord"];
+    var range_preset = parsed["range_preset"];
 
     if(ct){
 	searchquery.set_cell_line_filter(parsed["cellType"]);
@@ -50,6 +66,9 @@ function play(parsed){
     }
     if(coord){
 	searchquery.set_coordinate_filter(coord["chrom"], coord["start"], coord["end"]);
+    }
+    if (range_preset && range_preset in range_preset_handlers) {
+	range_preset_handlers[range_preset]();
     }
     sendText(JSON.stringify(searchquery.eso));
 };

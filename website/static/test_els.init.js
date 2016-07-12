@@ -8,11 +8,7 @@ var facet_link_handlers = {
     "chromosome": function(chr) {
 	if (searchquery.chromosome != chr)
 	{
-            create_range_slider("coordinates_range_slider",
-				chromosome_lengths[chr],
-				document.getElementById("coordinates_textbox"),
-				update_coordinate_filter,
-				update_coordinate_histogram_selection);
+	    GUI.facets["coordinates"].range_slider.set_range([0, chromosome_lengths[chr]]);
             searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
 	}
 	else
@@ -47,31 +43,10 @@ function socket_message_handler(e) {
 
 }
 
-function handle_autocomplete_suggestions(results)
-{
-    // TODO: handle suggestions
-}
-
 function handle_enumeration(results)
 {
     enumerations[results["name"]] = results.datapairs;
     process_agglist(results["name"], results);
-}
-
-function reset_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range=null)
-{
-    clear_div_contents(document.getElementById(div_id));
-    create_range_slider(div_id, max, textbox_el, stopf, slidef, selection_range);
-    if (selection_range != null) textbox_el.value = selection_range[0] + " - " + selection_range[1];
-}
-
-function reset_rank_sliders(agg_results)
-{
-    reset_range_slider("dnase_rank_range_slider", 20000, document.getElementById("dnase_rank_textbox"), update_dnase_rank_filter, update_dnase_histogram_selection);
-    reset_range_slider("ctcf_rank_range_slider", 20000, document.getElementById("ctcf_rank_textbox"), update_ctcf_rank_filter, update_ctcf_histogram_selection);
-    reset_range_slider("promoter_rank_range_slider", 20000, document.getElementById("promoter_rank_textbox"), update_promoter_rank_filter, update_promoter_histogram_selection);
-    reset_range_slider("enhancer_rank_range_slider", 20000, document.getElementById("enhancer_rank_textbox"), update_enhancer_rank_filter, update_enhancer_histogram_selection);
-    reset_range_slider("conservation_range_slider", 20000, document.getElementById("conservation_textbox"), update_conservation_filter, update_conservation_histogram_selection);
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs)
@@ -126,20 +101,10 @@ function handle_query_results(results)
 
     last_results = results;
     
-    if (searchquery.has_chromosome_filter() && document.getElementById("coordinates_facet_panel").style.display == "none")
-    {
-        reset_range_slider("coordinates_range_slider",
-                           2000000,
-                           document.getElementById("coordinates_textbox"),
-                           update_coordinate_filter,
-                           update_coordinate_histogram_selection,
-			   searchquery.get_coordinate_selection_range());
-    }
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
     {
-	reset_rank_sliders();
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
     else if (!searchquery.has_cell_line_filter())

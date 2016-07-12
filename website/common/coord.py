@@ -16,6 +16,11 @@ class Coord:
 
     @classmethod
     def parse(cls, loci):
+        if loci.startswith("chr") and ":" not in loci:
+            chrom = loci
+            start = 0
+            end = 500000000
+            return cls(chrom, start, end)
         try:
             toks = loci.split(':')
             chrom = toks[0]

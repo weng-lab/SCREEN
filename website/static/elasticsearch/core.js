@@ -34,16 +34,16 @@ function autocomplete_query(q, indeces, callback_f)
 function rank_aggs(cell_line) {
 
     return {
-	"dnase_rank": {"histogram": {"field": "ranks.dnase." + cell_line + ".rank",
+	"dnase": {"histogram": {"field": "ranks.dnase." + cell_line + ".rank",
 				      "interval": 500,
 				      "min_doc_count": 1}},
-	"promoter_rank": {"histogram": {"field": "ranks.promoter." + cell_line + ".rank",
+	"promoter": {"histogram": {"field": "ranks.promoter." + cell_line + ".rank",
 					 "interval": 500,
 					 "min_doc_count": 1}},
-	"enhancer_rank": {"histogram": {"field": "ranks.enhancer." + cell_line + ".rank",
+	"enhancer": {"histogram": {"field": "ranks.enhancer." + cell_line + ".rank",
 					 "interval": 500,
 					 "min_doc_count": 1}},
-	"ctcf_rank": {"histogram": {"field": "ranks.ctcf." + cell_line + ".rank",
+	"ctcf": {"histogram": {"field": "ranks.ctcf." + cell_line + ".rank",
 				     "interval": 500,
 				     "min_doc_count": 1}},
 	"conservation": {"histogram": {"field": "ranks.conservation.rank",
@@ -58,6 +58,14 @@ function Query() {
     this.cell_line = "";
     this.chromosome = "";
     this.assembly = "";
+
+    this.post_filter_map = {
+	"dnase": DNASE_RANKS,
+	"promoter": PROMOTER_RANKS,
+	"enhancer": ENHANCER_RANKS,
+	"ctcf": CTCF_RANKS,
+	"conservation": CONSERVATION_RNK
+    }
 
     this.eso = {
 	"from": 0,
@@ -201,7 +209,24 @@ Query.prototype.set_filter_generic = function(lbound, ubound, i, name) {
     this.eso.post_filter.bool.must[i]["range"] = {};
     this.eso.post_filter.bool.must[i]["range"][name] = {"gte": +lbound,
 							"lte": +ubound};
-}
+};
+
+Query.prototype.set_enhancer_filter_preset = function() {
+    this.set_filter_generic(0, 20000, ENHANCER_RANKS, "ranks.enhancer." + this.cell_line + ".rank");
+    this.set_filter_generic(20000, 100000000, PROMOTER_RANKS, "ranks.promoter." + this.cell_line + ".rank");
+    this.set_filter_generic(20000, 100000000, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");
+};
+
+Query.prototype.set_promoter_filer_preset = function () {
+    this.set_filter_generic(0, 20000, PROMOTER_RANKS, "ranks.promoter." + this.cell_line + ".rank");
+    this.set_filter_generic(0, 20000, DNASE_RANKS, "ranks.dnase." + this.cell_line + ".rank")
+    this.set_filter_generic(20000, 100000000, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");
+};
+
+Query.prototype.set_insulator_filter_preset = function () {
+    this.set_filter_generic(0, 20000, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");
+    this.set_filter_generic(20000, 100000000, PROMOTER_RANKS, "ranks.promoter." + this.cell_line + ".rank");
+};
 
 Query.prototype.set_pcgene_distance_filter = function(lbound, ubound) {
     this.set_filter_generic(lbound, ubound, NEAREST_GENE_PC, "gene.nearest-pc.distance");
@@ -224,7 +249,7 @@ Query.prototype.set_ctcf_rank_filter = function(lbound, ubound) {
 };
 
 Query.prototype.set_conservation_filter = function(lbound, ubound) {
-    this.set_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation");
+    this.set_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation.rank");
 };
 
 searchquery = new Query();
