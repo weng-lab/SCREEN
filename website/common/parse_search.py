@@ -42,6 +42,12 @@ class ParseSearch:
         snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
 
+        if len(snp_coords) > 0:
+            coord = Coord.parse(snp_coords[-1])
+            coord.resize(self.halfWindow)
+        if len(gene_coords) > 0:
+            coord = Coord.parse(gene_coords[-1])
+        
         try:
             for t in toks:
                 print(t)
@@ -64,12 +70,6 @@ class ParseSearch:
             ret["range_preset"] = "enhancer"
         elif "insulator" in toks:
             ret["range_preset"] = "insulator"
-        
-        if len(snp_coords) > 0:
-            coord = Coord.parse(snp_coords[-1])
-            coord.resize(self.halfWindow)
-        if len(gene_coords) > 0:
-            coord = Coord.parse(gene_coords[-1])
 
         print(coord, cellType)
         if cellType:

@@ -41,10 +41,9 @@ _gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID
                       "UCSC_ID", "RefSeq_ID"]
 
 class or_query:
-    basequery = {"query": {"bool": {"should": [] }}}
     
     def __init__(self):
-        self.query_obj = copy(or_query.basequery)
+        self.query_obj = {"query": {"bool": {"should": [] }}}
 
     def append_fuzzy_match(self, field, value, fuzziness=1):
         self.query_obj["query"]["bool"]["should"].append({"match": {field: {"fuzziness": fuzziness,
@@ -61,10 +60,9 @@ class or_query:
         self.query_obj["query"]["bool"]["should"] = []
 
 class and_query:
-    basequery = {"query": {"bool": {"must": [] }}}
 
     def __init__(self):
-        self.query_obj = copy(and_query.basequery)
+        self.query_obj = {"query": {"bool": {"must": [] }}}
 
     def append_fuzzy_match(self, field, value, fuzziness=1):
         self.query_obj["query"]["bool"]["must"].append({"match": {field: {"fuzziness": fuzziness,
