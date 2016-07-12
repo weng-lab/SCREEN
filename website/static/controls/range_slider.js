@@ -32,6 +32,17 @@ range_slider.prototype.set_selection_range = function(start, end) {
     this.base.slider("values", [start, end]);
 };
 
+range_slider.prototype.refresh_selection = function(start = null, end = null) {
+
+    if (start != null && end != null) this.set_selection_range(start, end);
+    var crange = this.get_range();
+    var cselection = this.get_selection_range();
+    if (cselection[0] < crange[0]) cselection[0] = crange[0];
+    if (cselection[1] > crange[1]) cselection[1] = crange[1];
+    this.set_selection_range(...cselection);
+    
+};
+
 range_slider.prototype.get_selection_range = function() {
     return this.base.slider("values");
 };
@@ -41,12 +52,9 @@ range_slider.prototype.get_range = function() {
 };
 
 range_slider.prototype.set_range = function(min, max) {
-    var cselection = this.get_selection_range();
-    if (cselection[0] < min) cselection[0] = min;
-    if (cselection[1] > max) cselection[1] = max;
-    this.set_selection_range(...cselection);
     this.base.slider("option", "min", min);
     this.base.slider("option", "max", max);
+    this.refresh_selection();
 };
 
 range_slider.prototype.get_range = function() {

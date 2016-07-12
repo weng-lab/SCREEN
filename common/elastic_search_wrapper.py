@@ -153,6 +153,7 @@ class ElasticSearchWrapper:
         query = or_query()
         for field in fields:
             query.append_fuzzy_match(field, q, fuzziness=fuzziness)
+        print(query.query_obj)
         raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":

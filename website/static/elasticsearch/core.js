@@ -1,5 +1,5 @@
 var POSITION_CHROM   = 0;
-var ASSEMBLY = 0;
+var ASSEMBLY = 1;
 
 var POSITION_START   = 0;
 var POSITION_END     = 1;
@@ -217,7 +217,7 @@ Query.prototype.set_enhancer_filter_preset = function() {
     this.set_filter_generic(20000, 100000000, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");
 };
 
-Query.prototype.set_promoter_filer_preset = function () {
+Query.prototype.set_promoter_filter_preset = function () {
     this.set_filter_generic(0, 20000, PROMOTER_RANKS, "ranks.promoter." + this.cell_line + ".rank");
     this.set_filter_generic(0, 20000, DNASE_RANKS, "ranks.dnase." + this.cell_line + ".rank")
     this.set_filter_generic(20000, 100000000, CTCF_RANKS, "ranks.ctcf." + this.cell_line + ".rank");

@@ -4,15 +4,12 @@ var isopen = false;
 var range_preset_handlers = {
     "promoter": function() {
 	searchquery.set_promoter_filter_preset();
-	GUI.refresh();
     },
     "enhancer": function() {
 	searchquery.set_enhancer_filter_preset();
-	GUI.refresh();
     },
     "insulator": function() {
 	searchquery.set_insulator_filter_preset();
-	GUI.refresh();
     }
 };
 

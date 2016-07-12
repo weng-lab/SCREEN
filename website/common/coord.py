@@ -16,6 +16,7 @@ class Coord:
 
     @classmethod
     def parse(cls, loci):
+        print(loci)
         if loci.startswith("chr") and ":" not in loci:
             chrom = loci
             start = 0
@@ -26,7 +27,6 @@ class Coord:
             chrom = toks[0]
             start = int(toks[1].split('-')[0])
             end = int(toks[1].split('-')[1])
-            print "!", chrom
             if not chrom.startswith("chr"): chrom = "chr" + chrom
             return cls(chrom, start, end)
         except:

@@ -9,11 +9,15 @@ facetGUI.prototype.refresh = function() {
 	if (facet.id in searchquery.post_filter_map
 	    && searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]] != {}) {
 	    for (field in searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range) {
-		facet.range_slider.set_selection_range(searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].gte,
-						       searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].lte);
+		if (!facet.range_slider || !facet.histogram) continue;
+		facet.range_slider.refresh_selection(searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].gte,
+						     searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].lte);
+		facet.histogram.update_selection(...facet.range_slider.get_selection_range());
 	    }
 	}
     }
+    this.facets["coordinates"].range_slider.refresh_selection(...searchquery.get_coordinate_selection_range());
+    this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
 };
 
 function range_facet()
@@ -59,13 +63,13 @@ function update_conservation_histogram_selection() {update_histogram(GUI.facets[
 function update_coordinate_histogram_selection() {update_histogram(GUI.facets["coordinates"]);}
 
 GUI.facets["coordinates"] = new range_facet();
-GUI.facets["coordinates"].range_slider = create_range_slider("coordinates_range_slider", 2000000, document.getElementById("coordinates_textbox"),
+GUI.facets["coordinates"].range_slider = create_range_slider("coordinates_range_slider", 2000000000, document.getElementById("coordinates_textbox"),
 							     update_coordinate_filter, update_coordinate_histogram_selection);
 
 {%- for facet in facetlist -%}
 {%- if facet.type == "range" -%}
 GUI.facets["{{facet.id}}"] = new range_facet();
-GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 20000, document.getElementById("{{facet.id}}_textbox"),
+GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 2000000, document.getElementById("{{facet.id}}_textbox"),
 							      update_{{facet.id}}_rank_filter, update_{{facet.id}}_histogram_selection);
 GUI.facets["{{facet.id}}"].id = "{{facet.id}}";
 {%- endif -%}
@@ -73,7 +77,7 @@ GUI.facets["{{facet.id}}"].id = "{{facet.id}}";
 
 {%- for facet in ranklist -%}
 GUI.facets["{{facet.id}}"] = new range_facet();
-GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 20000, document.getElementById("{{facet.id}}_textbox"),
+GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 2000000, document.getElementById("{{facet.id}}_textbox"),
 							      update_{{facet.id}}_rank_filter, update_{{facet.id}}_histogram_selection);
 GUI.facets["{{facet.id}}"].id = "{{facet.id}}";
 {%- endfor -%}
