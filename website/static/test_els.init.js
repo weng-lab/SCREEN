@@ -124,6 +124,8 @@ function handle_query_results(results)
         }
     }
 
+    GUI.refresh();
+
     var rtable = $("#searchresults_table");
     rtable.DataTable( {
 	destroy: true,

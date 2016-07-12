@@ -23,7 +23,7 @@ function process_histogram_result(control_prefix, result)
     var nrange = [result["minvalue"], nmax];
     if (!ae(nrange, range_facet.range_slider.get_range())) {
 	range_facet.range_slider.set_range(...nrange);
-	range_facet.range_slider.set_selection_range(...nrange);
+	range_facet.range_slider.refresh_selection(...nrange);
     }
     
     coordinates = range_facet.range_slider.get_selection_range();
