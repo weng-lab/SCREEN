@@ -36,7 +36,7 @@ function toggle_display(el, sh)
 function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
-    console.log(e.data);
+    // console.log(e.data);
 
     if (results["type"] == "enumeration")
 	handle_enumeration(results);
@@ -203,7 +203,6 @@ function renderTable(){
     ];
 
     if(searchquery.has_cell_line_filter()){
-        console.log(searchquery.cell_line);
         var cellType = searchquery.cell_line;
         cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
                     render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
@@ -237,8 +236,6 @@ function renderTable(){
                 "defaultContent": '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
     colNames.push("Ensembl");
 
-    console.log(cols);
-
     var table = '<table id="searchresults_table"><thead><tr>';
     for(i=0; i < colNames.length; i++){
         table += '<th>' + colNames[i] + '</th>';
@@ -265,7 +262,7 @@ function renderTable(){
 
     $('#searchresults_table tbody').on( 'click', 'button', function () {
         var data = dtable.row( $(this).parents('tr') ).data();
-        console.log(data);
+        //console.log(data);
     } );
 }
 
