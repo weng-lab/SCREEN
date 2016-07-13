@@ -14,11 +14,15 @@ from autocomplete import Autocompleter
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 
 from models.regelm import RegElements
+from models.expression_matrix import ExpressionMatrix
 
 # from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
 
 es = ElasticSearchWrapper(Elasticsearch())
 ac = Autocompleter(es)
+
+cmap = {"regulatory_elements": RegElements,
+        "expression_matrix": ExpressionMatrix}
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -52,12 +56,14 @@ class MyServerProtocol(WebSocketServerProtocol):
                             output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
                     self.sendMessage(json.dumps(output))
                     return
-
-            if "aggs" in j and "query" in j:
-                raw_results = es.search(body=j, index="regulatory_elements")
-                processed_results = RegElements.process_for_javascript(raw_results)
-                self.sendMessage(json.dumps(processed_results))
-                return
+                elif j["action"] == "query":
+                    raw_results = es.search(body=j["object"], index=j["index"])
+                    if j["index"] in cmap:
+                        processed_results = cmap[j["index"]].process_for_javascript(raw_results)
+                    else:
+                        processed_results = raw_results
+                    self.sendMessage(json.dumps(processed_results))
+                    return
 
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 

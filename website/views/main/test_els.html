@@ -12,7 +12,7 @@
 <script src="/ver4/search/static/searchresults.js"></script>
 <script src="/ver4/search/static/controls/range_slider.js"></script>
 <script src="/ver4/search/static/controls/histogram.js"></script>
-<script src="/ver4/search/static/controls/heatmap.js"></script>
+<script src="/ver4/search/static/controls/d3_heatmap.js"></script>
 
 <div class="container" style="width:100%">
   <br><br>
@@ -59,6 +59,10 @@
 	    {% endfor -%}
 	  </select>
 	  <div style="width:100%" id="rank_heatmap">
+	  </div>
+	</div>
+	<div class="col-md-3" id="expression_heatmap_container">
+	  <div style="width:100%" id="expression_heatmap">
 	</div>
       </div>
     </div>
