@@ -185,7 +185,7 @@ function renderTable(){
           className: "dt-right"
         },
         { "data": "_source.position.end",
-          render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
+          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
           className: "dt-right"
         }
     ];
