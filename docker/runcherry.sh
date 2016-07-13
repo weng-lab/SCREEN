@@ -24,17 +24,16 @@ docker rm "${NAME}"
 docker run \
        -v "/nfs/0_metadata@bib5/:/nfs/0_metadata@bib5/:ro" \
        -v "${BASE}/data:/data" \
-       -v "${BASE}/var/lib/postgresql:/var/lib/postgresql" \
        -v "${BASE}/var/log:/var/log" \
-       -v "${BASE}/etc/postgresql:/etc/postgresql" \
        -v "${BASE}/home:/home" \
        -v "${BASE}/etc/ssh:/etc/ssh" \
        -p 127.0.0.1:8013:8000 \
        -p 127.0.0.1:8014:9000 \
        -p 127.0.0.1:8033:22 \
+       --link postgresql:postgresql \
        -d --restart=always \
-       -m 32G \
-       --cpuset="58-62" \
+       -m 64G \
+       --cpuset="48-63" \
        --hostname="${NAME}" \
        --name="${NAME}" "${IMAGE}"
 
