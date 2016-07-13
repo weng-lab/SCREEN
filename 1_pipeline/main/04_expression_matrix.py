@@ -23,9 +23,9 @@ def main():
         for line in f:
             line = line.split("\t")
             if len(line) < 10 or ":" not in line: continue
-            genelist[line[0].split(":")[1]] = line[9]
+            genelist[line[0].split(":")[1]] = (line[9], line[1])
+            genelist[line[9].strip()] = line[1]
 
-    print("converting json objects...")
     i = 1
     with gzip.open(infnp, "r") as f:
         lines = [line for line in f][:-1]
@@ -38,12 +38,16 @@ def main():
             obj = json.loads(line)
             if "ENSG" not in obj["ensembl_id"]:
                 if obj["ensembl_id"] in genelist:
-                    obj["ensembl_id"] = genelist[obj["ensembl_id"]]
+                    obj["ensembl_id"] = genelist[obj["ensembl_id"]][0]
+                    obj["gene_symbol"] = genelist[obj["ensembl_id"]][1]
                 elif "0" + obj["ensembl_id"] in genelist:
                     obj["ensembl_id"] = genelist["0" + obj["ensembl_id"]]
+                    obj["gene_symbol"] = genelist["0" + obj["ensembl_id"]][1]
                 else:
                     print('"ensembl_id" %s could not be mapped' % obj["ensembl_id"])
                     continue
+            elif obj["ensembl_id"].split(".")[0].strip() in genelist:
+                obj["gene_symbol"] = genelist[obj["ensembl_id"].split(".")[0].strip()]
             for expressionset in obj["expression_values"]:
                 if expressionset["dataset"] in cached:
                     expressionset["cell_line"] = cached[expressionset["dataset"]]
