@@ -54,7 +54,7 @@ class RegElmVizWebsite(object):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dev', action="store_true", default=False)
+    parser.add_argument('--dev', action="store_true", default=True)
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")

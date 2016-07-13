@@ -1,4 +1,3 @@
-var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 var histograms = {};
 var enumerations = {};
 
@@ -38,7 +37,7 @@ function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
     console.log(e.data);
-    
+
     if (results["type"] == "enumeration")
 	handle_enumeration(results);
     else if (results["type"] == "query_results")
@@ -69,7 +68,7 @@ function create_expression_heatmap(results)
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
-    
+
     for (i in results.hits) {
 	result = results.hits[i]._source;
 	data.collabels.push(result.ensembl_id);
@@ -109,7 +108,7 @@ function create_expression_heatmap(results)
     }
 
     create_heatmap(data, "expression_heatmap", defaultlayout);
-    
+
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs)
@@ -124,11 +123,11 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
     var trimmed_rank = rank.split("_")[0];
     var maxes = [];
     var normalization_factor;
-    
+
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse();
     defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", "max"];
-    
+
     for (var i = 0; i < cell_line_datapairs.length; i++) {
 	maxes.push(0);
 	data.rowlabels.push(cell_line_datapairs[i][0]);
@@ -152,13 +151,13 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
 	    data.data[results.results.hits.length * i + j].value /= normalization_factor;
 	}
     }
-    
+
     for (i in results.results.hits) {
 	data.collabels.push(results.results.hits[i]._source.accession);
     }
 
     create_heatmap(data, "rank_heatmap", defaultlayout);
-    
+
 }
 
 function handle_expression_matrix_results(results)
@@ -169,9 +168,9 @@ function handle_expression_matrix_results(results)
 
 function handle_regulatory_results(results)
 {
-    
+
     last_results = results;
-    
+
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
@@ -194,7 +193,7 @@ function handle_regulatory_results(results)
             histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
         }
     }
-    
+
     GUI.refresh();
 
     var rtable = $("#searchresults_table");

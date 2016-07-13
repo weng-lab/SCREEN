@@ -10,9 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, staticDir, es, version):
+    def __init__(self, viewDir, staticDir, es, version, production):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, es, version)
+        self.mc = MainController(self.templates, es, version, production)
 
     @cherrypy.expose
     def index(self):
@@ -53,6 +53,6 @@ class MainAppRunner:
                 }
             }
 
-        server = MainApp(viewDir, staticDir, es, version)
+        server = MainApp(viewDir, staticDir, es, version, not devMode)
 
         cherrypy.tree.mount(server, "/" + version, config = config)
