@@ -180,13 +180,18 @@ function renderTable(){
 	            "End"];
 
     var cols = [
-	{ "data": "_source.accession" },
+	{ "data": "_source.accession",
+          className: "dt-right"
+        },
 	{ "data": "_source.confidence",
           render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
           className: "dt-right"
         },
-	{ "data": "_source.genome" },
-        { "data": "_source.position.chrom" },
+	{ "data": "_source.genome",
+          className: "dt-right"
+        },
+        { "data": "_source.position.chrom",
+          className: "dt-right" },
 	{ "data": "_source.position.start",
           render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
           className: "dt-right"
@@ -222,14 +227,14 @@ function renderTable(){
         colNames.push("CTCF rank");
     }
 
-    cols.push({ "targets": -1, "data": null, "defaultContent":
-                '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
+    cols.push({ "targets": -1, "data": null, className: "dt-right",
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
     colNames.push("UCSC");
-    cols.push({ "targets": -1, "data": null, "defaultContent":
-                '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
+    cols.push({ "targets": -1, "data": null, className: "dt-right",
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
     colNames.push("WashU");
-    cols.push({ "targets": -1, "data": null, "defaultContent":
-                '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
+    cols.push({ "targets": -1, "data": null, className: "dt-right",
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
     colNames.push("Ensembl");
 
     console.log(cols);
