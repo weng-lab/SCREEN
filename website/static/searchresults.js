@@ -66,7 +66,7 @@ function call_link_handler(handler, value)
     if (facet_link_handlers.hasOwnProperty(handler)) {
 	facet_link_handlers[handler](value);
     }
-    sendText(JSON.stringify(searchquery.eso));
+    perform_search();
 }
 
 function add_filterresult(id, result)

@@ -53,6 +53,26 @@ function rank_aggs(cell_line) {
 
 };
 
+function gene_expression_query(ensembl_ids)
+{
+
+    var retval = {
+	"query": {
+	    "bool": {
+		"should": []
+	    }
+	}
+    };
+
+    for (id in ensembl_ids)
+    {
+	retval.query.bool.should.push({"match": {"ensembl_id": ensembl_ids[id]}});
+    }
+
+    return retval;
+    
+};
+
 function Query() {
 
     this.cell_line = "";
@@ -256,7 +276,16 @@ searchquery = new Query();
 
 function perform_search()
 {
-    sendText(JSON.stringify(searchquery.eso));
+    sendText(JSON.stringify({"action": "query",
+			     "index": "regulatory_elements",
+			     "object": searchquery.eso}));
+};
+
+function perform_gene_expression_search(obj)
+{
+    sendText(JSON.stringify({"action": "query",
+			     "index": "expression_matrix",
+			     "object": obj}));
 };
 
 function request_cell_lines()
