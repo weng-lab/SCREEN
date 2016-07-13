@@ -172,6 +172,13 @@ function formatNumber(n) {
 }
 
 function renderTable(){
+    var colNames = ["Accession",
+	            "Confidence",
+	            "Genome",
+	            "Chr",
+	            "Start",
+	            "End"];
+
     var cols = [
 	{ "data": "_source.accession" },
 	{ "data": "_source.confidence",
@@ -189,13 +196,6 @@ function renderTable(){
           className: "dt-right"
         }
     ];
-
-    var colNames = ["Accession",
-	            "Confidence",
-	            "Genome",
-	            "Chr",
-	            "Start",
-	            "End"];
 
     if(searchquery.has_cell_line_filter()){
         console.log(searchquery.cell_line);
@@ -222,6 +222,16 @@ function renderTable(){
         colNames.push("CTCF rank");
     }
 
+    cols.push({ "targets": -1, "data": null, "defaultContent":
+                '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
+    colNames.push("UCSC");
+    cols.push({ "targets": -1, "data": null, "defaultContent":
+                '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
+    colNames.push("WashU");
+    cols.push({ "targets": -1, "data": null, "defaultContent":
+                '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
+    colNames.push("Ensembl");
+
     console.log(cols);
 
     var table = '<table id="searchresults_table"><thead><tr>';
@@ -237,8 +247,7 @@ function renderTable(){
     $("#searchresults_div").html(table);
     var rtable = $("#searchresults_table");
 
-
-    rtable.DataTable( {
+    var dtable = rtable.DataTable( {
 	destroy: true,
         "processing": true,
         "data": results.results.hits,
@@ -247,6 +256,11 @@ function renderTable(){
 		  [3, "asc"],
 		  [4, "asc"]
 		 ]
+    } );
+
+    $('#searchresults_table tbody').on( 'click', 'button', function () {
+        var data = dtable.row( $(this).parents('tr') ).data();
+        console.log(data);
     } );
 }
 
