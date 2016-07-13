@@ -28,46 +28,55 @@
 
     </div>
     <div class="col-md-9">
-      <h2>Results</h2>
+      <ul class="nav nav-tabs main-tabs" id="maintabs">
+	<li class="active">
+	  <a href="#tab_results" data-toggle="tab">results</a></li>
+	<li class="">
+	  <a href="#tab_expression" data-toggle="tab">nearby gene expression</a></li>
+      </ul>
       <!--<button onclick='play();'>Construct base results</button>-->
-      <div id="searchresults_div">
-	<table id="searchresults_table">
-          <thead>
-	    <tr>
-              {% for tc in tableCols -%}
-	      <th>{{tc-}}</th>
-              {% endfor -%}
-	    </tr>
-	  </thead>
-	  <tfoot>
-	    <tr>
-              {% for tc in tableCols -%}
-	      <th>{{tc-}}</th>
-              {% endfor -%}
-	    </tr>
-	  </tfoot>
-	</table>
-      </div>
-      <div id="d3_div">
-	<div id="tooltip" class="hidden">
-	  <p><span id="value"></p>
-	</div>
-	<div class="col-md-3" id="heatmap_container">
-	  <select id="heatmap_dropdown">
-	    {% for rank in ranklist -%}
-	    <option value="{{rank.id}}">{{rank.name}}</option>
-	    {% endfor -%}
-	  </select>
-	  <div style="width:100%" id="rank_heatmap">
+      <div id="content" class="tab-content">
+	<div class="tab-pane active" id="tab_results">
+	  <div id="searchresults_div">
+	    <table id="searchresults_table">
+              <thead>
+		<tr>
+		  {% for tc in tableCols -%}
+		  <th>{{tc-}}</th>
+		  {% endfor -%}
+		</tr>
+	      </thead>
+	      <tfoot>
+		<tr>
+		  {% for tc in tableCols -%}
+		  <th>{{tc-}}</th>
+		  {% endfor -%}
+		</tr>
+	      </tfoot>
+	    </table>
+	  </div>
+	  <div class="col-md-3" id="heatmap_container">
+	    <select id="heatmap_dropdown">
+	      {% for rank in ranklist -%}
+	      <option value="{{rank.id}}">{{rank.name}}</option>
+	      {% endfor -%}
+	    </select>
+	    <div style="width:100%" id="rank_heatmap">
+	    </div>
 	  </div>
 	</div>
-	<div class="col-md-3" id="expression_heatmap_container">
-	  <div style="width:100%" id="expression_heatmap">
+	<div id="tab-pane" id="tab_expression">
+	  <div id="tooltip" class="hidden">
+	    <p><span id="value"></p>
+	  </div>
+	  <div id="expression_heatmap_container">
+	    <div style="width:100%" id="expression_heatmap">
+	    </div>
+	  </div>
 	</div>
       </div>
     </div>
   </div>
-</div>
 
 <script>{% include 'test_els.setup.js' -%}</script>
 
