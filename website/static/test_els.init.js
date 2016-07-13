@@ -166,6 +166,90 @@ function handle_expression_matrix_results(results)
     create_expression_heatmap(results.results);
 }
 
+function formatNumber(n) {
+    // from http://stackoverflow.com/a/13283490
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function renderTable(){
+    var cols = [
+	{ "data": "_source.accession" },
+	{ "data": "_source.confidence",
+          render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
+          className: "dt-right"
+        },
+	{ "data": "_source.genome" },
+        { "data": "_source.position.chrom" },
+	{ "data": "_source.position.start",
+          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+          className: "dt-right"
+        },
+        { "data": "_source.position.end",
+          render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
+          className: "dt-right"
+        }
+    ];
+
+    var colNames = ["Accession",
+	            "Confidence",
+	            "Genome",
+	            "Chr",
+	            "Start",
+	            "End"];
+
+    if(searchquery.has_cell_line_filter()){
+        console.log(searchquery.cell_line);
+        var cellType = searchquery.cell_line;
+        cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("Enhancer rank");
+        cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("Promoter rank");
+        cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("DNase rank");
+        cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("CTCF rank");
+    }
+
+    console.log(cols);
+
+    var table = '<table id="searchresults_table"><thead><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></thead><tfoot><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></tfoot></table>';
+
+    $("#searchresults_div").html(table);
+    var rtable = $("#searchresults_table");
+
+
+    rtable.DataTable( {
+	destroy: true,
+        "processing": true,
+        "data": results.results.hits,
+        "aoColumns": cols,
+	"order": [[ 1, "desc" ],
+		  [3, "asc"],
+		  [4, "asc"]
+		 ]
+    } );
+}
+
 function handle_regulatory_results(results)
 {
 
@@ -196,63 +280,7 @@ function handle_regulatory_results(results)
 
     GUI.refresh();
 
-    var cols = [
-	    { "data": "_source.accession" },
-	    { "data": "_source.confidence" },
-	    { "data": "_source.genome" },
-            { "data": "_source.position.chrom" },
-	    { "data": "_source.position.start" },
-	    { "data": "_source.position.end" }
-    ];
-
-    var colNames = ["Accession",
-	            "Confidence",
-	            "Genome",
-	            "Chr",
-	            "Start",
-	            "End"];
-
-    if(searchquery.has_cell_line_filter()){
-        console.log(searchquery.cell_line);
-        var cellType = searchquery.cell_line;
-        cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank" } );
-        colNames.push("Enhancer rank");
-        cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank" } );
-        colNames.push("Promoter rank");
-        cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank" } );
-        colNames.push("DNase rank");
-        cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank" } );
-        colNames.push("CTCF rank");
-    }
-
-    console.log(cols);
-
-    var table = '<table id="searchresults_table"><thead><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
-    }
-    table += '</tr></thead><tfoot><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
-    }
-    table += '</tr></tfoot></table>';
-
-    $("#searchresults_div").html(table);
-    var rtable = $("#searchresults_table");
-
-    rtable.DataTable( {
-	destroy: true,
-        "language": {
-            "thousands": ","
-        },
-        "processing": true,
-        "data": results.results.hits,
-        "columns": cols,
-	"order": [[ 1, "desc" ],
-		  [3, "asc"],
-		  [4, "asc"]
-		 ]
-    } );
+    renderTable();
 
     var genelist = [];
     for (i in results.results.hits) {
