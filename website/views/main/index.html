@@ -10,11 +10,10 @@ var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 console.log(webSocketUrl);
 </script>
 
-<script src="/ver4/search/static/elasticsearch/core.js"></script>
-<script src="/ver4/search/static/client.js"></script>
-<script src="/ver4/search/static/controls/autocomplete.js"></script>
-
-<script src="/ver4/search/static/index.init.js"></script>
+{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
+{{ hh.jsVer(version, "static/client.js") }}
+{{ hh.jsVer(version, "static/controls/autocomplete.js") }}
+{{ hh.jsVer(version, "static/index.init.js") }}
 
 <script>setupSocket();</script>
 

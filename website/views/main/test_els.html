@@ -87,13 +87,13 @@ console.log(webSocketUrl);
 
 <script>{% include 'test_els.init.js' -%}</script>
 
-<script src="/ver4/search/static/client.js"></script>
-<script src="/ver4/search/static/elasticsearch/core.js"></script>
-<script src="/ver4/search/static/constants/hg19.js"></script>
-<script src="/ver4/search/static/searchresults.js"></script>
-<script src="/ver4/search/static/controls/range_slider.js"></script>
-<script src="/ver4/search/static/controls/histogram.js"></script>
-<script src="/ver4/search/static/controls/d3_heatmap.js"></script>
+{{ hh.jsVer(version, "static/client.js") }}
+{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
+{{ hh.jsVer(version, "static/constants/hg19.js") }}
+{{ hh.jsVer(version, "static/searchresults.js") }}
+{{ hh.jsVer(version, "static/controls/range_slider.js") }}
+{{ hh.jsVer(version, "static/controls/histogram.js") }}
+{{ hh.jsVer(version, "static/controls/d3_heatmap.js") }}
 
 <script>{% include 'test_els.setup.js' -%}</script>
 
