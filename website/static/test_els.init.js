@@ -196,6 +196,26 @@ function handle_regulatory_results(results)
 
     GUI.refresh();
 
+    var cols = [
+	    { "data": "_source.accession" },
+	    { "data": "_source.confidence" },
+	    { "data": "_source.genome" },
+            { "data": "_source.position.chrom" },
+	    { "data": "_source.position.start" },
+	    { "data": "_source.position.end" }
+    ];
+
+    if(searchquery.has_cell_line_filter()){
+        console.log(searchquery.cell_line);
+        var cellType = searchquery.cell_line;
+        cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank" } );
+        cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank" } );
+        cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank" } );
+        cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank" } );
+    }
+
+    console.log(cols);
+
     var rtable = $("#searchresults_table");
     rtable.DataTable( {
 	destroy: true,
@@ -204,14 +224,7 @@ function handle_regulatory_results(results)
         },
         "processing": true,
         "data": results.results.hits,
-        "columns": [
-	    { "data": "_source.accession" },
-	    { "data": "_source.confidence" },
-	    { "data": "_source.genome" },
-            { "data": "_source.position.chrom" },
-	    { "data": "_source.position.start" },
-	    { "data": "_source.position.end" }
-        ],
+        "columns": cols,
 	"order": [[ 1, "desc" ],
 		  [3, "asc"],
 		  [4, "asc"]
