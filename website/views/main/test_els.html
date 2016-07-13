@@ -31,22 +31,6 @@
         <div class="tab-content clearfix">
           <div class="tab-pane active" id="tab_results">
             <div id="searchresults_div">
-              <table id="searchresults_table">
-                <thead>
-                  <tr>
-                    {% for tc in tableCols -%}
-                    <th>{{tc-}}</th>
-                    {% endfor -%}
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                    {% for tc in tableCols -%}
-                    <th>{{tc-}}</th>
-                    {% endfor -%}
-                  </tr>
-                </tfoot>
-              </table>
             </div>
             <div class="col-md-3" id="heatmap_container">
               <select id="heatmap_dropdown">

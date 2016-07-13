@@ -46,17 +46,7 @@ class PageInfoMain:
             parsed = p.parse()
             retval.update({"parsed" : json.dumps(parsed)})
 
-        retval.update({"tableCols" : ["Accession",
-	                              "Confidence",
-	                              "Genome",
-	                              "Chr",
-	                              "Start",
-	                              "End",
-                                      "Enhancer rank",
-                                      "Promoter rank",
-                                      "DNase rank",
-                                      "CTCF rank"],
-                       "facetlist": [{"id": "assembly",
+        retval.update({"facetlist": [{"id": "assembly",
                                       "name": "assembly",
                                       "type": "list",
                                       "visible": True},

@@ -205,18 +205,41 @@ function handle_regulatory_results(results)
 	    { "data": "_source.position.end" }
     ];
 
+    var colNames = ["Accession",
+	            "Confidence",
+	            "Genome",
+	            "Chr",
+	            "Start",
+	            "End"];
+
     if(searchquery.has_cell_line_filter()){
         console.log(searchquery.cell_line);
         var cellType = searchquery.cell_line;
         cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank" } );
+        colNames.push("Enhancer rank");
         cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank" } );
+        colNames.push("Promoter rank");
         cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank" } );
+        colNames.push("DNase rank");
         cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank" } );
+        colNames.push("CTCF rank");
     }
 
     console.log(cols);
 
+    var table = '<table id="searchresults_table"><thead><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></thead><tfoot><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></tfoot></table>';
+
+    $("#searchresults_div").html(table);
     var rtable = $("#searchresults_table");
+
     rtable.DataTable( {
 	destroy: true,
         "language": {
