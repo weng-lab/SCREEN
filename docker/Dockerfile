@@ -22,10 +22,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget rsync emacs23-nox git
 
 # install postgres, cherrypy, etc.
 RUN \
-	echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-	wget --quiet -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && \
 	apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-9.5 postgresql-client-9.5 \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-client-9.5 \
 				postgresql-contrib-9.5 python-pip realpath libpq-dev python-dev \
 				python-dateutil python-numpy python-pil python-pandas; \
 	DEBIAN_FRONTEND=noninteractive pip install psycopg2 jinja2 cherrypy
