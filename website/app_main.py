@@ -57,4 +57,4 @@ class MainAppRunner:
 
         server = MainApp(viewDir, staticDir, es, version, not devMode)
 
-        cherrypy.tree.mount(server, "/" + version, config = config)
+        cherrypy.tree.mount(server, "/" + '/'.join(["ver4", "search"]), config = config)
