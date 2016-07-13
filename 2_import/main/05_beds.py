@@ -78,11 +78,19 @@ def index(assembly, cur):
     CREATE INDEX rangeIdx{assembly} ON bedRanges{assembly} USING gist (startend);
     """.format(assembly = assembly))
 
+def counts(cur, assembly):
+    cur.execute("""
+select count(1)
+from bedRanges{assembly}
+""".format(assembly = assembly))
+    print(assembly, cur.fetchone())
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--rebuild', action="store_true", default=False)
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -98,10 +106,14 @@ def main():
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
             for assembly in ["hg19", "mm10"]:
+                try:
+                    counts(cur, assembly)
+                except:
+                    pass
                 if args.rebuild:
                     build(args, assembly, conn, cur)
-                #test(cur)
-                index(assembly, cur)
+                if args.index:
+                    index(assembly, cur)
 
 if __name__ == '__main__':
     main()
