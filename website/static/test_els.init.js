@@ -227,13 +227,13 @@ function renderTable(){
         colNames.push("CTCF rank");
     }
 
-    cols.push({ "targets": -1, "data": null, className: "dt-right",
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
                 "defaultContent": '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
     colNames.push("UCSC");
-    cols.push({ "targets": -1, "data": null, className: "dt-right",
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
                 "defaultContent": '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
     colNames.push("WashU");
-    cols.push({ "targets": -1, "data": null, className: "dt-right",
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
                 "defaultContent": '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
     colNames.push("Ensembl");
 
