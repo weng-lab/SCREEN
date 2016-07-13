@@ -82,6 +82,7 @@ var webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
 {% else -%}
 var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 {% endif -%}
+console.log(webSocketUrl);
 </script>
 
 <script>{% include 'test_els.init.js' -%}</script>
