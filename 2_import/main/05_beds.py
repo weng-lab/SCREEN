@@ -65,6 +65,7 @@ def build(args, assembly, conn, cur):
                 print "bad exp:", exp
         conn.commit()
 
+def index(assembly, cur):
     print "indexing", assembly
     cur.execute("""
     CREATE INDEX rangeIdx{assembly} ON bedRanges{assembly} USING gist (chrom, startend);
