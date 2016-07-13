@@ -41,6 +41,8 @@ class MainApp():
 class MainAppRunner:
     def __init__(self, es, devMode):
         version = '/'.join(["ver4", "search"])
+        if not devMode:
+            version = '/'.join(["regElmViz", "ver4", "search"])
 
         d = os.path.dirname(__file__)
         staticDir = os.path.abspath(os.path.join(d, "static"))
