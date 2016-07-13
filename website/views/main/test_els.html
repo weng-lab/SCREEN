@@ -28,61 +28,68 @@
 
     </div>
     <div class="col-md-9">
-      <ul class="nav nav-tabs main-tabs" id="maintabs">
-	<li class="active">
-	  <a href="#tab_results" data-toggle="tab">results</a></li>
-	<li class="">
-	  <a href="#tab_expression" data-toggle="tab">nearby gene expression</a></li>
-      </ul>
-      <!--<button onclick='play();'>Construct base results</button>-->
-      <div id="content" class="tab-content">
-	<div class="tab-pane active" id="tab_results">
-	  <div id="searchresults_div">
-	    <table id="searchresults_table">
-              <thead>
-		<tr>
-		  {% for tc in tableCols -%}
-		  <th>{{tc-}}</th>
-		  {% endfor -%}
-		</tr>
-	      </thead>
-	      <tfoot>
-		<tr>
-		  {% for tc in tableCols -%}
-		  <th>{{tc-}}</th>
-		  {% endfor -%}
-		</tr>
-	      </tfoot>
-	    </table>
-	  </div>
-	  <div class="col-md-3" id="heatmap_container">
-	    <select id="heatmap_dropdown">
-	      {% for rank in ranklist -%}
-	      <option value="{{rank.id}}">{{rank.name}}</option>
-	      {% endfor -%}
-	    </select>
-	    <div style="width:100%" id="rank_heatmap">
-	    </div>
-	  </div>
-	</div>
-	<div id="tab-pane" id="tab_expression">
-	  <div id="tooltip" class="hidden">
-	    <p><span id="value"></p>
-	  </div>
-	  <div id="expression_heatmap_container">
-	    <div style="width:100%" id="expression_heatmap">
-	    </div>
-	  </div>
-	</div>
+
+      <div id="exTab1" class="container">
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a href="#tab_results" data-toggle="tab">Overview</a>
+          </li>
+          <li><a href="#tab_expression" data-toggle="tab">Using nav-pills</a>
+          </li>
+        </ul>
+
+        <div class="tab-content clearfix">
+          <div class="tab-pane active" id="tab_results">
+            <div id="searchresults_div">
+              <table id="searchresults_table">
+                <thead>
+                  <tr>
+                    {% for tc in tableCols -%}
+                    <th>{{tc-}}</th>
+                    {% endfor -%}
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    {% for tc in tableCols -%}
+                    <th>{{tc-}}</th>
+                    {% endfor -%}
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="col-md-3" id="heatmap_container">
+              <select id="heatmap_dropdown">
+                {% for rank in ranklist -%}
+                <option value="{{rank.id}}">{{rank.name}}</option>
+                {% endfor -%}
+              </select>
+              <div style="width:100%" id="rank_heatmap">
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane" id="tab_expression">
+            <div id="tooltip" class="hidden">
+              <p><span id="value"></p>
+            </div>
+            <div id="expression_heatmap_container">
+              <div style="width:100%" id="expression_heatmap">
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
+</div>
 
 <script>{% include 'test_els.setup.js' -%}</script>
 
 <script>$( document ).ready(function() {
   setupSocket(play, {{parsed}});
-});
+  });
 </script>
 
 {% include '_footer.html' -%}

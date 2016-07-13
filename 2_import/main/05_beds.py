@@ -59,6 +59,8 @@ def build(args, assembly, conn, cur):
                 if not beds:
                     print "missing", exp
                 for bed in beds:
+                    if not assembly == bed.assembly:
+                        continue
                     insertFile(cur, exp, bed)
             except Exception, e:
                 print str(e)
@@ -68,8 +70,13 @@ def build(args, assembly, conn, cur):
 def index(assembly, cur):
     print "indexing", assembly
     cur.execute("""
-    CREATE INDEX rangeIdx{assembly} ON bedRanges{assembly} USING gist (chrom, startend);
-""".format(assembly = assembly))
+    CREATE INDEX chromIdx{assembly} ON bedRanges{assembly}(chrom);
+    """.format(assembly = assembly))
+
+    print "indexing", assembly, "startend"
+    cur.execute("""
+    CREATE INDEX rangeIdx{assembly} ON bedRanges{assembly} USING gist (startend);
+    """.format(assembly = assembly))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -94,6 +101,7 @@ def main():
                 if args.rebuild:
                     build(args, assembly, conn, cur)
                 #test(cur)
+                index(assembly, cur)
 
 if __name__ == '__main__':
     main()
