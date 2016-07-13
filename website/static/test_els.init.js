@@ -24,6 +24,11 @@ var facet_link_handlers = {
     }
 };
 
+var query_results_handlers = {
+    "regulatory_elements": handle_regulatory_results,
+    "expression_matrix": handle_expression_matrix_results
+};
+
 function toggle_display(el, sh)
 {
     el.style.display = (sh ? "block" : "none");
@@ -37,7 +42,8 @@ function socket_message_handler(e) {
     if (results["type"] == "enumeration")
 	handle_enumeration(results);
     else if (results["type"] == "query_results")
-	handle_query_results(results);
+	if (results["index"] in query_results_handlers)
+	    query_results_handlers[results["index"]](results);
     else if (results["type"] == "suggestions")
 	handle_autocomplete_suggestions(results);
 
@@ -47,6 +53,63 @@ function handle_enumeration(results)
 {
     enumerations[results["name"]] = results.datapairs;
     process_agglist(results["name"], results);
+}
+
+function create_expression_heatmap(results)
+{
+
+    var data = {
+	"collabels": [],
+	"rowlabels": [],
+	"data": []
+    };
+    var result, eset;
+    var map = {};
+    var datamap = {};
+
+    defaultlayout.range = [0, 0];
+    defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
+    
+    for (i in results.hits) {
+	result = results.hits[i]._source;
+	data.collabels.push(result.ensembl_id);
+	for (n in result.expression_values) {
+	    eset = result.expression_values[n];
+	    if (!(eset.dataset in map)) {
+		for (key in eset) {
+		    if (key.indexOf("rep1_tpm") != -1) {
+			var rl = eset.cell_line + " (" + eset.dataset + ", " + key.split("_")[0] + ")";
+			if (!(rl in map)) {
+			    data.rowlabels.push(rl);
+			    datamap[data.rowlabels.length - 1] = {}
+			    map[rl] = data.rowlabels.length - 1;
+			}
+			var v1 = Math.log(eset[key]);
+			datamap[map[rl]][data.collabels.length - 1] = v1;
+			if (v1 > defaultlayout.range[1]) defaultlayout.range[1] = v1;
+		    }
+		}
+	    }
+	}
+    }
+
+    defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", defaultlayout.range[1]];
+
+    for (i = 0; i < data.rowlabels.length; i++) {
+	for (j = 0; j < data.collabels.length; j++) {
+	    if (j in datamap[i])
+		data.data.push({"row": i + 1,
+				"col": j + 1,
+				"value": datamap[i][j]});
+	    else
+		data.data.push({"row": i + 1,
+				"col": j + 1,
+				"value": 0});
+	}
+    }
+
+    create_heatmap(data, "expression_heatmap", defaultlayout);
+    
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs)
@@ -63,6 +126,8 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
     var normalization_factor;
     
     defaultlayout.range = [0, 0];
+    defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse();
+    defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", "max"];
     
     for (var i = 0; i < cell_line_datapairs.length; i++) {
 	maxes.push(0);
@@ -96,9 +161,15 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
     
 }
 
-function handle_query_results(results)
+function handle_expression_matrix_results(results)
 {
+    clear_div_contents(document.getElementById("expression_heatmap"));
+    create_expression_heatmap(results.results);
+}
 
+function handle_regulatory_results(results)
+{
+    
     last_results = results;
     
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
@@ -123,7 +194,7 @@ function handle_query_results(results)
             histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
         }
     }
-
+    
     GUI.refresh();
 
     var rtable = $("#searchresults_table");
@@ -147,5 +218,13 @@ function handle_query_results(results)
 		  [4, "asc"]
 		 ]
     } );
+
+    var genelist = [];
+    for (i in results.results.hits) {
+	var result = results.results.hits[i]._source;
+	genelist.push(result.genes["nearest-pc"]["gene-id"]);
+	genelist.push(result.genes["nearest-all"]["gene-id"]);
+    }
+    perform_gene_expression_search(gene_expression_query(genelist));
 
 }

@@ -67,7 +67,7 @@ function play(parsed){
     if (range_preset && range_preset in range_preset_handlers) {
 	range_preset_handlers[range_preset]();
     }
-    sendText(JSON.stringify(searchquery.eso));
+    perform_search();
 };
 
 window.onload = function() {

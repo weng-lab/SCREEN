@@ -8,6 +8,7 @@ class RegElements:
     @staticmethod
     def process_for_javascript(raw_results):
         retval = {"type": "query_results",
+                  "index": "regulatory_elements",
                   "aggs": {}}
         retval["results"] = raw_results["hits"]
         if "aggregations" not in raw_results: return retval
