@@ -55,7 +55,7 @@ def main():
             i += 1
             d = json.loads(line)
             for rank in ranks:
-                if rank == "confidence": break
+                if rank == "confidence": continue
                 for cell_line in d["ranks"][rank]:
                     if cell_line not in ranks[rank]: ranks[rank][cell_line] = []
                     ranks[rank][cell_line].append(d["ranks"][rank][cell_line]["rank"])
