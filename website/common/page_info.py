@@ -5,8 +5,9 @@ from parse_search import ParseSearch
 import subprocess
 
 class PageInfoMain:
-    def __init__(self, es, version, webSocketUrl):
+    def __init__(self, es, DBCONN, version, webSocketUrl):
         self.es = es
+        self.DBCONN = DBCONN
         self.version = version
         self.regElements = RegElements(es)
         self.webSocketUrl = webSocketUrl
