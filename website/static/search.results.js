@@ -1,10 +1,3 @@
-function ae(a1, a2)
-{
-    if (a1.length != a2.length) return false;
-    for (i in a1) if (a1[i] != a2[i]) return false;
-    return true;
-}
-
 function process_histogram_result(control_prefix, result)
 {
 
@@ -21,7 +14,7 @@ function process_histogram_result(control_prefix, result)
 
     var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
     var nrange = [result["minvalue"], nmax];
-    if (!ae(nrange, range_facet.range_slider.get_range())) {
+    if (!_.isEqual(nrange, range_facet.range_slider.get_range())) {
 	range_facet.range_slider.set_range(...nrange);
 	range_facet.range_slider.refresh_selection(...nrange);
     }
