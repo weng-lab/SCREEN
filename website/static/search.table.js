@@ -1,3 +1,23 @@
+function genStrCol(field){
+    return { data: field, className: "dt-right"};
+}
+
+function genFloatCol(field){
+    return { data: field, className: "dt-right",
+             render: $.fn.dataTable.render.number( ',', '.', 1, '' ) };
+}
+
+function genIntCol(field){
+    return { data: field, className: "dt-right",
+             render: $.fn.dataTable.render.number( ',', '.', 0, '' ) };
+}
+
+function genButtonCol(name){
+    return { "targets": -1, "data": null, className: "dt-right", "orderable": false,
+             "defaultContent":
+             '<button type="button" class="btn btn-success btn-xs">' + name + '</button>' };
+}
+
 function renderTable(){
     var colNames = ["Accession",
 	            "Confidence",
@@ -64,6 +84,6 @@ function renderTable(){
 
     $('#searchresults_table tbody').on( 'click', 'button', function () {
         var data = dtable.row( $(this).parents('tr') ).data();
-        //console.log(data);
+        console.log(data);
     } );
 }
