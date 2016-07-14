@@ -1,5 +1,3 @@
-var webSocketUrl = "ws://" + window.location.hostname + ":9000";
-
 function process_autocomplete_results(results)
 {
     var retval = [];
@@ -21,5 +19,5 @@ function socket_message_handler(e)
 {
     results = JSON.parse(e.data);
     if (results["type"] == "suggestions")
-	handle_autocomplete_suggestions(results);	
+	handle_autocomplete_suggestions(results);
 }

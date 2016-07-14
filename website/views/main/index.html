@@ -2,14 +2,18 @@
 {% import 'Helpers/_helpers.html' as hh -%}
 
 <script>
-  var webSocketUrl = "ws://" + window.location.hostname + ":9000";
+{% if production -%}
+var webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
+{% else -%}
+var webSocketUrl = "ws://" + window.location.hostname + ":9000";
+{% endif -%}
+console.log(webSocketUrl);
 </script>
 
-<script src="/ver4/search/static/elasticsearch/core.js"></script>
-<script src="/ver4/search/static/client.js"></script>
-<script src="/ver4/search/static/controls/autocomplete.js"></script>
-
-<script src="/ver4/search/static/index.init.js"></script>
+{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
+{{ hh.jsVer(version, "static/client.js") }}
+{{ hh.jsVer(version, "static/controls/autocomplete.js") }}
+{{ hh.jsVer(version, "static/index.init.js") }}
 
 <script>setupSocket();</script>
 
@@ -58,5 +62,5 @@
     <script>
       bind_autocomplete_textbox("q", ["gene_aliases", "snp_aliases"]);
     </script>
-    
+
 {% include '_footer.html' -%}

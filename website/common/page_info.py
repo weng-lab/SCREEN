@@ -5,20 +5,21 @@ from parse_search import ParseSearch
 import subprocess
 
 class PageInfoMain:
-    def __init__(self, es, version):
+    def __init__(self, es, version, production):
         self.es = es
         self.version = version
         self.regElements = RegElements(es)
+        self.production = production
 
     def wholePage(self):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
-                "version" : self.version}
+                "version" : self.version,
+                "production" : self.production}
 
     def hexplotPage(self, args, kwargs):
-        retval = {"page": {"version": self.version,
-                           "title": "hexplot view - Regulatory Element Visualizer"},
-                  "version": self.version}
+        retval = self.wholePage()
+        retval["page"]["title"] = "hexplot view - Regulatory Element Visualizer"
         if len(args) < 1: return retval
         if "rankA" not in kwargs or "rankB" not in kwargs: return retval
         print(subprocess.check_output("ls", shell=True))
@@ -33,7 +34,7 @@ class PageInfoMain:
         retval["rankA"] = kwargs["rankA"]
         retval["rankB"] = kwargs["rankB"]
         return retval
-    
+
     def testqueryPage(self, args, kwargs):
         retval = self.wholePage()
         print("args", args)
@@ -45,13 +46,7 @@ class PageInfoMain:
             parsed = p.parse()
             retval.update({"parsed" : json.dumps(parsed)})
 
-        retval.update({"tableCols" : ["Accession",
-	                              "Confidence",
-	                              "Genome",
-	                              "Chr",
-	                              "Start",
-	                              "End"],
-                       "facetlist": [{"id": "assembly",
+        retval.update({"facetlist": [{"id": "assembly",
                                       "name": "assembly",
                                       "type": "list",
                                       "visible": True},
