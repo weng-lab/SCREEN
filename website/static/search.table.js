@@ -13,9 +13,9 @@ function genIntCol(field){
 }
 
 function genButtonCol(name){
-    return { "targets": -1, "data": null, className: "dt-right", "orderable": false,
-             "defaultContent":
-             '<button type="button" class="btn btn-success btn-xs">' + name + '</button>' };
+    var b = '<button type="button" class="btn btn-success btn-xs">' + name + '</button>';
+    return { targets: -1, data: null, className: "dt-right", orderable: false,
+             defaultContent : b };
 }
 
 function setupColumns(){
@@ -49,15 +49,19 @@ function renderTable(){
     var cols = setupColumns();
     var colNames = _.keys(cols);
 
-    var table = '<table id="searchresults_table"><thead><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
+    var frag = document.createDocumentFragment();
+    for(i = 0; i < colNames.length; i++){
+        var th = document.createElement("th");
+        th.innerHTML = colNames[i];
+        frag.appendChild(th);
     }
-    table += '</tr></thead><tfoot><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
-    }
-    table += '</tr></tfoot></table>';
+    var tr = document.createElement("tr");
+    tr.appendChild(frag)
+    var thead = document.createElement("thead");
+    thead.appendChild(tr);
+    var table = document.createElement("table");
+    table.id = "searchresults_table";
+    table.appendChild(thead);
 
     $("#searchresults_div").html(table);
     var rtable = $("#searchresults_table");
