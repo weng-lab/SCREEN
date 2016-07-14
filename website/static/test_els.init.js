@@ -204,6 +204,15 @@ function renderTable(){
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
+        cols.push( {"data" : "_source.genes.nearest-all.gene-id",
+                    className: "dt-right"
+                   } );
+        colNames.push("Nearest gene");
+        cols.push( {"data" : "_source.genes.nearest-pc.gene-id",
+                    className: "dt-right"
+                   } );
+        colNames.push("Nearest protein-coding gene");
+
         cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
                     render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
                     className: "dt-right"
