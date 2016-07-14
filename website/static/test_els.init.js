@@ -37,6 +37,8 @@ var query_results_handlers = {
 function create_venn()
 {
     clear_div_contents(document.getElementById("venn_div"));
+    venn_results.sets[0].size += venn_results.overlaps[0].size;
+    venn_results.sets[1].size += venn_results.overlaps[1].size;
     create_venn_diagram("venn_div", venn_results);
 }
 
