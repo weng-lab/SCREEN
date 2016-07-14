@@ -34,9 +34,13 @@ class RegElmVizWebsite(object):
                 'tools.sessions.locking': 'early',
                 })
 
+        webSocketUrl = '"ws://" + window.location.hostname + ":9000"'
+        if not self.devMode:
+            webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
+
         self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
                                                      #port = args.elasticsearch_port))
-        MainAppRunner(self.es, self.devMode)
+        MainAppRunner(self.es, self.devMode, webSocketUrl)
 
     def start(self):
         if self.devMode:

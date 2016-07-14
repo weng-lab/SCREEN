@@ -10,9 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, staticDir, es, version, production):
+    def __init__(self, viewDir, staticDir, es, version, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, es, version, production)
+        self.mc = MainController(self.templates, es, version, webSocketUrl)
 
     @cherrypy.expose
     def index(self):
@@ -39,7 +39,7 @@ class MainApp():
         return self.mc.Query(q)
 
 class MainAppRunner:
-    def __init__(self, es, devMode):
+    def __init__(self, es, devMode, webSocketUrl):
         version = '/'.join(["ver4", "search"])
         if not devMode:
             version = '/'.join(["regElmViz", "ver4", "search"])
@@ -55,6 +55,8 @@ class MainAppRunner:
                 }
             }
 
-        server = MainApp(viewDir, staticDir, es, version, not devMode)
+        server = MainApp(viewDir, staticDir, es, version, webSocketUrl)
 
-        cherrypy.tree.mount(server, "/" + '/'.join(["ver4", "search"]), config = config)
+        cherrypy.tree.mount(server,
+                            "/" + '/'.join(["ver4", "search"]),
+                            config = config)

@@ -4,11 +4,11 @@
     <div class="panel-body" id="ranks_filter_container">
       {% for rank in ranklist -%}
       <p>
-	<label for="{{rank.id}}_textbox">{{rank.name}}:</label>
-	<input type="text" id="{{rank.id}}_textbox" style="border:1;font-weight:bold;">
+	<label for="{{rank['id']}}_textbox">{{rank['name']}}:</label>
+	<input type="text" id="{{rank['id']}}_textbox" style="border:1;font-weight:bold;">
       </p>
-      <div style="width:90%;height:20px;" id="{{rank.id}}_histogram"></div>
-      <div style="width:90%" id="{{rank.id}}_range_slider"></div><br>
+      <div style="width:90%;height:20px;" id="{{rank['id']}}_histogram"></div>
+      <div style="width:90%" id="{{rank['id']}}_range_slider"></div><br>
       {% endfor -%}
     </div>
   </div>
