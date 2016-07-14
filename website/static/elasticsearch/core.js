@@ -76,7 +76,7 @@ function get_venn_queries(cell_lines, rank_id)
     }, {
 	"query": {
 	    "bool": {
-		"must": [{"range": {}}]		
+		"must": [{"range": {}}]
 	    }
 	}
     }];
@@ -91,7 +91,7 @@ function get_venn_queries(cell_lines, rank_id)
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[0]);
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[1]);
     }
-    
+
     return retval;
 };
 
@@ -134,7 +134,7 @@ function gene_expression_query(ensembl_ids)
     }
 
     return retval;
-    
+
 };
 
 function Query() {
@@ -233,7 +233,9 @@ Query.prototype.set_num_results = function(n) {this.eso.size = n;};
 Query.prototype.set_first_result_index = function(i) {this.eso.from = i;};
 
 Query.prototype.get_coordinate_selection_range = function() {
-    if (this.eso.post_filter.bool.must[POSITION_END] == {}) return null;
+    if(jQuery.isEmptyObject(this.eso.post_filter.bool.must[POSITION_END])){
+        return null;
+    }
     return [this.eso.post_filter.bool.must[POSITION_END].range["position.end"].gte,
 	    this.eso.post_filter.bool.must[POSITION_START].range["position.start"].lte];
 };

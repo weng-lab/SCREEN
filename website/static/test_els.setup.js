@@ -1,5 +1,4 @@
-function facetGUI()
-{
+function facetGUI(){
     this.facets = {};
 }
 
@@ -20,69 +19,115 @@ facetGUI.prototype.refresh = function() {
     this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
 };
 
-function range_facet()
-{
+function range_facet(){
     this.range_slider = null;
     this.histogram = null;
     this.id = null;
 }
 
-var GUI = new facetGUI();
-
-function update_coordinate_filter()
-{
+function update_coordinate_filter(){
     var coordinates = GUI.facets["coordinates"].range_slider.get_selection_range();
     searchquery.set_coordinate_filter(searchquery.chromosome, coordinates[0], coordinates[1]);
     perform_search();
 }
 
-function update_histogram(range_facet)
-{
+function update_histogram(range_facet){
     var coordinates = range_facet.range_slider.get_selection_range();
     range_facet.histogram.update_selection(...coordinates);
 }
 
-function rank_filter_generic(range_facet, fptr)
-{
+function rank_filter_generic(range_facet, fptr){
     var ranks = range_facet.range_slider.get_selection_range();
     fptr.call(searchquery, ranks[0], ranks[1]);
     perform_search();
 }
 
-function update_dnase_rank_filter() {rank_filter_generic(GUI.facets["dnase"], searchquery.set_dnase_rank_filter);}
-function update_ctcf_rank_filter() {rank_filter_generic(GUI.facets["ctcf"], searchquery.set_ctcf_rank_filter);}
-function update_promoter_rank_filter() {rank_filter_generic(GUI.facets["promoter"], searchquery.set_promoter_rank_filter);}
-function update_enhancer_rank_filter() {rank_filter_generic(GUI.facets["enhancer"], searchquery.set_enhancer_rank_filter);}
-function update_conservation_rank_filter() {rank_filter_generic(GUI.facets["conservation"], searchquery.set_conservation_filter);}
+var update_rank_filter = {
+    dnase : function() {
+        rank_filter_generic(GUI.facets["dnase"],
+                            searchquery.set_dnase_rank_filter);
+    },
+    ctcf : function() {
+        rank_filter_generic(GUI.facets["ctcf"],
+                            searchquery.set_ctcf_rank_filter);
+    },
+    promoter : function() {
+        rank_filter_generic(GUI.facets["promoter"],
+                            searchquery.set_promoter_rank_filter);
+    },
+    enhancer : function() {
+        rank_filter_generic(GUI.facets["enhancer"],
+                            searchquery.set_enhancer_rank_filter);
+    },
+    conservation : function() {
+        rank_filter_generic(GUI.facets["conservation"],
+                            searchquery.set_conservation_filter);
+    }
+};
 
-function update_dnase_histogram_selection() {update_histogram(GUI.facets["dnase"]);}
-function update_ctcf_histogram_selection() {update_histogram(GUI.facets["ctcf"]);}
-function update_promoter_histogram_selection() {update_histogram(GUI.facets["promoter"]);}
-function update_enhancer_histogram_selection() {update_histogram(GUI.facets["enhancer"]);}
-function update_conservation_histogram_selection() {update_histogram(GUI.facets["conservation"]);}
-function update_coordinate_histogram_selection() {update_histogram(GUI.facets["coordinates"]);}
+var update_histogram_selection = {
+    dnase : function() { update_histogram(GUI.facets["dnase"]); },
+    ctcf : function() { update_histogram(GUI.facets["ctcf"]); },
+    promoter : function() { update_histogram(GUI.facets["promoter"]); },
+    enhancer : function() { update_histogram(GUI.facets["enhancer"]); },
+    conservation : function() { update_histogram(GUI.facets["conservation"]); },
+    coordinate : function() { update_histogram(GUI.facets["coordinates"]); }
+};
+
+var GUI = new facetGUI();
 
 GUI.facets["coordinates"] = new range_facet();
-GUI.facets["coordinates"].range_slider = create_range_slider("coordinates_range_slider", 2000000000, document.getElementById("coordinates_textbox"),
-							     update_coordinate_filter, update_coordinate_histogram_selection);
+GUI.facets["coordinates"].range_slider =
+    create_range_slider("coordinates_range_slider",
+                        2000000000,
+                        document.getElementById("coordinates_textbox"),
+			update_rank_filter["coordinate"],
+                        update_histogram_selection["coordinate"]);
 
-{%- for facet in facetlist -%}
-{%- if facet.type == "range" -%}
-GUI.facets["{{facet.id}}"] = new range_facet();
-GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 2000000, document.getElementById("{{facet.id}}_textbox"),
-							      update_{{facet.id}}_rank_filter, update_{{facet.id}}_histogram_selection);
-GUI.facets["{{facet.id}}"].id = "{{facet.id}}";
-{%- endif -%}
-{%- endfor -%}
+$.each(FacetList, function(idx, facet) {
+    if("range" == facet.type){
+        GUI.facets[facet.id] = new range_facet();
+        GUI.facets[facet.id].range_slider =
+            create_range_slider(facet.id + "_range_slider",
+                                2000000,
+                                document.getElementById(facet.id + "_textbox"),
+				update_rank_filter[facet.id],
+                                update_histogram_selection[facet.id]);
+        GUI.facets[facet.id].id = facet.id};
+});
 
-{%- for facet in ranklist -%}
-GUI.facets["{{facet.id}}"] = new range_facet();
-GUI.facets["{{facet.id}}"].range_slider = create_range_slider("{{facet.id}}_range_slider", 2000000, document.getElementById("{{facet.id}}_textbox"),
-							      update_{{facet.id}}_rank_filter, update_{{facet.id}}_histogram_selection);
-GUI.facets["{{facet.id}}"].id = "{{facet.id}}";
-{%- endfor -%}
+$.each(RankList, function(idx, facet) {
+    GUI.facets[facet.id] = new range_facet();
+    GUI.facets[facet.id].range_slider =
+        create_range_slider(facet.id + "_range_slider",
+                            2000000,
+                            document.getElementById(facet.id + "_textbox"),
+				update_rank_filter[facet.id],
+                            update_histogram_selection[facet.id]);
+    GUI.facets[facet.id].id = facet.id;
+});
 
 $("#heatmap_dropdown").on("change", function(e) {
     clear_div_contents(document.getElementById("rank_heatmap"));
     create_rank_heatmap(last_results, this.value, enumerations["cell_line"]);
 });
+
+function play(parsed){
+    console.log(parsed);
+    var ct = parsed["cellType"];
+    var coord = parsed["coord"];
+    var range_preset = parsed["range_preset"];
+
+    request_cell_lines();
+
+    if(ct){
+	searchquery.set_cell_line_filter(parsed["cellType"]);
+    }
+    if(coord){
+	searchquery.set_coordinate_filter(coord["chrom"], coord["start"], coord["end"]);
+    }
+    if (range_preset && range_preset in range_preset_handlers) {
+	range_preset_handlers[range_preset]();
+    }
+    perform_search();
+};

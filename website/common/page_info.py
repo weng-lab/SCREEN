@@ -5,17 +5,17 @@ from parse_search import ParseSearch
 import subprocess
 
 class PageInfoMain:
-    def __init__(self, es, version, production):
+    def __init__(self, es, version, webSocketUrl):
         self.es = es
         self.version = version
         self.regElements = RegElements(es)
-        self.production = production
+        self.webSocketUrl = webSocketUrl
 
     def wholePage(self):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version,
-                "production" : self.production}
+                "webSocketUrl" : self.webSocketUrl}
 
     def hexplotPage(self, args, kwargs):
         retval = self.wholePage()
@@ -43,29 +43,36 @@ class PageInfoMain:
             p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
 
+        facetlist = [{"id": "assembly",
+                      "name": "assembly",
+                      "type": "list",
+                      "visible": True},
+                     {"id": "cell_line",
+                      "name": "cell types",
+                      "type": "list",
+                      "visible": True},
+                     {"id": "chromosome",
+                      "name": "chromosome",
+                      "type": "list",
+                      "visible": True},
+                     {"id": "coordinates",
+                      "name": "coordinates",
+                      "type": "slider",
+                      "label_text": "coordinates",
+                      "visible": False} ]
+
+        ranklist = [{"id": "dnase", "name": "DNase"},
+                    {"id": "ctcf", "name": "CTCF"},
+                    {"id": "promoter", "name": "promoter"},
+                    {"id": "enhancer", "name": "enhancer"},
+                    {"id": "conservation", "name": "conservation"}]
+
         retval.update({"parsed" : json.dumps(parsed),
-                       "facetlist": [{"id": "assembly",
-                                      "name": "assembly",
-                                      "type": "list",
-                                      "visible": True},
-                                     {"id": "cell_line",
-                                      "name": "cell types",
-                                      "type": "list",
-                                      "visible": True},
-                                     {"id": "chromosome",
-                                      "name": "chromosome",
-                                      "type": "list",
-                                      "visible": True},
-                                     {"id": "coordinates",
-                                      "name": "coordinates",
-                                      "type": "slider",
-                                      "label_text": "coordinates",
-                                      "visible": False} ],
-                       "ranklist": [{"id": "dnase", "name": "DNase"},
-                                    {"id": "ctcf", "name": "CTCF"},
-                                    {"id": "promoter", "name": "promoter"},
-                                    {"id": "enhancer", "name": "enhancer"},
-                                    {"id": "conservation", "name": "conservation"}] })
+                       "facetlist": facetlist,
+                       "ranklist": ranklist,
+                       "facetlist_json": json.dumps(facetlist),
+                       "ranklist_json": json.dumps(ranklist) })
+
         return retval
 
     def rawQueryPage(self, q, url):
