@@ -39,7 +39,7 @@ function create_venn()
     clear_div_contents(document.getElementById("venn_div"));
     venn_results.sets[0].size += venn_results.overlaps[0].size;
     venn_results.sets[1].size += venn_results.overlaps[0].size;
-    venn_slider.set_range(0, Math.max(venn_results.sets[0].size, venn_results.sets[1].size));
+    venn_slider.set_range(0, GUI.facets[document.getElementById("vennrank_dropdown").value].range_slider.get_range()[1]);
     create_venn_diagram("venn_div", venn_results);
 }
 
