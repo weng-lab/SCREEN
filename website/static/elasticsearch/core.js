@@ -70,24 +70,28 @@ function get_venn_queries(cell_lines, rank_id)
     }, {
 	"query": {
 	    "bool": {
-		"must": [{"range": {}},
-			 {"range": {}}]
+		"must": [{"range": {}}]
 	    }
 	}
     }, {
 	"query": {
 	    "bool": {
-		"must": [{"range": {}},
-			 {"range": {}}]		
+		"must": [{"range": {}}]		
 	    }
 	}
     }];
     retval[0].query.bool.must[0].range[clr1] = {"lte": threshold};
     retval[0].query.bool.must[1].range[clr2] = {"lte": threshold};
     retval[1].query.bool.must[0].range[clr1] = {"gte": threshold};
-    retval[1].query.bool.must[1].range[clr2] = {"lte": threshold};
-    retval[2].query.bool.must[0].range[clr1] = {"lte": threshold};
-    retval[2].query.bool.must[1].range[clr2] = {"gte": threshold};
+    retval[2].query.bool.must[0].range[clr2] = {"gte": threshold};
+
+    for (var i = 0; i < 3; i++) {
+	for (var j = 0; j < searchquery.eso.query.bool.must; j++)
+	    retval[i].query.bool.must.push(searchquery.eso.query.bool.must[j]);
+	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[0]);
+	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[1]);
+    }
+    
     return retval;
 };
 
