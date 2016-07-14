@@ -35,7 +35,7 @@ class PageInfoMain:
         retval["rankB"] = kwargs["rankB"]
         return retval
 
-    def testqueryPage(self, args, kwargs):
+    def searchPage(self, args, kwargs):
         retval = self.wholePage()
 
         parsed = ""
