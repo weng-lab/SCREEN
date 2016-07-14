@@ -37,9 +37,6 @@ class PageInfoMain:
 
     def testqueryPage(self, args, kwargs):
         retval = self.wholePage()
-        print("args", args)
-        print("kwargs", kwargs)
-        retval.update({"parsed" : ""})
 
         parsed = ""
         if "q" in kwargs:
