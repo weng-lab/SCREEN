@@ -58,10 +58,11 @@ class MyServerProtocol(WebSocketServerProtocol):
                     return
                 elif j["action"] == "query":
                     raw_results = es.search(body=j["object"], index=j["index"])
-                    if j["index"] in cmap:
-                        processed_results = cmap[j["index"]].process_for_javascript(raw_results)
+                    if j["callback"] in cmap:
+                        processed_results = cmap[j["callback"]].process_for_javascript(raw_results)
                     else:
                         processed_results = raw_results
+                    processed_results["callback"] = j["callback"]
                     self.sendMessage(json.dumps(processed_results))
                     return
 
