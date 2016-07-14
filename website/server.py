@@ -3,6 +3,7 @@
 import cherrypy, os, sys, argparse
 
 from elasticsearch import Elasticsearch
+import psycopg2, psycopg2.pool
 
 from app_main import MainAppRunner
 
@@ -12,6 +13,7 @@ from elastic_search_wrapper import ElasticSearchWrapper
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
+from dbs import DBS
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
@@ -38,9 +40,16 @@ class RegElmVizWebsite(object):
         if not self.devMode:
             webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
 
-        self.es = ElasticSearchWrapper(Elasticsearch())#([args.elasticsearch_server],
-                                                     #port = args.elasticsearch_port))
-        MainAppRunner(self.es, self.devMode, webSocketUrl)
+        self.es = ElasticSearchWrapper(Elasticsearch())
+
+        if args.local:
+            dbs = DBS.localRegElmViz()
+        else:
+            dbs = DBS.pgdsn("regElmViz")
+            dbs["application_name"] = os.path.realpath(__file__)
+        self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+
+        MainAppRunner(self.es, self.DBCONN, self.devMode, webSocketUrl)
 
     def start(self):
         if self.devMode:
