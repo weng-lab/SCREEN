@@ -45,7 +45,7 @@ function setupColumns(){
     return ret;
 }
 
-function makeTable(cols){
+function makeEmptyTable(cols){
     var colNames = _.keys(cols);
 
     var frag = document.createDocumentFragment();
@@ -68,7 +68,7 @@ function makeTable(cols){
 function renderTable(){
     var cols = setupColumns();
 
-    $("#searchresults_div").html(makeTable(cols));
+    $("#searchresults_div").html(makeEmptyTable(cols));
     var rtable = $("#searchresults_table");
 
     var dtable = rtable.DataTable( {
