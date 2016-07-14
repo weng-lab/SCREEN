@@ -20,18 +20,6 @@ function Ver() {
 var socket = null;
 var isopen = false;
 
-var range_preset_handlers = {
-    "promoter": function() {
-	searchquery.set_promoter_filter_preset();
-    },
-    "enhancer": function() {
-	searchquery.set_enhancer_filter_preset();
-    },
-    "insulator": function() {
-	searchquery.set_insulator_filter_preset();
-    }
-};
-
 var setupSocket = function(fonopen, fargs) {
 
     socket = new WebSocket(WebSocketUrl);

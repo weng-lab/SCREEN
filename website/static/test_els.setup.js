@@ -112,6 +112,18 @@ $("#heatmap_dropdown").on("change", function(e) {
     create_rank_heatmap(last_results, this.value, enumerations["cell_line"]);
 });
 
+var range_preset_handlers = {
+    "promoter": function() {
+	searchquery.set_promoter_filter_preset();
+    },
+    "enhancer": function() {
+	searchquery.set_enhancer_filter_preset();
+    },
+    "insulator": function() {
+	searchquery.set_insulator_filter_preset();
+    }
+};
+
 function play(parsed){
     console.log(parsed);
     var ct = parsed["cellType"];
