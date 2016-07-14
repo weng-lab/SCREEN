@@ -290,6 +290,7 @@
     }
 
     function centerVennDiagram( diagram, width, height, padding ) {
+	return;
         var diagramBoundaries;
         var allowedWidth = width - ( 2 * ( padding || 0 ) );
         var allowedHeight = height - ( 2 * ( padding || 0 ) );
@@ -831,7 +832,6 @@ function create_venn_diagram(destination_div, data)
     var diagram;
     var tooltip = d3.select("body").append("div")
 	            .attr("class", "venntooltip");
-    var	dataInput = document.getElementById('data');
     var elem = d3.select("#" + destination_div);
 	
     var	sets = data.sets;
@@ -871,7 +871,7 @@ function create_venn_diagram(destination_div, data)
 
     // draw a path around each intersection area, add hover there as well
     var intersections = diagram.svg.select("g").selectAll("path")
-	.data(overlaps)
+	.data(overlaps);
     intersections
 	.enter()
 	.append("path")
@@ -890,7 +890,7 @@ function create_venn_diagram(destination_div, data)
 		.style("fill-opacity", .1)
 		.style("stroke-opacity", 1);
 	    tooltip.transition().style("opacity", .9);
-	    tooltip.text(d.size + " users");
+	    tooltip.text(d.size);
 	})
 	.on("mouseout", function(d, i) {
 	    d3.select(this).transition()

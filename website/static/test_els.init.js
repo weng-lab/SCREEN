@@ -4,6 +4,9 @@ var enumerations = {};
 
 var last_results = null;
 
+var venn_results = {"overlaps": [{"sets": [0, 1], "size": -1}],
+		    "sets": [{"size": -1}, {"size": -1}]};
+
 var facet_link_handlers = {
     "chromosome": function(chr) {
 	if (searchquery.chromosome != chr)
@@ -26,8 +29,17 @@ var facet_link_handlers = {
 
 var query_results_handlers = {
     "regulatory_elements": handle_regulatory_results,
-    "expression_matrix": handle_expression_matrix_results
+    "expression_matrix": handle_expression_matrix_results,
+    "venn_handler_both": venn_handler_both,
+    "venn_handler_left": venn_handler_left,
+    "venn_handler_right": venn_handler_right
 };
+
+function create_venn()
+{
+    clear_div_contents(document.getElementById("venn_div"));
+    create_venn_diagram("venn_div", venn_results);
+}
 
 function toggle_display(el, sh)
 {
@@ -39,20 +51,72 @@ function socket_message_handler(e) {
     results = JSON.parse(e.data);
     console.log(e.data);
     
-    if (results["type"] == "enumeration")
+    if (results["type"] == "enumeration") {
 	handle_enumeration(results);
-    else if (results["type"] == "query_results")
-	if (results["index"] in query_results_handlers)
-	    query_results_handlers[results["index"]](results);
+	if (results["name"] == "cell_line") {
+	    var select = document.getElementById("cell_line_dropdown");
+	    for (i in enumerations["cell_line"]) {
+		var option = document.createElement("option");
+		option.value = enumerations["cell_line"][i][0];
+		option.text = enumerations["cell_line"][i][0];
+		select.add(option);
+	    }
+	}
+    }
+    else if (results["type"] == "query_results" || "callback" in results)
+	if (results["callback"] in query_results_handlers)
+	    query_results_handlers[results["callback"]](results);
     else if (results["type"] == "suggestions")
 	handle_autocomplete_suggestions(results);
 
+}
+
+function venn_ready()
+{
+    if (venn_results.overlaps[0].size == -1) return false;
+    if (venn_results.sets[0].size == -1) return false;
+    if (venn_results.sets[1].size == -1) return false;
+    return true;
+}
+
+function reset_venn_results(cell_line_labels)
+{
+    venn_results.overlaps[0].size = -1;
+    venn_results.sets[0].size = -1;
+    venn_results.sets[1].size = -1;
+    venn_results.sets[0].label = cell_line_labels[0];
+    venn_results.sets[1].label = cell_line_labels[1];
+}
+
+function venn_handler_both(results)
+{
+    venn_results.overlaps[0].size = results.hits.total;
+    if (venn_ready()) create_venn();
+}
+
+function venn_handler_left(results)
+{
+    venn_results.sets[0].size = results.hits.total;
+    if (venn_ready()) create_venn();
+}
+
+function venn_handler_right(results)
+{
+    venn_results.sets[1].size = results.hits.total;
+    if (venn_ready()) create_venn();
 }
 
 function handle_enumeration(results)
 {
     enumerations[results["name"]] = results.datapairs;
     process_agglist(results["name"], results);
+}
+
+function refresh_venn()
+{
+    var cl = document.getElementById("cell_line_dropdown").value;
+    reset_venn_results([searchquery.cell_line, cl]);
+    request_venn(get_venn_queries([searchquery.cell_line, cl], document.getElementById("vennrank_dropdown").value));
 }
 
 function create_expression_heatmap(results)
@@ -193,6 +257,16 @@ function handle_regulatory_results(results)
         } else if (results["aggs"][aggname]["type"] == "histogram") {
             histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
         }
+    }
+
+    if (searchquery.has_cell_line_filter())
+    {
+	refresh_venn();
+	for (i in enumerations["cell_line"]) {
+	    if (enumerations["cell_line"][i] != searchquery.cell_line) {
+		break;
+	    }
+	}
     }
     
     GUI.refresh();
