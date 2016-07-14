@@ -48,7 +48,6 @@ function setupColumns(){
 function renderTable(){
     var cols = setupColumns();
     var colNames = _.keys(cols);
-    var colValues = _.values(cols);
 
     var table = '<table id="searchresults_table"><thead><tr>';
     for(i=0; i < colNames.length; i++){
@@ -67,7 +66,7 @@ function renderTable(){
 	destroy: true,
         processing: true,
         data: results.results.hits,
-        columns: colValues,
+        columns: _.values(cols),
 	order: [[1, "desc"],
 		[3, "asc"],
 		[4, "asc"]
