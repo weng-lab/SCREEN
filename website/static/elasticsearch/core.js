@@ -59,7 +59,9 @@ function get_venn_queries(cell_lines, rank_id)
     var clr1 = "ranks." + rank_id + "." + cell_lines[0] + ".rank";
     var clr2 = "ranks." + rank_id + "." + cell_lines[1] + ".rank";
     if (searchquery.eso.post_filter.bool.must[rank_map[rank_id]] == {}) return;
-    var threshold = searchquery.eso.post_filter.bool.must[rank_map[rank_id]].range[clr1].lte;
+    var srange = venn_slider.get_selection_range();
+    var threshold = srange[0];
+    var filter = srange[1];
     var retval = [{
 	"query": {
 	    "bool": {
@@ -70,13 +72,15 @@ function get_venn_queries(cell_lines, rank_id)
     }, {
 	"query": {
 	    "bool": {
-		"must": [{"range": {}}]
+		"must": [{"range": {}},
+			 {"range": {}}]
 	    }
 	}
     }, {
 	"query": {
 	    "bool": {
-		"must": [{"range": {}}]
+		"must": [{"range": {}},
+			 {"range": {}}]
 	    }
 	}
     }];
@@ -84,6 +88,8 @@ function get_venn_queries(cell_lines, rank_id)
     retval[0].query.bool.must[1].range[clr2] = {"lte": threshold};
     retval[1].query.bool.must[0].range[clr1] = {"gte": threshold};
     retval[2].query.bool.must[0].range[clr2] = {"gte": threshold};
+    retval[1].query.bool.must[1].range[clr2] = {"lte": filter};
+    retval[2].query.bool.must[1].range[clr1] = {"lte": filter};
 
     for (var i = 0; i < 3; i++) {
 	for (var j = 0; j < searchquery.eso.query.bool.must.length; j++)
