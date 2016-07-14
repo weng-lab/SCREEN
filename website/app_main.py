@@ -28,7 +28,7 @@ class MainApp():
 
     @cherrypy.expose
     def search(self, *args, **kwargs):
-        return self.mc.Query(args, kwargs)
+        return self.mc.search(args, kwargs)
 
     @cherrypy.expose
     def hexplot(self, *args, **kwargs):
