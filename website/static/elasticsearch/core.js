@@ -86,7 +86,7 @@ function get_venn_queries(cell_lines, rank_id)
     retval[2].query.bool.must[0].range[clr2] = {"gte": threshold};
 
     for (var i = 0; i < 3; i++) {
-	for (var j = 0; j < searchquery.eso.query.bool.must; j++)
+	for (var j = 0; j < searchquery.eso.query.bool.must.length; j++)
 	    retval[i].query.bool.must.push(searchquery.eso.query.bool.must[j]);
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[0]);
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[1]);
