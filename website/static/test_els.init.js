@@ -1,4 +1,3 @@
-var webSocketUrl = "ws://" + window.location.hostname + ":9000";
 var histograms = {};
 var enumerations = {};
 
@@ -49,9 +48,11 @@ function toggle_display(el, sh)
 function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
-    console.log(e.data);
     
     if (results["type"] == "enumeration") {
+    // console.log(e.data);
+
+    if (results["type"] == "enumeration")
 	handle_enumeration(results);
 	if (results["name"] == "cell_line") {
 	    var select = document.getElementById("cell_line_dropdown");
@@ -133,7 +134,7 @@ function create_expression_heatmap(results)
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
-    
+
     for (i in results.hits) {
 	result = results.hits[i]._source;
 	data.collabels.push(result.ensembl_id);
@@ -173,7 +174,7 @@ function create_expression_heatmap(results)
     }
 
     create_heatmap(data, "expression_heatmap", defaultlayout);
-    
+
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs)
@@ -188,11 +189,11 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
     var trimmed_rank = rank.split("_")[0];
     var maxes = [];
     var normalization_factor;
-    
+
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse();
     defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", "max"];
-    
+
     for (var i = 0; i < cell_line_datapairs.length; i++) {
 	maxes.push(0);
 	data.rowlabels.push(cell_line_datapairs[i][0]);
@@ -216,13 +217,13 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
 	    data.data[results.results.hits.length * i + j].value /= normalization_factor;
 	}
     }
-    
+
     for (i in results.results.hits) {
 	data.collabels.push(results.results.hits[i]._source.accession);
     }
 
     create_heatmap(data, "rank_heatmap", defaultlayout);
-    
+
 }
 
 function handle_expression_matrix_results(results)
@@ -231,11 +232,111 @@ function handle_expression_matrix_results(results)
     create_expression_heatmap(results.results);
 }
 
+function formatNumber(n) {
+    // from http://stackoverflow.com/a/13283490
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function renderTable(){
+    var colNames = ["Accession",
+	            "Confidence",
+	            "Genome",
+	            "Chr",
+	            "Start",
+	            "End"];
+
+    var cols = [
+	{ "data": "_source.accession",
+          className: "dt-right"
+        },
+	{ "data": "_source.confidence",
+          render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
+          className: "dt-right"
+        },
+	{ "data": "_source.genome",
+          className: "dt-right"
+        },
+        { "data": "_source.position.chrom",
+          className: "dt-right" },
+	{ "data": "_source.position.start",
+          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+          className: "dt-right"
+        },
+        { "data": "_source.position.end",
+          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+          className: "dt-right"
+        }
+    ];
+
+    if(searchquery.has_cell_line_filter()){
+        var cellType = searchquery.cell_line;
+        cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("Enhancer rank");
+        cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("Promoter rank");
+        cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("DNase rank");
+        cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank",
+                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
+                    className: "dt-right"
+                   } );
+        colNames.push("CTCF rank");
+    }
+
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
+    colNames.push("UCSC");
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
+    colNames.push("WashU");
+    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
+                "defaultContent": '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
+    colNames.push("Ensembl");
+
+    var table = '<table id="searchresults_table"><thead><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></thead><tfoot><tr>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
+    }
+    table += '</tr></tfoot></table>';
+
+    $("#searchresults_div").html(table);
+    var rtable = $("#searchresults_table");
+
+    var dtable = rtable.DataTable( {
+	destroy: true,
+        "processing": true,
+        "data": results.results.hits,
+        "aoColumns": cols,
+	"order": [[ 1, "desc" ],
+		  [3, "asc"],
+		  [4, "asc"]
+		 ]
+    } );
+
+    $('#searchresults_table tbody').on( 'click', 'button', function () {
+        var data = dtable.row( $(this).parents('tr') ).data();
+        //console.log(data);
+    } );
+}
+
 function handle_regulatory_results(results)
 {
-    
+
     last_results = results;
-    
+
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
@@ -259,6 +360,7 @@ function handle_regulatory_results(results)
         }
     }
 
+<<<<<<< HEAD
     if (searchquery.has_cell_line_filter())
     {
 	refresh_venn();
@@ -269,29 +371,11 @@ function handle_regulatory_results(results)
 	}
     }
     
+=======
+>>>>>>> 54096c406f145b2dc5849150381745160bf17904
     GUI.refresh();
 
-    var rtable = $("#searchresults_table");
-    rtable.DataTable( {
-	destroy: true,
-        "language": {
-            "thousands": ","
-        },
-        "processing": true,
-        "data": results.results.hits,
-        "columns": [
-	    { "data": "_source.accession" },
-	    { "data": "_source.confidence" },
-	    { "data": "_source.genome" },
-            { "data": "_source.position.chrom" },
-	    { "data": "_source.position.start" },
-	    { "data": "_source.position.end" }
-        ],
-	"order": [[ 1, "desc" ],
-		  [3, "asc"],
-		  [4, "asc"]
-		 ]
-    } );
+    renderTable();
 
     var genelist = [];
     for (i in results.results.hits) {
