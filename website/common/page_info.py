@@ -41,10 +41,11 @@ class PageInfoMain:
         print("kwargs", kwargs)
         retval.update({"parsed" : ""})
 
+        parsed = ""
         if "q" in kwargs:
             p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
-            retval.update({"parsed" : json.dumps(parsed)})
+        retval.update({"parsed" : json.dumps(parsed)})
 
         retval.update({"facetlist": [{"id": "assembly",
                                       "name": "assembly",
