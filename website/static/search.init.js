@@ -219,29 +219,7 @@ function handle_expression_matrix_results(results){
     create_expression_heatmap(results.results);
 }
 
-function genStrCol(field){
-    return { data: field, className: "dt-right"};
-}
-
-function genFloatCol(field){
-    return { data: field, className: "dt-right",
-             render: $.fn.dataTable.render.number( ',', '.', 1, '' ) };
-}
-
-function genIntCol(field){
-    return { data: field, className: "dt-right",
-             render: $.fn.dataTable.render.number( ',', '.', 0, '' ) };
-}
-
-function genButtonCol(name){
-    return { "targets": -1, "data": null, className: "dt-right", "orderable": false,
-             "defaultContent":
-             '<button type="button" class="btn btn-success btn-xs">' + name + '</button>' };
-}
-
-function handle_regulatory_results(results)
-{
-
+function handle_regulatory_results(results){
     last_results = results;
 
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
