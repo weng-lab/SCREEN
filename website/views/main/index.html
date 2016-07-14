@@ -1,70 +1,61 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
-<script>
-{% if production -%}
-var webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
-{% else -%}
-var webSocketUrl = "ws://" + window.location.hostname + ":9000";
-{% endif -%}
-console.log(webSocketUrl);
-</script>
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container text-center">
+    <br>
+    <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
+    <br>
+    <form action="testsearch" method="get" id="searchform">
+      <input class="searchbox" type="text" size="125" name="q" id="q" value="GM12878 chr1:1000-23000000">
+      <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
+    </form>
+    <br>
+</i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
+</div>
+</div>
+
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Heading</h2>
+      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>Heading</h2>
+      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+      <h2>Heading</h2>
+      <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+    </div>
+  </div>
+
+  <hr>
+
+  <footer>
+    <p>&copy; 2015 Company, Inc.</p>
+  </footer>
+</div> <!-- /container -->
 
 {{ hh.jsVer(version, "static/common.js") }}
 <script>
+  var WebSocketUrl = {{ webSocketUrl }};
   FBVERSION.init("/{{version}}");
 </script>
+
 {{ hh.jsVer(version, "static/elasticsearch/core.js") }}
-{{ hh.jsVer(version, "static/client.js") }}
 {{ hh.jsVer(version, "static/controls/autocomplete.js") }}
 {{ hh.jsVer(version, "static/index.init.js") }}
 
-<script>setupSocket();</script>
-
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container text-center">
-        <br>
-        <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
-        <br>
-	<form action="testsearch" method="get" id="searchform">
-          <input class="searchbox" type="text" size="125" name="q" id="q" value="GM12878 chr1:1000-23000000">
-          <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
-	</form>
-        <br>
-        </i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
-      </div>
-    </div>
-
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-      </div>
-
-      <hr>
-
-      <footer>
-        <p>&copy; 2015 Company, Inc.</p>
-      </footer>
-    </div> <!-- /container -->
-
-    <script>
-      bind_autocomplete_textbox("q", ["gene_aliases", "snp_aliases"]);
-    </script>
+<script>
+  setupSocket();
+  bind_autocomplete_textbox("q", ["gene_aliases", "snp_aliases"]);
+</script>
 
 {% include '_footer.html' -%}
