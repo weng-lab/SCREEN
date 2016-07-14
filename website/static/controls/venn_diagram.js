@@ -830,8 +830,8 @@ function create_venn_diagram(destination_div, data)
 {
 
     var diagram;
-    var tooltip = d3.select("body").append("div")
-	            .attr("class", "venntooltip");
+
+    var tooltip = d3.select("#venntooltip");
     var elem = d3.select("#" + destination_div);
 	
     var	sets = data.sets;

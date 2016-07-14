@@ -111,7 +111,7 @@ venn_slider = create_range_slider("venn_range_slider",
 				  100000,
 				  document.getElementById("venn_range_textbox"),
 				  refresh_venn,
-				  refresh_venn);
+				  null);
 
 $("#heatmap_dropdown").on("change", function(e) {
     clear_div_contents(document.getElementById("rank_heatmap"));
