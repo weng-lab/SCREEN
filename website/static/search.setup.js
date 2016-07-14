@@ -102,7 +102,7 @@ $.each(RankList, function(idx, facet) {
         create_range_slider(facet.id + "_range_slider",
                             2000000,
                             document.getElementById(facet.id + "_textbox"),
-				update_rank_filter[facet.id],
+			    update_rank_filter[facet.id],
                             update_histogram_selection[facet.id]);
     GUI.facets[facet.id].id = facet.id;
 });
