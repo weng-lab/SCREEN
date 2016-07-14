@@ -69,9 +69,8 @@ function renderTable(){
     var cols = setupColumns();
 
     $("#searchresults_div").html(makeEmptyTable(cols));
-    var rtable = $("#searchresults_table");
 
-    var dtable = rtable.DataTable( {
+    var dtable = $("#searchresults_table").DataTable( {
 	destroy: true,
         processing: true,
         data: results.results.hits,
