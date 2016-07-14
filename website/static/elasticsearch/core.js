@@ -21,6 +21,13 @@ var cell_line_request = {"action": "enumerate",
 
 var autocomplete_callbacks = {};
 
+var rank_map = {
+    "promoter": PROMOTER_RANKS,
+    "enhancer": ENHANCER_RANKS,
+    "ctcf": CTCF_RANKS,
+    "dnase": DNASE_RANKS
+};
+
 function autocomplete_query(q, indeces, callback_f)
 {
     var ctime = (new Date()).getTime();
@@ -29,6 +36,59 @@ function autocomplete_query(q, indeces, callback_f)
 	    "indeces": indeces,
 	    "q": q,
 	    "callback": ctime};
+};
+
+function request_venn(venn_queries)
+{
+    sendText(JSON.stringify({"action": "query",
+			     "index": "regulatory_elements",
+			     "callback": "venn_handler_both",
+			     "object": venn_queries[0]}));
+    sendText(JSON.stringify({"action": "query",
+			     "index": "regulatory_elements",
+			     "callback": "venn_handler_left",
+			     "object": venn_queries[2]}));
+    sendText(JSON.stringify({"action": "query",
+			     "index": "regulatory_elements",
+			     "callback": "venn_handler_right",
+			     "object": venn_queries[1]}));
+};
+
+function get_venn_queries(cell_lines, rank_id)
+{
+    var clr1 = "ranks." + rank_id + "." + cell_lines[0] + ".rank";
+    var clr2 = "ranks." + rank_id + "." + cell_lines[1] + ".rank";
+    if (searchquery.eso.post_filter.bool.must[rank_map[rank_id]] == {}) return;
+    var threshold = searchquery.eso.post_filter.bool.must[rank_map[rank_id]].range[clr1].lte;
+    var retval = [{
+	"query": {
+	    "bool": {
+		"must": [{"range": {}},
+			 {"range": {}}]
+	    }
+	}
+    }, {
+	"query": {
+	    "bool": {
+		"must": [{"range": {}},
+			 {"range": {}}]
+	    }
+	}
+    }, {
+	"query": {
+	    "bool": {
+		"must": [{"range": {}},
+			 {"range": {}}]		
+	    }
+	}
+    }];
+    retval[0].query.bool.must[0].range[clr1] = {"lte": threshold};
+    retval[0].query.bool.must[1].range[clr2] = {"lte": threshold};
+    retval[1].query.bool.must[0].range[clr1] = {"gte": threshold};
+    retval[1].query.bool.must[1].range[clr2] = {"lte": threshold};
+    retval[2].query.bool.must[0].range[clr1] = {"lte": threshold};
+    retval[2].query.bool.must[1].range[clr2] = {"gte": threshold};
+    return retval;
 };
 
 function rank_aggs(cell_line) {
@@ -277,6 +337,7 @@ searchquery = new Query();
 function perform_search()
 {
     sendText(JSON.stringify({"action": "query",
+			     "callback": "regulatory_elements",
 			     "index": "regulatory_elements",
 			     "object": searchquery.eso}));
 };
@@ -284,6 +345,7 @@ function perform_search()
 function perform_gene_expression_search(obj)
 {
     sendText(JSON.stringify({"action": "query",
+			     "callback": "expression_matrix",
 			     "index": "expression_matrix",
 			     "object": obj}));
 };

@@ -56,10 +56,10 @@ function play(parsed){
     var coord = parsed["coord"];
     var range_preset = parsed["range_preset"];
 
+    request_cell_lines();
+    
     if(ct){
 	searchquery.set_cell_line_filter(parsed["cellType"]);
-    } else {
-	request_cell_lines();
     }
     if(coord){
 	searchquery.set_coordinate_filter(coord["chrom"], coord["start"], coord["end"]);
