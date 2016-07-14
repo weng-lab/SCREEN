@@ -835,7 +835,7 @@ function create_venn_diagram(destination_div, data)
     var elem = d3.select("#" + destination_div);
 	
     var	sets = data.sets;
-    var	overlaps = data.overlaps
+    var	overlaps = data.overlaps;
 
     var vennObj = venn.venn(sets, overlaps);
     diagram = venn.drawD3Diagram(elem, vennObj,
