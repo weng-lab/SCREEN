@@ -66,8 +66,6 @@
 	    </select>
 	    <p>Choose the rank ranges to display in the diagram.
 	    <p>Ranks below the lower bound in both cell lines populate the overlap region; ranks above the upper bound in either cell line are excluded from the diagram.
-	    <div id="venntooltip" class="venntooltip">
-            </div>
 	    <input type="text" id="venn_range_textbox" value="10000 - 40000">
 	    <div style="width:50%" id="venn_range_slider">
             <div style="width:1000px;height:1000px" class="venn" id="venn_div">
@@ -78,6 +76,9 @@
       </div>
     </div>
   </div>
+</div>
+
+<div id="venntooltip" class="venntooltip">
 </div>
 
 {{ hh.jsVer(version, "static/common.js") }}
