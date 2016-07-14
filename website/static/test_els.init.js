@@ -48,7 +48,7 @@ function toggle_display(el, sh)
 function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
-    
+
     if (results["type"] == "enumeration") {
     // console.log(e.data);
 
@@ -270,6 +270,15 @@ function renderTable(){
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
+        cols.push( {"data" : "_source.genes.nearest-all.gene-id",
+                    className: "dt-right"
+                   } );
+        colNames.push("Nearest gene");
+        cols.push( {"data" : "_source.genes.nearest-pc.gene-id",
+                    className: "dt-right"
+                   } );
+        colNames.push("Nearest protein-coding gene");
+
         cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
                     render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
                     className: "dt-right"
@@ -359,7 +368,7 @@ function handle_regulatory_results(results)
             histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
         }
     }
-    
+
     GUI.refresh();
 
     renderTable();
