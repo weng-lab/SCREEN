@@ -359,20 +359,7 @@ function handle_regulatory_results(results)
             histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
         }
     }
-
-<<<<<<< HEAD
-    if (searchquery.has_cell_line_filter())
-    {
-	refresh_venn();
-	for (i in enumerations["cell_line"]) {
-	    if (enumerations["cell_line"][i] != searchquery.cell_line) {
-		break;
-	    }
-	}
-    }
     
-=======
->>>>>>> 54096c406f145b2dc5849150381745160bf17904
     GUI.refresh();
 
     renderTable();
@@ -384,5 +371,15 @@ function handle_regulatory_results(results)
 	genelist.push(result.genes["nearest-all"]["gene-id"]);
     }
     perform_gene_expression_search(gene_expression_query(genelist));
+
+    if (searchquery.has_cell_line_filter())
+    {
+	refresh_venn();
+	for (i in enumerations["cell_line"]) {
+	    if (enumerations["cell_line"][i] != searchquery.cell_line) {
+		break;
+	    }
+	}
+    }
 
 }

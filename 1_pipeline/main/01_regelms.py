@@ -37,7 +37,7 @@ def hexplot(dx, dy, outfnp):
     pyplot.axis([x.min(), x.max(), y.min(), y.max()])
     
     cb = pyplot.colorbar()
-    cb.set_label('occurrences')
+    cb.set_label('log occurrences')
     pyplot.savefig(outfnp)
     pyplot.clf()
 
@@ -57,13 +57,17 @@ def main():
                 for cell_line in d["ranks"][rank]:
                     if cell_line not in ranks[rank]: ranks[rank][cell_line] = []
                     ranks[rank][cell_line].append(d["ranks"][rank][cell_line]["rank"])
+            for cell_line in d["ranks"]["dnase"]:
+                ranks["confidence"][cell_line].append(d["confidence"])
     for i in range(0, len(ranks)):
         for j in range(i + 1, len(ranks)):
             for cell_line in ranks[keys[i]]:
                 ofnp = os.path.join(onp, cell_line, "%s_x_%s.png" % (keys[i], keys[j]))
                 print("plotting %s" % ofnp)
                 hexplot(ranks[keys[i]][cell_line], ranks[keys[j]][cell_line], ofnp)
-    print("wrote to %s" % onp)
+        for cell_line in ranks[keys[i]]:
+            hexplot(ranks[keys[i]][cell_line], ranks["confidence"], ofnp)
+        print("wrote to %s" % onp)
 
 if __name__ == "__main__":
     sys.exit(main())
