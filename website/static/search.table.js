@@ -45,8 +45,7 @@ function setupColumns(){
     return ret;
 }
 
-function renderTable(){
-    var cols = setupColumns();
+function makeTable(cols){
     var colNames = _.keys(cols);
 
     var frag = document.createDocumentFragment();
@@ -63,7 +62,13 @@ function renderTable(){
     table.id = "searchresults_table";
     table.appendChild(thead);
 
-    $("#searchresults_div").html(table);
+    return table;
+}
+
+function renderTable(){
+    var cols = setupColumns();
+
+    $("#searchresults_div").html(makeTable(cols));
     var rtable = $("#searchresults_table");
 
     var dtable = rtable.DataTable( {
