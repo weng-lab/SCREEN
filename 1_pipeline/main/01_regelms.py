@@ -70,6 +70,7 @@ def main():
             ofnp = os.path.join(onp, cell_line, "confidence_x_%s.png" % keys[i])
             print("producing hexplot for values at %s" % ofnp)
             print("lengths of arrays: %d, %d" % (len(ranks[keys[i]][cell_line]), len(ranks["confidence"])))
+            print("first 10: ", ranks["confidence"][:10])
             hexplot(ranks[keys[i]][cell_line], ranks["confidence"], ofnp)
         print("wrote to %s" % onp)
 
