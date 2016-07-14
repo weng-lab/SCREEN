@@ -7,7 +7,7 @@ function ae(a1, a2)
 
 function process_histogram_result(control_prefix, result)
 {
-    
+
     if (!(control_prefix in GUI.facets)) {
 	console.log(control_prefix + " is not in the facets list");
 	return;
@@ -18,14 +18,14 @@ function process_histogram_result(control_prefix, result)
 	console.log(control_prefix + " is in facet list but does not appear to be a range slider");
 	return;
     }
-    
+
     var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
     var nrange = [result["minvalue"], nmax];
     if (!ae(nrange, range_facet.range_slider.get_range())) {
 	range_facet.range_slider.set_range(...nrange);
 	range_facet.range_slider.refresh_selection(...nrange);
     }
-    
+
     coordinates = range_facet.range_slider.get_selection_range();
     if (range_facet.histogram)
 	range_facet.histogram.reset(result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
@@ -33,7 +33,7 @@ function process_histogram_result(control_prefix, result)
     else
 	range_facet.histogram = create_histogram(document.getElementById(control_prefix + "_histogram"), result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
 						 {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
-    
+
 }
 
 function process_agglist(facetbox_id, agglist)
@@ -87,7 +87,8 @@ function add_filterresult(id, result)
     {
 	n_div.className = "result_row_selected"
 	rght_text = document.createElement("img");
-	rght_text.src = "/ver4/search/static/x.png";
+        var url = [Ver(), "static", "x.png"].join('/');
+	rght_text.src = url;
     }
     else
 	rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
@@ -100,5 +101,5 @@ function add_filterresult(id, result)
     n_href.appendChild(n_div);
 
     facetbox_div.appendChild(n_href);
-    
+
 }

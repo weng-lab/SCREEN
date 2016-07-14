@@ -32,6 +32,10 @@
 
 </script>
 
+{{ hh.jsVer(version, "static/common.js") }}
+<script>
+  FBVERSION.init("/{{version}}");
+</script>
 {{ hh.jsVer(version, "static/client.js") }}
 {{ hh.jsVer(version, "static/elasticsearch/core.js") }}
 {{ hh.jsVer(version, "static/constants/hg19.js") }}
