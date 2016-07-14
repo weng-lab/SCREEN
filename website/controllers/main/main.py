@@ -17,7 +17,7 @@ class MainController:
 
     def search(self, args, kwargs):
         pageInfo = PageInfoMain(self.es, self.version, self.webSocketUrl)
-        return self.t('main/search', **pageInfo.testqueryPage(args, kwargs))
+        return self.t('main/search', **pageInfo.searchPage(args, kwargs))
 
     def Overlap(self, chrom, start, end):
         pageInfo = PageInfoMain(self.es, self.version, self.webSocketUrl)
