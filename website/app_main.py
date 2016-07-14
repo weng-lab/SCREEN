@@ -27,16 +27,12 @@ class MainApp():
         return self.mc.Overlap(chrom, int(start), int(end))
 
     @cherrypy.expose
-    def testsearch(self, *args, **kwargs):
-        return self.mc.TestQuery(args, kwargs)
+    def search(self, *args, **kwargs):
+        return self.mc.Query(args, kwargs)
 
     @cherrypy.expose
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
-
-    @cherrypy.expose
-    def search(self, q):
-        return self.mc.Query(q)
 
 class MainAppRunner:
     def __init__(self, es, devMode, webSocketUrl):

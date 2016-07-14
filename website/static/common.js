@@ -20,7 +20,7 @@ function Ver() {
 var socket = null;
 var isopen = false;
 
-var setupSocket = function(fonopen, fargs) {
+var setupSocket = function(fonopen = null, fargs = null) {
 
     socket = new WebSocket(WebSocketUrl);
     socket.binaryType = "arraybuffer";
@@ -28,7 +28,9 @@ var setupSocket = function(fonopen, fargs) {
     socket.onopen = function() {
         console.log("Connected to " + WebSocketUrl);
         isopen = true;
-        fonopen(fargs);
+        if(fonopen){
+            fonopen(fargs);
+        }
     };
 
     socket.onmessage = function(e){
