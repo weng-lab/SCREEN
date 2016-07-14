@@ -48,7 +48,7 @@ function toggle_display(el, sh)
 function socket_message_handler(e) {
 
     results = JSON.parse(e.data);
-    
+
     if (results["type"] == "enumeration") {
     // console.log(e.data);
 
@@ -369,7 +369,6 @@ function handle_regulatory_results(results)
         }
     }
 
-<<<<<<< HEAD
     if (searchquery.has_cell_line_filter())
     {
 	refresh_venn();
@@ -379,9 +378,7 @@ function handle_regulatory_results(results)
 	    }
 	}
     }
-    
-=======
->>>>>>> 54096c406f145b2dc5849150381745160bf17904
+
     GUI.refresh();
 
     renderTable();
