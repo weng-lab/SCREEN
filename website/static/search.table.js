@@ -18,7 +18,7 @@ function genButtonCol(name){
              '<button type="button" class="btn btn-success btn-xs">' + name + '</button>' };
 }
 
-function renderTable(){
+function setupColumns(){
     var colNames = ["Accession",
 	            "Confidence",
 	            "Genome",
@@ -58,13 +58,20 @@ function renderTable(){
     cols.push(genButtonCol("Ensembl"));
     colNames.push("Ensembl");
 
+    return {names : colNames,
+            values : cols};
+}
+
+function renderTable(){
+    var colInfo = setupColumns();
+
     var table = '<table id="searchresults_table"><thead><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
+    for(i=0; i < colInfo.names.length; i++){
+        table += '<th>' + colInfo.names[i] + '</th>';
     }
     table += '</tr></thead><tfoot><tr>';
-    for(i=0; i < colNames.length; i++){
-        table += '<th>' + colNames[i] + '</th>';
+    for(i=0; i < colInfo.names.length; i++){
+        table += '<th>' + colInfo.names[i] + '</th>';
     }
     table += '</tr></tfoot></table>';
 
@@ -73,13 +80,13 @@ function renderTable(){
 
     var dtable = rtable.DataTable( {
 	destroy: true,
-        "processing": true,
-        "data": results.results.hits,
-        "aoColumns": cols,
-	"order": [[ 1, "desc" ],
-		  [3, "asc"],
-		  [4, "asc"]
-		 ]
+        processing: true,
+        data: results.results.hits,
+        columns: colInfo.values,
+	order: [[1, "desc"],
+		[3, "asc"],
+		[4, "asc"]
+	       ]
     } );
 
     $('#searchresults_table tbody').on( 'click', 'button', function () {
