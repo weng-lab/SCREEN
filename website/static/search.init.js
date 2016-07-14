@@ -34,8 +34,7 @@ var query_results_handlers = {
     "venn_handler_right": venn_handler_right
 };
 
-function create_venn()
-{
+function create_venn(){
     clear_div_contents(document.getElementById("venn_div"));
     venn_results.sets[0].size += venn_results.overlaps[0].size;
     venn_results.sets[1].size += venn_results.overlaps[0].size;
@@ -43,13 +42,11 @@ function create_venn()
     create_venn_diagram("venn_div", venn_results);
 }
 
-function toggle_display(el, sh)
-{
+function toggle_display(el, sh){
     el.style.display = (sh ? "block" : "none");
 }
 
 function socket_message_handler(e) {
-
     results = JSON.parse(e.data);
 
     if (results["type"] == "enumeration") {
@@ -75,16 +72,14 @@ function socket_message_handler(e) {
 
 }
 
-function venn_ready()
-{
+function venn_ready(){
     if (venn_results.overlaps[0].size == -1) return false;
     if (venn_results.sets[0].size == -1) return false;
     if (venn_results.sets[1].size == -1) return false;
     return true;
 }
 
-function reset_venn_results(cell_line_labels)
-{
+function reset_venn_results(cell_line_labels){
     venn_results.overlaps[0].size = -1;
     venn_results.sets[0].size = -1;
     venn_results.sets[1].size = -1;
@@ -92,40 +87,33 @@ function reset_venn_results(cell_line_labels)
     venn_results.sets[1].label = cell_line_labels[1];
 }
 
-function venn_handler_both(results)
-{
+function venn_handler_both(results){
     venn_results.overlaps[0].size = results.hits.total;
     if (venn_ready()) create_venn();
 }
 
-function venn_handler_left(results)
-{
+function venn_handler_left(results){
     venn_results.sets[0].size = results.hits.total;
     if (venn_ready()) create_venn();
 }
 
-function venn_handler_right(results)
-{
+function venn_handler_right(results){
     venn_results.sets[1].size = results.hits.total;
     if (venn_ready()) create_venn();
 }
 
-function handle_enumeration(results)
-{
+function handle_enumeration(results){
     enumerations[results["name"]] = results.datapairs;
     process_agglist(results["name"], results);
 }
 
-function refresh_venn()
-{
+function refresh_venn(){
     var cl = document.getElementById("cell_line_dropdown").value;
     reset_venn_results([searchquery.cell_line, cl]);
     request_venn(get_venn_queries([searchquery.cell_line, cl], document.getElementById("vennrank_dropdown").value));
 }
 
-function create_expression_heatmap(results)
-{
-
+function create_expression_heatmap(results){
     var data = {
 	"collabels": [],
 	"rowlabels": [],
@@ -177,12 +165,9 @@ function create_expression_heatmap(results)
     }
 
     create_heatmap(data, "expression_heatmap", defaultlayout);
-
 }
 
-function create_rank_heatmap(results, rank, cell_line_datapairs)
-{
-
+function create_rank_heatmap(results, rank, cell_line_datapairs){
     var data = {
 	"collabels": [],
 	"rowlabels": [],
@@ -229,15 +214,29 @@ function create_rank_heatmap(results, rank, cell_line_datapairs)
 
 }
 
-function handle_expression_matrix_results(results)
-{
+function handle_expression_matrix_results(results){
     clear_div_contents(document.getElementById("expression_heatmap"));
     create_expression_heatmap(results.results);
 }
 
-function formatNumber(n) {
-    // from http://stackoverflow.com/a/13283490
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function genStrCol(field){
+    return { data: field, className: "dt-right"};
+}
+
+function genFloatCol(field){
+    return { data: field, className: "dt-right",
+             render: $.fn.dataTable.render.number( ',', '.', 1, '' ) };
+}
+
+function genIntCol(field){
+    return { data: field, className: "dt-right",
+             render: $.fn.dataTable.render.number( ',', '.', 0, '' ) };
+}
+
+function genButtonCol(name){
+    return { "targets": -1, "data": null, className: "dt-right", "orderable": false,
+             "defaultContent":
+             '<button type="button" class="btn btn-success btn-xs">' + name + '</button>' };
 }
 
 function renderTable(){
@@ -248,70 +247,36 @@ function renderTable(){
 	            "Start",
 	            "End"];
 
-    var cols = [
-	{ "data": "_source.accession",
-          className: "dt-right"
-        },
-	{ "data": "_source.confidence",
-          render: $.fn.dataTable.render.number( ',', '.', 1, '' ),
-          className: "dt-right"
-        },
-	{ "data": "_source.genome",
-          className: "dt-right"
-        },
-        { "data": "_source.position.chrom",
-          className: "dt-right" },
-	{ "data": "_source.position.start",
-          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-          className: "dt-right"
-        },
-        { "data": "_source.position.end",
-          render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-          className: "dt-right"
-        }
-    ];
+    var cols = [ genStrCol("_source.accession"),
+                 genFloatCol("_source.confidence"),
+                 genStrCol("_source.genome"),
+                 genStrCol("_source.position.chrom"),
+                 genIntCol("_source.position.start"),
+                 genIntCol("_source.position.end")
+               ];
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
-        cols.push( {"data" : "_source.genes.nearest-all.gene-id",
-                    className: "dt-right"
-                   } );
+        cols.push(genStrCol("_source.genes.nearest-all.gene-id"));
         colNames.push("Nearest gene");
-        cols.push( {"data" : "_source.genes.nearest-pc.gene-id",
-                    className: "dt-right"
-                   } );
+        cols.push(genStrCol("_source.genes.nearest-pc.gene-id"));
         colNames.push("Nearest protein-coding gene");
 
-        cols.push( {"data" : "_source.ranks.enhancer." + cellType + ".rank",
-                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-                    className: "dt-right"
-                   } );
+        cols.push(genIntCol("_source.ranks.enhancer." + cellType + ".rank"));
         colNames.push("Enhancer rank");
-        cols.push( {"data" : "_source.ranks.promoter." + cellType + ".rank",
-                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-                    className: "dt-right"
-                   } );
+        cols.push(genIntCol("_source.ranks.promoter." + cellType + ".rank"));
         colNames.push("Promoter rank");
-        cols.push( {"data" : "_source.ranks.dnase." + cellType + ".rank",
-                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-                    className: "dt-right"
-                   } );
+        cols.push(genIntCol("_source.ranks.dnase." + cellType + ".rank"));
         colNames.push("DNase rank");
-        cols.push( {"data" : "_source.ranks.ctcf." + cellType + ".rank",
-                    render: $.fn.dataTable.render.number( ',', '.', 0, '' ),
-                    className: "dt-right"
-                   } );
+        cols.push(genIntCol("_source.ranks.ctcf." + cellType + ".rank"));
         colNames.push("CTCF rank");
     }
 
-    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
-                "defaultContent": '<button type="button" class="btn btn-success btn-xs">UCSC</button>' });
+    cols.push(genButtonCol("UCSC"));
     colNames.push("UCSC");
-    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
-                "defaultContent": '<button type="button" class="btn btn-success btn-xs">WashU</button>' });
+    cols.push(genButtonCol("WashU"));
     colNames.push("WashU");
-    cols.push({ "targets": -1, "data": null, className: "dt-right", "orderable": false,
-                "defaultContent": '<button type="button" class="btn btn-success btn-xs">Ensembl</button>' });
+    cols.push(genButtonCol("Ensembl"))
     colNames.push("Ensembl");
 
     var table = '<table id="searchresults_table"><thead><tr>';
