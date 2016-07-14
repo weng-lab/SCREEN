@@ -42,9 +42,9 @@ class PageInfoMain:
         if "q" in kwargs:
             p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
-        retval.update({"parsed" : json.dumps(parsed)})
 
-        retval.update({"facetlist": [{"id": "assembly",
+        retval.update({"parsed" : json.dumps(parsed),
+                       "facetlist": [{"id": "assembly",
                                       "name": "assembly",
                                       "type": "list",
                                       "visible": True},
