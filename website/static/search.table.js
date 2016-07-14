@@ -19,59 +19,43 @@ function genButtonCol(name){
 }
 
 function setupColumns(){
-    var colNames = ["Accession",
-	            "Confidence",
-	            "Genome",
-	            "Chr",
-	            "Start",
-	            "End"];
-
-    var cols = [ genStrCol("_source.accession"),
-                 genFloatCol("_source.confidence"),
-                 genStrCol("_source.genome"),
-                 genStrCol("_source.position.chrom"),
-                 genIntCol("_source.position.start"),
-                 genIntCol("_source.position.end")
-               ];
+    var ret = {Accession : genStrCol("_source.accession"),
+	       Confidence : genFloatCol("_source.confidence"),
+               Genome : genStrCol("_source.genome"),
+	       Chr : genStrCol("_source.position.chrom"),
+               Start : genIntCol("_source.position.start"),
+	       End : genIntCol("_source.position.end")}
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
-        cols.push(genStrCol("_source.genes.nearest-all.gene-id"));
-        colNames.push("Nearest gene");
-        cols.push(genStrCol("_source.genes.nearest-pc.gene-id"));
-        colNames.push("Nearest protein-coding gene");
-
-        cols.push(genIntCol("_source.ranks.enhancer." + cellType + ".rank"));
-        colNames.push("Enhancer rank");
-        cols.push(genIntCol("_source.ranks.promoter." + cellType + ".rank"));
-        colNames.push("Promoter rank");
-        cols.push(genIntCol("_source.ranks.dnase." + cellType + ".rank"));
-        colNames.push("DNase rank");
-        cols.push(genIntCol("_source.ranks.ctcf." + cellType + ".rank"));
-        colNames.push("CTCF rank");
+        var ret2 = {
+            "Nearest gene" : genStrCol("_source.genes.nearest-all.gene-id"),
+            "Nearest protein-coding gene" : genStrCol("_source.genes.nearest-pc.gene-id"),
+            "Enhancer rank" : genIntCol("_source.ranks.enhancer." + cellType + ".rank"),
+            "Promoter rank" : genIntCol("_source.ranks.promoter." + cellType + ".rank"),
+            "DNase rank" : genIntCol("_source.ranks.dnase." + cellType + ".rank"),
+            "CTCF rank" : genIntCol("_source.ranks.ctcf." + cellType + ".rank")};
+        _.extend(ret, ret2);
     }
 
-    cols.push(genButtonCol("UCSC"));
-    colNames.push("UCSC");
-    cols.push(genButtonCol("WashU"));
-    colNames.push("WashU");
-    cols.push(genButtonCol("Ensembl"));
-    colNames.push("Ensembl");
+    ret.UCSC = genButtonCol("UCSC");
+    ret.WashU = genButtonCol("WashU");
+    ret.Ensembl = genButtonCol("Ensembl");
 
-    return {names : colNames,
-            values : cols};
+    return ret;
 }
 
 function renderTable(){
-    var colInfo = setupColumns();
+    var cols = setupColumns();
+    var colNames = _.keys(cols);
 
     var table = '<table id="searchresults_table"><thead><tr>';
-    for(i=0; i < colInfo.names.length; i++){
-        table += '<th>' + colInfo.names[i] + '</th>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
     }
     table += '</tr></thead><tfoot><tr>';
-    for(i=0; i < colInfo.names.length; i++){
-        table += '<th>' + colInfo.names[i] + '</th>';
+    for(i=0; i < colNames.length; i++){
+        table += '<th>' + colNames[i] + '</th>';
     }
     table += '</tr></tfoot></table>';
 
@@ -82,7 +66,7 @@ function renderTable(){
 	destroy: true,
         processing: true,
         data: results.results.hits,
-        columns: colInfo.values,
+        columns: _.values(cols),
 	order: [[1, "desc"],
 		[3, "asc"],
 		[4, "asc"]
