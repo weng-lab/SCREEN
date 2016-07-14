@@ -19,7 +19,8 @@ import numpy
 ranks = {"dnase": {},
          "promoter": {},
          "ctcf": {},
-         "enhancer": {} }
+         "enhancer": {},
+         "confidence": []}
 
 keys = ["dnase", "promoter", "ctcf", "enhancer"]
 
@@ -54,18 +55,19 @@ def main():
             i += 1
             d = json.loads(line)
             for rank in ranks:
+                if rank == "confidence": break
                 for cell_line in d["ranks"][rank]:
                     if cell_line not in ranks[rank]: ranks[rank][cell_line] = []
                     ranks[rank][cell_line].append(d["ranks"][rank][cell_line]["rank"])
-            for cell_line in d["ranks"]["dnase"]:
-                ranks["confidence"][cell_line].append(d["confidence"])
-    for i in range(0, len(ranks)):
-        for j in range(i + 1, len(ranks)):
+            ranks["confidence"].append(d["confidence"])
+    for i in range(0, len(ranks) - 1):
+        for j in range(i + 1, len(ranks) - 1):
             for cell_line in ranks[keys[i]]:
                 ofnp = os.path.join(onp, cell_line, "%s_x_%s.png" % (keys[i], keys[j]))
                 print("plotting %s" % ofnp)
                 hexplot(ranks[keys[i]][cell_line], ranks[keys[j]][cell_line], ofnp)
         for cell_line in ranks[keys[i]]:
+            ofnp = os.path.join(onp, cell_line, "confidence_x_%s.png" % keys[i])
             hexplot(ranks[keys[i]][cell_line], ranks["confidence"], ofnp)
         print("wrote to %s" % onp)
 
