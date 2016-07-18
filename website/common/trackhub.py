@@ -7,7 +7,6 @@ from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTra
 from enums import AssayType
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
-from common.web_epigenomes import WebEpigenome
 from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
 from common.site_info import SiteInfos
 
@@ -16,31 +15,10 @@ from utils import Utils
 from files_and_paths import Dirs
 
 class TrackHub(object):
-    def __init__(self, args, epigenomes, urlStatus, row):
-        self.assembly = row["assembly"]
-        self.assays = row["assays"]
-        self.tissue_ids = json.loads(row["tissues"])
-        self.loci = row["loci"]
-        self.assayType = row["assayType"]
-        self.hubNum = row["hubNum"]
-
+    def __init__(self, args, reAccession):
         self.args = args
-        self.epigenomes = epigenomes[self.assayType]
-        self.urlStatus = urlStatus
-        self.histMark = SiteInfos[self.assayType].histMark
-
+        self.reAccession = reAccession
         self.priority = 1
-
-    def Custom(self):
-        lines = []
-        #lines += ["browser hide all"]
-        #lines += ["browser pack knownGene refGene ensGene"]
-        #lines += ["browser dense snp128"]
-
-        f = StringIO.StringIO()
-        map(lambda line: f.write(line + "\n"), lines)
-
-        return f.getvalue()
 
     def ParsePath(self, path):
         if not path:
@@ -236,104 +214,3 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             raise Exception("unexpected exp")
 
         return url, name, color
-
-    def compositeTrack(self, wepi):
-        dnaseExp, histoneExp = wepi.exps()
-        histoneUrl, histoneName, histoneColor = self._getUrl(histoneExp, True)
-        dnaseUrl, dnaseName, dnaseColor = self._getUrl(dnaseExp, True)
-
-        desc = wepi.web_title()
-        descShort = desc
-
-        track = """
-track composite{priority}
-container multiWig
-aggregate transparentOverlay
-showSubtrackColorOnUi on
-type bigWig 0 50.0
-maxHeightPixels 128:32:8
-shortLabel {descShort}
-longLabel {desc}
-visibility full
-priority {priority}
-html examplePage
-
-                track composite{priority}Histone
-                bigDataUrl {histoneUrl}
-                shortLabel {histone}
-                longLabel {histone}
-                parent composite{priority}
-                type bigWig
-                color {histoneColor}
-
-                track composite{priority}DNase
-                bigDataUrl {dnaseUrl}
-                shortLabel DNase
-                longLabel DNase
-                parent composite{priority}
-                type bigWig
-                color {dnaseColor}
-""".format(priority = self.priority,
-           descShort = descShort,
-           desc = desc,
-           histoneUrl = histoneUrl,
-           histoneColor = histoneColor,
-           dnaseUrl = dnaseUrl,
-           dnaseColor = dnaseColor,
-           histone = self.histMark)
-
-        self.priority += 1
-        return track
-
-    def showMissing(self):
-        wepis = self.epigenomes.GetByAssemblyAndAssays(self.assembly, self.assays)
-
-        def checkUrl(url):
-            if not url:
-                return {"title" : None, "url" : None}
-
-            if not self.urlStatus.find(url):
-                self.urlStatus.insertOrUpdate(url,
-                                              Utils.checkIfUrlExists(url))
-            if self.urlStatus.get(url):
-                if "encodeproject" in url:
-                    return {"title" : "OK - ENCODE", "url" : url}
-                if BIB5 in url:
-                    return {"title" : "OK - zlab", "url" : url}
-                if "wustl.edu" in url:
-                    return {"title" : "OK - roadmap", "url" : url}
-                return {"title" : "OK", "url" : url}
-
-            if "encodeproject" in url:
-                return {"title" : "ERROR - ENCODE", "url" : url}
-            if BIB5 in url:
-                return {"title" : "ERROR - zlab", "url" : url}
-            if "wustl.edu" in url:
-                return {"title" : "ERROR - roadmap", "url" : url}
-            return {"title" : "ERROR", "url" : url}
-
-        def checkExp(exp):
-            u, _, _ = self._getUrl(exp, False)
-            u = checkUrl(u)
-            un, _, _ = self._getUrl(exp, True)
-            un = checkUrl(un)
-            return u, un
-
-        for wepi in wepis.epis:
-            dnaseExp = None
-            histoneExp = None
-            exps = wepi.exps()
-            if self.assays.startswith("BothDNaseAnd"):
-                dnaseExp, histoneExp = exps
-            elif self.assays in ["H3K27ac", "H3K4me3"]:
-                histoneExp = exps[0]
-            elif "DNase" == self.assays:
-                dnaseExp = exps[0]
-            else:
-                raise Exception("unknown assay type")
-
-            desc = wepi.web_title()
-            dnaseUrl, dnaseUrlNorm = checkExp(dnaseExp)
-            histoneUrl, histoneUrlNorm = checkExp(histoneExp)
-            yield(desc, dnaseUrl, dnaseUrlNorm,
-                  histoneUrl, histoneUrlNorm)

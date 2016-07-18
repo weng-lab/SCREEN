@@ -34,6 +34,11 @@ class MainApp():
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def reDetail(self, reAccession, cellType = None):
+        return self.mc.reDetail(reAccession, cellType)
+
 class MainAppRunner:
     def __init__(self, es, DBCONN, devMode, webSocketUrl):
         version = '/'.join(["ver4", "search"])
