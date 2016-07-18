@@ -18,6 +18,16 @@ function genButtonCol(name){
              defaultContent : b };
 }
 
+function genButtonGroupCol(names){
+    var bg = '<div class="btn-group" role="group">';
+    for(i = 0; i < names.length; i++){
+        bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] + '</button>';
+    }
+    bg += '</div>';
+    return { targets: -1, data: null, className: "dt-right", orderable: false,
+             defaultContent : bg };
+}
+
 function setupColumns(){
     var ret = {Accession : genStrCol("_source.accession"),
 	       Confidence : genFloatCol("_source.confidence"),
@@ -28,19 +38,19 @@ function setupColumns(){
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
-        var ret2 = {
-            "Nearest gene" : genStrCol("_source.genes.nearest-all.gene-id"),
-            "Nearest protein-coding gene" : genStrCol("_source.genes.nearest-pc.gene-id"),
-            "Enhancer rank" : genIntCol("_source.ranks.enhancer." + cellType + ".rank"),
-            "Promoter rank" : genIntCol("_source.ranks.promoter." + cellType + ".rank"),
-            "DNase rank" : genIntCol("_source.ranks.dnase." + cellType + ".rank"),
-            "CTCF rank" : genIntCol("_source.ranks.ctcf." + cellType + ".rank")};
-        _.extend(ret, ret2);
+        ret["Nearest gene"] = genStrCol("_source.genes.nearest-all.gene-id");
+        ret["Nearest protein-coding gene"] = genStrCol("_source.genes.nearest-pc.gene-id");
+
+        if(0){
+            var ret2 = {"Enhancer rank" : genIntCol("_source.ranks.enhancer." + cellType + ".rank"),
+                        "Promoter rank" : genIntCol("_source.ranks.promoter." + cellType + ".rank"),
+                        "DNase rank" : genIntCol("_source.ranks.dnase." + cellType + ".rank"),
+                        "CTCF rank" : genIntCol("_source.ranks.ctcf." + cellType + ".rank")};
+            _.extend(ret, ret2);
+        }
     }
 
-    ret.UCSC = genButtonCol("UCSC");
-    ret.WashU = genButtonCol("WashU");
-    ret.Ensembl = genButtonCol("Ensembl");
+    ret["genome browsers"] = genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;
 }
@@ -82,7 +92,11 @@ function renderTable(){
     } );
 
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-        var data = dtable.row( $(this).parents('tr') ).data();
-        console.log(data);
+        var t = $(this);
+        var whichBrowser = t.html();
+        var data = dtable.row(t.parents('tr')).data();
+        // console.log(data);
+        var accession = data["_source"]["accession"];
+        //console.log(whichBrowser, accession);
     } );
 }
