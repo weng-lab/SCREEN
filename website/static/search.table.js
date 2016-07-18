@@ -96,7 +96,7 @@ function renderTable(){
         var whichBrowser = t.html();
         var data = dtable.row(t.parents('tr')).data();
         // console.log(data);
-        var accession = data["_source"]["accession"];
-        //console.log(whichBrowser, accession);
+        var reAccession = data["_source"]["accession"];
+        //console.log(whichBrowser, reAccession);
     } );
 }
