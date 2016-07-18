@@ -27,3 +27,7 @@ class MainController:
     def HexplotView(self, args, kwargs):
         pageInfo = PageInfoMain(self.es, self.DBCONN, self.version, self.webSocketUrl)
         return self.t("main/hexplot", **pageInfo.hexplotPage(args, kwargs))
+
+    def reDetail(self, reAccession, cellType):
+        ret = {"asdf" : 123}
+        return ret
