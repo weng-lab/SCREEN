@@ -11,8 +11,9 @@ function regelm_details()
 			      "CTCF": "238, 80, 245"};
 };
 
-/* convert key ("promoter", "enhancer", etc.) and percentile rank (0 - 1) to corresponding color */
-regelm_details.prototype.get_color = function(key, pct_rank) {
+/* convert key ("promoter", "enhancer", etc.) and rank to color */
+regelm_details.prototype.get_color = function(key, absolute, total) {
+    var pct_rank = 1 - Math.log10(absolute) / Math.log10(total);
     return "rgba(" + this.annotation_colors[key] + ", " + pct_rank + ")";
 };
 
@@ -146,6 +147,16 @@ function _regelm_ranks_comparator(a, b)
 */
 regelm_ranking_view.prototype.load_cell_lines = function(data) {
 
+    for (rank in this._rank_nodes) {
+	if (rank in data && data[rank].length > 1) return this._load_cell_lines(data);
+    }
+    return this._load_cell_lines(data, true);
+    
+};
+
+/* private: do actual display of data once number of cell lines is known */
+regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line = false) {
+
     clear_div_contents(this._table_div);
     var root_table = document.createElement("table");
     root_table.cellPadding = 5;
@@ -167,9 +178,9 @@ regelm_ranking_view.prototype.load_cell_lines = function(data) {
 		var pct = 1.0 - d.absolute / d.total;
 		var rank_td = document.createElement("td");
 		
-		rank_td.innerText = d.id;
+		rank_td.innerText = (single_cell_line ? data[rank][i].absolute + " / " + data[rank][i].total : d.id);
 		rank_td.style.color = (pct > 0.5 ? "#ffffff" : "#000000");
-		rank_td.style.backgroundColor = regelm_details_base.get_color(rank, pct);
+		rank_td.style.backgroundColor = regelm_details_base.get_color(rank, data[rank][i].absolute, data[rank][i].total);
 		rank_td.className = "regelm_rank_td";
 		
 		tr.appendChild(rank_td);
