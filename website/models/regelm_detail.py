@@ -20,15 +20,13 @@ class RegElementDetails:
             return { "error" : "no hits for " + reAccession}
         if retval["hits"]["total"] > 1:
             return { "error" : "too many hits (%d) for " + reAccession }
-        retval["hit"] = retval["hits"]["hits"][0]["_source"]
-        return retval
+        return retval["hits"]["hits"][0]["_source"]
 
     def get_intersecting_beds(self, reAccession):
         re = self.reFull(reAccession)
         if "error" in re: return re
-        hit = re["hit"]
-        pos = hit["position"]
-        return {"experiments": self.ps.findBedOverlap(hit["genome"],
-                                                 pos["chrom"],
-                                                 pos["start"],
-                                                 pos["end"] )}
+        pos = re["position"]
+        return {"experiments": self.ps.findBedOverlap(re["genome"],
+                                                      pos["chrom"],
+                                                      pos["start"],
+                                                      pos["end"] )}
