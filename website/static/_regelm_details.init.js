@@ -85,6 +85,9 @@ function regelm_gui()
     
 };
 
+var regelm_details_view = new regelm_gui();
+
+
 /* create individual components within target div and wrap */
 regelm_gui.prototype.bind = function(container_div_id)
 {
@@ -100,6 +103,7 @@ regelm_gui.prototype.bind = function(container_div_id)
     for (subGUI in this.GUIs) {
 	var new_div = document.createElement("div");
 	new_div.id = "regelm_view_" + subGUI;
+	new_div.className = "col-md-3";
 	this._container.appendChild(new_div);
 	this[subGUI] = new this.GUIs[subGUI].proto();
 	this[subGUI].bind("regelm_view_" + subGUI, this.GUIs[subGUI].args);
