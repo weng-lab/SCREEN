@@ -1,6 +1,7 @@
 import sys, os, json
 
 from models.regelm import RegElements
+from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
 import subprocess
 
@@ -10,6 +11,7 @@ class PageInfoMain:
         self.DBCONN = DBCONN
         self.version = version
         self.regElements = RegElements(es)
+        self.regElementDetails = RegElementDetails(es)
         self.webSocketUrl = webSocketUrl
 
     def wholePage(self):
@@ -106,3 +108,48 @@ class PageInfoMain:
             raise
         pageinfo.update({"queryresults": res})
         return pageinfo
+
+    def reDetail(self, reAccession, kwargs):
+        if not reAccession.startswith("EE"):
+            return { "error" : "invalid accession"}
+
+        try:
+            res = self.regElementDetails.reFull(reAccession)
+        except:
+            return { "error" : "invalid read for " + reAccession }
+
+        if not "hits" in res:
+            return { "error" : "no hits for " + reAccession}
+
+        hits = res["hits"]
+        if len(hits["hits"]) > 1:
+            return { "error" : "too many hits for " + reAccession }
+        
+        ret = {}
+        ret["hit"] = hits["hits"][0]["_source"]
+
+        return ret
+
+    def rePeaks(self, reAccession, kwargs):
+        try:
+            hit = self.reDetail(reAccession, kwargs)
+        except:
+            raise
+            return {"error" : "could not lookup " + reAccession}
+        
+        if "error" in hit:
+            return hit
+
+        pos = hit["hit"]["position"]
+        chrom = pos["chrom"]
+        start = pos["start"]
+        end = pos["end"]
+
+
+
+        
+        ret = {}
+
+        
+        return ret
+
