@@ -41,7 +41,7 @@ _gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID
                       "UCSC_ID", "RefSeq_ID"]
 
 class or_query:
-    
+
     def __init__(self):
         self.query_obj = {"query": {"bool": {"should": [] }}}
 
@@ -77,7 +77,7 @@ class and_query:
 
     def append(self, obj):
         self.query_obj["query"]["bool"]["must"].append(obj)
-    
+
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
     if assembly != "":
@@ -113,7 +113,7 @@ class ElasticSearchWrapper:
         for acc in acc_list:
             query.append_exact_match("accession", acc)
         return self.es.search(index="peak_beds", body=query.query_obj)
-    
+
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
         result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
@@ -130,7 +130,7 @@ class ElasticSearchWrapper:
     def get_cell_line_list(self):
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
-    
+
     def gene_aliases_to_coordinates(self, q):
         suggestions, raw_results = self.resolve_gene_aliases(q)
         retval = []
@@ -185,7 +185,7 @@ class ElasticSearchWrapper:
             results = [r["_source"] for r in raw_results["hits"]["hits"]]
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["accession"] not in q],
                 results)
-    
+
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
         suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0)
