@@ -2,11 +2,16 @@
 
 import os, sys, json
 
+import argparse
+
 from twisted.python import log
 from twisted.internet import reactor
 
+import psycopg2, psycopg2.pool
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
+from postgres_wrapper import PostgresWrapper
 
 from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
@@ -14,12 +19,12 @@ from autocomplete import Autocompleter
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 
 from models.regelm import RegElements
+from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 
-# from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
+from dbs import DBS
 
-es = ElasticSearchWrapper(Elasticsearch())
-ac = Autocompleter(es)
+# from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
 
 cmap = {"regulatory_elements": RegElements,
         "expression_matrix": ExpressionMatrix}
@@ -48,7 +53,15 @@ class MyServerProtocol(WebSocketServerProtocol):
                     raw_results.update({"name": j["name"]})
                     self.sendMessage(json.dumps(raw_results))
                     return
-                elif j["action"] == "suggest":
+                if j["action"] == "re_detail":
+                    output = {"type": "re_details",
+                              "accession": j["accession"]}
+                    details = RegElementDetails(es, ps)
+                    bed_accs = details.get_intersecting_beds(j["accession"])
+                    output["overlapping_peaks"] = details.get_bed_stats(bed_accs)
+                    self.sendMessage(json.dumps(output))
+                    return
+                if j["action"] == "suggest":
                     output = {"type": "suggestions",
                               "callback": j["callback"]}
                     for index in j["indeces"]:
@@ -56,7 +69,7 @@ class MyServerProtocol(WebSocketServerProtocol):
                             output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
                     self.sendMessage(json.dumps(output))
                     return
-                elif j["action"] == "query":
+                if j["action"] == "query":
                     raw_results = es.search(body=j["object"], index=j["index"])
                     if j["callback"] in cmap:
                         processed_results = cmap[j["callback"]].process_for_javascript(raw_results)
@@ -83,11 +96,28 @@ def parse_args():
     parser.add_argument('--port', default=9000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
+    parser.add_argument('--local', action="store_true", default=False)
     return parser.parse_args()
 
 def main():
     log.startLogging(sys.stdout)
 
+    global es, ac, ps
+
+    args = parse_args()
+    
+    es = ElasticSearchWrapper(Elasticsearch())
+    ac = Autocompleter(es)
+
+    if args.local:
+        dbs = DBS.localRegElmViz()
+    else:
+        dbs = DBS.pgdsn("regElmViz")
+        dbs["application_name"] = os.path.realpath(__file__)
+    
+    DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+    ps = PostgresWrapper(self.DBCONN)
+    
     factory = WebSocketServerFactory(u"ws://127.0.0.1:9000")
     factory.protocol = MyServerProtocol
     # factory.setProtocolOptions(maxConnections=2)

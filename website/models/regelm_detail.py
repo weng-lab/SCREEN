@@ -30,3 +30,17 @@ class RegElementDetails:
                                                       pos["chrom"],
                                                       pos["start"],
                                                       pos["end"] )}
+
+    def get_bed_stats(self, bed_accs):
+        hits = self.es.get_bed_list(bed_accs)
+        results = {}
+        if hits["total"] != len(bed_accs):
+            for hit in hits["hits"]:
+                if hit["accession"] not in bed_accs: print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % hit["accession"])
+        for hit in hits["hits"]:
+            cell_line = hit["biosample_term_name"]
+            target = hit["target"]
+            if cell_line not in results: results[cell_line] = {}
+            if target not in results[cell_line]: results[cell_line][target] = 0
+            results[cell_line][target] += 1
+        return results
