@@ -1,61 +1,52 @@
-function genStrCol(field){
+function RE_table(){
+};
+
+RE_table.prototype.genStrCol = function(field){
     return { data: field, className: "dt-right"};
 }
 
-function genFloatCol(field){
+RE_table.prototype.genFloatCol = function(field){
     return { data: field, className: "dt-right",
              render: $.fn.dataTable.render.number( ',', '.', 1, '' ) };
 }
 
-function genIntCol(field){
+RE_table.prototype.genIntCol = function(field){
     return { data: field, className: "dt-right",
              render: $.fn.dataTable.render.number( ',', '.', 0, '' ) };
 }
 
-function genButtonCol(name){
-    var b = '<button type="button" class="btn btn-success btn-xs">' + name + '</button>';
-    return { targets: -1, data: null, className: "dt-right", orderable: false,
-             defaultContent : b };
-}
-
-function genButtonGroupCol(names){
+RE_table.prototype.genButtonGroupCol = function(names){
     var bg = '<div class="btn-group" role="group">';
     for(i = 0; i < names.length; i++){
-        bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] + '</button>';
+        bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] +
+            '</button>';
     }
     bg += '</div>';
     return { targets: -1, data: null, className: "dt-right", orderable: false,
              defaultContent : bg };
 }
 
-function setupColumns(){
-    var ret = {Accession : genStrCol("_source.accession"),
-	       Confidence : genFloatCol("_source.confidence"),
-               Genome : genStrCol("_source.genome"),
-	       Chr : genStrCol("_source.position.chrom"),
-               Start : genIntCol("_source.position.start"),
-	       End : genIntCol("_source.position.end")}
+RE_table.prototype.setupColumns = function(){
+    var ret = {Accession : this.genStrCol("_source.accession"),
+	       Confidence : this.genFloatCol("_source.confidence"),
+               Genome : this.genStrCol("_source.genome"),
+	       Chr : this.genStrCol("_source.position.chrom"),
+               Start : this.genIntCol("_source.position.start"),
+	       End : this.genIntCol("_source.position.end")}
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
-        ret["Nearest gene"] = genStrCol("_source.genes.nearest-all.gene-id");
-        ret["Nearest protein-coding gene"] = genStrCol("_source.genes.nearest-pc.gene-id");
-
-        if(0){
-            var ret2 = {"Enhancer rank" : genIntCol("_source.ranks.enhancer." + cellType + ".rank"),
-                        "Promoter rank" : genIntCol("_source.ranks.promoter." + cellType + ".rank"),
-                        "DNase rank" : genIntCol("_source.ranks.dnase." + cellType + ".rank"),
-                        "CTCF rank" : genIntCol("_source.ranks.ctcf." + cellType + ".rank")};
-            _.extend(ret, ret2);
-        }
+        ret["Nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
+        ret["Nearest protein-coding gene"] =
+            this.genStrCol("_source.genes.nearest-pc.gene-id");
     }
 
-    ret["genome browsers"] = genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
+    ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;
 }
 
-function makeEmptyTable(cols){
+RE_table.prototype.makeEmptyTable = function(cols){
     var colNames = _.keys(cols);
 
     var frag = document.createDocumentFragment();
@@ -75,7 +66,7 @@ function makeEmptyTable(cols){
     return table;
 }
 
-function makeEmptyDetailsDiv(){
+RE_table.prototype.makeEmptyDetailsDiv = function(){
     var div = document.createElement("div");
     div.style.width = "100%";
     div.id = "details_view"
@@ -87,16 +78,17 @@ function makeEmptyDetailsDiv(){
     tr.style.display = "none";
     tr.appendChild(td)
 
-    document.getElementById("details_view_table").appendChild(tr);
+    var table = document.getElementById("details_view_table");
+    table.insertBefore(tr, table.firstChild);
 
     regelm_details_view.bind("details_view");
     regelm_details_view.table_row = tr;
 }
 
-function renderTable(){
-    var cols = setupColumns();
+RE_table.prototype.renderTable = function(){
+    var cols = this.setupColumns();
 
-    $("#searchresults_div").html(makeEmptyTable(cols));
+    $("#searchresults_div").html(this.makeEmptyTable(cols));
 
     var dtable = $("#searchresults_table").DataTable( {
         destroy: true,
@@ -109,7 +101,7 @@ function renderTable(){
                ]
     } );
 
-    makeEmptyDetailsDiv();
+    this.makeEmptyDetailsDiv();
 
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
