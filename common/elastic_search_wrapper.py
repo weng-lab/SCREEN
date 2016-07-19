@@ -141,10 +141,13 @@ class ElasticSearchWrapper:
         suggestions, raw_results = self.resolve_snp_aliases(q)
         print("    raw_results=", raw_results)
         retval = []
-        if len(raw_results) == 0: return (suggestions, retval)
+        if len(raw_results) == 0:
+            return (suggestions, retval)
         for result in raw_results:
             if result["accession"] in q:
-                retval.append((result["accession"], result["coordinates"]))
+                pos = result["position"]
+                coordinates = "%s:%s-%s" % (pos["chrom"], pos["start"], pos["end"])
+                retval.append((result["accession"], coordinates))
         return (suggestions, retval)
 
     def run_gene_query(self, fields, q, fuzziness, field_to_return=""):

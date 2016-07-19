@@ -15,9 +15,14 @@ from utils import Utils
 from files_and_paths import Dirs
 
 class TrackHub(object):
-    def __init__(self, args, reAccession):
+    def __init__(self, args, row):
+        self.assembly = row["assembly"]
+        self.assays = row["assays"]
+        self.cellTypes = json.loads(row["cellTypes"])
+        self.loci = row["loci"]
+        self.hubNum = row["hubNum"]
+
         self.args = args
-        self.reAccession = reAccession
         self.priority = 1
 
     def ParsePath(self, path):
@@ -46,8 +51,7 @@ class TrackHub(object):
     def makeHub(self):
         f = StringIO.StringIO()
         t = ""
-        if self.args.debug:
-            t += "debug "
+
         if AssayType.Enhancer == self.assayType:
             t += "ENCODE Enhancer-like regions " + self.assembly
         elif AssayType.Promoter == self.assayType:
@@ -67,24 +71,50 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                                    hubNum = self.hubNum)
 
     def makeTrackDb(self):
-        epis = self.epigenomes.GetByAssemblyAndAssays(self.assembly, self.assays)
-        epis = filter(lambda e: e.web_id() in self.tissue_ids, epis.epis)
-
         lines = []
         lines += [self.genes()]
 
-        for wepi in sorted(epis, key=lambda e: e.epi.biosample_term_name):
-            if self.assays.startswith("BothDNaseAnd"):
-                lines += [self.predictionTrackHub(wepi)]
-                if AssayType.Enhancer == self.assayType:
-                    lines += [self.compositeTrack(wepi)]
-            for exp in wepi.exps():
-                try:
-                    lines += [self.trackhubExp(exp)]
-                except:
-                    if self.args.debug:
-                        raise
-                    pass
+        dataset = Datasets.GetDatasetByAssembly(self.assembly)
+        m = MetadataWS(dataset)
+        for cellType in self.cellTypes:
+            exps = m.biosample_term_name(cellType)
+
+            for exp in sorted(exps, key = lambda x: (x.assay_term_name,
+                                                     x.tf, x.lab)):
+                lines += [self.trackhubExp(exp)]
+
+        f = StringIO.StringIO()
+        for line in lines:
+            if line:
+                f.write(line + "\n")
+
+        return fileLines + "\n" + f.getvalue()
+
+    def trackhubExp(self, exp):
+        if not exp:
+            return ""
+
+        bigWigs = bigWigFilters(self.assembly, exp.files)
+
+        if not bigWigs:
+            return ""
+        bigWig = bigWigs[0]
+
+        url = bigWig.url
+        if not url:
+            return ""
+
+        color = GetTrackColorSignal(exp)
+        if color:
+            color = color.rgb
+
+        desc = " ".join([exp.encodeID, exp.biosample_term_name,
+                         Labs.translate(exp.lab),
+                         exp.assay_term_name, exp.tf])
+
+        track = BigWigTrack(desc, self.priority, url, color).track()
+        self.priority += 1
+        return track
 
         if self.enableVistaTrack():
             lines += [self.vista()]
@@ -99,9 +129,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def enableVistaTrack(self):
         if "mm10" == self.assembly:
-            for t in self.tissue_ids:
-                if "11_5" in t:
-                    return True
+            return True
         return False
 
     def phastcons(self):
