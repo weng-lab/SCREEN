@@ -32,6 +32,11 @@ regelm_details.prototype.get_re_href = function(symbol) {
     return "#"; // TODO: link to RE info page
 };
 
+/* converts a TF name to a link to a page with details */
+regelm_details.prototype.get_tf_href = function(symbol) {
+    return "#"; // TODO: link to RE info page
+};
+
 var regelm_details_base = new regelm_details();
 
 
@@ -66,6 +71,13 @@ function regelm_gui()
 	    "args": {
 		"header_text": "nearest regulatory elements",
 		"href_f": regelm_details_base.get_re_href
+	    }
+	},
+	"tf_view": {
+	    "proto": regelm_gene_view,
+	    "args": {
+		"header_text": "interacting TFs",
+		"href_f": regelm_details_base.get_tf_href
 	    }
 	}
     };	
