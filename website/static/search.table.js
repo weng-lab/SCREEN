@@ -96,7 +96,6 @@ function renderTable(){
     div.id = "details_view"
 
     var td = document.createElement("td");
-    td.colSpan = cols.length;
     td.appendChild(div);
 
     var tr = document.createElement("tr");
