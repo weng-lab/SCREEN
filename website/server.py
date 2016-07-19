@@ -9,6 +9,7 @@ from app_main import MainAppRunner
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
+from postgres_wrapper import PostgresWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
@@ -48,8 +49,9 @@ class RegElmVizWebsite(object):
             dbs = DBS.pgdsn("regElmViz")
             dbs["application_name"] = os.path.realpath(__file__)
         self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+        self.ps = PostgresWrapper(self.DBCONN)
 
-        MainAppRunner(self.es, self.DBCONN, self.devMode, webSocketUrl)
+        MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl)
 
     def start(self):
         if self.devMode:
