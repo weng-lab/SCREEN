@@ -32,7 +32,8 @@ class RegElementDetails:
                                                       pos["end"] )}
 
     def get_bed_stats(self, bed_accs):
-        hits = self.es.get_bed_list(bed_accs)
+        r = self.es.get_bed_list(bed_accs)
+        hits = r["hits"]
         results = {}
         if hits["total"] != len(bed_accs):
             for hit in hits["hits"]:
