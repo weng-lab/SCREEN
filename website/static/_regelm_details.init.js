@@ -319,6 +319,11 @@ function _regelm_overlap_comparator(a, b)
     return a.count - b.count;
 }
 
+function _regelm_overlap_cellline_comparator(a, b)
+{
+    return a.total - b.total;
+}
+
 /*
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
@@ -328,10 +333,12 @@ peak_overlap_view.prototype.load_data = function(data) {
     clear_div_contents(this._table_div);
 
     var root_table = document.createElement("table");
+    data.results.sort(_regelm_overlap_cellline_comparator);
+    
+    for (i in data.results) {
 
-    for (cell_line in data) {
-
-	var results = data[cell_line];
+	var results = data.results[i];
+	var cell_line = results.id;
 	var tr = document.createElement("tr");
 	var ntd = [document.createElement("td"),
 		   document.createElement("td")];
@@ -341,9 +348,11 @@ peak_overlap_view.prototype.load_data = function(data) {
 	a.href = regelm_details_base.get_genelist_href(cell_line);
 	ntd[0].appendChild(a);
 
-	for (i in data[cell_line]) {
+	results.labels.sort(_regelm_overlap_comparator);
+
+	for (j in results.labels) {
 	    if (i != 0) ntd[1].innerText += ", ";
-	    ntd[1].innerText += data[cell_line][i].count + " " + data[cell_line][i].id;
+	    ntd[1].innerText += results.labels[j].count + " " + results.labels[j].id;
 	}
 
 	tr.appendChild(ntd[0]);

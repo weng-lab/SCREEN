@@ -35,6 +35,7 @@ class RegElementDetails:
         r = self.es.get_bed_list(bed_accs)
         hits = r["hits"]
         results = {}
+        formatted_results = {"results": []}
         if hits["total"] != len(bed_accs):
             for hit in hits["hits"]:
                 if hit["accession"] not in bed_accs: print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % hit["accession"])
@@ -44,4 +45,11 @@ class RegElementDetails:
             if cell_line not in results: results[cell_line] = {}
             if label not in results[cell_line]: results[cell_line][label] = 0
             results[cell_line][label] += 1
-        return results
+        for cell_line in results:
+            formatted_results.append({"id": cell_line,
+                                      "total": 0,
+                                      "labels": []})
+            for label in cell_line:
+                formatted_results[-1]["labels"].append({"id": label, "count": results[cell_line][label]})
+                formatted_results[-1]["total"] += results[cell_line][label]
+        return formatted_results
