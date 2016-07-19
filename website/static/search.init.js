@@ -6,6 +6,8 @@ var last_results = null;
 var venn_results = {"overlaps": [{"sets": [0, 1], "size": -1}],
 		    "sets": [{"size": -1}, {"size": -1}]};
 
+var re_table = new RE_table();
+
 var facet_link_handlers = {
     "chromosome": function(chr) {
 	if (searchquery.chromosome != chr)
@@ -248,7 +250,8 @@ function handle_regulatory_results(results){
 
     GUI.refresh();
 
-    renderTable();
+
+    re_table.renderTable();
 
     var genelist = [];
     for (i in results.results.hits) {
