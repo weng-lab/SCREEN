@@ -75,22 +75,7 @@ function makeEmptyTable(cols){
     return table;
 }
 
-function renderTable(){
-    var cols = setupColumns();
-
-    $("#searchresults_div").html(makeEmptyTable(cols));
-
-    var dtable = $("#searchresults_table").DataTable( {
-	destroy: true,
-        processing: true,
-        data: results.results.hits,
-        columns: _.values(cols),
-	order: [[1, "desc"],
-		[3, "asc"],
-		[4, "asc"]
-	       ]
-    } );
-
+function makeEmptyDetailsDiv(){
     var div = document.createElement("div");
     div.style.width = "100%";
     div.id = "details_view"
@@ -106,7 +91,27 @@ function renderTable(){
 
     regelm_details_view.bind("details_view");
     regelm_details_view.table_row = tr;
+}
 
+function renderTable(){
+    var cols = setupColumns();
+
+    $("#searchresults_div").html(makeEmptyTable(cols));
+
+    var dtable = $("#searchresults_table").DataTable( {
+        destroy: true,
+        processing: true,
+        data: results.results.hits,
+        columns: _.values(cols),
+        order: [[1, "desc"],
+        	[3, "asc"],
+        	[4, "asc"]
+               ]
+    } );
+
+    makeEmptyDetailsDiv();
+
+    // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
         var t = $(this);
         var whichBrowser = t.html();
@@ -116,6 +121,7 @@ function renderTable(){
         //console.log(whichBrowser, reAccession);
     } );
 
+    // deal w/ RE row click
     $('#searchresults_table').on( 'click', 'td', function() {
 	regelm_details_view.table_row.style.display = 'table-row';
     } );
