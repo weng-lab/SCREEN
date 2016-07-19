@@ -125,9 +125,11 @@ class PageInfoMain:
             return { "error" : "no hits for " + reAccession}
 
         hits = res["hits"]
+        if 0 == len(hits["hits"]):
+            return { "error" : "no hits for " + reAccession }
         if len(hits["hits"]) > 1:
             return { "error" : "too many hits for " + reAccession }
-        
+
         ret = {}
         ret["hit"] = hits["hits"][0]["_source"]
 
@@ -139,7 +141,7 @@ class PageInfoMain:
         except:
             raise
             return {"error" : "could not lookup " + reAccession}
-        
+
         if "error" in re:
             return re
 
@@ -153,6 +155,5 @@ class PageInfoMain:
 
         ret = {}
         ret["experiments"] = expIDs
-        
-        return ret
 
+        return ret
