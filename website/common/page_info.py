@@ -109,7 +109,7 @@ class PageInfoMain:
         pageinfo.update({"queryresults": res})
         return pageinfo
 
-    def reDetail(self, reAccession, cellType):
+    def reDetail(self, reAccession, kwargs):
         if not reAccession.startswith("EE"):
             return { "error" : "invalid accession"}
 
@@ -127,8 +127,20 @@ class PageInfoMain:
         
         ret = {}
         ret["hit"] = hits["hits"][0]["_source"]
-        ret["tf_peaks"] = {}
-        ret["snps"] = {}
 
         return ret
+
+    def rePeaks(self, reAccession, kwargs):
+        try:
+            hit = self.reDetail(reAccession, kwargs)
+        except:
+            raise
+            return {"error" : "could not lookup " + reAccession}
         
+        if "error" in hit:
+            return hit
+                            
+        ret = {}
+
+        return ret
+

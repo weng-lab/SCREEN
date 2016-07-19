@@ -36,8 +36,18 @@ class MainApp():
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def reDetail(self, reAccession, cellType = None):
-        return self.mc.reDetail(reAccession, cellType)
+    def reDetail(self, reAccession, **kwargs):
+        return self.mc.reDetail(reAccession, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def rePeaks(self, reAccession, **kwargs):
+        return self.mc.rePeaks(reAccession, kwargs)
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def reSNPs(self, reAccession, **kwargs):
+        return self.mc.reSNPs(reAccession, kwargs)
 
 class MainAppRunner:
     def __init__(self, es, DBCONN, devMode, webSocketUrl):
