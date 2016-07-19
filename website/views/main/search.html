@@ -89,6 +89,7 @@
   var RankList = {{ ranklist_json }}
   FBVERSION.init("/{{version}}");
 </script>
+{{ hh.jsVer(version, "static/_regelm_details.init.js") }}
 {{ hh.jsVer(version, "static/search.init.js") }}
 {{ hh.jsVer(version, "static/elasticsearch/core.js") }}
 {{ hh.jsVer(version, "static/constants/hg19.js") }}
