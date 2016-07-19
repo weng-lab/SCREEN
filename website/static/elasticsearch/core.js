@@ -371,3 +371,9 @@ function request_suggestions(q, indeces, callback_f)
 {
     sendText(JSON.stringify(autocomplete_query(q, indeces, callback_f)));
 };
+
+function request_details(q)
+{
+    sendText(JSON.stringify({"action": "re_detail",
+			     "accession": q}));
+};

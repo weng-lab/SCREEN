@@ -79,6 +79,10 @@ function regelm_gui()
 		"header_text": "interacting TFs",
 		"href_f": regelm_details_base.get_tf_href
 	    }
+	},
+	"peak_overlap_view": {
+	    "proto": peak_overlap_view,
+	    "args": null
 	}
     };
     this._container = null;
@@ -276,6 +280,72 @@ regelm_gene_view.prototype.load_list = function(data) {
 	ntd[0].appendChild(a);
 
 	ntd[1].appendChild(document.createTextNode(row.distance));
+	tr.appendChild(ntd[0]);
+	tr.appendChild(ntd[1]);
+	root_table.appendChild(tr);
+
+    }
+
+    this._table_div.appendChild(root_table);
+
+};
+
+
+/*
+*  peak overlap view
+*  display information on peak experiments which overlap the REs
+*/
+function peak_oberlap_view()
+{
+    this._container = null;
+};
+
+/* dynamically generate components in target div */
+peak_overlap_view.prototype.bind = function(container_div_id, args) {
+
+    this._container = document.getElementById(container_div_id);
+
+    this._header = document.createElement("h3");
+    this._header.innerText = "overlapping peaks";
+    this._container.appendChild(this._header);
+
+    this._table_div = document.createElement("div");
+    this._container.appendChild(this._table_div);
+
+}
+
+function _regelm_overlap_comparator(a, b)
+{
+    return a.count - b.count;
+}
+
+/*
+*  loads the given gene list
+*  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
+*/
+peak_overlap_view.prototype.load_data = function(data) {
+
+    clear_div_contents(this._table_div);
+
+    var root_table = document.createElement("table");
+
+    for (cell_line in data) {
+
+	var results = data[cell_line];
+	var tr = document.createElement("tr");
+	var ntd = [document.createElement("td"),
+		   document.createElement("td")];
+
+	var a = document.createElement("a");
+	a.appendChild(document.createTextNode(cell_line));
+	a.href = regelm_details_base.get_genelist_href(cell_line);
+	ntd[0].appendChild(a);
+
+	for (i in data[cell_line]) {
+	    if (i != 0) ntd[1].innerText += ", ";
+	    ntd[1].innerText += data[cell_line][i].count + " " + data[cell_line][i].id;
+	}
+
 	tr.appendChild(ntd[0]);
 	tr.appendChild(ntd[1]);
 	root_table.appendChild(tr);

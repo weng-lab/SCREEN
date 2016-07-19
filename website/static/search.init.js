@@ -72,7 +72,15 @@ function socket_message_handler(e) {
 	    query_results_handlers[results["callback"]](results);
     else if (results["type"] == "suggestions")
 	handle_autocomplete_suggestions(results);
+    else if (results["type"] == "details")
+	handle_details(results);
 
+}
+
+function handle_details(results)
+{
+    regelm_details_view.set_header(results.accession);
+    regelm_details_view.peak_overlap_view.load_data(results.overlapping_peaks);
 }
 
 function venn_ready(){

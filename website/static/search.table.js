@@ -102,20 +102,24 @@ RE_table.prototype.renderTable = function(){
     } );
 
     this.makeEmptyDetailsDiv();
-
+    
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-        var t = $(this);
-        var whichBrowser = t.html();
-        var data = dtable.row(t.parents('tr')).data();
-        // console.log(data);
-        var reAccession = data["_source"]["accession"];
+        var reAccession = get_accession($(this));
         //console.log(whichBrowser, reAccession);
     } );
 
     // deal w/ RE row click
     $('#searchresults_table').on( 'click', 'td', function() {
 	regelm_details_view.table_row.style.display = 'table-row';
+	request_details(get_accession($(this)));
     } );
 
+}
+
+function get_accession(t)
+{
+    var whichBrowser = t.html();
+    var data = dtable.row(t.parents('tr')).data();
+    return data["_source"]["accession"];
 }

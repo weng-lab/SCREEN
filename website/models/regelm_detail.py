@@ -39,8 +39,8 @@ class RegElementDetails:
                 if hit["accession"] not in bed_accs: print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % hit["accession"])
         for hit in hits["hits"]:
             cell_line = hit["biosample_term_name"]
-            target = hit["target"]
+            label = hit["label"]
             if cell_line not in results: results[cell_line] = {}
-            if target not in results[cell_line]: results[cell_line][target] = 0
-            results[cell_line][target] += 1
+            if label not in results[cell_line]: results[cell_line][label] = 0
+            results[cell_line][label] += 1
         return results
