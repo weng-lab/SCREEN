@@ -10,8 +10,8 @@ from files_and_paths import Datasets
 
 def setupDB(cur, assembly):
     cur.execute("""
-DROP TABLE IF EXISTS bedRanges{assembly};
-CREATE TABLE bedRanges{assembly}
+DROP TABLE IF EXISTS bed_ranges_{assembly};
+CREATE TABLE bed_ranges_{assembly}
 (id serial PRIMARY KEY,
 chrom text,
 startend int4range,
@@ -28,7 +28,7 @@ def insertFile(cur, exp, bed):
                               "[%s, %s)" %(toks[1], toks[2]),
                               bed.fileID]) + "\n")
     outF.seek(0)
-    cur.copy_from(outF, "bedRanges" + bed.assembly, '\t',
+    cur.copy_from(outF, "bed_ranges_" + bed.assembly, '\t',
                   columns=("chrom", "startend", "file_accession"))
     print "\t", fnp, cur.rowcount
 
@@ -36,7 +36,7 @@ def test(cur):
     # check chr1:134054000-134071000
     cur.execute("""
 SELECT DISTINCT expID
-FROM bedRangesmm10
+FROM bed_ranges_mm10
 WHERE chrom = 'chr1'
 AND startend && int4range(134054000, 134071000)
 """)
@@ -70,18 +70,18 @@ def build(args, assembly, conn, cur):
 def index(assembly, cur):
     print "indexing", assembly
     cur.execute("""
-    CREATE INDEX chromIdx{assembly} ON bedRanges{assembly}(chrom);
+    CREATE INDEX chromIdx{assembly} ON bed_ranges_{assembly}(chrom);
     """.format(assembly = assembly))
 
     print "indexing", assembly, "startend"
     cur.execute("""
-    CREATE INDEX rangeIdx{assembly} ON bedRanges{assembly} USING gist (startend);
+    CREATE INDEX rangeIdx{assembly} ON bed_ranges_{assembly} USING gist (startend);
     """.format(assembly = assembly))
 
 def counts(cur, assembly):
     cur.execute("""
 select count(1)
-from bedRanges{assembly}
+from bed_ranges_{assembly}
 """.format(assembly = assembly))
     print(assembly, cur.fetchone())
 
@@ -106,10 +106,6 @@ def main():
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
             for assembly in ["hg19", "mm10"]:
-                try:
-                    counts(cur, assembly)
-                except:
-                    pass
                 if args.rebuild:
                     build(args, assembly, conn, cur)
                 if args.index:

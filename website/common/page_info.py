@@ -1,9 +1,12 @@
 import sys, os, json
+import subprocess
 
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
-import subprocess
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+from db_bed_overlap import DbBedOverlap
 
 class PageInfoMain:
     def __init__(self, es, DBCONN, version, webSocketUrl):
@@ -132,24 +135,24 @@ class PageInfoMain:
 
     def rePeaks(self, reAccession, kwargs):
         try:
-            hit = self.reDetail(reAccession, kwargs)
+            re = self.reDetail(reAccession, kwargs)
         except:
             raise
             return {"error" : "could not lookup " + reAccession}
         
-        if "error" in hit:
-            return hit
+        if "error" in re:
+            return re
 
-        pos = hit["hit"]["position"]
-        chrom = pos["chrom"]
-        start = pos["start"]
-        end = pos["end"]
+        re = re["hit"]
+        dbo = DbBedOverlap(self.DBCONN)
+        pos = re["position"]
+        expIDs = dbo.findBedOverlap(re["genome"],
+                                    pos["chrom"],
+                                    pos["start"],
+                                    pos["end"])
 
-
-
-        
         ret = {}
-
+        ret["experiments"] = expIDs
         
         return ret
 
