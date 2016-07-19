@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append("../../metadata/utils")
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils
 
 class ESBulkImporter:
