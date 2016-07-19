@@ -295,7 +295,7 @@ regelm_gene_view.prototype.load_list = function(data) {
 *  peak overlap view
 *  display information on peak experiments which overlap the REs
 */
-function peak_oberlap_view()
+function peak_overlap_view()
 {
     this._container = null;
 };
