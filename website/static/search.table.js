@@ -75,37 +75,45 @@ function makeEmptyTable(cols){
     return table;
 }
 
+function makeEmptyDetailsDiv(){
+    var div = document.createElement("div");
+    div.style.width = "100%";
+    div.id = "details_view"
+
+    var td = document.createElement("td");
+    td.appendChild(div);
+
+    var tr = document.createElement("tr");
+    tr.style.display = "none";
+    tr.appendChild(td)
+
+    document.getElementById("details_view_table").appendChild(tr);
+
+    regelm_details_view.bind("details_view");
+    regelm_details_view.table_row = tr;
+}
+
 function renderTable(){
     var cols = setupColumns();
 
     $("#searchresults_div").html(makeEmptyTable(cols));
 
     var dtable = $("#searchresults_table").DataTable( {
-	destroy: true,
+        destroy: true,
         processing: true,
         data: results.results.hits,
         columns: _.values(cols),
-	order: [[1, "desc"],
-		[3, "asc"],
-		[4, "asc"]
-	       ]
+        order: [[1, "desc"],
+        	[3, "asc"],
+        	[4, "asc"]
+               ]
     } );
 
-    var tr = document.createElement("tr");
-    tr.colSpan = 0;
-    for (key in cols) tr.colSpan++;
-    tr.style.display = "none";
+    makeEmptyDetailsDiv();
 
-    var div = document.createElement("div");
-    div.style.width = "100%";
-    div.id = "details_view"
-    tr.appendChild(div);
-    document.getElementById("searchresults_table").appendChild(tr);
-    regelm_details_view.bind("details_view");
-    regelm_details_view.table_row = tr;
-
+    // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-        var t = $(this);	
+        var t = $(this);
         var whichBrowser = t.html();
         var data = dtable.row(t.parents('tr')).data();
         // console.log(data);
@@ -113,10 +121,9 @@ function renderTable(){
         //console.log(whichBrowser, reAccession);
     } );
 
+    // deal w/ RE row click
     $('#searchresults_table').on( 'click', 'td', function() {
-	var nrow = $(this).closest('tr');
-	$(regelm_details_view.table_row).before(nrow);
 	regelm_details_view.table_row.style.display = 'table-row';
     } );
-    
+
 }
