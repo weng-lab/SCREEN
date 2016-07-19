@@ -115,6 +115,10 @@ RE_table.prototype.renderTable = function(){
 
     // deal w/ RE row click
     $('#searchresults_table').on( 'click', 'td', function() {
+        var t = $(this);
+        var tr = dtable.row(t.parents('tr'));
+        console.log(tr);
+
 	regelm_details_view.table_row.style.display = 'table-row';
     } );
 
