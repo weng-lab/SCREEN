@@ -139,8 +139,17 @@ class PageInfoMain:
         
         if "error" in hit:
             return hit
-                            
+
+        pos = hit["hit"]["position"]
+        chrom = pos["chrom"]
+        start = pos["start"]
+        end = pos["end"]
+
+
+
+        
         ret = {}
 
+        
         return ret
 
