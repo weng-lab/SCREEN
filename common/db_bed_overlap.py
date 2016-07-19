@@ -16,7 +16,7 @@ class DbBedOverlap:
             return []
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             curs.execute("""
-SELECT DISTINCT expID
+SELECT DISTINCT file_accession
 FROM bedRanges{assembly}
 WHERE chrom = %(chrom)s
 AND startend && int4range(%(start)s, %(end)s)
