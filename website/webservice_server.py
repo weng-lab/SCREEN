@@ -105,7 +105,7 @@ def main():
     global es, ac, ps
 
     args = parse_args()
-    
+
     es = ElasticSearchWrapper(Elasticsearch())
     ac = Autocompleter(es)
 
@@ -114,10 +114,10 @@ def main():
     else:
         dbs = DBS.pgdsn("regElmViz")
         dbs["application_name"] = os.path.realpath(__file__)
-    
+
     DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
-    ps = PostgresWrapper(self.DBCONN)
-    
+    ps = PostgresWrapper(DBCONN)
+
     factory = WebSocketServerFactory(u"ws://127.0.0.1:9000")
     factory.protocol = MyServerProtocol
     # factory.setProtocolOptions(maxConnections=2)

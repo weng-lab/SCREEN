@@ -102,10 +102,10 @@ RE_table.prototype.renderTable = function(){
     } );
 
     this.makeEmptyDetailsDiv();
-    
+
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-        var reAccession = get_accession($(this));
+        var reAccession = get_accession(dtable, $(this));
         //console.log(whichBrowser, reAccession);
     } );
 
@@ -116,13 +116,12 @@ RE_table.prototype.renderTable = function(){
         console.log(tr);
 
 	regelm_details_view.table_row.style.display = 'table-row';
-	request_details(get_accession($(this)));
+	request_details(get_accession(dtable, $(this)));
     } );
 
 }
 
-function get_accession(t)
-{
+function get_accession(dtable, t){
     var whichBrowser = t.html();
     var data = dtable.row(t.parents('tr')).data();
     return data["_source"]["accession"];
