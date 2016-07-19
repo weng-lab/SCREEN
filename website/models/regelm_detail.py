@@ -15,3 +15,6 @@ class RegElementDetails:
             }
         }
         return self.es.search(index = self.index, body = q)
+
+    def get_intersecting_beds(self, reAccession):
+        pass

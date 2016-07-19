@@ -6,12 +6,11 @@ from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
-from db_bed_overlap import DbBedOverlap
 
 class PageInfoMain:
-    def __init__(self, es, DBCONN, version, webSocketUrl):
+    def __init__(self, es, ps, version, webSocketUrl):
         self.es = es
-        self.DBCONN = DBCONN
+        self.ps = ps
         self.version = version
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es)
@@ -146,12 +145,11 @@ class PageInfoMain:
             return re
 
         re = re["hit"]
-        dbo = DbBedOverlap(self.DBCONN)
         pos = re["position"]
-        expIDs = dbo.findBedOverlap(re["genome"],
-                                    pos["chrom"],
-                                    pos["start"],
-                                    pos["end"])
+        expIDs = ps.findBedOverlap(re["genome"],
+                                   pos["chrom"],
+                                   pos["start"],
+                                   pos["end"])
 
         ret = {}
         ret["experiments"] = expIDs

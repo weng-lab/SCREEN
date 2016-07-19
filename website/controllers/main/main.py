@@ -1,9 +1,9 @@
 from common.page_info import PageInfoMain
 
 class MainController:
-    def __init__(self, templates, es, DBCONN, version, webSocketUrl):
+    def __init__(self, templates, es, ps, version, webSocketUrl):
         self.t = templates
-        self.params = (es, DBCONN, version, webSocketUrl)
+        self.params = (es, ps, version, webSocketUrl)
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
