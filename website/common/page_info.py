@@ -13,7 +13,7 @@ class PageInfoMain:
         self.ps = ps
         self.version = version
         self.regElements = RegElements(es)
-        self.regElementDetails = RegElementDetails(es)
+        self.regElementDetails = RegElementDetails(es, ps)
         self.webSocketUrl = webSocketUrl
 
     def wholePage(self):
@@ -116,42 +116,14 @@ class PageInfoMain:
             return { "error" : "invalid accession"}
 
         try:
-            res = self.regElementDetails.reFull(reAccession)
+            return self.regElementDetails.reFull(reAccession)
         except:
+            raise
             return { "error" : "invalid read for " + reAccession }
-
-        if not "hits" in res:
-            return { "error" : "no hits for " + reAccession}
-
-        hits = res["hits"]
-        if 0 == len(hits["hits"]):
-            return { "error" : "no hits for " + reAccession }
-        if len(hits["hits"]) > 1:
-            return { "error" : "too many hits for " + reAccession }
-
-        ret = {}
-        ret["hit"] = hits["hits"][0]["_source"]
-
-        return ret
 
     def rePeaks(self, reAccession, kwargs):
         try:
-            re = self.reDetail(reAccession, kwargs)
+            return {"experiments": self.regElementDetails.get_intersecting_beds(reAccession)}
         except:
             raise
             return {"error" : "could not lookup " + reAccession}
-
-        if "error" in re:
-            return re
-
-        re = re["hit"]
-        pos = re["position"]
-        expIDs = ps.findBedOverlap(re["genome"],
-                                   pos["chrom"],
-                                   pos["start"],
-                                   pos["end"])
-
-        ret = {}
-        ret["experiments"] = expIDs
-
-        return ret
