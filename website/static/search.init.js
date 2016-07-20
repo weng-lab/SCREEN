@@ -10,20 +10,20 @@ var re_table = new RE_table();
 
 var facet_link_handlers = {
     "chromosome": function(chr) {
-	if (searchquery.chromosome != chr)
-	{
+	if (searchquery.chromosome != chr){
 	    GUI.facets["coordinates"].range_slider.set_range([0, chromosome_lengths[chr]]);
             searchquery.set_coordinate_filter(chr, 0, chromosome_lengths[chr]);
-	}
-	else
+	} else {
 	    searchquery.set_coordinate_filter("", 0, 0);
+        }
     },
     "cell_line": function(cell_line) {
 	searchquery.set_cell_line_filter(cell_line);
-	if (searchquery.cell_line == "")
+	if (searchquery.cell_line == ""){
 	    request_cell_lines();
-	else
+        } else {
 	    process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, "x"]]});
+        }
 	perform_search();
     }
 };
@@ -41,7 +41,9 @@ function create_venn(){
     venn_results.sets[0].size += venn_results.overlaps[0].size;
     venn_results.sets[1].size += venn_results.overlaps[0].size;
     var nrange = GUI.facets[document.getElementById("vennrank_dropdown").value].range_slider.get_range();
-    if (!_.isEqual(venn_slider.get_range(), nrange)) venn_slider.set_range(...nrange);
+    if (!_.isEqual(venn_slider.get_range(), nrange)) {
+        venn_slider.set_range(...nrange);
+    }
     create_venn_diagram("venn_div", venn_results);
 }
 
@@ -52,12 +54,12 @@ function toggle_display(el, sh){
 function socket_message_handler(e) {
     results = JSON.parse(e.data);
 
-    if (results["type"] == "enumeration") {
-    // console.log(e.data);
+    if ("enumeration" == results["type"]) {
+        // console.log(e.data);
 
-    if (results["type"] == "enumeration")
 	handle_enumeration(results);
-	if (results["name"] == "cell_line") {
+
+	if ("cell_line" == results["name"]) {
 	    var select = document.getElementById("cell_line_dropdown");
 	    for (i in enumerations["cell_line"]) {
 		var option = document.createElement("option");
@@ -66,21 +68,23 @@ function socket_message_handler(e) {
 		select.add(option);
 	    }
 	}
-    }
-    else if (results["type"] == "query_results" || "callback" in results)
-    {
-	if (results["callback"] in query_results_handlers)
-	    query_results_handlers[results["callback"]](results);
-    }
-    else if (results["type"] == "suggestions")
+
+    } else if("query_results" == results["type"] || "callback" in results){
+	if (results["callback"] in query_results_handlers){
+            query_results_handlers[results["callback"]](results);
+        }
+    } else if("suggestions" == results["type"]) {
 	handle_autocomplete_suggestions(results);
-    else if (results["type"] == "details")
+
+    } else if("re_details" == results["type"]) {
 	handle_details(results);
 
+    } else {
+        console.log("unhandled result type:", results["type"]);
+    }
 }
 
-function handle_details(results)
-{
+function handle_details(results) {
     regelm_details_view.set_header(results.accession);
     regelm_details_view.peak_overlap_view.load_data(results.overlapping_peaks);
 }
@@ -166,14 +170,15 @@ function create_expression_heatmap(results){
 
     for (i = 0; i < data.rowlabels.length; i++) {
 	for (j = 0; j < data.collabels.length; j++) {
-	    if (j in datamap[i])
+	    if (j in datamap[i]){
 		data.data.push({"row": i + 1,
 				"col": j + 1,
 				"value": datamap[i][j]});
-	    else
+            } else {
 		data.data.push({"row": i + 1,
 				"col": j + 1,
 				"value": 0});
+            }
 	}
     }
 
@@ -203,10 +208,12 @@ function create_rank_heatmap(results, rank, cell_line_datapairs){
 			    "row": i + 1,
 			    "value": results.results.hits[j]._source.ranks[trimmed_rank][cell_line_datapairs[i][0]].rank
 			   });
-	    if (data.data[data.data.length - 1].value > defaultlayout.range[1])
+	    if (data.data[data.data.length - 1].value > defaultlayout.range[1]){
 		defaultlayout.range[1] = data.data[data.data.length - 1].value;
-	    if (data.data[data.data.length - 1].value > maxes[i])
+            }
+	    if (data.data[data.data.length - 1].value > maxes[i]){
 		maxes[i] = data.data[data.data.length - 1].value;
+            }
 	}
     }
 
@@ -237,12 +244,11 @@ function handle_regulatory_results(results){
 
     toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
 
-    if (searchquery.has_cell_line_filter() && document.getElementById("ranks_facet_panel").style.display == "none")
-    {
+    if (searchquery.has_cell_line_filter() &&
+        document.getElementById("ranks_facet_panel").style.display == "none"){
 	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
     }
-    else if (!searchquery.has_cell_line_filter())
-    {
+    else if (!searchquery.has_cell_line_filter()) {
 	clear_div_contents(document.getElementById("rank_heatmap"));
 	create_rank_heatmap(results, document.getElementById("heatmap_dropdown").value, enumerations["cell_line"]);
     }
@@ -260,7 +266,6 @@ function handle_regulatory_results(results){
 
     GUI.refresh();
 
-
     re_table.renderTable();
 
     var genelist = [];
@@ -271,8 +276,7 @@ function handle_regulatory_results(results){
     }
     perform_gene_expression_search(gene_expression_query(genelist));
 
-    if (searchquery.has_cell_line_filter())
-    {
+    if (searchquery.has_cell_line_filter()){
 	refresh_venn();
 	for (i in enumerations["cell_line"]) {
 	    if (enumerations["cell_line"][i] != searchquery.cell_line) {
@@ -280,5 +284,4 @@ function handle_regulatory_results(results){
 	    }
 	}
     }
-
 }
