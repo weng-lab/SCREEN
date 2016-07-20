@@ -118,11 +118,11 @@ def main():
     DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
     ps = PostgresWrapper(DBCONN)
 
-    factory = WebSocketServerFactory(u"ws://127.0.0.1:9000")
+    factory = WebSocketServerFactory("ws://127.0.0.1:" + str(args.port))
     factory.protocol = MyServerProtocol
     # factory.setProtocolOptions(maxConnections=2)
 
-    reactor.listenTCP(9000, factory)
+    reactor.listenTCP(args.port, factory)
     reactor.run()
 
 if __name__ == '__main__':
