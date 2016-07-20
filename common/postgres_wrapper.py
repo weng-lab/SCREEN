@@ -18,7 +18,7 @@ class PostgresWrapper:
             curs.execute("""
             
             SELECT DISTINCT file_accession
-            FROM bedRanges{assembly}
+            FROM bed_ranges_{assembly}
             WHERE chrom = %(chrom)s
             AND startend && int4range(%(start)s, %(end)s)
             
