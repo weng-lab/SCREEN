@@ -68,8 +68,10 @@ function socket_message_handler(e) {
 	}
     }
     else if (results["type"] == "query_results" || "callback" in results)
+    {
 	if (results["callback"] in query_results_handlers)
 	    query_results_handlers[results["callback"]](results);
+    }
     else if (results["type"] == "suggestions")
 	handle_autocomplete_suggestions(results);
     else if (results["type"] == "details")
