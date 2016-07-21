@@ -321,12 +321,12 @@ peak_overlap_view.prototype.bind = function(container_div_id, args) {
 
 function _regelm_overlap_comparator(a, b)
 {
-    return a.count - b.count;
+    return b.count - a.count;
 }
 
 function _regelm_overlap_cellline_comparator(a, b)
 {
-    return a.total - b.total;
+    return b.total - a.total;
 }
 
 /*
@@ -356,7 +356,7 @@ peak_overlap_view.prototype.load_data = function(data) {
 	results.labels.sort(_regelm_overlap_comparator);
 
 	for (j in results.labels) {
-	    if (i != 0) ntd[1].innerText += ", ";
+	    if (j != 0) ntd[1].innerText += ", ";
 	    ntd[1].innerText += results.labels[j].count + " " + results.labels[j].id;
 	}
 

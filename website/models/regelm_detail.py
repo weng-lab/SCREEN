@@ -58,6 +58,7 @@ class RegElementDetails:
             hit = _hit["_source"]
             cell_line = hit["biosample_term_name"]
             label = hit["label"]
+            if label.strip() == "": label = hit["assay_term_name"]
             if cell_line not in results: results[cell_line] = {}
             if label not in results[cell_line]:
                 results[cell_line][label] = 0
