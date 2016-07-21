@@ -183,7 +183,6 @@ regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line
 
     clear_div_contents(this._table_div);
     var root_table = document.createElement("table");
-    root_table.cellPadding = 5;
 
     for (rank in this._rank_nodes) {
 
@@ -271,6 +270,7 @@ regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
     data.sort(_regelm_gene_comparator);
 
     var root_table = document.createElement("table");
+    
     var header = document.createElement("tr");
     var nth = [document.createElement("th"),
 	       document.createElement("th")];

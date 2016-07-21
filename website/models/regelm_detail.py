@@ -38,15 +38,21 @@ class RegElementDetails:
         print("found", len(exps), "overlapping peak exps")
         return {"experiments": exps}
 
-    def format_snps_for_javascript(self, snp_results, qcoord):
+    def _process_result_generic(self, _results, qcoord, name_field):
         results = []
-        for result in snp_results["hits"]["hits"]:
+        for result in _results["hits"]["hits"]:
             result = result["_source"]
             coord = result["position"]
             distance = min(abs(int(coord["end"]) - qcoord["end"]), abs(int(coord["start"]) - qcoord["start"]))
-            results.append({"name": result["accession"],
+            results.append({"name": result[name_field],
                             "distance": distance})
         return results
+    
+    def format_snps_for_javascript(self, snp_results, qcoord):
+        return self._process_result_generic(snp_results, qcoord, "accession")
+
+    def format_genes_for_javascript(self, gene_results, qcoord):
+        return self._process_result_generic(gene_results, qcoord, "approved_symbol")
     
     def get_bed_stats(self, bed_accs):
         fileIDs = bed_accs["experiments"]
