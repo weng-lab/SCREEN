@@ -127,7 +127,7 @@ def main():
 
     factory = WebSocketServerFactory("ws://127.0.0.1:" + str(args.port))
     factory.protocol = MyServerProtocol
-    # factory.setProtocolOptions(maxConnections=2)
+    factory.setProtocolOptions(maxConnections=50)
 
     reactor.listenTCP(args.port, factory)
     reactor.run()
