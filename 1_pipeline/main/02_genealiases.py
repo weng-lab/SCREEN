@@ -21,6 +21,17 @@ def get_gene_map(assembly="hg19"):
         retval[gene.genename_] = "%s:%s-%s" % (gene.chr_, gene.start_, gene.end_)
     return retval
 
+def tryparse(coordinate):
+    if "-" not in coordinate or ":" not in coordinate:
+        return {"chrom": "",
+                "start": -1,
+                "end": -1 }
+    p = coordinate.split(":")
+    v = p[1].split("-")
+    return {"chrom": p[0],
+            "start": int(v[0]),
+            "end": int(v[1]) }
+
 def main():
     infnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.tsv")
     outfnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.lsj")
@@ -56,6 +67,7 @@ def main():
                     continue
                 if geneobj["approved_symbol"] in hg19_genes:
                     geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
+                    geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))

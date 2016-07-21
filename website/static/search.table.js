@@ -119,6 +119,7 @@ RE_table.prototype.renderTable = function(){
 	request_details(result_from_tablerow(dtable, $(this)));
 	regelm_details_view.peak_overlap_view.set_loading_text();
 	regelm_details_view.snp_view.set_loading_text();
+	regelm_details_view.genes_view.set_loading_text();	
     } );
 
 }
