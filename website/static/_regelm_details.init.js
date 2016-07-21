@@ -37,6 +37,11 @@ regelm_details.prototype.get_tf_href = function(symbol) {
     return "#"; // TODO: link to RE info page
 };
 
+/* converts a list of overlapping peaks to a link to a page with details */
+regelm_details.prototype.get_genelist_href = function(symbol) {
+    return "#"; // TODO: link to RE info page
+};
+
 var regelm_details_base = new regelm_details();
 
 
