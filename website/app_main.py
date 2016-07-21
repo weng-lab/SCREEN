@@ -35,6 +35,10 @@ class MainApp():
         return self.mc.HexplotView(args, kwargs)
 
     @cherrypy.expose
+    def element(self, accession):
+        return self.mc.element(accession)
+
+    @cherrypy.expose
     @cherrypy.tools.json_out()
     def reDetail(self, reAccession, **kwargs):
         return self.mc.reDetail(reAccession, kwargs)
@@ -43,7 +47,7 @@ class MainApp():
     @cherrypy.tools.json_out()
     def rePeaks(self, reAccession, **kwargs):
         return self.mc.rePeaks(reAccession, kwargs)
-    
+
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def reSNPs(self, reAccession, **kwargs):
