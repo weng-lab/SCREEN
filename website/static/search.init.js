@@ -85,8 +85,8 @@ function socket_message_handler(e) {
 
 function handle_details(results) {
     regelm_details_view.set_header(results.accession);
-    regelm_details_view.peak_overlap_view.load_data(results.overlapping_peaks);
-    regelm_details_view.snp_view.load_list(results.overlapping_snps);
+    regelm_details_view.peak_overlap_view.load_data(results.overlapping_peaks, 5);
+    regelm_details_view.snp_view.load_list(results.overlapping_snps, 5);
 }
 
 function venn_ready(){
