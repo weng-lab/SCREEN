@@ -78,7 +78,6 @@ function socket_message_handler(e) {
 
     } else if("re_details" == results["type"]) {
 	handle_details(results);
-
     } else {
         console.log("unhandled result type:", results["type"]);
     }
@@ -87,6 +86,7 @@ function socket_message_handler(e) {
 function handle_details(results) {
     regelm_details_view.set_header(results.accession);
     regelm_details_view.peak_overlap_view.load_data(results.overlapping_peaks);
+    regelm_details_view.snp_view.load_list(results.overlapping_snps);
 }
 
 function venn_ready(){

@@ -115,6 +115,13 @@ class ElasticSearchWrapper:
         query.query_obj["size"] = 10000
         return self.es.search(index="peak_beds", body=query.query_obj)
 
+    def get_overlapping_snps(self, coord):
+        query = and_query()
+        query.append_exact_match("position.chrom", coord["chrom"])
+        query.append({"range": {"position.start": {"gte": coord["start"]}}})
+        query.append({"range": {"position.end": {"lte": coord["end"]}}})
+        return self.es.search(index="snp_aliases", body=query.query_obj)
+        
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
         result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
