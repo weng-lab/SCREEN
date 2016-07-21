@@ -16,11 +16,11 @@ class PostgresWrapper:
             return []
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             curs.execute("""
-            
+
             SELECT DISTINCT file_accession
             FROM bed_ranges_{assembly}
             WHERE chrom = %(chrom)s
             AND startend && int4range(%(start)s, %(end)s)
-            
+
             """.format(assembly=assembly), {"chrom" : chrom, "start": start, "end": end})
             return [x[0] for x in curs.fetchall()]
