@@ -51,6 +51,13 @@ class RegElementDetails:
     def format_snps_for_javascript(self, snp_results, qcoord):
         return self._process_result_generic(snp_results, qcoord, "accession")
 
+    def format_res_for_javascript(self, snp_results, qcoord, name = ""):
+        results = self._process_result_generic(snp_results, qcoord, "accession")
+        for result in results:
+            if result["name"] == name:
+                results.remove(result) # exclude RE being queried
+        return results
+
     def format_genes_for_javascript(self, gene_results, qcoord):
         return self._process_result_generic(gene_results, qcoord, "approved_symbol")
     

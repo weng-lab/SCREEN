@@ -125,6 +125,9 @@ class ElasticSearchWrapper:
     def get_overlapping_snps(self, coord):
         return self._get_overlaps_generic(coord, "snp_aliases")
 
+    def get_overlapping_res(self, coord):
+        return self._get_overlaps_generic(coord, "regulatory_elements")
+
     def get_overlapping_genes(self, coord):
         return self._get_overlaps_generic(coord, "gene_aliases")
         
