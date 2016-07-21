@@ -375,5 +375,6 @@ function request_suggestions(q, indeces, callback_f)
 function request_details(q)
 {
     sendText(JSON.stringify({"action": "re_detail",
-			     "accession": q}));
+			     "accession": q.accession,
+			     "coord": q.position }));
 };

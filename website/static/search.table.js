@@ -116,13 +116,15 @@ RE_table.prototype.renderTable = function(){
         console.log(tr);
 
 	regelm_details_view.table_row.style.display = 'table-row';
-	request_details(get_accession(dtable, $(this)));
+	request_details(result_from_tablerow(dtable, $(this)));
+	regelm_details_view.peak_overlap_view.set_loading_text();
+	regelm_details_view.snp_view.set_loading_text();
     } );
 
 }
 
-function get_accession(dtable, t){
+function result_from_tablerow(dtable, t){
     var whichBrowser = t.html();
     var data = dtable.row(t.parents('tr')).data();
-    return data["_source"]["accession"];
+    return data["_source"];
 }

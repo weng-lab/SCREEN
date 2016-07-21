@@ -58,6 +58,8 @@ class MyServerProtocol(WebSocketServerProtocol):
                               "accession": j["accession"]}
                     details = RegElementDetails(es, ps)
                     bed_accs = details.get_intersecting_beds(j["accession"])
+                    snp_results = es.get_overlapping_snps(j["coord"])
+                    output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
                     output["overlapping_peaks"] = details.get_bed_stats(bed_accs)
                     self.sendMessage(json.dumps(output))
                     return

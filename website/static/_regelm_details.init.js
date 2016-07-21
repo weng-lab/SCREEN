@@ -254,6 +254,14 @@ regelm_gene_view.prototype.bind = function(container_div_id, args) {
 }
 
 /*
+*  displays a temporary loading message; replaces existing content
+*/
+regelm_gene_view.prototype.set_loading_text = function() {
+    clear_div_contents(this._table_div);
+    this._table_div.appendChild(document.createTextNode("Loading..."));
+};
+
+/*
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
@@ -328,6 +336,14 @@ function _regelm_overlap_cellline_comparator(a, b)
 {
     return b.total - a.total;
 }
+
+/*
+*  displays a temporary loading message; replaces existing content
+*/
+peak_overlap_view.prototype.set_loading_text = function() {
+    clear_div_contents(this._table_div);
+    this._table_div.appendChild(document.createTextNode("Loading..."));
+};
 
 /*
 *  loads the given gene list
