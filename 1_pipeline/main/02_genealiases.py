@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 import json
 import sys
 import os
 import requests
 
-sys.path.append("../../../metadata/utils")
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from get_tss import Genes
 
@@ -69,7 +71,7 @@ def main():
                     geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
-                
+
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
 
