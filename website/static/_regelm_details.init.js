@@ -265,7 +265,7 @@ regelm_gene_view.prototype.set_loading_text = function() {
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
-regelm_gene_view.prototype.load_list = function(data) {
+regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
 
     clear_div_contents(this._table_div);
     data.sort(_regelm_gene_comparator);
@@ -281,6 +281,8 @@ regelm_gene_view.prototype.load_list = function(data) {
     root_table.appendChild(header);
 
     for (i in data) {
+
+	if (result_limit != -1 && i >= result_limit) break;
 
 	var row = data[i];
 	var tr = document.createElement("tr");
@@ -349,7 +351,7 @@ peak_overlap_view.prototype.set_loading_text = function() {
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
-peak_overlap_view.prototype.load_data = function(data) {
+peak_overlap_view.prototype.load_data = function(data, results_limit = -1) {
 
     clear_div_contents(this._table_div);
 
@@ -358,6 +360,8 @@ peak_overlap_view.prototype.load_data = function(data) {
     
     for (i in data.results) {
 
+	if (results_limit != -1 && i >= results_limit) break;
+	
 	var results = data.results[i];
 	var cell_line = results.id;
 	var tr = document.createElement("tr");
