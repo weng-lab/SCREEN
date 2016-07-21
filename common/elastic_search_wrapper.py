@@ -112,7 +112,7 @@ class ElasticSearchWrapper:
         query = or_query()
         for acc in acc_list:
             query.append_exact_match("accession", acc)
-        query.query_obj["size"] = 1000000
+        query.query_obj["size"] = 10000
         return self.es.search(index="peak_beds", body=query.query_obj)
 
     def get_field_mapping(self, index, doc_type, field):
