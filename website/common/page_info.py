@@ -111,6 +111,16 @@ class PageInfoMain:
         pageinfo.update({"queryresults": res})
         return pageinfo
 
+    def element(self, accession):
+        pageinfo = self.wholePage()
+        try:
+            res = None
+        except:
+            res = None
+            raise
+        pageinfo.update({"queryresults": res})
+        return pageinfo
+
     def reDetail(self, reAccession, kwargs):
         if not reAccession.startswith("EE"):
             return { "error" : "invalid accession"}
