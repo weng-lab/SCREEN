@@ -38,16 +38,22 @@ class RegElementDetails:
         return {"experiments": exps}
 
     def get_bed_stats(self, bed_accs):
-        r = self.es.get_bed_list(bed_accs["experiments"])
+        fileIDs = bed_accs["experiments"]
+        r = self.es.get_bed_list(fileIDs)
         hits = r["hits"]
+
+        foundIDs = [x["_source"]["accession"] for x in hits["hits"]]
+        print("foundIDs", foundIDs)
+
+        if hits["total"] != len(fileIDs):
+            for fid in fileIDs:
+                if fid not in foundIDs:
+                    print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % fid)
+
         print("hits:", hits)
         results = {}
         formatted_results = {"results": []}
-        if hits["total"] != len(bed_accs):
-            for _hit in hits["hits"]:
-                hit = _hit["_source"]
-                if hit["accession"] not in bed_accs:
-                    print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % hit["accession"])
+
         for _hit in hits["hits"]:
             hit = _hit["_source"]
             cell_line = hit["biosample_term_name"]
