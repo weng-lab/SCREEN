@@ -1,4 +1,5 @@
 import os, sys, json
+from collections import defaultdict
 
 class RegElementDetails:
     def __init__(self, es, ps):
@@ -43,26 +44,23 @@ class RegElementDetails:
         hits = r["hits"]
 
         foundIDs = [x["_source"]["accession"] for x in hits["hits"]]
-        print("foundIDs", foundIDs)
 
         if hits["total"] != len(fileIDs):
             for fid in fileIDs:
                 if fid not in foundIDs:
                     print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % fid)
 
-        print("hits:", hits)
-        results = {}
-        formatted_results = {"results": []}
 
+        results = defaultdict(lambda : defaultdict(int))
         for _hit in hits["hits"]:
             hit = _hit["_source"]
             cell_line = hit["biosample_term_name"]
             label = hit["label"]
-            if label.strip() == "": label = hit["assay_term_name"]
-            if cell_line not in results: results[cell_line] = {}
-            if label not in results[cell_line]:
-                results[cell_line][label] = 0
+            if label.strip() == "":
+                label = hit["assay_term_name"]
             results[cell_line][label] += 1
+
+        formatted_results = {"results": []}
         for cell_line, result in results.iteritems():
             formatted_results["results"].append({"id": cell_line,
                                                  "total": 0,
