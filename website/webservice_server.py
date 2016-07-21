@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import os, sys, json
-
 import argparse
 
 from twisted.python import log
 from twisted.internet import reactor
 
 import psycopg2, psycopg2.pool
+
+import autoreload
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
@@ -106,7 +107,7 @@ def parse_args():
     parser.add_argument('--local', action="store_true", default=False)
     return parser.parse_args()
 
-def main():
+def myMain():
     log.startLogging(sys.stdout)
 
     global es, ac, ps
@@ -131,6 +132,9 @@ def main():
 
     reactor.listenTCP(args.port, factory)
     reactor.run()
+
+def main():
+    autoreload.main(myMain)
 
 if __name__ == '__main__':
     sys.exit(main())
