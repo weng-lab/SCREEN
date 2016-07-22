@@ -197,6 +197,17 @@ regelm_ranking_view.prototype.load_cell_lines = function(data) {
     return this._load_cell_lines(data, true);
 };
 
+regelm_ranking_view.prototype.rankNames = function(s){
+    lookups = { "promoter" : "by H3K4me3",
+                "enhancer" : "by H3K27ac",
+                "dnase" : "by DNase",
+                "ctcf" : "by CTCF" };
+    if(s in lookups){
+        return lookups[s];
+    }
+    return s;
+}
+
 /* private: do actual display of data once number of cell lines is known */
 regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line = false) {
     clear_div_contents(this._table_div);
@@ -207,7 +218,9 @@ regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line
 	if (rank in data) {
 	    var tr = document.createElement("tr");
 	    var thl = document.createElement("th");
-	    thl.appendChild(document.createTextNode(rank + ": "));
+
+            var rankName = this.rankNames(rank);
+            thl.appendChild(document.createTextNode(rankName + ": "));
 	    tr.appendChild(thl);
 
 	    data[rank].sort(_regelm_ranks_comparator);
