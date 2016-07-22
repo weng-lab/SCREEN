@@ -65,13 +65,26 @@ var update_rank_filter = {
     }
 };
 
+var update_tss_filter = {
+    pc: function() {
+	searchquery.set_pcgene_filter(...GUI.facets["pc"].range_slider.get_selection_range());
+	perform_search();
+    },
+    all: function() {
+	searchquery.set_allgene_filter(...GUI.facets["all"].range_slider.get_selection_range());
+	perform_search();
+    }
+};
+
 var update_histogram_selection = {
     dnase : function() { update_histogram(GUI.facets["dnase"]); },
     ctcf : function() { update_histogram(GUI.facets["ctcf"]); },
     promoter : function() { update_histogram(GUI.facets["promoter"]); },
     enhancer : function() { update_histogram(GUI.facets["enhancer"]); },
     conservation : function() { update_histogram(GUI.facets["conservation"]); },
-    coordinate : function() { update_histogram(GUI.facets["coordinates"]); }
+    coordinate : function() { update_histogram(GUI.facets["coordinates"]); },
+    pc: function() {update_histogram(GUI.facets["pc"]);},
+    all: function() {update_histogram(GUI.facets["all"]);}
 };
 
 var GUI = new facetGUI();
@@ -81,7 +94,7 @@ GUI.facets["coordinates"].range_slider =
     create_range_slider("coordinates_range_slider",
                         2000000000,
                         document.getElementById("coordinates_textbox"),
-			update_rank_filter["coordinate"],
+			update_coordinate_filter,
                         update_histogram_selection["coordinate"]);
 
 $.each(FacetList, function(idx, facet) {
@@ -94,6 +107,17 @@ $.each(FacetList, function(idx, facet) {
 				update_rank_filter[facet.id],
                                 update_histogram_selection[facet.id]);
         GUI.facets[facet.id].id = facet.id};
+});
+
+$.each(TSS_List, function(idx, facet) {
+    GUI.facets[facet.id] = new range_facet();
+    GUI.facets[facet.id].range_slider =
+        create_range_slider(facet.id + "_range_slider",
+                            2000000,
+                            document.getElementById(facet.id + "_textbox"),
+			    update_tss_filter[facet.id],
+                            update_histogram_selection[facet.id]);
+    GUI.facets[facet.id].id = facet.id;
 });
 
 $.each(RankList, function(idx, facet) {

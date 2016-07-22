@@ -10,6 +10,8 @@ var PROMOTER_RANKS   = 5;
 var ENHANCER_RANKS   = 6;
 var CTCF_RANKS       = 7;
 var CONSERVATION_RNK = 8;
+var PC_GENE = 9;
+var ALL_GENE = 10;
 
 var HISTOGRAM_BINS   = 100;
 
@@ -160,12 +162,12 @@ function Query() {
 	    "coordinates": {"histogram": {"field": "position.start",
 					  "interval": 2000000,
 					  "min_doc_count": 1}},
-	    "gene_distance": {"histogram": {"field": "gene.nearest-all.distance",
-					    "interval": 50000,
-					    "min_doc_count": 1}},
-	    "pcgene_distance": {"histogram": {"field": "gene.nearest-pc.distance",
-					      "interval": 50000,
-					      "min_doc_count": 1}},
+	    "all": {"histogram": {"field": "genes.nearest-all.distance",
+				  "interval": 50000,
+				  "min_doc_count": 1}},
+	    "pc": {"histogram": {"field": "genes.nearest-pc.distance",
+				 "interval": 50000,
+				 "min_doc_count": 1}},
 	    "cell_lines": {"terms": {"field": "ranks.dnase"}},
 	    "assembly": {"terms": {"field": "genome"}}
 	},
@@ -173,7 +175,9 @@ function Query() {
 	    "bool": {
 		"must": [
 		    {}, // position.chrom
-		    {}  // assembly
+		    {}, // assembly
+		    {}, // nearest PC gene
+		    {}  // nearest gene
 		]
 	    }
 	},
@@ -226,6 +230,16 @@ Query.prototype.set_assembly_filter = function(assembly) {
 	this.eso.query.bool.must[ASSEMBLY] = {};
 	this.assembly = "";
     }
+};
+
+Query.prototype.set_pcgene_filter = function(min, max) {
+    this.eso.post_filter.bool.must[PC_GENE] = {"range": {"genes.nearest-pc.distance": {"gte": min,
+										       "lte": max}}};
+};
+
+Query.prototype.set_allgene_filter = function(min, max) {
+    this.eso.post_filter.bool.must[ALL_GENE] = {"range": {"genes.nearest-all.distance": {"gte": min,
+											 "lte": max}}};
 };
 
 Query.prototype.set_num_results = function(n) {this.eso.size = n;};
