@@ -73,24 +73,35 @@ class RegElementDetails:
                 if fid not in foundIDs:
                     print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % fid)
 
-
-        results = defaultdict(lambda : defaultdict(int))
+        results = {"tfs": defaultdict(lambda : defaultdict(int)),
+                   "histones": defaultdict(lambda : defaultdict(int)),
+                   "other": defaultdict(lambda : defaultdict(int)) }
+        
         for _hit in hits["hits"]:
             hit = _hit["_source"]
             cell_line = hit["biosample_term_name"]
             label = hit["label"]
             if label.strip() == "":
                 label = hit["assay_term_name"]
-            results[cell_line][label] += 1
+                results["other"][cell_line][label] += 1
+            elif "transcription" in hit["target"]:
+                results["tfs"][cell_line][label] += 1
+            elif "histone" in hit["target"]:
+                results["histones"][cell_line][label] += 1
+            else:
+                print("WARNING: experiment with assay %s does not seem to fit into existing categories" % hit["assay_term_name"])
 
-        formatted_results = {"results": []}
-        for cell_line, result in results.iteritems():
-            formatted_results["results"].append({"id": cell_line,
-                                                 "total": 0,
-                                                 "labels": []})
-            for label, val in result.iteritems():
-                formatted_results["results"][-1]["labels"].append({"id": label,
-                                                                   "count": val})
-                formatted_results["results"][-1]["total"] += val
-        print(formatted_results)
+        formatted_results = {"tfs": [],
+                             "histones": [],
+                             "other": [] }
+
+        for key, resultslist in results.iteritems():
+            for cell_line, result in resultslist.iteritems():
+                formatted_results[key].append({"id": cell_line,
+                                               "total": 0,
+                                               "labels": []})
+                for label, val in result.iteritems():
+                    formatted_results[key][-1]["labels"].append({"id": label,
+                                                                 "count": val})
+                    formatted_results[key][-1]["total"] += val
         return formatted_results

@@ -118,6 +118,8 @@ RE_table.prototype.renderTable = function(){
 	regelm_details_view.table_row.style.display = 'table-row';
 	request_details(result_from_tablerow(dtable, $(this)));
 	regelm_details_view.peak_overlap_view.set_loading_text();
+	regelm_details_view.tf_view.set_loading_text();
+	regelm_details_view.histones_view.set_loading_text();	
 	regelm_details_view.snp_view.set_loading_text();
 	regelm_details_view.genes_view.set_loading_text();
 	regelm_details_view.re_view.set_loading_text();	
