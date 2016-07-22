@@ -75,22 +75,26 @@ function socket_message_handler(e) {
         }
     } else if("suggestions" == results["type"]) {
 	handle_autocomplete_suggestions(results);
-
     } else if("re_details" == results["type"]) {
 	handle_details(results);
+    } else if ("peak_details" == results["type"]) {
+	handle_peaks(results);
     } else {
         console.log("unhandled result type:", results["type"]);
     }
 }
 
 function handle_details(results) {
-    regelm_details_view.set_header(results.accession);
+    regelm_details_view.snp_view.load_list(results.overlapping_snps, 5);
+    regelm_details_view.genes_view.load_list(results.nearby_genes, 5);
+    regelm_details_view.re_view.load_list(results.nearby_res, 5);
+    request_peaks(results.q);
+}
+
+function handle_peaks(results) {
     regelm_details_view.peak_overlap_view.load_data(results.peak_results.other, 5);
     regelm_details_view.tf_view.load_data(results.peak_results.tfs, 5);
     regelm_details_view.histones_view.load_data(results.peak_results.histones, 5);
-    regelm_details_view.snp_view.load_list(results.overlapping_snps, 5);
-    regelm_details_view.genes_view.load_list(results.nearby_genes, 5);
-    regelm_details_view.re_view.load_list(results.nearby_res, 5);    
 }
 
 function venn_ready(){

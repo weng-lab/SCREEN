@@ -113,10 +113,12 @@ RE_table.prototype.renderTable = function(){
     $('#searchresults_table').on( 'click', 'td', function() {
         var t = $(this);
         var tr = dtable.row(t.parents('tr'));
+	var r = result_from_tablerow(dtable, $(this));
         console.log(tr);
 
 	regelm_details_view.table_row.style.display = 'table-row';
-	request_details(result_from_tablerow(dtable, $(this)));
+	request_details(r);
+	regelm_details_view.set_header(r.accession);
 	regelm_details_view.peak_overlap_view.set_loading_text();
 	regelm_details_view.tf_view.set_loading_text();
 	regelm_details_view.histones_view.set_loading_text();	

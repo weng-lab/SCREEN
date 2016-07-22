@@ -378,3 +378,10 @@ function request_details(q)
 			     "accession": q.accession,
 			     "coord": q.position }));
 };
+
+function request_peaks(q)
+{
+    sendText(JSON.stringify({"action": "peak_detail",
+			     "accession": q.accession,
+			     "coord": q.position }));
+};

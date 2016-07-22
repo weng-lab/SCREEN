@@ -38,6 +38,36 @@ class MyServerProtocol(WebSocketServerProtocol):
     def onOpen(self):
         print("WebSocket connection open.")
 
+    def _get_and_send_re_detail(self, j):
+        global details
+
+        output = {"type": "re_details",
+                  "q": {"accession": j["accession"],
+                        "position": j["coord"]} }
+
+        expanded_coords = {"chrom": j["coord"]["chrom"],
+                           "start": j["coord"]["start"] - 10000000,
+                           "end": j["coord"]["end"] + 10000000}
+        
+        snp_results = es.get_overlapping_snps(j["coord"])
+        gene_results = es.get_overlapping_genes(expanded_coords)
+        re_results = es.get_overlapping_res(expanded_coords)
+        
+        output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
+        output["nearby_genes"] = details.format_genes_for_javascript(gene_results, j["coord"])
+        output["nearby_res"] = details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+        
+        self.sendMessage(json.dumps(output))
+
+    def _get_and_send_peaks_detail(self, j):
+        global details
+        output = {"type": "peak_details",
+                  "q": {"accession": j["accession"],
+                        "position": j["coord"]} }
+        bed_accs = details.get_intersecting_beds(j["accession"])
+        output["peak_results"] = details.get_bed_stats(bed_accs)
+        self.sendMessage(json.dumps(output))
+        
     def onMessage(self, payload, isBinary):
         if isBinary:
             self.sendMessage("not supported", False)
@@ -55,29 +85,11 @@ class MyServerProtocol(WebSocketServerProtocol):
                     self.sendMessage(json.dumps(raw_results))
                     return
                 if j["action"] == "re_detail":
-                    
-                    output = {"type": "re_details",
-                              "accession": j["accession"]}
-                    details = RegElementDetails(es, ps)
-                    
-                    bed_accs = details.get_intersecting_beds(j["accession"])
-                    output["peak_results"] = details.get_bed_stats(bed_accs)
-                    
-
-                    expanded_coords = {"chrom": j["coord"]["chrom"],
-                                       "start": j["coord"]["start"] - 10000000,
-                                       "end": j["coord"]["end"] + 10000000}
-                    snp_results = es.get_overlapping_snps(j["coord"])
-                    gene_results = es.get_overlapping_genes(expanded_coords)
-                    re_results = es.get_overlapping_res(expanded_coords)
-                    
-                    output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
-                    output["nearby_genes"] = details.format_genes_for_javascript(gene_results, j["coord"])
-                    output["nearby_res"] = details.format_res_for_javascript(re_results, j["coord"], j["accession"])
-                    
-                    self.sendMessage(json.dumps(output))
+                    self._get_and_send_re_detail(j)
                     return
-                
+                elif j["action"] == "peak_detail":
+                    self._get_and_send_peaks_detail(j)
+                    return
                 if j["action"] == "suggest":
                     output = {"type": "suggestions",
                               "callback": j["callback"]}
@@ -119,13 +131,13 @@ def parse_args():
 def myMain():
     log.startLogging(sys.stdout)
 
-    global es, ac, ps
+    global es, ac, ps, details
 
     args = parse_args()
 
     es = ElasticSearchWrapper(Elasticsearch())
     ac = Autocompleter(es)
-
+    
     if args.local:
         dbs = DBS.localRegElmViz()
     else:
@@ -134,6 +146,7 @@ def myMain():
 
     DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
     ps = PostgresWrapper(DBCONN)
+    details = RegElementDetails(es, ps)
 
     factory = WebSocketServerFactory("ws://127.0.0.1:" + str(args.port))
     factory.protocol = MyServerProtocol
