@@ -120,8 +120,8 @@ class ElasticSearchWrapper:
         query.append_exact_match("position.chrom", coord["chrom"])
         query.append({"range": {"position.start": {"gte": coord["start"]}}})
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
-        return self.es.search(index=index, body=query.query_obj)        
-    
+        return self.es.search(index=index, body=query.query_obj)
+
     def get_overlapping_snps(self, coord):
         return self._get_overlaps_generic(coord, "snp_aliases")
 
@@ -130,7 +130,7 @@ class ElasticSearchWrapper:
 
     def get_overlapping_genes(self, coord):
         return self._get_overlaps_generic(coord, "gene_aliases")
-        
+
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
         result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
