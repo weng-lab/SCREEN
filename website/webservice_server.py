@@ -55,22 +55,29 @@ class MyServerProtocol(WebSocketServerProtocol):
                     self.sendMessage(json.dumps(raw_results))
                     return
                 if j["action"] == "re_detail":
+                    
                     output = {"type": "re_details",
                               "accession": j["accession"]}
+                    details = RegElementDetails(es, ps)
+                    
+                    bed_accs = details.get_intersecting_beds(j["accession"])
+                    output["peak_results"] = details.get_bed_stats(bed_accs)
+                    
+
                     expanded_coords = {"chrom": j["coord"]["chrom"],
                                        "start": j["coord"]["start"] - 10000000,
                                        "end": j["coord"]["end"] + 10000000}
-                    details = RegElementDetails(es, ps)
-                    bed_accs = details.get_intersecting_beds(j["accession"])
                     snp_results = es.get_overlapping_snps(j["coord"])
                     gene_results = es.get_overlapping_genes(expanded_coords)
                     re_results = es.get_overlapping_res(expanded_coords)
+                    
                     output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
                     output["nearby_genes"] = details.format_genes_for_javascript(gene_results, j["coord"])
-                    output["overlapping_peaks"] = details.get_bed_stats(bed_accs)
                     output["nearby_res"] = details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+                    
                     self.sendMessage(json.dumps(output))
                     return
+                
                 if j["action"] == "suggest":
                     output = {"type": "suggestions",
                               "callback": j["callback"]}

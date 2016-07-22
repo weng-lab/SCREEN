@@ -79,15 +79,22 @@ function regelm_gui()
 	    }
 	},
 	"tf_view": {
-	    "proto": regelm_gene_view,
+	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "interacting TFs",
-		"href_f": regelm_details_base.get_tf_href
+		"header_text": "intersecting TF peaks"
+	    }
+	},
+	"histones_view": {
+	    "proto": peak_overlap_view,
+	    "args": {
+		"header_text": "intersecting histone peaks"
 	    }
 	},
 	"peak_overlap_view": {
 	    "proto": peak_overlap_view,
-	    "args": null
+	    "args": {
+		"header_text": "other intersecting peaks"
+	    }
 	}
     };
     this._container = null;
@@ -321,7 +328,7 @@ peak_overlap_view.prototype.bind = function(container_div_id, args) {
     this._container = document.getElementById(container_div_id);
 
     this._header = document.createElement("h3");
-    this._header.innerText = "overlapping peaks";
+    this._header.innerText = args.header_text;
     this._container.appendChild(this._header);
 
     this._table_div = document.createElement("div");
@@ -356,13 +363,13 @@ peak_overlap_view.prototype.load_data = function(data, results_limit = -1) {
     clear_div_contents(this._table_div);
 
     var root_table = document.createElement("table");
-    data.results.sort(_regelm_overlap_cellline_comparator);
+    data.sort(_regelm_overlap_cellline_comparator);
     
-    for (i in data.results) {
+    for (i in data) {
 
 	if (results_limit != -1 && i >= results_limit) break;
 	
-	var results = data.results[i];
+	var results = data[i];
 	var cell_line = results.id;
 	var tr = document.createElement("tr");
 	var ntd = [document.createElement("td"),
