@@ -38,11 +38,13 @@ var query_results_handlers = {
 
 function create_venn(){
     clear_div_contents(document.getElementById("venn_div"));
-    venn_results.sets[0].size += venn_results.overlaps[0].size;
-    venn_results.sets[1].size += venn_results.overlaps[0].size;
+    if (venn_results.sets[0].size == 0 && venn_results.sets[1].size == 0) {
+	document.getElementById("venn_div").appendChild(document.createTextNode("No data; select a higher threshold rank."));
+	return;
+    }
     var nrange = GUI.facets[document.getElementById("vennrank_dropdown").value].range_slider.get_range();
-    if (!_.isEqual(venn_slider.get_range(), nrange)) {
-        venn_slider.set_range(...nrange);
+    if (!_.isEqual(venn_lbound_slider.get_range(), nrange)) {
+        venn_lbound_slider.set_range(...nrange);
     }
     create_venn_diagram("venn_div", venn_results);
 }
@@ -285,7 +287,6 @@ function handle_regulatory_results(results){
     perform_gene_expression_search(gene_expression_query(genelist));
 
     if (searchquery.has_cell_line_filter()){
-	refresh_venn();
 	for (i in enumerations["cell_line"]) {
 	    if (enumerations["cell_line"][i] != searchquery.cell_line) {
 		break;
