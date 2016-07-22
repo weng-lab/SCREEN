@@ -15,8 +15,10 @@ facetGUI.prototype.refresh = function() {
 	    }
 	}
     }
-    this.facets["coordinates"].range_slider.refresh_selection(...searchquery.get_coordinate_selection_range());
-    this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
+    if (searchquery.get_coordinate_selection_range()) {
+	this.facets["coordinates"].range_slider.refresh_selection(...searchquery.get_coordinate_selection_range());
+	this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
+    }
 };
 
 function range_facet(){

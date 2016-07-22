@@ -163,10 +163,10 @@ function Query() {
 					  "interval": 2000000,
 					  "min_doc_count": 1}},
 	    "all": {"histogram": {"field": "genes.nearest-all.distance",
-				  "interval": 50000,
+				  "interval": 5000,
 				  "min_doc_count": 1}},
 	    "pc": {"histogram": {"field": "genes.nearest-pc.distance",
-				 "interval": 50000,
+				 "interval": 5000,
 				 "min_doc_count": 1}},
 	    "cell_lines": {"terms": {"field": "ranks.dnase"}},
 	    "assembly": {"terms": {"field": "genome"}}
