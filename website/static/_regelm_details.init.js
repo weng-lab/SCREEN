@@ -198,10 +198,10 @@ regelm_ranking_view.prototype.load_cell_lines = function(data) {
 };
 
 regelm_ranking_view.prototype.rankNames = function(s){
-    lookups = { "promoter" : "by H3K4me3",
-                "enhancer" : "by H3K27ac",
-                "dnase" : "by DNase",
-                "ctcf" : "by CTCF" };
+    lookups = { "promoter" : "promoter-like",
+                "enhancer" : "enhancer-like",
+                "dnase" : "DNase",
+                "ctcf" : "CTCF" };
     if(s in lookups){
         return lookups[s];
     }
