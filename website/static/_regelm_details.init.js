@@ -8,13 +8,19 @@ function regelm_details()
     this.annotation_colors = {"promoter": "255, 0, 0",
 			      "enhancer": "255, 205, 0",
 			      "dnase": "0, 218, 147",
-			      "CTCF": "238, 80, 245"};
+			      "ctcf": "238, 80, 245"};
 };
 
 /* convert key ("promoter", "enhancer", etc.) and rank to color */
 regelm_details.prototype.get_color = function(key, absolute, total) {
     var pct_rank = 1 - Math.log10(absolute) / Math.log10(total);
     return "rgba(" + this.annotation_colors[key] + ", " + pct_rank + ")";
+};
+
+/* convert rank to text color that will be visible on corresponding background color */
+regelm_details.prototype.get_text_color = function(absolute, total) {
+    var pct_rank = 1 - Math.log10(absolute) / Math.log10(total);
+    return (pct_rank < 0.5 ? "#000000" : "#ffffff");
 };
 
 /* converts a gene symbol to a link to a page with details */
@@ -40,6 +46,20 @@ regelm_details.prototype.get_tf_href = function(symbol) {
 /* converts a list of overlapping peaks to a link to a page with details */
 regelm_details.prototype.get_genelist_href = function(symbol) {
     return "#"; // TODO: link to RE info page
+};
+
+regelm_details.prototype.reformat_ranks = function(ranks) {
+    reformatted = {};
+    for (rank in ranks) {
+	if (rank == "conservation") continue;
+	reformatted[rank] = [];
+	for (cell_line in ranks[rank]) {
+	    reformatted[rank].push({"id": cell_line,
+				    "absolute": ranks[rank][cell_line].rank,
+				    "total": 4000000});
+	}
+    }
+    return reformatted;
 };
 
 var regelm_details_base = new regelm_details();
@@ -149,7 +169,7 @@ function regelm_ranking_view()
     this._rank_nodes = {"promoter": null,
 			"enhancer": null,
 			"dnase": null,
-			"CTCF": null}
+			"ctcf": null}
 };
 
 /* dynamically generate contents within target div and wrap */
@@ -209,7 +229,7 @@ regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line
 		var rank_td = document.createElement("td");
 
 		rank_td.innerText = (single_cell_line ? data[rank][i].absolute + " / " + data[rank][i].total : d.id);
-		rank_td.style.color = (pct > 0.5 ? "#ffffff" : "#000000");
+		rank_td.style.color = regelm_details_base.get_text_color(data[rank][i].absolute, data[rank][i].total);
 		rank_td.style.backgroundColor = regelm_details_base.get_color(rank, data[rank][i].absolute, data[rank][i].total);
 		rank_td.className = "regelm_rank_td";
 
