@@ -51,7 +51,9 @@ regelm_details.prototype.get_genelist_href = function(symbol) {
 regelm_details.prototype.reformat_ranks = function(ranks) {
     reformatted = {};
     for (rank in ranks) {
-	if (rank == "conservation") continue;
+	if (rank == "conservation") {
+            continue;
+        }
 	reformatted[rank] = [];
 	for (cell_line in ranks[rank]) {
 	    reformatted[rank].push({"id": cell_line,
@@ -80,40 +82,40 @@ function regelm_gui()
 	"genes_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest genes",
+		"header_text": "Nearest genes",
 		"href_f": regelm_details_base.get_gene_href
 	    }
 	},
 	"snp_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest SNPs",
+		"header_text": "Nearest SNPs",
 		"href_f": regelm_details_base.get_snp_href
 	    }
 	},
 	"re_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest regulatory elements",
+		"header_text": "Nearest candidate REs",
 		"href_f": regelm_details_base.get_re_href
 	    }
 	},
 	"tf_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "intersecting TF peaks"
+		"header_text": "Intersecting TF peaks"
 	    }
 	},
 	"histones_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "intersecting histone peaks"
+		"header_text": "Intersecting histone peaks"
 	    }
 	},
 	"peak_overlap_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "other intersecting peaks"
+		"header_text": "Other intersecting peaks"
 	    }
 	}
     };
@@ -124,9 +126,7 @@ function regelm_gui()
 var regelm_details_view = new regelm_gui();
 
 /* create individual components within target div and wrap */
-regelm_gui.prototype.bind = function(container_div_id)
-{
-
+regelm_gui.prototype.bind = function(container_div_id){
     this.ranking_GUI = new regelm_ranking_view();
     this._container = document.getElementById(container_div_id);
 
@@ -143,28 +143,23 @@ regelm_gui.prototype.bind = function(container_div_id)
 	this[subGUI] = new this.GUIs[subGUI].proto();
 	this[subGUI].bind("regelm_view_" + subGUI, this.GUIs[subGUI].args);
     }
-
 };
 
 /* set header text to given accession */
-regelm_gui.prototype.set_header = function(accession)
-{
+regelm_gui.prototype.set_header = function(accession){
     this._header.innerText = accession;
 };
 
 /* display given coordinates */
-regelm_gui.prototype.set_coordinates = function(coordinates)
-{
+regelm_gui.prototype.set_coordinates = function(coordinates){
     this._coordinates.innerText = coordinates;
 };
-
 
 /*
 *  rank subview
 *  contains ranks for promoter, enhancer, dnase, etc. and functions for manipulation
 */
-function regelm_ranking_view()
-{
+function regelm_ranking_view(){
     this._container = null;
     this._rank_nodes = {"promoter": null,
 			"enhancer": null,
@@ -174,21 +169,18 @@ function regelm_ranking_view()
 
 /* dynamically generate contents within target div and wrap */
 regelm_ranking_view.prototype.bind = function(container_div_id, args) {
-
     this._container = document.getElementById(container_div_id);
 
     this._header = document.createElement("h3");
-    this._header.innerText = "ranks";
+    this._header.innerText = "Top-ranked cell types";
     this._container.appendChild(this._header);
 
     this._table_div = document.createElement("div");
     this._container.appendChild(this._table_div);
-
 };
 
 /* for sorting ranks according to percentile */
-function _regelm_ranks_comparator(a, b)
-{
+function _regelm_ranks_comparator(a, b){
     return a.absolute / a.total - b.absolute / b.total;
 };
 
@@ -197,33 +189,43 @@ function _regelm_ranks_comparator(a, b)
 *  format is [{"rank": promoter|enhancer|etc., "absolute": absolute rank, "total": total elements ranked}, ...]
 */
 regelm_ranking_view.prototype.load_cell_lines = function(data) {
-
     for (rank in this._rank_nodes) {
-	if (rank in data && data[rank].length > 1) return this._load_cell_lines(data);
+	if (rank in data && data[rank].length > 1) {
+            return this._load_cell_lines(data);
+        }
     }
     return this._load_cell_lines(data, true);
-
 };
+
+regelm_ranking_view.prototype.rankNames = function(s){
+    lookups = { "promoter" : "by H3K4me3",
+                "enhancer" : "by H3K27ac",
+                "dnase" : "by DNase",
+                "ctcf" : "by CTCF" };
+    if(s in lookups){
+        return lookups[s];
+    }
+    return s;
+}
 
 /* private: do actual display of data once number of cell lines is known */
 regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line = false) {
-
     clear_div_contents(this._table_div);
     var root_table = document.createElement("table");
+    root_table.className = "table table-condensed";
 
     for (rank in this._rank_nodes) {
-
 	if (rank in data) {
-
 	    var tr = document.createElement("tr");
 	    var thl = document.createElement("th");
-	    thl.appendChild(document.createTextNode(rank + ": "));
+
+            var rankName = this.rankNames(rank);
+            thl.appendChild(document.createTextNode(rankName + ": "));
 	    tr.appendChild(thl);
 
 	    data[rank].sort(_regelm_ranks_comparator);
 
 	    for (i in data[rank]) {
-
 		var d = data[rank][i];
 		var pct = 1.0 - d.absolute / d.total;
 		var rank_td = document.createElement("td");
@@ -234,16 +236,11 @@ regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line
 		rank_td.className = "regelm_rank_td";
 
 		tr.appendChild(rank_td);
-
 	    }
-
 	    root_table.appendChild(tr);
-
 	}
-
     }
     this._table_div.appendChild(root_table);
-
 };
 
 
@@ -251,21 +248,18 @@ regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line
 *  gene view
 *  dynamically generates list of nearest genes
 */
-function regelm_gene_view()
-{
+function regelm_gene_view(){
     this.nearest_genes = null;
     this._container = null;
 };
 
 /* for sorting genes by distance */
-function _regelm_gene_comparator(a, b)
-{
+function _regelm_gene_comparator(a, b){
     return a.distance - b.distance;
 };
 
 /* dynamically generate components in target div */
 regelm_gene_view.prototype.bind = function(container_div_id, args) {
-
     this._container = document.getElementById(container_div_id);
 
     this._header = document.createElement("h3");
@@ -276,7 +270,6 @@ regelm_gene_view.prototype.bind = function(container_div_id, args) {
     this._container.appendChild(this._table_div);
 
     this.href_f = args.href_f;
-
 }
 
 /*
@@ -292,24 +285,25 @@ regelm_gene_view.prototype.set_loading_text = function() {
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
 regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
-
     clear_div_contents(this._table_div);
     data.sort(_regelm_gene_comparator);
 
     var root_table = document.createElement("table");
-    
+    root_table.className = "table table-condensed";
+
     var header = document.createElement("tr");
     var nth = [document.createElement("th"),
 	       document.createElement("th")];
     nth[0].appendChild(document.createTextNode("symbol"));
-    nth[1].appendChild(document.createTextNode("distance"));
+    nth[1].appendChild(document.createTextNode("distance (bp)"));
     header.appendChild(nth[0]);
     header.appendChild(nth[1]);
     root_table.appendChild(header);
 
     for (i in data) {
-
-	if (result_limit != -1 && i >= result_limit) break;
+	if (result_limit != -1 && i >= result_limit) {
+            break;
+        }
 
 	var row = data[i];
 	var tr = document.createElement("tr");
@@ -321,15 +315,13 @@ regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
 	a.href = this.href_f(row.name);
 	ntd[0].appendChild(a);
 
-	ntd[1].appendChild(document.createTextNode(row.distance));
+	ntd[1].appendChild(document.createTextNode(row.distance.toLocaleString("en")));
 	tr.appendChild(ntd[0]);
 	tr.appendChild(ntd[1]);
 	root_table.appendChild(tr);
-
     }
 
     this._table_div.appendChild(root_table);
-
 };
 
 
@@ -337,14 +329,12 @@ regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
 *  peak overlap view
 *  display information on peak experiments which overlap the REs
 */
-function peak_overlap_view()
-{
+function peak_overlap_view(){
     this._container = null;
 };
 
 /* dynamically generate components in target div */
 peak_overlap_view.prototype.bind = function(container_div_id, args) {
-
     this._container = document.getElementById(container_div_id);
 
     this._header = document.createElement("h3");
@@ -353,16 +343,13 @@ peak_overlap_view.prototype.bind = function(container_div_id, args) {
 
     this._table_div = document.createElement("div");
     this._container.appendChild(this._table_div);
-
 }
 
-function _regelm_overlap_comparator(a, b)
-{
+function _regelm_overlap_comparator(a, b){
     return b.count - a.count;
 }
 
-function _regelm_overlap_cellline_comparator(a, b)
-{
+function _regelm_overlap_cellline_comparator(a, b){
     return b.total - a.total;
 }
 
@@ -379,16 +366,17 @@ peak_overlap_view.prototype.set_loading_text = function() {
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
 peak_overlap_view.prototype.load_data = function(data, results_limit = -1) {
-
     clear_div_contents(this._table_div);
 
     var root_table = document.createElement("table");
+    root_table.className = "table table-condensed";
     data.sort(_regelm_overlap_cellline_comparator);
-    
-    for (i in data) {
 
-	if (results_limit != -1 && i >= results_limit) break;
-	
+    for (i in data) {
+	if (results_limit != -1 && i >= results_limit) {
+            break;
+        }
+
 	var results = data[i];
 	var cell_line = results.id;
 	var tr = document.createElement("tr");
@@ -412,7 +400,5 @@ peak_overlap_view.prototype.load_data = function(data, results_limit = -1) {
 	root_table.appendChild(tr);
 
     }
-
     this._table_div.appendChild(root_table);
-
 };
