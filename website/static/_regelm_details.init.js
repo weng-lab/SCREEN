@@ -82,40 +82,40 @@ function regelm_gui()
 	"genes_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest genes",
+		"header_text": "Nearest genes",
 		"href_f": regelm_details_base.get_gene_href
 	    }
 	},
 	"snp_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest SNPs",
+		"header_text": "Nearest SNPs",
 		"href_f": regelm_details_base.get_snp_href
 	    }
 	},
 	"re_view": {
 	    "proto": regelm_gene_view,
 	    "args": {
-		"header_text": "nearest regulatory elements",
+		"header_text": "Nearest candidate REs",
 		"href_f": regelm_details_base.get_re_href
 	    }
 	},
 	"tf_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "intersecting TF peaks"
+		"header_text": "Intersecting TF peaks"
 	    }
 	},
 	"histones_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "intersecting histone peaks"
+		"header_text": "Intersecting histone peaks"
 	    }
 	},
 	"peak_overlap_view": {
 	    "proto": peak_overlap_view,
 	    "args": {
-		"header_text": "other intersecting peaks"
+		"header_text": "Other intersecting peaks"
 	    }
 	}
     };
@@ -172,7 +172,7 @@ regelm_ranking_view.prototype.bind = function(container_div_id, args) {
     this._container = document.getElementById(container_div_id);
 
     this._header = document.createElement("h3");
-    this._header.innerText = "ranks";
+    this._header.innerText = "Top-ranked cell types";
     this._container.appendChild(this._header);
 
     this._table_div = document.createElement("div");
@@ -282,7 +282,7 @@ regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
     var nth = [document.createElement("th"),
 	       document.createElement("th")];
     nth[0].appendChild(document.createTextNode("symbol"));
-    nth[1].appendChild(document.createTextNode("distance"));
+    nth[1].appendChild(document.createTextNode("distance (bp)"));
     header.appendChild(nth[0]);
     header.appendChild(nth[1]);
     root_table.appendChild(header);
@@ -302,7 +302,7 @@ regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
 	a.href = this.href_f(row.name);
 	ntd[0].appendChild(a);
 
-	ntd[1].appendChild(document.createTextNode(row.distance));
+	ntd[1].appendChild(document.createTextNode(row.distance.toLocaleString("en")));
 	tr.appendChild(ntd[0]);
 	tr.appendChild(ntd[1]);
 	root_table.appendChild(tr);
