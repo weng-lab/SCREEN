@@ -72,11 +72,16 @@ class PageInfoMain:
                     {"id": "enhancer", "name": "enhancer"},
                     {"id": "conservation", "name": "conservation"}]
 
+        tsslist = [{"id": "pc", "name": "protein coding"},
+                    {"id": "all", "name": "all"}]
+        
         retval.update({"parsed" : json.dumps(parsed),
                        "facetlist": facetlist,
                        "ranklist": ranklist,
+                       "tsslist": tsslist,
                        "facetlist_json": json.dumps(facetlist),
-                       "ranklist_json": json.dumps(ranklist) })
+                       "ranklist_json": json.dumps(ranklist),
+                       "tsslist_json": json.dumps(tsslist) })
 
         return retval
 

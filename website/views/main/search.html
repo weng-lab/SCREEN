@@ -15,6 +15,7 @@
       {{ hh.facetbox(facet) }}
       {% endfor -%}
 
+      {% include '_tss_facetbox.html' -%}
       {% include '_ranks_facetbox.html' -%}
 
     </div>
@@ -88,7 +89,8 @@
   var WebSocketUrl = {{ webSocketUrl }};
   var ParsedQuery = {{ parsed }};
   var FacetList = {{ facetlist_json }};
-  var RankList = {{ ranklist_json }}
+  var RankList = {{ ranklist_json }};
+  var TSS_List = {{ tsslist_json }};
   FBVERSION.init("/{{version}}");
 </script>
 {{ hh.jsVer(version, "static/_regelm_details.init.js") }}
