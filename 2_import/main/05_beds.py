@@ -53,11 +53,11 @@ class LoadBeds:
                 tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
                     assembly = self.assembly, assay=assay, chrom=chrom)
                 self.cur.execute("""
-        DROP TABLE IF EXISTS {tableName};
-        CREATE TABLE {tableName}
-        (id serial PRIMARY KEY,
-        startend int4range,
-        file_accession text
+                DROP TABLE IF EXISTS {tableName};
+                CREATE TABLE {tableName}
+                (id serial PRIMARY KEY,
+                startend int4range,
+                file_accession text
                 ) """.format(tableName = tableName))
 
     def insertAssay(self, assay, exps):
@@ -81,6 +81,7 @@ class LoadBeds:
         outFs = {}
         for chrom in self.chroms:
             outFs[chrom] = cStringIO.StringIO()
+
         badPeaks = 0
         for peak in peaks:
             toks = peak.rstrip().split('\t') # chrom, start, end, etc...
@@ -89,6 +90,7 @@ class LoadBeds:
                 badPeaks += 1
                 continue
             outFs[chrom].write('[' + toks[1] + ',' + toks[2] + ')\t' + bed.fileID + '\n')
+
         peakNums = 0
         for chrom in self.chroms:
             outFs[chrom].seek(0)
@@ -97,6 +99,7 @@ class LoadBeds:
             self.cur.copy_from(outFs[chrom], tableName,
                                columns=("startend", "file_accession"))
             peakNums += self.cur.rowcount
+
         print("\t", self.assembly, assay, "{:,}".format(peakNums), badPeaks, fnp)
 
     def index(self):
@@ -106,6 +109,7 @@ class LoadBeds:
                 tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
                     assembly = self.assembly, assay=assay, chrom=chrom)
                 indexName = "rangeIdx_" + tableName
+
                 self.cur.execute("""
                 CREATE INDEX {indexName} ON {tableName} USING gist (startend);
                 """.format(indexName = indexName, tableName = tableName))
