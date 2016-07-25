@@ -52,6 +52,7 @@ class LoadBeds:
             for chrom in self.chroms:
                 tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
                     assembly = self.assembly, assay=assay, chrom=chrom)
+                print('\t', "dropping and creating", tableName)
                 self.cur.execute("""
                 DROP TABLE IF EXISTS {tableName};
                 CREATE TABLE {tableName}
@@ -93,9 +94,9 @@ class LoadBeds:
 
         peakNums = 0
         for chrom in self.chroms:
-            outFs[chrom].seek(0)
             tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
                 assembly = self.assembly, assay=assay, chrom=chrom)
+            outFs[chrom].seek(0)
             self.cur.copy_from(outFs[chrom], tableName,
                                columns=("startend", "file_accession"))
             peakNums += self.cur.rowcount
