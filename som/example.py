@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import tensorflow as tf
 import numpy as np
 
@@ -223,16 +225,19 @@ color_names = \
      'cyan', 'violet', 'yellow', 'white',
      'darkgrey', 'mediumgrey', 'lightgrey']
 
+print("about to train")
 #Train a 20x30 SOM with 400 iterations
 som = SOM(20, 30, 3, 400)
 som.train(colors)
 
+print("centroids")
 #Get output grid
 image_grid = som.get_centroids()
 
 #Map colours to their closest neurons
 mapped = som.map_vects(colors)
 
+print("plotting")
 #Plot
 plt.imshow(image_grid)
 plt.title('Color SOM')
