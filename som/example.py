@@ -151,6 +151,7 @@ class SOM(object):
 
         #Training iterations
         for iter_no in range(self._n_iterations):
+            print(iter_no)
             #Train with each vector one by one
             for input_vect in input_vects:
                 self._sess.run(self._training_op,
@@ -227,7 +228,7 @@ color_names = \
 
 print("about to train")
 #Train a 20x30 SOM with 400 iterations
-som = SOM(20, 30, 3, 400)
+som = SOM(100, 100, 3, 400)
 som.train(colors)
 
 print("centroids")
