@@ -24,17 +24,18 @@ inline double RandFloat()		   {return (rand())/(RAND_MAX+1.0);}
 //returns a random bool
 inline bool   RandBool()
 {
-	if (RandInt(0,1)) return true;
+    if (RandInt(0,1)) return true;
 
-	else return false;
+    else return false;
 }
 
 //returns a random float in the range -1 < n < 1
-inline double RandomClamped()	   {return RandFloat() - RandFloat();}
-
+inline double RandomClamped(){
+    return RandFloat() - RandFloat();
+    }
 
 //-----------------------------------------------------------------------
-//	
+//
 //	some handy little functions
 //-----------------------------------------------------------------------
 
@@ -42,12 +43,12 @@ inline double RandomClamped()	   {return RandFloat() - RandFloat();}
 inline string itos(int arg)
 {
     ostringstream buffer;
-	
-	//send the int to the ostringstream
-    buffer << arg;	
-	
-	//capture the string
-    return buffer.str();		
+
+    //send the int to the ostringstream
+    buffer << arg;
+
+    //capture the string
+    return buffer.str();
 }
 
 
@@ -56,62 +57,62 @@ inline string itos(int arg)
 inline string ftos(float arg)
 {
     ostringstream buffer;
-	
-	//send the int to the ostringstream
-    buffer << arg;	
-	
-	//capture the string
-    return buffer.str();		
+
+    //send the int to the ostringstream
+    buffer << arg;
+
+    //capture the string
+    return buffer.str();
 }
 
 //clamps the first argument between the second two
 inline void Clamp(double &arg, const double min, const double max)
 {
-	if (arg < min)
-	{
-		arg = min;
-	}
+    if (arg < min)
+    {
+        arg = min;
+    }
 
-	if (arg > max)
-	{
-		arg = max;
-	}
+    if (arg > max)
+    {
+        arg = max;
+    }
 }
 
 
 //rounds a double up or down depending on its value
 inline int Rounded(double val)
 {
-  int    integral = (int)val;
-  double mantissa = val - integral;
+    int    integral = (int)val;
+    double mantissa = val - integral;
 
-  if (mantissa < 0.5)
-  {
-    return integral;
-  }
+    if (mantissa < 0.5)
+    {
+        return integral;
+    }
 
-  else
-  {
-    return integral + 1;
-  }
+    else
+    {
+        return integral + 1;
+    }
 }
 
-//rounds a double up or down depending on whether its 
+//rounds a double up or down depending on whether its
 //mantissa is higher or lower than offset
 inline int RoundUnderOffset(double val, double offset)
 {
-  int    integral = (int)val;
-  double mantissa = val - integral;
+    int    integral = (int)val;
+    double mantissa = val - integral;
 
-  if (mantissa < offset)
-  {
-    return integral;
-  }
+    if (mantissa < offset)
+    {
+        return integral;
+    }
 
-  else
-  {
-    return integral + 1;
-  }
+    else
+    {
+        return integral + 1;
+    }
 }
 
 
