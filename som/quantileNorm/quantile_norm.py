@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import sys
 import numpy as np
 import pandas as pd
 
@@ -15,3 +18,13 @@ def quantileNormalize(df_input):
         t = np.searchsorted(np.sort(df[col]), df[col])
         df[col] = [rank[i] for i in t]
     return df
+
+def main():
+    data = {"a1" : [5,2,3,4],
+            "a2" : [4,1,4,2],
+            "a3" : [3,4,6,8]}
+    df = pd.DataFrame(data, columns=['a1', 'a2', 'a3'])
+    print(quantileNormalize(df))
+
+if __name__ == "__main__":
+    sys.exit(main())
