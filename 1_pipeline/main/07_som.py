@@ -25,10 +25,17 @@ def doExtractPeaks(exp):
 
     peaks = Peaks.fromFnp(assembly, allPeakFnp)
 
-    d = "
-    outFnp = allPeakFnp + ".signal.matrix"
+    d = "/nfs/purcarom@zlab2/som"
+    outFnp = os.path.join(d, exp.encodeID + ".signal.matrix.gz")
 
-    print(allPeakFnp, bigWigFnp)
+    print(allPeakFnp, bigWigFnp, outFnp)
+    cmds = ["/home/purcarom/common/zentLib/bin/test",
+            "--bed",
+            allPeakFnp,
+            bigWigFnp,
+            '|', "gzip"
+            '>', outFnp]
+    Utils.runCmds(cmds)
 
 def parse_args():
     parser = argparse.ArgumentParser()
