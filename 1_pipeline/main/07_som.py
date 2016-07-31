@@ -66,7 +66,7 @@ def main():
                    jobType = PythonJob,
                    cpus = args.j)
 
-    for dataset in [Datasets.all_mouse, Datasets.all_human]:
+    for dataset in [Datasets.all_human]:
         m = MetadataWS(dataset)
         exps = m.dnases_useful()
         print("found", len(exps), "DNase exps w/ peak files...")
