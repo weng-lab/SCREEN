@@ -25,6 +25,7 @@ def doExtractPeaks(exp):
 
     peaks = Peaks.fromFnp(assembly, allPeakFnp)
 
+    d = "
     outFnp = allPeakFnp + ".signal.matrix"
 
     print(allPeakFnp, bigWigFnp)
