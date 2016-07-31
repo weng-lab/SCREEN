@@ -28,7 +28,6 @@ def doExtractPeaks(exp):
     d = "/nfs/purcarom@zlab2/som"
     outFnp = os.path.join(d, exp.encodeID + ".signal.matrix.gz")
 
-    print(allPeakFnp, bigWigFnp, outFnp)
     cmds = ["/home/purcarom/common/zentLib/bin/test",
             "--bed",
             allPeakFnp,
