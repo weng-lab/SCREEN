@@ -21,6 +21,10 @@ div.result_row_selected {
     padding: 10px;
 }
 
-.mainNavBar {
+#mainNavBar {
     margin-bottom: 0px;
+}
+
+.jumbotron {
+    padding-top: 0px;
 }
