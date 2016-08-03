@@ -5,7 +5,7 @@ class Autocompleter:
     def __init__(self, es):
         self.es = es
         self.indicies = {"gene_aliases": self.get_gene_suggestions,
-                        "snp_aliases": self.get_snp_suggestions}
+                         "snp_aliases": self.get_snp_suggestions}
 
     def recognizes_index(self, index):
         return index in self.indicies
@@ -20,7 +20,8 @@ class Autocompleter:
         query = or_query()
         for field in _gene_alias_fields:
             query.append({"match_phrase_prefix": {field: q}})
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases",
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] > 0:
             return self._process_gene_suggestions(raw_results, q)
         query.reset()
@@ -37,7 +38,8 @@ class Autocompleter:
     def get_snp_suggestions(self, q):
         query = or_query()
         query.append({"match_phrase_prefix": {"accession": q}})
-        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "snp_aliases",
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] > 0:
             return self._process_snp_suggestions(raw_results, q)
         query.reset()
