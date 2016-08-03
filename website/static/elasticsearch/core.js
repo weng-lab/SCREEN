@@ -30,18 +30,15 @@ var rank_map = {
     "dnase": DNASE_RANKS
 };
 
-function autocomplete_query(q, indeces, callback_f)
-{
+function autocomplete_query(q, callback_f){
     var ctime = (new Date()).getTime();
     autocomplete_callbacks[ctime] = callback_f;
     return {"action": "suggest",
-	    "indeces": indeces,
 	    "q": q,
 	    "callback": ctime};
 };
 
-function request_venn(venn_queries)
-{
+function request_venn(venn_queries){
     sendText(JSON.stringify({"action": "query",
 			     "index": "regulatory_elements",
 			     "callback": "venn_handler_both",
@@ -56,8 +53,7 @@ function request_venn(venn_queries)
 			     "object": venn_queries[1]}));
 };
 
-function get_venn_queries(cell_lines, rank_id)
-{
+function get_venn_queries(cell_lines, rank_id){
     var clr1 = "ranks." + rank_id + "." + cell_lines[0] + ".rank";
     var clr2 = "ranks." + rank_id + "." + cell_lines[1] + ".rank";
     if (searchquery.eso.post_filter.bool.must[rank_map[rank_id]] == {}) return;
@@ -98,7 +94,6 @@ function get_venn_queries(cell_lines, rank_id)
 };
 
 function rank_aggs(cell_line) {
-
     return {
 	"dnase": {"histogram": {"field": "ranks.dnase." + cell_line + ".rank",
 				      "interval": 500,
@@ -119,9 +114,7 @@ function rank_aggs(cell_line) {
 
 };
 
-function gene_expression_query(ensembl_ids)
-{
-
+function gene_expression_query(ensembl_ids){
     var retval = {
 	"query": {
 	    "bool": {
@@ -130,17 +123,14 @@ function gene_expression_query(ensembl_ids)
 	}
     };
 
-    for (id in ensembl_ids)
-    {
+    for (id in ensembl_ids)    {
 	retval.query.bool.should.push({"match": {"ensembl_id": ensembl_ids[id]}});
     }
 
     return retval;
-
 };
 
 function Query() {
-
     this.cell_line = "";
     this.chromosome = "";
     this.assembly = "";
@@ -200,8 +190,7 @@ function Query() {
 
 };
 
-function array_remove(array, element)
-{
+function array_remove(array, element){
     for (i in array) {
 	if (array[i] == element) array.splice(index, 1);
     }
@@ -354,41 +343,35 @@ Query.prototype.set_conservation_filter = function(lbound, ubound) {
 
 searchquery = new Query();
 
-function perform_search()
-{
+function perform_search(){
     sendText(JSON.stringify({"action": "query",
 			     "callback": "regulatory_elements",
 			     "index": "regulatory_elements",
 			     "object": searchquery.eso}));
 };
 
-function perform_gene_expression_search(obj)
-{
+function perform_gene_expression_search(obj){
     sendText(JSON.stringify({"action": "query",
 			     "callback": "expression_matrix",
 			     "index": "expression_matrix",
 			     "object": obj}));
 };
 
-function request_cell_lines()
-{
+function request_cell_lines(){
     sendText(JSON.stringify(cell_line_request));
 };
 
-function request_suggestions(q, indeces, callback_f)
-{
-    sendText(JSON.stringify(autocomplete_query(q, indeces, callback_f)));
+function request_suggestions(q, callback_f){
+    sendText(JSON.stringify(autocomplete_query(q, callback_f)));
 };
 
-function request_details(q)
-{
+function request_details(q){
     sendText(JSON.stringify({"action": "re_detail",
 			     "accession": q.accession,
 			     "coord": q.position }));
 };
 
-function request_peaks(q)
-{
+function request_peaks(q){
     sendText(JSON.stringify({"action": "peak_detail",
 			     "accession": q.accession,
 			     "coord": q.position }));
