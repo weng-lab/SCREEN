@@ -30,14 +30,6 @@ var rank_map = {
     "dnase": DNASE_RANKS
 };
 
-function autocomplete_query(q, callback_f){
-    var ctime = (new Date()).getTime();
-    autocomplete_callbacks[ctime] = callback_f;
-    return {"action": "suggest",
-	    "q": q,
-	    "callback": ctime};
-};
-
 function request_venn(venn_queries){
     sendText(JSON.stringify({"action": "query",
 			     "index": "regulatory_elements",
@@ -362,7 +354,12 @@ function request_cell_lines(){
 };
 
 function request_suggestions(q, callback_f){
-    sendText(JSON.stringify(autocomplete_query(q, callback_f)));
+    var ctime = (new Date()).getTime();
+    autocomplete_callbacks[ctime] = callback_f;
+    var payload = {"action": "suggest",
+		   "q": q,
+		   "callback": ctime};
+    sendText(JSON.stringify(payload));
 };
 
 function request_details(q){
