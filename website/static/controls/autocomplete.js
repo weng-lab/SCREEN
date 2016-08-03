@@ -1,3 +1,14 @@
+var autocomplete_callbacks = {};
+
+function request_suggestions(userQuery, callback_f){
+    var ctime = (new Date()).getTime();
+    autocomplete_callbacks[ctime] = callback_f;
+    var payload = {"action": "suggest",
+		   "userQuery": userQuery,
+		   "callback": ctime};
+    sendText(JSON.stringify(payload));
+};
+
 function bind_autocomplete_textbox(textbox_id){
     $("#" + textbox_id).autocomplete({
 	source: function (q, response) {
@@ -14,17 +25,15 @@ function bind_autocomplete_textbox(textbox_id){
 }
 
 function process_autocomplete_results(results){
-    var retval = [];
-    for (field in results) {
-	if (field.indexOf("_suggestions") != -1) {
-	    retval = retval.concat(results[field]);
-	}
-    }
-    return retval;
+    console.log("process_autocomplete_results", "results:", results);
+    return results["results"];
 }
 
 function handle_autocomplete_suggestions(results){
-    autocomplete_callbacks[results["callback"]](process_autocomplete_results(results));
-    delete autocomplete_callbacks[results["callback"]];
+    var cb = results["callback"];
+    autocomplete_callbacks[cb](
+	process_autocomplete_results(results)
+    );
+    delete autocomplete_callbacks[cb];
 }
 

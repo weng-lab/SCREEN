@@ -21,8 +21,6 @@ var cell_line_request = {"action": "enumerate",
 			 "name": "cell_line",
 			 "field": "ranks.dnase"};
 
-var autocomplete_callbacks = {};
-
 var rank_map = {
     "promoter": PROMOTER_RANKS,
     "enhancer": ENHANCER_RANKS,
@@ -351,15 +349,6 @@ function perform_gene_expression_search(obj){
 
 function request_cell_lines(){
     sendText(JSON.stringify(cell_line_request));
-};
-
-function request_suggestions(q, callback_f){
-    var ctime = (new Date()).getTime();
-    autocomplete_callbacks[ctime] = callback_f;
-    var payload = {"action": "suggest",
-		   "q": q,
-		   "callback": ctime};
-    sendText(JSON.stringify(payload));
 };
 
 function request_details(q){
