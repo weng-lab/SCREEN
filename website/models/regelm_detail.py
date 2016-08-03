@@ -27,10 +27,10 @@ class RegElementDetails:
         re = self.reFull(reAccession)
         if "error" in re: return re
         pos = re["position"]
-        exps = self.ps.findBedOverlap(re["genome"],
-                                      pos["chrom"],
-                                      pos["start"],
-                                      pos["end"] )
+        exps = self.ps.findBedOverlapAllAssays(re["genome"],
+                                               pos["chrom"],
+                                               pos["start"],
+                                               pos["end"] )
         print(re["genome"],
               pos["chrom"],
               pos["start"],
@@ -43,7 +43,8 @@ class RegElementDetails:
         for result in _results["hits"]["hits"]:
             result = result["_source"]
             coord = result["position"]
-            distance = min(abs(int(coord["end"]) - qcoord["end"]), abs(int(coord["start"]) - qcoord["start"]))
+            distance = min(abs(int(coord["end"]) - qcoord["end"]),
+                           abs(int(coord["start"]) - qcoord["start"]))
             results.append({"name": result[name_field],
                             "distance": distance})
         return results
