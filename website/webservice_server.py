@@ -70,7 +70,7 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def _suggest(self, j):
         ret = {"type": "suggestions",
-                  "callback": j["callback"]}
+               "callback": j["callback"]}
         ret.update(ac.get_suggestions(j["userQuery"]))
         self.sendMessage(json.dumps(ret))
 
