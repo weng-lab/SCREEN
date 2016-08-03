@@ -49,6 +49,8 @@
   FBVERSION.init("/{{version}}");
 </script>
 
+{{ hh.jsVer(version, "static/selectize/selectize.js-0.12.2.standalone.min.js") }}
+{{ hh.cssVer(version, "static/selectize/selectize.js-0.12.2.default.css") }}
 {{ hh.jsVer(version, "static/elasticsearch/core.js") }}
 {{ hh.jsVer(version, "static/controls/autocomplete.js") }}
 {{ hh.jsVer(version, "static/index.init.js") }}

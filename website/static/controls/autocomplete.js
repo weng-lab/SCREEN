@@ -16,39 +16,36 @@ function bind_autocomplete_textbox(textbox_id){
 	});
     } else {
 	$("#" + textbox_id).selectize({
-	    valueField: 'url',
+	    valueField: 'value',
 	    labelField: 'name',
 	    searchField: 'name',
 	    create: false,
+	    options: [],
+	    loadThrottle: 0,
+	    render: {
+		option: function(item, escape) {
+		    return '<div><span class=name>' + escape(item.name) + '</span></div>';
+		}
+	    },
 	    load: function(query, callback) {
 		if (!query.length){
 		    return callback();
 		}
-		request_suggestions(query.term, callback);
+		$.ajax({
+		    url: '/ver4/search/autocomplete',
+		    type: 'POST',
+		    contentType: "application/json",
+		    dataType: 'json',
+		    data: JSON.stringify({"userQuery": query}),
+		    error: function() {
+			callback();
+		    },
+		    success: function(res) {
+			console.log(res.results);
+			callback(res.results);
+		    }
+		});
 	    }
 	});
     }
 }
-
-function request_suggestions(userQuery, callback_f){
-    var ctime = (new Date()).getTime();
-    autocomplete_callbacks[ctime] = callback_f;
-    var payload = {"action": "suggest",
-		   "userQuery": userQuery,
-		   "callback": ctime};
-    sendText(JSON.stringify(payload));
-};
-
-function process_autocomplete_results(results){
-    //console.log("process_autocomplete_results", "results:", results);
-    return results["results"];
-}
-
-function handle_autocomplete_suggestions(results){
-    var cb = results["callback"];
-    autocomplete_callbacks[cb](
-	process_autocomplete_results(results)
-    );
-    delete autocomplete_callbacks[cb];
-}
-

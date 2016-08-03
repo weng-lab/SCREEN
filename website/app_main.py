@@ -53,6 +53,13 @@ class MainApp():
     def reSNPs(self, reAccession, **kwargs):
         return self.mc.reSNPs(reAccession, kwargs)
 
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def autocomplete(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.mc.autocomplete(j)
+
 class MainAppRunner:
     def __init__(self, es, ps, devMode, webSocketUrl):
         version = '/'.join(["ver4", "search"])
