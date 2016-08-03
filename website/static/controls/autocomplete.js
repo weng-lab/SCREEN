@@ -1,40 +1,39 @@
 var autocomplete_callbacks = {};
 
+function request_suggestions(userQuery, callback_f){
+    var ctime = (new Date()).getTime();
+    autocomplete_callbacks[ctime] = callback_f;
+    var payload = {"action": "suggest",
+		   "userQuery": userQuery,
+		   "callback": ctime};
+    sendText(JSON.stringify(payload));
+};
+
 function bind_autocomplete_textbox(textbox_id){
-    $("#" + textbox_id).selectize({
-	valueField: 'value',
-	labelField: 'name',
-	searchField: 'name',
-	selectOnTab: true,
-	create: false,
-	options: [],
-	loadThrottle: 300,
-	maxItems : null,
-	delimiter: ',',
-	render: {
-	    option: function(item, escape) {
-		console.log("item");
-		return '<div><span class=name>' + escape(item.name) + '</span></div>';
-	    }
+    $("#" + textbox_id).autocomplete({
+	source: function (q, response) {
+	    request_suggestions(q.term, response)
 	},
-	load: function(query, callback) {
-	    if (!query.length){
-		return callback();
-	    }
-	    $.ajax({
-		url: '/ver4/search/autocomplete',
-		type: 'POST',
-		contentType: "application/json",
-		dataType: 'json',
-		data: JSON.stringify({"userQuery": query}),
-		error: function() {
-		    callback();
-		},
-		success: function(res) {
-		    console.log(res.results);
-		    callback(res.results);
-		}
-	    });
+	select: function(event, ui) {
+	    $("#" + textbox_id).val(ui.item.value);
+	    return false;
+	},
+	change: function() {
+	    $("#" + textbox_id).val("").css("display", 2);
 	}
     });
 }
+
+function process_autocomplete_results(results){
+    //console.log("process_autocomplete_results", "results:", results);
+    return results["results"];
+}
+
+function handle_autocomplete_suggestions(results){
+    var cb = results["callback"];
+    autocomplete_callbacks[cb](
+	process_autocomplete_results(results)
+    );
+    delete autocomplete_callbacks[cb];
+}
+

@@ -11,12 +11,16 @@ class Autocompleter:
         return index in self.indicies
         
     def get_suggestions(self, userQuery):
+        uq = userQuery #.lower()
         ret = []
         counter = 0
         for k, v in self.indicies.iteritems():
-            for item in v(userQuery):
-                ret.append({"name" : item,
-                            "value" : counter})
+            for item in v(uq):
+                if 0:
+                    ret.append({"name" : item,
+                                "value" : counter})
+                else:
+                    ret.append(item)
                 counter += 1
         return { "results" : ret }
         
