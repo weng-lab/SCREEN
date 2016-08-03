@@ -21,7 +21,6 @@ var socket = null;
 var isopen = false;
 
 var setupSocket = function(fonopen = null, fargs = null) {
-
     socket = new WebSocket(WebSocketUrl);
     socket.binaryType = "arraybuffer";
 

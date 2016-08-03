@@ -67,7 +67,15 @@ class MyServerProtocol(WebSocketServerProtocol):
         bed_accs = details.get_intersecting_beds(j["accession"])
         output["peak_results"] = details.get_bed_stats(bed_accs)
         self.sendMessage(json.dumps(output))
-        
+
+    def _suggest(self, j):
+        output = {"type": "suggestions",
+                  "callback": j["callback"]}
+        for index in ["gene_aliases", "snp_aliases"]:
+            if ac.recognizes_index(index):
+                output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
+        self.sendMessage(json.dumps(output))
+
     def onMessage(self, payload, isBinary):
         if isBinary:
             self.sendMessage("not supported", False)
@@ -91,12 +99,7 @@ class MyServerProtocol(WebSocketServerProtocol):
                     self._get_and_send_peaks_detail(j)
                     return
                 if j["action"] == "suggest":
-                    output = {"type": "suggestions",
-                              "callback": j["callback"]}
-                    for index in j["indeces"]:
-                        if ac.recognizes_index(index):
-                            output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
-                    self.sendMessage(json.dumps(output))
+                    self._suggest(j)
                     return
                 if j["action"] == "query":
                     raw_results = es.search(body=j["object"], index=j["index"])
@@ -114,6 +117,7 @@ class MyServerProtocol(WebSocketServerProtocol):
             raise
             ret = { "status" : "error",
                     "err" : 1}
+
         self.sendMessage(json.dumps(ret), False)
 
     def onClose(self, wasClean, code, reason):
