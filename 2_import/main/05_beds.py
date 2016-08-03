@@ -11,6 +11,18 @@ from dbs import DBS
 from metadataws import MetadataWS
 from files_and_paths import Genome, Datasets
 
+def GetChroms(assembly):
+    with open(Genome.ChrLenByAssembly(assembly)) as f:
+        allChroms = [line.split('\t')[0] for line in f]
+    chroms = []
+    for chrom in allChroms:
+        if len(chrom) > 5:
+            continue
+        chroms.append(chrom)
+    chroms.sort()
+    print(chroms)
+    return chroms
+
 class LoadBeds:
     def __init__(self, args, conn, cur, assembly):
         self.args = args
@@ -24,18 +36,6 @@ class LoadBeds:
             self.datasets = MetadataWS(Datasets.all_mouse)
         else:
             self.datasets = MetadataWS(Datasets.all_human)
-
-    def _getChroms(self):
-        with open(Genome.ChrLenByAssembly(self.assembly)) as f:
-            allChroms = [line.split('\t')[0] for line in f]
-        chroms = []
-        for chrom in allChroms:
-            if len(chrom) > 5:
-                continue
-            chroms.append(chrom)
-        chroms.sort()
-        print(chroms)
-        return chroms
 
     def rebuild(self):
         self.setupDB()
@@ -136,6 +136,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--dump', action="store_true", default=False)
     parser.add_argument('--rebuild', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
@@ -150,6 +151,11 @@ def main():
         dbs = DBS.pgdsn("RegElmViz")
     dbs["application_name"] = os.path.basename(__file__)
 
+    if args.dump:
+        for assembly in ["hg19", "mm10"]:
+            print(assembly, GetChroms(assembly))
+        return
+    
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
             for assembly in ["hg19", "mm10"]:
