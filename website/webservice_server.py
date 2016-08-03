@@ -69,12 +69,10 @@ class MyServerProtocol(WebSocketServerProtocol):
         self.sendMessage(json.dumps(output))
 
     def _suggest(self, j):
-        output = {"type": "suggestions",
+        ret = {"type": "suggestions",
                   "callback": j["callback"]}
-        for index in ["gene_aliases", "snp_aliases"]:
-            if ac.recognizes_index(index):
-                output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
-        self.sendMessage(json.dumps(output))
+        ret.update(ac.get_suggestions(j["userQuery"]))
+        self.sendMessage(json.dumps(ret))
 
     def onMessage(self, payload, isBinary):
         if isBinary:

@@ -4,16 +4,17 @@ class Autocompleter:
 
     def __init__(self, es):
         self.es = es
-        self.indeces = {"gene_aliases": self.get_gene_suggestions,
+        self.indicies = {"gene_aliases": self.get_gene_suggestions,
                         "snp_aliases": self.get_snp_suggestions}
 
     def recognizes_index(self, index):
-        return index in self.indeces
+        return index in self.indicies
         
-    def get_suggestions(self, index, q):
-        if index not in self.indeces:
-            raise Exception("index %s is not recognized by the autocompleter" % index)
-        return self.indeces[index](q)
+    def get_suggestions(self, userQuery):
+        ret = []
+        for k, v in self.indicies.iteritems():
+            ret += v(userQuery)
+        return { "results" : ret }
         
     def get_gene_suggestions(self, q):
         query = or_query()
