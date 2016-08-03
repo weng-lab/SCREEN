@@ -40,3 +40,8 @@ class MainController:
     def rePeaks(self, reAccession, kwargs):
         pageInfo = PageInfoMain(*self.params)
         return pageInfo.rePeaks(reAccession, kwargs)
+
+    def autocomplete(self, j):
+        pageInfo = PageInfoMain(*self.params)
+        return pageInfo.autocomplete(j)
+        

@@ -12,8 +12,12 @@ class Autocompleter:
         
     def get_suggestions(self, userQuery):
         ret = []
+        counter = 0
         for k, v in self.indicies.iteritems():
-            ret += v(userQuery)
+            for item in v(userQuery):
+                ret.append({"name" : item,
+                            "value" : counter})
+                counter += 1
         return { "results" : ret }
         
     def get_gene_suggestions(self, q):

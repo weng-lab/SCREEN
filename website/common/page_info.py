@@ -6,6 +6,7 @@ from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+from autocomplete import Autocompleter
 
 class PageInfoMain:
     def __init__(self, es, ps, version, webSocketUrl):
@@ -142,3 +143,7 @@ class PageInfoMain:
         except:
             raise
             return {"error" : "could not lookup " + reAccession}
+
+    def autocomplete(self, j):
+        ac = Autocompleter(self.es)
+        return ac.get_suggestions(j["userQuery"])
