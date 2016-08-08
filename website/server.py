@@ -6,6 +6,7 @@ from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
 from app_main import MainAppRunner
+from app_ui import UiAppRunner
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
@@ -52,7 +53,8 @@ class RegElmVizWebsite(object):
         self.ps = PostgresWrapper(self.DBCONN)
 
         MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl)
-
+        UiAppRunner(self.es, self.ps, self.devMode, webSocketUrl)
+        
     def start(self):
         if self.devMode:
             cherrypy.config.update({'server.environment': "development", })
