@@ -69,8 +69,8 @@ class PageInfoMain:
 
         ranklist = [{"id": "dnase", "name": "DNase"},
                     {"id": "ctcf", "name": "CTCF"},
-                    {"id": "promoter", "name": "promoter"},
-                    {"id": "enhancer", "name": "enhancer"},
+                    {"id": "promoter", "name": "promoter-like"},
+                    {"id": "enhancer", "name": "enhancer-like"},
                     {"id": "conservation", "name": "conservation"}]
 
         tsslist = [{"id": "pc", "name": "protein coding"},

@@ -24,11 +24,11 @@
       <div id="exTab1" class="container" style="width:100%">
         <ul class="nav nav-tabs">
           <li class="active">
-            <a href="#tab_results" data-toggle="tab">results</a>
+            <a href="#tab_results" data-toggle="tab">Results</a>
           </li>
-          <li><a href="#tab_expression" data-toggle="tab">nearby gene expression</a>
+          <li><a href="#tab_expression" data-toggle="tab">Nearby Gene Expression</a>
           </li>
-	  <li><a href="#tab_venn" data-toggle="tab">rank venn diagrams</a>
+	  <li><a href="#tab_venn" data-toggle="tab">Comparison</a>
           </li>
         </ul>
 
@@ -59,17 +59,20 @@
           </div>
 
 	  <div class="tab-pane" id="tab_venn">
+	    <br>
+	    <br>
 	    <select id="cell_line_dropdown" onchange="javascript:refresh_venn();"></select>
 	    <select id="vennrank_dropdown" onchange="javascript:refresh_venn();">
-	      <option value="promoter">promoter</option>
-	      <option value="enhancer">enhancer</option>
-	      <option value="ctcf">ctcf</option>
-	      <option value="dnase">dnase</option>
+	      <option value="promoter">promoter-like</option>
+	      <option value="enhancer">enhancer-like</option>
+	      <option value="ctcf">CTCF</option>
+	      <option value="dnase">DNase</option>
 	    </select>
-	    <p>Only elements below the threshold rank in at least one cell type will be displayed. Elements below the threshold rank in both cell types fall in the overlap region.
-	    <p>Choose the threshold rank: <input type="text" id="venn_lbound_textbox" value="1000">
-	      <div style="width:50%" id="venn_lbound_slider"></div><br>
-	      <div style="width:500px;height:500px" class="venn" id="venn_div">
+	    <br>
+	    <br>
+	    <p>Ranked between 1 and <input type="text" id="venn_lbound_textbox" value="5000">
+	      <div style="width:200px" id="venn_lbound_slider"></div>
+	      <div style="width:200px; height:200px" class="venn" id="venn_div">
 	      </div>
           </div>
         </div>
