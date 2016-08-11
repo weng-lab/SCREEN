@@ -28,3 +28,25 @@ div.result_row_selected {
 .jumbotron {
     padding-top: 0px;
 }
+
+.facet {
+
+}
+
+.facet > .panel > .panel-heading {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.facet > .panel > .panel-body {
+    padding: 10px;
+}
+
+.facet-histogram {
+    height: 20px;
+    margin-left: 0px;
+}
+
+.facet-slider {
+    margin-left: 10px;
+}
