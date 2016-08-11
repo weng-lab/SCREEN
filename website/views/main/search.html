@@ -4,6 +4,7 @@
 {{ hh.cssVer(version, "static/controls/range_slider.css") }}
 {{ hh.cssVer(version, "static/controls/heatmap.css") }}
 {{ hh.cssVer(version, "static/controls/venn_diagram.css") }}
+{{ hh.jsVer(version, "static/common.js") }}
 
 <div class="container" style="width:100%">
   <!-- Example row of columns -->
@@ -86,7 +87,6 @@
   <p><span id="value"></p>
 </div>
 
-{{ hh.jsVer(version, "static/common.js") }}
 <script>
   var WebSocketUrl = {{ webSocketUrl }};
   var ParsedQuery = {{ parsed }};

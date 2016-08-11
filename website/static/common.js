@@ -57,3 +57,13 @@ function sendText(s) {
         console.log("Connection not opened.")
     }
 };
+
+function growPerm(div){
+    $(div).hover(function() {
+	hoverTimeout = setTimeout(function() {
+	    $(div).removeClass('grow');
+	}, 2000);
+    }, function() {
+	clearTimeout(hoverTimeout);
+    });
+};
