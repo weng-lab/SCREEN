@@ -7,7 +7,7 @@ class MainController:
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
-        return self.t('main/index', **pageInfo.wholePage())
+        return self.t('main/index', **pageInfo.wholePage(True))
 
     def RawQuery(self, q, url):
         pageInfo = PageInfoMain(*self.params)
