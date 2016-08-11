@@ -3,12 +3,7 @@
     <div class="panel-heading">Ranks</div>
     <div class="panel-body" id="ranks_filter_container">
       {% for rank in ranklist -%}
-      <p>
-	<label for="{{rank['id']}}_textbox">{{rank['name']}}:</label>
-	<input type="text" id="{{rank['id']}}_textbox" style="border:1;font-weight:bold;">
-      </p>
-      <div class="facet-histogram" id="{{rank['id']}}_histogram"></div>
-      <div class="facet-slider" id="{{rank['id']}}_range_slider"></div><br>
+      {{ hh.facet_input_box(rank['name'], rank['id']) }}
       {% endfor -%}
     </div>
   </div>

@@ -20,6 +20,14 @@
 </div>
 {% endmacro -%}
 
+{% macro facet_input_box(label, id) -%}
+  <label class="facet-label">{{label}}:
+    <input type="text" id="{{id}}_textbox" class="facet-textbox">
+  </label>
+  <div class="facet-histogram" id="{{id}}_histogram"></div>
+  <div class="facet-slider" id="{{id}}_range_slider"></div><br>
+ {% endmacro -%}
+
 {% macro facet_sliderbox(facet) -%}
 {% if facet.visible -%}
 <div class="panel-group facet" id="{{facet.id}}_facet_panel">
@@ -29,12 +37,7 @@
   <div class="panel panel-primary">
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_filter_container">
-      <p>
-	<label for="{{facet.id}}_textbox">{{facet.label_text}}:</label>
-	<input type="text" id="{{facet.id}}_textbox" style="border:1;font-weight:bold;">
-      </p>
-      <div class="facet-histogram" id="{{facet.id}}_histogram"></div>
-      <div class="facet-slider" id="{{facet.id}}_range_slider"></div>
+      {{facet_input_box(facet.label_text, facet.id)}}
     </div>
   </div>
 </div>
