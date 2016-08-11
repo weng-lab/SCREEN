@@ -157,7 +157,6 @@ var range_preset_handlers = {
 };
 
 function play(parsed){
-    console.log(parsed);
     var ct = parsed["cellType"];
     var coord = parsed["coord"];
     var range_preset = parsed["range_preset"];

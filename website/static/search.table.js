@@ -66,25 +66,6 @@ RE_table.prototype.makeEmptyTable = function(cols){
     return table;
 }
 
-RE_table.prototype.makeEmptyDetailsDiv = function(){
-    var div = document.createElement("div");
-    div.style.width = "100%";
-    div.id = "details_view"
-
-    var td = document.createElement("td");
-    td.appendChild(div);
-
-    var tr = document.createElement("tr");
-    tr.style.display = "none";
-    tr.appendChild(td)
-
-    var table = document.getElementById("details_view_table");
-    table.insertBefore(tr, table.firstChild);
-
-    regelm_details_view.bind("details_view");
-    regelm_details_view.table_row = tr;
-}
-
 RE_table.prototype.renderTable = function(){
     var cols = this.setupColumns();
 
@@ -104,8 +85,6 @@ RE_table.prototype.renderTable = function(){
     $("#searchresults_table").removeClass( 'display' )
 	.addClass('table table-condensed table-hover');
     
-    this.makeEmptyDetailsDiv();
-
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
         var reAccession = get_accession(dtable, $(this));
@@ -118,9 +97,11 @@ RE_table.prototype.renderTable = function(){
         var tr = dtable.row(t.parents('tr'));
 	var r = result_from_tablerow(dtable, $(this));
 
+	$("#redetails").html("");
+	regelm_details_view.bind("redetails");
+
 	showTab("tab_details");
 	
-	regelm_details_view.table_row.style.display = 'table-row';
 	request_details(r);
 	
 	regelm_details_view.set_header(r.accession);
