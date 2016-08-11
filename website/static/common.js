@@ -33,7 +33,7 @@ var setupSocket = function(fonopen = null, fargs = null) {
     };
 
     socket.onmessage = function(e){
-        console.log("Text message received");
+        //console.log("Text message received");
 	if(typeof socket_message_handler === 'function'){
 	    socket_message_handler(e);
 	} else {
@@ -51,8 +51,8 @@ var setupSocket = function(fonopen = null, fargs = null) {
 function sendText(s) {
     if (isopen) {
         socket.send(s);
-        console.log("sent:");
-	console.log(s);
+        //console.log("sent:");
+	//console.log(s);
     } else {
         console.log("Connection not opened.")
     }
@@ -67,3 +67,15 @@ function growPerm(div){
 	clearTimeout(hoverTimeout);
     });
 };
+
+function showTab(tabName){
+    // http://stackoverflow.com/a/11744586
+    var $tab = $('.nav-tabs a[href="#' + tabName + '"]');
+    
+    $tab.click(function(e){
+	e.preventDefault();
+	$tab.tab('show');
+    });
+    $tab.show();           
+    $tab.tab('show');
+}
