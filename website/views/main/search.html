@@ -7,38 +7,35 @@
 {{ hh.jsVer(version, "static/common.js") }}
 
 <div class="container" style="width:100%">
-  <!-- Example row of columns -->
   <div class="row" style="width:100%">
-    <div class="col-md-3 nopadding-right" id="facets-container">
 
+    <div class="col-md-3 nopadding-right" id="facets-container">
       {% for facet in facetlist -%}
       {{ hh.facetbox(facet) }}
       {% endfor -%}
 
       {% include '_tss_facetbox.html' -%}
       {% include '_ranks_facetbox.html' -%}
-
     </div>
+
     <div class="col-md-9 nopadding-left">
 
       <div id="exTab1" class="container">
         <ul class="nav nav-tabs">
-          <li class="active">
-            <a href="#tab_results" data-toggle="tab">Candidate RE Search</a>
-          </li>
-          <li><a href="#tab_expression" data-toggle="tab">Nearby Gene Expression</a>
-          </li>
-	  <li><a href="#tab_venn" data-toggle="tab">Comparison</a>
+          <li class="active"><a href="#tab_results" data-toggle="tab">
+	      Candidate RE Search</a>
+          </li><li><a href="#tab_details" data-toggle="tab" style="display:none;">
+	      RE Details</a>
+          </li><li><a href="#tab_expression" data-toggle="tab">
+	      Nearby Gene Expression</a>
+          </li><li><a href="#tab_venn" data-toggle="tab">
+	      Comparison</a>
           </li>
         </ul>
 
         <div class="tab-content clearfix">
           <div class="tab-pane active" id="tab_results">
             <div id="searchresults_div">
-            </div>
-            <div>
-              <table id="details_view_table">
-              </table>
             </div>
             <div class="col-md-3" id="heatmap_container">
               <select id="heatmap_dropdown">
@@ -51,6 +48,13 @@
             </div>
           </div>
 
+          <div class="tab-pane" id="tab_details">
+            <div id="redetails">
+              <table id="details_view_table">
+              </table>
+            </div>
+	  </div>
+	  
           <div class="tab-pane" id="tab_expression">
             <div id="expression_heatmap_container">
               <div style="width:100%" id="expression_heatmap">
@@ -108,9 +112,9 @@
 {{ hh.jsVer(version, "static/search.setup.js") }}
 
 <script>
-$( document ).ready(function() {
+  $( document ).ready(function() {
   setupSocket(play, ParsedQuery);
-});
+  });
 </script>
 
 {% include '_footer.html' -%}
