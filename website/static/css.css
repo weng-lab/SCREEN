@@ -81,3 +81,14 @@ div.result_row_selected {
     width: 100%;
     padding-top: 10px;
 }
+
+.grow {
+    /* http://stackoverflow.com/questions/27441404/text-div-expand-on-hover-with-css */
+    height: 30px;
+    transition: height 0.5s;
+    -webkit-transition: height 0.5s;
+    overflow: hidden;
+}
+.grow:hover {
+    height: 100%;
+}
