@@ -102,6 +102,11 @@ div.result_row_selected {
     background-color: #F5B041;
 }
 
+#redetails {
+    width: 100%;
+}
+
 #redetails h3 {
     font-size: 16px;
+    font-weight: bold;
 }
