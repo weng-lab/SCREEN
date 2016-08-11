@@ -28,7 +28,7 @@ RE_table.prototype.genButtonGroupCol = function(names){
 
 RE_table.prototype.setupColumns = function(){
     var ret = {Accession : this.genStrCol("_source.accession"),
-	       "-log(p)" : this.genFloatCol("_source.confidence"),
+	       "&#8209;log(p)" : this.genFloatCol("_source.confidence"),
                //Genome : this.genStrCol("_source.genome"),
 	       Chr : this.genStrCol("_source.position.chrom"),
                Start : this.genIntCol("_source.position.start"),
@@ -114,8 +114,6 @@ RE_table.prototype.renderTable = function(){
         var t = $(this);
         var tr = dtable.row(t.parents('tr'));
 	var r = result_from_tablerow(dtable, $(this));
-	console.log(r);
-        console.log(tr);
 
 	regelm_details_view.table_row.style.display = 'table-row';
 	request_details(r);
