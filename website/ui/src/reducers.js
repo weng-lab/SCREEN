@@ -1,6 +1,7 @@
 import {combineReducers }  from 'redux';
 import byIdReducer, * as fromById from './byId';
 import createList, * as fromList from './createList';
+import search from './search';
 
 const listByFilter = combineReducers({
     all: createList('all'),
@@ -10,7 +11,8 @@ const listByFilter = combineReducers({
 
 export const todoApp = combineReducers({
     byId : byIdReducer,
-    listByFilter 
+    listByFilter,
+    search
 });
 
 // aka selector
