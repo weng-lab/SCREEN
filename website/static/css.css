@@ -59,3 +59,25 @@ div.result_row_selected {
 .facet-label {
 
 }
+
+#facets-container {
+    padding-top: 10px;
+}
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.nopadding-right {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+.nopadding-left {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+#exTab1 {
+    width: 100%;
+    padding-top: 10px;
+}
