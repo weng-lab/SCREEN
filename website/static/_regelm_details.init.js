@@ -135,14 +135,33 @@ regelm_gui.prototype.bind = function(container_div_id){
     this._container.appendChild(this._header);
     this._container.appendChild(this._coordinates);
 
-    for (subGUI in this.GUIs) {
+    var cf = document.createElement("div");
+    cf.className = "container-fluid";
+    
+    var row = null;
+    var i = 0;
+    for (subGUI in this.GUIs){
+	console.log(subGUI, i, i%3, row);
+	if(i%3 == 0){
+	    if(null != row){
+		cf.appendChild(row);
+	    }
+	    row = document.createElement("div");
+	    row.className = "row";
+	}
+
 	var new_div = document.createElement("div");
 	new_div.id = "regelm_view_" + subGUI;
-	new_div.className = "col-md-3";
-	this._container.appendChild(new_div);
+	new_div.className = "col-md-4";
 	this[subGUI] = new this.GUIs[subGUI].proto();
-	this[subGUI].bind("regelm_view_" + subGUI, this.GUIs[subGUI].args);
+	this[subGUI].bind("regelm_view_" + subGUI, this.GUIs[subGUI].args,
+			 new_div);
+	row.appendChild(new_div);
+	i += 1;
     }
+
+    this._container.appendChild(cf);
+
 };
 
 /* set header text to given accession */
@@ -168,15 +187,13 @@ function regelm_ranking_view(){
 };
 
 /* dynamically generate contents within target div and wrap */
-regelm_ranking_view.prototype.bind = function(container_div_id, args) {
-    this._container = document.getElementById(container_div_id);
-
+regelm_ranking_view.prototype.bind = function(container_div_id, args, new_div) {
     this._header = document.createElement("h3");
     this._header.innerText = "Top-ranked cell types";
-    this._container.appendChild(this._header);
+    new_div.appendChild(this._header);
 
     this._table_div = document.createElement("div");
-    this._container.appendChild(this._table_div);
+    new_div.appendChild(this._table_div);
 };
 
 /* for sorting ranks according to percentile */
@@ -259,15 +276,13 @@ function _regelm_gene_comparator(a, b){
 };
 
 /* dynamically generate components in target div */
-regelm_gene_view.prototype.bind = function(container_div_id, args) {
-    this._container = document.getElementById(container_div_id);
-
+regelm_gene_view.prototype.bind = function(container_div_id, args, new_div) {
     this._header = document.createElement("h3");
     this._header.innerText = args.header_text;
-    this._container.appendChild(this._header);
+    new_div.appendChild(this._header);
 
     this._table_div = document.createElement("div");
-    this._container.appendChild(this._table_div);
+    new_div.appendChild(this._table_div);
 
     this.href_f = args.href_f;
 }
@@ -334,15 +349,13 @@ function peak_overlap_view(){
 };
 
 /* dynamically generate components in target div */
-peak_overlap_view.prototype.bind = function(container_div_id, args) {
-    this._container = document.getElementById(container_div_id);
-
+peak_overlap_view.prototype.bind = function(container_div_id, args, new_div) {
     this._header = document.createElement("h3");
     this._header.innerText = args.header_text;
-    this._container.appendChild(this._header);
+    new_div.appendChild(this._header);
 
     this._table_div = document.createElement("div");
-    this._container.appendChild(this._table_div);
+    new_div.appendChild(this._table_div);
 }
 
 function _regelm_overlap_comparator(a, b){
