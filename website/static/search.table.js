@@ -27,17 +27,17 @@ RE_table.prototype.genButtonGroupCol = function(names){
 }
 
 RE_table.prototype.setupColumns = function(){
-    var ret = {Accession : this.genStrCol("_source.accession"),
+    var ret = {accession : this.genStrCol("_source.accession"),
 	       "&#8209;log(p)" : this.genFloatCol("_source.confidence"),
                //Genome : this.genStrCol("_source.genome"),
-	       Chr : this.genStrCol("_source.position.chrom"),
-               Start : this.genIntCol("_source.position.start"),
-	       End : this.genIntCol("_source.position.end")}
+	       chr : this.genStrCol("_source.position.chrom"),
+               start : this.genIntCol("_source.position.start"),
+	       end : this.genIntCol("_source.position.end")}
 
     if(searchquery.has_cell_line_filter()){
         var cellType = searchquery.cell_line;
-        ret["Nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
-        ret["Nearest protein-coding gene"] =
+        ret["nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
+        ret["nearest protein-coding gene"] =
             this.genStrCol("_source.genes.nearest-pc.gene-id");
     }
 
