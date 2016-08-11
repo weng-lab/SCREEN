@@ -101,3 +101,7 @@ div.result_row_selected {
 #searchresults_table > tbody > tr:hover > th {
     background-color: #F5B041;
 }
+
+#redetails h3 {
+    font-size: 16px;
+}
