@@ -130,6 +130,12 @@ regelm_gui.prototype.bind = function(container_div_id){
     this.ranking_GUI = new regelm_ranking_view();
     this._container = document.getElementById(container_div_id);
 
+    var leftArrow = document.createElement("span");
+    leftArrow.className = "glyphicon glyphicon-arrow-left";
+    leftArrow.setAttribute("id", "detailsLeftArrow");
+    leftArrow.setAttribute("aria-hidden", "true");
+    this._container.appendChild(leftArrow);
+
     this._header = document.createElement("h2");
     this._coordinates = document.createElement("h3");
     this._container.appendChild(this._header);
@@ -141,7 +147,6 @@ regelm_gui.prototype.bind = function(container_div_id){
     var row = null;
     var i = 0;
     for (subGUI in this.GUIs){
-	console.log(subGUI, i, i%3, row);
 	if(i%3 == 0){
 	    if(null != row){
 		cf.appendChild(row);
@@ -161,7 +166,6 @@ regelm_gui.prototype.bind = function(container_div_id){
     }
 
     this._container.appendChild(cf);
-
 };
 
 /* set header text to given accession */
