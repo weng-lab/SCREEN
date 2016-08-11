@@ -1,35 +1,33 @@
 import * as api from './api';
 import { getIsFetching } from './reducers';
 
-export const searchKeyPress = (value) => (dispatch, getState) => {
+export const fetchTodos = (userQuery) => (dispatch, getState) => {
     dispatch({
 	type: 'SEARCH_KEY_PRESS',
-	value,
+	userQuery,
     });
-}
 
-export const fetchTodos = (filter) => (dispatch, getState) => {
-    if(getIsFetching(getState(), filter)){
+    if(getIsFetching(getState(), userQuery)){
 	return Promise.resolve();
     }
 
     dispatch({
 	type: 'FETCH_TODOS_REQUEST',
-	filter,
+	userQuery,
     });
     
-    return api.fetchTodos(filter).then(
+    return api.fetchTodos(userQuery).then(
 	response =>{
 	    dispatch({
 		type: 'FETCH_TODOS_SUCCESS',
 		response,
-		filter
+		userQuery
 	    })
 	},
 	error => {
 	    dispatch({
 		type: 'FETCH_TODOS_FAILURE',
-		filter,
+		userQuery,
 		message: error.message || 'Something went wrong.'
 	    });
 	}

@@ -1,7 +1,7 @@
 const search = (state = [], action) => {
     switch(action.type){
     case 'SEARCH_KEY_PRESS':
-	return action.value;
+	return action.userQuery;
     default:
 	return state;
     }
@@ -9,4 +9,4 @@ const search = (state = [], action) => {
 
 export default search;
 
-export const getUserQuery = (state) => state;
+export const getSearch = (state) => state;

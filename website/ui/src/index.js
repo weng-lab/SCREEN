@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
 
 import * as actions from './actions';
-import { todoApp, getIsFetching, getVisibileTodos, getErrorMessage } from './reducers';
+import { todoApp, getIsFetching, getSugs, getErrorMessage } from './reducers';
 import FetchError from './fetchError';
 
 class VisibleTodoList extends Component {
@@ -16,14 +16,14 @@ class VisibleTodoList extends Component {
     }
 
     componentDidUpdate(prevProps){
-	if(this.props.filter !== prevProps.filter){
+	if(this.props.userQuery !== prevProps.userQuery){
 	    this.fetchData();
 	}
     }
 
     fetchData(){
-	const { filter, fetchTodos } = this.props;
-	fetchTodos(filter).then(() => console.log('done!'));
+	const { userQuery, fetchTodos } = this.props;
+	fetchTodos(userQuery).then(() => console.log('done!'));
     }
     
     render() {
@@ -47,7 +47,9 @@ class VisibleTodoList extends Component {
     }
 };
 
-const TodoList = ({ todos, onTodoClick }) => (
+const TodoList = ({ todos, onTodoClick }) => {
+    console.log(todos);
+    return (
     <ul>
     {todos.map(todo =>
 	<TodoLi
@@ -57,15 +59,16 @@ const TodoList = ({ todos, onTodoClick }) => (
 	/>
     )}
     </ul>
-);
+    );
+};
 
 const mapStateToPropsTodoList = (state, {params}) => {
-    const filter = params.filter || 'all';
+    const userQuery = params.userQuery || '';
     return {
-	todos: getVisibileTodos(state, filter),
-	isFetching: getIsFetching(state, filter),
-	errorMessage: getErrorMessage(state, filter),
-	filter,
+	todos: getSugs(state, userQuery),
+	isFetching: getIsFetching(state, userQuery),
+	errorMessage: getErrorMessage(state, userQuery),
+	userQuery,
     };
 };
 VisibleTodoList = withRouter(connect(mapStateToPropsTodoList, actions)
@@ -89,15 +92,16 @@ const TodoLi = ({
 class AddButton extends Component {
     componentDidMount(){
     }
-    
+
     add({keyCode, target}) {
-	const { searchKeyPress } = this.props;
+	const { searchKeyPress, fetchTodos } = this.props;
 	const Enter = 13;
 	
 	if(Enter == keyCode){
 
 	} else {
-	    searchKeyPress(target.value);
+	    const userQuery = target.value;
+	    fetchTodos(userQuery).then(() => console.log('done!'));
 	}
     }
     
@@ -111,17 +115,15 @@ class AddButton extends Component {
 	    }}>
 	    Search
 	    </button>
+	    <VisibleTodoList />
 	    </div>
 	);
     }
 };
 const mapStateToPropsSearch = (state, {params}) => {
-    const filter = params.filter || 'all';
+    const userQuery = params.userQuery || '';
     return {
-	todos: getVisibileTodos(state, filter),
-	isFetching: getIsFetching(state, filter),
-	errorMessage: getErrorMessage(state, filter),
-	filter,
+	userQuery
     };
 };
 AddButton = withRouter(connect(mapStateToPropsSearch, actions)
@@ -130,14 +132,13 @@ AddButton = withRouter(connect(mapStateToPropsSearch, actions)
 const TodoApp = () => (
 	<div>
 	<AddButton />
-        <VisibleTodoList />
 	</div>
  );
 
 const Root = ({ store }) => (
     <Provider store={store} >  
     <Router history={browserHistory}>
-    <Route path='/(:filter)' component={TodoApp} />
+    <Route path='/(:userQuery)' component={TodoApp} />
     </Router>
     </Provider>
 );
