@@ -4,6 +4,9 @@
     <div class="panel-body" id="tss_filter_container">
       {% for tss_set in tsslist -%}
       {{ hh.facet_input_box(tss_set['name'], tss_set['id']) }}
+      {% if not loop.last %}
+      <br>
+      {% endif %}
       {% endfor -%}
     </div>
   </div>
