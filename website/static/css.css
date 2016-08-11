@@ -50,3 +50,12 @@ div.result_row_selected {
 .facet-slider {
     margin-left: 10px;
 }
+
+.facet-textbox {
+    border:1;
+    font-weight:bold;
+}
+
+.facet-label {
+
+}
