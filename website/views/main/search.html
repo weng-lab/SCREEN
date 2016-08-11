@@ -8,9 +8,8 @@
 <div class="container" style="width:100%">
   <!-- Example row of columns -->
   <div class="row" style="width:100%">
-    <div class="col-md-3" id="facets-container">
+    <div class="col-md-3 nopadding-right" id="facets-container">
 
-      <br>
       {% for facet in facetlist -%}
       {{ hh.facetbox(facet) }}
       {% endfor -%}
@@ -19,12 +18,12 @@
       {% include '_ranks_facetbox.html' -%}
 
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9 nopadding-left">
 
-      <div id="exTab1" class="container" style="width:100%">
+      <div id="exTab1" class="container">
         <ul class="nav nav-tabs">
           <li class="active">
-            <a href="#tab_results" data-toggle="tab">Results</a>
+            <a href="#tab_results" data-toggle="tab">Candidate RE Search</a>
           </li>
           <li><a href="#tab_expression" data-toggle="tab">Nearby Gene Expression</a>
           </li>
