@@ -4,6 +4,9 @@
     <div class="panel-body" id="ranks_filter_container">
       {% for rank in ranklist -%}
       {{ hh.facet_input_box(rank['name'], rank['id']) }}
+      {% if not loop.last %}
+      <br>
+      {% endif %}
       {% endfor -%}
     </div>
   </div>

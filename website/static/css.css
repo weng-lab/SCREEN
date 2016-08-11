@@ -52,8 +52,8 @@ div.result_row_selected {
 }
 
 .facet-textbox {
-    border:1;
-    font-weight:bold;
+    font-weight: bold;
+    width: 50%;
 }
 
 .facet-label {
