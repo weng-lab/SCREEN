@@ -30,13 +30,13 @@ class RegElmVizWebsite(object):
         Utils.mkdir_p(cacheDir)
 
         cherrypy.config.update({
-                'server.socket_host': '0.0.0.0',
-                'server.socket_port': self.port,
-                'tools.sessions.on': True,
-                'tools.sessions.storage_type': "file",
-                'tools.sessions.storage_path': cacheDir,
-                'tools.sessions.locking': 'early',
-                })
+            'server.socket_host': '0.0.0.0',
+            'server.socket_port': self.port,
+            'tools.sessions.on': True,
+            'tools.sessions.storage_type': "file",
+            'tools.sessions.storage_path': cacheDir,
+            'tools.sessions.locking': 'early',
+        })
 
         webSocketUrl = '"ws://" + window.location.hostname + ":{websocket_port}"'.format(websocket_port=args.websocket_port)
         if not self.devMode:
@@ -57,7 +57,8 @@ class RegElmVizWebsite(object):
         
     def start(self):
         if self.devMode:
-            cherrypy.config.update({'server.environment': "development", })
+            cherrypy.config.update({'server.environment': "development",
+                                    'log.screen': True,})
         else:
             cherrypy.config.update({'server.socket_queue_size': 512,
                                     'server.thread_pool': 30

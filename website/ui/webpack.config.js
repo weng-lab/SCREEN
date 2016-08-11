@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
+    debug: true,
     devtool: 'cheap-module-eval-source-map',
   entry: [
     'webpack-dev-server/client?http://0.0.0.0:8080/',
@@ -26,9 +27,19 @@ module.exports = {
   },
   devServer: {
       contentBase: './dist',
-      hot: true
+      hot: true,
+      proxy: {
+	  '/api/*': {
+	      target: 'http://megatux.purcaro.com:9002/',
+	      secure: false,
+	      changeOrigin : true,
+	      pathRewrite: {
+		  '^/api' : ''
+	      },
+	  }
+      }
   },
-  plugins: [
+    plugins: [
     new webpack.HotModuleReplacementPlugin()
   ]
 };
