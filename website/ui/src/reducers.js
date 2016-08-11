@@ -3,27 +3,46 @@ import byIdReducer, * as fromById from './byId';
 import createList, * as fromList from './createList';
 import search from './search';
 
-const listByFilter = combineReducers({
-    all: createList('all'),
-    active: createList('active'),
-    completed: createList('completed') 
-});
+const sugsByUserQuery = (state = {}, action) =>{
+    switch(action.type){
+    case 'SEARCH_KEY_PRESS':
+	if (action.userQuery in state){
+	    return state;
+	}
+	
+        const nextState = { ...state };
+	nextState[action.userQuery] = createList(undefined, action);
+	console.log(nextState[action.userQuery]);
+	return nextState;
+    default:
+	return state;
+    }
+};
 
 export const todoApp = combineReducers({
-    byId : byIdReducer,
-    listByFilter,
+    sugsByUserQuery,
     search
 });
 
 // aka selector
-export const getVisibileTodos = (state, filter) => {
-    const ids = fromList.getIds(state.listByFilter[filter]);
-    return ids.map(id => fromById.getTodo(state.byId, id));
+export const getSugs = (state, userQuery) => {
+    if('' == userQuery){
+	return [];
+    }
+    return fromList.getSugs(state.sugsByUserQuery[userQuery]);
 };
 
-export const getIsFetching = (state, filter) =>
-    fromList.getIsFetching(state.listByFilter[filter]);
+export const getIsFetching = (state, userQuery) => {
+    if('' == userQuery){
+	return false;
+    }
+    return fromList.getIsFetching(state.sugsByUserQuery[userQuery]);
+}
 
-export const getErrorMessage = (state, filter) =>
-    fromList.getErrorMessage(state.listByFilter[filter]);
+export const getErrorMessage = (state, userQuery) => {
+    if('' == userQuery){
+	return [];
+    }
+    fromList.getErrorMessage(state.sugsByUserQuery[userQuery]);
+}
 

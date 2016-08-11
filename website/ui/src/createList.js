@@ -1,20 +1,20 @@
 import {combineReducers }  from 'redux';
 
-const createList = (filter) => {
-    const ids = (state = [], action) => {
-	if(action.filter !== filter){
+const createList = (userQuery) => {
+    const sugs = (state = [], action) => {
+	if(action.userQuery !== userQuery){
 	    return state;
 	}
 	switch(action.type){
 	case 'FETCH_TODOS_SUCCESS':
-	    return action.response.todos.map(todo => todo.id);
+	    return action.response;
 	default:
 	    return state;
 	}
     };
 
     const isFetching = (state = false, action) => {
-	if(action.filter !== filter){
+	if(action.userQuery !== userQuery){
 	    return state;
 	}
 	switch(action.type){
@@ -29,7 +29,7 @@ const createList = (filter) => {
     };
 
     const errorMessage = (state = null, action) => {
-	if(action.filter !== filter){
+	if(action.userQuery !== userQuery){
 	    return state;
 	}
 	switch(action.type){
@@ -44,7 +44,7 @@ const createList = (filter) => {
     };
     
     return combineReducers({
-	ids,
+	sugs,
 	isFetching,
 	errorMessage
     });
@@ -52,7 +52,7 @@ const createList = (filter) => {
 
 export default createList;
 
-export const getIds = (state) =>  state.ids;
+export const getSugs = (state) =>  state.sugs;
 
 export const getIsFetching = (state) => state.isFetching;
 

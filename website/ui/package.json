@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "axios": "^0.13.1",
     "babel-polyfill": "^6.13.0",
     "babel-preset-stage-2": "^6.13.0",
     "immutable": "^3.8.1",
