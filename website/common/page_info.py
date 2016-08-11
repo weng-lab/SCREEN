@@ -50,22 +50,14 @@ class PageInfoMain:
             p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
 
-        facetlist = [{"id": "assembly",
-                      "name": "assembly",
-                      "type": "list",
+        facetlist = [{"id": "assembly", "name": "Assembly", "type": "list",
                       "visible": True},
-                     {"id": "cell_line",
-                      "name": "cell types",
-                      "type": "list",
+                     {"id": "cell_line", "name": "Cell types", "type": "list",
                       "visible": True},
-                     {"id": "chromosome",
-                      "name": "chromosome",
-                      "type": "list",
+                     {"id": "chromosome", "name": "Chromosome", "type": "list",
                       "visible": True},
-                     {"id": "coordinates",
-                      "name": "coordinates",
-                      "type": "slider",
-                      "label_text": "coordinates",
+                     {"id": "coordinates", "name": "Coordinates",
+                      "type": "slider", "label_text": "coordinates",
                       "visible": False} ]
 
         ranklist = [{"id": "dnase", "name": "DNase"},
