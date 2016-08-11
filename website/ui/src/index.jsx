@@ -12,7 +12,7 @@ import FetchError from './fetchError';
 
 class VisibleTodoList extends Component {
     componentDidMount(){
-	this.fetchData();
+	// this.fetchData();
     }
 
     componentDidUpdate(prevProps){
@@ -68,21 +68,8 @@ const mapStateToPropsTodoList = (state, {params}) => {
 	filter,
     };
 };
-VisibleTodoList = withRouter(connect(
-    mapStateToPropsTodoList,
-    actions
-)(VisibleTodoList));
-
-const FilterLink = ({filter, children}) => (
-    <Link
-    to={filter === 'all' ? '' : filter}
-    activeStyle={{
-	textDecoration: 'none',
-	color: 'black',
-    }}>
-    {children}
-    </Link>
-);
+VisibleTodoList = withRouter(connect(mapStateToPropsTodoList, actions)
+    (VisibleTodoList));
 
 const TodoLi = ({
     text, completed, onClick
@@ -99,39 +86,51 @@ const TodoLi = ({
     </li>
 );
 
-const Footer = () => (
-    <p>
-    Show:
-    {' '} <FilterLink filter='all'>All</FilterLink>
-    {' '} <FilterLink filter='active'>Active</FilterLink>
-    {' '} <FilterLink filter='completed'>Completed</FilterLink>
-    </p>
-);
-
-const AddButtonBase = ({dispatch}) => {
-    let input;
+class AddButton extends Component {
+    componentDidMount(){
+    }
     
-    return (
-	<div>
-	<input ref={node => {
-	    input = node;
-	}} />
-	<button onClick={() => {
-	    dispatch(actions.addTodo(input.value));
-	    input.value = '';
-	}}>
-	Add Todo
+    add({keyCode, target}) {
+	const { searchKeyPress } = this.props;
+	const Enter = 13;
+	
+	if(Enter == keyCode){
+
+	} else {
+	    searchKeyPress(target.value);
+	}
+    }
+    
+    render(){
+	const { addTodo } = this.props;
+	return (
+	    <div>
+	    <input onKeyUp={ (e) => this.add(e) } />
+	    <button onClick={() => {
+		addTodo(input.value);
+	    }}>
+	    Search
 	    </button>
-	</div>
-    );
+	    </div>
+	);
+    }
 };
-const AddButton = connect()(AddButtonBase);
+const mapStateToPropsSearch = (state, {params}) => {
+    const filter = params.filter || 'all';
+    return {
+	todos: getVisibileTodos(state, filter),
+	isFetching: getIsFetching(state, filter),
+	errorMessage: getErrorMessage(state, filter),
+	filter,
+    };
+};
+AddButton = withRouter(connect(mapStateToPropsSearch, actions)
+    (AddButton));
 
 const TodoApp = () => (
 	<div>
 	<AddButton />
         <VisibleTodoList />
-	<Footer />
 	</div>
  );
 

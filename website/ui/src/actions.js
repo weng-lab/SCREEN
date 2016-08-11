@@ -1,6 +1,13 @@
 import * as api from './api';
 import { getIsFetching } from './reducers';
 
+export const searchKeyPress = (value) => (dispatch, getState) => {
+    dispatch({
+	type: 'SEARCH_KEY_PRESS',
+	value,
+    });
+}
+
 export const fetchTodos = (filter) => (dispatch, getState) => {
     if(getIsFetching(getState(), filter)){
 	return Promise.resolve();
