@@ -17,11 +17,12 @@ class PageInfoMain:
         self.regElementDetails = RegElementDetails(es, ps)
         self.webSocketUrl = webSocketUrl
 
-    def wholePage(self):
+    def wholePage(self, indexPage = False):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version,
-                "webSocketUrl" : self.webSocketUrl}
+                "webSocketUrl" : self.webSocketUrl,
+                "indexPage": indexPage}
 
     def hexplotPage(self, args, kwargs):
         retval = self.wholePage()

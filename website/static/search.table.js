@@ -28,7 +28,7 @@ RE_table.prototype.genButtonGroupCol = function(names){
 
 RE_table.prototype.setupColumns = function(){
     var ret = {Accession : this.genStrCol("_source.accession"),
-	       Confidence : this.genFloatCol("_source.confidence"),
+	       "-log(p)" : this.genFloatCol("_source.confidence"),
                //Genome : this.genStrCol("_source.genome"),
 	       Chr : this.genStrCol("_source.position.chrom"),
                Start : this.genIntCol("_source.position.start"),
