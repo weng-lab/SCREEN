@@ -92,3 +92,7 @@ div.result_row_selected {
 .grow:hover {
     height: 100%;
 }
+
+#searchresults_table {
+    width: 100% !important;
+}

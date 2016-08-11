@@ -101,6 +101,9 @@ RE_table.prototype.renderTable = function(){
                ]
     } );
 
+    $("#searchresults_table").removeClass( 'display' )
+	.addClass('table table-condensed');
+    
     this.makeEmptyDetailsDiv();
 
     // deal w/ genome browser button click
