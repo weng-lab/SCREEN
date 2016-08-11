@@ -96,3 +96,8 @@ div.result_row_selected {
 #searchresults_table {
     width: 100% !important;
 }
+
+#searchresults_table > tbody > tr:hover > td,
+#searchresults_table > tbody > tr:hover > th {
+    background-color: #F5B041;
+}

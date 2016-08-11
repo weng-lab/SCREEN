@@ -102,7 +102,7 @@ RE_table.prototype.renderTable = function(){
     } );
 
     $("#searchresults_table").removeClass( 'display' )
-	.addClass('table table-condensed');
+	.addClass('table table-condensed table-hover');
     
     this.makeEmptyDetailsDiv();
 
