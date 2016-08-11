@@ -114,7 +114,11 @@ RE_table.prototype.renderTable = function(){
 
 	regelm_details_view.ranking_view.load_cell_lines(
 	    regelm_details_base.reformat_ranks(r.ranks));
-    } );
+
+	$("#detailsLeftArrow").click(function(){
+	    showTab("tab_results");
+	});	
+    });
 }
 
 function result_from_tablerow(dtable, t){
