@@ -215,6 +215,8 @@ function create_rank_heatmap(results, rank, cell_line_datapairs){
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse();
     defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", "max"];
+    defaultlayout.margin.top = 100;
+    defaultlayout.margin.left = 75;
 
     for (var i = 0; i < cell_line_datapairs.length; i++) {
 	maxes.push(0);
