@@ -23,29 +23,33 @@ regelm_details.prototype.get_text_color = function(absolute, total) {
     return (pct_rank < 0.5 ? "#000000" : "#ffffff");
 };
 
+get_search_ahref = function(s) {
+    return Ver() + '/search?q=' + s;
+};
+
 /* converts a gene symbol to a link to a page with details */
 regelm_details.prototype.get_gene_href = function(symbol) {
-    return "#"; // TODO: link to gene info page
+    return get_search_ahref(symbol);
 };
 
 /* converts a SNP symbol to a link to a page with details */
 regelm_details.prototype.get_snp_href = function(symbol) {
-    return "#"; // TODO: link to SNP info page
+    return get_search_ahref(symbol);
 };
 
 /* converts an RE accession to a link to a page with details */
 regelm_details.prototype.get_re_href = function(symbol) {
-    return "#"; // TODO: link to RE info page
+    return get_search_ahref(symbol);
 };
 
 /* converts a TF name to a link to a page with details */
 regelm_details.prototype.get_tf_href = function(symbol) {
-    return "#"; // TODO: link to RE info page
+    return get_search_ahref(symbol);
 };
 
 /* converts a list of overlapping peaks to a link to a page with details */
 regelm_details.prototype.get_genelist_href = function(symbol) {
-    return "#"; // TODO: link to RE info page
+    return get_search_ahref(symbol);
 };
 
 regelm_details.prototype.reformat_ranks = function(ranks) {
