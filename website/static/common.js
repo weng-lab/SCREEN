@@ -20,7 +20,10 @@ function Ver() {
 var socket = null;
 var isopen = false;
 
-var setupSocket = function(fonopen = null, fargs = null) {
+function setupSocket(fonopen, fargs) {
+    if (typeof(fonopen)==='undefined') fonopen = null;
+    if (typeof(fargs)==='undefined') fargs = null;
+    
     socket = new WebSocket(WebSocketUrl);
     socket.binaryType = "arraybuffer";
 

@@ -23,7 +23,7 @@ regelm_details.prototype.get_text_color = function(absolute, total) {
     return (pct_rank < 0.5 ? "#000000" : "#ffffff");
 };
 
-get_search_ahref = function(s) {
+function get_search_ahref(s) {
     return Ver() + '/search?q=' + s;
 };
 
@@ -234,7 +234,10 @@ regelm_ranking_view.prototype.rankNames = function(s){
 }
 
 /* private: do actual display of data once number of cell lines is known */
-regelm_ranking_view.prototype._load_cell_lines = function(data, single_cell_line = false) {
+regelm_ranking_view.prototype._load_cell_lines = function(data,
+							  single_cell_line) {
+    if (typeof(single_cell_line)==='undefined') single_cell_line = false;
+    
     clear_div_contents(this._table_div);
     var root_table = document.createElement("table");
     root_table.className = "table table-condensed";
@@ -307,7 +310,9 @@ regelm_gene_view.prototype.set_loading_text = function() {
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
-regelm_gene_view.prototype.load_list = function(data, result_limit = -1) {
+regelm_gene_view.prototype.load_list = function(data, result_limit) {
+    if (typeof(result_limit)==='undefined') result_limit = -1;
+    
     clear_div_contents(this._table_div);
     data.sort(_regelm_gene_comparator);
 
@@ -386,7 +391,9 @@ peak_overlap_view.prototype.set_loading_text = function() {
 *  loads the given gene list
 *  format is [{"symbol": gene name/symbol, "distance": distance from RE}, ...]
 */
-peak_overlap_view.prototype.load_data = function(data, results_limit = -1) {
+peak_overlap_view.prototype.load_data = function(data, results_limit) {
+    if (typeof(results_limit)==='undefined') results_limit = -1;
+    
     clear_div_contents(this._table_div);
 
     var root_table = document.createElement("table");

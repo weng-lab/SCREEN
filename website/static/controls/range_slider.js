@@ -9,9 +9,10 @@ function slider()
     this.base = null;
 }
 
-function _create_slider_generic(slider_div, max, txbox, update_function, slide_function, is_range = true)
-{
-    
+function _create_slider_generic(slider_div, max, txbox, update_function,
+				slide_function, is_range){
+    if (typeof(is_range)==='undefined') is_range = true;
+
     var retval = (is_range ? new range_slider() : new slider());
 
     retval.base = $("#" + slider_div);
@@ -62,8 +63,10 @@ range_slider.prototype.set_selection_range = function(start, end) {
     this.base.slider("values", [start, end]);
 };
 
-range_slider.prototype.refresh_selection = function(start = null, end = null) {
-
+range_slider.prototype.refresh_selection = function(start, end) {
+    if (typeof(start)==='undefined') start = null;
+    if (typeof(end)==='undefined') end = null;
+    
     if (start != null && end != null) this.set_selection_range(start, end);
     var crange = this.get_range();
     var cselection = this.get_selection_range();
@@ -73,7 +76,8 @@ range_slider.prototype.refresh_selection = function(start = null, end = null) {
     
 };
 
-slider.prototype.refresh_selection = function(value = null) {
+slider.prototype.refresh_selection = function(value) {
+    if (typeof(value)==='undefined') value = null;
 
     if (value != null) this.set_selection(value);
     var crange = this.get_range();
