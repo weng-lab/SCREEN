@@ -129,7 +129,7 @@ RE_table.prototype.renderTable = function(){
         console.log(whichBrowser, reAccession);
 	console.log(data);
 
-	if("UCSC" == whichBrowser){
+	//if("UCSC" == whichBrowser){
 	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
 	    url += "db=hg19";
 	    url += "&position=" + data["position"]["chrom"] + ':' + data["position"]["start"] + '-' + data["position"]["end"];
@@ -144,7 +144,7 @@ RE_table.prototype.renderTable = function(){
 	    console.log(url);
 	    
 	    window.open(url, '_blank');
-	}
+	//}
 	
     } );
 
