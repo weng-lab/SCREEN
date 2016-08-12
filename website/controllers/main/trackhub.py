@@ -2,6 +2,12 @@
 
 import StringIO
 
+from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
+
+from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
+
+from models.regelm_detail import RegElementDetails
+
 class TrackhubController:
     def __init__(self, templates, es, ps, version, webSocketUrl):
         self.templates = templates
@@ -12,13 +18,14 @@ class TrackhubController:
 
         self.assembly = "hg19"
         self.debug = False
-
+        self.priority = 0
+        
     def ucsc_trackhub(self, *args, **kwargs):
         print("args:", args)
         args = args[0]
         if not args[0].startswith('EE'):
             return "first arg must be EE<num>"
-        re_accession = args[0]
+        self.re_accession = args[0]
 
         if 2 == len(args):
             loc = args[1]
@@ -26,7 +33,7 @@ class TrackhubController:
                 return self.makeHub()
             if loc == "genomes.txt":
                 return self.makeGenomes()
-            return "ERROR with path"
+            return "error with path"
 
         if 3 != len(args):
             return "path too long"
@@ -56,29 +63,78 @@ trackDb\t{assembly}/trackDb.txt""".format(assembly = self.assembly)
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
+    def genes(self):
+        if "hg19" == self.assembly:
+            return None
+
+        byAssembly = {"mm10" : "Comprehensive M8",
+                      "hg19" : "Comprehensive 24"}
+        desc = "GENCODE Genes " + byAssembly[self.assembly]
+
+        byAssemblyURl = {"mm10" : os.path.join(BIB5, "genes", "gencode.vM8.annotation.bb"),
+                         "hg19" : os.path.join(BIB5, "genes", "gencode.v24.annotation.bb")}
+        url = byAssemblyURl[self.assembly]
+
+        track = BigGenePredTrack(desc, self.priority, url).track()
+        self.priority += 1
+        return track
+
+    def mp(self):
+        url = "http://bib5.umassmed.edu/~purcarom/cre/cre.bigBed"
+        track = BigBedTrack("Candidate Regulatory Elements",
+                            self.priority,
+                            url).track()
+        self.priority += 1
+        return track
+
+    def phastcons(self):
+        if "mm10" == self.assembly:
+            url =  "http://hgdownload.cse.ucsc.edu/goldenPath/mm10/phastCons60way/mm10.60way.phastCons.bw"
+        elif "hg19" == self.assembly:
+            url = "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/phastCons100way/hg19.100way.phastCons.bw"
+
+        desc = "phastCons"
+
+        color = OtherTrackhubColors.Conservation.rgb
+        track = BigWigTrack(desc, self.priority, url, color).track()
+        self.priority += 1
+        return track
+
+    def trackhubExp(self, name, color, cellType, accession):
+        url = "https://encodeproject.org/files/" + accession
+
+        desc = Track.MakeDesc(name, "", cellType)
+
+        track = BigWigTrack(desc, self.priority, url, color).track()
+        self.priority += 1
+        return track
+
     def makeTrackDb(self):
-        return "here"
-        epis = self.epigenomes.GetByAssemblyAndAssays(self.assembly, self.assays)
-        epis = filter(lambda e: e.web_id() in self.tissue_ids, epis.epis)
+        red = RegElementDetails(self.es, self.ps)
+        re = red.reFull(self.re_accession)
 
         lines = []
         lines += [self.genes()]
 
-        for wepi in sorted(epis, key=lambda e: e.epi.biosample_term_name):
-            lines += [self.predictionTrackHub(wepi)]
-            if self.assays.startswith("BothDNaseAnd"):
-                if AssayType.Enhancer == self.assayType:
-                    lines += [self.compositeTrack(wepi)]
-            for exp in wepi.exps():
-                try:
-                    lines += [self.trackhubExp(exp)]
-                except:
-                    if self.args.debug:
-                        raise
-                    pass
+        lines+= [self.mp()]
+        
+        for cellType, v in re["ranks"]["enhancer"].iteritems():
+            lines += [self.trackhubExp(v["method"],
+                                       EncodeTrackhubColors.DNase_Signal.rgb,
+                                       cellType, v["accession"])]
+        for cellType, v in re["ranks"]["promoter"].iteritems():
+            lines += [self.trackhubExp(v["method"],
+                                       EncodeTrackhubColors.DNase_Signal.rgb,
+                                       cellType, v["accession"])]
+        for cellType, v in re["ranks"]["ctcf"].iteritems():
+            lines += [self.trackhubExp(v["method"],
+                                       EncodeTrackhubColors.DNase_Signal.rgb,
+                                       cellType, v["accession"])]
+        for cellType, v in re["ranks"]["dnase"].iteritems():
+            lines += [self.trackhubExp(v["method"],
+                                       EncodeTrackhubColors.DNase_Signal.rgb,
+                                       cellType, v["accession"])]
 
-        if self.enableVistaTrack():
-            lines += [self.vista()]
         lines += [self.phastcons()]
 
         lines = filter(lambda x: x, lines)
