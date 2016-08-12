@@ -8,7 +8,9 @@ facetGUI.prototype.refresh = function() {
 	if (facet.id in searchquery.post_filter_map
 	    && searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]] != {}) {
 	    for (field in searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range) {
-		if (!facet.range_slider || !facet.histogram) continue;
+		if (!facet.range_slider || !facet.histogram) {
+		    continue;
+		}
 		facet.range_slider.refresh_selection(searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].gte,
 						     searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].lte);
 		facet.histogram.update_selection(...facet.range_slider.get_selection_range());

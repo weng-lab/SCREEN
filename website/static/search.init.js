@@ -8,6 +8,23 @@ var venn_results = {"overlaps": [{"sets": [0, 1], "size": -1}],
 
 var re_table = new RE_table();
 
+function updateSearchBar(){
+    var assembly = searchquery.assembly;
+    var cellType = searchquery.cell_line;
+    var chrom = searchquery.chromosome;
+    var start = searchquery.chromosome_start;
+    var end = searchquery.chromosome_end;
+
+    var pos = ""
+    if(chrom > ""){
+	pos = chrom + ':' + start + '-' + end;
+    }
+    
+    var arr = [assembly, cellType, pos];
+    var str = arr.filter(function(e){ return e > ""; }).join(' ');
+    $('#queryBox').val(str);
+};
+
 var facet_link_handlers = {
     "chromosome": function(chr) {
 	if (searchquery.chromosome != chr){
@@ -16,14 +33,18 @@ var facet_link_handlers = {
 	} else {
 	    searchquery.set_coordinate_filter("", 0, 0);
         }
+	updateSearchBar();
     },
     "cell_line": function(cell_line) {
 	searchquery.set_cell_line_filter(cell_line);
 	if (searchquery.cell_line == ""){
 	    request_cell_lines();
         } else {
-	    process_agglist("cell_line", {"name": "cell_line", "datapairs": [[cell_line, "x"]]});
+	    process_agglist("cell_line",
+			    {"name": "cell_line",
+			     "datapairs": [[cell_line, "x"]]});
         }
+	updateSearchBar();
 	perform_search();
     }
 };
@@ -86,6 +107,8 @@ function socket_message_handler(e) {
     } else {
         console.log("unhandled result type:", results["type"]);
     }
+
+    updateSearchBar();
 }
 
 function handle_details(results) {
