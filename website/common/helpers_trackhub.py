@@ -152,9 +152,9 @@ class BigGenePredTrack(Track):
         self.visibility = "pack"
 
 class BigBedTrack(Track):
-    def __init__(self, desc, priority, url):
+    def __init__(self, desc, priority, url, color):
         super(BigBedTrack, self).__init__(desc, priority, url)
-        self.color = PredictionTrackhubColors.distal_regions.rgb
+        self.color = color
         self.type = "bigBed"
         self.visibility = "pack"
         
