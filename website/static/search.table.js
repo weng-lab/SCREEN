@@ -92,9 +92,8 @@ RE_table.prototype.renderTable = function(){
     } );
 
     // deal w/ RE row click
-    $('#searchresults_table').on( 'click', 'td', function() {
-        var t = $(this);
-        var tr = dtable.row(t.parents('tr'));
+    $('#searchresults_table').on( 'click', 'tr', function() {
+	$(this).addClass('info');
 	var r = result_from_tablerow(dtable, $(this));
 
 	$("#redetails").html("");
@@ -121,8 +120,7 @@ RE_table.prototype.renderTable = function(){
     });
 }
 
-function result_from_tablerow(dtable, t){
-    var whichBrowser = t.html();
-    var data = dtable.row(t.parents('tr')).data();
+function result_from_tablerow(dtable, tr){
+    var data = dtable.row(tr).data();
     return data["_source"];
 }
