@@ -154,7 +154,9 @@ function create_expression_heatmap(results){
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
-
+    defaultlayout.margin.top = 200;
+    defaultlayout.margin.left = 600;
+    
     for (i in results.hits) {
 	result = results.hits[i]._source;
 	data.collabels.push(result.ensembl_id);
