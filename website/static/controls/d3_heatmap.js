@@ -24,9 +24,7 @@ var defaultlayout = {
 
 };
 
-function create_heatmap(ndata, destination_div, chart_layout)
-{
-
+function create_heatmap(ndata, destination_div, chart_layout){
     var data = ndata.data;
 
     chart_layout.rows.labels = ndata.rowlabels;

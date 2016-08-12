@@ -26,6 +26,8 @@
 	      Candidate RE Search</a>
           </li><li><a href="#tab_details" data-toggle="tab" style="display:none;">
 	      RE Details</a>
+          </li><li><a href="#tab_rank_heatmap" data-toggle="tab" style="display:none;">
+	      Rank Heatmap</a>
           </li><li><a href="#tab_expression" data-toggle="tab">
 	      Nearby Gene Expression</a>
           </li><li><a href="#tab_venn" data-toggle="tab">
@@ -37,20 +39,23 @@
           <div class="tab-pane active" id="tab_results">
             <div id="searchresults_div">
             </div>
-            <div class="col-md-3" id="heatmap_container">
-              <select id="heatmap_dropdown">
-                {% for rank in ranklist -%}
-                <option value="{{rank.id}}">{{rank.name}}</option>
-                {% endfor -%}
-              </select>
-              <div style="width:100%" id="rank_heatmap">
-              </div>
-            </div>
           </div>
 
           <div class="tab-pane" id="tab_details">
 	    <div id="redetails">
 	    </div>
+	  </div>
+
+          <div class="tab-pane" id="tab_rank_heatmap">
+            <div id="heatmap_container">
+              <select id="heatmap_dropdown">
+                {% for rank in ranklist -%}
+                <option value="{{rank.id}}">{{rank.name}}</option>
+                {% endfor -%}
+              </select>
+              <div id="rank_heatmap">
+              </div>
+            </div>
 	  </div>
 	  
           <div class="tab-pane" id="tab_expression">

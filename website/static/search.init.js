@@ -198,6 +198,8 @@ function create_expression_heatmap(results){
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs){
+    showTab("tab_rank_heatmap");
+    
     var data = {
 	"collabels": [],
 	"rowlabels": [],
