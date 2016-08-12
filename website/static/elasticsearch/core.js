@@ -74,8 +74,9 @@ function get_venn_queries(cell_lines, rank_id){
     retval[2].query.bool.must[0].range[clr1] = {"lte": threshold};
 
     for (var i = 0; i < 3; i++) {
-	for (var j = 0; j < searchquery.eso.query.bool.must.length; j++)
+	for (var j = 0; j < searchquery.eso.query.bool.must.length; j++){
 	    retval[i].query.bool.must.push(searchquery.eso.query.bool.must[j]);
+	}
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[0]);
 	retval[i].query.bool.must.push(searchquery.eso.post_filter.bool.must[1]);
     }
@@ -184,7 +185,9 @@ function Query() {
 
 function array_remove(array, element){
     for (i in array) {
-	if (array[i] == element) array.splice(index, 1);
+	if (array[i] == element) {
+	    array.splice(index, 1);
+	}
     }
     return array;
 }
@@ -261,7 +264,9 @@ Query.prototype.remove_aggregations = function(aggdict) {
 };
 
 Query.prototype.remove_rank_filters = function() {
-    for (var i = 4; i <= 8; i++) this.eso.post_filter.bool.must[i] = {};
+    for (var i = 4; i <= 8; i++) {
+	this.eso.post_filter.bool.must[i] = {};
+    }
 };
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
