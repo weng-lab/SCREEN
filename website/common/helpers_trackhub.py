@@ -151,6 +151,13 @@ class BigGenePredTrack(Track):
         self.type = "bigBed 12 + 8"
         self.visibility = "pack"
 
+class BigBedTrack(Track):
+    def __init__(self, desc, priority, url):
+        super(BigBedTrack, self).__init__(desc, priority, url)
+        self.color = PredictionTrackhubColors.distal_regions.rgb
+        self.type = "bigBed"
+        self.visibility = "pack"
+        
 def officialVistaTrack(assembly):
     byAssembly = {"mm10" : """
 track VISTAenhancers
