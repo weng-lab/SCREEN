@@ -97,3 +97,5 @@ TAGS
 *.core
 .Rhistory
 Rplots.pdf
+
+/website/cache

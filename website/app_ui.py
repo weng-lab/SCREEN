@@ -8,6 +8,7 @@ from timeit import default_timer as timer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
+from utils import Utils
 
 class UiApp():
     def __init__(self, viewDir, staticDir, es, ps, version, webSocketUrl):
@@ -26,6 +27,7 @@ class UiAppRunner:
 
         d = os.path.dirname(__file__)
         staticDir = os.path.abspath(os.path.join(d, "static", "ui"))
+        Utils.mkdir_p(staticDir)
         viewDir = os.path.abspath(os.path.join(d, "views"))
 
         config = {
