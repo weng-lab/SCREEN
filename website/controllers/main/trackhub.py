@@ -87,7 +87,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         url = "http://bib5.umassmed.edu/~purcarom/cre/cre.bigBed"
         track = BigBedTrack("Candidate Regulatory Elements",
                             self.priority,
-                            url).track()
+                            url,
+                            PredictionTrackhubColors.distal_regions.rgb).track()
         self.priority += 1
         return track
 
@@ -105,7 +106,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return track
 
     def trackhubExp(self, name, color, cellType, accession):
-        url = "https://encodeproject.org/files/" + accession
+        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=accession)
 
         desc = Track.MakeDesc(name, "", cellType)
 

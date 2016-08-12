@@ -122,10 +122,30 @@ RE_table.prototype.renderTable = function(){
     
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
+	var milliseconds = (new Date).getTime();
 	var whichBrowser = $(this).html();
 	var data = result_from_table_button(dtable, $(this));
         var reAccession = data["accession"];
         console.log(whichBrowser, reAccession);
+	console.log(data);
+
+	if("UCSC" == whichBrowser){
+	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
+	    url += "db=hg19";
+	    url += "&position=" + data["position"]["chrom"] + ':' + data["position"]["start"] + '-' + data["position"]["end"];
+	    	    
+            var trackhubUrl = ["http://megatux.purcaro.com:9002",
+			       Ver(),
+                               "ucsc_trackhub",
+			       reAccession,
+			       "hub_" + milliseconds + ".txt"].join('/');
+	    url += "&hubClear=" + trackhubUrl;
+
+	    console.log(url);
+	    
+	    window.open(url, '_blank');
+	}
+	
     } );
 
     // deal w/ RE row click
