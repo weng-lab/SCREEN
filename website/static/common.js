@@ -62,7 +62,7 @@ function growPerm(div){
     $(div).hover(function() {
 	hoverTimeout = setTimeout(function() {
 	    $(div).removeClass('grow');
-	}, 2000);
+	}, 200);
     }, function() {
 	clearTimeout(hoverTimeout);
     });
