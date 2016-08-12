@@ -103,7 +103,6 @@ RE_table.prototype.renderTable = function(){
 	    re_table.setCallback(function(){
 		var json = {
 		    data : results.results.hits,
-		    draw : 1,
 		    recordsTotal : results.results.total,
 		    recordsFiltered : results.results.total
 		};
