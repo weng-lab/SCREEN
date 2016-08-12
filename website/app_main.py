@@ -3,6 +3,7 @@
 import cherrypy, jinja2, os, sys
 
 from controllers.main.main import MainController
+from controllers.main.trackhub import TrackhubController
 
 from timeit import default_timer as timer
 
@@ -13,10 +14,16 @@ class MainApp():
     def __init__(self, viewDir, staticDir, es, ps, version, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps, version, webSocketUrl)
-
+        self.trackhub = TrackhubController(self.templates, es, ps,
+                                           version, webSocketUrl)
+        
     @cherrypy.expose
     def index(self):
         return self.mc.Index()
+
+    @cherrypy.expose
+    def ucsc_trackhub(self, *args, **kwargs):
+        return self.trackhub.ucsc_trackhub(args, kwargs)
 
     @cherrypy.expose
     def query(self, q=None, url=None):
