@@ -86,7 +86,9 @@ class MyServerProtocol(WebSocketServerProtocol):
 
             if "action" in j:
                 if j["action"] == "enumerate":
-                    raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
+                    raw_results = es.get_field_mapping(index=j["index"],
+                                                       doc_type=j["doc_type"],
+                                                       field=j["field"])
                     raw_results.update({"name": j["name"]})
                     self.sendMessage(json.dumps(raw_results))
                     return

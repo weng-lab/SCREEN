@@ -56,6 +56,8 @@ function toggle_display(el, sh){
 function socket_message_handler(e) {
     results = JSON.parse(e.data);
 
+    //console.log(results);
+    
     if ("enumeration" == results["type"]) {
         // console.log(e.data);
 
@@ -241,7 +243,6 @@ function create_rank_heatmap(results, rank, cell_line_datapairs){
     }
 
     create_heatmap(data, "rank_heatmap", defaultlayout);
-
 }
 
 function handle_expression_matrix_results(results){
@@ -252,25 +253,32 @@ function handle_expression_matrix_results(results){
 function handle_regulatory_results(results){
     last_results = results;
 
-    toggle_display(document.getElementById("coordinates_facet_panel"), searchquery.has_chromosome_filter());
+    toggle_display(document.getElementById("coordinates_facet_panel"),
+		   searchquery.has_chromosome_filter());
 
     if (searchquery.has_cell_line_filter() &&
         document.getElementById("ranks_facet_panel").style.display == "none"){
-	process_agglist("cell_line", {"name": "cell_line", "datapairs": [[searchquery.cell_line, "x"]]});
-    }
-    else if (!searchquery.has_cell_line_filter()) {
+	process_agglist("cell_line",
+			{"name": "cell_line",
+			 "datapairs": [[searchquery.cell_line, "x"]]});
+    } else if (!searchquery.has_cell_line_filter()) {
 	clear_div_contents(document.getElementById("rank_heatmap"));
-	create_rank_heatmap(results, document.getElementById("heatmap_dropdown").value, enumerations["cell_line"]);
+	create_rank_heatmap(results,
+			    document.getElementById("heatmap_dropdown").value,
+			    enumerations["cell_line"]);
     }
 
-    toggle_display(document.getElementById("ranks_facet_panel"), searchquery.has_cell_line_filter());
-    toggle_display(document.getElementById("heatmap_container"), !searchquery.has_cell_line_filter());
+    toggle_display(document.getElementById("ranks_facet_panel"),
+		   searchquery.has_cell_line_filter());
+    toggle_display(document.getElementById("heatmap_container"),
+		   !searchquery.has_cell_line_filter());
 
     for (aggname in results["aggs"]) {
         if (results["aggs"][aggname]["type"] == "list") {
             process_agglist(aggname, results["aggs"][aggname]);
         } else if (results["aggs"][aggname]["type"] == "histogram") {
-            histograms[aggname] = process_histogram_result(aggname, results["aggs"][aggname]);
+            histograms[aggname] =
+		process_histogram_result(aggname, results["aggs"][aggname]);
         }
     }
 
