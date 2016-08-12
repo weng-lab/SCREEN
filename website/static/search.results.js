@@ -79,13 +79,24 @@ function add_filterresult(id, result){
     } else {
 	rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
     }
+    
     var name_text = document.createTextNode(result[0]);
     name_span.appendChild(name_text);
     rght_span.className = "pull-right";
-    n_href.appendChild(rght_text);
-    rght_span.appendChild(n_href);
-    n_div.appendChild(name_span);
-    n_div.appendChild(rght_span);
+    
+    if (result[1] == "x"){
+	n_href.appendChild(rght_text);
+	rght_span.appendChild(n_href);
+	n_div.appendChild(name_span);
+	n_div.appendChild(rght_span);
 
-    facetbox_div.appendChild(n_div);
+	facetbox_div.appendChild(n_div);
+    } else {
+	rght_span.appendChild(rght_text);
+	n_div.appendChild(name_span);
+	n_div.appendChild(rght_span);
+	n_href.appendChild(n_div);
+
+	facetbox_div.appendChild(n_href);
+    }
 }
