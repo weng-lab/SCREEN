@@ -79,7 +79,8 @@ RE_table.prototype.renderTable = function(){
         order: [[1, "desc"],
         	[3, "asc"],
         	[4, "asc"]
-               ]
+               ],
+	bFilter: false
     } );
 
     $("#searchresults_table").removeClass( 'display' )
