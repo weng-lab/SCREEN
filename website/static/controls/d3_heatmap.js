@@ -1,10 +1,9 @@
 var defaultlayout = {
-
     "margin": {
-	"top": 200,
+	"top": 100,
 	"right": 10,
 	"bottom": 50,
-	"left": 600
+	"left": 75
     },
 
     "cellSize": 12,
