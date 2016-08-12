@@ -123,7 +123,9 @@ function gene_expression_query(ensembl_ids){
 function Query() {
     this.cell_line = "";
     this.chromosome = "";
-    this.assembly = "";
+    this.chromosome_start = "";
+    this.chromosome_end = "";
+    this.assembly = "hg19";
 
     this.post_filter_map = {
 	"dnase": DNASE_RANKS,
@@ -199,13 +201,10 @@ Query.prototype.set_chromosome_filter = function(chr) {
 };
 
 Query.prototype.set_assembly_filter = function(assembly) {
-    if (assembly != this.assembly)
-    {
+    if (assembly != this.assembly){
 	this.eso.query.bool.must[ASSEMBLY] = {"match": {"genome": assembly}};
 	this.assembly = assembly;
-    }
-    else
-    {
+    } else {
 	this.eso.query.bool.must[ASSEMBLY] = {};
 	this.assembly = "";
     }
@@ -238,16 +237,17 @@ Query.prototype.has_chromosome_filter = function() {return this.chromosome != ""
 Query.prototype.has_cell_line_filter = function() {return this.cell_line != ""};
 
 Query.prototype.set_coordinate_filter = function(chrom, start, end) {
-    if (chrom != "")
-    {
+    if (chrom != ""){
 	this.chromosome = chrom;
+	this.chromosome_start = start;
+	this.chromosome_end = end;
 	this.eso.query.bool.must[POSITION_CHROM] = {"match" : { "position.chrom" : chrom } };
-	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : +end } } };
-	this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : +start } } };
-    }
-    else
-    {
+	this.eso.post_filter.bool.must[POSITION_START]  = {"range" : { "position.start" : { "lte" : + end } } };
+	this.eso.post_filter.bool.must[POSITION_END]    = {"range" : { "position.end" : { "gte" : + start } } };
+    } else {
 	this.chromosome = "";
+	this.chromosome_start = "";
+	this.chromosome_end = "";
 	this.eso.query.bool.must[POSITION_CHROM] = {};
 	this.eso.post_filter.bool.must[POSITION_START] = {};
 	this.eso.post_filter.bool.must[POSITION_END] = {};
@@ -265,14 +265,11 @@ Query.prototype.remove_rank_filters = function() {
 };
 
 Query.prototype.set_cell_line_filter = function(cell_line) {
-    if (this.cell_line == "")
-    {
+    if (this.cell_line == ""){
 	this.eso.query.bool.must.push({"exists": {"field": "ranks.dnase." + cell_line}});
 	this.add_aggregations(rank_aggs(cell_line));
 	this.cell_line = cell_line;
-    }
-    else
-    {
+    } else {
 	array_remove(this.eso.query.bool.must, {"exists": {"field": "ranks.dnase." + cell_line}});
 	this.remove_aggregations(rank_aggs(cell_line));
 	this.cell_line = "";
