@@ -83,13 +83,15 @@ RE_table.prototype.renderTable = function(){
 	bFilter: false
     } );
 
-    $("#searchresults_table").removeClass( 'display' )
+    $("#searchresults_table").removeClass('display')
 	.addClass('table table-condensed table-hover');
     
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-        var reAccession = get_accession(dtable, $(this));
-        //console.log(whichBrowser, reAccession);
+	var whichBrowser = $(this).html();
+	var data = result_from_table_button(dtable, $(this));
+        var reAccession = data["accession"];
+        console.log(whichBrowser, reAccession);
     } );
 
     // deal w/ RE row click
@@ -123,5 +125,10 @@ RE_table.prototype.renderTable = function(){
 
 function result_from_tablerow(dtable, tr){
     var data = dtable.row(tr).data();
+    return data["_source"];
+}
+
+function result_from_table_button(dtable, t){
+    var data = dtable.row(t.parents('tr')).data();
     return data["_source"];
 }
