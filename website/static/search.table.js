@@ -1,5 +1,6 @@
 function RE_table(){
     this.callback = null;
+    this.milliseconds = (new Date).getTime();
 };
 
 RE_table.prototype.genStrCol = function(field){
@@ -122,12 +123,11 @@ RE_table.prototype.renderTable = function(){
     
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
-	var milliseconds = (new Date).getTime();
 	var whichBrowser = $(this).html();
 	var data = result_from_table_button(dtable, $(this));
         var reAccession = data["accession"];
-        console.log(whichBrowser, reAccession);
-	console.log(data);
+        //console.log(whichBrowser, reAccession);
+	//console.log(data);
 
 	//if("UCSC" == whichBrowser){
 	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
@@ -138,7 +138,7 @@ RE_table.prototype.renderTable = function(){
 			       Ver(),
                                "ucsc_trackhub",
 			       reAccession,
-			       "hub_" + milliseconds + ".txt"].join('/');
+			       "hub_" + this.milliseconds + ".txt"].join('/');
 	    url += "&hubClear=" + trackhubUrl;
 
 	    console.log(url);
