@@ -70,12 +70,12 @@ function growPerm(div){
 
 function showTab(tabName){
     // http://stackoverflow.com/a/11744586
-    var $tab = $('.nav-tabs a[href="#' + tabName + '"]');
+    var tab = $('.nav-tabs a[href="#' + tabName + '"]');
     
-    $tab.click(function(e){
+    tab.click(function(e){
 	e.preventDefault();
-	$tab.tab('show');
+	tab.tab('show');
     });
-    $tab.show();           
-    $tab.tab('show');
+    tab.show();           
+    tab.tab('show');
 }
