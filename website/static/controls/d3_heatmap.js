@@ -20,8 +20,6 @@ var defaultlayout = {
     },
 
     "colors": ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse()
-    //['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F']
-
 };
 
 function create_heatmap(ndata, destination_div, chart_layout){
@@ -29,11 +27,16 @@ function create_heatmap(ndata, destination_div, chart_layout){
 
     chart_layout.rows.labels = ndata.rowlabels;
     chart_layout.rows.order = [];
-    for (var i = 1; i <= chart_layout.rows.labels.length; i++) chart_layout.rows.order.push(i);
+
+    for (var i = 1; i <= chart_layout.rows.labels.length; i++){
+	chart_layout.rows.order.push(i);
+    }
 
     chart_layout.cols.labels = ndata.collabels;
     chart_layout.cols.order = [];
-    for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
+    for (var i = 1; i <= chart_layout.cols.labels.length; i++){
+	chart_layout.cols.order.push(i);
+    }
 
     chart_layout.width  = chart_layout.cellSize * chart_layout.cols.order.length;
     chart_layout.height = chart_layout.cellSize * chart_layout.rows.order.length;
