@@ -101,10 +101,14 @@ RE_table.prototype.renderTable = function(){
 	    searchquery.eso["size"] = requestLength;
 	    
 	    re_table.setCallback(function(){
+		var numFil = results.results.total;
+		if(numFil > 5000){
+		    numFil = 5000;
+		}
 		var json = {
 		    data : results.results.hits,
 		    recordsTotal : results.results.total,
-		    recordsFiltered : results.results.total
+		    recordsFiltered : numFil
 		};
 		callback(json);
 	    });
