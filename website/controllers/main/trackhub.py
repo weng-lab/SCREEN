@@ -18,7 +18,6 @@ class TrackhubController:
 
         self.assembly = "hg19"
         self.debug = False
-        self.priority = 0
         
     def ucsc_trackhub(self, *args, **kwargs):
         print("args:", args)
@@ -29,9 +28,11 @@ class TrackhubController:
 
         if 2 == len(args):
             loc = args[1]
-            if loc == "hub.txt":
+            if loc.startswith("hub_") and loc.endswith(".txt"):
+                self.hubNum = loc.split('_')[1].split('.')[0]
                 return self.makeHub()
-            if loc == "genomes.txt":
+            if loc.startswith("genomes_") and loc.endswith(".txt"):
+                self.hubNum = loc.split('_')[1].split('.')[0]
                 return self.makeGenomes()
             return "error with path"
 
@@ -39,14 +40,16 @@ class TrackhubController:
             return "path too long"
 
         loc = args[2]
-        if loc == "trackDb.txt":
+        if loc.startswith("trackDb_") and loc.endswith(".txt"):
+            self.hubNum = loc.split('_')[1].split('.')[0]
             return self.makeTrackDb()
 
         return "invalid path"
 
     def makeGenomes(self):
         return """genome\t{assembly}
-trackDb\t{assembly}/trackDb.txt""".format(assembly = self.assembly)
+trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
+                                                   hubNum = self.hubNum)
 
     def makeHub(self):
         f = StringIO.StringIO()
@@ -58,7 +61,8 @@ trackDb\t{assembly}/trackDb.txt""".format(assembly = self.assembly)
         for r in [["hub", t],
                   ["shortLabel", t],
                   ["longLabel", t],
-                  ["genomesFile", "genomes.txt"],
+                  ["genomesFile", "genomes_{hubNum}.txt".format(hubNum=
+                                                                self.hubNum)],
                   ["email", "zhiping.weng@umassmed.edu"]]:
             f.write(" ".join(r) + "\n")
         return f.getvalue()
@@ -110,6 +114,7 @@ trackDb\t{assembly}/trackDb.txt""".format(assembly = self.assembly)
         return track
 
     def makeTrackDb(self):
+        self.priority = 0
         red = RegElementDetails(self.es, self.ps)
         re = red.reFull(self.re_accession)
 
