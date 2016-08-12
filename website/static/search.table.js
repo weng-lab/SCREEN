@@ -1,4 +1,5 @@
 function RE_table(){
+    this.callback = null;
 };
 
 RE_table.prototype.genStrCol = function(field){
@@ -66,6 +67,17 @@ RE_table.prototype.makeEmptyTable = function(cols){
     return table;
 }
 
+RE_table.prototype.setCallback = function(f){
+    this.callback = f;
+}
+
+RE_table.prototype.runCallback = function(f){
+    if(this.callback){
+	this.callback();
+	this.callback = null;
+    }
+}
+ 
 RE_table.prototype.renderTable = function(){
     var cols = this.setupColumns();
 
@@ -74,13 +86,32 @@ RE_table.prototype.renderTable = function(){
     var dtable = $("#searchresults_table").DataTable( {
         destroy: true,
         processing: true,
-        data: results.results.hits,
         columns: _.values(cols),
         order: [[1, "desc"],
         	[3, "asc"],
         	[4, "asc"]
                ],
-	bFilter: false
+	bFilter: false,
+	serverSide: true,
+	ajax: function ( request, callback, settings ) {
+	    var requestStart  = request.start;
+	    var requestLength = request.length;
+	    
+	    searchquery.eso["from"] = requestStart;
+	    searchquery.eso["size"] = requestLength;
+	    
+	    re_table.setCallback(function(){
+		var json = {
+		    data : results.results.hits,
+		    draw : 1,
+		    recordsTotal : results.results.total,
+		    recordsFiltered : results.results.total
+		};
+		callback(json);
+	    });
+	    
+	    perform_search();
+	}
     } );
 
     $("#searchresults_table").removeClass('display')

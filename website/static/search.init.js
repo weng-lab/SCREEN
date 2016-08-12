@@ -280,6 +280,11 @@ function handle_expression_matrix_results(results){
 }
 
 function handle_regulatory_results(results){
+    if(re_table.callback){
+	re_table.runCallback();
+	return;
+    }
+
     last_results = results;
 
     toggle_display(document.getElementById("coordinates_facet_panel"),
