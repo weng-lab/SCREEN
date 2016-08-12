@@ -1,6 +1,5 @@
 function RE_table(){
     this.callback = null;
-    this.milliseconds = (new Date).getTime();
 };
 
 RE_table.prototype.genStrCol = function(field){
@@ -129,16 +128,26 @@ RE_table.prototype.renderTable = function(){
         //console.log(whichBrowser, reAccession);
 	//console.log(data);
 
+	var halfWindow = 7500;
+	
 	if("UCSC" == whichBrowser){
 	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
 	    url += "db=hg19";
-	    url += "&position=" + data["position"]["chrom"] + ':' + data["position"]["start"] + '-' + data["position"]["end"];
+
+	    var chrom = data["position"]["chrom"]
+	    var start = data["position"]["start"];
+	    var end = data["position"]["end"];
+	    
+	    start = Math.max(1, start - halfWindow);
+            end = end + halfWindow;
+	    
+	    url += "&position=" + chrom + ':' + start + '-' + end;
 	    	    
-            var trackhubUrl = ["http://megatux.purcaro.com:9002",
-			       Ver(),
-                               "ucsc_trackhub",
-			       reAccession,
-			       "hub_" + this.milliseconds + ".txt"].join('/');
+            var trackhubUrl = "http://megatux.purcaro.com:9002" +
+		[Ver(),
+                 "ucsc_trackhub",
+		 reAccession,
+		 "hub_" + Session_Uid + ".txt"].join('/');
 	    url += "&hubClear=" + trackhubUrl;
 
 	    console.log(url);

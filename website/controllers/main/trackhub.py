@@ -18,7 +18,7 @@ class TrackhubController:
 
         self.assembly = "hg19"
         self.debug = False
-        
+
     def ucsc_trackhub(self, *args, **kwargs):
         print("args:", args)
         args = args[0]

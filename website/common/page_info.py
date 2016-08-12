@@ -1,9 +1,12 @@
-import sys, os, json
+import sys, os, json, cherrypy
 import subprocess
+import uuid
 
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
+
+from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from autocomplete import Autocompleter
@@ -16,13 +19,27 @@ class PageInfoMain:
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es, ps)
         self.webSocketUrl = webSocketUrl
+        self.sessions = Sessions(self.ps.DBCONN)
+        self.session_uid = self.session_uuid()
+        
+    def makeUid(self):
+        return str(uuid.uuid4())
 
+    def session_uuid(self):
+        uid = self.sessions.get(cherrypy.session.id)
+        if not uid:
+            uid = self.makeUid()
+            cherrypy.session["uid"] = uid
+            self.sessions.insert(cherrypy.session.id, uid)
+        return uid.replace('-', '');
+            
     def wholePage(self, indexPage = False):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version,
                 "webSocketUrl" : self.webSocketUrl,
-                "indexPage": indexPage}
+                "indexPage": indexPage,
+                "session_uid" : self.session_uid }
 
     def hexplotPage(self, args, kwargs):
         retval = self.wholePage()
