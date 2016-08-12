@@ -28,8 +28,12 @@ class ParseSearch:
         # TODO: add more here!
         return self.rawInput[:2048]
 
+    def parseStr(self):
+        return self.sanitizedStr
+    
     def parse(self):
         s = self._sanitize()
+        self.sanitizedStr = s
         toks = s.split()
         toks = [t.lower() for t in toks]
 
