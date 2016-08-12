@@ -154,6 +154,11 @@ function Query() {
 	    "cell_lines": {"terms": {"field": "ranks.dnase"}},
 	    "assembly": {"terms": {"field": "genome"}}
 	},
+	"sort" : [
+	    { "confidence" : "desc" },
+	    "position.start",
+	    "position.end"
+	],
 	"query": {
 	    "bool": {
 		"must": [
