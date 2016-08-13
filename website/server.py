@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import cherrypy, os, sys, argparse
+import cherrypy, os, sys, argparse, time
 
 from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
@@ -16,6 +16,31 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
 from dbs import DBS
+
+def getRootConfig(siteName):
+    d = os.path.realpath(os.path.join(os.path.dirname(__file__), "tmp"))
+
+    # shared sessions
+    sessionDir = os.path.join(d, "sessions")
+    Utils.mkdir_p(sessionDir)
+
+    logDir = os.path.join(d, "logs", siteName)
+    Utils.mkdir_p(logDir)
+
+    # http://stackoverflow.com/a/10607768
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+
+    return {
+        '/': {
+            'tools.sessions.on' : True,
+            'tools.sessions.timeout' : 60000,
+            'tools.sessions.storage_type' : "file",
+            'tools.sessions.storage_path' : sessionDir,
+            'log.access_file' : os.path.join(logDir, "access-" + timestr + ".log"),
+            'log.error_file' : os.path.join(logDir, "error-" + timestr + ".log"),
+            'log.screen' : False,
+        }
+    }
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
@@ -52,8 +77,8 @@ class RegElmVizWebsite(object):
         self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
         self.ps = PostgresWrapper(self.DBCONN)
 
-        MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl)
-        UiAppRunner(self.es, self.ps, self.devMode, webSocketUrl)
+        MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("main"))
+        UiAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("ui"))
         
     def start(self):
         if self.devMode:

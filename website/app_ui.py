@@ -20,7 +20,7 @@ class UiApp():
         return self.uic.Default()
         
 class UiAppRunner:
-    def __init__(self, es, ps, devMode, webSocketUrl):
+    def __init__(self, es, ps, devMode, webSocketUrl, config):
         version = '/'.join(["ver4", "ui"])
         if not devMode:
             version = '/'.join(["regElmViz", "ver4", "ui"])
@@ -30,13 +30,13 @@ class UiAppRunner:
         Utils.mkdir_p(staticDir)
         viewDir = os.path.abspath(os.path.join(d, "views"))
 
-        config = {
+        config.update({
             '/static': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': staticDir
-                }
             }
-
+        })
+        
         server = UiApp(viewDir, staticDir, es, ps, version, webSocketUrl)
 
         cherrypy.tree.mount(server,
