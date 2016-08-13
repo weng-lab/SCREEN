@@ -68,7 +68,7 @@ class MainApp():
         return self.mc.autocomplete(j)
 
 class MainAppRunner:
-    def __init__(self, es, ps, devMode, webSocketUrl):
+    def __init__(self, es, ps, devMode, webSocketUrl, config):
         version = '/'.join(["ver4", "search"])
         if not devMode:
             version = '/'.join(["regElmViz", "ver4", "search"])
@@ -77,12 +77,12 @@ class MainAppRunner:
         staticDir = os.path.abspath(os.path.join(d, "static"))
         viewDir = os.path.abspath(os.path.join(d, "views"))
 
-        config = {
+        config.update({
             '/static': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': staticDir
-                }
             }
+        })
 
         server = MainApp(viewDir, staticDir, es, ps, version, webSocketUrl)
 
