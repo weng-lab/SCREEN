@@ -30,7 +30,7 @@ class LoadBeds:
         self.cur = cur
         self.assembly = assembly
         self.assays = ["dnase", "tf", "histone"]
-        self.chroms = self._getChroms()
+        self.chroms = GetChroms(assembly)
 
         if "mm10" == assembly:
             self.datasets = MetadataWS(Datasets.all_mouse)
