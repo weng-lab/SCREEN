@@ -32,7 +32,7 @@ class LoadBeds:
         self.assays = ["dnase", "tf", "histone"]
         self.chroms = GetChroms(assembly)
 
-        if "mm10" == assembly:
+        if assembly.startswith("mm10"):
             self.datasets = MetadataWS(Datasets.all_mouse)
         else:
             self.datasets = MetadataWS(Datasets.all_human)
@@ -112,6 +112,7 @@ class LoadBeds:
                 indexName = "rangeIdx_" + tableName
 
                 self.cur.execute("""
+                DROP INDEX IF EXISTS {indexName};
                 CREATE INDEX {indexName} ON {tableName} USING gist (startend);
                 """.format(indexName = indexName, tableName = tableName))
 
@@ -158,7 +159,7 @@ def main():
     
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
-            for assembly in ["hg19", "mm10"]:
+            for assembly in ["hg19", "mm10", "mm10-minimal"]:
                 loadBeds = LoadBeds(args, conn, cur, assembly)
                 if args.rebuild:
                     loadBeds.rebuild()
