@@ -47,11 +47,14 @@ class LoadBeds:
 
         self.index()
 
+    def tableName(self, assembly, assay, chrom):
+        return "bed_ranges_{assembly}_{assay}_{chrom}".format(
+            assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
+    
     def setupDB(self):
         for assay in self.assays:
             for chrom in self.chroms:
-                tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                    assembly = self.assembly, assay=assay, chrom=chrom)
+                tableName = self.tableName(self.assembly, assay, chrom)
                 print('\t', "dropping and creating", tableName)
                 self.cur.execute("""
                 DROP TABLE IF EXISTS {tableName};
@@ -156,10 +159,13 @@ def main():
         for assembly in ["hg19", "mm10"]:
             print(assembly, GetChroms(assembly))
         return
+
+    assemblies = ["hg19", "mm10", "mm10-minimal"]
+    assemblies = ["mm10-minimal"]
     
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
-            for assembly in ["hg19", "mm10", "mm10-minimal"]:
+            for assembly in assemblies:
                 loadBeds = LoadBeds(args, conn, cur, assembly)
                 if args.rebuild:
                     loadBeds.rebuild()
