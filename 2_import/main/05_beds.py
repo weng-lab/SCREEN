@@ -97,8 +97,7 @@ class LoadBeds:
 
         peakNums = 0
         for chrom in self.chroms:
-            tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                assembly = self.assembly, assay=assay, chrom=chrom)
+            tableName = self.tableName(self.assembly, assay, chrom)
             outFs[chrom].seek(0)
             self.cur.copy_from(outFs[chrom], tableName,
                                columns=("startend", "file_accession"))
@@ -110,8 +109,7 @@ class LoadBeds:
         for assay in self.assays:
             for chrom in self.chroms:
                 print("indexing", self.assembly, assay, chrom, "startend")
-                tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                    assembly = self.assembly, assay=assay, chrom=chrom)
+                tableName = self.tableName(self.assembly, assay, chrom)
                 indexName = "rangeIdx_" + tableName
 
                 self.cur.execute("""
