@@ -30,9 +30,9 @@ class LoadBeds:
         self.cur = cur
         self.assembly = assembly
         self.assays = ["dnase", "tf", "histone"]
-        self.chroms = self._getChroms()
+        self.chroms = GetChroms(assembly)
 
-        if "mm10" == assembly:
+        if assembly.startswith("mm10"):
             self.datasets = MetadataWS(Datasets.all_mouse)
         else:
             self.datasets = MetadataWS(Datasets.all_human)
@@ -47,11 +47,14 @@ class LoadBeds:
 
         self.index()
 
+    def tableName(self, assembly, assay, chrom):
+        return "bed_ranges_{assembly}_{assay}_{chrom}".format(
+            assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
+    
     def setupDB(self):
         for assay in self.assays:
             for chrom in self.chroms:
-                tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                    assembly = self.assembly, assay=assay, chrom=chrom)
+                tableName = self.tableName(self.assembly, assay, chrom)
                 print('\t', "dropping and creating", tableName)
                 self.cur.execute("""
                 DROP TABLE IF EXISTS {tableName};
@@ -94,8 +97,7 @@ class LoadBeds:
 
         peakNums = 0
         for chrom in self.chroms:
-            tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                assembly = self.assembly, assay=assay, chrom=chrom)
+            tableName = self.tableName(self.assembly, assay, chrom)
             outFs[chrom].seek(0)
             self.cur.copy_from(outFs[chrom], tableName,
                                columns=("startend", "file_accession"))
@@ -107,11 +109,11 @@ class LoadBeds:
         for assay in self.assays:
             for chrom in self.chroms:
                 print("indexing", self.assembly, assay, chrom, "startend")
-                tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-                    assembly = self.assembly, assay=assay, chrom=chrom)
+                tableName = self.tableName(self.assembly, assay, chrom)
                 indexName = "rangeIdx_" + tableName
 
                 self.cur.execute("""
+                DROP INDEX IF EXISTS {indexName};
                 CREATE INDEX {indexName} ON {tableName} USING gist (startend);
                 """.format(indexName = indexName, tableName = tableName))
 
@@ -155,10 +157,13 @@ def main():
         for assembly in ["hg19", "mm10"]:
             print(assembly, GetChroms(assembly))
         return
+
+    assemblies = ["hg19", "mm10", "mm10-minimal"]
+    assemblies = ["mm10-minimal"]
     
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
-            for assembly in ["hg19", "mm10"]:
+            for assembly in assemblies:
                 loadBeds = LoadBeds(args, conn, cur, assembly)
                 if args.rebuild:
                     loadBeds.rebuild()
