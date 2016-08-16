@@ -9,6 +9,11 @@ function ShoppingCart()
 	this.update_counter();
     };
 
+    this.clear = function() {
+	this.items = [];
+	this.update_counter();
+    };
+
     this.update_counter = function() {
 	this.counter.textContent = this.items.length;
     };
