@@ -113,11 +113,20 @@
 {{ hh.jsVer(version, "static/controls/d3_heatmap.js") }}
 {{ hh.jsVer(version, "static/controls/venn_diagram.js") }}
 {{ hh.jsVer(version, "static/search.setup.js") }}
+{{ hh.jsVer(version, "static/shoppingcart.js") }}
 
 <script>
+
+  var cart = new ShoppingCart();
+  var cartobj = document.getElementById("shoppingcart_obj");
+  cartobj.onload = function() {
+      cart.bind(cartobj.contentDocument.getElementsByTagName("svg")[0]);
+  };
+  
   $( document ).ready(function() {
-  setupSocket(play, ParsedQuery);
+    setupSocket(play, ParsedQuery);
   });
+  
 </script>
 
 {% include '_footer.html' -%}
