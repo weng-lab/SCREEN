@@ -27,13 +27,15 @@ RE_table.prototype.genButtonGroupCol = function(names){
              defaultContent : bg };
 }
 
-function cart_img(rmv)
+function cart_img(rmv, src_only)
 {
-    return "<img src='/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png' width='56' height='56'>";
+    var src = "/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png";
+    if (src_only) return src;
+    return "<img src='" + src + "' width='56' height='56'>";
 }
 
 RE_table.prototype.genCartCol = function(field) {
-    return {data: field, render: function(d) {return cart_img(cart.has_item(d))}};
+    return {data: field, render: function(d) {return cart_img(cart.has_item(d), false)}};
 };
 
 RE_table.prototype.setupColumns = function(){
@@ -200,11 +202,10 @@ RE_table.prototype.renderTable = function(){
 	var r = result_from_table_button(dtable, i);
 	if (cart.has_item(r)) {
 	    cart.remove_item(r);
-	    i[0].src = i[0].src.replace("rmv", "add");
 	} else {
 	    cart.add_item(r);
-	    i[0].src = i[0].src.replace("add", "rmv");	    
 	}
+	i.attr("src", cart_img(cart.has_item(r), true));
     });
     
 }
