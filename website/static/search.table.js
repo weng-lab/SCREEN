@@ -27,6 +27,15 @@ RE_table.prototype.genButtonGroupCol = function(names){
              defaultContent : bg };
 }
 
+function cart_img(rmv)
+{
+    return "<img src='/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png' width='56' height='56'>";
+}
+
+RE_table.prototype.genCartCol = function(field) {
+    return {data: field, render: function(d) {return cart_img(cart.has_item(d))}};
+};
+
 RE_table.prototype.setupColumns = function(){
     var ret = {accession : this.genStrCol("_source.accession"),
 	       "&#8209;log(p)" : this.genFloatCol("_source.confidence"),
@@ -42,6 +51,7 @@ RE_table.prototype.setupColumns = function(){
             this.genStrCol("_source.genes.nearest-pc.gene-id");
     }
 
+    ret["cart"] = this.genCartCol("_source");
     ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;
@@ -184,6 +194,19 @@ RE_table.prototype.renderTable = function(){
 	    showTab("tab_results");
 	});	
     });
+
+    $('#searchresults_table').on( 'click', 'img', function() {
+	var i = $(this);
+	var r = result_from_table_button(dtable, i);
+	if (cart.has_item(r)) {
+	    cart.remove_item(r);
+	    i[0].src = i[0].src.replace("rmv", "add");
+	} else {
+	    cart.add_item(r);
+	    i[0].src = i[0].src.replace("add", "rmv");	    
+	}
+    });
+    
 }
 
 function result_from_tablerow(dtable, tr){

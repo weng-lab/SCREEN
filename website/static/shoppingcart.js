@@ -18,8 +18,15 @@ function ShoppingCart()
 	this.update_counter();
     };
 
+    this.has_item = function(item) {
+	for (i in this.items) {
+	    if (this.items[i].accession == item.accession) return true;
+	}
+	return false;
+    };
+    
     this.remove_item = function(item) {
-	_.without(items, item);
+	this.items = _.without(this.items, item);
 	this.update_counter();
     };
     
