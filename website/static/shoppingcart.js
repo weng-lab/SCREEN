@@ -31,7 +31,9 @@ function ShoppingCart()
     };
     
     this.remove_item = function(item) {
-	this.items = _.without(this.items, item);
+	for (i in this.items) {
+	    if (this.items[i].accession == item.accession) this.items.splice(i, 1);
+	}
 	this.update_counter();
     };
     
