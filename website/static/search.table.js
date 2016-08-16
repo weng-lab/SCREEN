@@ -23,7 +23,7 @@ RE_table.prototype.genButtonGroupCol = function(names){
             '</button>';
     }
     bg += '</div>';
-    return { targets: -1, data: null, className: "dt-right", orderable: false,
+    return { targets: -1, data: null, className: "dt-right browser", orderable: false,
              defaultContent : bg };
 }
 
@@ -35,7 +35,8 @@ function cart_img(rmv, src_only)
 }
 
 RE_table.prototype.genCartCol = function(field) {
-    return {data: field, render: function(d) {return cart_img(cart.has_item(d), false)}};
+    return {data: field, render: function(d) {return cart_img(cart.has_item(d), false)},
+	    className: "cart"};
 };
 
 RE_table.prototype.setupColumns = function(){
@@ -135,7 +136,7 @@ RE_table.prototype.renderTable = function(){
     // deal w/ genome browser button click
     $('#searchresults_table tbody').on( 'click', 'button', function () {
 	var whichBrowser = $(this).html();
-	var data = result_from_table_button(dtable, $(this));
+	var data = result_from_tablerow_child(dtable, $(this));
         var reAccession = data["accession"];
         //console.log(whichBrowser, reAccession);
 	//console.log(data);
@@ -170,9 +171,13 @@ RE_table.prototype.renderTable = function(){
     } );
 
     // deal w/ RE row click
-    $('#searchresults_table').on( 'click', 'tr', function() {
-	$(this).addClass('info');
-	var r = result_from_tablerow(dtable, $(this));
+    $('#searchresults_table').on( 'click', 'td', function() {
+
+	// browser, cart columns handled separately
+	if (this.className.indexOf("cart") != -1
+	    || this.className.indexOf("browser") != -1) return;
+	
+	var r = result_from_tablerow_child(dtable, $(this));
 
 	$("#redetails").html("");
 	regelm_details_view.bind("redetails");
@@ -199,7 +204,7 @@ RE_table.prototype.renderTable = function(){
 
     $('#searchresults_table').on( 'click', 'img', function() {
 	var i = $(this);
-	var r = result_from_table_button(dtable, i);
+	var r = result_from_tablerow_child(dtable, i);
 	if (cart.has_item(r)) {
 	    cart.remove_item(r);
 	} else {
@@ -215,7 +220,7 @@ function result_from_tablerow(dtable, tr){
     return data["_source"];
 }
 
-function result_from_table_button(dtable, t){
+function result_from_tablerow_child(dtable, t){
     var data = dtable.row(t.parents('tr')).data();
     return data["_source"];
 }
