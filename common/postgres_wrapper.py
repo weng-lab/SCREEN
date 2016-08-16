@@ -37,7 +37,7 @@ class PostgresWrapper:
             print("PostgresWrapper: findBedOverlap: bad assay", assay)
             return []
         tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
-            assembly = assembly, assay=assay, chrom=chrom)
+            assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
 
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             curs.execute("""
