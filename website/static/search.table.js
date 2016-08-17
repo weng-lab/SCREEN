@@ -163,10 +163,9 @@ RE_table.prototype.renderTable = function(){
                  "ucsc_trackhub",
 		 reAccession,
 		 "hub_" + Session_Uid + ".txt"].join('/');
+
 	    url += "&hubClear=" + trackhubUrl;
 
-	    console.log(url);
-	    
 	    window.open(url, '_blank');
 	}
 	
