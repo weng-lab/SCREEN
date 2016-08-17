@@ -70,6 +70,13 @@ function create_venn(){
     create_venn_diagram("venn_div", venn_results);
 }
 
+function go_to_cart() {
+    sendText(JSON.stringify({
+	"action": "create_cart",
+	"acclist": cart.items
+    }));
+}
+
 function toggle_display(el, sh){
     el.style.display = (sh ? "block" : "none");
 }
@@ -79,7 +86,9 @@ function socket_message_handler(e) {
 
     //console.log(results);
     
-    if ("enumeration" == results["type"]) {
+    if ("cart" == results["type"]) {
+	window.location.href = "/ver4/search/cart/?guid=" + results["guid"];
+    } else if ("enumeration" == results["type"]) {
         // console.log(e.data);
 
 	handle_enumeration(results);

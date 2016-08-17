@@ -1,0 +1,47 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+{{ hh.jsVer(version, "static/common.js") }}
+{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
+
+<div class="container" style="width:100%">
+  <div class="row" style="width:100%">
+
+    <div class="col-md-12 nopadding-left">
+
+      <div id="exTab1" class="container">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab_summary" data-toggle="tab">
+	      Summary</a>
+          </li>
+        </ul>
+
+        <div class="tab-content clearfix">
+          <div class="tab-pane active" id="tab_summary">
+            <div id="searchresults_div">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var WebSocketUrl = {{ webSocketUrl }};
+  var ParsedList = {{ parsed }};
+  FBVERSION.init("/{{version}}");
+</script>
+
+{{ hh.jsVer(version, "static/search.table.js") }}
+{{ hh.jsVer(version, "static/cart.init.js") }}
+
+<script>
+  
+  $( document ).ready(function() {
+    setupSocket(perform_search);
+  });
+  
+</script>
+
+{% include '_footer.html' -%}

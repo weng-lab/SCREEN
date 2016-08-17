@@ -119,8 +119,16 @@
 
   var cart = new ShoppingCart();
   var cartobj = document.getElementById("shoppingcart_obj");
+  
   cartobj.onload = function() {
-      cart.bind(cartobj.contentDocument.getElementsByTagName("svg")[0]);
+      var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
+      var img = svg.getElementsByTagName("image")[0];
+      img.onclick = function() {
+          if (cart.items.length > 0) {
+              go_to_cart();
+          }
+      }
+      cart.bind(svg);
   };
   
   $( document ).ready(function() {

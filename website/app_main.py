@@ -38,6 +38,10 @@ class MainApp():
         return self.mc.search(args, kwargs)
 
     @cherrypy.expose
+    def cart(self, *args, **kwargs):
+        return self.mc.cart(args, kwargs)
+    
+    @cherrypy.expose
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
 

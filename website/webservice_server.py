@@ -10,6 +10,8 @@ import psycopg2, psycopg2.pool
 
 import autoreload
 
+import hashlib
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
@@ -74,6 +76,12 @@ class MyServerProtocol(WebSocketServerProtocol):
         ret.update(ac.get_suggestions(j["userQuery"]))
         self.sendMessage(json.dumps(ret))
 
+    def _acclist_md5(self, acclist):
+        m = hashlib.md5()
+        for acc in acclist:
+            m.update(acc["accession"])
+        return m.hexdigest()
+
     def onMessage(self, payload, isBinary):
         if isBinary:
             self.sendMessage("not supported", False)
@@ -98,10 +106,10 @@ class MyServerProtocol(WebSocketServerProtocol):
                 elif j["action"] == "peak_detail":
                     self._get_and_send_peaks_detail(j)
                     return
-                if j["action"] == "suggest":
+                elif j["action"] == "suggest":
                     self._suggest(j)
                     return
-                if j["action"] == "query":
+                elif j["action"] == "query":
                     raw_results = es.search(body=j["object"], index=j["index"])
                     if j["callback"] in cmap:
                         processed_results = cmap[j["callback"]].process_for_javascript(raw_results)
@@ -109,6 +117,17 @@ class MyServerProtocol(WebSocketServerProtocol):
                         processed_results = raw_results
                     processed_results["callback"] = j["callback"]
                     self.sendMessage(json.dumps(processed_results))
+                    return
+                elif j["action"] == "create_cart":
+                    cart_dir = os.path.join(os.path.dirname(__file__), "../data/carts")
+                    if not os.path.exists(cart_dir): os.mkdir(cart_dir)
+                    acclist = j["acclist"]
+                    guid = self._acclist_md5(j["acclist"])
+                    with open(os.path.join(cart_dir, guid), "wb") as o:
+                        for acc in acclist:
+                            o.write(acc["accession"] + "\n")
+                    self.sendMessage(json.dumps({"type": "cart",
+                                                 "guid": guid }))
                     return
 
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))

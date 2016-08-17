@@ -1,5 +1,6 @@
 function RE_table(){
     this.callback = null;
+    this.no_cart = false;
 };
 
 RE_table.prototype.genStrCol = function(field){
@@ -27,6 +28,10 @@ RE_table.prototype.genButtonGroupCol = function(names){
              defaultContent : bg };
 }
 
+RE_table.prototype.disable_cart_icons = function() {
+    this.no_cart = true;
+};
+
 function cart_img(rmv, src_only)
 {
     var src = "/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png";
@@ -47,14 +52,12 @@ RE_table.prototype.setupColumns = function(){
                start : this.genIntCol("_source.position.start"),
 	       end : this.genIntCol("_source.position.end")}
 
-    if(searchquery.has_cell_line_filter()){
-        var cellType = searchquery.cell_line;
-        ret["nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
-        ret["nearest protein-coding gene"] =
-            this.genStrCol("_source.genes.nearest-pc.gene-id");
-    }
 
-    ret["cart"] = this.genCartCol("_source");
+    ret["nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
+    ret["nearest protein-coding gene"] =
+        this.genStrCol("_source.genes.nearest-pc.gene-id");
+
+    if (!this.no_cart) ret["cart"] = this.genCartCol("_source");
     ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;
@@ -126,7 +129,7 @@ RE_table.prototype.renderTable = function(){
 		callback(json);
 	    });
 	    
-	    perform_search();
+	    if (!this.no_cart) perform_search();
 	}
     } );
 

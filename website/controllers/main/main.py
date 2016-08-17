@@ -17,6 +17,11 @@ class MainController:
         pageInfo = PageInfoMain(*self.params)
         return self.t('main/search', **pageInfo.searchPage(args, kwargs))
 
+    def cart(self, args, kwargs):
+        pageInfo = PageInfoMain(*self.params)
+        print(pageInfo.cartPage(args, kwargs))
+        return self.t('main/cart', **pageInfo.cartPage(args, kwargs))
+
     def element(self, accession):
         pageInfo = PageInfoMain(*self.params)
         return self.t('main/element', **pageInfo.element(accession))
