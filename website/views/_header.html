@@ -41,20 +41,23 @@
           <a class="navbar-brand" href="/{{version}}">Candidate RE Viz (alpha version)</a>
 
 	  {% if not indexPage -%}
-	  <form action="search" method="get" id="searchformNavbar" class="navbar-collapse collapse">
+	  <form action="search" method="get" id="searchformNavbar" class="navbar-collapse">
 	    <input class="searchbox" type="text" size="100" name="q" id="queryBox" value="{{parsedStr}}">
 	    <a class="btn btn-primary btn-lg" href="javascript:searchformNavbar.submit();" role="button">Search</a>
 	  </form>
-	  <form class="navbar-collapse collapse navbar-right">
+
+	  <form class="navbar-form navbar-right">
+            <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success">ENCODE</a>
+          </form>
+
+	  <form class="navbar-collapse navbar-right">
 	    <a href="cart">
-	      <object type="image/svg+xml" data="/{{version}}/static/re_cartview.svg"id="shoppingcart_obj">
+	      <object type="image/svg+xml" data="/{{version}}/static/re_cartview.svg" id="shoppingcart_obj">
 		<img src="/{{version}}/static/re_cartview.png">
 	      </object>
 	    </a>
 	  </form>
-          <form class="navbar-form navbar-right">
-            <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success">ENCODE</a>
-          </form>
+	  
 	  {% endif -%}
 	  
 	</div>
