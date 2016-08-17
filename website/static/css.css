@@ -104,6 +104,10 @@ div.result_row_selected {
     cursor: hand;
 }
 
+#searchresults_table > tbody > tr > td{
+    vertical-align: middle;
+}
+
 #redetails {
     width: 100%;
 }
@@ -117,4 +121,25 @@ div.result_row_selected {
     float: left;
     font-size: 30px;
     padding-right: 10px;
+}
+
+.cart > img {
+    width: 36px;
+    height: 36px;
+}
+
+#shoppingcart_obj {
+    width: 48px;
+    height: 48px;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+#searchformNavbar {
+    float: left;
+    padding: 5px;
 }
