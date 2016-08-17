@@ -45,18 +45,16 @@
 	    <input class="searchbox" type="text" size="100" name="q" id="queryBox" value="{{parsedStr}}">
 	    <a class="btn btn-primary btn-lg" href="javascript:searchformNavbar.submit();" role="button">Search</a>
 	  </form>
-	  {% endif -%}
-	  {% if searchPage -%}
-	  <form class="navbar-form navbar-right">
-	    <object type="image/svg+xml" data="/{{version}}/static/cartview.svg" width="56" height="56" id="shoppingcart_obj">
-	      <img src="/{{version}}/static/cartview.png">
-	    </object>
-	  </form>
-	  {% endif -%}
-	  {% if not indexPage -%}
           <form class="navbar-form navbar-right">
             <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success">ENCODE</a>
           </form>
+	  {% endif -%}
+	  {% if searchPage -%}
+	  <form class="navbar-form navbar-right">
+	    <object type="image/svg+xml" data="/{{version}}/static/re_cartview.svg" width="56" height="56" id="shoppingcart_obj">
+	      <img src="/{{version}}/static/cartview.png">
+	    </object>
+	  </form>
 	  {% endif -%}
 	  
 	</div>
