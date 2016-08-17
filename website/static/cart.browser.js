@@ -2,7 +2,11 @@ function setupCartBrowser(){
     $("#compareInWashU").on('click', function(e){
 	e.preventDefault();
 
-        var trackdbUrl = ["http://megatux.purcaro.com:9006",
+	var w = window.location.href;
+	var arr = w.split("/");
+	var host = arr[0] + "//" + arr[2];
+	
+        var trackdbUrl = [host,
 			  "ver4", "search",
                           "washu_trackhub",
                           "trackDb_" + CartGuid + ".json"].join('/')
