@@ -143,3 +143,7 @@ div.result_row_selected {
     float: left;
     padding: 5px;
 }
+
+#compareInWashU {
+    margin: 10px;
+}

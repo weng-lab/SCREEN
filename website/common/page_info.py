@@ -89,13 +89,16 @@ class PageInfoMain:
         if "guid" not in kwargs:
             retval.update({"error": "shopping cart ID not specified"})
             return retval
-        fnp = os.path.join(os.path.dirname(__file__), "../../data/carts", kwargs["guid"])
+        guid = kwargs["guid"]
+        fnp = os.path.join(os.path.dirname(__file__),
+                           "../../data/carts", guid)
         if not os.path.exists(fnp):
             retval.update({"error": "cart %s missing" % kwargs["guid"]})
             return retval
         with open(fnp, "r") as f:
             accs = f.read().split("\n")[:-1]
-        retval.update({"parsed": accs})
+        retval.update({"parsed": accs,
+                       "guid" : guid})
         return retval
 
     def rawQueryPage(self, q, url):
