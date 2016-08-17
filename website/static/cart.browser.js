@@ -3,7 +3,7 @@ function setupCartBrowser(){
 	e.preventDefault();
 
         var trackdbUrl = ["http://megatux.purcaro.com:9006",
-                          "trackhub_washu",
+                          "washu_trackhub",
                           "trackDb_" + CartGuid + ".json"].join('/')
 	
         var urlBase = "http://epigenomegateway.wustl.edu/browser/";

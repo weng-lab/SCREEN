@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 import StringIO
-import uuid
 import cherrypy
+import json
+import os
+import uuid
 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
@@ -26,6 +28,8 @@ class TrackhubController:
         #self.sessions = Sessions(self.ps.DBCONN)
         #self.session_uid = self.session_uuid()
         #self.db = DbTrackhub(self.ps.DBCONN)
+
+        self.isUcsc = True
         
     def makeUid(self):
         return str(uuid.uuid4())
@@ -53,7 +57,7 @@ class TrackhubController:
         args = args[0]
         if not args[0].startswith('EE'):
             return "first arg must be EE<num>"
-        self.re_accession = args[0]
+        re_accession = args[0]
 
         if 2 == len(args):
             loc = args[1]
@@ -71,7 +75,7 @@ class TrackhubController:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb()
+            return self.makeTrackDb([re_accession])
 
         return "invalid path"
 
@@ -108,18 +112,25 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                          "hg19" : os.path.join(BIB5, "genes", "gencode.v24.annotation.bb")}
         url = byAssemblyURl[self.assembly]
 
-        track = BigGenePredTrack(desc, self.priority, url).track()
+        if self.isUcsc:
+            track = BigGenePredTrack(desc, self.priority, url).track()
+        else:
+            track = BigGenePredTrack(desc, self.priority, url).track_washu()
         self.priority += 1
         return track
 
     def mp(self):
         url = "http://bib5.umassmed.edu/~purcarom/cre/cre.bigBed"
-        track = BigBedTrack("Candidate Regulatory Elements",
-                            self.priority,
-                            url,
+        if self.isUcsc:
+            t = BigBedTrack("Candidate Regulatory Elements",
+                            self.priority, url,
                             PredictionTrackhubColors.distal_regions.rgb).track()
+        else:
+            t = BigBedTrack("Candidate Regulatory Elements",
+                            self.priority, url,
+                            PredictionTrackhubColors.distal_regions.rgb).track_washu()
         self.priority += 1
-        return track
+        return t
 
     def phastcons(self):
         if "mm10" == self.assembly:
@@ -130,7 +141,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         desc = "phastCons"
 
         color = OtherTrackhubColors.Conservation.rgb
-        track = BigWigTrack(desc, self.priority, url, color).track()
+        if self.isUcsc:
+            track = BigWigTrack(desc, self.priority, url, color).track()
+        else:
+            track = BigWigTrack(desc, self.priority, url, color).track_washu()
         self.priority += 1
         return track
 
@@ -139,42 +153,87 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         desc = Track.MakeDesc(name, "", cellType)
 
-        track = BigWigTrack(desc, self.priority, url, color).track()
+        if self.isUcsc:
+            track = BigWigTrack(desc, self.priority, url, color).track()
+        else:
+            track = BigWigTrack(desc, self.priority, url, color).track_washu()
         self.priority += 1
         return track
 
-    def makeTrackDb(self):
+    def getLines(self, re_accessions):
         self.priority = 0
-        red = RegElementDetails(self.es, self.ps)
-        re = red.reFull(self.re_accession)
 
         lines = []
         lines += [self.genes()]
-
         lines+= [self.mp()]
-        
-        for cellType, v in re["ranks"]["enhancer"].iteritems():
-            lines += [self.trackhubExp(v["method"],
-                                       EncodeTrackhubColors.DNase_Signal.rgb,
-                                       cellType, v["accession"])]
-        for cellType, v in re["ranks"]["promoter"].iteritems():
-            lines += [self.trackhubExp(v["method"],
-                                       EncodeTrackhubColors.DNase_Signal.rgb,
-                                       cellType, v["accession"])]
-        for cellType, v in re["ranks"]["ctcf"].iteritems():
-            lines += [self.trackhubExp(v["method"],
-                                       EncodeTrackhubColors.DNase_Signal.rgb,
-                                       cellType, v["accession"])]
-        for cellType, v in re["ranks"]["dnase"].iteritems():
-            lines += [self.trackhubExp(v["method"],
-                                       EncodeTrackhubColors.DNase_Signal.rgb,
-                                       cellType, v["accession"])]
-
         lines += [self.phastcons()]
 
-        lines = filter(lambda x: x, lines)
+        red = RegElementDetails(self.es, self.ps)
 
+        self.re_pos = []
+        for re_accession in re_accessions:
+            re = red.reFull(re_accession)
+
+            self.re_pos.append(re["position"])
+            
+            for cellType, v in re["ranks"]["enhancer"].iteritems():
+                lines += [self.trackhubExp(v["method"],
+                                           EncodeTrackhubColors.DNase_Signal.rgb,
+                                           cellType, v["accession"])]
+            for cellType, v in re["ranks"]["promoter"].iteritems():
+                lines += [self.trackhubExp(v["method"],
+                                           EncodeTrackhubColors.DNase_Signal.rgb,
+                                           cellType, v["accession"])]
+            for cellType, v in re["ranks"]["ctcf"].iteritems():
+                lines += [self.trackhubExp(v["method"],
+                                           EncodeTrackhubColors.DNase_Signal.rgb,
+                                           cellType, v["accession"])]
+            for cellType, v in re["ranks"]["dnase"].iteritems():
+                lines += [self.trackhubExp(v["method"],
+                                           EncodeTrackhubColors.DNase_Signal.rgb,
+                                           cellType, v["accession"])]
+
+        lines = filter(lambda x: x, lines)
+        return lines
+    
+    def makeTrackDb(self, re_accessions):
+        self.isUcsc = True
+        lines = self.getLines(re_accessions)
+        
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
 
         return f.getvalue()
+
+    def makePos(self, p):
+        return p["chrom"] + ':' + str(p["end"]) + '-' + str(p["start"])
+    
+    def makeTrackDbWashU(self, re_accessions):
+        lines = self.getLines(re_accessions)
+
+        pos = [self.makePos(x) for x in self.re_pos]
+        print(pos)
+        lines.append({"type" : "splinters",
+                      "list" : pos})
+        return lines
+
+    def washu_trackhub(self, *args, **kwargs):
+        self.isUcsc = False
+        
+        args = args[0]
+
+        if 1 != len(args):
+            return { "error" : "too many args" }
+
+        toks = args[0].split('_')
+        guid = toks[1].split('.')[0]
+
+        fnp = os.path.join(os.path.dirname(__file__),
+                           "../../../data/carts", guid)
+        if not os.path.exists(fnp):
+            return {"error": "cart %s missing" % kwargs["guid"]}
+
+        with open(fnp, "r") as f:
+            accs = f.read().split("\n")[:-1]
+
+        return self.makeTrackDbWashU(accs)
