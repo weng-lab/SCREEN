@@ -211,7 +211,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return f.getvalue()
 
     def makePos(self, p):
-        return p["chrom"] + ':' + str(p["start"]) + '-' + str(p["end"])
+        halfWindow = 2500
+        start = str(max(1, p["start"] - halfWindow))
+        end = str(p["end"] + halfWindow)
+        return p["chrom"] + ':' + start + '-' + end
     
     def makeTrackDbWashU(self, re_accessions):
         lines = self.getLines(re_accessions)
