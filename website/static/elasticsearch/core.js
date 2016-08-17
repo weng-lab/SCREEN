@@ -121,6 +121,24 @@ function gene_expression_query(ensembl_ids){
     return retval;
 };
 
+function accession_list_query(accs) {
+    var retval = {
+	"eso": {
+	    "query": {
+		"bool": {
+		    "should": []
+		}
+	    }
+	}
+    };
+
+    for (i in accs) {
+	retval.eso.query.bool.should.push({"match": {"accession": accs[i]}});
+    }
+
+    return retval;
+};
+
 function Query() {
     this.cell_line = "";
     this.chromosome = "";
@@ -336,15 +354,6 @@ Query.prototype.set_ctcf_rank_filter = function(lbound, ubound) {
 
 Query.prototype.set_conservation_filter = function(lbound, ubound) {
     this.set_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation.rank");
-};
-
-searchquery = new Query();
-
-function perform_search(){
-    sendText(JSON.stringify({"action": "query",
-			     "callback": "regulatory_elements",
-			     "index": "regulatory_elements",
-			     "object": searchquery.eso}));
 };
 
 function perform_gene_expression_search(obj){

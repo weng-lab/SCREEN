@@ -79,8 +79,23 @@ class PageInfoMain:
                        "tsslist": tsslist,
                        "facetlist_json": json.dumps(facetlist),
                        "ranklist_json": json.dumps(ranklist),
-                       "tsslist_json": json.dumps(tsslist) })
+                       "tsslist_json": json.dumps(tsslist),
+                       "searchPage": True })
 
+        return retval
+
+    def cartPage(self, args, kwargs):
+        retval = self.wholePage()
+        if "guid" not in kwargs:
+            retval.update({"error": "shopping cart ID not specified"})
+            return retval
+        fnp = os.path.join(os.path.dirname(__file__), "../../data/carts", kwargs["guid"])
+        if not os.path.exists(fnp):
+            retval.update({"error": "cart %s missing" % kwargs["guid"]})
+            return retval
+        with open(fnp, "r") as f:
+            accs = f.read().split("\n")[:-1]
+        retval.update({"parsed": accs})
         return retval
 
     def rawQueryPage(self, q, url):
