@@ -127,4 +127,19 @@ div.result_row_selected {
     width: 36px;
     height: 36px;
 }
-    
+
+#shoppingcart_obj {
+    width: 48px;
+    height: 48px;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+#searchformNavbar {
+    float: left;
+    padding: 5px;
+}
