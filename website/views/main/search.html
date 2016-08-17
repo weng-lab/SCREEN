@@ -119,10 +119,8 @@
 
   var cart = new ShoppingCart();
   var cartobj = document.getElementById("shoppingcart_obj");
-  
-  $( document ).ready(function() {
-  
-      setupSocket(play, ParsedQuery);
+
+  $("#shoppingcart_obj").load("image/svg+xml", function() {
 
       var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
       var img = svg.getElementsByTagName("image")[0];
@@ -133,6 +131,10 @@
       }
       cart.bind(svg);
   
+  });
+  
+  $( document ).ready(function() {
+      setupSocket(play, ParsedQuery);
   });
   
 </script>
