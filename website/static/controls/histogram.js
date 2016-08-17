@@ -11,9 +11,10 @@ function create_histogram(destination_div, data, range, selection_range, interva
     var margin = {top: 1, right: 1, bottom: 1, left: 1};
     var width = $("#" + destination_div.id).width() - margin.left - margin.right;
     var height = $("#" + destination_div.id).height() - margin.top - margin.bottom;
+    var xrange = [range.min, range.max];
 
     var x = d3.scale.linear()
-        .domain([0, d3.max(data, function(d) { return d.key; })])
+        .domain(xrange)
 	.rangeRound([0, width]);
 
     var y = d3.scale.linear()
@@ -35,7 +36,7 @@ function create_histogram(destination_div, data, range, selection_range, interva
 
     bar.append("rect")
 	.attr("x", 1)
-	.attr("width", x(interval))
+	.attr("width", x(interval + xrange[0]))
 	.attr("height", function(d) { return height - y(d.doc_count); });
 
     retval.bins = data;
@@ -59,9 +60,10 @@ histogram.prototype.reset = function(data, range, selection_range, interval) {
     this.svg.selectAll("*").remove();
 
     var height = this.height;
+    var xrange = [range.min, range.max];
 
     var x = d3.scale.linear()
-        .domain([0, d3.max(data, function(d) { return d.key; })])
+        .domain(xrange)
 	.rangeRound([0, this.width]);
 
     var y = d3.scale.linear()
@@ -76,7 +78,7 @@ histogram.prototype.reset = function(data, range, selection_range, interval) {
 
     bar.append("rect")
 	.attr("x", 1)
-	.attr("width", x(interval))
+	.attr("width", x(interval + xrange[0]))
 	.attr("height", function(d) { return height - y(d.doc_count); });
 
 };

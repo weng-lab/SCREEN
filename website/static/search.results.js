@@ -14,6 +14,19 @@ function process_histogram_result(control_prefix, result)
 
     var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
     var nrange = [result["minvalue"], nmax];
+
+    // makes empty buckets explicit
+    var nbuckets = [];
+    var bptr = 0;
+    for (var i = result["minvalue"]; i <= result["maxvalue"]; i += searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]) {
+	if (result["buckets"][bptr].key == i) {
+	    nbuckets.push(result["buckets"][bptr++]);
+	    continue;
+	}
+	nbuckets.push({"key": i, "doc_count": 0});
+    }
+    result["buckets"] = nbuckets;
+    
     if (!_.isEqual(nrange, range_facet.range_slider.get_range())) {
 	range_facet.range_slider.set_range(...nrange);
 	range_facet.range_slider.refresh_selection(...nrange);

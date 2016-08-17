@@ -161,7 +161,7 @@ function Query() {
 	    "chromosome": {"terms": {"field": "position.chrom",
 				     "size": 100}},
 	    "coordinates": {"histogram": {"field": "position.start",
-					  "interval": 2000000,
+					  "interval": 200000,
 					  "min_doc_count": 1}},
 	    "all": {"histogram": {"field": "genes.nearest-all.distance",
 				  "interval": 5000,
