@@ -153,6 +153,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def trackhubExp(self, name, color, cellType, accession):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=accession)
+        url = "http://bib5.umassmed.edu/~purcarom/bigwigs/{e}.bigWig".format(e=accession)
 
         desc = Track.MakeDesc(name, "", cellType)
 
@@ -163,7 +164,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def addSignals(self, re_accession):
+    def addSignals(self, re_accessions):
         red = RegElementDetails(self.es, self.ps)
 
         for re_accession in re_accessions:
@@ -196,7 +197,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             re = red.reFull(re_accession)
             self.re_pos.append(re["position"])
 
-        #self.addSignals(re_accessions)
+        self.addSignals([re_accessions[0]])
 
         return filter(lambda x: x, self.lines)
     

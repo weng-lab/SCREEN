@@ -18,7 +18,6 @@ function setupCartBrowser(){
         var trackhub = "&datahub=" + trackdbUrl;
 
 	var re = results.results.hits[0]._source;
-	console.log(re);
 	var d = re["position"];
 	var c = d["chrom"] + ':' + d["start"] + '-' + d["end"];
         var coord = "&coordinate=" + c;
