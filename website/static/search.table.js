@@ -27,11 +27,12 @@ RE_table.prototype.genButtonGroupCol = function(names){
              defaultContent : bg };
 }
 
-function cart_img(rmv, src_only)
-{
+function cart_img(rmv, src_only){
     var src = "/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png";
-    if (src_only) return src;
-    return "<img src='" + src + "' width='56' height='56'>";
+    if (src_only) {
+	return src;
+    }
+    return "<img src='" + src + "'>";
 }
 
 RE_table.prototype.genCartCol = function(field) {
