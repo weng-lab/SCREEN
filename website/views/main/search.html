@@ -120,7 +120,10 @@
   var cart = new ShoppingCart();
   var cartobj = document.getElementById("shoppingcart_obj");
   
-  cartobj.onload = function() {
+  $( document ).ready(function() {
+  
+      setupSocket(play, ParsedQuery);
+
       var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
       var img = svg.getElementsByTagName("image")[0];
       img.onclick = function() {
@@ -129,10 +132,7 @@
           }
       }
       cart.bind(svg);
-  };
   
-  $( document ).ready(function() {
-    setupSocket(play, ParsedQuery);
   });
   
 </script>
