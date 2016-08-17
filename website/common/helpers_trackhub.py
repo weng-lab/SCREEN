@@ -56,7 +56,8 @@ def bigWigFilters(assembly, files):
             return bigWigs
 
 class Track(object):
-    def __init__(self, desc, priority, url):
+    def __init__(self, desc, priority, url,
+                 color = None, type = None):
         self.desc = desc
         self.priority = priority
 
@@ -68,9 +69,8 @@ class Track(object):
                                         "http://www.encodeproject.org")
 
         self.visibility = "dense"
-        self.type = None
-
-        self.color = None
+        self.type = type
+        self.color = color
         self.height = None
         self.autoScale = None
 
