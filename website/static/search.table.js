@@ -200,7 +200,9 @@ RE_table.prototype.renderTable = function(){
 
 	$("#detailsLeftArrow").click(function(){
 	    showTab("tab_results");
-	});	
+	});
+	
+	//showPileup();
     });
 
     $('#searchresults_table').on( 'click', 'img', function() {
@@ -213,7 +215,6 @@ RE_table.prototype.renderTable = function(){
 	}
 	i.attr("src", cart_img(cart.has_item(r), true));
     });
-    
 }
 
 function result_from_tablerow(dtable, tr){
@@ -224,4 +225,21 @@ function result_from_tablerow(dtable, tr){
 function result_from_tablerow_child(dtable, t){
     var data = dtable.row(t.parents('tr')).data();
     return data["_source"];
+}
+
+function showPileup(){
+    var div = document.getElementById("repileup");
+    var p = pileup.create(div, {
+	range: {contig: 'chr17', start: 7512384, stop: 7512544},
+	tracks: [
+	    {
+		viz: pileup.viz.genome(),
+		isReference: true,
+		data: pileup.formats.twoBit({
+		    url: 'http://www.biodalliance.org/datasets/hg19.2bit'
+		}),
+		name: 'Reference'
+	    },
+	]
+    });
 }
