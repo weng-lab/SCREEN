@@ -176,7 +176,7 @@ RE_table.prototype.renderTable = function(){
 
 	// browser, cart columns handled separately
 	if (this.className.indexOf("cart") != -1
-	    || this.className.indexOf("browser") != -1) return;
+	    || this.className.indexOf("browser") != -1) { return };
 	
 	var r = result_from_tablerow_child(dtable, $(this));
 
@@ -202,7 +202,7 @@ RE_table.prototype.renderTable = function(){
 	    showTab("tab_results");
 	});
 	
-	//showPileup();
+	showPileup(r);
     });
 
     $('#searchresults_table').on( 'click', 'img', function() {
@@ -227,10 +227,13 @@ function result_from_tablerow_child(dtable, t){
     return data["_source"];
 }
 
-function showPileup(){
+function showPileup(re){
+    //console.log(re);
+    var pos = re.position;
+    
     var div = document.getElementById("repileup");
     var p = pileup.create(div, {
-	range: {contig: 'chr17', start: 7512384, stop: 7512544},
+	range: {contig: pos.chrom, start: pos.start, stop: pos.end},
 	tracks: [
 	    {
 		viz: pileup.viz.genome(),
