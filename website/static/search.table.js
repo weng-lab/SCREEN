@@ -255,17 +255,20 @@ RE_table.prototype.renderTable = function(){
     this.rowClick();
 }
 
-RE_table.prototype.showPileup = function(re){
-    //console.log(re);
-    var pos = re.position;
-    
+RE_table.prototype.showPileup = function(re){   
     var div = document.getElementById("repileup");
     if(this.pileup){
 	this.pileup.destroy();
     }
+
+    //console.log(re);
+    var pos = re.position;
+    var halfWindow = 150;
+    var start = Math.max(1, pos.start - halfWindow);
+    var end = pos.end + halfWindow;
     
     this.pileup = pileup.create(div, {
-	range: {contig: pos.chrom, start: pos.start, stop: pos.end},
+	range: {contig: pos.chrom, start: start, stop: end},
 	tracks: [
 	    {
 		viz: pileup.viz.genome(),
