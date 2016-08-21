@@ -197,8 +197,10 @@ RE_table.prototype.rowClick = function() {
     $(this.tableDom).on( 'click', 'td', function() {
 
 	// browser, cart columns handled separately
-	if (this.className.indexOf("cart") != -1
-	    || this.className.indexOf("browser") != -1) { return };
+	if (this.className.indexOf("cart") != -1 ||
+	    this.className.indexOf("browser") != -1) {
+	    return
+	};
 
 	var i = $(this);
 	var r = _this.result_from_tablerow_child(i);
