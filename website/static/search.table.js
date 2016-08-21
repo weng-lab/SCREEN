@@ -103,10 +103,10 @@ RE_table.prototype.result_from_tablerow_child = function(t){
     return data["_source"];
 }
 
-RE_table.prototype.makeTable = function(){
+RE_table.prototype.makeTable = function(outerDiv){
     var cols = this.setupColumns();
     
-    $(this.tableDiv).html(this.makeEmptyTable(cols));
+    $(outerDiv).html(this.makeEmptyTable(cols));
     
     var dtable = $(this.tableDom).DataTable( {
         destroy: true,
@@ -244,10 +244,10 @@ RE_table.prototype.cartClick = function() {
 };
 
 RE_table.prototype.renderTable = function(){
-    this.tableDiv = "#searchresults_div";
-    this.tableDom = "#searchresults_table";
+    var outerDiv = "#searchresults";
+    this.tableDom = outerDiv + "_table";
 
-    this.dtable = this.makeTable();
+    this.dtable = this.makeTable(outerDiv);
     
     this.browserClick();
     this.cartClick();
