@@ -159,7 +159,6 @@ def main():
         return
 
     assemblies = ["hg19", "mm10", "mm10-minimal"]
-    assemblies = ["mm10-minimal"]
     
     with psycopg2.connect(**dbs) as conn:
         with conn.cursor() as cur:
