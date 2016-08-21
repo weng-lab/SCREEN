@@ -1,6 +1,7 @@
 function RE_table(){
     this.callback = null;
     this.no_cart = false;
+    this.pileup = null;
 };
 
 RE_table.prototype.genStrCol = function(field){
@@ -259,7 +260,11 @@ RE_table.prototype.showPileup = function(re){
     var pos = re.position;
     
     var div = document.getElementById("repileup");
-    var p = pileup.create(div, {
+    if(this.pileup){
+	this.pileup.destroy();
+    }
+    
+    this.pileup = pileup.create(div, {
 	range: {contig: pos.chrom, start: pos.start, stop: pos.end},
 	tracks: [
 	    {
