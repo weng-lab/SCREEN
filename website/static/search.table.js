@@ -76,7 +76,7 @@ RE_table.prototype.makeEmptyTable = function(cols){
     var thead = document.createElement("thead");
     thead.appendChild(tr);
     var table = document.createElement("table");
-    table.id = "searchresults_table";
+    table.id = this.tableDom.substring(1);
     table.appendChild(thead);
 
     return table;
@@ -92,13 +92,23 @@ RE_table.prototype.runCallback = function(f){
 	this.callback = null;
     }
 }
- 
-RE_table.prototype.renderTable = function(){
+
+RE_table.prototype.result_from_tablerow = function(tr){
+    var data = this.dtable.row(tr).data();
+    return data["_source"];
+}
+
+RE_table.prototype.result_from_tablerow_child = function(t){
+    var data = this.dtable.row(t.parents('tr')).data();
+    return data["_source"];
+}
+
+RE_table.prototype.makeTable = function(){
     var cols = this.setupColumns();
-
-    $("#searchresults_div").html(this.makeEmptyTable(cols));
-
-    var dtable = $("#searchresults_table").DataTable( {
+    
+    $(this.tableDiv).html(this.makeEmptyTable(cols));
+    
+    var dtable = $(this.tableDom).DataTable( {
         destroy: true,
         processing: true,
         columns: _.values(cols),
@@ -132,13 +142,20 @@ RE_table.prototype.renderTable = function(){
 	}
     } );
 
-    $("#searchresults_table").removeClass('display')
+    $(this.tableDom).removeClass('display')
 	.addClass('table table-condensed table-hover');
     
+    return dtable;
+}
+
+RE_table.prototype.browserClick = function(){
+    var _this = this;
+    
     // deal w/ genome browser button click
-    $('#searchresults_table tbody').on( 'click', 'button', function () {
+    $(this.tableDom + ' tbody').on( 'click', 'button', function () {
 	var whichBrowser = $(this).html();
-	var data = result_from_tablerow_child(dtable, $(this));
+	var i = $(this);
+	var data = _this.result_from_tablerow_child(i);
         var reAccession = data["accession"];
         //console.log(whichBrowser, reAccession);
 	//console.log(data);
@@ -170,15 +187,20 @@ RE_table.prototype.renderTable = function(){
 	}
 	
     } );
+}
 
+RE_table.prototype.rowClick = function() {
+    var _this = this;
+    
     // deal w/ RE row click
-    $('#searchresults_table').on( 'click', 'td', function() {
+    $(this.tableDom).on( 'click', 'td', function() {
 
 	// browser, cart columns handled separately
 	if (this.className.indexOf("cart") != -1
 	    || this.className.indexOf("browser") != -1) { return };
-	
-	var r = result_from_tablerow_child(dtable, $(this));
+
+	var i = $(this);
+	var r = _this.result_from_tablerow_child(i);
 
 	$("#redetails").html("");
 	regelm_details_view.bind("redetails");
@@ -202,12 +224,16 @@ RE_table.prototype.renderTable = function(){
 	    showTab("tab_results");
 	});
 	
-	showPileup(r);
+	_this.showPileup(r);
     });
+}
 
-    $('#searchresults_table').on( 'click', 'img', function() {
+RE_table.prototype.cartClick = function() {
+    var _this = this;
+
+    $(this.tableDom).on( 'click', 'img', function() {
 	var i = $(this);
-	var r = result_from_tablerow_child(dtable, i);
+	var r = _this.result_from_tablerow_child(i);
 	if (cart.has_item(r)) {
 	    cart.remove_item(r);
 	} else {
@@ -215,19 +241,20 @@ RE_table.prototype.renderTable = function(){
 	}
 	i.attr("src", cart_img(cart.has_item(r), true));
     });
+};
+
+RE_table.prototype.renderTable = function(){
+    this.tableDiv = "#searchresults_div";
+    this.tableDom = "#searchresults_table";
+
+    this.dtable = this.makeTable();
+    
+    this.browserClick();
+    this.cartClick();
+    this.rowClick();
 }
 
-function result_from_tablerow(dtable, tr){
-    var data = dtable.row(tr).data();
-    return data["_source"];
-}
-
-function result_from_tablerow_child(dtable, t){
-    var data = dtable.row(t.parents('tr')).data();
-    return data["_source"];
-}
-
-function showPileup(re){
+RE_table.prototype.showPileup = function(re){
     //console.log(re);
     var pos = re.position;
     
