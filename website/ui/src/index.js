@@ -131,10 +131,24 @@ AddButton = withRouter(connect(mapStateToPropsSearch, actions)
 
 const TodoApp = () => (
 	<div>
-	<div class="sandbox">
-	<input type="text" id="input-tags" class="demo-default selectized" tabindex="-1" style="display: none;"><div class="selectize-control demo-default multi"><div class="selectize-input items not-full has-options has-items"><div class="item" data-value="awesome">awesome</div><div class="item" data-value="neat">neat</div><div class="item" data-value="asdfsfasdfasd">asdfsfasdfasd</div><div class="item" data-value="qwerqwerq">qwerqwerq</div><input type="text" autocomplete="off" tabindex="" style="width: 4px; opacity: 1; position: relative; left: 0px;"></div><div class="selectize-dropdown multi demo-default" style="display: none; width: 520px; top: 36px; left: 0px; visibility: visible;"><div class="selectize-dropdown-content"></div></div></div><div class="value">Current Value: <span>"awesome,neat,asdfsfasdfasd,qwerqwerq"</span></div>
-					</div>
-
+	<div className="sandbox">
+	<input type="text" id="input-tags" tabIndex="-1" className="demo-default selectized" style={{display: 'none'}}></input>
+	<div className="selectize-control demo-default multi">
+	<div className="selectize-input items not-full has-options has-items">
+	<div className="item" data-value="awesome">awesome</div>
+	<div className="item" data-value="neat">neat</div>
+	<div className="item" data-value="asdfsfasdfasd">asdfsfasdfasd</div>
+	<div className="item" data-value="qwerqwerq">qwerqwerq</div>
+	<input type="text" tabIndex="" style={{width: '4px', opacity: 1, position: 'relative', left: '0px'}}></input>
+	</div>
+	<div className="selectize-dropdown multi demo-default" style={{display: 'none', width: '520px', top: '36px', left: '0px', visibility: 'visible'}}>
+	<div className="selectize-dropdown-content">
+	</div>
+	</div>
+	</div>
+	<div className="value">Current Value: <span>"awesome,neat,asdfsfasdfasd,qwerqwerq"</span>
+	</div>
+	</div>
 	<AddButton />
 	</div>
  );
