@@ -22,6 +22,7 @@ class Autocompleter:
                 else:
                     ret.append(item)
                 counter += 1
+        print("userQuery:", userQuery, "has", len(ret), "results")
         return { "results" : ret }
         
     def get_gene_suggestions(self, q):
