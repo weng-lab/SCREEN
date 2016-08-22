@@ -72,7 +72,7 @@ class RegElmVizWebsite(object):
         if args.local:
             dbs = DBS.localRegElmViz(args.production)
         else:
-            dbs = DBS.pgdsn("regElmViz")
+            dbs = DBS.pgdsn("RegElmViz")
             dbs["application_name"] = os.path.realpath(__file__)
         self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
         self.ps = PostgresWrapper(self.DBCONN)

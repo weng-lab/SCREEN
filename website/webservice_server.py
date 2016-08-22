@@ -50,15 +50,15 @@ class MyServerProtocol(WebSocketServerProtocol):
         expanded_coords = {"chrom": j["coord"]["chrom"],
                            "start": j["coord"]["start"] - 10000000,
                            "end": j["coord"]["end"] + 10000000}
-        
+
         snp_results = es.get_overlapping_snps(j["coord"])
         gene_results = es.get_overlapping_genes(expanded_coords)
         re_results = es.get_overlapping_res(expanded_coords)
-        
+
         output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
         output["nearby_genes"] = details.format_genes_for_javascript(gene_results, j["coord"])
         output["nearby_res"] = details.format_res_for_javascript(re_results, j["coord"], j["accession"])
-        
+
         self.sendMessage(json.dumps(output))
 
     def _get_and_send_peaks_detail(self, j):
@@ -160,11 +160,11 @@ def myMain():
 
     es = ElasticSearchWrapper(Elasticsearch())
     ac = Autocompleter(es)
-    
+
     if args.local:
         dbs = DBS.localRegElmViz()
     else:
-        dbs = DBS.pgdsn("regElmViz")
+        dbs = DBS.pgdsn("RegElmViz")
         dbs["application_name"] = os.path.realpath(__file__)
 
     DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
