@@ -18,7 +18,7 @@ class PageInfoMain:
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es, ps)
         self.webSocketUrl = webSocketUrl
-            
+
     def wholePage(self, indexPage = False):
         return {"page": {"version" : self.version,
                          "title" : "Regulatory Element Visualizer"},
@@ -52,7 +52,7 @@ class PageInfoMain:
             p = ParseSearch(kwargs["q"], self.es)
             parsed = p.parse()
             parsedStr = p.parseStr()
-            
+
         facetlist = [{"id": "assembly", "name": "Assembly", "type": "list",
                       "visible": True},
                      {"id": "cell_line", "name": "Cell types", "type": "list",
@@ -71,7 +71,7 @@ class PageInfoMain:
 
         tsslist = [{"id": "pc", "name": "protein coding"},
                     {"id": "all", "name": "all"}]
-        
+
         retval.update({"parsed" : json.dumps(parsed),
                        "parsedStr" : parsedStr,
                        "facetlist": facetlist,

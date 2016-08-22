@@ -65,7 +65,7 @@ class RegElmVizWebsite(object):
 
         webSocketUrl = '"ws://" + window.location.hostname + ":{websocket_port}"'.format(websocket_port=args.websocket_port)
         if not self.devMode:
-            webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
+            webSocketUrl = '"ws://bib7.umassmed.edu/regElmViz/ws/"';
 
         self.es = ElasticSearchWrapper(Elasticsearch())
 
