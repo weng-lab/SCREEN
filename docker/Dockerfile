@@ -26,7 +26,7 @@ RUN \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-client-9.5 \
 				postgresql-contrib-9.5 python-pip realpath libpq-dev python-dev \
 				python-dateutil python-numpy python-pil python-pandas; \
-	DEBIAN_FRONTEND=noninteractive pip install psycopg2 jinja2 cherrypy npm
+	DEBIAN_FRONTEND=noninteractive pip install psycopg2 jinja2 cherrypy npm python-autobahn
 
 # create a user
 RUN /bin/bash -c '/bin/mkdir /data && /usr/sbin/useradd -m -k /etc/skel -s /bin/bash -p "*" -d /data/cherrypy cherrypy && /usr/sbin/usermod -U cherrypy'
