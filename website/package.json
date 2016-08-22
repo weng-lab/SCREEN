@@ -1,0 +1,8 @@
+{
+  "name": "regelmviz4",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "pileup": "^0.6.7"
+  }
+}
