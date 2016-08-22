@@ -10,6 +10,12 @@ from timeit import default_timer as timer
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
+def CORS():
+    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+    cherrypy.response.headers["Access-Control-Allow-Headers"] = \
+                                                                "content-type, Authorization, X-Requested-With"
+    cherrypy.response.headers["Access-Control-Allow-Methods"] = 'GET, POST'
+
 class MainApp():
     def __init__(self, viewDir, staticDir, es, ps, version, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
@@ -70,11 +76,9 @@ class MainApp():
         return self.mc.reSNPs(reAccession, kwargs)
 
     @cherrypy.expose
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def autocomplete(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.mc.autocomplete(j)
+        return self.mc.autocomplete(kwargs["userQuery"])
 
 class MainAppRunner:
     def __init__(self, es, ps, devMode, webSocketUrl, config):
@@ -86,7 +90,13 @@ class MainAppRunner:
         staticDir = os.path.abspath(os.path.join(d, "static"))
         viewDir = os.path.abspath(os.path.join(d, "views"))
 
+        cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
+         
         config.update({
+            '/' : {
+                'tools.CORS.on': True,
+                #'tools.json_in.force': False,
+            },
             '/static': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': staticDir

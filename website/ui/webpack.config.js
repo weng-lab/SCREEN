@@ -5,7 +5,7 @@ module.exports = {
     debug: true,
     devtool: 'cheap-module-eval-source-map',
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080/',
+    'webpack-dev-server/client?http://0.0.0.0:8081/',
     'webpack/hot/only-dev-server',
     './src/index'
   ],
@@ -27,17 +27,7 @@ module.exports = {
   },
   devServer: {
       contentBase: './dist',
-      hot: true,
-      proxy: {
-	  '/api/*': {
-	      target: 'http://megatux.purcaro.com:9002/',
-	      secure: false,
-	      changeOrigin : true,
-	      pathRewrite: {
-		  '^/api' : ''
-	      },
-	  }
-      }
+      hot: true
   },
     plugins: [
     new webpack.HotModuleReplacementPlugin()

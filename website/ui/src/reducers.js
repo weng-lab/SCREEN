@@ -12,7 +12,6 @@ const sugsByUserQuery = (state = {}, action) =>{
 	
         const nextState = { ...state };
 	nextState[action.userQuery] = createList(undefined, action);
-	console.log(nextState[action.userQuery]);
 	return nextState;
     default:
 	return state;
