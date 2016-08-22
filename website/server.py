@@ -70,7 +70,7 @@ class RegElmVizWebsite(object):
         self.es = ElasticSearchWrapper(Elasticsearch())
 
         if args.local:
-            dbs = DBS.localRegElmViz()
+            dbs = DBS.localRegElmViz(args.production)
         else:
             dbs = DBS.pgdsn("regElmViz")
             dbs["application_name"] = os.path.realpath(__file__)
@@ -79,7 +79,7 @@ class RegElmVizWebsite(object):
 
         MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("main"))
         UiAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("ui"))
-        
+
     def start(self):
         if self.devMode:
             cherrypy.config.update({'server.environment': "development",
