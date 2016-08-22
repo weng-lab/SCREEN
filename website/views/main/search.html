@@ -60,7 +60,7 @@
               </div>
             </div>
 	  </div>
-	  
+
           <div class="tab-pane" id="tab_expression">
             <div id="expression_heatmap_container">
               <div style="width:100%" id="expression_heatmap">
@@ -98,7 +98,7 @@
 </div>
 
 <script>
-  var WebSocketUrl = {{ webSocketUrl }};
+  var WebSocketUrl = "{{ webSocketUrl }}";
   var ParsedQuery = {{ parsed }};
   var FacetList = {{ facetlist_json }};
   var RankList = {{ ranklist_json }};
@@ -134,13 +134,13 @@
           }
       }
       cart.bind(svg);
-  
+
   });
-  
+
   $( document ).ready(function() {
       setupSocket(play, ParsedQuery);
   });
-  
+
 </script>
 
 {% include '_footer.html' -%}
