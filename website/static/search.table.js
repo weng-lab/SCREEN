@@ -33,9 +33,8 @@ RE_table.prototype.disable_cart_icons = function() {
     this.no_cart = true;
 };
 
-function cart_img(rmv, src_only)
-{
-    var src = "/ver4/search/static/cart" + (rmv ? "rmv" : "add") + ".png";
+function cart_img(rmv, src_only){
+    var src = Ver() + "/static/cart" + (rmv ? "rmv" : "add") + ".png";
     return (src_only ? src : "<img src='" + src + "' width='56' height='56'>");
 }
 
@@ -106,9 +105,9 @@ RE_table.prototype.result_from_tablerow_child = function(t){
 
 RE_table.prototype.makeTable = function(outerDiv){
     var cols = this.setupColumns();
-    
+
     $(outerDiv).html(this.makeEmptyTable(cols));
-    
+
     var dtable = $(this.tableDom).DataTable( {
         destroy: true,
         processing: true,
@@ -122,10 +121,10 @@ RE_table.prototype.makeTable = function(outerDiv){
 	ajax: function ( request, callback, settings ) {
 	    var requestStart  = request.start;
 	    var requestLength = request.length;
-	    
+
 	    searchquery.eso["from"] = requestStart;
 	    searchquery.eso["size"] = requestLength;
-	    
+
 	    re_table.setCallback(function(){
 		var numFil = results.results.total;
 		if(numFil > 5000){
@@ -138,20 +137,20 @@ RE_table.prototype.makeTable = function(outerDiv){
 		};
 		callback(json);
 	    });
-	    
+
 	    perform_search();
 	}
     } );
 
     $(this.tableDom).removeClass('display')
 	.addClass('table table-condensed table-hover');
-    
+
     return dtable;
 }
 
 RE_table.prototype.browserClick = function(){
     var _this = this;
-    
+
     // deal w/ genome browser button click
     $(this.tableDom + ' tbody').on( 'click', 'button', function () {
 	var whichBrowser = $(this).html();
@@ -162,7 +161,7 @@ RE_table.prototype.browserClick = function(){
 	//console.log(data);
 
 	var halfWindow = 7500;
-	
+
 	if("UCSC" == whichBrowser){
 	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
 	    url += "db=hg19";
@@ -170,12 +169,12 @@ RE_table.prototype.browserClick = function(){
 	    var chrom = data["position"]["chrom"]
 	    var start = data["position"]["start"];
 	    var end = data["position"]["end"];
-	    
+
 	    start = Math.max(1, start - halfWindow);
             end = end + halfWindow;
-	    
+
 	    url += "&position=" + chrom + ':' + start + '-' + end;
-	    	    
+
             var trackhubUrl = "http://megatux.purcaro.com:9002" +
 		[Ver(),
                  "ucsc_trackhub",
@@ -186,13 +185,13 @@ RE_table.prototype.browserClick = function(){
 
 	    window.open(url, '_blank');
 	}
-	
+
     } );
 }
 
 RE_table.prototype.rowClick = function() {
     var _this = this;
-    
+
     // deal w/ RE row click
     $(this.tableDom).on( 'click', 'td', function() {
 
@@ -209,13 +208,13 @@ RE_table.prototype.rowClick = function() {
 	regelm_details_view.bind("redetails");
 
 	showTab("tab_details");
-	
+
 	request_details(r);
-	
+
 	regelm_details_view.set_header(r.accession);
 	regelm_details_view.peak_overlap_view.set_loading_text();
 	regelm_details_view.tf_view.set_loading_text();
-	regelm_details_view.histones_view.set_loading_text();	
+	regelm_details_view.histones_view.set_loading_text();
 	regelm_details_view.snp_view.set_loading_text();
 	regelm_details_view.genes_view.set_loading_text();
 	regelm_details_view.re_view.set_loading_text();
@@ -226,7 +225,7 @@ RE_table.prototype.rowClick = function() {
 	$("#detailsLeftArrow").click(function(){
 	    showTab("tab_results");
 	});
-	
+
 	_this.showPileup(r);
     });
 }
@@ -251,13 +250,13 @@ RE_table.prototype.renderTable = function(){
     this.tableDom = outerDiv + "_table";
 
     this.dtable = this.makeTable(outerDiv);
-    
+
     this.browserClick();
     this.cartClick();
     this.rowClick();
 }
 
-RE_table.prototype.showPileup = function(re){   
+RE_table.prototype.showPileup = function(re){
     var div = document.getElementById("repileup");
     if(this.pileup){
 	this.pileup.destroy();
@@ -268,7 +267,7 @@ RE_table.prototype.showPileup = function(re){
     var halfWindow = 150;
     var start = Math.max(1, pos.start - halfWindow);
     var end = pos.end + halfWindow;
-    
+
     this.pileup = pileup.create(div, {
 	range: {contig: pos.chrom, start: start, stop: end},
 	tracks: [
