@@ -159,6 +159,6 @@ class PageInfoMain:
             raise
             return {"error" : "could not lookup " + reAccession}
 
-    def autocomplete(self, j):
+    def autocomplete(self, userQuery):
         ac = Autocompleter(self.es)
-        return ac.get_suggestions(j["userQuery"])
+        return ac.get_suggestions(userQuery)
