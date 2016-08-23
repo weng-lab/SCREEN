@@ -17,7 +17,7 @@ class Autocompleter:
         ret = []
         counter = 0
         for k, v in self.indices.iteritems():
-            if k not in j["indices"]: continue
+            if "indices" in j and k not in j["indices"]: continue
             for item in v(uq):
                 if 0:
                     ret.append({"name" : item,
