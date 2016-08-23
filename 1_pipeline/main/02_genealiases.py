@@ -98,7 +98,7 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(os.path.join(Dirs.encyclopedia, "Version-4", "regulatory-element-registry-hg19.V2.json.new.gz"),
+    ensembl_to_symbol(os.path.join(Dirs.encyclopedia, "Version-4", "regulatory-element-registry-hg19.V2.json.gz"),
                       emap)
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
