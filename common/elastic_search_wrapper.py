@@ -83,7 +83,7 @@ class terms_aggregation:
         self.query_obj = {"size": size, "aggs": {}}
 
     def append(self, name, term):
-        self.query_obj[name] = {"terms": {"field": term}}
+        self.query_obj["aggs"][name] = {"terms": {"field": term}}
 
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
