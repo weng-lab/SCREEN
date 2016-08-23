@@ -78,6 +78,13 @@ class and_query:
     def append(self, obj):
         self.query_obj["query"]["bool"]["must"].append(obj)
 
+class terms_aggregation:
+    def __init__(self, size = 0):
+        self.query_obj = {"size": size, "aggs": {}}
+
+    def append(self, name, term):
+        self.query_obj[name] = {"terms": {"field": term}}
+
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
     if assembly != "":
@@ -88,7 +95,7 @@ def snp_query(accession, assembly="", fuzziness=0):
     return retval
 
 class ElasticSearchWrapper:
-
+               
     def __init__(self, es):
         self.es = es
         self.search = self.es.search
@@ -108,6 +115,15 @@ class ElasticSearchWrapper:
         if q is None: return None
         return requests.get(url, headers=get_headers, data=json.dumps(q))
 
+    def get_tf_list(self):
+        results = []
+        query = terms_aggregation()
+        query.append("tf", "label")
+        raw_results = self.es.search(index="peak_beds", body=query.query_obj)
+        for bucket in raw_results["aggregations"]["tf"]["buckets"]:
+            results.append(bucket["key"])
+        return results
+    
     def get_bed_list(self, acc_list):
         query = or_query()
         for acc in acc_list:
