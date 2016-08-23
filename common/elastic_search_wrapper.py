@@ -80,10 +80,11 @@ class and_query:
 
 class terms_aggregation:
     def __init__(self, size = 0):
-        self.query_obj = {"size": size, "aggs": {}}
+        self.query_obj = {"aggs": {}}
+        self.size = size
 
     def append(self, name, term):
-        self.query_obj["aggs"][name] = {"terms": {"field": term}}
+        self.query_obj["aggs"][name] = {"terms": {"field": term, "size": self.size}}
 
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
@@ -119,6 +120,7 @@ class ElasticSearchWrapper:
         results = []
         query = terms_aggregation()
         query.append("tf", "label")
+        print(query.query_obj)
         raw_results = self.es.search(index="peak_beds", body=query.query_obj)
         for bucket in raw_results["aggregations"]["tf"]["buckets"]:
             results.append(bucket["key"])

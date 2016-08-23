@@ -30,7 +30,7 @@ class Autocompleter:
 
     def get_tf_suggestions(self, q):
         results = []
-        print(self.tfs)
+        q = q.lower()
         for tf in self.tfs:
             if tf.startswith(q):
                 results.append(tf)

@@ -102,13 +102,12 @@ function socket_message_handler(e) {
 		select.add(option);
 	    }
 	}
-
+    } else if("suggestions" == results["type"]) {
+	handle_autocomplete_suggestions(results);
     } else if("query_results" == results["type"] || "callback" in results){
 	if (results["callback"] in query_results_handlers){
             query_results_handlers[results["callback"]](results);
         }
-    } else if("suggestions" == results["type"]) {
-	handle_autocomplete_suggestions(results);
     } else if("re_details" == results["type"]) {
 	handle_details(results);
     } else if ("peak_details" == results["type"]) {
