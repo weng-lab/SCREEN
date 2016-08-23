@@ -4,6 +4,17 @@ function RE_table(){
     this.pileup = null;
 };
 
+RE_table.prototype.gene_id_col = function(field) {
+    return {
+	data: field,
+	className: "dt-right",
+	render: function(d) {
+	    if (data["gene-name"]) return data["gene-name"];
+	    return data["gene-id"];
+	}
+    };
+};
+
 RE_table.prototype.genStrCol = function(field){
     return { data: field, className: "dt-right"};
 }
@@ -52,9 +63,9 @@ RE_table.prototype.setupColumns = function(){
 	       end : this.genIntCol("_source.position.end")}
 
 
-    ret["nearest gene"] = this.genStrCol("_source.genes.nearest-all.gene-id");
+    ret["nearest gene"] = this.gene_id_col("_source.genes.nearest-all");
     ret["nearest protein-coding gene"] =
-        this.genStrCol("_source.genes.nearest-pc.gene-id");
+        this.gene_id_col("_source.genes.nearest-pc");
 
     if (!this.no_cart) ret["cart"] = this.genCartCol("_source");
     ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);

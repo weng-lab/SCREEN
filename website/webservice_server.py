@@ -160,7 +160,7 @@ def myMain():
 
     es = ElasticSearchWrapper(Elasticsearch())
     ac = Autocompleter(es)
-
+    
     if args.local:
         dbs = DBS.localRegElmViz()
     else:

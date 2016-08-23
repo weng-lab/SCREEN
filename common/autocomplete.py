@@ -4,17 +4,19 @@ class Autocompleter:
 
     def __init__(self, es):
         self.es = es
-        self.indicies = {"gene_aliases": self.get_gene_suggestions,
-                         "snp_aliases": self.get_snp_suggestions}
+        self.indices = {"gene_aliases": self.get_gene_suggestions,
+                        "snp_aliases": self.get_snp_suggestions,
+                        "tfs", self.get_tf_suggestions }
+        self.tfs = self.es.get_tf_list()
 
     def recognizes_index(self, index):
-        return index in self.indicies
+        return index in self.indices
         
     def get_suggestions(self, userQuery):
         uq = userQuery #.lower()
         ret = []
         counter = 0
-        for k, v in self.indicies.iteritems():
+        for k, v in self.indices.iteritems():
             for item in v(uq):
                 if 0:
                     ret.append({"name" : item,
@@ -24,7 +26,14 @@ class Autocompleter:
                 counter += 1
         print("userQuery:", userQuery, "has", len(ret), "results")
         return { "results" : ret }
-        
+
+    def get_tf_suggestions(self, q):
+        results = []
+        for tf in self.tfs:
+            if tf.startswith(q):
+                results.append(tf)
+        return results
+    
     def get_gene_suggestions(self, q):
         query = or_query()
         for field in _gene_alias_fields:
