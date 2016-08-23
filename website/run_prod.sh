@@ -4,6 +4,6 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
 while [ 1 ]; do
-    $SCRIPTPATH/server.py --production
+    $SCRIPTPATH/server.py --production --local
     sleep 5
 done

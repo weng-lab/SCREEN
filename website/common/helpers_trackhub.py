@@ -56,7 +56,8 @@ def bigWigFilters(assembly, files):
             return bigWigs
 
 class Track(object):
-    def __init__(self, desc, priority, url):
+    def __init__(self, desc, priority, url,
+                 color = None, type = None):
         self.desc = desc
         self.priority = priority
 
@@ -68,9 +69,8 @@ class Track(object):
                                         "http://www.encodeproject.org")
 
         self.visibility = "dense"
-        self.type = None
-
-        self.color = None
+        self.type = type
+        self.color = color
         self.height = None
         self.autoScale = None
 
@@ -151,6 +151,13 @@ class BigGenePredTrack(Track):
         self.type = "bigBed 12 + 8"
         self.visibility = "pack"
 
+class BigBedTrack(Track):
+    def __init__(self, desc, priority, url, color):
+        super(BigBedTrack, self).__init__(desc, priority, url)
+        self.color = color
+        self.type = "bigBed"
+        self.visibility = "pack"
+        
 def officialVistaTrack(assembly):
     byAssembly = {"mm10" : """
 track VISTAenhancers

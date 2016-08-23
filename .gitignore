@@ -13,7 +13,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+#dist/
 downloads/
 eggs/
 .eggs/
@@ -22,6 +22,7 @@ lib64/
 parts/
 sdist/
 var/
+data/carts/*
 *.egg-info/
 .installed.cfg
 *.egg
@@ -97,3 +98,5 @@ TAGS
 *.core
 .Rhistory
 Rplots.pdf
+
+/website/cache

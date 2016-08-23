@@ -8,38 +8,23 @@
     <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
     <br>
     <form action="search" method="get" id="searchform">
-      <input class="searchbox" type="text" size="125" name="q" id="q" value="GM12878 chr1:1000-23000000">
+      <input class="searchbox" type="text" size="125" name="q" id="queryBox" value="HeLa-S3 chr14:35792756-35819812">
       <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
     </form>
     <br>
-</i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
-</div>
+    <i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
+  </div>
 </div>
 
 <div class="container">
   <!-- Example row of columns -->
   <div class="row">
-    <div class="col-md-4">
-      <h2>Heading</h2>
-      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-      <h2>Heading</h2>
-      <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-      <h2>Heading</h2>
-      <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-      <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-    </div>
   </div>
 
   <hr>
 
   <footer>
-    <p>&copy; 2015 Company, Inc.</p>
+    <p>&copy; </p>
   </footer>
 </div> <!-- /container -->
 
@@ -55,7 +40,7 @@
 
 <script>
   setupSocket();
-  bind_autocomplete_textbox("q", ["gene_aliases", "snp_aliases"]);
+  bind_autocomplete_textbox("queryBox");
 </script>
 
 {% include '_footer.html' -%}

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import nltk
+#import nltk
 #sentence = """At eight o'clock on Thursday morning  Arthur didn't feel very good."""
 #tokens = nltk.word_tokenize(sentence)
 #print tokens
@@ -28,8 +28,12 @@ class ParseSearch:
         # TODO: add more here!
         return self.rawInput[:2048]
 
+    def parseStr(self):
+        return self.sanitizedStr
+    
     def parse(self):
         s = self._sanitize()
+        self.sanitizedStr = s
         toks = s.split()
         toks = [t.lower() for t in toks]
 

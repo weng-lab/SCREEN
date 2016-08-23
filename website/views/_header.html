@@ -28,24 +28,35 @@
     <!-- Load c3 -->
     {{ hh.js("https://d3js.org/d3.v3.min.js") }}
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.css"/>
-
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
 
     {{ hh.cssVer(version, "static/css.css") }}
 
   </head>
   <body>
-
     <nav id="mainNavBar" class="navbar navbar-default navbar-inverse">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Candidate Regulatory Element Visualizer</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
+
+          <a class="navbar-brand" href="/{{version}}">Candidate RE Viz (alpha version)</a>
+
+	  {% if not indexPage -%}
+	  <form action="search" method="get" id="searchformNavbar" class="navbar-collapse">
+	    <input class="searchbox" type="text" size="100" name="q" id="queryBox" value="{{parsedStr}}">
+	    <a class="btn btn-primary btn-lg" href="javascript:searchformNavbar.submit();" role="button">Search</a>
+	  </form>
           <form class="navbar-form navbar-right">
             <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success">ENCODE</a>
           </form>
-        </div><!--/.navbar -->
+	  {% endif -%}
+	  {% if searchPage -%}
+	  <form class="navbar-form navbar-right">
+	    <object type="image/svg+xml" data="/{{version}}/static/re_cartview.svg" width="56" height="56" id="shoppingcart_obj">
+	      <img src="/{{version}}/static/re_cartview.png">
+	    </object>
+	  </form>
+	  {% endif -%}
+	  
+	</div>
       </div>
     </nav>
