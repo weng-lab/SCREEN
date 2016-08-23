@@ -9,10 +9,10 @@ function request_suggestions(userQuery, callback_f){
     sendText(JSON.stringify(payload));
 };
 
-function bind_autocomplete_textbox(textbox_id){
+function bind_autocomplete_textbox(textbox_id, f) {
     $("#" + textbox_id).autocomplete({
 	source: function (q, response) {
-	    request_suggestions(q.term, response)
+	    f(q.term, response)
 	},
 	select: function(event, ui) {
 	    $("#" + textbox_id).val(ui.item.value);

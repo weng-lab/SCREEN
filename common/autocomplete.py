@@ -12,11 +12,12 @@ class Autocompleter:
     def recognizes_index(self, index):
         return index in self.indices
         
-    def get_suggestions(self, userQuery):
-        uq = userQuery #.lower()
+    def get_suggestions(self, j):
+        uq = j["userQuery"] #.lower()
         ret = []
         counter = 0
         for k, v in self.indices.iteritems():
+            if k not in j["indices"]: continue
             for item in v(uq):
                 if 0:
                     ret.append({"name" : item,

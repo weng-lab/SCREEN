@@ -61,8 +61,11 @@ class PageInfoMain:
                       "visible": True},
                      {"id": "coordinates", "name": "Coordinates",
                       "type": "slider", "label_text": "coordinates",
-                      "visible": False} ]
-
+                      "visible": False},
+                     {"id": "tfs", "name": "TF peak intersection",
+                      "type": "checklist", "label_text": "tfs",
+                      "indices": ["tfs"], "visible": True} ]
+        
         ranklist = [{"id": "dnase", "name": "DNase"},
                     {"id": "ctcf", "name": "CTCF"},
                     {"id": "promoter", "name": "promoter-like"},

@@ -73,7 +73,7 @@ class MyServerProtocol(WebSocketServerProtocol):
     def _suggest(self, j):
         ret = {"type": "suggestions",
                "callback": j["callback"]}
-        ret.update(ac.get_suggestions(j["userQuery"]))
+        ret.update(ac.get_suggestions(j))
         self.sendMessage(json.dumps(ret))
 
     def _acclist_md5(self, acclist):
