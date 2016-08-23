@@ -100,6 +100,36 @@ var update_histogram_selection = {
     all: function() {update_histogram(GUI.facets["all"]);}
 };
 
+function checklist_facet()
+{
+    
+    this.tfs = [];
+    this.input_box = null;
+    this.check_div = null;
+
+    this.add_tf = function(tf) {
+
+	if (tf in this.tfs) return;
+	this.tfs.push({"id": tf, "selected": true});
+	var tid = this.tfs.length - 1;
+	
+	var nc = document.createElement("input");
+	nc.type = "checkbox";
+	nc.checked = true;
+	nc.value = tf;
+	nc.onclick = function() {
+	    this.tfs[tid].selected = nc.checked;
+	};
+
+	var nt = document.createTextNode(" " + tf);
+	this.check_div.appendChild(nc);
+	this.check_div.appendChild(nt);
+	this.check_div.appendChild(document.createElement("br"));
+	
+    };
+    
+}
+
 var GUI = new facetGUI();
 
 GUI.facets["coordinates"] = new range_facet();
@@ -119,7 +149,19 @@ $.each(FacetList, function(idx, facet) {
                                 document.getElementById(facet.id + "_textbox"),
 				update_rank_filter[facet.id],
                                 update_histogram_selection[facet.id]);
-        GUI.facets[facet.id].id = facet.id};
+        GUI.facets[facet.id].id = facet.id
+    } else if ("checklist" == facet.type) {
+	GUI.facets[facet.id] = new checklist_facet();
+	GUI.facets[facet.id].id = facet.id;
+	GUI.facets[facet.id].input_box = document.getElementById(facet.id + "_cl_input");
+	$("#" + facet.id + "_cl_input").keyup(function(e) {
+	    if (e.keyCode == 13) { // enter key
+		GUI.facets[facet.id].add_tf(GUI.facets[facet.id].input_box.value);
+		GUI.facets[facet.id].input_box.value = "";
+	    }
+	});
+	GUI.facets[facet.id].check_div = document.getElementById(facet.id + "_list_container");
+    }
 });
 
 $.each(TSS_List, function(idx, facet) {

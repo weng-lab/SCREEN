@@ -32,6 +32,7 @@
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_facet_container">
       <div style="width:100%">Enter TF: <input type="text" id="{{facet.id}}_cl_input" style="width:100%"></div>
+      <div style="width:100%" id="{{facet.id}}_list_container"></div>
       <script type="text/javascript">
 	function {{facet.id}}_request_suggestions(userQuery, callback_f)
 	{
