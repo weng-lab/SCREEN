@@ -3,6 +3,8 @@
 {{facet_listbox(facet)}}
 {% elif facet.type == "slider" -%}
 {{facet_sliderbox(facet)}}
+{% elif facet.type == "checklist" -%}
+{{facet_checklist(facet)}}
 {% endif -%}
 {% endmacro -%}
 
@@ -15,6 +17,34 @@
   <div class="panel panel-primary">
     <div class="panel-heading">{{facet.name}}</div>
     <div class="panel-body" id="{{facet.id}}_facet_container">
+    </div>
+  </div>
+</div>
+{% endmacro -%}
+
+{% macro facet_checklist(facet) -%}
+{% if facet.visible -%}
+<div class="panel-group facet" id="{{facet.id}}_facet_panel">
+{% else -%}
+<div class="panel-group facet" style="display:none;" id="{{facet.id}}_facet_panel">
+{% endif -%}
+  <div class="panel panel-primary">
+    <div class="panel-heading">{{facet.name}}</div>
+    <div class="panel-body" id="{{facet.id}}_facet_container">
+      <input type="text" id="{{facet.id}}_cl_input">
+      <script type="text/javascript">
+	function {{facet.id}}_request_suggestions(userQuery, callback_f)
+	{
+	    var ctime = (new Date()).getTime();
+	    autocomplete_callbacks[ctime] = callback_f;
+	    var payload = {"action": "suggest",
+ 	                   "userQuery": userQuery,
+ 	                   "callback": ctime,
+	                   "indices": {{facet.indices}}};
+	    sendText(JSON.stringify(payload));
+	};
+	bind_autocomplete_textbox("{{facet.id}}_cl_input", {{facet.id}}_request_suggestions);
+      </script>
     </div>
   </div>
 </div>
