@@ -119,8 +119,6 @@ class ElasticSearchWrapper:
         results = []
         query = terms_aggregation()
         query.append("tf", "label")
-        print("!")
-        print(query.query_obj)
         raw_results = self.es.search(index="peak_beds", body=query.query_obj)
         for bucket in raw_results["aggregations"]["tf"]["buckets"]:
             results.append(bucket["key"])
