@@ -25,11 +25,12 @@ class Autocompleter:
                 else:
                     ret.append(item)
                 counter += 1
-        print("userQuery:", userQuery, "has", len(ret), "results")
+        print("userQuery:", uq, "has", len(ret), "results")
         return { "results" : ret }
 
     def get_tf_suggestions(self, q):
         results = []
+        print(self.tfs)
         for tf in self.tfs:
             if tf.startswith(q):
                 results.append(tf)
