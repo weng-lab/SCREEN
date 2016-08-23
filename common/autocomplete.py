@@ -6,7 +6,7 @@ class Autocompleter:
         self.es = es
         self.indices = {"gene_aliases": self.get_gene_suggestions,
                         "snp_aliases": self.get_snp_suggestions,
-                        "tfs", self.get_tf_suggestions }
+                        "tfs": self.get_tf_suggestions }
         self.tfs = self.es.get_tf_list()
 
     def recognizes_index(self, index):

@@ -9,8 +9,8 @@ RE_table.prototype.gene_id_col = function(field) {
 	data: field,
 	className: "dt-right",
 	render: function(d) {
-	    if (data["gene-name"]) return data["gene-name"];
-	    return data["gene-id"];
+	    if (d["gene-name"]) return d["gene-name"];
+	    return d["gene-id"];
 	}
     };
 };

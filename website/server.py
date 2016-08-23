@@ -70,7 +70,7 @@ class RegElmVizWebsite(object):
         self.es = ElasticSearchWrapper(Elasticsearch())
 
         if args.local:
-            dbs = DBS.localRegElmViz(args.production)
+            dbs = DBS.localRegElmViz()
         else:
             dbs = DBS.pgdsn("RegElmViz")
             dbs["application_name"] = os.path.realpath(__file__)
