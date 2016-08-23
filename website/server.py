@@ -1,19 +1,46 @@
 #!/usr/bin/python
 
-import cherrypy, os, sys, argparse
+import cherrypy, os, sys, argparse, time
 
 from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
 from app_main import MainAppRunner
+from app_ui import UiAppRunner
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
+from postgres_wrapper import PostgresWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
 from dbs import DBS
+
+def getRootConfig(siteName):
+    d = os.path.realpath(os.path.join(os.path.dirname(__file__), "tmp"))
+
+    # shared sessions
+    sessionDir = os.path.join(d, "sessions")
+    Utils.mkdir_p(sessionDir)
+
+    logDir = os.path.join(d, "logs", siteName)
+    Utils.mkdir_p(logDir)
+
+    # http://stackoverflow.com/a/10607768
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+
+    return {
+        '/': {
+            'tools.sessions.on' : True,
+            'tools.sessions.timeout' : 60000,
+            'tools.sessions.storage_type' : "file",
+            'tools.sessions.storage_path' : sessionDir,
+            'log.access_file' : os.path.join(logDir, "access-" + timestr + ".log"),
+            'log.error_file' : os.path.join(logDir, "error-" + timestr + ".log"),
+            'log.screen' : False,
+        }
+    }
 
 class RegElmVizWebsite(object):
     # from http://stackoverflow.com/a/15015705
@@ -28,32 +55,35 @@ class RegElmVizWebsite(object):
         Utils.mkdir_p(cacheDir)
 
         cherrypy.config.update({
-                'server.socket_host': '0.0.0.0',
-                'server.socket_port': self.port,
-                'tools.sessions.on': True,
-                'tools.sessions.storage_type': "file",
-                'tools.sessions.storage_path': cacheDir,
-                'tools.sessions.locking': 'early',
-                })
+            'server.socket_host': '0.0.0.0',
+            'server.socket_port': self.port,
+            'tools.sessions.on': True,
+            'tools.sessions.storage_type': "file",
+            'tools.sessions.storage_path': cacheDir,
+            'tools.sessions.locking': 'early',
+        })
 
-        webSocketUrl = '"ws://" + window.location.hostname + ":9000"'
+        webSocketUrl = '"ws://" + window.location.hostname + ":{websocket_port}"'.format(websocket_port=args.websocket_port)
         if not self.devMode:
-            webSocketUrl = "ws://bib7.umassmed.edu/regElmViz/ws/";
+            webSocketUrl = '"ws://bib7.umassmed.edu/regElmViz/ws/"';
 
         self.es = ElasticSearchWrapper(Elasticsearch())
 
         if args.local:
-            dbs = DBS.localRegElmViz()
+            dbs = DBS.localRegElmViz(args.production)
         else:
-            dbs = DBS.pgdsn("regElmViz")
+            dbs = DBS.pgdsn("RegElmViz")
             dbs["application_name"] = os.path.realpath(__file__)
         self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+        self.ps = PostgresWrapper(self.DBCONN)
 
-        MainAppRunner(self.es, self.DBCONN, self.devMode, webSocketUrl)
+        MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("main"))
+        UiAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("ui"))
 
     def start(self):
         if self.devMode:
-            cherrypy.config.update({'server.environment': "development", })
+            cherrypy.config.update({'server.environment': "development",
+                                    'log.screen': True,})
         else:
             cherrypy.config.update({'server.socket_queue_size': 512,
                                     'server.thread_pool': 30
@@ -71,6 +101,7 @@ def parse_args():
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
+    parser.add_argument('--websocket_port', default=9000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
     return parser.parse_args()

@@ -1,3 +1,12 @@
+var searchquery = new Query();
+
+function perform_search(){
+    sendText(JSON.stringify({"action": "query",
+			     "callback": "regulatory_elements",
+			     "index": "regulatory_elements",
+			     "object": searchquery.eso}));
+};
+
 function facetGUI(){
     this.facets = {};
 }
@@ -8,15 +17,19 @@ facetGUI.prototype.refresh = function() {
 	if (facet.id in searchquery.post_filter_map
 	    && searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]] != {}) {
 	    for (field in searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range) {
-		if (!facet.range_slider || !facet.histogram) continue;
+		if (!facet.range_slider || !facet.histogram) {
+		    continue;
+		}
 		facet.range_slider.refresh_selection(searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].gte,
 						     searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range[field].lte);
 		facet.histogram.update_selection(...facet.range_slider.get_selection_range());
 	    }
 	}
     }
-    this.facets["coordinates"].range_slider.refresh_selection(...searchquery.get_coordinate_selection_range());
-    this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
+    if (searchquery.get_coordinate_selection_range()) {
+	this.facets["coordinates"].range_slider.refresh_selection(...searchquery.get_coordinate_selection_range());
+	this.facets["coordinates"].histogram.update_selection(...searchquery.get_coordinate_selection_range());
+    }
 };
 
 function range_facet(){
@@ -65,13 +78,26 @@ var update_rank_filter = {
     }
 };
 
+var update_tss_filter = {
+    pc: function() {
+	searchquery.set_pcgene_filter(...GUI.facets["pc"].range_slider.get_selection_range());
+	perform_search();
+    },
+    all: function() {
+	searchquery.set_allgene_filter(...GUI.facets["all"].range_slider.get_selection_range());
+	perform_search();
+    }
+};
+
 var update_histogram_selection = {
     dnase : function() { update_histogram(GUI.facets["dnase"]); },
     ctcf : function() { update_histogram(GUI.facets["ctcf"]); },
     promoter : function() { update_histogram(GUI.facets["promoter"]); },
     enhancer : function() { update_histogram(GUI.facets["enhancer"]); },
     conservation : function() { update_histogram(GUI.facets["conservation"]); },
-    coordinate : function() { update_histogram(GUI.facets["coordinates"]); }
+    coordinate : function() { update_histogram(GUI.facets["coordinates"]); },
+    pc: function() {update_histogram(GUI.facets["pc"]);},
+    all: function() {update_histogram(GUI.facets["all"]);}
 };
 
 var GUI = new facetGUI();
@@ -81,7 +107,7 @@ GUI.facets["coordinates"].range_slider =
     create_range_slider("coordinates_range_slider",
                         2000000000,
                         document.getElementById("coordinates_textbox"),
-			update_rank_filter["coordinate"],
+			update_coordinate_filter,
                         update_histogram_selection["coordinate"]);
 
 $.each(FacetList, function(idx, facet) {
@@ -96,6 +122,17 @@ $.each(FacetList, function(idx, facet) {
         GUI.facets[facet.id].id = facet.id};
 });
 
+$.each(TSS_List, function(idx, facet) {
+    GUI.facets[facet.id] = new range_facet();
+    GUI.facets[facet.id].range_slider =
+        create_range_slider(facet.id + "_range_slider",
+                            2000000,
+                            document.getElementById(facet.id + "_textbox"),
+			    update_tss_filter[facet.id],
+                            update_histogram_selection[facet.id]);
+    GUI.facets[facet.id].id = facet.id;
+});
+
 $.each(RankList, function(idx, facet) {
     GUI.facets[facet.id] = new range_facet();
     GUI.facets[facet.id].range_slider =
@@ -107,11 +144,11 @@ $.each(RankList, function(idx, facet) {
     GUI.facets[facet.id].id = facet.id;
 });
 
-venn_slider = create_range_slider("venn_range_slider",
-				  100000,
-				  document.getElementById("venn_range_textbox"),
-				  refresh_venn,
-				  null);
+venn_lbound_slider = create_slider("venn_lbound_slider",
+				   100000,
+				   document.getElementById("venn_lbound_textbox"),
+				   refresh_venn,
+				   null);
 
 $("#heatmap_dropdown").on("change", function(e) {
     clear_div_contents(document.getElementById("rank_heatmap"));
@@ -131,7 +168,6 @@ var range_preset_handlers = {
 };
 
 function play(parsed){
-    console.log(parsed);
     var ct = parsed["cellType"];
     var coord = parsed["coord"];
     var range_preset = parsed["range_preset"];

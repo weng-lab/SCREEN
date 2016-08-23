@@ -4,22 +4,33 @@ class Autocompleter:
 
     def __init__(self, es):
         self.es = es
-        self.indeces = {"gene_aliases": self.get_gene_suggestions,
-                        "snp_aliases": self.get_snp_suggestions}
+        self.indicies = {"gene_aliases": self.get_gene_suggestions,
+                         "snp_aliases": self.get_snp_suggestions}
 
     def recognizes_index(self, index):
-        return index in self.indeces
+        return index in self.indicies
         
-    def get_suggestions(self, index, q):
-        if index not in self.indeces:
-            raise Exception("index %s is not recognized by the autocompleter" % index)
-        return self.indeces[index](q)
+    def get_suggestions(self, userQuery):
+        uq = userQuery #.lower()
+        ret = []
+        counter = 0
+        for k, v in self.indicies.iteritems():
+            for item in v(uq):
+                if 0:
+                    ret.append({"name" : item,
+                                "value" : counter})
+                else:
+                    ret.append(item)
+                counter += 1
+        print("userQuery:", userQuery, "has", len(ret), "results")
+        return { "results" : ret }
         
     def get_gene_suggestions(self, q):
         query = or_query()
         for field in _gene_alias_fields:
             query.append({"match_phrase_prefix": {field: q}})
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases",
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] > 0:
             return self._process_gene_suggestions(raw_results, q)
         query.reset()
@@ -36,7 +47,8 @@ class Autocompleter:
     def get_snp_suggestions(self, q):
         query = or_query()
         query.append({"match_phrase_prefix": {"accession": q}})
-        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "snp_aliases",
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] > 0:
             return self._process_snp_suggestions(raw_results, q)
         query.reset()

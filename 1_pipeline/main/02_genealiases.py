@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 import json
 import sys
@@ -5,7 +7,7 @@ import os
 import requests
 import gzip
 
-sys.path.append("../../../metadata/utils")
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from get_tss import Genes
 
@@ -42,6 +44,18 @@ def ensembl_to_symbol(fnp, emap):
                     d["genes"]["nearest-all"]["gene-name"] = emap[an]
                 o.write(json.dumps(d) + "\n")
     os.rename(fnp.replace(".V2.", ".V2.genenames."), fnp)
+
+def tryparse(coordinate):
+    if "-" not in coordinate or ":" not in coordinate:
+        return {"chrom": "",
+                "start": -1,
+                "end": -1 }
+    p = coordinate.split(":")
+    v = p[1].split("-")
+    return {"chrom": p[0],
+            "start": int(v[0]),
+            "end": int(v[1]) }
+
 
 def main():
     infnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.tsv")
@@ -81,6 +95,7 @@ def main():
                     continue
                 if geneobj["approved_symbol"] in hg19_genes:
                     geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
+                    geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
     ensembl_to_symbol(os.path.join(Dirs.encyclopedia, "Version-4", "regulatory-element-registry-hg19.V2.json.new.gz"),

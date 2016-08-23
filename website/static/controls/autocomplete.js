@@ -1,22 +1,39 @@
-function data_request_function(indeces){
-    return function (q, response) {
-	request_suggestions(q.term, indeces, response);
-    };
-}
+var autocomplete_callbacks = {};
 
-function select_item_function(textbox_id){
-    return function(event, ui) {
-	$("#" + textbox_id).val(ui.item.value);
-	return false;
-    };
-}
+function request_suggestions(userQuery, callback_f){
+    var ctime = (new Date()).getTime();
+    autocomplete_callbacks[ctime] = callback_f;
+    var payload = {"action": "suggest",
+		   "userQuery": userQuery,
+		   "callback": ctime};
+    sendText(JSON.stringify(payload));
+};
 
-function bind_autocomplete_textbox(textbox_id, indeces_to_search){
+function bind_autocomplete_textbox(textbox_id){
     $("#" + textbox_id).autocomplete({
-	source: data_request_function(indeces_to_search),
-	select: select_item_function(textbox_id),
+	source: function (q, response) {
+	    request_suggestions(q.term, response)
+	},
+	select: function(event, ui) {
+	    $("#" + textbox_id).val(ui.item.value);
+	    return false;
+	},
 	change: function() {
 	    $("#" + textbox_id).val("").css("display", 2);
 	}
     });
 }
+
+function process_autocomplete_results(results){
+    //console.log("process_autocomplete_results", "results:", results);
+    return results["results"];
+}
+
+function handle_autocomplete_suggestions(results){
+    var cb = results["callback"];
+    autocomplete_callbacks[cb](
+	process_autocomplete_results(results)
+    );
+    delete autocomplete_callbacks[cb];
+}
+

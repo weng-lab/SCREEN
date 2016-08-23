@@ -1,12 +1,20 @@
 #!/usr/bin/env python
 
 import os, sys, json
+import argparse
 
 from twisted.python import log
 from twisted.internet import reactor
 
+import psycopg2, psycopg2.pool
+
+import autoreload
+
+import hashlib
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
+from postgres_wrapper import PostgresWrapper
 
 from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
@@ -14,12 +22,12 @@ from autocomplete import Autocompleter
 from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory
 
 from models.regelm import RegElements
+from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 
-# from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
+from dbs import DBS
 
-es = ElasticSearchWrapper(Elasticsearch())
-ac = Autocompleter(es)
+# from https://github.com/crossbario/autobahn-python/blob/master/examples/twisted/websocket/echo/server.py
 
 cmap = {"regulatory_elements": RegElements,
         "expression_matrix": ExpressionMatrix}
@@ -31,6 +39,48 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def onOpen(self):
         print("WebSocket connection open.")
+
+    def _get_and_send_re_detail(self, j):
+        global details
+
+        output = {"type": "re_details",
+                  "q": {"accession": j["accession"],
+                        "position": j["coord"]} }
+
+        expanded_coords = {"chrom": j["coord"]["chrom"],
+                           "start": j["coord"]["start"] - 10000000,
+                           "end": j["coord"]["end"] + 10000000}
+
+        snp_results = es.get_overlapping_snps(j["coord"])
+        gene_results = es.get_overlapping_genes(expanded_coords)
+        re_results = es.get_overlapping_res(expanded_coords)
+
+        output["overlapping_snps"] = details.format_snps_for_javascript(snp_results, j["coord"])
+        output["nearby_genes"] = details.format_genes_for_javascript(gene_results, j["coord"])
+        output["nearby_res"] = details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+
+        self.sendMessage(json.dumps(output))
+
+    def _get_and_send_peaks_detail(self, j):
+        global details
+        output = {"type": "peak_details",
+                  "q": {"accession": j["accession"],
+                        "position": j["coord"]} }
+        bed_accs = details.get_intersecting_beds(j["accession"])
+        output["peak_results"] = details.get_bed_stats(bed_accs)
+        self.sendMessage(json.dumps(output))
+
+    def _suggest(self, j):
+        ret = {"type": "suggestions",
+               "callback": j["callback"]}
+        ret.update(ac.get_suggestions(j["userQuery"]))
+        self.sendMessage(json.dumps(ret))
+
+    def _acclist_md5(self, acclist):
+        m = hashlib.md5()
+        for acc in acclist:
+            m.update(acc["accession"])
+        return m.hexdigest()
 
     def onMessage(self, payload, isBinary):
         if isBinary:
@@ -44,17 +94,20 @@ class MyServerProtocol(WebSocketServerProtocol):
 
             if "action" in j:
                 if j["action"] == "enumerate":
-                    raw_results = es.get_field_mapping(index=j["index"], doc_type=j["doc_type"], field=j["field"])
+                    raw_results = es.get_field_mapping(index=j["index"],
+                                                       doc_type=j["doc_type"],
+                                                       field=j["field"])
                     raw_results.update({"name": j["name"]})
                     self.sendMessage(json.dumps(raw_results))
                     return
+                if j["action"] == "re_detail":
+                    self._get_and_send_re_detail(j)
+                    return
+                elif j["action"] == "peak_detail":
+                    self._get_and_send_peaks_detail(j)
+                    return
                 elif j["action"] == "suggest":
-                    output = {"type": "suggestions",
-                              "callback": j["callback"]}
-                    for index in j["indeces"]:
-                        if ac.recognizes_index(index):
-                            output[index + "_suggestions"] = ac.get_suggestions(index, j["q"])
-                    self.sendMessage(json.dumps(output))
+                    self._suggest(j)
                     return
                 elif j["action"] == "query":
                     raw_results = es.search(body=j["object"], index=j["index"])
@@ -65,6 +118,17 @@ class MyServerProtocol(WebSocketServerProtocol):
                     processed_results["callback"] = j["callback"]
                     self.sendMessage(json.dumps(processed_results))
                     return
+                elif j["action"] == "create_cart":
+                    cart_dir = os.path.join(os.path.dirname(__file__), "../data/carts")
+                    if not os.path.exists(cart_dir): os.mkdir(cart_dir)
+                    acclist = j["acclist"]
+                    guid = self._acclist_md5(j["acclist"])
+                    with open(os.path.join(cart_dir, guid), "wb") as o:
+                        for acc in acclist:
+                            o.write(acc["accession"] + "\n")
+                    self.sendMessage(json.dumps({"type": "cart",
+                                                 "guid": guid }))
+                    return
 
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
@@ -72,6 +136,7 @@ class MyServerProtocol(WebSocketServerProtocol):
             raise
             ret = { "status" : "error",
                     "err" : 1}
+
         self.sendMessage(json.dumps(ret), False)
 
     def onClose(self, wasClean, code, reason):
@@ -83,17 +148,39 @@ def parse_args():
     parser.add_argument('--port', default=9000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
+    parser.add_argument('--local', action="store_true", default=False)
     return parser.parse_args()
 
-def main():
+def myMain():
     log.startLogging(sys.stdout)
 
-    factory = WebSocketServerFactory(u"ws://127.0.0.1:9000")
-    factory.protocol = MyServerProtocol
-    # factory.setProtocolOptions(maxConnections=2)
+    global es, ac, ps, details
 
-    reactor.listenTCP(9000, factory)
+    args = parse_args()
+
+    es = ElasticSearchWrapper(Elasticsearch())
+    ac = Autocompleter(es)
+
+    if args.local:
+        dbs = DBS.localRegElmViz()
+    else:
+        dbs = DBS.pgdsn("RegElmViz")
+        dbs["application_name"] = os.path.realpath(__file__)
+
+    DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+    ps = PostgresWrapper(DBCONN)
+    details = RegElementDetails(es, ps)
+
+    factory = WebSocketServerFactory("ws://127.0.0.1:" + str(args.port))
+    factory.protocol = MyServerProtocol
+    factory.setProtocolOptions(maxConnections=50)
+
+    reactor.listenTCP(args.port, factory)
     reactor.run()
+
+def main():
+    # from https://gist.github.com/motleytech/8f255193f613c6623c19d3f93c01cbed
+    autoreload.main(myMain)
 
 if __name__ == '__main__':
     sys.exit(main())

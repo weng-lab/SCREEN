@@ -11,7 +11,8 @@ class RegElements:
                   "index": "regulatory_elements",
                   "aggs": {}}
         retval["results"] = raw_results["hits"]
-        if "aggregations" not in raw_results: return retval
+        if "aggregations" not in raw_results:
+            return retval
         for key, agg in raw_results["aggregations"].iteritems():
             if "buckets" not in agg or len(agg["buckets"]) == 0:
                 retval["aggs"][key] = {"type": "list",

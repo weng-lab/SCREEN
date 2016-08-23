@@ -1,50 +1,50 @@
 var defaultlayout = {
-
     "margin": {
-	"top": 200,
+	"top": 100,
 	"right": 10,
 	"bottom": 50,
-	"left": 600
+	"left": 75
     },
-    
+
     "cellSize": 12,
 
     "rows": {
 	"order": [],
 	"labels": []
     },
-    
+
     "cols": {
 	"order": [],
 	"labels": []
     },
-    
+
     "colors": ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse()
-    //['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F']
-    
 };
 
-function create_heatmap(ndata, destination_div, chart_layout)
-{
-
+function create_heatmap(ndata, destination_div, chart_layout){
     var data = ndata.data;
-    
+
     chart_layout.rows.labels = ndata.rowlabels;
     chart_layout.rows.order = [];
-    for (var i = 1; i <= chart_layout.rows.labels.length; i++) chart_layout.rows.order.push(i);
-    
+
+    for (var i = 1; i <= chart_layout.rows.labels.length; i++){
+	chart_layout.rows.order.push(i);
+    }
+
     chart_layout.cols.labels = ndata.collabels;
     chart_layout.cols.order = [];
-    for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
-    
+    for (var i = 1; i <= chart_layout.cols.labels.length; i++){
+	chart_layout.cols.order.push(i);
+    }
+
     chart_layout.width  = chart_layout.cellSize * chart_layout.cols.order.length;
     chart_layout.height = chart_layout.cellSize * chart_layout.rows.order.length;
     chart_layout.legendElementWidth = chart_layout.cellSize;
-    
+
     var colorScale = d3.scale.quantile()
 	.domain(chart_layout.range)
 	.range(chart_layout.colors);
-    
+
     var svg = d3.select("#" + destination_div).append("svg")
 	.attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right + 50)
 	.attr("height", chart_layout.height + chart_layout.margin.top + chart_layout.margin.bottom)
@@ -63,7 +63,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	.attr("y", function (d, i) { return chart_layout.rows.order.indexOf(i+1) * chart_layout.cellSize; })
 	.style("text-anchor", "end")
 	.attr("transform", "translate(-6," + chart_layout.cellSize / 1.5 + ")")
-	.attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
+	.attr("class", function (d,i) { return "rowLabel mono r"+i;} )
 	.on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
 	.on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
 	.on("click", function(d,i) {rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder); d3.select("#order").property("selectedIndex", 4).node().focus();;})
@@ -101,13 +101,13 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	    d3.select(this).classed("cell-hover",true);
 	    d3.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
 	    d3.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
-	    
+
 	    //Update the tooltip position and value
 	    d3.select("#tooltip")
 		.style("left", d + "px")
 		.style("top", d + "px")
 		.select("#value")
-		.text(chart_layout.cols.labels[d.col-1] + " in " + chart_layout.rows.labels[d.row-1] + "\nrank:" + d.ovalue);  
+		.text(chart_layout.cols.labels[d.col-1] + " in " + chart_layout.rows.labels[d.row-1] + "\nrank:" + d.ovalue);
 	    //Show the tooltip
 	    d3.select("#tooltip").classed("hidden", false);
 	})
@@ -120,33 +120,33 @@ function create_heatmap(ndata, destination_div, chart_layout)
     ;
 
     var legend_labels = chart_layout.legend_labels;
-    
+
     var legend = svg.selectAll(".legend")
 	.data(legend_labels)
 	.enter().append("g")
 	.attr("class", "legend");
-    
+
     legend.append("rect")
 	.attr("x", function(d, i) { return chart_layout.legendElementWidth * i; })
 	.attr("y", chart_layout.height + (chart_layout.cellSize * 2))
 	.attr("width", chart_layout.legendElementWidth)
 	.attr("height", chart_layout.cellSize)
 	.style("fill", function(d, i) { return chart_layout.colors[i]; });
-    
+
     legend.append("text")
 	.attr("class", "mono")
 	.text(function(d) { return d; })
 	.attr("width", chart_layout.legendElementWidth)
 	.attr("x", function(d, i) { return chart_layout.legendElementWidth * i; })
 	.attr("y", chart_layout.height + (chart_layout.cellSize * 4));
-    
+
     // Change ordering of cells
-    
+
     function sortbylabel(rORc,i,sortOrder){
 	var t = svg.transition().duration(3000);
 	var log2r=[];
 	var sorted; // sorted is zero-based index
-	d3.selectAll(".c"+rORc+i) 
+	d3.selectAll(".c"+rORc+i)
 	    .filter(function(ce){
 		log2r.push(ce.value);
 	    })
@@ -169,11 +169,11 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	    ;
 	}
     }
-    
+
     d3.select("#order").on("change",function(){
 	order(this.value);
     });
-    
+
     function order(value){
 	if(value=="hclust"){
 	    var t = svg.transition().duration(3000);
@@ -181,11 +181,11 @@ function create_heatmap(ndata, destination_div, chart_layout)
 		.attr("x", function(d) { return chart_layout.cols.order.indexOf(d.col) * chart_layout.cellSize; })
 		.attr("y", function(d) { return chart_layout.rows.order.indexOf(d.row) * chart_layout.cellSize; })
 	    ;
-	    
+
 	    t.selectAll(".rowLabel")
 		.attr("y", function (d, i) { return chart_layout.rows.order.indexOf(i+1) * chart_layout.cellSize; })
 	    ;
-	    
+
 	    t.selectAll(".colLabel")
 		.attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize; })
 	    ;
@@ -224,7 +224,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	    ;
 	}
     }
-     
+
     var sa=d3.select(".g3")
 	.on("mousedown", function() {
 	    if( !d3.event.altKey) {
@@ -246,7 +246,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	})
 	.on("mousemove", function() {
 	    var s = sa.select("rect.selection");
-	    
+
 	    if(!s.empty()) {
 		var p = d3.mouse(this),
 		    d = {
@@ -260,34 +260,34 @@ function create_heatmap(ndata, destination_div, chart_layout)
 			y : p[1] - d.y
 		    }
 		;
-		
+
 		if(move.x < 1 || (move.x*2<d.width)) {
 		    d.x = p[0];
 		    d.width -= move.x;
 		} else {
-		    d.width = move.x;       
+		    d.width = move.x;
 		}
-		
+
 		if(move.y < 1 || (move.y*2<d.height)) {
 		    d.y = p[1];
 		    d.height -= move.y;
 		} else {
-		    d.height = move.y;       
+		    d.height = move.y;
 		}
 		s.attr(d);
-		
+
 		// deselect all temporary selected state objects
 		d3.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
 		d3.selectAll(".text-selection.text-selected").classed("text-selected",false);
 
 		d3.selectAll('.cell').filter(function(cell_d, i) {
 		    if(
-			!d3.select(this).classed("cell-selected") && 
+			!d3.select(this).classed("cell-selected") &&
 			    // inner circle inside selection frame
-			    (this.x.baseVal.value)+ chart_layout.cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width && 
+			    (this.x.baseVal.value)+ chart_layout.cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width &&
 			    (this.y.baseVal.value)+ chart_layout.cellSize >= d.y && (this.y.baseVal.value)<=d.y+d.height
 		    ) {
-			
+
 			d3.select(this)
 			    .classed("cell-selection", true)
 			    .classed("cell-selected", true);
@@ -306,7 +306,7 @@ function create_heatmap(ndata, destination_div, chart_layout)
 	.on("mouseup", function() {
 	    // remove selection frame
 	    sa.selectAll("rect.selection").remove();
-	    
+
 	    // remove temporary selection marker class
 	    d3.selectAll('.cell-selection').classed("cell-selection", false);
 	    d3.selectAll(".text-selection").classed("text-selection",false);
@@ -321,5 +321,5 @@ function create_heatmap(ndata, destination_div, chart_layout)
 		d3.selectAll(".colLabel").classed("text-selected",false);
 	    }
 	});
-    
+
 }

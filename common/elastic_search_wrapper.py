@@ -41,7 +41,7 @@ _gene_alias_fields = ["approved_symbol", "approved_name", "UniProt_ID", "Vega_ID
                       "UCSC_ID", "RefSeq_ID"]
 
 class or_query:
-    
+
     def __init__(self):
         self.query_obj = {"query": {"bool": {"should": [] }}}
 
@@ -77,7 +77,7 @@ class and_query:
 
     def append(self, obj):
         self.query_obj["query"]["bool"]["must"].append(obj)
-    
+
 def snp_query(accession, assembly="", fuzziness=0):
     retval = copy(_snp_query)
     if assembly != "":
@@ -108,6 +108,29 @@ class ElasticSearchWrapper:
         if q is None: return None
         return requests.get(url, headers=get_headers, data=json.dumps(q))
 
+    def get_bed_list(self, acc_list):
+        query = or_query()
+        for acc in acc_list:
+            query.append_exact_match("accession", acc)
+        query.query_obj["size"] = 10000
+        return self.es.search(index="peak_beds", body=query.query_obj)
+
+    def _get_overlaps_generic(self, coord, index):
+        query = and_query()
+        query.append_exact_match("position.chrom", coord["chrom"])
+        query.append({"range": {"position.start": {"gte": coord["start"]}}})
+        query.append({"range": {"position.end": {"lte": coord["end"]}}})
+        return self.es.search(index=index, body=query.query_obj)
+
+    def get_overlapping_snps(self, coord):
+        return self._get_overlaps_generic(coord, "snp_aliases")
+
+    def get_overlapping_res(self, coord):
+        return self._get_overlaps_generic(coord, "regulatory_elements")
+
+    def get_overlapping_genes(self, coord):
+        return self._get_overlaps_generic(coord, "gene_aliases")
+
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
         result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
@@ -124,7 +147,7 @@ class ElasticSearchWrapper:
     def get_cell_line_list(self):
         jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
-    
+
     def gene_aliases_to_coordinates(self, q):
         suggestions, raw_results = self.resolve_gene_aliases(q)
         retval = []
@@ -141,10 +164,13 @@ class ElasticSearchWrapper:
         suggestions, raw_results = self.resolve_snp_aliases(q)
         print("    raw_results=", raw_results)
         retval = []
-        if len(raw_results) == 0: return (suggestions, retval)
+        if len(raw_results) == 0:
+            return (suggestions, retval)
         for result in raw_results:
             if result["accession"] in q:
-                retval.append((result["accession"], result["coordinates"]))
+                pos = result["position"]
+                coordinates = "%s:%s-%s" % (pos["chrom"], pos["start"], pos["end"])
+                retval.append((result["accession"], coordinates))
         return (suggestions, retval)
 
     def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
@@ -176,7 +202,7 @@ class ElasticSearchWrapper:
             results = [r["_source"] for r in raw_results["hits"]["hits"]]
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["accession"] not in q],
                 results)
-    
+
     def resolve_gene_aliases(self, q):
         # first round: exact matches on any of the IDs or the friendly name
         suggestions, results = self.run_gene_query(_gene_alias_fields, q, 0)

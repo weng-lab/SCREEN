@@ -4,47 +4,62 @@
 {{ hh.cssVer(version, "static/controls/range_slider.css") }}
 {{ hh.cssVer(version, "static/controls/heatmap.css") }}
 {{ hh.cssVer(version, "static/controls/venn_diagram.css") }}
+{{ hh.jsVer(version, "static/common.js") }}
+{{ hh.jsVer(version, "static/pileup.min.js") }}
 
 <div class="container" style="width:100%">
-  <!-- Example row of columns -->
   <div class="row" style="width:100%">
-    <div class="col-md-3" id="facets-container">
 
-      <br>
+    <div class="col-md-3 nopadding-right" id="facets-container">
       {% for facet in facetlist -%}
       {{ hh.facetbox(facet) }}
       {% endfor -%}
 
+      {% include '_tss_facetbox.html' -%}
       {% include '_ranks_facetbox.html' -%}
-
     </div>
-    <div class="col-md-9">
 
-      <div id="exTab1" class="container" style="width:100%">
+    <div class="col-md-9 nopadding-left">
+
+      <div id="exTab1" class="container">
         <ul class="nav nav-tabs">
-          <li class="active">
-            <a href="#tab_results" data-toggle="tab">results</a>
-          </li>
-          <li><a href="#tab_expression" data-toggle="tab">nearby gene expression</a>
-          </li>
-	  <li><a href="#tab_venn" data-toggle="tab">rank venn diagrams</a>
+          <li class="active"><a href="#tab_results" data-toggle="tab">
+	      Candidate RE Search</a>
+          </li><li><a href="#tab_details" data-toggle="tab" style="display:none;">
+	      RE Details</a>
+          </li><li><a href="#tab_rank_heatmap" data-toggle="tab" style="display:none;">
+	      Rank Heatmap</a>
+          </li><li><a href="#tab_expression" data-toggle="tab">
+	      Nearby Gene Expression</a>
+          </li><li><a href="#tab_venn" data-toggle="tab">
+	      Comparison</a>
           </li>
         </ul>
 
         <div class="tab-content clearfix">
           <div class="tab-pane active" id="tab_results">
-            <div id="searchresults_div">
+            <div id="searchresults">
             </div>
-            <div class="col-md-3" id="heatmap_container">
+          </div>
+
+          <div class="tab-pane" id="tab_details">
+	    <div id="redetails">
+	    </div>
+	    <div id="repileup">
+	    </div>
+	  </div>
+
+          <div class="tab-pane" id="tab_rank_heatmap">
+            <div id="heatmap_container">
               <select id="heatmap_dropdown">
                 {% for rank in ranklist -%}
                 <option value="{{rank.id}}">{{rank.name}}</option>
                 {% endfor -%}
               </select>
-              <div style="width:100%" id="rank_heatmap">
+              <div id="rank_heatmap">
               </div>
             </div>
-          </div>
+	  </div>
 
           <div class="tab-pane" id="tab_expression">
             <div id="expression_heatmap_container">
@@ -54,20 +69,21 @@
           </div>
 
 	  <div class="tab-pane" id="tab_venn">
+	    <br>
+	    <br>
 	    <select id="cell_line_dropdown" onchange="javascript:refresh_venn();"></select>
 	    <select id="vennrank_dropdown" onchange="javascript:refresh_venn();">
-	      <option value="promoter">promoter</option>
-	      <option value="enhancer">enhancer</option>
-	      <option value="ctcf">ctcf</option>
-	      <option value="dnase">dnase</option>
+	      <option value="promoter">promoter-like</option>
+	      <option value="enhancer">enhancer-like</option>
+	      <option value="ctcf">CTCF</option>
+	      <option value="dnase">DNase</option>
 	    </select>
-	    <p>Choose the rank ranges to display in the diagram.
-	    <p>Ranks below the lower bound in both cell lines populate the overlap region; ranks above the upper bound in either cell line are excluded from the diagram.
-	    <input type="text" id="venn_range_textbox" value="10000 - 40000">
-	    <div style="width:50%" id="venn_range_slider">
-            <div style="width:1000px;height:1000px" class="venn" id="venn_div">
-            </div>
-	    </div>
+	    <br>
+	    <br>
+	    <p>Ranked between 1 and <input type="text" id="venn_lbound_textbox" value="5000">
+	      <div style="width:200px" id="venn_lbound_slider"></div>
+	      <div style="width:200px; height:200px" class="venn" id="venn_div">
+	      </div>
           </div>
         </div>
       </div>
@@ -81,29 +97,50 @@
   <p><span id="value"></p>
 </div>
 
-{{ hh.jsVer(version, "static/common.js") }}
 <script>
   var WebSocketUrl = {{ webSocketUrl }};
   var ParsedQuery = {{ parsed }};
   var FacetList = {{ facetlist_json }};
-  var RankList = {{ ranklist_json }}
+  var RankList = {{ ranklist_json }};
+  var TSS_List = {{ tsslist_json }};
+  var Session_Uid = 1;
   FBVERSION.init("/{{version}}");
 </script>
+{{ hh.jsVer(version, "static/_regelm_details.init.js") }}
+{{ hh.jsVer(version, "static/search.table.js") }}
 {{ hh.jsVer(version, "static/search.init.js") }}
 {{ hh.jsVer(version, "static/elasticsearch/core.js") }}
 {{ hh.jsVer(version, "static/constants/hg19.js") }}
 {{ hh.jsVer(version, "static/search.results.js") }}
-{{ hh.jsVer(version, "static/search.table.js") }}
 {{ hh.jsVer(version, "static/controls/range_slider.js") }}
 {{ hh.jsVer(version, "static/controls/histogram.js") }}
 {{ hh.jsVer(version, "static/controls/d3_heatmap.js") }}
 {{ hh.jsVer(version, "static/controls/venn_diagram.js") }}
 {{ hh.jsVer(version, "static/search.setup.js") }}
+{{ hh.jsVer(version, "static/re_shoppingcart.js") }}
 
 <script>
-$( document ).ready(function() {
-  setupSocket(play, ParsedQuery);
-});
+
+  var cart = new ShoppingCart();
+  var cartobj = document.getElementById("shoppingcart_obj");
+
+  $("#shoppingcart_obj").load("image/svg+xml", function() {
+
+      var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
+      var img = svg.getElementsByTagName("image")[0];
+      img.onclick = function() {
+          if (cart.items.length > 0) {
+              go_to_cart();
+          }
+      }
+      cart.bind(svg);
+
+  });
+
+  $( document ).ready(function() {
+      setupSocket(play, ParsedQuery);
+  });
+
 </script>
 
 {% include '_footer.html' -%}

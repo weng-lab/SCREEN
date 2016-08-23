@@ -21,6 +21,129 @@ div.result_row_selected {
     padding: 10px;
 }
 
-.mainNavBar {
+#mainNavBar {
     margin-bottom: 0px;
+}
+
+.jumbotron {
+    padding-top: 0px;
+}
+
+.facet {
+    margin-bottom: 10px;
+}
+
+.facet > .panel > .panel-heading {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.facet > .panel > .panel-body {
+    padding: 10px;
+}
+
+.facet-histogram {
+    height: 20px;
+    margin-left: 0px;
+}
+
+.facet-slider {
+    margin-left: 10px;
+}
+
+.facet-textbox {
+    font-weight: bold;
+    width: 50%;
+}
+
+.facet-label {
+
+}
+
+#facets-container {
+    padding-top: 10px;
+}
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.nopadding-right {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+.nopadding-left {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+#exTab1 {
+    width: 100%;
+    padding-top: 10px;
+}
+
+.grow {
+    /* http://stackoverflow.com/questions/27441404/text-div-expand-on-hover-with-css */
+    height: 30px;
+    transition: height 0.5s;
+    -webkit-transition: height 0.5s;
+    overflow: hidden;
+}
+.grow:hover {
+    height: 100%;
+}
+
+#searchresults_table {
+    width: 100% !important;
+}
+
+#searchresults_table > tbody > tr:hover > td,
+#searchresults_table > tbody > tr:hover > th {
+    background-color: #F5B041;
+    cursor: pointer;
+    cursor: hand;
+}
+
+#searchresults_table > tbody > tr > td{
+    vertical-align: middle;
+}
+
+#redetails {
+    width: 100%;
+}
+
+#redetails h3 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#detailsLeftArrow {
+    float: left;
+    font-size: 30px;
+    padding-right: 10px;
+}
+
+.cart > img {
+    width: 36px;
+    height: 36px;
+}
+
+#shoppingcart_obj {
+    width: 48px;
+    height: 48px;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+#searchformNavbar {
+    float: left;
+    padding: 5px;
+}
+
+#compareInWashU {
+    margin: 10px;
 }

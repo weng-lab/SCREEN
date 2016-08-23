@@ -1,0 +1,11 @@
+{
+        "databases": {
+                "postgresql": {
+                        "RegElmViz": {
+                                "host": "postgresql",
+                                "user": "regElmViz_usr",
+                                "dbname": "regElmViz"
+                        }
+                }
+        }
+}
