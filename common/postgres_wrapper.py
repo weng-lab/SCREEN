@@ -56,7 +56,10 @@ class PostgresWrapper:
             FROM cart
             WHERE uid = %(uid)s
             """, {"uid": guid})
-            return [x[0] for x in curs.fetchall()]
+            r = curs.fetchall()
+        if r:
+            return r[0][0]
+        return None
 
     def addToCart(self, guid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
@@ -83,6 +86,8 @@ def main():
     j = {"b" : [5,6,7]}
     ps.addToCart(uid, json.dumps(j))
     print(ps.getCart(uid))
+
+    print(ps.getCart("nocart"))
     
 if __name__ == '__main__':
     sys.exit(main())
