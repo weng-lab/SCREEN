@@ -126,7 +126,6 @@
   var cartobj = document.getElementById("shoppingcart_obj");
 
   $("#shoppingcart_obj").load("image/svg+xml", function() {
-
       var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
       var img = svg.getElementsByTagName("image")[0];
       img.onclick = function() {
