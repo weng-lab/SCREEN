@@ -1,4 +1,4 @@
-var searchquery = accession_list_query(ParsedList);
+var searchquery = accession_list_query(CartReAccessions);
 
 var re_table = new RE_table();
 re_table.disable_cart_icons();

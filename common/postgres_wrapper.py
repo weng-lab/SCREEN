@@ -7,7 +7,6 @@ from dbs import DBS
 from db_utils import getcursor
 
 class PostgresWrapper:
-
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
         self.assays = ["dnase", "tf", "histone"]
@@ -46,3 +45,13 @@ class PostgresWrapper:
             WHERE startend && int4range(%(start)s, %(end)s)
             """.format(tableName = tableName), {"start": start, "end": end})
             return [x[0] for x in curs.fetchall()]
+
+    def getCart(self, guid):
+        with getcursor(self.DBCONN, "getCart") as curs:
+            curs.execute("""
+            SELECT re_accession
+            FROM cart
+            WHERE uid = %(uid)s
+            """, {"uid": guid})
+            return [x[0] for x in curs.fetchall()]
+        

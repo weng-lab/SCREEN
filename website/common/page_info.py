@@ -24,7 +24,9 @@ class PageInfoMain:
                          "title" : "Regulatory Element Visualizer"},
                 "version" : self.version,
                 "webSocketUrl" : self.webSocketUrl,
-                "indexPage": indexPage}
+                "indexPage": indexPage,
+                "reAccessions" : []
+        }
 
     def hexplotPage(self, args, kwargs):
         retval = self.wholePage()
@@ -75,8 +77,8 @@ class PageInfoMain:
         tsslist = [{"id": "pc", "name": "protein coding"},
                     {"id": "all", "name": "all"}]
 
-        retval.update({"parsed" : json.dumps(parsed),
-                       "parsedStr" : parsedStr,
+        retval.update({"parsedUserQuery" : json.dumps(parsed),
+                       "parsedUserQueryStr" : parsedStr,
                        "facetlist": facetlist,
                        "ranklist": ranklist,
                        "tsslist": tsslist,
@@ -93,14 +95,14 @@ class PageInfoMain:
             retval.update({"error": "shopping cart ID not specified"})
             return retval
         guid = kwargs["guid"]
-        fnp = os.path.join(os.path.dirname(__file__),
-                           "../../data/carts", guid)
-        if not os.path.exists(fnp):
-            retval.update({"error": "cart %s missing" % kwargs["guid"]})
-            return retval
-        with open(fnp, "r") as f:
-            accs = f.read().split("\n")[:-1]
-        retval.update({"parsed": accs,
+
+        reAccessions = self.ps.getCart(guid)
+
+        if not reAccessions:
+            retval.update({"error": "cart %s is empty" % guid})
+            reAccessions = []
+            
+        retval.update({"reAccessions": reAccessions,
                        "guid" : guid})
         return retval
 
