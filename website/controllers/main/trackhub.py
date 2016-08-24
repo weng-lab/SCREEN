@@ -25,9 +25,9 @@ class TrackhubController:
         self.assembly = "hg19"
         self.debug = False
 
-        self.sessions = Sessions(self.ps.DBCONN)
-        self.session_uid = self.session_uuid()
-        self.db = DbTrackhub(self.ps.DBCONN)
+        #self.sessions = Sessions(self.ps.DBCONN)
+        #self.session_uid = self.session_uuid()
+        #self.db = DbTrackhub(self.ps.DBCONN)
 
         self.isUcsc = True
         
