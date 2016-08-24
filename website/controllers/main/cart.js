@@ -1,15 +1,9 @@
-import cherrypy
-
 from common.page_info import PageInfoMain
-from common.session import Sessions
 
 class MainController:
     def __init__(self, templates, es, ps, version, webSocketUrl):
         self.t = templates
-        self.ps = ps
         self.params = (es, ps, version, webSocketUrl)
-        self.sessions = Sessions(self.ps.DBCONN)
-        self.session_uid = self.sessions.session_uuid(cherrypy)
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
@@ -22,6 +16,11 @@ class MainController:
     def search(self, args, kwargs):
         pageInfo = PageInfoMain(*self.params)
         return self.t('main/search', **pageInfo.searchPage(args, kwargs))
+
+    def cart(self, args, kwargs):
+        pageInfo = PageInfoMain(*self.params)
+        print(pageInfo.cartPage(args, kwargs))
+        return self.t('main/cart', **pageInfo.cartPage(args, kwargs))
 
     def element(self, accession):
         pageInfo = PageInfoMain(*self.params)

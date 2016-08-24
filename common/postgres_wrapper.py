@@ -71,7 +71,6 @@ class PostgresWrapper:
             where cart.uid = %(guid)s""",
                          {"guid": guid, "re_accessions" : reAccessions})
 
-
 def main():
     dbs = DBS.localRegElmViz()
     DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)

@@ -119,6 +119,8 @@ class MyServerProtocol(WebSocketServerProtocol):
                     self.sendMessage(json.dumps(processed_results))
                     return
                 elif j["action"] == "create_cart":
+
+                    
                     cart_dir = os.path.join(os.path.dirname(__file__), "../data/carts")
                     if not os.path.exists(cart_dir): os.mkdir(cart_dir)
                     acclist = j["acclist"]

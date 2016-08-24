@@ -89,23 +89,6 @@ class PageInfoMain:
 
         return retval
 
-    def cartPage(self, args, kwargs):
-        retval = self.wholePage()
-        if "guid" not in kwargs:
-            retval.update({"error": "shopping cart ID not specified"})
-            return retval
-        guid = kwargs["guid"]
-
-        reAccessions = self.ps.getCart(guid)
-
-        if not reAccessions:
-            retval.update({"error": "cart %s is empty" % guid})
-            reAccessions = []
-            
-        retval.update({"reAccessions": reAccessions,
-                       "guid" : guid})
-        return retval
-
     def rawQueryPage(self, q, url):
         pageinfo = self.wholePage()
         try:
@@ -167,3 +150,21 @@ class PageInfoMain:
     def autocomplete(self, userQuery):
         ac = Autocompleter(self.es)
         return ac.get_suggestions(userQuery)
+
+    def cartPage(self, args, kwargs):
+        retval = self.wholePage()
+        if "guid" not in kwargs:
+            retval.update({"error": "shopping cart ID not specified"})
+            return retval
+        guid = kwargs["guid"]
+
+        reAccessions = self.ps.getCart(guid)
+
+        if not reAccessions:
+            retval.update({"error": "cart %s is empty" % guid})
+            reAccessions = []
+            
+        retval.update({"reAccessions": reAccessions,
+                       "guid" : guid})
+        return retval
+
