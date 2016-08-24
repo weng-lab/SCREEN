@@ -4,6 +4,7 @@ import cherrypy, jinja2, os, sys
 
 from controllers.main.main import MainController
 from controllers.main.trackhub import TrackhubController
+from controllers.main.cart import CartController
 
 from timeit import default_timer as timer
 
@@ -20,6 +21,7 @@ class MainApp():
     def __init__(self, viewDir, staticDir, es, ps, version, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps, version, webSocketUrl)
+        self.cart = CartController(self.templates, es, ps, version, webSocketUrl)
         self.trackhub = TrackhubController(self.templates, es, ps,
                                            version, webSocketUrl)
         
@@ -49,10 +51,6 @@ class MainApp():
         return self.mc.search(args, kwargs)
 
     @cherrypy.expose
-    def cart(self, *args, **kwargs):
-        return self.mc.cart(args, kwargs)
-    
-    @cherrypy.expose
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
 
@@ -79,6 +77,17 @@ class MainApp():
     @cherrypy.tools.json_out()
     def autocomplete(self, *args, **kwargs):
         return self.mc.autocomplete(kwargs["userQuery"])
+
+    @cherrypy.expose
+    def cart(self, *args, **kwargs):
+        return self.cart.Cart(args, kwargs)
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def setCart(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.cart.SetCart(j)
 
 class MainAppRunner:
     def __init__(self, es, ps, devMode, webSocketUrl, config):

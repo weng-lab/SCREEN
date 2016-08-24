@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, sys, json, psycopg2, argparse
+import uuid
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils
@@ -11,6 +12,17 @@ class Sessions:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
         self.table = "sessions"
+
+    def makeUid(self):
+        return str(uuid.uuid4())
+
+    def session_uuid(self, cp):
+        uid = self.get(cp.session.id)
+        if not uid:
+            uid = self.makeUid()
+            cp.session["uid"] = uid
+            self.insert(cp.session.id, uid)
+        return uid
 
     def setupDB(self):
         with getcursor(self.DBCONN, "get") as curs:
