@@ -87,7 +87,9 @@ function socket_message_handler(e) {
     //console.log(results);
     
     if ("cart" == results["type"]) {
-	window.location.href = "/ver4/search/cart/?guid=" + results["guid"];
+	var url = "/ver4/search/cart/?guid=" + results["guid"];
+	console.log(url);
+	window.location.href = url;
     } else if ("enumeration" == results["type"]) {
         // console.log(e.data);
 

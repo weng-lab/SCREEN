@@ -237,7 +237,7 @@ RE_table.prototype.rowClick = function() {
 	    showTab("tab_results");
 	});
 
-	_this.showPileup(r);
+	//_this.showPileup(r);
     });
 }
 
