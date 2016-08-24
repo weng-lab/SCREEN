@@ -1,6 +1,11 @@
-function ShoppingCart()
-{
-    
+function go_to_cart() {
+    sendText(JSON.stringify({
+	"action": "create_cart",
+	"acclist": cart.items
+    }));
+}
+
+function ShoppingCart(){
     this.items = [];
 
     this.bind = function(svg) {
@@ -25,14 +30,18 @@ function ShoppingCart()
 
     this.has_item = function(item) {
 	for (i in this.items) {
-	    if (this.items[i].accession == item.accession) return true;
+	    if (this.items[i].accession == item.accession) {
+		return true;
+	    }
 	}
 	return false;
     };
     
     this.remove_item = function(item) {
 	for (i in this.items) {
-	    if (this.items[i].accession == item.accession) this.items.splice(i, 1);
+	    if (this.items[i].accession == item.accession) {
+		this.items.splice(i, 1);
+	    }
 	}
 	this.update_counter();
     };

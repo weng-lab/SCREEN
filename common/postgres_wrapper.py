@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import sys
 import os
+import psycopg2, psycopg2.pool
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
@@ -49,9 +52,38 @@ class PostgresWrapper:
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""
-            SELECT re_accession
+            SELECT re_accessions
             FROM cart
             WHERE uid = %(uid)s
             """, {"uid": guid})
             return [x[0] for x in curs.fetchall()]
-        
+
+    def addToCart(self, guid, reAccessions):
+        with getcursor(self.DBCONN, "addToCart") as curs:
+            curs.execute("""
+            INSERT into cart(uid, re_accessions)
+            values (%(guid)s, %(re_accessions)s)
+            on conflict(uid)
+            do update set (re_accessions) = (%(re_accessions)s)
+            where cart.uid = %(guid)s""",
+                         {"guid": guid, "re_accessions" : reAccessions})
+
+
+def main():
+    dbs = DBS.localRegElmViz()
+    DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+    ps = PostgresWrapper(DBCONN)
+
+    import json
+    uid = "test"
+    j = {"a" : [1,2,3]}
+    ps.addToCart(uid, json.dumps(j))
+    print(ps.getCart(uid))
+
+    j = {"b" : [5,6,7]}
+    ps.addToCart(uid, json.dumps(j))
+    print(ps.getCart(uid))
+    
+if __name__ == '__main__':
+    sys.exit(main())
+            

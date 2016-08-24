@@ -67,7 +67,9 @@ RE_table.prototype.setupColumns = function(){
     ret["nearest protein-coding gene"] =
         this.gene_id_col("_source.genes.nearest-pc");
 
-    if (!this.no_cart) ret["cart"] = this.genCartCol("_source");
+    if (!this.no_cart) {
+	ret["cart"] = this.genCartCol("_source");
+    }
     ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;

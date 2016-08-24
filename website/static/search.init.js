@@ -70,13 +70,6 @@ function create_venn(){
     create_venn_diagram("venn_div", venn_results);
 }
 
-function go_to_cart() {
-    sendText(JSON.stringify({
-	"action": "create_cart",
-	"acclist": cart.items
-    }));
-}
-
 function toggle_display(el, sh){
     el.style.display = (sh ? "block" : "none");
 }
