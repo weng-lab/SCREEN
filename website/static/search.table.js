@@ -275,13 +275,22 @@ RE_table.prototype.showPileup = function(re){
 
     //console.log(re);
     var pos = re.position;
-    var halfWindow = 150;
-    var start = Math.max(1, pos.start - halfWindow);
-    var end = pos.end + halfWindow;
+    var halfWindow = 100;
+    var midPt = pos.start + (pos.end - pos.start) / 2.0;
+    var start = Math.max(1, midPt - halfWindow);
+    var end = midPt + halfWindow;
 
     this.pileup = pileup.create(div, {
 	range: {contig: pos.chrom, start: start, stop: end},
 	tracks: [
+	    {
+		viz: pileup.viz.location(),
+		name: 'Location'
+	    },
+	    {
+		viz: pileup.viz.scale(),
+		name: 'Scale'
+	    },
 	    {
 		viz: pileup.viz.genome(),
 		isReference: true,
@@ -290,6 +299,13 @@ RE_table.prototype.showPileup = function(re){
 		}),
 		name: 'Reference'
 	    },
+	    {
+		viz: pileup.viz.genome(),
+		data: pileup.formats.bigBed({
+		    url: "http://bib5.umassmed.edu/~purcarom/cre/cre.bigBed"
+		}),
+		name: 'Candidate REs'
+	    }
 	]
     });
 }
