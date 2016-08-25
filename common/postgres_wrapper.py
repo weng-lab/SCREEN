@@ -54,7 +54,7 @@ class PostgresWrapper:
             with gzip.open(fnp, "r") as f:
                 i = 0
                 for line in f:
-                    if i % 100000 == 0: print("working with item %d" % i)
+                    if i % 100000 == 0: print("working with row %d" % i)
                     re = json.loads(line)
                     curs.execute("""
                     INSERT INTO %(table)s (accession, startend)
@@ -63,7 +63,7 @@ class PostgresWrapper:
                           "table": "re_" + "_".join((assembly, chrom))})
                     i += 1
         return i
-    
+
     def get_table_suffix(self, assay, assembly, chrom):
         if assembly not in self.assemblies:
             print("PostgresWrapper: findBedOverlap: bad assembly", assembly)
@@ -76,34 +76,38 @@ class PostgresWrapper:
             return ""
         return "{assembly}_{assay}_{chrom}".format(
             assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
-    
+
     def findBedOverlap(self, assay, assembly, chrom, start, end,
                        overlap_fraction = 0.0, overlap_bp = 0):
         if overlap_fraction > 1.0: overlap_fraction = 1.0
 
         tableName = "bed_ranges_" + self.get_table_suffix(assay, assembly, chrom)
         if tableName == "bed_ranges_": return []
-        
+        retval = []
+
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             if overlap_fraction <= 0.0 and overlap_bp <= 0:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
                 WHERE startend && int4range(%(start)s, %(end)s)
                 """.format(tableName = tableName), {"start": start, "end": end})
             elif overlap_fraction > 0.0:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
-                WHERE upper(overlap) - lower(overlap) / %(length)s >= %(ofrac)s
+                WHERE upper(startend * int4range(%(start)s, %(end)s)) - lower(startend * int4range(%(start)s, %(end)s)) / %(length)s >= %(ofrac)s
                 """.format(tableName = tableName), {"length": end - start, "ofrac": overlap_fraction})
             else:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
-                WHERE upper(overlap) - lower(overlap) >= %(obp)s
+                WHERE upper(startend * int4range(%(start)s, %(end)s)) - lower(startend * int4range(%(start)s, %(end)s)) >= %(obp)s
                 """.format(tableName = tableName), {"obp": overlap_bp})
-            return [(x[0], x[2], x[2] / (end - start)) for x in curs.fetchall()]
+            for x in curs.fetchall():
+                r = 0 if x[1].isempty else x[1].upper - x[1].lower
+                retval.append((x[0], r, r / (end - start)))
+            return retval
 
     def recreate_all_mvs(self):
         for assembly in self.assemblies:
@@ -122,17 +126,17 @@ class PostgresWrapper:
                     if tablesuffix == "": continue
                     print("refreshing view for %s" % tablesuffix)
                     self.refresh_intersection_mv(tablesuffix)
-        
+
     def recreate_intersection_mv(self, tablesuffix):
-        with open(os.path.realpath(__file__) + ".recreate_mv.sql", "r") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.recreate_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
-                curs.execute(file.read().format(tablesuffix=tablesuffix))
+                curs.execute(f.read().format(tablesuffix=tablesuffix))
 
     def refresh_intersection_mv(self, tablesuffix):
-        with open(os.path.realpath(__file__) + ".refresh_mv.sql", "r") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.refresh_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
-                curs.execute(file.read().format(tablesuffix=tablesuffix))
-        
+                curs.execute(f.read().format(tablesuffix=tablesuffix))
+
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""
@@ -148,13 +152,22 @@ class PostgresWrapper:
     def addToCart(self, uuid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
             curs.execute("""
-            INSERT into cart(uid, re_accessions)
-            values (%(uuid)s, %(re_accessions)s)
-            on conflict(uid)
-            do update set (re_accessions) = (%(re_accessions)s)
-            where cart.uid = %(uuid)s""",
-                         {"uuid": uuid,
-                          "re_accessions" : json.dumps(reAccessions)})
+            SELECT re_accessions
+            FROM cart
+            WHERE uid = %(uuid)s""",{"uuid": uuid})
+            if (curs.rowcount > 0):
+                curs.execute("""
+                UPDATE cart
+                SET (re_accessions) = (%(re_accessions)s)
+                WHERE uid = %(uuid)s""",
+                             {"uuid": uuid,
+                              "re_accessions" : json.dumps(reAccessions)})
+            else:
+                curs.execute("""
+                INSERT into cart(uid, re_accessions)
+                VALUES (%(uuid)s, %(re_accessions)s)""",
+                            {"uuid": uuid,
+                             "re_accessions" : json.dumps(reAccessions)})
             return {"rows" : curs.rowcount}
 
 def main():
@@ -172,7 +185,6 @@ def main():
     print(ps.getCart(uid))
 
     print(ps.getCart("nocart"))
-    
+
 if __name__ == '__main__':
     sys.exit(main())
-            

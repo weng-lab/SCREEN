@@ -30,7 +30,7 @@ class MainApp():
         return uid
 
     @cherrypy.expose
-    def index(self):       
+    def index(self):
         return self.mc.Index()
 
     @cherrypy.expose
@@ -41,8 +41,21 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(args, kwargs,
-                                            self.session_uuid())
+        return self.trackhub.washu_trackhub(self.session_uuid(), args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def ucsc_trackhub_url(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.trackhub.ucsc_trackhub_url(j, self.session_uuid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def washu_trackhub_url(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.trackhub.washu_trackhub_url(j, self.session_uuid())
 
     @cherrypy.expose
     def query(self, q=None, url=None):
@@ -54,7 +67,7 @@ class MainApp():
 
     @cherrypy.expose
     def search(self, *args, **kwargs):
-        return self.mc.search(args, kwargs)
+        return self.mc.search(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
     def hexplot(self, *args, **kwargs):
@@ -87,11 +100,10 @@ class MainApp():
     @cherrypy.expose
     def cart(self):
         return self.cartc.Cart(self.session_uuid())
-    
+
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def setCart(self):
         j = cherrypy.request.json
         return self.cartc.SetCart(self.session_uuid(), j)
-

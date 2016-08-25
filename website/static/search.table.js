@@ -173,37 +173,46 @@ RE_table.prototype.browserClick = function(){
     $(this.tableDom + ' tbody').on( 'click', 'button', function () {
 	var whichBrowser = $(this).html();
 	var i = $(this);
-	var data = _this.result_from_tablerow_child(i);
-        var reAccession = data["accession"];
+	var re = _this.result_from_tablerow_child(i);
+        var reAccession = re["accession"];
         //console.log(whichBrowser, reAccession);
 	//console.log(data);
 
 	var halfWindow = 7500;
+	var chrom = re["position"]["chrom"]
+	var start = re["position"]["start"];
+	var end = re["position"]["end"];
+
+	var w = window.location.href;
+	var arr = w.split("/");
+	var host = arr[0] + "//" + arr[2];
+
+        var data = JSON.stringify({"re" : re,
+	                           "chrom" : chrom,
+                                   "start" : start,
+                                   "end" : end,
+                                   "halfWindow" : halfWindow,
+                                   "host" : host});
 
 	if("UCSC" == whichBrowser){
-	    var  url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
-	    url += "db=hg19";
+            $.ajax({
+                type: "POST",
+                url: "/ucsc_trackhub_url",
+                data: data,
+                dataType: "json",
+                contentType : "application/json",
+                success: function(got){
+                    if("err" in got){
+                        $("#errMsg").text(got["err"]);
+                        $("#errBox").show()
+                        return true;
+                    }
 
-	    var chrom = data["position"]["chrom"]
-	    var start = data["position"]["start"];
-	    var end = data["position"]["end"];
-
-	    start = Math.max(1, start - halfWindow);
-            end = end + halfWindow;
-
-	    url += "&position=" + chrom + ':' + start + '-' + end;
-
-            var trackhubUrl = "http://megatux.purcaro.com:9002" +
-		[Ver(),
-                 "ucsc_trackhub",
-		 reAccession,
-		 "hub_" + Session_Uid + ".txt"].join('/');
-
-	    url += "&hubClear=" + trackhubUrl;
-
-	    window.open(url, '_blank');
+		    console.log(got["trackhubUrl"]);
+	            window.open(got["url"], '_blank');
+                }
+            });
 	}
-
     } );
 }
 

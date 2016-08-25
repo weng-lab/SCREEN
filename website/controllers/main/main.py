@@ -17,9 +17,9 @@ class MainController:
         pageInfo = PageInfoMain(*self.params)
         return self.t('main/query', **pageInfo.rawQueryPage(q, url))
 
-    def search(self, args, kwargs):
+    def search(self, args, kwargs, uuid):
         pageInfo = PageInfoMain(*self.params)
-        return self.t('main/search', **pageInfo.searchPage(args, kwargs))
+        return self.t('main/search', **pageInfo.searchPage(args, kwargs, uuid))
 
     def element(self, accession):
         pageInfo = PageInfoMain(*self.params)
@@ -48,4 +48,3 @@ class MainController:
     def autocomplete(self, j):
         pageInfo = PageInfoMain(*self.params)
         return pageInfo.autocomplete(j)
-        

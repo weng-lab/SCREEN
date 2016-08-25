@@ -3,8 +3,10 @@ import sys
 import argparse
 
 sys.path.append("../../common")
+sys.path.append("../common")
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
+from constants import paths
 
 sys.path.append("../../../metadata/utils")
 from db_utils import getcursor
@@ -28,9 +30,9 @@ def main():
         print("inserted %d REs" % n_re)
     
     if args.refresh:
-        pg.refresh_intersection_mv()
+        pg.refresh_all_mvs()
     else:
-        pg.recreate_intersection_mv()
+        pg.recreate_all_mvs()
 
     return 0
 

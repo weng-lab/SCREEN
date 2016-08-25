@@ -5,12 +5,11 @@ function setupCartBrowser(){
 	var w = window.location.href;
 	var arr = w.split("/");
 	var host = arr[0] + "//" + arr[2];
-	
+
         var trackdbUrl = [host,
-			  "ver4", "search",
                           "washu_trackhub",
                           "trackDb_" + CartGuid + ".json"].join('/')
-	
+
 	console.log(trackdbUrl);
 
         var urlBase = "http://epigenomegateway.wustl.edu/browser/";
@@ -23,7 +22,7 @@ function setupCartBrowser(){
         var coord = "&coordinate=" + c;
 
         var url = urlBase + assembly + trackhub + coord;
-	
+
 	window.open(url, '_blank');
     });
 };

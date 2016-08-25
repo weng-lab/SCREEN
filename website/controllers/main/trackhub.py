@@ -17,7 +17,7 @@ class TrackhubController:
         self.templates = templates
         self.es = es
         self.ps = ps
-        self.webSocketUrl = webSocketUrl        
+        self.webSocketUrl = webSocketUrl
 
         self.assembly = "hg19"
         self.debug = False
@@ -25,7 +25,7 @@ class TrackhubController:
         self.db = DbTrackhub(self.ps.DBCONN)
 
         self.isUcsc = True
-        
+
     def setReAccession(self, reAccession):
         self.hubNum = self.db.insertOrUpdate(reAccession,
                                              "hg19",
@@ -35,14 +35,18 @@ class TrackhubController:
                                              self.session_uid)
         return {"hubNum" : self.hubNum,
                 "uuid" : self.session_uid}
-    
-    def ucsc_trackhub(self, *args, **kwargs):
-        print("args:", args)
-        args = args[0]
-        if not args[0].startswith('EE'):
-            return "first arg must be EE<num>"
-        re_accession = args[0]
 
+    def ucsc_trackhub(self, *args, **kwargs):
+        #print("args:", args)
+        args = args[0]
+        uuid = args[0]
+
+        try:
+            info = self.db.get(uuid)
+        except:
+            raise
+            return "error: couldn't find uuid"
+        
         if 2 == len(args):
             loc = args[1]
             if loc.startswith("hub_") and loc.endswith(".txt"):
@@ -59,7 +63,7 @@ class TrackhubController:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb([re_accession])
+            return self.makeTrackDb([info["reAccession"]])
 
         return "invalid path"
 
@@ -166,7 +170,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             for cellType, v in re["ranks"]["dnase"].iteritems():
                 self.lines += [self.trackhubExp(v["method"],
                                                 c, cellType, v["accession"])]
-            
+
     def getLines(self, re_accessions):
         self.priority = 0
 
@@ -184,11 +188,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.addSignals([re_accessions[0]])
 
         return filter(lambda x: x, self.lines)
-    
+
     def makeTrackDb(self, re_accessions):
         self.isUcsc = True
         lines = self.getLines(re_accessions)
-        
+
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
 
@@ -199,19 +203,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         start = str(max(1, p["start"] - halfWindow))
         end = str(p["end"] + halfWindow)
         return p["chrom"] + ':' + start + '-' + end
-    
+
     def makeTrackDbWashU(self, re_accessions):
         lines = self.getLines(re_accessions)
 
         pos = [self.makePos(x) for x in self.re_pos]
-        print(pos)
         lines.append({"type" : "splinters",
                       "list" : sorted(pos)})
         return lines
 
-    def washu_trackhub(self, *args, **kwargs):
+    def washu_trackhub(self, uuid, *args, **kwargs):
         self.isUcsc = False
-        
+
         args = args[0]
 
         if 1 != len(args):
@@ -220,12 +223,37 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         toks = args[0].split('_')
         guid = toks[1].split('.')[0]
 
-        fnp = os.path.join(os.path.dirname(__file__),
-                           "../../../data/carts", guid)
-        if not os.path.exists(fnp):
-            return {"error": "cart %s missing" % kwargs["guid"]}
-
-        with open(fnp, "r") as f:
-            accs = f.read().split("\n")[:-1]
+        accs = self.ps.getCart(guid)
 
         return self.makeTrackDbWashU(accs)
+
+    def ucsc_trackhub_url(self, j, uuid):
+        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
+	url += "db=hg19";
+
+        halfWindow = j["halfWindow"]
+	chrom = j["chrom"]
+	start = j["start"]
+	end = j["end"]
+
+	start = max(1, start - halfWindow);
+        end = end + halfWindow;
+
+	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
+
+        host = j["host"]
+
+        hubNum = self.db.insertOrUpdate("hg19", j["re"]["accession"], uuid)
+
+        trackhubUrl = '/'.join([host,
+                                "ucsc_trackhub",
+		                uuid,
+		                "hub_" + str(hubNum) + ".txt"])
+
+	url += "&hubClear=" + trackhubUrl;
+
+        return {"url" : url,
+                "trackhubUrl" : trackhubUrl}
+
+    def washu_trackhub_url(self, j, uuid):
+        return {"url" : url}

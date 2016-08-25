@@ -1,4 +1,3 @@
-var histograms = {};
 var enumerations = {};
 
 var last_results = null;
@@ -279,6 +278,9 @@ function handle_expression_matrix_results(results){
 }
 
 function handle_regulatory_results(results){
+
+    var needs_requery = false;
+    
     if(re_table.callback){
 	re_table.runCallback();
 	return;
@@ -310,11 +312,13 @@ function handle_regulatory_results(results){
         if (results["aggs"][aggname]["type"] == "list") {
             process_agglist(aggname, results["aggs"][aggname]);
         } else if (results["aggs"][aggname]["type"] == "histogram") {
-            histograms[aggname] =
-		process_histogram_result(aggname, results["aggs"][aggname]);
+	    if (!process_histogram_result(aggname, results["aggs"][aggname])) {
+		needs_requery = true;
+	    }
         }
     }
 
+    if (needs_requery) perform_search();
     GUI.refresh();
 
     re_table.renderTable();
