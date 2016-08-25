@@ -11,6 +11,22 @@ function facetGUI(){
     this.facets = {};
 }
 
+facetGUI.prototype.resize = function() {
+    for (f in this.facets) {
+	var facet = this.facets[f];
+	if (facet.id in searchquery.post_filter_map
+	    && searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]] != {}) {
+	    for (field in searchquery.eso.post_filter.bool.must[searchquery.post_filter_map[facet.id]].range) {
+		if (!facet.range_slider || !facet.histogram) {
+		    continue;
+		}
+		facet.histogram.redraw();
+	    }
+	}
+    }
+    perform_search();
+}
+
 facetGUI.prototype.refresh = function() {
     for (f in this.facets) {
 	var facet = this.facets[f];
@@ -227,3 +243,5 @@ function play(parsed){
     }
     perform_search();
 };
+
+$(window).resize(GUI.resize);
