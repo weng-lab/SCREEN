@@ -16,7 +16,7 @@ class MainApp():
     def __init__(self, viewDir, staticDir, es, ps, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps, webSocketUrl)
-        self.cart = CartController(self.templates, es, ps, webSocketUrl)
+        self.cartc = CartController(self.templates, es, ps, webSocketUrl)
         self.trackhub = TrackhubController(self.templates, es, ps,
                                            webSocketUrl)
         self.sessions = Sessions(ps.DBCONN)
@@ -85,8 +85,8 @@ class MainApp():
         return self.mc.autocomplete(kwargs["userQuery"])
 
     @cherrypy.expose
-    def cart(self, *args, **kwargs):
-        return self.cart.Cart(args, kwargs, self.session_uuid())
+    def cart(self):
+        return self.cartc.Cart(self.session_uuid())
     
     @cherrypy.expose
     @cherrypy.tools.json_in()

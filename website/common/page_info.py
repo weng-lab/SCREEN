@@ -148,20 +148,16 @@ class PageInfoMain:
         ac = Autocompleter(self.es)
         return ac.get_suggestions(userQuery)
 
-    def cartPage(self, args, kwargs):
+    def cartPage(self, uuid):
         retval = self.wholePage()
-        if "guid" not in kwargs:
-            retval.update({"error": "shopping cart ID not specified"})
-            return retval
-        guid = kwargs["guid"]
 
-        reAccessions = self.ps.getCart(guid)
+        reAccessions = self.ps.getCart(uuid)
 
         if not reAccessions:
-            retval.update({"error": "cart %s is empty" % guid})
+            retval.update({"error": "cart %s is empty" % uuid})
             reAccessions = []
             
         retval.update({"reAccessions": reAccessions,
-                       "guid" : guid})
+                       "uuid" : uuid})
         return retval
 

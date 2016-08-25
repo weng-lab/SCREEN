@@ -1,7 +1,7 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
-{{ hh.js("static/common.js") }}
-{{ hh.js("static/elasticsearch/core.js") }}
+{{ hh.js("/static/common.js") }}
+{{ hh.js("/static/elasticsearch/core.js") }}
 
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
@@ -35,11 +35,12 @@
   var WebSocketUrl = {{ webSocketUrl }};
   var CartReAccessions = {{ reAccessions }};
   var CartGuid = "{{ guid }}";
-  FBVERSION.init("/{{version}}");
+
 </script>
 
-{{ hh.js("static/search.table.js") }}
-{{ hh.js("static/re_cart.browser.js") }}
+{{ hh.js("/static/search.table.js") }}
+{{ hh.js("/static/re_cart.init.js") }}
+{{ hh.js("/static/re_cart.browser.js") }}
 
 <script>
   

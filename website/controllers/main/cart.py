@@ -9,8 +9,7 @@ class CartController:
         pageInfo = PageInfoMain(*self.params)
         return pageInfo.setCart(j)
 
-    def Cart(self, args, kwargs):
+    def Cart(self, uuid):
         pageInfo = PageInfoMain(*self.params)
-        print(pageInfo.cartPage(args, kwargs))
-        return self.t('main/cart', **pageInfo.cartPage(args, kwargs))
+        return self.t('main/cart', **pageInfo.cartPage(uuid))
 
