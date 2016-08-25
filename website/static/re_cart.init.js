@@ -16,6 +16,7 @@ function socket_message_handler(e) {
 	re_table.runCallback();
 	return;
     }
+
     if (results.callback == "regulatory_elements") {
 	re_table.renderTable();
     }

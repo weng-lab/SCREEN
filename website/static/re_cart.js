@@ -39,7 +39,7 @@ function go_to_cart() {
 }
 
 function ShoppingCart(){
-    this.res = [];
+    this.res = []; // RE accessions
 
     this.bind = function(svg) {
 	this.svg = svg;

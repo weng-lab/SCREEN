@@ -157,7 +157,7 @@ class PageInfoMain:
             retval.update({"error": "cart %s is empty" % uuid})
             reAccessions = []
             
-        retval.update({"reAccessions": reAccessions,
+        retval.update({"reAccessions": json.dumps(reAccessions),
                        "uuid" : uuid})
         return retval
 
