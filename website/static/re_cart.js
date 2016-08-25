@@ -73,8 +73,9 @@ function ShoppingCart(){
     this.reClick = function(re){
 	if (this.has_re(re)) {
 	    this.remove_re(re);
-	} else {
-	    this.add_re(re);
-	}
+	    return false;
+	} 
+	this.add_re(re);
+	return true;
     }
 };
