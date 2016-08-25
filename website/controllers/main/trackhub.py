@@ -17,7 +17,7 @@ class TrackhubController:
         self.templates = templates
         self.es = es
         self.ps = ps
-        self.webSocketUrl = webSocketUrl        
+        self.webSocketUrl = webSocketUrl
 
         self.assembly = "hg19"
         self.debug = False
@@ -25,7 +25,7 @@ class TrackhubController:
         self.db = DbTrackhub(self.ps.DBCONN)
 
         self.isUcsc = True
-        
+
     def setReAccession(self, reAccession):
         self.hubNum = self.db.insertOrUpdate(reAccession,
                                              "hg19",
@@ -35,7 +35,7 @@ class TrackhubController:
                                              self.session_uid)
         return {"hubNum" : self.hubNum,
                 "uuid" : self.session_uid}
-    
+
     def ucsc_trackhub(self, *args, **kwargs):
         print("args:", args)
         args = args[0]
@@ -166,7 +166,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             for cellType, v in re["ranks"]["dnase"].iteritems():
                 self.lines += [self.trackhubExp(v["method"],
                                                 c, cellType, v["accession"])]
-            
+
     def getLines(self, re_accessions):
         self.priority = 0
 
@@ -184,11 +184,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.addSignals([re_accessions[0]])
 
         return filter(lambda x: x, self.lines)
-    
+
     def makeTrackDb(self, re_accessions):
         self.isUcsc = True
         lines = self.getLines(re_accessions)
-        
+
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
 
@@ -199,7 +199,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         start = str(max(1, p["start"] - halfWindow))
         end = str(p["end"] + halfWindow)
         return p["chrom"] + ':' + start + '-' + end
-    
+
     def makeTrackDbWashU(self, re_accessions):
         lines = self.getLines(re_accessions)
 
@@ -211,7 +211,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def washu_trackhub(self, *args, **kwargs):
         self.isUcsc = False
-        
+
         args = args[0]
 
         if 1 != len(args):
@@ -229,3 +229,33 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             accs = f.read().split("\n")[:-1]
 
         return self.makeTrackDbWashU(accs)
+
+    def ucsc_trackhub_url(self, j, uuid):
+        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
+	url += "db=hg19";
+
+        halfWindow = j["halfWindow"]
+	chrom = j["chrom"]
+	start = j["start"]
+	end = j["end"]
+
+	start = max(1, start - halfWindow);
+        end = end + halfWindow;
+
+	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
+
+        host = j["host"]
+
+        hubNum = self.db.insertOrUpdate("hg19", j["re"]["accession"], uuid)
+
+        trackhubUrl = '/'.join([host,
+                                "ucsc_trackhub",
+		                uuid,
+		                "hub_" + str(hubNum) + ".txt"])
+
+	url += "&hubClear=" + trackhubUrl;
+
+        return {"url" : url}
+
+    def washu_trackhub(self, j, uuid):
+        return {"url" : url}
