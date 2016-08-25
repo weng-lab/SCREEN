@@ -254,8 +254,8 @@ RE_table.prototype.cartClick = function() {
     $(this.tableDom).on( 'click', 'img', function() {
 	var i = $(this);
 	var re = _this.result_from_tablerow_child(i);
-	cart.reClick(re);
-	i.attr("src", cart_img(cart.has_re(re), true));
+	var show = cart.reClick(re);
+	i.attr("src", cart_img(show, true));
     });
 };
 
