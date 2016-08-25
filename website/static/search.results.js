@@ -3,13 +3,13 @@ function process_histogram_result(control_prefix, result)
 
     if (!(control_prefix in GUI.facets)) {
 	console.log(control_prefix + " is not in the facets list");
-	return;
+	return true;
     }
 
     var range_facet = GUI.facets[control_prefix];
     if (!range_facet) {
 	console.log(control_prefix + " is in facet list but does not appear to be a range slider");
-	return;
+	return true;
     }
 
     var nmax = result["maxvalue"] + searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] - 1;
@@ -39,6 +39,13 @@ function process_histogram_result(control_prefix, result)
     else
 	range_facet.histogram = create_histogram(document.getElementById(control_prefix + "_histogram"), result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
 						 {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+
+    if (result["buckets"].length > range_facet.histogram.width) {
+	searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] = Math.round((nrange[1] - nrange[0]) / range_facet.histogram.width);
+	return false;
+    }
+
+    return true;
 
 }
 
