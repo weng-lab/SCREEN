@@ -1,9 +1,9 @@
 from common.page_info import PageInfoMain
 
 class CartController:
-    def __init__(self, templates, es, ps, version, webSocketUrl):
+    def __init__(self, templates, es, ps, webSocketUrl):
         self.t = templates
-        self.params = (es, ps, version, webSocketUrl)
+        self.params = (es, ps, webSocketUrl)
 
     def SetCart(self, j):
         pageInfo = PageInfoMain(*self.params)

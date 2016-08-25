@@ -87,7 +87,7 @@ function add_filterresult(id, result){
     if (result[1] == "x"){
 	n_div.className = "result_row_selected"
 	rght_text = document.createElement("img");
-        var url = [Ver(), "static", "x.png"].join('/');
+        var url = "/static/x.png";
 	rght_text.src = url;
     } else {
 	rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");

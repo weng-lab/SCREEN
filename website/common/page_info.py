@@ -11,18 +11,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from autocomplete import Autocompleter
 
 class PageInfoMain:
-    def __init__(self, es, ps, version, webSocketUrl):
+    def __init__(self, es, ps, webSocketUrl):
         self.es = es
         self.ps = ps
-        self.version = version
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es, ps)
         self.webSocketUrl = webSocketUrl
 
     def wholePage(self, indexPage = False):
-        return {"page": {"version" : self.version,
-                         "title" : "Regulatory Element Visualizer"},
-                "version" : self.version,
+        return {"page": {"title" : "Regulatory Element Visualizer"},
                 "webSocketUrl" : self.webSocketUrl,
                 "indexPage": indexPage,
                 "reAccessions" : []
@@ -39,7 +36,7 @@ class PageInfoMain:
         print(fnps)
         for path in fnps:
             if os.path.exists(path):
-                retval["imgpath"] = os.path.join("/%s" % self.version, "static", path.split("static/")[1])
+                retval["imgpath"] = '/' + os.path.join("static", path.split("static/")[1])
                 retval["page"]["title"] = "%s vs %s in %s - Regulatory Element Visualizer" % (kwargs["rankA"], kwargs["rankB"], args[0])
         retval["cell_line"] = args[0]
         retval["rankA"] = kwargs["rankA"]
