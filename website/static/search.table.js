@@ -53,7 +53,9 @@ function cart_img(rmv, src_only){
 }
 
 RE_table.prototype.genCartCol = function(field) {
-    return {data: field, render: function(d) {return cart_img(cart.has_item(d), false)},
+    return {data: field,
+	    render: function(d) { return cart_img(cart.has_item(d),
+						  false)},
 	    className: "cart"};
 };
 
