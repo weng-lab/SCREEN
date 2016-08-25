@@ -208,6 +208,7 @@ RE_table.prototype.browserClick = function(){
                         return true;
                     }
 
+		    console.log(got["trackhubUrl"]);
 	            window.open(got["url"], '_blank');
                 }
             });
