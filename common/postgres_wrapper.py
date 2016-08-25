@@ -49,6 +49,7 @@ class PostgresWrapper:
             with gzip.open(fnp, "r") as f:
                 i = 0
                 for line in f:
+                    if i % 100000 == 0: print("working with row %d" % i)
                     re = json.loads(line)
                     curs.execute("""
                     INSERT INTO re (accession, startend)
