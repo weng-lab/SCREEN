@@ -27,13 +27,14 @@ def get_gene_map(assembly="hg19"):
         retval[gene.genename_] = "%s:%s-%s" % (gene.chr_, gene.start_, gene.end_)
     return retval
 
-def ensembl_to_symbol(fnp, emap):
+def ensembl_to_symbol(inFnp, outFnp, emap):
     print("converting ensembl IDs to gene symbols")
     i = 0
-    with gzip.open(fnp, "r") as f:
-        with gzip.open(fnp.replace(".V2.", ".V2.genenames."), "w") as o:
+    with gzip.open(inFnp, "r") as f:
+        with gzip.open(outFnp, "w") as o:
             for line in f:
-                if i % 100000 == 0: print("working with entry %d\r" % i, end = "")
+                if i % 100000 == 0:
+                    print("working with entry %d\r" % i, end = "")
                 sys.stdout.flush()
                 i += 1
                 d = json.loads(line)
@@ -46,7 +47,6 @@ def ensembl_to_symbol(fnp, emap):
                 if an in emap:
                     d["genes"]["nearest-all"]["gene-name"] = emap[an]
                 o.write(json.dumps(d) + "\n")
-    os.rename(fnp.replace(".V2.", ".V2.genenames."), fnp)
 
 def tryparse(coordinate):
     if "-" not in coordinate or ":" not in coordinate:
@@ -101,7 +101,7 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(paths.re_json, emap)
+    ensembl_to_symbol(paths.re_json_orig, path.re_json_rewrite, emap)
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
