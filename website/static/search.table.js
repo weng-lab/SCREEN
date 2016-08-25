@@ -193,16 +193,19 @@ RE_table.prototype.browserClick = function(){
 
 	    url += "&position=" + chrom + ':' + start + '-' + end;
 
-            var trackhubUrl = "http://megatux.purcaro.com:9002" +
-		["ucsc_trackhub",
-		 reAccession,
-		 "hub_" + Session_Uid + ".txt"].join('/');
+	    var w = window.location.href;
+	    var arr = w.split("/");
+	    var host = arr[0] + "//" + arr[2];
+
+            var trackdbUrl = [host,
+                              "ucsc_trackhub",
+		              reAccession,
+		              "hub_" + Session_Uid + ".txt"].join('/');
 
 	    url += "&hubClear=" + trackhubUrl;
 
 	    window.open(url, '_blank');
 	}
-
     } );
 }
 
