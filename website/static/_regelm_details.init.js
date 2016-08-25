@@ -147,7 +147,7 @@ regelm_gui.prototype.bind = function(container_div_id){
 
     var cf = document.createElement("div");
     cf.className = "container-fluid";
-    
+
     var row = null;
     var i = 0;
     for (subGUI in this.GUIs){
@@ -237,7 +237,7 @@ regelm_ranking_view.prototype.rankNames = function(s){
 regelm_ranking_view.prototype._load_cell_lines = function(data,
 							  single_cell_line) {
     if (typeof(single_cell_line)==='undefined') single_cell_line = false;
-    
+
     clear_div_contents(this._table_div);
     var root_table = document.createElement("table");
     root_table.className = "table table-condensed";
@@ -312,7 +312,7 @@ regelm_gene_view.prototype.set_loading_text = function() {
 */
 regelm_gene_view.prototype.load_list = function(data, result_limit) {
     if (typeof(result_limit)==='undefined') result_limit = -1;
-    
+
     clear_div_contents(this._table_div);
     data.sort(_regelm_gene_comparator);
 
@@ -393,7 +393,7 @@ peak_overlap_view.prototype.set_loading_text = function() {
 */
 peak_overlap_view.prototype.load_data = function(data, results_limit) {
     if (typeof(results_limit)==='undefined') results_limit = -1;
-    
+
     clear_div_contents(this._table_div);
 
     var root_table = document.createElement("table");
