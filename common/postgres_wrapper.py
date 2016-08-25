@@ -45,7 +45,7 @@ class PostgresWrapper:
             accession text,
             startend int4range )
             """)
-            
+
             with gzip.open(fnp, "r") as f:
                 i = 0
                 for line in f:
@@ -57,7 +57,7 @@ class PostgresWrapper:
                     """, {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"]})
                     i += 1
         return i
-    
+
     def get_table_suffix(self, assay, assembly, chrom):
         if assembly not in self.assemblies:
             print("PostgresWrapper: findBedOverlap: bad assembly", assembly)
@@ -70,7 +70,7 @@ class PostgresWrapper:
             return ""
         return "{assembly}_{assay}_{chrom}".format(
             assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
-    
+
     def findBedOverlap(self, assay, assembly, chrom, start, end,
                        overlap_fraction = 0.0, overlap_bp = 0):
         if overlap_fraction > 1.0: overlap_fraction = 1.0
@@ -78,7 +78,7 @@ class PostgresWrapper:
         tableName = "bed_ranges_" + self.get_table_suffix(assay, assembly, chrom)
         if tableName == "bed_ranges_": return []
         retval = []
-        
+
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             if overlap_fraction <= 0.0 and overlap_bp <= 0:
                 curs.execute("""
@@ -120,7 +120,7 @@ class PostgresWrapper:
                     if tablesuffix == "": continue
                     print("refreshing view for %s" % tablesuffix)
                     self.refresh_intersection_mv(tablesuffix)
-        
+
     def recreate_intersection_mv(self, tablesuffix):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.recreate_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
@@ -130,7 +130,7 @@ class PostgresWrapper:
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.refresh_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
                 curs.execute(f.read().format(tablesuffix=tablesuffix))
-        
+
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""
@@ -146,13 +146,22 @@ class PostgresWrapper:
     def addToCart(self, uuid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
             curs.execute("""
-            INSERT into cart(uid, re_accessions)
-            values (%(uuid)s, %(re_accessions)s)
-            on conflict(uid)
-            do update set (re_accessions) = (%(re_accessions)s)
-            where cart.uid = %(uuid)s""",
-                         {"uuid": uuid,
-                          "re_accessions" : json.dumps(reAccessions)})
+            SELECT re_accessions
+            FROM cart
+            WHERE uid = %(uuid)s""",{"uuid": uuid})
+            if (curs.rowcount > 0):
+                curs.execute("""
+                UPDATE cart
+                SET (re_accessions) = (%(re_accessions)s)
+                WHERE uid = %(uuid)s""",
+                             {"uuid": uuid,
+                              "re_accessions" : json.dumps(reAccessions)})
+            else:
+                curs.execute("""
+                INSERT into cart(uid, re_accessions)
+                VALUES (%(uuid)s, %(re_accessions)s)""",
+                            {"uuid": uuid,
+                             "re_accessions" : json.dumps(reAccessions)})
             return {"rows" : curs.rowcount}
 
 def main():
@@ -170,7 +179,6 @@ def main():
     print(ps.getCart(uid))
 
     print(ps.getCart("nocart"))
-    
+
 if __name__ == '__main__':
     sys.exit(main())
-            
