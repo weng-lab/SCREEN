@@ -5,9 +5,9 @@ class CartController:
         self.t = templates
         self.params = (es, ps, webSocketUrl)
 
-    def SetCart(self, j):
+    def SetCart(self, session_uuid, reAccessions):
         pageInfo = PageInfoMain(*self.params)
-        return pageInfo.setCart(j)
+        return pageInfo.setCart(session_uuid, reAccessions)
 
     def Cart(self, uuid):
         pageInfo = PageInfoMain(*self.params)

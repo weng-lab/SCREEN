@@ -161,3 +161,6 @@ class PageInfoMain:
                        "uuid" : uuid})
         return retval
 
+    def setCart(self, uuid, reAccessions):
+        return self.ps.addToCart(uuid, reAccessions)
+
