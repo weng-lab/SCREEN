@@ -159,7 +159,7 @@ class PageInfoMain:
 
     def rePeaks(self, reAccession, kwargs):
         try:
-            return {"experiments": self.regElementDetails.get_intersecting_beds(reAccession)}
+            return {"experiments": [x[0] for x in self.regElementDetails.get_intersecting_beds(reAccession)]}
         except:
             raise
             return {"error" : "could not lookup " + reAccession}

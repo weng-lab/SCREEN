@@ -3,6 +3,8 @@
 import os, sys, json, psycopg2, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from dbconnect import db_connect
 from utils import Utils
 from dbs import DBS
 from db_utils import getcursor
@@ -82,14 +84,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if args.local:
-        dbs = DBS.localRegElmViz()
-    else:
-        dbs = DBS.pgdsn("RegElmViz")
-    dbs["application_name"] = os.path.realpath(__file__)
-
-    import psycopg2.pool
-    DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
     for t in ["sessions"]:
         s = Sessions(DBCONN)

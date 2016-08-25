@@ -1,5 +1,7 @@
 import sys
 import os
+import gzip
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
@@ -10,6 +12,7 @@ class PostgresWrapper:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
         self.assays = ["dnase", "tf", "histone"]
+        self.assemblies = ["hg19", "mm10"]
         self.chroms = {}
         self.chroms['hg19'] = ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
                                'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
@@ -22,30 +25,104 @@ class PostgresWrapper:
                                'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
                                'chr9', 'chrM', 'chrX', 'chrY']
 
-    def findBedOverlapAllAssays(self, assembly, chrom, start, end):
-        return self.findBedOverlap("dnase", assembly, chrom, start, end) + self.findBedOverlap("tf", assembly, chrom, start, end) + self.findBedOverlap("histone", assembly, chrom, start, end)
+    def findBedOverlapAllAssays(self, assembly, chrom, start, end,
+                                overlap_fraction = 0.0, overlap_bp = 0):
+        retval = self.findBedOverlap("dnase", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        retval += self.findBedOverlap("tf", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        retval += self.findBedOverlap("histone", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        return retval
+
+    def recreate_re_table(self, fnp):
+        with getcursor(self.DBCONN, "recreate_re_table") as curs:
+
+            curs.execute("DROP TABLE IF EXISTS re")
+            curs.execute("""
+            CREATE TABLE re (
+            id serial PRIMARY KEY,
+            accession text,
+            startend int4range )
+            """)
+            
+            with gzip.open(fnp, "r") as f:
+                i = 0
+                for line in f:
+                    re = json.loads(line)
+                    curs.execute("""
+                    INSERT INTO re (accession, startend)
+                    VALUES (%(acc)s, int4range(%(start)s, %(end)s))
+                    """, {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"]})
+                    i += 1
+        return i
     
-    def findBedOverlap(self, assay, assembly, chrom, start, end):
-        if assembly not in ["hg19", "mm10"]:
+    def get_table_suffix(self, assay, assembly, chrom):
+        if assembly not in self.assemblies:
             print("PostgresWrapper: findBedOverlap: bad assembly", assembly)
-            return []
+            return ""
         if chrom not in self.chroms[assembly]:
             print("PostgresWrapper: findBedOverlap: bad chrom", chrom)
-            return []
+            return ""
         if assay not in self.assays:
             print("PostgresWrapper: findBedOverlap: bad assay", assay)
-            return []
-        tableName = "bed_ranges_{assembly}_{assay}_{chrom}".format(
+            return ""
+        return "{assembly}_{assay}_{chrom}".format(
             assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
+    
+    def findBedOverlap(self, assay, assembly, chrom, start, end,
+                       overlap_fraction = 0.0, overlap_bp = 0):
+        if overlap_fraction > 1.0: overlap_fraction = 1.0
 
+        tableName = "bed_ranges_" + self.get_table_suffix(assay, assembly, chrom)
+        if tableName == "bed_ranges_": return []
+        
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
-            curs.execute("""
-            SELECT DISTINCT file_accession
-            FROM {tableName}
-            WHERE startend && int4range(%(start)s, %(end)s)
-            """.format(tableName = tableName), {"start": start, "end": end})
-            return [x[0] for x in curs.fetchall()]
+            if overlap_fraction <= 0.0 and overlap_bp <= 0:
+                curs.execute("""
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                FROM {tableName}
+                WHERE startend && int4range(%(start)s, %(end)s)
+                """.format(tableName = tableName), {"start": start, "end": end})
+            elif overlap_fraction > 0.0:
+                curs.execute("""
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                FROM {tableName}
+                WHERE upper(overlap) - lower(overlap) / %(length)s >= %(ofrac)s
+                """.format(tableName = tableName), {"length": end - start, "ofrac": overlap_fraction})
+            else:
+                curs.execute("""
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                FROM {tableName}
+                WHERE upper(overlap) - lower(overlap) >= %(obp)s
+                """.format(tableName = tableName), {"obp": overlap_bp})
+            return [(x[0], x[2], x[2] / (end - start)) for x in curs.fetchall()]
 
+    def recreate_all_mvs(self):
+        for assembly in self.assemblies:
+            for chrom in self.chroms[assembly]:
+                for assay in self.assays:
+                    tablesuffix = self.get_table_suffix(assay, assembly, chrom)
+                    if tablesuffix == "": continue
+                    print("recreating view for %s" % tablesuffix)
+                    self.recreate_intersection_mv(tablesuffix)
+
+    def refresh_all_mvs(self):
+        for assembly in self.assemblies:
+            for chrom in self.chroms[assembly]:
+                for assay in self.assays:
+                    tablesuffix = self.get_table_suffix(assay, assembly, chrom)
+                    if tablesuffix == "": continue
+                    print("refreshing view for %s" % tablesuffix)
+                    self.refresh_intersection_mv(tablesuffix)
+        
+    def recreate_intersection_mv(self, tablesuffix):
+        with open(os.path.realpath(__file__) + ".recreate_mv.sql", "r") as f:
+            with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
+                curs.execute(file.read().format(tablesuffix=tablesuffix))
+
+    def refresh_intersection_mv(self, tablesuffix):
+        with open(os.path.realpath(__file__) + ".refresh_mv.sql", "r") as f:
+            with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
+                curs.execute(file.read().format(tablesuffix=tablesuffix))
+        
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""

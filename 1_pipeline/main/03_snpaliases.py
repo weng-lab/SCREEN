@@ -10,12 +10,12 @@ import gzip
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 
-def main():
-    encyclopedia_dir = os.path.join(Dirs.encyclopedia, "Version-4")
+sys.path.append("../common")
+from constants import paths
 
-    component_fnps = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
-                      ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
-    outfnp = os.path.join(encyclopedia_dir, "snplist.lsj.gz")
+def main():
+    component_fnps = paths.snp_csvs
+    outfnp = paths.snp_lsj
 
     with gzip.open(outfnp, "wb") as o:
         for assembly, infnp in component_fnps:

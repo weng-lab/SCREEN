@@ -66,7 +66,8 @@ class MyServerProtocol(WebSocketServerProtocol):
         output = {"type": "peak_details",
                   "q": {"accession": j["accession"],
                         "position": j["coord"]} }
-        bed_accs = details.get_intersecting_beds(j["accession"])
+        results = details.get_intersecting_beds(j["accession"])
+        bed_accs = [x[0] for x in results]
         output["peak_results"] = details.get_bed_stats(bed_accs)
         self.sendMessage(json.dumps(output))
 

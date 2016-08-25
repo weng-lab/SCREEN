@@ -10,12 +10,14 @@ sys.path.append("../../../metadata/utils")
 from helpers_metadata import Exp
 from files_and_paths import Dirs
 
+sys.path.append("../common")
+from constants import paths
+
 def main():
 
-    encyclopedia_dir = os.path.join(Dirs.encyclopedia, "Version-4")
-    genelist_fnp = os.path.join(encyclopedia_dir, "genelist.tsv")
-    infnp = os.path.join(encyclopedia_dir, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
-    outfnp = os.path.join(encyclopedia_dir, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
+    genelist_fnp = paths.genelist
+    infnp = paths.genedb
+    outfnp = paths.genedb_lsj
 
     cached = {}
     genelist = {}
