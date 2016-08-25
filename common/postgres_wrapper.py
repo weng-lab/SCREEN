@@ -2,11 +2,14 @@ import sys
 import os
 import gzip
 import json
+#!/usr/bin/env python
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
 from dbs import DBS
 from db_utils import getcursor
+
+from dbconnect import db_connect
 
 class PostgresWrapper:
     def __init__(self, DBCONN):
@@ -126,9 +129,43 @@ class PostgresWrapper:
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""
-            SELECT re_accession
+            SELECT re_accessions
             FROM cart
             WHERE uid = %(uid)s
             """, {"uid": guid})
-            return [x[0] for x in curs.fetchall()]
-        
+            r = curs.fetchall()
+        if r:
+            return r[0][0]
+        return None
+
+    def addToCart(self, uuid, reAccessions):
+        with getcursor(self.DBCONN, "addToCart") as curs:
+            curs.execute("""
+            INSERT into cart(uid, re_accessions)
+            values (%(uuid)s, %(re_accessions)s)
+            on conflict(uid)
+            do update set (re_accessions) = (%(re_accessions)s)
+            where cart.uid = %(uuid)s""",
+                         {"uuid": uuid,
+                          "re_accessions" : json.dumps(reAccessions)})
+            return {"rows" : curs.rowcount}
+
+def main():
+    DBCONN = db_connect(os.path.realpath(__file__))
+    ps = PostgresWrapper(DBCONN)
+
+    import json
+    uid = "test"
+    j = {"a" : [1,2,3]}
+    ps.addToCart(uid, json.dumps(j))
+    print(ps.getCart(uid))
+
+    j = {"b" : [5,6,7]}
+    ps.addToCart(uid, json.dumps(j))
+    print(ps.getCart(uid))
+
+    print(ps.getCart("nocart"))
+    
+if __name__ == '__main__':
+    sys.exit(main())
+            

@@ -45,12 +45,17 @@ RE_table.prototype.disable_cart_icons = function() {
 };
 
 function cart_img(rmv, src_only){
-    var src = Ver() + "/static/cart" + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : "<img src='" + src + "' width='56' height='56'>");
+    var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
+    if(src_only){
+	return src;
+    }
+    return '<img class="rowCart" src="' + src + '">';
 }
 
 RE_table.prototype.genCartCol = function(field) {
-    return {data: field, render: function(d) {return cart_img(cart.has_item(d), false)},
+    return {data: field,
+	    render: function(d) { return cart_img(cart.has_re(d),
+						  false)},
 	    className: "cart"};
 };
 
@@ -67,7 +72,9 @@ RE_table.prototype.setupColumns = function(){
     ret["nearest protein-coding gene"] =
         this.gene_id_col("_source.genes.nearest-pc");
 
-    if (!this.no_cart) ret["cart"] = this.genCartCol("_source");
+    if (!this.no_cart) {
+	ret["cart"] = this.genCartCol("_source");
+    }
     ret["genome browsers"] = this.genButtonGroupCol(["UCSC", "WashU", "Ensembl"]);
 
     return ret;
@@ -246,13 +253,9 @@ RE_table.prototype.cartClick = function() {
 
     $(this.tableDom).on( 'click', 'img', function() {
 	var i = $(this);
-	var r = _this.result_from_tablerow_child(i);
-	if (cart.has_item(r)) {
-	    cart.remove_item(r);
-	} else {
-	    cart.add_item(r);
-	}
-	i.attr("src", cart_img(cart.has_item(r), true));
+	var re = _this.result_from_tablerow_child(i);
+	var show = cart.reClick(re);
+	i.attr("src", cart_img(show, true));
     });
 };
 

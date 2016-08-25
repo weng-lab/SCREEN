@@ -1,12 +1,12 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
-{{ hh.cssVer(version, "static/controls/histogram.css") }}
-{{ hh.cssVer(version, "static/controls/range_slider.css") }}
-{{ hh.cssVer(version, "static/controls/heatmap.css") }}
-{{ hh.cssVer(version, "static/controls/venn_diagram.css") }}
-{{ hh.jsVer(version, "static/common.js") }}
-{{ hh.jsVer(version, "static/controls/autocomplete.js") }}
-{{ hh.jsVer(version, "static/pileup.js") }}
+{{ hh.css("/static/controls/histogram.css") }}
+{{ hh.css("/static/controls/range_slider.css") }}
+{{ hh.css("/static/controls/heatmap.css") }}
+{{ hh.css("/static/controls/venn_diagram.css") }}
+{{ hh.js("/static/common.js") }}
+{{ hh.js("/static/controls/autocomplete.js") }}
+{{ hh.js("/static/pileup.js") }}
 
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
@@ -104,40 +104,24 @@
   var FacetList = {{ facetlist_json }};
   var RankList = {{ ranklist_json }};
   var TSS_List = {{ tsslist_json }};
-  var Session_Uid = 1;
-  FBVERSION.init("/{{version}}");
 </script>
-{{ hh.jsVer(version, "static/_regelm_details.init.js") }}
-{{ hh.jsVer(version, "static/search.table.js") }}
-{{ hh.jsVer(version, "static/search.init.js") }}
-{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
-{{ hh.jsVer(version, "static/constants/hg19.js") }}
-{{ hh.jsVer(version, "static/search.results.js") }}
-{{ hh.jsVer(version, "static/controls/range_slider.js") }}
-{{ hh.jsVer(version, "static/controls/histogram.js") }}
-{{ hh.jsVer(version, "static/controls/d3_heatmap.js") }}
-{{ hh.jsVer(version, "static/controls/venn_diagram.js") }}
-{{ hh.jsVer(version, "static/search.setup.js") }}
-{{ hh.jsVer(version, "static/re_cart.js") }}
 
-<script>
+{{ hh.js("/static/_regelm_details.init.js") }}
+{{ hh.js("/static/search.table.js") }}
+{{ hh.js("/static/search.init.js") }}
+{{ hh.js("/static/elasticsearch/core.js") }}
+{{ hh.js("/static/constants/hg19.js") }}
+{{ hh.js("/static/search.results.js") }}
+{{ hh.js("/static/controls/range_slider.js") }}
+{{ hh.js("/static/controls/histogram.js") }}
+{{ hh.js("/static/controls/d3_heatmap.js") }}
+{{ hh.js("/static/controls/venn_diagram.js") }}
+{{ hh.js("/static/search.setup.js") }}
+{{ hh.js("/static/re_cart.js") }}
 
-  var cart = new ShoppingCart();
-  var cartobj = document.getElementById("shoppingcart_obj");
-
-  $("#shoppingcart_obj").load("image/svg+xml", function() {
-
-      var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
-      var img = svg.getElementsByTagName("image")[0];
-      img.onclick = function() {
-          if (cart.items.length > 0) {
-              go_to_cart();
-          }
-      }
-      cart.bind(svg);
-
-  });
-
+<script>  
+  var cart = initCart();
+  
   $( document ).ready(function() {
       setupSocket(play, ParsedQuery);
   });

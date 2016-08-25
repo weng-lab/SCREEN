@@ -133,6 +133,11 @@ div.result_row_selected {
     height: 48px;
 }
 
+.rowCart {
+    width: 48px;
+    height: 48px;
+}
+
 .vcenter {
     display: inline-block;
     vertical-align: middle;

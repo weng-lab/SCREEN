@@ -14,8 +14,6 @@
     {%- endfor -%}
     {% endif %}
 
-    {{ hh.Link(version, "static/favicon.png") }}
-
     {{ hh.js("//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js") }}
     {{ hh.css("//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css") }}
     {{ hh.js("//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js") }}
@@ -30,7 +28,7 @@
 
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
 
-    {{ hh.cssVer(version, "static/css.css") }}
+    {{ hh.css("/static/css.css") }}
 
   </head>
   <body>
@@ -51,8 +49,8 @@
 	  {% endif -%}
 	  {% if searchPage -%}
 	  <form class="navbar-form navbar-right">
-	    <object type="image/svg+xml" data="/{{version}}/static/re_cart.view.svg" width="56" height="56" id="shoppingcart_obj">
-	      <img src="/{{version}}/static/re_cart.view.png">
+	    <object type="image/svg+xml" data="/static/re_cart.view.svg" id="shoppingcart_obj">
+	      <img src="/static/re_cart.view.png">
 	    </object>
 	  </form>
 	  {% endif -%}

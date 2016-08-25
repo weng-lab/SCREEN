@@ -6,4 +6,5 @@ class Cart:
         self.es = es
         self.ps = ps
 
-    def get(self, guid
+    def get(self):
+        
