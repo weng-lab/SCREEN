@@ -212,7 +212,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                       "list" : sorted(pos)})
         return lines
 
-    def washu_trackhub(self, *args, **kwargs):
+    def washu_trackhub(self, uuid, *args, **kwargs):
         self.isUcsc = False
 
         args = args[0]
@@ -223,13 +223,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         toks = args[0].split('_')
         guid = toks[1].split('.')[0]
 
-        fnp = os.path.join(os.path.dirname(__file__),
-                           "../../../data/carts", guid)
-        if not os.path.exists(fnp):
-            return {"error": "cart %s missing" % kwargs["guid"]}
-
-        with open(fnp, "r") as f:
-            accs = f.read().split("\n")[:-1]
+        accs = self.ps.getCart(guid)
 
         return self.makeTrackDbWashU(accs)
 
@@ -261,5 +255,5 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return {"url" : url,
                 "trackhubUrl" : trackhubUrl}
 
-    def washu_trackhub(self, j, uuid):
+    def washu_trackhub_url(self, j, uuid):
         return {"url" : url}
