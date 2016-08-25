@@ -20,33 +20,27 @@ class DbTrackhub:
 DROP TABLE IF EXISTS {search};
 CREATE TABLE {search}
 (id serial PRIMARY KEY,
+reAccession text,
 assembly text,
-assays text,
-tissues text,
-loci text,
 uid text NOT NULL,
-assayType integer NOT NULL,
 hubNum integer NOT NULL
 ) """.format(search = self.tableSearch))
 
     def get(self, uid):
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""
-SELECT assembly, assays, tissues, loci, assayType, hubNum
+SELECT reAccession, assembly, hubNum
 FROM {search}
 WHERE uid = %(uid)s
 """.format(search = self.tableSearch), {"uid" : uid})
             row = curs.fetchone()
         if not row:
             return None
-        return {"assembly" : row[0],
-                "assays" : row[1],
-                "tissues" : row[2],
-                "loci" : row[3],
-                "assayType" : row[4],
-                "hubNum" : row[5]}
+        return {"reAccession" : row[0],
+                "assembly" : row[1],
+                "hubNum" : row[2]}
 
-    def insertOrUpdate(self, assayType, assembly, assays, tissues, loci, uid):
+    def insertOrUpdate(self, assembly, reAccession, uid):
         with getcursor(self.DBCONN, "insertOrUpdate") as curs:
             curs.execute("""
 SELECT id FROM search
@@ -56,41 +50,29 @@ WHERE uid = %(uid)s
                 curs.execute("""
 UPDATE search
 SET
+reAccession = %(reAccession)s,
 assembly = %(assembly)s,
-assays = %(assays)s,
-tissues = %(tissues)s,
-loci = %(loci)s,
-assayType = %(assayType)s,
 hubNum = hubNum + 1
 WHERE uid = %(uid)s
 RETURNING hubNum;
-""", {"assembly" : assembly,
-      "assays" : assays,
-      "tissues" : json.dumps(tissues),
-      "loci" : loci,
-      "uid" : uid,
-      "assayType" : assayType
+""", {"reAccession" : reAccession,
+      "assembly" : assembly,
+      "uid" : uid
 })
                 hubNum = curs.fetchone()[0]
             else:
                 curs.execute("""
 INSERT INTO search
-(assembly, assays, tissues, loci, uid, assayType, hubNum)
+                (reAccession, assembly, uid, hubNum)
 VALUES (
+%(reAccession)s,
 %(assembly)s,
-%(assays)s,
-%(tissues)s,
-%(loci)s,
 %(uid)s,
-%(assayType)s,
 %(hubNum)s
 ) RETURNING hubNum;
-""", {"assembly" : assembly,
-      "assays" : assays,
-      "tissues" : json.dumps(tissues),
-      "loci" : loci,
+""", {"reAccession" : reAccession,
+      "assembly" : assembly,
       "uid" : uid,
-      "assayType" : assayType,
       "hubNum" : 0
       })
                 hubNum = curs.fetchone()[0]
@@ -104,7 +86,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    
+
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
     adb = DbTrackhub(DBCONN)

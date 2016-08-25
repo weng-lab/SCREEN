@@ -9,9 +9,10 @@ function create_histogram(destination_div, data, range, selection_range, interva
     var retval = new histogram();
 
     var margin = {top: 1, right: 1, bottom: 1, left: 1};
-    var width = $("#" + destination_div.id).width() - margin.left - margin.right;
-    var height = $("#" + destination_div.id).height() - margin.top - margin.bottom;
-    this.margin = margin;
+    retval.div = $("#" + destination_div.id);
+    var width = retval.div.width() - margin.left - margin.right;
+    var height = retval.div.height() - margin.top - margin.bottom;
+    retval.margin = margin;
     
     retval.height = height;
     retval.width = width;
@@ -31,6 +32,7 @@ histogram.prototype.redraw = function(data, range, selection_range, interval) {
 
     var xrange = [range.min, range.max];
     var height = this.height;
+    this.width = this.div.width();
 
     this.bins = data;
     

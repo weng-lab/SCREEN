@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os, sys, json
 from collections import defaultdict
 
@@ -43,7 +45,7 @@ class RegElementDetails:
               pos["chrom"],
               pos["start"],
               pos["end"],
-              self._get_overlap_message(overlap_fraction, overlap_bp)
+              self._get_overlap_message(overlap_fraction, overlap_bp))
         print("found", len(exps), "overlapping peak exps")
         return {"experiments": exps}
 
@@ -72,14 +74,13 @@ class RegElementDetails:
         return self._process_result_generic(gene_results, qcoord, "approved_symbol")
     
     def get_bed_stats(self, bed_accs):
-        fileIDs = bed_accs["experiments"]
-        r = self.es.get_bed_list(fileIDs)
+        r = self.es.get_bed_list(bed_accs)
         hits = r["hits"]
 
         foundIDs = [x["_source"]["accession"] for x in hits["hits"]]
 
-        if hits["total"] != len(fileIDs):
-            for fid in fileIDs:
+        if hits["total"] != len(bed_accs):
+            for fid in bed_accs:
                 if fid not in foundIDs:
                     print("WARNING: postgres BED match %s is not indexed in ElasticSearch" % fid)
 
