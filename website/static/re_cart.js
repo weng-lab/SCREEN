@@ -1,8 +1,41 @@
+function initCart(){
+    var dom = "shoppingcart_obj";
+    var cart = new ShoppingCart();
+    var cartobj = document.getElementById(dom);
+
+    $('#' + dom).load("image/svg+xml", function() {
+	var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
+	var img = svg.getElementsByTagName("image")[0];
+	img.onclick = function() {
+            if (cart.items.length > 0) {
+		go_to_cart();
+            }
+	}
+	cart.bind(svg);
+    });
+
+    return cart;
+}
+
 function go_to_cart() {
-    sendText(JSON.stringify({
-	"action": "create_cart",
-	"acclist": cart.items
-    }));
+    var data = JSON.stringify(cart.items);
+
+    $.ajax({
+        type: "POST",
+        url: "/setCart",
+        data: data,
+        dataType: "json",
+        contentType : "application/json",
+        success: function(got){
+            if("err" in got){
+                $("#errMsg").text(got["err"]);
+                $("#errBox").show()
+                return true;
+            }
+
+	    window.location.href = "/cart";
+        }
+    });
 }
 
 function ShoppingCart(){

@@ -105,6 +105,7 @@
   var RankList = {{ ranklist_json }};
   var TSS_List = {{ tsslist_json }};
 </script>
+
 {{ hh.js("/static/_regelm_details.init.js") }}
 {{ hh.js("/static/search.table.js") }}
 {{ hh.js("/static/search.init.js") }}
@@ -118,23 +119,9 @@
 {{ hh.js("/static/search.setup.js") }}
 {{ hh.js("/static/re_cart.js") }}
 
-<script>
-
-  var cart = new ShoppingCart();
-  var cartobj = document.getElementById("shoppingcart_obj");
-
-  $("#shoppingcart_obj").load("image/svg+xml", function() {
-      var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
-      var img = svg.getElementsByTagName("image")[0];
-      img.onclick = function() {
-          if (cart.items.length > 0) {
-              go_to_cart();
-          }
-      }
-      cart.bind(svg);
-
-  });
-
+<script>  
+  var cart = initCart();
+  
   $( document ).ready(function() {
       setupSocket(play, ParsedQuery);
   });

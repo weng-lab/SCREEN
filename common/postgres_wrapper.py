@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import sys
-import os
+import sys, os, json
 import psycopg2, psycopg2.pool
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
@@ -61,15 +60,17 @@ class PostgresWrapper:
             return r[0][0]
         return None
 
-    def addToCart(self, guid, reAccessions):
+    def addToCart(self, uuid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
             curs.execute("""
             INSERT into cart(uid, re_accessions)
-            values (%(guid)s, %(re_accessions)s)
+            values (%(uuid)s, %(re_accessions)s)
             on conflict(uid)
             do update set (re_accessions) = (%(re_accessions)s)
-            where cart.uid = %(guid)s""",
-                         {"guid": guid, "re_accessions" : reAccessions})
+            where cart.uid = %(uuid)s""",
+                         {"uuid": uuid,
+                          "re_accessions" : json.dumps(reAccessions)})
+            return {"rows" : curs.rowcount}
 
 def main():
     dbs = DBS.localRegElmViz()
