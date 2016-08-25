@@ -37,12 +37,16 @@ class TrackhubController:
                 "uuid" : self.session_uid}
 
     def ucsc_trackhub(self, *args, **kwargs):
-        print("args:", args)
+        #print("args:", args)
         args = args[0]
-        if not args[0].startswith('EE'):
-            return "first arg must be EE<num>"
-        re_accession = args[0]
+        uuid = args[0]
 
+        try:
+            info = self.db.get(uuid)
+        except:
+            raise
+            return "error: couldn't find uuid"
+        
         if 2 == len(args):
             loc = args[1]
             if loc.startswith("hub_") and loc.endswith(".txt"):
@@ -59,7 +63,7 @@ class TrackhubController:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb([re_accession])
+            return self.makeTrackDb([info["reAccession"]])
 
         return "invalid path"
 
@@ -204,7 +208,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         lines = self.getLines(re_accessions)
 
         pos = [self.makePos(x) for x in self.re_pos]
-        print(pos)
         lines.append({"type" : "splinters",
                       "list" : sorted(pos)})
         return lines
@@ -255,7 +258,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
 	url += "&hubClear=" + trackhubUrl;
 
-        return {"url" : url}
+        return {"url" : url,
+                "trackhubUrl" : trackhubUrl}
 
     def washu_trackhub(self, j, uuid):
         return {"url" : url}

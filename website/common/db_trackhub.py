@@ -36,7 +36,8 @@ WHERE uid = %(uid)s
             row = curs.fetchone()
         if not row:
             return None
-        return {"reAccession" : row[1],
+        return {"reAccession" : row[0],
+                "assembly" : row[1],
                 "hubNum" : row[2]}
 
     def insertOrUpdate(self, assembly, reAccession, uid):
