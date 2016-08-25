@@ -1,12 +1,12 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
-{{ hh.css("static/controls/histogram.css") }}
-{{ hh.css("static/controls/range_slider.css") }}
-{{ hh.css("static/controls/heatmap.css") }}
-{{ hh.css("static/controls/venn_diagram.css") }}
-{{ hh.js("static/common.js") }}
-{{ hh.js("static/controls/autocomplete.js") }}
-{{ hh.js("static/pileup.js") }}
+{{ hh.css("/static/controls/histogram.css") }}
+{{ hh.css("/static/controls/range_slider.css") }}
+{{ hh.css("/static/controls/heatmap.css") }}
+{{ hh.css("/static/controls/venn_diagram.css") }}
+{{ hh.js("/static/common.js") }}
+{{ hh.js("/static/controls/autocomplete.js") }}
+{{ hh.js("/static/pileup.js") }}
 
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
@@ -105,18 +105,18 @@
   var RankList = {{ ranklist_json }};
   var TSS_List = {{ tsslist_json }};
 </script>
-{{ hh.js("static/_regelm_details.init.js") }}
-{{ hh.js("static/search.table.js") }}
-{{ hh.js("static/search.init.js") }}
-{{ hh.js("static/elasticsearch/core.js") }}
-{{ hh.js("static/constants/hg19.js") }}
-{{ hh.js("static/search.results.js") }}
-{{ hh.js("static/controls/range_slider.js") }}
-{{ hh.js("static/controls/histogram.js") }}
-{{ hh.js("static/controls/d3_heatmap.js") }}
-{{ hh.js("static/controls/venn_diagram.js") }}
-{{ hh.js("static/search.setup.js") }}
-{{ hh.js("static/re_cart.js") }}
+{{ hh.js("/static/_regelm_details.init.js") }}
+{{ hh.js("/static/search.table.js") }}
+{{ hh.js("/static/search.init.js") }}
+{{ hh.js("/static/elasticsearch/core.js") }}
+{{ hh.js("/static/constants/hg19.js") }}
+{{ hh.js("/static/search.results.js") }}
+{{ hh.js("/static/controls/range_slider.js") }}
+{{ hh.js("/static/controls/histogram.js") }}
+{{ hh.js("/static/controls/d3_heatmap.js") }}
+{{ hh.js("/static/controls/venn_diagram.js") }}
+{{ hh.js("/static/search.setup.js") }}
+{{ hh.js("/static/re_cart.js") }}
 
 <script>
 
