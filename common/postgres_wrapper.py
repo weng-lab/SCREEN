@@ -76,27 +76,31 @@ class PostgresWrapper:
 
         tableName = "bed_ranges_" + self.get_table_suffix(assay, assembly, chrom)
         if tableName == "bed_ranges_": return []
+        retval = []
         
         with getcursor(self.DBCONN, "findBedOverlap") as curs:
             if overlap_fraction <= 0.0 and overlap_bp <= 0:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
                 WHERE startend && int4range(%(start)s, %(end)s)
                 """.format(tableName = tableName), {"start": start, "end": end})
             elif overlap_fraction > 0.0:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
-                WHERE upper(overlap) - lower(overlap) / %(length)s >= %(ofrac)s
+                WHERE upper(startend * int4range(%(start)s, %(end)s)) - lower(startend * int4range(%(start)s, %(end)s)) / %(length)s >= %(ofrac)s
                 """.format(tableName = tableName), {"length": end - start, "ofrac": overlap_fraction})
             else:
                 curs.execute("""
-                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap, upper(overlap) - lower(overlap) AS olen
+                SELECT DISTINCT file_accession, startend * int4range(%(start)s, %(end)s) AS overlap
                 FROM {tableName}
-                WHERE upper(overlap) - lower(overlap) >= %(obp)s
+                WHERE upper(startend * int4range(%(start)s, %(end)s)) - lower(startend * int4range(%(start)s, %(end)s)) >= %(obp)s
                 """.format(tableName = tableName), {"obp": overlap_bp})
-            return [(x[0], x[2], x[2] / (end - start)) for x in curs.fetchall()]
+            for x in curs.fetchall():
+                r = 0 if x[1].isempty else x[1].upper - x[1].lower
+                retval.append((x[0], r, r / (end - start)))
+            return retval
 
     def recreate_all_mvs(self):
         for assembly in self.assemblies:
