@@ -101,7 +101,7 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(paths.re_json_orig, path.re_json_rewrite, emap)
+    ensembl_to_symbol(paths.re_json_orig, paths.re_json_rewrite, emap)
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
