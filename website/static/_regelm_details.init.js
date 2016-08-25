@@ -24,7 +24,7 @@ regelm_details.prototype.get_text_color = function(absolute, total) {
 };
 
 function get_search_ahref(s) {
-    return Ver() + '/search?q=' + s;
+    return '/search?q=' + s;
 };
 
 /* converts a gene symbol to a link to a page with details */
