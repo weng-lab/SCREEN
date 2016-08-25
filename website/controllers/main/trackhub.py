@@ -4,44 +4,28 @@ import StringIO
 import cherrypy
 import json
 import os
-import uuid
 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
 
 from common.db_trackhub import DbTrackhub
-from common.session import Sessions
 from models.regelm_detail import RegElementDetails
 
 class TrackhubController:
-    def __init__(self, templates, es, ps, version, webSocketUrl):
+    def __init__(self, templates, es, ps, webSocketUrl):
         self.templates = templates
         self.es = es
         self.ps = ps
-        self.version = version
         self.webSocketUrl = webSocketUrl        
 
         self.assembly = "hg19"
         self.debug = False
 
-        #self.sessions = Sessions(self.ps.DBCONN)
-        #self.session_uid = self.session_uuid()
-        #self.db = DbTrackhub(self.ps.DBCONN)
+        self.db = DbTrackhub(self.ps.DBCONN)
 
         self.isUcsc = True
         
-    def makeUid(self):
-        return str(uuid.uuid4())
-
-    def session_uuid(self):
-        uid = self.sessions.get(cherrypy.session.id)
-        if not uid:
-            uid = self.makeUid()
-            cherrypy.session["uid"] = uid
-            self.sessions.insert(cherrypy.session.id, uid)
-        return uid
-
     def setReAccession(self, reAccession):
         self.hubNum = self.db.insertOrUpdate(reAccession,
                                              "hg19",

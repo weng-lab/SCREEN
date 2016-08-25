@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import os, sys, json, psycopg2, argparse
+import os, sys, json, psycopg2, argparse, cherrypy
+import uuid
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
@@ -13,6 +14,9 @@ class Sessions:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
         self.table = "sessions"
+
+    def makeUid(self):
+        return str(uuid.uuid4())
 
     def setupDB(self):
         with getcursor(self.DBCONN, "get") as curs:

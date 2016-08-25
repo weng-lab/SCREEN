@@ -19,7 +19,8 @@ def setupCart(cur):
     CREATE TABLE {tableName}
     (id serial PRIMARY KEY,
     uid text,
-    re_accession text
+    re_accessions json,
+    unique (uid)
     ) """.format(tableName = tableName))
     
 def parse_args():
