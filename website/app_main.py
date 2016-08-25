@@ -5,6 +5,7 @@ import cherrypy, jinja2, os, sys
 from controllers.main.main import MainController
 from controllers.main.trackhub import TrackhubController
 from controllers.main.cart import CartController
+from common.session import Sessions
 
 from timeit import default_timer as timer
 
@@ -18,19 +19,30 @@ class MainApp():
         self.cart = CartController(self.templates, es, ps, version, webSocketUrl)
         self.trackhub = TrackhubController(self.templates, es, ps,
                                            version, webSocketUrl)
-        
+        self.sessions = Sessions(ps.DBCONN)
+
+    def session_uuid(self):
+        uid = self.sessions.get(cherrypy.session.id)
+        if not uid:
+            uid = self.sessions.makeUid()
+            cherrypy.session["uid"] = uid
+            self.sessions.insert(cherrypy.session.id, uid)
+        return uid
+
     @cherrypy.expose
-    def index(self):
+    def index(self):       
         return self.mc.Index()
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
-        return self.trackhub.ucsc_trackhub(args, kwargs)
+        return self.trackhub.ucsc_trackhub(args, kwargs,
+                                           self.session_uuid())
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(args, kwargs)
+        return self.trackhub.washu_trackhub(args, kwargs,
+                                            self.session_uuid())
 
     @cherrypy.expose
     def query(self, q=None, url=None):
@@ -74,12 +86,12 @@ class MainApp():
 
     @cherrypy.expose
     def cart(self, *args, **kwargs):
-        return self.cart.Cart(args, kwargs)
+        return self.cart.Cart(args, kwargs, self.session_uuid())
     
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def setCart(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.cart.SetCart(j)
+        return self.cart.SetCart(j, self.session_uuid())
 

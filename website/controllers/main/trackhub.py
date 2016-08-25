@@ -10,7 +10,6 @@ from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, Bi
 from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
 
 from common.db_trackhub import DbTrackhub
-from common.session import Sessions
 from models.regelm_detail import RegElementDetails
 
 class TrackhubController:
@@ -24,9 +23,7 @@ class TrackhubController:
         self.assembly = "hg19"
         self.debug = False
 
-        self.sessions = Sessions(self.ps.DBCONN)
-        self.session_uid = self.sessions.session_uuid()
-        #self.db = DbTrackhub(self.ps.DBCONN)
+        self.db = DbTrackhub(self.ps.DBCONN)
 
         self.isUcsc = True
         

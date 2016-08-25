@@ -16,14 +16,6 @@ class Sessions:
     def makeUid(self):
         return str(uuid.uuid4())
 
-    def session_uuid(self):
-        uid = self.get(cherrypy.session.id)
-        if not uid:
-            uid = self.makeUid()
-            cherrypy.session["uid"] = uid
-            self.insert(cherrypy.session.id, uid)
-        return uid
-
     def setupDB(self):
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""
