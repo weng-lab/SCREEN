@@ -28,15 +28,14 @@
   </footer>
 </div> <!-- /container -->
 
-{{ hh.jsVer(version, "static/common.js") }}
+{{ hh.js("/static/common.js") }}
 <script>
   var WebSocketUrl = {{ webSocketUrl }};
-//  FBVERSION.init("/{{version}}");
 </script>
 
-{{ hh.jsVer(version, "static/elasticsearch/core.js") }}
-{{ hh.jsVer(version, "static/controls/autocomplete.js") }}
-{{ hh.jsVer(version, "static/index.init.js") }}
+{{ hh.js("/static/elasticsearch/core.js") }}
+{{ hh.js("/static/controls/autocomplete.js") }}
+{{ hh.js("/static/index.init.js") }}
 
 <script>
   setupSocket();
