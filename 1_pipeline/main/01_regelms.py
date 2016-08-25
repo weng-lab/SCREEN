@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 sys.path.append("../common")
 from files_and_paths import Dirs
 from utils import Utils
+from constants import paths
 
 from matplotlib import use
 use('Agg') # shut off any matplotlib visual display attempts
@@ -47,8 +48,8 @@ def hexplot(dx, dy, xlab, ylab, outfnp):
 
     
 def main():
-    fnp = os.path.join(Dirs.encyclopedia, "Version-4", "regulatory-element-registry-hg19.V2.json.gz")
-    onp = os.path.join(Dirs.encyclopedia, "Version-4", "hexplots")
+    fnp = paths.re_json
+    onp = paths.hexplots_dir
     Utils.ensureDir(onp + "/")
     i = 1
     with gzip.open(fnp, "r") as f:

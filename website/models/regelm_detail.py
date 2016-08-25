@@ -23,18 +23,27 @@ class RegElementDetails:
             return { "error" : "too many hits (%d) for " + reAccession }
         return retval["hits"]["hits"][0]["_source"]
 
-    def get_intersecting_beds(self, reAccession):
+    def _get_overlap_message(self, overlap_fraction, overlap_bp):
+        if overlap_fraction > 0.0: return "(overlap at least %f%)" % (overlap_fraction * 100.0)
+        if overlap_bp > 1: return "(overlap at least %d bp)" % overlap_bp
+        return "(any overlap)"
+    
+    def get_intersecting_beds(self, reAccession, overlap_fraction = 0.0, overlap_bp = 0):
         re = self.reFull(reAccession)
         if "error" in re: return re
         pos = re["position"]
+        if overlap_fraction > 1.0: overlap_fraction = 1.0
         exps = self.ps.findBedOverlapAllAssays(re["genome"],
                                                pos["chrom"],
                                                pos["start"],
-                                               pos["end"] )
+                                               pos["end"],
+                                               overlap_fraction = overlap_fraction,
+                                               overlap_bp = overlap_bp )
         print(re["genome"],
               pos["chrom"],
               pos["start"],
-              pos["end"])
+              pos["end"],
+              self._get_overlap_message(overlap_fraction, overlap_bp)
         print("found", len(exps), "overlapping peak exps")
         return {"experiments": exps}
 

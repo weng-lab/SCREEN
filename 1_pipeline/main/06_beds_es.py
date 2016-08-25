@@ -4,7 +4,6 @@ import os, sys, json, psycopg2, argparse, fileinput, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils, printWroteNumLines
-from dbs import DBS
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 

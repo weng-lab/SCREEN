@@ -11,6 +11,7 @@ from app_ui import UiAppRunner
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
+from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
@@ -69,12 +70,7 @@ class RegElmVizWebsite(object):
 
         self.es = ElasticSearchWrapper(Elasticsearch())
 
-        if args.local:
-            dbs = DBS.localRegElmViz()
-        else:
-            dbs = DBS.pgdsn("RegElmViz")
-            dbs["application_name"] = os.path.realpath(__file__)
-        self.DBCONN = psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+        self.DBCONN = db_connect(os.path.realpath(__file__), args.local)
         self.ps = PostgresWrapper(self.DBCONN)
 
         MainAppRunner(self.es, self.ps, self.devMode, webSocketUrl, getRootConfig("main"))

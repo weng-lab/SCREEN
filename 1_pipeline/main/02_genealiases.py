@@ -11,7 +11,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from get_tss import Genes
 
-_gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
+sys.path.append("../common")
+from constants import paths
+
+_gene_files = paths.gene_files
 
 def get_gene_map(assembly="hg19"):
     if assembly not in _gene_files:
@@ -58,8 +61,8 @@ def tryparse(coordinate):
 
 
 def main():
-    infnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.tsv")
-    outfnp = os.path.join(Dirs.encyclopedia, "Version-4", "genelist.lsj")
+    infnp = paths.genelist
+    outfnp = paths.genelsj
     emap = {}
     
     i = -1
@@ -98,8 +101,7 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(os.path.join(Dirs.encyclopedia, "Version-4", "regulatory-element-registry-hg19.V2.json.gz"),
-                      emap)
+    ensembl_to_symbol(paths.re_json, emap)
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
