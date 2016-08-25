@@ -23,7 +23,7 @@ def main():
     pg = PostgresWrapper(DBCONN)
 
     if args.refresh_re:
-        print("creating RE table...")
+        print("creating RE tables...")
         n_re = pg.recreate_re_table(paths.re_json)
         print("inserted %d REs" % n_re)
     
