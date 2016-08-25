@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW IF EXISTS bed_ranges_{tablesuffix};
+DROP MATERIALIZED VIEW IF EXISTS re_bed_intersection_{tablesuffix};
 
 CREATE MATERIALIZED VIEW re_bed_intersection_{tablesuffix}
 AS SELECT
@@ -10,5 +10,5 @@ FROM
    re,
    bed_ranges_{tablesuffix}
 WHERE
-   overlap_bp > 0
+   upper(bed_ranges_{tablesuffix}.startend * re.startend) - lower(bed_ranges_{tablesuffix}.startend * re.startend) > 0
 ;
