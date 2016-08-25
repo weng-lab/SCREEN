@@ -13,12 +13,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, staticDir, es, ps, version, webSocketUrl):
+    def __init__(self, viewDir, staticDir, es, ps, webSocketUrl):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, es, ps, version, webSocketUrl)
-        self.cart = CartController(self.templates, es, ps, version, webSocketUrl)
+        self.mc = MainController(self.templates, es, ps, webSocketUrl)
+        self.cart = CartController(self.templates, es, ps, webSocketUrl)
         self.trackhub = TrackhubController(self.templates, es, ps,
-                                           version, webSocketUrl)
+                                           webSocketUrl)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):

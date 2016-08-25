@@ -45,8 +45,11 @@ RE_table.prototype.disable_cart_icons = function() {
 };
 
 function cart_img(rmv, src_only){
-    var src = Ver() + "/static/cart" + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : "<img src='" + src + "' width='56' height='56'>");
+    var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
+    if(src_only){
+	return src;
+    }
+    return '<img class="rowCart" src="' + src + '">';
 }
 
 RE_table.prototype.genCartCol = function(field) {

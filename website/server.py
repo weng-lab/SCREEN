@@ -42,7 +42,6 @@ class Config:
         self.errorFnp = os.path.join(self.logDir,
                                      "error-" + ts + ".log")
 
-        self.version = '/'.join(["ver4", "search"])
         self.staticDir = os.path.join(self.root, "static")
         self.viewDir = os.path.join(self.root, "views")
 
@@ -95,7 +94,7 @@ def main():
 
     config = Config("main")
     main = MainApp(config.viewDir, config.staticDir,
-                   es, ps, config.version, webSocketUrl)
+                   es, ps, webSocketUrl)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
     cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 

@@ -4,10 +4,10 @@ from common.page_info import PageInfoMain
 from common.session import Sessions
 
 class MainController:
-    def __init__(self, templates, es, ps, version, webSocketUrl):
+    def __init__(self, templates, es, ps, webSocketUrl):
         self.t = templates
         self.ps = ps
-        self.params = (es, ps, version, webSocketUrl)
+        self.params = (es, ps, webSocketUrl)
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
