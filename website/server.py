@@ -80,7 +80,7 @@ def main():
         args.dev = False
 
     webSocketUrl = '"ws://" + window.location.hostname + ":%s"' % args.websocket_port
-    if not self.args.dev:
+    if not args.dev:
         webSocketUrl = '"ws://" + window.location.hostname + "/ws/"';
 
     es = ElasticSearchWrapper(Elasticsearch())
