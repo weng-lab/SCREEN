@@ -206,7 +206,6 @@ RE_table.prototype.browserClick = function(){
 
 	    window.open(url, '_blank');
 	}
-
     } );
 }
 
