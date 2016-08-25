@@ -62,7 +62,8 @@ def main():
                 if rank == "confidence": continue
                 if rank == "conservation": continue
                 for cell_line in d["ranks"][rank]:
-                    if cell_line not in ranks[rank]: ranks[rank][cell_line] = []
+                    if cell_line not in ranks[rank]:
+                        ranks[rank][cell_line] = []
                     ranks[rank][cell_line].append(d["ranks"][rank][cell_line]["rank"])
             ranks["confidence"].append(int(d["confidence"])) if d["confidence"] < 325.0 else ranks["confidence"].append(324)
             ranks["conservation"].append(int(d["ranks"]["conservation"]["rank"]))
