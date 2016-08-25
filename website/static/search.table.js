@@ -54,7 +54,7 @@ function cart_img(rmv, src_only){
 
 RE_table.prototype.genCartCol = function(field) {
     return {data: field,
-	    render: function(d) { return cart_img(cart.has_item(d),
+	    render: function(d) { return cart_img(cart.has_re(d),
 						  false)},
 	    className: "cart"};
 };
@@ -253,13 +253,9 @@ RE_table.prototype.cartClick = function() {
 
     $(this.tableDom).on( 'click', 'img', function() {
 	var i = $(this);
-	var r = _this.result_from_tablerow_child(i);
-	if (cart.has_item(r)) {
-	    cart.remove_item(r);
-	} else {
-	    cart.add_item(r);
-	}
-	i.attr("src", cart_img(cart.has_item(r), true));
+	var re = _this.result_from_tablerow_child(i);
+	cart.reClick(re);
+	i.attr("src", cart_img(cart.has_re(re), true));
     });
 };
 
