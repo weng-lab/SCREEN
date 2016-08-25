@@ -110,7 +110,7 @@ class PostgresWrapper:
                     tablesuffix = self.get_table_suffix(assay, assembly, chrom)
                     if tablesuffix == "": continue
                     print("recreating view for %s" % tablesuffix)
-                    self.recreate_intersection_mv(tablesuffix)
+                    self.recreate_intersection_mv(tablesuffix, "_".join((assembly, chrom)))
 
     def refresh_all_mvs(self):
         for assembly in self.assemblies:
@@ -119,17 +119,19 @@ class PostgresWrapper:
                     tablesuffix = self.get_table_suffix(assay, assembly, chrom)
                     if tablesuffix == "": continue
                     print("refreshing view for %s" % tablesuffix)
-                    self.refresh_intersection_mv(tablesuffix)
+                    self.refresh_intersection_mv(tablesuffix, "_".join((assembly, chrom)))
 
-    def recreate_intersection_mv(self, tablesuffix):
+    def recreate_intersection_mv(self, tablesuffix, resuffix):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.recreate_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
-                curs.execute(f.read().format(tablesuffix=tablesuffix))
+                curs.execute(f.read().format(tablesuffix=tablesuffix,
+                                             resuffix = resuffix))
 
-    def refresh_intersection_mv(self, tablesuffix):
+    def refresh_intersection_mv(self, tablesuffix, resuffix):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.refresh_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
-                curs.execute(f.read().format(tablesuffix=tablesuffix))
+                curs.execute(f.read().format(tablesuffix=tablesuffix,
+                                             resuffix = resuffix))
 
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
