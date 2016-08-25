@@ -9,7 +9,7 @@ class MainController:
         self.ps = ps
         self.params = (es, ps, version, webSocketUrl)
         self.sessions = Sessions(self.ps.DBCONN)
-        self.session_uid = self.sessions.session_uuid(cherrypy)
+        self.session_uid = self.sessions.session_uuid()
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)

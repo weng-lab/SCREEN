@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, json, psycopg2, argparse
+import os, sys, json, psycopg2, argparse, cherrypy
 import uuid
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
@@ -16,12 +16,12 @@ class Sessions:
     def makeUid(self):
         return str(uuid.uuid4())
 
-    def session_uuid(self, cp):
-        uid = self.get(cp.session.id)
+    def session_uuid(self):
+        uid = self.get(cherrypy.session.id)
         if not uid:
             uid = self.makeUid()
-            cp.session["uid"] = uid
-            self.insert(cp.session.id, uid)
+            cherrypy.session["uid"] = uid
+            self.insert(cherrypy.session.id, uid)
         return uid
 
     def setupDB(self):
