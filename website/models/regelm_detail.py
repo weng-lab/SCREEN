@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os, sys, json
 from collections import defaultdict
 
@@ -43,7 +45,7 @@ class RegElementDetails:
               pos["chrom"],
               pos["start"],
               pos["end"],
-              self._get_overlap_message(overlap_fraction, overlap_bp)
+              self._get_overlap_message(overlap_fraction, overlap_bp))
         print("found", len(exps), "overlapping peak exps")
         return {"experiments": exps}
 

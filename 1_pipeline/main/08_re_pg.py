@@ -3,8 +3,10 @@ import sys
 import argparse
 
 sys.path.append("../../common")
+sys.path.append("../common")
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
+from constants import paths
 
 sys.path.append("../../../metadata/utils")
 from db_utils import getcursor
