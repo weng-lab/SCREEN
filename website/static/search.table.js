@@ -194,8 +194,7 @@ RE_table.prototype.browserClick = function(){
 	    url += "&position=" + chrom + ':' + start + '-' + end;
 
             var trackhubUrl = "http://megatux.purcaro.com:9002" +
-		[Ver(),
-                 "ucsc_trackhub",
+		["ucsc_trackhub",
 		 reAccession,
 		 "hub_" + Session_Uid + ".txt"].join('/');
 
