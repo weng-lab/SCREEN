@@ -122,14 +122,14 @@ class PostgresWrapper:
                     self.refresh_intersection_mv(tablesuffix)
         
     def recreate_intersection_mv(self, tablesuffix):
-        with open(os.path.realpath(__file__) + ".recreate_mv.sql", "r") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.recreate_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
-                curs.execute(file.read().format(tablesuffix=tablesuffix))
+                curs.execute(f.read().format(tablesuffix=tablesuffix))
 
     def refresh_intersection_mv(self, tablesuffix):
-        with open(os.path.realpath(__file__) + ".refresh_mv.sql", "r") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.refresh_mv.sql"), "r") as f:
             with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
-                curs.execute(file.read().format(tablesuffix=tablesuffix))
+                curs.execute(f.read().format(tablesuffix=tablesuffix))
         
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:

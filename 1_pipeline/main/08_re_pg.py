@@ -30,9 +30,9 @@ def main():
         print("inserted %d REs" % n_re)
     
     if args.refresh:
-        pg.refresh_intersection_mv()
+        pg.refresh_all_mvs()
     else:
-        pg.recreate_intersection_mv()
+        pg.recreate_all_mvs()
 
     return 0
 
