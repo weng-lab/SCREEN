@@ -104,6 +104,7 @@
   var FacetList = {{ facetlist_json }};
   var RankList = {{ ranklist_json }};
   var TSS_List = {{ tsslist_json }};
+  var Session_Uid = "{{ SessionUid }}";
 </script>
 
 {{ hh.js("/static/_regelm_details.init.js") }}
@@ -119,9 +120,9 @@
 {{ hh.js("/static/search.setup.js") }}
 {{ hh.js("/static/re_cart.js") }}
 
-<script>  
+<script>
   var cart = initCart();
-  
+
   $( document ).ready(function() {
       setupSocket(play, ParsedQuery);
   });

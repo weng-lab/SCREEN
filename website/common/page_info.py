@@ -43,7 +43,7 @@ class PageInfoMain:
         retval["rankB"] = kwargs["rankB"]
         return retval
 
-    def searchPage(self, args, kwargs):
+    def searchPage(self, args, kwargs, uuid):
         retval = self.wholePage()
 
         parsed = ""
@@ -64,7 +64,7 @@ class PageInfoMain:
                      {"id": "tfs", "name": "TF peak intersection",
                       "type": "checklist", "label_text": "tfs",
                       "indices": ["tfs"], "visible": True} ]
-        
+
         ranklist = [{"id": "dnase", "name": "DNase"},
                     {"id": "ctcf", "name": "CTCF"},
                     {"id": "promoter", "name": "promoter-like"},
@@ -82,7 +82,8 @@ class PageInfoMain:
                        "facetlist_json": json.dumps(facetlist),
                        "ranklist_json": json.dumps(ranklist),
                        "tsslist_json": json.dumps(tsslist),
-                       "searchPage": True })
+                       "searchPage": True,
+                       "SessionUid" : uuid })
 
         return retval
 
@@ -156,11 +157,10 @@ class PageInfoMain:
         if not reAccessions:
             retval.update({"error": "cart %s is empty" % uuid})
             reAccessions = []
-            
+
         retval.update({"reAccessions": json.dumps(reAccessions),
                        "uuid" : uuid})
         return retval
 
     def setCart(self, uuid, reAccessions):
         return self.ps.addToCart(uuid, reAccessions)
-
