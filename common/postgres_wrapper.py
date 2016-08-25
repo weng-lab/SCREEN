@@ -35,26 +35,32 @@ class PostgresWrapper:
         retval += self.findBedOverlap("histone", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
         return retval
 
-    def recreate_re_table(self, fnp):
+    def recreate_re_tables(self, fnp):
         with getcursor(self.DBCONN, "recreate_re_table") as curs:
 
-            curs.execute("DROP TABLE IF EXISTS re")
-            curs.execute("""
-            CREATE TABLE re (
-            id serial PRIMARY KEY,
-            accession text,
-            startend int4range )
-            """)
-
+            for assembly in self.assemblies:
+                for chrom in self.chroms[assembly]:
+                    tablename = "re_" + "_".join((assembly, chrom))
+                    if tablename == "re_": continue
+                    
+                    curs.execute("DROP TABLE IF EXISTS %(table)s", {"table": table})
+                    curs.execute("""
+                    CREATE TABLE %(table)s (
+                    id serial PRIMARY KEY,
+                    accession text,
+                    startend int4range )
+                    """, {"table": table})
+            
             with gzip.open(fnp, "r") as f:
                 i = 0
                 for line in f:
                     if i % 100000 == 0: print("working with row %d" % i)
                     re = json.loads(line)
                     curs.execute("""
-                    INSERT INTO re (accession, startend)
+                    INSERT INTO %(table)s (accession, startend)
                     VALUES (%(acc)s, int4range(%(start)s, %(end)s))
-                    """, {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"]})
+                    """, {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"],
+                          "table": "re_" + "_".join((assembly, chrom))})
                     i += 1
         return i
 
