@@ -7,7 +7,7 @@ function initCart(){
 	var svg = cartobj.contentDocument.getElementsByTagName("svg")[0];
 	var img = svg.getElementsByTagName("image")[0];
 	img.onclick = function() {
-            if (cart.items.length > 0) {
+            if (cart.res.length > 0) {
 		go_to_cart();
             }
 	}
@@ -18,7 +18,7 @@ function initCart(){
 }
 
 function go_to_cart() {
-    var data = JSON.stringify(cart.items);
+    var data = JSON.stringify(cart.res);
 
     $.ajax({
         type: "POST",
@@ -39,7 +39,7 @@ function go_to_cart() {
 }
 
 function ShoppingCart(){
-    this.items = [];
+    this.res = [];
 
     this.bind = function(svg) {
 	this.svg = svg;
@@ -48,35 +48,33 @@ function ShoppingCart(){
     };
 
     this.clear = function() {
-	this.items = [];
+	this.res = [];
 	this.update_counter();
     };
 
     this.update_counter = function() {
-	this.counter.textContent = this.items.length;
+	this.counter.textContent = this.res.length;
     };
     
-    this.add_item = function(item) {
-	this.items.push(item);
+    this.add_re = function(re) {
+	this.res.push(re.accession);
 	this.update_counter();
     };
 
-    this.has_item = function(item) {
-	for (i in this.items) {
-	    if (this.items[i].accession == item.accession) {
-		return true;
-	    }
-	}
-	return false;
+    this.has_re = function(re) {
+	return _.contains(this.res, re.accession);
     };
     
-    this.remove_item = function(item) {
-	for (i in this.items) {
-	    if (this.items[i].accession == item.accession) {
-		this.items.splice(i, 1);
-	    }
-	}
+    this.remove_re = function(re) {
+	this.res = _.without(this.res, re.accession);
 	this.update_counter();
     };
-    
+
+    this.reClick = function(re){
+	if (this.has_re(re)) {
+	    this.remove_re(re);
+	} else {
+	    this.add_re(re);
+	}
+    }
 };
