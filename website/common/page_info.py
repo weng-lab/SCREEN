@@ -11,16 +11,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from autocomplete import Autocompleter
 
 class PageInfoMain:
-    def __init__(self, es, ps, webSocketUrl):
+    def __init__(self, es, ps):
         self.es = es
         self.ps = ps
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es, ps)
-        self.webSocketUrl = webSocketUrl
 
     def wholePage(self, indexPage = False):
         return {"page": {"title" : "Regulatory Element Visualizer"},
-                "webSocketUrl" : self.webSocketUrl,
                 "indexPage": indexPage,
                 "reAccessions" : []
         }

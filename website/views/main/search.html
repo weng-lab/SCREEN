@@ -99,7 +99,6 @@
 </div>
 
 <script>
-  var WebSocketUrl = {{ webSocketUrl }};
   var ParsedQuery = {{ parsedUserQuery }};
   var FacetList = {{ facetlist_json }};
   var RankList = {{ ranklist_json }};
@@ -124,7 +123,7 @@
   var cart = initCart();
 
   $( document ).ready(function() {
-      setupSocket(play, ParsedQuery);
+      play(ParsedQuery);
   });
 
 </script>

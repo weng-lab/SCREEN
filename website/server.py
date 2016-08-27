@@ -69,7 +69,6 @@ def parse_args():
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
-    parser.add_argument('--websocket_port', default=9000, type=int)
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
     return parser.parse_args()
@@ -79,18 +78,13 @@ def main():
     if args.production:
         args.dev = False
 
-    webSocketUrl = '"ws://" + window.location.hostname + ":%s"' % args.websocket_port
-    if not args.dev:
-        webSocketUrl = '"ws://" + window.location.hostname + "/ws/"';
-
     es = ElasticSearchWrapper(Elasticsearch())
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
 
     config = Config("main")
-    main = MainApp(config.viewDir, config.staticDir,
-                   es, ps, webSocketUrl)
+    main = MainApp(config.viewDir, config.staticDir, es, ps)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
     cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 
