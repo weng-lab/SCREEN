@@ -3,7 +3,7 @@ var searchquery = new Query();
 function perform_search(){
     sendText(JSON.stringify({"action": "query",
 			     "callback": "regulatory_elements",
-			     "index": "regulatory_elements",
+			     "index": REjsonIndex,
 			     "object": searchquery.eso}));
 };
 
