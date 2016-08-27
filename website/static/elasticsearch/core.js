@@ -16,7 +16,7 @@ var ALL_GENE = 10;
 var HISTOGRAM_BINS   = 100;
 
 var cell_line_request = {"action": "enumerate",
-			 "index": "regulatory_elements",
+			 "index": REjsonIndex,
 			 "doc_type": "element",
 			 "name": "cell_line",
 			 "field": "ranks.dnase"};
@@ -30,15 +30,15 @@ var rank_map = {
 
 function request_venn(venn_queries){
     sendText(JSON.stringify({"action": "query",
-			     "index": "regulatory_elements",
+			     "index": REjsonIndex,
 			     "callback": "venn_handler_both",
 			     "object": venn_queries[0]}));
     sendText(JSON.stringify({"action": "query",
-			     "index": "regulatory_elements",
+			     "index": REjsonIndex,
 			     "callback": "venn_handler_left",
 			     "object": venn_queries[2]}));
     sendText(JSON.stringify({"action": "query",
-			     "index": "regulatory_elements",
+			     "index": REjsonIndex,
 			     "callback": "venn_handler_right",
 			     "object": venn_queries[1]}));
 };
