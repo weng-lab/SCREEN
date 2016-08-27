@@ -2,14 +2,15 @@
 
 import os, sys, json
 
+from models.regelm import RegElements
+from models.regelm_detail import RegElementDetails
+from models.expression_matrix import ExpressionMatrix
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
-from models.regelm import RegElements
-from models.regelm_detail import RegElementDetails
-from models.expression_matrix import ExpressionMatrix
 
 class AjaxWebService:
     def __init__(self, es, ps):
@@ -79,13 +80,7 @@ class AjaxWebService:
         self.ps.logQuery(j, ret, "")
         return ret
     
-    def process(self, payload):
-        try:
-            j = json.loads(payload)
-        except:
-            raise
-            return { "error" : "error parsing payload"}
-
+    def process(self, j):
         try:
             if "action" in j:
                 action = j["action"] 

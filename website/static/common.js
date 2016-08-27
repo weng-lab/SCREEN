@@ -1,12 +1,10 @@
 //
 
 function sendText(s) {
-    var data = JSON.stringify(s);
-
     $.ajax({
         type: "POST",
         url: "/ajaxws",
-        data: data,
+        data: s,
         dataType: "json",
         contentType : "application/json",
         success: function(r){
