@@ -82,18 +82,19 @@ class AjaxWebService:
     def process(self, payload):
         try:
             j = json.loads(payload)
+        except:
+            raise
+            return { "error" : "error parsing payload"}
 
+        try:
             if "action" in j:
                 action = j["action"] 
                 if action in self.actions:
                     return self.actions[action](j)
                 print("unknown action:", action)
                 
-            ret = self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
+            return self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
         except:
             raise
-            ret = { "status" : "error",
-                    "err" : 1}
-
-        return ret
+            return { "error" : "error running action"}
