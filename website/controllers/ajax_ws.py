@@ -11,17 +11,24 @@ from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 
-cmap = {"regulatory_elements": RegElements,
-        "expression_matrix": ExpressionMatrix}
-
 class AjaxWebService:
     def __init__(self, es, ps):
         self.es = es
         self.ps = ps
         self.details = RegElementDetails(es, ps)
         self.ac = Autocompleter(es)
+        self.regElements = RegElements(es)
+
+        self.cmap = {"regulatory_elements": RegElements,
+                     "expression_matrix": ExpressionMatrix}
         
-    def _get_and_send_re_detail(self, j):
+        self.actions = {"enumerate": self._enumerate,
+                        "re_detail": self._re_detail,
+                        "peak_detail" : self._peaks_detail,
+                        "suggest" : self._suggest,
+                        "query": self._query}
+        
+    def _re_detail(self, j):
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
                         "position": j["coord"]} }
@@ -40,7 +47,7 @@ class AjaxWebService:
 
         return output
 
-    def _get_and_send_peaks_detail(self, j):
+    def _peaks_detail(self, j):
         output = {"type": "peak_details",
                   "q": {"accession": j["accession"],
                         "position": j["coord"]} }
@@ -55,35 +62,34 @@ class AjaxWebService:
         ret.update(self.ac.get_suggestions(j))
         return ret
 
+    def _enumerate(self, j):
+        raw_results = self.es.get_field_mapping(index=j["index"],
+                                                doc_type=j["doc_type"],
+                                                field=j["field"])
+        raw_results.update({"name": j["name"]})
+        return raw_results
+
+    def _query(self, j):
+        ret = self.es.search(body=j["object"], index=j["index"])
+        
+        if j["callback"] in self.cmap:
+            ret = self.cmap[j["callback"]].process_for_javascript(ret)
+            
+        ret["callback"] = j["callback"]
+        self.ps.logQuery(j, ret, "")
+        return ret
+    
     def process(self, payload):
         try:
             j = json.loads(payload)
-            regElements = RegElements(self.es)
 
             if "action" in j:
-                if j["action"] == "enumerate":
-                    raw_results = self.es.get_field_mapping(index=j["index"],
-                                                       doc_type=j["doc_type"],
-                                                       field=j["field"])
-                    raw_results.update({"name": j["name"]})
-                    return raw_results
-                if j["action"] == "re_detail":
-                    return self._get_and_send_re_detail(j)
-                elif j["action"] == "peak_detail":
-                    return self._get_and_send_peaks_detail(j)
-                elif j["action"] == "suggest":
-                    return self._suggest(j)
-                elif j["action"] == "query":
-                    raw_results = self.es.search(body=j["object"], index=j["index"])
-                    if j["callback"] in cmap:
-                        processed_results = cmap[j["callback"]].process_for_javascript(raw_results)
-                    else:
-                        processed_results = raw_results
-                    processed_results["callback"] = j["callback"]
-                    self.ps.logQuery(j, processed_results, "")
-                    return processed_results
-
-            ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
+                action = j["action"] 
+                if action in self.actions:
+                    return self.actions[action](j)
+                print("unknown action:", action)
+                
+            ret = self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
         except:
             raise
