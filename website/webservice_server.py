@@ -110,6 +110,8 @@ class MyServerProtocol(WebSocketServerProtocol):
                         processed_results = raw_results
                     processed_results["callback"] = j["callback"]
                     self.sendMessage(json.dumps(processed_results))
+                    #print(processed_results)
+                    ps.logQuery(j, processed_results, "")
                     return
 
             ret = regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))

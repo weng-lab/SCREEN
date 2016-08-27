@@ -18,9 +18,12 @@ def setupDb(cur):
     DROP TABLE IF EXISTS {tableName};
     CREATE TABLE {tableName}
     (id serial PRIMARY KEY,
-    query text,
+    query json,
+    userQuery text,
+    esIndex text,
     numResults integer,
-    ip text
+    ip text,
+    timeAndDate TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
     ) """.format(tableName = tableName))
     
 def parse_args():
