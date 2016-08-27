@@ -22,8 +22,6 @@ class AjaxWebService:
         self.ac = Autocompleter(es)
         
     def _get_and_send_re_detail(self, j):
-        global details
-
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
                         "position": j["coord"]} }
@@ -43,7 +41,6 @@ class AjaxWebService:
         return output
 
     def _get_and_send_peaks_detail(self, j):
-        global details
         output = {"type": "peak_details",
                   "q": {"accession": j["accession"],
                         "position": j["coord"]} }
