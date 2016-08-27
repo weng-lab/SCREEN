@@ -2,9 +2,11 @@
 
 import cherrypy, jinja2, os, sys
 
-from controllers.main.main import MainController
-from controllers.main.trackhub import TrackhubController
-from controllers.main.cart import CartController
+from controllers.main import MainController
+from controllers.trackhub import TrackhubController
+from controllers.cart import CartController
+from controllers.ajax_ws import AjaxWebService
+
 from common.session import Sessions
 
 from timeit import default_timer as timer
@@ -13,12 +15,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, staticDir, es, ps, webSocketUrl):
+    def __init__(self, viewDir, staticDir, es, ps):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, es, ps, webSocketUrl)
-        self.cartc = CartController(self.templates, es, ps, webSocketUrl)
-        self.trackhub = TrackhubController(self.templates, es, ps,
-                                           webSocketUrl)
+        self.mc = MainController(self.templates, es, ps)
+        self.cartc = CartController(self.templates, es, ps)
+        self.trackhub = TrackhubController(self.templates, es, ps)
+        self.ajaxWS = AjaxWebService(es, ps)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):
@@ -107,3 +109,10 @@ class MainApp():
     def setCart(self):
         j = cherrypy.request.json
         return self.cartc.SetCart(self.session_uuid(), j)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def ajaxws(self):
+        j = cherrypy.request.json
+        return self.ajaxWS.process(j)

@@ -13,11 +13,10 @@ from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
 
 class TrackhubController:
-    def __init__(self, templates, es, ps, webSocketUrl):
+    def __init__(self, templates, es, ps):
         self.templates = templates
         self.es = es
         self.ps = ps
-        self.webSocketUrl = webSocketUrl
 
         self.assembly = "hg19"
         self.debug = False

@@ -73,8 +73,8 @@ function toggle_display(el, sh){
     el.style.display = (sh ? "block" : "none");
 }
 
-function socket_message_handler(e) {
-    results = JSON.parse(e.data);
+function ajaxws_message_handler(e) {
+    results = e;
 
     //console.log(results);
     

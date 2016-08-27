@@ -10,8 +10,8 @@ function perform_search() {
 			     "object": searchquery.eso}));
 };
 
-function socket_message_handler(e) {
-    results = JSON.parse(e.data);
+function ajaxws_message_handler(e) {
+    results = e;
     if (re_table.callback) {
 	re_table.runCallback();
 	return;
