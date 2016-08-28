@@ -2,7 +2,7 @@
 import sys, os
 import ConfigParser
 
-class Config:
+class V4Config:
     fnp = os.path.join(os.path.dirname(__file__), "../config.ini")
     
     c = ConfigParser.ConfigParser()

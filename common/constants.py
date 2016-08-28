@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from files_and_paths import Dirs
-from config import Config
+from v4_config import V4Config
 
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
@@ -15,7 +15,7 @@ class paths:
                           "rewriteFnp" : os.path.join(v4d, "regulatory-element-registry-hg19.V3.mod.json.gz"),
                           "index" : "regulatory_elements_3"}}
 
-    re_json_version = Config.re_version
+    re_json_version = V4Config.re_version
     re_json_orig = re_json_vers[re_json_version]["origFnp"]
     re_json_rewrite = re_json_vers[re_json_version]["rewriteFnp"]
     re_json_index = re_json_vers[re_json_version]["index"]
