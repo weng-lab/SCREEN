@@ -2,7 +2,7 @@
 
 import cherrypy, jinja2, os, sys
 
-from controllers.ui import UiController
+from controllers.ui_controller import UiController
 
 from timeit import default_timer as timer
 

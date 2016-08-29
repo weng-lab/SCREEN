@@ -2,7 +2,7 @@
 
 import cherrypy, jinja2, os, sys
 
-from controllers.main import MainController
+from controllers.app_main import MainController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.ajax_ws import AjaxWebService
@@ -115,4 +115,6 @@ class MainApp():
     @cherrypy.tools.json_out()
     def ajaxws(self):
         j = cherrypy.request.json
-        return self.ajaxWS.process(j)
+        retval = self.ajaxWS.process(j)
+        print(retval)
+        return retval

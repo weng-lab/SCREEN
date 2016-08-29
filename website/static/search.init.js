@@ -50,7 +50,6 @@ var facet_link_handlers = {
 
 var query_results_handlers = {
     "regulatory_elements": handle_regulatory_results,
-    "expression_matrix": handle_expression_matrix_results,
     "venn_handler_both": venn_handler_both,
     "venn_handler_left": venn_handler_left,
     "venn_handler_right": venn_handler_right
@@ -76,7 +75,7 @@ function toggle_display(el, sh){
 function ajaxws_message_handler(e) {
     results = e;
 
-    //console.log(results);
+    console.log(results);
     
     if ("enumeration" == results["type"]) {
         // console.log(e.data);
@@ -102,6 +101,8 @@ function ajaxws_message_handler(e) {
 	handle_details(results);
     } else if ("peak_details" == results["type"]) {
 	handle_peaks(results);
+    } else if ("expression_matrix" == results["type"]) {
+	handle_expression_matrix_results(results);
     } else {
         console.log("unhandled result type:", results["type"]);
     }
@@ -276,7 +277,7 @@ function create_rank_heatmap(results, rank, cell_line_datapairs){
 
 function handle_expression_matrix_results(results){
     clear_div_contents(document.getElementById("expression_heatmap"));
-    create_expression_heatmap(results.results);
+    create_expression_heatmap(results);
 }
 
 function handle_regulatory_results(results){
@@ -331,7 +332,7 @@ function handle_regulatory_results(results){
 	genelist.push(result.genes["nearest-pc"]["gene-id"]);
 	genelist.push(result.genes["nearest-all"]["gene-id"]);
     }
-    perform_gene_expression_search(gene_expression_query(genelist));
+    perform_gene_expression_search(genelist);
 
     if (searchquery.has_cell_line_filter()){
 	for (i in enumerations["cell_line"]) {

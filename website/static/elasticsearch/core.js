@@ -105,22 +105,6 @@ function rank_aggs(cell_line) {
 
 };
 
-function gene_expression_query(ensembl_ids){
-    var retval = {
-	"query": {
-	    "bool": {
-		"should": []
-	    }
-	}
-    };
-
-    for (id in ensembl_ids)    {
-	retval.query.bool.should.push({"match": {"ensembl_id": ensembl_ids[id]}});
-    }
-
-    return retval;
-};
-
 function accession_list_query(accs) {
     var retval = {
 	"eso": {
@@ -356,11 +340,9 @@ Query.prototype.set_conservation_filter = function(lbound, ubound) {
     this.set_filter_generic(lbound, ubound, CONSERVATION_RNK, "ranks.conservation.rank");
 };
 
-function perform_gene_expression_search(obj){
-    sendText(JSON.stringify({"action": "query",
-			     "callback": "expression_matrix",
-			     "index": "expression_matrix",
-			     "object": obj}));
+function perform_gene_expression_search(ids){
+    sendText(JSON.stringify({"action": "gene_expression",
+			     "ids": ids}));
 };
 
 function request_cell_lines(){
