@@ -43,13 +43,13 @@ class PostgresWrapper:
                     tablename = "re_" + "_".join((assembly, chrom))
                     if tablename == "re_": continue
                     
-                    curs.execute("DROP TABLE IF EXISTS %(table)s", {"table": table})
+                    curs.execute("DROP TABLE IF EXISTS {tablename}".format(tablename = tablename))
                     curs.execute("""
-                    CREATE TABLE %(table)s (
+                    CREATE TABLE {tablename} (
                     id serial PRIMARY KEY,
                     accession text,
                     startend int4range )
-                    """, {"table": table})
+                    """.format(tablename = tablename))
             
             with gzip.open(fnp, "r") as f:
                 i = 0
@@ -57,10 +57,10 @@ class PostgresWrapper:
                     if i % 100000 == 0: print("working with row %d" % i)
                     re = json.loads(line)
                     curs.execute("""
-                    INSERT INTO %(table)s (accession, startend)
+                    INSERT INTO {tablename} (accession, startend)
                     VALUES (%(acc)s, int4range(%(start)s, %(end)s))
-                    """, {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"],
-                          "table": "re_" + "_".join((assembly, chrom))})
+                    """.format(tablename = tablename), {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"],
+                                                        "table": "re_" + "_".join((assembly, chrom))})
                     i += 1
         return i
 
