@@ -30,10 +30,10 @@ class ExpressionMatrix:
                     clmap[ev["cell_line"]] = clptr
                     heatmap["cols"].append(ev["cell_line"])
                     clptr += 1
-                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = ev["rep1_fpkm"] if "rep1_fpkm" in ev else float('NaN')
+                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = ev["rep1_fpkm"] if "rep1_fpkm" in ev else -1.0
             heatmap["rows"].append(hit["gene_name"] if hit["gene_name"] is not None else hit["ensembl_id"])
         for i in range(0, len(rmtrx)):
-            heatmap["matrix"].append([float('NaN') for n in range(0, clptr)])
+            heatmap["matrix"].append([-1.0 for n in range(0, clptr)])
             for k, v in rmtrx[i].iteritems():
                 heatmap["matrix"][i][clmap[k]] = v
         return Heatmap(heatmap["matrix"], heatmap["rows"], heatmap["cols"])
