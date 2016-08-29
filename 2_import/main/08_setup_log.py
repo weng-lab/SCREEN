@@ -25,7 +25,7 @@ def setupDb(cur):
     ip text,
     timeAndDate TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
     ) """.format(tableName = tableName))
-    
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -38,6 +38,6 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     with getcursor(DBCONN, "08_setup_log") as curs:
         setupDb(curs)
-            
+
 if __name__ == '__main__':
     main()

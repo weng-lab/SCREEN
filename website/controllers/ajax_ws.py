@@ -22,13 +22,13 @@ class AjaxWebService:
 
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
-        
+
         self.actions = {"enumerate": self._enumerate,
                         "re_detail": self._re_detail,
                         "peak_detail" : self._peaks_detail,
                         "suggest" : self._suggest,
                         "query": self._query}
-        
+
     def _re_detail(self, j):
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
@@ -72,22 +72,22 @@ class AjaxWebService:
 
     def _query(self, j):
         ret = self.es.search(body=j["object"], index=j["index"])
-        
+
         if j["callback"] in self.cmap:
             ret = self.cmap[j["callback"]].process_for_javascript(ret)
-            
+
         ret["callback"] = j["callback"]
         self.ps.logQuery(j, ret, "")
         return ret
-    
+
     def process(self, j):
         try:
             if "action" in j:
-                action = j["action"] 
+                action = j["action"]
                 if action in self.actions:
                     return self.actions[action](j)
                 print("unknown action:", action)
-                
+
             return self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
         except:
