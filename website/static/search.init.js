@@ -164,21 +164,21 @@ function refresh_venn(){
 }
 
 function create_expression_heatmap(results){
+
     var data = {
-	"collabels": [],
-	"rowlabels": [],
-	"data": []
+	"collabels": results["collabels"],
+	"rowlabels": results["rowlabels"],
+	"data": results["matrix"]
     };
     var result, eset;
-    var map = {};
-    var datamap = {};
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
     defaultlayout.margin.top = 200;
     defaultlayout.margin.left = 600;
     
-    for (i in results.hits) {
+/* 
+   for (i in results.hits) {
 	result = results.hits[i]._source;
 	data.collabels.push(result.ensembl_id);
 	for (n in result.expression_values) {
@@ -200,24 +200,26 @@ function create_expression_heatmap(results){
 	    }
 	}
     }
+*/
 
     defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", defaultlayout.range[1]];
 
     for (i = 0; i < data.rowlabels.length; i++) {
 	for (j = 0; j < data.collabels.length; j++) {
-	    if (j in datamap[i]){
+	    if (j in data.data[i]){
 		data.data.push({"row": i + 1,
 				"col": j + 1,
-				"value": datamap[i][j]});
+				"value": data.data[i][j]});
             } else {
 		data.data.push({"row": i + 1,
 				"col": j + 1,
-				"value": 0});
+				"value": NaN});
             }
 	}
     }
 
     create_heatmap(data, "expression_heatmap", defaultlayout);
+    
 }
 
 function create_rank_heatmap(results, rank, cell_line_datapairs){
