@@ -75,7 +75,7 @@ function toggle_display(el, sh){
 function ajaxws_message_handler(e) {
     results = e;
 
-    console.log(results);
+    //console.log(results);
     
     if ("enumeration" == results["type"]) {
         // console.log(e.data);
