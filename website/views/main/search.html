@@ -99,7 +99,7 @@
 </div>
 
 <script>
-  var WebSocketUrl = {{ webSocketUrl }};
+  var REjsonIndex = "{{ re_json_index }}";
   var ParsedQuery = {{ parsedUserQuery }};
   var FacetList = {{ facetlist_json }};
   var RankList = {{ ranklist_json }};
@@ -124,7 +124,7 @@
   var cart = initCart();
 
   $( document ).ready(function() {
-      setupSocket(play, ParsedQuery);
+      play(ParsedQuery);
   });
 
 </script>

@@ -2,7 +2,6 @@ import argparse
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from es_bulk_importer import ESBulkImporter
 
 class executable_importer:
@@ -27,7 +26,4 @@ class executable_importer:
         try:
             importer.do_import(self.fnp, self.index, doc_type=self.doc_type)
         except:
-            if args.debug:
-                raise
-            return 1
-        return 0
+            raise

@@ -17,12 +17,16 @@ class ESBulkImporter:
                   purge_existing = True, verbose = True, unzip_on_fly = False):
         if fnp.endswith(".gz"):
             unzip_on_fly = True
-        cmds = ["/usr/sbin/esbulk", "-server", self.server,
-                "-index", index, "-type", doc_type]
+        cmds = ["/usr/sbin/esbulk",
+                "-server", self.server,
+                "-index", index,
+                "-type", doc_type]
+        
         if purge_existing: cmds.append("-purge")
         if verbose: cmds.append("-verbose")
         if self.n_workers != 4: cmds += ["-w", str(self.n_workers)]
         if self.batch_size != 1000: cmds += ["-size", str(self.batch_size)]
         if unzip_on_fly: cmds.append("-z")
         cmds.append(fnp)
+        
         Utils.runCmds(cmds, verbose=verbose)

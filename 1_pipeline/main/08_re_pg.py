@@ -2,8 +2,8 @@ import os
 import sys
 import argparse
 
-sys.path.append("../../common")
-sys.path.append("../common")
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             "../../common"))
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
 from constants import paths

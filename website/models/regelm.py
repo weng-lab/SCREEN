@@ -1,14 +1,17 @@
 import os, sys, json
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from constants import paths
+
 class RegElements:
     def __init__(self, es):
-        self.index = "regulatory_elements"
+        self.index = paths.re_json_index
         self.es = es
 
     @staticmethod
     def process_for_javascript(raw_results):
         retval = {"type": "query_results",
-                  "index": "regulatory_elements",
+                  "index": paths.re_json_index,
                   "aggs": {}}
         retval["results"] = raw_results["hits"]
         if "aggregations" not in raw_results:

@@ -38,14 +38,20 @@ def ensembl_to_symbol(inFnp, outFnp, emap):
                 sys.stdout.flush()
                 i += 1
                 d = json.loads(line)
-                pc = d["genes"]["nearest-pc"]["gene-id"].split(".")[0]
-                an = d["genes"]["nearest-all"]["gene-id"].split(".")[0]
-                d["genes"]["nearest-pc"]["gene-name"] = None
-                d["genes"]["nearest-all"]["gene-name"] = None
+
+                gpc = d["genes"]["nearest-pc"]["gene1"]
+                d["genes"]["nearest-pc"] = gpc
+                pc = gpc["gene name"].split(".")[0]
                 if pc in emap:
                     d["genes"]["nearest-pc"]["gene-name"] = emap[pc]
+
+                gall = d["genes"]["nearest-all"]["gene1"]
+                an = gall["gene name"].split(".")[0]
+                d["genes"]["nearest-all"] = gall
+                d["genes"]["nearest-all"]["gene-name"] = None
                 if an in emap:
                     d["genes"]["nearest-all"]["gene-name"] = emap[an]
+                    
                 o.write(json.dumps(d) + "\n")
 
 def tryparse(coordinate):
@@ -101,7 +107,7 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(paths.re_json_orig, path.re_json_rewrite, emap)
+    ensembl_to_symbol(paths.re_json_orig, paths.re_json_rewrite, emap)
                 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0

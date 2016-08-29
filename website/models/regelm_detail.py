@@ -3,9 +3,12 @@ from __future__ import print_function
 import os, sys, json
 from collections import defaultdict
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from constants import paths
+
 class RegElementDetails:
     def __init__(self, es, ps):
-        self.index = "regulatory_elements"
+        self.index = paths.re_json_index
         self.es = es
         self.ps = ps
 
@@ -26,15 +29,20 @@ class RegElementDetails:
         return retval["hits"]["hits"][0]["_source"]
 
     def _get_overlap_message(self, overlap_fraction, overlap_bp):
-        if overlap_fraction > 0.0: return "(overlap at least %f%)" % (overlap_fraction * 100.0)
-        if overlap_bp > 1: return "(overlap at least %d bp)" % overlap_bp
+        if overlap_fraction > 0.0:
+            return "(overlap at least %f%)" % (overlap_fraction * 100.0)
+        if overlap_bp > 1:
+            return "(overlap at least %d bp)" % overlap_bp
         return "(any overlap)"
     
-    def get_intersecting_beds(self, reAccession, overlap_fraction = 0.0, overlap_bp = 0):
+    def get_intersecting_beds(self, reAccession,
+                              overlap_fraction = 0.0, overlap_bp = 0):
         re = self.reFull(reAccession)
-        if "error" in re: return re
+        if "error" in re:
+            return re
         pos = re["position"]
-        if overlap_fraction > 1.0: overlap_fraction = 1.0
+        if overlap_fraction > 1.0:
+            overlap_fraction = 1.0
         exps = self.ps.findBedOverlapAllAssays(re["genome"],
                                                pos["chrom"],
                                                pos["start"],
