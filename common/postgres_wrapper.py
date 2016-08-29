@@ -42,7 +42,7 @@ class PostgresWrapper:
                 for chrom in self.chroms[assembly]:
                     tablename = "re_" + "_".join((assembly, chrom))
                     if tablename == "re_": continue
-                    
+
                     curs.execute("DROP TABLE IF EXISTS %(table)s", {"table": table})
                     curs.execute("""
                     CREATE TABLE %(table)s (
@@ -50,7 +50,7 @@ class PostgresWrapper:
                     accession text,
                     startend int4range )
                     """, {"table": table})
-            
+
             with gzip.open(fnp, "r") as f:
                 i = 0
                 for line in f:
@@ -147,18 +147,18 @@ class PostgresWrapper:
         if "results" in ret:
             if "results" in ret["results"]:
                 numResults = ret["results"]["results"]["total"]
-        
+
         with getcursor(self.DBCONN, "logQuery") as curs:
             curs.execute("""
             INSERT into query_logs(query, userQuery, esIndex, numResults, ip)
-            VALUES (%(query)s, %(userQuery)s, 
+            VALUES (%(query)s, %(userQuery)s,
             %(esIndex)s, %(numResults)s, %(ip)s)""",
                          {"query" : json.dumps(query),
                           "userQuery" : userQuery,
                           "esIndex" : esIndex,
                           "numResults": numResults,
                           "ip" : ip})
-                 
+
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:
             curs.execute("""
