@@ -32,10 +32,9 @@
 </div>
 
 <script>
-  var WebSocketUrl = {{ webSocketUrl }};
+  var REjsonIndex = "{{ re_json_index }}";
   var CartReAccessions = {{ reAccessions }};
   var CartGuid = "{{ uuid }}";
-
 </script>
 
 {{ hh.js("/static/search.table.js") }}
@@ -45,7 +44,7 @@
 <script>
   
   $( document ).ready(function() {
-  setupSocket(perform_search);
+  perform_search();
   setupCartBrowser();
   });
   

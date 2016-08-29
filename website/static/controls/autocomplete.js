@@ -19,7 +19,7 @@ function bind_autocomplete_textbox(textbox_id, f) {
 	    return false;
 	},
 	change: function() {
-	    $("#" + textbox_id).val("").css("display", 2);
+	    //$("#" + textbox_id).val("").css("display", 2);
 	}
     });
 }

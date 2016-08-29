@@ -42,8 +42,7 @@ class PostgresWrapper:
                 for chrom in self.chroms[assembly]:
                     tablename = "re_" + "_".join((assembly, chrom))
                     if tablename == "re_": continue
-                    
-                    curs.execute("DROP TABLE IF EXISTS {tablename}".format(tablename = tablename))
+                    curs.execute("DROP TABLE IF EXISTS %(table)s", {"table": table})
                     curs.execute("""
                     CREATE TABLE {tablename} (
                     id serial PRIMARY KEY,
@@ -138,6 +137,26 @@ class PostgresWrapper:
             with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
                 curs.execute(f.read().format(tablesuffix=tablesuffix,
                                              resuffix = resuffix))
+
+    def logQuery(self, query, ret, ip):
+        userQuery = query.get("userQuery", "")
+        esIndex = query.get("index", "")
+
+        numResults = -1
+        if "results" in ret:
+            if "results" in ret["results"]:
+                numResults = ret["results"]["results"]["total"]
+
+        with getcursor(self.DBCONN, "logQuery") as curs:
+            curs.execute("""
+            INSERT into query_logs(query, userQuery, esIndex, numResults, ip)
+            VALUES (%(query)s, %(userQuery)s,
+            %(esIndex)s, %(numResults)s, %(ip)s)""",
+                         {"query" : json.dumps(query),
+                          "userQuery" : userQuery,
+                          "esIndex" : esIndex,
+                          "numResults": numResults,
+                          "ip" : ip})
 
     def getCart(self, guid):
         with getcursor(self.DBCONN, "getCart") as curs:

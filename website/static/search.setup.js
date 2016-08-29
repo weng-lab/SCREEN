@@ -3,7 +3,7 @@ var searchquery = new Query();
 function perform_search(){
     sendText(JSON.stringify({"action": "query",
 			     "callback": "regulatory_elements",
-			     "index": "regulatory_elements",
+			     "index": REjsonIndex,
 			     "object": searchquery.eso}));
 };
 
@@ -116,9 +116,7 @@ var update_histogram_selection = {
     all: function() {update_histogram(GUI.facets["all"]);}
 };
 
-function checklist_facet()
-{
-    
+function checklist_facet(){
     this.tfs = [];
     this.input_box = null;
     this.check_div = null;
@@ -143,7 +141,6 @@ function checklist_facet()
 	this.check_div.appendChild(document.createElement("br"));
 	
     };
-    
 }
 
 var GUI = new facetGUI();

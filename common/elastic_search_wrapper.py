@@ -1,7 +1,11 @@
+import sys, os
 import requests
 import json
 import elasticsearch
 from copy import copy
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from constants import paths
 
 get_headers = {}
 put_headers = {}
@@ -144,7 +148,7 @@ class ElasticSearchWrapper:
         return self._get_overlaps_generic(coord, "snp_aliases")
 
     def get_overlapping_res(self, coord):
-        return self._get_overlaps_generic(coord, "regulatory_elements")
+        return self._get_overlaps_generic(coord, paths.re_json_index)
 
     def get_overlapping_genes(self, coord):
         return self._get_overlaps_generic(coord, "gene_aliases")
@@ -163,7 +167,8 @@ class ElasticSearchWrapper:
                 "datapairs": [(k, -1) for k, v in result.iteritems()] if result is not None else [] }
 
     def get_cell_line_list(self):
-        jobj = self.es.get_field_mapping(index="regulatory_elements", doc_type="element", field="ranks.dnase")
+        jobj = self.es.get_field_mapping(index=paths.re_json_index,
+                                         doc_type="element", field="ranks.dnase")
         return [k for k, v in jobj.iteritems()]
 
     def gene_aliases_to_coordinates(self, q):

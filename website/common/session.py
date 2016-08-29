@@ -18,16 +18,6 @@ class Sessions:
     def makeUid(self):
         return str(uuid.uuid4())
 
-    def setupDB(self):
-        with getcursor(self.DBCONN, "get") as curs:
-            curs.execute("""
-DROP TABLE IF EXISTS {table};
-CREATE TABLE {table}
-(id serial PRIMARY KEY,
-uid text,
-session_id text
-) """.format(table = self.table))
-
     def insert(self, session_id, uid):
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""
@@ -92,7 +82,6 @@ def main():
 
     for t in ["sessions"]:
         s = Sessions(DBCONN)
-        s.setupDB()
 
 if __name__ == '__main__':
     main()
