@@ -48,7 +48,7 @@ def hexplot(dx, dy, xlab, ylab, outfnp):
 
     
 def main():
-    fnp = paths.re_json
+    fnp = paths.re_json_orig
     onp = paths.hexplots_dir
     Utils.ensureDir(onp + "/")
     i = 1

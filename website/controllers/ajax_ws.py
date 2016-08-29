@@ -2,6 +2,7 @@
 
 import os, sys, json
 
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
@@ -16,6 +17,7 @@ class AjaxWebService:
     def __init__(self, es, ps):
         self.es = es
         self.ps = ps
+        self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps)
         self.ac = Autocompleter(es)
         self.regElements = RegElements(es)
@@ -27,7 +29,8 @@ class AjaxWebService:
                         "re_detail": self._re_detail,
                         "peak_detail" : self._peaks_detail,
                         "suggest" : self._suggest,
-                        "query": self._query}
+                        "query": self._query,
+                        "gene_expression": self._expression_matrix}
 
     def _re_detail(self, j):
         output = {"type": "re_details",
@@ -48,6 +51,11 @@ class AjaxWebService:
 
         return output
 
+    def _expression_matrix(self, j):
+        retval = self.em.search(j["ids"])
+        return retval
+        
+    
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
                   "q": {"accession": j["accession"],
@@ -85,7 +93,9 @@ class AjaxWebService:
             if "action" in j:
                 action = j["action"]
                 if action in self.actions:
-                    return self.actions[action](j)
+                    retval = self.actions[action](j)
+                    print(retval)
+                    return retval
                 print("unknown action:", action)
 
             return self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
