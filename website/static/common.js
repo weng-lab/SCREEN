@@ -11,7 +11,8 @@ function sendText(s) {
 	    ajaxws_message_handler(r);
         },
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+	    console.log("Status: " + textStatus);
+	    console.log("Error: " + errorThrown);
 	}       
     });
 }
