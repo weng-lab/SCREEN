@@ -94,8 +94,7 @@ class AjaxWebService:
                 action = j["action"]
                 if action in self.actions:
                     retval = self.actions[action](j)
-                    if "gene_expression" == action:
-                        print(retval)
+                    #print(retval)
                     return retval
                 print("unknown action:", action)
 
