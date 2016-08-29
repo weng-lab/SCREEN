@@ -207,7 +207,7 @@ function create_expression_heatmap(results){
 
     for (i = 0; i < data.rowlabels.length; i++) {
 	for (j = 0; j < data.collabels.length; j++) {
-	    if (j in data.data[i]){
+	    if (j in data.data[i] && data.data[i][j] >= 0.0){
 		data.data.push({"row": i + 1,
 				"col": j + 1,
 				"value": data.data[i][j]});
