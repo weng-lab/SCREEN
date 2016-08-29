@@ -26,7 +26,7 @@ def main():
 
     if args.refresh_re:
         print("creating RE tables...")
-        n_re = pg.recreate_re_table(paths.re_json)
+        n_re = pg.recreate_re_tables(paths.re_json_orig)
         print("inserted %d REs" % n_re)
     
     if args.refresh:
