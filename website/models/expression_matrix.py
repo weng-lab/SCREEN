@@ -1,4 +1,5 @@
 import os, sys, json
+import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common/python"))
 from heatmap import Heatmap
@@ -30,7 +31,7 @@ class ExpressionMatrix:
                     clmap[ev["cell_line"]] = clptr
                     heatmap["cols"].append(ev["cell_line"])
                     clptr += 1
-                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = ev["rep1_fpkm"] if "rep1_fpkm" in ev else -1.0
+                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = math.log(ev["rep1_fpkm"] + 1.0) if "rep1_fpkm" in ev else -1.0
             heatmap["rows"].append(hit["gene_name"] if hit["gene_name"] is not None else hit["ensembl_id"])
         for i in range(0, len(rmtrx)):
             heatmap["matrix"].append([-1.0 for n in range(0, clptr)])
