@@ -15,7 +15,6 @@ class ExpressionMatrix:
                   "matrix": raw_results.matrix,
                   "collabels": raw_results.collabels,
                   "rowlabels": raw_results.rowlabels }
-        print(retval)
         return retval
 
     @staticmethod
@@ -49,6 +48,9 @@ class ExpressionMatrix:
         if type(q) is not dict: q = json.loads(q)
         raw_results = self.es.search(index = self.index, body = q)
         raw_results = ExpressionMatrix.results_to_heatmap(raw_results["hits"]["hits"])
-        raw_results.cluster_rows_by_hierarchy()
-        raw_results.cluster_cols_by_hierarchy()
-        return ExpressionMatrix.process_for_javascript(raw_results)
+        row_tree = raw_results.cluster_rows_by_hierarchy()
+        col_tree = raw_results.cluster_cols_by_hierarchy()
+        retval = ExpressionMatrix.process_for_javascript(raw_results)
+        retval.update({"rowtree": row_tree.as_dict(),
+                       "coltree": col_tree.as_dict()})
+        return retval
