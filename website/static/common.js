@@ -13,6 +13,7 @@ function sendText(s) {
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
 	    console.log("Status: " + textStatus);
 	    console.log("Error: " + errorThrown);
+	    console.log(XMLHttpRequest);
 	}       
     });
 }
