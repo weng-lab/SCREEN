@@ -1,5 +1,4 @@
-function process_histogram_result(control_prefix, result)
-{
+function process_histogram_result(control_prefix, result){
 
     if (!(control_prefix in GUI.facets)) {
 	console.log(control_prefix + " is not in the facets list");
@@ -26,19 +25,25 @@ function process_histogram_result(control_prefix, result)
 	nbuckets.push({"key": i, "doc_count": 0});
     }
     result["buckets"] = nbuckets;
-    
+
     if (!_.isEqual(nrange, range_facet.range_slider.get_range())) {
 	range_facet.range_slider.set_range(...nrange);
 	range_facet.range_slider.refresh_selection(...nrange);
     }
 
     coordinates = range_facet.range_slider.get_selection_range();
-    if (range_facet.histogram)
-	range_facet.histogram.reset(result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
-				    {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
-    else
-	range_facet.histogram = create_histogram(document.getElementById(control_prefix + "_histogram"), result["buckets"], {"min": result["minvalue"], "max": result["maxvalue"]},
-						 {"min": +coordinates[0], "max": +coordinates[1]}, searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    if (range_facet.histogram) {
+	range_facet.histogram.reset(result["buckets"],
+                                    {"min": result["minvalue"], "max": result["maxvalue"]},
+				    {"min": +coordinates[0], "max": +coordinates[1]},
+                                    searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    } else {
+	range_facet.histogram = create_histogram(document.getElementById(control_prefix + "_histogram"),
+                                                 result["buckets"],
+                                                 {"min": result["minvalue"], "max": result["maxvalue"]},
+						 {"min": +coordinates[0], "max": +coordinates[1]},
+                                                 searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
+    }
 
     if (result["buckets"].length > range_facet.histogram.width) {
 	searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] = Math.round((nrange[1] - nrange[0]) / range_facet.histogram.width);
@@ -46,11 +51,9 @@ function process_histogram_result(control_prefix, result)
     }
 
     return true;
-
 }
 
-function process_agglist(facetbox_id, agglist)
-{
+function process_agglist(facetbox_id, agglist){
     clear_facetlist(facetbox_id);
     if (agglist.datapairs == null) return;
     if (agglist.datapairs.length == 1) agglist.datapairs[0][1] = "x";
@@ -99,11 +102,11 @@ function add_filterresult(id, result){
     } else {
 	rght_text = document.createTextNode(result[1] == -1 ? "" : "(" + result[1] + ")");
     }
-    
+
     var name_text = document.createTextNode(result[0]);
     name_span.appendChild(name_text);
     rght_span.className = "pull-right";
-    
+
     if (result[1] == "x"){
 	n_href.appendChild(rght_text);
 	rght_span.appendChild(n_href);
