@@ -45,17 +45,17 @@ def ensembl_to_symbol(inFnp, outFnp, emap):
                         g = d["genes"][geneCat]["gene" + str(gi)]
                         pc = g["gene name"].split(".")[0]
                         if pc in emap:
-                            g["gene-name"] = emap[pc]
+                            g["gene name"] = emap[pc]
                         gpca.append(g)
                     d["genes"][geneCat] = gpca
-                
+
                 for rk in ["ctcf", "dnase", "promoter", "enhancer"]:
                     cts = d["ranks"][rk].keys()
                     for ct in cts:
                         nct = ct.replace('.', '_')
                         if nct != ct:
                             d["ranks"][rk][nct] = d["ranks"][rk].pop(ct)
-                
+
                 o.write(json.dumps(d) + "\n")
 
 def tryparse(coordinate):
@@ -74,7 +74,7 @@ def main():
     infnp = paths.genelist
     outfnp = paths.genelsj
     emap = {}
-    
+
     i = -1
     skipped = 0
 
@@ -112,7 +112,7 @@ def main():
                 o.write(json.dumps(geneobj) + "\n")
 
     ensembl_to_symbol(paths.re_json_orig, paths.re_json_rewrite, emap)
-                
+
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
 
