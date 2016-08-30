@@ -169,7 +169,7 @@ function create_expression_heatmap(results){
     var data = {
 	"collabels": results["collabels"],
 	"rowlabels": results["rowlabels"],
-	"data": results["matrix"]
+	"matrix": results["matrix"]
     };
     var result, eset;
 
@@ -195,7 +195,6 @@ function create_expression_heatmap(results){
 			}
 			var v1 = Math.log(eset[key]);
 			datamap[map[rl]][data.collabels.length - 1] = v1;
-			if (v1 > defaultlayout.range[1]) defaultlayout.range[1] = v1;
 		    }
 		}
 	    }
@@ -203,14 +202,15 @@ function create_expression_heatmap(results){
     }
 */
 
-    defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", defaultlayout.range[1]];
-
+    data.data = [];
     for (i = 0; i < data.rowlabels.length; i++) {
 	for (j = 0; j < data.collabels.length; j++) {
-	    if (j in data.data[i] && data.data[i][j] >= 0.0){
+	    if (j in data.matrix[i] && data.matrix[i][j] >= 0.0){
+		if (data.matrix[i][j] > defaultlayout.range[1])
+		    defaultlayout.range[1] = data.matrix[i][j];
 		data.data.push({"row": i + 1,
 				"col": j + 1,
-				"value": data.data[i][j]});
+				"value": data.matrix[i][j]});
             } else {
 		data.data.push({"row": i + 1,
 				"col": j + 1,
@@ -219,6 +219,7 @@ function create_expression_heatmap(results){
 	}
     }
 
+    defaultlayout.legend_labels = ["1", "", "", "", "", "", "", "", "", defaultlayout.range[1]];    
     create_heatmap(data, "expression_heatmap", defaultlayout);
     
 }
