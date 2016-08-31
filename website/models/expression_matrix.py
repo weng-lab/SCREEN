@@ -43,14 +43,21 @@ class ExpressionMatrix:
         for i in ids:
 	    q["query"]["bool"]["should"].append({"match": {"ensembl_id": i}})
         return self.rawquery(q)
-    
+
     def rawquery(self, q):
-        if type(q) is not dict: q = json.loads(q)
+        if type(q) is not dict:
+            q = json.loads(q)
         raw_results = self.es.search(index = self.index, body = q)
-        raw_results = ExpressionMatrix.results_to_heatmap(raw_results["hits"]["hits"])
-        row_tree = raw_results.cluster_rows_by_hierarchy()
-        col_tree = raw_results.cluster_cols_by_hierarchy()
-        retval = ExpressionMatrix.process_for_javascript(raw_results)
-        retval.update({"rowtree": row_tree.as_dict(),
-                       "coltree": col_tree.as_dict()})
+
+        try:
+            raw_results = ExpressionMatrix.results_to_heatmap(raw_results["hits"]["hits"])
+            row_tree = raw_results.cluster_rows_by_hierarchy()
+            col_tree = raw_results.cluster_cols_by_hierarchy()
+            retval = ExpressionMatrix.process_for_javascript(raw_results)
+            retval.update({"rowtree": row_tree.as_dict(),
+                           "coltree": col_tree.as_dict()})
+        except:
+            raise
+            retval = {"rowtree": {},
+                      "coltree": {}};
         return retval
