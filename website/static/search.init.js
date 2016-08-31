@@ -165,13 +165,18 @@ function refresh_venn(){
 }
 
 function create_expression_heatmap(results){
-
     var data = {
 	"collabels": results["collabels"],
 	"rowlabels": results["rowlabels"],
 	"matrix": results["matrix"]
     };
-    var result, eset;
+
+    var longestRowLabel = _.max(data["rowlabels"], function(s){return s.length;});
+    var longestColLabel = _.max(data["collabels"], function(s){return s.length;});
+    var xpad = getWidthOfText(longestRowLabel, 'Arial', '8px');
+    var ypad = getWidthOfText(longestColLabel, 'Arial', '8px');
+
+    console.log("max lengths:", xpad, ypad);
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
@@ -179,6 +184,7 @@ function create_expression_heatmap(results){
     defaultlayout.margin.left = 100;
 
 /*
+    var result, eset;
    for (i in results.hits) {
 	result = results.hits[i]._source;
 	data.collabels.push(result.ensembl_id);
@@ -282,7 +288,6 @@ function handle_expression_matrix_results(results){
 }
 
 function handle_regulatory_results(results){
-
     var needs_requery = false;
 
     if(re_table.callback){
