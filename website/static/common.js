@@ -42,9 +42,13 @@ function showTab(tabName){
 
 function getWidthOfText(txt, fontname, fontsize){
     // http://stackoverflow.com/a/25467363
-    var e = document.createElement('span');
-    e.style.fontSize = fontsize;
-    e.style.fontFamily = fontname;
-    e.innerHTML = txt;
-    return e.innerWidth;
+    // Create a dummy canvas (render invisible with css)
+    var c = document.createElement('canvas');
+    var ctx=c.getContext('2d');
+    ctx.font = fontsize + 'px' + fontname;
+    return ctx.measureText(txt).width;
+}
+
+function roundUpToNearest(num, upTo){
+    return Math.ceil(num / upTo) * upTo;
 }

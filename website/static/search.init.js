@@ -173,15 +173,16 @@ function create_expression_heatmap(results){
 
     var longestRowLabel = _.max(data["rowlabels"], function(s){return s.length;});
     var longestColLabel = _.max(data["collabels"], function(s){return s.length;});
-    var xpad = getWidthOfText(longestRowLabel, 'Arial', '8px');
-    var ypad = getWidthOfText(longestColLabel, 'Arial', '8px');
 
-    console.log("max lengths:", xpad, ypad);
+    var xpad = getWidthOfText(longestRowLabel, 'sans-serif', '12px');
+    xpad = roundUpToNearest(xpad, 25);
+    var ypad = getWidthOfText(longestColLabel, 'sans-serif', '12px');
+    ypad = roundUpToNearest(ypad, 75);
 
     defaultlayout.range = [0, 0];
     defaultlayout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
-    defaultlayout.margin.top = 300;
-    defaultlayout.margin.left = 100;
+    defaultlayout.margin.top = ypad;
+    defaultlayout.margin.left = xpad;
 
 /*
     var result, eset;
