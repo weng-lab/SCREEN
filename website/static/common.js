@@ -14,7 +14,7 @@ function sendText(s) {
 	    console.log("Status: " + textStatus);
 	    console.log("Error: " + errorThrown);
 	    console.log(XMLHttpRequest);
-	}       
+	}
     });
 }
 
@@ -31,11 +31,20 @@ function growPerm(div){
 function showTab(tabName){
     // http://stackoverflow.com/a/11744586
     var tab = $('.nav-tabs a[href="#' + tabName + '"]');
-    
+
     tab.click(function(e){
 	e.preventDefault();
 	tab.tab('show');
     });
-    tab.show();           
+    tab.show();
     tab.tab('show');
+}
+
+function getWidthOfText(txt, fontname, fontsize){
+    // http://stackoverflow.com/a/25467363
+    var e = document.createElement('span');
+    e.style.fontSize = fontsize;
+    e.style.fontFamily = fontname;
+    e.innerHTML = txt;
+    return e.innerWidth;
 }
