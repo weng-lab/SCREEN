@@ -10,7 +10,7 @@ import gzip
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 
-sys.path.append("../common")
+sys.path.append("../../common")
 from constants import paths
 
 def main():

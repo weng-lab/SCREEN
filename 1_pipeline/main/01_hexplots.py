@@ -7,7 +7,7 @@ import json
 import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-sys.path.append("../common")
+sys.path.append("../../common")
 from files_and_paths import Dirs
 from utils import Utils
 from constants import paths
