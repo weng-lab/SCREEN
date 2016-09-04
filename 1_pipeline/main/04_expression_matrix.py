@@ -10,7 +10,7 @@ sys.path.append("../../../metadata/utils")
 from helpers_metadata import Exp
 from files_and_paths import Dirs
 
-sys.path.append("../common")
+sys.path.append("../../common")
 from constants import paths
 
 def main():
