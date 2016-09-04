@@ -45,7 +45,8 @@ function process_histogram_result(control_prefix, result){
                                                  searchquery.eso["aggs"][control_prefix]["histogram"]["interval"]);
     }
 
-    if (result["buckets"].length > range_facet.histogram.width) {
+    if (result["buckets"].length > range_facet.histogram.width
+	&& range_facet.histogram.width > 0) {
 	searchquery.eso["aggs"][control_prefix]["histogram"]["interval"] = Math.round((nrange[1] - nrange[0]) / range_facet.histogram.width);
 	return false;
     }
