@@ -15,7 +15,7 @@ export const fetchTodos = (userQuery) => (dispatch, getState) => {
 	type: 'FETCH_TODOS_REQUEST',
 	userQuery,
     });
-    
+
     return api.fetchTodos(userQuery).then(
 	response =>{
 	    dispatch({
