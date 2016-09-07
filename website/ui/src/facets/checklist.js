@@ -3,13 +3,8 @@ var ReactDOM = require('react-dom');
 
 var CheckBox = React.createClass({
 
-    getInitialState: function() {
-	return {checked: this.props.checked};
-    },
-
     change_handler: function() {
-	this.setState({checked: this.refs.box.checked});
-	if (this.props.onchange) this.props.onchange();
+	if (this.props.onchange) this.props.onchange(this.props.k);
     },
     
     render: function() {
@@ -18,25 +13,6 @@ var CheckBox = React.createClass({
 		: <div><input ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>);
     }
 
-});
-
-    
-var CheckList = React.createClass({
-
-    onchange: function() {
-	var refs = this.refs;
-	this.props.items.map(function(item) {item.checked = refs[item.key].state.checked;});
-	if (this.props.onchange) this.props.onchange(this.props.items);
-    },
-    
-    render: function() {
-	var onchange = this.onchange;
-	var create_item = function(item) {
-	    return <CheckBox ref={item.key} key={item.key} value={item.value} onchange={onchange} checked={item.checked} />;
-	};
-	return <div>{this.props.items.map(create_item)}</div>;
-    }
-    
 });
 
 var ChecklistFacet = React.createClass({
@@ -53,28 +29,42 @@ var ChecklistFacet = React.createClass({
 	e.preventDefault();
 	if ($.trim(this.state.text) == "") return;
 	var next_items = this.state.items.concat([{
-	    key: "check_" + this.state.items.length,
 	    value: this.state.text,
 	    checked: true
 	}]);
 	this.setState({items: next_items, text: ""});
     },
+
+    _clone_items: function() {
+	return $.extend(true, {}, this.state.items);
+    },
     
-    check_handler: function(items) {
-	console.log(items);
-	this.setState({items: items})
+    check_handler: function(key) {
+	var next_items = this._clone_items();
+	next_items[key].checked = !next_items[key].checked;
+	console.log(next_items);
+	this.setState({items: next_items})
     },
     
     render: function() {
+
+	var items = this.state.items;
+	var onchange = this.check_handler;
+	var create_item = function(key) {
+	    var item = items[key];
+	    return <CheckBox key={key} k={key} value={item.value} onchange={onchange} checked={item.checked} />;
+	};
+	
 	return (
 		<div>
 		   <form onSubmit={this.handleSubmit}>
 		      <input onChange={this.onChange} value={this.state.text} />
-		      <button>{'Add #' + (this.state.items.length + 1)}</button>
+		      <button>add</button>
 		   </form>
-		   <CheckList items={this.state.items} onchange={this.check_handler} />
+		   {Object.keys(this.state.items).map(create_item)}
 		</div>
 	);
+	
     }
     
 });
