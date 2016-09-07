@@ -14,8 +14,8 @@ var CheckBox = React.createClass({
     
     render: function() {
 	return (this.props.checked
-		? <div><input checked ref="box" type="checkbox" onChange={this.change_handler} />{this.props.value}</div>
-		: <div><input ref="box" type="checkbox" onChange={this.change_handler} />{this.props.value}</div>);
+		? <div><input checked ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>
+		: <div><input ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>);
     }
 
 });
