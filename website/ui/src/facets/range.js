@@ -77,8 +77,10 @@ var RangeSlider = React.createClass({
     
     render: function() {
 	return (<div><br/>
-		   <input ref="txmin" type="text" value={this.props.selection_range.min} onChange={this.onMinChange} /> -
-		   <input ref="txmax" type="text" value={this.props.selection_range.max} onChange={this.onMaxChange} />
+		   <input ref="txmin" type="text" value={this.props.selection_range.min} onChange={this.onMinChange}
+	 	      style={{width: "45%"}} /> -
+		   <input ref="txmax" type="text" value={this.props.selection_range.max} onChange={this.onMaxChange}
+		      style={{width: "45%"}} />
   		   <div ref="container" />
 		</div>
 	       );
