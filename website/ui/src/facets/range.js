@@ -10,12 +10,18 @@ var Histogram = React.createClass({
 	return <div ref="container" style={{width: "100%", height: "20px"}} />;
     },
 
-    componentDidMount: function() {
+    componentDidUpdate: function() {
 	this._histogram = this.create_histogram(this.refs.container);
+    },
+
+    componentDidMount: function() {
+	this.componentDidUpdate();
     },
 
     create_histogram: function(destination_div) {
 
+	$(destination_div).empty();
+	
 	var div = $(destination_div);
 	var height = div.height();
 	var width = div.width();
@@ -68,33 +74,46 @@ var Histogram = React.createClass({
 });
 
 var RangeSlider = React.createClass({
-
-    getInitialState: function() {
-	return {selection_range: this.props.selection_range};
-    },
     
     render: function() {
-	var value = this.state.selection_range.min + " - " + this.state.selection_range.max;
 	return (<div><br/>
-		   <input ref="txbox" type="text" value={value} />
+		   <input ref="txmin" type="text" value={this.props.selection_range.min} onChange={this.onMinChange} /> -
+		   <input ref="txmax" type="text" value={this.props.selection_range.max} onChange={this.onMaxChange} />
   		   <div ref="container" />
 		</div>
 	       );
     },
 
     componentDidMount: function() {
+	this.componentDidUpdate();
+    },
+    
+    componentDidUpdate: function() {
 	this._slider = this.create_range_slider(this.refs.container);
+    },
+
+    onMinChange: function() {
+	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
+	if (srange[0] > srange[1]) srange[0] = srange[1];
+	if (srange[0] < this.props.range.min) srange[0] = this.props.range.min;
+	this.set_selection(srange);
+    },
+
+    onMaxChange: function() {
+	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
+	if (srange[1] < srange[0]) srange[1] = srange[0];
+	if (srange[1] > this.props.range.max) srange[1] = this.props.range.max;
+	this.set_selection(srange);
     },
     
     create_range_slider: function(dcontainer) {
 	var container = $(dcontainer);
-	console.log(container);
-	container.slider({
+	container.empty().slider({
 	    range: true,
 	    min: this.props.range.min,
 	    max: this.props.range.max,
-	    values: [ this.state.selection_range.min, this.state.selection_range.max ],
-	    stop: this.set_selection,
+	    values: [ this.props.selection_range.min, this.props.selection_range.max ],
+	    stop: this._set_selection,
 	    slide: this.update_selection
 	});
 	return container;
@@ -102,33 +121,53 @@ var RangeSlider = React.createClass({
 
     update_selection: function(event, ui) {
 	var r = this._slider.slider("values");
-	this.refs.txbox.value = r[0] + " - " + r[1];
+	this.refs.txmin.value = r[0];
+	this.refs.txmax.value = r[1];
 	if (this.props.onslide) this.props.onslide(r);
     },
     
-    set_selection: function(event, ui) {
+    _set_selection: function(event, ui) {
 	var r = this._slider.slider("values");
-	this.setState({selection_range: {min: r[0], max: r[1]}});
+	this.set_selection(r);
+    },
+
+    set_selection: function(r) {
+	if (this.props.onchange) this.props.onchange(r);
     }
     
 });
 
 var RangeFacet = React.createClass({
 
+    getInitialState: function() {
+	return {
+	    selection_range: this.props.srange,
+	};
+    },
+    
     slide_handler: function(r) {
 	this.refs.histogram.update_selection(...r);
+    },
+
+    selection_change_handler: function(r) {
+	this.setState({
+	    selection_range: {
+		min: +r[0],
+		max: +r[1]
+	    }
+	});
     },
     
     render: function() {
 	return (<div>
 		   <Histogram
-		      range={this.props.range} selection_range={this.props.srange}
+		      range={this.props.range} selection_range={this.state.selection_range}
 		      interval={this.props.h_interval} data={this.props.h_data}
 		      margin={this.props.h_margin} ref="histogram"
 		   />
 		   <RangeSlider
-		      range={this.props.range} selection_range={this.props.srange}
-		      onslide={this.slide_handler} ref="slider"
+		      range={this.props.range} selection_range={this.state.selection_range}
+		      onslide={this.slide_handler} onchange={this.selection_change_handler} ref="slider"
 		   />
 		</div>
 	       );
