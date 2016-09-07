@@ -1,0 +1,7 @@
+g.bardeselected rect {
+  fill: #a0a0a0;
+}
+
+g.barselected rect {
+    fill: #000090;
+}
