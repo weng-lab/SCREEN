@@ -72,11 +72,13 @@ class AjaxWebService:
         return ret
 
     def _enumerate(self, j):
-        raw_results = self.es.get_field_mapping(index=j["index"],
-                                                doc_type=j["doc_type"],
-                                                field=j["field"])
-        raw_results.update({"name": j["name"]})
-        return raw_results
+        r = self.es.get_field_mapping(index=j["index"],
+                                      doc_type=j["doc_type"],
+                                      field=j["field"])
+        if "cell_line" == j["name"]:
+            r["datapairs"] = sorted(r["datapairs"], key=lambda s: s[0].lower())
+        r["name"] = j["name"]
+        return r
 
     def _query(self, j):
         ret = self.es.search(body=j["object"], index=j["index"])
