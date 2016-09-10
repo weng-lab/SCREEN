@@ -4,21 +4,25 @@ var d3 = require('d3');
 var $ = require('jquery');
 var __jui = require('jquery-ui-bundle');
 
-var Histogram = React.createClass({
+class Histogram extends React.Component {
+
+    constructor(props) {
+	super(props);
+    }
     
-    render: function() {
+    render() {
 	return <div ref="container" style={{width: "100%", height: "20px"}} />;
-    },
+    }
 
-    componentDidUpdate: function() {
+    componentDidUpdate() {
 	this._histogram = this.create_histogram(this.refs.container);
-    },
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
 	this.componentDidUpdate();
-    },
+    }
 
-    create_histogram: function(destination_div) {
+    create_histogram(destination_div) {
 
 	$(destination_div).empty();
 	
@@ -59,23 +63,31 @@ var Histogram = React.createClass({
 
 	return svg;
 	
-    },
+    }
 
     /*
      * to be called as the user is dragging the associated slider
      * this prevents a re-render of the component until the user has released the mouse
      */
-    update_selection: function(min, max) {
+    update_selection(min, max) {
 	this._histogram.selectAll("g")
             .data(this.props.data)
             .attr("class", function(d) { return (d.key >= +min && d.key < +max ? "barselected" : "bardeselected"); });   	
     }
 
-});
+}
 
-var RangeSlider = React.createClass({
+class RangeSlider extends React.Component {
+
+    constructor(props) {
+	super(props);
+	this.onMinChange = this.onMinChange.bind(this);
+	this.onMaxChange = this.onMaxChange.bind(this);
+	this._set_selection = this._set_selection.bind(this);
+	this.update_selection = this.update_selection.bind(this);
+    }
     
-    render: function() {
+    render() {
 	return (<div><br/>
 		   <input ref="txmin" type="text" value={this.props.selection_range.min} onChange={this.onMinChange}
 	 	      style={{width: "45%"}} /> -
@@ -84,31 +96,31 @@ var RangeSlider = React.createClass({
   		   <div ref="container" />
 		</div>
 	       );
-    },
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
 	this.componentDidUpdate();
-    },
+    }
     
-    componentDidUpdate: function() {
+    componentDidUpdate() {
 	this._slider = this.create_range_slider(this.refs.container);
-    },
+    }
 
-    onMinChange: function() {
+    onMinChange() {
 	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
 	if (srange[0] > srange[1]) srange[0] = srange[1];
 	if (srange[0] < this.props.range.min) srange[0] = this.props.range.min;
 	this.set_selection(srange);
-    },
+    }
 
-    onMaxChange: function() {
+    onMaxChange() {
 	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
 	if (srange[1] < srange[0]) srange[1] = srange[0];
 	if (srange[1] > this.props.range.max) srange[1] = this.props.range.max;
 	this.set_selection(srange);
-    },
+    }
     
-    create_range_slider: function(dcontainer) {
+    create_range_slider(dcontainer) {
 	var container = $(dcontainer);
 	container.empty().slider({
 	    range: true,
@@ -119,48 +131,49 @@ var RangeSlider = React.createClass({
 	    slide: this.update_selection
 	});
 	return container;
-    },
+    }
 
-    update_selection: function(event, ui) {
+    update_selection(event, ui) {
 	var r = this._slider.slider("values");
 	this.refs.txmin.value = r[0];
 	this.refs.txmax.value = r[1];
 	if (this.props.onslide) this.props.onslide(r);
-    },
+    }
     
-    _set_selection: function(event, ui) {
+    _set_selection(event, ui) {
 	var r = this._slider.slider("values");
 	this.set_selection(r);
-    },
+    }
 
-    set_selection: function(r) {
+    set_selection(r) {
 	if (this.props.onchange) this.props.onchange(r);
     }
     
-});
+}
 
-var RangeFacet = React.createClass({
+class RangeFacet extends React.Component {
 
-    getInitialState: function() {
-	return {
-	    selection_range: this.props.srange,
-	};
-    },
+    constructor(props) {
+	super(props);
+	this.state = {selection_range: this.props.srange};
+	this.slide_handler = this.slide_handler.bind(this);
+	this.selection_change_handler = this.selection_change_handler.bind(this);
+    }
     
-    slide_handler: function(r) {
+    slide_handler(r) {
 	this.refs.histogram.update_selection(...r);
-    },
+    }
 
-    selection_change_handler: function(r) {
+    selection_change_handler(r) {
 	this.setState({
 	    selection_range: {
 		min: +r[0],
 		max: +r[1]
 	    }
 	});
-    },
+    }
     
-    render: function() {
+    render() {
 	return (<div>
 		   <Histogram
 		      range={this.props.range} selection_range={this.state.selection_range}
@@ -175,7 +188,8 @@ var RangeFacet = React.createClass({
 	       );
     }
     
-});
+}
+export default RangeFacet;
 
 /*
  * test function with dummy data
