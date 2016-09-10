@@ -1,13 +1,18 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var ListItem = React.createClass({
+class ListItem extends React.Component {
 
-    onclick: function() {
-	if (this.props.onclick) this.props.onclick(this.props.k);
-    },
+    constructor(props) {
+	super(props);
+	this.onclick = this.onclick.bind(this);
+    }
     
-    render: function() {
+    onclick() {
+	if (this.props.onclick) this.props.onclick(this.props.k);
+    }
+    
+    render() {
 	
 	var classname, rtxt;
 	if (this.props.selected) {
@@ -28,23 +33,25 @@ var ListItem = React.createClass({
 	
     }
 
-});
+}
 
-var ListFacet = React.createClass({
+class ListFacet extends React.Component {
 
-    getInitialState: function() {
-	return {
+    constructor(props) {
+	super(props);
+	this.state = {
 	    items: this.props.items,
 	    selection: this.props.selection
 	};
-    },
+	this.click_handler = this.click_handler.bind(this);
+    }
     
-    click_handler: function(k) {
+    click_handler(k) {
 	if (k == this.state.selection) k = null;
 	this.setState({selection: k});
-    },
+    }
     
-    render: function() {
+    render() {
 	var click_handler = this.click_handler;
 	var s = this.state.selection;
 	var items = this.state.items;
@@ -57,7 +64,8 @@ var ListFacet = React.createClass({
 	return <div>{items}</div>;
     }
     
-});
+}
+export default ListFacet;
 
 /*
  * test function with dummy data

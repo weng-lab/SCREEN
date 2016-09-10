@@ -1,31 +1,40 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var CheckBox = React.createClass({
+class CheckBox extends React.Component {
 
-    change_handler: function() {
-	if (this.props.onchange) this.props.onchange(this.props.k);
-    },
+    constructor(props) {
+	super(props);
+	this.change_handler = this.change_handler.bind(this);
+    }
     
-    render: function() {
+    change_handler() {
+	if (this.props.onchange) this.props.onchange(this.props.k);
+    }
+    
+    render() {
 	return (this.props.checked
 		? <div><input checked ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>
 		: <div><input ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>);
     }
 
-});
+}
 
-var ChecklistFacet = React.createClass({
+class ChecklistFacet extends React.Component {
     
-    getInitialState: function() {
-	return {items: [], text: ''};
-    },
+    constructor(props) {
+	super(props);
+	this.state = {items: [], text: ''};
+	this.onChange = this.onChange.bind(this);
+	this.handleSubmit = this.handleSubmit.bind(this);
+	this.check_handler = this.check_handler.bind(this);
+    }
     
-    onChange: function(e) {
+    onChange(e) {
 	this.setState({text: e.target.value});
-    },
+    }
     
-    handleSubmit: function(e) {
+    handleSubmit(e) {
 	e.preventDefault();
 	if ($.trim(this.state.text) == "") return;
 	var next_items = this.state.items.concat([{
@@ -33,20 +42,20 @@ var ChecklistFacet = React.createClass({
 	    checked: true
 	}]);
 	this.setState({items: next_items, text: ""});
-    },
+    }
 
-    _clone_items: function() {
+    _clone_items() {
 	return $.extend(true, {}, this.state.items);
-    },
+    }
     
-    check_handler: function(key) {
+    check_handler(key) {
 	var next_items = this._clone_items();
 	next_items[key].checked = !next_items[key].checked;
 	console.log(next_items);
 	this.setState({items: next_items})
-    },
+    }
     
-    render: function() {
+    render() {
 
 	var items = this.state.items;
 	var onchange = this.check_handler;
@@ -67,6 +76,6 @@ var ChecklistFacet = React.createClass({
 	
     }
     
-});
+}
 
 ReactDOM.render(<ChecklistFacet />, document.getElementById("checklist"));
