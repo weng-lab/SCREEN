@@ -77,5 +77,6 @@ class ChecklistFacet extends React.Component {
     }
     
 }
+export default ChecklistFacet;
 
 ReactDOM.render(<ChecklistFacet />, document.getElementById("checklist"));
