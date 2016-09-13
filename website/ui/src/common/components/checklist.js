@@ -37,22 +37,19 @@ class ChecklistFacet extends React.Component {
     handleSubmit(e) {
 	e.preventDefault();
 	if ($.trim(this.state.text) == "") return;
-	var next_items = this.state.items.concat([{
+	var next_items = [...this.state.items, {
 	    value: this.state.text,
 	    checked: true
-	}]);
+	}];
 	this.setState({items: next_items, text: ""});
-    }
-
-    _clone_items() {
-	return $.extend(true, {}, this.state.items);
+	if (this.props.onchange) this.props.onchange();
     }
     
     check_handler(key) {
-	var next_items = this._clone_items();
+	var next_items = [...this.state.items];
 	next_items[key].checked = !next_items[key].checked;
-	console.log(next_items);
-	this.setState({items: next_items})
+	this.setState({items: next_items});
+	if (this.props.onchange) this.props.onchange();
     }
     
     render() {
@@ -78,5 +75,3 @@ class ChecklistFacet extends React.Component {
     
 }
 export default ChecklistFacet;
-
-ReactDOM.render(<ChecklistFacet />, document.getElementById("checklist"));
