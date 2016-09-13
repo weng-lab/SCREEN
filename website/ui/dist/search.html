@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>Search page test - React</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"><!-- for persona -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.12/r-2.1.0/sc-1.4.2/datatables.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css.css"></link>
+
+  </head>
+  <body>
+    <nav id="mainNavBar" class="navbar navbar-default navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+
+          <a class="navbar-brand" href="/{{version}}">Candidate RE Viz (alpha version)</a>
+
+	  <form class="navbar-form navbar-right">
+	    <object type="image/svg+xml" data="/static/re_cart.view.svg" id="shoppingcart_obj">
+	      <img src="/static/re_cart.view.png">
+	    </object>
+	  </form>
+
+	</div>
+      </div>
+    </nav>
+
+
+<div class="container" style="width:100%">
+  <div class="row" style="width:100%">
+
+    <div class="col-md-3 nopadding-right" id="facets-container">
+    </div>
+
+    <div class="col-md-9 nopadding-left">
+
+      <div id="exTab1" class="container">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab_results" data-toggle="tab">
+	      Candidate RE Search</a>
+          </li><li><a href="#tab_details" data-toggle="tab" style="display:none;">
+	      RE Details</a>
+          </li><li><a href="#tab_rank_heatmap" data-toggle="tab" style="display:none;">
+	      Rank Heatmap</a>
+          </li><li><a href="#tab_expression" data-toggle="tab">
+	      Nearby Gene Expression</a>
+          </li><li><a href="#tab_venn" data-toggle="tab">
+	      Comparison</a>
+          </li>
+        </ul>
+
+        <div class="tab-content clearfix">
+          <div class="tab-pane active" id="tab_results">
+            <div id="searchresults">
+            </div>
+          </div>
+
+          <div class="tab-pane" id="tab_details">
+	    <div id="redetails">
+	    </div>
+	    <div id="repileup">
+	    </div>
+	  </div>
+
+          <div class="tab-pane" id="tab_rank_heatmap">
+            <div id="heatmap_container">
+              <select id="heatmap_dropdown">
+              </select>
+              <div id="rank_heatmap">
+              </div>
+            </div>
+	  </div>
+
+          <div class="tab-pane" id="tab_expression">
+            <div id="expression_heatmap_container">
+              <div style="width:100%" id="expression_heatmap">
+              </div>
+            </div>
+          </div>
+
+	  <div class="tab-pane" id="tab_venn">
+	    <br>
+	    <br>
+	    <select id="cell_line_dropdown" onchange="javascript:refresh_venn();"></select>
+	    <select id="vennrank_dropdown" onchange="javascript:refresh_venn();">
+	      <option value="promoter">promoter-like</option>
+	      <option value="enhancer">enhancer-like</option>
+	      <option value="ctcf">CTCF</option>
+	      <option value="dnase">DNase</option>
+	    </select>
+	    <br>
+	    <br>
+	    <p>Ranked between 1 and <input type="text" id="venn_lbound_textbox" value="5000">
+	      <div style="width:200px" id="venn_lbound_slider"></div>
+	      <div style="width:200px; height:200px" class="venn" id="venn_div">
+	      </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="venntooltip" class="venntooltip">
+</div>
+<div id="tooltip" class="hidden">
+  <p><span id="value"></p>
+</div>
+
+<script src="bundle.js"></script>
+
+  </body>
+</html>

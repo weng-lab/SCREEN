@@ -49,6 +49,7 @@ class ListFacet extends React.Component {
     click_handler(k) {
 	if (k == this.state.selection) k = null;
 	this.setState({selection: k});
+	if (this.props.onchange) this.props.onchange();
     }
     
     render() {
@@ -72,6 +73,8 @@ export default ListFacet;
  */
 (function() {
 
+    if (!document.getElementById("list_facet")) return;
+    
     var items = [
 	{
 	    value: "K562",
