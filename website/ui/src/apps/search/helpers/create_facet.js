@@ -6,7 +6,8 @@ import {RangeFacetReducer} from '../../../common/reducers/range'
 import {ListFacetReducer} from '../../../common/reducers/list'
 import {ChecklistFacetReducer} from '../../../common/reducers/checklist'
 
-import {ADD_FACET} from '../reducers/root_reducer'
+import {FACETBOX_ACTION} from '../reducers/root_reducer'
+import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
 import {invalidate_results, facet_action} from './actions'
 
 import MainRangeFacet from '../components/range'
@@ -17,7 +18,8 @@ export const RANGE_FACET = 'RANGE_FACET';
 export const LIST_FACET = 'LIST_FACET';
 export const CHECKLIST_FACET = 'CHECKLIST_FACET';
 
-const range_props_map = (key) => (state) => {
+const range_props_map = (box, key) => (_state) => {
+    var state = _state.facet_boxes[box];
     return {
 	range: state.facets[key].state.range,
 	selection_range: state.facets[key].state.selection_range,
@@ -29,7 +31,8 @@ const range_props_map = (key) => (state) => {
     };
 };
 
-const list_props_map = (key) => (state) => {
+const list_props_map = (box, key) => (_state) => {
+    var state = _state.facet_boxes[box];
     return {
 	items: state.facets[key].state.items,
 	selection: state.facets[key].state.selection,
@@ -38,7 +41,8 @@ const list_props_map = (key) => (state) => {
     };
 };
 
-const checklist_props_map = (key) => (state) => {
+const checklist_props_map = (box, key) => (_state) => {
+    var state = _state.facet_boxes[box];
     return {
 	items: state.facets[key].state.items,
 	visible: state.facets[key].visible,
@@ -56,41 +60,38 @@ const props_dispatch_map = (dispatch) => {
 
 const _map = {
     RANGE_FACET: {
-	connector: (key) => connect(range_props_map(key), props_dispatch_map),
+	connector: (box, key) => connect(range_props_map(box, key), props_dispatch_map),
 	component: MainRangeFacet,
 	reducer: RangeFacetReducer
     },
     LIST_FACET: {
-	connector: (key) => connect(list_props_map(key), props_dispatch_map),
+	connector: (box, key) => connect(list_props_map(box, key), props_dispatch_map),
 	component: MainListFacet,
 	reducer: ListFacetReducer
     },
     CHECKLIST_FACET: {
-	connector: (key) => connect(checklist_props_map(key), props_dispatch_map),
+	connector: (box, key) => connect(checklist_props_map(box, key), props_dispatch_map),
 	component: MainChecklistFacet,
 	reducer: ChecklistFacetReducer
     }
 };
 
-const add_facet = (key, props) => {
-    console.log(_map[props.type]);
-    return Object.assign({}, props, {
-	type: ADD_FACET,
-	reducer: _map[props.type].reducer,
-	key
-    });
+const add_facet = (box, key, props) => {
+    return {
+	type: FACETBOX_ACTION,
+	key: box,
+	subaction: {
+	    type: ADD_FACET,
+	    reducer: _map[props.type].reducer,
+	    key
+	}
+    };
 };
 
-export const FacetCreator = (store) => (key, props) => {
-    store.dispatch(add_facet(key, props));
-    console.log("dispatched add_facet:");
-    console.log(add_facet(key, props));
-    console.log("store is:");
-    console.log(store);
+export const FacetCreator = (store, box) => (key, props) => {
+    store.dispatch(add_facet(box, key, props));
     var link = _map[props.type];
-    console.log("created component with props:");
-    console.log(props);
-    return link.connector(key)(link.component);
+    return link.connector(box, key)(link.component);
 };
 
 export const wrap_facet = (visible, facet) => {

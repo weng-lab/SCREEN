@@ -25,7 +25,7 @@ class FacetBox extends React.Component {
     componentDidMount() {
 	var facets = this.props.facets;
 	var store = this.props.store;
-	var create_facet = FacetCreator(this.props.store);
+	var create_facet = this.props.create_facet;
 	ReactDOM.render((
 	    <div>
 		{Object.keys(facets).map((key) => {
@@ -51,7 +51,8 @@ const state_props_map = (store, key) => (state) => {
 	visible: state.facet_boxes[key].visible,
 	title: state.facet_boxes[key].title,
 	facets: state.facet_boxes[key].facets,
-	store: store
+	store,
+	create_facet: FacetCreator(store, key)
     };
 }
 
