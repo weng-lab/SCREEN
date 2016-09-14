@@ -1,6 +1,6 @@
 import {fit_to} from '../common'
 
-export const SET_SELECTION = 'SET_SELECTION';
+export const SET_SELECTION_RANGE = 'SET_SELECTION_RANGE';
 export const SET_RANGE = 'SET_RANGE';
 
 export let default_margin = {
@@ -24,11 +24,11 @@ export function RangeFacetReducer(state = range_default_state, action) {
     
     switch (action.type) {
 	
-    case SET_SELECTION:
+    case SET_SELECTION_RANGE:
 	var n_selection = [...action.selection_range];
 	fit_to(n_selection, state.range);
 	return Object.assign({}, state, {
-	    selecton_range: n_selection
+	    selection_range: n_selection
 	});
 
     case SET_RANGE:

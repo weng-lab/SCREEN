@@ -14,7 +14,7 @@ const facet_default_state = (reducer) => {
 };
 
 const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), action) => {
-
+    
     if (action == null) return state;
 
     switch (action.type) {
@@ -36,7 +36,7 @@ const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), a
 	});
 	
     }
-
+    
     return Object.assign({}, state, {
 	state: subreducer(state.state, action)
     });

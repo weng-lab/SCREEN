@@ -49,7 +49,7 @@ class ListFacet extends React.Component {
     click_handler(k) {
 	if (k == this.state.selection) k = null;
 	this.setState({selection: k});
-	if (this.props.onchange) this.props.onchange();
+	if (this.props.onchange) this.props.onchange(k);
     }
     
     render() {
