@@ -1,4 +1,5 @@
-import {ADD_FACET, FACET_ACTION, INVALIDATE_RESULTS} from '../reducers/root_reducer'
+import {INVALIDATE_RESULTS} from '../reducers/root_reducer'
+import {ADD_FACET, FACET_ACTION} from '../reducers/facetbox_reducer'
 import {HIDE_FACET, SHOW_FACET} from '../reducers/facet_reducer'
 
 export const hide_facet = (key) => {

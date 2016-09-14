@@ -15,7 +15,7 @@ MainListFacet.propTypes = {
 	value: PropTypes.any.isRequired,
 	n: PropTypes.number.isRequired
     }).isRequired).isRequired,
-    selection: PropTypes.number.isRequired
+    selection: PropTypes.number
 };
 
 export default MainListFacet;
