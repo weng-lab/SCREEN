@@ -46,6 +46,7 @@ export const RangeAggMap = (key, facet, query) => {
 
 export const ListQueryMap = (key, facet, query) => {
     var term = {};
+    if (facet.state.selection == null) return;
     term[facet.es_field] = facet.state.items[facet.state.selection].value;
     query.query.bool.must.push({
 	term: term
