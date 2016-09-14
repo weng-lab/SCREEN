@@ -42,14 +42,14 @@ class ChecklistFacet extends React.Component {
 	    checked: true
 	}];
 	this.setState({items: next_items, text: ""});
-	if (this.props.onchange) this.props.onchange();
+	if (this.props.onchange) this.props.onchange(next_items);
     }
     
     check_handler(key) {
 	var next_items = [...this.state.items];
 	next_items[key].checked = !next_items[key].checked;
 	this.setState({items: next_items});
-	if (this.props.onchange) this.props.onchange();
+	if (this.props.onchange) this.props.onchange(next_items);
     }
     
     render() {

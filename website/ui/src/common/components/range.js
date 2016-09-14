@@ -187,7 +187,7 @@ class RangeFacet extends React.Component {
 	this.setState({
 	    selection_range: [+r[0], +r[1]]
 	});
-	if (this.props.onchange) this.props.onchange();
+	if (this.props.onchange) this.props.onchange(r);
     }
     
     render() {

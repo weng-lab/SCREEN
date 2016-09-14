@@ -2,9 +2,9 @@ import React from 'react'
 
 import {connect} from 'react-redux'
 
-import {RangeFacetReducer} from '../../../common/reducers/range'
-import {ListFacetReducer} from '../../../common/reducers/list'
-import {ChecklistFacetReducer} from '../../../common/reducers/checklist'
+import {RangeFacetReducer, SET_SELECTION_RANGE} from '../../../common/reducers/range'
+import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
+import {ChecklistFacetReducer, SET_ITEMS} from '../../../common/reducers/checklist'
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
@@ -50,6 +50,43 @@ const checklist_props_map = (box, key) => (_state) => {
     };
 };
 
+const range_dispatch_map = (box, key) => (dispatch) => {
+    return {
+	onchange: (selection_range) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_SELECTION_RANGE,
+		selection_range: selection_range
+	    }));
+	    dispatch(invalidate_results());
+	}
+    };
+};
+
+const list_dispatch_map = (box, key) => (dispatch) => {
+    return {
+	onchange: (selection) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_SELECTION,
+		selection: selection
+	    }));
+	    dispatch(invalidate_results());
+	}
+    };
+};
+
+const checklist_dispatch_map = (box, key) => (dispatch) => {
+    return {
+	onchange: (items) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_ITEMS,
+		items: items
+	    }));
+	    dispatch(invalidate_results());
+	}
+    };
+};
+    
+
 const props_dispatch_map = (dispatch) => {
     return {
 	onchange: () => {
@@ -60,17 +97,17 @@ const props_dispatch_map = (dispatch) => {
 
 const _map = {
     RANGE_FACET: {
-	connector: (box, key) => connect(range_props_map(box, key), props_dispatch_map),
+	connector: (box, key) => connect(range_props_map(box, key), range_dispatch_map(box, key)),
 	component: MainRangeFacet,
 	reducer: RangeFacetReducer
     },
     LIST_FACET: {
-	connector: (box, key) => connect(list_props_map(box, key), props_dispatch_map),
+	connector: (box, key) => connect(list_props_map(box, key), list_dispatch_map(box, key)),
 	component: MainListFacet,
 	reducer: ListFacetReducer
     },
     CHECKLIST_FACET: {
-	connector: (box, key) => connect(checklist_props_map(box, key), props_dispatch_map),
+	connector: (box, key) => connect(checklist_props_map(box, key), checklist_dispatch_map(box, key)),
 	component: MainChecklistFacet,
 	reducer: ChecklistFacetReducer
     }
