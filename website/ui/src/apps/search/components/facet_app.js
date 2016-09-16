@@ -31,8 +31,8 @@ class FacetApp extends React.Component {
 		this.props.store.dispatch(connector(i, obj.f, obj.field));
 	    }
 	}
-	
+
     }
-    
+
 }
 export default FacetApp;

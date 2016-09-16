@@ -9,7 +9,7 @@ const sugsByUserQuery = (state = {}, action) =>{
 	if (action.userQuery in state){
 	    return state;
 	}
-	
+
         const nextState = { ...state };
 	nextState[action.userQuery] = createList(undefined, action);
 	return nextState;
@@ -44,4 +44,3 @@ export const getErrorMessage = (state, userQuery) => {
     }
     fromList.getErrorMessage(state.sugsByUserQuery[userQuery]);
 }
-
