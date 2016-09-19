@@ -1,4 +1,4 @@
-import {INVALIDATE_RESULTS, FACETBOX_ACTION} from '../reducers/root_reducer'
+import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {ADD_FACET, FACET_ACTION} from '../reducers/facetbox_reducer'
 import {HIDE_FACET, SHOW_FACET} from '../reducers/facet_reducer'
 
@@ -6,7 +6,7 @@ export const hide_facet = (key) => {
     return {
 	type: FACET_ACTION,
 	subtype: HIDE_FACET,
-	key: key
+	key
     };
 };
 
@@ -14,7 +14,7 @@ export const show_facet = (key) => {
     return {
 	type: FACET_ACTION,
 	subtype: SHOW_FACET,
-	key: key
+	key
     };
 };
 
@@ -24,14 +24,8 @@ export const facet_action = (box, key, action) => {
 	key: box,
 	subaction: {
 	    type: FACET_ACTION,
-	    key: key,
+	    key,
 	    subaction: action
 	}
-    };
-};
-
-export const invalidate_results = () => {
-    return {
-	type: INVALIDATE_RESULTS
     };
 };

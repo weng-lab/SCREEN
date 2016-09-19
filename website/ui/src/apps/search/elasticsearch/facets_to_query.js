@@ -19,7 +19,7 @@ const FacetQueryMap = (state) => {
 		must: []
 	    }
 	},
-	"extras": {} // this field can hold args for CherryPy which will be stripped before the query is sent to ES
+	extras: {}
     };
 
     for (var i in state.facet_boxes) {
@@ -29,8 +29,9 @@ const FacetQueryMap = (state) => {
 
 	for (var key in tbox.facets) {
 	    
-	    var tfacet = tbox.facets[key];
+	    var tfacet = Object.assign({}, tbox.facets[key]);
 	    if (!tfacet.visible || tfacet.es_map == null) continue;
+	    if (typeof(tfacet.es_field) === 'function') tfacet.es_field = tfacet.es_field(state);
 	    tfacet.es_map(key, tfacet, retval);
 	    
 	}

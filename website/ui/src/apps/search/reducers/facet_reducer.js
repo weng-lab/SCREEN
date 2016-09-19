@@ -1,4 +1,4 @@
-import {ES_CONNECT} from '../helpers/es_connect'
+import {ES_CONNECT} from '../elasticsearch/es_connect'
 export const HIDE_FACET = 'HIDE_FACET';
 export const SHOW_FACET = 'SHOW_FACET';
 
@@ -14,7 +14,8 @@ const facet_default_state = (reducer) => {
 };
 
 const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), action) => {
-    
+
+    console.log(action);
     if (action == null) return state;
 
     switch (action.type) {

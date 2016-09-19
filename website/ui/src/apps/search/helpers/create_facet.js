@@ -8,7 +8,8 @@ import {ChecklistFacetReducer, SET_ITEMS} from '../../../common/reducers/checkli
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
-import {invalidate_results, facet_action} from './actions'
+import {facet_action} from './actions'
+import {invalidate_results} from './invalidate_results'
 
 import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
@@ -18,7 +19,7 @@ export const RANGE_FACET = 'RANGE_FACET';
 export const LIST_FACET = 'LIST_FACET';
 export const CHECKLIST_FACET = 'CHECKLIST_FACET';
 
-const range_props_map = (box, key) => (_state) => {
+const range_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
     return {
 	range: state.facets[key].state.range,
@@ -31,7 +32,7 @@ const range_props_map = (box, key) => (_state) => {
     };
 };
 
-const list_props_map = (box, key) => (_state) => {
+const list_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
     return {
 	items: state.facets[key].state.items,
@@ -41,7 +42,7 @@ const list_props_map = (box, key) => (_state) => {
     };
 };
 
-const checklist_props_map = (box, key) => (_state) => {
+const checklist_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
     return {
 	items: state.facets[key].state.items,
@@ -50,38 +51,38 @@ const checklist_props_map = (box, key) => (_state) => {
     };
 };
 
-const range_dispatch_map = (box, key) => (dispatch) => {
+const range_dispatch_map = (store, box, key) => (dispatch) => {
     return {
 	onchange: (selection_range) => {
 	    dispatch(facet_action(box, key, {
 		type: SET_SELECTION_RANGE,
 		selection_range: selection_range
 	    }));
-	    dispatch(invalidate_results());
+	    dispatch(invalidate_results(store.getState()));
 	}
     };
 };
 
-const list_dispatch_map = (box, key) => (dispatch) => {
+const list_dispatch_map = (store, box, key) => (dispatch) => {
     return {
 	onchange: (selection) => {
 	    dispatch(facet_action(box, key, {
 		type: SET_SELECTION,
 		selection: selection
 	    }));
-	    dispatch(invalidate_results());
+	    dispatch(invalidate_results(store.getState()));
 	}
     };
 };
 
-const checklist_dispatch_map = (box, key) => (dispatch) => {
+const checklist_dispatch_map = (store, box, key) => (dispatch) => {
     return {
 	onchange: (items) => {
 	    dispatch(facet_action(box, key, {
 		type: SET_ITEMS,
 		items: items
 	    }));
-	    dispatch(invalidate_results());
+	    dispatch(invalidate_results(store.getState()));
 	}
     };
 };
@@ -97,17 +98,17 @@ const props_dispatch_map = (dispatch) => {
 
 const _map = {
     RANGE_FACET: {
-	connector: (box, key) => connect(range_props_map(box, key), range_dispatch_map(box, key)),
+	connector: (store, box, key) => connect(range_props_map(store, box, key), range_dispatch_map(store, box, key)),
 	component: MainRangeFacet,
 	reducer: RangeFacetReducer
     },
     LIST_FACET: {
-	connector: (box, key) => connect(list_props_map(box, key), list_dispatch_map(box, key)),
+	connector: (store, box, key) => connect(list_props_map(store, box, key), list_dispatch_map(store, box, key)),
 	component: MainListFacet,
 	reducer: ListFacetReducer
     },
     CHECKLIST_FACET: {
-	connector: (box, key) => connect(checklist_props_map(box, key), checklist_dispatch_map(box, key)),
+	connector: (store, box, key) => connect(checklist_props_map(store, box, key), checklist_dispatch_map(store, box, key)),
 	component: MainChecklistFacet,
 	reducer: ChecklistFacetReducer
     }
@@ -128,7 +129,7 @@ const add_facet = (box, key, props) => {
 export const FacetCreator = (store, box) => (key, props) => {
     store.dispatch(add_facet(box, key, props));
     var link = _map[props.type];
-    return link.connector(box, key)(link.component);
+    return link.connector(store, box, key)(link.component);
 };
 
 export const wrap_facet = (visible, facet) => {

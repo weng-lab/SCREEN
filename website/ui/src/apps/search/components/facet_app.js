@@ -2,7 +2,7 @@ var React = require('react')
 
 import {FacetboxCreator} from './facetbox'
 
-import es_connect from '../helpers/es_connect'
+import es_connect from '../elasticsearch/es_connect'
 import {facetboxes, facetbox_render_order, es_links} from '../config/facetboxes'
 
 class FacetApp extends React.Component {
