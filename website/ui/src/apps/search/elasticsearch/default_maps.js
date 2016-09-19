@@ -1,28 +1,3 @@
-import {FACETBOX_ACTION} from '../reducers/root_reducer'
-import {FACET_ACTION} from '../reducers/facetbox_reducer'
-export const ES_CONNECT = 'ES_CONNECT';
-
-const compose_maps = (maps) => (key, facet, query) => {
-    for (var i in maps) maps[i](key, facet, query);
-};
-
-const es_connect = (box) => (key, functions, es_field = null) => {
-    return {
-	type: FACETBOX_ACTION,
-	key: box,
-	subaction: {
-	    type: FACET_ACTION,
-	    key: key,
-	    subaction: {
-		type: ES_CONNECT,
-		f: compose_maps(functions),
-		es_field: es_field
-	    }
-	}
-    };
-};
-export default es_connect;
-
 export const RangeQueryMap = (key, facet, query) => {
     var range = {};
     range[facet.es_field] = {
@@ -51,4 +26,13 @@ export const ListQueryMap = (key, facet, query) => {
     query.query.bool.must.push({
 	term: term
     });
+};
+
+export const ListAggMap = (key, facet, query) => {
+    query.aggs[key] = {
+	terms: {
+	    field: facet.es_field,
+	    size: 100
+	}
+    };
 };

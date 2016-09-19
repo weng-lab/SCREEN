@@ -25,10 +25,9 @@ def main():
                 for line in lines[1:]:
                     line = line.split(",")
                     snpobj = {"accession": line[3].strip(),
-                              "position": {
-                                  "chrom": line[0],
-                                  "start": int(line[1]),
-                                  "end": int(line[2])},
+                              "position": {"chrom": line[0],
+                                           "start": int(line[1]),
+                                           "end": int(line[2]) },
                               "assembly": assembly }
                     o.write(json.dumps(snpobj) + "\n")
     return 0

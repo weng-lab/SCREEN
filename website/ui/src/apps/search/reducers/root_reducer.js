@@ -1,10 +1,11 @@
 import {obj_assign, obj_remove} from '../../../common/common'
 import FacetboxReducer from './facetbox_reducer'
-import FacetQueryMap from '../helpers/facets_to_query'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
-export const INVALIDATE_RESULTS = 'INVALIDATE_RESULTS';
+export const RESULTS_FETCHING = 'RESULTS_FETCHING';
+export const RESULTS_DONE = 'RESULTS_DONE';
+export const RESULTS_ERROR = 'RESULTS_ERROR';
 
 export let root_default_state = {
     facet_boxes: {},
@@ -40,12 +41,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	    facet_boxes: obj_assign(state.facet_boxes, action.key, n_item)
 	});
 
-    case INVALIDATE_RESULTS:
-	var n_query = FacetQueryMap(state);
-	console.log(n_query);
-	return Object.assign({}, state, {
-	    query: n_query
-	});
+    case RESULTS_DONE:
+	console.log(action.results);
+	return state;
+
+    case RESULTS_ERROR:
+	console.log(action.requestobj);a
+	return state;
 	
     }
 
