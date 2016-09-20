@@ -7,6 +7,8 @@ import argparse
 import fileinput, StringIO
 import gzip
 
+from joblib import Parallel, delayed
+
 sys.path.append("../../common")
 from constants import paths
 from common import printr
@@ -73,10 +75,9 @@ def do_intersection(bed, label, cmap):
         cmap[acc].append(label)
     return True
 
-def assembly_json(args, assembly):
+def get_parallel_jobs(args, assembly):
 
-    files = []
-    tf_imap = {}
+    jobs = []
     i = 0
     
     if "mm10" == assembly:
@@ -88,31 +89,47 @@ def assembly_json(args, assembly):
                  m.chipseq_histones_useful(args),
                  m.dnases_useful(args)]:
         for exp in exps:
+            i += 1
             try:
                 beds = exp.bedFilters()
-                i += 1
                 if not beds: print "missing", exp
                 for bed in beds:
                     if assembly != bed.assembly: continue
-                    files.append(file_json(exp, bed))
-                    if not os.path.exists(bed.fnp()):
-                        print("warning: missing bed %s; cannot intersect" % bed.fnp())
-                        continue
-                    if "hg19" == assembly:
-                        printr("intersecting TF %s (exp %d of %d)" % (exp.label, i, len(exps)))
-                        if not do_intersection(bed.fnp(), exp.label, tf_imap):
-                            print("warning: unable to intersect REs with bed %s" % bed.fnp())
+                    jobs.append({"exp": exp,
+                                 "bed": bed,
+                                 "i": i,
+                                 "total": len(exps),
+                                 "assembly": assembly })
             except Exception, e:
                 print str(e)
                 print "bad exp:", exp
 
+    return jobs
+
+def run(jobargs, tf_imap):
+    exp = jobargs["exp"]
+    bed = jobargs["bed"]
+    retval = file_json(exp, bed)
+    if not os.path.exists(bed.fnp()):
+        print("warning: missing bed %s; cannot intersect" % bed.fnp())
+        return retval
+    if "hg19" == jobargs["assembly"]:
+        printr("intersecting TF %s (exp %d of %d)" % (exp.label, jobargs["i"], jobargs["total"]))
+        if not do_intersection(bed.fnp(), exp.label, tf_imap):
+            print("warning: unable to intersect REs with bed %s" % bed.fnp())
+    return retval
+
+def assembly_json(args, assembly):
+    tf_imap = {}
+    jobs = get_parallel_jobs(args, assembly)
+    files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap) for _args in jobs)
     update_lsj(tf_imap)
-                
     return files
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--process', action="store_true", default=True)
+    parser.add_argument('-j', type=int, default=1)
     parser.add_argument('--remake_bed', action="store_true", default=False)
     args = parser.parse_args()
     return args
