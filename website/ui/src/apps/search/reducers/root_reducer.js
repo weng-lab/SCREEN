@@ -46,7 +46,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	return state;
 
     case RESULTS_ERROR:
-	console.log(action.requestobj);a
+	console.log(action.requestobj);
 	return state;
 	
     }
