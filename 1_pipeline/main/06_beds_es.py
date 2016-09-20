@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 
 sys.path.append("../../common")
 from constants import paths
-from common import printr
+from common import printr, printt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils, printWroteNumLines
@@ -43,9 +43,12 @@ def lsj_to_beds():
             o.write(el + "\n")
 
 def update_lsj(tf_imap):
+    i = 0
     with gzip.open(paths.re_json_orig, "r") as f:
         with gzip.open(paths.re_json_orig + ".tmp", "wb") as o:
             for line in f:
+                if i % 100000 == 0: printr("working with RE %d" % (i + 1))
+                i += 1
                 re = json.loads(line)
                 if re["accession"] not in tf_imap: tf_imap[re["accession"]] = []
                 re["tf_intersection"] = tf_imap[re["accession"]]
@@ -110,7 +113,7 @@ def run(jobargs, tf_imap):
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     retval = file_json(exp, bed)
-    if not os.path.exists(bed.fnp()):
+    if exp.label.strip() == "" or not os.path.exists(bed.fnp()):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
         return retval
     if "hg19" == jobargs["assembly"]:
@@ -123,6 +126,7 @@ def assembly_json(args, assembly):
     tf_imap = {}
     jobs = get_parallel_jobs(args, assembly)
     files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap) for _args in jobs)
+    printt("\n\nupdating RE JSON")
     update_lsj(tf_imap)
     return files
 
@@ -140,14 +144,17 @@ def main():
     args = parse_args()
 
     if not os.path.exists(paths.re_bed) or args.remake_bed:
+        printt("generating RE bed file")
         lsj_to_beds()
+        print("\n")
     
+    printt("intersecting TFs")
     for assembly in ["hg19", "mm10"]:
         files += assembly_json(args, assembly)
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
         for _file in files:
             o.write(json.dumps(_file) + "\n")
-    print("wrote %s" % os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"))
+    printt("\n\nwrote %s" % os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"))
     return 0
 
 if __name__ == '__main__':
