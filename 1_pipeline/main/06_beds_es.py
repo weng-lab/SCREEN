@@ -36,11 +36,9 @@ def lsj_to_beds():
             i += 1
             if i % 100000 == 0: printr("working with regelm %d" % i)
 
-    for chrom in output:
-        printr("writing elements for %s" % chrom)
-        with gzip.open(outfnp, "wb") as o:
-            for el in output:
-                o.write(el + "\n")
+    with gzip.open(outfnp, "wb") as o:
+        for el in output:
+            o.write(el + "\n")
 
 def update_lsj(tf_imap):
     with gzip.open(paths.re_json_orig, "r") as f:
@@ -63,23 +61,23 @@ def file_json(exp, bed):
 def do_intersection(bed, label, cmap):
     try:
         intersection = Utils.runCmds(["bedtools", "intersect",
-                                      "-a", bed,
-                                      "-b", paths.re_bed,
-                                      "-wb"])
+                                      "-b", bed,
+                                      "-a", paths.re_bed,
+                                      "-wa"])
     except:
         return False
     for line in intersection:
         line = line.strip()
         acc = line.split("\t")[3]
-        if acc not in cmap: acc[cmap] = []
-        acc[cmap].append(label)
+        if acc not in cmap: cmap[acc] = []
+        cmap[acc].append(label)
     return True
 
 def assembly_json(args, assembly):
 
     files = []
     tf_imap = {}
-    i = 1
+    i = 0
     
     if "mm10" == assembly:
         m = MetadataWS(Datasets.all_mouse)
@@ -92,6 +90,7 @@ def assembly_json(args, assembly):
         for exp in exps:
             try:
                 beds = exp.bedFilters()
+                i += 1
                 if not beds: print "missing", exp
                 for bed in beds:
                     if assembly != bed.assembly: continue
@@ -100,10 +99,9 @@ def assembly_json(args, assembly):
                         print("warning: missing bed %s; cannot intersect" % bed.fnp())
                         continue
                     if "hg19" == assembly:
-                        printr("intersecting TF %s (exp %d of %d)" % (label, bed, i, len(exps)))
-                        i += 1
+                        printr("intersecting TF %s (exp %d of %d)" % (exp.label, i, len(exps)))
                         if not do_intersection(bed.fnp(), exp.label, tf_imap):
-                        print("warning: unable to intersect REs with bed %s" % bed.fnp())
+                            print("warning: unable to intersect REs with bed %s" % bed.fnp())
             except Exception, e:
                 print str(e)
                 print "bad exp:", exp
