@@ -167,7 +167,12 @@ function Query() {
 		    {}, // position.chrom
 		    {}, // assembly
 		    {}, // nearest PC gene
-		    {}  // nearest gene
+		    {},  // nearest gene
+		    {
+			"bool": {
+			    "must": []
+			}
+		    } //TFs
 		]
 	    }
 	},
@@ -197,6 +202,19 @@ function array_remove(array, element){
 	}
     }
     return array;
+}
+
+Query.prototype.set_tf_query = function(tfs) {
+    this.eso.query.bool.must[4].bool.must = [];
+    for (i in tfs) {
+	if (!tfs[i].selected) continue;
+	this.eso.query.bool.must[4].bool.must.push({
+	    "term": {
+		"tf_intersection.hg19": tfs[i].id
+	    }
+	});
+    }
+    console.log(this.eso.query);
 }
 
 Query.prototype.add_aggregations = function(aggdict) {

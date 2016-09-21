@@ -121,6 +121,18 @@ function checklist_facet(){
     this.input_box = null;
     this.check_div = null;
 
+    this.check_clicked = function(id) {
+	return (function() {
+	    this.tfs[id].selected = nc.checked;
+	    this.refresh_and_search();
+	}).bind(this);
+    };
+
+    this.refresh_and_search = function() {
+	searchquery.set_tf_query(this.tfs);
+	perform_search();
+    };
+    
     this.add_tf = function(tf) {
 
 	if (tf in this.tfs) return;
@@ -131,14 +143,14 @@ function checklist_facet(){
 	nc.type = "checkbox";
 	nc.checked = true;
 	nc.value = tf;
-	nc.onclick = function() {
-	    this.tfs[tid].selected = nc.checked;
-	};
+	nc.onclick = this.check_clicked(tid);
 
 	var nt = document.createTextNode(" " + tf);
 	this.check_div.appendChild(nc);
 	this.check_div.appendChild(nt);
 	this.check_div.appendChild(document.createElement("br"));
+
+	this.refresh_and_search();
 	
     };
 }
