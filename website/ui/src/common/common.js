@@ -8,7 +8,7 @@ export function fit_to(a1, a2) {
 const primitive_comparator = (a, b) => (a == b);
 
 export function array_insert(a, v, c = primitive_comparator) {
-    for (i in a) {
+    for (var i in a) {
 	if (c(a[i], v)) return a;
     }
     return [...a, v];
@@ -16,10 +16,17 @@ export function array_insert(a, v, c = primitive_comparator) {
 
 export function array_remove(a, v, c = primitive_comparator) {
     var retval = [...a];
-    for (i in retval) {
+    for (var i in retval) {
 	if (c(retval[i], v)) retval.splice(i, 1);
     }
     return retval;
+}
+
+export function array_contains(a, v, c = primitive_comparator) {
+    for (var i in a) {
+	if (c(a[i], v)) return true;
+    }
+    return false;
 }
 
 export function obj_assign(o, k, v) {
@@ -33,4 +40,15 @@ export function obj_remove(o, k) {
     var retval = Object.assign({}, o);
     delete retval[k];
     return retval;
+}
+
+export function set_center_x(element, x, limits = null) {
+    var hw = $(element).width() / 2;
+    var nleft = (x - hw);
+    if (limits) {
+	var nlimits = [limits[0], limits[1] - hw];
+	if (nleft < nlimits[0]) nleft = nlimits[0];
+	if (nleft > nlimits[1]) nleft = nlimits[1];
+    }
+    element.style.left = nleft + "px";
 }

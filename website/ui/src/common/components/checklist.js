@@ -1,6 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+export const CHECKLIST_MATCH_ALL = 'CHECKLIST_MATCH_ALL';
+export const CHECKLIST_MATCH_ANY = 'CHECKLIST_MATCH_ANY';
+
 class CheckBox extends React.Component {
 
     constructor(props) {
@@ -24,14 +27,34 @@ class ChecklistFacet extends React.Component {
     
     constructor(props) {
 	super(props);
-	this.state = {items: [], text: ''};
+
+	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
+	
+	this.state = Object.assign({
+	    items: [],
+	    text: "",
+	    mode
+	});
+	
 	this.onChange = this.onChange.bind(this);
 	this.handleSubmit = this.handleSubmit.bind(this);
 	this.check_handler = this.check_handler.bind(this);
+	this.modeChangeAll = this.modeChangeAll.bind(this);
+	this.modeChangeAny = this.modeChangeAny.bind(this);
     }
     
     onChange(e) {
 	this.setState({text: e.target.value});
+    }
+
+    modeChangeAll() {
+	this.setState({mode: CHECKLIST_MATCH_ALL});
+	if (this.props.onModeChange) this.props.onModeChange(CHECKLIST_MATCH_ALL);
+    }
+
+    modeChangeAny() {
+	this.setState({mode: CHECKLIST_MATCH_ANY});
+	if (this.props.onModeChange) this.props.onModeChange(CHECKLIST_MATCH_ANY);
     }
     
     handleSubmit(e) {
@@ -56,20 +79,29 @@ class ChecklistFacet extends React.Component {
 
 	var items = this.state.items;
 	var onchange = this.check_handler;
+	
 	var create_item = function(key) {
 	    var item = items[key];
 	    return <CheckBox key={key} k={key} value={item.value} onchange={onchange} checked={item.checked} />;
 	};
 	
-	return (
-		<div>
-		   <form onSubmit={this.handleSubmit}>
-		      <input onChange={this.onChange} value={this.state.text} />
-		      <button>add</button>
-		   </form>
-		   {Object.keys(this.state.items).map(create_item)}
+	var checks = (!this.props.match_mode_enabled ? ""
+		      : (<div>
+		           <input type="checkbox" onChange={this.modeChangeAll} checked={this.state.mode == CHECKLIST_MATCH_ALL} />match all<br/>
+		           <input type="checkbox" onChange={this.modeChangeAny} checked={this.state.mode == CHECKLIST_MATCH_ANY} />match any
+		         </div>
+		        ));
+	
+	return (<div>
+		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>
+		  {checks}
+		  <form onSubmit={this.handleSubmit}>
+		    <input onChange={this.onChange} value={this.state.text} />
+		    <button>add</button>
+		  </form>
+		  {Object.keys(this.state.items).map(create_item)}
 		</div>
-	);
+	       );
 	
     }
     

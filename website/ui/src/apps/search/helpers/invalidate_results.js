@@ -1,6 +1,7 @@
 import QueryAJAX from '../elasticsearch/ajax'
-import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR} from '../reducers/root_reducer'
+import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS} from '../reducers/root_reducer'
 import FacetQueryMap from '../elasticsearch/facets_to_query'
+import ResultsDispatchMap from '../elasticsearch/results_to_map'
 
 export const results_fetching = () => {
     return {
@@ -23,12 +24,20 @@ export const results_error = (requestobj, error) => {
     };
 };
 
+export const set_table_results = (hits) => {
+    return {
+	type: SET_TABLE_RESULTS,
+	hits
+    };
+};
+
 export const invalidate_results = (state) => {
     return (dispatch) => {
-	
+
 	var n_query = FacetQueryMap(state);
-	console.log(n_query);
 	var f_success = (response, status, jqxhr) => {
+	    ResultsDispatchMap(state, response, dispatch);
+	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
 	};
 	var f_error = (jqxhr, status, error) => {

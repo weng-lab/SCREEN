@@ -8,6 +8,7 @@
 const FacetQueryMap = (state) => {
     
     var retval = {
+	size: 500,
 	aggs: {},
 	query: {
 	    bool: {
@@ -25,7 +26,8 @@ const FacetQueryMap = (state) => {
     for (var i in state.facet_boxes) {
 	
 	var tbox = state.facet_boxes[i];
-	if (!tbox.visible) continue;
+	var visible = (tbox.display_map ? tbox.display_map(state) : tbox.visible);
+	if (!visible) continue;
 
 	for (var key in tbox.facets) {
 	    

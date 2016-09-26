@@ -1,5 +1,5 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET} from '../helpers/create_facet'
-import {ListQueryMap, ListAggMap, RangeQueryMap, RangeAggMap} from '../elasticsearch/default_maps'
+import {ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 
 import {default_margin} from './constants'
@@ -15,11 +15,10 @@ export const facetboxes = {
 		visible: true,
 		title: "",
 		state: {
-		    items: [{
-			value: "hg19",
-			n: 1000000
-		    }],
-		    selection: 0
+		    items: {
+			"hg19": 1000000
+		    },
+		    selection: "hg19"
 		}
 	    }
 	}
@@ -33,11 +32,11 @@ export const facetboxes = {
 		visible: true,
 		title: "",
 		state: {
-		    items: [
-			{value: "HeLa-S3", n: 10000},
-			{value: "GM12878", n: 10000},
-			{value: "HepG2", n: 10000}
-		    ],
+		    items: {
+			"HeLa-S3": 10000,
+			"GM12878": 10000,
+			"HepG2": 10000
+		    },
 		    selection: null
 		}
 	    }
@@ -52,13 +51,9 @@ export const facetboxes = {
 		visible: true,
 		title: "",
 		state: {
-		    items: [
-			{value: "chr1", n: 10000},
-			{value: "chr2", n: 10000},
-			{value: "chr3", n: 10000},
-			{value: "chrX", n: 10000},
-			{value: "chrY", n: 10000}
-		    ],
+		    items: {
+			"chr1": 10000
+		    },
 		    selection: null
 		}
 	    }
@@ -67,6 +62,7 @@ export const facetboxes = {
     "coordinates": {
 	title: "Coordinates",
 	visible: true,
+	display_map: (state) => (state.facet_boxes.chromosome.facets.chromosome.state.selection != null),
 	facets: {
 	    "coordinates": {
 		type: RANGE_FACET,
@@ -89,6 +85,7 @@ export const facetboxes = {
 		type: CHECKLIST_FACET,
 		visible: true,
 		title: "",
+		match_mode_enabled: true,
 		state: {
 		    items: []
 		}
@@ -99,7 +96,7 @@ export const facetboxes = {
 	title: "Distance to Genes",
 	visible: true,
 	facets: {
-	    "gene-distance.pc": {
+	    "genedistance_pc": {
 		type: RANGE_FACET,
 		visible: true,
 		title: "Protein coding",
@@ -110,7 +107,7 @@ export const facetboxes = {
 		    h_interval: 5000
 		}
 	    },
-	    "gene-distance.all": {
+	    "genedistance_all": {
 		type: RANGE_FACET,
 		visible: true,
 		title: "All",
@@ -126,6 +123,7 @@ export const facetboxes = {
     "ranks": {
 	title: "Rank",
 	visible: true,
+	display_map: (state) => (state.facet_boxes.cell_lines.facets.cell_lines.state.selection != null),
 	facets: {
 	    "dnase": {
 		type: RANGE_FACET,
@@ -199,7 +197,8 @@ export const facetbox_render_order = [
 export const es_links = {
     "assembly": {
 	"assembly": {
-	    f: [ListQueryMap, ListAggMap],
+	    f_query: [ListQueryMap, ListAggMap],
+	    f_results: [ListResultsMap],
 	    field: "genome"
 	}
     },
@@ -207,47 +206,61 @@ export const es_links = {
     },
     "chromosome": {
 	"chromosome": {
-	    f: [ListQueryMap, ListAggMap],
+	    f_query: [ListQueryMap, ListAggMap],
+	    f_results: [ListResultsMap],
 	    field: "position.chrom"
 	}
     },
     "coordinates": {
 	"coordinates": {
-	    f: [CoordinateQueryMap, RangeAggMap],
+	    f_query: [CoordinateQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: "position.start"
 	}
     },
     "TFs": {
+	"TF": {
+	    f_query: [ChecklistQueryMap],
+	    f_results: [],
+	    field: "tf_intersections"
+	}
     },
     "gene_distance": {
 	"gene-distance.pc": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: "genes.nearest-pc.distance"
 	},
 	"gene-distance.all": {
-	    f: [RangeQueryMap, RangeAggMap],
-	    field: "gene.nearest-all.distance"
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
+	    field: "genes.nearest-all.distance"
 	}	
     },
     "ranks": {
 	"dnase": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.dnase." + selected_cell_line(state) + ".rank"
 	},
 	"promoter": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.promoter." + selected_cell_line(state) + ".rank"
 	},
 	"enhancer": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.enhancer." + selected_cell_line(state) + ".rank"
 	},
 	"ctcf": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.ctcf." + selected_cell_line(state) + ".rank"
 	},
 	"conservation": {
-	    f: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.conservation.rank"
 	}
     }

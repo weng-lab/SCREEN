@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 
 import {RangeFacetReducer, SET_SELECTION_RANGE} from '../../../common/reducers/range'
 import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
-import {ChecklistFacetReducer, SET_ITEMS} from '../../../common/reducers/checklist'
+import {ChecklistFacetReducer, SET_ITEMS, SET_MATCH_MODE} from '../../../common/reducers/checklist'
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
@@ -34,20 +34,23 @@ const range_props_map = (store, box, key) => (_state) => {
 
 const list_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
-    return {
+    var retval = {
 	items: state.facets[key].state.items,
 	selection: state.facets[key].state.selection,
 	visible: state.facets[key].visible,
 	title: state.facets[key].title
     };
+    return retval;
 };
 
 const checklist_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
     return {
 	items: state.facets[key].state.items,
+	match_mode_enabled: state.facets[key].match_mode_enabled,
 	visible: state.facets[key].visible,
-	title: state.facets[key].title
+	title: state.facets[key].title,
+	mode: state.facets[key].state.mode
     };
 };
 
@@ -81,6 +84,13 @@ const checklist_dispatch_map = (store, box, key) => (dispatch) => {
 	    dispatch(facet_action(box, key, {
 		type: SET_ITEMS,
 		items: items
+	    }));
+	    dispatch(invalidate_results(store.getState()));
+	},
+	onModeChange: (mode) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_MATCH_MODE,
+		mode
 	    }));
 	    dispatch(invalidate_results(store.getState()));
 	}

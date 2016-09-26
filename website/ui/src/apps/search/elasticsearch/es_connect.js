@@ -6,7 +6,11 @@ const compose_maps = (maps) => (a, b, c) => {
     for (var i in maps) maps[i](a, b, c);
 };
 
-const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null) => {
+const compose_callbacks = (callbacks) => (a, b, c, d) => {
+    for (var i in callbacks) callbacks[i](a, b, c, d);
+};
+
+const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null, rs_field = null) => {
     return {
 	type: FACETBOX_ACTION,
 	key: box,
@@ -16,15 +20,16 @@ const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null) =
 	    subaction: {
 		type: ES_CONNECT,
 		es_map: compose_maps(f_query_maps),
-		es_callback: compose_maps(r_facet_maps),
-		es_field
+		es_callback: compose_callbacks(r_facet_maps),
+		es_field,
+		rs_field
 	    }
 	}
     };
 };
 export default es_connect;
 
-const es_connect_fb = (key, functions, es_field = null) => {
+export const es_connect_fb = (key, functions, es_field = null) => {
     return {
 	type: FACETBOX_ACTION,
 	key,
@@ -35,4 +40,3 @@ const es_connect_fb = (key, functions, es_field = null) => {
 	}
     };
 };
-export default es_connect_fb;
