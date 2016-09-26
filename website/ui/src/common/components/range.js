@@ -4,22 +4,32 @@ var d3 = require('d3');
 var $ = require('jquery');
 var __jui = require('jquery-ui-bundle');
 
-class Histogram extends React.Component {
+import {set_center_x} from '../common'
+
+class RangeSlider extends React.Component {
     
     constructor(props) {
 	super(props);
+	this.onMinChange = this.onMinChange.bind(this);
+	this.onMaxChange = this.onMaxChange.bind(this);
+	this._set_selection = this._set_selection.bind(this);
+	this.update_selection = this.update_selection.bind(this);
     }
     
     render() {
-	return <div ref="container" style={{width: "100%", height: "20px"}} />;
-    }
-
-    componentDidUpdate() {
-	this._histogram = this.create_histogram(this.refs.container);
-    }
-
-    componentDidMount() {
-	this.componentDidUpdate();
+	return (<div><br/>
+		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
+		   <div ref="histogram" style={{width: "100%", height: "20px"}} />
+  		   <div ref="container" />
+		<div style={{textAlign: "center"}}>
+		      <input ref="txmin" type="text" value={this.props.selection_range[0]} onChange={this.onMinChange}
+	 	         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} /> - 
+		      <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
+		         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} />
+		   </div>
+		   <br/>
+		</div>
+	       );
     }
 
     create_histogram(destination_div) {
@@ -64,46 +74,15 @@ class Histogram extends React.Component {
 	return svg;
 	
     }
-
-    /*
-     * to be called as the user is dragging the associated slider
-     * this prevents a re-render of the component until the user has released the mouse
-     */
-    update_selection(min, max) {
-	this._histogram.selectAll("g")
-            .data(this.props.data)
-            .attr("class", function(d) { return (d.key >= +min && d.key < +max ? "barselected" : "bardeselected"); });   	
-    }
-
-}
-
-class RangeSlider extends React.Component {
     
-    constructor(props) {
-	super(props);
-	this.onMinChange = this.onMinChange.bind(this);
-	this.onMaxChange = this.onMaxChange.bind(this);
-	this._set_selection = this._set_selection.bind(this);
-	this.update_selection = this.update_selection.bind(this);
-    }
-    
-    render() {
-	return (<div><br/>
-		   <input ref="txmin" type="text" value={this.props.selection_range[0]} onChange={this.onMinChange}
-	 	      style={{width: "45%"}} /> -
-		   <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
-		      style={{width: "45%"}} />
-  		   <div ref="container" />
-		</div>
-	       );
-    }
-
     componentDidMount() {
 	this.componentDidUpdate();
     }
     
     componentDidUpdate() {
 	this._slider = this.create_range_slider(this.refs.container);
+	this._histogram = this.create_histogram(this.refs.histogram);
+	this._handles = $(this._slider).find(".ui-slider-handle");
     }
 
     onMinChange() {
@@ -132,12 +111,14 @@ class RangeSlider extends React.Component {
 	});
 	return container;
     }
-
+    
     update_selection(event, ui) {
 	var r = this._slider.slider("values");
 	this.refs.txmin.value = r[0];
 	this.refs.txmax.value = r[1];
-	if (this.props.onslide) this.props.onslide(r);
+	this._histogram.selectAll("g")
+            .data(this.props.data)
+            .attr("class", function(d) { return (d.key >= +r[0] && d.key < +r[1] ? "barselected" : "bardeselected"); });
     }
     
     _set_selection(event, ui) {
@@ -166,40 +147,22 @@ class RangeFacet extends React.Component {
 
     constructor(props) {
 	super(props);
-	
-	var h_data = (this.props.h_data == null
-		      ? zeros(this.props.range, this.props.h_interval)
-		      : this.props.h_data);
-	this.state = {
-	    selection_range: this.props.selection_range,
-	    h_data: h_data
-	};
-	
-	this.slide_handler = this.slide_handler.bind(this);
 	this.selection_change_handler = this.selection_change_handler.bind(this);
-    }
-    
-    slide_handler(r) {
-	this.refs.histogram.update_selection(...r);
     }
 
     selection_change_handler(r) {
-	this.setState({
-	    selection_range: [+r[0], +r[1]]
-	});
 	if (this.props.onchange) this.props.onchange(r);
     }
     
     render() {
+	var h_data = (this.props.h_data == null
+		      ? zeros(this.props.range, this.props.h_interval)
+		      : this.props.h_data);
 	return (<div>
-		   <Histogram
-		      range={this.props.range} selection_range={this.state.selection_range}
-		      interval={this.props.h_interval} data={this.state.h_data}
-		      margin={this.props.h_margin} ref="histogram"
-		   />
 		   <RangeSlider
-		      range={this.props.range} selection_range={this.state.selection_range}
-		      onslide={this.slide_handler} onchange={this.selection_change_handler} ref="slider"
+		      range={this.props.range} selection_range={this.props.selection_range}
+		      interval={this.props.h_interval} data={h_data} margin={this.props.h_margin}
+		      onchange={this.selection_change_handler} ref="slider" title={this.props.title}
 		   />
 		</div>
 	       );

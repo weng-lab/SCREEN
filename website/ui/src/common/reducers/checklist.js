@@ -6,6 +6,7 @@ export const ADD_ITEM = 'ADD_ITEM';
 export const REMOVE_ITEM = 'REMOVE_ITEM';
 export const CLEAR_ALL = 'CLEAR_ALL';
 export const SELECT_ALL = 'SELECT_ALL';
+export const SET_MATCH_MODE = 'SET_MATCH_MODE';
 
 export let checklist_initial_state = {
     items: []
@@ -61,6 +62,11 @@ export function ChecklistFacetReducer(state = checklist_initial_state, action) {
     case SET_ITEMS:
 	return Object.assign({}, state, {
 	    items: action.items
+	});
+
+    case SET_MATCH_MODE:
+	return Object.assign({}, state, {
+	    mode: action.mode
 	});
 	
     }

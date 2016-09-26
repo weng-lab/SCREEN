@@ -5,13 +5,14 @@ const format_query = (query) => {
     var eso = Object.assign({}, query);
     delete eso.extras;
     return JSON.stringify({
-	action: "query",
-	q: eso,
+	action: "search",
+	object: eso,
 	post_processing: query.extras
     });
 };
 
 const QueryAJAX = (query, f_success, f_error) => {
+    console.log(query);
     $.ajax({
         type: "POST",
         url: AJAX_URL,

@@ -31,12 +31,12 @@ class RegElements:
             elif type(agg["buckets"][0]["key"]) is str or type(agg["buckets"][0]["key"]) is unicode:
                 retval["aggs"][key] = {"type": "list",
                                        "key": key,
-                                       "datapairs": [] }
+                                       "datapairs": {} }
             else:
                 print("unrecognized type %s for %s" % (type(agg["buckets"][0]["key"]), key))
                 continue
             for bucket in agg["buckets"]:
-                retval["aggs"][key]["datapairs"].append([bucket["key"], bucket["doc_count"]])
+                retval["aggs"][key]["datapairs"][bucket["key"]] = bucket["doc_count"]
         return retval
 
     def rawquery(self, q):

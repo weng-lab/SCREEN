@@ -9,7 +9,7 @@ class ListItem extends React.Component {
     }
     
     onclick() {
-	if (this.props.onclick) this.props.onclick(this.props.k);
+	if (this.props.onclick) this.props.onclick(this.props.value);
     }
     
     render() {
@@ -17,14 +17,14 @@ class ListItem extends React.Component {
 	var classname, rtxt;
 	if (this.props.selected) {
 	    classname = "result_row_selected";
-	    rtxt = <img src="/images/x.png" />;
+	    rtxt = <img src="/static/x.png" />;
 	} else {
 	    classname = "result_row";
 	    rtxt = this.props.n;
 	}
 	
 	return (<a onClick={this.onclick}>
-		   <div className={classname} style={this.props.style} key={this.props.k}>
+		   <div className={classname} style={this.props.style} key={this.props.value}>
 		      <span>{this.props.value}</span>
 		      <span className="pull-right">{rtxt}</span>
 		   </div>
@@ -39,28 +39,22 @@ class ListFacet extends React.Component {
 
     constructor(props) {
 	super(props);
-	this.state = {
-	    items: this.props.items,
-	    selection: this.props.selection
-	};
 	this.click_handler = this.click_handler.bind(this);
     }
     
     click_handler(k) {
-	if (k == this.state.selection) k = null;
-	this.setState({selection: k});
+	if (k == this.props.selection) k = null;
 	if (this.props.onchange) this.props.onchange(k);
     }
     
     render() {
 	var click_handler = this.click_handler;
-	var s = this.state.selection;
-	var items = this.state.items;
-	var items = Object.keys(items).map(function(key) {
-	    var item = items[key];
+	var s = this.props.selection;
+	var i = this.props.items;
+	var items = Object.keys(this.props.items).map(function(key) {
 	    var selected = (key == s);
-	    var style = (s == null || selected ? {display: "block"} : {display:"none"});
-	    return <ListItem onclick={click_handler} value={item.value} key={key} k={key} n={item.n} selected={selected} style={style} />;
+	    var style = (s == null || selected ? {display: "block"} : {display: "none"});
+	    return <ListItem onclick={click_handler} value={key} key={key} n={i[key]} selected={selected} style={style} />;
 	});
 	return <div>{items}</div>;
     }

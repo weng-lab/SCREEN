@@ -30,6 +30,7 @@ class AjaxWebService:
                         "peak_detail" : self._peaks_detail,
                         "suggest" : self._suggest,
                         "query": self._query,
+                        "search": self._search,
                         "gene_expression": self._expression_matrix}
 
     def _re_detail(self, j):
@@ -90,6 +91,11 @@ class AjaxWebService:
         self.ps.logQuery(j, ret, "")
         return ret
 
+    def _search(self, j):
+        return self._query({"object": j["object"],
+                            "index": "regulatory_elements_2",
+                            "callback": "regulatory_elements" })
+    
     def process(self, j):
         try:
             if "action" in j:

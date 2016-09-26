@@ -2,9 +2,10 @@ import React, {PropTypes} from 'react'
 import ChecklistFacet from '../../../common/components/checklist'
 import {wrap_facet} from '../helpers/create_facet'
 
-const MainChecklistFacet = ({visible, title, items, onchange}) => {
+const MainChecklistFacet = ({visible, title, items, onchange, match_mode_enabled, onModeChange}) => {
     return wrap_facet(visible,
-		      <ChecklistFacet items={items} title={title} onchange={onchange} />);
+		      <ChecklistFacet items={items} title={title} onchange={onchange}
+		          match_mode_enabled={match_mode_enabled} onModeChange={onModeChange} />);
 };
 
 MainChecklistFacet.propTypes = {
@@ -14,7 +15,8 @@ MainChecklistFacet.propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool.isRequired
-    }).isRequired).isRequired
+    }).isRequired).isRequired,
+    match_mode_enabled: PropTypes.bool
 };
 
 export default MainChecklistFacet;

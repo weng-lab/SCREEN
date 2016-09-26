@@ -39,10 +39,10 @@ class FacetBox extends React.Component {
 };
 export default FacetBox;
 
-const add_facetbox = (key, {visible, title, facets}) => {
+const add_facetbox = (key, {visible, title, facets, display_map}) => {
     return {
 	type: ADD_FACETBOX,
-	key, visible, title, facets
+	key, visible, title, facets, display_map
     };
 };
 

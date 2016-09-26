@@ -2,6 +2,7 @@ import {fit_to} from '../common'
 
 export const SET_SELECTION_RANGE = 'SET_SELECTION_RANGE';
 export const SET_RANGE = 'SET_RANGE';
+export const SET_HPARAMETERS = 'SET_HPARAMETERS';
 
 export let default_margin = {
     top: 1,
