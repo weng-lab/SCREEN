@@ -83,6 +83,7 @@ class PageInfoMain:
                        "ranklist_json": json.dumps(ranklist),
                        "tsslist_json": json.dumps(tsslist),
                        "searchPage": True,
+                       "bundle_url": "http://127.0.0.1:8090/bundle.js",
                        "SessionUid" : uuid })
 
         return retval
