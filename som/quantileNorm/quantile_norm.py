@@ -10,7 +10,7 @@ def quantileNormalize(df_input):
     #compute rank
     dic = {}
     for col in df:
-        dic.update({col : sorted(df[col])})
+        dic[col] = sorted(df[col])
     sorted_df = pd.DataFrame(dic)
     rank = sorted_df.mean(axis = 1).tolist()
     #sort
@@ -20,9 +20,9 @@ def quantileNormalize(df_input):
     return df
 
 def main():
-    data = {"a1" : [5,2,3,4],
-            "a2" : [4,1,4,2],
-            "a3" : [3,4,6,8]}
+    data = {"a1" : [5,2,0,3,4],
+            "a2" : [4,1,0,4,2],
+            "a3" : [3,4,7,6,8]}
     df = pd.DataFrame(data, columns=['a1', 'a2', 'a3'])
     print(quantileNormalize(df))
 
