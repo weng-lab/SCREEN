@@ -7,12 +7,18 @@ import pandas as pd
 def quantileNormalize(df_input):
     # from https://github.com/ShawnLYU/Quantile_Normalize
     df = df_input.copy()
+    print("df", df)
+    
     #compute rank
     dic = {}
     for col in df:
         dic[col] = sorted(df[col])
     sorted_df = pd.DataFrame(dic)
+    print("sorted_df", sorted_df)
+
     rank = sorted_df.mean(axis = 1).tolist()
+    print("rank", rank)
+    
     #sort
     for col in df:
         t = np.searchsorted(np.sort(df[col]), df[col])
