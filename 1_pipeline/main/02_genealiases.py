@@ -7,12 +7,14 @@ import os
 import requests
 import gzip
 
+from joblib import Parallel, delayed
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from get_tss import Genes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from constants import paths
+from constants import paths, chroms
 
 _gene_files = paths.gene_files
 
@@ -69,8 +71,18 @@ def tryparse(coordinate):
             "start": int(v[0]),
             "end": int(v[1]) }
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-j', type=int, default=1)
+    parser.add_argument('--version', type=int, default=4)
+    parser.add_argument('--assembly', type=str, default="hg19")
+    args = parser.parse_args()
+    return args
 
 def main():
+
+    args = parse_args()
+    
     infnp = paths.genelist
     outfnp = paths.genelsj
     emap = {}
@@ -111,7 +123,8 @@ def main():
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
 
-    ensembl_to_symbol(paths.re_json_orig, paths.re_json_rewrite, emap)
+    fnps = paths.get_paths(args.version, chroms[args.assembly])
+    Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(fnps["origFnp"][i], fnps["rewriteFnp"][i], emap) for i in range(0, len(fnps["origFnp"])))
 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0

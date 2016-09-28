@@ -10,7 +10,7 @@ import gzip
 from joblib import Parallel, delayed
 
 sys.path.append("../../common")
-from constants import paths
+from constants import paths, chroms
 from common import printr, printt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
@@ -24,8 +24,7 @@ def as_bed(el):
                       str(el["position"]["end"]),
                       el["accession"]])
 
-def lsj_to_beds():
-    infnp = paths.re_json_orig
+def lsj_to_beds(infnp):
     outfnp = paths.re_bed
     output = []
 
@@ -36,16 +35,16 @@ def lsj_to_beds():
             el = json.loads(line.strip())
             output.append(as_bed(el))
             i += 1
-            if i % 100000 == 0: printr("working with regelm %d" % i)
+            if i % 100000 == 0: printr("working with regelm %d (%s)" % (i, infnp))
 
-    with gzip.open(outfnp, "wb") as o:
+    with gzip.open(outfnp, "ab") as o:
         for el in output:
             o.write(el + "\n")
 
-def update_lsj(_tf_imap):
+def update_lsj(infnp, _tf_imap):
     i = 0
-    with gzip.open(paths.re_json_orig, "r") as f:
-        with gzip.open(paths.re_json_orig + ".tmp", "wb") as o:
+    with gzip.open(infnp, "r") as f:
+        with gzip.open(infnp.replace(".gz", ".tmp.gz"), "wb") as o:
             for line in f:
                 if i % 100000 == 0: printr("working with RE %d" % (i + 1))
                 i += 1
@@ -55,7 +54,6 @@ def update_lsj(_tf_imap):
                     if re["accession"] not in tf_imap: tf_imap[re["accession"]] = {}
                     re[key + "_intersection"] = tf_imap[re["accession"]]
                 o.write(json.dumps(re) + "\n")
-    os.replace(paths.re_json_orig + ".tmp", paths.re_json_orig)
 
 def file_json(exp, bed):
     return {"accession": bed.fileID,
@@ -127,14 +125,14 @@ def run(jobargs, tf_imap):
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
     return retval
 
-def assembly_json(args, assembly):
+def assembly_json(args, assembly, in_fnps):
     tf_imap = {"tf": {},
                "histone": {},
                "dnase": {} }
     jobs = get_parallel_jobs(args, assembly)
     files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap) for _args in jobs)
     printt("\n\nupdating RE JSON")
-    update_lsj(tf_imap)
+    Parallel(n_jobs = args.j)(delayed(update_lsj)(infnp, tf_imap) for infnp in in_fnps)
     return files
 
 def parse_args():
@@ -142,6 +140,8 @@ def parse_args():
     parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('-j', type=int, default=1)
     parser.add_argument('--remake_bed', action="store_true", default=False)
+    parser.add_argument('--version', type=int, default=4)
+    parser.add_argument('--assembly', type=str, default="hg19")
     args = parser.parse_args()
     return args
 
@@ -149,15 +149,17 @@ def main():
 
     files = []
     args = parse_args()
+    in_fnps = paths.get_paths(args.version, chroms[args.assembly])["rewriteFnp"]
 
     if not os.path.exists(paths.re_bed) or args.remake_bed:
         printt("generating RE bed file")
-        lsj_to_beds()
+        with open(paths.re_bed, "wb") as o:
+            pass # truncate existing file
+        Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(infnp) for infnp in in_fnps)
         print("\n")
     
     printt("intersecting TFs")
-    for assembly in ["hg19", "mm10"]:
-        files += assembly_json(args, assembly)
+    files += assembly_json(args, args.assembly, in_fnps)
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
         for _file in files:
             o.write(json.dumps(_file) + "\n")
