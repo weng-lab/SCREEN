@@ -42,7 +42,7 @@ def lsj_to_beds():
         for el in output:
             o.write(el + "\n")
 
-def update_lsj(tf_imap):
+def update_lsj(_tf_imap):
     i = 0
     with gzip.open(paths.re_json_orig, "r") as f:
         with gzip.open(paths.re_json_orig + ".tmp", "wb") as o:
@@ -50,8 +50,10 @@ def update_lsj(tf_imap):
                 if i % 100000 == 0: printr("working with RE %d" % (i + 1))
                 i += 1
                 re = json.loads(line)
-                if re["accession"] not in tf_imap: tf_imap[re["accession"]] = []
-                re["tf_intersection"] = tf_imap[re["accession"]]
+                for key, tf_imap in _tf_imap.iteritems():
+                    print(key + " " + re["accession"])
+                    if re["accession"] not in tf_imap: tf_imap[re["accession"]] = {}
+                    re[key + "_intersection"] = tf_imap[re["accession"]]
                 o.write(json.dumps(re) + "\n")
     os.replace(paths.re_json_orig + ".tmp", paths.re_json_orig)
 
@@ -66,7 +68,7 @@ def file_json(exp, bed):
 def do_intersection(bed, label, cmap):
     try:
         intersection = Utils.runCmds(["bedtools", "intersect",
-                                      "-b", bed,
+                                      "-b", bed.fnp(),
                                       "-a", paths.re_bed,
                                       "-wa"])
     except:
@@ -74,8 +76,9 @@ def do_intersection(bed, label, cmap):
     for line in intersection:
         line = line.strip()
         acc = line.split("\t")[3]
-        if acc not in cmap: cmap[acc] = []
-        cmap[acc].append(label)
+        if acc not in cmap: cmap[acc] = {}
+        if label not in cmap[acc]: cmap[acc][label] = []
+        cmap[acc][label].append(bed.fileID)
     return True
 
 def get_parallel_jobs(args, assembly):
@@ -88,9 +91,9 @@ def get_parallel_jobs(args, assembly):
     else:
         m = MetadataWS(Datasets.all_human)
 
-    for exps in [m.chipseq_tfs_useful(args),
-                 m.chipseq_histones_useful(args),
-                 m.dnases_useful(args)]:
+    for exps, etype in [(m.chipseq_tfs_useful(args), "TF"),
+                        (m.chipseq_histones_useful(args), "histone"),
+                        (m.dnases_useful(args), "DNase")]:
         for exp in exps:
             i += 1
             try:
@@ -102,7 +105,8 @@ def get_parallel_jobs(args, assembly):
                                  "bed": bed,
                                  "i": i,
                                  "total": len(exps),
-                                 "assembly": assembly })
+                                 "assembly": assembly,
+                                 "map": etype })
             except Exception, e:
                 print str(e)
                 print "bad exp:", exp
@@ -113,17 +117,20 @@ def run(jobargs, tf_imap):
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     retval = file_json(exp, bed)
-    if exp.label.strip() == "" or not os.path.exists(bed.fnp()):
+    label = exp.label if jobargs["map"] != "dnase" else "dnase"
+    if not os.path.exists(bed.fnp()):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
         return retval
     if "hg19" == jobargs["assembly"]:
-        printr("intersecting TF %s (exp %d of %d)" % (exp.label, jobargs["i"], jobargs["total"]))
-        if not do_intersection(bed.fnp(), exp.label, tf_imap):
+        printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
+        if not do_intersection(bed, label, tf_imap[jobargs["map"]]):
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
     return retval
 
 def assembly_json(args, assembly):
-    tf_imap = {}
+    tf_imap = {"tf": {},
+               "histone": {},
+               "dnase": {} }
     jobs = get_parallel_jobs(args, assembly)
     files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap) for _args in jobs)
     printt("\n\nupdating RE JSON")
