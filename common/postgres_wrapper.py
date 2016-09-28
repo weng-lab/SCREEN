@@ -2,6 +2,7 @@ import sys
 import os
 import gzip
 import json
+import constants
 #!/usr/bin/env python
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
@@ -10,6 +11,7 @@ from dbs import DBS
 from db_utils import getcursor
 
 from dbconnect import db_connect
+from constants import chroms
 
 class PostgresWrapper:
     def __init__(self, DBCONN):
@@ -17,16 +19,7 @@ class PostgresWrapper:
         self.assays = ["dnase", "tf", "histone"]
         self.assemblies = ["hg19", "mm10"]
         self.chroms = {}
-        self.chroms['hg19'] = ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
-                               'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
-                               'chr19', 'chr2', 'chr20', 'chr21', 'chr22',
-                               'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
-                               'chr9', 'chrM', 'chrX', 'chrY']
-        self.chroms['mm10'] = ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
-                               'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
-                               'chr19', 'chr2',
-                               'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
-                               'chr9', 'chrM', 'chrX', 'chrY']
+        self.chroms = constants.chroms
 
     def findBedOverlapAllAssays(self, assembly, chrom, start, end,
                                 overlap_fraction = 0.0, overlap_bp = 0):
