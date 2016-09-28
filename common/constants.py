@@ -22,34 +22,32 @@ class paths:
     def ins_chr(fnp):
         def retval(_chr):
             parts = fnp.split(".")
-            return "%s.chr%s.%s" % (parts[0], _chr, ".".join(parts[1:]))
+            return "%s.%s.%s" % (parts[0], _chr, ".".join(parts[1:]))
         return retval
     
     re_json_vers = { 2 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
                           "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
+                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V2.bed.gz"),
                           "index" : "regulatory_elements_2"},
                      3 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.json.gz")],
                           "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.mod.json.gz")],
+                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V3.bed.gz"),
                           "index" : "regulatory_elements_3"},
                      4: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.json.gz")),
-                         "origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.mod.json.gz")),
+                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.mod.json.gz")),
+                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V4.bed.gz"),
                          "index": "regulatory_elements_4"} }
 
     @staticmethod
     def get_paths(version, chrs = None):
         retval = {}
-        if version not in re_json_vers: return retval
-        for key, value in re_json_vers.iteritems():
-            if not hasattr(re_json_vers[key], "__call__"):
-                retval[key] = re_json_vers[key]
+        if version not in paths.re_json_vers: return retval
+        for key, value in paths.re_json_vers[version].iteritems():
+            if not hasattr(value, "__call__"):
+                retval[key] = value
             else:
-                retval[key] = [re_json_vers[key](chrom) for chrom in chrs]
+                retval[key] = [value(chrom) for chrom in chrs]
         return retval
-
-    re_json_version = V4Config.re_version
-    re_json_orig = re_json_vers[re_json_version]["origFnp"]
-    re_json_rewrite = re_json_vers[re_json_version]["rewriteFnp"]
-    re_json_index = re_json_vers[re_json_version]["index"]
     
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
@@ -60,4 +58,3 @@ class paths:
     snp_csvs = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
                 ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
-    re_bed = re_json_orig.replace(".json.gz", ".bed.gz")

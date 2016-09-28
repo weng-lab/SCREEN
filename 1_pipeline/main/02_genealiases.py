@@ -6,6 +6,7 @@ import sys
 import os
 import requests
 import gzip
+import argparse
 
 from joblib import Parallel, delayed
 
@@ -43,11 +44,11 @@ def ensembl_to_symbol(inFnp, outFnp, emap):
 
                 for geneCat in ["nearest-pc", "nearest-all"]:
                     gpca = []
-                    for gi in xrange(1,6):
-                        g = d["genes"][geneCat]["gene" + str(gi)]
-                        pc = g["gene name"].split(".")[0]
+                    for gi in xrange(0, 5):
+                        g = d["genes"][geneCat][gi]
+                        pc = g["gene-name"].split(".")[0]
                         if pc in emap:
-                            g["gene name"] = emap[pc]
+                            g["gene-name"] = emap[pc]
                         gpca.append(g)
                     d["genes"][geneCat] = gpca
 
