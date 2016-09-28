@@ -72,12 +72,19 @@ class AjaxWebService:
         ret.update(self.ac.get_suggestions(j))
         return ret
 
+    def _get_tissue(self, celltype):
+        return ""
+    
     def _enumerate(self, j):
         r = self.es.get_field_mapping(index=j["index"],
                                       doc_type=j["doc_type"],
                                       field=j["field"])
         if "cell_line" == j["name"]:
             r["datapairs"] = sorted(r["datapairs"], key=lambda s: s[0].lower())
+            r["results"] = []
+            for datapair in r["datapairs"]:
+                r["results"].append({"value": r[0],
+                                    "tissue": self._get_tissue(r[0]) })
         r["name"] = j["name"]
         return r
 
@@ -92,10 +99,15 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
-        return self._query({"object": j["object"],
-                            "index": "regulatory_elements_2",
-                            "callback": "regulatory_elements" })
-    
+        results = self._query({"object": j["object"],
+                               "index": "regulatory_elements_2",
+                               "callback": "regulatory_elements" })
+        results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
+                                                         "index": "regulatory_elements_2",
+                                                         "doc_type": "element",
+                                                         "field": "ranks.dnase" })["results"]
+        return results
+        
     def process(self, j):
         try:
             if "action" in j:

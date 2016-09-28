@@ -1,3 +1,7 @@
-    <script src="{{bundle_url}}"></script>
+    <script>
+      var _script = document.createElement("script");
+      _script.setAttribute("src", "http://" + document.domain + ":8090/bundle.js");
+      document.head.appendChild(_script);
+    </script>
   </body>
 </html>
