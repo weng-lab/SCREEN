@@ -1,9 +1,11 @@
-import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET} from '../helpers/create_facet'
+import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET} from '../helpers/create_facet'
 import {ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 
 import {default_margin} from './constants'
 import {selected_cell_line} from '../elasticsearch/helpers'
+
+import {render_int} from './results_table'
 
 export const facetboxes = {
     "assembly": {
@@ -28,15 +30,30 @@ export const facetboxes = {
 	visible: true,
 	facets: {
 	    "cell_lines": {
-		type: LIST_FACET,
+		type: LONGLIST_FACET,
 		visible: true,
 		title: "",
 		state: {
-		    items: {
-			"HeLa-S3": 10000,
-			"GM12878": 10000,
-			"HepG2": 10000
-		    },
+		    data: [],
+		    order: [],
+		    cols: [
+			{
+			    title: "cell type",
+			    data: "_source.cell_line",
+			    className: "dt-right"
+			},
+			{
+			    title: "tissue",
+			    data: "_source.tissue",
+			    className: "dt-right"
+			}
+			{
+			    title: "results",
+			    data: "_source.n",
+			    className: "dt-right",
+			    render: render_int
+			}
+		    ],
 		    selection: null
 		}
 	    }
@@ -202,7 +219,10 @@ export const es_links = {
 	    field: "genome"
 	}
     },
-    "cell_lines": {
+    "cell_lines": { 
+	f_query: [LongListQueryMap],
+	f_results: [LongListResultsMap],
+	field: null
     },
     "chromosome": {
 	"chromosome": {

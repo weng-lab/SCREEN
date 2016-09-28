@@ -11,9 +11,9 @@ const cart_img = (rmv, src_only) => {
     return (src_only ? src : '<img class="rowCart" src="' + src + '">');
 }
 
-const render_int = $.fn.dataTable.render.number( ',', '.', 0, '' );
-const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-const render_gene = (d) => (d["gene-name"] ? d["gene-name"] : d["gene-id"]);
+export const render_int = $.fn.dataTable.render.number( ',', '.', 0, '' );
+export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
+export const render_gene = (d) => (d["gene-name"] ? d["gene-name"] : d["gene-id"]);
 
 const ResultsTableColumns = [
     {

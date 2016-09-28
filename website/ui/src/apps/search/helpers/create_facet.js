@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import {RangeFacetReducer, SET_SELECTION_RANGE} from '../../../common/reducers/range'
 import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
 import {ChecklistFacetReducer, SET_ITEMS, SET_MATCH_MODE} from '../../../common/reducers/checklist'
+import {LongListFacetReducer, SET_DATA} from '../../../common/reducers/longlist'
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
@@ -14,9 +15,11 @@ import {invalidate_results} from './invalidate_results'
 import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
 import MainChecklistFacet from '../components/checklist'
+import MainLongListFacet from '../components/longlist'
 
 export const RANGE_FACET = 'RANGE_FACET';
 export const LIST_FACET = 'LIST_FACET';
+export const LONGLIST_FACET = 'LONGLIST_FACET';
 export const CHECKLIST_FACET = 'CHECKLIST_FACET';
 
 const range_props_map = (store, box, key) => (_state) => {
@@ -96,7 +99,30 @@ const checklist_dispatch_map = (store, box, key) => (dispatch) => {
 	}
     };
 };
-    
+
+const longlist_props_map = (store, box, key) => (_state) => {
+    var state = _state.facet_boxes[box];
+    return {
+	data: state.facets[key].state.data,
+	cols: state.facets[key].state.cols,
+	order: state.facets[key].state.order,
+	selection: state.facets[key].state.selection,
+	visible: state.facets[key].visible,
+	title: state.facets[key].title
+    };
+};
+
+const longlist_dispatch_map = (store, box, key) => (dispatch) => {
+    return {
+	onTdClick: (selection) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_SELECTION,
+		selection
+	    }));
+	    dispatch(invalidate_results(store.getState()));
+	}
+    };
+};
 
 const props_dispatch_map = (dispatch) => {
     return {
@@ -121,6 +147,11 @@ const _map = {
 	connector: (store, box, key) => connect(checklist_props_map(store, box, key), checklist_dispatch_map(store, box, key)),
 	component: MainChecklistFacet,
 	reducer: ChecklistFacetReducer
+    },
+    LONGLIST_FACET: {
+	connector: (store, box, key) => connect(longlist_props_map(store, box, key), longlist_dispatch_map(store, box, key)),
+	component: LongListFacet,
+	reducer: LongListFacetReducer
     }
 };
 
@@ -144,7 +175,5 @@ export const FacetCreator = (store, box) => (key, props) => {
 
 export const wrap_facet = (visible, facet) => {
     var display = (visible ? "block" : "none");
-    return (
-	    <div style={{display: display}}>{facet}</div>
-    );
+    return <div style={{display: display}}>{facet}</div>
 };

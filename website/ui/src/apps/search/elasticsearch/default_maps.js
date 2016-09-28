@@ -24,11 +24,16 @@ export const RangeAggMap = (key, facet, query) => {
 };
 
 export const ListQueryMap = (key, facet, query) => {
-    var term = {};
     if (facet.state.selection == null) return;
-    term[facet.es_field] = facet.state.selection;
     query.query.bool.must.push(
 	term_match(facet.es_field, facet.state.selection)
+    );
+};
+
+export const LongListQueryMap = (key, facet, query) => {
+    if (facet.state.selection == null) return;
+    query.query.bool.must.push(
+	term_match(facet.es_field, facet.state.selection._source.value)
     );
 };
 
@@ -45,6 +50,13 @@ export const ListResultsMap = (key, facet, dispatch, results) => {
     dispatch({
 	type: SET_ITEMS,
 	items: results.aggs[key].datapairs
+    });
+};
+
+export const LongListResultsMap = (key, facet, dispatch, results) => {
+    dispatch({
+	type: SET_DATA,
+	items: results.aggs[key]
     });
 };
 
