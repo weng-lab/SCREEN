@@ -24,8 +24,7 @@ def as_bed(el):
                       str(el["position"]["end"]),
                       el["accession"]])
 
-def lsj_to_beds(infnp):
-    outfnp = paths.re_bed
+def lsj_to_beds(infnp, outfnp):
     output = []
 
     i = 0
@@ -63,11 +62,11 @@ def file_json(exp, bed):
             "target": exp.target,
             "label": exp.label }
 
-def do_intersection(bed, label, cmap):
+def do_intersection(bed, label, cmap, refnp):
     try:
         intersection = Utils.runCmds(["bedtools", "intersect",
                                       "-b", bed.fnp(),
-                                      "-a", paths.re_bed,
+                                      "-a", refnp,
                                       "-wa"])
     except:
         return False
@@ -121,16 +120,16 @@ def run(jobargs, tf_imap):
         return retval
     if "hg19" == jobargs["assembly"]:
         printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
-        if not do_intersection(bed, label, tf_imap[jobargs["map"]]):
+        if not do_intersection(bed, label, tf_imap[jobargs["map"]], jobargs["bedfnp"]):
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
     return retval
 
-def assembly_json(args, assembly, in_fnps):
+def assembly_json(args, assembly, in_fnps, bedfnp):
     tf_imap = {"tf": {},
                "histone": {},
                "dnase": {} }
     jobs = get_parallel_jobs(args, assembly)
-    files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap) for _args in jobs)
+    files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap, bedfnp) for _args in jobs)
     printt("\n\nupdating RE JSON")
     Parallel(n_jobs = args.j)(delayed(update_lsj)(infnp, tf_imap) for infnp in in_fnps)
     return files
@@ -149,17 +148,19 @@ def main():
 
     files = []
     args = parse_args()
-    in_fnps = paths.get_paths(args.version, chroms[args.assembly])["rewriteFnp"]
+    fnps = paths.get_paths(args.version, chroms[args.assembly])
+    in_fnps = fnps["rewriteFnp"]
+    bed_fnp = fnps["re_bed"]
 
     if not os.path.exists(paths.re_bed) or args.remake_bed:
         printt("generating RE bed file")
         with open(paths.re_bed, "wb") as o:
             pass # truncate existing file
-        Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(infnp) for infnp in in_fnps)
+        Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(infnp, bed_fnp) for infnp in in_fnps)
         print("\n")
     
     printt("intersecting TFs")
-    files += assembly_json(args, args.assembly, in_fnps)
+    files += assembly_json(args, args.assembly, in_fnps, bed_fnp)
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
         for _file in files:
             o.write(json.dumps(_file) + "\n")
