@@ -41,6 +41,7 @@ def lsj_to_beds(infnp, outfnp):
             o.write(el + "\n")
 
 def update_lsj(infnp, _tf_imap):
+    if not os.path.exists(infnp): return
     i = 0
     with gzip.open(infnp, "r") as f:
         with gzip.open(infnp.replace(".gz", ".tmp.gz"), "wb") as o:
@@ -49,7 +50,6 @@ def update_lsj(infnp, _tf_imap):
                 i += 1
                 re = json.loads(line)
                 for key, tf_imap in _tf_imap.iteritems():
-                    print(key + " " + re["accession"])
                     if re["accession"] not in tf_imap: tf_imap[re["accession"]] = {}
                     re[key + "_intersection"] = tf_imap[re["accession"]]
                 o.write(json.dumps(re) + "\n")
@@ -88,9 +88,9 @@ def get_parallel_jobs(args, assembly):
     else:
         m = MetadataWS(Datasets.all_human)
 
-    for exps, etype in [(m.chipseq_tfs_useful(args), "TF"),
+    for exps, etype in [(m.chipseq_tfs_useful(args), "tf"),
                         (m.chipseq_histones_useful(args), "histone"),
-                        (m.dnases_useful(args), "DNase")]:
+                        (m.dnases_useful(args), "dnase")]:
         for exp in exps:
             i += 1
             try:
@@ -110,7 +110,7 @@ def get_parallel_jobs(args, assembly):
 
     return jobs
 
-def run(jobargs, tf_imap):
+def run(jobargs, tf_imap, bedfnp):
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     retval = file_json(exp, bed)
@@ -120,16 +120,21 @@ def run(jobargs, tf_imap):
         return retval
     if "hg19" == jobargs["assembly"]:
         printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
-        if not do_intersection(bed, label, tf_imap[jobargs["map"]], jobargs["bedfnp"]):
+        if not do_intersection(bed, label, tf_imap[jobargs["map"]], bedfnp):
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
-    return retval
+    return (retval, tf_imap)
 
 def assembly_json(args, assembly, in_fnps, bedfnp):
     tf_imap = {"tf": {},
                "histone": {},
                "dnase": {} }
+    files = []
     jobs = get_parallel_jobs(args, assembly)
-    files = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap, bedfnp) for _args in jobs)
+    results = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap, bedfnp) for _args in jobs)
+    for result in results:
+        for k, v in result[1].iteritems():
+            tf_imap[k].update(v)
+        files += results[0]
     printt("\n\nupdating RE JSON")
     Parallel(n_jobs = args.j)(delayed(update_lsj)(infnp, tf_imap) for infnp in in_fnps)
     return files
@@ -152,11 +157,13 @@ def main():
     in_fnps = fnps["rewriteFnp"]
     bed_fnp = fnps["re_bed"]
 
-    if not os.path.exists(paths.re_bed) or args.remake_bed:
+    if not os.path.exists(bed_fnp) or args.remake_bed:
         printt("generating RE bed file")
-        with open(paths.re_bed, "wb") as o:
+        with open(bed_fnp, "wb") as o:
             pass # truncate existing file
-        Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(infnp, bed_fnp) for infnp in in_fnps)
+        for infnp in in_fnps:
+            if not os.path.exists(infnp): continue
+            lsj_to_beds(infnp, bed_fnp)
         print("\n")
     
     printt("intersecting TFs")
