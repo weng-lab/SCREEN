@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react'
-import LongListFacet from '../../../common/components/list'
+import LongListFacet from '../../../common/components/longlist'
 import {wrap_facet} from '../helpers/create_facet'
 
 const MainLongListFacet = ({visible, title, data, cols, order, selection, onTdClick}) => {

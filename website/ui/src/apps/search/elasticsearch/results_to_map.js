@@ -11,6 +11,8 @@ import toggle_facetbox from '../helpers/toggle_facetbox'
  *  This should be set by dipatching the ES_CONNECT action (see ./es_connect.js)
  */
 const ResultsDispatchMap = (state, results, dispatch) => {
+
+    console.log(results);
     
     for (var i in state.facet_boxes) {
 	

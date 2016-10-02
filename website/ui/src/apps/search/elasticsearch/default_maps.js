@@ -33,7 +33,7 @@ export const ListQueryMap = (key, facet, query) => {
 export const LongListQueryMap = (key, facet, query) => {
     if (facet.state.selection == null) return;
     query.query.bool.must.push(
-	term_match(facet.es_field, facet.state.selection._source.value)
+	term_match(facet.es_field, facet.state.selection)
     );
 };
 
