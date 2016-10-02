@@ -22,7 +22,7 @@ class PageInfoMain:
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index
+                "re_json_index" : paths.re_index
         }
 
     def hexplotPage(self, args, kwargs):

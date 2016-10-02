@@ -83,8 +83,8 @@ class AjaxWebService:
             r["datapairs"] = sorted(r["datapairs"], key=lambda s: s[0].lower())
             r["results"] = []
             for datapair in r["datapairs"]:
-                r["results"].append({"value": r[0],
-                                    "tissue": self._get_tissue(r[0]) })
+                r["results"].append({"value": datapair[0],
+                                    "tissue": self._get_tissue(datapair[0]) })
         r["name"] = j["name"]
         return r
 
@@ -99,15 +99,25 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
+        print(j)
         results = self._query({"object": j["object"],
-                               "index": "regulatory_elements_2",
+                               "index": "regulatory_elements_3",
                                "callback": "regulatory_elements" })
+        print(results)
         results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
-                                                         "index": "regulatory_elements_2",
+                                                         "index": "regulatory_elements_3",
                                                          "doc_type": "element",
                                                          "field": "ranks.dnase" })["results"]
+        results["expression_matrix"] = self._expression_matrix({"ids": self._get_genelist(results)})
         return results
-        
+
+    def _get_genelist(self, results):
+        retval = []
+        for result in results["results"]["hits"]:
+            for gene in result["nearest-all"] + result["nearest-pc"]:
+                if gene["gene-name"] not in retval: retval.append(gene["gene-name"])
+        return retval
+    
     def process(self, j):
         try:
             if "action" in j:

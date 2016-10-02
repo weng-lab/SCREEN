@@ -1,5 +1,5 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET} from '../helpers/create_facet'
-import {ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
+import {LongListResultsMap, LongListQueryMap, ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 
 import {default_margin} from './constants'
@@ -46,12 +46,6 @@ export const facetboxes = {
 			    title: "tissue",
 			    data: "_source.tissue",
 			    className: "dt-right"
-			}
-			{
-			    title: "results",
-			    data: "_source.n",
-			    className: "dt-right",
-			    render: render_int
 			}
 		    ],
 		    selection: null
@@ -219,10 +213,12 @@ export const es_links = {
 	    field: "genome"
 	}
     },
-    "cell_lines": { 
-	f_query: [LongListQueryMap],
-	f_results: [LongListResultsMap],
-	field: null
+    "cell_lines": {
+	"cell_lines": {
+	    f_query: [LongListQueryMap],
+	    f_results: [LongListResultsMap],
+	    field: null
+	}
     },
     "chromosome": {
 	"chromosome": {

@@ -5,7 +5,7 @@ from constants import paths
 
 class RegElements:
     def __init__(self, es):
-        self.index = paths.re_json_index
+        self.index = paths.re_index
         self.es = es
 
     @staticmethod

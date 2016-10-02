@@ -8,7 +8,7 @@ from constants import paths
 
 class RegElementDetails:
     def __init__(self, es, ps):
-        self.index = paths.re_json_index
+        self.index = paths.re_index
         self.es = es
         self.ps = ps
 
