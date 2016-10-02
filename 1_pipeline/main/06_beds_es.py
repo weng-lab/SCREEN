@@ -18,6 +18,8 @@ from utils import Utils, printWroteNumLines
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 
+_alines = []
+
 def as_bed(el):
     return "\t".join([el["position"]["chrom"],
                       str(el["position"]["start"]),
@@ -40,18 +42,17 @@ def lsj_to_beds(infnp, outfnp):
         for el in output:
             o.write(el + "\n")
 
-def update_lsj(infnp, _tf_imap):
+def update_lsj(infnp, tf_imap):
     if not os.path.exists(infnp): return
     i = 0
     with gzip.open(infnp, "r") as f:
-        with gzip.open(infnp.replace(".gz", ".tmp.gz"), "wb") as o:
+        with gzip.open(infnp.replace(".gz", "._tmp.gz"), "wb") as o:
             for line in f:
                 if i % 100000 == 0: printr("working with RE %d" % (i + 1))
                 i += 1
                 re = json.loads(line)
-                for key, tf_imap in _tf_imap.iteritems():
-                    if re["accession"] not in tf_imap: tf_imap[re["accession"]] = {}
-                    re[key + "_intersection"] = tf_imap[re["accession"]]
+                re["accession"] = unicode(re["accession"])
+                re["peak_intersections"] = tf_imap[re["accession"]] if re["accession"] in tf_imap else {"tf": {}, "histone": {}, "dnase": {}}
                 o.write(json.dumps(re) + "\n")
 
 def file_json(exp, bed):
@@ -62,21 +63,20 @@ def file_json(exp, bed):
             "target": exp.target,
             "label": exp.label }
 
-def do_intersection(bed, label, cmap, refnp):
+def do_intersection(bed, refnp):
+    retval = []
     try:
         intersection = Utils.runCmds(["bedtools", "intersect",
                                       "-b", bed.fnp(),
                                       "-a", refnp,
                                       "-wa"])
     except:
-        return False
+        return None
     for line in intersection:
         line = line.strip()
-        acc = line.split("\t")[3]
-        if acc not in cmap: cmap[acc] = {}
-        if label not in cmap[acc]: cmap[acc][label] = []
-        cmap[acc][label].append(bed.fileID)
-    return True
+        acc = str(line.split("\t")[3])
+        retval.append(acc)
+    return retval
 
 def get_parallel_jobs(args, assembly):
 
@@ -110,7 +110,8 @@ def get_parallel_jobs(args, assembly):
 
     return jobs
 
-def run(jobargs, tf_imap, bedfnp):
+def run(jobargs, bedfnp):
+    results = []
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     retval = file_json(exp, bed)
@@ -120,21 +121,25 @@ def run(jobargs, tf_imap, bedfnp):
         return retval
     if "hg19" == jobargs["assembly"]:
         printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
-        if not do_intersection(bed, label, tf_imap[jobargs["map"]], bedfnp):
+        result = do_intersection(bed, bedfnp)
+        if result is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
-    return (retval, tf_imap)
+        else:
+            results.append((jobargs["map"], label, bed.fileID, result))
+    return (retval, results)
 
 def assembly_json(args, assembly, in_fnps, bedfnp):
-    tf_imap = {"tf": {},
-               "histone": {},
-               "dnase": {} }
+    tf_imap = {}
     files = []
     jobs = get_parallel_jobs(args, assembly)
-    results = Parallel(n_jobs = args.j)(delayed(run)(_args, tf_imap, bedfnp) for _args in jobs)
-    for result in results:
-        for k, v in result[1].iteritems():
-            tf_imap[k].update(v)
-        files += results[0]
+    results = Parallel(n_jobs = args.j)(delayed(run)(_args, bedfnp) for _args in jobs)
+    for rfiles, intersections in results:
+        for key, label, bed, accs in intersections:
+            for acc in accs:
+                if acc not in tf_imap: tf_imap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
+                if label not in tf_imap[acc][key]: tf_imap[acc][key][label] = []
+                tf_imap[acc][key][label].append(bed)
+        files += rfiles
     printt("\n\nupdating RE JSON")
     Parallel(n_jobs = args.j)(delayed(update_lsj)(infnp, tf_imap) for infnp in in_fnps)
     return files
@@ -156,6 +161,7 @@ def main():
     fnps = paths.get_paths(args.version, chroms[args.assembly])
     in_fnps = fnps["rewriteFnp"]
     bed_fnp = fnps["re_bed"]
+    print(bed_fnp)
 
     if not os.path.exists(bed_fnp) or args.remake_bed:
         printt("generating RE bed file")
@@ -171,7 +177,8 @@ def main():
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
         for _file in files:
             o.write(json.dumps(_file) + "\n")
-    printt("\n\nwrote %s" % os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"))
+    print("\n")
+    printt("wrote %s" % os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"))
     return 0
 
 if __name__ == '__main__':
