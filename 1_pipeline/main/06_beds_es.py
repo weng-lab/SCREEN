@@ -158,7 +158,7 @@ def main():
 
     files = []
     args = parse_args()
-    fnps = paths.get_paths(args.version, ["chrX", "chrY"])
+    fnps = paths.get_paths(args.version, chroms[args.assembly])
     in_fnps = fnps["rewriteFnp"]
     bed_fnp = fnps["re_bed"]
     print(bed_fnp)
