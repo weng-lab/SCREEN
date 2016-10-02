@@ -19,6 +19,6 @@ class executable_importer:
         importer = ESBulkImporter(self.elasticsearch_server,
                                   self.elasticsearch_port)
         for i in range(0, len(self.fnps)):
-            importer.do_import(self.fnp, self.index, doc_type=self.doc_type,
+            importer.do_import(self.fnps[i], self.index, doc_type=self.doc_type,
                                purge_existing = (i == 0))
         
