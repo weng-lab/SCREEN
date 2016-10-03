@@ -11,6 +11,8 @@ import toggle_facetbox from '../helpers/toggle_facetbox'
  *  This should be set by dipatching the ES_CONNECT action (see ./es_connect.js)
  */
 const ResultsDispatchMap = (state, results, dispatch) => {
+
+    console.log(results);
     
     for (var i in state.facet_boxes) {
 	
@@ -24,7 +26,7 @@ const ResultsDispatchMap = (state, results, dispatch) => {
 	}
 	
 	for (var key in tbox.facets) {
-	    
+
 	    var tfacet = Object.assign({}, tbox.facets[key]);
 	    if (tfacet.es_callback == null || !tfacet.visible) continue;
 	    if (typeof(tfacet.rs_field) === 'function') tfacet.rs_field = tfacet.rs_field(results);

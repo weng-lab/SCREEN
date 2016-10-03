@@ -5,6 +5,8 @@ import {array_contains} from '../../../common/common'
 import {TOGGLE_CART_ITEM} from '../reducers/root_reducer'
 import ResultsDataTable from '../../../common/components/results_table'
 
+import {invalidate_detail} from '../helpers/invalidate_results'
+
 class TableWithCart extends React.Component {
 
     constructor(props) {
@@ -36,7 +38,7 @@ const table_click_handler = (td, rowdata, dispatch) => {
 	dispatch(toggle_cart_item(rowdata._source.accession));
 	return;
     }
-    
+    dispatch(invalidate_detail(rowdata));
 };
 
 const button_click_handler = (button, rowdata, dispatch) => {

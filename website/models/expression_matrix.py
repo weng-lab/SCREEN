@@ -30,7 +30,7 @@ class ExpressionMatrix:
                     clmap[ev["cell_line"]] = clptr
                     heatmap["cols"].append(ev["cell_line"])
                     clptr += 1
-                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = math.log(ev["rep1_fpkm"] + 1.0) if "rep1_fpkm" in ev else -1.0
+                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0
             heatmap["rows"].append(hit["gene_name"] if hit["gene_name"] is not None else hit["ensembl_id"])
         for i in range(0, len(rmtrx)):
             heatmap["matrix"].append([-1.0 for n in range(0, clptr)])
@@ -39,9 +39,11 @@ class ExpressionMatrix:
         return Heatmap(heatmap["matrix"], heatmap["rows"], heatmap["cols"])
 
     def search(self, ids):
-        q = {"query": {"bool": {"should": [] }}}
+        q = {"query": {"bool": {"should": [] }},
+             "size": 50 }
         for i in ids:
 	    q["query"]["bool"]["should"].append({"match": {"ensembl_id": i}})
+	    q["query"]["bool"]["should"].append({"match": {"gene_name": i}})            
         return self.rawquery(q)
 
     def rawquery(self, q):
