@@ -8,6 +8,7 @@ from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from constants import paths
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
@@ -89,6 +90,7 @@ class AjaxWebService:
         return r
 
     def _query(self, j):
+        print(j["object"])
         ret = self.es.search(body=j["object"], index=j["index"])
 
         if j["callback"] in self.cmap:
@@ -99,13 +101,12 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
-        print(j)
+        print(j["object"])
         results = self._query({"object": j["object"],
-                               "index": "regulatory_elements_3",
+                               "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
-        print(results)
         results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
-                                                         "index": "regulatory_elements_3",
+                                                         "index": paths.re_json_index,
                                                          "doc_type": "element",
                                                          "field": "ranks.dnase" })["results"]
         results["expression_matrix"] = self._expression_matrix({"ids": self._get_genelist(results)})
@@ -114,7 +115,7 @@ class AjaxWebService:
     def _get_genelist(self, results):
         retval = []
         for result in results["results"]["hits"]:
-            for gene in result["nearest-all"] + result["nearest-pc"]:
+            for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
                 if gene["gene-name"] not in retval: retval.append(gene["gene-name"])
         return retval
     

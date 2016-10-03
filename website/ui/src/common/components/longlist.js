@@ -12,20 +12,28 @@ class LongListFacet extends React.Component {
 	this._clear = this._clear.bind(this);
     }
     
-    _td_handler(k) {
-	if (this.props.onTdClick) this.props.onTdClick(k._source.value);
+    _td_handler(r, k) {
+	if (this.props.onTdClick) this.props.onTdClick(k.value);
     }
 
     _clear() {
 	if (this.props.onTdClick) this.props.onTdClick(null);
+	$(this.refs.container).empty();
     }
     
     render() {
-	if (this.props.selection == null)
-	    return (<ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
-	                onTdClick={this._td_handler} />);
-	return (<ListItem value={this.props.selection} selected="true" n="0"
-		    onclick={this._clear} />);
+	var table_display = (this.props.selection == null ? "blocK" : "none");
+	var sdisplay = (this.props.selection == null ? "none" : "block");
+	return (<div>
+		    <div style={{display: table_display}}>
+		        <ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
+	                    onTdClick={this._td_handler} />
+		    </div>
+		    <div style={{display: sdisplay}}>
+		        <ListItem value={this.props.selection} selected="true" n="0"
+		            onclick={this._clear} />
+		    </div>
+		</div>);
     }
     
 }

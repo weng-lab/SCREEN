@@ -26,7 +26,7 @@ const ResultsDispatchMap = (state, results, dispatch) => {
 	}
 	
 	for (var key in tbox.facets) {
-	    
+
 	    var tfacet = Object.assign({}, tbox.facets[key]);
 	    if (tfacet.es_callback == null || !tfacet.visible) continue;
 	    if (typeof(tfacet.rs_field) === 'function') tfacet.rs_field = tfacet.rs_field(results);

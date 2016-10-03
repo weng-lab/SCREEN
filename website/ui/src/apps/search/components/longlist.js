@@ -14,7 +14,7 @@ MainLongListFacet.propTypes = {
     data: PropTypes.any.isRequired,
     order: PropTypes.any.isRequired,
     cols: PropTypes.any.isRequired,
-    selection: PropTypes.any.isRequired
+    selection: PropTypes.any
 };
 
 export default MainLongListFacet;

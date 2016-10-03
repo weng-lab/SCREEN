@@ -1,5 +1,6 @@
 import {MATCH_MODE_ALL, MATCH_MODE_ANY, SET_ITEMS} from '../../../common/reducers/checklist'
 import {SET_RANGE, SET_HPARAMETERS} from '../../../common/reducers/range'
+import {SET_DATA} from '../../../common/reducers/longlist'
 import {term_match} from './helpers'
 
 export const RangeQueryMap = (key, facet, query) => {
@@ -56,7 +57,7 @@ export const ListResultsMap = (key, facet, dispatch, results) => {
 export const LongListResultsMap = (key, facet, dispatch, results) => {
     dispatch({
 	type: SET_DATA,
-	items: results.aggs[key]
+	data: results.aggs[key]
     });
 };
 
