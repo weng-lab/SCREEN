@@ -82,7 +82,9 @@ export const invalidate_detail = (re) => {
     return (dispatch) => {
 	var n_query = {
 	    accession: re._source.accession,
-	    coord: re._source.position
+	    coord: re._source.position,
+	    peak_intersections: re._source.peak_intersections,
+	    ranks: re._source.ranks
 	};
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_detail(response));

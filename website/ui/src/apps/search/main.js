@@ -14,7 +14,7 @@ import {expression_heatmap_connector} from './components/expression_heatmap'
 import Heatmap from '../../common/components/heatmap'
 
 import DetailsApp, {details_connector} from './components/details_app'
-import {tables} from './config/details'
+import {tabs} from './config/details'
 
 let store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
 
@@ -38,5 +38,5 @@ if (document.getElementById('expression_heatmap')) {
 
 if (document.getElementById('details-container')) {
     var Details = details_connector(DetailsApp);
-    render(<Details store={store} tables={tables} />, document.getElementById('details-container'));
+    render(<Details store={store} tabs={tabs} />, document.getElementById('details-container'));
 }
