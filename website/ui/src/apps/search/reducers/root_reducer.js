@@ -11,6 +11,8 @@ export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
 
+export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
+
 export let root_default_state = {
     facet_boxes: {},
     results: {
@@ -18,7 +20,12 @@ export let root_default_state = {
 	hits: [],
 	order: [],
 	columns: [],
-	cart_list: []
+	cart_list: [],
+	expression_matrix: {
+	    collabels: [],
+	    rowlabels: [],
+	    matrix: []
+	}
     }
 };
 
@@ -78,6 +85,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		cart_list: n_cart_list
+	    })
+	});
+
+    case UPDATE_EXPRESSION:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_matrix: action.expression_matrix
 	    })
 	});
 	
