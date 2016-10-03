@@ -1,5 +1,8 @@
 const React = require('react');
 
+var default_colors = ['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
+default_colors.reverse();
+
 export const default_heatmap_layout = {
 
     "margin": {
@@ -21,11 +24,11 @@ export const default_heatmap_layout = {
 	"labels": []
     },
     
-    "colors": ['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F']
+    "colors": default_colors
     
 };
 
-class Heatmap extends React.component {
+class Heatmap extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -37,6 +40,8 @@ class Heatmap extends React.component {
 
     componentDidUpdate() {
 
+	$(this.refs.container).empty();
+	
 	var data = this.props.data;
 	var chart_layout = Object.assign({}, this.props.chart_layout);
 	
@@ -48,17 +53,20 @@ class Heatmap extends React.component {
 	chart_layout.cols.order = [];
 	for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
 
-	chart_layout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'].reverse();
+	chart_layout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
 	
 	chart_layout.width  = chart_layout.cellSize * chart_layout.cols.order.length;
 	chart_layout.height = chart_layout.cellSize * chart_layout.rows.order.length;
 	chart_layout.legendElementWidth = chart_layout.cellSize;
+
+	var min = d3.min(data, function(d) {return d.value;});
+	var max = d3.max(data, function(d) {return d.value;});
 	
 	var colorScale = d3.scale.quantile()
-	    .domain([ 0, 10])
+	    .domain([min, max])
 	    .range(chart_layout.colors);
 	
-	var svg = d3.select("#" + this.refs.container).append("svg")
+	var svg = d3.select(this.refs.container).append("svg")
 	    .attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right)
 	    .attr("height", chart_layout.height + chart_layout.margin.top + chart_layout.margin.bottom)
 	    .append("g")
@@ -133,7 +141,7 @@ class Heatmap extends React.component {
 	;
 	
 	var legend = svg.selectAll(".legend")
-	    .data([0,1,2,3,4,5,6,7,8,9,10])
+	    .data([Math.round(min), "", "", "", "", "", "", "", "", "", Math.round(max)])
 	    .enter().append("g")
 	    .attr("class", "legend");
 	
