@@ -150,7 +150,7 @@ const _map = {
     },
     LONGLIST_FACET: {
 	connector: (store, box, key) => connect(longlist_props_map(store, box, key), longlist_dispatch_map(store, box, key)),
-	component: LongListFacet,
+	component: MainLongListFacet,
 	reducer: LongListFacetReducer
     }
 };

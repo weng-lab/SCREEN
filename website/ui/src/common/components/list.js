@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-class ListItem extends React.Component {
+export class ListItem extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -13,6 +13,8 @@ class ListItem extends React.Component {
     }
     
     render() {
+
+	console.log(this.props);
 	
 	var classname, rtxt;
 	if (this.props.selected) {

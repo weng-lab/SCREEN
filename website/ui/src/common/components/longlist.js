@@ -1,5 +1,5 @@
-import ResultsTable from './results-table'
-import ListItem from './list'
+import ResultsTable from './results_table'
+import {ListItem} from './list'
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -8,24 +8,32 @@ class LongListFacet extends React.Component {
 
     constructor(props) {
 	super(props);
-	this.click_handler = this.click_handler.bind(this);
+	this._td_handler = this._td_handler.bind(this);
+	this._clear = this._clear.bind(this);
     }
     
-    _td_handler(k) {
-	if (this.props.onTdClick) this.props.onTdClick(k);
+    _td_handler(r, k) {
+	if (this.props.onTdClick) this.props.onTdClick(k.value);
     }
 
     _clear() {
 	if (this.props.onTdClick) this.props.onTdClick(null);
+	$(this.refs.container).empty();
     }
     
     render() {
-	return (this.props.selection == null
-		? <ResultsTable cols={this.props.cols} data={data} order={this.props.order}
-	              onTdClick={this._td_handler} />
-		: <ListItem value={this.props._source.cell_line} n={this.props.selection._source.n} selected=true
-		      onclick={this._clear} />
-	       );
+	var table_display = (this.props.selection == null ? "blocK" : "none");
+	var sdisplay = (this.props.selection == null ? "none" : "block");
+	return (<div>
+		    <div style={{display: table_display}}>
+		        <ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
+	                    onTdClick={this._td_handler} />
+		    </div>
+		    <div style={{display: sdisplay}}>
+		        <ListItem value={this.props.selection} selected="true" n="0"
+		            onclick={this._clear} />
+		    </div>
+		</div>);
     }
     
 }

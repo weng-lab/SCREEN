@@ -8,6 +8,7 @@ from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from constants import paths
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
@@ -33,10 +34,37 @@ class AjaxWebService:
                         "search": self._search,
                         "gene_expression": self._expression_matrix}
 
+    def _format_ranks(self, ranks):
+        return {"promoter": [{"cell_type": k,
+                              "H3K4me3": None if "H3K4me3-Only" not in v else v["H3K4me3-Only"]["rank"],
+                              "H3K4me3_DNase": None if "DNase+H3K4me3" not in v else v["DNase+H3K4me3"]["rank"] }
+                             for k, v in ranks["promoter"].iteritems() ],
+                "enhancer": [{"cell_type": k,
+                              "H3K27ac": None if "H3K27ac-Only" not in v else v["H3K27ac-Only"]["rank"],
+                              "H3K27ac_DNase": None if "DNase+H3K27ac" not in v else v["DNase+H3K27ac"]["rank"] }
+                             for k, v in ranks["enhancer"].iteritems() ],
+                "ctcf": [{"cell_type": k,
+                          "ctcf": None if "CTCF-Only" not in v else v["CTCF-Only"]["rank"],
+                          "ctcf_DNase": None if "DNase+CTCF" not in v else v["DNase+CTCF"]["rank"] }
+                         for k, v in ranks["ctcf"].iteritems() ],
+                "dnase": [{"cell_type": k,
+                           "rank": v["rank"]} for k, v in ranks["dnase"].iteritems()] }
+        
+    def _peak_format(self, peaks):
+        retval = []
+        for k, v in peaks.iteritems():
+            retval.append({"name": k,
+                           "n": len(v),
+                           "encode_accs": v })
+        return retval
+        
     def _re_detail(self, j):
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
-                        "position": j["coord"]} }
+                        "position": j["coord"]},
+                  "data": {k: self._peak_format(v) for k, v in j["peak_intersections"].iteritems()} }
+
+        output["data"].update(self._format_ranks(j["ranks"]))
 
         expanded_coords = {"chrom": j["coord"]["chrom"],
                            "start": j["coord"]["start"] - 10000000,
@@ -46,16 +74,22 @@ class AjaxWebService:
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
-        output["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
-        output["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+        output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
+        output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
+        output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
 
         return output
 
     def _expression_matrix(self, j):
         retval = self.em.search(j["ids"])
-        return retval
-        
+        matrix = []
+        for i in range(0, len(retval["matrix"])):
+            for j in range(0, len(retval["matrix"][0])):
+                matrix.append({"row": i + 1,
+                               "col": j + 1,
+                               "value": retval["matrix"][i][j]})
+        retval.update({"matrix": matrix})
+        return retval        
     
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
@@ -83,12 +117,13 @@ class AjaxWebService:
             r["datapairs"] = sorted(r["datapairs"], key=lambda s: s[0].lower())
             r["results"] = []
             for datapair in r["datapairs"]:
-                r["results"].append({"value": r[0],
-                                    "tissue": self._get_tissue(r[0]) })
+                r["results"].append({"value": datapair[0],
+                                    "tissue": self._get_tissue(datapair[0]) })
         r["name"] = j["name"]
         return r
 
     def _query(self, j):
+        print(j["object"])
         ret = self.es.search(body=j["object"], index=j["index"])
 
         if j["callback"] in self.cmap:
@@ -99,15 +134,24 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
+        print(j["object"])
         results = self._query({"object": j["object"],
-                               "index": "regulatory_elements_2",
+                               "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
         results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
-                                                         "index": "regulatory_elements_2",
+                                                         "index": paths.re_json_index,
                                                          "doc_type": "element",
                                                          "field": "ranks.dnase" })["results"]
+        results["expression_matrix"] = self._expression_matrix({"ids": self._get_genelist(results)})
         return results
-        
+
+    def _get_genelist(self, results):
+        retval = []
+        for result in results["results"]["hits"]:
+            for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
+                if gene["gene-name"] not in retval: retval.append(gene["gene-name"])
+        return retval
+    
     def process(self, j):
         try:
             if "action" in j:
