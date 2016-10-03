@@ -34,10 +34,37 @@ class AjaxWebService:
                         "search": self._search,
                         "gene_expression": self._expression_matrix}
 
+    def _format_ranks(self, ranks):
+        return {"promoter": [{"cell_type": k,
+                              "H3K4me3": None if "H3K4me3-Only" not in v else v["H3K4me3-Only"]["rank"],
+                              "H3K4me3_DNase": None if "DNase+H3K4me3" not in v else v["DNase+H3K4me3"]["rank"] }
+                             for k, v in ranks["promoter"].iteritems() ],
+                "enhancer": [{"cell_type": k,
+                              "H3K27ac": None if "H3K27ac-Only" not in v else v["H3K27ac-Only"]["rank"],
+                              "H3K27ac_DNase": None if "DNase+H3K27ac" not in v else v["DNase+H3K27ac"]["rank"] }
+                             for k, v in ranks["enhancer"].iteritems() ],
+                "ctcf": [{"cell_type": k,
+                          "ctcf": None if "CTCF-Only" not in v else v["CTCF-Only"]["rank"],
+                          "ctcf_DNase": None if "DNase+CTCF" not in v else v["DNase+CTCF"]["rank"] }
+                         for k, v in ranks["ctcf"].iteritems() ],
+                "dnase": [{"cell_type": k,
+                           "rank": v["rank"]} for k, v in ranks["dnase"].iteritems()] }
+        
+    def _peak_format(self, peaks):
+        retval = []
+        for k, v in peaks.iteritems():
+            retval.append({"name": k,
+                           "n": len(v),
+                           "encode_accs": v })
+        return retval
+        
     def _re_detail(self, j):
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
-                        "position": j["coord"]} }
+                        "position": j["coord"]},
+                  "data": {k: self._peak_format(v) for k, v in j["peak_intersections"].iteritems()} }
+
+        output["data"].update(self._format_ranks(j["ranks"]))
 
         expanded_coords = {"chrom": j["coord"]["chrom"],
                            "start": j["coord"]["start"] - 10000000,
@@ -47,7 +74,6 @@ class AjaxWebService:
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["data"] = {}
         output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
         output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
         output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
