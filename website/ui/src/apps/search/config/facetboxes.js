@@ -1,5 +1,6 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET} from '../helpers/create_facet'
 import {LongListResultsMap, LongListQueryMap, ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
+import {TFQueryMap} from '../elasticsearch/tf_map'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 
 import {default_margin} from './constants'
@@ -39,12 +40,12 @@ export const facetboxes = {
 		    cols: [
 			{
 			    title: "cell type",
-			    data: "_source.cell_line",
+			    data: "value",
 			    className: "dt-right"
 			},
 			{
 			    title: "tissue",
-			    data: "_source.tissue",
+			    data: "tissue",
 			    className: "dt-right"
 			}
 		    ],
@@ -107,7 +108,7 @@ export const facetboxes = {
 	title: "Distance to Genes",
 	visible: true,
 	facets: {
-	    "genedistance_pc": {
+	    "genedistpc": {
 		type: RANGE_FACET,
 		visible: true,
 		title: "Protein coding",
@@ -118,7 +119,7 @@ export const facetboxes = {
 		    h_interval: 5000
 		}
 	    },
-	    "genedistance_all": {
+	    "genedistall": {
 		type: RANGE_FACET,
 		visible: true,
 		title: "All",
@@ -179,17 +180,6 @@ export const facetboxes = {
 		    h_margin: default_margin,
 		    h_interval: 500
 		}
-	    },
-	    "conservation": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "conservation",
-		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
-		    h_margin: default_margin,
-		    h_interval: 500
-		}
 	    }
 	}
     }
@@ -215,7 +205,7 @@ export const es_links = {
     },
     "cell_lines": {
 	"cell_lines": {
-	    f_query: [LongListQueryMap],
+	    f_query: null,
 	    f_results: [LongListResultsMap],
 	    field: null
 	}
@@ -236,18 +226,18 @@ export const es_links = {
     },
     "TFs": {
 	"TF": {
-	    f_query: [ChecklistQueryMap],
+	    f_query: [TFQueryMap],
 	    f_results: [],
 	    field: "tf_intersections"
 	}
     },
     "gene_distance": {
-	"gene-distance.pc": {
+	"genedistpc": {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: "genes.nearest-pc.distance"
 	},
-	"gene-distance.all": {
+	"genedistall": {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: "genes.nearest-all.distance"
@@ -262,22 +252,17 @@ export const es_links = {
 	"promoter": {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
-	    field: (state) => "ranks.promoter." + selected_cell_line(state) + ".rank"
+	    field: (state) => "ranks.promoter." + selected_cell_line(state) + ".DNase+H3K4me3.rank"
 	},
 	"enhancer": {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
-	    field: (state) => "ranks.enhancer." + selected_cell_line(state) + ".rank"
+	    field: (state) => "ranks.enhancer." + selected_cell_line(state) + ".DNase+H3K27ac.rank"
 	},
 	"ctcf": {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
-	    field: (state) => "ranks.ctcf." + selected_cell_line(state) + ".rank"
-	},
-	"conservation": {
-	    f_query: [RangeQueryMap, RangeAggMap],
-	    f_results: [RangeResultsMap],
-	    field: (state) => "ranks.conservation.rank"
+	    field: (state) => "ranks.ctcf." + selected_cell_line(state) + ".DNase+CTCF.rank"
 	}
     }
 };

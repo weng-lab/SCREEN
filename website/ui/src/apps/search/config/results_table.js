@@ -13,7 +13,7 @@ const cart_img = (rmv, src_only) => {
 
 export const render_int = $.fn.dataTable.render.number( ',', '.', 0, '' );
 export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-export const render_gene = (d) => (d["gene-name"] ? d["gene-name"] : d["gene-id"]);
+export const render_gene = (d) => (d[0]["gene-name"] ? d[0]["gene-name"] : d[0]["gene-id"]);
 
 const ResultsTableColumns = [
     {
@@ -23,7 +23,7 @@ const ResultsTableColumns = [
     },
     {
 	title: "&#8209;log(p)",
-	data: "_source.confidence",
+	data: "_source.neg-log-p",
 	className: "dt-right",
         render: render_float
     },
@@ -77,4 +77,9 @@ const ResultsTableColumns = [
 ];    
 export default ResultsTableColumns;
 
-export const results_order = [];
+export const table_order = [
+    [1, "desc"],
+    [2, "asc"],
+    [3, "asc"],
+    [4, "asc"]
+];

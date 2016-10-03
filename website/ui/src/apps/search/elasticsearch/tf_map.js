@@ -1,14 +1,22 @@
+import {MATCH_MODE_ALL, MATCH_MODE_ANY, SET_ITEMS} from '../../../common/reducers/checklist'
+
 export const TFQueryMap = (key, facet, query) => {
-    ranges[0]["position.start"] = {
-	lte: facet.state.selection_range[1]
-    };
-    ranges[1]["position.end"] = {
-	gte: facet.state.selection_range[0]
-    };
-    query.post_filter.bool.must.push({
-	range: ranges[0]
-    });
-    query.post_filter.bool.must.push({
-	range: ranges[1]
-    });
+
+    var key = (facet.state.mode == MATCH_MODE_ALL ? "must" : "should");
+    var retval = {bool: {}};
+    retval.bool[key] = [];
+
+    for (var i in facet.state.items) {
+	if (!facet.state.items[i].checked) continue;
+	retval.bool[key].push({
+	    "exists": {
+		"field": "peak_intersections.tf." + facet.state.items[i].value
+	    }
+	});
+    }
+
+    if (retval.bool[key].length > 0) {
+	query.query.bool.must.push(retval);
+    }
+    
 };
