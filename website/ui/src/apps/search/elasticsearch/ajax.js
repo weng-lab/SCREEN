@@ -11,6 +11,12 @@ const format_query = (query) => {
     });
 };
 
+const format_detail = (detail_query) => {
+    return JSON.stringify(Object.assign(detail_query, {
+	action: "re_detail"
+    }));
+};
+
 const QueryAJAX = (query, f_success, f_error) => {
     console.log(query);
     $.ajax({
@@ -24,3 +30,16 @@ const QueryAJAX = (query, f_success, f_error) => {
     });
 };
 export default QueryAJAX;
+
+export const DetailAJAX = (query, f_success, f_error) => {
+    console.log(format_detail(query));
+    $.ajax({
+	type: "POST",
+	url: AJAX_URL,
+        data: format_detail(query),
+        dataType: "json",
+        contentType : "application/json",
+        success: f_success,
+	error: f_error
+    });
+};
