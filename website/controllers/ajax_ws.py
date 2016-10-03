@@ -47,9 +47,10 @@ class AjaxWebService:
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
-        output["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
-        output["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+        output["data"] = {}
+        output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
+        output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
+        output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
 
         return output
 
@@ -126,6 +127,9 @@ class AjaxWebService:
         return retval
     
     def process(self, j):
+        print("!!!")
+        print(j)
+        print("!!!")
         try:
             if "action" in j:
                 action = j["action"]

@@ -13,6 +13,10 @@ export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
 
 export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
 
+export const DETAILS_FETCHING = 'DETAILS_FETCHING';
+export const DETAILS_DONE = 'DETAILS_DONE';
+export const UPDATE_DETAIL = 'UPDATE_DETAIL';
+
 export let root_default_state = {
     facet_boxes: {},
     results: {
@@ -26,6 +30,17 @@ export let root_default_state = {
 	    rowlabels: [],
 	    matrix: []
 	}
+    },
+    re_detail: {
+	q: {
+	    accession: "",
+	    coord: {
+		start: 0,
+		end: 0,
+		chrom: ""
+	    }
+	},
+	data: {}
     }
 };
 
@@ -93,6 +108,12 @@ export const RootReducer = (state = root_default_state, action) => {
 	    results: Object.assign({}, state.results, {
 		expression_matrix: action.expression_matrix
 	    })
+	});
+
+    case UPDATE_DETAIL:
+	console.log(action.response);
+	return Object.assign({}, state, {
+	    re_detail: action.response
 	});
 	
     }
