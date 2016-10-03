@@ -127,9 +127,6 @@ class AjaxWebService:
         return retval
     
     def process(self, j):
-        print("!!!")
-        print(j)
-        print("!!!")
         try:
             if "action" in j:
                 action = j["action"]
