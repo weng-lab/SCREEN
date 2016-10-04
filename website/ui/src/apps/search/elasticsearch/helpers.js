@@ -4,7 +4,7 @@ export const selected_cell_line = (state) => {
 };
 
 export const term_match = (field, value) => {
-    var retval = {term: {}};
-    retval.term[field] = value;
+    var retval = {match: {}};
+    retval.match[field] = value;
     return retval;
 };
