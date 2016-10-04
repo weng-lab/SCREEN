@@ -33,6 +33,7 @@ class AjaxWebService:
                         "query": self._query,
                         "search": self._search,
                         "gene_expression": self._expression_matrix}
+        self._cached_results = {}
 
     def _format_ranks(self, ranks):
         return {"promoter": [{"cell_type": k,
@@ -81,7 +82,8 @@ class AjaxWebService:
         return output
 
     def _expression_matrix(self, j):
-        retval = self.em.search(j["ids"])
+        genelist = self._get_genelist(self._search(j))
+        retval = self.em.search(genelist)
         matrix = []
         for i in range(0, len(retval["matrix"])):
             for j in range(0, len(retval["matrix"][0])):
@@ -89,7 +91,7 @@ class AjaxWebService:
                                "col": j + 1,
                                "value": retval["matrix"][i][j]})
         retval.update({"matrix": matrix})
-        return retval        
+        return {"expression_matrix": retval}
     
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
@@ -134,7 +136,6 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
-        print(j["object"])
         results = self._query({"object": j["object"],
                                "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
@@ -142,15 +143,15 @@ class AjaxWebService:
                                                          "index": paths.re_json_index,
                                                          "doc_type": "element",
                                                          "field": "ranks.dnase" })["results"]
-        results["expression_matrix"] = self._expression_matrix({"ids": self._get_genelist(results)})
         return results
 
     def _get_genelist(self, results):
-        retval = []
+        retval = {}
         for result in results["results"]["hits"]:
             for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
-                if gene["gene-name"] not in retval: retval.append(gene["gene-name"])
-        return retval
+                if gene["gene-name"] not in retval: retval[gene["gene-name"]] = 1
+                if len(retval) >= 50: return [k for k, v in retval.iteritems()]
+        return [k for k, v in retval.iteritems()]
     
     def process(self, j):
         try:

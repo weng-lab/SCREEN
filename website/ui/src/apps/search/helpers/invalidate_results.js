@@ -1,4 +1,4 @@
-import QueryAJAX, {DetailAJAX} from '../elasticsearch/ajax'
+import QueryAJAX, {DetailAJAX, ExpressionAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE, DETAILS_FETCHING, UPDATE_DETAIL} from '../reducers/root_reducer'
 import FacetQueryMap from '../elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
@@ -62,9 +62,12 @@ export const invalidate_results = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
-	var f_success = (response, status, jqxhr) => {
-	    ResultsDispatchMap(state, response, dispatch);
+	var e_success = (response, status, jqxhr) => {
 	    dispatch(update_expression(response.expression_matrix));
+	};
+	var f_success = (response, status, jqxhr) => {
+	    ExpressionAJAX(n_query, e_success, f_error);
+	    ResultsDispatchMap(state, response, dispatch);
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
 	};

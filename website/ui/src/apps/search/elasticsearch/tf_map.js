@@ -16,7 +16,7 @@ export const TFQueryMap = (key, facet, query) => {
     }
 
     if (retval.bool[key].length > 0) {
-	query.query.bool.must.push(retval);
+	query.query.bool.filter.push(retval);
     }
     
 };

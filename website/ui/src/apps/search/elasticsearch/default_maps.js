@@ -1,6 +1,7 @@
 import {MATCH_MODE_ALL, MATCH_MODE_ANY, SET_ITEMS} from '../../../common/reducers/checklist'
 import {SET_RANGE, SET_HPARAMETERS} from '../../../common/reducers/range'
 import {SET_DATA} from '../../../common/reducers/longlist'
+import {HIDE_FACET, SHOW_FACET} from '../reducers/facet_reducer'
 import {term_match} from './helpers'
 
 export const RangeQueryMap = (key, facet, query) => {
@@ -26,14 +27,14 @@ export const RangeAggMap = (key, facet, query) => {
 
 export const ListQueryMap = (key, facet, query) => {
     if (facet.state.selection == null) return;
-    query.query.bool.must.push(
+    query.query.bool.filter.push(
 	term_match(facet.es_field, facet.state.selection)
     );
 };
 
 export const LongListQueryMap = (key, facet, query) => {
     if (facet.state.selection == null) return;
-    query.query.bool.must.push(
+    query.query.bool.filter.push(
 	term_match(facet.es_field, facet.state.selection)
     );
 };
@@ -62,15 +63,25 @@ export const LongListResultsMap = (key, facet, dispatch, results) => {
 };
 
 export const RangeResultsMap = (key, facet, dispatch, results) => {
-    dispatch({
-	type: SET_RANGE,
-	range: [results.aggs[key].minvalue, results.aggs[key].maxvalue]
-    });
-    dispatch({
-	type: SET_HPARAMETERS,
-	h_data: results.aggs[key].buckets
-    });
-};
+    if (results.aggs[key].type == "histogram") {
+	dispatch({
+	    type: SET_RANGE,
+	    range: [results.aggs[key].minvalue, results.aggs[key].maxvalue]
+	});
+	dispatch({
+	    type: SET_HPARAMETERS,
+	    h_data: results.aggs[key].buckets
+	});
+	dispatch({
+	    type: SHOW_FACET
+	});
+    } else {
+	dispatch({
+	    type: HIDE_FACET
+	});
+    }
+}
+    
 
 export const ChecklistQueryMap = (key, facet, query) => {
     
@@ -87,7 +98,7 @@ export const ChecklistQueryMap = (key, facet, query) => {
     }
 
     if (retval.bool[key].length > 0) {
-	query.query.bool.must.push(retval);
+	query.query.bool.filter.push(retval);
     }
     
 };
