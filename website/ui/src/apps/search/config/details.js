@@ -1,6 +1,6 @@
-import {render_int} from './results_table'
+import {render_int, render_cell_type} from './results_table'
 
-const render_array = (m) => (array) => (array.length <= m ? array : [...array.slice(0, m), "..."]);
+const render_array = (m) => (array) => (array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
 export const tabs = [
     {
@@ -12,7 +12,8 @@ export const tabs = [
 		    {
 			title: "cell type",
 			data: "cell_type",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_cell_type
 		    },
 		    {
 			title: "H3K4me3 and DNase",
@@ -33,7 +34,8 @@ export const tabs = [
 		    {
 			title: "cell type",
 			data: "cell_type",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_cell_type
 		    },
 		    {
 			title: "H3K27ac and DNase",
@@ -54,7 +56,8 @@ export const tabs = [
 		    {
 			title: "cell type",
 			data: "cell_type",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_cell_type
 		    },
 		    {
 			title: "CTCF and DNase",
@@ -75,7 +78,8 @@ export const tabs = [
 		    {
 			title: "cell type",
 			data: "cell_type",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_cell_type
 		    },
 		    {
 			title: "rank",
