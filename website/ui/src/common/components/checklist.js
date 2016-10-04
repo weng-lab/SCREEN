@@ -1,5 +1,83 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var $ = require('jquery');
+var __jui = require('jquery-ui-bundle');
+
+$.fn.toggleSwitch = function (params) {
+
+    var defaults = {
+        highlight: true,
+        width: 25,
+        change: null,
+        stop: null
+    };
+
+    var options = $.extend({}, defaults, params);
+
+    return $(this).each(function (i, item) {
+        generateToggle(item);
+    });
+
+    function generateToggle(selectObj) {
+
+        // create containing element
+        var $contain = $("<div />").addClass("ui-toggle-switch");
+
+        // generate labels
+        $(selectObj).find("option").each(function (i, item) {
+            $contain.append("<label>" + $(item).text() + "</label>");
+        }).end().addClass("ui-toggle-switch");
+
+        // generate slider with established options
+        var $slider = $("<div />").slider({
+            min: 0,
+            max: 100,
+            animate: "fast",
+            change: options.change,
+            stop: function (e, ui) {
+                var roundedVal = Math.round(ui.value / 100);
+                var self = this;
+                window.setTimeout(function () {
+                    toggleValue(self.parentNode, roundedVal);
+                }, 11);
+
+                if(typeof options.stop === 'function') {
+                    options.stop.call(this, e, roundedVal);
+                }
+            },
+            range: (options.highlight && !$(selectObj).data("hideHighlight")) ? "max" : null
+        }).width(options.width);
+
+        // put slider in the middle
+        $slider.insertAfter(
+            $contain.children().eq(0)
+        );
+
+        // bind interaction
+        $contain.on("click", "label", function () {
+            if ($(this).hasClass("ui-state-active")) {
+                return;
+            }
+            var labelIndex = ($(this).is(":first-child")) ? 0 : 1;
+            toggleValue(this.parentNode, labelIndex);
+        });
+
+        function toggleValue(slideContain, index) {
+            var $slideContain = $(slideContain), $parent = $slideContain.parent();
+            $slideContain.find("label").eq(index).addClass("ui-state-active").siblings("label").removeClass("ui-state-active");
+            $parent.find("option").prop("selected", false).eq(index).prop("selected", true);
+            $parent.find("select").trigger("change");
+            $slideContain.find(".ui-slider").slider("value", index * 100);
+        }
+
+        // initialise selected option
+        $contain.find("label").eq(selectObj.selectedIndex).click();
+
+        // add to DOM
+        $(selectObj).parent().append($contain);
+
+    }
+};
 
 export const CHECKLIST_MATCH_ALL = 'CHECKLIST_MATCH_ALL';
 export const CHECKLIST_MATCH_ANY = 'CHECKLIST_MATCH_ANY';
@@ -39,22 +117,16 @@ class ChecklistFacet extends React.Component {
 	this.onChange = this.onChange.bind(this);
 	this.handleSubmit = this.handleSubmit.bind(this);
 	this.check_handler = this.check_handler.bind(this);
-	this.modeChangeAll = this.modeChangeAll.bind(this);
-	this.modeChangeAny = this.modeChangeAny.bind(this);
+	this.modeChange = this.modeChange.bind(this);
     }
     
     onChange(e) {
 	this.setState({text: e.target.value});
     }
 
-    modeChangeAll() {
-	this.setState({mode: CHECKLIST_MATCH_ALL});
-	if (this.props.onModeChange) this.props.onModeChange(CHECKLIST_MATCH_ALL);
-    }
-
-    modeChangeAny() {
-	this.setState({mode: CHECKLIST_MATCH_ANY});
-	if (this.props.onModeChange) this.props.onModeChange(CHECKLIST_MATCH_ANY);
+    modeChange() {
+	console.log(this.refs.mode.value);
+	if (this.props.onModeChange) this.props.onModeChange(this.refs.mode.value);
     }
     
     handleSubmit(e) {
@@ -74,6 +146,14 @@ class ChecklistFacet extends React.Component {
 	this.setState({items: next_items});
 	if (this.props.onchange) this.props.onchange(next_items);
     }
+
+    componentDidMount() {
+	$(this.refs.mode).toggleSwitch({
+	    highlight: true,
+	    width: 25,
+	    change: this.modeChange
+	});
+    }
     
     render() {
 
@@ -86,10 +166,10 @@ class ChecklistFacet extends React.Component {
 	};
 	
 	var checks = (!this.props.match_mode_enabled ? ""
-		      : (<div>
-		           <input type="checkbox" onChange={this.modeChangeAll} checked={this.state.mode == CHECKLIST_MATCH_ALL} />match all<br/>
-		           <input type="checkbox" onChange={this.modeChangeAny} checked={this.state.mode == CHECKLIST_MATCH_ANY} />match any
-		         </div>
+		      : (<div><select ref="mode">
+		            <option selected={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
+		            <option selected={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
+		         </select></div>
 		        ));
 	
 	return (<div>

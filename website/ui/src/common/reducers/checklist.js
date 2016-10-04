@@ -65,6 +65,8 @@ export function ChecklistFacetReducer(state = checklist_initial_state, action) {
 	});
 
     case SET_MATCH_MODE:
+	console.log(state);
+	console.log(action.mode);
 	return Object.assign({}, state, {
 	    mode: action.mode
 	});

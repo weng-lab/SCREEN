@@ -1,8 +1,9 @@
-import {MATCH_MODE_ALL, MATCH_MODE_ANY, SET_ITEMS} from '../../../common/reducers/checklist'
+import {SET_ITEMS} from '../../../common/reducers/checklist'
+import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 export const TFQueryMap = (key, facet, query) => {
-
-    var key = (facet.state.mode == MATCH_MODE_ALL ? "must" : "should");
+    
+    var key = (facet.state.mode == CHECKLIST_MATCH_ALL ? "must" : "should");
     var retval = {bool: {}};
     retval.bool[key] = [];
 
