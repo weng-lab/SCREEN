@@ -1,6 +1,9 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
 import FacetboxReducer from './facetbox_reducer'
 
+import {maintabs} from '../config/maintabs'
+import {MainTabsConnector} from '../components/maintab'
+
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
 export const RESULTS_FETCHING = 'RESULTS_FETCHING';
@@ -16,6 +19,8 @@ export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
 export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
+
+export const SELECT_TAB = 'SELECT_TAB';
 
 export let root_default_state = {
     facet_boxes: {},
@@ -41,8 +46,11 @@ export let root_default_state = {
 	    }
 	},
 	data: {}
-    }
+    },
+    main_tabs: maintabs
 };
+
+export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs), (dispatch) => (dispatch));
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -114,6 +122,14 @@ export const RootReducer = (state = root_default_state, action) => {
 	console.log(action.response);
 	return Object.assign({}, state, {
 	    re_detail: action.response
+	});
+
+    case SELECT_TAB:
+	if (!(action.selection in state.main_tabs.tabs)) return;
+	return Object.assign({}, state, {
+	    main_tabs: Object.assign({}, state.main_tabs, {
+		selection: action.selection
+	    })
 	});
 	
     }

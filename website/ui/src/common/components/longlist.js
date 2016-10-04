@@ -22,7 +22,7 @@ class LongListFacet extends React.Component {
     }
     
     render() {
-	var table_display = (this.props.selection == null ? "blocK" : "none");
+	var table_display = (this.props.selection == null ? "block" : "none");
 	var sdisplay = (this.props.selection == null ? "none" : "block");
 	return (<div>
 		    <div style={{display: table_display}}>
