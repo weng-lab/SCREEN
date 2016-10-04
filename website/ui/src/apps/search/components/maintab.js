@@ -29,14 +29,14 @@ class MainTabControl extends React.Component {
 		      {Object.keys(tabs).map((key) => (
 		         <li className={key == selection ? "active" : ""} key={"tab_" + key}
 	                    onClick={() => click_handler(key)}><a data-toggle="tab">{tabs[key].title}</a></li>
-	              ))};
+	              ))}
                    </ul>
 		   <div className="tab-content clearfix">
 		      {Object.keys(tabs).map((key) => (
 		  	 <div className={key == selection ? "tab-pane active" : "tab-pane"} key={"tab_" + key} id={"tab_" + id + "_" + key} key={"tcontent_" + key}>
 			     {this._tab_components[key]}
 			 </div>
-		      ))};
+		      ))}
 		   </div>
                 </div>);
     }
