@@ -8,11 +8,11 @@
 const FacetQueryMap = (state) => {
     
     var retval = {
-	size: 500,
+	size: 100,
 	aggs: {},
 	query: {
 	    bool: {
-		must: []
+		filter: []
 	    }
 	},
 	post_filter: {

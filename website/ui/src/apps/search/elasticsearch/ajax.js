@@ -1,11 +1,11 @@
 var $ = require('jquery');
 import {AJAX_URL} from '../config/constants'
 
-const format_query = (query) => {
+const format_query = (query, action = "search") => {
     var eso = Object.assign({}, query);
     delete eso.extras;
     return JSON.stringify({
-	action: "search",
+	action,
 	object: eso,
 	post_processing: query.extras
     });
@@ -40,6 +40,18 @@ export const DetailAJAX = (query, f_success, f_error) => {
         dataType: "json",
         contentType : "application/json",
         success: f_success,
+	error: f_error
+    });
+};
+
+export const ExpressionAJAX = (query, f_success, f_error) => {
+    $.ajax({
+	type: "POST",
+	url: AJAX_URL,
+	data: format_query(query, "gene_expression"),
+	dataType: "json",
+	contentType: "application/json",
+	success: f_success,
 	error: f_error
     });
 };
