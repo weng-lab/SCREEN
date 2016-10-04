@@ -152,3 +152,10 @@ div.result_row_selected {
 #compareInWashU {
     margin: 10px;
 }
+
+select.ui-toggle-switch { display: none; }
+.ui-toggle-switch, .ui-toggle-switch .ui-slider, .ui-toggle-switch label { display: inline-block; *display: inline; zoom: 1; }
+.ui-toggle-switch label { margin: 0 8px; font-weight: bold; background: none; border: 0; opacity: 0.5; filter: alpha(opacity=50); }
+.ui-toggle-switch label:first-child { margin-left: 0; }
+.ui-toggle-switch label.ui-state-active { opacity: 1; filter: alpha(opacity=100); }
+.ui-toggle-switch .ui-slider { margin: 0 8px; }
