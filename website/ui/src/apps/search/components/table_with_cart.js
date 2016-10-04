@@ -2,7 +2,7 @@ var React = require('react');
 import {connect} from 'react-redux'
 
 import {array_contains} from '../../../common/common'
-import {TOGGLE_CART_ITEM} from '../reducers/root_reducer'
+import {TOGGLE_CART_ITEM, SELECT_TAB} from '../reducers/root_reducer'
 import ResultsDataTable from '../../../common/components/results_table'
 
 import {invalidate_detail} from '../helpers/invalidate_results'
@@ -39,6 +39,10 @@ const table_click_handler = (td, rowdata, dispatch) => {
 	return;
     }
     dispatch(invalidate_detail(rowdata));
+    dispatch({
+	type: SELECT_TAB,
+	selection: "details"
+    });
 };
 
 const button_click_handler = (button, rowdata, dispatch) => {
