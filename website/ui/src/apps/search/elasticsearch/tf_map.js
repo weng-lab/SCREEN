@@ -1,4 +1,4 @@
-import {SET_ITEMS} from '../../../common/reducers/checklist'
+import {SET_ITEMS, SET_AUTOCOMPLETE_SOURCE} from '../../../common/reducers/checklist'
 import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 export const TFQueryMap = (key, facet, query) => {
@@ -20,4 +20,11 @@ export const TFQueryMap = (key, facet, query) => {
 	query.query.bool.filter.push(retval);
     }
     
+};
+
+export const TFResultsMap = (key, facet, dispatch, results) => {
+    dispatch({
+	type: SET_AUTOCOMPLETE_SOURCE,
+	autocomplete_source: results["aggs"]["tfs"]
+    });
 };

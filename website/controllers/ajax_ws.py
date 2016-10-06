@@ -22,6 +22,8 @@ class AjaxWebService:
         self.details = RegElementDetails(es, ps)
         self.ac = Autocompleter(es)
         self.regElements = RegElements(es)
+        self.tf_list = self.ac.get_suggestions({"userQuery": "",
+                                                "indices": "tfs" })["results"]
 
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
@@ -139,6 +141,7 @@ class AjaxWebService:
         results = self._query({"object": j["object"],
                                "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
+        results["aggs"]["tfs"] = self.tf_list
         results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
                                                          "index": paths.re_json_index,
                                                          "doc_type": "element",
