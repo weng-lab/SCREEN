@@ -53,7 +53,8 @@ const checklist_props_map = (store, box, key) => (_state) => {
 	match_mode_enabled: state.facets[key].match_mode_enabled,
 	visible: state.facets[key].visible,
 	title: state.facets[key].title,
-	mode: state.facets[key].state.mode
+	mode: state.facets[key].state.mode,
+	autocomplete_source: state.facets[key].state.autocomplete_source
     };
 };
 

@@ -7,9 +7,11 @@ export const REMOVE_ITEM = 'REMOVE_ITEM';
 export const CLEAR_ALL = 'CLEAR_ALL';
 export const SELECT_ALL = 'SELECT_ALL';
 export const SET_MATCH_MODE = 'SET_MATCH_MODE';
+export const SET_AUTOCOMPLETE_SOURCE = 'SET_AUTOCOMPLETE_SOURCE';
 
 export let checklist_initial_state = {
-    items: []
+    items: [],
+    autocomplete_source: null
 };
 
 function select_all(items, selected) {
@@ -65,10 +67,13 @@ export function ChecklistFacetReducer(state = checklist_initial_state, action) {
 	});
 
     case SET_MATCH_MODE:
-	console.log(state);
-	console.log(action.mode);
 	return Object.assign({}, state, {
 	    mode: action.mode
+	});
+
+    case SET_AUTOCOMPLETE_SOURCE:
+	return Object.assign({}, state, {
+	    autocomplete_source: action.autocomplete_source
 	});
 	
     }

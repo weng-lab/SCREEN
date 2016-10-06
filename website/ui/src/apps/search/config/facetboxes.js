@@ -1,6 +1,6 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET} from '../helpers/create_facet'
 import {LongListResultsMap, LongListQueryMap, ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
-import {TFQueryMap} from '../elasticsearch/tf_map'
+import {TFQueryMap, TFResultsMap} from '../elasticsearch/tf_map'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 
 import {default_margin} from './constants'
@@ -100,7 +100,8 @@ export const facetboxes = {
 		title: "",
 		match_mode_enabled: true,
 		state: {
-		    items: []
+		    items: [],
+		    autocomplete_source: []
 		}
 	    }
 	}
@@ -228,7 +229,7 @@ export const es_links = {
     "TFs": {
 	"TF": {
 	    f_query: [TFQueryMap],
-	    f_results: [],
+	    f_results: [TFResultsMap],
 	    field: "tf_intersections"
 	}
     },

@@ -3,6 +3,8 @@ var ReactDOM = require('react-dom');
 var $ = require('jquery');
 var __jui = require('jquery-ui-bundle');
 
+import AutocompleteTextbox from './autocomplete'
+
 $.fn.toggleSwitch = function (params) {
 
     var defaults = {
@@ -171,12 +173,16 @@ class ChecklistFacet extends React.Component {
 		            <option selected={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
 		         </select></div>
 		        ));
+
+	console.log("!");
+	console.log(this.props.autocomplete_source);
+	console.log("!");
 	
 	return (<div>
 		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>
 		  {checks}
 		  <form onSubmit={this.handleSubmit}>
-		    <input onChange={this.onChange} value={this.state.text} />
+ 		    <AutocompleteTextbox source={this.props.autocomplete_source} onChange={this.onChange} value={this.state.text} />
 		    <button>add</button>
 		  </form>
 		  {Object.keys(this.state.items).map(create_item)}
