@@ -1,1 +1,0 @@
-../ui/dist/bundle.js
