@@ -17,7 +17,7 @@ class RangeSlider extends React.Component {
     }
     
     render() {
-	return (<div><br/>
+	return (<div>
 		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
 		   <div ref="histogram" style={{width: "100%", height: "20px"}} />
   		   <div ref="container" />
@@ -26,8 +26,7 @@ class RangeSlider extends React.Component {
 	 	         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} /> - 
 		      <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
 		         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} />
-		   </div>
-		   <br/>
+		</div>
 		</div>
 	       );
     }
