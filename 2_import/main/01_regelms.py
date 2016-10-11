@@ -31,7 +31,7 @@ def main():
     importer = executable_importer(fnps["rewriteFnp"], fnps["index"], "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
-    importer.exe()
+    importer.exe(500)
 
 if __name__ == "__main__":
     sys.exit(main())
