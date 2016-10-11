@@ -115,7 +115,8 @@ class AjaxWebService:
         return ret
 
     def _get_tissue(self, celltype):
-        print(celltype)
+        if celltype in self.ctToTissue:
+            return self.ctToTissue[celltype]
         return ""
     
     def _enumerate(self, j):
