@@ -36,7 +36,11 @@ class paths:
                      4: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.json.gz")),
                          "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.mod.json.gz")),
                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V4.bed.gz"),
-                         "index": "regulatory_elements_4"} }
+                         "index": "regulatory_elements_4"},
+                     5: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.json.gz")),
+                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.mod.json.gz")),
+                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V5.bed.gz"),
+                         "index": "regulatory_elements_5"} }
 
     @staticmethod
     def get_paths(version, chrs = None):
