@@ -37,6 +37,10 @@ class AjaxWebService:
                         "gene_expression": self._expression_matrix}
         self._cached_results = {}
 
+        ctFnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
+        with open(ctFnp) as f:
+            self.ctToTissue = json.load(f)
+        
     def _format_ranks(self, ranks):
         return {"promoter": [{"cell_type": k,
                               "H3K4me3": None if "H3K4me3-Only" not in v else v["H3K4me3-Only"]["rank"],
@@ -111,6 +115,7 @@ class AjaxWebService:
         return ret
 
     def _get_tissue(self, celltype):
+        print(celltype)
         return ""
     
     def _enumerate(self, j):
