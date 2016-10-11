@@ -20,6 +20,7 @@ class ESBulkImporter:
         cmds = ["/usr/sbin/esbulk",
                 "-server", self.server,
                 "-index", index,
+                "-size", str(250),
                 "-type", doc_type]
         
         if purge_existing: cmds.append("-purge")
