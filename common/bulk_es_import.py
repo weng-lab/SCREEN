@@ -15,9 +15,10 @@ class executable_importer:
         self.elasticsearch_server = elasticsearch_server
         self.elasticsearch_port = elasticsearch_port
 
-    def exe(self):
+    def exe(self, batch_size = 1000):
         importer = ESBulkImporter(self.elasticsearch_server,
-                                  self.elasticsearch_port)
+                                  self.elasticsearch_port,
+                                  batch_size = batch_size)
         for i in range(0, len(self.fnps)):
             importer.do_import(self.fnps[i], self.index, doc_type=self.doc_type,
                                purge_existing = (i == 0))
