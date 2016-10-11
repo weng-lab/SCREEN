@@ -1,7 +1,13 @@
-    <script>
-      var _script = document.createElement("script");
-      _script.setAttribute("src", "http://" + document.domain + "/static/bundle.js");
-      document.head.appendChild(_script);
-    </script>
-  </body>
+<script>
+  //from http://stackoverflow.com/a/6941624
+  var url = window.location.href;
+  var arr = url.split("/");
+  var result = arr[0] + "//" + arr[2]
+  
+  var _script = document.createElement("script");
+  _script.setAttribute("src", result + "/static/bundle.js");
+  document.head.appendChild(_script);
+</script>
+
+</body>
 </html>
