@@ -21,11 +21,11 @@ class RangeSlider extends React.Component {
 		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
 		   <div ref="histogram" style={{width: "100%", height: "20px"}} />
   		   <div ref="container" />
-		<div style={{textAlign: "center"}}>
+		<div style={{textAlign: "center", paddingTop: "10px"}}>
 		      <input ref="txmin" type="text" value={this.props.selection_range[0]} onChange={this.onMinChange}
-	 	         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} /> - 
+	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> - 
 		      <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
-		         style={{textAlign: "center", position: "relative", fontWeight: "bold"}} />
+		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} />
 		</div>
 		</div>
 	       );
