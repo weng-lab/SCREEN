@@ -12,7 +12,7 @@ import toggle_facetbox from '../helpers/toggle_facetbox'
  */
 const ResultsDispatchMap = (state, results, dispatch) => {
 
-    console.log(results);
+    //console.log(results);
     
     for (var i in state.facet_boxes) {
 	

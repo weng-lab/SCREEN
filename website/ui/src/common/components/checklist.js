@@ -127,7 +127,7 @@ class ChecklistFacet extends React.Component {
     }
 
     modeChange() {
-	console.log(this.refs.mode.value);
+	//console.log(this.refs.mode.value);
 	if (this.props.onModeChange) this.props.onModeChange(this.refs.mode.value);
     }
     
@@ -174,9 +174,9 @@ class ChecklistFacet extends React.Component {
 		         </select></div>
 		        ));
 
-	console.log("!");
-	console.log(this.props.autocomplete_source);
-	console.log("!");
+	//console.log("!");
+	//console.log(this.props.autocomplete_source);
+	//console.log("!");
 	
 	return (<div>
 		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>

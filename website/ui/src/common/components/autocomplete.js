@@ -22,7 +22,7 @@ class AutocompleteTextbox extends React.Component {
     componentDidUpdate() {
 	var input = this.refs.input;
 	var onChange = this.onChange;
-	console.log($(input));
+	//console.log($(input));
 	$(input).autocomplete({
 	    source: this.props.source,
 	    select: function(event, ui) {

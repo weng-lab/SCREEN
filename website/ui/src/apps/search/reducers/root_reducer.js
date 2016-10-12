@@ -89,7 +89,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	return state;
 
     case RESULTS_ERROR:
-	console.log(action.requestobj);
+	console.log("RESULTS_ERROR:", action.requestobj);
 	return state;
 
     case CREATE_TABLE:
@@ -120,6 +120,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case UPDATE_EXPRESSION:
+	console.log("update_expression", action);
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		expression_matrix: action.expression_matrix
@@ -127,7 +128,6 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case UPDATE_DETAIL:
-	// console.log(action.response);
 	return Object.assign({}, state, {
 	    re_detail: action.response
 	});
@@ -136,6 +136,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	if (!(action.selection in state.main_tabs.tabs)) {
             return;
         }
+	console.log("SELECT_TAB", action);
 	return Object.assign({}, state, {
 	    main_tabs: Object.assign({}, state.main_tabs, {
 		selection: action.selection

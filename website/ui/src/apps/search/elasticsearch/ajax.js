@@ -18,7 +18,7 @@ const format_detail = (detail_query) => {
 };
 
 const QueryAJAX = (query, f_success, f_error) => {
-    console.log(query);
+    //console.log(query);
     $.ajax({
         type: "POST",
         url: AJAX_URL,
@@ -32,7 +32,7 @@ const QueryAJAX = (query, f_success, f_error) => {
 export default QueryAJAX;
 
 export const DetailAJAX = (query, f_success, f_error) => {
-    console.log(format_detail(query));
+    //console.log(format_detail(query));
     $.ajax({
 	type: "POST",
 	url: AJAX_URL,

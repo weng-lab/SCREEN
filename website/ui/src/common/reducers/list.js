@@ -38,7 +38,7 @@ export function ListFacetReducer(state = list_default_state, action) {
 	});
 
     case SET_ITEMS:
-	console.log(state);
+	//console.log(state);
 	return Object.assign({}, state, {
 	    items: action.items
 	});

@@ -71,7 +71,7 @@ const button_click_handler = (button, rowdata, dispatch) => {
                     $("#errBox").show()
                     return true;
                 }
-		console.log(response["trackhubUrl"]);
+		//console.log(response["trackhubUrl"]);
 	        window.open(response["url"], '_blank');
             },
 	    error: (a, b, c) => {
