@@ -90,7 +90,7 @@ export const ChecklistQueryMap = (key, facet, query) => {
     retval.bool[key] = [];
 
     for (var i in facet.state.items) {
-	console.log(facet.state.items[i]);
+	//console.log(facet.state.items[i]);
 	if (!facet.state.items[i].checked) continue;
 	retval.bool[key].push(
 	    term_match(facet.es_field, facet.state.items[i].value)
