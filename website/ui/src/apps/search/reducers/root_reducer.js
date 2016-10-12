@@ -50,12 +50,15 @@ export let root_default_state = {
     main_tabs: maintabs
 };
 
-export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs), (dispatch) => (dispatch));
+export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs),
+                                                    (dispatch) => (dispatch));
 
 export const RootReducer = (state = root_default_state, action) => {
 
-    if (action == null) return state;
-    
+    if (null == action) {
+        return state;
+    }
+
     switch (action.type) {
 
     case ADD_FACETBOX:
@@ -69,12 +72,15 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case FACETBOX_ACTION:
-	
+
 	/*
 	 *  pass this action on to the specified facetbox if it exists
 	 */
-	if (!(action.key in state.facet_boxes)) return state;
-	var n_item = FacetboxReducer(state.facet_boxes[action.key], action.subaction);
+	if (!(action.key in state.facet_boxes)){
+            return state;
+        }
+	var n_item = FacetboxReducer(state.facet_boxes[action.key],
+                                     action.subaction);
 	return Object.assign({}, state, {
 	    facet_boxes: obj_assign(state.facet_boxes, action.key, n_item)
 	});
@@ -102,9 +108,11 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case TOGGLE_CART_ITEM:
-	var n_cart_list = (array_contains(state.results.cart_list, action.accession)
-			   ? array_remove(state.results.cart_list, action.accession)
-			   : array_insert(state.results.cart_list, action.accession));
+	var n_cart_list =
+            (array_contains(state.results.cart_list, action.accession)
+	     ? array_remove(state.results.cart_list, action.accession)
+	     : array_insert(state.results.cart_list, action.accession));
+
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		cart_list: n_cart_list
@@ -119,21 +127,23 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case UPDATE_DETAIL:
-	console.log(action.response);
+	// console.log(action.response);
 	return Object.assign({}, state, {
 	    re_detail: action.response
 	});
 
     case SELECT_TAB:
-	if (!(action.selection in state.main_tabs.tabs)) return;
+	if (!(action.selection in state.main_tabs.tabs)) {
+            return;
+        }
 	return Object.assign({}, state, {
 	    main_tabs: Object.assign({}, state.main_tabs, {
 		selection: action.selection
 	    })
 	});
-	
+
     }
 
     return state;
-    
+
 }
