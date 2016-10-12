@@ -36,7 +36,9 @@ export function obj_assign(o, k, v) {
 }
 
 export function obj_remove(o, k) {
-    if (!(k in o)) return o;
+    if (!(k in o)) {
+        return o;
+    }
     var retval = Object.assign({}, o);
     delete retval[k];
     return retval;
