@@ -12,7 +12,7 @@ def main():
     fnp = os.path.join(Dirs.encyclopedia, "Version-4", "snplist.lsj.gz")
     importer = executable_importer(fnp, "snp_aliases", "snp")
     print("will import %s" % fnp)
-    return importer.exe()
+    return importer.exe(batch_size = 25000)
 
 if __name__ == "__main__":
     sys.exit(main())
