@@ -115,9 +115,10 @@ class AjaxWebService:
         return output
 
     def _expression_matrix(self, j):
+        return {"expression_matrix": {"matrix" : []}}
+        matrix = []
         genelist = self._get_genelist(self._search(j))
         retval = self.em.search(genelist)
-        matrix = []
         for i in range(0, len(retval["matrix"])):
             for j in range(0, len(retval["matrix"][0])):
                 matrix.append({"row": i + 1,
