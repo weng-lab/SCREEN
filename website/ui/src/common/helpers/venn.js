@@ -831,13 +831,13 @@ export const create_venn_diagram = (destination_div, sets, overlaps) => {
     var diagram;
 
     var tooltip = d3.select("#venntooltip");
-    var elem = d3.select("#" + destination_div);
+    var elem = d3.select(destination_div);
 
     var vennObj = venn.venn(sets, overlaps);
     diagram = venn.drawD3Diagram(elem, vennObj,
 				 +elem.style("width").replace("px", ""),
 				 +elem.style("height").replace("px", ""));
-    init = false;
+    var init = false;
 
     // hover on all the circles
     diagram.circles

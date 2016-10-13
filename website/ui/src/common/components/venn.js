@@ -15,7 +15,7 @@ class VennDiagram extends React.Component {
     }
     
     render() {
-	return <div ref="container" />;
+	return <div ref="container" style={{width: this.props.width, height: this.props.height}} />;
     }
     
 }

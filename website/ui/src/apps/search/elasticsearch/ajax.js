@@ -17,6 +17,12 @@ const format_detail = (detail_query) => {
     }));
 };
 
+const format_venn = (venn_query) => {
+    return JSON.stringify(Object.assign(venn_query, {
+	action: "venn"
+    }));
+};
+
 const QueryAJAX = (query, f_success, f_error) => {
     //console.log(query);
     $.ajax({
@@ -49,6 +55,18 @@ export const ExpressionAJAX = (query, f_success, f_error) => {
 	type: "POST",
 	url: AJAX_URL,
 	data: format_query(query, "gene_expression"),
+	dataType: "json",
+	contentType: "application/json",
+	success: f_success,
+	error: f_error
+    });
+};
+
+export const VennAJAX = (query, f_success, f_error) => {
+    $.ajax({
+	type: "POST",
+	url: AJAX_URL,
+	data: format_venn(query),
 	dataType: "json",
 	contentType: "application/json",
 	success: f_success,

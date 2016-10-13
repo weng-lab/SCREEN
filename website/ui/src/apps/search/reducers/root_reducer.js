@@ -3,6 +3,7 @@ import FacetboxReducer from './facetbox_reducer'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
+import {MainVennConnector} from '../components/venn'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -22,6 +23,13 @@ export const UPDATE_DETAIL = 'UPDATE_DETAIL';
 
 export const SELECT_TAB = 'SELECT_TAB';
 
+export const SET_VENN_CELL_LINES = 'SET_VENN_CELL_LINES';
+export const SET_VENN_SELECTIONS = 'SET_VENN_SELECTIONS';
+export const UPDATE_VENN = 'UPDATE_VENN';
+export const VENN_LOADING = 'VENN_LOADING';
+export const VENN_DONE = 'VENN_DONE';
+export const VENN_ERROR = 'VENN_ERROR';
+
 export let root_default_state = {
     facet_boxes: {},
     results: {
@@ -34,7 +42,8 @@ export let root_default_state = {
 	    collabels: [],
 	    rowlabels: [],
 	    matrix: []
-	}
+	},
+	fetching: false
     },
     re_detail: {
 	q: {
@@ -47,11 +56,22 @@ export let root_default_state = {
 	},
 	data: {}
     },
-    main_tabs: maintabs
+    main_tabs: maintabs,
+    venn: {
+	overlaps: [],
+	sets: [],
+	cell_line: "",
+	cell_lines: [],
+	rank: 10000,
+	rank_type: "ranks.dnase.%s.rank"
+    }
 };
 
 export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs),
                                                     (dispatch) => (dispatch));
+
+export const main_venn_connector = (store) => MainVennConnector(store)((state) => (state.venn),
+								       (dispatch) => (dispatch));
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -85,12 +105,22 @@ export const RootReducer = (state = root_default_state, action) => {
 	    facet_boxes: obj_assign(state.facet_boxes, action.key, n_item)
 	});
 
-    case RESULTS_DONE:
-	return state;
+    case RESULTS_FETCHING:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		fetching: true
+	    })
+	});
 
     case RESULTS_ERROR:
 	console.log("RESULTS_ERROR:", action.requestobj);
-	return state;
+    case RESULTS_DONE:
+	console.log("results done");
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		fetching: false
+	    })
+	});
 
     case CREATE_TABLE:
 	return Object.assign({}, state, {
@@ -143,6 +173,30 @@ export const RootReducer = (state = root_default_state, action) => {
 	    })
 	});
 
+    case SET_VENN_CELL_LINES:
+	return Object.assign({}, state, {
+	    venn: Object.assign({}, state.venn, {
+		cell_lines: action.cell_lines
+	    })
+	});
+
+    case SET_VENN_SELECTIONS:
+	return Object.assign({}, state, {
+	    venn: Object.assign({}, state.venn, {
+		cell_line: action.cell_line,
+		rank_type: action.rank_type,
+		rank: action.rank
+	    })
+	});
+
+    case UPDATE_VENN:
+	return Object.assign({}, state, {
+	    venn: Object.assign({}, state.venn, {
+		sets: action.sets,
+		overlaps: action.overlaps
+	    })
+	});
+	
     }
 
     return state;
