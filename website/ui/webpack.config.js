@@ -9,8 +9,8 @@ require.extensions['.css'] = () => {
 };
 
 module.exports = {
-    debug: true,
-    devtool: 'cheap-module-eval-source-map',
+    //debug: true,
+    //devtool: 'cheap-module-eval-source-map',
     entry: [
 	//'webpack-dev-server/client?http://0.0.0.0:9000/',
 	//'webpack/hot/only-dev-server',
