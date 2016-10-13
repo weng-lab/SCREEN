@@ -25,7 +25,8 @@ class RegElementDetails:
         if "hits" not in retval or retval["hits"]["total"] == 0:
             return { "error" : "no hits for " + reAccession}
         if retval["hits"]["total"] > 1:
-            return { "error" : "too many hits (%d) for " + reAccession }
+            #return { "error" : "too many hits (%d) for " + reAccession }
+            print("ERROR: too many hits for " + reAccession)
         return retval["hits"]["hits"][0]["_source"]
 
     def _get_overlap_message(self, overlap_fraction, overlap_bp):
