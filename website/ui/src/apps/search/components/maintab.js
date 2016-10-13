@@ -15,7 +15,9 @@ class MainTabControl extends React.Component {
     }
 
     _click_handler(k) {
-	if (this.props.onClick) this.props.onClick(k);
+	if (this.props.onClick) {
+	    this.props.onClick(k);
+	}
     }
     
     render() {
