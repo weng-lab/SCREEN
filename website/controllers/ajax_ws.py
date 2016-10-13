@@ -34,7 +34,8 @@ class AjaxWebService:
                         "suggest" : self._suggest,
                         "query": self._query,
                         "search": self._search,
-                        "gene_expression": self._expression_matrix}
+                        "gene_expression": self._expression_matrix,
+                        "venn": self._venn }
         self._cached_results = {}
 
         ctFnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
@@ -56,7 +57,33 @@ class AjaxWebService:
                          for k, v in ranks["ctcf"].iteritems() ],
                 "dnase": [{"cell_type": k,
                            "rank": v["rank"]} for k, v in ranks["dnase"].iteritems()] }
+    
+    def _venn(self, j):
+
+        print("VENN")
+        print(j)
         
+        cell_lines = j["cell_lines"]
+        rank = j["rank"]
+        rank_type = j["rank_type"]
+        
+        def _run_venn_q(q):
+            retval = self.es.search(body={"query": {"bool": {"must": q}}},
+                                    index=paths.re_json_index)["hits"]["total"]
+            print(retval)
+            return retval
+        
+        left = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"lte": rank}}},
+                            {"range": {rank_type % cell_lines[1]: {"gte": rank}}}])
+        center = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"gte": rank}}},
+                              {"range": {rank_type % cell_lines[1]: {"lte": rank}}}])
+        right = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"lte": rank}}},
+                             {"range": {rank_type % cell_lines[1]: {"lte": rank}}}])
+        
+        return {"sets": [{"label": cell_lines[0], "size": left + center},
+                         {"label": cell_lines[1], "size": right + center} ],
+                "overlaps": [{"sets": [0, 1], "size": center}] }
+    
     def _peak_format(self, peaks):
         retval = []
         for k, v in peaks.iteritems():

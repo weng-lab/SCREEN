@@ -9,7 +9,9 @@ class ResultsTable extends React.Component {
     }
 
     render() {
-	return <table ref="root" style={{width: "100%"}} />;
+	return (<div style={{"width": "100%", "display": (this.props.loading ? "none" : "block")}}>
+		    <table ref="root" style={{width: "100%"}} />
+		</div>);
     }
 
     componentDidUpdate() {
