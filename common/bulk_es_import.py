@@ -20,5 +20,8 @@ class executable_importer:
                                   self.elasticsearch_port,
                                   batch_size = batch_size)
         for i in range(0, len(self.fnps)):
+            if not os.path.exists(self.fnps[i]):
+                print("warning: file %s is missing; this file will be skipped" % self.fnps[i])
+                continue
             importer.do_import(self.fnps[i], self.index, doc_type=self.doc_type,
                                purge_existing = (i == 0))
