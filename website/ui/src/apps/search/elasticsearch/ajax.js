@@ -24,7 +24,6 @@ const format_venn = (venn_query) => {
 };
 
 const QueryAJAX = (query, f_success, f_error) => {
-    //console.log(query);
     $.ajax({
         type: "POST",
         url: AJAX_URL,

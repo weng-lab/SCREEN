@@ -7,3 +7,4 @@ import thunk from 'redux-thunk';
 //import createLogger from 'redux-logger';
 
 import * as search_app from './apps/search/main';
+import * as cart_app from './apps/cart/main';

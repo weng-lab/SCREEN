@@ -1,13 +1,14 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
-{{ hh.js("/static/common.js") }}
-{{ hh.js("/static/elasticsearch/core.js") }}
 
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
+    <div class="col-md-12 nopadding-left" id="tabs-container-cart">
+    </div>
+  </div>
+</div>
 
-    <div class="col-md-12 nopadding-left">
-
+<!--
       <div id="exTab1" class="container">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#tab_summary" data-toggle="tab">
@@ -27,27 +28,13 @@
 
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+-->
 
 <script>
   var REjsonIndex = "{{ re_json_index }}";
-  var CartReAccessions = {{ reAccessions }};
+  var INITIAL_ACCLIST = {{ reAccessions }};
   var CartGuid = "{{ uuid }}";
-</script>
-
-{{ hh.js("/static/search.table.js") }}
-{{ hh.js("/static/re_cart.init.js") }}
-{{ hh.js("/static/re_cart.browser.js") }}
-
-<script>
-  
-  $( document ).ready(function() {
-  perform_search();
-  setupCartBrowser();
-  });
-  
 </script>
 
 {% include '_footer.html' -%}
