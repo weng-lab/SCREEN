@@ -1,20 +1,4 @@
-export const browser_buttons = (names) => {
-    var bg = '<div class="btn-group" role="group">';
-    for (var i = 0; i < names.length; i++) {
-        bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] + '</button>';
-    }
-    return bg + "</div>";
-}
-
-const cart_img = (rmv, src_only) => {
-    var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : '<img class="rowCart" src="' + src + '">');
-}
-
-export const render_int = $.fn.dataTable.render.number( ',', '.', 0, '' );
-export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-export const render_gene = (d) => (d[0]["gene-name"] ? d[0]["gene-name"] : d[0]["gene-id"]);
-export const render_cell_type = (d) => (d.replace(/_/g, " "));
+import {render_int, render_float, render_gene, render_cell_type, browser_buttons} from '../../search/config/results_table'
 
 const ResultsTableColumns = [
     {
@@ -56,12 +40,6 @@ const ResultsTableColumns = [
 	data: "_source.genes.nearest-pc",
 	className: "dt-right",
 	render: render_gene
-    },
-    {
-	title: "cart",
-	data: "_source.in_cart",
-	render: (d) => cart_img(d, false),
-	className: "cart"
     },
     {
 	title: "genome browsers",
