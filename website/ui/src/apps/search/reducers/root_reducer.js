@@ -70,8 +70,9 @@ export let root_default_state = {
 export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs),
                                                     (dispatch) => (dispatch));
 
-export const main_venn_connector = (store) => MainVennConnector(store)((state) => (state.venn),
-								       (dispatch) => (dispatch));
+export const main_venn_connector = (store) => MainVennConnector(store)(
+    (state) => (state.venn),
+    (dispatch) => (dispatch));
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -177,7 +178,7 @@ export const RootReducer = (state = root_default_state, action) => {
     case SET_VENN_CELL_LINES:
 	return Object.assign({}, state, {
 	    venn: Object.assign({}, state.venn, {
-		cell_lines: action.cell_lines
+		cell_lines: GlobalCellTypes
 	    })
 	});
 
