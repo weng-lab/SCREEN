@@ -173,8 +173,8 @@ class AjaxWebService:
         results = self._query({"object": j["object"],
                                "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
-        results["aggs"]["tfs"] = self.cache.tf_list
-        results["aggs"]["cell_lines"] = self.cache.cellTypesAndTissues
+        #results["aggs"]["tfs"] = self.cache.tf_list
+        #results["aggs"]["cell_lines"] = self.cache.cellTypesAndTissues
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr()
