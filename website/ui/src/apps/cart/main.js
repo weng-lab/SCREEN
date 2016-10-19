@@ -10,12 +10,12 @@ import {RootReducer} from './reducers/root_reducer'
 import MainTabControl from '../search/components/maintab'
 import {main_tab_connector, SET_ACCLIST} from './reducers/root_reducer'
 
-console.log(INITIAL_ACCLIST);
+// console.log(INITIAL_ACCLIST);
 
 let store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
 store.dispatch({
     type: SET_ACCLIST,
-    acc_list: INITIAL_ACCLIST
+    acc_list: []
 });
 
 if (document.getElementById('tabs-container-cart')) {
