@@ -45,19 +45,22 @@ class AjaxWebService:
         self._cached_results = {}
 
         self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
-                
+
+    def _get_rank(self, label, v):
+        return None if label not in v else v[label]["rank"]
+
     def _format_ranks(self, ranks):
         return {"promoter": [{"cell_type": k,
-                              "H3K4me3": None if "H3K4me3-Only" not in v else v["H3K4me3-Only"]["rank"],
-                              "H3K4me3_DNase": None if "DNase+H3K4me3" not in v else v["DNase+H3K4me3"]["rank"] }
+                              "H3K4me3": self._get_rank("H3K4me3-Only", v),
+                              "H3K4me3_DNase": self._get_rank("DNase+H3K4me3", v) }
                              for k, v in ranks["promoter"].iteritems() ],
                 "enhancer": [{"cell_type": k,
-                              "H3K27ac": None if "H3K27ac-Only" not in v else v["H3K27ac-Only"]["rank"],
-                              "H3K27ac_DNase": None if "DNase+H3K27ac" not in v else v["DNase+H3K27ac"]["rank"] }
+                              "H3K27ac": self._get_rank("H3K27ac-Only", v),
+                              "H3K27ac_DNase": self._get_rank("DNase+H3K27ac", v)}
                              for k, v in ranks["enhancer"].iteritems() ],
                 "ctcf": [{"cell_type": k,
-                          "ctcf": None if "CTCF-Only" not in v else v["CTCF-Only"]["rank"],
-                          "ctcf_DNase": None if "DNase+CTCF" not in v else v["DNase+CTCF"]["rank"] }
+                          "ctcf": self._get_rank("CTCF-Only", v),
+                          "ctcf_DNase": self._get_rank("DNase+CTCF", v) }
                          for k, v in ranks["ctcf"].iteritems() ],
                 "dnase": [{"cell_type": k,
                            "rank": v["rank"]} for k, v in ranks["dnase"].iteritems()] }
