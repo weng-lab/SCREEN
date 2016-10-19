@@ -123,8 +123,7 @@ export const invalidate_results = (state) => {
 	};
 
 	dispatch(results_fetching());
-	QueryAJAX(n_query, f_success, f_error);
-	
+	QueryAJAX(n_query, f_success, f_error);	
     }
 };
 

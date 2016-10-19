@@ -15,26 +15,37 @@ const ResultsDispatchMap = (state, results, dispatch) => {
     //console.log(results);
     
     for (var i in state.facet_boxes) {
-	
 	var tbox = state.facet_boxes[i];
+	//console.log("tbox", tbox);
+	
 	var visible = (tbox.display_map
-		       ? toggle_facetbox(i, tbox.display_map(state), facetbox_dispatch(i, dispatch))
+		       ? toggle_facetbox(i, tbox.display_map(state),
+					 facetbox_dispatch(i, dispatch))
 		       : tbox.visible);
 	if (!visible) continue;
 	if (state.facet_boxes[i].rs_callback != null) {
-	    state.facet_boxes[i].rs_callback(i, tbox, facetbox_dispatch(i, dispatch), results);
+	    console.log("rs_callback NOT null");
+	    state.facet_boxes[i].rs_callback(i, tbox,
+					     facetbox_dispatch(i, dispatch),
+					     results);
 	}
 	
 	for (var key in tbox.facets) {
-
+	    if("cell_lines" == key){
+		continue;
+	    }
+	    //console.log(tbox.title, key);
 	    var tfacet = Object.assign({}, tbox.facets[key]);
-	    if (tfacet.es_callback == null || !tfacet.visible) continue;
-	    if (typeof(tfacet.rs_field) === 'function') tfacet.rs_field = tfacet.rs_field(results);
-	    tfacet.es_callback(key, tfacet, facet_dispatch(i, key, dispatch), results);
-	    
+	    if (tfacet.es_callback == null || !tfacet.visible) {
+		continue;
+	    }
+	    if (typeof(tfacet.rs_field) === 'function') {
+		tfacet.rs_field = tfacet.rs_field(results);
+	    }
+	    tfacet.es_callback(key, tfacet,
+			       facet_dispatch(i, key, dispatch), results);
 	}
-	
     }
-
 }
+
 export default ResultsDispatchMap;
