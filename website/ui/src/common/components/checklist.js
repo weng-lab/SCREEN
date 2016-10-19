@@ -169,8 +169,8 @@ class ChecklistFacet extends React.Component {
 	
 	var checks = (!this.props.match_mode_enabled ? ""
 		      : (<div><select ref="mode">
-		            <option selected={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
-		            <option selected={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
+		            <option value={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
+		            <option value={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
 		         </select></div>
 		        ));
 
