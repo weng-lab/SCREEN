@@ -3,7 +3,7 @@ from common.page_info import PageInfoMain
 class CartController:
     def __init__(self, templates, es, ps, cache):
         self.t = templates
-        self.params = (es, ps)
+        self.params = (es, ps, cache)
 
     def SetCart(self, session_uuid, reAccessions):
         pageInfo = PageInfoMain(*self.params)

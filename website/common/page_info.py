@@ -12,9 +12,10 @@ from autocomplete import Autocompleter
 from constants import paths
 
 class PageInfoMain:
-    def __init__(self, es, ps):
+    def __init__(self, es, ps, cache):
         self.es = es
         self.ps = ps
+        self.cache = cache
         self.regElements = RegElements(es)
         self.regElementDetails = RegElementDetails(es, ps)
 
@@ -52,10 +53,10 @@ class PageInfoMain:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
-        retval.update({"parsedUserQuery" : json.dumps(parsed),
-                       "SessionUid" : uuid,
-                       "tfs" : [],
-                       "cellTypes" : []})
+        retval.update({"globalParsedQuery" : json.dumps(parsed),
+                       "globalSessionUid" : uuid,
+                       "globalTfs" : self.cache.tf_list_json,
+                       "globalCellTypes" : self.cache.cellTypesAndTissues_json})
 
         return retval
 

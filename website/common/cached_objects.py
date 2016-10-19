@@ -25,3 +25,5 @@ class CachedObjects:
 
         self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
 
+        self.tf_list_json = json.dumps(self.tf_list)
+        self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)

@@ -7,7 +7,7 @@ class MainController:
     def __init__(self, templates, es, ps, cache):
         self.t = templates
         self.ps = ps
-        self.params = (es, ps)
+        self.params = (es, ps, cache)
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
