@@ -14,6 +14,7 @@ from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
+from load_cell_types import LoadCellTypes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils
@@ -43,10 +44,8 @@ class AjaxWebService:
                         "venn": self._venn }
         self._cached_results = {}
 
-        ctFnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
-        with open(ctFnp) as f:
-            self.ctToTissue = json.load(f)
-        
+        self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
+                
     def _format_ranks(self, ranks):
         return {"promoter": [{"cell_type": k,
                               "H3K4me3": None if "H3K4me3-Only" not in v else v["H3K4me3-Only"]["rank"],
@@ -65,8 +64,8 @@ class AjaxWebService:
     
     def _venn(self, j):
 
-        print("VENN")
-        print(j)
+        #print("VENN")
+        #print(j)
         
         cell_lines = j["cell_lines"]
         rank = j["rank"]
@@ -75,7 +74,7 @@ class AjaxWebService:
         def _run_venn_q(q):
             retval = self.es.search(body={"query": {"bool": {"must": q}}},
                                     index=paths.re_json_index)["hits"]["total"]
-            print(retval)
+            #print(retval)
             return retval
         
         left = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"lte": rank}}},
@@ -146,27 +145,20 @@ class AjaxWebService:
                "callback": j["callback"]}
         ret.update(self.ac.get_suggestions(j))
         return ret
-
-    def _get_tissue(self, celltype):
-        if celltype in self.ctToTissue:
-            return self.ctToTissue[celltype]
-        return ""
     
     def _enumerate(self, j):
-        r = self.es.get_field_mapping(index=j["index"],
-                                      doc_type=j["doc_type"],
-                                      field=j["field"])
         if "cell_line" == j["name"]:
-            r["datapairs"] = sorted(r["datapairs"], key=lambda s: s[0].lower())
-            r["results"] = []
-            for datapair in r["datapairs"]:
-                r["results"].append({"value": datapair[0],
-                                    "tissue": self._get_tissue(datapair[0]) })
+            r = {}
+            r["results"] = self.cellTypesAndTissues
+        else:
+            r = self.es.get_field_mapping(index=j["index"],
+                                          doc_type=j["doc_type"],
+                                          field=j["field"])
         r["name"] = j["name"]
         return r
 
     def _query(self, j):
-        print(j["object"])
+        #print(j["object"])
         ret = self.es.search(body=j["object"], index=j["index"])
 
         if j["callback"] in self.cmap:

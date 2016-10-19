@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 
 from elasticsearch import Elasticsearch
@@ -22,15 +24,31 @@ class LoadCellTypes:
             self.ctToTissue = json.load(f)
 
     @staticmethod
+    def Load(DBCONN):
+        with getcursor(DBCONN, "10_cellTypes") as curs:
+            loadCts = LoadCellTypes(curs)
+            return loadCts.load()
+
+    def load(self):
+        self.curs.execute('''
+        SELECT cellType, tissue
+        from {tableName}
+        ORDER BY LOWER(cellType), LOWER(tissue)
+        '''.format(tableName = self.tableName))
+        rets = self.curs.fetchall()
+        
+        return [{"value": r[0], "tissue": r[1]} for r in rets]
+            
+    @staticmethod
     def Import(args):
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "10_cellTypes") as curs:
             loadCts = LoadCellTypes(curs)
-            loadCts.setupDb()
-            loadCts.load()
+            loadCts._setupDb()
+            loadCts._import()
 
-    def setupDb(self):
-        print('\tdropping and creating", self.tableName)
+    def _setupDb(self):
+        print("\tdropping and creating", self.tableName)
         self.curs.execute("""
         DROP TABLE IF EXISTS {tableName};
         CREATE TABLE {tableName}
@@ -44,7 +62,7 @@ class LoadCellTypes:
             return self.ctToTissue[celltype]
         return ""
     
-    def load(self):
+    def _import(self):
         es = ElasticSearchWrapper(Elasticsearch())
 
         j = {"name": "cell_line",
@@ -77,3 +95,22 @@ INSERT INTO {tableName}
             count += self.curs.rowcount
 
         print("\tinserted", count, "rows")
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--local', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    #LoadCellTypes.Import(args)
+
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    with getcursor(DBCONN, "08_setup_log") as curs:
+        print(LoadCellTypes.Load(DBCONN))
+
+if __name__ == '__main__':
+    main()
