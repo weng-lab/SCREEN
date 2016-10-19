@@ -114,6 +114,6 @@ class MainApp():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ajaxws(self):
-        print(cherrypy.request)
+        #print(cherrypy.request)
         j = cherrypy.request.json
         return self.ajaxWS.process(j)
