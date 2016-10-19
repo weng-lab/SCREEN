@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, sys, json
+import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -14,8 +15,12 @@ from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+from utils import Utils
+
 class AjaxWebService:
-    def __init__(self, es, ps):
+    def __init__(self, args, es, ps):
+        self.args = args
         self.es = es
         self.ps = ps
         self.em = ExpressionMatrix(self.es)
@@ -180,6 +185,12 @@ class AjaxWebService:
                                                          "index": paths.re_json_index,
                                                          "doc_type": "element",
                                                          "field": "ranks.dnase" })["results"]
+        if self.args.dump:
+            fn = Utils.timeDateStr() + "_" + Utils.uuidStr() + ".json"
+            fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
+            with open(fnp, 'w') as f:
+                json.dump(results, f, sort_keys = True, indent = 4)
+            print("wrote", fnp)
         return results
 
     def _get_genelist(self, results):

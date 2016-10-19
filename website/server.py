@@ -66,6 +66,7 @@ class Config:
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_false")
+    parser.add_argument('--dump', action="store_true", default=False)
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
@@ -84,7 +85,7 @@ def main():
     ps = PostgresWrapper(DBCONN)
 
     config = Config("main")
-    main = MainApp(config.viewDir, config.staticDir, es, ps)
+    main = MainApp(args, config.viewDir, config.staticDir, es, ps)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
     cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 

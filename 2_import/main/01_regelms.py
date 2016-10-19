@@ -11,7 +11,7 @@ from files_and_paths import Dirs
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--version', type=int, default=4)
+    parser.add_argument('--version', type=int, default=6)
     parser.add_argument("--fnp", type=str, default="")
     parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
     parser.add_argument('--elasticsearch_port', type=int, default=9200)
