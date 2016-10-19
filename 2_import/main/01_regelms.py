@@ -2,12 +2,10 @@
 
 import os, sys, argparse
 
-import importlib
-LoadCellTypes = importlib.import_module('10_cellTypes')
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from bulk_es_import import executable_importer
 from constants import paths, chroms
+from load_cell_types import LoadCellTypes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
@@ -35,9 +33,9 @@ def main():
     importer = executable_importer(fnps["rewriteFnp"], fnps["index"], "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
-    importer.exe(500)
+    #importer.exe(500)
 
-    LoadCellTypes.LoadCellTypes.Run(args)
+    LoadCellTypes.Import(args)
 
 if __name__ == "__main__":
     sys.exit(main())
