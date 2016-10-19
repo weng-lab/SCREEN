@@ -15,12 +15,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, viewDir, staticDir, es, ps):
+    def __init__(self, args, viewDir, staticDir, es, ps):
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps)
         self.cartc = CartController(self.templates, es, ps)
         self.trackhub = TrackhubController(self.templates, es, ps)
-        self.ajaxWS = AjaxWebService(es, ps)
+        self.ajaxWS = AjaxWebService(args, es, ps)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):
