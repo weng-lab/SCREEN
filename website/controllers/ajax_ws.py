@@ -17,7 +17,7 @@ from autocomplete import Autocompleter
 from load_cell_types import LoadCellTypes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
-from utils import Utils
+from utils import Utils, Timer
 
 class AjaxWebService:
     def __init__(self, args, es, ps, cache):
@@ -170,11 +170,10 @@ class AjaxWebService:
         return ret
 
     def _search(self, j):
-        results = self._query({"object": j["object"],
-                               "index": paths.re_json_index,
-                               "callback": "regulatory_elements" })
-        #results["aggs"]["tfs"] = self.cache.tf_list
-        #results["aggs"]["cell_lines"] = self.cache.cellTypesAndTissues
+        with Timer('ElasticSearch time'):
+            results = self._query({"object": j["object"],
+                                   "index": paths.re_json_index,
+                                   "callback": "regulatory_elements" })
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr()
