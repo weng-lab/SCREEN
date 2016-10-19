@@ -13,7 +13,7 @@ from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
 
 class TrackhubController:
-    def __init__(self, templates, es, ps):
+    def __init__(self, templates, es, ps, cache):
         self.templates = templates
         self.es = es
         self.ps = ps

@@ -20,16 +20,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils
 from utils import Utils
 
 class AjaxWebService:
-    def __init__(self, args, es, ps):
+    def __init__(self, args, es, ps, cache):
         self.args = args
         self.es = es
         self.ps = ps
+        self.cache = cache
+        
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps)
         self.ac = Autocompleter(es)
         self.regElements = RegElements(es)
-        self.tf_list = self.ac.get_suggestions({"userQuery": "",
-                                                "indices": "tfs" })["results"]
 
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
@@ -43,8 +43,6 @@ class AjaxWebService:
                         "gene_expression": self._expression_matrix,
                         "venn": self._venn }
         self._cached_results = {}
-
-        self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
 
     def _get_rank(self, label, v):
         return None if label not in v else v[label]["rank"]
@@ -175,8 +173,8 @@ class AjaxWebService:
         results = self._query({"object": j["object"],
                                "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
-        results["aggs"]["tfs"] = self.tf_list
-        results["aggs"]["cell_lines"] = self.cellTypesAndTissues
+        results["aggs"]["tfs"] = self.cache.tf_list
+        results["aggs"]["cell_lines"] = self.cache.cellTypesAndTissues
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr()
