@@ -12,16 +12,19 @@ import {SET_VENN_CELL_LINE} from '../reducers/root_reducer'
 class MainVennDiagram extends React.Component {
 
     onchange() {
-	if (this.props.onChange) this.props.onChange(this.refs.cell_line.value,
-						     this.refs.ranks.value,
-						     this.props.rank);
+	if (this.props.onChange) {
+	    this.props.onChange(this.refs.cell_line.value,
+				this.refs.ranks.value,
+				this.props.rank);
+	}
     }
 
     onSlide(value) {
-	if (this.props.onChange) this.props.onChange(this.props.cell_line,
-						     this.props.rank_type,
-						     value);
-						     
+	if (this.props.onChange) {
+	    this.props.onChange(this.props.cell_line,
+				this.props.rank_type,
+				value);
+	}		     
     }
     
     constructor(props) {
@@ -32,7 +35,8 @@ class MainVennDiagram extends React.Component {
     
     render() {
 	//console.log("./apps/search/components/venn.js this.props", this.props);
-	return (<div ref="container">
+	return (
+		<div ref="container">
 		    <select ref="cell_line" onChange={this.onchange} defaultValue={this.props.cell_line}>
 		        {this.props.cell_lines.map((cell_line) => (
 	  		    <option value={cell_line.value} key={cell_line.value}>{cell_line.value}</option>
@@ -48,7 +52,7 @@ class MainVennDiagram extends React.Component {
 		    <div style={{width: "50%"}}>
 		        <Slider range={[0, 100000]} value={+this.props.rank} onChange={this.onSlide} />
 		    </div>
- 		    <VennDiagram sets={this.props.sets} overlaps={this.props.overlaps} width="800px" height="500px" />
+ 		<VennDiagram sets={this.props.sets} overlaps={this.props.overlaps} width="800px" height="500px" />
 		</div>
 	       );
     }
