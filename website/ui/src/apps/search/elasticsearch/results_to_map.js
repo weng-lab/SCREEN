@@ -23,12 +23,6 @@ const ResultsDispatchMap = (state, results, dispatch) => {
 					 facetbox_dispatch(i, dispatch))
 		       : tbox.visible);
 	if (!visible) continue;
-	if (state.facet_boxes[i].rs_callback != null) {
-	    console.log("rs_callback NOT null");
-	    state.facet_boxes[i].rs_callback(i, tbox,
-					     facetbox_dispatch(i, dispatch),
-					     results);
-	}
 	
 	for (var key in tbox.facets) {
 	    if("cell_lines" == key){

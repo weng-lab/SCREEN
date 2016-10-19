@@ -56,7 +56,7 @@ export const ListResultsMap = (key, facet, dispatch, results) => {
 };
 
 export const LongListResultsMap = (key, facet, dispatch, results) => {
-    console.log("LongListResultsMap", key);
+    //console.log("LongListResultsMap", key);
     dispatch({
 	type: SET_DATA,
 	data: results.aggs[key]
