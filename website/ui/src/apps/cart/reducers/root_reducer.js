@@ -118,7 +118,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case UPDATE_EXPRESSION:
-	console.log("update_expression", action);
+	//console.log("update_expression", action);
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		expression_matrix: action.expression_matrix
