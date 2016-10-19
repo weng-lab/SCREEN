@@ -43,6 +43,12 @@ class Heatmap extends React.Component {
 	$(this.refs.container).empty();
 	
 	var data = this.props.data;
+
+	if(0 == data.length){
+	    //console.log("no data:", data);
+	    return;
+	}
+	
 	var chart_layout = Object.assign({}, this.props.chart_layout);
 	
 	chart_layout.rows.labels = this.props.rowlabels;
