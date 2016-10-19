@@ -20,8 +20,8 @@ class CachedObjects:
         self.ps = ps
 
         ac = Autocompleter(es)
-        self.tf_list = ac.get_suggestions({"userQuery": "",
-                                           "indices": "tfs" })["results"]
+        self.tf_list = sorted(ac.get_suggestions({"userQuery": "",
+                                                  "indices": "tfs" })["results"])
 
         self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
 
