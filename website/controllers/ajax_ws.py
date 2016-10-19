@@ -202,7 +202,12 @@ class AjaxWebService:
                   "position.end", "genes.nearest-all",
                   "genes.nearest-pc", "in_cart"]
 
+        # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
+        if 0:
+            j["object"]["sort"] = [{ "neg-log-p" : "desc" },
+                                   "position.start",
+                                   "position.end" ]
         
         with Timer('ElasticSearch time'):
             results = self._query({"object": j["object"],
