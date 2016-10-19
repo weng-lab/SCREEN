@@ -173,13 +173,12 @@ class AjaxWebService:
                                "index": paths.re_json_index,
                                "callback": "regulatory_elements" })
         results["aggs"]["tfs"] = self.tf_list
-        results["aggs"]["cell_lines"] = self._enumerate({"name": "cell_line",
-                                                         "index": paths.re_json_index,
-                                                         "doc_type": "element",
-                                                         "field": "ranks.dnase" })["results"]
+        results["aggs"]["cell_lines"] = self.cellTypesAndTissues
+        
         if self.args.dump:
+            base = Utils.timeDateStr() + "_" + Utils.uuidStr()
             for prefix, data in [("request", j), ("response", results)]:
-                fn = prefix + "_" + Utils.timeDateStr() + "_" + Utils.uuidStr() + ".json"
+                fn = base + '_' + prefix + ".json"
                 fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
                 Utils.ensureDir(fnp)
                 with open(fnp, 'w') as f:
