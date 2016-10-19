@@ -4,7 +4,7 @@ from common.page_info import PageInfoMain
 from common.session import Sessions
 
 class MainController:
-    def __init__(self, templates, es, ps):
+    def __init__(self, templates, es, ps, cache):
         self.t = templates
         self.ps = ps
         self.params = (es, ps)
