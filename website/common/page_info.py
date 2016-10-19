@@ -52,38 +52,10 @@ class PageInfoMain:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
-        facetlist = [{"id": "assembly", "name": "Assembly", "type": "list",
-                      "visible": True},
-                     {"id": "cell_line", "name": "Cell types", "type": "list",
-                      "visible": True},
-                     {"id": "chromosome", "name": "Chromosome", "type": "list",
-                      "visible": True},
-                     {"id": "coordinates", "name": "Coordinates",
-                      "type": "slider", "label_text": "coordinates",
-                      "visible": False},
-                     {"id": "tfs", "name": "TF peak intersection",
-                      "type": "checklist", "label_text": "tfs",
-                      "indices": ["tfs"], "visible": True} ]
-
-        ranklist = [{"id": "dnase", "name": "DNase"},
-                    {"id": "ctcf", "name": "CTCF"},
-                    {"id": "promoter", "name": "promoter-like"},
-                    {"id": "enhancer", "name": "enhancer-like"},
-                    {"id": "conservation", "name": "conservation"}]
-
-        tsslist = [{"id": "pc", "name": "protein coding"},
-                    {"id": "all", "name": "all"}]
-
         retval.update({"parsedUserQuery" : json.dumps(parsed),
-                       "parsedUserQueryStr" : parsedStr,
-                       "facetlist": facetlist,
-                       "ranklist": ranklist,
-                       "tsslist": tsslist,
-                       "facetlist_json": json.dumps(facetlist),
-                       "ranklist_json": json.dumps(ranklist),
-                       "tsslist_json": json.dumps(tsslist),
-                       "searchPage": True,
-                       "SessionUid" : uuid })
+                       "SessionUid" : uuid,
+                       "tfs" : [],
+                       "cellTypes" : []})
 
         return retval
 
