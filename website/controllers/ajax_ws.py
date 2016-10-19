@@ -169,23 +169,6 @@ class AjaxWebService:
         self.ps.logQuery(j, ret, "")
         return ret
 
-    def _search(self, j):
-        with Timer('ElasticSearch time'):
-            results = self._query({"object": j["object"],
-                                   "index": paths.re_json_index,
-                                   "callback": "regulatory_elements" })
-        
-        if self.args.dump:
-            base = Utils.timeDateStr() + "_" + Utils.uuidStr()
-            for prefix, data in [("request", j), ("response", results)]:
-                fn = base + '_' + prefix + ".json"
-                fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
-                Utils.ensureDir(fnp)
-                with open(fnp, 'w') as f:
-                    json.dump(data, f, sort_keys = True, indent = 4)
-                print("wrote", fnp)
-        return results
-
     def _get_genelist(self, results):
         retval = {}
         for result in results["results"]["hits"]:
@@ -209,3 +192,48 @@ class AjaxWebService:
         except:
             raise
             return { "error" : "error running action"}
+
+    def _search(self, j):
+        return self._search_partial(j)
+
+    def _search_partial(self, j):
+        fields = ["accession", "neg-log-p",
+                  "position.chrom", "position.start",
+                  "position.end", "genes.nearest-all",
+                  "genes.nearest-pc", "in_cart"]
+
+        j["object"]["_source"] = fields
+        
+        with Timer('ElasticSearch time'):
+            results = self._query({"object": j["object"],
+                                   "index": paths.re_json_index,
+                                   "callback": "regulatory_elements" })
+        
+        if self.args.dump:
+            base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
+            for prefix, data in [("request", j), ("response", results)]:
+                fn = base + '_' + prefix + ".json"
+                fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
+                Utils.ensureDir(fnp)
+                with open(fnp, 'w') as f:
+                    json.dump(data, f, sort_keys = True, indent = 4)
+                print("wrote", fnp)
+        return results
+
+    def _search_full(self, j):
+        with Timer('ElasticSearch time'):
+            results = self._query({"object": j["object"],
+                                   "index": paths.re_json_index,
+                                   "callback": "regulatory_elements" })
+        
+        if self.args.dump:
+            base = Utils.timeDateStr() + "_" + Utils.uuidStr()
+            for prefix, data in [("request", j), ("response", results)]:
+                fn = base + '_' + prefix + ".json"
+                fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
+                Utils.ensureDir(fnp)
+                with open(fnp, 'w') as f:
+                    json.dump(data, f, sort_keys = True, indent = 4)
+                print("wrote", fnp)
+        return results
+
