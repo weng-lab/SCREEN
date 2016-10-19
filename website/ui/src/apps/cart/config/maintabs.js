@@ -8,7 +8,7 @@ import {tabs} from '../../search/config/details'
 import {expression_heatmap_connector} from '../../search/components/expression_heatmap'
 import Heatmap from '../../../common/components/heatmap'
 import {main_venn_connector} from '../reducers/root_reducer'
-import MainVennDiagram from '../../search/components/venn'
+import MainVennDiagram from '../../search/components/main_venn_diagram'
 
 export const maintabs = {
     id: "main",

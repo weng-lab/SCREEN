@@ -4,7 +4,7 @@
     updates the (x, y, radius) attribute on each set such that their positions
     roughly correspond to the desired overlaps */
     venn.venn = function(sets, overlaps, parameters) {
-        parameters = parameters || {};
+	parameters = parameters || {};
         parameters.maxIterations = parameters.maxIterations || 500;
         var lossFunction = parameters.lossFunction || venn.lossFunction;
         var initialLayout = parameters.layoutFunction || venn.greedyLayout;

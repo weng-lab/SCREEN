@@ -3,7 +3,7 @@ var $ = require('jquery');
 
 import {connect} from 'react-redux'
 
-import VennDiagram from '../../../common/components/venn'
+import VennDiagram from '../../../common/components/venn_diagram'
 import Slider from '../../../common/components/slider'
 import {invalidate_venn} from '../helpers/invalidate_results'
 

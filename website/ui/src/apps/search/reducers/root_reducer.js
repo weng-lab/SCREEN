@@ -3,7 +3,7 @@ import FacetboxReducer from './facetbox_reducer'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
-import {MainVennConnector} from '../components/venn'
+import {MainVennConnector} from '../components/main_venn_diagram'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
