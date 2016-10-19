@@ -25,6 +25,6 @@ export const TFQueryMap = (key, facet, query) => {
 export const TFResultsMap = (key, facet, dispatch, results) => {
     dispatch({
 	type: SET_AUTOCOMPLETE_SOURCE,
-	autocomplete_source: results["aggs"]["tfs"]
+	autocomplete_source: GlobalTfs
     });
 };
