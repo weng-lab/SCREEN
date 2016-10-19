@@ -31,7 +31,7 @@ class MainVennDiagram extends React.Component {
     }
     
     render() {
-	//console.log(this.props);
+	console.log("./apps/search/components/venn.js this.props", this.props);
 	return (<div ref="container">
 		    <select ref="cell_line" onChange={this.onchange} defaultValue={this.props.cell_line}>
 		        {this.props.cell_lines.map((cell_line) => (
