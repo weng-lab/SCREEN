@@ -114,8 +114,9 @@ export const RootReducer = (state = root_default_state, action) => {
 
     case RESULTS_ERROR:
 	console.log("RESULTS_ERROR:", action.requestobj);
+
     case RESULTS_DONE:
-	console.log("results done");
+	//console.log("results done");
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		fetching: false
