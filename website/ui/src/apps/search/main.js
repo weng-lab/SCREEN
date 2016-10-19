@@ -20,7 +20,7 @@ if (document.getElementById('tabs-container')) {
 }
 
 if (document.getElementById('facets-container')) {
-    render(<FacetApp store={store} pquery={ParsedQuery} />,
+    render(<FacetApp store={store} pquery={GlobalParsedQuery} />,
            document.getElementById('facets-container'));
 }
 
