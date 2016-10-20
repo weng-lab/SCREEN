@@ -25,17 +25,13 @@ class Autocompleter:
                 else:
                     ret.append(item)
                 counter += 1
-        print("userQuery:", uq, "has", len(ret), "results")
+        #print("userQuery:", uq, "has", len(ret), "results")
         return { "results" : ret }
 
     def get_tf_suggestions(self, q):
-        results = []
         q = q.lower()
-        for tf in self.tfs:
-            if tf.startswith(q):
-                results.append(tf)
-        return results
-    
+        return filter(lambda x: x.startswith(q), self.tfs)
+        
     def get_gene_suggestions(self, q):
         query = or_query()
         for field in _gene_alias_fields:
