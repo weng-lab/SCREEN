@@ -159,3 +159,10 @@ select.ui-toggle-switch { display: none; }
 .ui-toggle-switch label:first-child { margin-left: 0; }
 .ui-toggle-switch label.ui-state-active { opacity: 1; filter: alpha(opacity=100); }
 .ui-toggle-switch .ui-slider { margin: 0 8px; }
+
+.loading {
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}

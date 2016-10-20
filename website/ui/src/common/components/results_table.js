@@ -9,7 +9,8 @@ class ResultsTable extends React.Component {
     }
 
     render() {
-	return (<div style={{"width": "100%", "display": (this.props.loading ? "none" : "block")}}>
+	return (<div style={{"width": "100%",
+			     "display": (this.props.loading ? "none" : "block")}}>
 		    <table ref="root" style={{width: "100%"}} />
 		</div>);
     }
@@ -19,6 +20,7 @@ class ResultsTable extends React.Component {
     }
     
     componentDidMount() {
+	var backButton = this.props.backButton;
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
 	var _datatable = $(this.refs.root).DataTable({
@@ -27,12 +29,19 @@ class ResultsTable extends React.Component {
             order: this.props.order
 	});
 	$(this.refs.root).on("click", "td", function() {
-	    if (onTdClick) onTdClick(this, _datatable.row($(this).parents('tr')).data());
+	    if (onTdClick) {
+		onTdClick(this,
+			  _datatable.row($(this).parents('tr')).data());
+	    }
 	}).on("click", "button", function() {
-	    if (onButtonClick) onButtonClick($(this).html(), _datatable.row($(this).parents('tr')).data());
+	    if (onButtonClick) {
+		onButtonClick($(this).html(),
+			      _datatable.row($(this).parents('tr')).data());
+	    }
 	}).removeClass('display').addClass('table table-condensed table-hover');
+
 	this._datatable = _datatable;
     }
-    
 }
+
 export default ResultsTable;
