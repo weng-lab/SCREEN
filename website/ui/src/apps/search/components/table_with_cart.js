@@ -16,19 +16,24 @@ class TableWithCart extends React.Component {
     render() {
 	var n_data = [...this.props.data];
 	for (var i in n_data) {
-	    n_data[i]._source.in_cart = array_contains(this.props.cart_list, n_data[i]._source.accession);
+	    n_data[i]._source.in_cart = array_contains(this.props.cart_list,
+						       n_data[i]._source.accession);
 	}
 	return (<div style={{"width": "100%"}}>
-		    <div style={{"display": (this.props.fetching ? "block" : "none"), "fontSize": "20pt",
-			         "fontWeight": "bold", "textAlign": "center", "verticalAlign": "middle"}}>
-		        Loading...
-		    </div>
-		    <ResultsDataTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
-	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick} order={this.props.order} />
+		<div className={"loading"}
+		style={{"display": (this.props.fetching ? "block" : "none")}}>
+		Loading...
+		</div>
+		<ResultsDataTable data={n_data} cols={this.props.cols}
+		onTdClick={this.props.onTdClick}
+	        loading={this.props.fetching}
+		onButtonClick={this.props.onButtonClick}
+		order={this.props.order}
+		/>
 		</div>);
     }
-    
 }
+
 export default TableWithCart;
 
 const toggle_cart_item = (accession) => {
