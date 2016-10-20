@@ -158,8 +158,7 @@ class AjaxWebService:
     
     def _enumerate(self, j):
         if "cell_line" == j["name"]:
-            r = {}
-            r["results"] = self.cellTypesAndTissues
+            r = {"results" : self.cellTypesAndTissues}
         else:
             r = self.es.get_field_mapping(index=j["index"],
                                           doc_type=j["doc_type"],
@@ -182,8 +181,10 @@ class AjaxWebService:
         retval = {}
         for result in results["results"]["hits"]:
             for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
-                if gene["gene-name"] not in retval: retval[gene["gene-name"]] = 1
-                if len(retval) >= 50: return [k for k, v in retval.iteritems()]
+                if gene["gene-name"] not in retval:
+                    retval[gene["gene-name"]] = 1
+                if len(retval) >= 50:
+                    return [k for k, v in retval.iteritems()]
         return [k for k, v in retval.iteritems()]
     
     def process(self, j):
@@ -206,6 +207,8 @@ class AjaxWebService:
         return self._search_partial(j)
 
     def _search_partial(self, j):
+        # select only fields needed for re table
+        #  eliminates problem of returning >10MB of json
         fields = ["accession", "neg-log-p",
                   "position.chrom", "position.start",
                   "position.end", "genes.nearest-all",
