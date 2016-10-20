@@ -100,27 +100,30 @@ class AjaxWebService:
         return retval
         
     def _re_detail(self, j):
-        j = self.details.reFull(j["accession"])
+        accession = j["accession"]
+        j = self.details.reFull(accession)
         pos = j["position"]
         output = {"type": "re_details",
-                  "q": {"accession": j["accession"],
+                  "q": {"accession": accession,
                         "position": pos},
                   "data": {k: self._peak_format(v)
                            for k, v in j["peak_intersections"].iteritems()} }
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
+        # TODO: expand coords that much?
         expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, int(pos["start"]) - 10000000),
+                           "start": max(0, pos["start"] - 10000000),
                            "end": pos["end"] + 10000000}
 
         snp_results = self.es.get_overlapping_snps(pos)
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, pos)
-        output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, pos)
-        output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, pos, j["accession"])
+        output["data"].update({
+            "overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
+            "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
+            "nearby_res" : self.details.formatResJS(re_results, pos, accession)})
 
         return output
 

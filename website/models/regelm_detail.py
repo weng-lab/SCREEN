@@ -69,16 +69,16 @@ class RegElementDetails:
                             "distance": distance})
         return results
     
-    def format_snps_for_javascript(self, snp_results, qcoord):
+    def formatSnpsJS(self, snp_results, qcoord):
         return self._process_result_generic(snp_results, qcoord, "accession")
 
-    def format_res_for_javascript(self, snp_results, qcoord, name = ""):
+    def formatResJS(self, snp_results, qcoord, name = ""):
         ret = self._process_result_generic(snp_results, qcoord, "accession")
         # exclude RE being queried
         ret = filter(lambda x: x["name"] != name, ret)
         return ret
 
-    def format_genes_for_javascript(self, gene_results, qcoord):
+    def formatGenesJS(self, gene_results, qcoord):
         return self._process_result_generic(gene_results, qcoord, "approved_symbol")
     
     def get_bed_stats(self, bed_accs):
