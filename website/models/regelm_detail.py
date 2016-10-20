@@ -58,7 +58,7 @@ class RegElementDetails:
         print("found", len(exps), "overlapping peak exps")
         return {"experiments": exps}
 
-    def _process_result_generic(self, _results, qcoord, name_field):
+    def _processResultJS(self, _results, qcoord, name_field):
         results = []
         for result in _results["hits"]["hits"]:
             result = result["_source"]
@@ -70,16 +70,16 @@ class RegElementDetails:
         return results
     
     def formatSnpsJS(self, snp_results, qcoord):
-        return self._process_result_generic(snp_results, qcoord, "accession")
+        return self._processResultJS(snp_results, qcoord, "accession")
 
     def formatResJS(self, snp_results, qcoord, name = ""):
-        ret = self._process_result_generic(snp_results, qcoord, "accession")
+        ret = self._processResultJS(snp_results, qcoord, "accession")
         # exclude RE being queried
         ret = filter(lambda x: x["name"] != name, ret)
         return ret
 
     def formatGenesJS(self, gene_results, qcoord):
-        return self._process_result_generic(gene_results, qcoord, "approved_symbol")
+        return self._processResultJS(gene_results, qcoord, "approved_symbol")
     
     def get_bed_stats(self, bed_accs):
         r = self.es.get_bed_list(bed_accs)
@@ -100,7 +100,7 @@ class RegElementDetails:
             hit = _hit["_source"]
             cell_line = hit["biosample_term_name"]
             label = hit["label"]
-            if label.strip() == "":
+            if "" == label.strip():
                 label = hit["assay_term_name"]
                 results["other"][cell_line][label] += 1
             elif "transcription" in hit["target"]:

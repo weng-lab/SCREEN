@@ -111,10 +111,11 @@ class AjaxWebService:
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        # TODO: expand coords that much?
+        # TODO: expand coords by 10MB?
+        overlapBP = 10000000
         expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, pos["start"] - 10000000),
-                           "end": pos["end"] + 10000000}
+                           "start": max(0, pos["start"] - overlapBP),
+                           "end": pos["end"] + overlapBP}
 
         snp_results = self.es.get_overlapping_snps(pos)
         gene_results = self.es.get_overlapping_genes(expanded_coords)
