@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import os, sys, json
 import time
 
@@ -98,24 +100,27 @@ class AjaxWebService:
         return retval
         
     def _re_detail(self, j):
+        j = self.details.reFull(j["accession"])
+        pos = j["position"]
         output = {"type": "re_details",
                   "q": {"accession": j["accession"],
-                        "position": j["coord"]},
-                  "data": {k: self._peak_format(v) for k, v in j["peak_intersections"].iteritems()} }
+                        "position": pos},
+                  "data": {k: self._peak_format(v)
+                           for k, v in j["peak_intersections"].iteritems()} }
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        expanded_coords = {"chrom": j["coord"]["chrom"],
-                           "start": j["coord"]["start"] - 10000000,
-                           "end": j["coord"]["end"] + 10000000}
+        expanded_coords = {"chrom": pos["chrom"],
+                           "start": max(0, int(pos["start"]) - 10000000),
+                           "end": pos["end"] + 10000000}
 
-        snp_results = self.es.get_overlapping_snps(j["coord"])
+        snp_results = self.es.get_overlapping_snps(pos)
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, j["coord"])
-        output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, j["coord"])
-        output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, j["coord"], j["accession"])
+        output["data"]["overlapping_snps"] = self.details.format_snps_for_javascript(snp_results, pos)
+        output["data"]["nearby_genes"] = self.details.format_genes_for_javascript(gene_results, pos)
+        output["data"]["nearby_res"] = self.details.format_res_for_javascript(re_results, pos, j["accession"])
 
         return output
 
