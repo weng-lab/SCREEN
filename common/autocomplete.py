@@ -11,7 +11,7 @@ class Autocompleter:
 
     def recognizes_index(self, index):
         return index in self.indices
-        
+
     def get_suggestions(self, j):
         uq = j["userQuery"] #.lower()
         ret = []
@@ -31,7 +31,7 @@ class Autocompleter:
     def get_tf_suggestions(self, q):
         q = q.lower()
         return filter(lambda x: x.startswith(q), self.tfs)
-        
+
     def get_gene_suggestions(self, q):
         query = or_query()
         for field in _gene_alias_fields:
@@ -50,7 +50,7 @@ class Autocompleter:
                 if q in result["_source"][field]:
                     retval.append(result["_source"][field])
         return retval
-        
+
     def get_snp_suggestions(self, q):
         query = or_query()
         query.append({"match_phrase_prefix": {"accession": q}})
