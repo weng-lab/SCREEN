@@ -99,6 +99,7 @@ export const tabs = [
 		title: "nearby genes",
 		paging: false,
 		bInfo: false,
+		bFilter: false,
 		cols: [
 		    {
 			title: "symbol",
@@ -118,6 +119,7 @@ export const tabs = [
 		title: "nearby candidate REs",
 		paging: false,
 		bInfo: false,
+		bFilter: false,
 		cols: [
 		    {
 			title: "accession",
@@ -137,6 +139,7 @@ export const tabs = [
 		title: "nearby SNPs",
 		paging: false,
 		bInfo: false,
+		bFilter: false,
 		cols: [
 		    {
 			title: "accession",
