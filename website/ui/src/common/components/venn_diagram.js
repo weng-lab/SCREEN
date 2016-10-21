@@ -11,8 +11,7 @@ class VennDiagram extends React.Component {
 
     componentDidUpdate() {
 	$(this.refs.container).empty();
-	if (typeof this.props.set !== 'undefined' &&
-	    this.props.set.length > 0){
+	if (this.props.sets && this.props.sets.length > 0) {
 	    create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps);
 	}
     }

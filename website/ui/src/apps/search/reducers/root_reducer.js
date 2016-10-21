@@ -67,12 +67,15 @@ export let root_default_state = {
     }
 };
 
-export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs),
-                                                    (dispatch) => (dispatch));
+export const main_tab_connector = MainTabsConnector(
+    (state) => (state.main_tabs),
+    (dispatch) => (dispatch)
+);
 
 export const main_venn_connector = (store) => MainVennConnector(store)(
     (state) => (state.venn),
-    (dispatch) => (dispatch));
+    (dispatch) => (dispatch)
+);
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -168,7 +171,6 @@ export const RootReducer = (state = root_default_state, action) => {
 	if (!(action.selection in state.main_tabs.tabs)) {
             return;
         }
-	console.log("SELECT_TAB", action);
 	return Object.assign({}, state, {
 	    main_tabs: Object.assign({}, state.main_tabs, {
 		selection: action.selection
