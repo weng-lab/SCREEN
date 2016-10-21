@@ -1,5 +1,6 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
 import FacetboxReducer from './facetbox_reducer'
+import TabReducer from './tab_reducer'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
@@ -21,7 +22,7 @@ export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
 
-export const SELECT_TAB = 'SELECT_TAB';
+export const TAB_ACTION = 'TAB_ACTION';
 
 export const SET_VENN_CELL_LINES = 'SET_VENN_CELL_LINES';
 export const SET_VENN_SELECTIONS = 'SET_VENN_SELECTIONS';
@@ -69,7 +70,14 @@ export let root_default_state = {
 
 export const main_tab_connector = MainTabsConnector(
     (state) => (state.main_tabs),
-    (dispatch) => (dispatch)
+    (dispatch) => ((action) => {
+	console.log(action);
+	dispatch({
+	    type: TAB_ACTION,
+	    target: "main_tabs",
+	    subaction: action
+	});
+    })
 );
 
 export const main_venn_connector = (store) => MainVennConnector(store)(
@@ -167,16 +175,11 @@ export const RootReducer = (state = root_default_state, action) => {
 	    re_detail: action.response
 	});
 
-    case SELECT_TAB:
-	if (!(action.selection in state.main_tabs.tabs)) {
-            return;
-        }
-	return Object.assign({}, state, {
-	    main_tabs: Object.assign({}, state.main_tabs, {
-		selection: action.selection
-	    })
-	});
-
+    case TAB_ACTION:
+	var n_state = Object.assign({}, state);
+	n_state[action.target] = TabReducer(n_state[action.target], action.subaction);
+	return n_state;
+	
     case SET_VENN_CELL_LINES:
 	return Object.assign({}, state, {
 	    venn: Object.assign({}, state.venn, {

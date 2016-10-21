@@ -1,7 +1,7 @@
 var React = require('react');
 import {connect} from 'react-redux';
 
-import {SELECT_TAB} from '../reducers/root_reducer'
+import {SELECT_TAB} from '../reducers/tab_reducer'
 
 class MainTabControl extends React.Component {
 
@@ -30,6 +30,7 @@ class MainTabControl extends React.Component {
 		   <ul className="nav nav-tabs">
 		      {Object.keys(tabs).map((key) => (
 		         <li className={key == selection ? "active" : ""} key={"tab_" + key}
+			    style={{display: (tabs[key].visible ? "list-item" : "none") }}
 	                    onClick={() => click_handler(key)}><a data-toggle="tab">{tabs[key].title}</a></li>
 	              ))}
                    </ul>
