@@ -27,9 +27,10 @@ class DetailsApp extends React.Component {
 			    return (<div className={k == 0 ? "tab-pane active" : "tab-pane"} id={"tab_" + k} key={"tpane_" + k}>
 		                       {Object.keys(tab.tables).map((key) => {
 		                           var table = tab.tables[key];
+					   console.log(table);
 					   return (<div className="col-md-3" key={key}>
 			  	               <h4>{table.title}</h4>
-				               <ResultsTable cols={table.cols} order={table.order} data={data[key]} /><br/>
+						   <ResultsTable cols={table.cols} order={table.order} paging={table.paging} data={data[key]} /><br/>
 				           </div>);
 		                       })}
 				    </div>);
