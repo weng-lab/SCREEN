@@ -59,7 +59,7 @@ export let root_default_state = {
 	overlaps: [],
 	sets: [],
 	cell_line: "",
-	cell_lines: [],
+	cell_lines: GlobalCellTypes,
 	rank: 10000,
 	rank_type: "ranks.dnase.%s.rank"
     }
@@ -142,11 +142,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case SET_VENN_CELL_LINES:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		cell_lines: action.cell_lines
-	    })
-	});
+	return state;
 
     case SET_VENN_SELECTIONS:
 	return Object.assign({}, state, {

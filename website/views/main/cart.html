@@ -1,6 +1,13 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
+<script>
+  var REjsonIndex = "{{ re_json_index }}";
+  var INITIAL_ACCLIST = {{ reAccessions }};
+  var CartGuid = "{{ uuid }}";
+  var GlobalCellTypes = {{ globalCellTypes }};
+</script>
+
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
     <div class="col-md-12 nopadding-left" id="tabs-container-cart">
@@ -30,12 +37,5 @@
       </div>
 
 -->
-
-<script>
-  var REjsonIndex = "{{ re_json_index }}";
-  var INITIAL_ACCLIST = {{ reAccessions }};
-  var CartGuid = "{{ uuid }}";
-  var GlobalCellTypes = {{ globalCellTypes }};
-</script>
 
 {% include '_footer.html' -%}
