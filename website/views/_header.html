@@ -40,10 +40,10 @@
 	  {% if not indexPage -%}
 	  <form action="search" method="get" id="searchformNavbar" class="navbar-collapse">
 	    <input class="searchbox" type="text" size="100" name="q" id="queryBox" value="{{parsedStr}}">
-	    <a class="btn btn-primary btn-lg" href="javascript:searchformNavbar.submit();" role="button">Search</a>
+	    <a class="btn btn-primary btn-lg searchButton" href="javascript:searchformNavbar.submit();" role="button">Search</a>
 	  </form>
           <form class="navbar-form navbar-right">
-            <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success">ENCODE</a>
+            <a href="http://www.encodeproject.org" target="_blank" class="btn btn-success btn-lg encodeButton">ENCODE</a>
           </form>
 	  {% endif -%}
 	  {% if searchPage -%}
