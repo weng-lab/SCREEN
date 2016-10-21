@@ -133,7 +133,8 @@ class PageInfoMain:
             reAccessions = []
 
         retval.update({"reAccessions": json.dumps(reAccessions),
-                       "uuid" : uuid})
+                       "uuid" : uuid,
+                       "globalCellTypes" : self.cache.cellTypesAndTissues_json })
         return retval
 
     def setCart(self, uuid, reAccessions):
