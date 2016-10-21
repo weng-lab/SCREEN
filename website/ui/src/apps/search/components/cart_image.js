@@ -25,12 +25,10 @@ class CartImage extends React.Component {
 
     componentDidMount() {
 	var onClick = this.onClick;
-	console.log("MOUNTED");
-	$(this.refs.svg).load("image/svg+xml", () => {
+	this.refs.svg.addEventListener("load", () => {
 	    var svg = this.refs.svg.contentDocument.getElementsByTagName("svg")[0];
 	    var img = svg.getElementsByTagName("image")[0];
 	    img.onclick = () => {if (this.props.number > 0) onClick();};
-	    console.log(img.onclick);
 	});
     }
     
