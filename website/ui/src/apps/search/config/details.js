@@ -98,6 +98,7 @@ export const tabs = [
 	    "nearby_genes": {
 		title: "nearby genes",
 		paging: false,
+		bInfo: false,
 		cols: [
 		    {
 			title: "symbol",
@@ -116,6 +117,7 @@ export const tabs = [
 	    "nearby_res": {
 		title: "nearby candidate REs",
 		paging: false,
+		bInfo: false,
 		cols: [
 		    {
 			title: "accession",
@@ -134,6 +136,7 @@ export const tabs = [
 	    "overlapping_snps": {
 		title: "nearby SNPs",
 		paging: false,
+		bInfo: false,
 		cols: [
 		    {
 			title: "accession",
