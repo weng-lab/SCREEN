@@ -16,10 +16,12 @@ export const maintabs = {
     tabs: {
 	results: {
 	    title: "Cart Items",
+	    visible: true,
 	    render: (store, key) => (<ResultsApp store={store} key={key} />)
 	},
 	details: {
 	    title: "RE Details",
+	    visible: true,
 	    render: (store, key) => {
 		var Details = details_connector(DetailsApp);
 		return <Details store={store} tabs={tabs} key={key} />;
@@ -27,6 +29,7 @@ export const maintabs = {
 	},
 	gene_expression: {
 	    title: "Nearby Gene Expression",
+	    visible: true,
 	    render: (store, key) => {
 		var ExpressionHeatmap = expression_heatmap_connector(Heatmap);
 		return <ExpressionHeatmap store={store} key={key} />;
@@ -34,6 +37,7 @@ export const maintabs = {
 	},
 	comparison: {
 	    title: "Comparison",
+	    visible: true,
 	    render: (store, key) => {
 		var VennDiagram = main_venn_connector(store)(MainVennDiagram);
 		return <VennDiagram store={store} key={key} />
