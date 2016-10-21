@@ -2,6 +2,11 @@ html, body {
     height: 100%
 }
 
+.navbar-form{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
 .jumbotron {
     padding-top: 48px;
     padding-bottom: 18px;
@@ -17,8 +22,20 @@ div.result_row_selected {
     padding: 4px;
 }
 
+.searchButton {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.encodeButton {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-variant: small-caps;
+}
+
 .searchbox {
     padding: 10px;
+    height: 35px;
 }
 
 #mainNavBar {
@@ -129,8 +146,8 @@ div.result_row_selected {
 }
 
 #shoppingcart_obj {
-    width: 48px;
-    height: 48px;
+    width: 35px;
+    height: 35px;
 }
 
 .rowCart {
