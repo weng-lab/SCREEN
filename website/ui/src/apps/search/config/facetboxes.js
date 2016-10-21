@@ -91,7 +91,7 @@ export const facetboxes = {
 	}
     },
     "TFs": {
-	title: "TF intersection",
+	title: "intersect TF/histone/DNase peaks",
 	visible: true,
 	facets: {
 	    "TF": {
