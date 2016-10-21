@@ -30,7 +30,7 @@ class DetailsApp extends React.Component {
 					   console.log(table);
 					   return (<div className="col-md-3" key={key}>
 			  	               <h4>{table.title}</h4>
-						   <ResultsTable cols={table.cols} order={table.order} paging={table.paging} bInfo={table.bInfo} data={data[key]} /><br/>
+						   <ResultsTable cols={table.cols} order={table.order} paging={table.paging} bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} /><br/>
 				           </div>);
 		                       })}
 				    </div>);
