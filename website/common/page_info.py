@@ -56,7 +56,8 @@ class PageInfoMain:
         retval.update({"globalParsedQuery" : json.dumps(parsed),
                        "globalSessionUid" : uuid,
                        "globalTfs" : self.cache.tf_list_json,
-                       "globalCellTypes" : self.cache.cellTypesAndTissues_json})
+                       "globalCellTypes" : self.cache.cellTypesAndTissues_json,
+                       "searchPage": True })
 
         return retval
 
