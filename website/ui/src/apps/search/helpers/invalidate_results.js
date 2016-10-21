@@ -1,5 +1,5 @@
 import QueryAJAX, {DetailAJAX, ExpressionAJAX, VennAJAX} from '../elasticsearch/ajax'
-import {SET_VENN_SELECTIONS, VENN_ERROR, VENN_LOADING, VENN_DONE, UPDATE_VENN, SET_VENN_CELL_LINES, RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE, DETAILS_FETCHING, UPDATE_DETAIL} from '../reducers/root_reducer'
+import {SET_VENN_SELECTIONS, VENN_ERROR, VENN_LOADING, VENN_DONE, UPDATE_VENN, RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE, DETAILS_FETCHING, UPDATE_DETAIL} from '../reducers/root_reducer'
 import FacetQueryMap from '../elasticsearch/facets_to_query'
 import VennQueryMap from '../elasticsearch/venn_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
@@ -68,13 +68,6 @@ export const set_venn_selections = (cell_line, rank_type, rank) => {
     };
 };
 
-export const set_venn_cell_lines = (cell_lines) => {
-    return {
-	type: SET_VENN_CELL_LINES,
-	cell_lines
-    };
-};
-
 export const update_venn = (sets, overlaps) => {
     return {
 	type: UPDATE_VENN,
@@ -116,7 +109,6 @@ export const invalidate_results = (state) => {
 	    ResultsDispatchMap(state, response, dispatch);
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
-	    dispatch(set_venn_cell_lines(response.aggs.cell_lines));
 	};
 	var f_error = (jqxhr, status, error) => {
 	    dispatch(results_error(jqxhr, error));
