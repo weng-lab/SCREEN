@@ -7,7 +7,7 @@ export const tabs = [
 	title: "top cell types",
 	tables: {
 	    "promoter": {
-		title: "promoter",
+		title: "Promoter ranks",
 		cols: [
 		    {
 			title: "cell type",
@@ -29,7 +29,7 @@ export const tabs = [
 		data: []
 	    },
 	    "enhancer": {
-		title: "enhancer",
+		title: "Enhancer ranks",
 		cols: [
 		    {
 			title: "cell type",
@@ -51,7 +51,7 @@ export const tabs = [
 		data: []
 	    },
 	    "ctcf": {
-		title: "CTCF",
+		title: "CTCF ranks",
 		cols: [
 		    {
 			title: "cell type",
@@ -73,7 +73,7 @@ export const tabs = [
 		data: []
 	    },
 	    "dnase": {
-		title: "DNase",
+		title: "DNase ranks",
 		cols: [
 		    {
 			title: "cell type",
