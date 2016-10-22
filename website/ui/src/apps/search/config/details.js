@@ -5,6 +5,7 @@ const render_array = (m) => (array) => (array.length <= m ? array : [...array.sl
 export const tabs = [
     {
 	title: "top cell types",
+	numCols : 2,
 	tables: {
 	    "promoter": {
 		title: "Promoter ranks",
@@ -159,6 +160,7 @@ export const tabs = [
     },
     {
 	title: "peak intersection",
+	numCols : 2,
 	tables: {
 	    "tf": {
 		title: "intersecting TFs",
