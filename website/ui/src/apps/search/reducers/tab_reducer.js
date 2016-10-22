@@ -11,7 +11,7 @@ const set_tab_visibility = (state, target, value) => {
 
 const TabReducer = (state, action) => {
 
-    console.log(action);
+    //console.log(action);
     
     switch (action.type) {
 
