@@ -71,7 +71,7 @@ export let root_default_state = {
 export const main_tab_connector = MainTabsConnector(
     (state) => (state.main_tabs),
     (dispatch) => ((action) => {
-	console.log(action);
+	//console.log(action);
 	dispatch({
 	    type: TAB_ACTION,
 	    target: "main_tabs",

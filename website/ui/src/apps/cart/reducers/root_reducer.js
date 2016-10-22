@@ -93,8 +93,9 @@ export const RootReducer = (state = root_default_state, action) => {
 
     case RESULTS_ERROR:
 	console.log("RESULTS_ERROR:", action.requestobj);
+	
     case RESULTS_DONE:
-	console.log("results done");
+	//console.log("results done");
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		fetching: false
@@ -110,7 +111,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case SET_TABLE_RESULTS:
-	console.log(action.hits);
+	//console.log(action.hits);
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		hits: action.hits
@@ -134,7 +135,7 @@ export const RootReducer = (state = root_default_state, action) => {
 	if (!(action.selection in state.main_tabs.tabs)) {
             return;
         }
-	console.log("SELECT_TAB", action);
+	//console.log("SELECT_TAB", action);
 	return Object.assign({}, state, {
 	    main_tabs: Object.assign({}, state.main_tabs, {
 		selection: action.selection
