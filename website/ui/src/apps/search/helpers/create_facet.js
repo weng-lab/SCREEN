@@ -6,6 +6,7 @@ import {RangeFacetReducer, SET_SELECTION_RANGE} from '../../../common/reducers/r
 import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
 import {ChecklistFacetReducer, SET_ITEMS, SET_MATCH_MODE} from '../../../common/reducers/checklist'
 import {LongListFacetReducer, SET_DATA} from '../../../common/reducers/longlist'
+import {LongChecklistFacetReducer, TOGGLE_ITEM} from '../../../common/reducers/longchecklist'
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
@@ -16,11 +17,13 @@ import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
 import MainChecklistFacet from '../components/checklist'
 import MainLongListFacet from '../components/longlist'
+import MainLongChecklistFacet from '../components/longchecklist'
 
 export const RANGE_FACET = 'RANGE_FACET';
 export const LIST_FACET = 'LIST_FACET';
 export const LONGLIST_FACET = 'LONGLIST_FACET';
 export const CHECKLIST_FACET = 'CHECKLIST_FACET';
+export const LONGCHECKLIST_FACET = 'LONGCHECKLIST_FACET';
 
 const range_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
@@ -32,6 +35,19 @@ const range_props_map = (store, box, key) => (_state) => {
 	visible: state.facets[key].visible,
 	title: state.facets[key].title,
 	h_data: state.facets[key].state.h_data
+    };
+};
+
+const longchecklist_props_map = (store, box, key) => (_state) => {
+    var state = _state.facet_boxes[box];
+    return {
+	data: state.facets[key].state.data,
+	cols: state.facets[key].state.cols,
+	visible: state.facets[key].visible,
+	order: state.facets[key].state.order,
+	match_mode_enabled: state.facets[key].match_mode_enabled,
+	title: state.facets[key].title,
+	mode: state.facets[key].state.mode
     };
 };
 
@@ -101,6 +117,25 @@ const checklist_dispatch_map = (store, box, key) => (dispatch) => {
     };
 };
 
+const longchecklist_dispatch_map = (store, box, key) => (dispatch) => {
+    return {
+	onTdClick: (k) => {
+	    dispatch(facet_action(box, key, {
+		type: TOGGLE_ITEM,
+		key: k
+	    }));
+	    dispatch(invalidate_results(store.getState()));
+	},
+	onModeChange: (mode) => {
+	    dispatch(facet_action(box, key, {
+		type: SET_MATCH_MODE,
+		mode
+	    }));
+	    dispatch(invalidate_results(store.getState()));
+	}
+    };
+};
+
 const longlist_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
     return {
@@ -153,6 +188,11 @@ const _map = {
 	connector: (store, box, key) => connect(longlist_props_map(store, box, key), longlist_dispatch_map(store, box, key)),
 	component: MainLongListFacet,
 	reducer: LongListFacetReducer
+    },
+    LONGCHECKLIST_FACET: {
+	connector: (store, box, key) => connect(longchecklist_props_map(store, box, key), longchecklist_dispatch_map(store, box, key)),
+	component: MainLongChecklistFacet,
+	reducer: LongChecklistFacetReducer
     }
 };
 
