@@ -113,7 +113,7 @@ export const facetboxes = {
 	    "genedistpc": {
 		type: RANGE_FACET,
 		visible: true,
-		title: "Protein coding",
+		title: "Protein-coding genes",
 		state: {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
@@ -124,7 +124,7 @@ export const facetboxes = {
 	    "genedistall": {
 		type: RANGE_FACET,
 		visible: true,
-		title: "All",
+		title: "All genes",
 		state: {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
