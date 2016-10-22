@@ -7,11 +7,11 @@ export const TFQueryMap = (key, facet, query) => {
     var retval = {bool: {}};
     retval.bool[key] = [];
 
-    for (var i in facet.state.items) {
-	if (!facet.state.items[i].checked) continue;
+    for (var i in facet.state.data) {
+	if (!facet.state.data[i].selected) continue;
 	retval.bool[key].push({
 	    "exists": {
-		"field": "peak_intersections.tf." + facet.state.items[i].value
+		"field": "peak_intersections.tf." + facet.state.data[i].key.toUpperCase()
 	    }
 	});
     }
@@ -20,11 +20,4 @@ export const TFQueryMap = (key, facet, query) => {
 	query.query.bool.filter.push(retval);
     }
     
-};
-
-export const TFResultsMap = (key, facet, dispatch, results) => {
-    dispatch({
-	type: SET_AUTOCOMPLETE_SOURCE,
-	autocomplete_source: GlobalTfs
-    });
 };
