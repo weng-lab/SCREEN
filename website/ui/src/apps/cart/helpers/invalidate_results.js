@@ -22,14 +22,14 @@ const getquery = (accs) => {
 export const invalidate_results = (state) => (dispatch) => {
 
     var n_query = getquery(state.acc_list);
-    console.log("QUERY");
-    console.log(n_query);
+    //console.log("QUERY");
+    //console.log(n_query);
     
     var e_success = (response, status, jqxhr) => {
 	dispatch(update_expression(response.expression_matrix));
     };
     var f_success = (response, status, jqxhr) => {
-	console.log(response);
+	//console.log(response);
 	ExpressionAJAX(n_query, e_success, f_error);
 	dispatch(set_table_results(response.results.hits));
 	dispatch(results_done(response));
