@@ -28,8 +28,9 @@ class ResultsTable extends React.Component {
             columns: this.props.cols,
             order: this.props.order,
 	    paging: this.props.paging,
-	    bInfo : this.props.info,
-	    bFilter : this.props.bFilter
+	    bInfo: this.props.info,
+	    bFilter: this.props.bFilter,
+	    bLengthChange: this.props.bLengthChange
 	});
 	$(this.refs.root).on("click", "td", function() {
 	    if (onTdClick) {

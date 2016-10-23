@@ -18,7 +18,7 @@ class DetailsApp extends React.Component {
 	    return (<div className={"col-md-" + (12/numCols)} key={key}>
 		    <h4>{table.title}</h4>
 		    <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
-		    bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} /><br/>
+		        bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} /><br/>
 		    </div>);
 	}
 
