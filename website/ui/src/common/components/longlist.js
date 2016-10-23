@@ -27,7 +27,7 @@ class LongListFacet extends React.Component {
 	return (<div>
 		    <div style={{display: table_display}}>
 		        <ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
-	                    onTdClick={this._td_handler} />
+	                    onTdClick={this._td_handler} bFilter={true} bLengthChange={false} />
 		    </div>
 		    <div style={{display: sdisplay}}>
 		        <ListItem value={this.props.selection} selected="true" n="0"

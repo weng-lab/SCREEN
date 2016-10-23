@@ -56,7 +56,7 @@ class LongChecklistFacet extends React.Component {
 	return (<div>
 		    {checks}
 		    <ResultsTable cols={cols} data={this.props.data} order={this.props.order}
-	                onTdClick={this._td_handler} />
+	                onTdClick={this._td_handler} bFilter={true} bLengthChange={false} />
 		</div>
 	       );
     }
