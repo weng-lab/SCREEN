@@ -1,8 +1,9 @@
 import os, sys, json
 import math
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common/python"))
-from heatmap import Heatmap
+#sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common/python"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
+from heatmaps.heatmap import Heatmap
 
 class ExpressionMatrix:
     def __init__(self, es):
@@ -19,24 +20,26 @@ class ExpressionMatrix:
 
     @staticmethod
     def results_to_heatmap(raw_results):
-        clmap = {}
+        cmap = {}
         rmtrx = []
         heatmap = {"matrix": [], "cols": [], "rows": []}
         clptr = 0
         for hit in [x["_source"] for x in raw_results]:
-            rmtrx.append({})
-            for ev in hit["expression_values"]:
-                if ev["cell_line"] not in clmap:
-                    clmap[ev["cell_line"]] = clptr
-                    heatmap["cols"].append(ev["cell_line"])
-                    clptr += 1
-                rmtrx[len(rmtrx) - 1][ev["cell_line"]] = math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0
+            heatmap["matrix"].append([-1.0 for x in range(0, len(cmap))])
             heatmap["rows"].append(hit["gene_name"] if hit["gene_name"] is not None else hit["ensembl_id"])
-        for i in range(0, len(rmtrx)):
-            heatmap["matrix"].append([-1.0 for n in range(0, clptr)])
-            for k, v in rmtrx[i].iteritems():
-                heatmap["matrix"][i][clmap[k]] = v
-        return Heatmap(heatmap["matrix"], heatmap["rows"], heatmap["cols"])
+            for ev in hit["expression_values"]:
+                if ev["cell_line"] not in heatmap["cols"]:
+                    heatmap["cols"].append(ev["cell_line"])
+                    cmap[ev["cell_line"]] = clptr
+                    clptr += 1
+                    heatmap["matrix"][len(heatmap["matrix"]) - 1].append(math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0)
+                else:
+                    heatmap["matrix"][len(heatmap["matrix"]) - 1][cmap[ev["cell_line"]]] = math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0
+        _heatmap = Heatmap(heatmap["matrix"])
+        roworder, colorder = _heatmap.cluster_by_both()
+        heatmap["rowlabels"] = [heatmap["rows"][x] for x in roworder]
+        heatmap["collabels"] = [heatmap["cols"][x] for x in colorder]
+        return heatmap
 
     def search(self, ids):
         q = {"query": {"bool": {"should": [] }},
@@ -50,16 +53,6 @@ class ExpressionMatrix:
         if type(q) is not dict:
             q = json.loads(q)
         raw_results = self.es.search(index = self.index, body = q)
-
-        try:
-            raw_results = ExpressionMatrix.results_to_heatmap(raw_results["hits"]["hits"])
-            row_tree = raw_results.cluster_rows_by_hierarchy()
-            col_tree = raw_results.cluster_cols_by_hierarchy()
-            retval = ExpressionMatrix.process_for_javascript(raw_results)
-            retval.update({"rowtree": row_tree.as_dict(),
-                           "coltree": col_tree.as_dict()})
-        except:
-            raise
-            retval = {"rowtree": {},
-                      "coltree": {}};
+        retval = ExpressionMatrix.results_to_heatmap(raw_results["hits"]["hits"])
+        retval.update({"type": "expression_matrix"})
         return retval
