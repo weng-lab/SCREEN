@@ -1,5 +1,7 @@
 import QueryAJAX, {DetailAJAX, ExpressionAJAX, VennAJAX} from '../elasticsearch/ajax'
-import {SET_VENN_SELECTIONS, VENN_ERROR, VENN_LOADING, VENN_DONE, UPDATE_VENN, RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE, DETAILS_FETCHING, UPDATE_DETAIL} from '../reducers/root_reducer'
+import {SET_VENN_SELECTIONS, VENN_ERROR, VENN_LOADING, VENN_DONE, UPDATE_VENN, RESULTS_FETCHING,
+	RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE,
+	DETAILS_FETCHING, UPDATE_DETAIL, EXPRESSION_LOADING, EXPRESSION_DONE} from '../reducers/root_reducer'
 import FacetQueryMap from '../elasticsearch/facets_to_query'
 import VennQueryMap from '../elasticsearch/venn_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
@@ -97,11 +99,25 @@ export const venn_error = (jqxhr, error) => {
     };
 };
 
+export const expression_loading = () => {
+    return {
+	type: EXPRESSION_LOADING
+    }
+};
+
+export const expression_done = (response) => {
+    return {
+	type: EXPRESSION_DONE,
+	response
+    }
+};
+
 export const invalidate_results = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
 	var e_success = (response, status, jqxhr) => {
+	    dispatch(expression_done(response));
 	    dispatch(update_expression(response.expression_matrix));
 	};
 	var f_success = (response, status, jqxhr) => {
@@ -115,6 +131,7 @@ export const invalidate_results = (state) => {
 	};
 
 	dispatch(results_fetching());
+	dispatch(expression_loading());
 	QueryAJAX(n_query, f_success, f_error);	
     }
 };

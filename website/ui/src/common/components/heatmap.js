@@ -35,11 +35,18 @@ class Heatmap extends React.Component {
     }
 
     render() {
-	return <div ref="container" />
+	return (<div>
+  		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
+		        Loading...
+		    </div>
+		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
+		</div>);
+		
     }
 
     componentDidUpdate() {
 
+	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
 	
 	var data = this.props.data;
