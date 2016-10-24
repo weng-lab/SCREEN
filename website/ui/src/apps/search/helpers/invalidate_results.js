@@ -121,7 +121,6 @@ export const invalidate_results = (state) => {
 	    dispatch(update_expression(response.expression_matrix));
 	};
 	var f_success = (response, status, jqxhr) => {
-	    ExpressionAJAX(n_query, e_success, f_error);
 	    ResultsDispatchMap(state, response, dispatch);
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
@@ -132,7 +131,9 @@ export const invalidate_results = (state) => {
 
 	dispatch(results_fetching());
 	dispatch(expression_loading());
-	QueryAJAX(n_query, f_success, f_error);	
+	QueryAJAX(n_query, f_success, f_error);
+	ExpressionAJAX(n_query, e_success, f_error);
+	
     }
 };
 
