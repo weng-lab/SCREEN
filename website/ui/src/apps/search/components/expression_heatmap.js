@@ -10,7 +10,8 @@ const props_map = (state) => {
 	chart_layout: default_heatmap_layout,
 	rowlabels: state.results.expression_matrix.rowlabels,
 	collabels: state.results.expression_matrix.collabels,
-	data: state.results.expression_matrix.matrix
+	data: state.results.expression_matrix.matrix,
+	loading: state.results.expression_matrix.fetching
     };
 };
 

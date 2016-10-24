@@ -31,6 +31,9 @@ export const VENN_LOADING = 'VENN_LOADING';
 export const VENN_DONE = 'VENN_DONE';
 export const VENN_ERROR = 'VENN_ERROR';
 
+export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
+export const EXPRESSION_DONE = 'EXPRESSION_DONE';
+
 export let root_default_state = {
     facet_boxes: {},
     results: {
@@ -42,7 +45,8 @@ export let root_default_state = {
 	expression_matrix: {
 	    collabels: [],
 	    rowlabels: [],
-	    matrix: []
+	    matrix: [],
+	    fetching: false
 	},
 	fetching: false
     },
@@ -121,6 +125,24 @@ export const RootReducer = (state = root_default_state, action) => {
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		fetching: true
+	    })
+	});
+
+    case EXPRESSION_LOADING:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_matrix: Object.assign({}, state.results.expression_matrix, {
+		    fetching: true
+		})
+	    })
+	});
+
+    case EXPRESSION_DONE:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_matrix: Object.assign({}, state.results.expression_matrix, {
+		    fetching: false
+		})
 	    })
 	});
 
