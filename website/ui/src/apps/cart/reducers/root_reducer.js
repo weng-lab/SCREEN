@@ -59,7 +59,7 @@ export let root_default_state = {
 	overlaps: [],
 	sets: [],
 	cell_line: "",
-	cell_lines: GlobalCellTypes,
+	cell_lines: [],
 	rank: 10000,
 	rank_type: "ranks.dnase.%s.rank"
     }

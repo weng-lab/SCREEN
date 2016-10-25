@@ -1,4 +1,7 @@
+const React = require('react');
 import {render_int, render_cell_type} from './results_table'
+import {invalidate_detail} from '../helpers/invalidate_results'
+import {SET_DETAIL_TAB} from '../reducers/root_reducer'
 
 const render_factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
@@ -12,6 +15,8 @@ const render_snp_link = (d) => (
 
 const render_gene_link = (d) => (
     '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
+
+const render_re_link = (d) => ('<a href="#">' + d + '</a>');
 
 export const tabs = [
     {
@@ -156,7 +161,8 @@ export const tabs = [
 		    {
 			title: "accession",
 			data: "name",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_re_link
 		    },
 		    {
 			title: "distance",
@@ -165,7 +171,10 @@ export const tabs = [
 		    }
 		],
 		data: [],
-		order: [[1, "asc"]]
+		order: [[1, "asc"]],
+		onTdClick: (dispatch) => (i, d) => {
+		    dispatch(invalidate_detail({_source: {accession: d.name}}));
+		}
 	    },
 	    "overlapping_snps": {
 		title: "Nearby SNPs",

@@ -7,8 +7,8 @@ import {tabs} from './details'
 
 import {expression_heatmap_connector} from '../components/expression_heatmap'
 import Heatmap from '../../../common/components/heatmap'
-import {main_venn_connector} from '../reducers/root_reducer'
-import MainVennDiagram from '../components/main_venn_diagram'
+import {main_comparison_connector} from '../reducers/root_reducer'
+import ComparisonBarGraph from '../components/comparison_bar_graph'
 
 export const maintabs = {
     id: "main",
@@ -39,8 +39,7 @@ export const maintabs = {
 	    title: "Comparison",
 	    visible: true,
 	    render: (store, key) => {
-		var VennDiagram = main_venn_connector(store)(MainVennDiagram);
-		return <VennDiagram store={store} key={key} />
+		
 	    }
 	}
     }

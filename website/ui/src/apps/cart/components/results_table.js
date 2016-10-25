@@ -22,7 +22,8 @@ class ResultsTable extends React.Component {
 		        Loading...
 		    </div>
 		    <ResultsDataTable data={this.props.data} cols={this.props.cols} onTdClick={this.props.onTdClick}
-	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick} order={this.props.order} />
+	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick} order={this.props.order}
+		        store={this.props.store} />
 		</div>);
     }
 
