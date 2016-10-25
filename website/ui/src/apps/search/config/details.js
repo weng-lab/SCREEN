@@ -1,6 +1,13 @@
 import {render_int, render_cell_type} from './results_table'
 
-const render_array = (m) => (array) => (array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
+const render_factorbook_link_tf = (d) => (
+    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+
+const render_factorbook_link_histone = (d) => (
+    '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
+
+const render_factorbook_link_snp = (d) => (
+    '<a href="http://ensembl.org/Multi/Search/Results?q=' + d + '" target="_blank">' + d + '</a>');
 
 export const tabs = [
     {
@@ -164,7 +171,7 @@ export const tabs = [
 		    {
 			title: "accession",
 			data: "name",
-			className: "dt-right"
+			render: render_factorbook_link_snp
 		    },
 		    {
 			title: "distance",
@@ -187,18 +194,12 @@ export const tabs = [
 		    {
 			title: "factor",
 			data: "name",
-			className: "dt-right"
+			render: render_factorbook_link_tf
 		    },
 		    {
 			title: "# experiments",
 			data: "n",
 			render: render_int
-		    },
-		    {
-			title: "ENCODE accessions",
-			data: "encode_accs",
-			className: "dt-right",
-			render: render_array(3)
 		    }
 		],
 		data: [],
@@ -210,18 +211,12 @@ export const tabs = [
 		    {
 			title: "mark",
 			data: "name",
-			className: "dt-right"
+			render: render_factorbook_link_histone
 		    },
 		    {
 			title: "# experiments",
 			data: "n",
 			render: render_int
-		    },
-		    {
-			title: "ENCODE accessions",
-			data: "encode_accs",
-			className: "dt-right",
-			render: render_array(3)
 		    }
 		],
 		data: [],

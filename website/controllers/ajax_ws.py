@@ -96,12 +96,10 @@ class AjaxWebService:
                 "overlaps": [{"sets": [0, 1], "size": center}] }
     
     def _peak_format(self, peaks):
-        retval = []
+        ret = []
         for k, v in peaks.iteritems():
-            retval.append({"name": k,
-                           "n": len(v),
-                           "encode_accs": v })
-        return retval
+            ret.append({"name": k, "n": len(v)})
+        return ret
         
     def _re_detail(self, j):
         accession = j["accession"]
