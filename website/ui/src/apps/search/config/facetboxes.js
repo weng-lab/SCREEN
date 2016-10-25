@@ -1,5 +1,5 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET, LONGCHECKLIST_FACET} from '../helpers/create_facet'
-import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
+import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {LongListResultsMap, LongListQueryMap, ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
 import {TFQueryMap} from '../elasticsearch/tf_map'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
@@ -9,7 +9,26 @@ import {selected_cell_line} from '../elasticsearch/helpers'
 
 import {render_int, render_cell_type} from './results_table'
 
+console.log(GlobalParsedQuery);
+
 export const facetboxes = {
+    "accessions": {
+	title: "Accessions",
+	visible: (GlobalParsedQuery.accessions.length != 0),
+	facets: {
+	    "accessions": {
+		type: CHECKLIST_FACET,
+		visible: true,
+		title: "",
+		state: {
+		    items: GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}),
+		    match_mode_enabled: false,
+		    mode: CHECKLIST_MATCH_ANY,
+		    autocomplete_source: []
+		}
+	    }
+	}
+    },
     "cell_lines": {
 	title: "Cell Types",
 	visible: true,
@@ -178,6 +197,7 @@ export const facetboxes = {
 };
 
 export const facetbox_render_order = [
+    "accessions",
     "cell_lines",
     "chromosome",
     "coordinates",
@@ -187,6 +207,13 @@ export const facetbox_render_order = [
 ];
 
 export const es_links = {
+    "accessions": {
+	"accessions": {
+	    f_query: [ChecklistQueryMap],
+	    f_results: null,
+	    field: "accession"
+	}
+    },
     "cell_lines": {
 	"cell_lines": {
 	    f_query: null,

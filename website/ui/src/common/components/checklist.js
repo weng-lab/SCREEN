@@ -36,7 +36,7 @@ class ChecklistFacet extends React.Component {
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
 	
 	this.state = Object.assign({
-	    items: [],
+	    items: this.props.items,
 	    text: "",
 	    mode
 	});

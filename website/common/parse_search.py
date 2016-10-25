@@ -45,6 +45,7 @@ class ParseSearch:
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
         snp_suggestions, snp_results = self.es.snp_aliases_to_coordinates(s)
         snp_toks, snp_coords = _unpack_tuple_array(snp_results)
+        accessions = []
 
         if len(snp_coords) > 0:
             coord = Coord.parse(snp_coords[-1])
@@ -61,6 +62,9 @@ class ParseSearch:
                 elif t.startswith("chr"):
                     # coordinate
                     coord = Coord.parse(t)
+                    continue
+                elif t.startswith("ee"):
+                    accessions.append(t)
                     continue
         except:
             raise
@@ -82,4 +86,5 @@ class ParseSearch:
             ret.update({"coord" : {"chrom" : coord.chrom,
                                    "start" : coord.start,
                                    "end" : coord.end}})
+        ret.update({"accessions": accessions})
         return ret

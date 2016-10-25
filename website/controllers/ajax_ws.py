@@ -102,6 +102,7 @@ class AjaxWebService:
         return ret
         
     def _re_detail(self, j):
+        print(j)
         accession = j["accession"]
         j = self.details.reFull(accession)
         pos = j["position"]
