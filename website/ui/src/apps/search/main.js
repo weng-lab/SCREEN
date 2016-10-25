@@ -10,6 +10,7 @@ import FacetApp from './components/facet_app'
 import CartImage, {cart_connector} from './components/cart_image'
 
 import MainTabControl from './components/maintab'
+import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector} from './reducers/root_reducer'
 
 let store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
