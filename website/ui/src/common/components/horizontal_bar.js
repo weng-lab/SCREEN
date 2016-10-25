@@ -88,7 +88,7 @@ class HorizontalBars extends React.Component {
 		.data(itemsets[n].items)
 		.transition()
 		.duration(1000)
-		.attr("width", (d) => {console.log(d); return +xscale(-rank_f(d))});
+		.attr("width", (d) => {return +xscale(-rank_f(d))});
 	    if (+barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
 		.data(itemsets[n].items)
