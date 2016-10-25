@@ -27,7 +27,9 @@ export const tabs = [
 			render: render_int
 		    }
 		],
-		data: []
+		data: [],
+		bar_graph: true,
+		bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
 	    },
 	    "enhancer": {
 		title: "Enhancer ranks",
@@ -49,7 +51,9 @@ export const tabs = [
 			render: render_int
 		    }
 		],
-		data: []
+		data: [],
+		bar_graph: true,
+		bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
 	    },
 	    "ctcf": {
 		title: "CTCF ranks",
@@ -71,7 +75,9 @@ export const tabs = [
 			render: render_int
 		    }
 		],
-		data: []
+		data: [],
+		bar_graph: true,
+		bg_rank_f: (d) => (Math.log(d["ctcf"]))
 	    },
 	    "dnase": {
 		title: "DNase ranks",
@@ -89,7 +95,9 @@ export const tabs = [
 		    }
 		],
 		data: [],
-		order: [[1, "asc"]]
+		order: [[1, "asc"]],
+		bar_graph: true,
+		bg_rank_f: (d) => (Math.log(d["rank"]))
 	    }
 	}
     },
