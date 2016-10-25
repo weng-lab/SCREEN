@@ -16,6 +16,9 @@ export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
 export const render_gene = (d) => (d[0]["gene-name"] ? d[0]["gene-name"] : d[0]["gene-id"]);
 export const render_cell_type = (d) => (d.replace(/_/g, " "));
 
+const render_array = (m) => (array) => (
+    array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
+
 const ResultsTableColumns = [
     {
 	title: "accession",
