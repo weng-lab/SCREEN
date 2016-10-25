@@ -169,11 +169,11 @@ export const tabs = [
 	}
     },
     {
-	title: "peak intersection",
+	title: "TF and Histone Intersection",
 	numCols : 2,
 	tables: {
 	    "tf": {
-		title: "intersecting TFs",
+		title: "Intersecting TFs",
 		cols: [
 		    {
 			title: "factor",
@@ -196,7 +196,7 @@ export const tabs = [
 		order: [[1, "desc"]]
 	    },
 	    "histone": {
-		title: "intersecting histones",
+		title: "Intersecting Histones",
 		cols: [
 		    {
 			title: "mark",
