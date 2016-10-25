@@ -4,7 +4,7 @@ import TabReducer from './tab_reducer'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
-import {MainVennConnector} from '../components/main_venn_diagram'
+import {MainComparisonConnector} from '../components/comparison_bar_graph'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -21,15 +21,11 @@ export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
 export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
+export const SET_DETAIL_TAB = 'SET_DETAIL_TAB';
 
 export const TAB_ACTION = 'TAB_ACTION';
 
-export const SET_VENN_CELL_LINES = 'SET_VENN_CELL_LINES';
-export const SET_VENN_SELECTIONS = 'SET_VENN_SELECTIONS';
-export const UPDATE_VENN = 'UPDATE_VENN';
-export const VENN_LOADING = 'VENN_LOADING';
-export const VENN_DONE = 'VENN_DONE';
-export const VENN_ERROR = 'VENN_ERROR';
+export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
 
 export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
 export const EXPRESSION_DONE = 'EXPRESSION_DONE';
@@ -59,16 +55,13 @@ export let root_default_state = {
 		chrom: ""
 	    }
 	},
-	data: {}
+	data: {},
+	tab_selection: 0
     },
     main_tabs: maintabs,
-    venn: {
-	overlaps: [],
-	sets: [],
-	cell_line: "",
-	cell_lines: GlobalCellTypes,
-	rank: 10000,
-	rank_type: "ranks.dnase.%s.rank"
+    comparison: {
+	threshold: 1000,
+	rank_type: "enhancer"
     }
 };
 
@@ -83,8 +76,8 @@ export const main_tab_connector = MainTabsConnector(
     })
 );
 
-export const main_venn_connector = (store) => MainVennConnector(store)(
-    (state) => (state.venn),
+export const main_comparison_connector = (store) => MainComparisonConnector(store)(
+    (state) => (state.comparison),
     (dispatch) => (dispatch)
 );
 
@@ -191,37 +184,22 @@ export const RootReducer = (state = root_default_state, action) => {
 
     case UPDATE_DETAIL:
 	return Object.assign({}, state, {
-	    re_detail: action.response
+	    re_detail: Object.assign({}, action.response, {
+		tab_selection: 0
+	    })
+	});
+
+    case SET_DETAIL_TAB:
+	return Object.assign({}, state, {
+	    re_detail: Object.assign({}, state.re_detail, {
+		tab_selection: action.tab_selection
+	    })
 	});
 
     case TAB_ACTION:
 	var n_state = Object.assign({}, state);
 	n_state[action.target] = TabReducer(n_state[action.target], action.subaction);
 	return n_state;
-	
-    case SET_VENN_CELL_LINES:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		cell_lines: GlobalCellTypes
-	    })
-	});
-
-    case SET_VENN_SELECTIONS:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		cell_line: action.cell_line,
-		rank_type: action.rank_type,
-		rank: action.rank
-	    })
-	});
-
-    case UPDATE_VENN:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		sets: action.sets,
-		overlaps: action.overlaps
-	    })
-	});
 	
     }
 

@@ -33,7 +33,7 @@ class TableWithCart extends React.Component {
 
 export default TableWithCart;
 
-const toggle_cart_item = (accession) => {
+export const toggle_cart_item = (accession) => {
     return {
 	type: TOGGLE_CART_ITEM,
 	accession
