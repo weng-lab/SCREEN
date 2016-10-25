@@ -144,8 +144,14 @@ class ElasticSearchWrapper:
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
         return self.es.search(index=index, body=query.query_obj)
 
-    def get_overlapping_snps(self, coord):
-        return self._get_overlaps_generic(coord, "snp_aliases")
+    def get_overlapping_snps(self, coord, assembly):
+        index = "snp_aliases"
+        query = and_query()
+        query.append_exact_match("assembly", assembly)
+        query.append_exact_match("position.chrom", coord["chrom"])
+        query.append({"range": {"position.start": {"gte": coord["start"]}}})
+        query.append({"range": {"position.end": {"lte": coord["end"]}}})
+        return self.es.search(index=index, body=query.query_obj)
 
     def get_overlapping_res(self, coord):
         return self._get_overlaps_generic(coord, paths.re_json_index)

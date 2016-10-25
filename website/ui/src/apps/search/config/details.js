@@ -1,10 +1,21 @@
 import {render_int, render_cell_type} from './results_table'
 
-const render_array = (m) => (array) => (array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
+const render_factorbook_link_tf = (d) => (
+    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+
+const render_factorbook_link_histone = (d) => (
+    '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
+
+const render_snp_link = (d) => (
+    // TODO: support mouse SNPs!
+    '<a href="http://ensembl.org/Homo_sapiens/Variation/Explore?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>');
+
+const render_gene_link = (d) => (
+    '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
 
 export const tabs = [
     {
-	title: "top cell types",
+	title: "Top tissues",
 	numCols : 2,
 	tables: {
 	    "promoter": {
@@ -28,6 +39,8 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
 	    },
@@ -52,6 +65,8 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
 	    },
@@ -76,6 +91,8 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["ctcf"]))
 	    },
@@ -96,24 +113,28 @@ export const tabs = [
 		],
 		data: [],
 		order: [[1, "asc"]],
+		pageLength: 5,
+		paging: false,
+
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["rank"]))
 	    }
 	}
     },
     {
-	title: "nearby genome features",
+	title: "Nearby Genomic Features",
 	tables: {
 	    "nearby_genes": {
-		title: "nearby genes",
+		title: "Nearby genes",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
+		emptyText: "No genes within 1Mb",
 		cols: [
 		    {
 			title: "symbol",
 			data: "name",
-			className: "dt-right"
+			render: render_gene_link
 		    },
 		    {
 			title: "distance",
@@ -125,7 +146,7 @@ export const tabs = [
 		order: [[1, "asc"]]
 	    },
 	    "nearby_res": {
-		title: "nearby candidate REs",
+		title: "Nearby candidate REs",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
@@ -145,15 +166,16 @@ export const tabs = [
 		order: [[1, "asc"]]
 	    },
 	    "overlapping_snps": {
-		title: "nearby SNPs",
+		title: "Nearby SNPs",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
+		emptyText: "No SNPs within 10Kb",
 		cols: [
 		    {
 			title: "accession",
 			data: "name",
-			className: "dt-right"
+			render: render_snp_link
 		    },
 		    {
 			title: "distance",
@@ -167,50 +189,38 @@ export const tabs = [
 	}
     },
     {
-	title: "peak intersection",
+	title: "TF and Histone Intersection",
 	numCols : 2,
 	tables: {
 	    "tf": {
-		title: "intersecting TFs",
+		title: "Intersecting TFs",
 		cols: [
 		    {
 			title: "factor",
 			data: "name",
-			className: "dt-right"
+			render: render_factorbook_link_tf
 		    },
 		    {
 			title: "# experiments",
 			data: "n",
 			render: render_int
-		    },
-		    {
-			title: "ENCODE accessions",
-			data: "encode_accs",
-			className: "dt-right",
-			render: render_array(3)
 		    }
 		],
 		data: [],
 		order: [[1, "desc"]]
 	    },
 	    "histone": {
-		title: "intersecting histones",
+		title: "Intersecting Histones",
 		cols: [
 		    {
 			title: "mark",
 			data: "name",
-			className: "dt-right"
+			render: render_factorbook_link_histone
 		    },
 		    {
 			title: "# experiments",
 			data: "n",
 			render: render_int
-		    },
-		    {
-			title: "ENCODE accessions",
-			data: "encode_accs",
-			className: "dt-right",
-			render: render_array(3)
 		    }
 		],
 		data: [],

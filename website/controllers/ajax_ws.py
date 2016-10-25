@@ -96,12 +96,10 @@ class AjaxWebService:
                 "overlaps": [{"sets": [0, 1], "size": center}] }
     
     def _peak_format(self, peaks):
-        retval = []
+        ret = []
         for k, v in peaks.iteritems():
-            retval.append({"name": k,
-                           "n": len(v),
-                           "encode_accs": v })
-        return retval
+            ret.append({"name": k, "n": len(v)})
+        return ret
         
     def _re_detail(self, j):
         accession = j["accession"]
@@ -115,14 +113,13 @@ class AjaxWebService:
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        # expand coords by 10KB
-        overlapBP = 10000
+        overlapBP = 10000 #10KB
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords)
+        snp_results = self.es.get_overlapping_snps(expanded_coords, "hg19")
 
-        overlapBP = 10000000
+        overlapBP = 1000000 # 1MB
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
