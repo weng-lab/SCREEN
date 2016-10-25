@@ -117,7 +117,7 @@ class AjaxWebService:
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords)
+        snp_results = self.es.get_overlapping_snps(expanded_coords, "hg19")
 
         overlapBP = 1000000 # 1MB
         expanded_coords = {"chrom": pos["chrom"],

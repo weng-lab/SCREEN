@@ -6,8 +6,12 @@ const render_factorbook_link_tf = (d) => (
 const render_factorbook_link_histone = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
 
-const render_factorbook_link_snp = (d) => (
-    '<a href="http://ensembl.org/Multi/Search/Results?q=' + d + '" target="_blank">' + d + '</a>');
+const render_snp_link = (d) => (
+    // TODO: support mouse SNPs!
+    '<a href="http://ensembl.org/Homo_sapiens/Variation/Explore?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>');
+
+const render_gene_link = (d) => (
+    '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
 
 export const tabs = [
     {
@@ -130,7 +134,7 @@ export const tabs = [
 		    {
 			title: "symbol",
 			data: "name",
-			className: "dt-right"
+			render: render_gene_link
 		    },
 		    {
 			title: "distance",
@@ -171,7 +175,7 @@ export const tabs = [
 		    {
 			title: "accession",
 			data: "name",
-			render: render_factorbook_link_snp
+			render: render_snp_link
 		    },
 		    {
 			title: "distance",
