@@ -13,7 +13,7 @@ class LongChecklistFacet extends React.Component {
 	super(props);
 	this._td_handler = this._td_handler.bind(this);
 	this._render_checkbox = this._render_checkbox.bind(this);
-	this.modeChange = this.modeChange.bind(this);
+	this.modeToggle = this.modeToggle.bind(this);
     }
 
     _render_checkbox(d) {
@@ -27,25 +27,35 @@ class LongChecklistFacet extends React.Component {
 	if (this.props.onTdClick) this.props.onTdClick(k.key);
     }
 
-    modeChange() {
-	if (this.props.onModeChange) this.props.onModeChange(this.refs.mode.value);
+    modeToggle() {
+	var n_value = (this.props.mode == CHECKLIST_MATCH_ANY
+		       ? CHECKLIST_MATCH_ALL : CHECKLIST_MATCH_ANY);
+	if (this.props.onModeChange) this.props.onModeChange(n_value);
     }
     
     componentDidMount() {
-	$(this.refs.mode).toggleSwitch({
+	/*$(this.refs.mode).toggleSwitch({
 	    highlight: true,
 	    width: 25,
 	    change: this.modeChange
-	});
+	});*/
     }
     
     render() {
-	var checks = (!this.props.match_mode_enabled ? ""
+	/* var checks = (!this.props.match_mode_enabled ? ""
 		      : (<div><select ref="mode">
 		            <option value={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
 		            <option value={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
 		         </select></div>
-		        ));
+		         )); */
+	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
+	var checks = (!this.props.match_mode_enabled ? ""
+		      : (<div>
+			     <input type="radio" checked={mode == CHECKLIST_MATCH_ALL ? true : false}
+			         onClick={this.modeToggle} />match all&nbsp;
+			     <input type="radio" checked={mode == CHECKLIST_MATCH_ANY ? true : false}
+			         onClick={this.modeToggle} />match any
+			 </div>));
 	var cols = [
 	    {
 		title: "",

@@ -1,4 +1,5 @@
 import {RANGE_FACET, CHECKLIST_FACET, LIST_FACET, LONGLIST_FACET, LONGCHECKLIST_FACET} from '../helpers/create_facet'
+import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 import {LongListResultsMap, LongListQueryMap, ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap, ChecklistQueryMap, ChecklistAggMap} from '../elasticsearch/default_maps'
 import {TFQueryMap} from '../elasticsearch/tf_map'
 import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
@@ -9,23 +10,6 @@ import {selected_cell_line} from '../elasticsearch/helpers'
 import {render_int, render_cell_type} from './results_table'
 
 export const facetboxes = {
-    "assembly": {
-	title: "Assembly",
-	visible: true,
-	facets: {
-	    "assembly": {
-		type: LIST_FACET,
-		visible: true,
-		title: "",
-		state: {
-		    items: {
-			"hg19": 1000000
-		    },
-		    selection: "hg19"
-		}
-	    }
-	}
-    },
     "cell_lines": {
 	title: "Cell Types",
 	visible: true,
@@ -106,7 +90,8 @@ export const facetboxes = {
 			title: "TF",
 			data: "key",
 			className: "dt-right"
-		    }]
+		    }],
+		    mode: CHECKLIST_MATCH_ALL
 		}
 	    }
 	}
@@ -193,7 +178,6 @@ export const facetboxes = {
 };
 
 export const facetbox_render_order = [
-    "assembly",
     "cell_lines",
     "chromosome",
     "coordinates",
@@ -203,13 +187,6 @@ export const facetbox_render_order = [
 ];
 
 export const es_links = {
-    "assembly": {
-	"assembly": {
-	    f_query: [ListQueryMap, ListAggMap],
-	    f_results: [ListResultsMap],
-	    field: "genome"
-	}
-    },
     "cell_lines": {
 	"cell_lines": {
 	    f_query: null,

@@ -1,11 +1,13 @@
 import {array_insert, array_remove} from '../common'
+import {CHECKLIST_MATCH_ALL} from '../components/checklist'
 
 export const TOGGLE_ITEM = 'TOGGLE_ITEM';
 export const SET_DATA = 'SET_ITEMS';
 export const SET_MATCH_MODE = 'SET_MATCH_MODE';
 
 export let longchecklist_initial_state = {
-    data: []
+    data: [],
+    mode: CHECKLIST_MATCH_ALL
 };
 
 function select_all(items, selected) {
