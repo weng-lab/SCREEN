@@ -14,22 +14,31 @@ class DetailsApp extends React.Component {
 	var tabs = this.props.tabs;
 	var tables = this.props.tables;
 	var data = this.props.data;
+
+	function makeTable(key, table){
+	    if(table.bar_graph){
+		return (<BarGraphTable cols={table.cols} order={table.order} paging={table.paging}
+			bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]}
+			bLengthChange={true} emptyText={table.emptyText}
+			pageLength={table.pageLength} rank_f={table.bg_rank_f}
+			/>);
+	    }
+	    return (<ResultsTable cols={table.cols} order={table.order} paging={table.paging}
+		    bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]}
+		    bLengthChange={true} emptyText={table.emptyText} pageLength={table.pageLength}
+		    />);
+	}
 	
 	function tabEle(key, table, numCols) {
-	    var _table = (!table.bar_graph
-			 ? <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
-		               bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} />
-			 : <BarGraphTable cols={table.cols} order={table.order} paging={table.paging} rank_f={table.bg_rank_f}
-			       bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} />
-			);
 	    return (<div className={"col-md-" + (12/numCols)} key={key}>
 		        <h4>{table.title}</h4>
-		        {_table}<br/>
+		    {makeTable(key, table)}<br/>
 		    </div>);
 	}
 
 	function chunkArr(arr, chunk){
 	    // from https://jsperf.com/array-splice-vs-underscore
+	    // TODO: move to common
 	    var i, j, temparray = [];
 	    for (i = 0, j = arr.length; i < j; i += chunk) {
 		temparray.push(arr.slice(i, i + chunk));

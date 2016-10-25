@@ -4,7 +4,7 @@ const render_array = (m) => (array) => (array.length <= m ? array : [...array.sl
 
 export const tabs = [
     {
-	title: "top cell types",
+	title: "Top tissues",
 	numCols : 2,
 	tables: {
 	    "promoter": {
@@ -28,6 +28,7 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
 	    },
@@ -52,6 +53,7 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
 	    },
@@ -76,6 +78,7 @@ export const tabs = [
 		    }
 		],
 		data: [],
+		pageLength: 5,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["ctcf"]))
 	    },
@@ -96,13 +99,14 @@ export const tabs = [
 		],
 		data: [],
 		order: [[1, "asc"]],
+		pageLength: 5,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["rank"]))
 	    }
 	}
     },
     {
-	title: "nearby genome features",
+	title: "Nearby Genomic Features",
 	tables: {
 	    "nearby_genes": {
 		title: "Nearby genes",
