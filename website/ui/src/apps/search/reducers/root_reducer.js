@@ -4,7 +4,6 @@ import TabReducer from './tab_reducer'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
-import {MainComparisonConnector} from '../components/comparison_bar_graph'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -74,11 +73,6 @@ export const main_tab_connector = MainTabsConnector(
 	    subaction: action
 	});
     })
-);
-
-export const main_comparison_connector = (store) => MainComparisonConnector(store)(
-    (state) => (state.comparison),
-    (dispatch) => (dispatch)
 );
 
 export const RootReducer = (state = root_default_state, action) => {

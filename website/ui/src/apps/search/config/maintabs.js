@@ -8,7 +8,6 @@ import {tabs} from './details'
 import {expression_heatmap_connector} from '../components/expression_heatmap'
 import Heatmap from '../../../common/components/heatmap'
 import {main_comparison_connector} from '../reducers/root_reducer'
-import ComparisonBarGraph from '../components/comparison_bar_graph'
 
 export const maintabs = {
     id: "main",
@@ -33,13 +32,6 @@ export const maintabs = {
 	    render: (store, key) => {
 		var ExpressionHeatmap = expression_heatmap_connector(Heatmap);
 		return <ExpressionHeatmap store={store} key={key} />;
-	    }
-	},
-	comparison: {
-	    title: "Comparison",
-	    visible: true,
-	    render: (store, key) => {
-		
 	    }
 	}
     }
