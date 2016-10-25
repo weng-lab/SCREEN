@@ -2,6 +2,7 @@ var React = require('react');
 import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table'
+import BarGraphTable from '../components/bar_graph_table'
 
 class DetailsApp extends React.Component {
 
@@ -14,11 +15,16 @@ class DetailsApp extends React.Component {
 	var tables = this.props.tables;
 	var data = this.props.data;
 	
-	function tabEle(key, table, numCols){
+	function tabEle(key, table, numCols) {
+	    var _table = (!table.bar_graph
+			 ? <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
+		               bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} />
+			 : <BarGraphTable cols={table.cols} order={table.order} paging={table.paging} rank_f={table.bg_rank_f}
+			       bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} />
+			);
 	    return (<div className={"col-md-" + (12/numCols)} key={key}>
-		    <h4>{table.title}</h4>
-		    <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
-		        bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]} bLengthChange={true} /><br/>
+		        <h4>{table.title}</h4>
+		        {_table}<br/>
 		    </div>);
 	}
 

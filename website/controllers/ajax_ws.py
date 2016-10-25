@@ -49,21 +49,25 @@ class AjaxWebService:
     def _get_rank(self, label, v):
         return None if label not in v else v[label]["rank"]
 
+    def _tissue(self, k):
+        return "" if k not in self.cache.tissueMap else self.cache.tissueMap[k]
+    
     def _format_ranks(self, ranks):
-        return {"promoter": [{"cell_type": k,
+        return {"dnase": [{"tissue": self._tissue(k),
+                           "cell_type": k,
+                           "rank": v["rank"] } for k, v in ranks["dnase"].iteritems()],
+                "promoter": [{"tissue": self._tissue(k),
+                              "cell_type": k,
                               "H3K4me3": self._get_rank("H3K4me3-Only", v),
-                              "H3K4me3_DNase": self._get_rank("DNase+H3K4me3", v) }
-                             for k, v in ranks["promoter"].iteritems() ],
-                "enhancer": [{"cell_type": k,
+                              "H3K4me3_DNase": self._get_rank("DNase+H3K4me3", v) } for k, v in ranks["promoter"].iteritems()],
+                "enhancer": [{"tissue": self._tissue(k),
+                              "cell_type": k,
                               "H3K27ac": self._get_rank("H3K27ac-Only", v),
-                              "H3K27ac_DNase": self._get_rank("DNase+H3K27ac", v)}
-                             for k, v in ranks["enhancer"].iteritems() ],
-                "ctcf": [{"cell_type": k,
+                              "H3K27ac_DNase": self._get_rank("DNase+H3K27ac", v) } for k, v in ranks["enhancer"].iteritems()],
+                "ctcf": [{"tissue": self._tissue(k),
+                          "cell_type": k,
                           "ctcf": self._get_rank("CTCF-Only", v),
-                          "ctcf_DNase": self._get_rank("DNase+CTCF", v) }
-                         for k, v in ranks["ctcf"].iteritems() ],
-                "dnase": [{"cell_type": k,
-                           "rank": v["rank"]} for k, v in ranks["dnase"].iteritems()] }
+                          "ctcf_DNase": self._get_rank("DNase+CTCF", v) } for k, v in ranks["ctcf"].iteritems()] }
     
     def _venn(self, j):
 
@@ -160,7 +164,7 @@ class AjaxWebService:
     
     def _enumerate(self, j):
         if "cell_line" == j["name"]:
-            r = {"results" : self.cellTypesAndTissues}
+            r = {"results": self.cache.cellTypesAndTissues}
         else:
             r = self.es.get_field_mapping(index=j["index"],
                                           doc_type=j["doc_type"],

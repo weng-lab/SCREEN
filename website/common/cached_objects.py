@@ -24,6 +24,7 @@ class CachedObjects:
                                                   "indices": "tfs" })["results"])
 
         self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
+        self.tissueMap = {x["value"]: x["tissue"] for x in self.cellTypesAndTissues}
 
         self.tf_list_json = json.dumps(self.tf_list)
         self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
