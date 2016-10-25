@@ -9,8 +9,6 @@ import {selected_cell_line} from '../elasticsearch/helpers'
 
 import {render_int, render_cell_type} from './results_table'
 
-console.log(GlobalParsedQuery);
-
 export const facetboxes = {
     "accessions": {
 	title: "Accessions",
