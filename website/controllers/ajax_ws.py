@@ -47,7 +47,7 @@ class AjaxWebService:
         self._cached_results = {}
 
     def _get_rank(self, label, v):
-        return None if label not in v else v[label]["rank"]
+        return 1e12 if label not in v else v[label]["rank"]
 
     def _tissue(self, k):
         return "" if k not in self.cache.tissueMap else self.cache.tissueMap[k]

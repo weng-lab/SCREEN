@@ -75,7 +75,6 @@ export let root_default_state = {
 export const main_tab_connector = MainTabsConnector(
     (state) => (state.main_tabs),
     (dispatch) => ((action) => {
-	//console.log(action);
 	dispatch({
 	    type: TAB_ACTION,
 	    target: "main_tabs",
@@ -150,7 +149,6 @@ export const RootReducer = (state = root_default_state, action) => {
 	console.log("RESULTS_ERROR:", action.requestobj);
 
     case RESULTS_DONE:
-	//console.log("results done");
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		fetching: false
@@ -185,7 +183,6 @@ export const RootReducer = (state = root_default_state, action) => {
 	});
 
     case UPDATE_EXPRESSION:
-	//console.log("update_expression", action);
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		expression_matrix: action.expression_matrix
