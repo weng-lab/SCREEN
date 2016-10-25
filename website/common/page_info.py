@@ -57,7 +57,8 @@ class PageInfoMain:
                        "globalSessionUid" : uuid,
                        "globalTfs" : self.cache.tf_list_json,
                        "globalCellTypes" : self.cache.cellTypesAndTissues_json,
-                       "searchPage": True })
+                       "searchPage": True,
+                       "tissueMap": self.cache.tissueMap })
 
         return retval
 
@@ -134,6 +135,7 @@ class PageInfoMain:
 
         retval.update({"reAccessions": json.dumps(reAccessions),
                        "uuid" : uuid,
+                       "globalTfs" : self.cache.tf_list_json,
                        "globalCellTypes" : self.cache.cellTypesAndTissues_json })
         return retval
 
