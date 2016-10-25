@@ -30,7 +30,8 @@ class ResultsTable extends React.Component {
 	    paging: this.props.paging,
 	    bInfo: this.props.info,
 	    bFilter: this.props.bFilter,
-	    bLengthChange: this.props.bLengthChange
+	    bLengthChange: this.props.bLengthChange,
+	    oLanguage: { sEmptyTable : this.props.emptyText }
 	});
 	$(this.refs.root).on("click", "td", function() {
 	    if (onTdClick) {

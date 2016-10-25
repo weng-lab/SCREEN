@@ -97,10 +97,11 @@ export const tabs = [
 	title: "nearby genome features",
 	tables: {
 	    "nearby_genes": {
-		title: "nearby genes",
+		title: "Nearby genes",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
+		emptyText: "No genes within 1Mb",
 		cols: [
 		    {
 			title: "symbol",
@@ -117,7 +118,7 @@ export const tabs = [
 		order: [[1, "asc"]]
 	    },
 	    "nearby_res": {
-		title: "nearby candidate REs",
+		title: "Nearby candidate REs",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
@@ -137,10 +138,11 @@ export const tabs = [
 		order: [[1, "asc"]]
 	    },
 	    "overlapping_snps": {
-		title: "nearby SNPs",
+		title: "Nearby SNPs",
 		paging: false,
 		bInfo: false,
 		bFilter: false,
+		emptyText: "No SNPs within 10Kb",
 		cols: [
 		    {
 			title: "accession",
