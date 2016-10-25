@@ -29,6 +29,7 @@ export const tabs = [
 		],
 		data: [],
 		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
 	    },
@@ -54,6 +55,7 @@ export const tabs = [
 		],
 		data: [],
 		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
 	    },
@@ -79,6 +81,7 @@ export const tabs = [
 		],
 		data: [],
 		pageLength: 5,
+		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["ctcf"]))
 	    },
@@ -100,6 +103,8 @@ export const tabs = [
 		data: [],
 		order: [[1, "asc"]],
 		pageLength: 5,
+		paging: false,
+
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["rank"]))
 	    }

@@ -19,7 +19,7 @@ class DetailsApp extends React.Component {
 	    if(table.bar_graph){
 		return (<BarGraphTable cols={table.cols} order={table.order} paging={table.paging}
 			bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]}
-			bLengthChange={true} emptyText={table.emptyText}
+			bLengthChange={false} emptyText={table.emptyText}
 			pageLength={table.pageLength} rank_f={table.bg_rank_f}
 			/>);
 	    }
