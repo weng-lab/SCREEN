@@ -12,16 +12,19 @@ std::vector<HeatmapRow> EmptyMatrix(int w, int h) {
 }
 
 Heatmap::Heatmap(std::vector<HeatmapRow> &values) {
+  values_ = values;
+  
+  if (0 == values.size()){
+    return;
+  }
 
-  Values = values;
-  if (values.size() == 0) return;
+  //sanity check row lengths for heatmaps with at least one row
 
-  /*
-   * sanity check row lengths for heatmaps with at least one row
-   */
   int h = values[0].size();
   for (int n = 0; n < values.size(); ++n) {
-    if (values[n].size() != h) throw std::invalid_argument("all heatmap rows must be of the same length");
+    if (values[n].size() != h) {
+      throw std::invalid_argument("all heatmap rows must be of the same length");
+    }
   }
 
 }
@@ -32,7 +35,7 @@ Heatmap::Heatmap(std::vector<HeatmapRow> &values) {
 void Heatmap::print_matrix() const {
   for (int i = 0; i < Width(); ++i) {
     for (int j = 0; j < Height(); ++j) {
-      std::cout << Values[i][j] << "\t";
+      std::cout << values_[i][j] << "\t";
     }
     std::cout << "\n";
   }
@@ -43,7 +46,6 @@ void Heatmap::print_matrix() const {
  *  i and j are the indices of the rows to compare
  */
 double Heatmap::RowDistance(int i, int j) const {
-
   int w = Width();
   int h = Height();
 
@@ -56,7 +58,7 @@ double Heatmap::RowDistance(int i, int j) const {
 
   double ret = 0;
   for (int n = 0; n < h; ++n) {
-      ret += std::abs(Values[i][n] - Values[j][n]);
+      ret += std::abs(values_[i][n] - values_[j][n]);
   }
   
   return ret;
@@ -79,7 +81,7 @@ double Heatmap::ColDistance(int i, int j) const {
 
   double ret = 0.0;
   for (int n = 0; n < w; ++n) {
-      ret += std::abs(Values[n][i] - Values[n][j]);
+      ret += std::abs(values_[n][i] - values_[n][j]);
   }
   return ret;
 
@@ -95,14 +97,14 @@ std::vector<int> Heatmap::RowCluster() {
   }
 
   ClusterSet c = ClusterSet::FromRows(*this);
-  std::vector<HeatmapRow> tmp(Values);
+  std::vector<HeatmapRow> tmp(values_);
 
   c.docluster();
   for (int i = 0; i < Width(); ++i) {
     int w = c.indices_[0][i];
     ret[i] = w;
     for (int j = 0; j < Height(); ++j) {
-      Values[i][j] = tmp[w][j];
+      values_[i][j] = tmp[w][j];
     }
   }
 
@@ -121,14 +123,14 @@ std::vector<int> Heatmap::ColCluster() {
   }
 
   ClusterSet c = ClusterSet::FromCols(*this);
-  std::vector<HeatmapRow> tmp(Values);
+  std::vector<HeatmapRow> tmp(values_);
 
   c.docluster();
   for (int i = 0; i < Height(); ++i) {
     int h = c.indices_[0][i];
     ret[i] = h;
     for (int j = 0; j < Width(); ++j) {
-      Values[j][i] = tmp[j][h];
+      values_[j][i] = tmp[j][h];
     }
   }
 
