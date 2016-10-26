@@ -17,10 +17,10 @@ public:
 
   std::vector<int> RowCluster();
   std::vector<int> ColCluster();
-
-  void print_matrix() const;
 };
 
-std::vector<HeatmapRow> EmptyMatrix(int w, int h);
+  std::ostream& operator<< (std::ostream& stream, const Heatmap&);
+  
+  std::vector<HeatmapRow> EmptyMatrix(int w, int h);
 
 } // namespace zlab

@@ -8,14 +8,11 @@ int main(int argc, char **argv) {
 					  {3.1, 3.0, 3.1, 3.0},
 					  {2.0, 2.0, 2.1, 2.0}};
   zlab::Heatmap hm(matrix);
-  hm.print_matrix();
-  std::cout << "\n";
+  std::cout << hm << "\n";
   
   hm.RowCluster();
-  hm.print_matrix();
-  std::cout << "\n";
+  std::cout << hm << "\n";
   
   hm.ColCluster();
-  hm.print_matrix();
-  std::cout << "\n";
+  std::cout << hm << "\n";
 }
