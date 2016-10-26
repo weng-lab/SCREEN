@@ -1,24 +1,33 @@
+# from http://stackoverflow.com/a/18258352
+rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+
+CPP = g++
 FLAGS = -g -std=c++14 -fPIC
 CFLAGS = -g -std=c99 -fPIC
 
-all: directories build/heatmap.o build/heatmap_ctypes.o lib/libheatmap.so
+OBJ_DIR := build
+OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, src/, *.cpp)))
+HEADERS = $(call rwildcard, src/, *.h) \
+	$(call rwildcard, src/, *.hpp)
+SRC = -I../
+BIN := bin/heatmap_test
+LIB := lib/libheatmap.so
 
-directories: build lib
+.PHONY: all
+all: directories $(OBJ_DIR) $(BIN) lib/libheatmap.so
 
-lib:
-	mkdir -p lib
+$(OBJ_DIR)/%.o: %.cpp $(HEADERS)
+	@mkdir -p $(OBJ_DIR)/$(shell dirname $<)
+	$(CPP) $(FLAGS) $(SRC) -c -o $@ $<
 
-build:
-	mkdir -p build
+$(BIN): $(OBJ)
+	$(CPP) -o $@ $^ $(LD_FLAGS)
 
-build/heatmap.o : ./heatmap.cpp
-	g++ $(FLAGS) -c ./heatmap.cpp -o build/heatmap.o
+directories:
+	mkdir -p $(OBJ_DIR) bin lib
 
-build/heatmap_ctypes.o : ./heatmap_ctypes.cpp
-	g++ $(FLAGS) -c ./heatmap_ctypes.cpp -o build/heatmap_ctypes.o
-
-lib/libheatmap.so : build/heatmap_ctypes.o build/heatmap.o
-	g++ $(FLAGS) -shared ./heatmap.cpp ./heatmap_ctypes.cpp -o lib/libheatmap.so
+$(LIB): $(OBJ)
+	$(CPP) -shared -o $@ $^ $(LD_FLAGS)
 
 clean :
-	rm -f build/* lib/*
+	rm -rf build/* lib/* bin/*
