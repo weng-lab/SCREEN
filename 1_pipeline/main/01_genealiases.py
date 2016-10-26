@@ -82,7 +82,7 @@ class GeneInfo:
                         geneobj["position"] = self.tryparse(geneobj["coordinates"])
                     o.write(json.dumps(geneobj) + "\n")
         print("wrote", paths.genelsj[self.assembly])
-        print("skipped", skipped)
+        print("wrote", idx + 1, " and skipped", skipped)
         with open(paths.geneJsonFnp[self.assembly], 'w') as f:
             json.dump(emap, f)
         print("wrote", paths.geneJsonFnp[self.assembly])
@@ -151,7 +151,6 @@ def main():
         jobs.append((fnps["origFnp"][i], fnps["rewriteFnp"][i], emap))
     ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
 
-    print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
 
 if __name__ == "__main__":
