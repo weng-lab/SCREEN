@@ -14,7 +14,7 @@ BIN := bin/heatmap_test
 LIB := lib/libheatmap.so
 
 .PHONY: all
-all: directories $(OBJ_DIR) $(BIN) lib/libheatmap.so
+all: directories $(OBJ_DIR) $(BIN) $(LIB)
 
 $(OBJ_DIR)/%.o: %.cpp $(HEADERS)
 	@mkdir -p $(OBJ_DIR)/$(shell dirname $<)
