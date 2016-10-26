@@ -1,3 +1,5 @@
+namespace zlab {
+
 typedef std::vector<double> HeatmapRow;
 
 class Heatmap {
@@ -20,3 +22,5 @@ public:
 };
 
 std::vector<HeatmapRow> EmptyMatrix(int w, int h);
+
+} // namespace zlab
