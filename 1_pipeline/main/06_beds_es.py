@@ -94,7 +94,7 @@ def get_parallel_jobs(args, assembly):
         for exp in exps:
             i += 1
             try:
-                beds = exp.bedFilters()
+                beds = exp.bedFilters(assembly)
                 if not beds:
                     print "missing", exp
                 for bed in beds:
