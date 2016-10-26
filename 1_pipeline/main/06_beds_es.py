@@ -118,7 +118,7 @@ def run(jobargs, bedfnp):
     label = exp.label if jobargs["map"] != "dnase" else "dnase"
     if not os.path.exists(bed.fnp()):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
-        return retval
+        return (retval, None)
     if "hg19" == jobargs["assembly"]:
         printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
         result = do_intersection(bed, bedfnp)
@@ -134,6 +134,8 @@ def assembly_json(args, assembly, in_fnps, bedfnp):
     jobs = get_parallel_jobs(args, assembly)
     results = Parallel(n_jobs = args.j)(delayed(run)(_args, bedfnp) for _args in jobs)
     for rfiles, intersections in results:
+        if not intersections:
+            continue
         for key, label, bed, accs in intersections:
             for acc in accs:
                 if acc not in tf_imap: tf_imap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
