@@ -48,8 +48,11 @@ class paths:
 
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
-    genelist = os.path.join(v4d, "genelist.tsv")
-    genelsj = os.path.join(v4d, "genelist.lsj")
+
+    genelist = {"hg19" : os.path.join(v4d, "genelist.hg19.tsv")}
+    genelsj = {"hg19" : os.path.join(v4d, "genelist.hg19.lsj")}
+    geneJsonFnp = {"hg19" : os.path.join(v4d, "genelist.hg19.json")}
+
     genedb = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
     genedb_lsj = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
     snp_csvs = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
