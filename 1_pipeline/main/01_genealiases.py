@@ -30,22 +30,21 @@ def get_gene_map(assembly="hg19"):
         retval[gene.genename_] = "%s:%s-%s" % (gene.chr_, gene.start_, gene.end_)
     return retval
 
-def ensembl_to_symbol(inFnp, outFnp, emap):
-    print("rewriting", inFnp, ": converting ensembl IDs to gene symbols",
+def rewrite(inFnp, outFnp, emap):
+    print("rewriting", os.path.basename(inFnp),
+          ": converting ensembl IDs to gene symbols",
           "and fixing cell line names")
-    i = 0
+
     with gzip.open(inFnp, "r") as f:
         with gzip.open(outFnp, "w") as o:
-            for line in f:
-                if i % 100000 == 0:
-                    print("working with entry %d\r" % i, end = "")
-                sys.stdout.flush()
-                i += 1
+            for idx, line in enumerate(f):
+                if idx % 1000 == 0:
+                    print(inFnp, "working with entry", idx)
                 d = json.loads(line)
 
                 for geneCat in ["nearest-pc", "nearest-all"]:
                     gpca = []
-                    for gi in xrange(0, 5):
+                    for gi in xrange(5):
                         g = d["genes"][geneCat][gi]
                         pc = g["gene-name"].split(".")[0]
                         if pc in emap:
@@ -61,6 +60,7 @@ def ensembl_to_symbol(inFnp, outFnp, emap):
                             d["ranks"][rk][nct] = d["ranks"][rk].pop(ct)
 
                 o.write(json.dumps(d) + "\n")
+    print("wrote", outFnp)
 
 def tryparse(coordinate):
     if "-" not in coordinate or ":" not in coordinate:
@@ -143,7 +143,7 @@ def main():
     jobs = []
     for i in xrange(len(fnps["origFnp"])):
         jobs.append((fnps["origFnp"][i], fnps["rewriteFnp"][i], emap))
-    ret = Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(*job) for job in jobs)
+    ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
