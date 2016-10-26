@@ -24,27 +24,16 @@ class paths:
             parts = fnp.split(".")
             return "%s.%s.%s" % (parts[0], _chr, ".".join(parts[1:]))
         return retval
-    
-    re_json_vers = { 2 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
-                          "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
-                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V2.bed.gz"),
-                          "index" : "regulatory_elements_2"},
-                     3 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.json.gz")],
-                          "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.mod.json.gz")],
-                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V3.bed.gz"),
-                          "index" : "regulatory_elements_3"},
-                     4: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.mod.json.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V4.bed.gz"),
-                         "index": "regulatory_elements_4"},
-                     5: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.mod.json.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V5.bed.gz"),
-                         "index": "regulatory_elements_5"},
-                     6: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V6.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V6.bed.gz"),
-                         "index": "regulatory_elements_6"} }
+
+    re_json_vers = { 6: {"origFnp": ins_chr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
+                         "rewriteFnp": ins_chr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
+                         "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
+                         "index": "regulatory_elements_6"},
+                     7: {"origFnp": ins_chr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+                         "rewriteFnp": ins_chr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.json._tmp.gz")),
+                         "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
+                         "index": "regulatory_elements_7"}
+                     }
 
 
     @staticmethod
@@ -57,7 +46,7 @@ class paths:
             else:
                 retval[key] = [value(chrom) for chrom in chrs]
         return retval
-    
+
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
     genelist = os.path.join(v4d, "genelist.tsv")
