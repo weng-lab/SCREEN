@@ -74,7 +74,7 @@ def tryparse(coordinate):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-j', type=int, default=1)
+    parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--version', type=int, default=4)
     parser.add_argument('--assembly', type=str, default="hg19")
     args = parser.parse_args()
@@ -125,7 +125,11 @@ def main():
                 o.write(json.dumps(geneobj) + "\n")
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(fnps["origFnp"][i], fnps["rewriteFnp"][i], emap) for i in range(0, len(fnps["origFnp"])))
+
+    jobs = []
+    for i in range(0, len(fnps["origFnp"])):
+        jobs.append((fnps["origFnp"][i], fnps["rewriteFnp"][i], emap))
+    ret = Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(*job) for job in jobs
 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
