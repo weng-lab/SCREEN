@@ -5,10 +5,10 @@ class Heatmap {
 public:
   Heatmap(std::vector<HeatmapRow> &values);
 
-  std::vector<HeatmapRow> Values;
+  std::vector<HeatmapRow> values_;
 
-  int Width() const {return Values.size();}
-  int Height() const {return Values[0].size();}
+  int Width() const {return values_.size();}
+  int Height() const {return values_[0].size();}
 
   double RowDistance(int, int) const;
   double ColDistance(int, int) const;
