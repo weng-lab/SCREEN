@@ -1,9 +1,10 @@
 typedef std::vector<double> HeatmapRow;
 
-class Heatmap
-{
+class Heatmap {
 
 public:
+  Heatmap(std::vector<HeatmapRow> &values);
+
   std::vector<HeatmapRow> Values;
 
   int Width() const {return Values.size();}
@@ -15,10 +16,7 @@ public:
   std::vector<int> RowCluster();
   std::vector<int> ColCluster();
 
-  Heatmap(std::vector<HeatmapRow> &values);
-
   void print_matrix() const;
-
 };
 
 std::vector<HeatmapRow> EmptyMatrix(int w, int h);
