@@ -30,7 +30,7 @@ def lsj_to_beds(infnp, outfnp):
     output = []
 
     i = 0
-    
+
     with gzip.open(infnp, "r") as f:
         for line in f:
             el = json.loads(line.strip())
@@ -82,7 +82,7 @@ def get_parallel_jobs(args, assembly):
 
     jobs = []
     i = 0
-    
+
     if "mm10" == assembly:
         m = MetadataWS(Datasets.all_mouse)
     else:
@@ -149,7 +149,7 @@ def parse_args():
     parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('-j', type=int, default=1)
     parser.add_argument('--remake_bed', action="store_true", default=False)
-    parser.add_argument('--version', type=int, default=4)
+    parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="hg19")
     args = parser.parse_args()
     return args
@@ -171,7 +171,7 @@ def main():
             if not os.path.exists(infnp): continue
             lsj_to_beds(infnp, bed_fnp)
         print("\n")
-    
+
     printt("intersecting TFs")
     files += assembly_json(args, args.assembly, in_fnps, bed_fnp)
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
