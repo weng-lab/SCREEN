@@ -8,7 +8,7 @@ public:
   Heatmap hm_;
 
 private:
-  distance_function df_;
+  const distance_function df_;
   
   int best_orientation(int i, int j) const {
     int bi = indices_[i][0];
@@ -16,12 +16,11 @@ private:
     int bj = indices_[j][0];
     int ej = indices_[j][indices_[j].size() - 1];
 
-    std::vector<double> dists = {
-      df_(hm_, ei, bj),
-      df_(hm_, ei, ej),
-      df_(hm_, bi, bj),
-      df_(hm_, bi, ej)
-    };
+    std::vector<double> dists {df_(hm_, ei, bj),
+	df_(hm_, ei, ej),
+	df_(hm_, bi, bj),
+	df_(hm_, bi, ej)
+	};
 
     return index_of_min(dists);
   }
@@ -46,6 +45,7 @@ private:
   }
 
 public:
+
   int Length() const {return indices_.size();}
 
   void Merge(int i, int j) {
@@ -97,15 +97,14 @@ public:
 
     // main loop: continue until all clusters have been combined
     while (Length() > 1) {
-
       double cmin = ClusterDistance(0, 1);
       int mi = 0;
       int mj = 1;
 
       // find closest two clusters
       double d = 0;
-      for (int i = 0; i < Length(); ++i) {
-	for (int j = i + 1; j < Length(); ++j) {
+      for (auto i = 0; i < Length(); ++i) {
+	for (auto j = i + 1; j < Length(); ++j) {
 	  d = ClusterDistance(i, j);
 	  if (d < cmin) {
 	    cmin = d;
