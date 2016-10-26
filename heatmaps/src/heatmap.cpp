@@ -32,18 +32,6 @@ Heatmap::Heatmap(std::vector<HeatmapRow> &values) {
 }
 
 /*
- *  print a heatmap matrix
- */
-void Heatmap::print_matrix() const {
-  for (int i = 0; i < Width(); ++i) {
-    for (int j = 0; j < Height(); ++j) {
-      std::cout << values_[i][j] << "\t";
-    }
-    std::cout << "\n";
-  }
-}
-
-/*
  *  compute the distance between two rows in a heatmap
  *  i and j are the indices of the rows to compare
  */
@@ -139,5 +127,16 @@ std::vector<int> Heatmap::ColCluster() {
   return ret;
 
 }
+  
+  std::ostream& operator<<(std::ostream& s, const Heatmap& hm) {
+    for (int i = 0; i < hm.Width(); ++i) {
+      for (int j = 0; j < hm.Height(); ++j) {
+	std::cout << hm.values_[i][j] << "\t";
+      }
+      std::cout << "\n";
+    }
+    return s;
+  }
 
+  
 } // namespace zlab
