@@ -141,7 +141,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    gi = GeneInfo("hg19")
+    gi = GeneInfo(args.assembly)
     emap = gi.getGeneList()
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
