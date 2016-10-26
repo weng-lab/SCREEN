@@ -29,10 +29,10 @@ class GeneInfo:
             return
         fnp, filetype = self.gene_files[self.assembly]
         ggff = Genes(fnp, filetype)
-        retval = {}
-        for gene in ggff.getGenes():
-            retval[gene.genename_] = "%s:%s-%s" % (gene.chr_, gene.start_, gene.end_)
-        return retval
+        ret = {}
+        for g in ggff.getGenes():
+            ret[g.genename_] = "%s:%s-%s" % (g.chr_, g.start_, g.end_)
+        return ret
 
     def tryparse(self, coord):
         if "-" not in coord or ":" not in coord:
