@@ -66,8 +66,8 @@ def getFileJson(exp, bed):
 
 def doIntersection(bed, refnp):
     cmds = ["bedtools", "intersect",
-            "-b", bed.fnp(),
             "-a", refnp,
+            "-b", bed.fnp(),
             "-wa"]
     try:
         peaks = Utils.runCmds(cmds)
