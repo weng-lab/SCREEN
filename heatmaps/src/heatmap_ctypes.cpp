@@ -4,6 +4,8 @@
 #include "heatmap.hpp"
 #include "heatmap_ctypes.hpp"
 
+using namespace zlab;
+
 std::vector<HeatmapRow> matrix_from_ptr(double *matrix,
 					int width, int height) {
   std::vector<HeatmapRow> retval = EmptyMatrix(width, height);

@@ -1,5 +1,7 @@
 #include "common.hpp"
 
+namespace zlab {
+
 class ClusterSet{
 public:
   std::vector<clusterlist> indices_;
@@ -128,3 +130,4 @@ public:
 
 };
 
+} // namespace zlab

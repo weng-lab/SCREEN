@@ -7,6 +7,8 @@
 #include "heatmap.hpp"
 #include "cluster_set.hpp"
 
+namespace zlab {
+  
 std::vector<HeatmapRow> EmptyMatrix(int w, int h) {
   return std::vector<HeatmapRow>(w, HeatmapRow(h));
 }
@@ -138,17 +140,4 @@ std::vector<int> Heatmap::ColCluster() {
 
 }
 
-int main(int argc, char **argv) {
-  std::vector<HeatmapRow> matrix = {{1.0, 1.0, 1.1, 1.0},
-				    {3.1, 3.0, 3.1, 3.0},
-				    {2.0, 2.0, 2.1, 2.0}};
-  Heatmap hm(matrix);
-  hm.print_matrix();
-  std::cout << "\n";
-  hm.RowCluster();
-  hm.print_matrix();
-  std::cout << "\n";
-  hm.ColCluster();
-  hm.print_matrix();
-  std::cout << "\n";
-}
+} // namespace zlab
