@@ -6,8 +6,6 @@
 
 #include "heatmap.hpp"
 
-double abs(double n) {return (n < 0 ? -n : n);}
-
 int index_of_min(std::vector<double> d) {
   if (d.size() == 0) return -1;
   int retval = 0;
@@ -26,10 +24,10 @@ std::vector<HeatmapRow> EmptyMatrix(int w, int h) {
 }
 
 Heatmap::Heatmap(std::vector<HeatmapRow> &values) {
-  
+
   Values = values;
   if (values.size() == 0) return;
-  
+
   /*
    * sanity check row lengths for heatmaps with at least one row
    */
@@ -37,7 +35,7 @@ Heatmap::Heatmap(std::vector<HeatmapRow> &values) {
   for (int n = 0; n < values.size(); ++n) {
     if (values[n].size() != h) throw std::invalid_argument("all heatmap rows must be of the same length");
   }
-  
+
 }
 
 /*
@@ -61,15 +59,15 @@ double Heatmap::RowDistance(int i, int j) const {
   int w = Width();
   int h = Height();
   double retval = 0.0;
-  
+
   if (i >= w) throw std::invalid_argument("cannot compute row distance: left index out of range");
   if (j >= w) throw std::invalid_argument("cannot compute row distance: right index out of range");
 
   for (int n = 0; n < h; ++n) {
-    retval += abs(Values[i][n] - Values[j][n]);
+      retval += std::abs(Values[i][n] - Values[j][n]);
   }
   return retval;
-  
+
 }
 
 /*
@@ -81,15 +79,15 @@ double Heatmap::ColDistance(int i, int j) const {
   int w = Width();
   int h = Height();
   double retval = 0.0;
-  
+
   if (i >= h) throw std::invalid_argument("cannot compute col distance: left index out of range");
   if (j >= h) throw std::invalid_argument("cannot compute col distance: right index out of range");
 
   for (int n = 0; n < w; ++n) {
-    retval += abs(Values[n][i] - Values[n][j]);
+      retval += std::abs(Values[n][i] - Values[n][j]);
   }
   return retval;
-  
+
 }
 
 typedef std::function<double(const Heatmap &, int, int)> distance_function;
@@ -106,7 +104,7 @@ private:
     int _ei = Indices[i][Indices[i].size() - 1];
     int _bj = Indices[j][0];
     int _ej = Indices[j][Indices[j].size() - 1];
-    
+
     std::vector<double> dists = {
       df(H, _ei, _bj),
       df(H, _ei, _ej),
@@ -115,7 +113,7 @@ private:
     };
 
     return index_of_min(dists);
-    
+
   }
 
   explicit ClusterSet(const Heatmap &_H, int l, distance_function _df) : H(_H) {
@@ -128,15 +126,15 @@ private:
 
   static double coldist(const Heatmap &H, int i, int j) {return H.ColDistance(i, j);};
   static double rowdist(const Heatmap &H, int i, int j) {return H.RowDistance(i, j);};
-  
+
 public:
   std::vector<clusterlist> Indices;
   Heatmap H;
 
   int Length() const {return Indices.size();}
-  
+
   void Merge(int i, int j) {
-    
+
     if (i >= Indices.size()) throw std::invalid_argument("cannot merge clusters: left index is out of range");
     if (j >= Indices.size()) throw std::invalid_argument("cannot merge clusters: right index is out of range");
 
@@ -154,7 +152,7 @@ public:
       Indices.erase(Indices.begin() + i);
       break;
     }
-    
+
   }
 
   double ClusterDistance(int i, int j) const {
@@ -171,21 +169,21 @@ public:
       }
     }
     return retval;
-    
+
   }
 
   void docluster() {
-    
+
     /*
      *  main loop: continue until all clusters have been combined
      */
     while (Length() > 1) {
-      
+
       double cmin = ClusterDistance(0, 1);
       double d;
       int _mi = 0;
       int _mj = 1;
-      
+
       /*
        *  find closest two clusters
        */
@@ -199,14 +197,14 @@ public:
 	  }
 	}
       }
-      
+
       /*
        *  merge the closest two clusters
        */
       Merge(_mi, _mj);
-      
+
     }
-  
+
   }
 
   static ClusterSet FromRows(Heatmap &H) {
@@ -218,21 +216,21 @@ public:
     distance_function _coldist = coldist;
     return ClusterSet(H, H.Height(), _coldist);
   }
-  
+
 };
 
 std::vector<int> Heatmap::RowCluster() {
 
   std::vector<int> retval(Width());
-  
+
   if (Width() <= 2) {
     for (int i = 0; i < Width(); ++i) retval[i] = i;
     return retval;
   }
-  
+
   ClusterSet c = ClusterSet::FromRows(*this);
   std::vector<HeatmapRow> tmp = std::vector<HeatmapRow>(Values);
-  
+
   c.docluster();
   for (int i = 0; i < Width(); ++i) {
     int w = c.Indices[0][i];
@@ -243,13 +241,13 @@ std::vector<int> Heatmap::RowCluster() {
   }
 
   return retval;
-  
+
 }
 
 std::vector<int> Heatmap::ColCluster() {
 
   std::vector<int> retval(Height());
-  
+
   if (Height() <= 2) {
     for (int i = 0; i < Height(); ++i) retval[i] = i;
     return retval;
@@ -268,7 +266,7 @@ std::vector<int> Heatmap::ColCluster() {
   }
 
   return retval;
-  
+
 }
 
 int main(int argc, char **argv) {

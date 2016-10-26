@@ -14,11 +14,11 @@ public:
 
   std::vector<int> RowCluster();
   std::vector<int> ColCluster();
-  
+
   Heatmap(std::vector<HeatmapRow> &values);
 
   void print_matrix() const;
-  
+
 };
 
 std::vector<HeatmapRow> EmptyMatrix(int w, int h);
