@@ -9,7 +9,7 @@ import gzip
 
 from joblib import Parallel, delayed
 
-sys.path.append("../../common")
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from common import printr, printt
 
@@ -88,16 +88,16 @@ def get_parallel_jobs(args, assembly):
     else:
         m = MetadataWS(Datasets.all_human)
 
-    for exps, etype in [(m.chipseq_tfs_useful(args), "tf"),
-                        (m.chipseq_histones_useful(args), "histone"),
-                        (m.dnases_useful(args), "dnase")]:
+    for exps, etype in [(m.chipseq_tfs_useful(assembly, args), "tf"),
+                        (m.chipseq_histones_useful(assembly, args), "histone"),
+                        (m.dnases_useful(assembly, args), "dnase")]:
         for exp in exps:
             i += 1
             try:
                 beds = exp.bedFilters()
-                if not beds: print "missing", exp
+                if not beds:
+                    print "missing", exp
                 for bed in beds:
-                    if assembly != bed.assembly: continue
                     jobs.append({"exp": exp,
                                  "bed": bed,
                                  "i": i,
