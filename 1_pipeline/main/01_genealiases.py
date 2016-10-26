@@ -31,7 +31,8 @@ def get_gene_map(assembly="hg19"):
     return retval
 
 def ensembl_to_symbol(inFnp, outFnp, emap):
-    print("converting ensembl IDs to gene symbols")
+    print("rewriting", inFnp, ": converting ensembl IDs to gene symbols",
+          "and fixing cell line names")
     i = 0
     with gzip.open(inFnp, "r") as f:
         with gzip.open(outFnp, "w") as o:
@@ -72,34 +73,19 @@ def tryparse(coordinate):
             "start": int(v[0]),
             "end": int(v[1]) }
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-j', type=int, default=32)
-    parser.add_argument('--version', type=int, default=4)
-    parser.add_argument('--assembly', type=str, default="hg19")
-    args = parser.parse_args()
-    return args
-
-def main():
-
-    args = parse_args()
-    
-    infnp = paths.genelist
-    outfnp = paths.genelsj
+def processGeneList():
     emap = {}
-
-    i = -1
     skipped = 0
 
     print("getting gene coordinates...")
     hg19_genes = get_gene_map("hg19")
 
     print("processing genelist...")
-    with open(infnp, "r") as f:
-        with open(outfnp, "wb") as o:
-            for line in f:
-                i += 1
-                if i == 0: continue
+    with open(paths.genelist, "r") as f:
+        with open(paths.genelsj, "wb") as o:
+            for idx, line in enumerate(f):
+                if idx == 0:
+                    continue
                 line = line.strip().split("\t")
                 while len(line) < 19:
                     line.append("")
@@ -123,13 +109,41 @@ def main():
                     geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
+    print("wrote", paths.genelsj)
+    print("skipped", skipped)
+    with open(paths.geneJsonFnp, 'w') as f:
+        json.dump(emap, f)
+    print("wrote", paths.geneJsonFnp)
+    return emap
+
+def getGeneList():
+    if os.path.exists(paths.geneJsonFnp):
+        with open(paths.geneJsonFnp) as f:
+            emap = json.load(f)
+        print("loaded from", paths.geneJsonFnp)
+    else:
+        emap = processGeneList()
+    return emap
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-j', type=int, default=32)
+    parser.add_argument('--version', type=int, default=7)
+    parser.add_argument('--assembly', type=str, default="hg19")
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    emap = getGeneList()
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
 
     jobs = []
-    for i in range(0, len(fnps["origFnp"])):
+    for i in xrange(len(fnps["origFnp"])):
         jobs.append((fnps["origFnp"][i], fnps["rewriteFnp"][i], emap))
-    ret = Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(*job) for job in jobs
+    ret = Parallel(n_jobs = args.j)(delayed(ensembl_to_symbol)(*job) for job in jobs)
 
     print("wrote %d gene objects less %d skipped" % (i, skipped))
     return 0
