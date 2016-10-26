@@ -131,9 +131,9 @@ std::vector<int> Heatmap::ColCluster() {
   std::ostream& operator<<(std::ostream& s, const Heatmap& hm) {
     for (int i = 0; i < hm.Width(); ++i) {
       for (int j = 0; j < hm.Height(); ++j) {
-	std::cout << hm.values_[i][j] << "\t";
+	s << hm.values_[i][j] << "\t";
       }
-      std::cout << "\n";
+      s << "\n";
     }
     return s;
   }
