@@ -19,9 +19,10 @@ from constants import paths, chroms
 
 _gene_files = paths.gene_files
 
-def get_gene_map(assembly="hg19"):
+def get_gene_map(assembly):
     if assembly not in _gene_files:
-        print("WARNING: cannot get gene coordinates for assembly %s: no gene file found" % assembly)
+        print("WARNING: cannot get gene coordinates for assembly",
+              assembly, "-- no gene file found")
         return
     fnp, filetype = _gene_files[assembly]
     ggff = Genes(fnp, filetype)
@@ -73,16 +74,16 @@ def tryparse(coordinate):
             "start": int(v[0]),
             "end": int(v[1]) }
 
-def processGeneList():
+def processGeneList(assembly):
     emap = {}
     skipped = 0
 
-    print("getting gene coordinates...")
-    hg19_genes = get_gene_map("hg19")
+    print(assembly, "getting gene coordinates...")
+    gene_map = get_gene_map(assembly)
 
-    print("processing genelist...")
-    with open(paths.genelist, "r") as f:
-        with open(paths.genelsj, "wb") as o:
+    print(assembly, "processing genelist...")
+    with open(paths.genelist[assembly], "r") as f:
+        with open(paths.genelsj[assembly], "wb") as o:
             for idx, line in enumerate(f):
                 if idx == 0:
                     continue
@@ -105,25 +106,26 @@ def processGeneList():
                 if geneobj["ensemblid"] == "":
                     skipped += 1
                     continue
-                if geneobj["approved_symbol"] in hg19_genes:
-                    geneobj["coordinates"] = hg19_genes[geneobj["approved_symbol"]]
+                if geneobj["approved_symbol"] in gene_map:
+                    geneobj["coordinates"] = gene_map[geneobj["approved_symbol"]]
                     geneobj["position"] = tryparse(geneobj["coordinates"])
                 o.write(json.dumps(geneobj) + "\n")
-    print("wrote", paths.genelsj)
+    print("wrote", paths.genelsj[assembly])
     print("skipped", skipped)
-    with open(paths.geneJsonFnp, 'w') as f:
+    with open(paths.geneJsonFnp[assembly], 'w') as f:
         json.dump(emap, f)
-    print("wrote", paths.geneJsonFnp)
+    print("wrote", paths.geneJsonFnp[assembly])
     return emap
 
-def getGeneList():
-    if os.path.exists(paths.geneJsonFnp):
-        with open(paths.geneJsonFnp) as f:
+def getGeneList(assembly):
+    fnp = paths.geneJsonFnp[assembly]
+    if os.path.exists(fnp):
+        with open(fnp) as f:
             emap = json.load(f)
-        print("loaded from", paths.geneJsonFnp)
-    else:
-        emap = processGeneList()
-    return emap
+        print("loaded from", fnp)
+        return emap
+
+    return processGeneList(assembly)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -136,7 +138,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    emap = getGeneList()
+    emap = getGeneList("hg19")
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
 
