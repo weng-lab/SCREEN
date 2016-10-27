@@ -8,6 +8,7 @@ import argparse
 import fileinput, StringIO
 import gzip
 import redis
+import random
 
 from joblib import Parallel, delayed
 
@@ -63,33 +64,34 @@ def makeJobs(args, assembly):
     else:
         m = MetadataWS(Datasets.all_human)
 
-    i = 0
-    jobs = []
-
     allExps = [(m.chipseq_tfs_useful(assembly, args), "tf"),
                (m.chipseq_histones_useful(assembly, args), "histone"),
                (m.dnases_useful(assembly, args), "dnase")]
-    total = 0
-    for exps, etype in allExps:
-        total += len(exps)
-
+    allExpsIndiv = []
     for exps, etype in allExps:
         for exp in exps:
-            i += 1
-            try:
-                beds = exp.bedFilters(assembly)
-                if not beds:
-                    print("missing", exp)
-                for bed in beds:
-                    jobs.append({"exp": exp,
-                                 "bed": bed,
-                                 "i": i,
-                                 "total": total,
-                                 "assembly": assembly,
-                                 "etype": etype })
-            except Exception, e:
-                print(str(e))
-                print("bad exp:", exp)
+            allExpsIndiv.append((exp, etype))
+    random.shuffle(allExpsIndiv)
+    total = len(allExpsIndiv)
+
+    i = 0
+    jobs = []
+    for exp, etype in allExpsIndiv:
+        i += 1
+        try:
+            beds = exp.bedFilters(assembly)
+            if not beds:
+                print("missing", exp)
+            for bed in beds:
+                jobs.append({"exp": exp,
+                             "bed": bed,
+                             "i": i,
+                             "total": total,
+                             "assembly": assembly,
+                             "etype": etype })
+        except Exception, e:
+            print(str(e))
+            print("bad exp:", exp)
 
     return jobs
 
@@ -142,7 +144,7 @@ def computeIntersections(args, assembly, fnps):
     r = redis.StrictRedis()
     for k,v in tfImap.iteritems():
         r.set(paths.reVerStr + k, v)
-    print("wrote to redis")
+    printt("wrote to redis")
 
     bedsLsjFnp = fnps["bedLsjFnp"]
     with open(bedsLsjFnp, "wb") as f:
