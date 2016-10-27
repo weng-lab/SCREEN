@@ -26,9 +26,7 @@ def n_digits(n):
 def pad_space(n, d):
     digits = n_digits(n)
     if digits >= d: return str(n)
-    retval = str(n)
-    for i in range(0, d - digits): retval = " " + retval
-    return retval
+    return " " * (d - digits) + str(n)
 
 class ParallelCounter:
     def __init__(self, x = 0):
@@ -38,6 +36,10 @@ class ParallelCounter:
 
 def main():
     printt("a", 1, [])
+    print(pad_space(1, 0))
+    print(pad_space(1, 2))
+    print(pad_space(1, 5))
+    print(pad_space(1, 10))
 
 if __name__ == '__main__':
     sys.exit(main())
