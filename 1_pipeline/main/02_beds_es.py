@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys
 import json
 import psycopg2
@@ -26,18 +27,15 @@ def as_bed(re):
                       str(re["position"]["end"]),
                       re["accession"]])
 
-def lsj_to_beds(inFnp, outfnp):
-    output = []
+def lsj_to_beds(inFnp):
+    ret = []
     with gzip.open(inFnp, "r") as f:
         for idx, line in enumerate(f):
-            el = json.loads(line.strip())
-            output.append(as_bed(el))
+            re = json.loads(line.strip())
+            ret.append(as_bed(re))
             if idx % 100000 == 0:
-                printr("working with regelm %d (%s)" % (idx, inFnp))
-
-    with gzip.open(outfnp, "ab") as o:
-        for re in output:
-            o.write(re + "\n")
+                print("working with", idx, inFnp)
+    return ret
 
 def updateREjson(inFnp, tf_imap):
     if not os.path.exists(inFnp):
@@ -93,7 +91,7 @@ def makeJobs(args, assembly):
             try:
                 beds = exp.bedFilters(assembly)
                 if not beds:
-                    print "missing", exp
+                    print("missing", exp)
                 for bed in beds:
                     jobs.append({"exp": exp,
                                  "bed": bed,
@@ -102,8 +100,8 @@ def makeJobs(args, assembly):
                                  "assembly": assembly,
                                  "map": etype })
             except Exception, e:
-                print str(e)
-                print "bad exp:", exp
+                print(str(e))
+                print("bad exp:", exp)
 
     return jobs
 
@@ -144,10 +142,29 @@ def assembly_json(args, assembly, inFnps, bedfnp):
     Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, tf_imap) for inFnp in inFnps)
     return files
 
+def extractREbeds(args, fnps):
+    bedFnp = fnps["re_bed"]
+    inFnps = fnps["rewriteFnp"]
+    printt("generating RE bed file")
+
+    jobs = []
+    for inFnp in inFnps:
+        if not os.path.exists(inFnp):
+            continue
+        jobs.append(inFnp)
+
+    outputs = Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(j) for j in jobs)
+
+    with gzip.open(bedFnp, "w") as o:
+        for output in outputs:
+            for re in output:
+                o.write(re + "\n")
+    print("wrote", bedFnp)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--process', action="store_true", default=True)
-    parser.add_argument('-j', type=int, default=1)
+    parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--remake_bed', action="store_true", default=False)
     parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="hg19")
@@ -159,22 +176,17 @@ def main():
 
     files = []
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    inFnps = fnps["rewriteFnp"]
     bed_fnp = fnps["re_bed"]
     print(bed_fnp)
 
     if not os.path.exists(bed_fnp) or args.remake_bed:
-        printt("generating RE bed file")
-        with open(bed_fnp, "wb") as o:
-            pass # truncate existing file
-        for inFnp in inFnps:
-            if not os.path.exists(inFnp):
-                continue
-            lsj_to_beds(inFnp, bed_fnp)
-        print("\n")
+        extractREbeds(args, fnps)
+
+    bedFnp = fnps["re_bed"]
+    inFnps = fnps["rewriteFnp"]
 
     printt("intersecting TFs")
-    files += assembly_json(args, args.assembly, in_fnps, bed_fnp)
+    files += assembly_json(args, args.assembly, inFnps, bedFnp)
     with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
         for f in files:
             o.write(json.dumps(f) + "\n")
