@@ -119,7 +119,7 @@ def computeIntersections(args, assembly, fnps):
     results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
                                         for job in jobs)
 
-    prnit("\n")
+    print("\n")
     printt("merging intersections into hash...")
 
     tfImap = {}
