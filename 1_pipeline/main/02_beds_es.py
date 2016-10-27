@@ -85,7 +85,7 @@ def makeJobs(args, assembly):
                                  "i": i,
                                  "total": total,
                                  "assembly": assembly,
-                                 "map": etype })
+                                 "etype": etype })
             except Exception, e:
                 print(str(e))
                 print("bad exp:", exp)
@@ -97,14 +97,14 @@ def runIntersectJob(jobargs, bedfnp):
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     retval = getFileJson(exp, bed)
-    label = exp.label if jobargs["map"] != "dnase" else "dnase"
+    label = exp.label if jobargs["etype"] != "dnase" else "dnase"
     if not os.path.exists(bed.fnp()):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
         return (retval, None)
 
     if "hg19" == jobargs["assembly"]:
-        printr("(exp %d of %d) intersecting TF %s              "
-               % (jobargs["i"], jobargs["total"], label))
+        printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
+               "intersecting", jobargs["etype"], label)
         result = doIntersection(bed, bedfnp)
         if result is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
@@ -225,7 +225,7 @@ def main():
     if not os.path.exists(fnps["re_bed"]) or args.remakeBed:
         extractREbeds(args, fnps)
 
-    printt("intersecting TFs")
+    printt("intersecting TFs, Histones, and DNases")
     tfMap = computeIntersections(args, args.assembly, fnps)
 
     updateREfiles(fnps, tfMap)
