@@ -96,21 +96,21 @@ def runIntersectJob(jobargs, bedfnp):
     results = []
     exp = jobargs["exp"]
     bed = jobargs["bed"]
-    retval = getFileJson(exp, bed)
+    fileJson = getFileJson(exp, bed)
     label = exp.label if jobargs["etype"] != "dnase" else "dnase"
     if not os.path.exists(bed.fnp()):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
-        return (retval, None)
+        return (fileJson, None)
 
     if "hg19" == jobargs["assembly"]:
         printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
                "intersecting", jobargs["etype"], label)
-        result = doIntersection(bed, bedfnp)
-        if result is None:
+        accessions = doIntersection(bed, bedfnp)
+        if accessions is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
         else:
-            results.append((jobargs["etype"], label, bed.fileID, result))
-    return (retval, results)
+            results.append((jobargs["etype"], label, bed.fileID, accessions))
+    return (fileJson, accessions)
 
 def computeIntersections(args, assembly, fnps):
     bedFnp = fnps["re_bed"]
@@ -124,17 +124,17 @@ def computeIntersections(args, assembly, fnps):
 
     tfImap = {}
     files = []
-    for rfiles, intersections in results:
-        if not intersections:
+    for fileJson, accessions in results:
+        if not accessions:
             continue
-        for etype, label, bed, accs in intersections:
+        for etype, label, bed, accs in accessions:
             for acc in accs:
                 if acc not in tfImap:
                     tfImap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
                 if label not in tfImap[acc][etype]:
                     tfImap[acc][etype][label] = []
                 tfImap[acc][etype][label].append(bed)
-        files += rfiles
+        files += fileJson
 
     printt("completed hash merge")
 
