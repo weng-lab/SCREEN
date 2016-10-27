@@ -109,7 +109,7 @@ def runIntersectJob(jobargs, bedfnp):
         if result is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
         else:
-            results.append((jobargs["map"], label, bed.fileID, result))
+            results.append((jobargs["etype"], label, bed.fileID, result))
     return (retval, results)
 
 def computeIntersections(args, assembly, fnps):
@@ -119,24 +119,27 @@ def computeIntersections(args, assembly, fnps):
     results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
                                         for job in jobs)
 
+    prnit("\n")
+    printt("merging intersections into hash...")
+
     tfImap = {}
     files = []
     for rfiles, intersections in results:
         if not intersections:
             continue
-        for key, label, bed, accs in intersections:
+        for etype, label, bed, accs in intersections:
             for acc in accs:
                 if acc not in tfImap:
                     tfImap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
-                if label not in tfImap[acc][key]:
-                    tfImap[acc][key][label] = []
-                tfImap[acc][key][label].append(bed)
+                if label not in tfImap[acc][etype]:
+                    tfImap[acc][etype][label] = []
+                tfImap[acc][etype][label].append(bed)
         files += rfiles
 
-    printt("completed intersections")
+    printt("completed hash merge")
 
     outFnp = fnps["accIntersections"]
-    with ope(outFnp, 'w') as f:
+    with open(outFnp, 'w') as f:
         json.dump(tfMap, f)
     printt("wrote", outFnp)
 
