@@ -143,7 +143,7 @@ def computeIntersections(args, assembly, fnps):
         json.dump(tfMap, f)
     printt("wrote", outFnp)
 
-    bedsLsjFnp = os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj")
+    bedsLsjFnp = fnps["bedLsjFnp"]
     with open(bedsLsjFnp, "wb") as o:
         for f in files:
             o.write(json.dumps(f) + "\n")
