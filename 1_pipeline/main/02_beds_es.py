@@ -19,8 +19,6 @@ from utils import Utils, printWroteNumLines
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 
-_alines = []
-
 def as_bed(re):
     return "\t".join([re["position"]["chrom"],
                       str(re["position"]["start"]),
@@ -128,7 +126,7 @@ def assembly_json(args, assembly, inFnps, bedfnp):
     tf_imap = {}
     files = []
     jobs = makeJobs(args, assembly)
-    results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(_args, bedfnp) for _args in jobs)
+    results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedfnp) for job in jobs)
     for rfiles, intersections in results:
         if not intersections:
             continue
@@ -142,9 +140,7 @@ def assembly_json(args, assembly, inFnps, bedfnp):
     Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, tf_imap) for inFnp in inFnps)
     return files
 
-def extractREbeds(args, fnps):
-    bedFnp = fnps["re_bed"]
-    inFnps = fnps["rewriteFnp"]
+def extractREbeds(args, bedFnp, inFnps):
     printt("generating RE bed file")
 
     jobs = []
@@ -174,24 +170,22 @@ def parse_args():
 def main():
     args = parse_args()
 
-    files = []
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    bed_fnp = fnps["re_bed"]
-    print(bed_fnp)
-
-    if not os.path.exists(bed_fnp) or args.remake_bed:
-        extractREbeds(args, fnps)
-
     bedFnp = fnps["re_bed"]
     inFnps = fnps["rewriteFnp"]
 
+    if not os.path.exists(bedFnp) or args.remake_bed:
+        extractREbeds(args, bedFnp, inFnps)
+
     printt("intersecting TFs")
-    files += assembly_json(args, args.assembly, inFnps, bedFnp)
-    with open(os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"), "wb") as o:
+    files = assembly_json(args, args.assembly, inFnps, bedFnp)
+
+    bedsLsjFnp = os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj")
+    with open(bedsLsjFnp, "wb") as o:
         for f in files:
             o.write(json.dumps(f) + "\n")
     print("\n")
-    printt("wrote %s" % os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj"))
+    printt("wrote", bedsLsjFnp)
     return 0
 
 if __name__ == '__main__':

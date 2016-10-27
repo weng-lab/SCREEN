@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 import sys
 import time
@@ -7,8 +9,8 @@ def printr(s):
     print(s, end="\r")
     sys.stdout.flush()
 
-def printt(s):
-    print("%s %s" % (time.strftime("%m/%d/%Y %H:%M:%S"), s))
+def printt(*args):
+    print(time.strftime("%m/%d/%Y %H:%M:%S") + "\t", *args)
 
 def n_digits(n):
     return 1 if n == 0 else int(math.floor(math.log10(n)) + 1)
@@ -25,3 +27,9 @@ class ParallelCounter:
         self.x = x
     def inc(self):
         self.x += 1
+
+def main():
+    printt("a", 1, [])
+
+if __name__ == '__main__':
+    sys.exit(main())
