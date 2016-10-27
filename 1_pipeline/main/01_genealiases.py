@@ -148,7 +148,7 @@ def main():
 
     jobs = []
     for i in xrange(len(fnps["origFnp"])):
-        jobs.append((fnps["origFnp"][i], fnps["rewriteFnp"][i], emap))
+        jobs.append((fnps["origFnp"][i], fnps["rewriteGeneFnp"][i], emap))
     ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
 
     return 0
