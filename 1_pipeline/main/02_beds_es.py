@@ -123,7 +123,7 @@ def computeIntersections(args, assembly, fnps):
     printt("merging intersections into hash...")
 
     tfImap = {}
-    files = []
+    fileJsons = []
     for fileJson, accessions in results:
         if not accessions:
             continue
@@ -134,7 +134,7 @@ def computeIntersections(args, assembly, fnps):
                 if label not in tfImap[acc][etype]:
                     tfImap[acc][etype][label] = []
                 tfImap[acc][etype][label].append(bed)
-        files += fileJson
+        fileJsons += fileJson
 
     printt("completed hash merge")
 
@@ -144,9 +144,9 @@ def computeIntersections(args, assembly, fnps):
     printt("wrote", outFnp)
 
     bedsLsjFnp = fnps["bedLsjFnp"]
-    with open(bedsLsjFnp, "wb") as o:
-        for f in files:
-            o.write(json.dumps(f) + "\n")
+    with open(bedsLsjFnp, "wb") as f:
+        for fj in fileJsons:
+            f.write(json.dumps(fj) + "\n")
     printt("wrote", bedsLsjFnp)
 
     return tfMap
