@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import os
 import sys
 import time
 import math
 
-def printr(s):
+def screenWidth():
+    # http://stackoverflow.com/a/943921
+    rows, columns = os.popen('stty size', 'r').read().split()
+    return int(columns)
+
+def printr(*args):
+    s = " ".join([str(x) for x in args])
+    s += " " * (screenWidth() - len(s))
     print(s, end="\r")
     sys.stdout.flush()
 
