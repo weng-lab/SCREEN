@@ -181,29 +181,28 @@ def updateREjson(inFnp, outFnp):
     with gzip.open(inFnp, "r") as inF:
         with gzip.open(outFnp, "w") as outF:
             for idx, line in enumerate(inF):
-                if 0 == idx % 5000:
+                if 0 == idx % 10000:
                     print(inFnp, idx + 1)
                 re = json.loads(line)
-                #re["accession"] = unicode(re["accession"])
 
+                acc = re["accession"]
                 try:
-                    acc = re["accession"]
                     info = r.get(paths.reVerStr + acc)
 
                     if info:
                         re["peak_intersections"] = info
                     else:
                         re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
-                    #print("no intersections found for", re["accession"])
+                        print("no intersections found for", re["accession"])
                 except:
                     print("error with", acc)
-                    print("bad", re)
                     continue
 
                 try:
                     outF.write(json.dumps(re) + "\n")
                 except:
                     print("could not write:", re)
+
     print("wrote", outFnp)
 
 def updateREfiles(args, fnps):
