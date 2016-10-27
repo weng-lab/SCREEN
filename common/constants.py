@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
 import sys
 import os
 
@@ -19,19 +23,22 @@ chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
 
-    def ins_chr(fnp):
-        def retval(_chr):
-            parts = fnp.split(".")
-            return "%s.%s.%s" % (parts[0], _chr, ".".join(parts[1:]))
-        return retval
+    def insChr(fnp):
+        def addChr(chrom):
+            toks = fnp.split(".")
+            return "%s.%s.%s" % (toks[0], chrom, ".".join(toks[1:]))
+        return addChr
 
-    re_json_vers = { 6: {"origFnp": ins_chr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
+    re_json_vers = { 6: {"origFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
+                         "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
                          "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
                          "index": "regulatory_elements_6"},
-                     7: {"origFnp": ins_chr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.json._tmp.gz")),
+                     7: {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+                         "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
+                         "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
                          "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
+                         "accIntersections": os.path.join(v4d, "ver7/accessionsAndIntersections.json"),
+                         "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
                          "index": "regulatory_elements_7"}
                      }
 
@@ -62,3 +69,13 @@ class paths:
     re_json_index = "regulatory_elements_7"
 
     cellTypeTissueTable = "cellTypesAndTissues"
+
+def main():
+    fnps = paths.get_paths(7, chroms["hg19"])
+
+    inFnps = fnps["rewriteGeneFnp"]
+    for fnp in inFnps:
+        print(fnp)
+
+if __name__ == '__main__':
+    sys.exit(main())

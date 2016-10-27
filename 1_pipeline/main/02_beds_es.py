@@ -35,23 +35,6 @@ def lsj_to_beds(inFnp):
                 print("working with", idx, inFnp)
     return ret
 
-def updateREjson(inFnp, tf_imap):
-    if not os.path.exists(inFnp):
-        return
-    outFnp = inFnp.replace(".gz", "._tmp.gz")
-    with gzip.open(inFnp, "r") as f:
-        with gzip.open(outFnp, "wb") as o:
-            for idx, line in enumerate(f):
-                if idx % 100000 == 0: printr("working with RE %d" % (idx + 1))
-                re = json.loads(line)
-                re["accession"] = unicode(re["accession"])
-                if re["accession"] in tf_imap:
-                    re["peak_intersections"] = tf_imap[re["accession"]]
-                else:
-                    re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
-                o.write(json.dumps(re) + "\n")
-    print("wrote", outFnp)
-
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
@@ -114,7 +97,8 @@ def runIntersectJob(jobargs, bedfnp):
         return (retval, None)
 
     if "hg19" == jobargs["assembly"]:
-        printr("intersecting TF %s (exp %d of %d)" % (label, jobargs["i"], jobargs["total"]))
+        printr("(exp %d of %d) intersecting TF %s              "
+               % (jobargs["i"], jobargs["total"], label))
         result = doIntersection(bed, bedfnp)
         if result is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
@@ -122,26 +106,46 @@ def runIntersectJob(jobargs, bedfnp):
             results.append((jobargs["map"], label, bed.fileID, result))
     return (retval, results)
 
-def assembly_json(args, assembly, inFnps, bedfnp):
-    tf_imap = {}
-    files = []
+def computeIntersections(args, assembly, fnps):
+    bedFnp = fnps["re_bed"]
+
     jobs = makeJobs(args, assembly)
-    results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedfnp) for job in jobs)
+    results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
+                                        for job in jobs)
+
+    tfImap = {}
+    files = []
     for rfiles, intersections in results:
         if not intersections:
             continue
         for key, label, bed, accs in intersections:
             for acc in accs:
-                if acc not in tf_imap: tf_imap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
-                if label not in tf_imap[acc][key]: tf_imap[acc][key][label] = []
-                tf_imap[acc][key][label].append(bed)
+                if acc not in tfImap:
+                    tfImap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
+                if label not in tfImap[acc][key]:
+                    tfImap[acc][key][label] = []
+                tfImap[acc][key][label].append(bed)
         files += rfiles
-    printt("\n\nupdating RE JSON")
-    Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, tf_imap) for inFnp in inFnps)
-    return files
 
-def extractREbeds(args, bedFnp, inFnps):
+    printt("completed intersections")
+
+    outFnp = fnps["accIntersections"]
+    with ope(outFnp, 'w') as f:
+        json.dump(tfMap, f)
+    printt("wrote", outFnp)
+
+    bedsLsjFnp = os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj")
+    with open(bedsLsjFnp, "wb") as o:
+        for f in files:
+            o.write(json.dumps(f) + "\n")
+    printt("wrote", bedsLsjFnp)
+
+    return tfMap
+
+def extractREbeds(args, fnps):
     printt("generating RE bed file")
+    bedFnp = fnps["re_bed"]
+    inFnps = fnps["rewriteGeneFnp"]
 
     jobs = []
     for inFnp in inFnps:
@@ -157,11 +161,48 @@ def extractREbeds(args, bedFnp, inFnps):
                 o.write(re + "\n")
     print("wrote", bedFnp)
 
+def updateREjson(tfImap, inFnp, outFnp):
+    if not os.path.exists(inFnp):
+        return
+    outFnp = inFnp.replace(".gz", "._tmp.gz")
+    with gzip.open(inFnp, "r") as inF:
+        with gzip.open(outFnp, "w") as outF:
+            for idx, line in enumerate(inF):
+                if 0 == idx % 5000:
+                    print(inFnp, idx + 1)
+                re = json.loads(line)
+                re["accession"] = unicode(re["accession"])
+                if re["accession"] in tfImap:
+                    re["peak_intersections"] = tfImap[re["accession"]]
+                else:
+                    re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
+                outF.write(json.dumps(re) + "\n")
+    print("wrote", outFnp)
+
+def updateREfiles(fnps, tfMap):
+    printt("updating RE JSON")
+
+    if not tfMap:
+        fnp = fnps["accIntersections"]
+        if os.path.exists(fnp):
+            with open(fnp) as f:
+                tmap = json.load(f)
+            print("loaded from", fnp)
+        else:
+            raise Exception("missing", fnp)
+
+    inFnps = fnps["rewriteGeneFnp"]
+    outFnps = fnps["rewriteGenePeaksFnp"]
+
+    Parallel(n_jobs = args.j)(delayed(updateREjson)(tfImap, inFnp, outFnp)
+                              for (inFnp, outFnp) in zip(inFnps, outFnps))
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('-j', type=int, default=32)
-    parser.add_argument('--remake_bed', action="store_true", default=False)
+    parser.add_argument('--remakeBed', action="store_true", default=False)
+    parser.add_argument('--updateOnly', action="store_true", default=False)
     parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="hg19")
     args = parser.parse_args()
@@ -171,21 +212,18 @@ def main():
     args = parse_args()
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    bedFnp = fnps["re_bed"]
-    inFnps = fnps["rewriteFnp"]
 
-    if not os.path.exists(bedFnp) or args.remake_bed:
-        extractREbeds(args, bedFnp, inFnps)
+    if args.updateOnly:
+        return updateREfiles(fnps, None)
+
+    if not os.path.exists(fnps["re_bed"]) or args.remakeBed:
+        extractREbeds(args, fnps)
 
     printt("intersecting TFs")
-    files = assembly_json(args, args.assembly, inFnps, bedFnp)
+    tfMap = computeIntersections(args, args.assembly, fnps)
 
-    bedsLsjFnp = os.path.join(Dirs.encyclopedia, "Version-4", "beds.lsj")
-    with open(bedsLsjFnp, "wb") as o:
-        for f in files:
-            o.write(json.dumps(f) + "\n")
-    print("\n")
-    printt("wrote", bedsLsjFnp)
+    updateREfiles(fnps, tfMap)
+
     return 0
 
 if __name__ == '__main__':
