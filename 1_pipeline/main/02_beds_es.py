@@ -141,7 +141,7 @@ def computeIntersections(args, assembly, fnps):
     printt("completed hash merge")
 
     outFnp = fnps["accIntersections"]
-    with open(outFnp, 'w') as f:
+    with gzip.open(outFnp, 'w') as f:
         json.dump(tfImap, f)
     printt("wrote", outFnp)
 
@@ -174,6 +174,7 @@ def extractREbeds(args, fnps):
 
 def updateREjson(tfImap, inFnp, outFnp):
     if not os.path.exists(inFnp):
+        print("missing", inFnp)
         return
 
     with gzip.open(inFnp, "r") as inF:
@@ -183,7 +184,13 @@ def updateREjson(tfImap, inFnp, outFnp):
                     print(inFnp, idx + 1)
                 re = json.loads(line)
                 re["accession"] = unicode(re["accession"])
-                re["peak_intersections"] = tfImap[re["accession"]]
+
+                if re["accession"] in tfImap:
+                    re["peak_intersections"] = tfImap[re["accession"]]
+                else:
+                    re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
+                    print("no intersections found for", re["accession"])
+
                 outF.write(json.dumps(re) + "\n")
     print("wrote", outFnp)
 
@@ -193,7 +200,8 @@ def updateREfiles(args, fnps, tfImap):
     if not tfImap:
         fnp = fnps["accIntersections"]
         if os.path.exists(fnp):
-            with open(fnp) as f:
+            printt("loading", fnp)
+            with gzip.open(fnp) as f:
                 tmap = json.load(f)
             print("loaded from", fnp)
         else:
@@ -202,6 +210,7 @@ def updateREfiles(args, fnps, tfImap):
     inFnps = fnps["rewriteGeneFnp"]
     outFnps = fnps["rewriteGenePeaksFnp"]
 
+    printt("running RE file rewrite....")
     Parallel(n_jobs = args.j)(delayed(updateREjson)(tfImap, inFnp, outFnp)
                               for (inFnp, outFnp) in zip(inFnps, outFnps))
 
