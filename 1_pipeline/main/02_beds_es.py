@@ -93,7 +93,6 @@ def makeJobs(args, assembly):
     return jobs
 
 def runIntersectJob(jobargs, bedfnp):
-    results = []
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     fileJson = getFileJson(exp, bed)
@@ -102,6 +101,7 @@ def runIntersectJob(jobargs, bedfnp):
         print("warning: missing bed %s; cannot intersect" % bed.fnp())
         return (fileJson, None)
 
+    ret = []
     if "hg19" == jobargs["assembly"]:
         printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
                "intersecting", jobargs["etype"], label)
@@ -109,8 +109,8 @@ def runIntersectJob(jobargs, bedfnp):
         if accessions is None:
             print("warning: unable to intersect REs with bed %s" % bed.fnp())
         else:
-            results.append((jobargs["etype"], label, bed.fileID, accessions))
-    return (fileJson, accessions)
+            ret.append((jobargs["etype"], label, bed.fileID, accessions))
+    return (fileJson, ret)
 
 def computeIntersections(args, assembly, fnps):
     bedFnp = fnps["re_bed"]
@@ -140,7 +140,7 @@ def computeIntersections(args, assembly, fnps):
 
     outFnp = fnps["accIntersections"]
     with open(outFnp, 'w') as f:
-        json.dump(tfMap, f)
+        json.dump(tfImap, f)
     printt("wrote", outFnp)
 
     bedsLsjFnp = fnps["bedLsjFnp"]
@@ -149,7 +149,7 @@ def computeIntersections(args, assembly, fnps):
             f.write(json.dumps(fj) + "\n")
     printt("wrote", bedsLsjFnp)
 
-    return tfMap
+    return tfImap
 
 def extractREbeds(args, fnps):
     printt("generating RE bed file")
@@ -188,10 +188,10 @@ def updateREjson(tfImap, inFnp, outFnp):
                 outF.write(json.dumps(re) + "\n")
     print("wrote", outFnp)
 
-def updateREfiles(fnps, tfMap):
+def updateREfiles(fnps, tfImap):
     printt("updating RE JSON")
 
-    if not tfMap:
+    if not tfImap:
         fnp = fnps["accIntersections"]
         if os.path.exists(fnp):
             with open(fnp) as f:
@@ -229,9 +229,9 @@ def main():
         extractREbeds(args, fnps)
 
     printt("intersecting TFs, Histones, and DNases")
-    tfMap = computeIntersections(args, args.assembly, fnps)
+    tfImap = computeIntersections(args, args.assembly, fnps)
 
-    updateREfiles(fnps, tfMap)
+    updateREfiles(fnps, tfImap)
 
     return 0
 
