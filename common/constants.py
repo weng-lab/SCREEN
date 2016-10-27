@@ -37,7 +37,6 @@ class paths:
                          "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
                          "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
                          "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
-                         "accIntersections": os.path.join(v4d, "ver7/accessionsAndIntersections.json.gz"),
                          "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
                          "index": "regulatory_elements_7"}
                      }
@@ -66,7 +65,9 @@ class paths:
                 ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
 
-    re_json_index = "regulatory_elements_7"
+    reVer = 7
+    reVerStr = "reVer" + str(reVer)
+    re_json_index = "regulatory_elements_" + str(reVer)
 
     cellTypeTissueTable = "cellTypesAndTissues"
 
@@ -79,3 +80,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
