@@ -100,7 +100,7 @@ def runIntersectJob(jobargs, bedfnp):
     fileJson = getFileJson(exp, bed)
     label = exp.label if jobargs["etype"] != "dnase" else "dnase"
     if not os.path.exists(bed.fnp()):
-        print("warning: missing bed" bed.fnp(), "-- cannot intersect" % bed.fnp())
+        print("warning: missing bed", bed.fnp(), "-- cannot intersect" % bed.fnp())
         return (fileJson, None)
 
     ret = []
@@ -175,7 +175,7 @@ def extractREbeds(args, fnps):
 def updateREjson(tfImap, inFnp, outFnp):
     if not os.path.exists(inFnp):
         return
-    outFnp = inFnp.replace(".gz", "._tmp.gz")
+
     with gzip.open(inFnp, "r") as inF:
         with gzip.open(outFnp, "w") as outF:
             for idx, line in enumerate(inF):
@@ -183,14 +183,11 @@ def updateREjson(tfImap, inFnp, outFnp):
                     print(inFnp, idx + 1)
                 re = json.loads(line)
                 re["accession"] = unicode(re["accession"])
-                if re["accession"] in tfImap:
-                    re["peak_intersections"] = tfImap[re["accession"]]
-                else:
-                    re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
+                re["peak_intersections"] = tfImap[re["accession"]]
                 outF.write(json.dumps(re) + "\n")
     print("wrote", outFnp)
 
-def updateREfiles(fnps, tfImap):
+def updateREfiles(args, fnps, tfImap):
     printt("updating RE JSON")
 
     if not tfImap:
@@ -225,7 +222,7 @@ def main():
     fnps = paths.get_paths(args.version, chroms[args.assembly])
 
     if args.updateOnly:
-        return updateREfiles(fnps, None)
+        return updateREfiles(args, fnps, None)
 
     if not os.path.exists(fnps["re_bed"]) or args.remakeBed:
         extractREbeds(args, fnps)
@@ -233,7 +230,7 @@ def main():
     printt("intersecting TFs, Histones, and DNases")
     tfImap = computeIntersections(args, args.assembly, fnps)
 
-    updateREfiles(fnps, tfImap)
+    updateREfiles(args, fnps, tfImap)
 
     return 0
 
