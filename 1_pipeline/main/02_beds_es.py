@@ -64,9 +64,15 @@ def makeJobs(args, assembly):
 
     i = 0
     jobs = []
-    for exps, etype in [(m.chipseq_tfs_useful(assembly, args), "tf"),
-                        (m.chipseq_histones_useful(assembly, args), "histone"),
-                        (m.dnases_useful(assembly, args), "dnase")]:
+
+    allExps = [(m.chipseq_tfs_useful(assembly, args), "tf"),
+               (m.chipseq_histones_useful(assembly, args), "histone"),
+               (m.dnases_useful(assembly, args), "dnase")]
+    total = 0
+    for exps, etype in allExps:
+        total += len(exps)
+
+    for exps, etype in allExps:
         for exp in exps:
             i += 1
             try:
@@ -77,7 +83,7 @@ def makeJobs(args, assembly):
                     jobs.append({"exp": exp,
                                  "bed": bed,
                                  "i": i,
-                                 "total": len(exps),
+                                 "total": total,
                                  "assembly": assembly,
                                  "map": etype })
             except Exception, e:
