@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import random
 import os, sys
 import json
 import psycopg2
@@ -90,6 +91,7 @@ def makeJobs(args, assembly):
                 print(str(e))
                 print("bad exp:", exp)
 
+    random.shuffle(jobs)
     return jobs
 
 def runIntersectJob(jobargs, bedfnp):
@@ -98,7 +100,7 @@ def runIntersectJob(jobargs, bedfnp):
     fileJson = getFileJson(exp, bed)
     label = exp.label if jobargs["etype"] != "dnase" else "dnase"
     if not os.path.exists(bed.fnp()):
-        print("warning: missing bed %s; cannot intersect" % bed.fnp())
+        print("warning: missing bed" bed.fnp(), "-- cannot intersect" % bed.fnp())
         return (fileJson, None)
 
     ret = []
@@ -127,13 +129,13 @@ def computeIntersections(args, assembly, fnps):
     for fileJson, accessions in results:
         if not accessions:
             continue
-        for etype, label, bed, accs in accessions:
+        for etype, label, fileID, accs in accessions:
             for acc in accs:
                 if acc not in tfImap:
                     tfImap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
                 if label not in tfImap[acc][etype]:
                     tfImap[acc][etype][label] = []
-                tfImap[acc][etype][label].append(bed)
+                tfImap[acc][etype][label].append(fileID)
         fileJsons += fileJson
 
     printt("completed hash merge")
