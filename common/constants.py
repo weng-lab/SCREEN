@@ -44,14 +44,14 @@ class paths:
 
     @staticmethod
     def get_paths(version, chrs = None):
-        retval = {}
-        if version not in paths.re_json_vers: return retval
-        for key, value in paths.re_json_vers[version].iteritems():
-            if not hasattr(value, "__call__"):
-                retval[key] = value
+        ret = {}
+        if version not in paths.re_json_vers: return ret
+        for k, v in paths.re_json_vers[version].iteritems():
+            if not hasattr(v, "__call__"):
+                ret[k] = v
             else:
-                retval[key] = [value(chrom) for chrom in chrs]
-        return retval
+                ret[k] = [v(chrom) for chrom in chrs]
+        return ret
 
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
