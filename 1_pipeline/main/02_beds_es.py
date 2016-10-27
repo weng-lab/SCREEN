@@ -55,7 +55,7 @@ def doIntersection(bed, refnp):
         print("failed to run", " ".join(cmds))
         return None
 
-    return [p.split("\t")[3] for p in peaks] # return accessions?
+    return [p.rstrip().split("\t")[3] for p in peaks] # return accessions?
 
 def makeJobs(args, assembly):
     if "mm10" == assembly:
