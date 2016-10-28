@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
 import sys
 import os
 
@@ -19,54 +23,61 @@ chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
 
-    def ins_chr(fnp):
-        def retval(_chr):
-            parts = fnp.split(".")
-            return "%s.%s.%s" % (parts[0], _chr, ".".join(parts[1:]))
-        return retval
-    
-    re_json_vers = { 2 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
-                          "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V2.json.gz")],
-                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V2.bed.gz"),
-                          "index" : "regulatory_elements_2"},
-                     3 : {"origFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.json.gz")],
-                          "rewriteFnp" : [os.path.join(v4d, "regulatory-element-registry-hg19.V3.mod.json.gz")],
-                          "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V3.bed.gz"),
-                          "index" : "regulatory_elements_3"},
-                     4: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V4.mod.json.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V4.bed.gz"),
-                         "index": "regulatory_elements_4"},
-                     5: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V5.mod.json.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V5.bed.gz"),
-                         "index": "regulatory_elements_5"},
-                     6: {"origFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V6.json.gz")),
-                         "rewriteFnp": ins_chr(os.path.join(v4d, "regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
-                         "re_bed": os.path.join(v4d, "regulatory-element-registry-hg19.V6.bed.gz"),
-                         "index": "regulatory_elements_6"} }
+    def insChr(fnp):
+        def addChr(chrom):
+            toks = fnp.split(".")
+            return "%s.%s.%s" % (toks[0], chrom, ".".join(toks[1:]))
+        return addChr
 
+    re_json_vers = { 6: {"origFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
+                         "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
+                         "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
+                         "index": "regulatory_elements_6"},
+                     7: {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+                         "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
+                         "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
+                         "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
+                         "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
+                         "index": "regulatory_elements_7"}
+                     }
 
     @staticmethod
     def get_paths(version, chrs = None):
-        retval = {}
-        if version not in paths.re_json_vers: return retval
-        for key, value in paths.re_json_vers[version].iteritems():
-            if not hasattr(value, "__call__"):
-                retval[key] = value
+        ret = {}
+        if version not in paths.re_json_vers: return ret
+        for k, v in paths.re_json_vers[version].iteritems():
+            if not hasattr(v, "__call__"):
+                ret[k] = v
             else:
-                retval[key] = [value(chrom) for chrom in chrs]
-        return retval
-    
+                ret[k] = [v(chrom) for chrom in chrs]
+        return ret
+
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
-    genelist = os.path.join(v4d, "genelist.tsv")
-    genelsj = os.path.join(v4d, "genelist.lsj")
+
+    genelist = {"hg19" : os.path.join(v4d, "genelist.hg19.tsv")}
+    genelsj = {"hg19" : os.path.join(v4d, "genelist.hg19.lsj")}
+    geneJsonFnp = {"hg19" : os.path.join(v4d, "genelist.hg19.json")}
+
     genedb = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
     genedb_lsj = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
     snp_csvs = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
                 ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
-    re_json_index = "regulatory_elements_6"
+
+    reVer = 7
+    reVerStr = "reVer" + str(reVer)
+    re_json_index = "regulatory_elements_" + str(reVer)
 
     cellTypeTissueTable = "cellTypesAndTissues"
+
+def main():
+    fnps = paths.get_paths(7, chroms["hg19"])
+
+    inFnps = fnps["rewriteGeneFnp"]
+    for fnp in inFnps:
+        print(fnp)
+
+if __name__ == '__main__':
+    sys.exit(main())
+
