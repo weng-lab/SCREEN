@@ -34,14 +34,6 @@ export const maintabs = {
 		var ExpressionHeatmap = expression_heatmap_connector(Heatmap);
 		return <ExpressionHeatmap store={store} key={key} />;
 	    }
-	},
-	comparison: {
-	    title: "Comparison",
-	    visible: true,
-	    render: (store, key) => {
-		var VennDiagram = main_venn_connector(store)(MainVennDiagram);
-		return <VennDiagram store={store} key={key} />
-	    }
 	}
     }
 };

@@ -19,13 +19,6 @@ export const UPDATE_DETAIL = 'UPDATE_DETAIL';
 
 export const SELECT_TAB = 'SELECT_TAB';
 
-export const SET_VENN_CELL_LINES = 'SET_VENN_CELL_LINES';
-export const SET_VENN_SELECTIONS = 'SET_VENN_SELECTIONS';
-export const UPDATE_VENN = 'UPDATE_VENN';
-export const VENN_LOADING = 'VENN_LOADING';
-export const VENN_DONE = 'VENN_DONE';
-export const VENN_ERROR = 'VENN_ERROR';
-
 export const SET_ACCLIST = 'SET_ACCLIST';
 
 export let root_default_state = {
@@ -54,22 +47,11 @@ export let root_default_state = {
 	},
 	data: {}
     },
-    main_tabs: maintabs,
-    venn: {
-	overlaps: [],
-	sets: [],
-	cell_line: "",
-	cell_lines: [],
-	rank: 10000,
-	rank_type: "ranks.dnase.%s.rank"
-    }
+    main_tabs: maintabs
 };
 
 export const main_tab_connector = MainTabsConnector((state) => (state.main_tabs),
                                                     (dispatch) => (dispatch));
-
-export const main_venn_connector = (store) => MainVennConnector(store)((state) => (state.venn),
-								       (dispatch) => (dispatch));
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -141,28 +123,6 @@ export const RootReducer = (state = root_default_state, action) => {
 		selection: action.selection
 	    })
 	});
-
-    case SET_VENN_CELL_LINES:
-	return state;
-
-    case SET_VENN_SELECTIONS:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		cell_line: action.cell_line,
-		rank_type: action.rank_type,
-		rank: action.rank
-	    })
-	});
-
-    case UPDATE_VENN:
-	return Object.assign({}, state, {
-	    venn: Object.assign({}, state.venn, {
-		sets: action.sets,
-		overlaps: action.overlaps
-	    })
-	});
-	
-    }
 
     return state;
 
