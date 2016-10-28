@@ -143,7 +143,7 @@ def computeIntersections(args, assembly, fnps):
 
     r = redis.StrictRedis()
     for k,v in tfImap.iteritems():
-        r.set(paths.reVerStr + k, v)
+        r.set(paths.reVerStr + k, json.dumps(v))
     printt("wrote to redis")
 
     bedsLsjFnp = fnps["bedLsjFnp"]
@@ -190,7 +190,7 @@ def updateREjson(inFnp, outFnp):
                     info = r.get(paths.reVerStr + acc)
 
                     if info:
-                        re["peak_intersections"] = info
+                        re["peak_intersections"] = json.loads(info)
                     else:
                         re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
                         print("no intersections found for", re["accession"])
