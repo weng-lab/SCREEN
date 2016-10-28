@@ -14,6 +14,7 @@ class RangeSlider extends React.Component {
 	this.onMaxChange = this.onMaxChange.bind(this);
 	this._set_selection = this._set_selection.bind(this);
 	this.update_selection = this.update_selection.bind(this);
+	this._update_width = this._update_width.bind(this);
     }
     
     render() {
@@ -29,6 +30,10 @@ class RangeSlider extends React.Component {
 		</div>
 		</div>
 	       );
+    }
+
+    _update_width() {
+	if (this.props.updateWidth) this.props.updateWidth($(this.refs.histogram).width());
     }
 
     create_histogram(destination_div) {
@@ -162,6 +167,7 @@ class RangeFacet extends React.Component {
 		      range={this.props.range} selection_range={this.props.selection_range}
 		      interval={this.props.h_interval} data={h_data} margin={this.props.h_margin}
 		      onchange={this.selection_change_handler} ref="slider" title={this.props.title}
+		      updateWidth={this.props.updateWidth}
 		   />
 		</div>
 	       );

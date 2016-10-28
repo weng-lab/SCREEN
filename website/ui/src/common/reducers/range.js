@@ -3,6 +3,7 @@ import {fit_to} from '../common'
 export const SET_SELECTION_RANGE = 'SET_SELECTION_RANGE';
 export const SET_RANGE = 'SET_RANGE';
 export const SET_HPARAMETERS = 'SET_HPARAMETERS';
+export const SET_WIDTH = 'SET_WIDTH';
 
 export let default_margin = {
     top: 1,
@@ -16,7 +17,8 @@ export let range_default_state = {
     range: [0, 0],
     h_data: null,
     h_interval: 1,
-    h_margin: default_margin
+    h_margin: default_margin,
+    h_width: 200
 };
 
 export function RangeFacetReducer(state = range_default_state, action) {
@@ -32,6 +34,11 @@ export function RangeFacetReducer(state = range_default_state, action) {
 	    selection_range: n_selection
 	});
 
+    case SET_WIDTH:
+	return Object.assign({}, state, {
+	    h_width: action.width
+	});
+	
     case SET_RANGE:
 	var n_selection = [...state.selection_range];
 	fit_to(n_selection, action.range);

@@ -2,7 +2,7 @@ import React from 'react'
 
 import {connect} from 'react-redux'
 
-import {RangeFacetReducer, SET_SELECTION_RANGE} from '../../../common/reducers/range'
+import {RangeFacetReducer, SET_SELECTION_RANGE, SET_WIDTH} from '../../../common/reducers/range'
 import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
 import {ChecklistFacetReducer, SET_ITEMS, SET_MATCH_MODE} from '../../../common/reducers/checklist'
 import {LongListFacetReducer, SET_DATA} from '../../../common/reducers/longlist'
@@ -34,7 +34,8 @@ const range_props_map = (store, box, key) => (_state) => {
 	h_interval: state.facets[key].state.h_interval,
 	visible: state.facets[key].visible,
 	title: state.facets[key].title,
-	h_data: state.facets[key].state.h_data
+	h_data: state.facets[key].state.h_data,
+	h_width: state.facets[key].state.h_width
     };
 };
 
@@ -79,9 +80,16 @@ const range_dispatch_map = (store, box, key) => (dispatch) => {
 	onchange: (selection_range) => {
 	    dispatch(facet_action(box, key, {
 		type: SET_SELECTION_RANGE,
-		selection_range: selection_range
+		selection_range
 	    }));
 	    dispatch(invalidate_results(store.getState()));
+	},
+	updateWidth: (width) => {
+	    console.log(width);
+	    dispatch(facet_action(box, key, {
+		type: SET_WIDTH,
+		width
+	    }));
 	}
     };
 };
