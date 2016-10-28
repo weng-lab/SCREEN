@@ -1,25 +1,13 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-
-<script>
-  var REjsonIndex = "{{ re_json_index }}";
-  var INITIAL_ACCLIST = {{ reAccessions }};
-  var CartGuid = "{{ uuid }}";
-  var GlobalCellTypes = {{ globalCellTypes }};
-  var GlobalTfs = {{ globalTfs }};
-  var GlobalParsedQuery = {accessions: INITIAL_ACCLIST};
-</script>
+{{ hh.js("/static/common.js") }}
+{{ hh.js("/static/elasticsearch/core.js") }}
 
 <div class="container" style="width:100%">
   <div class="row" style="width:100%">
-    <div class="col-md-12 nopadding-left" id="tabs-container-cart">
-    </div>
-  </div>
-</div>
 
-<!--
+    <div class="col-md-12 nopadding-left">
+
       <div id="exTab1" class="container">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#tab_summary" data-toggle="tab">
@@ -39,7 +27,27 @@
 
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
--->
+<script>
+  var REjsonIndex = "{{ re_json_index }}";
+  var INITIAL_ACCLIST = {{ reAccessions }};
+  var CartGuid = "{{ uuid }}";
+</script>
+
+{{ hh.js("/static/search.table.js") }}
+{{ hh.js("/static/re_cart.init.js") }}
+{{ hh.js("/static/re_cart.browser.js") }}
+
+<script>
+  
+  $( document ).ready(function() {
+  perform_search();
+  setupCartBrowser();
+  });
+  
+</script>
 
 {% include '_footer.html' -%}
