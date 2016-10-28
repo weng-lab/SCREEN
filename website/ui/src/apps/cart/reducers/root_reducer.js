@@ -102,6 +102,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	    })
 	});
 
+    case SET_DETAIL_TAB:
+	return Object.assign({}, state, {
+	    re_detail: Object.assign({}, state.re_detail, {
+		tab_selection: action.tab_selection
+	    })
+	});
+
     case UPDATE_EXPRESSION:
 	//console.log("update_expression", action);
 	return Object.assign({}, state, {
@@ -112,7 +119,9 @@ export const RootReducer = (state = root_default_state, action) => {
 
     case UPDATE_DETAIL:
 	return Object.assign({}, state, {
-	    re_detail: action.response
+	    re_detail: Object.assign({}, action.response, {
+		tab_selection: 0
+	    })
 	});
 
     case SELECT_TAB:
