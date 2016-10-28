@@ -97,7 +97,6 @@ class DetailsApp extends React.Component {
 export default DetailsApp;
 
 const props_map = (state) => {
-    console.log(state);
     return {
 	q: state.re_detail.q,
 	data: state.re_detail.data,

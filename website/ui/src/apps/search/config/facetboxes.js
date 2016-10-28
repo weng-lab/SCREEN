@@ -86,7 +86,8 @@ export const facetboxes = {
 		    range: [0, 200000000],
 		    selection_range: [0, 200000000],
 		    h_margin: default_margin,
-		    h_interval: 200000
+		    h_interval: 200000,
+		    h_width: 200
 		}
 	    }
 	}
@@ -125,7 +126,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 5000
+		    h_interval: 5000,
+		    h_width: 200
 		}
 	    },
 	    "genedistall": {
@@ -136,7 +138,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 5000
+		    h_interval: 5000,
+		    h_width: 200
 		}
 	    },
 	}
@@ -154,7 +157,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 500
+		    h_interval: 500,
+		    h_width: 200
 		}
 	    },
 	    "promoter": {
@@ -165,7 +169,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 500
+		    h_interval: 500,
+		    h_width: 200
 		}
 	    },
 	    "enhancer": {
@@ -176,7 +181,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 500
+		    h_interval: 500,
+		    h_width: 200
 		}
 	    },
 	    "ctcf": {
@@ -187,7 +193,8 @@ export const facetboxes = {
 		    range: [0, 20000],
 		    selection_range: [0, 20000],
 		    h_margin: default_margin,
-		    h_interval: 500
+		    h_interval: 500,
+		    h_width: 200
 		}
 	    }
 	}

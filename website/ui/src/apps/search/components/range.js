@@ -2,9 +2,9 @@ import React, {PropTypes} from 'react'
 import RangeFacet from '../../../common/components/range'
 import {wrap_facet} from '../helpers/create_facet'
 
-const MainRangeFacet = ({title, visible, h_margin, h_interval, range, selection_range, onchange, h_data}) => {
+const MainRangeFacet = ({title, visible, h_margin, h_interval, range, selection_range, onchange, h_data, updateWidth}) => {
     return wrap_facet(visible,
-		      <RangeFacet h_margin={h_margin} h_interval={h_interval} onchange={onchange}
+		      <RangeFacet h_margin={h_margin} h_interval={h_interval} onchange={onchange} updateWidth={updateWidth}
 		          title={title} range={range} selection_range={selection_range} h_data={h_data} />);
 };
 
