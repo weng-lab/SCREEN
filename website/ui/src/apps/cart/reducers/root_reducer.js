@@ -16,6 +16,7 @@ export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
 export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
+export const SET_DETAIL_TAB = 'SET_DETAIL_TAB';
 
 export const SELECT_TAB = 'SELECT_TAB';
 
@@ -45,6 +46,7 @@ export let root_default_state = {
 		chrom: ""
 	    }
 	},
+	tab_selection: 0,
 	data: {}
     },
     main_tabs: maintabs
@@ -123,6 +125,8 @@ export const RootReducer = (state = root_default_state, action) => {
 		selection: action.selection
 	    })
 	});
+
+    }
 
     return state;
 
