@@ -185,8 +185,8 @@ def updateREjson(inFnp, outFnp):
                     print(inFnp, idx + 1)
                 re = json.loads(line)
 
-                acc = re["accession"]
                 try:
+                    acc = re["accession"]
                     info = r.get(paths.reVerStr + acc)
 
                     if info:
@@ -195,13 +195,14 @@ def updateREjson(inFnp, outFnp):
                         re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
                         print("no intersections found for", re["accession"])
                 except:
-                    print("error with", acc)
+                    print("error with", inFnp, "line", idx)
                     continue
 
                 try:
                     outF.write(json.dumps(re) + "\n")
                 except:
-                    print("could not write:", re)
+                    print("could not rewrite", inFnp, "line", idx)
+                    continue
 
     print("wrote", outFnp)
 
