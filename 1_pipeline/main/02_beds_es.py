@@ -182,7 +182,7 @@ def updateREjson(inFnp, outFnp):
         with gzip.open(outFnp, "w") as outF:
             for idx, line in enumerate(inF):
                 if 0 == idx % 10000:
-                    print(inFnp, idx + 1)
+                    print(inFnp, idx)
                 re = json.loads(line)
 
                 try:
