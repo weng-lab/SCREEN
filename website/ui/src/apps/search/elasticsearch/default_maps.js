@@ -19,7 +19,7 @@ export const RangeAggMap = (key, facet, query) => {
     query.aggs[key] = {
 	histogram: {
 	    field: facet.es_field,
-	    interval: (facet.state.selection_range[1] - facet.state.selection_range[0]) / facet.state.h_width,
+	    interval: facet.state.h_interval, //(facet.state.range[1] - facet.state.range[0]) / facet.state.h_width,
 	    min_doc_count: 1
 	}
     };
