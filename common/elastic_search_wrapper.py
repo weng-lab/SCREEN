@@ -124,7 +124,6 @@ class ElasticSearchWrapper:
         results = []
         query = terms_aggregation()
         query.append("tf", "label")
-        #print(query.query_obj)
         raw_results = self.es.search(index="peak_beds", body=query.query_obj)
         for bucket in raw_results["aggregations"]["tf"]["buckets"]:
             results.append(bucket["key"])
@@ -183,15 +182,12 @@ class ElasticSearchWrapper:
         if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
             for result in raw_results:
-                #print "!", result
-                if result[field] in q:
+                if result[field].strip() != '' and result[field] in q:
                     retval.append((result[field], result["coordinates"]))
         return (suggestions, retval)
 
     def snp_aliases_to_coordinates(self, q):
-        #print("@ElasticSearchWrapper.snp_aliases_to_coordinates(%s)" % q)
         suggestions, raw_results = self.resolve_snp_aliases(q)
-        #print("    raw_results=", raw_results)
         retval = []
         if len(raw_results) == 0:
             return (suggestions, retval)
@@ -206,7 +202,6 @@ class ElasticSearchWrapper:
         query = or_query()
         for field in fields:
             query.append_fuzzy_match(field, q, fuzziness=fuzziness)
-        #print(query.query_obj)
         raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
@@ -221,9 +216,7 @@ class ElasticSearchWrapper:
         if assembly != "":
             query.append_exact_match("assembly", assembly)
         query.append_fuzzy_match("accession", q, fuzziness=fuzziness)
-        #print("@ElasticSearchWrapper.run_snp_query(%s, %d, %s, %s)" % (q, fuzziness, assembly, field_to_return))
         raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
-        #print "    raw_results=", raw_results
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
             results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
@@ -257,9 +250,7 @@ class ElasticSearchWrapper:
 
     def resolve_snp_aliases(self, q):
         for i in range(0, 3):
-            #print("@ElasticSearchWrapper.resolve_snp_aliases(%s):fuzziness=%d" % (q, i))
             suggestions, results = self.run_snp_query(q, i)
-            #print "    results=", results
             if len(results) > 0:
                 return (suggestions, results)
         return ([], [])
@@ -274,7 +265,6 @@ class ElasticSearchWrapper:
         for term in parts:
             retval["query"]["bool"]["should"].append({"exists": {"field": "ranks.dnase." + term}})
         for gene_id in [str(g) for g in gene_ids]:
-            #print gene_id
             retval["query"]["bool"]["should"].append({"match_phrase_prefix": {"genes.nearest-all.gene-id": gene_id}})
             retval["query"]["bool"]["should"].append({"match_phrase_prefix": {"genes.nearest-pc.gene-id": gene_id}})
         return (suggestions, retval)
