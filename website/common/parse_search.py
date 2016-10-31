@@ -31,9 +31,14 @@ class ParseSearch:
         _tk = q.split(" ")
         retval = []
         while len(retval) == 0:
-            retval = self.es.cell_type_query(q)
+            retval = self.es.cell_type_query(" ".join(_tk))
             if len(_tk) == 1: break
             _tk = _tk[1:]
+        _tk = q.split(" ")[:-1]
+        while len(retval) == 0:
+            retval = self.es.cell_type_query(" ".join(_tk))
+            if len(_tk) == 1: break
+            _tk = _tk[:-1]
         return retval
     
     def parse(self):
