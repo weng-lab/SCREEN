@@ -30,7 +30,7 @@ class LongListFacet extends React.Component {
 	                    onTdClick={this._td_handler} bFilter={true} bLengthChange={false} />
 		    </div>
 		    <div style={{display: sdisplay}}>
-		        <ListItem value={this.props.selection} selected="true" n="0"
+		        <ListItem value={this.props.selection.replace(/_/g, " ")} selected="true" n="0"
 		            onclick={this._clear} />
 		    </div>
 		</div>);
