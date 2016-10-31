@@ -20,16 +20,21 @@ class ParseSearch:
 
         self.assembly = "hg19"
 
-        self.cellTypes = {"hela-s3" : "HeLa-S3",
-                          "k562" : "K562",
-                          "gm12878" : "GM12878"}
-
     def _sanitize(self):
         # TODO: add more here!
         return self.rawInput[:2048]
 
     def parseStr(self):
         return self.sanitizedStr
+
+    def find_celltypes_in_query(self, q):
+        _tk = q.split(" ")
+        retval = []
+        while len(retval) == 0:
+            retval = self.es.cell_type_query(q)
+            if len(_tk) == 1: break
+            _tk = _tk[1:]
+        return retval
     
     def parse(self):
         s = self._sanitize()
@@ -38,8 +43,8 @@ class ParseSearch:
         toks = [t.lower() for t in toks]
 
         coord = None
-        cellType = None
-        ret = {"cellType" : None, "coord" : None, "range_preset": None}
+        cellTypes = self.find_celltypes_in_query(s)
+        ret = {"cellType": None if len(cellTypes) == 0 else cellTypes[0].replace(" ", "_"), "coord" : None, "range_preset": None}
 
         gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
@@ -56,10 +61,7 @@ class ParseSearch:
         try:
             for t in toks:
                 print(t)
-                if t in self.cellTypes:
-                    cellType = self.cellTypes[t]
-                    continue
-                elif t.startswith("chr"):
+                if t.startswith("chr"):
                     # coordinate
                     coord = Coord.parse(t)
                     continue
@@ -79,9 +81,7 @@ class ParseSearch:
         elif "insulator" in toks:
             ret["range_preset"] = "insulator"
 
-        print(coord, cellType)
-        if cellType:
-            ret.update({"cellType" : cellType})
+        print(coord, ret["cellType"])
         if coord:
             ret.update({"coord" : {"chrom" : coord.chrom,
                                    "start" : coord.start,

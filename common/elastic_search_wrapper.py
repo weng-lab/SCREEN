@@ -152,6 +152,12 @@ class ElasticSearchWrapper:
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
         return self.es.search(index=index, body=query.query_obj)
 
+    def cell_type_query(self, q):
+        query = or_query()
+        query.append_fuzzy_match("cell_type", q.replace(" ", "_"), fuzziness=1)
+        raw_results = self.es.search(index = "cell_types", body = query.query_obj)
+        return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
+    
     def get_overlapping_res(self, coord):
         return self._get_overlaps_generic(coord, paths.re_json_index)
 
