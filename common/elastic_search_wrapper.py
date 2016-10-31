@@ -143,7 +143,7 @@ class ElasticSearchWrapper:
             if len(_tk) == 1: break
             _tk = _tk[1:]
         _tk = q.split(" ")[:-1]
-        if len(_tk) == 0: return retval
+        if len(_tk) == 0: return (s, retval)
         while len(retval) == 0:
             s, retval = rf(" ".join(_tk))
             if len(_tk) == 1: break
@@ -217,6 +217,7 @@ class ElasticSearchWrapper:
 
     def gene_aliases_to_coordinates(self, q):
         suggestions, raw_results = self._suggest_within(q, self.resolve_gene_aliases)
+        print(raw_results)
         retval = []
         if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
