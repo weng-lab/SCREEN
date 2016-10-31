@@ -24,7 +24,7 @@ class LongListFacet extends React.Component {
     render() {
 	var table_display = (this.props.selection == null ? "block" : "none");
 	var sdisplay = (this.props.selection == null ? "none" : "block");
-	var friendly_selection = (this.props.selection == null ? null : this.props.selection.replace(/_/g, " "));
+	var friendly_selection = (this.props.selection ? this.props.selection.replace(/_/g, " ") : null);
 	return (<div>
 		    <div style={{display: table_display}}>
 		        <ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
