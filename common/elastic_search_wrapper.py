@@ -120,6 +120,36 @@ class ElasticSearchWrapper:
         if q is None: return None
         return requests.get(url, headers=get_headers, data=json.dumps(q))
 
+    def _find_within(self, q, rf):
+        _tk = q.split(" ")
+        retval = []
+        while len(retval) == 0:
+            retval = rf(" ".join(_tk))
+            if len(_tk) == 1: break
+            _tk = _tk[1:]
+        _tk = q.split(" ")[:-1]
+        if len(_tk) == 0: return retval
+        while len(retval) == 0:
+            retval = rf(" ".join(_tk))
+            if len(_tk) == 1: break
+            _tk = _tk[:-1]
+        return retval
+
+    def _suggest_within(self, q, rf):
+        _tk = q.split(" ")
+        retval = []
+        while len(retval) == 0:
+            s, retval = rf(" ".join(_tk))
+            if len(_tk) == 1: break
+            _tk = _tk[1:]
+        _tk = q.split(" ")[:-1]
+        if len(_tk) == 0: return retval
+        while len(retval) == 0:
+            s, retval = rf(" ".join(_tk))
+            if len(_tk) == 1: break
+            _tk = _tk[:-1]
+        return (s, retval)
+    
     def get_tf_list(self):
         results = []
         query = terms_aggregation()
@@ -153,6 +183,9 @@ class ElasticSearchWrapper:
         return self.es.search(index=index, body=query.query_obj)
 
     def cell_type_query(self, q):
+        return self._find_within(q, self._cell_type_query)
+    
+    def _cell_type_query(self, q):
         query = or_query()
         query.append_fuzzy_match("cell_type", q.replace(" ", "_"), fuzziness=1)
         raw_results = self.es.search(index = "cell_types", body = query.query_obj)
@@ -183,7 +216,7 @@ class ElasticSearchWrapper:
         return [k for k, v in jobj.iteritems()]
 
     def gene_aliases_to_coordinates(self, q):
-        suggestions, raw_results = self.resolve_gene_aliases(q)
+        suggestions, raw_results = self._suggest_within(q, self.resolve_gene_aliases)
         retval = []
         if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
