@@ -1,3 +1,3 @@
 #!/bin/bash
 
-webpack -p --config ./webpack.production.config.js --watch
+webpack -p --define process.env.NODE_ENV='\"production\"' --config ./webpack.production.config.js --watch --progress --colors
