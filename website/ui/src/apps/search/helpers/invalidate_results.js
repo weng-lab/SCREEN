@@ -76,12 +76,22 @@ export const invalidate_results = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
+
+	Object.keys(state.results_displays).map((k) => {
+	    var r = state.results_displays[k];
+	    if (r.append_query) r.append_query(n_query);
+	});
+	
 	var e_success = (response, status, jqxhr) => {
 	    dispatch(expression_done(response));
 	    dispatch(update_expression(response.expression_matrix));
 	};
 	var f_success = (response, status, jqxhr) => {
 	    ResultsDispatchMap(state, response, dispatch);
+	    Object.keys(state.results_displays).map((k) => {
+		var r = state.results_displays[k];
+		if (r.dispatch_result) r.dispatch_result(response, r.dispatcher(dispatch));
+	    });
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
 	};

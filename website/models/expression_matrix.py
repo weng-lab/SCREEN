@@ -1,5 +1,6 @@
 import os, sys, json
 import math
+import time
 
 #sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common/python"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
@@ -36,7 +37,9 @@ class ExpressionMatrix:
                 else:
                     heatmap["matrix"][len(heatmap["matrix"]) - 1][cmap[ev["cell_line"]]] = math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0
         _heatmap = Heatmap(heatmap["matrix"])
+        start = time.time()
         roworder, colorder = _heatmap.cluster_by_both()
+        print("performed hierarchial clustering in %f seconds" % (time.time() - start))
         heatmap["rowlabels"] = [heatmap["rows"][x] for x in roworder]
         heatmap["collabels"] = [heatmap["cols"][x] for x in colorder]
         return heatmap

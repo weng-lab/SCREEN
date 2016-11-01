@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
+from models.tss_bar import TSSBarGraph
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
@@ -230,6 +231,9 @@ class AjaxWebService:
             results = self._query({"object": j["object"],
                                    "index": paths.re_json_index,
                                    "callback": "regulatory_elements" })
+        if "tss_bins" in j["post_processing"]:
+            tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
+            results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"

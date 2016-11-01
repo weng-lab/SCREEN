@@ -11,6 +11,9 @@ export const RESULTS_FETCHING = 'RESULTS_FETCHING';
 export const RESULTS_DONE = 'RESULTS_DONE';
 export const RESULTS_ERROR = 'RESULTS_ERROR';
 
+export const ADD_RESULTS_DISPLAY = 'ADD_RESULTS_DISPLAY';
+export const RESULTS_DISPLAY_ACTION = 'RESULTS_DISPLAY_ACTION';
+
 export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
@@ -43,6 +46,7 @@ export let root_default_state = {
 	    matrix: [],
 	    fetching: false
 	},
+	total: 0,
 	fetching: false
     },
     re_detail: {
@@ -61,7 +65,8 @@ export let root_default_state = {
     comparison: {
 	threshold: 1000,
 	rank_type: "enhancer"
-    }
+    },
+    results_displays: {}
 };
 
 export const main_tab_connector = MainTabsConnector(
@@ -93,6 +98,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	    })
 	});
 
+    case RESULTS_DISPLAY_ACTION:
+	if (!(action.key in state.results_displays)) return state;
+	var n_item = state.results_displays[action.key].reducer(state.results_displays[action.key], action.subaction);
+	return Object.assign({}, state, {
+	    results_displays: obj_assign(state.results_displays, action.key, n_item)
+	});
+	
     case FACETBOX_ACTION:
 
 	/*
@@ -112,6 +124,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	    results: Object.assign({}, state.results, {
 		fetching: true
 	    })
+	});
+
+    case ADD_RESULTS_DISPLAY:
+	var n_rd = Object.assign({}, state.results_displays);
+	n_rd[action.key] = action.results_display;
+	return Object.assign({}, state, {
+	    results_displays: n_rd
 	});
 
     case EXPRESSION_LOADING:
@@ -138,7 +157,8 @@ export const RootReducer = (state = root_default_state, action) => {
     case RESULTS_DONE:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
-		fetching: false
+		fetching: false,
+		total: action.results.results.total
 	    })
 	});
 

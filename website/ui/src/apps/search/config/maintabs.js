@@ -1,6 +1,7 @@
 var React = require('react');
 
 import ResultsApp from '../components/results_app'
+import ResultsDisplayApp from '../components/results_display_app'
 
 import DetailsApp, {details_connector} from '../components/details_app'
 import {tabs} from './details'
@@ -16,7 +17,10 @@ export const maintabs = {
 	results: {
 	    title: "Search results",
 	    visible: true,
-	    render: (store, key) => (<ResultsApp store={store} key={key} />)
+	    render: (store, key) => (<div>
+				        <ResultsApp store={store} key={key + "_main"} />
+				        <ResultsDisplayApp store={store} key={key + "_display"} />
+				     </div>)
 	},
 	details: {
 	    title: "RE Details",
