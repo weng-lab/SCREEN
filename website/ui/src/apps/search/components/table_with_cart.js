@@ -16,6 +16,9 @@ class TableWithCart extends React.Component {
 
     render() {
 	var n_data = [...this.props.data];
+	var total = (n_data.length < this.props.total
+		     ? "displaying top " + n_data.length + " results of " + this.props.total + " total"
+		     : "found " + this.props.total + " results");
 	for (var i in n_data) {
 	    n_data[i]._source.in_cart = array_contains(this.props.cart_list,
 						       n_data[i]._source.accession);
@@ -27,6 +30,7 @@ class TableWithCart extends React.Component {
 		    <ResultsDataTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
 	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
 		        order={this.props.order} bFilter={true} bLengthChange={true} />
+		    <span>{total}</span>
 		</div>);
     }
 }
@@ -101,7 +105,8 @@ const table_props_map = (state) => {
 	cart_list: state.results.cart_list,
 	order: state.results.order,
 	cols: state.results.columns,
-	fetching: state.results.fetching
+	fetching: state.results.fetching,
+	total: state.results.total
     };
 };
 
