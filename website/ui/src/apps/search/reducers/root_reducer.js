@@ -1,15 +1,19 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
 import FacetboxReducer from './facetbox_reducer'
 import TabReducer from './tab_reducer'
+import SearchBoxReducer from '../../../common/reducers/searchbox'
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
+import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
 export const RESULTS_FETCHING = 'RESULTS_FETCHING';
 export const RESULTS_DONE = 'RESULTS_DONE';
 export const RESULTS_ERROR = 'RESULTS_ERROR';
+
+export const SEARCHBOX_ACTION = 'SEARCHBOX_ACTION';
 
 export const ADD_RESULTS_DISPLAY = 'ADD_RESULTS_DISPLAY';
 export const RESULTS_DISPLAY_ACTION = 'RESULTS_DISPLAY_ACTION';
@@ -66,7 +70,10 @@ export let root_default_state = {
 	threshold: 1000,
 	rank_type: "enhancer"
     },
-    results_displays: {}
+    results_displays: {},
+    searchbox: {
+	value: ""
+    }
 };
 
 export const main_tab_connector = MainTabsConnector(
@@ -79,6 +86,18 @@ export const main_tab_connector = MainTabsConnector(
 	});
     })
 );
+
+export const main_searchbox_connector = MainSearchBoxConnector(
+    (state) => (state.searchbox),
+    (dispatch) => ((action) => {
+	dispatch({
+	    type: SEARCHBOX_ACTION,
+	    target: "searchbox",
+	    subaction: action
+	});
+    })
+);
+	    
 
 export const RootReducer = (state = root_default_state, action) => {
 
@@ -187,6 +206,11 @@ export const RootReducer = (state = root_default_state, action) => {
 	    results: Object.assign({}, state.results, {
 		cart_list: n_cart_list
 	    })
+	});
+
+    case SEARCHBOX_ACTION:
+	return Object.assign({}, state, {
+	    searchbox: SearchBoxReducer(state[action.target], action.subaction)
 	});
 
     case UPDATE_EXPRESSION:

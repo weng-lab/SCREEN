@@ -35,12 +35,12 @@ class PageInfoGeneExp:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
-        retval.update({"globalParsedQuery" : json.dumps(parsed),
+        retval.update({"globalParsedQuery" : json.dumps({}),
                        "globalSessionUid" : uuid,
-                       "globalTfs" : self.cache.tf_list_json,
-                       "globalCellTypes" : self.cache.cellTypesAndTissues_json,
-                       "searchPage": True,
-                       "tissueMap": self.cache.tissueMap })
+                       "globalTfs" : json.dumps({}),
+                       "globalCellTypes" : json.dumps({}),
+                       "searchPage": False,
+                       "tissueMap": json.dumps({})})
 
         return retval
     
