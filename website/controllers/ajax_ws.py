@@ -231,9 +231,12 @@ class AjaxWebService:
             results = self._query({"object": j["object"],
                                    "index": paths.re_json_index,
                                    "callback": "regulatory_elements" })
+        print(results["results"]["total"])
         if "tss_bins" in j["post_processing"]:
             tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
             results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
+            print(results["tss_histogram"])
+            print(results["aggs"])
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
