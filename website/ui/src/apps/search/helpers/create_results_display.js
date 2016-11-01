@@ -15,7 +15,8 @@ const vertical_bar_props_map = (store, key) => (_state) => {
 	width: state.width,
 	height: state.height,
 	xlabels: state.xlabels,
-	title: state.title
+	title: state.title,
+	loading: state.loading
     };
 };
 
