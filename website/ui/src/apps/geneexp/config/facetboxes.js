@@ -40,3 +40,7 @@ export const facetboxes = {
 	}
     }
 };
+
+export const facetbox_render_order = [
+    "cell_lines"
+];
