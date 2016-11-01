@@ -31,10 +31,8 @@ class PageInfoMain:
         retval["page"]["title"] = "hexplot view - Regulatory Element Visualizer"
         if len(args) < 1: return retval
         if "rankA" not in kwargs or "rankB" not in kwargs: return retval
-        #print(subprocess.check_output("ls", shell=True))
         fnps = [os.path.join(os.path.dirname(__file__), "../static/hexplot_data/%s/%s_x_%s.png" % (args[0], kwargs["rankA"], kwargs["rankB"])),
                 os.path.join(os.path.dirname(__file__), "../static/hexplot_data/%s/%s_x_%s.png" % (args[0], kwargs["rankB"], kwargs["rankA"]))]
-        #print(fnps)
         for path in fnps:
             if os.path.exists(path):
                 retval["imgpath"] = '/' + os.path.join("static", path.split("static/")[1])

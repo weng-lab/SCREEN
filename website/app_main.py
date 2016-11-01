@@ -3,6 +3,7 @@
 import cherrypy, jinja2, os, sys
 
 from controllers.main_controller import MainController
+from controllers.geneexp_controller import GeneExpController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.ajax_ws import AjaxWebService
@@ -18,6 +19,7 @@ class MainApp():
     def __init__(self, args, viewDir, staticDir, es, ps, cache):
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps, cache)
+        self.ge = GeneExpController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
         self.ajaxWS = AjaxWebService(args, es, ps, cache)
@@ -70,6 +72,10 @@ class MainApp():
     @cherrypy.expose
     def search(self, *args, **kwargs):
         return self.mc.search(args, kwargs, self.session_uuid())
+
+    @cherrypy.expose
+    def geneexp(self, *args, **kwargs):
+        return self.ge.geneexp(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
     def hexplot(self, *args, **kwargs):
