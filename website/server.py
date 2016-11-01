@@ -17,11 +17,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
 
-def CORS():
-    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
-    cherrypy.response.headers["Access-Control-Allow-Headers"] = "content-type, Authorization, X-Requested-With"
-    cherrypy.response.headers["Access-Control-Allow-Methods"] = 'GET, POST'
-
 class Config:
     def __init__(self, siteName):
         self.siteName = siteName
@@ -48,7 +43,6 @@ class Config:
     def getRootConfig(self):
         return {
             '/': {
-                'tools.CORS.on' : True,
                 'tools.sessions.on' : True,
                 'tools.sessions.timeout' : 60000,
                 'tools.sessions.storage_type' : "file",
@@ -88,7 +82,6 @@ def main():
     config = Config("main")
     main = MainApp(args, config.viewDir, config.staticDir, es, ps, cache)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
-    cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
