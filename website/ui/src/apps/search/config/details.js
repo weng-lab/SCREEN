@@ -16,7 +16,7 @@ const render_snp_link = (d) => (
 const render_gene_link = (d) => (
     '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
 
-const render_re_link = (d) => ('<a href="#">' + d + '</a>');
+const render_re_link = (d) => ('<a>' + d + '</a>');
 
 export const tabs = [
     {
