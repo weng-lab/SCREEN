@@ -77,12 +77,6 @@ export const invalidate_results = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
-
-	Object.keys(state.results_displays).map((k) => {
-	    var r = state.results_displays[k];
-	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k));
-	    r.dispatcher(dispatch)({type: SET_LOADING});
-	});
 	
 	var e_success = (response, status, jqxhr) => {
 	    dispatch(expression_done(response));
@@ -108,6 +102,11 @@ export const invalidate_results = (state) => {
 	dispatch(results_fetching());
 	dispatch(expression_loading());
 	QueryAJAX(n_query, f_success, f_error);
+	Object.keys(state.results_displays).map((k) => {
+	    var r = state.results_displays[k];
+	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k));
+	    r.dispatcher(dispatch)({type: SET_LOADING});
+	});	
 	ExpressionAJAX(n_query, e_success, f_error);
 	
     }
