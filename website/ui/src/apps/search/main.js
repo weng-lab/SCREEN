@@ -26,7 +26,7 @@ class SearchPage extends React.Component {
 	var Tabs = main_tab_connector(MainTabControl);
 	var SearchBoxC = main_searchbox_connector(SearchBox);
 	return (<div>
-		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse">
+		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse navbar-main">
 		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} searchbox={SearchBoxC} store={this.store} /></div>
 		   </nav>
 		   <div className="container" style={{width: "100%"}}>

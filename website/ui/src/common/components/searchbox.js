@@ -21,8 +21,8 @@ class SearchBox extends React.Component {
     }
 
     render() {
-	return (<form action="search" method="get" ref="form" className="navbar-collapse">
-	           <input className="searchbox" type="text" size="100" name="q" ref="input" value={this.props.value} onChange={this.onchange} />
+	return (<form action="search" method="get" ref="form" className="navbar-collapse navbar-searchform">
+	           <input className="searchbox" type="text" size="100" name="q" ref="input" value={this.props.value} onChange={this.onchange} />&nbsp;
 	           <a className="btn btn-primary btn-lg searchButton" href={this.submit} role="button">Search</a>
 		</form>);
     }
