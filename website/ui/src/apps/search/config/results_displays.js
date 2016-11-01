@@ -23,6 +23,7 @@ export const results_displays = {
 	xlabels: ["<2.5k", "2.5k-10k", "10k-50k", "50k-250k", "250k-500k", "500k-1m", ">1m"],
 	width: 500,
 	height: 300,
+	loading: false,
 	append_query: (query_obj) => {
 	    query_obj.aggs[TSS_AGG_KEY] = tss_agg;
 	    query_obj.extras["tss_bins"] = tss_pp;

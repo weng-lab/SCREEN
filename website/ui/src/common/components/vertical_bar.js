@@ -8,11 +8,9 @@ class VerticalBars extends React.Component {
     }
 
     render() {
+	console.log(this.props);
 	return (<div>
-		<div style={{width: this.props.width + "px", textAlign: "center", fontSize: "14pt"}}>{this.props.title}</div>
-  		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
-		        Loading...
-		    </div>
+		    <div style={{width: this.props.width + "px", textAlign: "center", fontSize: "14pt", display: (this.props.loading ? "none" : "block")}}>{this.props.title}</div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px", height: this.props.height + "px" }} />
 		</div>);
 		
