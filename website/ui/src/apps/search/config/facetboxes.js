@@ -102,7 +102,7 @@ export const facetboxes = {
 		title: "",
 		match_mode_enabled: true,
 		state: {
-		    data: GlobalTfs.map((tf) => {return {key: tf.toUpperCase(), selected: false}}),
+		    data: (GlobalTfs.map ? GlobalTfs.map((tf) => {return {key: tf.toUpperCase(), selected: false}}) : []),
 		    order: [],
 		    cols: [{
 			title: "Assay",
