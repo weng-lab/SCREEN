@@ -6,7 +6,6 @@ from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
 from app_main import MainApp
-from app_ui import UiAppRunner
 from common.cached_objects import CachedObjects
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
