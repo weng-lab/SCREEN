@@ -28,13 +28,7 @@ class ParseSearch:
         return self.sanitizedStr
 
     def find_celltypes_in_query(self, q):
-        _tk = q.split(" ")
-        retval = []
-        while len(retval) == 0:
-            retval = self.es.cell_type_query(q)
-            if len(_tk) == 1: break
-            _tk = _tk[1:]
-        return retval
+        return self.es.cell_type_query(q)
     
     def parse(self):
         s = self._sanitize()
