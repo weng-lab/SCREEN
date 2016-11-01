@@ -12,14 +12,14 @@ import {render_int, render_cell_type} from './results_table'
 export const facetboxes = {
     "accessions": {
 	title: "Accessions",
-	visible: (GlobalParsedQuery.accessions.length != 0),
+	visible: (GlobalParsedQuery != "" && "accessions" in GlobalParsedQuery && GlobalParsedQuery.accessions.length != 0),
 	facets: {
 	    "accessions": {
 		type: CHECKLIST_FACET,
 		visible: true,
 		title: "",
 		state: {
-		    items: GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}),
+		    items: (GlobalParsedQuery && "accessions" in GlobalParsedQuery ? GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}) : []),
 		    match_mode_enabled: false,
 		    mode: CHECKLIST_MATCH_ANY,
 		    autocomplete_source: []

@@ -7,25 +7,10 @@
 {{ hh.js("/static/controls/autocomplete.js") }}
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-
 <script type="text/javascript">
   var GlobalParsedQuery = {{ globalParsedQuery }};
-  var GlobalSessionUid = "{{ globalSessionUid }}";
-  var GlobalTfs = {{ globalTfs }}; 
-  var GlobalCellTypes = {{ globalCellTypes }};
   var TISSUE_MAP = {{ tissueMap }};
 </script>
-
-<div class="container" style="width:100%">
-  <div class="row" style="width:100%">
-
-    <div class="col-md-3 nopadding-right" id="facets-container">
-    </div>
-
-    <div class="col-md-9 nopadding-left" id="tabs-container">
-    </div>
-    
-  </div>
-</div>
+<div id="root"></div>
 
 {% include '_footer.html' -%}
