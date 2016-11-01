@@ -78,7 +78,7 @@ class DetailsApp extends React.Component {
 		    <ul className="nav nav-tabs">
   		        {Object.keys(tabs).map((k) => (
 			    <li key={"tab_" + k} className={k == this.props.tab_selection ? "active" : ""} >
-				<a href="#" onClick={() => {this.props.store.dispatch(set_tab_selection(k))}}>{tabs[k].title}</a>
+				<a onClick={() => {this.props.store.dispatch(set_tab_selection(k))}}>{tabs[k].title}</a>
 		            </li>
 		        ))}
 		    </ul>
