@@ -12,7 +12,7 @@ class ResultsDisplayApp extends React.Component {
     render() {
 	var store = this.props.store;
 	var creator = ResultsDisplayCreator(store);
-	return (<div>
+	return (<div style={{padding: "30px"}}>
 		{Object.keys(results_displays).map((k) => {
 		    var Retval = creator(k, results_displays[k]);
 		    return <Retval key={k} store={store} />;
