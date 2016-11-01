@@ -79,8 +79,8 @@ export const invalidate_results = (state) => {
 	var n_query = FacetQueryMap(state);
 	
 	var e_success = (response, status, jqxhr) => {
-	    dispatch(expression_done(response));
 	    dispatch(update_expression(response.expression_matrix));
+	    dispatch(expression_done(response));
 	};
 
 	var d_error = (key) => (response, status, jqxhr) => {};
