@@ -75,7 +75,7 @@ class VerticalBars extends React.Component {
 	    .attr("class", "axis axis--y")
 	    .attr("width", 50)
 	    .attr("transform", "translate(50,0)")
-	    .call(d3.axisLeft(y).ticks(10))
+	    .call(d3.axisLeft(y).ticks(4))
 	    .append("text")
 	    .attr("y", 6)
 	    .attr("dy", "0.71em")
@@ -86,9 +86,9 @@ class VerticalBars extends React.Component {
 	    .data(data)
 	    .enter().append("rect")
 	    .attr("class", "bar")
-	    .attr("x", function(d) { return x(d.key); })
+	    .attr("x", function(d) { return x(d.key) + x.bandwidth() * 0.25; })
 	    .attr("y", height)
-	    .attr("width", x.bandwidth())
+	    .attr("width", x.bandwidth() / 2)
 	    .attr("height", 0)
 	    .attr("fill", "#393");
 
@@ -98,7 +98,7 @@ class VerticalBars extends React.Component {
 	    .duration(1000)
 	    .attr("y", function(d) { return y(d.value); })
 	    .attr("height", function(d) { return height - y(d.value); });
-		
+	
     }
     
 }

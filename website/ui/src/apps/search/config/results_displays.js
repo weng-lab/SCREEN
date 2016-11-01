@@ -22,7 +22,7 @@ export const results_displays = {
 	title: "Distance to TSS",
 	xlabels: ["<2.5k", "2.5k-10k", "10k-50k", "50k-250k", "250k-500k", "500k-1m", ">1m"],
 	width: 500,
-	height: 300,
+	height: 150,
 	loading: false,
 	append_query: (query_obj) => {
 	    var extras = {};
