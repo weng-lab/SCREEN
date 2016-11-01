@@ -11,12 +11,9 @@ import toggle_facetbox from '../helpers/toggle_facetbox'
  *  This should be set by dipatching the ES_CONNECT action (see ./es_connect.js)
  */
 const ResultsDispatchMap = (state, results, dispatch) => {
-
-    //console.log(results);
     
     for (var i in state.facet_boxes) {
 	var tbox = state.facet_boxes[i];
-	//console.log("tbox", tbox);
 	
 	var visible = (tbox.display_map
 		       ? toggle_facetbox(i, tbox.display_map(state),
@@ -28,7 +25,6 @@ const ResultsDispatchMap = (state, results, dispatch) => {
 	    if("cell_lines" == key){
 		continue;
 	    }
-	    //console.log(tbox.title, key);
 	    var tfacet = Object.assign({}, tbox.facets[key]);
 	    if (tfacet.es_callback == null || !tfacet.visible) {
 		continue;

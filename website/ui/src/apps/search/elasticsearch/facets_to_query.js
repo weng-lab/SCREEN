@@ -20,7 +20,12 @@ const FacetQueryMap = (state) => {
 		must: []
 	    }
 	},
-	extras: {}
+	extras: {
+	    "tss_bins": {
+		"aggkey": "genedistall",
+		"bins": [2500, 10000, 50000, 250000, 500000, 1000000]
+	    }
+	}
     };
 
     for (var i in state.facet_boxes) {
