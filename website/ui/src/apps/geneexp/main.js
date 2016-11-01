@@ -23,14 +23,3 @@ if (document.getElementById('facets-container')) {
     render(<FacetApp store={store} pquery={GlobalParsedQuery} />,
            document.getElementById('facets-container'));
 }
-
-if (document.getElementById('results-container')) {
-    render(<ResultsApp store={store} />,
-           document.getElementById('results-container'));
-}
-
-if (document.getElementById('cartimage-container')) {
-    var Cart = cart_connector(CartImage);
-    render(<Cart store={store} />,
-           document.getElementById('cartimage-container'));
-}
