@@ -80,7 +80,7 @@ export const invalidate_results = (state) => {
 
 	Object.keys(state.results_displays).map((k) => {
 	    var r = state.results_displays[k];
-	    if (r.append_query) r.append_query(n_query);
+	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k));
 	    r.dispatcher(dispatch)({type: SET_LOADING});
 	});
 	
@@ -88,13 +88,16 @@ export const invalidate_results = (state) => {
 	    dispatch(expression_done(response));
 	    dispatch(update_expression(response.expression_matrix));
 	};
+
+	var d_error = (key) => (response, status, jqxhr) => {};
+	var d_success = (key) => (response, status, jqxhr) => {
+	    var r = state.results_displays[key];
+	    if (r.dispatch_result) r.dispatch_result(response, r.dispatcher(dispatch));
+	    r.dispatcher(dispatch)({type: SET_COMPLETE});
+	};
+	
 	var f_success = (response, status, jqxhr) => {
 	    ResultsDispatchMap(state, response, dispatch);
-	    Object.keys(state.results_displays).map((k) => {
-		var r = state.results_displays[k];
-		if (r.dispatch_result) r.dispatch_result(response, r.dispatcher(dispatch));
-		r.dispatcher(dispatch)({type: SET_COMPLETE});
-	    });
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
 	};
