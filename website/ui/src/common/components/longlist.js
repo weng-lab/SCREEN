@@ -24,13 +24,14 @@ class LongListFacet extends React.Component {
     render() {
 	var table_display = (this.props.selection == null ? "block" : "none");
 	var sdisplay = (this.props.selection == null ? "none" : "block");
+	var friendly_selection = (this.props.selection ? this.props.selection.replace(/_/g, " ") : null);
 	return (<div>
 		    <div style={{display: table_display}}>
 		        <ResultsTable cols={this.props.cols} data={this.props.data} order={this.props.order}
 	                    onTdClick={this._td_handler} bFilter={true} bLengthChange={false} />
 		    </div>
 		    <div style={{display: sdisplay}}>
-		        <ListItem value={this.props.selection.replace(/_/g, " ")} selected="true" n="0"
+		        <ListItem value={friendly_selection} selected="true" n="0"
 		            onclick={this._clear} />
 		    </div>
 		</div>);
