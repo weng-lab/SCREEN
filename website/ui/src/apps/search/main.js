@@ -8,10 +8,12 @@ import thunkMiddleware from 'redux-thunk'
 import {RootReducer} from './reducers/root_reducer'
 import FacetApp from './components/facet_app'
 
+import SearchBox from '../../common/components/searchbox'
+
 import MainTabControl from './components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
 import HorizontalBars from "../../common/components/horizontal_bar"
-import {main_tab_connector} from './reducers/root_reducer'
+import {main_tab_connector, main_searchbox_connector} from './reducers/root_reducer'
 
 class SearchPage extends React.Component {
 
@@ -22,9 +24,10 @@ class SearchPage extends React.Component {
     
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
+	var SearchBoxC = main_searchbox_connector(SearchBox);
 	return (<div>
 		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse">
-		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} show_searchbox={true} store={this.store} /></div>
+		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} searchbox={SearchBoxC} store={this.store} /></div>
 		   </nav>
 		   <div className="container" style={{width: "100%"}}>
                       <div className="row" style={{width: "100%"}}>
