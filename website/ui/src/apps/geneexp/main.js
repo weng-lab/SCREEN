@@ -13,9 +13,6 @@ import MainTabControl from './components/maintab'
 import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector} from './reducers/root_reducer'
 
-if (GlobalParsedQuery == "") GlobalParsedQuery = {"accessions": []};
-console.log(GlobalParsedQuery);
-
 class GeneExpPage extends React.Component {
 
     constructor(props) {

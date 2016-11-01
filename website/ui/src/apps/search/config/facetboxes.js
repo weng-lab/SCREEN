@@ -93,7 +93,7 @@ export const facetboxes = {
 	}
     },
     "TFs": {
-	title: "intersect TF/histone/DNase peaks",
+	title: "Intersect TF/histone/DNase peaks",
 	visible: true,
 	facets: {
 	    "TF": {
@@ -105,7 +105,7 @@ export const facetboxes = {
 		    data: GlobalTfs.map((tf) => {return {key: tf.toUpperCase(), selected: false}}),
 		    order: [],
 		    cols: [{
-			title: "TF",
+			title: "Assay",
 			data: "key",
 			className: "dt-right"
 		    }],
