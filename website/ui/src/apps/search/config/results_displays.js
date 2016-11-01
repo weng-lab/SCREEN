@@ -25,13 +25,20 @@ export const results_displays = {
 	height: 300,
 	loading: false,
 	append_query: (query_obj) => {
-	    var retval = Object.assign({}, query_obj);
-	    retval.aggs = {};
-	    retval.aggs[TSS_AGG_KEY] = tss_agg;
-	    retval.extras["tss_bins"] = tss_pp;
-	    retval.query.bool.must.push(query_obj.post_filter);
-	    retval.post_filter = {};
-	    return retval; 
+	    var extras = {};
+	    var aggs = {};
+	    var query = [...query_obj.query.bool.filter, query_obj.post_filter];
+	    aggs[TSS_AGG_KEY] = tss_agg;
+	    extras["tss_bins"] = tss_pp;
+	    return {
+		extras,
+		query: Object.assign({}, query_obj.query, {
+		    bool: {
+			must: query
+		    }
+		}),
+		aggs
+	    };
 	},
 	dispatch_result: (results, dispatch) => {dispatch({
 	    type: SET_DATA,

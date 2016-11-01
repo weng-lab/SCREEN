@@ -38,7 +38,7 @@ div.result_row_selected {
     height: 35px;
 }
 
-#mainNavBar {
+.navbar-main {
     margin-bottom: 0px;
 }
 
@@ -161,7 +161,7 @@ div.result_row_selected {
     float: none;
 }
 
-#searchformNavbar {
+.navbar-searchform {
     float: left;
     padding: 5px;
 }

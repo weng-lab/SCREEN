@@ -12,14 +12,14 @@ import {render_int, render_cell_type} from './results_table'
 export const facetboxes = {
     "accessions": {
 	title: "Accessions",
-	visible: (GlobalParsedQuery.accessions.length != 0),
+	visible: (GlobalParsedQuery != "" && "accessions" in GlobalParsedQuery && GlobalParsedQuery.accessions.length != 0),
 	facets: {
 	    "accessions": {
 		type: CHECKLIST_FACET,
 		visible: true,
 		title: "",
 		state: {
-		    items: GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}),
+		    items: (GlobalParsedQuery && "accessions" in GlobalParsedQuery ? GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}) : []),
 		    match_mode_enabled: false,
 		    mode: CHECKLIST_MATCH_ANY,
 		    autocomplete_source: []
@@ -93,7 +93,7 @@ export const facetboxes = {
 	}
     },
     "TFs": {
-	title: "intersect TF/histone/DNase peaks",
+	title: "Intersect TF/histone/DNase peaks",
 	visible: true,
 	facets: {
 	    "TF": {
@@ -102,10 +102,10 @@ export const facetboxes = {
 		title: "",
 		match_mode_enabled: true,
 		state: {
-		    data: GlobalTfs.map((tf) => {return {key: tf.toUpperCase(), selected: false}}),
+		    data: (GlobalTfs.map ? GlobalTfs.map((tf) => {return {key: tf.toUpperCase(), selected: false}}) : []),
 		    order: [],
 		    cols: [{
-			title: "TF",
+			title: "Assay",
 			data: "key",
 			className: "dt-right"
 		    }],
