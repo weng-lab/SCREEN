@@ -45,5 +45,10 @@ class PageInfoGeneExp:
 
         ret.update(ge)
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
+
+        cellcs = [{"value" : "cell"}]
+        ret.update({"cellCompartments" : json.dumps(cellcs),
+                    "globalCellCompartments" : json.dumps(cellcs)})
+                
         return ret
     
