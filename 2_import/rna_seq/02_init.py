@@ -21,6 +21,7 @@ CREATE TABLE r_rnas
 encode_id text,
 cellType text,
 organ text,
+    cellCompartment text,
 target text,
 lab text,
 assay_term_name text,
@@ -46,13 +47,21 @@ select distinct(dataset) from r_expression""")
                 organ = organ[0]
         except:
             organ = ""
+
+        try:
+            cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
+        except:
+            cellCompartment = "cell"
+        print(cellCompartment)
+            
         cur.execute("""
 INSERT INTO r_rnas
-(encode_id, cellType, organ, target, lab, assay_term_name, biosample_type, description)
+        (encode_id, cellType, organ, cellCompartment, target, lab, assay_term_name, biosample_type, description)
 VALUES (
 %(encode_id)s,
 %(cellType)s,
 %(organ)s,
+        %(cellCompartment)s,
 %(target)s,
 %(lab)s,
 %(assay)s,
@@ -61,6 +70,7 @@ VALUES (
 )""", {"encode_id" : exp.encodeID,
        "cellType" : exp.biosample_term_name,
        "organ" : organ,
+       "cellCompartment" : cellCompartment,
        "target" : exp.target,
        "lab" : exp.lab,
        "assay" : exp.assay_term_name,

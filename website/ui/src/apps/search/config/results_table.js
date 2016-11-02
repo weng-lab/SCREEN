@@ -26,6 +26,11 @@ const browser_button = (re, name) => {
 	'</form>';
 }
 
+const render_gene_button = (d) => {
+    var g = render_gene(d);
+    return '<a href="/geneexp?q=' + g + '" _target="blank">' + g + '</a>';
+};
+
 const render_browser_buttons = (re) => (arr) => (
     '<div class="btn-group" role="group">' +
 	browser_button(re, "UCSC") +
@@ -67,13 +72,13 @@ const ResultsTableColumns = [
 	title: "nearest gene",
 	data: "_source.genes.nearest-all",
 	className: "dt-right",
-	render: render_gene
+	render: render_gene_button
     },
     {
 	title: "nearest protein-coding gene",
 	data: "_source.genes.nearest-pc",
 	className: "dt-right",
-	render: render_gene
+	render: render_gene_button
     },
     {
 	title: "cart",

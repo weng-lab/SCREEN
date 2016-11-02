@@ -19,7 +19,7 @@ export const facetboxes = {
 		visible: true,
 		title: "",
 		state: {
-		    data: GlobalCellTypes,
+		    data: GlobalCellCompartments,
 		    order: [],
 		    cols: [
 			{
