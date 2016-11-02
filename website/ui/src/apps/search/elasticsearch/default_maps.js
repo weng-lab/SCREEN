@@ -64,6 +64,9 @@ export const LongListResultsMap = (key, facet, dispatch, results) => {
 };
 
 export const RangeResultsMap = (key, facet, dispatch, results) => {
+    dispatch({
+	type: SHOW_FACET
+    });
     if (results.aggs[key].type == "histogram") {
 	dispatch({
 	    type: SET_RANGE,
@@ -72,9 +75,6 @@ export const RangeResultsMap = (key, facet, dispatch, results) => {
 	dispatch({
 	    type: SET_HPARAMETERS,
 	    h_data: results.aggs[key].buckets
-	});
-	dispatch({
-	    type: SHOW_FACET
 	});
     } else {
 	dispatch({

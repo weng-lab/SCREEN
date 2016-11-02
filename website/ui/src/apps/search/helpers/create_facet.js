@@ -85,7 +85,6 @@ const range_dispatch_map = (store, box, key) => (dispatch) => {
 	    dispatch(invalidate_results(store.getState()));
 	},
 	updateWidth: (width) => {
-	    console.log(width);
 	    dispatch(facet_action(box, key, {
 		type: SET_WIDTH,
 		width
