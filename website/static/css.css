@@ -209,3 +209,9 @@ select.ui-toggle-switch { display: none; }
     margin-top: -25px;
     padding-right: 50px;
 }
+
+.browserForm {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
