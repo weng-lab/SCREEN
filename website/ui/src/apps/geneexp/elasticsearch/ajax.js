@@ -49,6 +49,19 @@ export const DetailAJAX = (query, f_success, f_error) => {
     });
 };
 
+export const ExpressionBoxplotAJAX = (query, f_success, f_error) => {
+    console.log(format_detail(query));
+    $.ajax({
+	type: "POST",
+	url: GENEEXP_URL,
+        data: format_detail(query),
+        dataType: "json",
+        contentType : "application/json",
+        success: f_success,
+	error: f_error
+    });
+};
+
 export const ExpressionAJAX = (query, f_success, f_error) => {
     $.ajax({
 	type: "POST",

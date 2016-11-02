@@ -11,11 +11,11 @@ import {render_int, render_cell_type} from './results_table'
 
 export const facetboxes = {
     "cell_lines": {
-	title: "Cell Types",
+	title: "Cellular Compartments",
 	visible: true,
 	facets: {
 	    "cell_lines": {
-		type: LONGLIST_FACET,
+		type: LONGCHECKLIST_FACET,
 		visible: true,
 		title: "",
 		state: {
@@ -23,15 +23,10 @@ export const facetboxes = {
 		    order: [],
 		    cols: [
 			{
-			    title: "cell type",
+			    title: "compartment",
 			    data: "value",
 			    className: "dt-right",
 			    render: render_cell_type
-			},
-			{
-			    title: "tissue",
-			    data: "tissue",
-			    className: "dt-right"
 			}
 		    ],
 		    selection: null
