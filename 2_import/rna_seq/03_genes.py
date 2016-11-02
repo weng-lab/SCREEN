@@ -28,10 +28,10 @@ def parse_args():
 def main():
     args = parse_args()
 
-    for dataset in [Datasets.all_human, Datasets.all_mouse]:
+    for dataset in [Datasets.all_human]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "03_genes") as curs:
-            setupDB(cur, dataset.species)
+            setupDB(curs, dataset.species)
 
 if __name__ == '__main__':
     main()

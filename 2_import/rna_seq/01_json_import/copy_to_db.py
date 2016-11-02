@@ -43,7 +43,7 @@ def main():
     fnps["human"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
     fnps["mouse"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
 
-    for dataset in [Datasets.all_human, Datasets.all_mouse]:
+    for dataset in [Datasets.all_human]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         inFnp = fnps[dataset.species]
         outFnp = inFnp + ".csv"
