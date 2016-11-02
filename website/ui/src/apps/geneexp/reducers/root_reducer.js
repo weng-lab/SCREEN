@@ -43,6 +43,11 @@ export let root_default_state = {
 	    matrix: [],
 	    fetching: false
 	},
+	expression_boxplot: {
+	    data: [],
+	    mmax: 0,
+	    fetching: false
+	},
 	fetching: false
     },
     re_detail: {
@@ -61,7 +66,8 @@ export let root_default_state = {
     comparison: {
 	threshold: 1000,
 	rank_type: "enhancer"
-    }
+    },
+    
 };
 
 export const main_tab_connector = MainTabsConnector(
