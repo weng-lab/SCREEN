@@ -24,7 +24,7 @@ class RangeSlider extends React.Component {
   		   <div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
 		      <input ref="txmin" type="text" value={this.props.selection_range[0]} onChange={this.onMinChange}
-	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> - 
+	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> -&nbsp;
 		      <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
 		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} />
 		</div>
