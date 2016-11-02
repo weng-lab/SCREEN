@@ -1,7 +1,7 @@
 var React = require('react');
 var $ = require('jquery');
 var _dt = require('datatables.net');
-//require('datatables.net-bs');
+require('datatables.net-bs');
 
 class ResultsTable extends React.Component {
 
@@ -32,8 +32,10 @@ class ResultsTable extends React.Component {
 	    bInfo: this.props.info,
 	    bFilter: this.props.bFilter,
 	    bLengthChange: this.props.bLengthChange,
-	    oLanguage: { sEmptyTable : this.props.emptyText },
-	    pageLength: this.props.pageLength
+	    language: { emptyTable : this.props.emptyText,
+		       	paginate: { previous: "&lt", next : "&gt" }},
+	    pageLength: this.props.pageLength,
+	    dom: '<"top"f>t<"bottom"p><"clear">'
 	});
 	$(this.refs.root).on("click", "td", function() {
 	    if (onTdClick) {
