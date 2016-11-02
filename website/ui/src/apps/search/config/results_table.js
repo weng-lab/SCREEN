@@ -22,7 +22,7 @@ const render_array = (m) => (array) => (
 const browser_button = (re, name) => {
     // TODO: make into React component...
     return '<form class="browserForm" onsubmit="event.preventDefault(); browserButtonClick(\'' + name + '\', \'' + re.accession + '\'); return false; ">' +
-	'<input role="button" class="btn btn-success btn-xs" type="submit" value="' + name + '">' +
+	'<input role="button" class="btn btn-default btn-xs" type="submit" value="' + name + '">' +
 	'</form>';
 }
 
