@@ -56,7 +56,6 @@ export const FacetsToSearchText = (state) => {
 	if (!visible) continue;
 
 	for (var key in tbox.facets) {
-	    console.log(tfacet);
 	    var tfacet = Object.assign({}, tbox.facets[key]);
 	    if (!tfacet.visible || tfacet.st_map == null) continue;
 	    retval += tfacet.st_map(key, tfacet);
