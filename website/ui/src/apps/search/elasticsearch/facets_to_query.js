@@ -32,8 +32,9 @@ const FacetQueryMap = (state) => {
 	for (var key in tbox.facets) {
 	    
 	    var tfacet = Object.assign({}, tbox.facets[key]);
-	    if (!tfacet.visible || tfacet.es_map == null) continue;
 	    if (typeof(tfacet.es_field) === 'function') tfacet.es_field = tfacet.es_field(state);
+	    tfacet.agg_map(key, tfacet, retval);
+	    if (!tfacet.visible || tfacet.es_map == null) continue;
 	    tfacet.es_map(key, tfacet, retval);
 	    
 	}

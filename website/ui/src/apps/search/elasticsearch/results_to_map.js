@@ -22,18 +22,13 @@ const ResultsDispatchMap = (state, results, dispatch) => {
 	if (!visible) continue;
 	
 	for (var key in tbox.facets) {
-	    if("cell_lines" == key){
-		continue;
-	    }
+
+	    if (tbox.facets[key].es_callback == null || "cell_lines" == key) continue;
 	    var tfacet = Object.assign({}, tbox.facets[key]);
-	    if (tfacet.es_callback == null || !tfacet.visible) {
-		continue;
-	    }
-	    if (typeof(tfacet.rs_field) === 'function') {
-		tfacet.rs_field = tfacet.rs_field(results);
-	    }
+	    if (typeof(tfacet.rs_field) === 'function') tfacet.rs_field = tfacet.rs_field(results);
 	    tfacet.es_callback(key, tfacet,
 			       facet_dispatch(i, key, dispatch), results);
+	    
 	}
     }
 }
