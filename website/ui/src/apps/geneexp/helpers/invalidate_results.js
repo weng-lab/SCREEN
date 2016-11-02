@@ -112,7 +112,6 @@ export const invalidate_results = (state) => {
 	dispatch(expression_loading());
 	QueryAJAX(n_query, f_success, f_error);
 	ExpressionAJAX(n_query, e_success, f_error);
-	
     }
 };
 
@@ -149,6 +148,6 @@ export const invalidate_boxplot = (gene) => {
 	    dispatch(results_error(jqxhr, error));
 	};
 	dispatch(expression_loading());
-	DetailAJAX(n_query, f_success, f_error);
+	ExpressionBoxplotAJAX(n_query, f_success, f_error);
     }
 };

@@ -9,36 +9,4 @@
 </script>
 <div id="root"></div>
 
-<div class="row" style="width: 100%;">
-  <div class="col-md-4 nopadding-right"></div>
-  <div class="col-md-8 nopadding-left">
-    <div class="gallery" id="chart1">
-      <svg></svg>
-    </div>
-  </div>
-</div>
-
-  <script>
-    	var data = GlobalData; //this.props.data;
-	var mmax = GlobalMmax; //this.props.mmax;
-	
-	nv.addGraph(function() {
-	    var chart = nv.models.boxPlotChart()
-		.x(function(d) { return d.label })
-		.y(function(d) { return d.values.Q3 })
-		.maxBoxWidth(75) // prevent boxes from being incredibly wide
-		.yDomain([0, mmax ])
-            ;
-	    chart.xAxis.rotateLabels(-25);
-	    chart.yAxis.axisLabel("log10(tpm + 0.01)");
-	    console.log(this.refs);
-	    d3.select('#chart1 svg')
-		.datum(data)
-		.call(chart);
-	    nv.utils.windowResize(chart.update);
-	    return chart;
-	});	
-</script>
-  
-
 {% include '_footer.html' -%}

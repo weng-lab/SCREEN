@@ -8,10 +8,17 @@ class Boxplot extends React.Component {
 
     render() {
 	return (<div>
-		<div ref="container" />
+  		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
+		        Loading...
+		    </div>
+		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
 		</div>);
     }
-    
+
+    componentDidMount(){
+	this.componentDidUpdate();
+    }
+
     componentDidUpdate() {
 	console.log("boxplot componentDidUpdate");
 	$(this.refs.container).empty();
