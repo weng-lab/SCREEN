@@ -1,6 +1,7 @@
 var React = require('react');
 var $ = require('jquery');
 var _dt = require('datatables.net');
+//require('datatables.net-bs');
 
 class ResultsTable extends React.Component {
 
