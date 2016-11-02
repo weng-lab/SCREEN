@@ -11,7 +11,7 @@ import CartPage from './apps/cart/main';
 import GeneExpPage from './apps/geneexp/main';
 //import * as cart_app from './apps/cart/main';
 
-console.log(Route);
+//console.log(Route);
 
 ReactDOM.render((<Router history={browserHistory}>
 		    <Route path="/search(.*)" component={SearchPage} />
