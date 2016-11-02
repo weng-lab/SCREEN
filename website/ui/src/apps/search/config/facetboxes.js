@@ -263,22 +263,26 @@ export const es_links = {
     },
     "ranks": {
 	"dnase": {
-	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap],
+	    agg_map: [RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.dnase." + selected_cell_line(state) + ".rank"
 	},
 	"promoter": {
-	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap],
+	    agg_map: [RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.promoter." + selected_cell_line(state) + ".DNase+H3K4me3.rank"
 	},
 	"enhancer": {
-	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap],
+	    agg_map: [RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.enhancer." + selected_cell_line(state) + ".DNase+H3K27ac.rank"
 	},
 	"ctcf": {
-	    f_query: [RangeQueryMap, RangeAggMap],
+	    f_query: [RangeQueryMap],
+	    agg_map: [RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: (state) => "ranks.ctcf." + selected_cell_line(state) + ".DNase+CTCF.rank"
 	}
