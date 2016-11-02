@@ -32,7 +32,7 @@ class FacetApp extends React.Component {
 	    var connector = es_connect(k);
 	    for (var i in es_links[k]) {
 		var obj = es_links[k][i];
-		this.props.store.dispatch(connector(i, obj.f_query, obj.f_results, obj.field));
+		this.props.store.dispatch(connector(i, obj.f_query, obj.f_results, obj.field, null, obj.st_map));
 	    }
 	}
 	this.props.store.dispatch(invalidate_results(this.props.store.getState()));

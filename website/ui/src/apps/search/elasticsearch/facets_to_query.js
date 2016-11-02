@@ -44,3 +44,26 @@ const FacetQueryMap = (state) => {
 
 }
 export default FacetQueryMap;
+
+export const FacetsToSearchText = (state) => {
+
+    var retval = "";
+    
+    for (var i in state.facet_boxes) {
+	
+	var tbox = state.facet_boxes[i];
+	var visible = (tbox.display_map ? tbox.display_map(state) : tbox.visible);
+	if (!visible) continue;
+
+	for (var key in tbox.facets) {
+	    console.log(tfacet);
+	    var tfacet = Object.assign({}, tbox.facets[key]);
+	    if (!tfacet.visible || tfacet.st_map == null) continue;
+	    retval += tfacet.st_map(key, tfacet);
+	}
+	
+    }
+
+    return retval;
+    
+};
