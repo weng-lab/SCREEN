@@ -1,6 +1,7 @@
 import sys, os, json, cherrypy
 import subprocess
 
+from compute_gene_expression import ComputeGeneExpression
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
@@ -25,22 +26,18 @@ class PageInfoGeneExp:
                 "reAccessions" : [],
                 "re_json_index" : paths.re_json_index
         }
-
+    
     def geneexpPage(self, args, kwargs, uuid):
-        retval = self.wholePage()
+        ret = self.wholePage()
 
         parsed = ""
         if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.es)
-            parsed = p.parse()
-            parsedStr = p.parseStr()
+            gene = kwargs["q"]
+        # TODO: check gene
 
-        retval.update({"globalParsedQuery" : json.dumps({}),
-                       "globalSessionUid" : uuid,
-                       "globalTfs" : json.dumps({}),
-                       "globalCellTypes" : json.dumps({}),
-                       "searchPage": False,
-                       "tissueMap": json.dumps({})})
+        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
+        ge = cge.compute()
 
-        return retval
+        ret.update(ge)
+        return ret
     
