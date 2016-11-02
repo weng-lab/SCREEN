@@ -223,21 +223,24 @@ export const es_links = {
 	"cell_lines": {
 	    f_query: null,
 	    f_results: [LongListResultsMap],
-	    field: null
+	    field: null,
+	    st_map: (key, tfacet) => (tfacet.state.selection == null ? "" : tfacet.state.selection.replace(/_/g, " ") + " ")
 	}
     },
     "chromosome": {
 	"chromosome": {
 	    f_query: [ListQueryMap, ListAggMap],
 	    f_results: [ListResultsMap],
-	    field: "position.chrom"
+	    field: "position.chrom",
+	    st_map: (key, tfacet) => (tfacet.state.selection == null ? "" : tfacet.state.selection + ":")
 	}
     },
     "coordinates": {
 	"coordinates": {
 	    f_query: [CoordinateQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
-	    field: "position.start"
+	    field: "position.start",
+	    st_map: (key, tfacet) => (tfacet.state.selection_range[0] + "-" + tfacet.state.selection_range[1])
 	}
     },
     "TFs": {

@@ -33,7 +33,8 @@ const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), a
 	return Object.assign({}, state, {
 	    es_map: action.es_map,
 	    es_callback: action.es_callback,
-	    es_field: action.es_field
+	    es_field: action.es_field,
+	    st_map: action.st_map
 	});
 	
     }

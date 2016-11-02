@@ -1,8 +1,9 @@
 import QueryAJAX, {DetailAJAX, ExpressionAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE,
-	DETAILS_FETCHING, UPDATE_DETAIL, EXPRESSION_LOADING, EXPRESSION_DONE} from '../reducers/root_reducer'
+	DETAILS_FETCHING, UPDATE_DETAIL, EXPRESSION_LOADING, EXPRESSION_DONE, SEARCHBOX_ACTION} from '../reducers/root_reducer'
+import {SET_VALUE} from '../../../common/reducers/searchbox'
 import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
-import FacetQueryMap from '../elasticsearch/facets_to_query'
+import FacetQueryMap, {FacetsToSearchText} from '../elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
 
 export const results_fetching = () => {
@@ -73,6 +74,17 @@ export const expression_done = (response) => {
     }
 };
 
+export const set_searchtext = (value) => {
+    return {
+	type: SEARCHBOX_ACTION,
+	target: "searchbox",
+	subaction: {
+	    type: SET_VALUE,
+	    value
+	}
+    }
+}
+
 export const invalidate_results = (state) => {
     return (dispatch) => {
 
@@ -94,6 +106,7 @@ export const invalidate_results = (state) => {
 	    ResultsDispatchMap(state, response, dispatch);
 	    dispatch(set_table_results(response.results.hits));
 	    dispatch(results_done(response));
+	    dispatch(set_searchtext(FacetsToSearchText(state)));
 	};
 	var f_error = (jqxhr, status, error) => {
 	    dispatch(results_error(jqxhr, error));

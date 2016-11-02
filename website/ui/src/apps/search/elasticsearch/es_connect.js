@@ -10,7 +10,7 @@ const compose_callbacks = (callbacks) => (a, b, c, d) => {
     for (var i in callbacks) callbacks[i](a, b, c, d);
 };
 
-const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null, rs_field = null) => {
+const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null, rs_field = null, st_map = null) => {
     return {
 	type: FACETBOX_ACTION,
 	key: box,
@@ -22,7 +22,8 @@ const es_connect = (box) => (key, f_query_maps, r_facet_maps, es_field = null, r
 		es_map: compose_maps(f_query_maps),
 		es_callback: compose_callbacks(r_facet_maps),
 		es_field,
-		rs_field
+		rs_field,
+		st_map
 	    }
 	}
     };
