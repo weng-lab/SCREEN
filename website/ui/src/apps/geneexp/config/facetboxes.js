@@ -7,7 +7,7 @@ import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 import {default_margin} from './constants'
 import {selected_cell_line} from '../elasticsearch/helpers'
 
-import {render_int, render_cell_type} from './results_table'
+import {render_int} from './results_table'
 
 export const facetboxes = {
     "cell_lines": {
@@ -25,8 +25,7 @@ export const facetboxes = {
 			{
 			    title: "compartment",
 			    data: "value",
-			    className: "dt-right",
-			    render: render_cell_type
+			    className: "dt-right"
 			}
 		    ],
 		    selection: null

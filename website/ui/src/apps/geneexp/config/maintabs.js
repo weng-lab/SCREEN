@@ -3,7 +3,6 @@ var React = require('react');
 import ResultsApp from '../components/results_app'
 
 import DetailsApp, {details_connector} from '../components/details_app'
-import {tabs} from './details'
 
 import {expression_boxplot_connector} from '../components/expression_boxplot'
 import Boxplot from '../../../common/components/boxplot'

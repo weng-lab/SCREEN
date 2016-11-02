@@ -13,7 +13,7 @@ const facet_default_state = (reducer) => {
     };
 };
 
-const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), action) => {
+const FacetReducer = (subreducer) => (state = facet_default_state(reducer), action) => {
 
     if (action == null) return state;
 
