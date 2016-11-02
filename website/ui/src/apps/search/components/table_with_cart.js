@@ -30,7 +30,7 @@ class TableWithCart extends React.Component {
 		    <ResultsDataTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
 	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
 		        order={this.props.order} bFilter={true} bLengthChange={true} />
-		    <span>{total}</span>
+		    <span className="tableInfo">{total}</span>
 		</div>);
     }
 }
