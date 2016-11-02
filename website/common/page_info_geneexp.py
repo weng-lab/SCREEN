@@ -38,6 +38,9 @@ class PageInfoGeneExp:
             gene = kwargs["q"]
         # TODO: check gene
 
+        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
+        return ret
+        
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
         ge = cge.compute(gene)
 
