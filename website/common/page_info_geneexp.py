@@ -24,7 +24,10 @@ class PageInfoGeneExp:
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index
+                "re_json_index" : paths.re_json_index,
+                "globalSessionUid" : "",
+                "globalTfs" : [],
+                "globalCellTypes" : []
         }
     
     def geneexpPage(self, args, kwargs, uuid):
@@ -36,8 +39,9 @@ class PageInfoGeneExp:
         # TODO: check gene
 
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        ge = cge.compute()
+        ge = cge.compute(gene)
 
         ret.update(ge)
+        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
         return ret
     

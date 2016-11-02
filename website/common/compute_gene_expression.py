@@ -1,5 +1,12 @@
 import sys, os, json
 
+from itertools import groupby
+from scipy.stats.mstats import mquantiles
+import numpy as np
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from db_utils import getcursor
+
 class ComputeGeneExpression:
     def __init__(self, es, ps, cache):
         self.es = es
@@ -15,7 +22,7 @@ class ComputeGeneExpression:
             ret.append(r)
         return ret
 
-    def process(self, curs, gene, rows, f):
+    def process(self, gene, rows):
         rows = self.filterNAs(rows)
         sorter = lambda x: x[1]
         rows.sort(key = sorter)
@@ -44,7 +51,7 @@ inner join r_rnas on r_rnas.encode_id = r.dataset
 where gene_name = %(gene)s""",
                      { "gene" : gene })
         rows = curs.fetchall()
-        return process(curs, gene, rows, f)
+        return self.process(gene, rows)
 
     def compute(self, gene):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
