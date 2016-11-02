@@ -45,7 +45,7 @@ class Heatmap extends React.Component {
     }
 
     componentDidUpdate() {
-
+	
 	if (!this.refs.container.style.display == "block") return;
 
 	$(this.refs.container).empty();

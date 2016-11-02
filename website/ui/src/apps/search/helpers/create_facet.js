@@ -167,14 +167,6 @@ const longlist_dispatch_map = (store, box, key) => (dispatch) => {
     };
 };
 
-const props_dispatch_map = (dispatch) => {
-    return {
-	onchange: () => {
-	    dispatch(invalidate_results());
-	}
-    };
-};
-
 const _map = {
     RANGE_FACET: {
 	connector: (store, box, key) => connect(range_props_map(store, box, key), range_dispatch_map(store, box, key)),
