@@ -40,6 +40,7 @@
     "babel-preset-stage-2": "^6.13.0",
     "d3": "^4.2.2",
     "datatables.net": "^1.10.12",
+    "datatables.net-bs": "^1.10.12",
     "immutable": "^3.8.1",
     "jquery": "^2.1.4",
     "jquery-ui": "^1.12.1",
