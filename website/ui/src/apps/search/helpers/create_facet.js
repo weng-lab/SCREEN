@@ -94,7 +94,7 @@ const range_dispatch_map = (store, box, key, invalidator = null) => (dispatch) =
 		type: SET_SELECTION_RANGE,
 		selection_range
 	    }));
-	    if (invalidtor) dispatch(invalidator(store.getState()));
+	    if (invalidator) dispatch(invalidator(store.getState()));
 	},
 	updateWidth: (width) => {
 	    dispatch(facet_action(box, key, {
