@@ -84,6 +84,11 @@ class MainApp():
         return self.ge.geneexp(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def geneexpjson(self, *args, **kwargs):
+        return self.ge.geneexpjson(args, kwargs)
+
+    @cherrypy.expose
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
 

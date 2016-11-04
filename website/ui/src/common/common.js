@@ -54,3 +54,10 @@ export function set_center_x(element, x, limits = null) {
     }
     element.style.left = nleft + "px";
 }
+
+export function numberWithCommas(x) {
+    // http://stackoverflow.com/a/2901298
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}

@@ -13,22 +13,19 @@ const facet_default_state = (reducer) => {
     };
 };
 
-const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), action) => {
+const FacetReducer = (subreducer) => (state = facet_default_state(reducer), action) => {
 
     if (action == null) return state;
 
     switch (action.type) {
-
     case HIDE_FACET:
 	return Object.assign({}, state, {
 	    visible: false
 	});
-
     case SHOW_FACET:
 	return Object.assign({}, state, {
 	    visible: true
 	});
-
     case ES_CONNECT:
 	return Object.assign({}, state, {
 	    es_map: action.es_map,
@@ -37,7 +34,6 @@ const FacetReducer = (subreducer) => (state = facetbox_default_state(reducer), a
 	    st_map: action.st_map,
 	    agg_map: action.agg_map
 	});
-	
     }
     
     return Object.assign({}, state, {

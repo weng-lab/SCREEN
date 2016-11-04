@@ -26,18 +26,5 @@ class FacetApp extends React.Component {
 		</div>);
     }
 
-    componentDidMount() {
-
-	for (var k in es_links) {
-	    var connector = es_connect(k);
-	    for (var i in es_links[k]) {
-		var obj = es_links[k][i];
-		this.props.store.dispatch(connector(i, obj.f_query, obj.f_results, obj.field));
-	    }
-	}
-	this.props.store.dispatch(invalidate_results(this.props.store.getState()));
-
-    }
-
 }
 export default FacetApp;

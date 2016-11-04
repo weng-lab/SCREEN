@@ -1,10 +1,11 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-
 <script type="text/javascript">
   var GlobalParsedQuery = {{ globalParsedQuery }};
+  var GlobalData = {{ data }};
+  var GlobalMmax = {{ mmax }};
+  var GlobalCellCompartments = {{ cellCompartments }};
 </script>
 <div id="root"></div>
 

@@ -195,3 +195,35 @@ select.ui-toggle-switch { display: none; }
     text-align: center;
     vertical-align: middle;
 }
+
+/* datatables */
+
+.pagination {
+    margin: 0px;
+}
+
+.pagination > li > a {
+    padding: 2px; /* button padding */
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.table {
+    margin-bottom: 4px;
+}
+
+.dataTables_filter {
+    float: right;
+}
+
+.tableInfo {
+    float: right;
+    margin-top: -25px;
+    padding-right: 50px;
+}
+
+.browserForm {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}

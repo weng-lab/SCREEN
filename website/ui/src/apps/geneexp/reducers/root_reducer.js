@@ -15,8 +15,6 @@ export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
 
-export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
-
 export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
@@ -26,8 +24,12 @@ export const TAB_ACTION = 'TAB_ACTION';
 
 export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
 
+export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
+export const UPDATE_EXPRESSION_BOXPLOT = 'UPDATE_EXPRESSION_BOXPLOT';
 export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
 export const EXPRESSION_DONE = 'EXPRESSION_DONE';
+export const EXPRESSION_BOXPLOT_LOADING = 'EXPRESSION_BOXPLOT_LOADING';
+export const EXPRESSION_BOXPLOT_DONE = 'EXPRESSION_BOXPLOT_DONE';
 
 export let root_default_state = {
     facet_boxes: {},
@@ -42,6 +44,11 @@ export let root_default_state = {
 	    rowlabels: [],
 	    matrix: [],
 	    fetching: false
+	},
+	expression_boxplot: {
+	    data: [],
+	    mmax: 0,
+	    fetching: true
 	},
 	fetching: false
     },
@@ -61,7 +68,8 @@ export let root_default_state = {
     comparison: {
 	threshold: 1000,
 	rank_type: "enhancer"
-    }
+    },
+    
 };
 
 export const main_tab_connector = MainTabsConnector(
@@ -132,6 +140,25 @@ export const RootReducer = (state = root_default_state, action) => {
 	    })
 	});
 
+    case EXPRESSION_BOXPLOT_LOADING:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: Object.assign({},
+						 state.results.expression_boxplot, {
+		    fetching: true
+		})
+	    })
+	});
+
+    case EXPRESSION_BOXPLOT_DONE:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: Object.assign({}, state.results.expression_boxplot, {
+		    fetching: false
+		})
+	    })
+	});
+
     case RESULTS_ERROR:
 	console.log("RESULTS_ERROR:", action.requestobj);
 
@@ -173,6 +200,13 @@ export const RootReducer = (state = root_default_state, action) => {
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		expression_matrix: action.expression_matrix
+	    })
+	});
+
+    case UPDATE_EXPRESSION_BOXPLOT:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: action.expression_boxplot
 	    })
 	});
 
