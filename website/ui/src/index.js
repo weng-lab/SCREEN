@@ -16,5 +16,6 @@ import GeneExpPage from './apps/geneexp/main';
 ReactDOM.render((<Router history={browserHistory}>
 		    <Route path="/search(.*)" component={SearchPage} />
 		    <Route path="/cart" component={CartPage} />
-		    <Route path="/geneexp(.*)" component={GeneExpPage} />
+		    <Route path="/geneexp" component={GeneExpPage} />
+		    <Route path="/comparison" component={ComparisonPage} />
 		 </Router>), document.getElementById('root'));
