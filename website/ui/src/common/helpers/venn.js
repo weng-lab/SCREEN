@@ -525,10 +525,9 @@
 
         nodeEnter.append("text")
             .attr("x", function(d) { return d.x; })
-            .attr("y", function(d) { return d.y; })
+            .attr("y", function(d, i) { return d.y + (i * 20); })
             .attr("text-anchor", "middle")
             .attr("dy", "0.35em")
-	    .attr("class", "venntext")
             .style("stroke", function(d, i) { return textStrokeColours(i); })
             .style("fill", function(d, i) { return textFillColours(i); })
             .text(function(d) { return d.label; });
@@ -826,11 +825,12 @@
 }(window.circleIntersection = window.circleIntersection || {}));
 
 
-export const create_venn_diagram = (destination_div, sets, overlaps) => {
+export const create_venn_diagram = (destination_div, sets, overlaps, tooltipdiv) => {
 
     var diagram;
 
-    var tooltip = d3.select("#venntooltip");
+    var tooltip = d3.select(tooltipdiv);
+    
     var elem = d3.select(destination_div);
 
     var vennObj = venn.venn(sets, overlaps);
@@ -845,8 +845,9 @@ export const create_venn_diagram = (destination_div, sets, overlaps) => {
 	.style("stroke", "white")
 	.style("stroke-width", "2")
 	.on("mousemove", function() {
-	    tooltip.style("left", (d3.event.pageX) + "px")
-	  	.style("top", (d3.event.pageY - 28) + "px");
+	    console.log(d3.event);
+	    tooltip.style("left", (d3.event.offsetX) + "px")
+	  	.style("top", (d3.event.offsetY) + "px");
 	})
 	.on("mouseover", function(d, i) {
 	    var selection = d3.select(this);
@@ -895,8 +896,8 @@ export const create_venn_diagram = (destination_div, sets, overlaps) => {
 	    tooltip.transition().style("opacity", 0);
 	})
 	.on("mousemove", function() {
-	    tooltip.style("left", (d3.event.pageX) + "px")
-		.style("top", (d3.event.pageY - 28) + "px");
+	    tooltip.style("left", (d3.event.offsetX) + "px")
+		.style("top", (d3.event.offsetY) + "px");
 	});
     
     intersections.exit().remove();  

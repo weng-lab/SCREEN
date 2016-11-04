@@ -2,7 +2,6 @@ import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from
 
 import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../../search/components/maintab'
-import {MainVennConnector} from '../../search/components/main_venn_diagram'
 
 export const RESULTS_FETCHING = 'RESULTS_FETCHING';
 export const RESULTS_DONE = 'RESULTS_DONE';

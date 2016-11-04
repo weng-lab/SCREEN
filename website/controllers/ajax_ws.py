@@ -43,8 +43,7 @@ class AjaxWebService:
                         "suggest" : self._suggest,
                         "query": self._query,
                         "search": self._search,
-                        "gene_expression": self._expression_matrix,
-                        "venn": self._venn }
+                        "gene_expression": self._expression_matrix }
         self._cached_results = {}
 
     def _get_rank(self, label, v):
@@ -69,32 +68,6 @@ class AjaxWebService:
                           "cell_type": k,
                           "ctcf": self._get_rank("CTCF-Only", v),
                           "ctcf_DNase": self._get_rank("DNase+CTCF", v) } for k, v in ranks["ctcf"].iteritems()] }
-    
-    def _venn(self, j):
-
-        #print("VENN")
-        #print(j)
-        
-        cell_lines = j["cell_lines"]
-        rank = j["rank"]
-        rank_type = j["rank_type"]
-        
-        def _run_venn_q(q):
-            retval = self.es.search(body={"query": {"bool": {"must": q}}},
-                                    index=paths.re_json_index)["hits"]["total"]
-            #print(retval)
-            return retval
-        
-        left = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"lte": rank}}},
-                            {"range": {rank_type % cell_lines[1]: {"gte": rank}}}])
-        center = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"gte": rank}}},
-                              {"range": {rank_type % cell_lines[1]: {"lte": rank}}}])
-        right = _run_venn_q([{"range": {rank_type % cell_lines[0]: {"lte": rank}}},
-                             {"range": {rank_type % cell_lines[1]: {"lte": rank}}}])
-        
-        return {"sets": [{"label": cell_lines[0], "size": left + center},
-                         {"label": cell_lines[1], "size": right + center} ],
-                "overlaps": [{"sets": [0, 1], "size": center}] }
     
     def _peak_format(self, peaks):
         ret = []
@@ -212,14 +185,56 @@ class AjaxWebService:
     def _search(self, j):
         return self._search_partial(j)
 
+    def _run_venn_queries(self, j, basequery):
+        
+        if len(j["cell_types"]) < 2:
+            return {"rank_range": [],
+                    "totals": {},
+                    "overlaps": {} }
+        
+        fields = {}
+        _rank_types = { "DNase": ("dnase", ""),
+                        "Enhancer": ("enhancer", ".H3K27ac-Only"),
+                        "Promoter": ("promoter", ".H3K4me3-Only"),
+                        "CTCF": ("ctcf", ".CTCF-Only") }
+        query = { "aggs": {},
+                  "filter": basequery["query"] }
+
+        # first pass: build rank aggs, cell type aggs
+        for cell_type in j["cell_types"]:
+            rt1, rt2 = _rank_types[j["rank_type"]]
+            fields[cell_type] = "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
+            query["aggs"][cell_type + "min"] = {"min": {"field": fields[cell_type]}}
+            query["aggs"][cell_type + "max"] = {"max": {"field": fields[cell_type]}}
+            query["aggs"][cell_type] = {"filter": {"range": {fields[cell_type]: {"lte": j["rank_threshold"]}}},
+                                        "aggs": {} }
+
+        # second pass: build comparison aggs
+        for cell_type in j["cell_types"]:
+            for comparison_ct in j["cell_types"]:
+                if cell_type == comparison_ct: continue
+                query["aggs"][cell_type]["aggs"][comparison_ct] = {"range": {"field": fields[comparison_ct],
+                                                                             "ranges": [{"to": j["rank_threshold"]}]}}
+
+
+        # do search and reformat for return
+        raw_results = self.es.search(body = query, index = paths.re_json_index)["aggregations"]
+        return {"rank_range": [min([raw_results[cell_type + "min"]["value"] for cell_type in j["cell_types"]]),
+                               max([raw_results[cell_type + "max"]["value"] for cell_type in j["cell_types"]]) ],
+                "totals": {cell_type: raw_results[cell_type]["doc_count"] for cell_type in j["cell_types"]},
+                "overlaps": {ct: {cct: raw_results[ct][cct]["buckets"][0]["doc_count"]
+                                  for cct in j["cell_types"] if cct != ct } for ct in j["cell_types"] } }
+        
+    
     def _search_partial(self, j):
+        
         # select only fields needed for re table
         #  eliminates problem of returning >10MB of json
         fields = ["accession", "neg-log-p",
                   "position.chrom", "position.start",
                   "position.end", "genes.nearest-all",
                   "genes.nearest-pc", "in_cart"]
-
+        
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
         if 0:
@@ -232,11 +247,14 @@ class AjaxWebService:
                                    "index": paths.re_json_index,
                                    "callback": "regulatory_elements" })
         print(results["results"]["total"])
-        if "post_processing" in j and "tss_bins" in j["post_processing"]:
-            tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
-            results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
-            print(results["tss_histogram"])
-            print(results["aggs"])
+        if "post_processing" in j:
+            if "tss_bins" in j["post_processing"]:
+                tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
+                results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
+                print(results["tss_histogram"])
+                print(results["aggs"])
+            if "venn" in j["post_processing"]:
+                results["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
         
         if self.args.dump:
             base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"

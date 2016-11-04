@@ -3,7 +3,6 @@ import FacetboxReducer from './facetbox_reducer'
 import TabReducer from './tab_reducer'
 import SearchBoxReducer from '../../../common/reducers/searchbox'
 
-import {maintabs} from '../config/maintabs'
 import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 
@@ -36,7 +35,7 @@ export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
 export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
 export const EXPRESSION_DONE = 'EXPRESSION_DONE';
 
-export let root_default_state = {
+export const default_state = (tabs) => {return {
     facet_boxes: {},
     results: {
 	query: {},
@@ -65,7 +64,7 @@ export let root_default_state = {
 	data: {},
 	tab_selection: 0
     },
-    main_tabs: maintabs,
+    main_tabs: tabs,
     comparison: {
 	threshold: 1000,
 	rank_type: "enhancer"
@@ -74,7 +73,7 @@ export let root_default_state = {
     searchbox: {
 	value: ""
     }
-};
+}};
 
 export const main_tab_connector = MainTabsConnector(
     (state) => (state.main_tabs),
@@ -96,10 +95,9 @@ export const main_searchbox_connector = MainSearchBoxConnector(
 	    subaction: action
 	});
     })
-);
-	    
+);	    
 
-export const RootReducer = (state = root_default_state, action) => {
+export const get_root_reducer = (tabs) => (state = default_state(tabs), action) => {
 
     if (null == action) {
         return state;

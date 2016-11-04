@@ -30,7 +30,7 @@ class ParseSearch:
     def find_celltypes_in_query(self, q):
         return self.es.cell_type_query(q)
     
-    def parse(self):
+    def parse(self, comparison = False):
         s = self._sanitize()
         self.sanitizedStr = s
         toks = s.split()
@@ -77,8 +77,8 @@ class ParseSearch:
 
         print(coord, ret["cellType"])
         if coord:
-            ret.update({"coord" : {"chrom" : coord.chrom,
-                                   "start" : coord.start,
-                                   "end" : coord.end}})
+            ret.update({"coord": {"chrom": coord.chrom,
+                                   "start": coord.start,
+                                   "end": coord.end}})
         ret.update({"accessions": accessions})
         return ret

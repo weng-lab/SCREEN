@@ -7,6 +7,7 @@ from controllers.geneexp_controller import GeneExpController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.ajax_ws import AjaxWebService
+from controllers.comparison import ComparisonController
 
 from common.session import Sessions
 
@@ -20,6 +21,7 @@ class MainApp():
         self.templates = Templates(viewDir, staticDir)
         self.mc = MainController(self.templates, es, ps, cache)
         self.ge = GeneExpController(self.templates, es, ps, cache)
+        self.cp = ComparisonController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
         self.ajaxWS = AjaxWebService(args, es, ps, cache)
@@ -68,6 +70,10 @@ class MainApp():
     @cherrypy.expose
     def overlap(self, chrom, start, end):
         return self.mc.Overlap(chrom, int(start), int(end))
+
+    @cherrypy.expose
+    def comparison(self, *args, **kwargs):
+        return self.cp.comparison(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
     def search(self, *args, **kwargs):

@@ -1,0 +1,15 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+
+{{ hh.css("/static/controls/histogram.css") }}
+{{ hh.css("/static/controls/range_slider.css") }}
+{{ hh.css("/static/controls/heatmap.css") }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script type="text/javascript">
+  var GlobalParsedQuery = {{ globalParsedQuery }};
+  var TISSUE_MAP = {{ tissueMap }};
+</script>
+<div id="root"></div>
+
+{% include '_footer.html' -%}
