@@ -42,6 +42,11 @@ class ResultsTable extends React.Component {
 		onTdClick(this,
 			  _datatable.row($(this).parents('tr')).data());
 	    }
+	}).on("click", "button", function() {
+	    if (onButtonClick) {
+		onButtonClick($(this).html(),
+			      _datatable.row($(this).parents('tr')).data());
+		 }
 	}).removeClass('display').addClass('table table-condensed table-hover');
 	
 	this._datatable = _datatable;

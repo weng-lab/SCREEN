@@ -39,12 +39,6 @@ class PageInfoGeneExp:
         # TODO: check gene
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
-        
-        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        ge = cge.compute(gene)
-
-        ret.update(ge)
-        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 
         cellcs = [{"value" : "cell"},
                   {"value" : "nucleoplasm"},
@@ -53,7 +47,16 @@ class PageInfoGeneExp:
                   {"value" : "membrane"},
                   {"value" : "chromatin"},
                   {"value" : "nucleolus"}]
-        ret.update({"globalCellCompartments" : json.dumps(cellcs)})
+        ret.update({"cellCompartments" : json.dumps(cellcs),
+                    "globalCellCompartments" : json.dumps(cellcs)})
+
+        return ret
+        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
+        ge = cge.compute(gene)
+
+        ret.update(ge)
+        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
+
                 
         return ret
     

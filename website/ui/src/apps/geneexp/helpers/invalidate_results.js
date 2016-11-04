@@ -32,8 +32,9 @@ export const expression_boxplot_done = (response) => {
 };
 
 export const invalidate_boxplot = (gene) => {
+    console.log("invalidate_boxplot", gene);
     return (dispatch) => {
-	var n_query = {
+	var query = {
 	    gene: gene
 	};
 	var f_success = (response, status, jqxhr) => {
@@ -44,6 +45,6 @@ export const invalidate_boxplot = (gene) => {
 	    dispatch(results_error(jqxhr, error));
 	};
 	dispatch(expression_boxplot_loading());
-	ExpressionBoxplotAJAX(n_query, f_success, f_error);
+	ExpressionBoxplotAJAX(query, f_success, f_error);
     }
 };

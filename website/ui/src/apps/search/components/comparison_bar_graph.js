@@ -26,16 +26,16 @@ const format_data_for_bar_graph = (data, rank_type, threshold) => {
     var c_rank_f = c_rank_fs[rank_type];
     for (var i in data) {
 	for (var k in c_rank_f(data[i])) {
-	    if (TISSUE_MAP[k] == "") continue;
+	    if (GlobalTissueMap[k] == "") continue;
 	    if (rank_f(c_rank_f(data[i])[k]) > threshold) continue;
-	    if (!(TISSUE_MAP[k] in retval)) {
-		retval[TISSUE_MAP[k]] = {
-		    name: TISSUE_MAP[k],
-		    color: (TISSUE_MAP[k] in TissueColors ? TissueColors[TISSUE_MAP[k]] : "#000000"),
+	    if (!(GlobalTissueMap[k] in retval)) {
+		retval[GlobalTissueMap[k]] = {
+		    name: GlobalTissueMap[k],
+		    color: (GlobalTissueMap[k] in TissueColors ? TissueColors[GlobalTissueMap[k]] : "#000000"),
 		    items: []
 		};
 	    }
-	    retval[TISSUE_MAP[k]].items.push(rank_f(c_rank_f(data[i])[k]));
+	    retval[GlobalTissueMap[k]].items.push(rank_f(c_rank_f(data[i])[k]));
 	}
     }
     return retval;
