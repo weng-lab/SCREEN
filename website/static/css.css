@@ -99,6 +99,18 @@ div.result_row_selected {
     padding-top: 10px;
 }
 
+.venntooltip {
+  position: absolute;
+  text-align: center;
+  width: 128px;
+  height: 22px;
+  background: #333;
+  color: #ddd;
+  border: 0px;
+  border-radius: 8px;
+  opacity: 0;
+}
+
 .grow {
     /* http://stackoverflow.com/questions/27441404/text-div-expand-on-hover-with-css */
     height: 30px;

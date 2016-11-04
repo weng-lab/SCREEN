@@ -12,12 +12,15 @@ class VennDiagram extends React.Component {
     componentDidUpdate() {
 	$(this.refs.container).empty();
 	if (this.props.sets && this.props.sets.length > 0) {
-	    create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps);
+	    create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps, this.refs.tooltip);
 	}
     }
     
     render() {
-	return <div ref="container" style={{width: this.props.width, height: this.props.height}} />;
+	return (<div>
+		   <div ref="container" style={{width: this.props.width, height: this.props.height}} />
+		   <div ref="tooltip" className="venntooltip" />
+		</div>);
     }
     
 }

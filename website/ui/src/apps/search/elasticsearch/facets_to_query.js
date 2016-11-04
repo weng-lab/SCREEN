@@ -40,7 +40,7 @@ const FacetQueryMap = (state) => {
 	}
 	
     }
-
+    
     return retval;
 
 }
