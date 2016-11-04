@@ -9,7 +9,7 @@ import {selected_cell_line} from '../elasticsearch/helpers'
 
 import {render_int} from './results_table'
 
-export const facetboxes = {
+export const facetboxes = () => {return {
     "cell_lines": {
 	title: "Cellular Compartments",
 	visible: true,
@@ -33,7 +33,7 @@ export const facetboxes = {
 	    }
 	}
     }
-};
+}};
 
 export const facetbox_render_order = [
     "cell_lines"
