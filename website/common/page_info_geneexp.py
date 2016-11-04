@@ -53,8 +53,7 @@ class PageInfoGeneExp:
                   {"value" : "membrane"},
                   {"value" : "chromatin"},
                   {"value" : "nucleolus"}]
-        ret.update({"cellCompartments" : json.dumps(cellcs),
-                    "globalCellCompartments" : json.dumps(cellcs)})
+        ret.update({"globalCellCompartments" : json.dumps(cellcs)})
                 
         return ret
     
