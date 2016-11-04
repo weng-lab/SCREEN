@@ -9,6 +9,8 @@ import thunk from 'redux-thunk';
 import SearchPage from './apps/search/main';
 import CartPage from './apps/cart/main';
 import GeneExpPage from './apps/geneexp/main';
+import ComparisonPage from './apps/search/comparison';
+
 //import * as cart_app from './apps/cart/main';
 
 //console.log(Route);
