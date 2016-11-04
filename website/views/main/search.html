@@ -9,6 +9,44 @@
 <script type="text/javascript">
   var GlobalParsedQuery = {{ globalParsedQuery }};
   var TISSUE_MAP = {{ tissueMap }};
+
+  function browserButtonClick(name, accession){
+
+    var half_window = 7500;
+    var arr = window.location.href.split("/");
+    var host = arr[0] + "//" + arr[2];
+    var data = JSON.stringify({"accession" : accession,
+                               "halfWindow" : half_window,
+                               "host" : host});
+    console.log("name", name);
+    switch (name) {
+    case "UCSC":
+        $.ajax({
+            type: "POST",
+            url: "/ucsc_trackhub_url",
+            data: data,
+            dataType: "json",
+            contentType : "application/json",
+  async: false, // http://stackoverflow.com/a/20235765
+             success: (response) => {
+                if ("err" in response) {
+                    $("#errMsg").text(response["err"]);
+                    $("#errBox").show()
+                    return true;
+                }
+		//console.log(response["trackhubUrl"]);
+	        window.open(response["url"], '_blank');
+            },
+	    error: (a, b, c) => {
+		console.log(a);
+	    }
+        });
+	break;
+    }
+
+};
+
+
 </script>
 <div id="root"></div>
 

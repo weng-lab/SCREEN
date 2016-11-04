@@ -1,6 +1,7 @@
 import sys, os, json, cherrypy
 import subprocess
 
+from compute_gene_expression import ComputeGeneExpression
 from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
@@ -23,24 +24,37 @@ class PageInfoGeneExp:
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index
+                "re_json_index" : paths.re_json_index,
+                "globalSessionUid" : "",
+                "globalTfs" : [],
+                "globalCellTypes" : []
         }
-
+    
     def geneexpPage(self, args, kwargs, uuid):
-        retval = self.wholePage()
+        ret = self.wholePage()
 
         parsed = ""
         if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.es)
-            parsed = p.parse()
-            parsedStr = p.parseStr()
+            gene = kwargs["q"]
+        # TODO: check gene
 
-        retval.update({"globalParsedQuery" : json.dumps({}),
-                       "globalSessionUid" : uuid,
-                       "globalTfs" : json.dumps({}),
-                       "globalCellTypes" : json.dumps({}),
-                       "searchPage": False,
-                       "tissueMap": json.dumps({})})
+        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
+        
+        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
+        ge = cge.compute(gene)
 
-        return retval
+        ret.update(ge)
+        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
+
+        cellcs = [{"value" : "cell"},
+                  {"value" : "nucleoplasm"},
+                  {"value" : "cytosol"},
+                  {"value" : "nucleus"},
+                  {"value" : "membrane"},
+                  {"value" : "chromatin"},
+                  {"value" : "nucleolus"}]
+        ret.update({"cellCompartments" : json.dumps(cellcs),
+                    "globalCellCompartments" : json.dumps(cellcs)})
+                
+        return ret
     

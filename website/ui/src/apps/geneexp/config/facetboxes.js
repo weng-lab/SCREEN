@@ -7,30 +7,24 @@ import {CoordinateQueryMap} from '../elasticsearch/coordinate_map'
 import {default_margin} from './constants'
 import {selected_cell_line} from '../elasticsearch/helpers'
 
-import {render_int, render_cell_type} from './results_table'
+import {render_int} from './results_table'
 
 export const facetboxes = {
     "cell_lines": {
-	title: "Cell Types",
+	title: "Cellular Compartments",
 	visible: true,
 	facets: {
 	    "cell_lines": {
-		type: LONGLIST_FACET,
+		type: LONGCHECKLIST_FACET,
 		visible: true,
 		title: "",
 		state: {
-		    data: GlobalCellTypes,
+		    data: GlobalCellCompartments,
 		    order: [],
 		    cols: [
 			{
-			    title: "cell type",
+			    title: "compartment",
 			    data: "value",
-			    className: "dt-right",
-			    render: render_cell_type
-			},
-			{
-			    title: "tissue",
-			    data: "tissue",
 			    className: "dt-right"
 			}
 		    ],

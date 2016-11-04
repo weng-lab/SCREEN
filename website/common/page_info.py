@@ -23,7 +23,8 @@ class PageInfoMain:
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index
+                "re_json_index" : paths.re_json_index,
+                "globalCellCompartments" : json.dumps([])
         }
 
     def hexplotPage(self, args, kwargs):

@@ -229,11 +229,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def ucsc_trackhub_url(self, j, uuid):
         url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
 	url += "db=hg19";
+        
+        red = RegElementDetails(self.es, self.ps)
+        re = red.reFull(j["accession"])
 
         halfWindow = j["halfWindow"]
-	chrom = j["chrom"]
-	start = j["start"]
-	end = j["end"]
+	chrom = re["position"]["chrom"]
+	start = re["position"]["start"]
+	end = re["position"]["end"]
 
 	start = max(1, start - halfWindow);
         end = end + halfWindow;
@@ -242,7 +245,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         host = j["host"]
 
-        hubNum = self.db.insertOrUpdate("hg19", j["re"]["accession"], uuid)
+        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
 
         trackhubUrl = '/'.join([host,
                                 "ucsc_trackhub",

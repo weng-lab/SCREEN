@@ -5,6 +5,7 @@ import {render} from 'react-dom'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
+import {invalidate_results} from './helpers/invalidate_results'
 import {RootReducer} from './reducers/root_reducer'
 import FacetApp from './components/facet_app'
 
