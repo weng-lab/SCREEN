@@ -31,11 +31,11 @@ export const expression_boxplot_done = (response) => {
     }
 };
 
-export const invalidate_boxplot = (gene) => {
-    console.log("invalidate_boxplot", gene);
+export const invalidate_boxplot = (store) => {
+    console.log("invalidate_boxplot", store);
     return (dispatch) => {
 	var query = {
-	    gene: gene
+	    gene: store
 	};
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_expression_boxplot(response));

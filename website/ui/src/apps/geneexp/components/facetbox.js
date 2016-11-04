@@ -46,17 +46,17 @@ const add_facetbox = (key, {visible, title, facets, display_map}) => {
     };
 };
 
-const state_props_map = (store, key) => (state) => {
+const state_props_map = (store, key, invalidator = null) => (state) => {
     return {
 	visible: state.facet_boxes[key].visible,
 	title: state.facet_boxes[key].title,
 	facets: state.facet_boxes[key].facets,
 	store,
-	create_facet: FacetCreator(store, key)
+	create_facet: FacetCreator(store, key, invalidator)
     };
 }
 
-export const FacetboxCreator = (store) => (key, props) => {
+export const FacetboxCreator = (store) => (key, props, invalidator = null) => {
     store.dispatch(add_facetbox(key, props));
-    return connect(state_props_map(store, key))(FacetBox);
+    return connect(state_props_map(store, key, invalidator))(FacetBox);
 }
