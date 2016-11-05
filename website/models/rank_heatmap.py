@@ -21,5 +21,5 @@ class RankHeatmap:
             if not k.startswith("rank_"): continue
             rank_type = k.split("_")[1]
             tissue = k.split("_")[2]
-            retval[tissue][rank_type] = v["doc_count"] / total
+            retval[tissue][rank_type] = v["doc_count"] / float(total)
         return retval

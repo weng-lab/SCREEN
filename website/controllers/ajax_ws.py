@@ -20,6 +20,9 @@ from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
 from load_cell_types import LoadCellTypes
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
+from heatmaps.heatmap import Heatmap
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
 
@@ -221,14 +224,37 @@ class AjaxWebService:
                                                                              "ranges": [{"to": j["rank_threshold"]}]}}
 
 
-        # do search and reformat for return
+        # do search
         raw_results = self.es.search(body = query, index = paths.re_json_index)["aggregations"]
-        return {"rank_range": [min([raw_results[cell_type + "min"]["value"] for cell_type in j["cell_types"]]),
-                               max([raw_results[cell_type + "max"]["value"] for cell_type in j["cell_types"]]) ],
-                "totals": {cell_type: raw_results[cell_type]["doc_count"] for cell_type in j["cell_types"]},
-                "overlaps": {ct: {cct: raw_results[ct][cct]["buckets"][0]["doc_count"]
-                                  for cct in j["cell_types"] if cct != ct } for ct in j["cell_types"] } }
+        rank_range = [min([raw_results[cell_type + "min"]["value"] for cell_type in j["cell_types"]]),
+                      max([raw_results[cell_type + "max"]["value"] for cell_type in j["cell_types"]]) ]
+        totals = {cell_type: raw_results[cell_type]["doc_count"] for cell_type in j["cell_types"]}
+
+        # only two cell types: format as a venn diagram
+        if len(j["cell_types"]) == 2:
+            return {"rank_range": rank_range, "collabels": [], "rowlabels": [], "matrix": [],
+                    "totals": totals,
+                    "overlaps": {ct: {cct: raw_results[ct][cct]["buckets"][0]["doc_count"]
+                                      for cct in j["cell_types"] if cct != ct } for ct in j["cell_types"] } }
         
+        # more than two cell types: format as a heatmap
+        matrix = []
+        for ct1 in j["cell_types"]:
+            matrix.append([])
+            for ct2 in j["cell_types"]:
+                if ct1 == ct2:
+                    matrix[-1].append(1)
+                elif raw_results[ct1]["doc_count"] + raw_results[ct2]["doc_count"] == 0:
+                    matrix[-1].append(0)
+                else:
+                    matrix[-1].append(raw_results[ct1][ct2]["buckets"][0]["doc_count"] / float(raw_results[ct1]["doc_count"] + raw_results[ct2]["doc_count"]))
+        _heatmap = Heatmap(matrix)
+        roworder, colorder = _heatmap.cluster_by_both()
+        return {"rank_range": rank_range, "totals": [], "overlaps": {},
+                "totals": totals,
+                "rowlabels": [j["cell_types"][x] for x in roworder],
+                "collabels": [j["cell_types"][x] for x in colorder],
+                "matrix": matrix }
     
     def _search_partial(self, j):
         

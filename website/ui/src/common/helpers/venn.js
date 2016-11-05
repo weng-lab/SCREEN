@@ -845,7 +845,6 @@ export const create_venn_diagram = (destination_div, sets, overlaps, tooltipdiv)
 	.style("stroke", "white")
 	.style("stroke-width", "2")
 	.on("mousemove", function() {
-	    console.log(d3.event);
 	    tooltip.style("left", (d3.event.offsetX) + "px")
 	  	.style("top", (d3.event.offsetY) + "px");
 	})

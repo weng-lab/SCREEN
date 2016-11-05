@@ -6,10 +6,10 @@ default_colors.reverse();
 export const default_heatmap_layout = {
 
     "margin": {
-	"top": 150,
+	"top": 200,
 	"right": 10,
 	"bottom": 50,
-	"left": 100
+	"left": 200
     },
     
     "cellSize": 12,
