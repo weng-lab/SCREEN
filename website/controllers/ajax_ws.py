@@ -10,6 +10,7 @@ from models.regelm import RegElements
 from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
+from models.rank_heatmap import RankHeatmap
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
@@ -24,9 +25,15 @@ from utils import Utils, Timer
 
 class AjaxWebService:
     def __init__(self, args, es, ps, cache):
+        self._rank_types = { "DNase": ("dnase", ""),
+                             "Enhancer": ("enhancer", ".H3K27ac-Only"),
+                             "Promoter": ("promoter", ".H3K4me3-Only"),
+                             "CTCF": ("ctcf", ".CTCF-Only") }
+
         self.args = args
         self.es = es
         self.ps = ps
+        self.rh = RankHeatmap(cache.cellTypesAndTissues, self._rank_types)
         self.cache = cache
         
         self.em = ExpressionMatrix(self.es)
@@ -193,16 +200,13 @@ class AjaxWebService:
                     "overlaps": {} }
         
         fields = {}
-        _rank_types = { "DNase": ("dnase", ""),
-                        "Enhancer": ("enhancer", ".H3K27ac-Only"),
-                        "Promoter": ("promoter", ".H3K4me3-Only"),
-                        "CTCF": ("ctcf", ".CTCF-Only") }
+        print(basequery)
         query = { "aggs": {},
-                  "filter": basequery["query"] }
+                  "query": basequery["post_filter"] }
 
         # first pass: build rank aggs, cell type aggs
         for cell_type in j["cell_types"]:
-            rt1, rt2 = _rank_types[j["rank_type"]]
+            rt1, rt2 = self._rank_types[j["rank_type"]]
             fields[cell_type] = "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
             query["aggs"][cell_type + "min"] = {"min": {"field": fields[cell_type]}}
             query["aggs"][cell_type + "max"] = {"max": {"field": fields[cell_type]}}
@@ -237,22 +241,26 @@ class AjaxWebService:
         
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
+        j["callback"] = "regulatory_elements"
         if 0:
             j["object"]["sort"] = [{ "neg-log-p" : "desc" },
                                    "position.start",
                                    "position.end" ]
+
+        if "rank_heatmap" in j["post_processing"]:
+            j["object"]["aggs"] = self.rh.aggs
+            j["callback"] = ""
         
         with Timer('ElasticSearch time'):
             results = self._query({"object": j["object"],
                                    "index": paths.re_json_index,
-                                   "callback": "regulatory_elements" })
-        print(results["results"]["total"])
+                                   "callback": j["callback"] })
         if "post_processing" in j:
             if "tss_bins" in j["post_processing"]:
                 tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
                 results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
-                print(results["tss_histogram"])
-                print(results["aggs"])
+            if "rank_heatmap" in j["post_processing"]:
+                results["rank_heatmap"] = self.rh.process(results)
             if "venn" in j["post_processing"]:
                 results["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
         

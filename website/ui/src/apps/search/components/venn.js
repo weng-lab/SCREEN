@@ -26,7 +26,7 @@ class ComparisonVenn extends React.Component {
     }
     
     render() {
-	var _missing_data = (!this.props.totals || this.props.totals.length == 0);
+	var _missing_data = (!this.props.totals || Object.keys(this.props.totals).length < 2);
 	var venn = (Object.keys(this.props.totals).length == 2 ? this._get_venn(this.props.totals, this.props.overlaps) : {sets: {}, overlaps: {}});
 	return (<div>
 		   <div style={{display: (_missing_data ? "block" : "none")}}>
