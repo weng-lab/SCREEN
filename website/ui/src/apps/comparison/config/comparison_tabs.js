@@ -1,6 +1,6 @@
 var React = require('react');
 
-import ResultsApp from '../components/results_app'
+import ResultsApp from '../../search/components/results_app'
 import {main_venn_connector} from '../reducers/comparison_reducer'
 import MainVennDiagram from '../components/venn'
 

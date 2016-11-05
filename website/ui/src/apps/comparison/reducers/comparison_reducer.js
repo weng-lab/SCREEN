@@ -1,4 +1,4 @@
-import {get_root_reducer} from './root_reducer'
+import {get_root_reducer} from '../../search/reducers/root_reducer'
 import VennReducer from './venn_reducer'
 import {venn_connector} from '../components/venn'
 

@@ -2,12 +2,12 @@ import {SLIDER_FACET, RANGE_FACET, LIST_FACET, LONGCHECKLIST_FACET} from '../../
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {ListQueryMap, ListAggMap, ListResultsMap, RangeQueryMap, RangeAggMap, RangeResultsMap} from '../../search/elasticsearch/default_maps'
 import {CoordinateQueryMap} from '../../search/elasticsearch/coordinate_map'
-import {CellTypeQueryMap, RankTypeQueryMap, RankThresholdQueryMap, RankThresholdResultsMap} from '../elasticsearch/comparison_maps'
+import {CellTypeQueryMap, RankTypeQueryMap, RankThresholdQueryMap, RankThresholdResultsMap} from '../../search/elasticsearch/comparison_maps'
 
-import {default_margin} from './constants'
-import {selected_cell_line} from '../elasticsearch/helpers'
+import {default_margin} from '../../search/config/constants'
+import {selected_cell_line} from '../../search/elasticsearch/helpers'
 
-import {render_int, render_cell_type} from './results_table'
+import {render_int, render_cell_type} from '../../search/config/results_table'
 
 export const count_selected_cell_lines = (data) => {
     var i = 0;
