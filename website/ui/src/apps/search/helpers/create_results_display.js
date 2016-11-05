@@ -6,7 +6,12 @@ import {ADD_RESULTS_DISPLAY, RESULTS_DISPLAY_ACTION} from '../reducers/root_redu
 
 import VerticalBar from "../../../common/components/vertical_bar.js"
 import VerticalBarReducer from '../../../common/reducers/vertical_bar'
+
+import Heatmap, {default_heatmap_layout} from "../../../common/components/heatmap"
+import HeatmapReducer from '../../../common/reducers/heatmap'
+
 export const VERTICAL_BAR = 'VERTICAL_BAR';
+export const HEATMAP = 'HEATMAP';
 
 const vertical_bar_props_map = (store, key) => (_state) => {
     var state = _state.results_displays[key];
@@ -20,11 +25,28 @@ const vertical_bar_props_map = (store, key) => (_state) => {
     };
 };
 
+const heatmap_props_map = (store, key) => (_state) => {
+    var state = _state.results_displays[key];
+    return {
+	collabels: state.collabels,
+	rowlabels: state.rowlabels,
+	data: state.matrix,
+	title: state.title,
+	loading: state.loading,
+	chart_layout: default_heatmap_layout
+    };
+};
+
 const _map = {
     VERTICAL_BAR: {
 	connector: (store, key) => connect(vertical_bar_props_map(store, key)),
 	component: VerticalBar,
 	reducer: VerticalBarReducer
+    },
+    HEATMAP: {
+	connector: (store, key) => connect(heatmap_props_map(store, key)),
+	component: Heatmap,
+	reducer: HeatmapReducer
     }
 };
 
