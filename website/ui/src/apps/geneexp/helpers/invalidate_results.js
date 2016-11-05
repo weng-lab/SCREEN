@@ -29,12 +29,10 @@ export const expression_boxplot_done = (response) => {
     }
 };
 
-export const invalidate_boxplot = (store) => {
-    console.log("invalidate_boxplot", store);
+export const invalidate_boxplot = (q) => {
+    console.log("invalidate_boxplot", q);
     return (dispatch) => {
-	var query = {
-	    gene: store
-	};
+	var query = JSON.stringify(q);
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_expression_boxplot(response));
 	    dispatch(expression_boxplot_done(response));

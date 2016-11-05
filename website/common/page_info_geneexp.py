@@ -33,10 +33,10 @@ class PageInfoGeneExp:
     def geneexpPage(self, args, kwargs, uuid):
         ret = self.wholePage()
 
-        parsed = ""
-        if "q" in kwargs:
-            gene = kwargs["q"]
-        # TODO: check gene
+        gene = ""
+        if len(args):
+            gene = args[0]
+            # TODO: check gene
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 
@@ -50,13 +50,10 @@ class PageInfoGeneExp:
         ret.update({"cellCompartments" : json.dumps(cellcs),
                     "globalCellCompartments" : json.dumps(cellcs)})
 
-        return ret
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
         ge = cge.compute(gene)
 
         ret.update(ge)
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
-
-                
         return ret
     
