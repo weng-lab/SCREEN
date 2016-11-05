@@ -1,9 +1,5 @@
-import QueryAJAX, {DetailAJAX, ExpressionAJAX} from '../../search/elasticsearch/ajax'
-import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE,
-	DETAILS_FETCHING, UPDATE_DETAIL, EXPRESSION_LOADING, EXPRESSION_DONE, SEARCHBOX_ACTION} from '../../search/reducers/root_reducer'
-import {SET_VALUE} from '../../../common/reducers/searchbox'
+import QueryAJAX from '../../search/elasticsearch/ajax'
 import {SET_VENN_RESULTS} from '../reducers/venn_reducer'
-import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
 import FacetQueryMap, {FacetsToSearchText} from '../../search/elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../../search/elasticsearch/results_to_map'
 import {results_fetching, results_error, results_done, set_table_results, set_searchtext} from '../../search/helpers/invalidate_results'
