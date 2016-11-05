@@ -30,7 +30,7 @@ export const results_displays = {
 	    var query = [...query_obj.query.bool.filter, query_obj.post_filter];
 	    aggs[TSS_AGG_KEY] = tss_agg;
 	    extras["tss_bins"] = tss_pp;
-	    return {
+	    var ret = {
 		extras,
 		query: Object.assign({}, query_obj.query, {
 		    bool: {
@@ -39,6 +39,8 @@ export const results_displays = {
 		}),
 		aggs
 	    };
+	    //console.log(ret);
+	    return ret;
 	},
 	dispatch_result: (results, dispatch) => {dispatch({
 	    type: SET_DATA,
