@@ -1,6 +1,4 @@
 export const SELECT_TAB = 'SELECT_TAB';
-export const SHOW_TAB = 'SHOW_TAB';
-export const HIDE_TAB = 'HIDE_TAB';
 
 const set_tab_visibility = (state, target, value) => {
     if (!(target in state.tabs)) return state;
@@ -21,13 +19,6 @@ const TabReducer = (state, action) => {
 		    selection: action.selection
 		})
 		: state);
-	
-    case HIDE_TAB:
-	return set_tab_visibility(state, target, false);
-
-    case SHOW_TAB:
-	return set_tab_visibility(state, target, true);
-	
     }
     
     return state;

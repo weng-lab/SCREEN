@@ -61,6 +61,43 @@ const table_click_handler = (td, rowdata, dispatch) => {
     });
 };
 
+const button_click_handler = (name, rowdata, dispatch) => {
+    var re = rowdata._source;
+    var half_window = 7500;
+    var arr = window.location.href.split("/");
+    var host = arr[0] + "//" + arr[2];
+    var data = JSON.stringify({"accession" : re["accession"],
+                               "halfWindow" : half_window,
+                               "host" : host});
+
+    console.log("name", name);
+    switch (name) {
+    case "UCSC":
+	$.ajax({
+	    type: "POST",
+	    url: "/ucsc_trackhub_url",
+	    data: data,
+	    dataType: "json",
+	    contentType : "application/json",
+	    async: false, // http://stackoverflow.com/a/20235765
+	    success: (response) => {
+		if ("err" in response) {
+		    $("#errMsg").text(response["err"]);
+		    $("#errBox").show()
+		    return true;
+		}
+		//console.log(response["trackhubUrl"]);
+		window.open(response["url"], '_blank');
+	    },
+	    error: (a, b, c) => {
+		console.log(a);
+	    }
+	});
+	break;
+    }
+    
+};
+
 const table_props_map = (state) => {
     return {
 	data: state.results.hits,

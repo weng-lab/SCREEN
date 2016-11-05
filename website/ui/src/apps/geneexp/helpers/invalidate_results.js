@@ -1,7 +1,5 @@
-import QueryAJAX, {DetailAJAX, ExpressionBoxplotAJAX} from '../elasticsearch/ajax'
+import {ExpressionBoxplotAJAX} from '../helpers/ajax'
 import {UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
-import FacetQueryMap from '../elasticsearch/facets_to_query'
-import ResultsDispatchMap from '../elasticsearch/results_to_map'
 
 export const results_error = (requestobj, error) => {
     return {
@@ -31,11 +29,10 @@ export const expression_boxplot_done = (response) => {
     }
 };
 
-export const invalidate_boxplot = (gene) => {
+export const invalidate_boxplot = (q) => {
+    console.log("invalidate_boxplot", q);
     return (dispatch) => {
-	var n_query = {
-	    gene: gene
-	};
+	var query = JSON.stringify(q);
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_expression_boxplot(response));
 	    dispatch(expression_boxplot_done(response));
@@ -44,6 +41,6 @@ export const invalidate_boxplot = (gene) => {
 	    dispatch(results_error(jqxhr, error));
 	};
 	dispatch(expression_boxplot_loading());
-	ExpressionBoxplotAJAX(n_query, f_success, f_error);
+	ExpressionBoxplotAJAX(query, f_success, f_error);
     }
 };

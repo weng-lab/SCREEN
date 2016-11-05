@@ -19,11 +19,11 @@ class Boxplot extends React.Component {
 	$(this.refs.container).empty();
 	
 	var refs = this.refs;
-	var data = GlobalData; //this.props.data;
-	if (0 && 0 == data.length) {
+	var data = this.props.data;
+	if (0 == data.length) {
 	    return;
 	}
-	var mmax = GlobalMmax; //this.props.mmax;
+	var mmax = this.props.mmax;
 	
 	var chart = nv.models.boxPlotChart()
 	    .x(function(d) { return d.label })
