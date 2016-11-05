@@ -8,7 +8,7 @@ import thunk from 'redux-thunk';
 import SearchPage from './apps/search/main';
 import CartPage from './apps/cart/main';
 import GeneExpPage from './apps/geneexp/main';
-import ComparisonPage from './apps/search/comparison';
+import ComparisonPage from './apps/comparison/main';
 
 ReactDOM.render((<Router history={browserHistory}>
 		    <Route path="/search(.*)" component={SearchPage} />

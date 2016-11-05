@@ -6,15 +6,15 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
 import {get_root_comparison_reducer} from './reducers/comparison_reducer'
-import FacetApp from './components/facet_app'
+import FacetApp from '../search/components/facet_app'
 import MainVennDiagram from './components/venn'
 
 import SearchBox from '../../common/components/searchbox'
 
-import MainTabControl from './components/maintab'
+import MainTabControl from '../search/components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
 import HorizontalBars from "../../common/components/horizontal_bar"
-import {main_tab_connector, main_searchbox_connector} from './reducers/root_reducer'
+import {main_tab_connector, main_searchbox_connector} from '../search/reducers/root_reducer'
 import {main_venn_connector} from './reducers/comparison_reducer'
 
 import {comparison_tabs} from './config/comparison_tabs'
