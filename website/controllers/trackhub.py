@@ -141,7 +141,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def trackhubExp(self, name, color, cellType, accession):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=accession)
-        url = "http://bib5.umassmed.edu/~purcarom/bigwigs/{e}.bigWig".format(e=accession)
+        #url = "http://bib5.umassmed.edu/~purcarom/bigwigs/{e}.bigWig".format(e=accession)
 
         desc = Track.MakeDesc(name, "", cellType)
 
@@ -157,7 +157,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
-            c = EncodeTrackhubColors.DNase_Signal.rgb
 
             rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
                          "dnase": [],
@@ -179,24 +178,26 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                     topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
                     topCellLinesByRankMethod[(rankType, rankMethod)] = topN
 
+            tracks = []
             for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
                 for ct in cellTypes:
-                    print(rtrm, ct)
+                    values = re["ranks"][rtrm[0]][ct]
+                    if "dnase" == rtrm[0]:
+                        fileID = values["bigwig"]
+                        tracks.append((rtrm, ct, "dnase", fileID))
+                    else:
+                        for assay, info in values[rtrm[1]].iteritems():
+                            if "rank" == assay:
+                                continue
+                            fileID = info["bigwig"]
+                            tracks.append((rtrm, ct, assay, fileID))
+            for t in tracks:
+                c = EncodeTrackhubColors.DNase_Signal.rgb
+                self.lines += [self.trackhubExp("_".join(list(t[0]) + [t[2]]),
+                                                c,
+                                                t[1],
+                                                t[3])]
                 
-            for cellType, v in re["ranks"]["enhancer"].iteritems():
-                print(cellType, v)
-                self.lines += [self.trackhubExp(v["method"],
-                                                c, cellType, v["accession"])]
-            for cellType, v in re["ranks"]["promoter"].iteritems():
-                self.lines += [self.trackhubExp(v["method"],
-                                                c, cellType, v["accession"])]
-            for cellType, v in re["ranks"]["ctcf"].iteritems():
-                self.lines += [self.trackhubExp(v["method"],
-                                                c, cellType, v["accession"])]
-            for cellType, v in re["ranks"]["dnase"].iteritems():
-                self.lines += [self.trackhubExp(v["method"],
-                                                c, cellType, v["accession"])]
-
     def getLines(self, re_accessions):
         self.priority = 0
 
