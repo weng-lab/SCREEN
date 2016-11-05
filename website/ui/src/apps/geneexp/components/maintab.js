@@ -1,7 +1,6 @@
-var React = require('react');
+import React from 'react';
 import {connect} from 'react-redux';
 
-import {invalidate_boxplot} from '../helpers/invalidate_results'
 import {SELECT_TAB} from '../reducers/tab_reducer'
 
 class MainTabControl extends React.Component {
@@ -21,10 +20,6 @@ class MainTabControl extends React.Component {
 	}
     }
 
-    componentDidMount() {
-	this.props.store.dispatch(invalidate_boxplot(this.props.store.getState()));
-    }
-    
     render() {
 	var tabs = this.props.tabs;
 	var selection = this.props.selection;

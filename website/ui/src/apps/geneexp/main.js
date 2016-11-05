@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 import {createStore, applyMiddleware} from 'redux'
 import {render} from 'react-dom'
@@ -13,14 +13,21 @@ import NavBarApp from '../../common/components/navbar_app'
 import MainTabControl from './components/maintab'
 import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector} from './reducers/root_reducer'
+import {invalidate_boxplot} from './helpers/invalidate_results'
 
 class GeneExpPage extends React.Component {
 
     constructor(props) {
 	super(props);
 	this.store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
+	console.log("props", this.props)
+	this.store.geneID = this.props.params.geneID
     }
-    
+
+    componentDidMount() {
+	this.store.dispatch(invalidate_boxplot({"geneID" : this.store.geneID}))
+    }    
+
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
 	return (<div>
@@ -39,6 +46,6 @@ class GeneExpPage extends React.Component {
                    </div>
 		</div>);
     }
-    
 }
+
 export default GeneExpPage;

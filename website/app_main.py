@@ -80,15 +80,6 @@ class MainApp():
         return self.mc.search(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
-    def geneexp(self, *args, **kwargs):
-        return self.ge.geneexp(args, kwargs, self.session_uuid())
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def geneexpjson(self, *args, **kwargs):
-        return self.ge.geneexpjson(args, kwargs)
-
-    @cherrypy.expose
     def hexplot(self, *args, **kwargs):
         return self.mc.HexplotView(args, kwargs)
 
@@ -134,3 +125,15 @@ class MainApp():
         #print(cherrypy.request)
         j = cherrypy.request.json
         return self.ajaxWS.process(j)
+
+    @cherrypy.expose
+    def geneexp(self, *args, **kwargs):
+        return self.ge.geneexp(args, kwargs, self.session_uuid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def geneexpjson(self):
+        j = cherrypy.request.json
+        return self.ge.geneexpjson(j)
+
