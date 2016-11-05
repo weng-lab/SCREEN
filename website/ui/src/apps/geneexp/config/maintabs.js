@@ -1,9 +1,5 @@
 var React = require('react');
 
-import ResultsApp from '../components/results_app'
-
-import DetailsApp, {details_connector} from '../components/details_app'
-
 import {expression_boxplot_connector} from '../components/expression_boxplot'
 import Boxplot from '../../../common/components/boxplot'
 import {main_comparison_connector} from '../reducers/root_reducer'

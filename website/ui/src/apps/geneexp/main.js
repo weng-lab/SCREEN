@@ -25,7 +25,7 @@ class GeneExpPage extends React.Component {
 	var Tabs = main_tab_connector(MainTabControl);
 	return (<div>
 		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse">
-		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} show_searchbox={true} store={this.store} /></div>
+		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={false} show_searchbox={true} store={this.store} /></div>
 		   </nav>
 		   <div className="container" style={{width: "100%"}}>
                       <div className="row" style={{width: "100%"}}>
