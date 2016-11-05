@@ -13,6 +13,9 @@
     <meta name="{{k}}" content="{{v}}">
     {%- endfor -%}
     {% endif %}
+
+    {{ hh.js("//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js") }}
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
@@ -23,6 +26,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.min.css" integrity="sha256-tw03Ka2ZwZCvz4XCrr6bZ+vooG4OKShABE6dtTYbDcc=" crossorigin="anonymous" />
 
     {{ hh.css("/static/css.css") }}
+    
     <script type="text/javascript">
       var HOMEPAGE = {
          "url": "/",
