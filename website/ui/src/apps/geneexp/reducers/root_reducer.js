@@ -43,6 +43,8 @@ export const main_tab_connector = MainTabsConnector(
 
 export const RootReducer = (state = root_default_state, action) => {
 
+    //console.log("RootReducer", action);
+    
     if (null == action) {
         return state;
     }
