@@ -249,16 +249,22 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.isUcsc = False
 
         args = args[0]
+        if 3 != len(args):
+            return { "error" : "wrong num of args", "args" : args }
+                
+        uui = args[0]
+        try:
+            info = self.db.get(uuid)
+        except:
+            raise
+            return {"error" : "couldn't find uuid", "args" : args }
 
-        if 1 != len(args):
-            return { "error" : "too many args" }
+        loc = args[2]
+        if loc.startswith("trackDb_") and loc.endswith(".json"):
+            self.hubNum = loc.split('_')[1].split('.')[0]
+            return self.makeTrackDbWashU([info["reAccession"]])
 
-        toks = args[0].split('_')
-        guid = toks[1].split('.')[0]
-
-        accs = self.ps.getCart(guid)
-
-        return self.makeTrackDbWashU(accs)
+        return {"error" : "invalid path", "args" : args }
 
     def ucsc_trackhub_url(self, j, uuid):
         red = RegElementDetails(self.es, self.ps)
