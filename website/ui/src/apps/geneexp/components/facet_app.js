@@ -2,7 +2,6 @@ var React = require('react')
 
 import {FacetboxCreator} from './facetbox'
 
-import es_connect from '../elasticsearch/es_connect'
 import {facetboxes, facetbox_render_order, es_links} from '../config/facetboxes'
 
 import {invalidate_results} from '../helpers/invalidate_results'

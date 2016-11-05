@@ -1,4 +1,3 @@
-import {ES_CONNECT} from '../elasticsearch/es_connect'
 export const HIDE_FACET = 'HIDE_FACET';
 export const SHOW_FACET = 'SHOW_FACET';
 
@@ -29,15 +28,6 @@ const FacetReducer = (subreducer) => (state = facet_default_state(subreducer), a
 	    visible: true
 	});
 
-    case ES_CONNECT:
-	return Object.assign({}, state, {
-	    es_map: action.es_map,
-	    es_callback: action.es_callback,
-	    es_field: action.es_field
-	});
-	
-    }
-    
     return Object.assign({}, state, {
 	state: subreducer(state.state, action)
     });
