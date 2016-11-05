@@ -32,3 +32,11 @@ def GetTrackColorSignal(exp):
     if exp.assay_term_name in m:
         return m[exp.assay_term_name]
     return None
+
+def GetTrackColorByAssay(assay):
+    m = {"dnase" : EncodeTrackhubColors.DNase_Signal,
+         "h3k27ac" : EncodeTrackhubColors.H3K27ac_Signal,
+         "h3k4me3" : EncodeTrackhubColors.H3K4me3_Signal}
+    if assay in m:
+        return m[assay].rgb
+    return None
