@@ -35,10 +35,12 @@ class Heatmap extends React.Component {
     }
 
     render() {
+	var title = (this.props.title ? this.props.title : "");
 	return (<div>
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		        Loading...
 		    </div>
+		    <div ref="title" style={{display: (this.props.loading ? "none" : "block")}}><h3>{title}</h3></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
 		</div>);
 		
