@@ -8,7 +8,7 @@ import heapq
                 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
-from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
+from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColors, OtherTrackhubColors
 
 from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
@@ -199,7 +199,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             re = red.reFull(re_accession)
             
             for t in self._getTrackList(re):
-                c = EncodeTrackhubColors.DNase_Signal.rgb
+                c = GetTrackColorByAssay(t[2])
                 self.lines += [self.trackhubExp("_".join(list(t[0]) + [t[2]]),
                                                 c,
                                                 t[1],
