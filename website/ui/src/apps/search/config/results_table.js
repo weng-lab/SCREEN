@@ -1,9 +1,9 @@
 export const browser_buttons = (names) => {
-    var bg = '<form class="btn-group" role="group">';
+    var bg = '<div class="btn-group" role="group">';
     for (var i = 0; i < names.length; i++) {
-        bg += '<input role="button" class="btn btn-success btn-xs" type="submit" value="' + names[i] + '" style="width: 85px;">';
+	bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] + '</button>';
     }
-    return bg + "</form>";
+    return bg + "</div>";
 }
 
 const cart_img = (rmv, src_only) => {
@@ -19,25 +19,10 @@ export const render_cell_type = (d) => (d.replace(/_/g, " "));
 const render_array = (m) => (array) => (
     array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
-const browser_button = (re, name) => {
-    // TODO: make into React component...
-    return '<form class="browserForm" onsubmit="event.preventDefault(); browserButtonClick(\'' + name + '\', \'' + re.accession + '\'); return false; ">' +
-	'<input role="button" class="btn btn-default btn-xs" type="submit" value="' + name + '">' +
-	'</form>';
-}
-
 const render_gene_button = (d) => {
     var g = render_gene(d);
-    return '<a href="/geneexp?q=' + g + '" _target="blank">' + g + '</a>';
+    return '<a href="/geneexp/' + g + '" _target="blank">' + g + '</a>';
 };
-
-const render_browser_buttons = (re) => (arr) => (
-    '<div class="btn-group" role="group">' +
-	browser_button(re, "UCSC") +
-	browser_button(re, "WashU") +
-	browser_button(re, "Ensembl") +
-	'</div>'
-);
 
 const ResultsTableColumns = [
     {
@@ -89,10 +74,14 @@ const ResultsTableColumns = [
     {
 	title: "genome browsers",
 	targets: -1,
-	data: "_source",
+	data: null,
 	className: "dt-right browser",
 	orderable: false,
-	render: render_browser_buttons
+	defaultContent: browser_buttons([
+	    "UCSC",
+	    "WashU",
+	    "Ensembl"
+	])
     }
 ];    
 export default ResultsTableColumns;

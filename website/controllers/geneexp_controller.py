@@ -18,11 +18,9 @@ class GeneExpController:
         pageInfo = PageInfoGeneExp(*self.params)
         return self.t('main/geneexp', **pageInfo.geneexpPage(args, kwargs, uuid))
 
-    def geneexpjson(self, args, kwargs):
-        gene = ""
-        if "q" in kwargs:
-            gene = kwargs["q"]
-            # TODO: check gene
+    def geneexpjson(self, j):
+        gene = j["geneID"]
+        # TODO: check gene
 
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
         return cge.compute(gene)

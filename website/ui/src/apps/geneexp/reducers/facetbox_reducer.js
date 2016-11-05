@@ -29,11 +29,7 @@ const FacetboxReducer = (state = facetbox_default_state, action) => {
 	});
 	return retval;
 
-    case FACET_ACTION:
-	
-	/*
-	 *  pass this action on to the specified facet if it exists
-	 */
+    case FACET_ACTION: // pass this action on to the specified facet if it exists
 	if (!(action.key in state.facets)) return state;
 	var n_item = state.facets[action.key].reducer(state.facets[action.key], action.subaction);
 	var retval = Object.assign({}, state, {
@@ -41,22 +37,6 @@ const FacetboxReducer = (state = facetbox_default_state, action) => {
 			       Object.assign({}, state.facets[action.key], n_item))
 	});
 	return retval;
-	
-    case HIDE_FACETBOX:
-	return Object.assign({}, state, {
-	    visible: false
-	});
-
-    case SHOW_FACETBOX:
-	return Object.assign({}, state, {
-	    visible: true
-	});
-
-    case SET_TITLE:
-	return Object.assign({}, state, {
-	    title: action.title
-	});
-	
     }
 
     return state;

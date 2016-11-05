@@ -51,9 +51,9 @@ class LongChecklistFacet extends React.Component {
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
 	var checks = (!this.props.match_mode_enabled ? ""
 		      : (<div>
-			     <input type="radio" checked={mode == CHECKLIST_MATCH_ALL ? true : false}
+			 <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ALL ? true : false}
 			         onClick={this.modeToggle} />match all&nbsp;
-			     <input type="radio" checked={mode == CHECKLIST_MATCH_ANY ? true : false}
+			     <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ANY ? true : false}
 			         onClick={this.modeToggle} />match any
 			 </div>));
 	var cols = [
