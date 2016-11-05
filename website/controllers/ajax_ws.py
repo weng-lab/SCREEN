@@ -192,9 +192,6 @@ class AjaxWebService:
             raise
             return { "error" : "error running action"}
 
-    def _search(self, j):
-        return self._search_partial(j)
-
     def _run_venn_queries(self, j, basequery):
         
         if len(j["cell_types"]) < 2:
@@ -255,9 +252,8 @@ class AjaxWebService:
                 "rowlabels": [j["cell_types"][x] for x in roworder],
                 "collabels": [j["cell_types"][x] for x in colorder],
                 "matrix": matrix }
-    
-    def _search_partial(self, j):
-        
+
+    def _search(self, j):
         # select only fields needed for re table
         #  eliminates problem of returning >10MB of json
         fields = ["accession", "neg-log-p",
@@ -268,7 +264,7 @@ class AjaxWebService:
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
         j["callback"] = "regulatory_elements"
-        if 0:
+        if 0: # slows down query...
             j["object"]["sort"] = [{ "neg-log-p" : "desc" },
                                    "position.start",
                                    "position.end" ]
@@ -282,43 +278,28 @@ class AjaxWebService:
             j["callback"] = ""
         
         with Timer('ElasticSearch time'):
-            results = self._query({"object": j["object"],
+            ret = self._query({"object": j["object"],
                                    "index": paths.re_json_index,
                                    "callback": j["callback"] })
         if "post_processing" in j:
             if "tss_bins" in j["post_processing"]:
-                tss = TSSBarGraph(results["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
-                results["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
+                tss = TSSBarGraph(ret["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
+                ret["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
             if "rank_heatmap" in j["post_processing"]:
-                results["rank_heatmap"] = self.rh.process(results)
+                ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
-                results["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
+                ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
         
         if self.args.dump:
-            base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
-            for prefix, data in [("request", j), ("response", results)]:
-                fn = base + '_' + prefix + ".json"
-                fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
-                Utils.ensureDir(fnp)
-                with open(fnp, 'w') as f:
-                    json.dump(data, f, sort_keys = True, indent = 4)
-                print("wrote", fnp)
-        return results
+            self._dump(j, response)
+        return ret
 
-    def _search_full(self, j):
-        with Timer('ElasticSearch time'):
-            results = self._query({"object": j["object"],
-                                   "index": paths.re_json_index,
-                                   "callback": "regulatory_elements" })
-        
-        if self.args.dump:
-            base = Utils.timeDateStr() + "_" + Utils.uuidStr()
-            for prefix, data in [("request", j), ("response", results)]:
-                fn = base + '_' + prefix + ".json"
-                fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
-                Utils.ensureDir(fnp)
-                with open(fnp, 'w') as f:
-                    json.dump(data, f, sort_keys = True, indent = 4)
-                print("wrote", fnp)
-        return results
-
+    def _dump(self, j, response):
+        base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
+        for prefix, data in [("request", j), ("response", results)]:
+            fn = base + '_' + prefix + ".json"
+            fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
+            Utils.ensureDir(fnp)
+            with open(fnp, 'w') as f:
+                json.dump(data, f, sort_keys = True, indent = 4)
+            print("wrote", fnp)
