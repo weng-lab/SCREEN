@@ -121,14 +121,14 @@ class AjaxWebService:
     def _expression_matrix(self, j):
         matrix = []
         genelist = self._get_genelist(self._search(j))
-        retval = self.em.search(genelist)
-        for i in range(0, len(retval["matrix"])):
-            for j in range(0, len(retval["matrix"][0])):
+        ret = self.em.search(genelist)
+        for i in range(0, len(ret["matrix"])):
+            for j in range(0, len(ret["matrix"][0])):
                 matrix.append({"row": i + 1,
                                "col": j + 1,
-                               "value": retval["matrix"][i][j]})
-        retval.update({"matrix": matrix})
-        return {"expression_matrix": retval}
+                               "value": ret["matrix"][i][j]})
+        ret.update({"matrix": matrix})
+        return {"expression_matrix": ret}
     
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
@@ -167,23 +167,23 @@ class AjaxWebService:
         return ret
 
     def _get_genelist(self, results):
-        retval = {}
+        ret = {}
         for result in results["results"]["hits"]:
             for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
-                if gene["gene-name"] not in retval:
-                    retval[gene["gene-name"]] = 1
-                if len(retval) >= 50:
-                    return [k for k, v in retval.iteritems()]
-        return [k for k, v in retval.iteritems()]
+                if gene["gene-name"] not in ret:
+                    ret[gene["gene-name"]] = 1
+                if len(ret) >= 50:
+                    return [k for k, v in ret.iteritems()]
+        return [k for k, v in ret.iteritems()]
     
     def process(self, j):
         try:
             if "action" in j:
                 action = j["action"]
                 if action in self.actions:
-                    retval = self.actions[action](j)
-                    #print(retval)
-                    return retval
+                    ret = self.actions[action](j)
+                    #print(ret)
+                    return ret
                 print("unknown action:", action)
 
             return self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
