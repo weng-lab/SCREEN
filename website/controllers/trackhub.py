@@ -152,46 +152,53 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
+    def _getTopCellTypesByRankMethod(self, re):
+        rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
+                     "dnase": [],
+                     "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
+                     "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
+        N = 10
+        ret = {}
+        for rankType, rankMethods in rankTypes.iteritems():
+            if "dnase" == rankType:
+                ctToRank = re["ranks"]["dnase"]
+                topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
+                ret[("dnase",)] = topN
+            for rankMethod in rankMethods:
+                ctToRank = {}
+                for cellType, ranks in re["ranks"][rankType].iteritems():
+                    if rankMethod in ranks:
+                        ctToRank[cellType] = ranks[rankMethod]["rank"]
+                #http://stackoverflow.com/a/7197643
+                topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
+                ret[(rankType, rankMethod)] = topN
+        return ret
+
+    def _getTrackList(self, re):
+        topCellLinesByRankMethod = self._getTopCellTypesByRankMethod(re)
+
+        tracks = []
+        for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
+            for ct in cellTypes:
+                values = re["ranks"][rtrm[0]][ct]
+                if "dnase" == rtrm[0]:
+                    fileID = values["bigwig"]
+                    tracks.append((rtrm, ct, "dnase", fileID))
+                else:
+                    for assay, info in values[rtrm[1]].iteritems():
+                        if "rank" == assay:
+                            continue
+                        fileID = info["bigwig"]
+                        tracks.append((rtrm, ct, assay, fileID))
+        return tracks
+    
     def addSignals(self, re_accessions):
         red = RegElementDetails(self.es, self.ps)
 
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
-
-            rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
-                         "dnase": [],
-                         "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
-                         "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
-            N = 10
-            topCellLinesByRankMethod = {}
-            for rankType, rankMethods in rankTypes.iteritems():
-                if "dnase" == rankType:
-                    ctToRank = re["ranks"]["dnase"]
-                    topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
-                    topCellLinesByRankMethod[("dnase",)] = topN
-                for rankMethod in rankMethods:
-                    ctToRank = {}
-                    for cellType, ranks in re["ranks"][rankType].iteritems():
-                        if rankMethod in ranks:
-                            ctToRank[cellType] = ranks[rankMethod]["rank"]
-                    #http://stackoverflow.com/a/7197643
-                    topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
-                    topCellLinesByRankMethod[(rankType, rankMethod)] = topN
-
-            tracks = []
-            for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
-                for ct in cellTypes:
-                    values = re["ranks"][rtrm[0]][ct]
-                    if "dnase" == rtrm[0]:
-                        fileID = values["bigwig"]
-                        tracks.append((rtrm, ct, "dnase", fileID))
-                    else:
-                        for assay, info in values[rtrm[1]].iteritems():
-                            if "rank" == assay:
-                                continue
-                            fileID = info["bigwig"]
-                            tracks.append((rtrm, ct, assay, fileID))
-            for t in tracks:
+            
+            for t in self._getTrackList(re):
                 c = EncodeTrackhubColors.DNase_Signal.rgb
                 self.lines += [self.trackhubExp("_".join(list(t[0]) + [t[2]]),
                                                 c,
