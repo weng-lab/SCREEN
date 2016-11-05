@@ -261,9 +261,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return self.makeTrackDbWashU(accs)
 
     def ucsc_trackhub_url(self, j, uuid):
-        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
-	url += "db=hg19";
-        
         red = RegElementDetails(self.es, self.ps)
         re = red.reFull(j["accession"])
 
@@ -275,24 +272,20 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 	start = max(1, start - halfWindow);
         end = end + halfWindow;
 
-	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
-
         host = j["host"]
-
         hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
-
         trackhubUrl = '/'.join([host,
                                 "ucsc_trackhub",
 		                uuid,
 		                "hub_" + str(hubNum) + ".txt"])
 
+        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
+	url += "db=hg19";
+	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
 	url += "&hubClear=" + trackhubUrl;
 
         return {"url" : url,
                 "trackhubUrl" : trackhubUrl}
-
-    def washu_trackhub_url(self, j, uuid):
-        return {"url" : url}
 
     def ensembl_trackhub_url(self, j, uuid):
         red = RegElementDetails(self.es, self.ps)
@@ -318,5 +311,33 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         url += ";species=Homo_sapiens;"
         url += "r=" + chrom[3:] + ':' + str(start) + '-' + str(end);
 
+        return {"url" : url,
+                "trackhubUrl" : trackhubUrl}
+
+    def washu_trackhub_url(self, j, uuid):
+        red = RegElementDetails(self.es, self.ps)
+        re = red.reFull(j["accession"])
+
+        halfWindow = j["halfWindow"]
+	chrom = re["position"]["chrom"]
+	start = re["position"]["start"]
+	end = re["position"]["end"]
+
+	start = max(1, start - halfWindow);
+        end = end + halfWindow;
+
+        host = j["host"]
+        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
+        trackhubUrl = '/'.join([host,
+                                "washu_trackhub",
+		                uuid,
+                                "hg19",
+                                "trackDb_{hn}.json".format(hn = hubNum)])
+        
+        url = "http://epigenomegateway.wustl.edu/browser/"
+        url += "?genome=" + "hg19"
+        url += "&datahub=" + trackhubUrl
+        url += "&coordinate=" + chrom + ':' + str(start) + '-' + str(end);
+        
         return {"url" : url,
                 "trackhubUrl" : trackhubUrl}
