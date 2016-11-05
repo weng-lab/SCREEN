@@ -1,8 +1,6 @@
 import {LONGCHECKLIST_FACET} from '../helpers/create_facet'
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
-import {default_margin} from './constants'
-
 export const facetboxes = () => {return {
     "cell_compartments": {
 	title: "Cellular Compartments",
