@@ -31,6 +31,7 @@ const FacetReducer = (subreducer) => (state = facet_default_state(subreducer), a
     return Object.assign({}, state, {
 	state: subreducer(state.state, action)
     });
-    
+	
+    };
 };
 export default FacetReducer;
