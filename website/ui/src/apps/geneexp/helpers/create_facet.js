@@ -2,30 +2,15 @@ import React from 'react'
 
 import {connect} from 'react-redux'
 
-import {RangeFacetReducer, SET_SELECTION_RANGE, SET_WIDTH} from '../../../common/reducers/range'
-import {ListFacetReducer, SET_SELECTION} from '../../../common/reducers/list'
-import {ChecklistFacetReducer, SET_ITEMS, SET_MATCH_MODE} from '../../../common/reducers/checklist'
-import {LongListFacetReducer, SET_DATA} from '../../../common/reducers/longlist'
 import {LongChecklistFacetReducer, TOGGLE_ITEM} from '../../../common/reducers/longchecklist'
-import {SliderFacetReducer, SET_VALUE} from '../../../common/reducers/slider'
 
 import {FACETBOX_ACTION} from '../reducers/root_reducer'
 import {FACET_ACTION, ADD_FACET} from '../reducers/facetbox_reducer'
 import {facet_action} from './actions'
 
-import MainRangeFacet from '../components/range'
-import MainListFacet from '../components/list'
-import MainChecklistFacet from '../components/checklist'
-import MainLongListFacet from '../components/longlist'
 import MainLongChecklistFacet from '../components/longchecklist'
-import MainSliderFacet from '../components/slider'
 
-export const RANGE_FACET = 'RANGE_FACET';
-export const LIST_FACET = 'LIST_FACET';
-export const LONGLIST_FACET = 'LONGLIST_FACET';
-export const CHECKLIST_FACET = 'CHECKLIST_FACET';
 export const LONGCHECKLIST_FACET = 'LONGCHECKLIST_FACET';
-export const SLIDER_FACET = 'SLIDER_FACET';
 
 const range_props_map = (store, box, key) => (_state) => {
     var state = _state.facet_boxes[box];
@@ -192,36 +177,11 @@ const slider_dispatch_map = (store, box, key, invalidator = null) => (dispatch) 
 };
 
 const _map = {
-    RANGE_FACET: {
-	connector: (store, box, key, invalidator = null) => connect(range_props_map(store, box, key), range_dispatch_map(store, box, key, invalidator)),
-	component: MainRangeFacet,
-	reducer: RangeFacetReducer
-    },
-    LIST_FACET: {
-	connector: (store, box, key, invalidator = null) => connect(list_props_map(store, box, key), list_dispatch_map(store, box, key, invalidator)),
-	component: MainListFacet,
-	reducer: ListFacetReducer
-    },
-    CHECKLIST_FACET: {
-	connector: (store, box, key, invalidator = null) => connect(checklist_props_map(store, box, key), checklist_dispatch_map(store, box, key, invalidator)),
-	component: MainChecklistFacet,
-	reducer: ChecklistFacetReducer
-    },
-    LONGLIST_FACET: {
-	connector: (store, box, key, invalidator = null) => connect(longlist_props_map(store, box, key), longlist_dispatch_map(store, box, key, invalidator)),
-	component: MainLongListFacet,
-	reducer: LongListFacetReducer
-    },
     LONGCHECKLIST_FACET: {
 	connector: (store, box, key, invalidator = null) => connect(longchecklist_props_map(store, box, key), longchecklist_dispatch_map(store, box, key, invalidator)),
 	component: MainLongChecklistFacet,
 	reducer: LongChecklistFacetReducer
     },
-    SLIDER_FACET: {
-	connector: (store, box, key, invalidator = null) => connect(slider_props_map(store, box, key), slider_dispatch_map(store, box, key, invalidator)),
-	component: MainSliderFacet,
-	reducer: SliderFacetReducer
-    }	
 };
 
 const add_facet = (box, key, props) => {
