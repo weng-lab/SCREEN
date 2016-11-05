@@ -4,7 +4,8 @@ import StringIO
 import cherrypy
 import json
 import os
-
+import heapq
+                
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
@@ -157,7 +158,33 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
             c = EncodeTrackhubColors.DNase_Signal.rgb
+
+            rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
+                         "dnase": [],
+                         "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
+                         "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
+            N = 10
+            topCellLinesByRankMethod = {}
+            for rankType, rankMethods in rankTypes.iteritems():
+                if "dnase" == rankType:
+                    ctToRank = re["ranks"]["dnase"]
+                    topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
+                    topCellLinesByRankMethod[("dnase",)] = topN
+                for rankMethod in rankMethods:
+                    ctToRank = {}
+                    for cellType, ranks in re["ranks"][rankType].iteritems():
+                        if rankMethod in ranks:
+                            ctToRank[cellType] = ranks[rankMethod]["rank"]
+                    #http://stackoverflow.com/a/7197643
+                    topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
+                    topCellLinesByRankMethod[(rankType, rankMethod)] = topN
+
+            for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
+                for ct in cellTypes:
+                    print(rtrm, ct)
+                
             for cellType, v in re["ranks"]["enhancer"].iteritems():
+                print(cellType, v)
                 self.lines += [self.trackhubExp(v["method"],
                                                 c, cellType, v["accession"])]
             for cellType, v in re["ranks"]["promoter"].iteritems():
