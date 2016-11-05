@@ -54,7 +54,7 @@ class Heatmap extends React.Component {
 	
 	var data = this.props.data;
 
-	if (0 == data.length) {
+	if (null == data || 0 == data.length) {
 	    return;
 	}
 	
