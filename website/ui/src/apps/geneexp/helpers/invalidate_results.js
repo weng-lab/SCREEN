@@ -1,4 +1,4 @@
-import {ExpressionBoxplotAJAX} from '../elasticsearch/ajax'
+import {ExpressionBoxplotAJAX} from '../helpers/ajax'
 import {UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
 
 export const results_error = (requestobj, error) => {
