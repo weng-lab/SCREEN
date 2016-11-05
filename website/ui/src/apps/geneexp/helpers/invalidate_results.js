@@ -1,7 +1,5 @@
-import QueryAJAX, {DetailAJAX, ExpressionBoxplotAJAX} from '../elasticsearch/ajax'
+import {ExpressionBoxplotAJAX} from '../elasticsearch/ajax'
 import {UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
-import FacetQueryMap from '../elasticsearch/facets_to_query'
-import ResultsDispatchMap from '../elasticsearch/results_to_map'
 
 export const results_error = (requestobj, error) => {
     return {
