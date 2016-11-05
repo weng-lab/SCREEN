@@ -275,6 +275,10 @@ class AjaxWebService:
 
         if "rank_heatmap" in j["post_processing"]:
             j["object"]["aggs"] = self.rh.aggs
+            if "bool" not in j["object"]["query"] or "must" not in j["object"]["query"]["bool"]:
+                j["object"]["query"] = {"bool": {"must": []}}
+            j["object"]["query"]["bool"]["must"].append(j["object"]["post_filter"])
+            j["object"].pop("post_filter", None)
             j["callback"] = ""
         
         with Timer('ElasticSearch time'):
