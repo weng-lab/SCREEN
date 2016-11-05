@@ -59,6 +59,13 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
+    def ensembl_trackhub_url(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.trackhub.ensembl_trackhub_url(j, self.session_uuid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def washu_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.trackhub.washu_trackhub_url(j, self.session_uuid())
