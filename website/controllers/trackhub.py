@@ -197,7 +197,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
-            
             for t in self._getTrackList(re):
                 c = GetTrackColorByAssay(t[2])
                 self.lines += [self.trackhubExp("_".join(list(t[0]) + [t[2]]),
@@ -294,3 +293,30 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def washu_trackhub_url(self, j, uuid):
         return {"url" : url}
+
+    def ensembl_trackhub_url(self, j, uuid):
+        red = RegElementDetails(self.es, self.ps)
+        re = red.reFull(j["accession"])
+
+        halfWindow = j["halfWindow"]
+	chrom = re["position"]["chrom"]
+	start = re["position"]["start"]
+	end = re["position"]["end"]
+
+	start = max(1, start - halfWindow);
+        end = end + halfWindow;
+
+        url = "http://grch37.ensembl.org/Trackhub?"
+        host = j["host"]
+        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
+        trackhubUrl = '/'.join([host,
+                                "ucsc_trackhub",
+		                uuid,
+		                "hub_" + str(hubNum) + ".txt"])
+
+	url += "&url=" + trackhubUrl
+        url += ";species=Homo_sapiens;"
+        url += "r=" + chrom[3:] + ':' + str(start) + '-' + str(end);
+
+        return {"url" : url,
+                "trackhubUrl" : trackhubUrl}

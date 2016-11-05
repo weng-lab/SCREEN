@@ -61,6 +61,29 @@ const table_click_handler = (td, rowdata, dispatch) => {
     });
 };
 
+const openGenomeBrowser = (data, url) => {
+    $.ajax({
+	type: "POST",
+	url: url,
+	data: data,
+	dataType: "json",
+	contentType : "application/json",
+	async: false, // http://stackoverflow.com/a/20235765
+	success: (response) => {
+	    if ("err" in response) {
+		$("#errMsg").text(response["err"]);
+		$("#errBox").show()
+		return true;
+	    }
+	    //console.log(response["trackhubUrl"]);
+	    window.open(response["url"], '_blank');
+	},
+	error: (a, b, c) => {
+	    console.log(a);
+	}
+    });
+};
+
 const button_click_handler = (name, rowdata, dispatch) => {
     var re = rowdata._source;
     var half_window = 7500;
@@ -70,32 +93,11 @@ const button_click_handler = (name, rowdata, dispatch) => {
                                "halfWindow" : half_window,
                                "host" : host});
 
-    console.log("name", name);
     switch (name) {
-    case "UCSC":
-	$.ajax({
-	    type: "POST",
-	    url: "/ucsc_trackhub_url",
-	    data: data,
-	    dataType: "json",
-	    contentType : "application/json",
-	    async: false, // http://stackoverflow.com/a/20235765
-	    success: (response) => {
-		if ("err" in response) {
-		    $("#errMsg").text(response["err"]);
-		    $("#errBox").show()
-		    return true;
-		}
-		//console.log(response["trackhubUrl"]);
-		window.open(response["url"], '_blank');
-	    },
-	    error: (a, b, c) => {
-		console.log(a);
-	    }
-	});
-	break;
-    }
-    
+    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
+    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
+    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
+    }    
 };
 
 const table_props_map = (state) => {
