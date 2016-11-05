@@ -25,7 +25,10 @@ const VennReducer = (state = default_state, action) => {
 	return Object.assign({}, state, {
 	    results: {
 		totals: action.results.totals,
-		overlaps: action.results.overlaps
+		overlaps: action.results.overlaps,
+		rowlabels: action.results.rowlabels,
+		collabels: action.results.collabels,
+		matrix: action.results.matrix
 	    }
 	});
     }

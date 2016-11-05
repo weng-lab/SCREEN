@@ -13,6 +13,12 @@ import HeatmapReducer from '../../../common/reducers/heatmap'
 export const VERTICAL_BAR = 'VERTICAL_BAR';
 export const HEATMAP = 'HEATMAP';
 
+const heatmap_layout = Object.assign({}, default_heatmap_layout, {
+    margin: Object.assign({}, default_heatmap_layout.margin, {
+	left: 100
+    })
+});
+
 const vertical_bar_props_map = (store, key) => (_state) => {
     var state = _state.results_displays[key];
     return {
@@ -33,7 +39,7 @@ const heatmap_props_map = (store, key) => (_state) => {
 	data: state.matrix,
 	title: state.title,
 	loading: state.loading,
-	chart_layout: default_heatmap_layout
+	chart_layout: heatmap_layout
     };
 };
 
