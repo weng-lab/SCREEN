@@ -4,6 +4,15 @@ import {SET_DATA} from '../../../common/reducers/vertical_bar'
 import {UPDATE_HEATMAP} from '../../../common/reducers/heatmap'
 import {VERTICAL_BAR, HEATMAP} from '../helpers/create_results_display'
 
+import {DO_NAV} from '../reducers/root_reducer'
+
+const do_nav = (url) => {
+    return {
+	type: DO_NAV,
+	url
+    }
+};
+
 const TSS_AGG_KEY = "tss_bar";
 
 const tss_agg = {
@@ -71,7 +80,7 @@ export const results_displays = {
 	width: 500,
 	title: "Activity across tissues",
 	loading: false,
-	footer: <a href="/comparison">View detailed comparison</a>,
+	footer: (dispatch) => (<a onClick={() => {dispatch(do_nav("/comparison"))}}>View detailed comparison</a>),
 	min: 0,
 	max: 1,
 	append_query: (query_obj) => {

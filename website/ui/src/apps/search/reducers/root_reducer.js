@@ -35,6 +35,8 @@ export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
 export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
 export const EXPRESSION_DONE = 'EXPRESSION_DONE';
 
+export const DO_NAV = 'DO_NAV';
+
 export const default_state = (tabs) => {return {
     facet_boxes: {},
     results: {
@@ -114,6 +116,10 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		display_map: action.display_map
 	    })
 	});
+
+    case DO_NAV:
+	window.location.href = action.url + "?q=" + state.searchbox.value;
+	return state;
 
     case RESULTS_DISPLAY_ACTION:
 	if (!(action.key in state.results_displays)) return state;

@@ -15,9 +15,12 @@ class ResultsDisplayApp extends React.Component {
 	return (<div style={{padding: "30px"}}>
 		{Object.keys(results_displays).map((k) => {
 		    var Retval = creator(k, results_displays[k]);
+		    var footer = (typeof results_displays[k].footer === 'function'
+				  ? results_displays[k].footer(store.dispatch)
+				  : results_displays[k].footer);
 		    return (<div style={{display: "inline-block"}} key={"div_" + k}>
 			       <Retval key={k} store={store} />
-			       {results_displays[k].footer}
+			       {footer}
 			    </div>);
 		})}
 		</div>);
