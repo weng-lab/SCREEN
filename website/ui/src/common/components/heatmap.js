@@ -73,8 +73,8 @@ class Heatmap extends React.Component {
 	chart_layout.height = chart_layout.cellSize * chart_layout.rows.order.length;
 	chart_layout.legendElementWidth = chart_layout.cellSize;
 
-	var min = d3.min(data, function(d) {return d.value;});
-	var max = d3.max(data, function(d) {return d.value;});
+	var min = (this.props.min == null ? d3.min(data, function(d) {return d.value;}) : this.props.min);
+	var max = (this.props.max == null ? d3.max(data, function(d) {return d.value;}) : this.props.max);
 	
 	var colorScale = d3.scale.quantile()
 	    .domain([min, max])

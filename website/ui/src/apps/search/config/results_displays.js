@@ -72,6 +72,8 @@ export const results_displays = {
 	title: "Activity across tissues",
 	loading: false,
 	footer: <a href="/comparison">View detailed comparison</a>,
+	min: 0,
+	max: 1,
 	append_query: (query_obj) => {
 	    query_obj.extras["rank_heatmap"] = true;
 	    return query_obj;
