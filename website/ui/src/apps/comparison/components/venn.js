@@ -5,6 +5,12 @@ import VennDiagram from '../../../common/components/venn_diagram'
 import Heatmap from '../../../common/components/heatmap'
 import {default_heatmap_layout} from '../../../common/components/heatmap'
 
+const heatmap_layout = Object.assign({}, default_heatmap_layout);
+heatmap_layout.margin = Object.assign({}, heatmap_layout.margin, {
+    left: 250,
+    top: 250
+});
+
 class ComparisonVenn extends React.Component {
     
     constructor(props) {
@@ -53,7 +59,8 @@ class ComparisonVenn extends React.Component {
 		      <VennDiagram sets={venn.sets} overlaps={venn.overlaps} width={this.props.diagram_width} height={this.props.diagram_height} />
 		   </div>
 		   <div style={{display: (!_show_venn && !_missing_data ? "block": "none")}}>
-		      <Heatmap rowlabels={rowlabels} collabels={collabels} data={this._format_matrix(this.props.matrix)} chart_layout={default_heatmap_layout} />
+		      <Heatmap rowlabels={rowlabels} collabels={collabels} data={this._format_matrix(this.props.matrix)}
+		         min={0} max={1} chart_layout={heatmap_layout} />
 		   </div>
 		</div>);
     }
