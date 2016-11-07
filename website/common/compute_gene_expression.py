@@ -13,17 +13,17 @@ class ComputeGeneExpression:
         self.ps = ps
         self.cache = cache
 
-    def filterNAs(self, rows):
+    def _filterNAs(self, rows):
         ret = []
         for row in rows:
-            r = [row[0], row[1]]
+            r = [row[0], row[1], row[2]]
             if '{}' == r[1]:
                 r[1] = "na"
             ret.append(r)
         return ret
 
-    def process(self, gene, rows):
-        rows = self.filterNAs(rows)
+    def _process(self, gene, rows):
+        rows = self._filterNAs(rows)
         sorter = lambda x: x[1]
         rows.sort(key = sorter)
 
@@ -43,7 +43,7 @@ class ComputeGeneExpression:
                 "whisker_high" : np.amax(a)})
         return boxPlots
 
-    def processGene(self, gene, curs):
+    def _processGene(self, gene, curs):
         curs.execute("""
 select r.tpm, r_rnas.organ
 from r_expression as r
@@ -51,11 +51,11 @@ inner join r_rnas on r_rnas.encode_id = r.dataset
 where gene_name = %(gene)s""",
                      { "gene" : gene })
         rows = curs.fetchall()
-        return self.process(gene, rows)
+        return self._process(gene, rows)
 
     def compute(self, gene):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
-            boxPlots = self.processGene(gene, curs)
+            boxPlots = self._processGene(gene, curs)
 
         data = []
         mmax = 0
@@ -70,4 +70,27 @@ where gene_name = %(gene)s""",
         ret = {"data" : data,
                "mmax" : mmax}
         return ret
+    
+    def computeHorBars(self, gene):
+        with getcursor(self.ps.DBCONN, "_gene") as curs:
+            curs.execute("""
+            select r.tpm, r_rnas.organ, r_rnas.cellType
+            from r_expression as r
+            inner join r_rnas on r_rnas.encode_id = r.dataset
+            where gene_name = %(gene)s""",
+                         { "gene" : gene })
+            rows = curs.fetchall()
+
+        rows = self._filterNAs(rows)
+        sorter = lambda x: x[1]
+        rows.sort(key = sorter)
+
+        ret = []
+        for organ, subRows in groupby(rows, sorter):
+            for row in subRows:
+                ret.append({"cell_type" : row[2],
+                            "rank" : np.log10(float(row[0]) + 0.01),
+                            "tissue" : organ})
+        return {"items" : ret }
+    
     
