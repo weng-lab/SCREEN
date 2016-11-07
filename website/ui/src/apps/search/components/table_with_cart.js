@@ -46,6 +46,7 @@ export const toggle_cart_item = (accession) => {
 
 const table_click_handler = (td, rowdata, dispatch) => {
     if (td.className.indexOf("browser") != -1) return;
+    if (td.className.indexOf("geneexp") != -1) return;
     if (td.className.indexOf("cart") != -1) {
 	dispatch(toggle_cart_item(rowdata._source.accession));
 	return;
