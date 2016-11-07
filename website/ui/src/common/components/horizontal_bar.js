@@ -22,6 +22,8 @@ class HorizontalBars extends React.Component {
     
     componentDidUpdate() {
 
+	console.log(this.props.items);
+	
 	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
 	

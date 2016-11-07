@@ -21,8 +21,7 @@ export let root_default_state = {
     facet_boxes: {},
     results: {
 	expression_boxplot: {
-	    data: [],
-	    mmax: 0,
+	    items: [],
 	    fetching: true
 	},
 	fetching: false
