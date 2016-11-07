@@ -159,8 +159,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def trackhubExp(self, trackInfo):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if not self.isUcsc:
-            url = "http://zlab.umassmed.edu/~purcarom/encode_data/{expID}/{fileID}.bigWig".format(expID = trackInfo.expID,
-                                                                                                  fileID = trackInfo.fileID)
+            url = os.path.join("http://zlab-annotations-v4.umassmed.edu/static_data/encode_data",
+                               trackInfo.expID, trackInfo.fileID + ".bigWig")
 
         desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
 
