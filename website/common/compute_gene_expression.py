@@ -51,13 +51,14 @@ class ComputeGeneExpression:
         ret = {}
         for e in arr:
             t = e["tissue"]
-	    if "" == t:
+	    if "na" == t:
                 continue
 	    if t not in ret:
                 c = "#000000"
                 if t in TissueColors:
                     c = TissueColors[t]
-	        ret[t] = {"name" : t, "color": c, "items": []}
+	        ret[t] = {"name" : e["cell_type"],
+                          "color": c, "items": []}
             ret[t]["items"].append(e)
         return ret
     
@@ -79,7 +80,7 @@ class ComputeGeneExpression:
         for organ, subRows in groupby(rows, sorter):
             for row in subRows:
                 ret.append({"cell_type" : row[2],
-                            "rank" : np.log10(float(row[0]) + 0.01),
+                            "rank" : float(row[0]),
                             "tissue" : organ})
 
         ret = self.regroup(ret)               

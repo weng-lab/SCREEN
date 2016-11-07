@@ -1,7 +1,6 @@
 var $ = require('jquery');
 
 export const ExpressionBoxplotAJAX = (query, f_success, f_error) => {
-    console.log("ExpressionBoxplotAJAX", query);
     $.ajax({
 	type: "POST",
 	url: '/geneexpjson',
