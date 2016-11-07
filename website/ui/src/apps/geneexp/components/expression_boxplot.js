@@ -3,12 +3,11 @@ var React = require('react')
 import {connect} from 'react-redux';
 
 import {invalidate_results} from '../helpers/invalidate_results'
-import Boxplot from '../../../common/components/boxplot'
+import Boxplot from '../../../common/components/horizontal_bar'
 
 const props_map = (state) => {
     return {
-	data: state.results.expression_boxplot.data,
-	mmax: state.results.expression_boxplot.mmax,
+	items: state.results.expression_boxplot.items,
 	loading: state.results.expression_boxplot.fetching
     };
 };
