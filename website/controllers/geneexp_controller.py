@@ -23,6 +23,7 @@ class GeneExpController:
         # TODO: check gene
 
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        return cge.compute(gene)
+        return cge.computeHorBars(gene)
+    
 
 
