@@ -20,6 +20,9 @@ class TrackInfo:
         self.assay = assay
         self.expID = values["accession"]
         self.fileID = values["bigwig"]
+
+    def __repr__(self):
+        return "\t".join([str(x) for x in [self.ct, self.assay, self.rtrm]])
         
     def name(self):
         return "_".join(list(self.rtrm[0]) + [self.assay])
@@ -207,7 +210,19 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         if "rank" == assay:
                             continue
                         tracks.append(TrackInfo(rtrm, ct, assay, info))
-        return tracks
+        tracks.sort(key = lambda x: [x.ct, x.assay])
+
+        pairs = set()
+        ret = []
+        for t in tracks:
+            k = (t.ct, t.assay)
+            if k in pairs:
+                continue
+            pairs.add(k)
+            ret.append(t)
+            
+        #print('\n'.join([str(x) for x in ret]))
+        return ret
     
     def addSignals(self, re_accessions):
         red = RegElementDetails(self.es, self.ps)
