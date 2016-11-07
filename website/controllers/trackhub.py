@@ -13,6 +13,23 @@ from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColor
 from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
 
+class TrackInfo:
+    def __init__(self, rtrm, ct, assay, values):
+        self.rtrm = rtrm
+        self.ct = ct
+        self.assay = assay
+        self.expID = values["accession"]
+        self.fileID = values["bigwig"]
+        
+    def name(self):
+        return "_".join(list(self.rtrm[0]) + [self.assay])
+
+    def color(self):
+        return GetTrackColorByAssay(self.assay)
+
+    def cellType(self):
+        return self.ct
+
 class TrackhubController:
     def __init__(self, templates, es, ps, cache):
         self.templates = templates
@@ -139,16 +156,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def trackhubExp(self, name, color, cellType, accession):
-        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=accession)
-        #url = "http://bib5.umassmed.edu/~purcarom/bigwigs/{e}.bigWig".format(e=accession)
+    def trackhubExp(self, trackInfo):
+        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
+        if not self.isUcsc:
+            url = "http://zlab.umassmed.edu/~purcarom/encode_data/{expID}/{fileID}.bigWig".format(expID = trackInfo.expID,
+                                                                                                  fileID = trackInfo.fileID)
 
-        desc = Track.MakeDesc(name, "", cellType)
+        desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
 
         if self.isUcsc:
-            track = BigWigTrack(desc, self.priority, url, color).track()
+            track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track()
         else:
-            track = BigWigTrack(desc, self.priority, url, color).track_washu()
+            track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track_washu()
         self.priority += 1
         return track
 
@@ -182,14 +201,12 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             for ct in cellTypes:
                 values = re["ranks"][rtrm[0]][ct]
                 if "dnase" == rtrm[0]:
-                    fileID = values["bigwig"]
-                    tracks.append((rtrm, ct, "dnase", fileID))
+                    tracks.append(TrackInfo(rtrm, ct, "dnase", values))
                 else:
                     for assay, info in values[rtrm[1]].iteritems():
                         if "rank" == assay:
                             continue
-                        fileID = info["bigwig"]
-                        tracks.append((rtrm, ct, assay, fileID))
+                        tracks.append(TrackInfo(rtrm, ct, assay, info))
         return tracks
     
     def addSignals(self, re_accessions):
@@ -197,12 +214,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
-            for t in self._getTrackList(re):
-                c = GetTrackColorByAssay(t[2])
-                self.lines += [self.trackhubExp("_".join(list(t[0]) + [t[2]]),
-                                                c,
-                                                t[1],
-                                                t[3])]
+            for ti in self._getTrackList(re):
+                self.lines += [self.trackhubExp(ti)]
                 
     def getLines(self, re_accessions):
         self.priority = 0
