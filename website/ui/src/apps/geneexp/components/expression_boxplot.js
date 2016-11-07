@@ -3,7 +3,6 @@ var React = require('react')
 import {connect} from 'react-redux';
 
 import {invalidate_results} from '../helpers/invalidate_results'
-import Boxplot from '../../../common/components/horizontal_bar'
 
 const props_map = (state) => {
     return {
