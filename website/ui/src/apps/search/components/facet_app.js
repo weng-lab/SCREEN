@@ -36,7 +36,7 @@ class FacetApp extends React.Component {
 		this.props.store.dispatch(connector(i, obj.f_query, obj.f_results, obj.field, obj.agg_map, obj.st_map));
 	    }
 	}
-	this.props.store.dispatch(invalidate_results(this.props.store.getState()));
+	this.props.store.dispatch(this.props.invalidator(this.props.store.getState()));
 
     }
 

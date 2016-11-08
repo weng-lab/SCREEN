@@ -53,7 +53,8 @@ class AjaxWebService:
                         "suggest" : self._suggest,
                         "query": self._query,
                         "search": self._search,
-                        "gene_expression": self._expression_matrix }
+                        "gene_expression": self._expression_matrix,
+                        "venn": self._venn_search }
         self._cached_results = {}
 
     def _get_rank(self, label, v):
@@ -86,7 +87,6 @@ class AjaxWebService:
         return ret
         
     def _re_detail(self, j):
-        print(j)
         accession = j["accession"]
         j = self.details.reFull(accession)
         pos = j["position"]
@@ -192,6 +192,10 @@ class AjaxWebService:
             raise
             return { "error" : "error running action"}
 
+    def _get_rankfield(self, rank_type, cell_type):
+        rt1, rt2 = self._rank_types[rank_type]
+        return "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
+        
     def _run_venn_queries(self, j, basequery):
         
         if len(j["cell_types"]) < 2:
@@ -200,14 +204,12 @@ class AjaxWebService:
                     "overlaps": {} }
         
         fields = {}
-        print(basequery)
         query = { "aggs": {},
                   "query": basequery["post_filter"] }
 
         # first pass: build rank aggs, cell type aggs
         for cell_type in j["cell_types"]:
-            rt1, rt2 = self._rank_types[j["rank_type"]]
-            fields[cell_type] = "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
+            fields[cell_type] = self._get_rankfield(j["rank_type"], cell_type)
             query["aggs"][cell_type + "min"] = {"min": {"field": fields[cell_type]}}
             query["aggs"][cell_type + "max"] = {"max": {"field": fields[cell_type]}}
             query["aggs"][cell_type] = {"filter": {"range": {fields[cell_type]: {"lte": j["rank_threshold"]}}},
@@ -253,7 +255,39 @@ class AjaxWebService:
                 "collabels": [j["cell_types"][x] for x in colorder],
                 "matrix": matrix }
 
+    def _venn_search(self, j):
+
+        j["post_processing"] = {}
+        results = {"results": self._search(j),
+                   "sep_results": {}}
+        if j["table_cell_types"][1] is None:
+            results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
+            return results
+        
+        ctqs = []
+        for cell_type in j["table_cell_types"]:
+            field = self._get_rankfield(j["venn"]["rank_type"], cell_type)
+            ctqs.append(({"range": {field: {"lte": j["venn"]["rank_threshold"]}}},
+                         {"range": {field: {"gte": j["venn"]["rank_threshold"]}}}))
+
+        # get overlapping results
+        title = "both %s and %s" % (j["table_cell_types"][1], j["table_cell_types"][0])
+        j["object"]["query"]["bool"] = {"must": j["object"]["query"]["bool"]["filter"]}
+        j["object"]["query"]["bool"]["must"] += [ctqs[0][0], ctqs[1][0]]
+        results["sep_results"][title] = self._search({"object": j["object"], "post_processing": {}})
+
+        # results for each cell type individually
+        j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][1], ctqs[1][0]]
+        results["sep_results"][j["table_cell_types"][1] + " only"] = self._search({"object": j["object"], "post_processing": {}})
+        j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
+        results["sep_results"][j["table_cell_types"][0] + " only"] = self._search({"object": j["object"], "post_processing": {}})
+
+        # for drawing the venn or heatmap
+        results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
+        return results
+    
     def _search(self, j):
+        
         # select only fields needed for re table
         #  eliminates problem of returning >10MB of json
         fields = ["accession", "neg-log-p",
@@ -279,8 +313,8 @@ class AjaxWebService:
         
         with Timer('ElasticSearch time'):
             ret = self._query({"object": j["object"],
-                                   "index": paths.re_json_index,
-                                   "callback": j["callback"] })
+                               "index": paths.re_json_index,
+                               "callback": j["callback"] })
         if "post_processing" in j:
             if "tss_bins" in j["post_processing"]:
                 tss = TSSBarGraph(ret["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
