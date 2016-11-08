@@ -1,5 +1,18 @@
 import {ExpressionBoxplotAJAX} from '../helpers/ajax'
-import {UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
+import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
+
+export const results_fetching = () => {
+    return {
+	type: RESULTS_FETCHING
+    };
+};
+
+export const results_done = (results) => {
+    return {
+	type: RESULTS_DONE,
+	results
+    };
+};
 
 export const results_error = (requestobj, error) => {
     return {
@@ -30,7 +43,6 @@ export const expression_boxplot_done = (response) => {
 };
 
 export const invalidate_boxplot = (q) => {
-    console.log("invalidate_boxplot", q);
     return (dispatch) => {
 	var query = JSON.stringify(q);
 	var f_success = (response, status, jqxhr) => {

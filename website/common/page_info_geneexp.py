@@ -50,10 +50,6 @@ class PageInfoGeneExp:
         ret.update({"cellCompartments" : json.dumps(cellcs),
                     "globalCellCompartments" : json.dumps(cellcs)})
 
-        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        ge = cge.compute(gene)
-
-        ret.update(ge)
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
         return ret
     

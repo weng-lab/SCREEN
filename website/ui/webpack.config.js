@@ -45,12 +45,5 @@ module.exports = {
 	    "jQuery": "jquery",
 	    "window.jQuery": "jquery"
 	})
-    ],
-    externals: {
-	'react': 'React',
-	'react-dom': 'ReactDOM',
-	'redux': 'Redux',
-	'react-redux': 'ReactRedux',
-	"jquery" : "jQuery"
-    }
+    ]
 };

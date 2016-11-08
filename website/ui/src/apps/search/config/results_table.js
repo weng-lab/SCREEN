@@ -21,7 +21,7 @@ const render_array = (m) => (array) => (
 
 const render_gene_button = (d) => {
     var g = render_gene(d);
-    return '<a href="/geneexp/' + g + '" _target="blank">' + g + '</a>';
+    return '<a href="/geneexp/' + g + '" target="_blank">' + g + '</a>';
 };
 
 const ResultsTableColumns = [
@@ -56,13 +56,13 @@ const ResultsTableColumns = [
     {
 	title: "nearest gene",
 	data: "_source.genes.nearest-all",
-	className: "dt-right",
+	className: "dt-right geneexp",
 	render: render_gene_button
     },
     {
 	title: "nearest protein-coding gene",
 	data: "_source.genes.nearest-pc",
-	className: "dt-right",
+	className: "dt-right geneexp",
 	render: render_gene_button
     },
     {

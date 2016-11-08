@@ -1,7 +1,6 @@
 var React = require('react');
 
-import {expression_boxplot_connector} from '../components/expression_boxplot'
-import Boxplot from '../../../common/components/boxplot'
+import ExpressionBoxplot, {expression_boxplot_connector} from '../components/expression_boxplot'
 import {main_comparison_connector} from '../reducers/root_reducer'
 
 export const maintabs = {
@@ -12,8 +11,8 @@ export const maintabs = {
 	    title: "Gene Expression",
 	    visible: true,
 	    render: (store, key) => {
-		var ExpressionBoxplot = expression_boxplot_connector(Boxplot);
-		return <ExpressionBoxplot store={store} key={key}/>;
+		var Ebp = expression_boxplot_connector(ExpressionBoxplot);
+		return <Ebp store={store} key={key}/>;
 	    }
 	}
     }
