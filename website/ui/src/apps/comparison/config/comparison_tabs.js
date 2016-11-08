@@ -1,8 +1,9 @@
 var React = require('react');
 
 import ResultsApp from '../../search/components/results_app'
-import {main_venn_connector} from '../reducers/comparison_reducer'
+import {main_venn_connector, main_results_connector} from '../reducers/comparison_reducer'
 import MainVennDiagram from '../components/venn'
+import TableList from '../components/table_list'
 
 export const maintabs = {
     id: "main",
@@ -19,9 +20,10 @@ export const maintabs = {
 	results: {
 	    title: "Search Results",
 	    visible: true,
-	    render: (store, key) => (<div>
- 				        <ResultsApp store={store} key={key + "_main"} />
-				     </div>)
+	    render: (store, key) => {
+		var ResultsApp = main_results_connector(TableList);
+		return <ResultsApp store={store} key={key + "_main"} />;
+	    }
 	}
     }
 };

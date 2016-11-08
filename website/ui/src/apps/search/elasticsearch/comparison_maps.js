@@ -4,6 +4,7 @@ export const CellTypeQueryMap = (key, facet, query) => {
     if (!("venn" in query.extras)) query.extras["venn"] = {};
     query.extras.venn.cell_types = [];
     facet.state.data.map((d) => {if (d.selected) query.extras.venn.cell_types.push(d.key.replace(/ /g, "_"))});
+    query.extras["table_cell_types"] = [query.extras.venn.cell_types[0], query.extras.venn.cell_types[1]];
 };
 
 export const RankTypeQueryMap = (key, facet, query) => {
