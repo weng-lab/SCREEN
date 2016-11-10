@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import StringIO
 import cherrypy
 import json
@@ -13,6 +14,9 @@ from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColor
 
 from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from files_and_paths import Dirs
 
 class TrackInfo:
     def __init__(self, rtrm, ct, assay, values):
@@ -163,9 +167,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return track
 
     def trackhubExp(self, trackInfo):
+        fnp = os.path.join(Dirs.encode_data, trackInfo.expID,
+                           trackInfo.fileID + ".bigWig")
+        if not os.path.exists(fnp):
+            return None
+        
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if not self.isUcsc:
-            url = os.path.join("http://zlab-annotations-v4.umassmed.edu/static_data/encode_data",
+            url = os.path.join("https://zlab.umassmed.edu/zlab-annotations-v4/static_data/encode_data",
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
         desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
@@ -273,7 +282,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         pos = [self.makePos(x) for x in self.re_pos]
         lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
-
+        
         return json.dumps(lines)
 
     def washu_trackhub(self, uuid, *args, **kwargs):
