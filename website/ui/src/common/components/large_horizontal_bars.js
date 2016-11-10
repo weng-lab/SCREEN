@@ -37,7 +37,8 @@ class LargeHorizontalBars extends React.Component {
 	var d;
 	for (var i in this.props.items) {
 	    yoffsets[i] = total_items;
-	    labeloffsets.push(total_items + (this.props.items[i].items.length / 2.0) + 0.25);
+	    labeloffsets.push(total_items + (
+		this.props.items[i].items.length / 2.0) + 0.25);
 	    total_items += this.props.items[i].items.length;
 	    d = d3.max(this.props.items[i].items, this.props.rank_f);
 	    if (d > cmax) cmax = d;
@@ -50,7 +51,7 @@ class LargeHorizontalBars extends React.Component {
 	var height = barheight * total_items + 10;
 
 	var xscale = d3.scale.linear()
-	    .domain([-cmax, 0])
+	    .domain([0, cmax])
 	    .range([0, +this.props.width * widthFactor]);
 
 	var yscale = d3.scale.linear()
@@ -93,13 +94,13 @@ class LargeHorizontalBars extends React.Component {
 		.data(itemsets[n].items)
 		.transition()
 		.duration(1000)
-		.attr("width", (d) => {return +xscale(-rank_f(d))});
+		.attr("width", (d) => {return xscale(rank_f(d))});
 	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
 		.data(itemsets[n].items)
 		.enter()
 		.append('text')
-		.attr({'x': (d) => (+xscale(-rank_f(d)) + 5),
+		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
 		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
 		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'});
