@@ -8,6 +8,14 @@ export const default_formatter = (table_layout) => (results) => (Object.keys(res
     total: results[k].results.total
 })));
 
+const render_order = (results) => {
+    var retval = ["both cell types"];
+    Object.keys(results).map((k) => {
+	if (k != "both cell types") retval.push(k);
+    });
+    return retval;
+}
+
 const results_default_state = {
     tables: [],
     loading: false,
@@ -21,7 +29,8 @@ const ResultsReducer = (results_formatter) => (state = results_default_state, ac
     switch (action.type) {
     case SET_TABLE_RESULTS:
 	return Object.assign({}, state, {
-	    tables: results_formatter(action.results)
+	    tables: results_formatter(action.results),
+	    render_order: render_order(action.results)
 	});
 
     case SET_RESULTS_LOADING:

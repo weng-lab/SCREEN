@@ -212,11 +212,8 @@ class AjaxWebService:
                     "overlaps": {} }
         
         fields = {}
-        print(basequery)
-        print("!\n!")
         query = { "aggs": {},
                   "query": self._combine(basequery) }
-        print(query)
 
         # first pass: build rank aggs, cell type aggs
         for cell_type in j["cell_types"]:
@@ -285,10 +282,9 @@ class AjaxWebService:
                          {"range": {field: {"gte": j["venn"]["rank_threshold"]}}}))
 
         # get overlapping results
-        title = "both %s and %s" % (j["table_cell_types"][1], j["table_cell_types"][0])
         j["object"]["query"]["bool"] = {"must": j["object"]["query"]["bool"]["filter"]}
         j["object"]["query"]["bool"]["must"] += [ctqs[0][0], ctqs[1][0]]
-        results["sep_results"][title] = self._search({"object": j["object"], "post_processing": {}})
+        results["sep_results"]["both cell types"] = self._search({"object": j["object"], "post_processing": {}})
 
         # results for each cell type individually
         j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][1], ctqs[1][0]]
