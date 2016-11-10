@@ -28,7 +28,8 @@ class LargeHorizontalBars extends React.Component {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
 	});
 
-	var leftOffset = 150;
+	var leftOffset = 175;
+	var widthFactor = 0.5;
 	var total_items = 0;
 	var labeloffsets = [];
 	var yoffsets = {};
@@ -44,12 +45,13 @@ class LargeHorizontalBars extends React.Component {
 	
 	var itemsets = this.props.items;
 	var rank_f = this.props.rank_f;
+	var subName_f = this.props.subName_f;
 	var barheight = +this.props.barheight;
 	var height = barheight * total_items + 10;
 
 	var xscale = d3.scale.linear()
 	    .domain([-cmax, 0])
-	    .range([0, +this.props.width * 0.8]);
+	    .range([0, +this.props.width * widthFactor]);
 
 	var yscale = d3.scale.linear()
 	    .domain([0, total_items])
@@ -98,7 +100,8 @@ class LargeHorizontalBars extends React.Component {
 		.enter()
 		.append('text')
 		.attr({'x': (d) => (+xscale(-rank_f(d)) + 5), 'y': (d, i) => (+yscale(i) + +barheight * 0.75)})
-		.text((d) => (rank_f(d))).style({'fill': '#000', 'font-size': (+barheight * 0.75) + 'px'});
+		.text((d) => (rank_f(d) + " " + subName_f(d) ))
+		.style({'fill': '#000', 'font-size': (+barheight * 0.75) + 'px'});
 	}
 	
 	var ylabels = canvas.append('g')
