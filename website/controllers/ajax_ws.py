@@ -192,6 +192,14 @@ class AjaxWebService:
             raise
             return { "error" : "error running action"}
 
+    def _combine(self, query):
+        retval = {"bool": {"must": []}}
+        for field in ["query", "post_filter"]:
+            if field in query and "bool" in query[field]:
+                for _field in query[field]["bool"]:
+                    retval["bool"]["must"] += query[field]["bool"][_field]
+        return retval
+        
     def _get_rankfield(self, rank_type, cell_type):
         rt1, rt2 = self._rank_types[rank_type]
         return "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
@@ -204,8 +212,11 @@ class AjaxWebService:
                     "overlaps": {} }
         
         fields = {}
+        print(basequery)
+        print("!\n!")
         query = { "aggs": {},
-                  "query": basequery["post_filter"] }
+                  "query": self._combine(basequery) }
+        print(query)
 
         # first pass: build rank aggs, cell type aggs
         for cell_type in j["cell_types"]:
@@ -260,10 +271,13 @@ class AjaxWebService:
         j["post_processing"] = {}
         results = {"results": self._search(j),
                    "sep_results": {}}
+
+        # for drawing the venn or heatmap
+        results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
         if j["table_cell_types"][1] is None:
-            results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
             return results
-        
+
+        # build query for individual result sets
         ctqs = []
         for cell_type in j["table_cell_types"]:
             field = self._get_rankfield(j["venn"]["rank_type"], cell_type)
@@ -282,8 +296,6 @@ class AjaxWebService:
         j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
         results["sep_results"][j["table_cell_types"][0] + " only"] = self._search({"object": j["object"], "post_processing": {}})
 
-        # for drawing the venn or heatmap
-        results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
         return results
     
     def _search(self, j):
