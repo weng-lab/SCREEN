@@ -51,13 +51,13 @@ class ComputeGeneExpression:
         ret = {}
         for e in arr:
             t = e["tissue"]
-	    if "na" == t:
-                continue
 	    if t not in ret:
                 c = "#000000"
                 if t in TissueColors:
                     c = TissueColors[t]
-	        ret[t] = {"name" : e["cell_type"],
+                else:
+                    print("missing color for", t)
+	        ret[t] = {"name" : e["tissue"],
                           "color": c, "items": []}
             ret[t]["items"].append(e)
         return ret
