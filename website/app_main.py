@@ -45,7 +45,6 @@ class MainApp():
                                            self.session_uuid())
 
     @cherrypy.expose
-    @cherrypy.tools.json_out()
     def washu_trackhub(self, *args, **kwargs):
         return self.trackhub.washu_trackhub(self.session_uuid(), args, kwargs)
 

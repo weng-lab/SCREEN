@@ -5,6 +5,7 @@ import cherrypy
 import json
 import os
 import heapq
+import re
                 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
@@ -25,7 +26,9 @@ class TrackInfo:
         return "\t".join([str(x) for x in [self.ct, self.assay, self.rtrm]])
         
     def name(self):
-        return "_".join(list(self.rtrm[0]) + [self.assay])
+        ret = "_".join([self.rtrm[0]] + [self.assay])
+        ret = re.sub(r'\W+', '', ret)
+        return ret
 
     def color(self):
         return GetTrackColorByAssay(self.assay)
@@ -139,7 +142,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                       self.priority,
                       washu_url,
                       color = PredictionTrackhubColors.distal_regions.rgb,
-                      type = "bed").track_washu()
+                      type = "hammock").track_washu()
         self.priority += 1
         return t
 
@@ -269,18 +272,20 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         lines = self.getLines(re_accessions)
 
         pos = [self.makePos(x) for x in self.re_pos]
-        lines.append({"type" : "splinters",
-                      "list" : sorted(pos)})
-        return lines
+        lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
+
+        return json.dumps(lines)
 
     def washu_trackhub(self, uuid, *args, **kwargs):
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+
         self.isUcsc = False
 
         args = args[0]
         if 3 != len(args):
             return { "error" : "wrong num of args", "args" : args }
                 
-        uui = args[0]
+        uuid = args[0]
         try:
             info = self.db.get(uuid)
         except:
