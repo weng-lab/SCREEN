@@ -28,7 +28,7 @@ class LargeHorizontalBars extends React.Component {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
 	});
 
-	var leftOffset = 175;
+	var leftOffset = 200;
 	var widthFactor = 0.5;
 	var total_items = 0;
 	var labeloffsets = [];
@@ -113,7 +113,7 @@ class LargeHorizontalBars extends React.Component {
 	    .enter()
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
-	    .attr("transform", "translate(140,0)")
+	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
 	    .text((d) => (itemsets[d].name))
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
