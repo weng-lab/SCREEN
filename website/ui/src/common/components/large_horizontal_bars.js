@@ -28,10 +28,12 @@ class LargeHorizontalBars extends React.Component {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
 	});
 
+	var leftOffset = 150;
 	var total_items = 0;
 	var labeloffsets = [];
 	var yoffsets = {};
-	var cmax = 0, d;
+	var cmax = 0;
+	var d;
 	for (var i in this.props.items) {
 	    yoffsets[i] = total_items;
 	    labeloffsets.push(total_items + (this.props.items[i].items.length / 2.0) + 0.25);
@@ -47,7 +49,7 @@ class LargeHorizontalBars extends React.Component {
 
 	var xscale = d3.scale.linear()
 	    .domain([-cmax, 0])
-	    .range([0, +this.props.width - 150]);
+	    .range([0, +this.props.width * 0.8]);
 
 	var yscale = d3.scale.linear()
 	    .domain([0, total_items])
@@ -68,20 +70,22 @@ class LargeHorizontalBars extends React.Component {
 	    .tickValues(d3.range(total_items + 2));
 
 	var y_xis = canvas.append('g')
-	    .attr("transform", "translate(150,0)")
+	    .attr("transform", "translate(" + leftOffset + ",0)")
 	    .attr('id','yaxis')
 	    .call(yAxis);
 
 	for (var n in itemsets) {
 	    var chart = canvas.append('g')
-		.attr("transform", "translate(150," + (yoffsets[n] * barheight) + ")");
+		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[n] * barheight) + ")");
 	    chart.selectAll('rect')
 		.data(itemsets[n].items)
 		.enter()
-		.append('rect')
+	    	.append('rect')
 		.attr('height', barheight)
 		.attr({'x': 0, 'y': (d, i) => (+yscale(i))})
 		.style('fill', (d, i) => (itemsets[n].color))
+		.attr("stroke-width", 1)
+	        .attr("stroke", "white")
 		.attr('width', 0);
 	    var transit = chart.selectAll("rect")
 		.data(itemsets[n].items)
@@ -111,4 +115,4 @@ class LargeHorizontalBars extends React.Component {
     
 }
 
-export default HorizontalBars;
+export default LargeHorizontalBars;
