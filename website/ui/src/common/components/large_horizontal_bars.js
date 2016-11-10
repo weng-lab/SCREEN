@@ -94,14 +94,15 @@ class LargeHorizontalBars extends React.Component {
 		.transition()
 		.duration(1000)
 		.attr("width", (d) => {return +xscale(-rank_f(d))});
-	    if (+barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
+	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
 		.data(itemsets[n].items)
 		.enter()
 		.append('text')
-		.attr({'x': (d) => (+xscale(-rank_f(d)) + 5), 'y': (d, i) => (+yscale(i) + +barheight * 0.75)})
+		.attr({'x': (d) => (+xscale(-rank_f(d)) + 5),
+		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
-		.style({'fill': '#000', 'font-size': (+barheight * 0.75) + 'px'});
+		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'});
 	}
 	
 	var ylabels = canvas.append('g')
@@ -112,10 +113,11 @@ class LargeHorizontalBars extends React.Component {
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(140,0)")
-	    .text((d) => (itemsets[d].name)).style({'fill': '#000', 'font-size': (+barheight < 8 ? 8 : barheight) + "px", "text-anchor": "end"});
-	
+	    .text((d) => (itemsets[d].name))
+	    .style({'fill': '#000',
+		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
+		    "text-anchor": "end"});
     }
-    
 }
 
 export default LargeHorizontalBars;
