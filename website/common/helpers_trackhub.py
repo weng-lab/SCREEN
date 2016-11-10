@@ -148,7 +148,7 @@ class BigGenePredTrack(Track):
     def __init__(self, desc, priority, url):
         super(BigGenePredTrack, self).__init__(desc, priority, url)
         self.color = OtherTrackhubColors.Genes.rgb
-        self.type = "bigBed 12 + 8"
+        self.type = "bigBed"
         self.visibility = "pack"
 
 class BigBedTrack(Track):

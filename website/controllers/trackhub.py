@@ -116,9 +116,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return f.getvalue()
 
     def genes(self):
-        if "hg19" == self.assembly:
-            return None
-
         byAssembly = {"mm10" : "Comprehensive M8",
                       "hg19" : "Comprehensive 24"}
         desc = "GENCODE Genes " + byAssembly[self.assembly]
