@@ -112,7 +112,7 @@ const table_props_map = (state) => {
     };
 };
 
-const table_dispatch_map = (dispatch) => {
+export const table_dispatch_map = (dispatch) => {
     var retval = {
 	onTdClick: (td, rowdata) => {
 	    table_click_handler(td, rowdata, dispatch);
