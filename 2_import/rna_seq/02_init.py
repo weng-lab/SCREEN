@@ -21,7 +21,7 @@ CREATE TABLE r_rnas
 encode_id text,
 cellType text,
 organ text,
-    cellCompartment text,
+cellCompartment text,
 target text,
 lab text,
 assay_term_name text,
