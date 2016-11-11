@@ -21,7 +21,13 @@ class HorizontalBars extends React.Component {
     }
     
     componentDidUpdate() {
-	if (!this.refs.container.style.display == "block") return;
+	if(this.refs.container.style.display != "block") {
+	    return;
+	}
+	if(this.props.width < 200){
+	    return; // hack to avoid rerender if items not in "view"
+	}
+	
 	$(this.refs.container).empty();
 	
 	var grid = d3.range(this.props.items.length).map((i) => {
@@ -47,7 +53,7 @@ class HorizontalBars extends React.Component {
 
 	var xscale = d3.scale.linear()
 	    .domain([0, cmax])
-	    .range([0, +this.props.width - 150]);
+	    .range([0, this.props.width - 150]);
 
 	var yscale = d3.scale.linear()
 	    .domain([0, total_items])
