@@ -17,7 +17,7 @@ export const facetboxes = () => {return {
 		    cols: [
 			{
 			    title: "compartment",
-			    data: "value",
+			    data: "key",
 			    className: "dt-right"
 			}
 		    ],
