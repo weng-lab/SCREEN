@@ -12,7 +12,6 @@ import SearchBox from '../../common/components/searchbox'
 
 import MainTabControl from './components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
-import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector, main_searchbox_connector, default_state} from './reducers/root_reducer'
 import {facetboxes, facetbox_render_order, es_links} from './config/facetboxes'
 import {maintabs} from './config/maintabs'

@@ -11,7 +11,6 @@ import FacetApp from './components/facet_app'
 
 import NavBarApp from '../../common/components/navbar_app'
 import MainTabControl from './components/maintab'
-import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector} from './reducers/root_reducer'
 import {invalidate_boxplot} from './helpers/invalidate_results'
 
