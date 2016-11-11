@@ -24,6 +24,8 @@ class ResultsTable extends React.Component {
 	var backButton = this.props.backButton;
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
+	var onMouseEnter = this.props.onMouseEnter;
+	var onMouseExit = this.props.onMouseExit;
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
@@ -37,17 +39,27 @@ class ResultsTable extends React.Component {
 	    pageLength: this.props.pageLength,
 	    dom: '<"top"f>t<"bottom"p><"clear">'
 	});
-	$(this.refs.root).on("click", "td", function() {
-	    if (onTdClick) {
-		onTdClick(this,
-			  _datatable.row($(this).parents('tr')).data());
-	    }
-	}).on("click", "button", function() {
-	    if (onButtonClick) {
-		onButtonClick($(this).html(),
+	$(this.refs.root)
+	    .on("click", "td", function() {
+		if (onTdClick) {
+		    onTdClick(this,
 			      _datatable.row($(this).parents('tr')).data());
-		 }
-	}).removeClass('display').addClass('table table-condensed table-hover');
+		}
+	    })
+	    .on("click", "button", function() {
+		if (onButtonClick) {
+		    onButtonClick($(this).html(),
+				  _datatable.row($(this).parents('tr')).data());
+		}
+	    })
+	    .on("mouseenter", "td", function() {
+		if(!onMouseEnter){
+		    return false;
+		}
+		$(this).attr("title", "click for more details")
+	    })
+	    .removeClass('display')
+	    .addClass('table table-condensed table-hover');
 	
 	this._datatable = _datatable;
     }
