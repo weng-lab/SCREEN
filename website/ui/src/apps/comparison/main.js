@@ -33,7 +33,7 @@ class ComparisonPage extends React.Component {
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
 	var SearchBoxC = main_searchbox_connector(SearchBox);
-	var Venn = main_venn_connector(MainVennDiagram);
+	var Venn = main_venn_connector(this.store)(MainVennDiagram);
 	return (<div>
 		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse navbar-main">
 		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} searchbox={SearchBoxC} store={this.store} /></div>

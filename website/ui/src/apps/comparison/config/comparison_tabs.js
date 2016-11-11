@@ -17,7 +17,7 @@ export const maintabs = {
 	    title: "Element Overlap",
 	    visible: true,
 	    render: (store, key) => {
-		var Venn = main_venn_connector(MainVennDiagram);
+		var Venn = main_venn_connector(store)(MainVennDiagram);
 		return <Venn store={store} key={key} />;
 	    }
 	},

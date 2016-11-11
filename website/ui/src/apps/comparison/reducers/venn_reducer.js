@@ -1,5 +1,6 @@
 export const SET_THRESHOLD = 'SET_THRESHOLD';
 export const SET_VENN_RESULTS = 'SET_VENN_RESULTS';
+export const SET_TABLE_CELL_TYPES = 'SET_TABLE_CELL_TYPES';
 
 const default_state = {
     diagram_width: 500,
@@ -8,7 +9,8 @@ const default_state = {
 	totals: {},
 	overlaps: {}
     },
-    threshold: 1000
+    threshold: 1000,
+    table_cell_types: []
 };
 
 const VennReducer = (state = default_state, action) => {
@@ -28,8 +30,14 @@ const VennReducer = (state = default_state, action) => {
 		overlaps: action.results.overlaps,
 		rowlabels: action.results.rowlabels,
 		collabels: action.results.collabels,
-		matrix: action.results.matrix
+		matrix: action.results.matrix,
+		table_cell_types: [action.results.rowlabels[0], action.results.rowlabels[1]]
 	    }
+	});
+
+    case SET_TABLE_CELL_TYPES:
+	return Object.assign({}, state, {
+	    table_cell_types: action.table_cell_types
 	});
     }
     

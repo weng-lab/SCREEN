@@ -5,6 +5,12 @@ import VennDiagram from '../../../common/components/venn_diagram'
 import Heatmap from '../../../common/components/heatmap'
 import {default_heatmap_layout} from '../../../common/components/heatmap'
 
+import {invalidate_comparison} from '../helpers/invalidate_results'
+
+import {SET_TABLE_CELL_TYPES} from '../reducers/venn_reducer'
+import {SELECT_TAB} from '../../search/reducers/tab_reducer'
+import {TAB_ACTION} from '../../search/reducers/root_reducer'
+
 const heatmap_layout = Object.assign({}, default_heatmap_layout);
 heatmap_layout.margin = Object.assign({}, heatmap_layout.margin, {
     left: 250,
@@ -15,6 +21,7 @@ class ComparisonVenn extends React.Component {
     
     constructor(props) {
 	super(props);
+	this.onClick = this.onClick.bind(this);
     }
 
     _get_venn(totals, overlaps) {
@@ -31,6 +38,11 @@ class ComparisonVenn extends React.Component {
 	    sets: _sets,
 	    overlaps: _overlaps
 	};
+    }
+
+    onClick(r, c) {
+	if (r == c) return;
+	this.props.onClick(this.props.rowlabels[r], this.props.collabels[c]);
     }
 
     _format_matrix(matrix) {
@@ -60,7 +72,7 @@ class ComparisonVenn extends React.Component {
 		   </div>
 		   <div style={{display: (!_show_venn && !_missing_data ? "block": "none")}}>
 		      <Heatmap rowlabels={rowlabels} collabels={collabels} data={this._format_matrix(this.props.matrix)}
-		         min={0} max={1} chart_layout={heatmap_layout} />
+		         min={0} max={1} chart_layout={heatmap_layout} onClick={this.onClick} />
 		   </div>
 		</div>);
     }
@@ -81,4 +93,25 @@ const props_map = (f) => (_state) => {
     };
 };
 
-export const venn_connector = (pf) => connect(props_map(pf));
+const dispatch_map = (store) => (f) => (_dispatch) => {
+    var dispatch = f(_dispatch);
+    return {
+	onClick: (rl, cl) => {
+	    dispatch({
+		type: SET_TABLE_CELL_TYPES,
+		table_cell_types: [rl, cl]
+	    });
+	    dispatch(invalidate_comparison(store.getState()));
+	    dispatch({
+		type: TAB_ACTION,
+		target: "main_tabs",
+		subaction: {
+		    type: SELECT_TAB,
+		    selection: "results"
+		}
+	    });
+	}
+    };
+};
+
+export const venn_connector = (store) => (pf, df) => connect(props_map(pf), dispatch_map(store)(df));

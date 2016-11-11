@@ -6,7 +6,7 @@ import {tablelist_connector} from '../components/table_list'
 
 import ResultsTableColumns, {table_order} from '../../search/config/results_table'
 
-export const main_venn_connector = venn_connector((state) => (state.venn));
+export const main_venn_connector = (store) => venn_connector(store)((state) => (state.venn), (dispatch) => (dispatch));
 export const main_results_connector = tablelist_connector((state) => (state.results), (dispatch) => (dispatch));
 
 const table_layout = {

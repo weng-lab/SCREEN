@@ -66,7 +66,8 @@ const props_map = (f) => (_state) => {
     return {
 	tables: state.tables,
 	loading: state.loading,
-	render_order: state.render_order
+	render_order: state.render_order,
+	cart_list: _state.results.cart_order
     };
 };
 

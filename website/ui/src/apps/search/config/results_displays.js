@@ -16,9 +16,19 @@ const do_nav = (url) => {
 const TSS_AGG_KEY = "tss_bar";
 
 const tss_agg = {
-    "histogram": {
-	"field": "genes.nearest-all.distance",
-	"interval": 2500
+    "range": {
+	"script": {
+	    "inline": "return doc['genes']['nearest-all'][0].distance;"
+	},
+	"ranges": [
+	    {"to": 2500},
+	    {"from": 2501, "to": 10000},
+	    {"from": 10001, "to": 50000},
+	    {"from": 50001, "to": 250000},
+	    {"from": 250001, "to": 500000},
+	    {"from": 500001, "to": 1000000},
+	    {"from": 1000001}
+	]
     }
 };
 
