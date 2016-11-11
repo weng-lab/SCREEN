@@ -3,7 +3,7 @@ var React = require('react');
 import {connect} from 'react-redux'
 import {render} from 'react-dom'
 
-import HorizontalBar from '../../../common/components/horizontal_bar'
+import HorizontalBars from '../../../common/components/horizontal_bars'
 import {TissueColors} from '../config/colors'
 
 const c_rank_fs = {
@@ -59,7 +59,7 @@ class ComparisonBarGraph extends React.Component {
 
     componentDidUpdate() {
 	var width = $(this.refs.bargraph).width();
-	render(<HorizontalBar width={width} height={1000}
+	render(<HorizontalBars width={width} height={1000}
 	          items={format_data_for_bar_graph(this.props.data, this.props.rank_type, this.props.threshold)}
 	          barheight="12" rank_f={(d) => (d)} />,
 	       this.refs.bargraph);

@@ -29,7 +29,8 @@ class TableWithCart extends React.Component {
 		    </div>
 		    <ResultsDataTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
 	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
-		        order={this.props.order} bFilter={true} bLengthChange={true} />
+		order={this.props.order} bFilter={true} bLengthChange={true}
+		onMouseEnter={true} onMouseExit={true}/>
 		    <span className="tableInfo">{total}</span>
 		</div>);
     }
