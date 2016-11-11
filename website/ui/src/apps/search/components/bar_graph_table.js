@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {render} from 'react-dom'
 
 import ResultsTable from '../../../common/components/results_table'
-import HorizontalBar from '../../../common/components/horizontal_bar'
+import HorizontalBars from '../../../common/components/horizontal_bars'
 import {TissueColors} from '../config/colors'
 
 const format_data_for_bar_graph = (data) => {
@@ -51,7 +51,7 @@ class BarGraphTable extends React.Component {
 
     componentDidUpdate() {
 	var width = $(this.refs.bargraph).width();
-	render(<HorizontalBar width={width} height={500}
+	render(<HorizontalBars width={width} height={500}
 	       items={format_data_for_bar_graph(this.props.data)}
 	       barheight="5" rank_f={this.props.rank_f} />,
 	       this.refs.bargraph);

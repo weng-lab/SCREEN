@@ -33,9 +33,9 @@ class ExpressionMatrix:
                     heatmap["cols"].append(ev["cell_line"])
                     cmap[ev["cell_line"]] = clptr
                     clptr += 1
-                    heatmap["matrix"][len(heatmap["matrix"]) - 1].append(math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0)
+                    heatmap["matrix"][len(heatmap["matrix"]) - 1].append(math.log(ev["rep1_tpm"] + 0.01) if "rep1_tpm" in ev else -1.0)
                 else:
-                    heatmap["matrix"][len(heatmap["matrix"]) - 1][cmap[ev["cell_line"]]] = math.log(ev["rep1_fpkm"] + 0.01) if "rep1_fpkm" in ev else -1.0
+                    heatmap["matrix"][len(heatmap["matrix"]) - 1][cmap[ev["cell_line"]]] = math.log(ev["rep1_tpm"] + 0.01) if "rep1_tpm" in ev else -1.0
         _heatmap = Heatmap(heatmap["matrix"])
         start = time.time()
         roworder, colorder = _heatmap.cluster_by_both()
