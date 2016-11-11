@@ -24,7 +24,9 @@ class LongChecklistFacet extends React.Component {
     }
     
     _td_handler(r, k) {
-	if (this.props.onTdClick) this.props.onTdClick(k.key);
+	if (this.props.onTdClick) {
+	    this.props.onTdClick(k.key);
+	}
     }
 
     modeToggle() {

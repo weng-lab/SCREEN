@@ -19,7 +19,7 @@ class FacetApp extends React.Component {
 	var boxes = ParsedQueryMap(this.props.pquery, facetboxes());
 	return (<div>
 		{facetbox_render_order.map((k) => {
-		    var Retval = fc(k, boxes[k]);
+		    var Retval = fc(k, boxes[k], this.props.invalidator);
 		    return <Retval key={k} store={store} />;
 		})}
 		</div>);

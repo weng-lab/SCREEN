@@ -42,9 +42,21 @@ export const expression_boxplot_done = (response) => {
     }
 };
 
+const collectCompartments = (s) => {
+    var arr = s.facet_boxes.cell_compartments.facets.cell_compartments.state.data;
+    var ret = []
+    arr.forEach(function(v) {
+	ret.push(v);
+    });
+    return ret;
+}
+
 export const invalidate_boxplot = (q) => {
     return (dispatch) => {
-	var query = JSON.stringify(q);
+	var query = JSON.stringify({
+	    "geneID" : GlobalParsedQuery["gene"],
+	    "compartments" : collectCompartments(q)
+	});
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_expression_boxplot(response));
 	    dispatch(expression_boxplot_done(response));
