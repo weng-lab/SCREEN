@@ -42,11 +42,11 @@ class HorizontalBars extends React.Component {
 	
 	var itemsets = this.props.items;
 	var rank_f = this.props.rank_f;
-	var barheight = +this.props.barheight;
+	var barheight = this.props.barheight;
 	var height = barheight * total_items + 10;
 
 	var xscale = d3.scale.linear()
-	    .domain([-cmax, 0])
+	    .domain([0, cmax])
 	    .range([0, +this.props.width - 150]);
 
 	var yscale = d3.scale.linear()
@@ -87,13 +87,13 @@ class HorizontalBars extends React.Component {
 		.data(itemsets[n].items)
 		.transition()
 		.duration(1000)
-		.attr("width", (d) => {return +xscale(-rank_f(d))});
+		.attr("width", (d) => {return +xscale(rank_f(d))});
 	    if (+barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
 		.data(itemsets[n].items)
 		.enter()
 		.append('text')
-		.attr({'x': (d) => (+xscale(-rank_f(d)) + 5), 'y': (d, i) => (+yscale(i) + +barheight * 0.75)})
+		.attr({'x': (d) => (+xscale(rank_f(d)) + 5), 'y': (d, i) => (+yscale(i) + +barheight * 0.75)})
 		.text((d) => (rank_f(d))).style({'fill': '#000', 'font-size': (+barheight * 0.75) + 'px'});
 	}
 	
