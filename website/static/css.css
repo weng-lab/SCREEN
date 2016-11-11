@@ -231,3 +231,6 @@ select.ui-toggle-switch { display: none; }
 .mainSearchTable tbody tr {
     cursor: pointer;
 }
+.mainSearchTable tbody > tr:hover {
+    background-color: #FAD7A0;
+}
