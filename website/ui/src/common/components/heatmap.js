@@ -79,6 +79,8 @@ class Heatmap extends React.Component {
 	var colorScale = d3.scale.quantile()
 	    .domain([min, max])
 	    .range(chart_layout.colors);
+
+	var onClick = (row, col) => {if (this.props.onClick) this.props.onClick(row, col);};
 	
 	var svg = d3.select(this.refs.container).append("svg")
 	    .attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right)
@@ -146,7 +148,11 @@ class Heatmap extends React.Component {
 		//Show the tooltip
 		d3.select("#tooltip").classed("hidden", false);
 	    })
+	    .on("mouseup", function(d){
+		onClick(d.row - 1, d.col - 1);
+	    })
 	    .on("mouseout", function(){
+		console.log("MOUSEOUT");
 		d3.select(this).classed("cell-hover",false);
 		d3.selectAll(".rowLabel").classed("text-highlight",false);
 		d3.selectAll(".colLabel").classed("text-highlight",false);
@@ -258,7 +264,7 @@ class Heatmap extends React.Component {
 	    }
 	}
 	
-	var sa=d3.select(".g3")
+/*	var sa=d3.select(".g3")
 	    .on("mousedown", function() {
 		if( !d3.event.altKey) {
 		    d3.selectAll(".cell-selected").classed("cell-selected",false);
@@ -353,7 +359,7 @@ class Heatmap extends React.Component {
 		    d3.selectAll(".rowLabel").classed("text-selected",false);
 		    d3.selectAll(".colLabel").classed("text-selected",false);
 		}
-	    });
+	    }); */
 	
     }
     

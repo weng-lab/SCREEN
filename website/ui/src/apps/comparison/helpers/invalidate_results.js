@@ -4,6 +4,7 @@ import {SET_RESULTS_LOADING, SET_RESULTS_COMPLETE, SET_TABLE_RESULTS} from '../r
 import FacetQueryMap, {FacetsToSearchText} from '../../search/elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../../search/elasticsearch/results_to_map'
 import {results_fetching, results_error, set_searchtext} from '../../search/helpers/invalidate_results'
+import {array_contains} from '../../../common/common'
 
 export const set_venn_results = (results) => {
     return {
@@ -35,6 +36,11 @@ export const invalidate_comparison = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
+	if (state.venn.table_cell_types.length == 2
+	    && array_contains(n_query.extras.venn.cell_types, state.venn.table_cell_types[0])
+	    && array_contains(n_query.extras.venn.cell_types, state.venn.table_cell_types[1])) {
+	    n_query.extras["table_cell_types"] = state.venn.table_cell_types;
+	}
 	
 	var f_success = (response, status, jqxhr) => {
 	    ResultsDispatchMap(state, response.results, dispatch);
