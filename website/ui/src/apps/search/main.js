@@ -35,7 +35,8 @@ class SearchPage extends React.Component {
 		   <div className="container" style={{width: "100%"}}>
                       <div className="row" style={{width: "100%"}}>
                          <div className="col-md-3 nopadding-right" id="facets-container">
-		            <FacetApp store={this.store} pquery={GlobalParsedQuery} facetboxes={facetboxes} facetbox_render_order={facetbox_render_order} es_links={es_links}
+		         <FacetApp store={this.store} pquery={GlobalParsedQuery} facetboxes={facetboxes}
+		               facetbox_render_order={facetbox_render_order} es_links={es_links}
  		               invalidator={invalidate_results} />
                          </div>
                          <div className="col-md-9 nopadding-left" id="tabs-container">
