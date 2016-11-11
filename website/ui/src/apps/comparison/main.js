@@ -13,7 +13,6 @@ import SearchBox from '../../common/components/searchbox'
 
 import MainTabControl from '../search/components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
-import HorizontalBars from "../../common/components/horizontal_bar"
 import {main_tab_connector, main_searchbox_connector} from '../search/reducers/root_reducer'
 import {main_venn_connector} from './reducers/comparison_reducer'
 
