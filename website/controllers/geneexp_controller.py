@@ -1,10 +1,9 @@
 import sys, os
 
 from common.page_info_geneexp import PageInfoGeneExp
-from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from compute_gene_expression import ComputeGeneExpression
+from compute_gene_expression import ComputeGeneExpression, Compartments
 
 class GeneExpController:
     def __init__(self, templates, es, ps, cache):
@@ -22,8 +21,15 @@ class GeneExpController:
         gene = j["geneID"]
         # TODO: check gene
 
+        compartments = j["compartments"]
+        compartments = filter(lambda x: x["key"] in Compartments, compartments)
+        compartments = filter(lambda x: x["selected"], compartments)
+        compartments = [x["key"] for x in compartments]
+        if not compartments:
+            return {"items" : [] }
+        
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        return cge.computeHorBars(gene)
+        return cge.computeHorBars(gene, compartments)
     
 
 

@@ -1,15 +1,9 @@
 import sys, os, json, cherrypy
 import subprocess
 
-from compute_gene_expression import ComputeGeneExpression
-from models.regelm import RegElements
-from models.regelm_detail import RegElementDetails
-from parse_search import ParseSearch
-
-from common.session import Sessions
+from compute_gene_expression import ComputeGeneExpression, Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
-from autocomplete import Autocompleter
 from constants import paths
 
 class PageInfoGeneExp:
@@ -17,8 +11,6 @@ class PageInfoGeneExp:
         self.es = es
         self.ps = ps
         self.cache = cache
-        self.regElements = RegElements(es)
-        self.regElementDetails = RegElementDetails(es, ps)
 
     def wholePage(self, indexPage = False):
         return {"page": {"title" : "Regulatory Element Visualizer"},
@@ -40,11 +32,7 @@ class PageInfoGeneExp:
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 
-        compartments = ["cell", "nucleoplasm", "cytosol",
-                        "nucleus", "membrane", "chromatin", 
-                        "nucleolus"]
-
-        cellcs = [{"key" : c, "selected" : True} for c in compartments]
+        cellcs = [{"key" : c, "selected" : True} for c in Compartments]
         ret.update({"cellCompartments" : json.dumps(cellcs),
                     "globalCellCompartments" : json.dumps(cellcs)})
 

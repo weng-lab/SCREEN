@@ -32,6 +32,10 @@ TissueColors = {
     "uterus": "#990033"
 }
 
+Compartments = ["cell", "nucleoplasm", "cytosol",
+                "nucleus", "membrane", "chromatin", 
+                "nucleolus"]
+
 class ComputeGeneExpression:
     def __init__(self, es, ps, cache):
         self.es = es
@@ -62,14 +66,17 @@ class ComputeGeneExpression:
             ret[t]["items"].append(e)
         return ret
     
-    def computeHorBars(self, gene):
+    def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
-            select r.tpm, r_rnas.organ, r_rnas.cellType
-            from r_expression as r
-            inner join r_rnas on r_rnas.encode_id = r.dataset
-            where gene_name = %(gene)s""",
-                         { "gene" : gene })
+            SELECT r.tpm, r_rnas.organ, r_rnas.cellType
+            FROM r_expression AS r
+            INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
+            WHERE gene_name = %(gene)s
+            AND r_rnas.cellCompartment IN %(compartments)s
+            """,
+                         { "gene" : gene,
+                           "compartments" : tuple(compartments)})
             rows = curs.fetchall()
 
         rows = self._filterNAs(rows)
