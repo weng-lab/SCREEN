@@ -3,6 +3,8 @@ import ResultsDataTable from '../../../common/components/results_table'
 import {numberWithCommas} from '../../../common/common'
 import {connect} from 'react-redux'
 
+import {table_dispatch_map} from '../../search/components/table_with_cart'
+
 class TableList extends React.Component {
 
     constructor(props) {
@@ -30,6 +32,7 @@ class TableList extends React.Component {
 
     render() {
 	var onTdClick = this.props.onTdClick;
+	var onButtonClick = this.props.onButtonClick;
 	var loading = this.props.loading;
 	var selection = this.state.selection;
 	var tables = this.reorder(this.props.tables, this.props.render_order);
@@ -45,7 +48,7 @@ class TableList extends React.Component {
 			 : "displaying top 100 results of " + t.total + " total");
 	    return <div className={i == selection ? "tab-pane active" : "tab-pane"} key={"tab_" + i}>
 		      <ResultsDataTable data={t.data} cols={t.cols} onTdClick={onTdClick} loading={loading}
-  	                 order={t.order} bFilter={true} bLengthChange={true} />
+  	                 order={t.order} bFilter={true} bLengthChange={true} onButtonClick={onButtonClick} />
 		      <span className="tableInfo">{total}</span>
 		   </div>;
 	});
@@ -67,8 +70,8 @@ const props_map = (f) => (_state) => {
     };
 };
 
-const dispatch_map = (f) => (_dispatch) => {
-    var dispatch = f(_dispatch);
-};
+const dispatch_map = (f) => (_dispatch) => (
+    table_dispatch_map(f(_dispatch))
+);
 
 export const tablelist_connector = (pf, df) => connect(props_map(pf), dispatch_map(df));
