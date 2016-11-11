@@ -13,6 +13,7 @@ class ExpressionBoxplot extends React.Component {
 
     render() {
 	return (<div>
+		<h2>{GlobalParsedQuery["gene"]}</h2>
 		<div style={{"width": "100%"}} ref="bargraph" />
 		</div>);
     }
