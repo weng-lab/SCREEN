@@ -1,0 +1,167 @@
+{"cell_type": "Caco-2_immortalized_cell_line", "tissue": "colon"}
+{"cell_type": "keratinocyte_primary_cell_female", "tissue": "skin"}
+{"cell_type": "fibroblast_of_the_aortic_adventitia_primary_cell_female", "tissue": "blood vessel"}
+{"cell_type": "T47D_immortalized_cell_line", "tissue": "breast"}
+{"cell_type": "eye_tissue_fetal_56_days_and_male_fetal_76_days", "tissue": "eye"}
+{"cell_type": "muscle_of_trunk_tissue_female_fetal_121_day", "tissue": "muscle"}
+{"cell_type": "Daoy_immortalized_cell_line", "tissue": "brain"}
+{"cell_type": "BJ_foreskin_fibroblast", "tissue": "skin"}
+{"cell_type": "cardiac_muscle_primary_cell", "tissue": "heart"}
+{"cell_type": "mammary_epithelial_primary_cell_female_adult_18_years", "tissue": "breast"}
+{"cell_type": "SK-N-SH_immortalized_cell_line_treated_with_6_\u03bcM_all-trans-retinoic_acid_for_48_hours", "tissue": "brain"}
+{"cell_type": "epithelial_of_prostate_primary_cell", "tissue": "prostate"}
+{"cell_type": "Jurkat_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "T-helper_2_primary_cell_male_adult_33_years", "tissue": "blood"}
+{"cell_type": "MM-1S_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "A673_immortalized_cell_line", "tissue": "muscle"}
+{"cell_type": "G401_immortalized_cell_line", "tissue": "kidney"}
+{"cell_type": "natural_killer_primary_cell_male_adult_21_year", "tissue": "blood"}
+{"cell_type": "BE2C_immortalized_cell_line", "tissue": "ESC"}
+{"cell_type": "fibroblast_of_gingiva_primary_cell", "tissue": "mouth"}
+{"cell_type": "fibroblast_of_upper_leg_skin_primary_cell_male_fetal_12_weeks", "tissue": "skin"}
+{"cell_type": "small_intestine_tissue_male_fetal_108_days", "tissue": "intestine"}
+{"cell_type": "choroid_plexus_epithelial_primary_cell", "tissue": "brain"}
+{"cell_type": "H7-hESC_stem_cell", "tissue": "ESC"}
+{"cell_type": "Caki2_immortalized_cell_line", "tissue": "kidney"}
+{"cell_type": "brain_tissue_male_fetal_122_days", "tissue": "brain"}
+{"cell_type": "hepatocyte_in_vitro_differentiated_cells_derived_from_H9", "tissue": "liver"}
+{"cell_type": "IMR-90_immortalized_cell_line", "tissue": "lung"}
+{"cell_type": "neural_progenitor_in_vitro_differentiated_cells_derived_from_H9", "tissue": "brain"}
+{"cell_type": "NB4_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "placenta_tissue_female_fetal_108_days", "tissue": "placenta"}
+{"cell_type": "neuronal_stem_in_vitro_differentiated_cells_H1_derived", "tissue": "brain"}
+{"cell_type": "lung_tissue_female_fetal_85_days", "tissue": "lung"}
+{"cell_type": "epithelial_of_esophagus_primary_cell", "tissue": "esophagus"}
+{"cell_type": "myotube_in_vitro_differentiated_cells_derived_from_skeletal_muscle_myoblast", "tissue": "muscle"}
+{"cell_type": "spinal_cord_tissue_female_fetal_59_days_and_male_fetal_72_days", "tissue": "spinal coord"}
+{"cell_type": "dermis_microvascular_lymphatic_vessel_endothelial_primary_cell_female", "tissue": "vessel"}
+{"cell_type": "MCF-7_immortalized_cell_line", "tissue": "breast"}
+{"cell_type": "heart_tissue_male_fetal_72_days_and_male_fetal_76_days", "tissue": "heart"}
+{"cell_type": "fibroblast_of_peridontal_ligament_primary_cell_male", "tissue": "mouth"}
+{"cell_type": "bronchial_epithelial_primary_cell", "tissue": "lung"}
+{"cell_type": "thymus_tissue_female_fetal_98_days", "tissue": "thymus"}
+{"cell_type": "NCI-H226_immortalized_cell_line", "tissue": "lung"}
+{"cell_type": "M059J_immortalized_cell_line", "tissue": "brain"}
+{"cell_type": "middle_frontal_gyrus_tissue_male_adult_78_years", "tissue": "brain"}
+{"cell_type": "astrocyte_of_the_cerebellum_primary_cell", "tissue": "brain"}
+{"cell_type": "globus_pallidus_tissue_male_adult_78_years_and_male_adult_84_years", "tissue": "brain"}
+{"cell_type": "retinal_pigment_epithelial_primary_cell", "tissue": "eye"}
+{"cell_type": "adrenal_gland_tissue_male_fetal_97_days", "tissue": "adrenal"}
+{"cell_type": "CD14-positive_monocyte_primary_cell_male_adult_37_years", "tissue": "blood"}
+{"cell_type": "A549_immortalized_cell_line", "tissue": "lung"}
+{"cell_type": "HS-5_immortalized_cell_line", "tissue": "bone marrow"}
+{"cell_type": "T-cell_primary_cell_male_adult_37_years", "tissue": "blood"}
+{"cell_type": "fibroblast_of_dermis_primary_cell_female_adult", "tissue": "skin"}
+{"cell_type": "skin_fibroblast_primary_cell_female_adult_31_year", "tissue": "skin"}
+{"cell_type": "renal_cortical_epithelial_primary_cell", "tissue": "kidney"}
+{"cell_type": "mammary_epithelial_primary_cell_female", "tissue": "breast"}
+{"cell_type": "amniotic_epithelial_primary_cell", "tissue": "placenta"}
+{"cell_type": "HeLa-S3_immortalized_cell_line", "tissue": "uterus"}
+{"cell_type": "GM12865_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "HS-27A_immortalized_cell_line", "tissue": "bone marrow"}
+{"cell_type": "fibroblast_of_pedal_digit_skin_primary_cell_female_adult_21_year", "tissue": "skin"}
+{"cell_type": "RCC_7860_immortalized_cell_line", "tissue": "kidney"}
+{"cell_type": "RPMI8226_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "large_intestine_tissue_male_fetal_108_days", "tissue": "intestine"}
+{"cell_type": "astrocyte_of_the_spinal_cord_primary_cell", "tissue": "brain"}
+{"cell_type": "iPS_DF_19-11_induced_pluripotent_stem_cell_line_male_newborn", "tissue": "ESC"}
+{"cell_type": "brain_microvascular_endothelial_primary_cell", "tissue": "brain"}
+{"cell_type": "tongue_tissue_female_fetal_59_days_and_female_fetal_76_days", "tissue": "tongue"}
+{"cell_type": "NT2/D1_immortalized_cell_line", "tissue": "gonad"}
+{"cell_type": "T-helper_2_primary_cell_female_adult_26_years", "tissue": "blood"}
+{"cell_type": "WI38_immortalized_cell_line_derived_from_WI38_stably_expressing_RAF1", "tissue": "lung"}
+{"cell_type": "dermis_blood_vessel_endothelial_primary_cell_female_adult", "tissue": "blood vessel"}
+{"cell_type": "T-helper_17_primary_cell", "tissue": "blood"}
+{"cell_type": "H1-hESC_stem_cell", "tissue": "embryonic structure"}
+{"cell_type": "Panc1_immortalized_cell_line", "tissue": "pancreas"}
+{"cell_type": "PC-3_immortalized_cell_line", "tissue": "prostate"}
+{"cell_type": "GM12878_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "trophoblast_primary_cell_male_embryo", "tissue": "extraembryonic structure"}
+{"cell_type": "endothelial_of_umbilical_vein_primary_cell_newborn", "tissue": "blood vessel"}
+{"cell_type": "CMK_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "female_gonad_tissue_female_adult_30_years", "tissue": "gonad"}
+{"cell_type": "LNCaP_clone_FGC_immortalized_cell_line", "tissue": "prostate"}
+{"cell_type": "common_myeloid_progenitor_female", "tissue": "bone marrow"}
+{"cell_type": "hematopoietic_multipotent_progenitor_primary_cell_male_adult_25_years", "tissue": "blood"}
+{"cell_type": "MG63_immortalized_cell_line", "tissue": "bone"}
+{"cell_type": "psoas_muscle_tissue_male_adult_34_years", "tissue": "muscle"}
+{"cell_type": "mesendoderm_in_vitro_differentiated_cells", "tissue": "extraembryonic structure"}
+{"cell_type": "B_primary_cell_female_adult_43_years", "tissue": "blood"}
+{"cell_type": "adipocyte_in_vitro_differentiated_cells", "tissue": "fat"}
+{"cell_type": "H9_stem_cell", "tissue": "ESC"}
+{"cell_type": "fibroblast_of_the_conjunctiva_primary_cell", "tissue": "eye"}
+{"cell_type": "stomach_tissue_male_adult_34_years", "tissue": "stomach"}
+{"cell_type": "LHCN-M2_immortalized_cell_line", "tissue": "muscle"}
+{"cell_type": "iPS_DF_6-9_induced_pluripotent_stem_cell_line_male_newborn", "tissue": "ESC"}
+{"cell_type": "fibroblast_of_lung_primary_cell_male_adult_45_years", "tissue": "lung"}
+{"cell_type": "ACHN_immortalized_cell_line", "tissue": "kidney"}
+{"cell_type": "Karpas-422_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "smooth_muscle_of_the_brain_vasculature_primary_cell_female", "tissue": "blood vessel"}
+{"cell_type": "epithelial_of_proximal_tubule_primary_cell", "tissue": "kidney"}
+{"cell_type": "GM06990_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "fibroblast_of_gingiva_primary_cell_female_adult_24_years", "tissue": "mouth"}
+{"cell_type": "naive_thymus-derived_CD4-positive,_alpha-beta_T_primary_cell_female_adult_35_years", "tissue": "thymus"}
+{"cell_type": "WERI-Rb-1_immortalized_cell_line", "tissue": "eye"}
+{"cell_type": "T-helper_1_primary_cell_male_adult_33_years", "tissue": "blood"}
+{"cell_type": "regulatory_T-lymphocyte_primary_cell_female_adult_35_years", "tissue": "blood"}
+{"cell_type": "foreskin_keratinocyte_primary_cell_male_newborn_2", "tissue": "skin"}
+{"cell_type": "lung_tissue_male_fetal_54_days_and_male_fetal_58_days", "tissue": "lung"}
+{"cell_type": "astrocyte_primary_cell", "tissue": "brain"}
+{"cell_type": "KBM-7_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "fibroblast_of_skin_abdomen_primary_cell_male_adult_22_years", "tissue": "skin"}
+{"cell_type": "B_primary_cell_male_adult_37_years", "tissue": "blood"}
+{"cell_type": "small_intestine_tissue_male_adult_34_years", "tissue": "intestine"}
+{"cell_type": "umbilical_cord_tissue_male_fetal_76_days", "tissue": "extraembryonic structure"}
+{"cell_type": "brain_tissue_female_fetal_17_weeks", "tissue": "brain"}
+{"cell_type": "stromal_of_bone_marrow_primary_cell_male", "tissue": "bone marrow"}
+{"cell_type": "SJSA1_immortalized_cell_line", "tissue": "bone"}
+{"cell_type": "hematopoietic_multipotent_progenitor_primary_cell_male", "tissue": "blood"}
+{"cell_type": "urinary_bladder_tissue_male_fetal_76_days", "tissue": "urinary bladder"}
+{"cell_type": "HCT116_immortalized_cell_line", "tissue": "intestine"}
+{"cell_type": "HFF-Myc_immortalized_cell_line_derived_from_foreskin_fibroblast", "tissue": "skin"}
+{"cell_type": "kidney_epithelial_primary_cell", "tissue": "kidney"}
+{"cell_type": "fibroblast_of_pulmonary_artery_primary_cell", "tissue": "blood vessel"}
+{"cell_type": "midbrain_tissue_male_adult_78_years_and_male_adult_84_years", "tissue": "brain"}
+{"cell_type": "naive_thymus-derived_CD4-positive,_alpha-beta_T_primary_cell_male_adult_26_years", "tissue": "thymus"}
+{"cell_type": "T-helper_1_primary_cell", "tissue": "blood"}
+{"cell_type": "cardiac_fibroblast_primary_cell", "tissue": "heart"}
+{"cell_type": "pancreas_tissue_male_adult_34_years", "tissue": "pancreas"}
+{"cell_type": "GM12864_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "K562_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "HepG2_immortalized_cell_line", "tissue": "liver"}
+{"cell_type": "mesenchymal_stem_in_vitro_differentiated_cells_H1_derived", "tissue": "ESC derived"}
+{"cell_type": "brain_tissue_male_fetal_72_days_and_male_fetal_76_days", "tissue": "brain"}
+{"cell_type": "lung_microvascular_endothelial_primary_cell_female", "tissue": "lung"}
+{"cell_type": "non-pigmented_ciliary_epithelial_primary_cell", "tissue": "skin"}
+{"cell_type": "heart_tissue_fetal_101_day", "tissue": "heart"}
+{"cell_type": "kidney_tissue_female_fetal_120_days", "tissue": "kidney"}
+{"cell_type": "fibroblast_of_mammary_gland_primary_cell_female", "tissue": "breast"}
+{"cell_type": "foreskin_fibroblast_primary_cell_male_postnatal", "tissue": "skin"}
+{"cell_type": "glomerular_endothelial_primary_cell", "tissue": "kidney"}
+{"cell_type": "skeletal_muscle_primary_cell", "tissue": "muscle"}
+{"cell_type": "HT-29_immortalized_cell_line", "tissue": "intestine"}
+{"cell_type": "fibroblast_of_villous_mesenchyme_primary_cell", "tissue": "extraembryonic structure"}
+{"cell_type": "brain_pericyte_primary_cell", "tissue": "brain"}
+{"cell_type": "T-helper_2_primary_cell", "tissue": "blood"}
+{"cell_type": "tongue_tissue_male_fetal_72_days", "tissue": "tongue"}
+{"cell_type": "common_myeloid_progenitor_male", "tissue": "bone marrow"}
+{"cell_type": "fibroblast_of_lung_primary_cell_male_fetal_12_weeks", "tissue": "lung"}
+{"cell_type": "skeletal_muscle_myoblast_primary_cell", "tissue": "muscle"}
+{"cell_type": "iris_pigment_epithelial_primary_cell", "tissue": "eye"}
+{"cell_type": "RPMI-7951_immortalized_cell_line", "tissue": "skin"}
+{"cell_type": "NAMALWA_immortalized_cell_line", "tissue": "blood"}
+{"cell_type": "PC-9_immortalized_cell_line", "tissue": "lung"}
+{"cell_type": "A172_immortalized_cell_line", "tissue": "brain"}
+{"cell_type": "left_kidney_tissue_female_fetal_59_days_and_male_fetal_91_day", "tissue": "kidney"}
+{"cell_type": "foreskin_fibroblast_primary_cell_male_newborn_2", "tissue": "skin"}
+{"cell_type": "regulatory_T-lymphocyte_primary_cell_male_adult_28_years", "tissue": "blood"}
+{"cell_type": "pulmonary_artery_endothelial_primary_cell_female", "tissue": "blood vessel"}
+{"cell_type": "muscle_of_leg_tissue_female_fetal_110_days", "tissue": "muscle"}
+{"cell_type": "SK-N-MC_immortalized_cell_line", "tissue": "brain"}
+{"cell_type": "T-cell_primary_cell", "tissue": "blood"}
+{"cell_type": "stomach_tissue_fetal_101_day", "tissue": "stomach"}
+{"cell_type": "foreskin_fibroblast_primary_cell_male_newborn_1", "tissue": "skin"}
+{"cell_type": "foreskin_melanocyte_primary_cell_male_newborn_1", "tissue": "skin"}
+{"cell_type": "astrocyte_of_the_hippocampus_primary_cell", "tissue": "brain"}
+{"cell_type": "T-helper_1_primary_cell_female_adult_26_years", "tissue": "blood"}
+{"cell_type": "HL-60_immortalized_cell_line", "tissue": "blood"}
