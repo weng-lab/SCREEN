@@ -23,7 +23,7 @@ class TableWithCart extends React.Component {
 	    n_data[i]._source.in_cart = array_contains(this.props.cart_list,
 						       n_data[i]._source.accession);
 	}
-	return (<div style={{"width": "100%"}}>
+	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
 		    <div className={"loading"} style={{"display": (this.props.fetching ? "block" : "none")}}>
 		        Loading...
 		    </div>

@@ -227,3 +227,7 @@ select.ui-toggle-switch { display: none; }
     display: inline-block;
     vertical-align: middle;
 }
+
+.mainSearchTable tbody tr {
+    cursor: pointer;
+}
