@@ -15,11 +15,11 @@ class FacetApp extends React.Component {
 
     render() {
 	var store = this.props.store;
-	var CreateFacetbox = FacetboxCreator(store);
+	var fc = FacetboxCreator(store);
 	var n_facetboxes = ParsedQueryMap(this.props.pquery, this.props.facetboxes);
 	return (<div>
 		{this.props.facetbox_render_order.map((k) => {
-		    var Retval = CreateFacetbox(k, n_facetboxes[k], this.props.invalidator);
+		    var Retval = fc(k, n_facetboxes[k], this.props.invalidator);
 		    return <Retval key={k} store={store} />;
 		})}
 		</div>);

@@ -23,7 +23,7 @@ class GeneExpPage extends React.Component {
     }
 
     componentDidMount() {
-	this.store.dispatch(invalidate_boxplot({"geneID" : this.store.geneID}))
+	this.store.dispatch(invalidate_boxplot(this.store.getState()));
     }    
 
     render() {
@@ -35,7 +35,7 @@ class GeneExpPage extends React.Component {
 		   <div className="container" style={{width: "100%"}}>
                       <div className="row" style={{width: "100%"}}>
                          <div className="col-md-3 nopadding-right" id="facets-container">
-		            <FacetApp store={this.store} pquery={GlobalParsedQuery} />
+		            <FacetApp store={this.store} pquery={GlobalParsedQuery} invalidator={invalidate_boxplot}/>
                          </div>
                          <div className="col-md-9 nopadding-left" id="tabs-container">
 		            <Tabs store={this.store} />
