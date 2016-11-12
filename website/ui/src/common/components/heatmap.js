@@ -37,12 +37,22 @@ class Heatmap extends React.Component {
     render() {
 	var title = (this.props.title ? this.props.title : "");
 	return (<div>
+		    <div ref="tooltip" className="heatmap_tooltip heatmap_tooltip_hidden" />
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		        Loading...
 		    </div>
 		    <div ref="title" style={{display: (this.props.loading ? "none" : "block")}}><h3>{title}</h3></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
+		    <div ref="order" />
 		</div>);
+    }
+
+    componentDidMount() {
+	$(this.refs.tooltip).appendTo(document.body);
+    }
+
+    _default_tooltip(d, rl, cl) {
+	return (rl[d.row - 1] + ", " + cl[d.col - 1] + ": " + (Math.round(d.value * 1000) / 1000));
     }
 
     componentDidUpdate() {
@@ -52,12 +62,26 @@ class Heatmap extends React.Component {
 	$(this.refs.container).empty();
 	
 	var data = this.props.data;
+	var tooltip = this.refs.tooltip;
+	var get_tooltip_text = this.props.tooltip ? this.props.tooltip : this._default_tooltip;
 
 	if (null == data || 0 == data.length) {
 	    return;
-	}
+	};
 	
-	var chart_layout = Object.assign({}, this.props.chart_layout);
+	var chart_layout = {
+	    margin: Object.assign({}, this.props.chart_layout.margin),
+	    rows: {
+		order: [...this.props.chart_layout.rows.order],
+		labels: [...this.props.chart_layout.rows.labels]
+	    },
+	    cols: {
+		order: [...this.props.chart_layout.cols.order],
+		labels: [...this.props.chart_layout.cols.labels]
+	    },
+	    cellSize: this.props.chart_layout.cellSize,
+	    colors: [...this.props.chart_layout.colors]
+	};
 	
 	chart_layout.rows.labels = this.props.rowlabels;
 	chart_layout.rows.order = [];
@@ -90,6 +114,7 @@ class Heatmap extends React.Component {
 	;
 	var rowSortOrder=false;
 	var colSortOrder=false;
+	var order = this.refs.order;
 	var rowLabels = svg.append("g")
 	    .selectAll(".rowLabelg")
 	    .data(chart_layout.rows.labels)
@@ -103,7 +128,7 @@ class Heatmap extends React.Component {
 	    .attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
 	    .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
-	    .on("click", function(d,i) {rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder); d3.select("#order").property("selectedIndex", 4).node().focus();;})
+	    .on("click", function(d,i) {rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder); d3.select(order).property("selectedIndex", 4).node().focus();;})
 	;
 
 	var colLabels = svg.append("g")
@@ -119,7 +144,7 @@ class Heatmap extends React.Component {
 	    .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
 	    .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
-	    .on("click", function(d,i) {colSortOrder = !colSortOrder;  sortbylabel("c",i,colSortOrder); d3.select("#order").property("selectedIndex", 4).node().focus();;})
+	    .on("click", function(d,i) {colSortOrder = !colSortOrder;  sortbylabel("c",i,colSortOrder); d3.select(order).property("selectedIndex", 4).node().focus();;})
 	;
 
 	var heatMap = svg.append("g").attr("class","g3")
@@ -140,23 +165,24 @@ class Heatmap extends React.Component {
 		d3.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
 		
 		//Update the tooltip position and value
-		d3.select("#tooltip")
-		    .style("left", (d3.event.pageX+10) + "px")
-		    .style("top", (d3.event.pageY-10) + "px")
-		    .select("#value")
-		    .text("lables:" + chart_layout.rows.labels[d.row-1] + "," + chart_layout.cols.labels[d.col-1] + "\ndata:" + d.value + "\nrow-col-idx:" + d.col + "," + d.row + "\ncell-xy " + this.x.baseVal.value + ", " + this.y.baseVal.value);  
+		d3.select(tooltip)
+		    .text(get_tooltip_text(d, chart_layout.rows.labels, chart_layout.cols.labels));
 		//Show the tooltip
-		d3.select("#tooltip").classed("hidden", false);
+		d3.select(tooltip).classed("heatmap_tooltip_hidden", false);
+	    })
+	    .on("mousemove", function(){
+		d3.select(tooltip)
+		    .style("left", (d3.event.pageX + 10) + "px")
+		    .style("top", (d3.event.pageY + 10) + "px")
 	    })
 	    .on("mouseup", function(d){
 		onClick(d.row - 1, d.col - 1);
 	    })
 	    .on("mouseout", function(){
-		console.log("MOUSEOUT");
 		d3.select(this).classed("cell-hover",false);
 		d3.selectAll(".rowLabel").classed("text-highlight",false);
 		d3.selectAll(".colLabel").classed("text-highlight",false);
-		d3.select("#tooltip").classed("hidden", true);
+		d3.select(tooltip).classed("heatmap_tooltip_hidden", true);
 	    })
 	;
 	
@@ -191,7 +217,7 @@ class Heatmap extends React.Component {
 		})
 	    ;
 	    if(rORc=="r"){ // sort log2ratio of a gene
-		sorted=d3.range(chart_layout.cols.labels.length).sort(function(a,b){ if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
+		sorted=d3.range(chart_layout.cols.labels.length).sort((a,b) => ((log2r[b] - log2r[a]) * (sortOrder ? 1 : -1)));
 		t.selectAll(".cell")
 		    .attr("x", function(d) { return sorted.indexOf(d.col-1) * chart_layout.cellSize; })
 		;
@@ -209,7 +235,7 @@ class Heatmap extends React.Component {
 	    }
 	}
 	
-	d3.select("#order").on("change",function(){
+	d3.select(order).on("change",function(){
 	    order(this.value);
 	});
 	

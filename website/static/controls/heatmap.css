@@ -46,7 +46,7 @@ text.text-highlight {
 text.text-hover {
     fill: #00C;
 }
-#tooltip {
+.heatmap_tooltip {
     position: absolute;
     width: 200px;
     height: auto;
@@ -61,13 +61,6 @@ text.text-hover {
     pointer-events: none;
 }
 
-#tooltip.hidden {
+.heatmap_tooltip_hidden {
     display: none;
-}
-
-#tooltip p {
-    margin: 0;
-    font-family: sans-serif;
-    font-size: 12px;
-    line-height: 20px;
 }
