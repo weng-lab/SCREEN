@@ -7,7 +7,7 @@ import DetailsApp, {details_connector} from '../components/details_app'
 import {tabs} from './details'
 
 import {expression_heatmap_connector} from '../components/expression_heatmap'
-import Heatmap from '../../../common/components/heatmap'
+import ExpressionHeatmapSet from '../components/expression_heatmap'
 import {main_comparison_connector} from '../reducers/root_reducer'
 
 export const maintabs = {
@@ -34,7 +34,7 @@ export const maintabs = {
 	    title: "Nearby Gene Expression",
 	    visible: true,
 	    render: (store, key) => {
-		var ExpressionHeatmap = expression_heatmap_connector(Heatmap);
+		var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression))(ExpressionHeatmapSet);
 		return <ExpressionHeatmap store={store} key={key} />;
 	    }
 	}
