@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys, json, psycopg2, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
@@ -30,6 +31,15 @@ description text
 ) """)
 
 def insertRNAs(cur, dataset):
+    with open("missing2.txt") as f:
+        rows = f.readlines()
+    lookup = {}
+    for r in rows:
+        toks = r.rstrip().split('\t')
+        print(toks)
+        if len(toks) != 2:
+            lookup[toks[0]] = toks[1]
+    
     cur.execute("""
 select distinct(dataset) from r_expression""")
     counter = 0
@@ -38,21 +48,29 @@ select distinct(dataset) from r_expression""")
         exp = Exp.fromJsonFile(encodeID)
         json = exp.getExpJson()
 
+        biosample = json["replicates"][0]["library"]["biosample"]
         try:
-            organ = json["replicates"][0]["library"]["biosample"]["organ_slims"]
+            organ = biosample["organ_slims"]
             if 1 == len(organ):
                 organ = organ[0]
             elif len(organ) > 1:
-                print organ
+                #print("multiple", organ)
                 organ = organ[0]
         except:
+            print("missing", encodeID, biosample["biosample_term_name"])
             organ = ""
 
+        if biosample["biosample_term_name"] in lookup:
+            organ = lookup[biosample["biosample_term_name"]]
+            
+        if not organ or "na" == organ:
+            print(biosample["biosample_term_name"])
+        
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
         except:
+            #print(encodeID, "assuming cell compartment")
             cellCompartment = "cell"
-        print(cellCompartment)
             
         cur.execute("""
 INSERT INTO r_rnas
@@ -78,7 +96,7 @@ VALUES (
        "desc" : exp.description
 })
         counter += 1
-    print "inserted", counter, "RNA-seq for", dataset.species
+    print("inserted", counter, "RNA-seq for", dataset.species)
 
 def parse_args():
     parser = argparse.ArgumentParser()
