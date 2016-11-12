@@ -326,7 +326,7 @@ class AjaxWebService:
         if "post_processing" in j:
             if "tss_bins" in j["post_processing"]:
                 tss = TSSBarGraph(ret["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
-                ret["tss_histogram"] = tss.rebin(j["post_processing"]["tss_bins"]["bins"])
+                ret["tss_histogram"] = tss.format()
             if "rank_heatmap" in j["post_processing"]:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:

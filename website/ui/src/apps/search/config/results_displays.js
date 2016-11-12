@@ -18,7 +18,7 @@ const TSS_AGG_KEY = "tss_bar";
 const tss_agg = {
     "range": {
 	"script": {
-	    "inline": "return doc['genes']['nearest-all'][0].distance;"
+	    "file": "tss"
 	},
 	"ranges": [
 	    {"to": 2500},
