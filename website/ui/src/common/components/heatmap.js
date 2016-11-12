@@ -83,11 +83,11 @@ class Heatmap extends React.Component {
 	    colors: [...this.props.chart_layout.colors]
 	};
 	
-	chart_layout.rows.labels = this.props.rowlabels;
+	chart_layout.rows.labels = [...this.props.rowlabels];
 	chart_layout.rows.order = [];
 	for (var i = 1; i <= chart_layout.rows.labels.length; i++) chart_layout.rows.order.push(i);
 
-	chart_layout.cols.labels = this.props.collabels;
+	chart_layout.cols.labels = [...this.props.collabels];
 	chart_layout.cols.order = [];
 	for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
 
@@ -161,8 +161,8 @@ class Heatmap extends React.Component {
 	    .on("mouseover", function(d){
 		//highlight text
 		d3.select(this).classed("cell-hover",true);
-		d3.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
-		d3.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
+		svg.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
+		svg.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
 		
 		//Update the tooltip position and value
 		d3.select(tooltip)
@@ -180,8 +180,8 @@ class Heatmap extends React.Component {
 	    })
 	    .on("mouseout", function(){
 		d3.select(this).classed("cell-hover",false);
-		d3.selectAll(".rowLabel").classed("text-highlight",false);
-		d3.selectAll(".colLabel").classed("text-highlight",false);
+		svg.selectAll(".rowLabel").classed("text-highlight",false);
+		svg.selectAll(".colLabel").classed("text-highlight",false);
 		d3.select(tooltip).classed("heatmap_tooltip_hidden", true);
 	    })
 	;
@@ -211,9 +211,9 @@ class Heatmap extends React.Component {
 	    var t = svg.transition().duration(3000);
 	    var log2r=[];
 	    var sorted; // sorted is zero-based index
-	    d3.selectAll(".c"+rORc+i) 
+	    svg.selectAll(".c"+rORc+i) 
 		.filter(function(ce){
-		    log2r.push(ce.value);
+		    log2r.push(+ce.value);
 		})
 	    ;
 	    if(rORc=="r"){ // sort log2ratio of a gene
@@ -293,9 +293,9 @@ class Heatmap extends React.Component {
 /*	var sa=d3.select(".g3")
 	    .on("mousedown", function() {
 		if( !d3.event.altKey) {
-		    d3.selectAll(".cell-selected").classed("cell-selected",false);
-		    d3.selectAll(".rowLabel").classed("text-selected",false);
-		    d3.selectAll(".colLabel").classed("text-selected",false);
+		    svg.selectAll(".cell-selected").classed("cell-selected",false);
+		    svg.selectAll(".rowLabel").classed("text-selected",false);
+		    svg.selectAll(".colLabel").classed("text-selected",false);
 		}
 		var p = d3.mouse(this);
 		sa.append("rect")
@@ -342,10 +342,10 @@ class Heatmap extends React.Component {
 		    s.attr(d);
 		    
 		    // deselect all temporary selected state objects
-		    d3.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
-		    d3.selectAll(".text-selection.text-selected").classed("text-selected",false);
+		    svg.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
+		    svg.selectAll(".text-selection.text-selected").classed("text-selected",false);
 
-		    d3.selectAll('.cell').filter(function(cell_d, i) {
+		    svg.selectAll('.cell').filter(function(cell_d, i) {
 			if(
 			    !d3.select(this).classed("cell-selected") && 
 				// inner circle inside selection frame
@@ -373,17 +373,17 @@ class Heatmap extends React.Component {
 		sa.selectAll("rect.selection").remove();
 		
 		// remove temporary selection marker class
-		d3.selectAll('.cell-selection').classed("cell-selection", false);
-		d3.selectAll(".text-selection").classed("text-selection",false);
+		svg.selectAll('.cell-selection').classed("cell-selection", false);
+		svg.selectAll(".text-selection").classed("text-selection",false);
 	    })
 	    .on("mouseout", function() {
 		if(d3.event.relatedTarget.tagName=='html') {
 		    // remove selection frame
 		    sa.selectAll("rect.selection").remove();
 		    // remove temporary selection marker class
-		    d3.selectAll('.cell-selection').classed("cell-selection", false);
-		    d3.selectAll(".rowLabel").classed("text-selected",false);
-		    d3.selectAll(".colLabel").classed("text-selected",false);
+		    svg.selectAll('.cell-selection').classed("cell-selection", false);
+		    svg.selectAll(".rowLabel").classed("text-selected",false);
+		    svg.selectAll(".colLabel").classed("text-selected",false);
 		}
 	    }); */
 	
