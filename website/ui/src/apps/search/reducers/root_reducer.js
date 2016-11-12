@@ -2,6 +2,7 @@ import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from
 import FacetboxReducer from './facetbox_reducer'
 import TabReducer from './tab_reducer'
 import SearchBoxReducer from '../../../common/reducers/searchbox'
+import ExpressionMatrixReducer from './expression_matrix_reducer'
 
 import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
@@ -21,7 +22,7 @@ export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
 
-export const UPDATE_EXPRESSION = 'UPDATE_EXPRESSION';
+export const EXPRESSION_MATRIX_ACTION = 'EXPRESSION_MATRIX_ACTION';
 
 export const DETAILS_FETCHING = 'DETAILS_FETCHING';
 export const DETAILS_DONE = 'DETAILS_DONE';
@@ -31,9 +32,6 @@ export const SET_DETAIL_TAB = 'SET_DETAIL_TAB';
 export const TAB_ACTION = 'TAB_ACTION';
 
 export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
-
-export const EXPRESSION_LOADING = 'EXPRESSION_LOADING';
-export const EXPRESSION_DONE = 'EXPRESSION_DONE';
 
 export const DO_NAV = 'DO_NAV';
 
@@ -45,12 +43,6 @@ export const default_state = (tabs) => {return {
 	order: [],
 	columns: [],
 	cart_list: [],
-	expression_matrix: {
-	    collabels: [],
-	    rowlabels: [],
-	    matrix: [],
-	    fetching: false
-	},
 	total: 0,
 	fetching: false
     },
@@ -64,6 +56,7 @@ export const default_state = (tabs) => {return {
 	    }
 	},
 	data: {},
+	expression: ExpressionMatrixReducer(),
 	tab_selection: 0
     },
     main_tabs: tabs,
@@ -121,6 +114,13 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	window.location.href = action.url + "?q=" + state.searchbox.value;
 	return state;
 
+    case EXPRESSION_MATRIX_ACTION:
+	return Object.assign({}, state, {
+	    re_detail: Object.assign({}, state.re_detail, {
+		expression: ExpressionMatrixReducer(state.re_detail.expression, action.subaction)
+	    })
+	});
+	
     case RESULTS_DISPLAY_ACTION:
 	if (!(action.key in state.results_displays)) return state;
 	var n_item = state.results_displays[action.key].reducer(state.results_displays[action.key], action.subaction);
@@ -154,24 +154,6 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	n_rd[action.key] = action.results_display;
 	return Object.assign({}, state, {
 	    results_displays: n_rd
-	});
-
-    case EXPRESSION_LOADING:
-	return Object.assign({}, state, {
-	    results: Object.assign({}, state.results, {
-		expression_matrix: Object.assign({}, state.results.expression_matrix, {
-		    fetching: true
-		})
-	    })
-	});
-
-    case EXPRESSION_DONE:
-	return Object.assign({}, state, {
-	    results: Object.assign({}, state.results, {
-		expression_matrix: Object.assign({}, state.results.expression_matrix, {
-		    fetching: false
-		})
-	    })
 	});
 
     case RESULTS_ERROR:
@@ -215,13 +197,6 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     case SEARCHBOX_ACTION:
 	return Object.assign({}, state, {
 	    searchbox: SearchBoxReducer(state[action.target], action.subaction)
-	});
-
-    case UPDATE_EXPRESSION:
-	return Object.assign({}, state, {
-	    results: Object.assign({}, state.results, {
-		expression_matrix: action.expression_matrix
-	    })
 	});
 
     case UPDATE_DETAIL:

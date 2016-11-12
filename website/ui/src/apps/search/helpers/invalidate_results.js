@@ -1,6 +1,7 @@
 import QueryAJAX, {DetailAJAX, ExpressionAJAX} from '../elasticsearch/ajax'
-import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, UPDATE_EXPRESSION, DETAILS_DONE,
-	DETAILS_FETCHING, UPDATE_DETAIL, EXPRESSION_LOADING, EXPRESSION_DONE, SEARCHBOX_ACTION} from '../reducers/root_reducer'
+import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, EXPRESSION_MATRIX_ACTION, DETAILS_DONE,
+	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION} from '../reducers/root_reducer'
+import {UPDATE_EXPRESSION} from '../reducers/expression_matrix_reducer'
 import {SET_VALUE} from '../../../common/reducers/searchbox'
 import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
 import FacetQueryMap, {FacetsToSearchText} from '../elasticsearch/facets_to_query'
@@ -34,10 +35,14 @@ export const set_table_results = (hits) => {
     };
 };
 
-export const update_expression = (expression_matrix) => {
+export const update_expression = (expression_matrix, key) => {
     return {
-	type: UPDATE_EXPRESSION,
-	expression_matrix
+	type: EXPRESSION_MATRIX_ACTION,
+	subaction: {
+	    type: UPDATE_EXPRESSION,
+	    target: key,
+	    expression_matrix
+	}
     };
 };
 
@@ -63,14 +68,19 @@ export const update_detail = (response) => {
 
 export const expression_loading = () => {
     return {
-	type: EXPRESSION_LOADING
+	type: EXPRESSION_MATRIX_ACTION,
+	subaction: {
+	    type: SET_LOADING
+	}
     }
 };
 
 export const expression_done = (response) => {
     return {
-	type: EXPRESSION_DONE,
-	response
+	type: EXPRESSION_MATRIX_ACTION,
+	subaction: {
+	    type: SET_COMPLETE
+	}
     }
 };
 
@@ -91,7 +101,9 @@ export const invalidate_results = (state) => {
 	var n_query = FacetQueryMap(state);
 	
 	var e_success = (response, status, jqxhr) => {
-	    dispatch(update_expression(response.expression_matrix));
+	    Object.keys(response.expression_matrices).map((k) => {
+		dispatch(update_expression(response.expression_matrices[k], k));
+	    });
 	    dispatch(expression_done(response));
 	};
 

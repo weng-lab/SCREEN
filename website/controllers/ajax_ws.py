@@ -128,7 +128,7 @@ class AjaxWebService:
                                "col": j + 1,
                                "value": ret["matrix"][i][j]})
         ret.update({"matrix": matrix})
-        return {"expression_matrix": ret}
+        return {"expression_matrices": {"top nearest": ret}}
     
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
