@@ -3,6 +3,9 @@ import {render_int, render_cell_type} from './results_table'
 import {invalidate_detail} from '../helpers/invalidate_results'
 import {SET_DETAIL_TAB} from '../reducers/root_reducer'
 
+import {expression_heatmap_connector} from '../components/expression_heatmap'
+import ExpressionHeatmapSet from '../components/expression_heatmap'
+
 const render_factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
@@ -237,6 +240,13 @@ export const tabs = [
 		data: [],
 		order: [[1, "desc"]]
 	    }
+	}
+    },
+    {
+	title: "Nearby Gene Expression",
+	render: (store, key) => {
+	    var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression_matrices))(ExpressionHeatmapSet);
+	    return <ExpressionHeatmap store={store} key={key} />;
 	}
     }
 ];
