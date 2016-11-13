@@ -27,6 +27,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils
 from utils import Utils, Timer
 
 class AjaxWebService:
+
+    _default_fields = ["accession", "neg-log-p",
+                       "position.chrom", "position.start",
+                       "position.end", "genes.nearest-all",
+                       "genes.nearest-pc", "in_cart"]
+    
     def __init__(self, args, es, ps, cache):
         self._rank_types = { "DNase": ("dnase", ""),
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
@@ -53,7 +59,6 @@ class AjaxWebService:
                         "suggest" : self._suggest,
                         "query": self._query,
                         "search": self._search,
-                        "gene_expression": self._expression_matrix,
                         "venn": self._venn_search }
         self._cached_results = {}
 
@@ -111,24 +116,27 @@ class AjaxWebService:
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
-        output["data"].update({
-            "overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
-            "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
-            "nearby_res" : self.details.formatResJS(re_results, pos, accession)})
+        output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
+                               "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
+                               "nearby_res" : self.details.formatResJS(re_results, pos, accession),
+                               "expression_matrices": self._expression_matrix(accession) })
 
         return output
 
-    def _expression_matrix(self, j):
+    def _expression_matrix(self, accession):
         matrix = []
-        genelist = self._get_genelist(self._search(j))
-        ret = self.em.search(genelist)
-        for i in range(0, len(ret["matrix"])):
-            for j in range(0, len(ret["matrix"][0])):
-                matrix.append({"row": i + 1,
-                               "col": j + 1,
-                               "value": ret["matrix"][i][j]})
-        ret.update({"matrix": matrix})
-        return {"expression_matrices": {"top nearest": ret}}
+        genelists = self._get_genelist(accession)
+        ret = {}
+        for title, _list in genelists.iteritems():
+            ret[title] = self.em.search(_list)
+            matrix = []
+            for i in range(0, len(ret[title]["matrix"])):
+                for j in range(0, len(ret[title]["matrix"][0])):
+                    matrix.append({"row": i + 1,
+                                   "col": j + 1,
+                                   "value": ret[title]["matrix"][i][j]})
+            ret[title].update({"matrix": matrix})
+        return ret
     
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
@@ -166,15 +174,24 @@ class AjaxWebService:
         self.ps.logQuery(j, ret, "")
         return ret
 
-    def _get_genelist(self, results):
+    def _get_genelist(self, accession):
+        results = self._search({"object": {"query": {"bool": {"must": [{"match": {"accession": accession}}]}}},
+                                "post_processing": {}},
+                               callback = "", fields = ["genes"])["hits"]["hits"]
+        if len(results) == 0: return {}
+        results = results[0]
         ret = {}
-        for result in results["results"]["hits"]:
-            for gene in result["_source"]["genes"]["nearest-all"] + result["_source"]["genes"]["nearest-pc"]:
-                if gene["gene-name"] not in ret:
-                    ret[gene["gene-name"]] = 1
-                if len(ret) >= 50:
-                    return [k for k, v in ret.iteritems()]
-        return [k for k, v in ret.iteritems()]
+        results_lists = {"Nearest Linearly": (results["_source"]["genes"]["nearest-all"] + results["_source"]["genes"]["nearest-pc"],
+                                              lambda gene: gene["gene-name"]),
+                         "Within TAD": (results["_source"]["genes"]["tads"],
+                                        lambda gene: gene) }
+        for title, v in results_lists.iteritems():
+            ret[title] = []
+            genelist, f = v
+            for gene in genelist:
+                if f(gene) not in ret[title]:
+                    ret[title].append(f(gene))
+        return ret
     
     def process(self, j):
         try:
@@ -294,22 +311,12 @@ class AjaxWebService:
 
         return results
     
-    def _search(self, j):
-        
-        # select only fields needed for re table
-        #  eliminates problem of returning >10MB of json
-        fields = ["accession", "neg-log-p",
-                  "position.chrom", "position.start",
-                  "position.end", "genes.nearest-all",
-                  "genes.nearest-pc", "in_cart"]
+    def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
         
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
-        j["callback"] = "regulatory_elements"
-        if 0: # slows down query...
-            j["object"]["sort"] = [{ "neg-log-p" : "desc" },
-                                   "position.start",
-                                   "position.end" ]
+        j["callback"] = callback
+        j["object"]["sort"] = [{ "neg-log-p": "desc" }]
 
         if "rank_heatmap" in j["post_processing"]:
             j["object"]["aggs"] = self.rh.aggs

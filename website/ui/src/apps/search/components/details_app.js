@@ -17,6 +17,12 @@ class DetailsApp extends React.Component {
 
     constructor(props) {
 	super(props);
+	this.onClick = this.onClick.bind(this);
+    }
+
+    onClick(k, dispatch) {
+	dispatch(set_tab_selection(k));
+	if (this.props.tabs[k].onClick) this.props.tabs[k].onClick(dispatch);
     }
     
     render() {
@@ -24,6 +30,9 @@ class DetailsApp extends React.Component {
 	var tables = this.props.tables;
 	var data = this.props.data;
 	var dispatch = this.props.store.dispatch;
+	var store = this.props.store;
+	var tab_selection = this.props.tab_selection;
+	var onClick = this.onClick;
 
 	function makeTable(key, table){
 	    if(table.bar_graph){
@@ -77,16 +86,17 @@ class DetailsApp extends React.Component {
 		    <h3>{this.props.q.accession}</h3>
 		    <ul className="nav nav-tabs">
   		        {Object.keys(tabs).map((k) => (
-			    <li key={"tab_" + k} className={k == this.props.tab_selection ? "active" : ""} >
-				<a onClick={() => {this.props.store.dispatch(set_tab_selection(k))}}>{tabs[k].title}</a>
+			    <li key={"tab_" + k} className={k == tab_selection ? "active" : ""} >
+				<a onClick={() => {onClick(k, dispatch)}}>{tabs[k].title}</a>
 		            </li>
 		        ))}
 		    </ul>
 		    <div className="tab-content clearfix">
 		        {Object.keys(tabs).map((k) => {
 		            var tab = tabs[k];
-			    return (<div className={k == this.props.tab_selection ? "tab-pane active" : "tab-pane"} id={"tab_" + k} key={"tpane_" + k}>
-		                        {tabEles(tab.tables, tab.numCols)}
+			    var content = (tab.render ? tab.render(store, k) : tabEles(tab.tables, tab.numCols));
+			    return (<div className={k == tab_selection ? "tab-pane active" : "tab-pane"} id={"tab_" + k} key={"tpane_" + k}>
+		                        {content}
 				    </div>);
 			})}
 		    </div>

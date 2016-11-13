@@ -56,7 +56,7 @@ export const default_state = (tabs) => {return {
 	    }
 	},
 	data: {},
-	expression: ExpressionMatrixReducer(),
+	expression_matrices: ExpressionMatrixReducer(),
 	tab_selection: 0
     },
     main_tabs: tabs,
@@ -117,7 +117,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     case EXPRESSION_MATRIX_ACTION:
 	return Object.assign({}, state, {
 	    re_detail: Object.assign({}, state.re_detail, {
-		expression: ExpressionMatrixReducer(state.re_detail.expression, action.subaction)
+		expression_matrices: ExpressionMatrixReducer(state.re_detail.expression_matrices, action.subaction)
 	    })
 	});
 	
@@ -202,7 +202,11 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     case UPDATE_DETAIL:
 	return Object.assign({}, state, {
 	    re_detail: Object.assign({}, action.response, {
-		tab_selection: 0
+		tab_selection: 0,
+		expression_matrices: Object.assign({}, ExpressionMatrixReducer(), {
+		    loading: false,
+		    matrices: action.response.data.expression_matrices
+		})
 	    })
 	});
 

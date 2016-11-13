@@ -99,13 +99,6 @@ export const invalidate_results = (state) => {
     return (dispatch) => {
 
 	var n_query = FacetQueryMap(state);
-	
-	var e_success = (response, status, jqxhr) => {
-	    Object.keys(response.expression_matrices).map((k) => {
-		dispatch(update_expression(response.expression_matrices[k], k));
-	    });
-	    dispatch(expression_done(response));
-	};
 
 	var d_error = (key) => (response, status, jqxhr) => {};
 	var d_success = (key) => (response, status, jqxhr) => {
@@ -125,9 +118,7 @@ export const invalidate_results = (state) => {
 	};
 
 	dispatch(results_fetching());
-	dispatch(expression_loading());
 	QueryAJAX(n_query, f_success, f_error);
-	ExpressionAJAX(n_query, e_success, f_error);
 	Object.keys(state.results_displays).map((k) => {
 	    var r = state.results_displays[k];
 	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k))
@@ -146,12 +137,16 @@ export const invalidate_detail = (re) => {
 	    ranks: re._source.ranks
 	};
 	var f_success = (response, status, jqxhr) => {
+	    dispatch(expression_done(response));
 	    dispatch(update_detail(response));
 	    dispatch(details_done(response));
 	};
 	var f_error = (jqxhr, status, error) => {
 	    dispatch(results_error(jqxhr, error));
 	};
+	var e_success = (response, status, jqxhr) => {
+	};
+	dispatch(expression_loading());
 	dispatch(details_fetching());
 	DetailAJAX(n_query, f_success, f_error);
     }

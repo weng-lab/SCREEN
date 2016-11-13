@@ -23,15 +23,16 @@ class ExpressionHeatmapSet extends React.Component {
 	var matrices = this.props.matrices;
 	var chart_layout = this.props.chart_layout;
 	var selection = this.state.selection;
+	var tabClick = this.tabClick;
 	var tabs = Object.keys(matrices).map((k, i) => (
 		<li className={i == selection ? "active" : ""} key={"tab_" + i}>
-	           <a data-toggle="tab" onClick={() => {tabClick(i);}}>{k}</a>
+	           <a data-toggle="tab" onClick={() => {tabClick(i);}} key={"a_" + i}>{k}</a>
 	        </li>
 	));
 	var tab_contents = Object.keys(matrices).map((k, i) => {
-	    return <div className={i == selection ? "tab-pane active" : "tab-pane"} key={"tab_" + i}>
+	    return <div className={i == selection ? "tab-pane active" : "tab-pane"} key={"tab_c" + i}>
 		      <Heatmap chart_layout={chart_layout} rowlabels={matrices[k].rowlabels} title=""
-	                 collabels={matrices[k].collabels} data={matrices[k].matrix} />
+	                 collabels={matrices[k].collabels} data={matrices[k].matrix} key={"heatmap_c" + i} />
 		   </div>;
 	});
 	return (<div id="exTab1" className="container">
