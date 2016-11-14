@@ -25,6 +25,8 @@ class ExpressionMatrix:
         rmtrx = []
         heatmap = {"matrix": [], "cols": [], "rows": []}
         clptr = 0
+
+        # build the heatmap matrix from the search results
         for hit in [x["_source"] for x in raw_results]:
             heatmap["matrix"].append([-1.0 for x in range(0, len(cmap))])
             heatmap["rows"].append(hit["gene_name"] if hit["gene_name"] is not None else hit["ensembl_id"])
@@ -36,10 +38,16 @@ class ExpressionMatrix:
                     heatmap["matrix"][len(heatmap["matrix"]) - 1].append(math.log(ev["rep1_tpm"] + 0.01) if "rep1_tpm" in ev else -1.0)
                 else:
                     heatmap["matrix"][len(heatmap["matrix"]) - 1][cmap[ev["cell_line"]]] = math.log(ev["rep1_tpm"] + 0.01) if "rep1_tpm" in ev else -1.0
+
+        # perform clustering as necessary
         _heatmap = Heatmap(heatmap["matrix"])
-        start = time.time()
-        roworder, colorder = _heatmap.cluster_by_both()
-        print("performed hierarchial clustering in %f seconds" % (time.time() - start))
+        if len(heatmap["matrix"]) > 2 and len(heatmap["matrix"][0]) > 2:
+            start = time.time()
+            roworder, colorder = _heatmap.cluster_by_both()
+            print("performed hierarchial clustering in %f seconds" % (time.time() - start))
+        else:
+            roworder = [x for x in range(0, len(heatmap["matrix"]))]
+            colorder = [] if len(heatmap["matrix"]) == 0 else [x for x in range(0, len(heatmap["matrix"][0]))]
         heatmap["rowlabels"] = [heatmap["rows"][x] for x in roworder]
         heatmap["collabels"] = [heatmap["cols"][x] for x in colorder]
         return heatmap
