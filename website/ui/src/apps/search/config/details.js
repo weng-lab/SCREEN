@@ -243,7 +243,7 @@ export const tabs = [
 	}
     },
     {
-	title: "Nearby Gene Expression",
+	title: "Related Gene Expression",
 	render: (store, key) => {
 	    var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression_matrices))(ExpressionHeatmapSet);
 	    return <ExpressionHeatmap store={store} key={key} />;
