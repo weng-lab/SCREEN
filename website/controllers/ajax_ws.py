@@ -223,7 +223,6 @@ class AjaxWebService:
         return ret
 
     def _gene_regulators(self, j):
-
         # convert to ensemblid
         fields = ["HGNC_ID", "RefSeq_ID", "UCSC_ID", "UniProt_ID", "Vega_ID", "ensemblid", "mouse_genome_ID",
                   "previous_symbols", "synonyms", "approved_name", "approved_symbol" ]
@@ -416,9 +415,11 @@ class AjaxWebService:
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
-    def downloadAsSomething(self, uid, formt, writeLineFunc, fields, callback):
-        ret = self._search(j, fields, callback)
-        outFnp = self.downloadFileName(uid, "bed")
+    def downloadAsSomething(self, uid, j, formt, writeLineFunc):
+        ret = self._query({"object": j["object"],
+                           "index": paths.re_json_index,
+                           "callback": "regulatory_elements" })
+        outFnp = self.downloadFileName(uid, formt)
 
         with zipfile.ZipFile(outFnp, mode='w') as f:
             for re in ret["hits"]["hits"]:
@@ -428,14 +429,16 @@ class AjaxWebService:
         url = os.path.join(self.host, "static", "downloads", uid, outFn)
         return {"url" : url}
         
-    def downloadAsBed(self, j, fields = _default_fields, callback = "regulatory_elements"):
+    def downloadAsBed(self, uid, j):
         def writeBedLine(re):
             pos = re["position"]
             return "\t".join([pos["chrom"], pos["start"], pos["end"],
                               re["accession"]])
-        return self.downloadAsSomething(uid, "bed", writeBedLine, fields, callback)
+        j["object"]["_source"] = _default_fields
+
+        return self.downloadAsSomething(uid, j, "bed", writeBedLine)
     
-    def downloadAsJson(self, j, fields = _default_fields, callback = "regulatory_elements"):
+    def downloadAsJson(self, uid, j):
         def writeJsonLine(re):
             return json.dumps(re)
-        return self.downloadAsSomething(uid, "json", writeJsonLine, fields, callback)
+        return self.downloadAsSomething(uid, j, "json", writeJsonLine)
