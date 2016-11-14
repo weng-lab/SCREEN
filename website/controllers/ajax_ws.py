@@ -33,7 +33,7 @@ class AjaxWebService:
                        "position.end", "genes.nearest-all",
                        "genes.nearest-pc", "in_cart"]
     
-    def __init__(self, args, es, ps, cache):
+    def __init__(self, args, es, ps, cache, staticDir):
         self._rank_types = { "DNase": ("dnase", ""),
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
                              "Promoter": ("promoter", ".H3K4me3-Only"),
@@ -50,6 +50,8 @@ class AjaxWebService:
         self.ac = Autocompleter(es)
         self.regElements = RegElements(es)
 
+        self.staticDir = staticDir
+        
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
 
@@ -396,6 +398,31 @@ class AjaxWebService:
                 json.dump(data, f, sort_keys = True, indent = 4)
             print("wrote", fnp)
 
+    def beddownload(self, j):
+        try:
+            if "action" in j and "search" == j["actions"]:
+                ret = self.asBed(j)
+                return ret
+            else:
+                return { "error" : "unknown action"}
+        except:
+            raise
+            return { "error" : "error running action"}
+
     def asBed(self, j, fields = _default_fields, callback = "regulatory_elements"):
         ret = self._search(j, fields, callback)
         
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        outFn = timestr + '-' + '-'.join([]) + ".v4.bed.zip"
+        outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
+        Utils.ensureDir(outFnp)
+
+        with zipfile.ZipFile(outFnp, mode='w') as f:
+            for re in ret["hits"]["hits"]:
+                pos = re["position"]
+                f.write("\t".join([pos["chrom"], pos["start"], pos["end"],
+                                   re["accession"]]) + "\n")
+        print("wrote", outFnp)
+
+        url = os.path.join(self.host, "static", "downloads", uid, outFn)
+        return {"url" : url}
