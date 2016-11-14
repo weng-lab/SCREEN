@@ -3,11 +3,11 @@ import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table'
 
-const render_support = (support) => (
+export const render_support = (support) => (
     ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ? support.chiapet.length : 0)
 );
-const render_length = (list) => (list ? list.length : 0);
-const render_supporting_cts = (list) => {
+export const render_length = (list) => (list ? list.length : 0);
+export const render_supporting_cts = (list) => {
     if (list == null) return "";
     var map = {};
     list.map((x) => {
