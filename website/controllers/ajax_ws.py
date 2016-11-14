@@ -201,7 +201,8 @@ class AjaxWebService:
             title = "Candidate target genes"
             ret[title] = []
             for hit in link_results:
-                ret[title].append(hit["gene"]["ensemble-id"])
+                print(hit)
+                ret[title].append(hit["_source"]["gene"]["ensemble-id"])
                 
         return ret
     
