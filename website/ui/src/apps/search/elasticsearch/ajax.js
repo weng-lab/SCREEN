@@ -17,6 +17,12 @@ const format_detail = (detail_query) => {
     }));
 };
 
+const format_detail_gene = (detail_gene_query) => {
+    return JSON.stringify(Object.assign(detail_gene_query, {
+	action: "re_genes"
+    }));
+};
+
 const format_venn = (venn_query) => {
     return JSON.stringify(Object.assign(venn_query, {
 	action: "venn"
@@ -45,6 +51,18 @@ export const DetailAJAX = (query, f_success, f_error) => {
         dataType: "json",
         contentType : "application/json",
         success: f_success,
+	error: f_error
+    });
+};
+
+export const DetailGeneAJAX = (query, f_success, f_error) => {
+    $.ajax({
+	type: "POST",
+	url: AJAX_URL,
+	data: format_detail_gene(query),
+	dataType: "json",
+	contentType: "application/json",
+	success: f_success,
 	error: f_error
     });
 };

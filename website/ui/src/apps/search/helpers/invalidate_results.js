@@ -1,4 +1,4 @@
-import QueryAJAX, {DetailAJAX, ExpressionAJAX} from '../elasticsearch/ajax'
+import QueryAJAX, {DetailAJAX, ExpressionAJAX, DetailGeneAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, EXPRESSION_MATRIX_ACTION, DETAILS_DONE,
 	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION} from '../reducers/root_reducer'
 import {UPDATE_EXPRESSION} from '../reducers/expression_matrix_reducer'
@@ -141,6 +141,12 @@ export const invalidate_detail = (re) => {
 	    dispatch(update_detail(response));
 	    dispatch(details_done(response));
 	};
+	var g_success = (response, status, jqxhr) => {
+	    dispatch(update_detail(response));
+	};
+	var g_error = (response, status, jqxhr) => {
+	    dispatch(results_error(jqxhr, error));
+	};
 	var f_error = (jqxhr, status, error) => {
 	    dispatch(results_error(jqxhr, error));
 	};
@@ -149,5 +155,6 @@ export const invalidate_detail = (re) => {
 	dispatch(expression_loading());
 	dispatch(details_fetching());
 	DetailAJAX(n_query, f_success, f_error);
+	DetailGeneAJAX(n_query, g_success, g_error);
     }
 };
