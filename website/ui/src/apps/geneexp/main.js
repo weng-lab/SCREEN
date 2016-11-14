@@ -5,14 +5,13 @@ import {render} from 'react-dom'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
-import {invalidate_results} from './helpers/invalidate_results'
 import {RootReducer} from './reducers/root_reducer'
 import FacetApp from './components/facet_app'
 
 import NavBarApp from '../../common/components/navbar_app'
 import MainTabControl from './components/maintab'
 import {main_tab_connector} from './reducers/root_reducer'
-import {invalidate_boxplot} from './helpers/invalidate_results'
+import {invalidate_boxplot, invalidate_res} from './helpers/invalidate_results'
 
 class GeneExpPage extends React.Component {
 
@@ -24,6 +23,7 @@ class GeneExpPage extends React.Component {
 
     componentDidMount() {
 	this.store.dispatch(invalidate_boxplot(this.store.getState()));
+	this.store.dispatch(invalidate_res());
     }    
 
     render() {

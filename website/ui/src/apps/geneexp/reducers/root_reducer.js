@@ -17,11 +17,18 @@ export const UPDATE_EXPRESSION_BOXPLOT = 'UPDATE_EXPRESSION_BOXPLOT';
 export const EXPRESSION_BOXPLOT_LOADING = 'EXPRESSION_BOXPLOT_LOADING';
 export const EXPRESSION_BOXPLOT_DONE = 'EXPRESSION_BOXPLOT_DONE';
 
+export const CANDIDATE_RES_LOADING = 'CANDIDATE_RES_LOADING';
+export const SET_CANDIDATE_RES = 'SET_CANDIDATE_RES';
+
 export let root_default_state = {
     facet_boxes: {},
     results: {
 	expression_boxplot: {
 	    items: [],
+	    fetching: true
+	},
+	candidate_res: {
+	    candidate_res: [],
 	    fetching: true
 	},
 	fetching: false
@@ -41,8 +48,6 @@ export const main_tab_connector = MainTabsConnector(
 );
 
 export const RootReducer = (state = root_default_state, action) => {
-
-    //console.log("RootReducer", action);
     
     if (null == action) {
         return state;
@@ -81,11 +86,29 @@ export const RootReducer = (state = root_default_state, action) => {
 	    })
 	});
 
+    case CANDIDATE_RES_LOADING:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		candidate_res: Object.assign({}, state.results.candidate_res, {
+		    fetching: true
+		})
+	    })
+	});
+
+    case SET_CANDIDATE_RES:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		candidate_res: Object.assign({}, state.results.candidate_res, {
+		    fetching: false,
+		    candidate_res: action.candidate_res
+		})
+	    })
+	});
+	
     case EXPRESSION_BOXPLOT_LOADING:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
-		expression_boxplot: Object.assign({},
-						 state.results.expression_boxplot, {
+		expression_boxplot: Object.assign({}, state.results.expression_boxplot, {
 		    fetching: true
 		})
 	    })
