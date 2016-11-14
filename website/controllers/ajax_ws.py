@@ -409,20 +409,33 @@ class AjaxWebService:
             raise
             return { "error" : "error running action"}
 
-    def asBed(self, j, fields = _default_fields, callback = "regulatory_elements"):
-        ret = self._search(j, fields, callback)
-        
+    def downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = timestr + '-' + '-'.join([]) + ".v4.bed.zip"
+        outFn = timestr + '-' + '-'.join([]) + ".v4." + formt + ".zip"
         outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
         Utils.ensureDir(outFnp)
+        return outFn, outFnp
+
+    def downloadAsSomething(self, uid, formt, writeLineFunc, fields, callback):
+        ret = self._search(j, fields, callback)
+        outFnp = self.downloadFileName(uid, "bed")
 
         with zipfile.ZipFile(outFnp, mode='w') as f:
             for re in ret["hits"]["hits"]:
-                pos = re["position"]
-                f.write("\t".join([pos["chrom"], pos["start"], pos["end"],
-                                   re["accession"]]) + "\n")
+                f.write(writeLineFunc(re) + "\n") 
         print("wrote", outFnp)
 
         url = os.path.join(self.host, "static", "downloads", uid, outFn)
         return {"url" : url}
+        
+    def downloadAsBed(self, j, fields = _default_fields, callback = "regulatory_elements"):
+        def writeBedLine(re):
+            pos = re["position"]
+            return "\t".join([pos["chrom"], pos["start"], pos["end"],
+                              re["accession"]])
+        return self.downloadAsSomething(uid, "bed", writeBedLine, fields, callback)
+    
+    def downloadAsJson(self, j, fields = _default_fields, callback = "regulatory_elements"):
+        def writeJsonLine(re):
+            return json.dumps(re)
+        return self.downloadAsSomething(uid, "json", writeJsonLine, fields, callback)
