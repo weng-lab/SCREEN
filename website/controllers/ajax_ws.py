@@ -215,11 +215,11 @@ class AjaxWebService:
         ensembl_id = self.es.search(body={"query": {"bool": {"must": [{"multi_match": {"query": j["name"],
                                                                                        "fields": fields}}]}}},
                                     index="gene_aliases")["hits"]["hits"]
-        if len(ensembl_id) == 0: return []
-        ensembl_id = ensembl_id[0]["_source"]["ensemblid"]
-
+        ensembl_id = ensembl_id[0]["_source"]["ensemblid"] if len(ensembl_id) > 0 else "~" # no IDs start with '~'
+        
         # search for matching links
-        link_results = self.es.search(body={"query": {"bool": {"must": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}}]}},
+        link_results = self.es.search(body={"query": {"bool": {"should": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}},
+                                                                          {"match": {"gene.common-gene-name": j["name"]}}]}},
                                             "size": 1000},
                                       index="candidate_links")["hits"]["hits"]
         return [x["_source"] for x in link_results]
