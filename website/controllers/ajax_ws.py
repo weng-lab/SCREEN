@@ -219,7 +219,8 @@ class AjaxWebService:
         ensembl_id = ensembl_id[0]["_source"]["ensemblid"]
 
         # search for matching links
-        link_results = self.es.search(body={"query": {"bool": {"must": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}}]}}},
+        link_results = self.es.search(body={"query": {"bool": {"must": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}}]}},
+                                            "size": 1000},
                                       index="candidate_links")["hits"]["hits"]
         return [x["_source"] for x in link_results]
             
