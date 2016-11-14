@@ -1,5 +1,6 @@
-import {ExpressionBoxplotAJAX} from '../helpers/ajax'
-import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING} from '../reducers/root_reducer'
+import {ExpressionBoxplotAJAX, CandidateREsAJAX} from '../helpers/ajax'
+import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, UPDATE_EXPRESSION_BOXPLOT, EXPRESSION_BOXPLOT_DONE, EXPRESSION_BOXPLOT_LOADING,
+	CANDIDATE_RES_LOADING, SET_CANDIDATE_RES} from '../reducers/root_reducer'
 
 export const results_fetching = () => {
     return {
@@ -42,6 +43,19 @@ export const expression_boxplot_done = (response) => {
     }
 };
 
+export const set_candidate_res = (response) => {
+    return {
+	type: SET_CANDIDATE_RES,
+	candidate_res: response
+    };
+};
+
+export const candidate_res_loading = () => {
+    return {
+	type: CANDIDATE_RES_LOADING
+    };
+}
+
 const collectCompartments = (s) => {
     var arr = s.facet_boxes.cell_compartments.facets.cell_compartments.state.data;
     var ret = []
@@ -66,5 +80,21 @@ export const invalidate_boxplot = (q) => {
 	};
 	dispatch(expression_boxplot_loading());
 	ExpressionBoxplotAJAX(query, f_success, f_error);
+    }
+};
+
+export const invalidate_res = () => {
+    return (dispatch) => {
+	var query = {
+	    "name": GlobalParsedQuery["gene"]
+	};
+	var f_success = (response, status, jqxhr) => {
+	    dispatch(set_candidate_res(response));
+	};
+	var f_error = (jqxhr, status, error) => {
+	    dispatch(results_error(jqxhr, error));
+	};
+	dispatch(candidate_res_loading());
+	CandidateREsAJAX(query, f_success, f_error);
     }
 };

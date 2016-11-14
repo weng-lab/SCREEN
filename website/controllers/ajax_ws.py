@@ -59,7 +59,8 @@ class AjaxWebService:
                         "suggest" : self._suggest,
                         "query": self._query,
                         "search": self._search,
-                        "venn": self._venn_search }
+                        "venn": self._venn_search,
+                        "gene_regulators": self._gene_regulators }
         self._cached_results = {}
 
     def _get_rank(self, label, v):
@@ -205,7 +206,23 @@ class AjaxWebService:
                 ret[title].append(hit["_source"]["gene"]["ensemble-id"])
                 
         return ret
-    
+
+    def _gene_regulators(self, j):
+
+        # convert to ensemblid
+        fields = ["HGNC_ID", "RefSeq_ID", "UCSC_ID", "UniProt_ID", "Vega_ID", "ensemblid", "mouse_genome_ID",
+                  "previous_symbols", "synonyms", "approved_name", "approved_symbol" ]
+        ensembl_id = self.es.search(body={"query": {"bool": {"must": [{"multi_match": {"query": j["name"],
+                                                                                       "fields": fields}}]}}},
+                                    index="gene_aliases")["hits"]["hits"]
+        if len(ensembl_id) == 0: return []
+        ensembl_id = ensembl_id[0]["_source"]["ensemblid"]
+
+        # search for matching links
+        link_results = self.es.search(body={"query": {"bool": {"must": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}}]}}},
+                                      index="candidate_links")["hits"]["hits"]
+        return [x["_source"] for x in link_results]
+            
     def process(self, j):
         try:
             if "action" in j:
