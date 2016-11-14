@@ -356,7 +356,6 @@ class AjaxWebService:
         return results
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
-        
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
         j["callback"] = callback
@@ -382,17 +381,21 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-        
+
         if self.args.dump:
-            self._dump(j, response)
+            self._dump(j, ret)
         return ret
 
-    def _dump(self, j, response):
+    def _dump(self, j, ret):
         base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
-        for prefix, data in [("request", j), ("response", results)]:
+        for prefix, data in [("request", j), ("response", ret)]:
             fn = base + '_' + prefix + ".json"
             fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
             Utils.ensureDir(fnp)
             with open(fnp, 'w') as f:
                 json.dump(data, f, sort_keys = True, indent = 4)
             print("wrote", fnp)
+
+    def asBed(self, j, fields = _default_fields, callback = "regulatory_elements"):
+        ret = self._search(j, fields, callback)
+        
