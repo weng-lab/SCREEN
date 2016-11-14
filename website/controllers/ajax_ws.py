@@ -175,22 +175,34 @@ class AjaxWebService:
         return ret
 
     def _get_genelist(self, accession):
+        ret = {}
+
+        # handle linear distance and TAD first
         results = self._search({"object": {"query": {"bool": {"must": [{"match": {"accession": accession}}]}}},
                                 "post_processing": {}},
                                callback = "", fields = ["genes"])["hits"]["hits"]
-        if len(results) == 0: return {}
-        results = results[0]
-        ret = {}
-        results_lists = {"Nearest Linearly": (results["_source"]["genes"]["nearest-all"] + results["_source"]["genes"]["nearest-pc"],
-                                              lambda gene: gene["gene-name"]),
-                         "Within TAD": (results["_source"]["genes"]["tads"],
-                                        lambda gene: gene) }
-        for title, v in results_lists.iteritems():
+        if len(results) > 0:
+            results = results[0]
+            results_lists = {"Nearest Linearly": (results["_source"]["genes"]["nearest-all"] + results["_source"]["genes"]["nearest-pc"],
+                                                  lambda gene: gene["gene-name"]),
+                             "Within TAD": (results["_source"]["genes"]["tads"],
+                                            lambda gene: gene) }
+            for title, v in results_lists.iteritems():
+                ret[title] = []
+                genelist, f = v
+                for gene in genelist:
+                    if f(gene) not in ret[title]:
+                        ret[title].append(f(gene))
+
+        # handle candidate links
+        link_results = self.es.search(body={"query": {"bool": {"must": [{"match": {"candidate-re": accession}}]}}},
+                                      index="candidate_links")["hits"]["hits"]
+        if len(link_results) > 0:
+            title = "Candidate target genes"
             ret[title] = []
-            genelist, f = v
-            for gene in genelist:
-                if f(gene) not in ret[title]:
-                    ret[title].append(f(gene))
+            for hit in link_results:
+                ret[title].append(hit["gene"]["ensemble-id"])
+                
         return ret
     
     def process(self, j):
