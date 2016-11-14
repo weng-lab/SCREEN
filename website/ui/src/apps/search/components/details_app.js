@@ -35,15 +35,16 @@ class DetailsApp extends React.Component {
 	var onClick = this.onClick;
 
 	function makeTable(key, table){
+	    var _data = (data[key] ? data[key] : []);
 	    if(table.bar_graph){
 		return <BarGraphTable cols={table.cols} order={table.order} paging={table.paging}
-			    bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]}
+			    bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
 			    bLengthChange={false} emptyText={table.emptyText}
 			    pageLength={table.pageLength} rank_f={table.bg_rank_f} />;
 	    }
 	    var tclick = (table.onTdClick ? table.onTdClick(dispatch) : null);
 	    return <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
-		       bInfo={table.bInfo} bFilter={table.bFilter} data={data[key]}
+		       bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
 	               bLengthChange={true} emptyText={table.emptyText} pageLength={table.pageLength}
   	               onTdClick={tclick} />;
 	}

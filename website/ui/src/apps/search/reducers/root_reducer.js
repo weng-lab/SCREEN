@@ -200,13 +200,18 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	});
 
     case UPDATE_DETAIL:
+	var em = ("expression_matrices" in action.response.data
+		  ? Object.assign({}, ExpressionMatrixReducer(), {
+		      loading: false,
+		      matrices: action.response.data.expression_matrices
+		  })
+		  : state.re_detail.expression_matrices);
 	return Object.assign({}, state, {
-	    re_detail: Object.assign({}, action.response, {
+	    re_detail: Object.assign({}, state.re_detail, {
+		data: Object.assign({}, state.re_detail.data, action.response.data),
+		expression_matrices: em,
 		tab_selection: 0,
-		expression_matrices: Object.assign({}, ExpressionMatrixReducer(), {
-		    loading: false,
-		    matrices: action.response.data.expression_matrices
-		})
+		q: action.response.q
 	    })
 	});
 

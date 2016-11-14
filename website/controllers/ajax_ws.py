@@ -60,7 +60,8 @@ class AjaxWebService:
                         "query": self._query,
                         "search": self._search,
                         "venn": self._venn_search,
-                        "gene_regulators": self._gene_regulators }
+                        "gene_regulators": self._gene_regulators,
+                        "re_genes": self._re_genes }
         self._cached_results = {}
 
     def _get_rank(self, label, v):
@@ -119,11 +120,23 @@ class AjaxWebService:
 
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
-                               "nearby_res" : self.details.formatResJS(re_results, pos, accession),
-                               "expression_matrices": self._expression_matrix(accession) })
+                               "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
 
         return output
 
+    def _re_genes(self, j):
+        accession = j["accession"]
+        return {"type": "re_genes",
+                "q": {"accession": accession},
+                "data": {"expression_matrices": self._expression_matrix(accession),
+                         "candidate_links": self._candidate_links(accession) }}
+
+    def _candidate_links(self, accession):
+        link_results = self.es.search(body={"query": {"bool": {"should": [{"match": {"candidate-re": accession}}]}},
+                                            "size": 1000},
+                                      index="candidate_links")["hits"]["hits"]
+        return [x["_source"] for x in link_results]
+    
     def _expression_matrix(self, accession):
         matrix = []
         genelists = self._get_genelist(accession)

@@ -6,6 +6,8 @@ import {SET_DETAIL_TAB} from '../reducers/root_reducer'
 import {expression_heatmap_connector} from '../components/expression_heatmap'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
 
+import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
+
 const render_factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
@@ -128,6 +130,58 @@ export const tabs = [
 		paging: false,
 		bar_graph: true,
 		bg_rank_f: (d) => (Math.log(d["rank"]))
+	    }
+	}
+    },
+    {
+	title: "Candidate Target Genes",
+	numCols: 1,
+	tables: {
+	    "candidate_links": {
+		title: "",
+		paging: true,
+		bInfo: true,
+		bFilter: true,
+		emptyText: "No target genes predicted",
+		cols: [
+		    {
+			title: "name",
+			data: "gene.common-gene-name",
+			className: "dt-right"
+		    },
+		    {
+			title: "ensembl ID",
+			data: "gene.ensemble-id",
+			className: "dt-right"
+		    },
+		    {
+			title: "# supporting exps",
+			data: "evidence",
+			render: render_support
+		    },
+		    {
+			title: "# ChIA-PET exps",
+			data: "evidence.chiapet",
+			render: render_length
+		    },
+		    {
+			title: "ChIA-PET cell types",
+			data: "evidence.chiapet",
+			render: render_supporting_cts
+		    },
+		    {
+			title: "# eQTL exps",
+			data: "evidence.eqtls",
+			render: render_length
+		    },
+		    {
+			title: "eQTL cell types",
+			data: "evidence.eqtls",
+			render: render_supporting_cts
+		    }
+		],
+		data: [],
+		order: [[2, "desc"]]
 	    }
 	}
     },
