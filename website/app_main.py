@@ -24,7 +24,7 @@ class MainApp():
         self.cp = ComparisonController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
-        self.ajaxWS = AjaxWebService(args, es, ps, cache)
+        self.ajaxWS = AjaxWebService(args, es, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):
@@ -142,4 +142,11 @@ class MainApp():
     def geneexpjson(self):
         j = cherrypy.request.json
         return self.ge.geneexpjson(j)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def beddownload(self):
+        j = cherrypy.request.json
+        return self.ajaxWS.beddownload(j)
 
