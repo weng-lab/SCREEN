@@ -219,17 +219,16 @@ export const tabs = [
 		cols: [
 		    {
 			title: "symbol",
-			data: "name",
+			data: "approved_symbol",
 			render: render_gene_link
 		    },
 		    {
-			title: "distance",
-			data: "distance",
-			render: render_int
+			title: "coordinates",
+			data: "coordinates"
 		    }
 		],
 		data: [],
-		order: [[1, "asc"]]
+		order: [[0, "asc"]]
 	    },
 	    "nearby_res": {
 		title: "Nearby candidate REs",

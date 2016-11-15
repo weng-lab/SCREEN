@@ -119,15 +119,21 @@ class AjaxWebService:
                            "end": pos["end"] + overlapBP}
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
-
-        print(j["genes"])
         
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
-                               "tads": [x for x in j["genes"]["tads"]] if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
+                               "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
 
         return output
+
+    def _tad_details(self, ensembl_list):
+        query = []
+        for ensembl_id in ensembl_list:
+            query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
+        retval = self.es.search(body={"query": {"bool": {"should": query}}},
+                                index="gene_aliases")["hits"]["hits"]
+        return [x["_source"] for x in retval]
 
     def _re_genes(self, j):
         accession = j["accession"]
