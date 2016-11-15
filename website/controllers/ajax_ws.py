@@ -134,7 +134,9 @@ class AjaxWebService:
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000},
                                 index="gene_aliases")["hits"]["hits"]
-        return [x["_source"] for x in retval]
+        return [{"approved_symbol": x["_source"]["approved_symbol"],
+                 "coordinates": x["_source"]["coordinates"] if "coordinates" in x["_source"] else ""}
+                for x in retval]
 
     def _re_genes(self, j):
         accession = j["accession"]
