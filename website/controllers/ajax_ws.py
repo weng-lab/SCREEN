@@ -131,7 +131,8 @@ class AjaxWebService:
         query = []
         for ensembl_id in ensembl_list:
             query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
-        retval = self.es.search(body={"query": {"bool": {"should": query}}},
+        retval = self.es.search(body={"query": {"bool": {"should": query}},
+                                      "size": 1000},
                                 index="gene_aliases")["hits"]["hits"]
         return [x["_source"] for x in retval]
 
