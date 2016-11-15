@@ -29,7 +29,33 @@ TissueColors = {
     "prostate": "#00AA88",
     "skin": "#BBAA44",
     "stomach": "#44AAFF",
-    "uterus": "#990033"
+    "uterus": "#990033",
+    'adrenal gland' : "#BBAA44", 
+    'blood vessel' : '#880000',
+    'bone' : "#BBAA44",
+    'bronchus' : "#BBAA44",
+    'cartilage' : "#BBAA44",
+    'connective tissue' : "#BBAA44",
+    'esophagus' : "#BBAA44",
+    'extraembryonic structure' : "#BBAA44",
+    'gonad' : "#BBAA44",
+    'iPSC' : "#BBAA44",
+    'large intestine' : "#BBAA44",
+    'lymphoid' : "#BBAA44",
+    'mammary gland' : "#BBAA44",
+    'mouth' : "#BBAA44",
+    'muscle organ' : "#BBAA44",
+    'myometrium' : "#BBAA44",
+    'nervous system' : "#BBAA44",
+    'olfactory organ' : "#BBAA44",
+    'prostate gland' : "#00AA88",
+    'skin of body' : "#BBAA44",
+    'spinal cord' : "#BBAA44",
+    'spleen' : "#BBAA44",
+    'thyroid gland' : "#BBAA44",
+    'trachea' : "#BBAA44",
+    'urinary bladder' : "#BBAA44",
+    'vagina' : "#BBAA44"
 }
 
 Compartments = ["cell", "nucleoplasm", "cytosol",
@@ -65,6 +91,46 @@ class ComputeGeneExpression:
                           "color": c, "items": []}
             ret[t]["items"].append(e)
         return ret
+
+    def groupByTissue(self, rows):
+        sorter = lambda x: x[1]
+        rows.sort(key = sorter)
+
+        ret = []
+        for organ, subRows in groupby(rows, sorter):
+            for row in subRows:
+                ret.append({"cell_type" : row[2],
+                            "rank" : float(row[0]),
+                            "tissue" : organ})
+
+        ret = self.regroup(ret)               
+        return ret
+
+    def sortHighToLow(self, rows):
+        sorter = lambda x: float(x[0])
+        rows.sort(key = sorter, reverse = True)
+
+        arr = []
+        for row in rows:
+            arr.append({"cell_type" : row[2],
+                        "rank" : float(row[0]),
+                        "tissue" : row[1].strip()})
+
+        keys = []
+        ret = {}
+        for idx, e in enumerate(arr):
+            t = e["tissue"]
+            c = "#000000"
+            if t in TissueColors:
+                c = TissueColors[t]
+            else:
+                print("missing color for", t)
+            k = str(idx).zfill(3) + '_' + t
+            keys.append(k)
+	    ret[k] = {"name" : t,
+                      "color": c,
+                      "items": [e]}
+        return ret
     
     def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
@@ -80,16 +146,8 @@ class ComputeGeneExpression:
             rows = curs.fetchall()
 
         rows = self._filterNAs(rows)
-        sorter = lambda x: x[1]
-        rows.sort(key = sorter)
 
-        ret = []
-        for organ, subRows in groupby(rows, sorter):
-            for row in subRows:
-                ret.append({"cell_type" : row[2],
-                            "rank" : float(row[0]),
-                            "tissue" : organ})
-
-        ret = self.regroup(ret)               
+        #ret = self.groupByTissue(rows)
+        ret = self.sortHighToLow(rows)
         return {"items" : ret }
     
