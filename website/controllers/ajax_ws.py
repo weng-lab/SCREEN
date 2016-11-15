@@ -118,8 +118,11 @@ class AjaxWebService:
         gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
 
+        print(j["genes"])
+        
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
+                               "tads": [x for x in j["genes"]["tads"]] if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
 
         return output

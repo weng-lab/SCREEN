@@ -209,6 +209,27 @@ export const tabs = [
 		data: [],
 		order: [[1, "asc"]]
 	    },
+	    "tads": {
+		title: "Genes within TAD",
+		paging: true,
+		bInfo: false,
+		bFilter: false,
+		emptyText: "No genes within TAD",
+		cols: [
+		    {
+			title: "symbol",
+			data: "name",
+			render: render_gene_link
+		    },
+		    {
+			title: "distance",
+			data: "distance",
+			render: render_int
+		    }
+		],
+		data: [],
+		order: [[1, "asc"]]
+	    },
 	    "nearby_res": {
 		title: "Nearby candidate REs",
 		paging: false,
