@@ -33,7 +33,7 @@ class AjaxWebService:
                        "position.end", "genes.nearest-all",
                        "genes.nearest-pc", "in_cart"]
     
-    def __init__(self, args, es, ps, cache):
+    def __init__(self, args, es, ps, cache, staticDir):
         self._rank_types = { "DNase": ("dnase", ""),
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
                              "Promoter": ("promoter", ".H3K4me3-Only"),
@@ -50,6 +50,8 @@ class AjaxWebService:
         self.ac = Autocompleter(es)
         self.regElements = RegElements(es)
 
+        self.staticDir = staticDir
+        
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
 
@@ -224,7 +226,6 @@ class AjaxWebService:
         return ret
 
     def _gene_regulators(self, j):
-
         # convert to ensemblid
         fields = ["HGNC_ID", "RefSeq_ID", "UCSC_ID", "UniProt_ID", "Vega_ID", "ensemblid", "mouse_genome_ID",
                   "previous_symbols", "synonyms", "approved_name", "approved_symbol" ]
@@ -359,7 +360,6 @@ class AjaxWebService:
         return results
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
-        
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
         j["callback"] = callback
@@ -385,17 +385,63 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-        
+
         if self.args.dump:
-            self._dump(j, response)
+            self._dump(j, ret)
         return ret
 
-    def _dump(self, j, response):
+    def _dump(self, j, ret):
         base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
-        for prefix, data in [("request", j), ("response", results)]:
+        for prefix, data in [("request", j), ("response", ret)]:
             fn = base + '_' + prefix + ".json"
             fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
             Utils.ensureDir(fnp)
             with open(fnp, 'w') as f:
                 json.dump(data, f, sort_keys = True, indent = 4)
             print("wrote", fnp)
+
+    def beddownload(self, j):
+        try:
+            if "action" in j and "search" == j["actions"]:
+                ret = self.asBed(j)
+                return ret
+            else:
+                return { "error" : "unknown action"}
+        except:
+            raise
+            return { "error" : "error running action"}
+
+    def downloadFileName(self, uid, formt):
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        outFn = timestr + '-' + '-'.join([]) + ".v4." + formt + ".zip"
+        outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
+        Utils.ensureDir(outFnp)
+        return outFn, outFnp
+
+    def downloadAsSomething(self, uid, j, formt, writeLineFunc):
+        ret = self._query({"object": j["object"],
+                           "index": paths.re_json_index,
+                           "callback": "regulatory_elements" })
+        outFnp = self.downloadFileName(uid, formt)
+
+        with zipfile.ZipFile(outFnp, mode='w') as f:
+            for re in ret["hits"]["hits"]:
+                f.write(writeLineFunc(re) + "\n") 
+        print("wrote", outFnp)
+
+        url = os.path.join(self.host, "static", "downloads", uid, outFn)
+        return {"url" : url}
+        
+    def downloadAsBed(self, uid, j):
+        def writeBedLine(re):
+            pos = re["position"]
+            return "\t".join([pos["chrom"], pos["start"], pos["end"],
+                              re["accession"]])
+        j["object"]["_source"] = _default_fields
+
+        return self.downloadAsSomething(uid, j, "bed", writeBedLine)
+    
+    def downloadAsJson(self, uid, j):
+        def writeJsonLine(re):
+            return json.dumps(re)
+        return self.downloadAsSomething(uid, j, "json", writeJsonLine)

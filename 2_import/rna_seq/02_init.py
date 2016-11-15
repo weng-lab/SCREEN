@@ -31,14 +31,16 @@ description text
 ) """)
 
 def insertRNAs(cur, dataset):
-    with open("missing2.txt") as f:
+    tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
+    with open(tissueFixesFnp) as f:
         rows = f.readlines()
     lookup = {}
-    for r in rows:
-        toks = r.rstrip().split('\t')
-        print(toks)
+    for idx, r in enumerate(rows):
+        toks = r.rstrip().split(',')
         if len(toks) != 2:
-            lookup[toks[0]] = toks[1]
+            raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
+                            + r + "found " + str(len(toks)))
+        lookup[toks[0]] = toks[1]
     
     cur.execute("""
 select distinct(dataset) from r_expression""")

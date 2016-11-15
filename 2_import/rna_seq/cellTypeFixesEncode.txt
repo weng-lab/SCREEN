@@ -1,0 +1,54 @@
+A172,brain
+A375,skin
+airway epithelial cell,lung
+articular chondrocyte of knee joint,cartilage
+astrocyte,brain
+bipolar spindle neuron,brain
+breast epithelium,breast
+Caki2,kidney
+cardiac myocyte,heart
+Daoy,brain
+G401,kidney
+GM12878,blood
+H4,brain
+H7-hESC,ESC
+hematopoietic multipotent progenitor cell,blood
+HepG2,liver
+HT1080,connective tissue
+HT-29,intestine
+induced pluripotent stem cell,iPSC
+K562,blood
+Karpas-422,blood
+LHCN-M2,muscle
+M059J,brain
+MCF-7,breast
+mesangial cell,kidney
+MG63,  bone
+myometrial cell,myometrium
+NCI-H460,lung
+neural progenitor cell,brain
+occipital lobe,  brain
+OCI-LY7,  blood
+omental fat pad,fat
+osteoblast,bone
+parietal lobe,brain
+PC-3, prostate
+pericardium fibroblast,heart
+pericyte cell,blood vessel
+Peyer's patch,lymphoid
+regular cardiac myocyte,heart
+RPMI-7951,skin
+SJCRH30,bone marrow
+SJSA1,bone
+skeletal muscle myoblast,muscle
+SK-MEL-5,skin
+SK-N-DZ, brain
+smooth muscle cell,muscle
+subcutaneous adipose tissue,fat
+subcutaneous preadipocyte,fat
+suprapubic skin,skin
+temporal lobe,brain
+tibial nerve,nervous system
+uterine smooth muscle cell,uterus
+uterus,uterus
+vagina,vagina

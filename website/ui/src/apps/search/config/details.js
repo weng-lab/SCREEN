@@ -147,7 +147,8 @@ export const tabs = [
 		    {
 			title: "name",
 			data: "gene.common-gene-name",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_gene_link
 		    },
 		    {
 			title: "ensembl ID",
