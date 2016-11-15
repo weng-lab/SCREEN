@@ -21,7 +21,10 @@ class LargeHorizontalBars extends React.Component {
     }
     
     componentDidUpdate() {
-	if (!this.refs.container.style.display == "block") return;
+	if(this.refs.container.style.display != "block") {
+	    return;
+	}
+	
 	$(this.refs.container).empty();
 	
 	var grid = d3.range(this.props.items.length).map((i) => {
@@ -35,12 +38,15 @@ class LargeHorizontalBars extends React.Component {
 	var yoffsets = {};
 	var cmax = 0;
 	var d;
-	for (var i in this.props.items) {
-	    yoffsets[i] = total_items;
+
+	var sorted_keys = Object.keys(this.props.items).sort();
+	for (var i in sorted_keys) {
+	    var key = sorted_keys[i];
+	    yoffsets[key] = total_items;
 	    labeloffsets.push(total_items + (
-		this.props.items[i].items.length / 2.0) + 0.25);
-	    total_items += this.props.items[i].items.length;
-	    d = d3.max(this.props.items[i].items, this.props.rank_f);
+		this.props.items[key].items.length / 2.0) + 0.25);
+	    total_items += this.props.items[key].items.length;
+	    d = d3.max(this.props.items[key].items, this.props.rank_f);
 	    if (d > cmax) cmax = d;
 	}
 	
