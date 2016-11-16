@@ -8,7 +8,7 @@ import random
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 
-TissueColors = {
+FixedTissueColors = {
     "blood": "#880000",
     "bone marrow": "#AACCAA",
     "brain": "#AA8888",
@@ -63,12 +63,8 @@ Compartments = ["cell", "nucleoplasm", "cytosol",
                 "nucleus", "membrane", "chromatin", 
                 "nucleolus"]
 
-class ComputeGeneExpression:
-    def __init__(self, es, ps, cache):
-        self.es = es
-        self.ps = ps
-        self.cache = cache
-
+class TissueColors:
+    def __init__(self):
         self.randColorGen = lambda: random.randint(0,255)
         self.tissueColors = {}
 
@@ -78,11 +74,21 @@ class ComputeGeneExpression:
                                   self.randColorGen())
 
     def getTissueColor(self, t):
-        if t in TissueColors:
-            return TissueColors[t]
+        if t in FixedTissueColors:
+            return FixedTissueColors[t]
         if t not in self.tissueColors:
             self.tissueColors[t] = self.randColor()
         return self.tissueColors[t]
+
+class ComputeGeneExpression:
+    def __init__(self, es, ps, cache):
+        self.es = es
+        self.ps = ps
+        self.cache = cache
+        self.tissueColors = TissueColors()
+        
+    def getTissueColor(self, t):
+        return self.tissueColors.getTissueColor(t)
             
     def _filterNAs(self, rows):
         ret = []
