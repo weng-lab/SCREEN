@@ -63,7 +63,7 @@ class CandidateREs extends React.Component {
     }
 
     render() {
-	console.log(this.props.candidate_res);
+	//console.log(this.props.candidate_res);
 	return (<div>
 		   <h2>{GlobalParsedQuery["gene"]}</h2>
 		   <ResultsTable cols={cols()} order={[[1, "desc"]]} paging={true} bInfo={true}
