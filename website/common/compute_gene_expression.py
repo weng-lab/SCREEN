@@ -78,6 +78,8 @@ class ComputeGeneExpression:
                                   self.randColorGen())
 
     def getTissueColor(self, t):
+        if t in TissueColors:
+            return TissueColors[t]
         if t not in self.tissueColors:
             self.tissueColors[t] = self.randColor()
         return self.tissueColors[t]
