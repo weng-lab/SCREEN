@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react'
 import {connect} from 'react-redux'
 import ReactDOM from 'react-dom'
 
-import {FacetCreator} from '../helpers/create_facet'
+import {FacetCreator} from '../../search/helpers//create_facet'
 import {ADD_FACETBOX} from '../reducers/root_reducer'
 
 class FacetBox extends React.Component {

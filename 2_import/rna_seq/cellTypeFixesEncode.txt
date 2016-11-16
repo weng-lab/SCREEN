@@ -52,3 +52,4 @@ tibial nerve,nervous system
 uterine smooth muscle cell,uterus
 uterus,uterus
 vagina,vagina
+cardiac muscle cell,heart
