@@ -27,9 +27,10 @@ class GeneExpController:
         compartments = [x["key"] for x in compartments]
         if not compartments:
             return {"items" : [] }
+
+        doLog = True
+        if "doLog" in j:
+            doLog = j["doLog"]
         
         cge = ComputeGeneExpression(self.es, self.ps, self.cache)
-        return cge.computeHorBars(gene, compartments)
-    
-
-
+        return cge.computeHorBars(gene, compartments, doLog)

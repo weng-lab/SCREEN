@@ -4,6 +4,7 @@ from itertools import groupby
 from scipy.stats.mstats import mquantiles
 import numpy as np
 import random
+import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -85,8 +86,9 @@ class ComputeGeneExpression:
         self.es = es
         self.ps = ps
         self.cache = cache
+        self.doLog = False
         self.tissueColors = TissueColors()
-        
+                
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
             
@@ -114,18 +116,33 @@ class ComputeGeneExpression:
             ret[t]["items"].append(e)
         return ret
 
+    def makeEntry(self, row):
+        val = row[0]
+        if self.doLog:
+            val = math.log(float(val) + 0.01)
+        val = "{0:.2f}".format(val)
+        return {"cell_type" : row[2],
+                "rank" : val,
+                "tissue" : row[1].strip()}
+    
     def groupByTissue(self, rows):
         sorter = lambda x: x[1]
         rows.sort(key = sorter)
 
-        ret = []
-        for organ, subRows in groupby(rows, sorter):
-            for row in subRows:
-                ret.append({"cell_type" : row[2],
-                            "rank" : float(row[0]),
-                            "tissue" : organ})
-
-        ret = self.regroup(ret)               
+        ret = {}
+        for row in rows:
+            t = row[1]
+	    if t not in ret:
+                c = "#000000"
+                c = self.getTissueColor(t)
+	        ret[t] = {"name" : t,
+                          "displayName" : t,
+                          "color": c,
+                          "items": []}
+            val = float(row[0])
+            if self.doLog:
+                val = math.log(val + 0.01) 
+            ret[t]["items"].append(self.makeEntry(row))
         return ret
 
     def sortHighToLow(self, rows):
@@ -134,9 +151,7 @@ class ComputeGeneExpression:
 
         arr = []
         for row in rows:
-            arr.append({"cell_type" : row[2],
-                        "rank" : float(row[0]),
-                        "tissue" : row[1].strip()})
+            arr.append(self.makeEntry(row))
 
         ret = {}
         for idx, e in enumerate(arr):
@@ -149,7 +164,9 @@ class ComputeGeneExpression:
                       "items": [e]}
         return ret
     
-    def computeHorBars(self, gene, compartments):
+    def computeHorBars(self, gene, compartments, doLog):
+        self.doLog = doLog
+        
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
             SELECT r.tpm, r_rnas.organ, r_rnas.cellType
