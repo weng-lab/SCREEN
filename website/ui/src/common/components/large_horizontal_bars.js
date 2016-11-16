@@ -39,7 +39,10 @@ class LargeHorizontalBars extends React.Component {
 	var cmax = 0;
 	var d;
 
-	var sorted_keys = Object.keys(this.props.items).sort();
+	var sorted_keys = Object.keys(this.props.items).sort(function (a, b) {
+	    // from http://stackoverflow.com/a/9645447
+	    return a.toLowerCase().localeCompare(b.toLowerCase());
+	});
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
 	    yoffsets[key] = total_items;
