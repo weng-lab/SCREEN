@@ -133,6 +133,7 @@ class ComputeGeneExpression:
             c = self.getTissueColor(t)
             k = str(idx).zfill(3) + '_' + t
 	    ret[k] = {"name" : k,
+                      "displayName" : t,
                       "color": c,
                       "items": [e]}
         return ret
