@@ -121,7 +121,7 @@ class LargeHorizontalBars extends React.Component {
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (this.props.items[d].name))
+	    .text((d) => (this.props.items[d].displayName))
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
