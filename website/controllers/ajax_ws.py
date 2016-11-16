@@ -447,7 +447,6 @@ class AjaxWebService:
             return "\t".join([pos["chrom"], pos["start"], pos["end"],
                               re["accession"]])
         j["object"]["_source"] = _default_fields
-
         return self.downloadAsSomething(uid, j, "bed", writeBedLine)
     
     def downloadAsJson(self, uid, j):
