@@ -96,6 +96,7 @@ class ComputeGeneExpression:
             r = [row[0], row[1], row[2]]
             if '{}' == r[1]:
                 r[1] = "na"
+            r[1] = r[1].strip()
             ret.append(r)
         return ret
 
