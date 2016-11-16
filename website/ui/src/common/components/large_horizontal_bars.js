@@ -50,9 +50,6 @@ class LargeHorizontalBars extends React.Component {
 	    if (d > cmax) cmax = d;
 	}
 
-	console.log("sorted_keys", sorted_keys);
-	console.log("labelOffsets", labeloffsets);
-	
 	var rank_f = this.props.rank_f;
 	var subName_f = this.props.subName_f;
 	var barheight = +this.props.barheight;
