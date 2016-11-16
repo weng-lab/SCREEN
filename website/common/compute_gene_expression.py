@@ -3,6 +3,7 @@ import sys, os, json
 from itertools import groupby
 from scipy.stats.mstats import mquantiles
 import numpy as np
+import random
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -68,6 +69,19 @@ class ComputeGeneExpression:
         self.ps = ps
         self.cache = cache
 
+        self.randColorGen = lambda: random.randint(0,255)
+        self.tissueColors = {}
+
+    def randColor(self):
+        return '#%02X%02X%02X' % (self.randColorGen(),
+                                  self.randColorGen(),
+                                  self.randColorGen())
+
+    def getTissueColor(self, t):
+        if t not in self.tissueColors:
+            self.tissueColors[t] = self.randColor()
+        return self.tissueColors[t]
+            
     def _filterNAs(self, rows):
         ret = []
         for row in rows:
@@ -83,10 +97,7 @@ class ComputeGeneExpression:
             t = e["tissue"]
 	    if t not in ret:
                 c = "#000000"
-                if t in TissueColors:
-                    c = TissueColors[t]
-                else:
-                    print("missing color for", t)
+                c = self.getTissueColor[t]
 	        ret[t] = {"name" : e["tissue"],
                           "color": c, "items": []}
             ret[t]["items"].append(e)
@@ -116,18 +127,12 @@ class ComputeGeneExpression:
                         "rank" : float(row[0]),
                         "tissue" : row[1].strip()})
 
-        keys = []
         ret = {}
         for idx, e in enumerate(arr):
             t = e["tissue"]
-            c = "#000000"
-            if t in TissueColors:
-                c = TissueColors[t]
-            else:
-                print("missing color for", t)
+            c = self.getTissueColor(t)
             k = str(idx).zfill(3) + '_' + t
-            keys.append(k)
-	    ret[k] = {"name" : t,
+	    ret[k] = {"name" : k,
                       "color": c,
                       "items": [e]}
         return ret

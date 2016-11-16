@@ -49,8 +49,10 @@ class LargeHorizontalBars extends React.Component {
 	    d = d3.max(this.props.items[key].items, this.props.rank_f);
 	    if (d > cmax) cmax = d;
 	}
+
+	console.log("sorted_keys", sorted_keys);
+	console.log("labelOffsets", labeloffsets);
 	
-	var itemsets = this.props.items;
 	var rank_f = this.props.rank_f;
 	var subName_f = this.props.subName_f;
 	var barheight = +this.props.barheight;
@@ -83,27 +85,29 @@ class LargeHorizontalBars extends React.Component {
 	    .attr('id','yaxis')
 	    .call(yAxis);
 
-	for (var n in itemsets) {
+	for (var i in sorted_keys) {
+	    var key = sorted_keys[i];
+	    var itemset = this.props.items[key];
 	    var chart = canvas.append('g')
-		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[n] * barheight) + ")");
+		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[key] * barheight) + ")");
 	    chart.selectAll('rect')
-		.data(itemsets[n].items)
+		.data(itemset.items)
 		.enter()
 	    	.append('rect')
 		.attr('height', barheight)
 		.attr({'x': 0, 'y': (d, i) => (+yscale(i))})
-		.style('fill', (d, i) => (itemsets[n].color))
+		.style('fill', (d, i) => (itemset.color))
 		.attr("stroke-width", 1)
 	        .attr("stroke", "white")
 		.attr('width', 0);
 	    var transit = chart.selectAll("rect")
-		.data(itemsets[n].items)
+		.data(itemset.items)
 		.transition()
 		.duration(1000)
 		.attr("width", (d) => {return xscale(rank_f(d))});
 	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
-		.data(itemsets[n].items)
+		.data(itemset.items)
 		.enter()
 		.append('text')
 		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
@@ -115,12 +119,12 @@ class LargeHorizontalBars extends React.Component {
 	var ylabels = canvas.append('g')
 	    .attr("transform", "translate(0,0)")
 	    .selectAll('text')
-	    .data(Object.keys(itemsets))
+	    .data(sorted_keys)
 	    .enter()
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (itemsets[d].name))
+	    .text((d) => (this.props.items[d].name))
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
