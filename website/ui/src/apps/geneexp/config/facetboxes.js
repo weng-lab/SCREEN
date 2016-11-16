@@ -1,4 +1,4 @@
-import {LONGCHECKLIST_FACET} from '../helpers/create_facet'
+import {LIST_FACET, LONGCHECKLIST_FACET} from '../../search/helpers/create_facet'
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
 export const facetboxes = () => {return {
@@ -26,7 +26,25 @@ export const facetboxes = () => {return {
 		}
 	    }
 	}
-    }
+    },
+    "order": {
+	title: "Order",
+	visible: true,
+	facets: {
+	    "order": {
+		type: LIST_FACET,
+		visible: true,
+		title: "",
+		state: {
+		    items: {
+			"chr1": 10000
+		    },
+		    selection: null
+		}
+	    }
+	}
+    },
+
 }};
 
 export const facetbox_render_order = [

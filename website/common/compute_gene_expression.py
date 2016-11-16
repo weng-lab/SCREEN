@@ -97,6 +97,7 @@ class ComputeGeneExpression:
         for row in rows:
             r = [row[0], row[1], row[2]]
             if '{}' == r[1]:
+                print("missing", r[2])
                 r[1] = "na"
             r[1] = r[1].strip()
             ret.append(r)
@@ -141,7 +142,7 @@ class ComputeGeneExpression:
                           "items": []}
             val = float(row[0])
             if self.doLog:
-                val = math.log(val + 0.01) 
+                val = math.log(val + 0.01)
             ret[t]["items"].append(self.makeEntry(row))
         return ret
 
@@ -164,7 +165,7 @@ class ComputeGeneExpression:
                       "items": [e]}
         return ret
     
-    def computeHorBars(self, gene, compartments, doLog):
+    def computeHorBars(self, gene, compartments, doLog, doOrder):
         self.doLog = doLog
         
         with getcursor(self.ps.DBCONN, "_gene") as curs:
@@ -181,7 +182,12 @@ class ComputeGeneExpression:
 
         rows = self._filterNAs(rows)
 
-        ret = self.groupByTissue(rows)
-        #ret = self.sortHighToLow(rows)
+        ret = []
+        if "highLow" == doOrder:
+            ret = self.sortHighToLow(rows)
+        elif "byTissue" == doOrder:
+            ret = self.groupByTissue(rows)
+        else:
+            print("unknown order: ", doOrder)
         return {"items" : ret }
     
