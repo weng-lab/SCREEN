@@ -105,9 +105,11 @@ class ComputeGeneExpression:
             t = e["tissue"]
 	    if t not in ret:
                 c = "#000000"
-                c = self.getTissueColor[t]
-	        ret[t] = {"name" : e["tissue"],
-                          "color": c, "items": []}
+                c = self.getTissueColor(t)
+	        ret[t] = {"name" : t,
+                          "displayName" : t,
+                          "color": c,
+                          "items": []}
             ret[t]["items"].append(e)
         return ret
 
@@ -161,7 +163,7 @@ class ComputeGeneExpression:
 
         rows = self._filterNAs(rows)
 
-        #ret = self.groupByTissue(rows)
-        ret = self.sortHighToLow(rows)
+        ret = self.groupByTissue(rows)
+        #ret = self.sortHighToLow(rows)
         return {"items" : ret }
     
