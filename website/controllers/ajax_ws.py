@@ -125,8 +125,6 @@ class AjaxWebService:
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
-        print(output["data"])
-        print([k for k, v in output["data"].iteritems()])
 
         return output
 
@@ -138,7 +136,6 @@ class AjaxWebService:
                                       "size": 1000,
                                       "_source": ["accession", "position"]},
                                 index=paths.re_json_index)["hits"]["hits"]
-        print([x["_source"] for x in retval])
         return [x["_source"] for x in retval]
                                       
     
