@@ -141,7 +141,10 @@ class LargeHorizontalBars extends React.Component {
 		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
 		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
-		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'});
+		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
+		.on("click", function(d) {
+		    window.open("http://encodeproject.org/" + d["expID"])
+		});
 	}
 	var ylabels = canvas.append('g')
 	    .attr("transform", "translate(0,0)")
