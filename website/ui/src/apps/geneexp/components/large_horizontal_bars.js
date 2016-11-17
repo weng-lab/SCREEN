@@ -181,9 +181,7 @@ class LargeHorizontalBars extends React.Component {
 	d3.selectAll("rect")
 	    .on('mouseover', toolTip.show)
 	    .on('mouseout', toolTip.hide);
-
     }
-
 }
 
 export default LargeHorizontalBars;
