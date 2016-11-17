@@ -25,12 +25,9 @@ class ExpressionBoxplot extends React.Component {
     componentDidUpdate() {
 	var width = 800;
 	var barheight = "15";
-	const rank_f = (d) => (d["rank"] >= 0 ? d["rank"] : 0);
-	const subName_f = (d) => (d["cell_type"]);
 		
 	render(<LargeHorizontalBars width={width} items={this.props.items}
-	       loading={this.props.loading} barheight={barheight}
-	       rank_f={rank_f} subName_f={subName_f} />,
+	       loading={this.props.loading} barheight={barheight} />,
 	       this.refs.bargraph);
     }
 }

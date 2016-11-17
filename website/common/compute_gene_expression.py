@@ -86,53 +86,18 @@ class ComputeGeneExpression:
         self.es = es
         self.ps = ps
         self.cache = cache
-        self.doLog = False
         self.tissueColors = TissueColors()
                 
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
             
-    def _filterNAs(self, rows):
-        ret = []
-        for row in rows:
-            r = [row[0], row[1], row[2]]
-            if '{}' == r[1]:
-                print("missing", r[2])
-                r[1] = "na"
-            r[1] = r[1].strip()
-            ret.append(r)
-        return ret
-
-    def regroup(self, arr):
-        ret = {}
-        for e in arr:
-            t = e["tissue"]
-	    if t not in ret:
-                c = "#000000"
-                c = self.getTissueColor(t)
-	        ret[t] = {"name" : t,
-                          "displayName" : t,
-                          "color": c,
-                          "items": []}
-            ret[t]["items"].append(e)
-        return ret
-
-    def makeEntry(self, row):
-        val = row[0]
-        if self.doLog:
-            val = math.log(float(val) + 0.01)
-        val = "{0:.2f}".format(val)
-        return {"cell_type" : row[2],
-                "rank" : val,
-                "tissue" : row[1].strip()}
-    
     def groupByTissue(self, rows):
-        sorter = lambda x: x[1]
+        sorter = lambda x: x["tissue"]
         rows.sort(key = sorter)
 
         ret = {}
         for row in rows:
-            t = row[1]
+            t = row["tissue"]
 	    if t not in ret:
                 c = "#000000"
                 c = self.getTissueColor(t)
@@ -140,37 +105,32 @@ class ComputeGeneExpression:
                           "displayName" : t,
                           "color": c,
                           "items": []}
-            val = float(row[0])
-            if self.doLog:
-                val = math.log(val + 0.01)
-            ret[t]["items"].append(self.makeEntry(row))
+            ret[t]["items"].append(row)
         return ret
 
-    def sortHighToLow(self, rows):
-        sorter = lambda x: float(x[0])
+    def sortByExpression(self, rows):
+        sorter = lambda x: float(x["rawVal"])
         rows.sort(key = sorter, reverse = True)
 
-        arr = []
-        for row in rows:
-            arr.append(self.makeEntry(row))
-
         ret = {}
-        for idx, e in enumerate(arr):
-            t = e["tissue"]
+        for idx, row in enumerate(rows):
+            t = row["tissue"]
             c = self.getTissueColor(t)
             k = str(idx).zfill(3) + '_' + t
 	    ret[k] = {"name" : k,
                       "displayName" : t,
                       "color": c,
-                      "items": [e]}
+                      "items": [row]}
         return ret
     
-    def computeHorBars(self, gene, compartments, doLog, doOrder):
-        self.doLog = doLog
-        
+    def process(self, rows):
+        return {"byTissue" : self.groupByTissue(rows),
+                "byExpression" : self.sortByExpression(rows)}
+    
+    def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
-            SELECT r.tpm, r_rnas.organ, r_rnas.cellType
+            SELECT r.tpm, r_rnas.organ, r_rnas.cellType, r.dataset, r.replicate
             FROM r_expression AS r
             INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
             WHERE gene_name = %(gene)s
@@ -180,14 +140,14 @@ class ComputeGeneExpression:
                            "compartments" : tuple(compartments)})
             rows = curs.fetchall()
 
-        rows = self._filterNAs(rows)
-
-        ret = []
-        if "highLow" == doOrder:
-            ret = self.sortHighToLow(rows)
-        elif "byTissue" == doOrder:
-            ret = self.groupByTissue(rows)
-        else:
-            print("unknown order: ", doOrder)
-        return {"items" : ret }
-    
+        def makeEntry(row):
+            return {"tissue" : row[1].strip(),
+                    "cellType" : row[2],
+                    "rawVal" : row[0],
+                    "logVal" : "{0:.2f}".format(math.log(float(row[0]) + 0.01)),
+                    "expID" : row[3],
+                    "rep" : row[4]}
+                
+        rows = [makeEntry(x) for x in rows]
+        return {"items" : self.process(rows)}
+        
