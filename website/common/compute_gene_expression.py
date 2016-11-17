@@ -108,8 +108,8 @@ class ComputeGeneExpression:
             ret[t]["items"].append(row)
         return ret
 
-    def sortByExpression(self, rows):
-        sorter = lambda x: float(x["rawVal"])
+    def sortByExpression(self, rows, key):
+        sorter = lambda x: float(x[key])
         rows.sort(key = sorter, reverse = True)
 
         ret = {}
@@ -125,12 +125,13 @@ class ComputeGeneExpression:
     
     def process(self, rows):
         return {"byTissue" : self.groupByTissue(rows),
-                "byExpression" : self.sortByExpression(rows)}
+                "byExpressionTPM" : self.sortByExpression(rows, "rawTPM"),
+                "byExpressionFPKM" : self.sortByExpression(rows, "rawFPKM")}
     
     def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
-            SELECT r.tpm, r_rnas.organ, r_rnas.cellType, r.dataset, r.replicate
+            SELECT r.tpm, r_rnas.organ, r_rnas.cellType, r.dataset, r.replicate, r.fpkm
             FROM r_expression AS r
             INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
             WHERE gene_name = %(gene)s
@@ -143,8 +144,10 @@ class ComputeGeneExpression:
         def makeEntry(row):
             return {"tissue" : row[1].strip(),
                     "cellType" : row[2],
-                    "rawVal" : row[0],
-                    "logVal" : "{0:.2f}".format(math.log(float(row[0]) + 0.01)),
+                    "rawTPM" : row[0],
+                    "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01)),
+                    "rawFPKM" : row[5],
+                    "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01)),
                     "expID" : row[3],
                     "rep" : row[4]}
                 

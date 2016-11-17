@@ -13,18 +13,21 @@ class LargeHorizontalBars extends React.Component {
 		<div className="row">
 		<div className="col-md-4">
 		Choose sort order:&nbsp;
-		<select ref="sortorder" defaultValue={"byExpression"}
+		<select ref="sortorder" defaultValue={"byExpressionTPM"}
 		   onChange={() => {this.componentDidUpdate()}}>
-		   <option value="byExpression">by expression</option>
+		   <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
+		   <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
 		   <option value="byTissue">by tissue</option>
 		</select>
 		</div>
 		<div className="col-md-4">
-		Data scale:&nbsp;
-		<select ref="datascale" defaultValue={"logVal"}
+		Data:&nbsp;
+		<select ref="datascale" defaultValue={"logTPM"}
 		   onChange={() => {this.componentDidUpdate()}}>
-		<option value="logVal">log&#40;TPM + 0.01&#41;</option>
-		   <option value="rawVal">TPM</option>
+		   <option value="logTPM">log&#40;TPM + 0.01&#41;</option>
+		   <option value="rawTPM">TPM</option>
+		   <option value="logFPKM">log&#40;FPKM + 0.01&#41;</option>
+		   <option value="rawFPKM">FPKM</option>
 		</select>
 		</div>
 		</div>
@@ -115,7 +118,7 @@ class LargeHorizontalBars extends React.Component {
 
 	var toolTip = d3.tip()
 	    .attr('class', 'd3-tip')
-	    .offset([-10, 0])
+	    .offset([0, 0])
 	    .html(function(d) {
 		return "<strong>" + d["cellType"] + "</strong>"+
 		    "<div>" + d["tissue"] + "</div>" +
