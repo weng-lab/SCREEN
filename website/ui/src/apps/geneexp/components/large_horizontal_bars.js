@@ -39,7 +39,6 @@ class LargeHorizontalBars extends React.Component {
 	    tissues[v.displayName].push(k);
 	});
 
-	console.log(tissues);
 	// append to results list
 	Object.keys(tissues).map((k) => {
 	    retval = retval.concat(tissues[k]);
