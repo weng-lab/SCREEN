@@ -259,7 +259,7 @@ class AjaxWebService:
                     #print(ret)
                     return ret
                 print("unknown action:", action)
-
+                return { "error" : "error running action"}
             return self.regElements.overlap(j["chrom"], int(j["start"]), int(j["end"]))
 
         except:
@@ -374,13 +374,14 @@ class AjaxWebService:
         j["callback"] = callback
         j["object"]["sort"] = [{ "neg-log-p": "desc" }]
 
-        if "rank_heatmap" in j["post_processing"]:
-            j["object"]["aggs"] = self.rh.aggs
-            if "bool" not in j["object"]["query"] or "must" not in j["object"]["query"]["bool"]:
-                j["object"]["query"] = {"bool": {"must": []}}
-            j["object"]["query"]["bool"]["must"].append(j["object"]["post_filter"])
-            j["object"].pop("post_filter", None)
-            j["callback"] = ""
+        if "post_processing" in j: # not present in cart
+            if "rank_heatmap" in j["post_processing"]:
+                j["object"]["aggs"] = self.rh.aggs
+                if "bool" not in j["object"]["query"] or "must" not in j["object"]["query"]["bool"]:
+                    j["object"]["query"] = {"bool": {"must": []}}
+                j["object"]["query"]["bool"]["must"].append(j["object"]["post_filter"])
+                j["object"].pop("post_filter", None)
+                j["callback"] = ""
         
         with Timer('ElasticSearch time'):
             ret = self._query({"object": j["object"],
