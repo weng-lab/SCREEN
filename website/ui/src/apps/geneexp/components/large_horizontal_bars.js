@@ -124,7 +124,8 @@ class LargeHorizontalBars extends React.Component {
 		    "<div>" + d["tissue"] + "</div>" +
 		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>" +
 		    "<div>" + "replicate: " +d["rep"] + "</div>" +
-		    "<div>" + "TPM: " + d["rawVal"] + "</div>";
+		    "<div>" + "TPM: " + d["rawTPM"] + "</div>" +
+		    "<div>" + "FPKM: " + d["rawFPKM"] + "</div>";
 	    })
 	
 	for (var i in sorted_keys) {
