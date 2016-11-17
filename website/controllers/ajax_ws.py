@@ -123,10 +123,22 @@ class AjaxWebService:
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
+                               "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
 
         return output
 
+    def _re_tad_details(self, ensembl_list):
+        query = []
+        for ensembl_id in ensembl_list:
+            query.append({"match": {"genes.tads": ensembl_id.split(".")[0]}})
+        retval = self.es.search(body={"query": {"bool": {"should": query}},
+                                      "size": 1000,
+                                      "_source": ["accession", "position"]},
+                                index=paths.re_json_index)["hits"]["hits"]
+        return [x["_source"] for x in retval]
+                                      
+    
     def _tad_details(self, ensembl_list):
         query = []
         for ensembl_id in ensembl_list:
