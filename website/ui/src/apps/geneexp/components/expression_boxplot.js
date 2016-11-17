@@ -3,7 +3,7 @@ var React = require('react')
 import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {invalidate_results} from '../helpers/invalidate_results'
-import LargeHorizontalBars from '../../../common/components/large_horizontal_bars'
+import LargeHorizontalBars from './large_horizontal_bars'
 
 class ExpressionBoxplot extends React.Component {
 
