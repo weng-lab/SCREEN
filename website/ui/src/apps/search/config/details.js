@@ -23,6 +23,8 @@ const render_gene_link = (d) => (
 
 const render_re_link = (d) => ('<a>' + d + '</a>');
 
+const render_position = (pos) => (position.chrom + ":" + position.start + "-" + position.end);
+
 export const tabs = [
     {
 	title: "Top tissues",
@@ -229,6 +231,30 @@ export const tabs = [
 		],
 		data: [],
 		order: [[0, "asc"]]
+	    },
+	    "re_tads": {
+		title: "Other REs within TAD",
+		paging: true,
+		bInfo: false,
+		bFilter: false,
+		emptyText: "No REs within TAD",
+		cols: [
+		    {
+			title: "accession",
+			data: "accession",
+			render: render_re_link
+		    },
+		    {
+			title: "coordinates",
+			data: "position",
+			render:  render_position
+		    }
+		],
+		data: [],
+		order: [[0, "asc"]],
+		onTdClick: (dispatch) => (i, d) => {
+		    dispatch(invalidate_detail({_source: {accession: d.accession}}));
+		}
 	    },
 	    "nearby_res": {
 		title: "Nearby candidate REs",
