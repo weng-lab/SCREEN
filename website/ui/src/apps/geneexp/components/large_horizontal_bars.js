@@ -113,6 +113,17 @@ class LargeHorizontalBars extends React.Component {
 	    .attr('id','yaxis')
 	    .call(yAxis);
 
+	var toolTip = d3.tip()
+	    .attr('class', 'd3-tip')
+	    .offset([40, 40])
+	    .html(function(d) {
+		return "<strong>" + d["cellType"] + "</strong>"+
+		    "<div>" + d["tissue"] + "</div>" +
+		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>" +
+		    "<div>" + "replicate: " +d["rep"] + "</div>" +
+		    "<div>" + "TPM: " + d["rawVal"] + "</div>";
+	    })
+	
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
 	    var itemset = items[key];
@@ -127,7 +138,10 @@ class LargeHorizontalBars extends React.Component {
 		.style('fill', (d, i) => (itemset.color))
 		.attr("stroke-width", 1)
 		.attr("stroke", "white")
-		.attr('width', 0);
+		.attr('width', 0)
+	    	.on("click", function(d) {
+		    window.open("http://encodeproject.org/" + d["expID"])
+		});
 	    var transit = chart.selectAll("rect")
 		.data(itemset.items)
 		.transition()
@@ -158,7 +172,14 @@ class LargeHorizontalBars extends React.Component {
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
+
+	d3.selectAll("rect").call(toolTip);
+	d3.selectAll("rect")
+	    .on('mouseover', toolTip.show)
+	    .on('mouseout', toolTip.hide);
+
     }
+
 }
 
 export default LargeHorizontalBars;
