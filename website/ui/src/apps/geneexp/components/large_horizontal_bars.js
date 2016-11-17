@@ -50,7 +50,7 @@ class LargeHorizontalBars extends React.Component {
 	case "tissue": neworder = this._tissue_keys; break;
 	}
 
-	var delay = 250;
+	var delay = 1000;
 	var barheight = this.props.barheight;
 	var yscale = this._yscale;
 	this._bars
