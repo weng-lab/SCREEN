@@ -10,13 +10,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from db_utils import getcursor
 
 FixedTissueColors = {
+    "ESC": "#77FF44",
     "blood": "#880000",
     "bone marrow": "#AACCAA",
     "brain": "#AA8888",
     "breast": "#33AA00",
     "colon": "#AAAA55",
     "embryonic structure": "#AAAAFF",
-    "ESC": "#77FF44",
     "eye": "#6600CC",
     "fat": "#FFFF55",
     "heart": "#880055",
@@ -99,7 +99,6 @@ class ComputeGeneExpression:
         for row in rows:
             t = row["tissue"]
 	    if t not in ret:
-                c = "#000000"
                 c = self.getTissueColor(t)
 	        ret[t] = {"name" : t,
                           "displayName" : t,
