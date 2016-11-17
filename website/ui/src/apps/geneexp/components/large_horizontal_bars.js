@@ -8,12 +8,28 @@ class LargeHorizontalBars extends React.Component {
     
     render() {
 	return (<div>
+
+		<div className="container">
+		<div className="row">
+		<div className="col-md-4">
 		Choose sort order:&nbsp;
 		<select ref="sortorder" defaultValue={"byExpression"}
 		   onChange={() => {this.componentDidUpdate()}}>
 		   <option value="byExpression">by expression</option>
 		   <option value="byTissue">by tissue</option>
 		</select>
+		</div>
+		<div className="col-md-4">
+		Data scale:&nbsp;
+		<select ref="datascale" defaultValue={"logVal"}
+		   onChange={() => {this.componentDidUpdate()}}>
+		<option value="logVal">log&#40;TPM + 0.01&#41;</option>
+		   <option value="rawVal">TPM</option>
+		</select>
+		</div>
+		</div>
+		</div>
+				
   		<div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		Loading...
 		</div>
@@ -38,7 +54,11 @@ class LargeHorizontalBars extends React.Component {
 	    return a.toLowerCase().localeCompare(b.toLowerCase());
 	});
 
-	var rank_f = (d) => (d["rawVal"] >= 0 ? d["rawVal"] : 0);
+	var rank_f = (d) => {
+	    var key = this.refs.datascale.value;
+	    var val = d[key];
+	    return val >= 0 ? val : 0;
+	};
 	var subName_f = (d) => (d["cellType"]);
 	
 	var grid = d3.range(items.length).map((i) => {
