@@ -9,8 +9,8 @@ class LargeHorizontalBars extends React.Component {
     render() {
 	return (<div>
 		   Choose sort order:&nbsp;
-		   <select ref="sortorder" onChange={() => {this._reorder(this.refs.sortorder.value)}}>
-		       <option value="expression" selected>by expression</option>
+		   <select ref="sortorder" selected={"expression"} onChange={() => {this._reorder(this.refs.sortorder.value)}}>
+		       <option value="expression">by expression</option>
 		       <option value="tissue">by tissue</option>
 		    </select>
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
@@ -18,7 +18,6 @@ class LargeHorizontalBars extends React.Component {
 		    </div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
 		</div>);
-		
     }
 
     componentDidMount() {
@@ -26,9 +25,8 @@ class LargeHorizontalBars extends React.Component {
     }
 
     _get_tissue_keys(items) {
-	
 	var tissues = {};
-	var retval = [];
+	var ret = [];
 
 	// get tissue groupings
 	Object.keys(items).map((k) => {
@@ -41,37 +39,35 @@ class LargeHorizontalBars extends React.Component {
 
 	// append to results list
 	Object.keys(tissues).map((k) => {
-	    retval = retval.concat(tissues[k]);
+	    ret = ret.concat(tissues[k]);
 	});
-	return retval;
-	
+	return ret;
     }
 
     _reorder(neworder) {
-	
 	switch (neworder) {
 	case "expression": neworder = this._sorted_keys_keyed; break;
 	case "tissue": neworder = this._tissue_keys; break;
 	}
-	
+
+	var delay = 250;
 	var barheight = this.props.barheight;
 	var yscale = this._yscale;
 	this._bars
 	    .data(this._sorted_keys)
 	    .transition()
-	    .duration(2500)
+	    .duration(delay)
 	    .attr("y", (d, i) => (+yscale(neworder[d])));
 	this._transitext
 	    .data(this._sorted_keys)
 	    .transition()
-	    .duration(2500)
+	    .duration(delay)
 	    .attr("y", (d, i) => (+yscale(neworder[d]) + barheight * 0.75));
 	this._ylabels
 	    .data(this._sorted_keys)
 	    .transition()
-	    .duration(2500)
+	    .duration(delay)
 	    .attr("y", (d, i) => (+yscale(neworder[d]) + barheight * 0.75));
-	
     }
     
     componentDidUpdate() {
@@ -187,9 +183,7 @@ class LargeHorizontalBars extends React.Component {
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
 	this._yscale = yscale;
-	
     }
-    
 }
 
 export default LargeHorizontalBars;
