@@ -147,7 +147,7 @@ class AjaxWebService:
     def _re_tad_details(self, ensembl_list):
         query = []
         for ensembl_id in ensembl_list:
-            query.append({"match": {"genes.tads": ensembl_id.split(".")[0]}})
+            query.append({"match": {"genes.tads": ensembl_id}})
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000,
                                       "_source": ["accession", "position"]},
@@ -162,7 +162,9 @@ class AjaxWebService:
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000},
                                 index="gene_aliases")["hits"]["hits"]
-        return [x["_source"] for x in retval]
+        return [{"approved_symbol": x["_source"]["approved_symbol"],
+                 "coordinates": x["_source"]["coordinates"] if "coordinates" in x["_source"] else ""}
+                for x in retval]
 
     def _re_genes(self, j):
         accession = j["accession"]

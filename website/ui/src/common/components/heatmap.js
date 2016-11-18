@@ -3,6 +3,8 @@ const React = require('react');
 var default_colors = ['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
 default_colors.reverse();
 
+var drawDelay = 1000;
+
 export const default_heatmap_layout = {
 
     "margin": {
@@ -207,7 +209,7 @@ class Heatmap extends React.Component {
 	// Change ordering of cells
 	
 	function sortbylabel(rORc,i,sortOrder){
-	    var t = svg.transition().duration(3000);
+	    var t = svg.transition().duration(drawDelay);
 	    var log2r=[];
 	    var sorted; // sorted is zero-based index
 	    svg.selectAll(".c"+rORc+i) 
@@ -240,7 +242,7 @@ class Heatmap extends React.Component {
 	
 	function order(value){
 	    if(value=="hclust"){
-		var t = svg.transition().duration(3000);
+		var t = svg.transition().duration(drawDelay);
 		t.selectAll(".cell")
 		    .attr("x", function(d) { return chart_layout.cols.order.indexOf(d.col) * chart_layout.cellSize; })
 		    .attr("y", function(d) { return chart_layout.rows.order.indexOf(d.row) * chart_layout.cellSize; })
@@ -255,7 +257,7 @@ class Heatmap extends React.Component {
 		;
 
 	    }else if (value=="probecontrast"){
-		var t = svg.transition().duration(3000);
+		var t = svg.transition().duration(drawDelay);
 		t.selectAll(".cell")
 		    .attr("x", function(d) { return (d.col - 1) * chart_layout.cellSize; })
 		    .attr("y", function(d) { return (d.row - 1) *  chart_layout.cellSize; })
@@ -270,7 +272,7 @@ class Heatmap extends React.Component {
 		;
 
 	    }else if (value=="probe"){
-		var t = svg.transition().duration(3000);
+		var t = svg.transition().duration(drawDelay);
 		t.selectAll(".cell")
 		    .attr("y", function(d) { return (d.row - 1) *  chart_layout.cellSize; })
 		;
@@ -279,7 +281,7 @@ class Heatmap extends React.Component {
 		    .attr("y", function (d, i) { return i *  chart_layout.cellSize; })
 		;
 	    }else if (value=="contrast"){
-		var t = svg.transition().duration(3000);
+		var t = svg.transition().duration(drawDelay);
 		t.selectAll(".cell")
 		    .attr("x", function(d) { return (d.col - 1) *  chart_layout.cellSize; })
 		;
@@ -288,106 +290,7 @@ class Heatmap extends React.Component {
 		;
 	    }
 	}
-	
-/*	var sa=d3.select(".g3")
-	    .on("mousedown", function() {
-		if( !d3.event.altKey) {
-		    svg.selectAll(".cell-selected").classed("cell-selected",false);
-		    svg.selectAll(".rowLabel").classed("text-selected",false);
-		    svg.selectAll(".colLabel").classed("text-selected",false);
-		}
-		var p = d3.mouse(this);
-		sa.append("rect")
-		    .attr({
-			rx      : 0,
-			ry      : 0,
-			class   : "selection",
-			x       : p[0],
-			y       : p[1],
-			width   : 1,
-			height  : 1
-		    })
-	    })
-	    .on("mousemove", function() {
-		var s = sa.select("rect.selection");
-		
-		if(!s.empty()) {
-		    var p = d3.mouse(this),
-			d = {
-			    x       : parseInt(s.attr("x"), 10),
-			    y       : parseInt(s.attr("y"), 10),
-			    width   : parseInt(s.attr("width"), 10),
-			    height  : parseInt(s.attr("height"), 10)
-			},
-			move = {
-			    x : p[0] - d.x,
-			    y : p[1] - d.y
-			}
-		    ;
-		    
-		    if(move.x < 1 || (move.x*2<d.width)) {
-			d.x = p[0];
-			d.width -= move.x;
-		    } else {
-			d.width = move.x;       
-		    }
-		    
-		    if(move.y < 1 || (move.y*2<d.height)) {
-			d.y = p[1];
-			d.height -= move.y;
-		    } else {
-			d.height = move.y;       
-		    }
-		    s.attr(d);
-		    
-		    // deselect all temporary selected state objects
-		    svg.selectAll('.cell-selection.cell-selected').classed("cell-selected", false);
-		    svg.selectAll(".text-selection.text-selected").classed("text-selected",false);
-
-		    svg.selectAll('.cell').filter(function(cell_d, i) {
-			if(
-			    !d3.select(this).classed("cell-selected") && 
-				// inner circle inside selection frame
-				(this.x.baseVal.value)+ chart_layout.cellSize >= d.x && (this.x.baseVal.value)<=d.x+d.width && 
-				(this.y.baseVal.value)+ chart_layout.cellSize >= d.y && (this.y.baseVal.value)<=d.y+d.height
-			) {
-			    
-			    d3.select(this)
-				.classed("cell-selection", true)
-				.classed("cell-selected", true);
-
-			    d3.select(".r"+(cell_d.row-1))
-				.classed("text-selection",true)
-				.classed("text-selected",true);
-
-			    d3.select(".c"+(cell_d.col-1))
-				.classed("text-selection",true)
-				.classed("text-selected",true);
-			}
-		    });
-		}
-	    })
-	    .on("mouseup", function() {
-		// remove selection frame
-		sa.selectAll("rect.selection").remove();
-		
-		// remove temporary selection marker class
-		svg.selectAll('.cell-selection').classed("cell-selection", false);
-		svg.selectAll(".text-selection").classed("text-selection",false);
-	    })
-	    .on("mouseout", function() {
-		if(d3.event.relatedTarget.tagName=='html') {
-		    // remove selection frame
-		    sa.selectAll("rect.selection").remove();
-		    // remove temporary selection marker class
-		    svg.selectAll('.cell-selection').classed("cell-selection", false);
-		    svg.selectAll(".rowLabel").classed("text-selected",false);
-		    svg.selectAll(".colLabel").classed("text-selected",false);
-		}
-	    }); */
-	
     }
-    
 }
 
 export default Heatmap;
