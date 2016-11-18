@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os, sys, json
 import time
+import scipy
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -66,6 +67,21 @@ class AjaxWebService:
                         "re_genes": self._re_genes }
         self._cached_results = {}
 
+    def _get_correlation(self, results, outerkey, innerkey = None):
+        if len(results) == 0: return []
+        ctlabels = [ct for ct, v in results[0]["_source"]["ranks"][outerkey].iteritems()]
+        observations = []
+        for result in results:
+            result = result["_source"]
+            observations.append([])
+            for cell_type in ctlabels:
+                if innerkey is not None:
+                    value = result["ranks"][outerkey][cell_type][innerkey]["rank"]
+                else:
+                    value = result["ranks"][outerkey][cell_type]["rank"]
+                observations[-1].append(value)
+        return (ctlabels, scipy.stats.spearmanr(observations))
+        
     def _get_rank(self, label, v):
         return 1e12 if label not in v else v[label]["rank"]
 
@@ -405,6 +421,19 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
+
+        """        
+        if "results" in ret and "hits" in ret["results"] and len(ret["results"]["hits"]) < 1000:
+            j["object"]["_source"] = ["ranks"]
+            cret = self._query({"object": j["object"],
+                                "index": paths.re_json_index,
+                                "callback": ""})
+            labels, corr = self._get_correlation(cret["hits"]["hits"], "dnase")
+            rho, pval = corr
+            _heatmap = Heatmap(rho.tolist())
+            roworder = _heatmap.cluster_by_rows()
+            print([labels[i] for i in roworder])
+        """
 
         if self.args.dump:
             self._dump(j, ret)
