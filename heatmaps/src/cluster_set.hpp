@@ -5,10 +5,9 @@ namespace zlab {
 class ClusterSet{
 public:
   std::vector<clusterlist> indices_;
-  Heatmap hm_;
 
 private:
-  const distance_function df_;
+  std::vector<std::vector<double>> distance_matrix_;
   
   int best_orientation(int i, int j) const {
     int bi = indices_[i][0];
@@ -16,24 +15,33 @@ private:
     int bj = indices_[j][0];
     int ej = indices_[j][indices_[j].size() - 1];
 
-    std::vector<double> dists {df_(hm_, ei, bj),
-	df_(hm_, ei, ej),
-	df_(hm_, bi, bj),
-	df_(hm_, bi, ej)
+    std::vector<double> dists {distance_matrix_[ei][bj],
+	distance_matrix_[ei][ej],
+	distance_matrix_[bi][bj],
+	distance_matrix_[bi][ej]
 	};
 
     return index_of_min(dists);
   }
 
-  explicit ClusterSet(const Heatmap &h, int len,
-		      distance_function df)
-    : hm_(h)
-    , df_(df) {
-    
+  explicit ClusterSet(const Heatmap &h, int orient_by_cols = 0) {
+
+    distance_function df = (orient_by_cols ? ClusterSet::coldist : ClusterSet::rowdist);
     indices_ = {};
-    for (int n = 0; n < len; ++n) {
+    int l = (orient_by_cols ? h.Height() : h.Width());
+    for (int n = 0; n < l; ++n) {
       indices_.push_back({n});
     }
+
+    std::vector<std::vector<double>> distance_matrix(l, std::vector<double>(l));
+    for (int i = 0; i < l; ++i) {
+      distance_matrix[i][i] = 0.0;
+      for (int j = i + 1; j < l; ++j) {
+	distance_matrix[i][j] = distance_matrix[j][i] = df(h, i, j);
+      }
+    }
+    distance_matrix_ = distance_matrix;
+    
   }
 
   static double coldist(const Heatmap &h, int i, int j) {
@@ -80,11 +88,11 @@ public:
       throw std::invalid_argument("cannot compute cluster distance: right index is out of range");
     }
 
-    double ret = df_(hm_, indices_[i][0], indices_[j][0]);
+    double ret = distance_matrix_[indices_[i][0]][indices_[j][0]];
 
     for (int n = 0; n < indices_[i].size(); ++n) {
       for (int m = 0; m < indices_[j].size(); ++m) {
-	double d = df_(hm_, indices_[i][n], indices_[j][m]);
+	double d = distance_matrix_[indices_[i][n]][indices_[j][m]];
 	if (d < ret) {
 	  ret = d;
 	}
@@ -120,11 +128,11 @@ public:
   }
 
   static ClusterSet FromRows(Heatmap &hm) {
-    return ClusterSet(hm, hm.Width(), rowdist);
+    return ClusterSet(hm, 0);
   }
 
   static ClusterSet FromCols(Heatmap &hm) {
-    return ClusterSet(hm, hm.Height(), coldist);
+    return ClusterSet(hm, 1);
   }
 
 };
