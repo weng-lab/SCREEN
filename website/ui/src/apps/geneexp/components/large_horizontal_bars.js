@@ -5,30 +5,67 @@ class LargeHorizontalBars extends React.Component {
     constructor(props) {
 	super(props);
     }
-
+    
     render() {
 	return (<div>
-  		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
-		        Loading...
-		    </div>
-		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
+
+		<div className="container">
+		<div className="row">
+		<div className="col-md-4">
+		Choose sort order:&nbsp;
+		<select ref="sortorder" defaultValue={"byExpressionTPM"}
+		   onChange={() => {this.componentDidUpdate()}}>
+		   <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
+		   <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
+		   <option value="byTissue">by tissue</option>
+		</select>
+		</div>
+		<div className="col-md-4">
+		Data:&nbsp;
+		<select ref="datascale" defaultValue={"logTPM"}
+		   onChange={() => {this.componentDidUpdate()}}>
+		   <option value="logTPM">log&#40;TPM + 0.01&#41;</option>
+		   <option value="rawTPM">TPM</option>
+		   <option value="logFPKM">log&#40;FPKM + 0.01&#41;</option>
+		   <option value="rawFPKM">FPKM</option>
+		</select>
+		</div>
+		</div>
+		</div>
+				
+  		<div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
+		Loading...
+		</div>
+		<div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
 		</div>);
-		
     }
 
     componentDidMount() {
 	this.componentDidUpdate();
     }
-    
+
     componentDidUpdate() {
 	if(this.refs.container.style.display != "block") {
 	    return;
 	}
 	
 	$(this.refs.container).empty();
+
+	var items = this.props.items[this.refs.sortorder.value];
+	var sorted_keys = Object.keys(items).sort(function (a, b) {
+	    // from http://stackoverflow.com/a/9645447
+	    return a.toLowerCase().localeCompare(b.toLowerCase());
+	});
+
+	var rank_f = (d) => {
+	    var key = this.refs.datascale.value;
+	    var val = d[key];
+	    return val >= 0 ? val : 0;
+	};
+	var subName_f = (d) => (d["cellType"]);
 	
-	var grid = d3.range(this.props.items.length).map((i) => {
-	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
+	var grid = d3.range(items.length).map((i) => {
+	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
 	});
 
 	var leftOffset = 200;
@@ -39,22 +76,16 @@ class LargeHorizontalBars extends React.Component {
 	var cmax = 0;
 	var d;
 
-	var sorted_keys = Object.keys(this.props.items).sort(function (a, b) {
-	    // from http://stackoverflow.com/a/9645447
-	    return a.toLowerCase().localeCompare(b.toLowerCase());
-	});
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
 	    yoffsets[key] = total_items;
 	    labeloffsets.push(total_items + (
-		this.props.items[key].items.length / 2.0) + 0.25);
-	    total_items += this.props.items[key].items.length;
-	    d = d3.max(this.props.items[key].items, this.props.rank_f);
+		items[key].items.length / 2.0) + 0.25);
+	    total_items += items[key].items.length;
+	    d = d3.max(items[key].items, rank_f);
 	    if (d > cmax) cmax = d;
 	}
 
-	var rank_f = this.props.rank_f;
-	var subName_f = this.props.subName_f;
 	var barheight = +this.props.barheight;
 	var height = barheight * total_items + 10;
 
@@ -85,21 +116,36 @@ class LargeHorizontalBars extends React.Component {
 	    .attr('id','yaxis')
 	    .call(yAxis);
 
+	var toolTip = d3.tip()
+	    .attr('class', 'd3-tip')
+	    .offset([0, 0])
+	    .html(function(d) {
+		return "<strong>" + d["cellType"] + "</strong>"+
+		    "<div>" + d["tissue"] + "</div>" +
+		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>" +
+		    "<div>" + "replicate: " +d["rep"] + "</div>" +
+		    "<div>" + "TPM: " + d["rawTPM"] + "</div>" +
+		    "<div>" + "FPKM: " + d["rawFPKM"] + "</div>";
+	    })
+	
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
-	    var itemset = this.props.items[key];
+	    var itemset = items[key];
 	    var chart = canvas.append('g')
 		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[key] * barheight) + ")");
 	    chart.selectAll('rect')
 		.data(itemset.items)
 		.enter()
-	    	.append('rect')
+		.append('rect')
 		.attr('height', barheight)
 		.attr({'x': 0, 'y': (d, i) => (+yscale(i))})
 		.style('fill', (d, i) => (itemset.color))
 		.attr("stroke-width", 1)
-	        .attr("stroke", "white")
-		.attr('width', 0);
+		.attr("stroke", "white")
+		.attr('width', 0)
+	    	.on("click", function(d) {
+		    window.open("http://encodeproject.org/" + d["expID"])
+		});
 	    var transit = chart.selectAll("rect")
 		.data(itemset.items)
 		.transition()
@@ -113,9 +159,11 @@ class LargeHorizontalBars extends React.Component {
 		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
 		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
-		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'});
+		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
+		.on("click", function(d) {
+		    window.open("http://encodeproject.org/" + d["expID"])
+		});
 	}
-	
 	var ylabels = canvas.append('g')
 	    .attr("transform", "translate(0,0)")
 	    .selectAll('text')
@@ -124,10 +172,15 @@ class LargeHorizontalBars extends React.Component {
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (this.props.items[d].displayName))
+	    .text((d) => (items[d].displayName))
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
+
+	d3.selectAll("rect").call(toolTip);
+	d3.selectAll("rect")
+	    .on('mouseover', toolTip.show)
+	    .on('mouseout', toolTip.hide);
     }
 }
 

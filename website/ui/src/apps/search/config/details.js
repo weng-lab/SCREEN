@@ -23,7 +23,7 @@ const render_gene_link = (d) => (
 
 const render_re_link = (d) => ('<a>' + d + '</a>');
 
-const render_position = (pos) => (position.chrom + ":" + position.start + "-" + position.end);
+const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 
 export const tabs = [
     {
