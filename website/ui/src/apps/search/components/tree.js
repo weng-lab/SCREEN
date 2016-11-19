@@ -10,7 +10,7 @@ class ResultsTree extends React.Component {
     }
 
     render() {
-	return <Tree data={this.props.data} width={2500} height={3000} />;
+	return <Tree data={this.props.data} width={2500} height={3000} labels={this.props.labels} />;
     }
     
 };
@@ -18,9 +18,9 @@ export default ResultsTree;
 
 const props_map = (f) => (_state) => {
     var state = f(_state);
-    console.log(_state);
     return {
-	data: state.tree
+	data: state.tree,
+	labels: state.labels
     };
 };
 

@@ -359,6 +359,8 @@ class AjaxWebService:
                     matrix[-1].append(raw_results[ct1][ct2]["buckets"][0]["doc_count"] / float(raw_results[ct1]["doc_count"] + raw_results[ct2]["doc_count"]))
         _heatmap = Heatmap(matrix)
         roworder, colorder = _heatmap.cluster_by_both()
+        roworder, rowtree = roworder
+        colorder, coltree = colorder
         return {"rank_range": rank_range, "totals": [], "overlaps": {},
                 "totals": totals,
                 "rowlabels": [j["cell_types"][x] for x in roworder],
@@ -410,7 +412,8 @@ class AjaxWebService:
             _heatmap = Heatmap(rho.tolist())
             with Timer("hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
-            ret["results"] = {"tree": rowtree.to_json(labels, rowtree.depth())}
+            ret["results"] = {"tree": {"tree": rowtree,
+                                       "labels": labels}}
         return ret
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
