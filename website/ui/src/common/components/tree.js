@@ -65,13 +65,13 @@ class Tree extends React.Component {
 	    .enter().append("g")
 	    .attr("class", function(d) { 
 		return "node" + 
-		    (d.children ? " node--internal" : " node--leaf"); })
+		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
 	    .attr("transform", function(d) { 
 		return "translate(" + d.y + "," + d.x + ")"; });
-	
-	// adds nodes
+
 	node.append("path")
-	    .attr("d", d3.symbol().size(5))
+	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))
+	    .attr("d", d3.symbol().size(5));
 	
 	// adds the text to the node
 	node.append("text")

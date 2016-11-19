@@ -2,6 +2,22 @@ html, body {
     height: 100%
 }
 
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+.node--internal circle {
+    fill: steelblue;
+    stroke: steelblue;
+    stroke-width: 2px;
+}
+
+.node--leaf g {
+    display: none;
+}
+
 .navbar-form{
     margin-bottom: 5px;
     margin-top: 5px;
