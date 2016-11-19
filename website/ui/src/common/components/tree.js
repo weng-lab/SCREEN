@@ -18,12 +18,58 @@ class Tree extends React.Component {
     componentDidMount() {
 	this.componentDidUpdate();
     }
+
+    _list_to_tree(list) {
+	var nodes = [], l = (list.length + 1) * 2, p;
+	for (var i = 0; i < l - 1; ++i) {
+	    nodes.push({"name": i, "left": null, "right": null});
+	}
+	for (var i = list.length - 1; i >= 0; --i) {
+	    p = +list[i];
+	    nodes[i + list.length + 1].left = nodes[Math.floor(p / l)];
+	    nodes[i + list.length + 1].right = nodes[p % l];
+	}
+	return nodes[nodes.length - 1];
+    }
+
+    _tree_depth(tree) {
+	var ret = 1, ld = 0, rd = 0;
+	if (tree.left) ld = this._tree_depth(tree.left);
+	if (tree.right) rd = this._tree_depth(tree.right);
+	return ret + (ld > rd ? ld : rd);
+    }
+    
+    _format_for_d3(tree, root_depth) {
+	if (tree.left && tree.right) {
+	    return {
+		name: "",
+		children: [
+		    this._format_for_d3(tree.left, root_depth - 1),
+		    this._format_for_d3(tree.right, root_depth - 1)
+		]
+	    };
+	} else if (root_depth > 0) {
+	    return {
+		name: "",
+		children: [this._format_for_d3(tree, root_depth - 1)]
+	    };
+	}
+	var name = (+tree.name >= 0 && +tree.name < this.props.labels.length
+		    ? this.props.labels[+tree.name] : tree.name);
+	return {name};
+    }
     
     componentDidUpdate() {
 	
 	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
 	if (!this.props.data) return;
+
+	console.log(this.props.data);
+	var tree = this._list_to_tree(this.props.data);
+	var data = this._format_for_d3(tree, this._tree_depth(tree));
+	console.log(tree);
+	console.log(data);
 
 	var margin = {top: 20, right: 750, bottom: 30, left: 90},
 	    width = this.props.width - margin.left - margin.right,
@@ -34,7 +80,7 @@ class Tree extends React.Component {
 	    .size([height, width]);
 	
 	//  assigns the data to a hierarchy using parent-child relationships
-	var nodes = d3.hierarchy(this.props.data, function(d) {
+	var nodes = d3.hierarchy(data, function(d) {
 	    return d.children;
 	});
 

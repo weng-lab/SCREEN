@@ -43,7 +43,7 @@ class Tree:
         nodes = []
         for x in range(0, l - 1):
             nodes.append(Tree(x))
-        for x in range(len(lst) - 1, 0, -1):
+        for x in range(len(lst) - 1, -1, -1):
             p = lst[x]
             nodes[x + len(lst) + 1].Left = nodes[p / l]
             nodes[x + len(lst) + 1].Right = nodes[p % l]
@@ -84,21 +84,21 @@ class Heatmap:
         global _c_heatmaps
         roworder = [0 for i in range(0, self.width * 2 - 1)]
         output = self._do_cluster(_c_heatmaps.cluster_by_rows, [roworder])
-        return (output[:self.width], Tree.from_list(output[self.width:]))
+        return (output[:self.width], output[self.width:])
 
     def cluster_by_cols(self):
         global _c_heatmaps
         colorder = [0 for i in range(0, self.height * 2 - 1)]
         output = self._do_cluster(_c_heatmaps.cluster_by_cols, [colorder])
-        return (output[:self.height], Tree.from_list(output[self.height:]))
+        return (output[:self.height], output[self.height:])
 
     def cluster_by_both(self):
         global _c_heatmaps
         roworder = [0 for i in range(0, self.width * 2 - 1)]
         colorder = [0 for i in range(0, self.height * 2 - 1)]
         rowoutput, coloutput = self._do_cluster(_c_heatmaps.cluster_by_both, [roworder, colorder])
-        return ((rowoutput[:self.width], Tree.from_list(rowoutput[self.width:])),
-                (coloutput[:self.height], Tree.from_list(coloutput[self.height:])))
+        return ((rowoutput[:self.width], rowoutput[self.width:]),
+                (coloutput[:self.height], coloutput[self.height:]))
 
 """
 "   this region prepares CTypes to make heatmap-related calls

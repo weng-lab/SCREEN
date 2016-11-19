@@ -46,7 +46,11 @@ export const default_state = (tabs) => {return {
 	columns: [],
 	cart_list: [],
 	total: 0,
-	fetching: false
+	fetching: false,
+	tree: {
+	    tree: null,
+	    labels: null
+	}
     },
     re_detail: {
 	q: {
@@ -84,7 +88,7 @@ export const main_tab_connector = MainTabsConnector(
 );
 
 export const main_tree_connector = tree_connector(
-    (state) => (state.results)
+    (state) => (state.results.tree)
 );
 
 export const main_searchbox_connector = MainSearchBoxConnector(
