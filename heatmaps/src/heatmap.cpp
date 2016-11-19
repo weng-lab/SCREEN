@@ -77,56 +77,69 @@ double Heatmap::ColDistance(int i, int j) const {
 
 }
 
-std::vector<int> Heatmap::RowCluster() {
+  std::vector<int> Heatmap::RowCluster() {
 
-  std::vector<int> ret(Width());
+    ClusterSet c = ClusterSet::FromRows(*this);
+    std::vector<int> ret;
 
-  if (Width() <= 2) {
-    for (int i = 0; i < Width(); ++i) ret[i] = i;
+    // for two or less elements, the result is constant
+    if (Width() <= 2) {
+      for (int i = 0; i < Width(); ++i) {
+	ret.push_back(i);
+      }
+      if (Width() == 2) {
+	ret.push_back(1);
+      }
+    }
+
+    // perform the clustering and rearrange the matrix accordingly
+    std::vector<HeatmapRow> tmp(values_);
+    c.docluster();
+    for (int i = 0; i < Width(); ++i) {
+      int w = c.indices_[0][i];
+      for (int j = 0; j < Height(); ++j) {
+	values_[i][j] = tmp[w][j];
+      }
+    }
+
+    // the return vector contains the roworder first and tree second
+    std::copy(c.indices_[0].begin(), c.indices_[0].end(), std::back_inserter(ret));
+    std::copy(c.tree_.begin() + c.indices_[0].size(), c.tree_.end(), std::back_inserter(ret));
     return ret;
+    
   }
 
-  ClusterSet c = ClusterSet::FromRows(*this);
-  std::vector<HeatmapRow> tmp(values_);
+  std::vector<int> Heatmap::ColCluster() {
 
-  c.docluster();
-  for (int i = 0; i < Width(); ++i) {
-    int w = c.indices_[0][i];
-    ret[i] = w;
-    for (int j = 0; j < Height(); ++j) {
-      values_[i][j] = tmp[w][j];
+    ClusterSet c = ClusterSet::FromCols(*this);
+    std::vector<int> ret;
+
+    // for two or less elements, the result is constant
+    if (Height() <= 2) {
+      for (int i = 0; i < Height(); ++i) {
+	ret.push_back(i);
+      }
+      if (Height() == 2) {
+	ret.push_back(1);
+      }
     }
-  }
 
-  return ret;
-}
-
-std::vector<int> Heatmap::ColCluster() {
-
-  std::vector<int> ret(Height());
-
-  if (Height() <= 2) {
-    for (int i = 0; i < Height(); ++i){
-      ret[i] = i;
+    // perform the clustering and rearrange the matrix accordingly
+    std::vector<HeatmapRow> tmp(values_);
+    c.docluster();
+    for (int i = 0; i < Height(); ++i) {
+      int h = c.indices_[0][i];
+      for (int j = 0; j < Width(); ++j) {
+	values_[j][i] = tmp[j][h];
+      }
     }
+
+    // the return vector contains the roworder first and tree second
+    std::copy(c.indices_[0].begin(), c.indices_[0].end(), std::back_inserter(ret));
+    std::copy(c.tree_.begin() + c.indices_[0].size(), c.tree_.end(), std::back_inserter(ret));
     return ret;
+    
   }
-
-  ClusterSet c = ClusterSet::FromCols(*this);
-  std::vector<HeatmapRow> tmp(values_);
-
-  c.docluster();
-  for (int i = 0; i < Height(); ++i) {
-    int h = c.indices_[0][i];
-    ret[i] = h;
-    for (int j = 0; j < Width(); ++j) {
-      values_[j][i] = tmp[j][h];
-    }
-  }
-
-  return ret;
-
-}
   
   std::ostream& operator<<(std::ostream& s, const Heatmap& hm) {
     for (int i = 0; i < hm.Width(); ++i) {

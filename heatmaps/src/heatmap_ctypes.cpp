@@ -47,7 +47,7 @@ extern "C" void cluster_by_cols(double *heatmap, int width, int height, int *ord
   copy_list_to_ptr(colorder, order);
 }
 
-extern "C" void cluster_by_both(double *heatmap, int width, int height, int* roworder, int *colorder) {
+extern "C" void cluster_by_both(double *heatmap, int width, int height, int *roworder, int *colorder) {
   std::vector<HeatmapRow> matrix = matrix_from_ptr(heatmap, width, height);
   Heatmap hm(matrix);
   std::vector<int> mcolorder = hm.ColCluster();

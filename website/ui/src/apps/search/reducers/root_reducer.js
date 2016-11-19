@@ -6,6 +6,7 @@ import ExpressionMatrixReducer from './expression_matrix_reducer'
 
 import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
+import {tree_connector} from '../components/tree'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -21,6 +22,7 @@ export const RESULTS_DISPLAY_ACTION = 'RESULTS_DISPLAY_ACTION';
 export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
+export const SET_TREE = 'SET_TREE';
 
 export const EXPRESSION_MATRIX_ACTION = 'EXPRESSION_MATRIX_ACTION';
 
@@ -79,6 +81,10 @@ export const main_tab_connector = MainTabsConnector(
 	    subaction: action
 	});
     })
+);
+
+export const main_tree_connector = tree_connector(
+    (state) => (state.results)
 );
 
 export const main_searchbox_connector = MainSearchBoxConnector(
@@ -179,6 +185,13 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
 		hits: action.hits
+	    })
+	});
+
+    case SET_TREE:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		tree: action.tree
 	    })
 	});
 

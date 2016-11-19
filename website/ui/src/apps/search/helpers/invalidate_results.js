@@ -1,6 +1,6 @@
-import QueryAJAX, {DetailAJAX, ExpressionAJAX, DetailGeneAJAX} from '../elasticsearch/ajax'
+import QueryAJAX, {TreeAJAX, DetailAJAX, ExpressionAJAX, DetailGeneAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, EXPRESSION_MATRIX_ACTION, DETAILS_DONE,
-	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION} from '../reducers/root_reducer'
+	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION, SET_TREE} from '../reducers/root_reducer'
 import {UPDATE_EXPRESSION} from '../reducers/expression_matrix_reducer'
 import {SET_VALUE} from '../../../common/reducers/searchbox'
 import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
@@ -117,8 +117,13 @@ export const invalidate_results = (state) => {
 	    dispatch(results_error(jqxhr, error));
 	};
 
+	var t_success = (response, status, jqxhr) => {
+	    dispatch({type: SET_TREE, tree: response.results.tree});
+	};
+
 	dispatch(results_fetching());
 	QueryAJAX(n_query, f_success, f_error);
+	TreeAJAX(n_query, t_success, f_error);
 	Object.keys(state.results_displays).map((k) => {
 	    var r = state.results_displays[k];
 	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k))

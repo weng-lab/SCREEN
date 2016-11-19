@@ -43,8 +43,10 @@ class ExpressionMatrix:
         _heatmap = Heatmap(heatmap["matrix"])
         if len(heatmap["matrix"]) > 2 and len(heatmap["matrix"][0]) > 2:
             start = time.time()
-            roworder, colorder = _heatmap.cluster_by_both()
+            rowout, colout = _heatmap.cluster_by_both()
             print("performed hierarchial clustering in %f seconds" % (time.time() - start))
+            roworder, rowtree = rowout
+            colorder, coltree = colout
         else:
             roworder = [x for x in range(0, len(heatmap["matrix"]))]
             colorder = [] if len(heatmap["matrix"]) == 0 else [x for x in range(0, len(heatmap["matrix"][0]))]

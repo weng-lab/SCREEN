@@ -64,7 +64,8 @@ class AjaxWebService:
                         "search": self._search,
                         "venn": self._venn_search,
                         "gene_regulators": self._gene_regulators,
-                        "re_genes": self._re_genes }
+                        "re_genes": self._re_genes,
+                        "tree": self._tree }
         self._cached_results = {}
 
     def _get_correlation(self, results, outerkey, innerkey = None):
@@ -257,7 +258,6 @@ class AjaxWebService:
             title = "Candidate target genes"
             ret[title] = []
             for hit in link_results:
-                print(hit)
                 ret[title].append(hit["_source"]["gene"]["ensemble-id"])
                 
         return ret
@@ -395,6 +395,23 @@ class AjaxWebService:
         results["sep_results"][j["table_cell_types"][0] + " only"] = self._search({"object": j["object"], "post_processing": {}})
 
         return results
+
+    def _tree(self, j):
+        j["object"]["_source"] = ["ranks"]
+        with Timer('ElasticSearch time'):
+            ret = self._query({"object": j["object"],
+                               "index": paths.re_json_index,
+                               "callback": "" })
+        
+        if "hits" in ret:
+            with Timer("spearman correlation time"):
+                labels, corr = self._get_correlation(ret["hits"]["hits"], "dnase")
+            rho, pval = corr
+            _heatmap = Heatmap(rho.tolist())
+            with Timer("hierarchical clustering time"):
+                roworder, rowtree = _heatmap.cluster_by_rows()
+            ret["results"] = {"tree": rowtree.to_json(labels, rowtree.depth())}
+        return ret
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
         # http://stackoverflow.com/a/27297611
@@ -423,19 +440,6 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-
-        """        
-        if "results" in ret and "hits" in ret["results"] and len(ret["results"]["hits"]) < 1000:
-            j["object"]["_source"] = ["ranks"]
-            cret = self._query({"object": j["object"],
-                                "index": paths.re_json_index,
-                                "callback": ""})
-            labels, corr = self._get_correlation(cret["hits"]["hits"], "dnase")
-            rho, pval = corr
-            _heatmap = Heatmap(rho.tolist())
-            roworder = _heatmap.cluster_by_rows()
-            print([labels[i] for i in roworder])
-        """
 
         if self.args.dump:
             self._dump(j, ret)
