@@ -55,6 +55,18 @@ export const DetailAJAX = (query, f_success, f_error) => {
     });
 };
 
+export const TreeAJAX = (query, f_success, f_error) => {
+    $.ajax({
+	type: "POST",
+	url: AJAX_URL,
+	data: format_query(query, "tree"),
+	dataType: "json",
+	contentType: "application/json",
+	success: f_success,
+	error: f_error
+    });
+};
+
 export const DetailGeneAJAX = (query, f_success, f_error) => {
     $.ajax({
 	type: "POST",

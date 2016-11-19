@@ -1,6 +1,54 @@
 from ctypes import *
 from base import _c_heatmaps
 
+class Tree:
+    def __init__(self, Label = -1, Left = None, Right = None):
+        self.Left = Left
+        self.Right = Right
+        self.Label = Label
+        
+    def _print(self, prefix = "", labels = []):
+        if self.Label < 0 or self.Label >= len(labels):
+            print(prefix + str(self.Label))
+        else:
+            print(prefix + str(labels[self.Label]))
+        if self.Left is not None: self.Left._print(prefix + "  ", labels)
+        if self.Right is not None: self.Right._print(prefix + "  ", labels)
+
+    def depth(self):
+        if self.Left is not None:
+            if self.Right is not None:
+                return 1 + max(self.Left.depth(), self.Right.depth())
+            return 1 + self.Left.depth()
+        elif self.Right is not None:
+            return 1 + self.Right.depth()
+        return 1
+
+    def to_json(self, labels = [], root_depth = 0):
+        if self.Left is not None and self.Right is not None:
+            return {"name": "",
+                    "children": [self.Right.to_json(labels, root_depth - 1),
+                                 self.Left.to_json(labels, root_depth - 1) ]}
+        if root_depth > 0:
+            return {"name": "",
+                    "children": [self.to_json(labels, root_depth - 1)] }
+        name = str(self.Label)
+        if self.Label >= 0 and self.Label < len(labels):
+            name = labels[self.Label]
+        return {"name": name}
+        
+    @staticmethod
+    def from_list(lst):
+        l = (len(lst) + 1) * 2
+        nodes = []
+        for x in range(0, l - 1):
+            nodes.append(Tree(x))
+        for x in range(len(lst) - 1, 0, -1):
+            p = lst[x]
+            nodes[x + len(lst) + 1].Left = nodes[p / l]
+            nodes[x + len(lst) + 1].Right = nodes[p % l]
+        return nodes[-1]
+
 """
 "   python wrapper of a heatmap
 """
@@ -31,22 +79,26 @@ class Heatmap:
         if len(out) == 1:
             return [out_ptr[0].contents[n] for n in range(0, len(out[0]))]
         return ([out_ptr[i].contents[n] for n in range(0, len(out[i]))] for i in range(0, len(out)))
-        
+
     def cluster_by_rows(self):
         global _c_heatmaps
-        roworder = [0 for i in range(0, self.width)]
-        return self._do_cluster(_c_heatmaps.cluster_by_rows, [roworder])
+        roworder = [0 for i in range(0, self.width * 2 - 1)]
+        output = self._do_cluster(_c_heatmaps.cluster_by_rows, [roworder])
+        return (output[:self.width], Tree.from_list(output[self.width:]))
 
     def cluster_by_cols(self):
         global _c_heatmaps
-        colorder = [0 for i in range(0, self.height)]
-        return self._do_cluster(_c_heatmaps.cluster_by_cols, [colorder])
+        colorder = [0 for i in range(0, self.height * 2 - 1)]
+        output = self._do_cluster(_c_heatmaps.cluster_by_cols, [colorder])
+        return (output[:self.height], Tree.from_list(output[self.height:]))
 
     def cluster_by_both(self):
         global _c_heatmaps
-        roworder = [0 for i in range(0, self.width)]
-        colorder = [0 for i in range(0, self.height)]
-        return self._do_cluster(_c_heatmaps.cluster_by_both, [roworder, colorder])
+        roworder = [0 for i in range(0, self.width * 2 - 1)]
+        colorder = [0 for i in range(0, self.height * 2 - 1)]
+        rowoutput, coloutput = self._do_cluster(_c_heatmaps.cluster_by_both, [roworder, colorder])
+        return ((rowoutput[:self.width], Tree.from_list(rowoutput[self.width:])),
+                (coloutput[:self.height], Tree.from_list(coloutput[self.height:])))
 
 """
 "   this region prepares CTypes to make heatmap-related calls

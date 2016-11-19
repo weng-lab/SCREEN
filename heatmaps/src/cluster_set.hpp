@@ -5,8 +5,11 @@ namespace zlab {
 class ClusterSet{
 public:
   std::vector<clusterlist> indices_;
+  std::vector<int> tree_;
 
 private:
+  int node_ptr_;
+  std::vector<int> nodei_;
   std::vector<std::vector<double>> distance_matrix_;
   
   int best_orientation(int i, int j) const {
@@ -25,14 +28,21 @@ private:
   }
 
   explicit ClusterSet(const Heatmap &h, int orient_by_cols = 0) {
-
+    
     distance_function df = (orient_by_cols ? ClusterSet::coldist : ClusterSet::rowdist);
-    indices_ = {};
     int l = (orient_by_cols ? h.Height() : h.Width());
+    indices_ = {};
+    nodei_ = {};
+    node_ptr_ = l;
+    tree_ = std::vector<int>(l * 2 - 1);
+
+    // initlialize clusters
     for (int n = 0; n < l; ++n) {
       indices_.push_back({n});
+      nodei_.push_back(n);
     }
 
+    // compute distance matrix
     std::vector<std::vector<double>> distance_matrix(l, std::vector<double>(l));
     for (int i = 0; i < l; ++i) {
       distance_matrix[i][i] = 0.0;
@@ -57,24 +67,33 @@ public:
   int Length() const {return indices_.size();}
 
   void Merge(int i, int j) {
+    
+    // make sure indices are valid
     if (i >= indices_.size()) {
       throw std::invalid_argument("cannot merge clusters: left index is out of range");}
     if (j >= indices_.size()) {
       throw std::invalid_argument("cannot merge clusters: right index is out of range");
     }
 
+    // make note of which clusters were merged for the tree
+    tree_[node_ptr_] = nodei_[i] * distance_matrix_.size() * 2 + nodei_[j];
+    nodei_[i] = nodei_[j] = node_ptr_++;
+
+    // find best orientation for the clusters and merge
     switch(best_orientation(i, j)) {
     case 1:
       std::reverse(indices_[j].begin(), indices_[j].end());
     case 0:
       indices_[i].insert(indices_[i].end(), indices_[j].begin(), indices_[j].end());
       indices_.erase(indices_.begin() + j);
+      nodei_.erase(nodei_.begin() + j);
       break;
     case 2:
       std::reverse(indices_[j].begin(), indices_[j].end());
     case 3:
       indices_[j].insert(indices_[j].end(), indices_[i].begin(), indices_[i].end());
       indices_.erase(indices_.begin() + i);
+      nodei_.erase(nodei_.begin() + i);
       break;
     }
 
@@ -125,6 +144,7 @@ public:
       // merge the closest two clusters
       Merge(mi, mj);
     }
+    
   }
 
   static ClusterSet FromRows(Heatmap &hm) {
