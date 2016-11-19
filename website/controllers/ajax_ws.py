@@ -401,20 +401,20 @@ class AjaxWebService:
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
         with Timer('ElasticSearch time'):
-            ret = self._query({"object": j["object"],
+            _ret = self._query({"object": j["object"],
                                "index": paths.re_json_index,
                                "callback": "" })
         
-        if "hits" in ret:
+        if "hits" in _ret:
             with Timer("spearman correlation time"):
-                labels, corr = self._get_correlation(ret["hits"]["hits"], "dnase")
+                labels, corr = self._get_correlation(_ret["hits"]["hits"], "dnase")
             rho, pval = corr
             _heatmap = Heatmap(rho.tolist())
             with Timer("hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
-            ret["results"] = {"tree": {"tree": rowtree,
-                                       "labels": labels}}
-        return ret
+            return {"results": {"tree": {"tree": rowtree,
+                                         "labels": labels}}}
+        return {"results": {"tree": {"tree": None, "labels": []}}}
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
         # http://stackoverflow.com/a/27297611
