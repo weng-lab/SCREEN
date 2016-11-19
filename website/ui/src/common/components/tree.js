@@ -65,11 +65,8 @@ class Tree extends React.Component {
 	$(this.refs.container).empty();
 	if (!this.props.data) return;
 
-	console.log(this.props.data);
 	var tree = this._list_to_tree(this.props.data);
 	var data = this._format_for_d3(tree, this._tree_depth(tree));
-	console.log(tree);
-	console.log(data);
 
 	var margin = {top: 20, right: 750, bottom: 30, left: 90},
 	    width = this.props.width - margin.left - margin.right,
