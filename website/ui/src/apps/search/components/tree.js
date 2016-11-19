@@ -18,7 +18,6 @@ export default ResultsTree;
 
 const props_map = (f) => (_state) => {
     var state = f(_state);
-    console.log(_state);
     return {
 	data: state.tree
     };
