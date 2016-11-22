@@ -1,5 +1,4 @@
-{
-"A172_immortalized_cell_line" : "brain",
+{"A172_immortalized_cell_line" : "brain",
 "A375_immortalized_cell_line" : "skin",
 "Caki2_immortalized_cell_line" : "kidney",
 "Daoy_immortalized_cell_line" : "brain",
@@ -51,7 +50,7 @@
 "dermis_microvascular_lymphatic_vessel_endothelial_cell_primary_cell" : "lymphatic",
 "diencephalon_tissue" : "brain",
 "endometrial_microvascular_endothelial_cells_primary_cell" : "uterus",
-"endothelial_cell_of_coronary_artery_primary_cell" : blood vessel"",
+"endothelial_cell_of_coronary_artery_primary_cell" : "blood vessel",
 "epithelial_cell_of_alveolus_of_lung_primary_cell" : "lung",
 "epithelial_cell_of_proximal_tubule_primary_cell" : "kidney",
 "epithelial_cell_of_umbilical_artery_primary_cell" : "extraembryonic structure",
