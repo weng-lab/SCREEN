@@ -14,6 +14,12 @@ from metadataws import MetadataWS
 from cache_memcache import MemCacheWrapper
 
 def loadCellTypes():
+    tissueFixesFnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
+    with open(tissueFixesFnp) as f:
+        lookup = json.loads(f.read())
+    return lookup
+
+def loadCellTypesFixes():
     tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
     with open(tissueFixesFnp) as f:
         rows = f.readlines()
@@ -28,20 +34,22 @@ def loadCellTypes():
     return lookup
 
 def getCellTypes():
-    url = "https://www.encodeproject.org/search/?searchTerm=rna-seq&type=Experiment&assay_title=RNA-seq&award.project=ENCODE&limit=all&format=json"
+    url = "https://www.encodeproject.org/search/?searchTerm=rna-seq&type=Experiment&assay_title=RNA-seq&award.project=ENCODE&limit=all&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens&format=json"
 
     mc = MemCacheWrapper()
     qd = QueryDCC(cache = mc)
 
-    j = json.loads(qd.getURL(url))
     cts = set()
-    for e in j["@graph"]:
-        cts.add(e["biosample_term_name"])
+    for e in qd.getExps(url):
+        cts.add(e.biosample_term_name + ' ' + e.biosample_type)
     cts = sorted(list(cts))
     #print("\n".join(cts))
 
     lookup = loadCellTypes()
-
+    if "Daoy_immortalized_cell_line" not in lookup:
+        raise Exception("lookup fail")
+    lookupFixes = loadCellTypesFixes()
+    
     tissues = set()
     for ct, t in lookup.iteritems():
         tissues.add(t)
@@ -50,9 +58,15 @@ def getCellTypes():
         if ct in tissues:
             print('"%s" : "%s",' % (ct, ct))
             continue
+        if ct in lookupFixes:
+            print('"%s" : "%s",' % (ct, lookupFixes[ct]))
+            continue
         ct = ct.replace(' ', '_')
         if ct in lookup:
             print('"%s" : "%s",' % (ct, lookup[ct]))
+            continue
+        if ct in lookupFixes:
+            print('"%s" : "%s",' % (ct, lookupFixes[ct]))
             continue
         print('"%s" : "",' % ct)
         

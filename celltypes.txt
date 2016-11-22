@@ -30,7 +30,7 @@
 "common_myeloid_progenitor_male" : "bone marrow",
 "Daoy_immortalized_cell_line" : "brain",
 "dermis_blood_vessel_endothelial_primary_cell_female_adult" : "blood vessel",
-"dermis_microvascular_lymphatic_vessel_endothelial_primary_cell_female" : "vessel",
+"dermis_microvascular_lymphatic_vessel_endothelial_primary_cell_female" : "lymphatic vessel",
 "endothelial_of_umbilical_vein_primary_cell_newborn" : "blood vessel",
 "epithelial_of_esophagus_primary_cell" : "esophagus",
 "epithelial_of_prostate_primary_cell" : "prostate",
