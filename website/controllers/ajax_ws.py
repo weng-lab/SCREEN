@@ -5,6 +5,7 @@ from __future__ import print_function
 import os, sys, json
 import time
 import scipy
+import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -458,10 +459,21 @@ class AjaxWebService:
                 json.dump(data, f, sort_keys = True, indent = 4)
             print("wrote", fnp)
 
-    def beddownload(self, j):
+    def beddownload(self, j, uid):
         try:
-            if "action" in j and "search" == j["actions"]:
-                ret = self.asBed(j)
+            if "action" in j and "search" == j["action"]:
+                ret = self.downloadAsBed(j, uid)
+                return ret
+            else:
+                return { "error" : "unknown action"}
+        except:
+            raise
+            return { "error" : "error running action"}
+
+    def jsondownload(self, j, uid):
+        try:
+            if "action" in j and "search" == j["action"]:
+                ret = self.downloadAsJson(j, uid)
                 return ret
             else:
                 return { "error" : "unknown action"}
@@ -480,25 +492,37 @@ class AjaxWebService:
         ret = self._query({"object": j["object"],
                            "index": paths.re_json_index,
                            "callback": "regulatory_elements" })
-        outFnp = self.downloadFileName(uid, formt)
+        outFn, outFnp = self.downloadFileName(uid, formt)
 
-        with zipfile.ZipFile(outFnp, mode='w') as f:
-            for re in ret["hits"]["hits"]:
-                f.write(writeLineFunc(re) + "\n") 
+        import StringIO
+        f = StringIO.StringIO()
+        for re in ret["results"]["hits"]:
+            f.write(writeLineFunc(re) + "\n")
+        data = f.getvalue()
+
+        mf = StringIO.StringIO()
+        with zipfile.ZipFile(mf, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr('data.' + formt, data)
+                    
+        with open(outFnp, mode='w') as f:
+            f.write(mf.getvalue())
+                
         print("wrote", outFnp)
 
-        url = os.path.join(self.host, "static", "downloads", uid, outFn)
+        url = os.path.join('/', "static", "downloads", uid, outFn)
         return {"url" : url}
         
-    def downloadAsBed(self, uid, j):
-        def writeBedLine(re):
+    def downloadAsBed(self, j, uid):
+        def writeBedLine(cre):
+            re = cre["_source"]
             pos = re["position"]
-            return "\t".join([pos["chrom"], pos["start"], pos["end"],
-                              re["accession"]])
-        j["object"]["_source"] = _default_fields
+            toks = [pos["chrom"], pos["start"], pos["end"], re["accession"]]
+            return "\t".join([str(x) for x in toks])
+        j["object"]["_source"] = AjaxWebService._default_fields
         return self.downloadAsSomething(uid, j, "bed", writeBedLine)
     
-    def downloadAsJson(self, uid, j):
-        def writeJsonLine(re):
+    def downloadAsJson(self, j, uid):
+        def writeJsonLine(cre):
+            re = cre["_source"]
             return json.dumps(re)
         return self.downloadAsSomething(uid, j, "json", writeJsonLine)
