@@ -46,14 +46,16 @@ def getCellTypes():
             if t == rnaT:
                 rnaCTS.add(rnaCT)
         rnaCTS = sorted(list(rnaCTS))
-        ret[t]["creCTS"] = creCTS
-        ret[t]["rnaCTS"] = rnaCTS
+        ret[t]["creCTS"] = sorted(creCTS)
+        ret[t]["rnaCTS"] = sorted(rnaCTS)
 
     fnp = os.path.join(os.path.dirname(__file__), "match.json")
     with open(fnp, 'w') as f:
         json.dump(ret, f)
 
-    for t, ctsMix in ret.iteritems():
+    keys = sorted(list(ret.keys()))
+    for t in keys:
+        ctsMix = ret[t]
         print('\t'.join([t, ','.join(ctsMix["creCTS"]), ','.join(ctsMix["rnaCTS"])]))
         
 def parse_args():
