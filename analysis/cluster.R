@@ -41,7 +41,9 @@ readfile <- function(fnp) { # boot.phylo wants a transposed matrix
 
 # perform clustering (on transposed mtx :-/)
 clustfun <- function(x) {
-	p <- as.phylo(hclust(as.dist(sqrt(1-cor(transpose(x))))))
+	# http://dx.doi.org/10.1016/j.csda.2005.10.006
+	d <- as.dist(sqrt(1-cor(transpose(x))))
+	p <- as.phylo(hclust(d))
 	return(p)
 }
 
