@@ -110,3 +110,31 @@ export const VennAJAX = (query, f_success, f_error) => {
 	error: f_error
     });
 };
+
+export const format_query = (query, action = "search") => {
+    var eso = Object.assign({}, query);
+    delete eso.extras;
+    return JSON.stringify({
+	action,
+	object: eso,
+	post_processing: query.extras
+    });
+};
+
+const format_detail = (detail_query) => {
+    return JSON.stringify(Object.assign(detail_query, {
+	action: "re_detail"
+    }));
+};
+
+const format_detail_gene = (detail_gene_query) => {
+    return JSON.stringify(Object.assign(detail_gene_query, {
+	action: "re_genes"
+    }));
+};
+
+const format_venn = (venn_query) => {
+    return JSON.stringify(Object.assign(venn_query, {
+	action: "venn"
+    }));
+};

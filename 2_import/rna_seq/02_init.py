@@ -40,7 +40,7 @@ def insertRNAs(cur, dataset):
         if len(toks) != 2:
             raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
                             + r + "found " + str(len(toks)))
-        lookup[toks[0]] = toks[1]
+        lookup[toks[0]] = toks[1].strip()
     
     cur.execute("""
 select distinct(dataset) from r_expression""")

@@ -124,3 +124,24 @@ class RegElementDetails:
                                                                  "count": val})
                     formatted_results[key][-1]["total"] += val
         return formatted_results
+
+def main():
+    from elasticsearch import Elasticsearch
+    from elastic_search_wrapper import ElasticSearchWrapper
+    import gzip
+    
+    es = ElasticSearchWrapper(Elasticsearch())
+    red = RegElementDetails(es, None)
+    with gzip.open("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/candidate-re-links.json.gz") as f:
+        for line in f:
+            c = json.loads(line)
+            acc = c["candidate-re"]
+            re = red.reFull(acc)
+            if "position" in re:
+                pos = re["position"]
+                print(acc, pos["chrom"], pos["start"], pos["end"])
+            else:
+                print("could not parse", acc)
+            
+if __name__ == '__main__':
+    main()
