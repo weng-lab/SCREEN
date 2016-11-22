@@ -56,7 +56,8 @@ def getCellTypes():
     keys = sorted(list(ret.keys()))
     for t in keys:
         ctsMix = ret[t]
-        print('\t'.join([t, ','.join(ctsMix["creCTS"]), ','.join(ctsMix["rnaCTS"])]))
+        delim = ', '
+        print('\t'.join([t, delim.join(ctsMix["creCTS"]), delim.join(ctsMix["rnaCTS"])]))
         
 def parse_args():
     parser = argparse.ArgumentParser()
