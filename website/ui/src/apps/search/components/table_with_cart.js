@@ -7,6 +7,8 @@ import {SELECT_TAB} from '../reducers/tab_reducer'
 import ResultsDataTable from '../../../common/components/results_table'
 
 import {invalidate_detail} from '../helpers/invalidate_results'
+import FacetQueryMap from '../elasticsearch/facets_to_query'
+import QueryAJAX, {format_query} from '../elasticsearch/ajax'
 
 class TableWithCart extends React.Component {
 
@@ -15,11 +17,49 @@ class TableWithCart extends React.Component {
     }
 
     downloadBed() {
-	console.log("download bed");
+	var n_query = FacetQueryMap(this.props.store.getState());
+	var formData = JSON.stringify({});
+	$.ajax({
+            type: "POST",
+            url: "beddownload",
+            data: format_query(n_query),
+            dataType: "json",
+            contentType : "application/json",
+            async: false, // http://stackoverflow.com/a/20235765
+            success: function(got){
+		if("error" in got){
+		    console.log(got["error"]);
+                    $("#errMsg").text(got["err"]);
+                    $("#errBox").show()
+                    return true;
+		}
+
+		return window.open(got["url"], '_blank');
+            }
+	});
     }
 
     downloadJSON() {
-	console.log("download JSON");
+	var n_query = FacetQueryMap(this.props.store.getState());
+	var formData = JSON.stringify({});
+	$.ajax({
+            type: "POST",
+            url: "jsondownload",
+            data: format_query(n_query),
+            dataType: "json",
+            contentType : "application/json",
+            async: false, // http://stackoverflow.com/a/20235765
+            success: function(got){
+		if("error" in got){
+		    console.log(got["error"]);
+                    $("#errMsg").text(got["err"]);
+                    $("#errBox").show()
+                    return true;
+		}
+
+		return window.open(got["url"], '_blank');
+            }
+	});
     }
     
     render() {
