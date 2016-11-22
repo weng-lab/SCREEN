@@ -21,11 +21,11 @@ class ResultsTree extends React.Component {
 		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
 		      <option value="dnase">DNase</option>
 		      <option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
-		      <option value="promoter$H3K4me3+DNase">H3K4me3 and DNase</option>
+		      <option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
 		      <option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
-		      <option value="enhancer$H3K27ac+DNase">H3K27ac and DNase</option>
-		      <option value="CTCF$CTCF-Only">CTCFOnly</option>
-		      <option value="CTCF$CTCF+DNase">CTCF and DNase</option>
+		      <option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
+		      <option value="ctcf$CTCF-Only">CTCF Only</option>
+		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
 		   </select>
 		   <Tree data={this.props.data} width={2500} height={3000} labels={this.props.labels} />;
 		</div>);
