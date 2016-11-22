@@ -1,6 +1,14 @@
 var $ = require('jquery');
 import {AJAX_URL} from '../config/constants'
 
+const format_tree_query = (query, outer, inner) => {
+    var retval = JSON.parse(format_query(query, "tree"));
+    return JSON.stringify(Object.assign({}, retval, {
+	outer,
+	inner
+    }));
+};
+
 const format_query = (query, action = "search") => {
     var eso = Object.assign({}, query);
     delete eso.extras;
@@ -55,11 +63,11 @@ export const DetailAJAX = (query, f_success, f_error) => {
     });
 };
 
-export const TreeAJAX = (query, f_success, f_error) => {
+export const TreeAJAX = (query, outer, inner, f_success, f_error) => {
     $.ajax({
 	type: "POST",
 	url: AJAX_URL,
-	data: format_query(query, "tree"),
+	data: format_tree_query(query, outer, inner),
 	dataType: "json",
 	contentType: "application/json",
 	success: f_success,

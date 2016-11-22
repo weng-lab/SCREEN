@@ -26,7 +26,7 @@ export const maintabs = {
 	    title: "Cell Type Clustering",
 	    visible: true,
 	    render: (store, key) => {
-		var Tree = main_tree_connector(ResultsTree);
+		var Tree = main_tree_connector(store)(ResultsTree);
 		return <Tree store={store} key={key} />
 	    }
 	},

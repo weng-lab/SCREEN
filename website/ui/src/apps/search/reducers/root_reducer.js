@@ -23,6 +23,7 @@ export const CREATE_TABLE = 'CREATE_TABLE';
 export const SET_TABLE_RESULTS = 'SET_TABLE_RESULTS';
 export const TOGGLE_CART_ITEM = 'TOGGLE_CART_ITEM';
 export const SET_TREE = 'SET_TREE';
+export const SET_TREE_FIELDS = 'SET_TREE_FIELDS';
 
 export const EXPRESSION_MATRIX_ACTION = 'EXPRESSION_MATRIX_ACTION';
 
@@ -49,7 +50,9 @@ export const default_state = (tabs) => {return {
 	fetching: false,
 	tree: {
 	    tree: null,
-	    labels: null
+	    labels: null,
+	    outer: "dnase",
+	    inner: null
 	}
     },
     re_detail: {
@@ -87,8 +90,9 @@ export const main_tab_connector = MainTabsConnector(
     })
 );
 
-export const main_tree_connector = tree_connector(
-    (state) => (state.results.tree)
+export const main_tree_connector = (store) => tree_connector(store)(
+    (state) => (state.results.tree),
+    (dispatch) => (dispatch)
 );
 
 export const main_searchbox_connector = MainSearchBoxConnector(
@@ -119,6 +123,16 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		display_map: action.display_map
 	    })
 	});
+
+    case SET_TREE_FIELDS:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		tree: Object.assign({}, state.results.tree, {
+		    outer: action.outer,
+		    inner: action.inner
+		})
+	    })
+	});		       
 
     case DO_NAV:
 	window.location.href = action.url + "?q=" + state.searchbox.value;
@@ -195,7 +209,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     case SET_TREE:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
-		tree: action.tree
+		tree: Object.assign({}, state.tree, action.tree)
 	    })
 	});
 
