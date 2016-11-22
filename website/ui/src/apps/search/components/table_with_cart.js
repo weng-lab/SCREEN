@@ -31,7 +31,13 @@ class TableWithCart extends React.Component {
 	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
 		order={this.props.order} bFilter={true} bLengthChange={true}
 		onMouseEnter={true} onMouseExit={true}/>
-		    <span className="tableInfo">{total}</span>
+		<span className="tableInfo">
+		<div className={"btn-group"} role={"group"}>
+		<button type={"button"} className={"btn btn-default btn-xs"}>Download bed</button>
+		<button type={"button"} className={"btn btn-default btn-xs"}>Download JSON</button>
+		</div>
+		&nbsp;&nbsp;{total}
+		</span>
 		</div>);
     }
 }

@@ -48,7 +48,6 @@ const _rank_result_to_heatmap = (result) => {
     return { "collabels": Object.keys(result),
 	     "rowlabels": Object.keys(idx),
 	     "matrix": data };
-    
 };
 
 export const results_displays = {
