@@ -14,6 +14,14 @@ class TableWithCart extends React.Component {
 	super(props);
     }
 
+    downloadBed() {
+	console.log("download bed");
+    }
+
+    downloadJSON() {
+	console.log("download JSON");
+    }
+    
     render() {
 	var n_data = [...this.props.data];
 	var total = (n_data.length < this.props.total
@@ -33,8 +41,10 @@ class TableWithCart extends React.Component {
 		onMouseEnter={true} onMouseExit={true}/>
 		<span className="tableInfo">
 		<div className={"btn-group"} role={"group"}>
-		<button type={"button"} className={"btn btn-default btn-xs"}>Download bed</button>
-		<button type={"button"} className={"btn btn-default btn-xs"}>Download JSON</button>
+		<button type={"button"} className={"btn btn-default btn-xs"}
+		onClick={() => {this.downloadBed()}}>Download bed</button>
+		<button type={"button"} className={"btn btn-default btn-xs"}
+		onClick={() => {this.downloadJSON()}}>Download JSON</button>
 		</div>
 		&nbsp;&nbsp;{total}
 		</span>
