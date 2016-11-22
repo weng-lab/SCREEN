@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import os, sys, json
 import time
-import scipy
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -12,6 +11,7 @@ from models.regelm_detail import RegElementDetails
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
+from models.correlation import Correlation
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
@@ -67,21 +67,6 @@ class AjaxWebService:
                         "re_genes": self._re_genes,
                         "tree": self._tree }
         self._cached_results = {}
-
-    def _get_correlation(self, results, outerkey, innerkey = None):
-        if len(results) == 0: return []
-        ctlabels = [ct for ct, v in results[0]["_source"]["ranks"][outerkey].iteritems()]
-        observations = []
-        for result in results:
-            result = result["_source"]
-            observations.append([])
-            for cell_type in ctlabels:
-                if innerkey is not None:
-                    value = result["ranks"][outerkey][cell_type][innerkey]["rank"]
-                else:
-                    value = result["ranks"][outerkey][cell_type]["rank"]
-                observations[-1].append(value)
-        return (ctlabels, scipy.stats.spearmanr(observations))
         
     def _get_rank(self, label, v):
         return 1e12 if label not in v else v[label]["rank"]
@@ -407,7 +392,9 @@ class AjaxWebService:
         
         if "hits" in _ret:
             with Timer("spearman correlation time"):
-                labels, corr = self._get_correlation(_ret["hits"]["hits"], "dnase")
+                c = Correlation(_ret["hits"]["hits"])
+                labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
+                                           None if "inner" not in j else j["inner"] )
             rho, pval = corr
             _heatmap = Heatmap(rho.tolist())
             with Timer("hierarchical clustering time"):

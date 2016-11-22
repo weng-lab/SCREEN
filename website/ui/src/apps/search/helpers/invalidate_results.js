@@ -123,7 +123,9 @@ export const invalidate_results = (state) => {
 
 	dispatch(results_fetching());
 	QueryAJAX(n_query, f_success, f_error);
-	TreeAJAX(n_query, t_success, f_error);
+	console.log(state);
+	if (state.results.tree)
+	    TreeAJAX(n_query, state.results.tree.outer, state.results.tree.inner, t_success, f_error);
 	Object.keys(state.results_displays).map((k) => {
 	    var r = state.results_displays[k];
 	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k))
