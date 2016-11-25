@@ -54,9 +54,9 @@ class Tree extends React.Component {
 		children: [this._format_for_d3(tree, root_depth - 1)]
 	    };
 	}
-	var name = (+tree.name >= 0 && +tree.name < this.props.labels.length
-		    ? this.props.labels[+tree.name] : tree.name);
-	return {name};
+	return (+tree.name >= 0 && +tree.name < this.props.labels.length
+		? this.props.labels[+tree.name]
+		: {name: tree.name, style: tree.style});
     }
     
     componentDidUpdate() {
@@ -68,9 +68,11 @@ class Tree extends React.Component {
 	var tree = this._list_to_tree(this.props.data);
 	var data = this._format_for_d3(tree, this._tree_depth(tree));
 
-	var margin = {top: 20, right: 750, bottom: 30, left: 90},
+	var margin = {top: 20, right: 700, bottom: 30, left: 150},
 	    width = this.props.width - margin.left - margin.right,
 	    height = this.props.height - margin.top - margin.bottom;
+
+	var _x = (x) => (width - x + margin.right);
 	
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
@@ -88,7 +90,7 @@ class Tree extends React.Component {
 	    .attr("height", height + margin.top + margin.bottom),
 	    g = svg.append("g")
 	    .attr("transform",
-		  "translate(" + margin.left + "," + margin.top + ")");
+		  "translate(0," + margin.top + ")");
 	
 	// adds the links between the nodes
 	var link = g.selectAll(".link")
@@ -96,21 +98,22 @@ class Tree extends React.Component {
 	    .enter().append("path")
 	    .attr("class", "link")
 	    .attr("d", function(d) {
-		return "M" + d.y + "," + d.x
-		    + "C" + (d.y + d.parent.y) / 2 + "," + d.x
-		    + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
-		    + " " + d.parent.y + "," + d.parent.x;
+		return "M" + _x(d.y) + "," + d.x
+		    + "C" + _x((d.y + d.parent.y) / 2) + "," + d.x
+		    + " " + _x((d.y + d.parent.y) / 2) + "," + d.parent.x
+		    + " " + _x(d.parent.y) + "," + d.parent.x;
 	    });
 	
 	// adds each node as a group
 	var node = g.selectAll(".node")
 	    .data(nodes.descendants())
-	    .enter().append("g")
+	    .enter()
+	    .append("g")
 	    .attr("class", function(d) { 
 		return "node" + 
 		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
 	    .attr("transform", function(d) { 
-		return "translate(" + d.y + "," + d.x + ")"; });
+		return "translate(" + _x(d.y) + "," + d.x + ")"; });
 
 	node.append("path")
 	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))
@@ -120,9 +123,11 @@ class Tree extends React.Component {
 	node.append("text")
 	    .attr("dy", ".35em")
 	    .style("text-anchor", function(d) { 
-		return d.children ? "end" : "start"; })
-	    .text(function(d) { return d.data.name; });
-	
+		return d.children ? "start" : "end"; })
+	    .text(function(d) { return d.data.name; })
+	    .style("fill", (d) => (d.data.style && d.data.style.fill ? d.data.style.fill : "#000000"))
+	    .style("font-weight", "bold");
+
     }
     
 }

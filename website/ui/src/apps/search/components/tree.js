@@ -5,6 +5,12 @@ import Tree from '../../../common/components/tree'
 import {invalidate_results} from '../helpers/invalidate_results'
 import {SET_TREE_FIELDS} from '../reducers/root_reducer'
 
+const default_label_formatter = (l) => {
+    return {
+	name: l
+    };
+};
+
 class ResultsTree extends React.Component {
 
     constructor(props) {
@@ -17,6 +23,8 @@ class ResultsTree extends React.Component {
     }
     
     render() {
+	var formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
+	var labels = (this.props.labels ? this.props.labels.map(formatter) : null);
 	return (<div>
 		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
 		      <option value="dnase">DNase</option>
@@ -27,7 +35,7 @@ class ResultsTree extends React.Component {
 		      <option value="ctcf$CTCF-Only">CTCF Only</option>
 		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
 		   </select>
-		   <Tree data={this.props.data} width={2500} height={3000} labels={this.props.labels} />;
+		   <Tree data={this.props.data} width={2500} height={3000} labels={labels} />;
 		</div>);
     }
     
@@ -38,7 +46,8 @@ const props_map = (f) => (_state) => {
     var state = f(_state);
     return {
 	data: state.tree,
-	labels: state.labels
+	labels: state.labels,
+	label_formatter: state.label_formatter
     };
 };
 

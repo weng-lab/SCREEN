@@ -41,7 +41,7 @@ class AjaxWebService:
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
                              "Promoter": ("promoter", ".H3K4me3-Only"),
                              "CTCF": ("ctcf", ".CTCF-Only") }
-
+        
         self.args = args
         self.es = es
         self.ps = ps
