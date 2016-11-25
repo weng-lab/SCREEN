@@ -4,6 +4,8 @@ import TabReducer from './tab_reducer'
 import SearchBoxReducer from '../../../common/reducers/searchbox'
 import ExpressionMatrixReducer from './expression_matrix_reducer'
 
+import {tissue_label_formatter} from '../config/colors'
+
 import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 import {tree_connector} from '../components/tree'
@@ -52,7 +54,8 @@ export const default_state = (tabs) => {return {
 	    tree: null,
 	    labels: null,
 	    outer: "dnase",
-	    inner: null
+	    inner: null,
+	    label_formatter: tissue_label_formatter
 	}
     },
     re_detail: {
@@ -209,7 +212,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     case SET_TREE:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
-		tree: Object.assign({}, state.tree, action.tree)
+		tree: Object.assign({}, state.results.tree, action.tree)
 	    })
 	});
 

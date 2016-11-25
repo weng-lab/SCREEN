@@ -1,3 +1,7 @@
+export const friendly_celltype = (c) => (
+    c.replace(/_/g, " ").replace(/\\u03bc/g, '\u03bc')
+);
+
 export const TissueColors = {
     "blood": "#880000",
     "bone marrow": "#AACCAA",
@@ -5,9 +9,9 @@ export const TissueColors = {
     "breast": "#33AA00",
     "colon": "#AAAA55",
     "embryonic structure": "#AAAAFF",
-    "ESC": "#77FF44",
+    "ESC": "#77AA44",
     "eye": "#6600CC",
-    "fat": "#FFFF55",
+    "fat": "#999955",
     "heart": "#880055",
     "intestine": "#9900AA",
     "kidney": "#77AABB",
@@ -21,4 +25,24 @@ export const TissueColors = {
     "skin": "#BBAA44",
     "stomach": "#44AAFF",
     "uterus": "#990033"
+};
+
+const tissue_name = (cell_type) => (
+    (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
+);
+
+const tissue_color = (cell_type) => {
+    if (!(cell_type in GlobalTissueMap)) return "#000000";
+    var tissue = GlobalTissueMap[cell_type];
+    return (tissue in TissueColors ? TissueColors[tissue] : "#000000");
+};
+
+export const tissue_label_formatter = (d) => {
+    var t = tissue_name(d);
+    return {
+	name: friendly_celltype(d) + (t == "" ? "" : " (" + t + ")"),
+	style: {
+	    "fill": tissue_color(d)
+	}
+    };
 };
