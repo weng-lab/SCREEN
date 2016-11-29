@@ -1,11 +1,11 @@
 class RankHeatmap:
 
-    def __init__(self, TissueMap, rank_types, threshold = 10000):
+    def __init__(self, TissueMap, rank_types, threshold = 20000):
         self.aggs = {}
         self._rank_types = rank_types
         for v in TissueMap:
             for rank_type in ["Enhancer", "Promoter", "DNase", "CTCF"]:
-                k = "rank_%s_%s" % (rank_type, v["tissue"])
+                k = "rank_%s_%s" % (rank_type, v["value"])
                 if k not in self.aggs:
                     self.aggs[k] = {"filter": {"bool": {"should": []}}}
                 self.aggs[k]["filter"]["bool"]["should"].append(self._rank_filter(rank_type, v["value"], threshold))
@@ -16,10 +16,10 @@ class RankHeatmap:
 
     def process(self, results):
         total = results["hits"]["total"]
-        retval = {k.split("_")[2]: {} for k, v in results["aggregations"].iteritems()}
+        retval = {"_".join(k.split("_")[2:]): {} for k, v in results["aggregations"].iteritems()}
         for k, v in results["aggregations"].iteritems():
             if not k.startswith("rank_"): continue
             rank_type = k.split("_")[1]
-            tissue = k.split("_")[2]
-            retval[tissue][rank_type] = v["doc_count"] / float(total)
+            cell_type = "_".join(k.split("_")[2:])
+            retval[cell_type][rank_type] = v["doc_count"] / float(total)
         return retval

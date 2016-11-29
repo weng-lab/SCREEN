@@ -15,7 +15,8 @@ export const HEATMAP = 'HEATMAP';
 
 const heatmap_layout = Object.assign({}, default_heatmap_layout, {
     margin: Object.assign({}, default_heatmap_layout.margin, {
-	left: 100
+	left: 100,
+	top: 350
     })
 });
 
@@ -36,6 +37,8 @@ const heatmap_props_map = (store, key) => (_state) => {
     return {
 	collabels: state.collabels,
 	rowlabels: state.rowlabels,
+	colstyles: state.colstyles,
+	rowstyles: state.rowstyles,
 	data: state.matrix,
 	title: state.title,
 	loading: state.loading,

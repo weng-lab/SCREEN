@@ -6,6 +6,8 @@ import {VERTICAL_BAR, HEATMAP} from '../helpers/create_results_display'
 
 import {DO_NAV} from '../reducers/root_reducer'
 
+import {tissue_color, friendly_celltype, name_and_tissue} from './colors'
+
 const do_nav = (url) => {
     return {
 	type: DO_NAV,
@@ -45,8 +47,9 @@ const _rank_result_to_heatmap = (result) => {
 	    data.push({col: i + 1, row: idx[_k], value: result[k][_k]});
 	})
     });
-    return { "collabels": Object.keys(result),
+    return { "collabels": Object.keys(result).map(name_and_tissue),
 	     "rowlabels": Object.keys(idx),
+	     "colstyles": Object.keys(result).map(tissue_color),
 	     "matrix": data };
 };
 
