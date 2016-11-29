@@ -271,7 +271,6 @@ class AjaxWebService:
                 action = j["action"]
                 if action in self.actions:
                     ret = self.actions[action](j)
-                    #print(ret)
                     return ret
                 print("unknown action:", action)
                 return { "error" : "error running action"}
@@ -432,7 +431,7 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-
+                
         if self.args.dump:
             self._dump(j, ret)
         return ret
