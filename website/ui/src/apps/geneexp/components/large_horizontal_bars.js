@@ -18,8 +18,9 @@ class LargeHorizontalBars extends React.Component {
 		   <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
 		   <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
 		   <option value="byTissue">by tissue</option>
-		   <option value="byTissueMaxTPM">by tissue &#40;TPM&#41;</option>
-		   <option value="byTissueMaxFPKM">by tissue &#40;FPKM&#41;</option>		</select>
+		   <option value="byTissueMaxTPM">by tissue max &#40;TPM&#41;</option>
+		   <option value="byTissueMaxFPKM">by tissue max &#40;FPKM&#41;</option>
+		</select>
 		</div>
 		<div className="col-md-4">
 		Data:&nbsp;
