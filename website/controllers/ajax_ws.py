@@ -472,7 +472,7 @@ class AjaxWebService:
 
     def downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = timestr + '-' + '-'.join([]) + ".v4." + formt + ".zip"
+        outFn = '-'.join([timestr, "v4", formt]) + ".zip"
         outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp
@@ -525,8 +525,9 @@ class AjaxWebService:
             f = StringIO.StringIO()
             for re in rows:
                 line = writeBedLine(rank, subRank, ct, re)
-                if line:
-                    f.write(line  + "\n")
+                if not line:
+                    return None
+                f.write(line  + "\n")
             return f.getvalue()
 
         def writeBeds(rows):
@@ -540,14 +541,16 @@ class AjaxWebService:
                             data = writeBed(rank, [], ct, rows)
                             ct = Utils.sanitize(ct)
                             fn = '.'.join([rank, ct, "bed"])
-                            zf.writestr(fn, data)
+                            if data:
+                                zf.writestr(fn, data)
                     else:
                         for subRank in subRanks:
                             for ct in cts:
                                 data = writeBed(rank, subRank, ct, rows)
                                 ct = Utils.sanitize(ct)
                                 fn = '.'.join([rank, subRank, ct, "bed"])
-                                zf.writestr(fn, data)
+                                if data:
+                                    zf.writestr(fn, data)
             return mf.getvalue()
         return self.downloadAsSomething(uid, j, "beds", writeBeds)
     
