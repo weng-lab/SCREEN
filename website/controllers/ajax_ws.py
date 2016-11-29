@@ -414,10 +414,15 @@ class AjaxWebService:
         if "post_processing" in j: # not present in cart
             if "rank_heatmap" in j["post_processing"]:
                 j["object"]["aggs"] = self.rh.aggs
-                if "bool" not in j["object"]["query"] or "must" not in j["object"]["query"]["bool"]:
-                    j["object"]["query"] = {"bool": {"must": []}}
+                if "bool" not in j["object"]["query"]:
+                    j["object"]["query"]["bool"] = {"must": []}
+                if "must" not in j["object"]["query"]["bool"]:
+                    j["object"]["query"]["bool"]["must"] = []
+                if "filter" in j["object"]["query"]["bool"]:
+                    j["object"]["query"]["bool"]["must"] += j["object"]["query"]["bool"]["filter"]
                 j["object"]["query"]["bool"]["must"].append(j["object"]["post_filter"])
                 j["object"].pop("post_filter", None)
+                j["object"]["query"]["bool"].pop("filter", None)
                 j["callback"] = ""
         
         with Timer('ElasticSearch time'):
