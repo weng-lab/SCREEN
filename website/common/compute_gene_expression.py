@@ -107,6 +107,36 @@ class ComputeGeneExpression:
             ret[t]["items"].append(row)
         return ret
 
+    def groupByTissueMax(self, rows, key):
+        sorter = lambda x: x["tissue"]
+        rows.sort(key = sorter)
+
+        ret = {}
+        for row in rows:
+            t = row["tissue"]
+	    if t not in ret:
+                c = self.getTissueColor(t)
+	        ret[t] = {"name" : t,
+                          "displayName" : t,
+                          "color": c,
+                          "items": [row]}
+            else:
+                if ret[t]["items"][0][key] < row[key]:
+                    ret[t]["items"][0] = row
+
+        rows = []
+        for t, arr in ret.iteritems():
+            rows.append(arr)
+        sorter = lambda x: x["items"][0][key]
+        rows.sort(key = sorter, reverse = True)
+
+        ret = {}
+        for idx, row in enumerate(rows):
+            t = row["name"]
+            k = str(idx).zfill(3) + '_' + t
+	    ret[k] = row
+        return ret
+    
     def sortByExpression(self, rows, key):
         sorter = lambda x: float(x[key])
         rows.sort(key = sorter, reverse = True)
@@ -124,6 +154,8 @@ class ComputeGeneExpression:
     
     def process(self, rows):
         return {"byTissue" : self.groupByTissue(rows),
+                "byTissueMaxTPM" : self.groupByTissueMax(rows, "rawTPM"),
+                "byTissueMaxFPKM" : self.groupByTissueMax(rows, "rawFPKM"),
                 "byExpressionTPM" : self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM" : self.sortByExpression(rows, "rawFPKM")}
     
