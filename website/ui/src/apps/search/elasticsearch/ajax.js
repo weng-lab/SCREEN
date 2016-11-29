@@ -9,7 +9,7 @@ const format_tree_query = (query, outer, inner) => {
     }));
 };
 
-const format_query = (query, action = "search") => {
+export const format_query = (query, action = "search") => {
     var eso = Object.assign({}, query);
     delete eso.extras;
     return JSON.stringify({
