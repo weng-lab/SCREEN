@@ -124,9 +124,7 @@ class ComputeGeneExpression:
                 if ret[t]["items"][0][key] < row[key]:
                     ret[t]["items"][0] = row
 
-        rows = []
-        for t, arr in ret.iteritems():
-            rows.append(arr)
+        rows = ret.values()
         sorter = lambda x: x["items"][0][key]
         rows.sort(key = sorter, reverse = True)
 
