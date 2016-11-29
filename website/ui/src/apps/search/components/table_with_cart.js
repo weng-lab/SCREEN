@@ -18,7 +18,6 @@ class TableWithCart extends React.Component {
 
     downloadBed() {
 	var n_query = FacetQueryMap(this.props.store.getState());
-	var formData = JSON.stringify({});
 	$.ajax({
             type: "POST",
             url: "beddownload",
