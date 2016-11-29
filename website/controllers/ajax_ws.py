@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os, sys, json
 import time
-
+import StringIO
 import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -476,24 +476,16 @@ class AjaxWebService:
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
-    def downloadAsSomething(self, uid, j, formt, writeLineFunc):
+    def downloadAsSomething(self, uid, j, formt, writeFunc):
         ret = self._query({"object": j["object"],
                            "index": paths.re_json_index,
                            "callback": "regulatory_elements" })
         outFn, outFnp = self.downloadFileName(uid, formt)
 
-        import StringIO
-        f = StringIO.StringIO()
-        for re in ret["results"]["hits"]:
-            f.write(writeLineFunc(re) + "\n")
-        data = f.getvalue()
-
-        mf = StringIO.StringIO()
-        with zipfile.ZipFile(mf, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.writestr('data.' + formt, data)
-                    
+        data = writeFunc(ret["results"]["hits"])
+        
         with open(outFnp, mode='w') as f:
-            f.write(mf.getvalue())
+            f.write(data)
                 
         print("wrote", outFnp)
 
@@ -501,16 +493,38 @@ class AjaxWebService:
         return {"url" : url}
         
     def downloadAsBed(self, j, uid):
-        def writeBedLine(cre):
+        def writeBedLine(typ, cre):
             re = cre["_source"]
             pos = re["position"]
             toks = [pos["chrom"], pos["start"], pos["end"], re["accession"]]
             return "\t".join([str(x) for x in toks])
+
+        def writeBed(typ, rows):
+            f = StringIO.StringIO()
+            for re in rows:
+                f.write(writeBedLine(typ, re) + "\n")
+            return f.getvalue()
+
+        def writeBeds(rows):
+            mf = StringIO.StringIO()
+            with zipfile.ZipFile(mf, mode='w',
+                                 compression=zipfile.ZIP_DEFLATED) as zf:
+                for typ in ["enhancer", "promoter", "CTCF", "DNase"]:
+                    data = writeBed(typ, rows)
+                    zf.writestr(typ + ".bed", data)
+            return mf.getvalue()
+
         j["object"]["_source"] = AjaxWebService._default_fields
-        return self.downloadAsSomething(uid, j, "bed", writeBedLine)
+        return self.downloadAsSomething(uid, j, "beds", writeBeds)
     
     def downloadAsJson(self, j, uid):
-        def writeJsonLine(cre):
-            re = cre["_source"]
-            return json.dumps(re)
-        return self.downloadAsSomething(uid, j, "json", writeJsonLine)
+        def writeJson(rows):
+            mf = StringIO.StringIO()
+            with zipfile.ZipFile(mf, mode='w',
+                                 compression=zipfile.ZIP_DEFLATED) as zf:
+                for cre in rows:
+                    re = cre["_source"]
+                    data = json.dumps(re) + "\n"
+                    zf.writestr(re["accession"] + '.json', data)
+            return mf.getvalue()
+        return self.downloadAsSomething(uid, j, "jsons", writeJson)
