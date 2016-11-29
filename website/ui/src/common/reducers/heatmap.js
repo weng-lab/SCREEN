@@ -20,7 +20,9 @@ export function VerticalBarReducer(state = heatmap_default_state, action) {
 	return Object.assign({}, state, {
 	    matrix: action.matrix,
 	    collabels: action.collabels,
-	    rowlabels: action.rowlabels
+	    rowlabels: action.rowlabels,
+	    colstyles: action.colstyles,
+	    rowstyles: action.rowstyles
 	});
 
     case SET_LOADING:

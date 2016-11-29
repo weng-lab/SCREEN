@@ -31,16 +31,20 @@ const tissue_name = (cell_type) => (
     (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
 );
 
-const tissue_color = (cell_type) => {
+export const name_and_tissue = (d) => {
+    var t = tissue_name(d);
+    return friendly_celltype(d) + (t == "" ? "" : " (" + t + ")");
+};
+
+export const tissue_color = (cell_type) => {
     if (!(cell_type in GlobalTissueMap)) return "#000000";
     var tissue = GlobalTissueMap[cell_type];
     return (tissue in TissueColors ? TissueColors[tissue] : "#000000");
 };
 
 export const tissue_label_formatter = (d) => {
-    var t = tissue_name(d);
     return {
-	name: friendly_celltype(d) + (t == "" ? "" : " (" + t + ")"),
+	name: name_and_tissue(d),
 	style: {
 	    "fill": tissue_color(d)
 	}

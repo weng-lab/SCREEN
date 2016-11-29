@@ -85,11 +85,13 @@ class Heatmap extends React.Component {
 	};
 	
 	chart_layout.rows.labels = [...this.props.rowlabels];
+	chart_layout.rows.styles = (this.props.rowstyles ? [...this.props.rowstyles] : []);
 	chart_layout.rows.order = [];
 	for (var i = 1; i <= chart_layout.rows.labels.length; i++) chart_layout.rows.order.push(i);
 
 	chart_layout.cols.labels = [...this.props.collabels];
 	chart_layout.cols.order = [];
+	chart_layout.cols.styles = (this.props.colstyles ? [...this.props.colstyles] : []);
 	for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
 
 	chart_layout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
@@ -125,6 +127,7 @@ class Heatmap extends React.Component {
 	    .attr("x", 0)
 	    .attr("y", function (d, i) { return chart_layout.rows.order.indexOf(i+1) * chart_layout.cellSize; })
 	    .style("text-anchor", "end")
+	    .style("fill", (d, i) => (i < chart_layout.rows.styles.length ? chart_layout.rows.styles[i] : "#000000"))
 	    .attr("transform", "translate(-6," + chart_layout.cellSize / 1.5 + ")")
 	    .attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
@@ -141,6 +144,7 @@ class Heatmap extends React.Component {
 	    .attr("x", 0)
 	    .attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize; })
 	    .style("text-anchor", "left")
+	    .style("fill", (d, i) => (i < chart_layout.cols.styles.length ? chart_layout.cols.styles[i] : "#000000"))
 	    .attr("transform", "translate(" + chart_layout.cellSize / 2 + ",-6) rotate (-90)")
 	    .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
