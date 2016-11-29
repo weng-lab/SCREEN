@@ -46,7 +46,8 @@ class VerticalBars extends React.Component {
 	var y = d3.scaleLinear().rangeRound([height, 0]);
 
 	var data = this.props.data;
-	
+
+	data.sort((a, b) => (a.key - b.key));
 	x.domain(data.map(function(d) { return d.key; }));
 	y.domain([0, d3.max(data, function(d) { return d.value; })]);
 	var sep = (data.length == 1 ? width - 50 : (x(data[1].key) - x(data[0].key)));
