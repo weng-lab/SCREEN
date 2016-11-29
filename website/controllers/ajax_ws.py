@@ -4,8 +4,9 @@ from __future__ import print_function
 
 import os, sys, json
 import time
-
+import StringIO
 import zipfile
+import numpy
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -470,29 +471,21 @@ class AjaxWebService:
 
     def downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = timestr + '-' + '-'.join([]) + ".v4." + formt + ".zip"
+        outFn = '-'.join([timestr, "v4", formt]) + ".zip"
         outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
-    def downloadAsSomething(self, uid, j, formt, writeLineFunc):
+    def downloadAsSomething(self, uid, j, formt, writeFunc):
         ret = self._query({"object": j["object"],
                            "index": paths.re_json_index,
                            "callback": "regulatory_elements" })
         outFn, outFnp = self.downloadFileName(uid, formt)
 
-        import StringIO
-        f = StringIO.StringIO()
-        for re in ret["results"]["hits"]:
-            f.write(writeLineFunc(re) + "\n")
-        data = f.getvalue()
-
-        mf = StringIO.StringIO()
-        with zipfile.ZipFile(mf, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.writestr('data.' + formt, data)
-                    
+        data = writeFunc(ret["results"]["hits"])
+        
         with open(outFnp, mode='w') as f:
-            f.write(mf.getvalue())
+            f.write(data)
                 
         print("wrote", outFnp)
 
@@ -500,16 +493,74 @@ class AjaxWebService:
         return {"url" : url}
         
     def downloadAsBed(self, j, uid):
-        def writeBedLine(cre):
+        rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
+                     "dnase": [],
+                     "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
+                     "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
+
+        def writeBedLine(rank, subRank, ct, cre):
             re = cre["_source"]
             pos = re["position"]
-            toks = [pos["chrom"], pos["start"], pos["end"], re["accession"]]
+            if "dnase" == rank:
+                r = re["ranks"][rank][ct]
+                signal = r["signal"]
+            else:
+                if subRank in re["ranks"][rank][ct]:
+                    r = re["ranks"][rank][ct][subRank]
+                    signalKeys = [x for x in r.keys() if x != "rank"]
+                    signalValues = [r[x]["signal"] for x in signalKeys]
+                    signal = numpy.mean(signalValues)
+                else:
+                    return None
+            rankVal = r["rank"]
+            signal = round(signal, 2)
+            
+            score = int(Utils.scale(rankVal, (1, 250 * 100), (1000, 1)))
+            toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
+                    score, '.', signal, re["neg-log-p"], -1, -1]
             return "\t".join([str(x) for x in toks])
-        j["object"]["_source"] = AjaxWebService._default_fields
-        return self.downloadAsSomething(uid, j, "bed", writeBedLine)
+
+        def writeBed(rank, subRank, ct, rows):
+            f = StringIO.StringIO()
+            for re in rows:
+                line = writeBedLine(rank, subRank, ct, re)
+                if not line:
+                    return None
+                f.write(line  + "\n")
+            return f.getvalue()
+
+        def writeBeds(rows):
+            mf = StringIO.StringIO()
+            with zipfile.ZipFile(mf, mode='w',
+                                 compression=zipfile.ZIP_DEFLATED) as zf:
+                for rank, subRanks in rankTypes.iteritems():
+                    cts = rows[0]["_source"]["ranks"][rank].keys()
+                    if "dnase" == rank:
+                        for ct in cts:
+                            data = writeBed(rank, [], ct, rows)
+                            ct = Utils.sanitize(ct)
+                            fn = '.'.join([rank, ct, "bed"])
+                            if data:
+                                zf.writestr(fn, data)
+                    else:
+                        for subRank in subRanks:
+                            for ct in cts:
+                                data = writeBed(rank, subRank, ct, rows)
+                                ct = Utils.sanitize(ct)
+                                fn = '.'.join([rank, subRank, ct, "bed"])
+                                if data:
+                                    zf.writestr(fn, data)
+            return mf.getvalue()
+        return self.downloadAsSomething(uid, j, "beds", writeBeds)
     
     def downloadAsJson(self, j, uid):
-        def writeJsonLine(cre):
-            re = cre["_source"]
-            return json.dumps(re)
-        return self.downloadAsSomething(uid, j, "json", writeJsonLine)
+        def writeJson(rows):
+            mf = StringIO.StringIO()
+            with zipfile.ZipFile(mf, mode='w',
+                                 compression=zipfile.ZIP_DEFLATED) as zf:
+                for cre in rows:
+                    re = cre["_source"]
+                    data = json.dumps(re) + "\n"
+                    zf.writestr(re["accession"] + '.json', data)
+            return mf.getvalue()
+        return self.downloadAsSomething(uid, j, "jsons", writeJson)
