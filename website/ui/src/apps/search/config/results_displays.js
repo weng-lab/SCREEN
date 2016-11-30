@@ -93,6 +93,7 @@ export const results_displays = {
 	title: "Activity across tissues",
 	loading: false,
 	footer: (dispatch) => (<a onClick={() => {dispatch(do_nav("/comparison"))}}>View detailed comparison</a>),
+	data_transform: (d) => (Math.exp(d) - 0.01),
 	append_query: (query_obj) => {
 	    query_obj.extras["rank_heatmap"] = true;
 	    return query_obj;

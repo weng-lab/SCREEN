@@ -44,7 +44,9 @@ const heatmap_props_map = (store, key) => (_state) => {
 	loading: state.loading,
 	chart_layout: heatmap_layout,
 	min: state.min,
-	max: state.max
+	max: state.max,
+	tooltip: state.tooltip,
+	data_transform: state.data_transform
     };
 };
 
