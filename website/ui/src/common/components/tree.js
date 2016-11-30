@@ -72,7 +72,8 @@ class Tree extends React.Component {
 	    width = this.props.width - margin.left - margin.right,
 	    height = this.props.height - margin.top - margin.bottom;
 
-	var _x = (x) => (width - x + margin.right);
+	var _x = (x) => ((width - x) / 1.75 + margin.right);
+	var _y = (y) => (y / 1.25);
 	
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
@@ -98,10 +99,10 @@ class Tree extends React.Component {
 	    .enter().append("path")
 	    .attr("class", "link")
 	    .attr("d", function(d) {
-		return "M" + _x(d.y) + "," + d.x
-		    + "C" + _x((d.y + d.parent.y) / 2) + "," + d.x
-		    + " " + _x((d.y + d.parent.y) / 2) + "," + d.parent.x
-		    + " " + _x(d.parent.y) + "," + d.parent.x;
+		return "M" + _x(d.y) + "," + _y(d.x)
+		    + "C" + _x((d.y + d.parent.y) / 2) + "," + _y(d.x)
+		    + " " + _x((d.y + d.parent.y) / 2) + "," + _y(d.parent.x)
+		    + " " + _x(d.parent.y) + "," + _y(d.parent.x);
 	    });
 	
 	// adds each node as a group
@@ -113,7 +114,7 @@ class Tree extends React.Component {
 		return "node" + 
 		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
 	    .attr("transform", function(d) { 
-		return "translate(" + _x(d.y) + "," + d.x + ")"; });
+		return "translate(" + _x(d.y) + "," + _y(d.x) + ")"; });
 
 	node.append("path")
 	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))
