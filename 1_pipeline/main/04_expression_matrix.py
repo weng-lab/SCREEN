@@ -7,7 +7,7 @@ import os
 
 import sys
 sys.path.append("../../../metadata/utils")
-from helpers_metadata import Exp
+from exp import Exp
 from files_and_paths import Dirs
 
 sys.path.append("../../common")
