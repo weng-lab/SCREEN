@@ -7,6 +7,11 @@ export function fit_to(a1, a2) {
 
 const primitive_comparator = (a, b) => (a == b);
 
+export const chain_functions = (f, g) => () => {
+    f && f();
+    g && g();
+};
+
 export function array_insert(a, v, c = primitive_comparator) {
     for (var i in a) {
 	if (c(a[i], v)) return a;

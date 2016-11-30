@@ -4,7 +4,7 @@ var d3 = require('d3');
 var $ = require('jquery');
 var __jui = require('jquery-ui-bundle');
 
-import {set_center_x} from '../common'
+import {chain_functions} from '../common'
 
 class RangeSlider extends React.Component {
     
@@ -15,6 +15,8 @@ class RangeSlider extends React.Component {
 	this._set_selection = this._set_selection.bind(this);
 	this.update_selection = this.update_selection.bind(this);
 	this._update_width = this._update_width.bind(this);
+	this.componentDidUpdate = this.componentDidUpdate.bind(this);
+	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
     
     render() {
