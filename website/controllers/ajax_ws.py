@@ -17,7 +17,7 @@ from models.rank_heatmap import RankHeatmap
 from models.correlation import Correlation
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from constants import paths
+from constants import paths, chroms
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
@@ -359,6 +359,7 @@ class AjaxWebService:
         j["post_processing"] = {}
         results = {"results": self._search(j),
                    "sep_results": {}}
+        assembly = "hg19" if "assembly" not in j else j["assembly"]
 
         # for drawing the venn or heatmap
         results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
@@ -383,8 +384,14 @@ class AjaxWebService:
         j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
         results["sep_results"][j["table_cell_types"][0] + " only"] = self._search({"object": j["object"], "post_processing": {}})
 
-        return results
+        # get chromosome similarity
+        results["chrom_spearman"] = {}
+        for chrom in chroms[assembly]:
+            results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 1000000, assembly),
+                                                "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 1000000, assembly) }
 
+        return results
+                                                       
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
         with Timer('ElasticSearch time'):

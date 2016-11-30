@@ -1,13 +1,14 @@
 var React = require('react');
 
 import ResultsApp from '../../search/components/results_app'
-import {main_venn_connector, main_results_connector} from '../reducers/comparison_reducer'
+import {main_venn_connector, main_results_connector, main_histogram_connector} from '../reducers/comparison_reducer'
 
 import DetailsApp, {details_connector} from '../../search/components/details_app'
 import {tabs} from '../../search/config/details'
 
 import MainVennDiagram from '../components/venn'
 import TableList from '../components/table_list'
+import HistogramSet from '../components/histogram'
 
 export const maintabs = {
     id: "main",
@@ -27,6 +28,14 @@ export const maintabs = {
 	    render: (store, key) => {
 		var ResultsApp = main_results_connector(TableList);
 		return <ResultsApp store={store} key={key + "_main"} />;
+	    }
+	},
+	chromosomes: {
+	    title: "Regions of similarity",
+	    visible: true,
+	    render: (store, key) => {
+		var Histogram = main_histogram_connector(HistogramSet);
+		return <Histogram store={store} key={key + "_main"} />;
 	    }
 	},
 	details: {

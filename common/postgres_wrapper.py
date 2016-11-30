@@ -162,7 +162,7 @@ class PostgresWrapper:
         if r:
             return r[0][0]
         return None
-
+    
     def addToCart(self, uuid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
             curs.execute("""
@@ -183,6 +183,24 @@ class PostgresWrapper:
                             {"uuid": uuid,
                              "re_accessions" : json.dumps(reAccessions)})
             return {"rows" : curs.rowcount}
+
+    def select_correlations(self, ct1, ct2, field, _chr, res, assembly):
+        with getcursor(self.DBCONN, "DB::select_correlation") as curs:
+            curs.execute("""SELECT correlation FROM {table}
+                                               WHERE ct1 = (SELECT id FROM celltypesandtissues WHERE celltype = %(ct1)s)
+                                                 AND ct2 = (SELECT id FROM celltypesandtissues WHERE celltype = %(ct2)s)
+                                                 AND resolution = %(res)s AND chr = %(_chr)s""".format(table = "%s_%s" % (assembly, field)),
+                         {"ct1": ct1, "ct2": ct2, "_chr": _chr, "res": res})
+            r = curs.fetchall()
+        return [float(x) for x in r[0][0]] if r else None
+
+    def select_totals(self, _chr, res, assembly):
+        with getcursor(self.DBCONN, "DB::select_totals") as curs:
+            curs.execute("""SELECT bintotals FROM {table}
+                                             WHERE resolution = %(res)s AND chr = %(_chr)s""".format(table = "%s_totals" % assembly),
+                         {"res": res, "_chr": _chr})
+            r = curs.fetchall()
+        return r[0][0] if r else None
 
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))

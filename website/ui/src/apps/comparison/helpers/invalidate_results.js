@@ -1,6 +1,7 @@
 import QueryAJAX from '../elasticsearch/ajax'
 import {SET_VENN_RESULTS} from '../reducers/venn_reducer'
 import {SET_RESULTS_LOADING, SET_RESULTS_COMPLETE, SET_TABLE_RESULTS} from '../reducers/results_reducer'
+import {SET_SPEARMAN} from '../reducers/comparison_reducer'
 import FacetQueryMap, {FacetsToSearchText} from '../../search/elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../../search/elasticsearch/results_to_map'
 import {results_fetching, results_error, set_searchtext} from '../../search/helpers/invalidate_results'
@@ -41,11 +42,12 @@ export const invalidate_comparison = (state) => {
 	    && array_contains(n_query.extras.venn.cell_types, state.venn.table_cell_types[1])) {
 	    n_query.extras["table_cell_types"] = state.venn.table_cell_types;
 	}
-	
+
 	var f_success = (response, status, jqxhr) => {
 	    ResultsDispatchMap(state, response.results, dispatch);
 	    dispatch(set_venn_results(response.results.venn));
 	    dispatch(set_table_results(response.sep_results));
+	    dispatch({type: SET_SPEARMAN, chrom_spearman: response.chrom_spearman});
 	    dispatch(results_done());
 	    dispatch(set_searchtext(FacetsToSearchText(state)));
 	};
