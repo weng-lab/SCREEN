@@ -34,6 +34,7 @@ class Heatmap extends React.Component {
 
     constructor(props) {
 	super(props);
+	this._default_tooltip = this._default_tooltip.bind(this);
     }
 
     render() {
@@ -55,7 +56,7 @@ class Heatmap extends React.Component {
     }
 
     _default_tooltip(d, rl, cl) {
-	return (rl[d.row - 1] + ", " + cl[d.col - 1] + ": " + (Math.round(d.value * 1000) / 1000));
+	return (rl[d.row - 1] + ", " + cl[d.col - 1] + ": " + (Math.round(this._d(d.value) * 1000) / 1000));
     }
 
     componentDidUpdate() {
@@ -65,7 +66,9 @@ class Heatmap extends React.Component {
 	var data = this.props.data;
 	var tooltip = this.refs.tooltip;
 	var get_tooltip_text = this.props.tooltip ? this.props.tooltip : this._default_tooltip;
-
+	var _d = this.props.data_transform ? this.props.data_transform : (d) => (d);
+	this._d = _d;
+	
 	if (null == data || 0 == data.length) {
 	    return;
 	};
@@ -194,7 +197,7 @@ class Heatmap extends React.Component {
 	;
 	
 	var legend = svg.selectAll(".legend")
-	    .data([Math.round(min), "", "", "", "", "", "", "", "", "", Math.round(max)])
+	    .data([Math.round(_d(min)), "", "", "", "", "", "", "", "", "", Math.round(_d(max))])
 	    .enter().append("g")
 	    .attr("class", "legend");
 	
