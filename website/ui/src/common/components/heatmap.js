@@ -9,7 +9,7 @@ export const default_heatmap_layout = {
 
     "margin": {
 	"top": 200,
-	"right": 10,
+	"right": 150,
 	"bottom": 50,
 	"left": 200
     },
@@ -135,17 +135,19 @@ class Heatmap extends React.Component {
 	    .on("click", function(d,i) {rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder); d3.select(order).property("selectedIndex", 4).node().focus();;})
 	;
 
+	var _angle = 60.0;
+	var angle = _angle * Math.PI / 180.0;
 	var colLabels = svg.append("g")
 	    .selectAll(".colLabelg")
 	    .data(chart_layout.cols.labels)
 	    .enter()
 	    .append("text")
-	    .text(function (d) { return d; })
-	    .attr("x", 0)
-	    .attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize; })
+	    .text(function (d) { return d.substring(0, 40) + (d.length > 40 ? "..." : ""); })
+	    .attr("x", (d, i) => (chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.cos(angle)))
+	    .attr("y", (d, i) => (chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.sin(angle)))
 	    .style("text-anchor", "left")
 	    .style("fill", (d, i) => (i < chart_layout.cols.styles.length ? chart_layout.cols.styles[i] : "#000000"))
-	    .attr("transform", "translate(" + chart_layout.cellSize / 2 + ",-6) rotate (-90)")
+	    .attr("transform", "translate(" + chart_layout.cellSize / 2 + ",-6) rotate(-" + _angle + ")")
 	    .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
 	    .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
@@ -227,7 +229,8 @@ class Heatmap extends React.Component {
 		    .attr("x", function(d) { return sorted.indexOf(d.col-1) * chart_layout.cellSize; })
 		;
 		t.selectAll(".colLabel")
-		    .attr("y", function (d, i) { return sorted.indexOf(i) * chart_layout.cellSize; })
+		    .attr("y", function (d, i) { return sorted.indexOf(i) * chart_layout.cellSize * Math.sin(angle); })
+		    .attr("x", (d, i) => (sorted.indexOf(i) * chart_layout.cellSize * Math.cos(angle)))
 		;
 	    }else{ // sort log2ratio of a contrast
 		sorted=d3.range(chart_layout.rows.labels.length).sort(function(a,b){if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
@@ -257,7 +260,8 @@ class Heatmap extends React.Component {
 		;
 		
 		t.selectAll(".colLabel")
-		    .attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize; })
+		    .attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.sin(angle); })
+		    .attr("x", (d, i) => (chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.cos(angle)))
 		;
 
 	    }else if (value=="probecontrast"){
@@ -272,7 +276,8 @@ class Heatmap extends React.Component {
 		;
 
 		t.selectAll(".colLabel")
-		    .attr("y", function (d, i) { return i *  chart_layout.cellSize; })
+		    .attr("y", function (d, i) { return i *  chart_layout.cellSize * Math.sin(angle); })
+		    .attr("x", (d, i) => (i * chart_layout.cellSize * Math.cos(angle)))
 		;
 
 	    }else if (value=="probe"){
@@ -290,7 +295,8 @@ class Heatmap extends React.Component {
 		    .attr("x", function(d) { return (d.col - 1) *  chart_layout.cellSize; })
 		;
 		t.selectAll(".colLabel")
-		    .attr("y", function (d, i) { return i *  chart_layout.cellSize; })
+		    .attr("y", function (d, i) { return i *  chart_layout.cellSize * Math.sin(angle); })
+		    .attr("x", (d, i) => (i * chart_layout.cellSize * Math.cos(angle)))
 		;
 	    }
 	}
