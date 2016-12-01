@@ -123,8 +123,8 @@ export const facetboxes = {
 		visible: true,
 		title: "Protein-coding genes",
 		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
+		    range: [0, 500000000],
+		    selection_range: [0, 500000000],
 		    h_margin: default_margin,
 		    h_interval: 5000,
 		    h_width: 200
@@ -135,8 +135,8 @@ export const facetboxes = {
 		visible: true,
 		title: "All genes",
 		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
+		    range: [0, 500000000],
+		    selection_range: [0, 500000000],
 		    h_margin: default_margin,
 		    h_interval: 5000,
 		    h_width: 200
