@@ -8,7 +8,7 @@ from dbconnect import db_connect
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from helpers_metadata import Exp
+from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 

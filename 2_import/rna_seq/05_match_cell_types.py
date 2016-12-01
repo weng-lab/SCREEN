@@ -8,7 +8,7 @@ from dbconnect import db_connect
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from helpers_metadata import Exp, QueryDCC
+from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 from cache_memcache import MemCacheWrapper
@@ -28,7 +28,7 @@ def loadRNAcellTypes():
 def getCellTypes():
     lookup = loadCellTypes()
     rnacts = loadRNAcellTypes()
-        
+
     tissues = set()
     for ct, t in lookup.iteritems():
         tissues.add(t)
@@ -58,7 +58,7 @@ def getCellTypes():
         ctsMix = ret[t]
         delim = ', '
         print('\t'.join([t, delim.join(ctsMix["creCTS"]), delim.join(ctsMix["rnaCTS"])]))
-        
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -69,7 +69,7 @@ def main():
     args = parse_args()
 
     getCellTypes()
-    
+
     for dataset in [Datasets.all_human]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "03_genes") as curs:
