@@ -9,7 +9,7 @@ from dbconnect import db_connect
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from helpers_metadata import Exp
+from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 
@@ -41,7 +41,7 @@ def insertRNAs(cur, dataset):
             raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
                             + r + "found " + str(len(toks)))
         lookup[toks[0]] = toks[1].strip()
-    
+
     cur.execute("""
 select distinct(dataset) from r_expression""")
     counter = 0
@@ -64,16 +64,16 @@ select distinct(dataset) from r_expression""")
 
         if biosample["biosample_term_name"] in lookup:
             organ = lookup[biosample["biosample_term_name"]]
-            
+
         if not organ or "na" == organ:
             print(biosample["biosample_term_name"])
-        
+
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
         except:
             #print(encodeID, "assuming cell compartment")
             cellCompartment = "cell"
-            
+
         cur.execute("""
 INSERT INTO r_rnas
         (encode_id, cellType, organ, cellCompartment, target, lab, assay_term_name, biosample_type, description)
