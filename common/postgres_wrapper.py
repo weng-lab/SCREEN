@@ -28,6 +28,14 @@ class PostgresWrapper:
         retval += self.findBedOverlap("histone", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
         return retval
 
+    def get_helpkey(self, key):
+        with getcursor(self.DBCONN, "get_helpkey") as curs:
+            curs.execute("""SELECT title, summary, link FROM helpkeys
+                                                        WHERE key = %(key)s""",
+                         {"key": key})
+            r = curs.fetchall()
+        return r[0] if r else None
+    
     def recreate_re_tables(self, fnp):
         with getcursor(self.DBCONN, "recreate_re_table") as curs:
 

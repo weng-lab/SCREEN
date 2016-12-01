@@ -68,9 +68,18 @@ class AjaxWebService:
                         "venn": self._venn_search,
                         "gene_regulators": self._gene_regulators,
                         "re_genes": self._re_genes,
-                        "tree": self._tree }
+                        "tree": self._tree,
+                        "helpkey": self._helpkey }
         self._cached_results = {}
-        
+
+    def _helpkey(self, j):
+        if "key" not in j: return {}
+        data = self.ps.get_helpkey(j["key"])
+        if data is None: return {}
+        return { "title": data[0],
+                 "summary": data[1],
+                 "link": data[2] }
+
     def _get_rank(self, label, v):
         return 1e12 if label not in v else v[label]["rank"]
 
