@@ -5,6 +5,8 @@ default_colors.reverse();
 
 var drawDelay = 1000;
 
+import REComponent from './re_component'
+
 export const default_heatmap_layout = {
 
     "margin": {
@@ -30,7 +32,7 @@ export const default_heatmap_layout = {
     
 };
 
-class Heatmap extends React.Component {
+class Heatmap extends REComponent {
 
     constructor(props) {
 	super(props);
@@ -39,18 +41,19 @@ class Heatmap extends React.Component {
 
     render() {
 	var title = (this.props.title ? this.props.title : "");
-	return (<div>
+	return super.render(<div>
 		    <div ref="tooltip" className="heatmap_tooltip heatmap_tooltip_hidden" />
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		        Loading...
 		    </div>
-		    <div ref="title" style={{display: (this.props.loading ? "none" : "block")}}><h3>{title}</h3></div>
+	            <div ref="title" style={{display: (this.props.loading ? "none" : "block")}}><span style={{"fontSize": "18pt"}}>{title}</span><span ref="help_icon" /></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
 		    <div ref="order" />
 		</div>);
     }
 
     componentDidMount() {
+	super.componentDidMount();
 	$(this.refs.tooltip).appendTo(document.body);
 	this.componentDidUpdate();
     }
@@ -61,6 +64,8 @@ class Heatmap extends React.Component {
 
     componentDidUpdate() {
 
+	super.componentDidUpdate();
+	
 	$(this.refs.container).empty();
 	
 	var data = this.props.data;
