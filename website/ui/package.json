@@ -43,6 +43,7 @@
     "datatables.net-bs": "^1.10.12",
     "immutable": "^3.8.1",
     "jquery": "^2.1.4",
+    "jquery-popover": "0.0.4",
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.11.3",
     "node-uuid": "^1.4.7",
