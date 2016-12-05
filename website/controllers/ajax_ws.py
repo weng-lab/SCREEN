@@ -396,8 +396,8 @@ class AjaxWebService:
         # get chromosome similarity
         results["chrom_spearman"] = {}
         for chrom in chroms[assembly]:
-            results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 1000000, assembly),
-                                                "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 1000000, assembly) }
+            results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
+                                                "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 300000, assembly) }
 
         return results
                                                        
