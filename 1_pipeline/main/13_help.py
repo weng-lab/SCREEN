@@ -50,11 +50,14 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     db = DB(DBCONN)
 
-    # recreate tables
-    db.recreate_tables()
-
     # download GoogleDoc
     _help_text = GoogleDocs(args).getcontents(helptext.docid).split("\n")
+
+    # only reset DB if valid helptext was downloaded
+    if len(_help_text) == 0:
+        print("no help text could be downloaded; please check GoogleDoc contents at https://docs.google.com/document/d/%s" % helptext.docid)
+        return 1
+    db.recreate_tables()
     
     """
       " load from the cached Google Doc and parse
