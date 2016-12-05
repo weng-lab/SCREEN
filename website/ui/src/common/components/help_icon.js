@@ -1,6 +1,5 @@
 var React = require('react');
 var $ = require('jquery');
-var _p = require('jquery-popover');
 
 const format_query = (key) => {
     return JSON.stringify({
