@@ -28,7 +28,7 @@ class HelpIcon extends React.Component {
     }
     
     render() {
-	return (<span ref="pspan">
+	return (<span ref="pspan" style={{fontSize: "14pt"}}>
 		   <a ref="aicon"><span ref="icon" className="glyphicon glyphicon-info-sign" style={{marginLeft: "5px"}} aria-hidden="true" /></a>
 		   <div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in"
 	 	      role="tooltip" ref="tt" style={{top: "0px", left: "0px", position: "absolute", display: "none" }}>

@@ -46,7 +46,7 @@ class Heatmap extends REComponent {
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		        Loading...
 		    </div>
-	            <div ref="title" style={{display: (this.props.loading ? "none" : "block")}}><span style={{"fontSize": "18pt"}}>{title}</span><span ref="help_icon" /></div>
+	            <div ref="title" style={{display: (this.props.loading ? "none" : "block"), "fontSize": "18pt"}}>{title}<span ref="help_icon" /></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block")}} />
 		    <div ref="order" />
 		</div>);

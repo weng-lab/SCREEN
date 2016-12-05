@@ -40,7 +40,8 @@ def parseargs():
     parser.add_argument('--local', action="store_true", default=False)
     return parser.parse_args()
 
-keymap = {"Activity Heatmap": "main_rank_heatmap"}
+keymap = {"Activity Heatmap": "main_rank_heatmap",
+          "TSS Start": "tss_dist" }
 
 def main():
     args = parseargs()
@@ -72,7 +73,7 @@ def main():
     for line in _help_text:
         if line.startswith('@'):
             if key and help_text and key in keymap:
-                db.insert_value(keymap[key], key if not title else title, help_text)
+                db.insert_value(keymap[key], key if not title else title, help_text.strip())
                 inserted += 1
             key = line.strip()[1:]
             help_text = ""
@@ -82,7 +83,7 @@ def main():
         elif not line.startswith("#"):
             help_text += line.strip() + "\n"
     if key and help_text and key in keymap:
-        db.insert_value(keymap[key], key if not title else title, help_text)
+        db.insert_value(keymap[key], key if not title else title, help_text.strip())
         inserted += 1
 
     print("inserted %d item%s" % (inserted, "s" if inserted != 1 else ""))
