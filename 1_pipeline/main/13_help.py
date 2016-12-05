@@ -68,17 +68,21 @@ def main():
     """
     key = None
     help_text = ""
+    title = ""
     for line in _help_text:
         if line.startswith('@'):
             if key and help_text and key in keymap:
-                db.insert_value(keymap[key], key, help_text)
+                db.insert_value(keymap[key], key if not title else title, help_text)
                 inserted += 1
             key = line.strip()[1:]
             help_text = ""
-        else:
-            help_text += line
+            title = ""
+        elif line.startswith("%"):
+            title = line.replace("%", "").strip()
+        elif not line.startswith("#"):
+            help_text += line.strip() + "\n"
     if key and help_text and key in keymap:
-        db.insert_value(keymap[key], key, help_text)
+        db.insert_value(keymap[key], key if not title else title, help_text)
         inserted += 1
 
     print("inserted %d item%s" % (inserted, "s" if inserted != 1 else ""))
