@@ -163,7 +163,7 @@ def main():
     DB(DBCONN, args.assembly).recreate_tables()
     
     # do correlation for each combo and insert
-    for res in [1000000]:
+    for res in [300000]:
         Parallel(n_jobs = args.j)(delayed(run)(_chr, res, args.local, args.assembly) for _chr in chroms[args.assembly])
             
     return 0
