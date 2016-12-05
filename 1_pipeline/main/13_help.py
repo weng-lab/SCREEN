@@ -55,18 +55,20 @@ def main():
 #                    """The activity heatmap displays the fraction of the search results which are active in each cell type by DNase, promoter, enhancer, and CTCF rank.\n
 #                       An active element is defined as any element with a rank below the predefined threshold of 20,000.""")
 
-    helptext = get_helptext().split("\n")
+    _helptext = get_helptext().split("\n")
     key = None
     helptext = ""
-    for line in helptext:
-        if line.startswith("@"):
+    for line in _helptext:
+        if line.startswith('@'):
             if key and helptext and key in keymap:
                 db.insert_value(keymap[key], key, helptext)
             key = line.strip()[1:]
             helptext = ""
         else:
             helptext += line
-    
+    if key and helptext and key in keymap:
+        db.insert_value(keymap[key], key, helptext)
+            
     return 0
 
 if __name__ == "__main__":
