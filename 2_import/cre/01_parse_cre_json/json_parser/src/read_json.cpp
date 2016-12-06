@@ -49,15 +49,15 @@ namespace bib {
     LockedFileWriter(bfs::path fnp)
       : fnp_(fnp)
     {
-      out_ = std::make_unique<T>(fnp_.string());
+      out_ = std::make_unique<T>(fnp_.string(), std::ios::out | std::ios::trunc);
     }
 
     template <typename C>
-    void write(const C& lines){
+    void write(const C& lines, const size_t len){
       std::lock_guard<std::mutex> lock(mutex_);
       auto& out = *out_;
-      for(const auto line : lines){
-	out << line << "\n";
+      for(size_t i = 0; i < len; ++i){
+	out << lines[i];
       }
     }
   };
@@ -109,14 +109,15 @@ namespace bib {
     }
 
     void parseVec(std::shared_ptr<ArrayPool> ap, uint32_t len){
-      std::cout << len << std::endl;
       auto& a = *ap;
-      auto outArray = arrays_.get();
-      auto& out = *outArray;
+      auto op = arrays_.get();
+      auto& out = *op;
       for(uint32_t i = 0; i < len; ++i){
 	out.strs[i] = parseLine(a.strs[i]);
       }
+      out_->write(out.strs, len);
       arrays_.put(ap);
+      arrays_.put(op);
     }
 
     std::string parseLine(const std::string& line){
@@ -158,9 +159,7 @@ namespace bib {
 	}
       }
 
-      std::ostringstream ss;
-      ss << root;
-      return ss.str();
+      return Json::FastWriter().write(root);
     }
   };
 } // namespace bib
