@@ -107,7 +107,7 @@ export const facetboxes = {
 		title: "",
 		state: {
 		    range: [0, 100000],
-		    value: 1000
+		    value: 20000
 		}
 	    }
 	}
