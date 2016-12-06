@@ -1,3 +1,7 @@
+export const chr_sort = (a, b) => (
+    +a.replace(/chr/g, '') - +b.replace(/chr/g, '')
+);
+
 export function fit_to(a1, a2) {
     if (a1[0] > a1[1]) a1.reverse();
     if (a1[0] < a2[0]) a1[0] = a2[0];
