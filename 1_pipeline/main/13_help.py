@@ -41,7 +41,9 @@ def parseargs():
     return parser.parse_args()
 
 keymap = {"Activity Heatmap": "main_rank_heatmap",
-          "TSS Start": "tss_dist" }
+          "TSS Start": "tss_dist",
+          "Comparison Venn": "comparison_venn",
+          "Comparison Heatmap": "comparison_heatmap" }
 
 def main():
     args = parseargs()

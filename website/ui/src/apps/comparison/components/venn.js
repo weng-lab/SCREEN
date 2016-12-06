@@ -68,10 +68,10 @@ class ComparisonVenn extends React.Component {
 		      Please modify the filter settings at left. At least two cell types must be selected to compare.
 		   </div>
 		   <div style={{display: (_show_venn ? "block" : "none")}}>
-		      <VennDiagram sets={venn.sets} overlaps={venn.overlaps} width={this.props.diagram_width} height={this.props.diagram_height} />
+		      <VennDiagram helpkey="comparison_venn" sets={venn.sets} overlaps={venn.overlaps} width={this.props.diagram_width} height={this.props.diagram_height} />
 		   </div>
 		   <div style={{display: (!_show_venn && !_missing_data ? "block": "none")}}>
-		      <Heatmap rowlabels={rowlabels} collabels={collabels} data={this._format_matrix(this.props.matrix)}
+		      <Heatmap helpkey="comparison_heatmap" rowlabels={rowlabels} collabels={collabels} data={this._format_matrix(this.props.matrix)}
 		         min={0} max={1} chart_layout={heatmap_layout} onClick={this.onClick} />
 		   </div>
 		</div>);
