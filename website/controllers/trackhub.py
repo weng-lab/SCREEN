@@ -15,12 +15,16 @@ from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColor
 from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from celltype_to_tissue import CtToTissue
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
 
 class TrackInfo:
-    def __init__(self, rtrm, ct, assay, values):
+    def __init__(self, rtrm, t, ct, assay, values):
         self.rtrm = rtrm
+        self.t = t
         self.ct = ct
         self.assay = assay
         self.expID = values["accession"]
@@ -211,15 +215,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         tracks = []
         for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
             for ct in cellTypes:
+                t = CtToTissue(ct)
                 values = re["ranks"][rtrm[0]][ct]
                 if "dnase" == rtrm[0]:
-                    tracks.append(TrackInfo(rtrm, ct, "dnase", values))
+                    tracks.append(TrackInfo(rtrm, t, ct, "dnase", values))
                 else:
                     for assay, info in values[rtrm[1]].iteritems():
                         if "rank" == assay:
                             continue
-                        tracks.append(TrackInfo(rtrm, ct, assay, info))
-        tracks.sort(key = lambda x: [x.ct, x.assay])
+                        tracks.append(TrackInfo(rtrm, t, ct, assay, info))
+
+
+        tracks.sort(key = lambda x: [x.t, x.ct, x.assay])
 
         pairs = set()
         ret = []
