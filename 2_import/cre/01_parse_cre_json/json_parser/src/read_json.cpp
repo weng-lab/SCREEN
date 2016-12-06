@@ -28,22 +28,6 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
-  struct DBrow {
-    std::string ensembl_id;
-    std::string gene_name;
-    std::string dataset;
-    int rep;
-    float fpkm;
-    float tpm;
-
-    friend std::ostream& operator<<(std::ostream& s, const DBrow& r){
-      s << r.ensembl_id << "," << r.gene_name << ","
-	<< r.dataset << "," << r.rep << ","
-	<< r.fpkm << "," << r.tpm;
-      return s;
-    }
-  };
-
   class ReadJson{
     const bfs::path inFnp_;
     const bfs::path outFnp_;
@@ -62,32 +46,6 @@ namespace bib {
       std::array<uint64_t, Constants::Len> idxs;
     };
     SimpleObjectPool<ArrayPool> arrays_;
-
-    void parseLine(const std::string& line){
-      Json::Value root;
-      Json::Reader reader;
-      if (!reader.parse(line, root, false)) {
-	std::cerr << reader.getFormattedErrorMessages() << std::endl;
-	std::cerr << line << std::endl;
-	return;
-      }
-    
-      if(ZiARG_first){
-	std::cout << root << std::endl;
-	return;
-      }
-    
-      //parseLine(out, root);
-    }
-
-    void parseVec(std::shared_ptr<ArrayPool> ap, uint32_t len){
-      std::cout << len << std::endl;
-      auto& a = *ap;
-      for(uint32_t i = 0; i < len; ++i){
-	parseLine(a.strs[i]);
-      }
-      arrays_.put(ap);
-    }
 
     void import(){
       TicToc t("done import");
@@ -117,48 +75,37 @@ namespace bib {
       parseVec(a, counter);
 
       tm.join();
-
-    }
-  
-    void parse(){
-      Gzip_reader d(inFnp_);
-
-      std::ofstream out(outFnp_.string());
-      if(!out.is_open()){
-	throw std::runtime_error("could not open " + outFnp_.string());
-      }
-
-      size_t fileLineCount = 0;
-      size_t parsedRows = 0;
-      for(std::string line; d.getline(line);){
-	++fileLineCount;
-	Json::Value root;
-	Json::Reader reader;
-	if (!reader.parse(line, root, false)) {
-	  std::cerr << reader.getFormattedErrorMessages() << std::endl;
-	  std::cerr << line << std::endl;
-	  std::cerr << fileLineCount - 1 << std::endl;
-	  continue;
-	}
-
-	if(ZiARG_first){
-	  std::cout << root << std::endl;
-	  return;
-	}
-
-	//parseLine(out, root);
-	++parsedRows;
-	if(0 == fileLineCount % 250){
-	  std::cout << fileLineCount << std::endl;
-	}
-      }
-
-      out.close();
-      std::cout << "parsed " << parsedRows << " rows" << std::endl;
-      std::cout << "wrote: " << outFnp_ << std::endl;
     }
 
-    void doParseLine(std::ofstream& out, Json::Value& root){
+    void parseVec(std::shared_ptr<ArrayPool> ap, uint32_t len){
+      std::cout << len << std::endl;
+      auto& a = *ap;
+      auto outArray = arrays_.get();
+      auto& out = *outArray;
+      for(uint32_t i = 0; i < len; ++i){
+	out.strs[i] = parseLine(a.strs[i]);
+      }
+      arrays_.put(ap);
+    }
+
+    std::string parseLine(const std::string& line){
+      Json::Value root;
+      Json::Reader reader;
+      if (!reader.parse(line, root, false)) {
+	std::cerr << reader.getFormattedErrorMessages() << std::endl;
+	std::cerr << line << std::endl;
+	return "";
+      }
+    
+      if(ZiARG_first){
+	std::cout << root << std::endl;
+	return "";
+      }
+    
+      return doParseLine(root);
+    }
+
+    std::string doParseLine(const Json::Value& root){
       std::string ensembl_id = root["ensembl_id"].asString();
       std::string gene_name = root["gene_name"].asString();
 
@@ -178,22 +125,9 @@ namespace bib {
 	  int8_t repNum = toks[0][3] - '0';
 	  vals[repNum][toks[1]] = n[e].asFloat();
 	}
-
-	for(const auto& repVals : vals){
-	  int8_t rep = repVals.first;
-	  float fpkm = repVals.second.at("fpkm");
-	  float tpm = repVals.second.at("tpm");
-	  if(fpkm > 0 || tpm > 0){
-	    DBrow row = {.ensembl_id = ensembl_id,
-			 .gene_name = gene_name,
-			 .dataset = dataset,
-			 .rep = rep,
-			 .fpkm = fpkm,
-			 .tpm = tpm};
-	    out << row << "\n";
-	  }
-	}
       }
+
+      return "";
     }
   };
 } // namespace bib
