@@ -4,24 +4,85 @@ var d3 = require('d3');
 
 import {chr_sort} from '../../../common/common'
 
+const BARWIDTH = 1;
+const CHRHEIGHT = 50;
+
 class HistogramSet extends React.Component {
 
     constructor(props) {
 	super(props);
+	this._append_histogram = this._append_histogram.bind(this);
+	this._margin = {top: 10, left: 10, right: 10, bottom: 10};
     }
 
     render() {
-	if (!this.props.histograms) return <div />;
+	return <div ref="container" />;
+    }
+
+    _append_histogram(k, i) {
+	
+	var h = this.props.histograms[k];
+	var div = $(this.props.container);
+	var width = h.totals.length * BARWIDTH;
+	var height = CHRHEIGHT;
+	var xrange = [0, h.totals.length];
+
+	var px = this._margin.left;
+	var py = this._margin.top + i * (CHRHEIGHT + 10);
+	
+	var svg = this._svg.append("g")
+	    .attr("width", width + 50)
+	    .attr("height", CHRHEIGHT)
+	    .attr("transform", "translate(" + px + "," + py + ")");
+
+	svg.append("g")
+	    .attr("transform", "translate(0, " + (CHRHEIGHT / 2) + ")")
+	    .append("text").text(k);
+	var g = svg.append("g")
+	    .attr("transform", "translate(50, 0)");
+	
+	var x = d3.scaleLinear()
+            .domain(xrange)
+	    .rangeRound([0, width]);
+	
+	var y = d3.scaleLinear()
+	    .domain([0, d3.max(h.totals, (d) => (d))])
+	    .range([height, 0]);
+
+	var c = d3.scaleLinear()
+	    .domain([0.0, 1.0])
+	    .range(["#aaaaaa", "#0000aa"]);
+	
+	var bar = g.selectAll(".bar")
+	    .data(h.totals)
+	    .enter().append("g")
+	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + (height / 2 - (height - y(d)) / 2) + ")"; });
+	
+	bar.append("rect")
+	    .attr("x", 1)
+	    .attr("width", x(1))
+	    .attr("fill", (d, i) => c(h.corrs[i]))
+	    .attr("height", function(d) { return height - y(d) + 2; });
+
+	return svg;
+
+    }
+    
+    componentDidUpdate() {
 	var h = this.props.histograms;
-	var margin = {top: 10, left: 10, right: 10, bottom: 10};
-	var skeys = [...Object.keys(this.props.histograms)].sort(chr_sort);
-	return (<div>
-		{skeys.map((k) => (!h[k].totals ? "" :
-		    <div key={"d_" + k}>
-			{k} <Histogram heights={h[k].totals} colors={h[k].corrs} margin={margin} key={"h_" + k} />
-                    </div>
-		))}
-		</div>);
+	var skeys = [...Object.keys(h)].sort(chr_sort);
+	var ptr = 0;
+	if (!h || !skeys) return;
+	$(this.refs.container).empty();
+	console.log(h);
+	this._svg = d3.select(this.refs.container).append("svg")
+	    .attr("height", skeys.length * CHRHEIGHT + this._margin.top)
+	    .attr("width", d3.max(Object.keys(h), (k) => (h[k] && h[k].totals ? h[k].totals.length : 0)) * BARWIDTH + 50);
+	skeys.map((k, i) => {
+	    if (h[k].totals && h[k].corrs) {
+		this._append_histogram(k, ptr++);
+	    }
+	});
     }
     
 }
@@ -51,7 +112,7 @@ class Histogram extends React.Component {
     }
 
     render() {
-	return <div ref="container" style={{height: "40px"}} />;
+	return <div style={{height: "40px"}}>{this.props.title} <span ref="container" /></div>;
     }
     
     create_histogram(destination_div) {
@@ -59,43 +120,6 @@ class Histogram extends React.Component {
 	$(destination_div).empty();
 	if (!this.props.heights) return;
 	
-	var div = $(destination_div);
-	var height = div.height();
-	var width = this.props.heights.length * 3;
-	var xrange = [0, this.props.heights.length];
-	var colors = this.props.colors;
-	
-	var svg = d3.select(destination_div).append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
-	
-	svg.append("g")
-	    .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
-	
-	var x = d3.scaleLinear()
-            .domain(xrange)
-	    .rangeRound([0, width]);
-	
-	var y = d3.scaleLinear()
-	    .domain([0, d3.max(this.props.heights, (d) => (d))])
-	    .range([height, 0]);
-
-	var c = d3.scaleLinear()
-	    .domain([0.0, 1.0])
-	    .range(["#aaaaaa", "#0000aa"]);
-	
-	var bar = svg.selectAll(".bar")
-	    .data(this.props.heights)
-	    .enter().append("g")
-	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + (height / 2 - (height - y(d)) / 2) + ")"; });
-	
-	bar.append("rect")
-	    .attr("x", 1)
-	    .attr("width", x(1))
-	    .attr("fill", (d, i) => c(colors[i]))
-	    .attr("height", function(d) { return height - y(d); });
-
-	return svg;
 	
     }
     
