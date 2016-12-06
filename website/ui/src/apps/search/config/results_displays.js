@@ -63,6 +63,7 @@ export const results_displays = {
 	height: 150,
 	loading: false,
 	footer: "",
+	helpkey: "tss_dist",
 	append_query: (query_obj) => {
 	    var extras = {};
 	    var aggs = {};

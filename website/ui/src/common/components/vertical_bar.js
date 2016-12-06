@@ -1,25 +1,30 @@
 const React = require('react');
 var d3 = require('d3');
 
-class VerticalBars extends React.Component {
+import REComponent from './re_component'
+
+class VerticalBars extends REComponent {
 
     constructor(props) {
 	super(props);
     }
 
     render() {
-	return (<div>
-		    <div style={{width: this.props.width + "px", textAlign: "center", fontSize: "14pt", display: (this.props.loading ? "none" : "block")}}>{this.props.title}</div>
+	return super.render(<div>
+		    <div style={{width: this.props.width + "px", fontSize: "18pt", display: (this.props.loading ? "none" : "block")}}>{this.props.title}<span ref="help_icon" /></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px", height: this.props.height + "px" }} />
 		</div>);
 		
     }
 
     componentDidMount() {
+	super.componentDidMount();
 	this.componentDidUpdate();
     }
     
     componentDidUpdate() {
+
+	super.componentDidUpdate();
 	
 	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
