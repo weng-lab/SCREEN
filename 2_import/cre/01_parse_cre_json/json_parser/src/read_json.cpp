@@ -9,9 +9,15 @@
 #include <algorithm>
 #include <json/json.h>
 #include <json/reader.h>
+#include <array>
+#include <zi/concurrency/concurrency.hpp>
+#include <zi/system.hpp>
 
 #include "cpp/utility.hpp"
 #include "cpp/gzip_reader.hpp"
+#include "cpp/tictoc.hpp"
+
+#include "simpleObjectPool.hpp"
 
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(file, "", "file to load");
@@ -38,20 +44,70 @@ struct DBrow {
 };
 
 class ReadJson{
-    const bfs::path fnp_;
+  const bfs::path inFnp_;
+  const bfs::path outFnp_;
 
 public:
-    ReadJson(bfs::path fnp)
-        : fnp_(fnp)
+  ReadJson(bfs::path inFnp, bfs::path outFnp)
+    : inFnp_(inFnp)
+    , outFnp_(outFnp)
     {}
 
-    void parse(){
-        Gzip_reader d(fnp_);
+    struct Constants {
+        enum lengths { Len = 250 };
+    };
+    struct ArrayPool {
+        std::array<std::string, Constants::Len> strs;
+        std::array<uint64_t, Constants::Len> idxs;
+    };
+    SimpleObjectPool<ArrayPool> arrays_;
 
-        bfs::path outFnp = fnp_.string() + ".csv";
-        std::ofstream out(outFnp.string());
+    void parseVec(std::shared_ptr<ArrayPool> ap, uint32_t len){
+      /*
+	auto& a = *ap;
+        for(uint32_t i = 0; i < len; ++i){
+            parser_.parse(a.strs[i], c, store_->get(a.idxs[i]));
+        }
+        arrays_.put(ap);
+      */
+    }
+
+    void import(){
+        TicToc t("done import");
+
+        std::cout << "starting import..." << std::endl;
+
+        zi::task_manager::simple tm(zi::system::cpu_count);
+        tm.start();
+
+        auto a = arrays_.get();
+        uint32_t counter = 0;
+        uint64_t line_counter = 1; // skip idx 0 in mem-map
+
+        Gzip_reader r(inFnp_);
+        while(likely(r.getline(a->strs[counter]))){
+            a->idxs[counter] = line_counter++;
+            ++counter;
+            if(unlikely(Constants::Len == counter)){
+                tm.insert(zi::run_fn(zi::bind(&ReadJson::parseVec, this, a, Constants::Len)));
+                a = arrays_.get();
+                counter = 0;
+            }
+        }
+
+        // parse remainder that weren't added to pool
+        parseVec(a, counter);
+
+        tm.join();
+
+    }
+  
+    void parse(){
+        Gzip_reader d(inFnp_);
+
+        std::ofstream out(outFnp_.string());
         if(!out.is_open()){
-            throw std::runtime_error("could not open " + outFnp.string());
+            throw std::runtime_error("could not open " + outFnp_.string());
         }
 
         size_t fileLineCount = 0;
@@ -72,13 +128,16 @@ public:
                 return;
             }
 
-            parseLine(out, root);
+            //parseLine(out, root);
             ++parsedRows;
+	    if(0 == fileLineCount % 250){
+	      std::cout << fileLineCount << std::endl;
+	    }
         }
 
         out.close();
         std::cout << "parsed " << parsedRows << " rows" << std::endl;
-        std::cout << "wrote: " << outFnp << std::endl;
+        std::cout << "wrote: " << outFnp_ << std::endl;
     }
 
     void parseLine(std::ofstream& out, Json::Value& root){
@@ -125,17 +184,17 @@ int main(int argc, char* argv[]){
     zi::parse_arguments(argc, argv, true);  // modifies argc and argv
     const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-    if(1 != args.size()){
-        std::cerr << "expect 1 JSON file" << std::endl;
+    if(2 != args.size()){
+        std::cerr << "expect 2 JSON files" << std::endl;
         return 1;
     }
 
     try {
-        bib::ReadJson rs(args[0]);
-        rs.parse();
+      bib::ReadJson rs(args[0], args[1]);
+      rs.parse();
     } catch(const std::exception& ex){
-        std::cerr << ex.what() << std::endl;
-        return 1;
+      std::cerr << ex.what() << std::endl;
+      return 1;
     }
 
     return 0;
