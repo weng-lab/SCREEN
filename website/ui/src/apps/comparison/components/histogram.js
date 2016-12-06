@@ -2,6 +2,8 @@ var React = require('react');
 import {connect} from 'react-redux'
 var d3 = require('d3');
 
+import {chr_sort} from '../../../common/common'
+
 class HistogramSet extends React.Component {
 
     constructor(props) {
@@ -9,15 +11,14 @@ class HistogramSet extends React.Component {
     }
 
     render() {
-	console.log(this.props.histograms);
 	if (!this.props.histograms) return <div />;
 	var h = this.props.histograms;
 	var margin = {top: 10, left: 10, right: 10, bottom: 10};
+	var skeys = [...Object.keys(this.props.histograms)].sort(chr_sort);
 	return (<div>
-		{Object.keys(this.props.histograms).map((k) => (!h[k].totals ? "" :
+		{skeys.map((k) => (!h[k].totals ? "" :
 		    <div key={"d_" + k}>
-			<h2 key={"h2_" + k}>{k}</h2>
-			<Histogram heights={h[k].totals} colors={h[k].corrs} margin={margin} key={"h_" + k} />
+			{k} <Histogram heights={h[k].totals} colors={h[k].corrs} margin={margin} key={"h_" + k} />
                     </div>
 		))}
 		</div>);
