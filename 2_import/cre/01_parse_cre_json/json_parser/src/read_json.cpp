@@ -1,6 +1,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup.hpp>
+#include <mutex>
 
 #include <vector>
 #include <string>
@@ -16,6 +17,7 @@
 #include "cpp/utility.hpp"
 #include "cpp/gzip_reader.hpp"
 #include "cpp/tictoc.hpp"
+#include "cpp/gzstream.hpp"
 
 #include "simpleObjectPool.hpp"
 
@@ -28,23 +30,52 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
+  struct Constants {
+    enum lengths { Len = 250 };
+  };
+  struct ArrayPool {
+    std::array<std::string, Constants::Len> strs;
+    std::array<uint64_t, Constants::Len> idxs;
+  };
+
+  template <typename T>
+  class LockedFileWriter{
+    bfs::path fnp_;
+    std::mutex mutex_;
+
+    std::unique_ptr<T> out_;
+    
+  public:
+    LockedFileWriter(bfs::path fnp)
+      : fnp_(fnp)
+    {
+      out_ = std::make_unique<T>(fnp_.string());
+    }
+
+    template <typename C>
+    void write(const C& lines){
+      std::lock_guard<std::mutex> lock(mutex_);
+      auto& out = *out_;
+      for(const auto line : lines){
+	out << line << "\n";
+      }
+    }
+  };
+  
   class ReadJson{
     const bfs::path inFnp_;
     const bfs::path outFnp_;
 
+    std::unique_ptr<LockedFileWriter<GZSTREAM::ogzstream>> out_;
+    
   public:
     ReadJson(bfs::path inFnp, bfs::path outFnp)
       : inFnp_(inFnp)
       , outFnp_(outFnp)
-    {}
+    {
+      out_ = std::make_unique<LockedFileWriter<GZSTREAM::ogzstream>>(outFnp_);
+    }
 
-    struct Constants {
-      enum lengths { Len = 250 };
-    };
-    struct ArrayPool {
-      std::array<std::string, Constants::Len> strs;
-      std::array<uint64_t, Constants::Len> idxs;
-    };
     SimpleObjectPool<ArrayPool> arrays_;
 
     void import(){
@@ -127,7 +158,9 @@ namespace bib {
 	}
       }
 
-      return "";
+      std::ostringstream ss;
+      ss << root;
+      return ss.str();
     }
   };
 } // namespace bib
