@@ -16,7 +16,7 @@ export const HEATMAP = 'HEATMAP';
 const heatmap_layout = Object.assign({}, default_heatmap_layout, {
     margin: Object.assign({}, default_heatmap_layout.margin, {
 	left: 100,
-	top: 350
+	top: 225
     })
 });
 
@@ -28,7 +28,8 @@ const vertical_bar_props_map = (store, key) => (_state) => {
 	height: state.height,
 	xlabels: state.xlabels,
 	title: state.title,
-	loading: state.loading
+	loading: state.loading,
+	helpkey: state.helpkey
     };
 };
 

@@ -27,6 +27,10 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373, "chr3": 19802243
                           "chr16": 90354753, "chr17": 81195210, "chr18": 78077248, "chr20": 63025520,
                           "chrY": 59373566, "chr19": 59128983, "chr22": 51304566, "chr21": 48129895 }}
 
+class helptext:
+    docid = "1fWphK-WAyk65d1WO8s0yBqO-_YiD2JdQwlkB3ZqqsYI"
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "googleapi", "helptext.txt")
+
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
 
