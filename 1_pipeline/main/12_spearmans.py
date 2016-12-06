@@ -138,6 +138,7 @@ def parseargs():
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="hg19")
     parser.add_argument('-j', type=int, default=8)
+    parser.add_argument("--resetdb", action="store_true", default=False)
     return parser.parse_args()
 
 # for parallelizing
@@ -160,7 +161,8 @@ def main():
 
     # connect to DB, recreate tables
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
-    DB(DBCONN, args.assembly).recreate_tables()
+    if args.resetdb:
+        DB(DBCONN, args.assembly).recreate_tables()
     
     # do correlation for each combo and insert
     for res in [300000]:
