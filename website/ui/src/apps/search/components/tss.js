@@ -14,7 +14,8 @@ class TSSExpressionPlot extends REComponent {
 	if (!this.props.items || this.props.items.length == 0) {
 	    return super.render(<div>This regulatory element does not have any associated transcription start sites.</div>);
 	}
-	return super.render(<ExpressionBoxplot items={this.props.items} gene_name={this.props.gene_name} loading={this.props.loading} />);
+	return super.render(<ExpressionBoxplot items={this.props.items} gene_name={this.props.gene_name} loading={this.props.loading}
+			       helpkey="gene_expression_barplot" />);
     }
 
     componentDidUpdate() {
