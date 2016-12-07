@@ -137,11 +137,30 @@ namespace bib {
       return doParseLine(root);
     }
 
-    std::string doParseLine(const Json::Value& root){
-      std::string ensembl_id = root["ensembl_id"].asString();
-      std::string gene_name = root["gene_name"].asString();
+    std::string doParseLine(const Json::Value& j){
+      std::string accession = j["accession"].asString();
+      //std::cout << accession << std::endl;
 
-      for(const auto& n : root["expression_values"]){
+      // top-level: accession, genes, genome, neg-log-p, position, ranks, stam_id
+      // genes: nearest-all, nearest-pc, tads
+      // genome
+      // neg-log-p
+      // position: chrom, end, start
+      // ranks: conservation ctcf dnase enhancer promoter
+				
+      for(const auto e : j["ranks"]["dnase"].getMemberNames()){
+	std::cout << ' ' << e;
+      }
+
+      exit(1);
+      
+      return Json::FastWriter().write(j);
+    }
+  };
+} // namespace bib
+
+/*
+      for(const auto& n : j["expression_values"]){
 	std::string dataset;
 	std::map<int, std::map<std::string, float>> vals;
 	for(const auto e : n.getMemberNames()){
@@ -158,11 +177,7 @@ namespace bib {
 	  vals[repNum][toks[1]] = n[e].asFloat();
 	}
       }
-
-      return Json::FastWriter().write(root);
-    }
-  };
-} // namespace bib
+*/
 
 int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
