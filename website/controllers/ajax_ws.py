@@ -72,6 +72,14 @@ class AjaxWebService:
                         "helpkey": self._helpkey }
         self._cached_results = {}
 
+    def _get_associated_genes(self, accession):
+        results = self.es.search(body={"query": {"bool": {"must": {"match": {"accession": accession}}}}},
+                                 index="associated_tss")["hits"]["hits"]
+        if len(results) == 0: return []
+        if len(results) > 1:
+            print("warning: too many results in index associated_tss for accession=%s; returning the first" % accession)
+        return self.es.genes_from_ensemblids(results[0]["_source"]["proximal-genes"])
+        
     def _helpkey(self, j):
         if "key" not in j: return {}
         data = self.ps.get_helpkey(j["key"])
@@ -138,7 +146,8 @@ class AjaxWebService:
                                "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
-                               "nearby_res" : self.details.formatResJS(re_results, pos, accession) })
+                               "nearby_res" : self.details.formatResJS(re_results, pos, accession),
+                               "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])] })
 
         return output
 
@@ -151,18 +160,12 @@ class AjaxWebService:
                                       "_source": ["accession", "position"]},
                                 index=paths.re_json_index)["hits"]["hits"]
         return [x["_source"] for x in retval]
-                                      
+    
     
     def _tad_details(self, ensembl_list):
-        query = []
-        for ensembl_id in ensembl_list:
-            query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
-        retval = self.es.search(body={"query": {"bool": {"should": query}},
-                                      "size": 1000},
-                                index="gene_aliases")["hits"]["hits"]
-        return [{"approved_symbol": x["_source"]["approved_symbol"],
-                 "coordinates": x["_source"]["coordinates"] if "coordinates" in x["_source"] else ""}
-                for x in retval]
+        return [{"approved_symbol": x["approved_symbol"],
+                 "coordinates": x["coordinates"] if "coordinates" in x else ""}
+                for x in self.es.genes_from_ensemblids(ensembl_list)]
 
     def _re_genes(self, j):
         accession = j["accession"]

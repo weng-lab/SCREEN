@@ -100,7 +100,7 @@ def snp_query(accession, assembly="", fuzziness=0):
     return retval
 
 class ElasticSearchWrapper:
-               
+    
     def __init__(self, es):
         self.es = es
         self.search = self.es.search
@@ -120,6 +120,15 @@ class ElasticSearchWrapper:
         if q is None: return None
         return requests.get(url, headers=get_headers, data=json.dumps(q))
 
+    def genes_from_ensemblids(self, ensembl_ids):
+        query = []
+        for ensembl_id in ensembl_ids:
+            query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
+        retval = self.es.search(body={"query": {"bool": {"should": query}},
+                                      "size": 1000},
+                                index="gene_aliases")["hits"]["hits"]
+        return [x["_source"] for x in retval]
+    
     def _find_within(self, q, rf):
         _tk = q.split(" ")
         retval = []

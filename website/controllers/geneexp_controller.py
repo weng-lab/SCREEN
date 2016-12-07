@@ -16,7 +16,7 @@ class GeneExpController:
     def geneexp(self, args, kwargs, uuid):
         pageInfo = PageInfoGeneExp(*self.params)
         return self.t('main/geneexp', **pageInfo.geneexpPage(args, kwargs, uuid))
-
+    
     def geneexpjson(self, j):
         gene = j["geneID"]
         # TODO: check for valid gene

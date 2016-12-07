@@ -1,3 +1,5 @@
+import {ExpressionBoxplotAJAX} from '../../geneexp/helpers/ajax'
+import {expression_boxplot_loading, expression_boxplot_done, update_expression_boxplot} from '../../geneexp/helpers/invalidate_results'
 import QueryAJAX, {TreeAJAX, DetailAJAX, ExpressionAJAX, DetailGeneAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, EXPRESSION_MATRIX_ACTION, DETAILS_DONE,
 	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION, SET_TREE} from '../reducers/root_reducer'
@@ -6,6 +8,10 @@ import {SET_VALUE} from '../../../common/reducers/searchbox'
 import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
 import FacetQueryMap, {FacetsToSearchText} from '../elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
+
+const all_compartments = ["cell", "nucleoplasm", "cytosol", "nucleus", "membrane", "chromatin", "nucleolus"].map(
+    (d) => {return {key: d, selected: true}}
+);
 
 export const results_fetching = () => {
     return {
@@ -95,6 +101,25 @@ export const set_searchtext = (value) => {
     }
 }
 
+export const invalidate_boxplot = (q) => {
+    return (dispatch) => {
+	var query = JSON.stringify({
+	    geneID : q,
+	    compartments: all_compartments
+	});
+	var f_success = (response, status, jqxhr) => {
+	    console.log(response);
+	    dispatch(update_expression_boxplot(response));
+	    dispatch(expression_boxplot_done(response));
+	};
+	var f_error = (jqxhr, status, error) => {
+	    dispatch(results_error(jqxhr, error));
+	};
+	dispatch(expression_boxplot_loading());
+	ExpressionBoxplotAJAX(query, f_success, f_error);
+    }
+};
+
 export const invalidate_results = (state) => {
     return (dispatch) => {
 
@@ -123,7 +148,6 @@ export const invalidate_results = (state) => {
 
 	dispatch(results_fetching());
 	QueryAJAX(n_query, f_success, f_error);
-	console.log(state);
 	if (state.results.tree)
 	    TreeAJAX(n_query, state.results.tree.outer, state.results.tree.inner, t_success, f_error);
 	Object.keys(state.results_displays).map((k) => {
@@ -147,6 +171,9 @@ export const invalidate_detail = (re) => {
 	    dispatch(expression_done(response));
 	    dispatch(update_detail(response));
 	    dispatch(details_done(response));
+	    if (response.data.associated_tss && response.data.associated_tss.length > 0) {
+		dispatch(invalidate_boxplot(response.data.associated_tss[0]));
+	    }
 	};
 	var g_success = (response, status, jqxhr) => {
 	    dispatch(update_detail(response));
