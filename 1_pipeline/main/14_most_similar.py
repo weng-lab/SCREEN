@@ -165,9 +165,12 @@ def main():
 
     # do comparison, map keys for easy writing
     ngroup = len(res) / args.j + 1
-    _results = asum(Parallel(n_jobs = args.j)(delayed(compare)(res, i * ngroup, (i + 1) * ngroup if i < args.j - 1 else len(res),
-                                                               args.n_elements)
-                                              for i in xrange(0, args.j)))
+    if args.j > 1:
+        _results = asum(Parallel(n_jobs = args.j)(delayed(compare)(res, i * ngroup, (i + 1) * ngroup if i < args.j - 1 else len(res),
+                                                                   args.n_elements)
+                                                  for i in xrange(0, args.j)))
+    else:
+        _results = compare(res, 0, len(res), args.n_elements)
     results = {}
     for result in _results:
         results[result[0]] = result[1]
