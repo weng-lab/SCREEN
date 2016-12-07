@@ -27,7 +27,11 @@ class RegElementDetails:
         if retval["hits"]["total"] > 1:
             #return { "error" : "too many hits (%d) for " + reAccession }
             print("ERROR: too many hits for " + reAccession)
-        return retval["hits"]["hits"][0]["_source"]
+        result = retval["hits"]["hits"][0]["_source"]
+        allgenes = result["genes"]["nearest-all"] + result["genes"]["nearest-pc"]
+        result["nearby_genes"] = [{"name": x["gene-name"],
+                                   "distance": x["distance"] } for x in allgenes]
+        return result
 
     def _get_overlap_message(self, overlap_fraction, overlap_bp):
         if overlap_fraction > 0.0:
