@@ -23,7 +23,7 @@ export const results_error = (requestobj, error) => {
     };
 };
 
-export const update_expression_boxplot = (expression_boxplot) => {
+export const update_expression_boxplot = (expression_boxplot, gene_name) => {
     return {
 	type: UPDATE_EXPRESSION_BOXPLOT,
 	expression_boxplot
@@ -67,7 +67,9 @@ export const invalidate_boxplot = (q) => {
 	    "compartments" : collectCompartments(q)
 	});
 	var f_success = (response, status, jqxhr) => {
-	    dispatch(update_expression_boxplot(response));
+	    dispatch(update_expression_boxplot(Object.assign({}, response, {
+		gene_name: GlobalParsedQuery["gene"]
+	    })));
 	    dispatch(expression_boxplot_done(response));
 	};
 	var f_error = (jqxhr, status, error) => {

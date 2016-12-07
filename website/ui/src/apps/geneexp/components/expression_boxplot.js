@@ -13,7 +13,7 @@ class ExpressionBoxplot extends React.Component {
 
     render() {
 	return (<div>
-		<h2>{GlobalParsedQuery["gene"]}</h2>
+		<h2>{this.props.gene_name}</h2>
 		<div style={{"width": "100%"}} ref="bargraph" />
 		</div>);
     }
@@ -37,7 +37,8 @@ export default ExpressionBoxplot;
 const props_map = (state) => {
     return {
 	items: state.results.expression_boxplot.items,
-	loading: state.results.expression_boxplot.fetching
+	loading: state.results.expression_boxplot.fetching,
+	gene_name: state.results.expression_boxplot.gene_name
     };
 };
 
