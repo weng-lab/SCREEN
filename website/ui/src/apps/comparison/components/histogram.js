@@ -51,7 +51,7 @@ class HistogramSet extends React.Component {
 
 	var c = d3.scaleLinear()
 	    .domain([0.0, 1.0])
-	    .range(["#aaaaaa", "#0000aa"]);
+	    .range(["#ff0000", "#0000ff"]);
 	
 	var bar = g.selectAll(".bar")
 	    .data(h.totals)
