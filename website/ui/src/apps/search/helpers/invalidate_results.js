@@ -108,8 +108,9 @@ export const invalidate_boxplot = (q) => {
 	    compartments: all_compartments
 	});
 	var f_success = (response, status, jqxhr) => {
-	    console.log(response);
-	    dispatch(update_expression_boxplot(response));
+	    dispatch(update_expression_boxplot(Object.assign({}, response, {
+	    	gene_name: q
+	    })));
 	    dispatch(expression_boxplot_done(response));
 	};
 	var f_error = (jqxhr, status, error) => {

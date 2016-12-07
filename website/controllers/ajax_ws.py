@@ -139,11 +139,11 @@ class AjaxWebService:
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
-        gene_results = self.es.get_overlapping_genes(expanded_coords)
+#        gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
         
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
-                               "nearby_genes" : self.details.formatGenesJS(gene_results, pos),
+                               "nearby_genes" : j["nearby_genes"],
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
