@@ -9,6 +9,7 @@ import {tissue_label_formatter} from '../config/colors'
 import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 import {tree_connector} from '../components/tree'
+import {tss_connector} from '../components/tss'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -34,6 +35,10 @@ export const DETAILS_DONE = 'DETAILS_DONE';
 export const UPDATE_DETAIL = 'UPDATE_DETAIL';
 export const SET_DETAIL_TAB = 'SET_DETAIL_TAB';
 
+export const UPDATE_EXPRESSION_BOXPLOT = 'UPDATE_EXPRESSION_BOXPLOT';
+export const EXPRESSION_BOXPLOT_LOADING = 'EXPRESSION_BOXPLOT_LOADING';
+export const EXPRESSION_BOXPLOT_DONE = 'EXPRESSION_BOXPLOT_DONE';
+
 export const TAB_ACTION = 'TAB_ACTION';
 
 export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
@@ -50,6 +55,11 @@ export const default_state = (tabs) => {return {
 	cart_list: [],
 	total: 0,
 	fetching: false,
+	expression_boxplot: {
+	    items: [],
+	    gene_name: "",
+	    fetching: false
+	},
 	tree: {
 	    tree: null,
 	    labels: null,
@@ -93,6 +103,10 @@ export const main_tab_connector = MainTabsConnector(
     })
 );
 
+export const main_tss_connector = tss_connector(
+    (state) => (state.results.expression_boxplot)
+);
+
 export const main_tree_connector = (store) => tree_connector(store)(
     (state) => (state.results.tree),
     (dispatch) => (dispatch)
@@ -117,6 +131,31 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 
     switch (action.type) {
 
+    case UPDATE_EXPRESSION_BOXPLOT:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: action.expression_boxplot
+	    })
+	});
+
+    case EXPRESSION_BOXPLOT_LOADING:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: Object.assign({}, state.results.expression_boxplot, {
+		    fetching: true
+		})
+	    })
+	});
+
+    case EXPRESSION_BOXPLOT_DONE:
+	return Object.assign({}, state, {
+	    results: Object.assign({}, state.results, {
+		expression_boxplot: Object.assign({}, state.results.expression_boxplot, {
+		    fetching: false
+		})
+	    })
+	});
+	
     case ADD_FACETBOX:
 	return Object.assign({}, state, {
 	    facet_boxes: obj_assign(state.facet_boxes, action.key, {

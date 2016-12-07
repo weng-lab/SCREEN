@@ -5,13 +5,15 @@ import Tree from '../../../common/components/tree'
 import {invalidate_results} from '../helpers/invalidate_results'
 import {SET_TREE_FIELDS} from '../reducers/root_reducer'
 
+import REComponent from '../../../common/components/re_component'
+
 const default_label_formatter = (l) => {
     return {
 	name: l
     };
 };
 
-class ResultsTree extends React.Component {
+class ResultsTree extends REComponent {
 
     constructor(props) {
 	super(props);
@@ -25,7 +27,7 @@ class ResultsTree extends React.Component {
     render() {
 	var formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
 	var labels = (this.props.labels ? this.props.labels.map(formatter) : null);
-	return (<div>
+	return super.render(<div>
 		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
 		      <option value="dnase">DNase</option>
 		      <option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
@@ -34,9 +36,18 @@ class ResultsTree extends React.Component {
 		      <option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
 		      <option value="ctcf$CTCF-Only">CTCF Only</option>
 		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
-		   </select>
+	           </select>
+		   <span ref="help_icon" />
 		   <Tree data={this.props.data} width={2500} height={3000} labels={labels} />;
 		</div>);
+    }
+
+    componentDidMount() {
+	super.componentDidMount();
+    }
+
+    componentDidUpdate() {
+	super.componentDidUpdate();
     }
     
 };
@@ -47,7 +58,8 @@ const props_map = (f) => (_state) => {
     return {
 	data: state.tree,
 	labels: state.labels,
-	label_formatter: state.label_formatter
+	label_formatter: state.label_formatter,
+	helpkey: "celltype_tree"
     };
 };
 
