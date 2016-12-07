@@ -56,14 +56,9 @@ export const candidate_res_loading = () => {
     };
 }
 
-const collectCompartments = (s) => {
-    var arr = s.facet_boxes.cell_compartments.facets.cell_compartments.state.data;
-    var ret = []
-    arr.forEach(function(v) {
-	ret.push(v);
-    });
-    return ret;
-}
+const collectCompartments = (s) => (
+    [...s.facet_boxes.cell_compartments.facets.cell_compartments.state.data]
+);
 
 export const invalidate_boxplot = (q) => {
     return (dispatch) => {
