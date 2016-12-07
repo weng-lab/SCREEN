@@ -42,7 +42,6 @@ namespace bib {
   class LockedFileWriter{
     bfs::path fnp_;
     std::mutex mutex_;
-
     std::unique_ptr<T> out_;
     
   public:
@@ -61,23 +60,25 @@ namespace bib {
       }
     }
   };
-  
+
   class ReadJson{
     const bfs::path inFnp_;
     const bfs::path outFnp_;
-
+    
     std::unique_ptr<LockedFileWriter<GZSTREAM::ogzstream>> out_;
+
     
   public:
     ReadJson(bfs::path inFnp, bfs::path outFnp)
       : inFnp_(inFnp)
       , outFnp_(outFnp)
-    {
-      out_ = std::make_unique<LockedFileWriter<GZSTREAM::ogzstream>>(outFnp_);
+    {      out_ = std::make_unique<LockedFileWriter<GZSTREAM::ogzstream>>(outFnp_);
     }
-
+    
     SimpleObjectPool<ArrayPool> arrays_;
 
+    virtual Json::Value run(const Json::Value& v) = 0;
+    
     void import(){
       TicToc t("done import");
 
@@ -133,12 +134,23 @@ namespace bib {
 	std::cout << root << std::endl;
 	return "";
       }
-    
-      return doParseLine(root);
+     
+      return Json::FastWriter().write(run(root));
     }
+  };
 
-    std::string doParseLine(const Json::Value& j){
+  class ReWriteJson : public ReadJson {
+    
+  public:
+    ReWriteJson(bfs::path inFnp, bfs::path outFnp)
+      : ReadJson(inFnp, outFnp)
+    {}
+
+    virtual Json::Value run(const Json::Value& j){
       std::string accession = j["accession"].asString();
+
+      return j;
+
       //std::cout << accession << std::endl;
 
       // top-level: accession, genes, genome, neg-log-p, position, ranks, stam_id
@@ -152,32 +164,11 @@ namespace bib {
 	std::cout << ' ' << e;
       }
 
-      exit(1);
-      
-      return Json::FastWriter().write(j);
+      exit(1);      
     }
   };
-} // namespace bib
 
-/*
-      for(const auto& n : j["expression_values"]){
-	std::string dataset;
-	std::map<int, std::map<std::string, float>> vals;
-	for(const auto e : n.getMemberNames()){
-	  if("dataset" == e){
-	    dataset = n[e].asString();
-	    continue;
-	  }
-	  if(!("rep" == e.substr(0, 3))){
-	    std::cout << "unknown " << e << "\n";
-	    std::exit(1);
-	  }
-	  auto toks = bib::str::split(e, '_');
-	  int8_t repNum = toks[0][3] - '0';
-	  vals[repNum][toks[1]] = n[e].asFloat();
-	}
-      }
-*/
+} // namespace bib
 
 int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
@@ -189,7 +180,7 @@ int main(int argc, char* argv[]){
   }
 
   try {
-    bib::ReadJson rs(args[0], args[1]);
+    bib::ReWriteJson rs(args[0], args[1]);
     // rs.parse();
     rs.import();
   } catch(const std::exception& ex){
