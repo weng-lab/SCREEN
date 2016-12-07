@@ -30,7 +30,7 @@ def main():
     if args.fnp:
         fnps["rewriteFnp"] = args.fnp
 
-    importer = executable_importer(fnps["rewriteGenePeaksFnp"],
+    importer = executable_importer(fnps["rewriteSimilarFnp"],
                                    fnps["index"], "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)

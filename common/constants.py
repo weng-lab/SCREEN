@@ -47,6 +47,7 @@ class paths:
                      7: {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
                          "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
                          "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
+                         "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
                          "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
                          "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
                          "index": "regulatory_elements_7"}
