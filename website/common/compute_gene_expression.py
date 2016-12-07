@@ -171,12 +171,13 @@ class ComputeGeneExpression:
             rows = curs.fetchall()
 
         def makeEntry(row):
+            base = 2
             return {"tissue" : row[1].strip(),
                     "cellType" : row[2],
                     "rawTPM" : row[0],
-                    "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01)),
+                    "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01, base)),
                     "rawFPKM" : row[5],
-                    "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01)),
+                    "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
                     "expID" : row[3],
                     "rep" : row[4]}
                 

@@ -26,9 +26,9 @@ class LargeHorizontalBars extends React.Component {
 		Data:&nbsp;
 		<select ref="datascale" defaultValue={"logTPM"}
 		   onChange={() => {this.componentDidUpdate()}}>
-		   <option value="logTPM">log&#40;TPM + 0.01&#41;</option>
+		   <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
 		   <option value="rawTPM">TPM</option>
-		   <option value="logFPKM">log&#40;FPKM + 0.01&#41;</option>
+		   <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
 		   <option value="rawFPKM">FPKM</option>
 		</select>
 		</div>

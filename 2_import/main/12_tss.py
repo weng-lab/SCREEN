@@ -23,7 +23,7 @@ def main():
     print("importing", args.version)
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    importer = executable_importer(fnps["rewriteTssFnp"],
+    importer = executable_importer(fnps["tssFnp"],
                                    "associated_tss", "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)

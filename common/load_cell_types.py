@@ -19,7 +19,7 @@ class LoadCellTypes:
         self.curs = curs
         self.tableName = paths.cellTypeTissueTable
 
-        ctFnp = os.path.join(os.path.dirname(__file__), "../celltypes.txt")
+        ctFnp = os.path.join(os.path.dirname(__file__), "../celltypes.json")
         with open(ctFnp) as f:
             self.ctToTissue = json.load(f)
 

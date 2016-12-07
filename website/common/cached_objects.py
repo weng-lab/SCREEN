@@ -28,3 +28,15 @@ class CachedObjects:
 
         self.tf_list_json = json.dumps(self.tf_list)
         self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
+
+    def getTissue(self, ct):
+        if ct in self.cellTypesAndTissues:
+            return self.cellTypesAndTissues[ct]
+        print("missing tissue for", ct)
+        return ""
+
+    def getTissueAsMap(self, ct):
+        if ct in self.tissueMap:
+            return self.tissueMap[ct]
+        print("missing tissue for", ct)
+        return ""
