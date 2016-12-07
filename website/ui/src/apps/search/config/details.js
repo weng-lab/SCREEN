@@ -1,10 +1,12 @@
 const React = require('react');
 import {render_int, render_cell_type} from './results_table'
 import {invalidate_detail} from '../helpers/invalidate_results'
-import {SET_DETAIL_TAB} from '../reducers/root_reducer'
+import {SET_DETAIL_TAB, main_tss_connector} from '../reducers/root_reducer'
 
 import {expression_heatmap_connector} from '../components/expression_heatmap'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
+
+import TSSExpressionPlot from '../components/tss'
 
 import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
 
@@ -348,6 +350,13 @@ export const tabs = [
 	render: (store, key) => {
 	    var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression_matrices))(ExpressionHeatmapSet);
 	    return <ExpressionHeatmap store={store} key={key} />;
+	}
+    },
+    {
+	title: "Associated TSS Expression",
+	render: (store, key) => {
+	    var TSS = main_tss_connector(TSSExpressionPlot);
+	    return <TSS store={store} key={key} />;
 	}
     }
 ];
