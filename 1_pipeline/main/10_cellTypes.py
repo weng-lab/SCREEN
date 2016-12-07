@@ -6,7 +6,7 @@ import json
 
 def main():
     output = []
-    with open(os.path.join(os.path.dirname(__file__), "../../celltypes.txt"), "r") as f:
+    with open(os.path.join(os.path.dirname(__file__), "../../celltypes.json"), "r") as f:
         ct = json.loads(f.read())
     for k, v in ct.iteritems():
         output.append({ "cell_type": k, "tissue": v })

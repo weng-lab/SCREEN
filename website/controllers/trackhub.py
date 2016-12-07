@@ -15,9 +15,6 @@ from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColor
 from common.db_trackhub import DbTrackhub
 from models.regelm_detail import RegElementDetails
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from celltype_to_tissue import CtToTissue
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
 
@@ -49,7 +46,8 @@ class TrackhubController:
         self.templates = templates
         self.es = es
         self.ps = ps
-
+        self.cache = cache
+        
         self.assembly = "hg19"
         self.debug = False
 
@@ -215,7 +213,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         tracks = []
         for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
             for ct in cellTypes:
-                t = CtToTissue(ct)
+                t = self.cache.getTissue(ct)
                 values = re["ranks"][rtrm[0]][ct]
                 if "dnase" == rtrm[0]:
                     tracks.append(TrackInfo(rtrm, t, ct, "dnase", values))

@@ -92,7 +92,7 @@ class AjaxWebService:
         return 1e12 if label not in v else v[label]["rank"]
 
     def _tissue(self, k):
-        return "" if k not in self.cache.tissueMap else self.cache.tissueMap[k]
+        return self.cache.getTissueAsMap(k)
     
     def _format_ranks(self, ranks):
         return {"dnase": [{"tissue": self._tissue(k),
