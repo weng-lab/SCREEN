@@ -23,11 +23,11 @@ def main():
     print("importing", args.version)
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
-    importer = executable_importer(fnps["tssFnp"],
+    importer = executable_importer(fnps["rewriteTssFnp"],
                                    "associated_tss", "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
-    importer.exe(500)
+    importer.exe(2500)
 
 if __name__ == "__main__":
     sys.exit(main())
