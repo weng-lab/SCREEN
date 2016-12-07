@@ -43,7 +43,9 @@ def parseargs():
 keymap = {"Activity Heatmap": "main_rank_heatmap",
           "TSS Start": "tss_dist",
           "Comparison Venn": "comparison_venn",
-          "Comparison Heatmap": "comparison_heatmap" }
+          "Comparison Heatmap": "comparison_heatmap",
+          "Gene Expression": "gene_expression_barplot",
+          "Cell Type Tree": "celltype_tree" }
 
 def main():
     args = parseargs()
@@ -67,6 +69,8 @@ def main():
       " file format is:
       "
       " @key
+      " # comment
+      " %title
       " help_text
     """
     key = None
