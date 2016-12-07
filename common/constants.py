@@ -50,7 +50,8 @@ class paths:
                          "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
                          "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
                          "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
-                         "index": "regulatory_elements_7"}
+                         "index": "regulatory_elements_7",
+                         "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz")}
                      }
 
     @staticmethod
