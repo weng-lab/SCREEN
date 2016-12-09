@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os, sys, json, psycopg2, re, argparse, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
 from dbconnect import db_connect
@@ -32,14 +32,14 @@ class CopyIn:
     """)
 
     def copyIn(self, cur, assembly, fnp):
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             cur.copy_from(f, "r_expression", ',',
                           columns=("assembly", "gene_transcript", "typ", "ensembl_id", "gene_name", "dataset", "replicate", "fpkm", "tpm"))
         print("imported", fnp)
 
     def process(self, assembly, inFnp, t):
         binFnp = os.path.join(os.path.dirname(__file__), "json_parser/bin/read_json") 
-        outFnp = inFnp + ".csv"
+        outFnp = inFnp + ".csv.gz"
         if not os.path.exists(outFnp):
             cmds = [binFnp, inFnp, assembly, t[0], t[1]]
             print("writing csv from", inFnp)
