@@ -38,11 +38,17 @@ struct DBrow {
 };
 
 class ReadJson{
-    const bfs::path fnp_;
-
+  const bfs::path fnp_;
+  const std::string assembly_;
+  const std::string gene_transcript_;
+  const std::string typ_;
+  
 public:
-    ReadJson(bfs::path fnp)
+  ReadJson(bfs::path fnp, std::string assembly, std::string gene_transcript, std::string typ)
         : fnp_(fnp)
+	, assembly_(assembly)
+	, gene_transcript_(gene_transcript)
+	, typ_(typ)
     {}
 
     void parse(){
@@ -113,7 +119,10 @@ public:
                                  .rep = rep,
                                  .fpkm = fpkm,
                                  .tpm = tpm};
-                    out << row << "\n";
+                    out << assembly_ << '\t'
+			<< gene_transcript_ << '\t'
+			<< typ_ << '\t'
+			<< row << "\n";
                 }
             }
         }
@@ -125,13 +134,13 @@ int main(int argc, char* argv[]){
     zi::parse_arguments(argc, argv, true);  // modifies argc and argv
     const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-    if(1 != args.size()){
-        std::cerr << "expect 1 JSON file" << std::endl;
+    if(4 != args.size()){
+        std::cerr << "expect 1 JSON file, assembly, gene/transcript, typ" << std::endl;
         return 1;
     }
 
     try {
-        bib::ReadJson rs(args[0]);
+      bib::ReadJson rs(args[0], args[1], args[2], args[3]);
         rs.parse();
     } catch(const std::exception& ex){
         std::cerr << ex.what() << std::endl;
