@@ -12,6 +12,7 @@
 
 #include "cpp/utility.hpp"
 #include "cpp/gzip_reader.hpp"
+#include "cpp/gzstream.hpp"
 
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(file, "", "file to load");
@@ -54,11 +55,8 @@ public:
     void parse(){
         Gzip_reader d(fnp_);
 
-        bfs::path outFnp = fnp_.string() + ".csv";
-        std::ofstream out(outFnp.string());
-        if(!out.is_open()){
-            throw std::runtime_error("could not open " + outFnp.string());
-        }
+        bfs::path outFnp = fnp_.string() + ".csv.gz";
+	GZSTREAM::ogzstream out(outFnp.string());
 
         size_t fileLineCount = 0;
         size_t parsedRows = 0;
@@ -87,7 +85,7 @@ public:
         std::cout << "wrote: " << outFnp << std::endl;
     }
 
-    void parseLine(std::ofstream& out, Json::Value& root){
+    void parseLine(GZSTREAM::ogzstream& out, Json::Value& root){
         std::string ensembl_id = root["ensembl_id"].asString();
         std::string gene_name = root["gene_name"].asString();
 
@@ -119,9 +117,9 @@ public:
                                  .rep = rep,
                                  .fpkm = fpkm,
                                  .tpm = tpm};
-                    out << assembly_ << '\t'
-			<< gene_transcript_ << '\t'
-			<< typ_ << '\t'
+                    out << assembly_ << ','
+			<< gene_transcript_ << ','
+			<< typ_ << ','
 			<< row << "\n";
                 }
             }
