@@ -13,15 +13,10 @@ class HistogramSet extends React.Component {
 	super(props);
 	this._append_histogram = this._append_histogram.bind(this);
 	this._margin = {top: 10, left: 10, right: 10, bottom: 10};
-	this._zoom = this._zoom.bind(this);
     }
 
     render() {
 	return <div ref="container" />;
-    }
-
-    _zoom() {
-	this._svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
     _append_histogram(k, i) {
@@ -69,8 +64,6 @@ class HistogramSet extends React.Component {
 	    .attr("fill", (d, i) => c(h.corrs[i]))
 	    .attr("height", function(d) { return height - y(d) + 2; });
 
-	this._svg.call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom));
-
 	return svg;
 
     }
@@ -82,9 +75,13 @@ class HistogramSet extends React.Component {
 	if (!h || !skeys) return;
 	$(this.refs.container).empty();
 	console.log(h);
-	this._svg = d3.select(this.refs.container).append("svg")
+	var _svg = d3.select(this.refs.container).append("svg")
 	    .attr("height", skeys.length * CHRHEIGHT + this._margin.top)
-	    .attr("width", d3.max(Object.keys(h), (k) => (h[k] && h[k].totals ? h[k].totals.length : 0)) * BARWIDTH + 50);
+	    .attr("width", d3.max(Object.keys(h), (k) => (h[k] && h[k].totals ? h[k].totals.length : 0)) * BARWIDTH + 50)
+	    .append("g");
+	var zoom = () => {console.log(d3.event); _svg.attr("transform", d3.event.transform);}
+	_svg.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom));
+	this._svg = _svg;
 	skeys.map((k, i) => {
 	    if (h[k].totals && h[k].corrs) {
 		this._append_histogram(k, ptr++);
