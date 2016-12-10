@@ -13,10 +13,15 @@ class HistogramSet extends React.Component {
 	super(props);
 	this._append_histogram = this._append_histogram.bind(this);
 	this._margin = {top: 10, left: 10, right: 10, bottom: 10};
+	this._zoom = this._zoom.bind(this);
     }
 
     render() {
 	return <div ref="container" />;
+    }
+
+    _zoom() {
+	this._svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
     _append_histogram(k, i) {
@@ -63,6 +68,8 @@ class HistogramSet extends React.Component {
 	    .attr("width", x(1))
 	    .attr("fill", (d, i) => c(h.corrs[i]))
 	    .attr("height", function(d) { return height - y(d) + 2; });
+
+	this._svg.call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom));
 
 	return svg;
 
