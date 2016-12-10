@@ -74,12 +74,11 @@ class HistogramSet extends React.Component {
 	var ptr = 0;
 	if (!h || !skeys) return;
 	$(this.refs.container).empty();
-	console.log(h);
 	var _svg = d3.select(this.refs.container).append("svg")
 	    .attr("height", skeys.length * CHRHEIGHT + this._margin.top)
 	    .attr("width", d3.max(Object.keys(h), (k) => (h[k] && h[k].totals ? h[k].totals.length : 0)) * BARWIDTH + 50)
 	    .append("g");
-	var zoom = () => {console.log(d3.event); _svg.attr("transform", d3.event.transform);}
+	var zoom = () => {_svg.attr("transform", d3.event.transform);}
 	_svg.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom));
 	this._svg = _svg;
 	skeys.map((k, i) => {
