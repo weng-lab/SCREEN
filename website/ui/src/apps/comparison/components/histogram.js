@@ -3,9 +3,11 @@ import {connect} from 'react-redux'
 var d3 = require('d3');
 
 import {chr_sort} from '../../../common/common'
+import {draw_chromosome} from '../../../common/d3/chromosome'
 
 const BARWIDTH = 1;
 const CHRHEIGHT = 50;
+const CHRMARGIN = 10;
 
 class HistogramSet extends React.Component {
 
@@ -28,12 +30,13 @@ class HistogramSet extends React.Component {
 	
 	var h = this.props.histograms[k];
 	var div = $(this.props.container);
-	var width = h.totals.length * BARWIDTH;
+	var t = d3.max(h.cytobands, (d) => (d.end)) / 300000;
+	var width = t * BARWIDTH;
 	var height = CHRHEIGHT;
-	var xrange = [0, h.totals.length];
+	var xrange = [0, t]; //[0, h.totals.length];
 
 	var px = this._margin.left;
-	var py = this._margin.top + i * (CHRHEIGHT + 10);
+	var py = this._margin.top + i * (CHRHEIGHT + CHRMARGIN);
 	
 	var svg = this._svg.append("g")
 	    .attr("width", width + 50)
@@ -45,6 +48,9 @@ class HistogramSet extends React.Component {
 	    .append("text").text(k);
 	var g = svg.append("g")
 	    .attr("transform", "translate(50, 0)");
+
+	draw_chromosome(g, {width, height: CHRHEIGHT}, h.cytobands);
+	return svg;
 	
 	var x = d3.scaleLinear()
             .domain(xrange)
@@ -69,8 +75,6 @@ class HistogramSet extends React.Component {
 	    .attr("fill", (d, i) => c(h.corrs[i]))
 	    .attr("height", function(d) { return height - y(d) + 2; });
 
-	this._svg.call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom));
-
 	return svg;
 
     }
@@ -81,15 +85,15 @@ class HistogramSet extends React.Component {
 	var ptr = 0;
 	if (!h || !skeys) return;
 	$(this.refs.container).empty();
-	console.log(h);
 	this._svg = d3.select(this.refs.container).append("svg")
-	    .attr("height", skeys.length * CHRHEIGHT + this._margin.top)
-	    .attr("width", d3.max(Object.keys(h), (k) => (h[k] && h[k].totals ? h[k].totals.length : 0)) * BARWIDTH + 50);
+	    .attr("height", skeys.length * (CHRHEIGHT + CHRMARGIN) + this._margin.top)
+	    .attr("width", d3.max(h, (d) => (d3.max(d.cytobands, (d) => (d.end)))) * BARWIDTH + 50);
 	skeys.map((k, i) => {
-	    if (h[k].totals && h[k].corrs) {
+	    if ((h[k].totals && h[k].corrs) || h[k].cytobands) {
 		this._append_histogram(k, ptr++);
 	    }
 	});
+	this._svg.call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", this._zoom));
     }
     
 }

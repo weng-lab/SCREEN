@@ -1,5 +1,6 @@
 export const chr_sort = (a, b) => (
-    +a.replace(/chr/g, '') - +b.replace(/chr/g, '')
+    +a.replace(/chr/g, '').replace(/Y/g, '24').replace(/X/g, '23')
+    - +b.replace(/chr/g, '').replace(/Y/g, '24').replace(/X/g, '23')
 );
 
 export function fit_to(a1, a2) {
