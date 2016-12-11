@@ -40,6 +40,8 @@ class paths:
             return "%s.%s.%s" % (toks[0], chrom, ".".join(toks[1:]))
         return addChr
 
+    cytobands = {"hg19": os.path.join(v4d, "hg19.cytoBand.txt.gz")}
+    
     re_json_vers = { 6: {"origFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
                          "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
                          "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),

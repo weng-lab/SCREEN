@@ -15,6 +15,7 @@ from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.correlation import Correlation
+from models.cytoband import Cytoband
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -48,6 +49,8 @@ class AjaxWebService:
         self.ps = ps
         self.rh = RankHeatmap(cache.cellTypesAndTissues, self._rank_types)
         self.cache = cache
+        self.cytobands = {assembly: Cytoband(v)
+                          for assembly, v in paths.cytobands.iteritems()}
         
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps)
@@ -400,6 +403,7 @@ class AjaxWebService:
         results["chrom_spearman"] = {}
         for chrom in chroms[assembly]:
             results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
+                                                "cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [],
                                                 "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 300000, assembly) }
 
         return results
