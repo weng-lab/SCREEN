@@ -20,7 +20,10 @@ class HistogramSet extends React.Component {
 	this._draw_feature = this._draw_feature.bind(this);
 	this._redraw_grid = this._redraw_grid.bind(this);
 	this._get_rekeys();
-	this.state = {k: 1};
+	this.state = {
+	    k: 1,
+	    hidden: {}
+	};
     }
     
     _get_rekeys() {
@@ -52,20 +55,38 @@ class HistogramSet extends React.Component {
     
     _draw_feature(f, g, size, _x) {
 	if (array_contains(this._re_keys, f.feature)) {
-	    var width = _x(f.end - f.start);
-	    g.append("rect")
-		.attr("x", _x(f.start))
-		.attr("width", width * this.state.k > 2 ? width : 2)
-		.attr("fill", this._colors[f.feature])
-		.attr("height", size.height)
-		.attr("class", "resizable");
+	    if (!(f.feature in this.state.hidden) || !(this.state.hidden[f.feature])) {
+		var width = _x(f.end - f.start);
+		g.append("rect")
+		    .attr("x", _x(f.start))
+		    .attr("width", width * this.state.k > 2 ? width : 2)
+		    .attr("fill", this._colors[f.feature])
+		    .attr("height", size.height)
+		    .attr("class", "resizable");
+	    }
 	    return true;
 	}
 	return false;
     }
     
     render() {
-	return (<div ref="container" />);
+	return (<div>
+		   <div>
+		   {this._re_keys.map((k) => {
+		       var cstate = (k in this.state.hidden ? this.state.hidden[k] : false);
+		       var onclick = () => {
+			   var n = Object.assign({}, this.state.hidden);
+			   n[k] = !cstate;
+			   this.setState({
+			       hidden: n
+			   });
+		       };
+		       var checked = (cstate ? "true" : "false");
+		       return (<div><input type="checkbox" onClick={onclick} checked={checked} />{k}</div>);
+		   })}
+		   </div>
+		   <br /><div ref="container" />
+		</div>);
     }
 
     _append_histogram(k, i) {
