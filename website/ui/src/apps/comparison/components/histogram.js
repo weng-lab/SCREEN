@@ -2,12 +2,13 @@ var React = require('react');
 import {connect} from 'react-redux'
 var d3 = require('d3');
 
-import {chr_sort} from '../../../common/common'
+import {chr_sort, array_contains} from '../../../common/common'
 import {draw_chromosome} from '../../../common/d3/chromosome'
 
 const BARWIDTH = 1;
 const CHRHEIGHT = 50;
-const CHRMARGIN = 10;
+const CHRMARGIN = 25;
+const LABELMARGIN = 50;
 
 class HistogramSet extends React.Component {
 
@@ -15,10 +16,48 @@ class HistogramSet extends React.Component {
 	super(props);
 	this._append_histogram = this._append_histogram.bind(this);
 	this._margin = {top: 10, left: 10, right: 10, bottom: 10};
+	this._get_rekeys = this._get_rekeys.bind(this);
+	this._draw_feature = this._draw_feature.bind(this);
+	this._redraw_grid = this._redraw_grid.bind(this);
+	this._get_rekeys();
+	this.state = {k: 1};
     }
-
+    
+    _get_rekeys() {
+	this._re_keys = [];
+	this._colors = {};
+	var cptr = 0;
+	if (!this.props.histograms) return;
+	var keys = Object.keys(this.props.histograms);
+	if (!keys || !keys.length) return;
+	var fkey = keys[0];
+	this.props.histograms[fkey].cytobands.map((c) => {
+	    if (c.feature.includes("both") && !array_contains(this._re_keys, c.feature)) {
+		this._re_keys.push(c.feature);
+		this._colors[c.feature] = "#00ff00";
+	    } else if (c.feature.includes("only") && !array_contains(this._re_keys, c.feature)) {
+		this._re_keys.push(c.feature);
+		this._colors[c.feature] = (cptr++ ? "#ff0000" : "#0000ff");
+	    }
+	});
+    }
+    
+    _draw_feature(f, g, size, _x) {
+	if (array_contains(this._re_keys, f.feature)) {
+	    var width = _x(f.end - f.start);
+	    g.append("rect")
+		.attr("x", _x(f.start))
+		.attr("width", width * this.state.k > 2 ? width : 2)
+		.attr("fill", this._colors[f.feature])
+		.attr("height", size.height)
+		.attr("class", "resizable");
+	    return true;
+	}
+	return false;
+    }
+    
     render() {
-	return <div ref="container" />;
+	return (<div ref="container" />);
     }
 
     _append_histogram(k, i) {
@@ -28,24 +67,19 @@ class HistogramSet extends React.Component {
 	var t = d3.max(h.cytobands, (d) => (d.end)) / 300000;
 	var width = t * BARWIDTH;
 	var height = CHRHEIGHT;
-	var xrange = [0, t]; //[0, h.totals.length];
 
-	var px = this._margin.left;
+	var px = 0;
 	var py = this._margin.top + i * (CHRHEIGHT + CHRMARGIN);
 	
-	var svg = this._svg.append("g")
-	    .attr("width", width + 50)
-	    .attr("height", CHRHEIGHT)
+	var g = this._chrs.append("g")
 	    .attr("transform", "translate(" + px + "," + py + ")");
+	draw_chromosome(g, {width: width * this.state.k, height: CHRHEIGHT}, h.cytobands, this._draw_feature);
 
-	svg.append("g")
-	    .attr("transform", "translate(0, " + (CHRHEIGHT / 2) + ")")
+	this._chr_labels.append("g")
+	    .attr("transform", "translate(" + px + "," + (py + (CHRHEIGHT / 2)) + ")")
 	    .append("text").text(k);
-	var g = svg.append("g")
-	    .attr("transform", "translate(50, 0)");
-
-	draw_chromosome(g, {width, height: CHRHEIGHT}, h.cytobands);
-	return svg;
+	
+	return;
 	
 	var x = d3.scaleLinear()
             .domain(xrange)
@@ -73,26 +107,88 @@ class HistogramSet extends React.Component {
 	return svg;
 
     }
+
+    _redraw_grid(size, offset, max) {
+	
+	// get spacing and scale, find first base in viewport
+	var g = this._chrs.append("g")
+	    .attr("width", size.width).attr("height", size.height);
+	var _ix = d3.scaleLinear().domain([0, size.width]).range([0, max / this.state.k]);
+	var spacing = size.width / 5;
+
+	// loop and draw until off the end of the viewport
+	for (var i = -offset; i < size.width - offset; i += spacing) {
+	    if (_ix(i) > max) break;
+	    if (_ix(i) < 0) continue;
+	    g.append("rect")
+		.attr("transform", "translate(" + i + ",0)")
+	    	.attr("width", 1)
+		.attr("height", size.height);
+	    for (var j = 1; j < Object.keys(this.props.histograms).length; ++j) {
+		g.append("text")
+		    .attr("transform", "translate(" + (i + 5) + "," + (j * (CHRHEIGHT + CHRMARGIN)) + ")")
+		    .text(Math.round(_ix(i)));	
+	    }
+	}
+	
+    }
+    
+    componentDidMount() {
+
+	// create SVG, g elements
+	this._rsvg = d3.select(this.refs.container).append("svg");
+	this._chrs = this._rsvg.append("g")
+	    .attr("transform", "translate(" + LABELMARGIN + ",0)");
+	this._chr_labels = this._rsvg.append("g")
+	    .attr("width", LABELMARGIN);
+	this._chr_labels.append("rect")
+	    .attr("fill", "#ffffff").attr("width", LABELMARGIN);
+	this._grid = this._chrs.append("g");
+
+	// attach zoom handler to SVG
+	var zoom = () => {
+	    this._chrs.attr("transform", "translate(" + d3.event.transform.x + ",0)");
+	    this.setState({k: d3.event.transform.k});
+	};
+	this._zoom = d3.zoom().scaleExtent([1, 1048576]).on("zoom", zoom);
+	this._rsvg.call(this._zoom);
+	
+    }
     
     componentDidUpdate() {
+
+	// sort chromosomes, ensure at least one is present
 	var h = this.props.histograms;
 	var skeys = [...Object.keys(h)].sort(chr_sort);
-	var ptr = 0;
 	if (!h || !skeys) return;
-	$(this.refs.container).empty();
-	var _svg = d3.select(this.refs.container).append("svg")
-	    .attr("height", skeys.length * (CHRHEIGHT + CHRMARGIN) + this._margin.top)
-	    .attr("width", d3.max(h, (d) => (d3.max(d.cytobands, (d) => (d.end)))) * BARWIDTH + 50)
-	    .append("g");
-	var zoom = () => {_svg.attr("transform", d3.event.transform);}
-	_svg.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom));
-	this._svg = _svg;
+	
+	// refresh keys, graphic dimensions
+	var height = skeys.length * (CHRHEIGHT + CHRMARGIN) + this._margin.top;
+	var maxclen = d3.max(Object.keys(h), (k) => {
+	    var d = h[k];
+	    return (d.cytobands ? d3.max(d.cytobands, (_d) => (_d.end ? _d.end : 0)) : 0);
+	});
+	var width = maxclen / 300000 * BARWIDTH;
+	this._get_rekeys();
+	this._rsvg
+	    .attr("height", height)
+	    .attr("width", width + LABELMARGIN);
+	this._chrs.attr("height", height);
+	this._chr_labels.attr("height", height);
+	this._chr_labels.selectAll("rect").attr("height", height);
+
+	// redraw chromosomes and grid
+	var ptr = 0;
+	this._chrs.selectAll("g").remove();
+	this._chr_labels.selectAll("g").remove();
+	this._redraw_grid({height, width}, +this._chrs.attr("transform").split("(")[1].split(",")[0] - LABELMARGIN,
+			  maxclen);
 	skeys.map((k, i) => {
 	    if ((h[k].totals && h[k].corrs) || h[k].cytobands) {
 		this._append_histogram(k, ptr++);
 	    }
 	});
-	this._svg.call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", this._zoom));
+	
     }
     
 }
