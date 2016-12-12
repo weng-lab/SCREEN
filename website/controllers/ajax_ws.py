@@ -72,7 +72,8 @@ class AjaxWebService:
                         "gene_regulators": self._gene_regulators,
                         "re_genes": self._re_genes,
                         "tree": self._tree,
-                        "helpkey": self._helpkey }
+                        "helpkey": self._helpkey,
+                        "venn_chr": self._venn_chr }
         self._cached_results = {}
 
     def _get_associated_genes(self, accession):
@@ -369,7 +370,7 @@ class AjaxWebService:
                 "collabels": [j["cell_types"][x] for x in colorder],
                 "matrix": matrix }
 
-    def _venn_ct_results(self, basequery, celltypes, ranktype, threshold):
+    def _venn_ct_results(self, basequery, celltypes, ranktype, threshold, limit = 100):
         ret = {}
         
         # build query for individual result sets
@@ -380,7 +381,8 @@ class AjaxWebService:
                          {"range": {field: {"gte": threshold}}}))
 
         # get overlapping results
-        q = {"query": {"bool": {"must": basequery}}}
+        q = {"query": {"bool": {"must": basequery}},
+             "size": limit}
         q["query"]["bool"]["must"] += [ctqs[0][0], ctqs[1][0]]
         ret["both cell types"] = self._search({"object": q, "post_processing": {}})
 
@@ -409,14 +411,16 @@ class AjaxWebService:
                                                        j["table_cell_types"], j["venn"]["rank_type"],
                                                        j["venn"]["rank_threshold"])
 
-        # get chromosome similarity
-        results["chrom_spearman"] = {"sep_results": self._venn_ct_results([], j["table_cell_types"], j["venn"]["rank_type"], j["venn"]["rank_threshold"])}
-        for chrom in chroms[assembly]:
-            results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
-                                                "cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [],
-                                                "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 300000, assembly) }
-
         return results
+
+    def _venn_chr(self, j):
+        assembly = "hg19" if "assembly" not in j else j["assembly"]
+        ret = {"sep_results": self._venn_ct_results([], j["table_cell_types"], "DNase", 5000, 5000)}
+        for chrom in chroms[assembly]:
+            ret[chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
+                          "cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [],
+                          "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 300000, assembly) }
+        return ret
                                                        
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
