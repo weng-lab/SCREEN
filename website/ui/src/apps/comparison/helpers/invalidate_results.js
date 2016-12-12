@@ -44,12 +44,25 @@ export const invalidate_comparison = (state) => {
 	}
 
 	var f_success = (response, status, jqxhr) => {
+
+	    Object.keys(response.chrom_spearman.sep_results).map((k) => {
+		response.chrom_spearman.sep_results[k].results.hits.map((d) => {
+		    if (!(d._source.position.chrom) in response.chrom_spearman) return;
+		    response.chrom_spearman[d._source.position.chrom].cytobands.push({
+			feature: k,
+			start: d._source.position.start,
+			end: d._source.position.end
+		    });
+		})
+	    });
+	    
 	    ResultsDispatchMap(state, response.results, dispatch);
 	    dispatch(set_venn_results(response.results.venn));
 	    dispatch(set_table_results(response.sep_results));
 	    dispatch({type: SET_SPEARMAN, chrom_spearman: response.chrom_spearman});
 	    dispatch(results_done());
 	    dispatch(set_searchtext(FacetsToSearchText(state)));
+	    
 	};
 	var f_error = (jqxhr, status, error) => {
 	    dispatch(results_error(jqxhr, error));

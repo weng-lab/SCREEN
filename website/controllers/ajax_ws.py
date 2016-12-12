@@ -369,6 +369,29 @@ class AjaxWebService:
                 "collabels": [j["cell_types"][x] for x in colorder],
                 "matrix": matrix }
 
+    def _venn_ct_results(self, basequery, celltypes, ranktype, threshold):
+        ret = {}
+        
+        # build query for individual result sets
+        ctqs = []
+        for cell_type in celltypes:
+            field = self._get_rankfield(ranktype, cell_type)
+            ctqs.append(({"range": {field: {"lte": threshold}}},
+                         {"range": {field: {"gte": threshold}}}))
+
+        # get overlapping results
+        q = {"query": {"bool": {"must": basequery}}}
+        q["query"]["bool"]["must"] += [ctqs[0][0], ctqs[1][0]]
+        ret["both cell types"] = self._search({"object": q, "post_processing": {}})
+
+        # results for each cell type individually
+        q["query"]["bool"]["must"] = q["query"]["bool"]["must"][:-2] + [ctqs[0][1], ctqs[1][0]]
+        ret[celltypes[1] + " only"] = self._search({"object": q, "post_processing": {}})
+        q["query"]["bool"]["must"] = q["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
+        ret[celltypes[0] + " only"] = self._search({"object": q, "post_processing": {}})
+        
+        return ret
+    
     def _venn_search(self, j):
 
         j["post_processing"] = {}
@@ -381,26 +404,13 @@ class AjaxWebService:
         if j["table_cell_types"][1] is None:
             return results
 
-        # build query for individual result sets
-        ctqs = []
-        for cell_type in j["table_cell_types"]:
-            field = self._get_rankfield(j["venn"]["rank_type"], cell_type)
-            ctqs.append(({"range": {field: {"lte": j["venn"]["rank_threshold"]}}},
-                         {"range": {field: {"gte": j["venn"]["rank_threshold"]}}}))
-
-        # get overlapping results
-        j["object"]["query"]["bool"] = {"must": j["object"]["query"]["bool"]["filter"]}
-        j["object"]["query"]["bool"]["must"] += [ctqs[0][0], ctqs[1][0]]
-        results["sep_results"]["both cell types"] = self._search({"object": j["object"], "post_processing": {}})
-
-        # results for each cell type individually
-        j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][1], ctqs[1][0]]
-        results["sep_results"][j["table_cell_types"][1] + " only"] = self._search({"object": j["object"], "post_processing": {}})
-        j["object"]["query"]["bool"]["must"] = j["object"]["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
-        results["sep_results"][j["table_cell_types"][0] + " only"] = self._search({"object": j["object"], "post_processing": {}})
+        # for results tables
+        results["sep_results"] = self._venn_ct_results(j["object"]["query"]["bool"]["filter"],
+                                                       j["table_cell_types"], j["venn"]["rank_type"],
+                                                       j["venn"]["rank_threshold"])
 
         # get chromosome similarity
-        results["chrom_spearman"] = {}
+        results["chrom_spearman"] = {"sep_results": self._venn_ct_results([], j["table_cell_types"], j["venn"]["rank_type"], j["venn"]["rank_threshold"])}
         for chrom in chroms[assembly]:
             results["chrom_spearman"][chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
                                                 "cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [],
