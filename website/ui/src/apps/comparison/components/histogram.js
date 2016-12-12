@@ -70,6 +70,7 @@ class HistogramSet extends React.Component {
     }
     
     render() {
+	this._get_rekeys();
 	return (<div>
 		   <div>
 		   {this._re_keys.map((k) => {
@@ -81,8 +82,8 @@ class HistogramSet extends React.Component {
 			       hidden: n
 			   });
 		       };
-		       var checked = (cstate ? "true" : "false");
-		       return (<div><input type="checkbox" onClick={onclick} checked={checked} />{k}</div>);
+		       var checked = !cstate;
+		       return (<div><input type="checkbox" onClick={onclick} checked={checked} /> <span style={{color: this._colors[k]}}>{k}</span></div>);
 		   })}
 		   </div>
 		   <br /><div ref="container" />
@@ -198,7 +199,6 @@ class HistogramSet extends React.Component {
 	    return (d.cytobands ? d3.max(d.cytobands, (_d) => (_d.end ? _d.end : 0)) : 0);
 	});
 	var width = maxclen / 300000 * BARWIDTH;
-	this._get_rekeys();
 	this._rsvg
 	    .attr("height", height)
 	    .attr("width", width + LABELMARGIN);
