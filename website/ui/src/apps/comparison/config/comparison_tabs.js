@@ -31,7 +31,7 @@ export const maintabs = {
 	    }
 	},
 	chromosomes: {
-	    title: "Regions of similarity",
+	    title: "Genome View",
 	    visible: true,
 	    render: (store, key) => {
 		var Histogram = main_histogram_connector(HistogramSet);
