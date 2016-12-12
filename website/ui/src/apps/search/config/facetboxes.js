@@ -9,6 +9,8 @@ import {selected_cell_line} from '../elasticsearch/helpers'
 
 import {render_int, render_cell_type} from './results_table'
 
+export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").replace(/27AC/g, "27ac").replace(/ME1/g, "me1").replace(/ME2/g, "me2").replace(/ME3/g, "me3"));
+
 export const facetboxes = {
     "accessions": {
 	title: "Accessions",
@@ -107,7 +109,8 @@ export const facetboxes = {
 		    cols: [{
 			title: "Assay",
 			data: "key",
-			className: "dt-right"
+			className: "dt-right",
+			render: render_histone_tf
 		    }],
 		    mode: CHECKLIST_MATCH_ALL
 		}
