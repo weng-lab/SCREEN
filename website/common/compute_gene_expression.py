@@ -156,6 +156,30 @@ class ComputeGeneExpression:
                 "byTissueMaxFPKM" : self.groupByTissueMax(rows, "rawFPKM"),
                 "byExpressionTPM" : self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM" : self.sortByExpression(rows, "rawFPKM")}
+
+    def computeFoldChange(self, ct1, ct2):
+        exp = {ct1: {}, ct2: {}}
+        fc = {}
+        counts = {ct1: {}, ct2: {}}
+        with getcursor(self.ps.DBCONN, "ComputeGeneExpression::computeFoldChange") as curs:
+            curs.execute("""SELECT r.tpm, r.fpkm, r_rnas.cellType, r.gene_name
+                            FROM r_expression as r INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
+                            WHERE r_rnas.cellType = %(ct1)s OR r_rnas.cellType = %(ct2)s""",
+                         {"ct1": ct1, "ct2": ct2})
+            rows = curs.fetchall()
+        for row in rows:
+            exp[row[2]][row[3]] += row[0]
+            if row[3] not in counts[row[2]]: counts[row[2]][row[3]] = 0.0
+            counts[row[2]][row[3]] += 1.0
+        for ct in [ct1, ct2]:
+            for gene in exp[ct]:
+                exp[ct][gene] /= counts[ct][gene]
+        for gene in exp[ct1]:
+            if gene in exp[ct2]:
+                fc[gene] = math.log((exp[ct1] + 0.01) / (exp[ct2] + 0.01), 2)
+        print(fc)
+        return fc
+            
     
     def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
