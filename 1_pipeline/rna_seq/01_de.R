@@ -1,3 +1,5 @@
+source("https://bioconductor.org/biocLite.R")
+biocLite("DESeq")
 library("pasilla")
 library("DESeq")
 
@@ -38,7 +40,4 @@ dev.off()
 
 # get list of differentially expressed genes
 resSig = res[ res$padj < 0.1, ]
-head(resSig[ order(resSig$pval), ])
-
-head(resSig)
-write.table(resSig, file=paste(dir, "genelist.tsv"))
+write.table(resSig, file=paste(dir, "genelist.tsv", sep="/"))
