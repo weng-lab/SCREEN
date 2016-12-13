@@ -20,44 +20,74 @@ class HistogramSet extends React.Component {
 	this._draw_feature = this._draw_feature.bind(this);
 	this._redraw_grid = this._redraw_grid.bind(this);
 	this._get_rekeys();
-	this.state = {k: 1};
+	this.state = {
+	    k: 1,
+	    hidden: {}
+	};
     }
     
     _get_rekeys() {
 	this._re_keys = [];
 	this._colors = {};
+
+	// make sure at least one histogram has features present
 	var cptr = 0;
 	if (!this.props.histograms) return;
 	var keys = Object.keys(this.props.histograms);
 	if (!keys || !keys.length) return;
-	var fkey = keys[0];
-	this.props.histograms[fkey].cytobands.map((c) => {
-	    if (c.feature.includes("both") && !array_contains(this._re_keys, c.feature)) {
-		this._re_keys.push(c.feature);
-		this._colors[c.feature] = "#00ff00";
-	    } else if (c.feature.includes("only") && !array_contains(this._re_keys, c.feature)) {
-		this._re_keys.push(c.feature);
-		this._colors[c.feature] = (cptr++ ? "#ff0000" : "#0000ff");
-	    }
+	
+	// get unique feature types, assign colors
+	cptr = 0;
+	keys.map((k) => {
+	    if (!this.props.histograms[k].cytobands) return;
+	    this.props.histograms[k].cytobands.map((c) => {
+		if (c.feature.includes("both") && !array_contains(this._re_keys, c.feature)) {
+		    this._re_keys.push(c.feature);
+		    this._colors[c.feature] = "#00ff00";
+		} else if (c.feature.includes("only") && !array_contains(this._re_keys, c.feature)) {
+		    this._re_keys.push(c.feature);
+		    this._colors[c.feature] = (cptr++ ? "#ff0000" : "#0000ff");
+		}
+	    });
 	});
+	
     }
     
     _draw_feature(f, g, size, _x) {
 	if (array_contains(this._re_keys, f.feature)) {
-	    var width = _x(f.end - f.start);
-	    g.append("rect")
-		.attr("x", _x(f.start))
-		.attr("width", width * this.state.k > 2 ? width : 2)
-		.attr("fill", this._colors[f.feature])
-		.attr("height", size.height)
-		.attr("class", "resizable");
+	    if (!(f.feature in this.state.hidden) || !(this.state.hidden[f.feature])) {
+		var width = _x(f.end - f.start);
+		g.append("rect")
+		    .attr("x", _x(f.start))
+		    .attr("width", width * this.state.k > 2 ? width : 2)
+		    .attr("fill", this._colors[f.feature])
+		    .attr("height", size.height)
+		    .attr("class", "resizable");
+	    }
 	    return true;
 	}
 	return false;
     }
     
     render() {
-	return (<div ref="container" />);
+	this._get_rekeys();
+	return (<div>
+		   <div>
+		   {this._re_keys.map((k) => {
+		       var cstate = (k in this.state.hidden ? this.state.hidden[k] : false);
+		       var onclick = () => {
+			   var n = Object.assign({}, this.state.hidden);
+			   n[k] = !cstate;
+			   this.setState({
+			       hidden: n
+			   });
+		       };
+		       var checked = !cstate;
+		       return (<div><input type="checkbox" onClick={onclick} checked={checked} /> <span style={{color: this._colors[k]}}>{k}</span></div>);
+		   })}
+		   </div>
+		   <br /><div ref="container" />
+		</div>);
     }
 
     _append_histogram(k, i) {
@@ -169,7 +199,6 @@ class HistogramSet extends React.Component {
 	    return (d.cytobands ? d3.max(d.cytobands, (_d) => (_d.end ? _d.end : 0)) : 0);
 	});
 	var width = maxclen / 300000 * BARWIDTH;
-	this._get_rekeys();
 	this._rsvg
 	    .attr("height", height)
 	    .attr("width", width + LABELMARGIN);
