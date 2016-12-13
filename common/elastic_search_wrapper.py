@@ -226,12 +226,11 @@ class ElasticSearchWrapper:
 
     def gene_aliases_to_coordinates(self, q):
         suggestions, raw_results = self._suggest_within(q, self.resolve_gene_aliases)
-        print(raw_results)
         retval = []
         if len(raw_results) == 0: return (suggestions, retval)
         for field in _gene_alias_fields:
             for result in raw_results:
-                if result[field].strip() != '' and result[field] in q:
+                if result[field].strip() != '' and result[field] in q and "coordinates" in result:
                     retval.append((result[field], result["coordinates"]))
         return (suggestions, retval)
 

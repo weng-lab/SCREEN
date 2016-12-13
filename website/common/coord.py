@@ -16,7 +16,6 @@ class Coord:
 
     @classmethod
     def parse(cls, loci):
-        print(loci)
         if loci.startswith("chr") and ":" not in loci:
             chrom = loci
             start = 0
