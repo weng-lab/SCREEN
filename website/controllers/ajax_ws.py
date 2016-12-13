@@ -419,12 +419,10 @@ class AjaxWebService:
 
     def _venn_chr(self, j):
         assembly = "hg19" if "assembly" not in j else j["assembly"]
-        ret = {"sep_results": self._venn_ct_results([], j["table_cell_types"], "DNase", 5000, 5000)}
+        ret = {"sep_results": self._venn_ct_results([], j["table_cell_types"], "DNase", 5000, 500),
+               "fold_changes": self.cg.computeFoldChange("K562", "HepG2")} #j["table_cell_types"][0], j["table_cell_types"][1])}
         for chrom in chroms[assembly]:
-            ret[chrom] = {"totals": self.ps.select_totals(chrom, 300000, assembly),
-                          "cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [],
-                          "corrs": self.ps.select_correlations(j["table_cell_types"][0], j["table_cell_types"][1], "dnase", chrom, 300000, assembly),
-                          "fold_changes": self.cg.computeFoldChange(j["table_cell_types"][0], j["table_cell_types"][1]) }
+            ret[chrom] = {"cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [] }
         return ret
                                                        
     def _tree(self, j):
