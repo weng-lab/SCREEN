@@ -436,7 +436,8 @@ class AjaxWebService:
             with Timer("spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
                 labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
-                                           None if "inner" not in j else j["inner"] )
+                                           None if "inner" not in j else j["inner"],
+                                           lambda ct: "primary cell" in ct )
             rho, pval = corr
             _heatmap = Heatmap(rho.tolist())
             with Timer("hierarchical clustering time"):
