@@ -7,12 +7,29 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/webservice/job_monitor'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 
+import jobmonitor
+import clusterjob
+
+clusterjob.ws_link = jobmonitor.job
+
+def generate_jobset(e1, e2, args):
+    try:
+        memejob = jobmonitor.job({}, "python2 %s --e1=%s --e2=%s --assembly=%s%s" % (os.path.realpath(__file__), e1, e2, args.assembly, " --local" if args.local else ""))
+        memejob.bsub_options = {"mem": 8192, "time": "12:00", "cores": 1, "queue": "long"}
+        memejob.ws_act("insert")
+        jobset = jobmonitor.jobset([[memejob]], "%s DESeq %s/%s" % (args.jobset_name_prefix, e1, e2))
+        jobset.ws_act("insert")
+    except:
+        print("Error generating jobsets for accessions %s/%s" % (e1, e2))
+        raise
+    return jobset
 
 def get_expids(curs):
     curs.execute("SELECT encode_id FROM r_rnas")
@@ -22,6 +39,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="hg19")
+    parser.add_argument('--bsuball', action="store_true", default=False)
+    parser.add_argument("--jobset_name_prefix", type=str, default="")
+    parser.add_argument('--e1', type=str, default="")
+    parser.add_argument('--e2', type=str, default="")
+    parser.add_argument("--testpne", action="store_true", default=False)
+    parser.add_argument('--accession_list', type=str, default="")
+    parser.add_argument("--save_list", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -70,7 +94,7 @@ def create_tsv(in_fnps, out_fnp):
   " generates metadata for DESeq and saves it to the given output path.
   " e1, e2: Exp objects referring to ENCODE RNA-Seq experiments
   " assembly: assmelby for which to select TSVs
-  " out_fnp: path to save the metadata
+2A  " out_fnp: path to save the metadata
   "
   " returns: list of paths to TSV files included in the metadata
 """
@@ -105,13 +129,54 @@ def generate_metadata(e1, e2, assembly, out_fnp):
 def main():
     args = parse_args()
 
+    # indicates a cluster run
+    if args.e1 != "" and args.e2 != "":
+
+        # find directory
+        dnp = "/project/umw_zhiping_weng/0_metadata/encyclopedia/de/%s_%s/" % (e1, e2)
+        if not os.path.exists(dnp):
+            dnp = "/project/umw_zhiping_weng/0_metadata/encyclopedia/de/%s_%s/" % (e2, e1)
+        if not os.path.exists(dnp):
+            print("fatal: could not find data; checked:")
+            print("     /project/umw_zhiping_weng/0_metadata/encyclopedia/de/%s_%s/" % (e1, e2))
+            print("     /project/umw_zhiping_weng/0_metadata/encyclopedia/de/%s_%s/" % (e2, e1))
+            return 1
+
+        # pass to R
+        try:
+            subprocess.check_output(["Rscript", os.path.join(os.path.dirname(os.path.realpath(__file__)), "01_de.R"),
+                                     dnp])
+        except subprocess.CalledProcessError as e:
+            print("R exited code %d" % e.returncode)
+            return e.returncode
+        except:
+            return 1
+        return 0
+
+    # default: loop through datasets downloading and submitting
     for dataset in [Datasets.all_human]:
 
-        # get datasets from database
-        DBCONN = db_connect(os.path.realpath(__file__), args.local)
-        with getcursor(DBCONN, "06_de") as curs:
-            expids = get_expids(curs)
-        exps = [Exp.fromJsonFile(i[0]) for i in expids]
+        # get datasets from database if no explicit list
+        if args.accession_list == "" or not os.path.exists(args.accession_list):
+            DBCONN = db_connect(os.path.realpath(__file__), args.local)
+            with getcursor(DBCONN, "06_de") as curs:
+                expids = get_expids(curs)
+
+            # if saving, write list out and exit
+            if args.save_list != "":
+                with open(args.save_list, "wb") as o:
+                    for i in expids:
+                        o.write(i[0] + "\n")
+                print("saved list to %s" % args.save_list)
+                return 0
+
+            # get exp objects
+            exps = [Exp.fromJsonFile(i[0]) for i in expids]
+
+        # have an explicit accession list
+        else:
+            with open(args.accession_list, "r") as f:
+                exps = [Exp.fromJsonFile(x.strip()) for x in f]
             
         # produce input and metadata for each pair
         for i in xrange(len(exps)):
@@ -132,6 +197,11 @@ def main():
                 create_tsv(flist, inputfnp)
                 print("input at %s" % inputfnp)
                 print("metadata at %s" % mfnp)
+
+                # if bsubbing...
+                if args.bsuball:
+                    generate_jobset(e1.encodeID, e2.encodeID, args).run()
+                if args.testone: return 0
 
     return 0
 
