@@ -158,6 +158,8 @@ class ComputeGeneExpression:
                 "byExpressionFPKM" : self.sortByExpression(rows, "rawFPKM")}
 
     def computeFoldChange(self, ct1, ct2):
+        ct1 = ct1.replace("_", " ")
+        ct2 = ct2.replace("_", " ")
         exp = {ct1: {}, ct2: {}}
         fc = {}
         counts = {ct1: {}, ct2: {}}
@@ -168,7 +170,8 @@ class ComputeGeneExpression:
                          {"ct1": ct1, "ct2": ct2})
             rows = curs.fetchall()
         for row in rows:
-            exp[row[2]][row[3]] += row[0]
+            if row[3] not in exp[row[2]]: exp[row[2]][row[3]] = 0.0
+            exp[row[2]][row[3]] += float(row[0])
             if row[3] not in counts[row[2]]: counts[row[2]][row[3]] = 0.0
             counts[row[2]][row[3]] += 1.0
         for ct in [ct1, ct2]:
@@ -176,7 +179,7 @@ class ComputeGeneExpression:
                 exp[ct][gene] /= counts[ct][gene]
         for gene in exp[ct1]:
             if gene in exp[ct2]:
-                fc[gene] = math.log((exp[ct1] + 0.01) / (exp[ct2] + 0.01), 2)
+                fc[gene] = math.log((exp[ct1][gene] + 0.01) / (exp[ct2][gene] + 0.01), 2)
         print(fc)
         return fc
             
