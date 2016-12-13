@@ -147,7 +147,7 @@ def main():
             subprocess.check_output(["Rscript", os.path.join(os.path.dirname(os.path.realpath(__file__)), "01_de.R"),
                                      dnp])
         except subprocess.CalledProcessError as e:
-            print "error code", e.returncode, e.output
+            print("R exited code %d" % e.returncode)
             return e.returncode
         except:
             return 1
@@ -161,14 +161,17 @@ def main():
             DBCONN = db_connect(os.path.realpath(__file__), args.local)
             with getcursor(DBCONN, "06_de") as curs:
                 expids = get_expids(curs)
-            exps = [Exp.fromJsonFile(i[0]) for i in expids]
 
             # if saving, write list out and exit
             if args.save_list != "":
                 with open(args.save_list, "wb") as o:
                     for i in expids:
-                        o.write(i + "\n")
+                        o.write(i[0] + "\n")
+                print("saved list to %s" % args.save_list)
                 return 0
+
+            # get exp objects
+            exps = [Exp.fromJsonFile(i[0]) for i in expids]
 
         # have an explicit accession list
         else:
