@@ -3,7 +3,7 @@
 # this assumes ""${NAME}"" is disposable!
 # runs ${IMAGE} with external file systems mounted in.
 
-export IMAGE="regelmviz/vanilla:v4.4"
+export IMAGE="bib7.umassmed.edu:5000/regelmvizv4:latest"
 export NAME="v4-regelmviz"
 export BASE="/data/docker/regelmviz"
 
