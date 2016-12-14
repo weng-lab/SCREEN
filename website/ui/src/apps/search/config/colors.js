@@ -27,6 +27,20 @@ export const TissueColors = {
     "uterus": "#990033"
 };
 
+const infer_primary_type = (cell_type) => {
+    if (cell_type.includes("fibroblast"))
+	return "paraxial mesoderm derivative";
+    else if (cell_type.includes("endotheli"))
+	return "endothelia";
+    else if (cell_type.includes("keratinocyte"))
+	return "ectoderm";
+    else if (cell_type.includes("epitheli"))
+	return "endoderm";
+    else if (tissue == "blood")
+	return "hemocytoblast derivatives";
+    return "unknown";
+};
+
 const tissue_name = (cell_type) => (
     (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
 );
