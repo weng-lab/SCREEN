@@ -26,7 +26,12 @@ class ResultsTree extends REComponent {
     
     render() {
 	var formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
-	var labels = (this.props.labels ? this.props.labels.map(formatter) : null);
+	var tr = this.props.tree_results;
+	var trees = (tr ? Object.keys(tr).map((k) => {
+	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
+	    var height = (labels ? labels.length * 15 : 0);
+	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} /></div>;
+	}) : "");
 	return super.render(<div>
 		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
 		      <option value="dnase">DNase</option>
@@ -37,8 +42,8 @@ class ResultsTree extends REComponent {
 		      <option value="ctcf$CTCF-Only">CTCF Only</option>
 		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
 	           </select>
-		   <span ref="help_icon" />
-		   <Tree data={this.props.data} width={2500} height={3000} labels={labels} />;
+	           <span ref="help_icon" />
+		   {trees}
 		</div>);
     }
 
@@ -55,12 +60,9 @@ export default ResultsTree;
     
 const props_map = (f) => (_state) => {
     var state = f(_state);
-    return {
-	data: state.tree,
-	labels: state.labels,
-	label_formatter: state.label_formatter,
+    return Object.assign({}, state, {
 	helpkey: "celltype_tree"
-    };
+    });
 };
 
 const dispatch_map = (store) => (f) => (_dispatch) => {
