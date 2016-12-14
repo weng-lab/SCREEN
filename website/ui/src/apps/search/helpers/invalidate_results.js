@@ -144,7 +144,8 @@ export const invalidate_results = (state) => {
 	};
 
 	var t_success = (response, status, jqxhr) => {
-	    dispatch({type: SET_TREE, tree: response.results.tree});
+	    console.log(response);
+	    dispatch({type: SET_TREE, tree: {tree_results: response.results.tree}});
 	};
 
 	dispatch(results_fetching());
