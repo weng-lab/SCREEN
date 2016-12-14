@@ -27,6 +27,33 @@ export const TissueColors = {
     "uterus": "#990033"
 };
 
+const primary_cell_colors = {
+    "paraxial mesoderm derivative": "#999900",
+    "endothelia": "#990099",
+    "ectoderm": "009999",
+    "endoderm": "#000099",
+    "hemocytoblast derivatives": "#990000",
+    "unknown": "#000000"
+};
+
+const infer_primary_type = (cell_type, tissue) => {
+    if (cell_type.includes("fibroblast"))
+	return "paraxial mesoderm derivative";
+    else if (cell_type.includes("endotheli"))
+	return "endothelia";
+    else if (cell_type.includes("keratinocyte"))
+	return "ectoderm";
+    else if (cell_type.includes("epitheli"))
+	return "endoderm";
+    else if (tissue == "blood")
+	return "hemocytoblast derivatives";
+    return "unknown";
+};
+
+export const primary_cell_color = (d) => {
+    return primary_cell_colors[infer_primary_type(d, tissue_name(d))];
+};
+
 const tissue_name = (cell_type) => (
     (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
 );
@@ -47,6 +74,15 @@ export const tissue_label_formatter = (d) => {
 	name: name_and_tissue(d),
 	style: {
 	    "fill": tissue_color(d)
+	}
+    };
+};
+
+export const primary_cell_label_formatter = (d) => {
+    return {
+	name: d,
+	style: {
+	    fill: primary_cell_color(d)
 	}
     };
 };
