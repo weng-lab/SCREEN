@@ -65,6 +65,7 @@ export const results_displays = {
 	footer: "",
 	helpkey: "tss_dist",
 	append_query: (query_obj) => {
+	    return query_obj;
 	    var extras = {};
 	    var aggs = {};
 	    var query = [...query_obj.query.bool.filter, query_obj.post_filter];
@@ -79,7 +80,6 @@ export const results_displays = {
 		}),
 		aggs
 	    };
-	    //console.log(ret);
 	    return ret;
 	},
 	dispatch_result: (results, dispatch) => {dispatch({
