@@ -68,12 +68,12 @@ class Tree extends React.Component {
 	var tree = this._list_to_tree(this.props.data);
 	var data = this._format_for_d3(tree, this._tree_depth(tree));
 
-	var margin = {top: 20, right: 700, bottom: 30, left: 150},
+	var margin = {top: 0, right: 700, bottom: 0, left: 150},
 	    width = this.props.width - margin.left - margin.right,
 	    height = this.props.height - margin.top - margin.bottom;
 
 	var _x = (x) => ((width - x) / 1.75 + margin.right);
-	var _y = (y) => (y / 1.25);
+	var _y = (y) => (y);
 	
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
