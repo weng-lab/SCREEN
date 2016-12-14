@@ -433,17 +433,22 @@ class AjaxWebService:
                                "callback": "" })
         
         if "hits" in _ret:
-            with Timer("spearman correlation time"):
-                c = Correlation(_ret["hits"]["hits"])
-                labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
-                                           None if "inner" not in j else j["inner"],
-                                           lambda ct: "primary cell" in ct )
-            rho, pval = corr
-            _heatmap = Heatmap(rho.tolist())
-            with Timer("hierarchical clustering time"):
-                roworder, rowtree = _heatmap.cluster_by_rows()
-            return {"results": {"tree": {"tree": rowtree,
-                                         "labels": labels}}}
+            results = {}
+            for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
+                                ("tissue", lambda ct: "tissue" in ct),
+                                ("immortalized cell lines", lambda ct: "immortalized" in ct)]:
+                with Timer("spearman correlation time"):
+                    c = Correlation(_ret["hits"]["hits"])
+                    labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
+                                               None if "inner" not in j else j["inner"],
+                                               lambda_pair[1] )
+                rho, pval = corr
+                _heatmap = Heatmap(rho.tolist())
+                with Timer("hierarchical clustering time"):
+                    roworder, rowtree = _heatmap.cluster_by_rows()
+                results[lambda_pair[0]] = {"tree": rowtree,
+                                           "labels": labels}
+            return {"results": {"tree": results}}
         return {"results": {"tree": {"tree": None, "labels": []}}}
     
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):

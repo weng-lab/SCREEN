@@ -9,7 +9,7 @@ class Correlation:
     def spearmanr(self, outerkey, innerkey = None, _ctfilter = None):
         if len(self.hits) == 0: return ([], [[], []])
         ctlabels = [ct for ct, v in self.hits[0]["_source"]["ranks"][outerkey].iteritems()
-                    if innerkey is None or innerkey in v and (_ctfilter is None or _ctfilter(ct))]
+                    if (innerkey is None or innerkey in v) and (_ctfilter is None or _ctfilter(ct))]
         observations = []
         for result in self.hits:
             result = result["_source"]
