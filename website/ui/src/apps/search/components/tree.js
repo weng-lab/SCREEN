@@ -33,7 +33,6 @@ class ResultsTree extends REComponent {
 	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
-	    console.log(formatter);
 	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} /></div>;
 	}) : "");
 	return super.render(<div>
