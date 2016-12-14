@@ -32,7 +32,7 @@ docker run \
        -p 127.0.0.1:8033:22 \
        --link postgresql:postgresql \
        -d --restart=always \
-       -m 64G \
+       -m 128G \
        --cpuset="48-63" \
        --hostname="${NAME}" \
        --name="${NAME}" "${IMAGE}"
