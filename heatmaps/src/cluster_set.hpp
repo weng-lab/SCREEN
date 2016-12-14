@@ -27,9 +27,10 @@ private:
     return index_of_min(dists);
   }
 
-  explicit ClusterSet(const Heatmap &h, int orient_by_cols = 0) {
+  explicit ClusterSet(const Heatmap &h, int orient_by_cols = 0, int use_simple_distance_ = 0) {
     
-    distance_function df = (orient_by_cols ? ClusterSet::coldist : ClusterSet::rowdist);
+    distance_function df = (use_simple_distance_ ? ClusterSet::simpledist
+			    : (orient_by_cols ? ClusterSet::coldist : ClusterSet::rowdist));
     int l = (orient_by_cols ? h.Height() : h.Width());
     indices_ = {};
     nodei_ = {};
@@ -54,12 +55,16 @@ private:
     
   }
 
+  static double simpledist(const Heatmap &h, int i, int j) {
+    return h.SimpleDistance(i, j);
+  }
+  
   static double coldist(const Heatmap &h, int i, int j) {
     return h.ColDistance(i, j);
   }
   
   static double rowdist(const Heatmap &h, int i, int j) {
-    return h.RowDistance(i, j);
+    return h.SimpleDistance(i, j);
   }
 
 public:
@@ -147,12 +152,12 @@ public:
     
   }
 
-  static ClusterSet FromRows(Heatmap &hm) {
-    return ClusterSet(hm, 0);
+  static ClusterSet FromRows(Heatmap &hm, int use_simple_distance = 0) {
+    return ClusterSet(hm, 0, use_simple_distance);
   }
 
-  static ClusterSet FromCols(Heatmap &hm) {
-    return ClusterSet(hm, 1);
+  static ClusterSet FromCols(Heatmap &hm, int use_simple_distance = 0) {
+    return ClusterSet(hm, 1, use_simple_distance);
   }
 
 };
