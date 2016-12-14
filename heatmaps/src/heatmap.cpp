@@ -54,6 +54,27 @@ double Heatmap::RowDistance(int i, int j) const {
   return ret;
 }
 
+  /*
+   *  gets the inverse of the value of a cell
+   *  will be lowest for the closest two elements in the heatmap
+   */
+  double Heatmap::SimpleDistance(int i, int j) const {
+    int w = Width();
+    int h = Height();
+
+    if (w != h) {
+      throw std::logic_error("cannot compute simple distance: heatmap must be square");
+    }
+    if (i >= w) {
+      throw std::invalid_argument("cannot compute distance: left index out of range");
+    }
+    if (j >= w) {
+      throw std::invalid_argument("cannot compute distance: right index out of range");
+    }
+    
+    return 1.0 / values_[i][j];
+  }
+
 /*
  *  compute the distance between two columns in a heatmap
  *  i and j are the indices of the columns to compare
@@ -77,9 +98,9 @@ double Heatmap::ColDistance(int i, int j) const {
 
 }
 
-  std::vector<int> Heatmap::RowCluster() {
+  std::vector<int> Heatmap::RowCluster(int use_simple_distance) {
 
-    ClusterSet c = ClusterSet::FromRows(*this);
+    ClusterSet c = ClusterSet::FromRows(*this, use_simple_distance);
     std::vector<int> ret;
 
     // for two or less elements, the result is constant
@@ -109,9 +130,9 @@ double Heatmap::ColDistance(int i, int j) const {
     
   }
 
-  std::vector<int> Heatmap::ColCluster() {
+  std::vector<int> Heatmap::ColCluster(int use_simple_distance) {
 
-    ClusterSet c = ClusterSet::FromCols(*this);
+    ClusterSet c = ClusterSet::FromCols(*this, use_simple_distance);
     std::vector<int> ret;
 
     // for two or less elements, the result is constant

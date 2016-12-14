@@ -14,9 +14,10 @@ public:
 
   double RowDistance(int, int) const;
   double ColDistance(int, int) const;
+  double SimpleDistance(int, int) const;
 
-  std::vector<int> RowCluster();
-  std::vector<int> ColCluster();
+  std::vector<int> RowCluster(int simple = 0);
+  std::vector<int> ColCluster(int simple = 0);
 };
 
   std::ostream& operator<< (std::ostream& stream, const Heatmap&);

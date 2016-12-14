@@ -442,7 +442,7 @@ class AjaxWebService:
             rho, pval = corr
             _heatmap = Heatmap(rho.tolist())
             with Timer("hierarchical clustering time"):
-                roworder, rowtree = _heatmap.cluster_by_rows()
+                roworder, rowtree = _heatmap.simple_cluster()
             return {"results": {"tree": {"tree": rowtree,
                                          "labels": labels}}}
         return {"results": {"tree": {"tree": None, "labels": []}}}
