@@ -30,7 +30,7 @@ export const TissueColors = {
 const primary_cell_colors = {
     "paraxial mesoderm derivative": "#999900",
     "endothelia": "#990099",
-    "ectoderm": "#990000",
+    "ectoderm": "009999",
     "endoderm": "#000099",
     "hemocytoblast derivatives": "#990000",
     "unknown": "#000000"
