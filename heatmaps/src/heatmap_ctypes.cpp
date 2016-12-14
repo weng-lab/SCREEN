@@ -56,3 +56,11 @@ extern "C" void cluster_by_both(double *heatmap, int width, int height, int *row
   copy_list_to_ptr(mroworder, roworder);
   copy_list_to_ptr(mcolorder, colorder);
 }
+
+extern "C" void simple_cluster(double *heatmap, int width, int height, int *order) {
+  std::vector<HeatmapRow> matrix = matrix_from_ptr(heatmap, width, height);
+  Heatmap hm(matrix);
+  std::vector<int> roworder = hm.RowCluster(1);
+  copy_vector_to_ptr(hm.values_, heatmap);
+  copy_list_to_ptr(roworder, order);
+}

@@ -86,6 +86,12 @@ class Heatmap:
         output = self._do_cluster(_c_heatmaps.cluster_by_rows, [roworder])
         return (output[:self.width], output[self.width:])
 
+    def simple_cluster(self):
+        global _c_heatmaps
+        roworder = [0 for i in range(0, self.width * 2 - 1)]
+        output = self._do_cluster(_c_heatmaps.simple_cluster, [roworder])
+        return (output[:self.width], output[self.width:])
+    
     def cluster_by_cols(self):
         global _c_heatmaps
         colorder = [0 for i in range(0, self.height * 2 - 1)]
@@ -116,8 +122,15 @@ _c_heatmaps.cluster_by_cols.argtypes = [POINTER(c_double), c_int, c_int, POINTER
 _c_heatmaps.cluster_by_both.restype = None
 _c_heatmaps.cluster_by_both.argtypes = [POINTER(c_double), c_int, c_int, POINTER(c_int), POINTER(c_int)]
 
+# void simple_cluster(double *, int, int *)
+_c_heatmaps.simple_cluster.restype = None
+_c_heatmaps.simple_cluster.argtypes = [POINTER(c_double), c_int, c_int, POINTER(c_int)]
+
 if __name__ == "__main__":
-    H = Heatmap([[1.0, 1.1, 1.0], [3.0, 3.1, 3.0], [2.0, 2.1, 2.2], [4.0, 4.1, 3.9]])
+    H = Heatmap([[1.0, 0.5, 0.9, 0.4], [0.5, 1.0, 0.7, 0.1], [0.9, 0.7, 1.0, 0.2], [0.4, 0.1, 0.2, 1.0]])
+    print(H.values)
+    roworder = H.simple_cluster()
+    print(roworder)
     print(H.values)
     roworder, colorder = H.cluster_by_both()
     print(H.values)
