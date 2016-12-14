@@ -7,6 +7,8 @@ import {SET_TREE_FIELDS} from '../reducers/root_reducer'
 
 import REComponent from '../../../common/components/re_component'
 
+import {primary_cell_label_formatter} from '../config/colors'
+
 const default_label_formatter = (l) => {
     return {
 	name: l
@@ -25,9 +27,10 @@ class ResultsTree extends REComponent {
     }
     
     render() {
-	var formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
+	var _formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
 	var tr = this.props.tree_results;
 	var trees = (tr ? Object.keys(tr).map((k) => {
+	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
 	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} /></div>;
