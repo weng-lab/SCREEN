@@ -13,8 +13,10 @@ from cache_memcache import MemCacheWrapper
 assaysToCts = {}
 
 d = "/home/purcarom/regElmViz/counts"
+
+assembly = "mm10"
 for fn in os.listdir(d):
-    if not fn.startswith("hg19") or "bigwig" not in fn:
+    if not fn.startswith(assembly) or "bigwig" not in fn:
         continue
     fnp = os.path.join(d, fn)
     print(fnp)
@@ -32,6 +34,7 @@ for fn in os.listdir(d):
     assaysToCts[assay] = cts
 
 assays = assaysToCts.keys()
+print(assembly)
 for assay, cts in assaysToCts.iteritems():
     print(assay, len(cts))
     for oassay in assays:
