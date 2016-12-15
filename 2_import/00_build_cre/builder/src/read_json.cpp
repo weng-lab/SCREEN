@@ -1,4 +1,4 @@
-#include "../../../../../common/json_processer.hpp"
+#include "../../../../common/json_processer.hpp"
 
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(file, "", "file to load");
