@@ -1,13 +1,15 @@
 import {ExpressionBoxplotAJAX} from '../../geneexp/helpers/ajax'
 import {expression_boxplot_loading, expression_boxplot_done, update_expression_boxplot} from '../../geneexp/helpers/invalidate_results'
-import QueryAJAX, {TreeAJAX, DetailAJAX, ExpressionAJAX, DetailGeneAJAX} from '../elasticsearch/ajax'
+import QueryAJAX, {TreeAJAX, DetailAJAX, ExpressionAJAX, DetailGeneAJAX, TreeComparisonAJAX} from '../elasticsearch/ajax'
 import {RESULTS_FETCHING, RESULTS_DONE, RESULTS_ERROR, SET_TABLE_RESULTS, EXPRESSION_MATRIX_ACTION, DETAILS_DONE,
-	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION, SET_TREE} from '../reducers/root_reducer'
+	DETAILS_FETCHING, UPDATE_DETAIL, SEARCHBOX_ACTION, SET_TREE,
+	SET_TREE_COMPARISON, TREE_COMPARISON_LOADING, TREE_COMPARISON_DONE} from '../reducers/root_reducer'
 import {UPDATE_EXPRESSION} from '../reducers/expression_matrix_reducer'
 import {SET_VALUE} from '../../../common/reducers/searchbox'
 import {SET_LOADING, SET_COMPLETE} from '../../../common/reducers/vertical_bar'
 import FacetQueryMap, {FacetsToSearchText} from '../elasticsearch/facets_to_query'
 import ResultsDispatchMap from '../elasticsearch/results_to_map'
+import {asum} from '../../../common/common'
 
 const all_compartments = ["cell", "nucleoplasm", "cytosol", "nucleus", "membrane", "chromatin", "nucleolus"].map(
     (d) => {return {key: d, selected: true}}
@@ -159,6 +161,48 @@ export const invalidate_results = (state) => {
 	});
 	
     }
+};
+
+const tree_comparison_done = (response) => {
+    return {
+	type: TREE_COMPARISON_DONE
+    };
+};
+
+const set_tree_comparison = (response) => {
+    return {
+	type: SET_TREE_COMPARISON,
+	response
+    };
+};
+
+const tree_comparison_loading = () => {
+    return {
+	type: TREE_COMPARISON_LOADING
+    };
+};
+
+const get_children = (node) => {
+    if (!node.children) return [node.data.name];
+    return asum(node.children.map(get_children));
+};
+
+export const invalidate_tree_comparison = ({left, right}) => {
+    return (dispatch) => {
+	var n_query = {
+	    left: get_children(left),
+	    right: get_children(right)
+	};
+	var f_success = (response, status, jqxhr) => {
+	    dispatch(tree_comparison_done(response));
+	    dispatch(set_tree_comparison(response));
+	};
+	var f_error = (jqxhr, status, error) => {
+	    dispatch(results_error(jqxhr, error));
+	};
+	dispatch(tree_comparison_loading());
+	TreeComparisonAJAX(n_query, f_success, f_error);
+    };
 };
 
 export const invalidate_detail = (re) => {

@@ -5,6 +5,7 @@ class Tree extends React.Component {
 
     constructor(props) {
 	super(props);
+	this._on_click = this._on_click.bind(this);
     }
 
     render() {
@@ -57,6 +58,12 @@ class Tree extends React.Component {
 	return (+tree.name >= 0 && +tree.name < this.props.labels.length
 		? this.props.labels[+tree.name]
 		: {name: tree.name, style: tree.style});
+    }
+
+    _on_click(d) {
+	console.log("CLICKED");
+	console.log(d);
+	if (this.props.onClick) this.props.onClick(d);
     }
     
     componentDidUpdate() {
@@ -114,7 +121,8 @@ class Tree extends React.Component {
 		return "node" + 
 		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
 	    .attr("transform", function(d) { 
-		return "translate(" + _x(d.y) + "," + _y(d.x) + ")"; });
+		return "translate(" + _x(d.y) + "," + _y(d.x) + ")"; })
+	    .on("click", (d) => {this._on_click(d)});
 
 	node.append("path")
 	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))

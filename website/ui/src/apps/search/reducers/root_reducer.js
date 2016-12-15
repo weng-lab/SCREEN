@@ -39,6 +39,10 @@ export const UPDATE_EXPRESSION_BOXPLOT = 'UPDATE_EXPRESSION_BOXPLOT';
 export const EXPRESSION_BOXPLOT_LOADING = 'EXPRESSION_BOXPLOT_LOADING';
 export const EXPRESSION_BOXPLOT_DONE = 'EXPRESSION_BOXPLOT_DONE';
 
+export const TREE_COMPARISON_DONE = 'TREE_COMPARISON_DONE';
+export const SET_TREE_COMPARISON = 'SET_TREE_COMPARISON';
+export const TREE_COMPARISON_LOADING = 'TREE_COMPARISON_LOADING';
+
 export const TAB_ACTION = 'TAB_ACTION';
 
 export const UPDATE_COMPARISON = 'UPDATE_COMPARISON';
@@ -131,6 +135,10 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 
     switch (action.type) {
 
+    case SET_TREE_COMPARISON:
+	console.log(action);
+	break;
+	
     case UPDATE_EXPRESSION_BOXPLOT:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {

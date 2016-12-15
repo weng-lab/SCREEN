@@ -77,9 +77,50 @@ class AjaxWebService:
                         "re_genes": self._re_genes,
                         "tree": self._tree,
                         "helpkey": self._helpkey,
-                        "venn_chr": self._venn_chr }
+                        "venn_chr": self._venn_chr,
+                        "tree_comparison": self._tree_comparison }
         self._cached_results = {}
+        
+    def _tree_comparison(self, j):
 
+        def tree_comparison_query(cts):
+            return [{"range": {"ranks.dnase." + ct + ".rank": {"lte": 20000}}}
+                    for ct in cts]
+
+        def search(q):
+            return self.es.search(body={"query": {"bool": {"should": q}},
+                                        "size": 10000},
+                                  index="regulatory_elements_7")
+
+        def process(r):
+            tfs = {}
+            _il = 1.0 / float(r["hits"]["total"])
+            for hit in r["hits"]["hits"]:
+                for tf, a in hit["_source"]["peak_intersections"]["tf"].iteritems():
+                    if tf not in tfs: tfs[tf] = 0
+                    tfs[tf] += _il
+            return tfs
+                    
+        hits = [search(tree_comparison_query(j["left"])),
+                search(tree_comparison_query(j["right"]))]
+
+        tfs = [process(hits[i]) for i in [0, 1]]
+        tfa = {}
+        for k, v in tfs[0].iteritems():
+            tfa[k] = {"left": v, "right": tfs[1][k] if k in tfs[1] else 0.0}
+        for k, v in tfs[1].iteritems():
+            if k not in tfs[0]:
+                tfa[k] = {"left": 0.0, "right": v}
+
+        return {"left": hits[0]["hits"]["hits"],
+                "right": hits[1]["hits"]["hits"],
+                "tfs": {"left": sorted([{"key": k, "left": v["left"], "right": v["right"]}
+                                        for k, v in tfa.iteritems() if v["left"] - v["right"] > 0],
+                                       key=lambda x: x["right"] - x["left"]),
+                        "right": sorted([{"key": k, "left": v["left"], "right": v["right"]}
+                                         for k, v in tfa.iteritems() if v["left"] - v["right"] < 0],
+                                        key=lambda x: x["left"] - x["right"]) }}
+        
     def _get_associated_genes(self, accession):
         results = self.es.search(body={"query": {"bool": {"must": {"match": {"accession": accession}}}}},
                                  index="associated_tss")["hits"]["hits"]
