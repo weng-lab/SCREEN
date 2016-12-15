@@ -50,7 +50,9 @@ public:
     bfs::path peaks(){
         return path_ / (chr_ + "_sorted-peaks");
     }
-
+    bfs::path signalDir(){
+        return path_ / "signal";
+    }
 };
 
 template <typename T>
@@ -116,6 +118,13 @@ public:
         std::cout << "loaded " << count << " " << typ << " genes\n";
         return ret;
     }
+
+    void loadSignals(){
+        bfs::path dir = paths_.signalDir();
+        for(const auto& f : bib::files::dir(dir)){
+            std::cout << f << std::endl;
+        }
+    }
 };
 
 template <typename T>
@@ -132,6 +141,7 @@ public:
         const auto peaks = d.peaks();
         const auto allGenes = d.allGenes();
         const auto pcGenes = d.pcGenes();
+        d.loadSignals();
     }
 };
 
