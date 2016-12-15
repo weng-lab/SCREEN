@@ -1,0 +1,644 @@
+Experiment	BigWig	Tissue
+ENCSR932KWJ	ENCFF531HVC	A172
+ENCSR932KWJ	ENCFF970PNO	A172
+ENCSR346JWH	ENCFF767IQX	A673
+ENCSR346JWH	ENCFF107AHF	A673
+ENCSR405TXU	ENCFF641AHZ	adipocyte
+ENCSR405TXU	ENCFF332BSK	adipocyte
+ENCSR866RCY	ENCFF476UGA	adrenal gland female fetal (85 days)
+ENCSR728BAD	ENCFF457CYU	adrenal gland male fetal (108 days)
+ENCSR696XSJ	ENCFF393DAS	adrenal gland female fetal (113 days)
+ENCSR865ICK	ENCFF986PSB	adrenal gland female adult (51 year)
+ENCSR080PZL	ENCFF849WEO	adrenal gland male fetal (101 day)
+ENCSR060BFU	ENCFF622SYJ	adrenal gland fetal (96 days)
+ENCSR191FOV	ENCFF340ESJ	adrenal gland male adult (37 years)
+ENCSR419MZH	ENCFF691JVZ	adrenal gland female fetal (108 days)
+ENCSR848XIY	ENCFF331MKY	adrenal gland male adult (54 years)
+ENCSR856QJX	ENCFF055ZKP	adrenal gland male fetal (85 days)
+ENCSR584LUZ	ENCFF521CFL	Ammon's horn male adult (84 years)
+ENCSR000END	ENCFF104TSY	amniotic epithelial cell
+ENCSR000END	ENCFF270BPI	amniotic epithelial cell
+ENCSR820WLP	ENCFF794OOC	amniotic stem cell
+ENCSR820WLP	ENCFF246WEU	amniotic stem cell
+ENCSR207TUX	ENCFF155NWE	amniotic stem cell
+ENCSR000EPM	ENCFF447SXZ	astrocyte
+ENCSR000EPM	ENCFF130HYX	astrocyte
+ENCSR000ENC	ENCFF316ZLJ	astrocyte of the cerebellum
+ENCSR000ENC	ENCFF549MCN	astrocyte of the cerebellum
+ENCSR891VOV	ENCFF135TPK	B cell female adult (34 years)
+ENCSR247IUJ	ENCFF842WUR	B cell male adult (37 years)
+ENCSR646BJT	ENCFF827WLK	B cell female adult (43 years)
+ENCSR000EMD	ENCFF094QPV	BE2C
+ENCSR000EMD	ENCFF151TJK	BE2C
+ENCSR626RVD	ENCFF251JUI	bipolar spindle neuron derived from induced pluripotent stem cell
+ENCSR626RVD	ENCFF547FPA	bipolar spindle neuron derived from induced pluripotent stem cell
+ENCSR522WLH	ENCFF943XXN	body of pancreas male adult (37 years)
+ENCSR228IKB	ENCFF759JPG	body of pancreas male adult (54 years)
+ENCSR228IKB	ENCFF974WIX	body of pancreas male adult (54 years)
+ENCSR187PYY	ENCFF179OMZ	brain female fetal (142 days)
+ENCSR595CSH	ENCFF310SIH	brain fetal (56 days) and male fetal (58 days)
+ENCSR595CSH	ENCFF593GTZ	brain fetal (56 days) and male fetal (58 days)
+ENCSR309FOO	ENCFF776HJF	brain female fetal (117 days)
+ENCSR475VQD	ENCFF318HIS	brain male fetal (72 days) and male fetal (76 days)
+ENCSR475VQD	ENCFF783MTK	brain male fetal (72 days) and male fetal (76 days)
+ENCSR118WIQ	ENCFF702MIF	brain fetal (112 days)
+ENCSR820XRX	ENCFF974ANJ	brain female fetal (105 days)
+ENCSR344FLH	ENCFF685TOS	brain female fetal (109 days)
+ENCSR026EOM	ENCFF867KZH	brain female fetal (85 days)
+ENCSR947POC	ENCFF157WSK	brain male fetal (104 days)
+ENCSR572LDG	ENCFF632CHU	brain male fetal (101 day)
+ENCSR156CLC	ENCFF560IOS	brain female fetal (96 days)
+ENCSR000ENE	ENCFF715FYZ	brain microvascular endothelial cell
+ENCSR000ENE	ENCFF763WGT	brain microvascular endothelial cell
+ENCSR000ENF	ENCFF566QXJ	brain pericyte
+ENCSR000EPN	ENCFF500DPH	bronchial epithelial cell female treated with retinoic acid
+ENCSR000EPN	ENCFF207RPA	bronchial epithelial cell female treated with retinoic acid
+ENCSR000EPX	ENCFF163WKS	bronchial epithelial cell
+ENCSR000EPX	ENCFF717LUT	bronchial epithelial cell
+ENCSR000EMI	ENCFF225FWX	Caco-2
+ENCSR000EMI	ENCFF617UXQ	Caco-2
+ENCSR515EWI	ENCFF711OVW	Caki2
+ENCSR515EWI	ENCFF071FKI	Caki2
+ENCSR000EMW	ENCFF025UVW	cardiac mesoderm
+ENCSR000EMW	ENCFF693PPD	cardiac mesoderm
+ENCSR000EMX	ENCFF028WTN	cardiac mesoderm
+ENCSR000EMY	ENCFF384DBN	cardiac mesoderm
+ENCSR000EMY	ENCFF438WBJ	cardiac mesoderm
+ENCSR000EMV	ENCFF088JUD	cardiac mesoderm
+ENCSR000EPK	ENCFF936ICC	CD14-positive monocyte female
+ENCSR695AUY	ENCFF058MSN	CD14-positive monocyte female adult (34 years)
+ENCSR674JIL	ENCFF960RXM	CD14-positive monocyte male adult (37 years)
+ENCSR373BIX	ENCFF216RDL	CD1c-positive myeloid dendritic cell
+ENCSR373BIX	ENCFF884GSQ	CD1c-positive myeloid dendritic cell
+ENCSR569ATD	ENCFF037YGC	CD4-positive helper T cell male adult (21 year)
+ENCSR643GHI	ENCFF345IBE	CD4-positive helper T cell female adult (33 years)
+ENCSR425MRQ	ENCFF618LXX	CD4-positive helper T cell male adult (37 years)
+ENCSR609DDQ	ENCFF184QUZ	CD8-positive, alpha-beta T cell female adult (34 years)
+ENCSR842VTJ	ENCFF099UAN	CD8-positive, alpha-beta T cell male adult (21 year)
+ENCSR840TVG	ENCFF932EDO	CD8-positive, alpha-beta T cell female adult (33 years)
+ENCSR000ENL	ENCFF380MBE	choroid plexus epithelial cell
+ENCSR000ENL	ENCFF656NUQ	choroid plexus epithelial cell
+ENCSR000EMN	ENCFF192CCZ	CMK
+ENCSR564TUY	ENCFF555SIW	common myeloid progenitor, CD34-positive male
+ENCSR735BIM	ENCFF230ZEO	common myeloid progenitor, CD34-positive male adult (43 years)
+ENCSR772HUG	ENCFF703RLA	common myeloid progenitor, CD34-positive male adult (37 years)
+ENCSR281HBB	ENCFF082BQJ	common myeloid progenitor, CD34-positive male adult (49 years)
+ENCSR639ZJI	ENCFF393TLL	common myeloid progenitor, CD34-positive male adult (23 years)
+ENCSR495INQ	ENCFF698MKV	common myeloid progenitor, CD34-positive male adult (42 years)
+ENCSR453EVC	ENCFF824REP	common myeloid progenitor, CD34-positive male adult (36 years)
+ENCSR122VUW	ENCFF356GGX	common myeloid progenitor, CD34-positive female adult (27 years)
+ENCSR122VUW	ENCFF707AXV	common myeloid progenitor, CD34-positive female adult (27 years)
+ENCSR271QSV	ENCFF449BFO	common myeloid progenitor, CD34-positive male adult
+ENCSR271QSV	ENCFF829RXL	common myeloid progenitor, CD34-positive male adult
+ENCSR320TUJ	ENCFF268FEL	common myeloid progenitor, CD34-positive female adult (50 years)
+ENCSR603BXE	ENCFF355BML	common myeloid progenitor, CD34-positive female adult (27 years)
+ENCSR346IHH	ENCFF248XOG	Daoy
+ENCSR346IHH	ENCFF275YKM	Daoy
+ENCSR000ENX	ENCFF698QUW	dermis blood vessel endothelial cell female adult
+ENCSR000ENX	ENCFF655PPP	dermis blood vessel endothelial cell female adult
+ENCSR000ENY	ENCFF897DZX	dermis blood vessel endothelial cell female adult
+ENCSR000ENY	ENCFF585ZGT	dermis blood vessel endothelial cell female adult
+ENCSR000EOC	ENCFF574GFX	dermis blood vessel endothelial cell male postnatal
+ENCSR000EOC	ENCFF798XNB	dermis blood vessel endothelial cell male postnatal
+ENCSR000EOA	ENCFF278PML	dermis microvascular lymphatic vessel endothelial cell female
+ENCSR000EOA	ENCFF354CZP	dermis microvascular lymphatic vessel endothelial cell female
+ENCSR548MMD	ENCFF472POF	EH
+ENCSR548MMD	ENCFF848HOJ	EH
+ENCSR691MQJ	ENCFF075CGP	EL
+ENCSR691MQJ	ENCFF655QTW	EL
+ENCSR678ILN	ENCFF360OEF	ELF-1
+ENCSR678ILN	ENCFF201XXX	ELF-1
+ENCSR240TPI	ENCFF041NUD	ELR
+ENCSR240TPI	ENCFF734LEV	ELR
+ENCSR435NHO	ENCFF518HBZ	embryonic facial prominence fetal (53 days) and fetal (58 days)
+ENCSR435NHO	ENCFF150PEO	embryonic facial prominence fetal (53 days) and fetal (58 days)
+ENCSR863XNX	ENCFF710COC	embryonic facial prominence male fetal (81 day)
+ENCSR000EPU	ENCFF607LWS	epithelial cell of prostate
+ENCSR000EPU	ENCFF897BAC	epithelial cell of prostate
+ENCSR000EPW	ENCFF386LWS	epithelial cell of proximal tubule
+ENCSR000EPW	ENCFF549DMP	epithelial cell of proximal tubule
+ENCSR579BNV	ENCFF993RID	esophagus squamous epithelium female adult (53 years)
+ENCSR782XFY	ENCFF575OBR	eye fetal (56 days) and male fetal (76 days)
+ENCSR782XFY	ENCFF961GVG	eye fetal (56 days) and male fetal (76 days)
+ENCSR127PWK	ENCFF722DQI	eye female fetal (76 days)
+ENCSR217TAW	ENCFF420QVY	fibroblast of arm male adult (53 years)
+ENCSR217TAW	ENCFF982VSH	fibroblast of arm male adult (53 years)
+ENCSR000EPO	ENCFF212CCF	fibroblast of dermis female adult
+ENCSR000EPO	ENCFF082LTL	fibroblast of dermis female adult
+ENCSR000EMA	ENCFF309JHG	fibroblast of gingiva female adult (24 years)
+ENCSR000EMA	ENCFF213XIF	fibroblast of gingiva female adult (24 years)
+ENCSR000EOJ	ENCFF326SDN	fibroblast of lung
+ENCSR000EOJ	ENCFF114GVE	fibroblast of lung
+ENCSR000ELY	ENCFF262JXS	fibroblast of lung male fetal (12 weeks)
+ENCSR000ELY	ENCFF100ZOA	fibroblast of lung male fetal (12 weeks)
+ENCSR000ENW	ENCFF603BWK	fibroblast of mammary gland female
+ENCSR000ENW	ENCFF991NDE	fibroblast of mammary gland female
+ENCSR000ELZ	ENCFF032WYM	fibroblast of pedal digit skin female adult (21 year)
+ENCSR000ELZ	ENCFF392FJH	fibroblast of pedal digit skin female adult (21 year)
+ENCSR000EOI	ENCFF716GHN	fibroblast of peridontal ligament male
+ENCSR000EOI	ENCFF525ZSJ	fibroblast of peridontal ligament male
+ENCSR000EOH	ENCFF195GIN	fibroblast of pulmonary artery
+ENCSR000EOH	ENCFF540TWK	fibroblast of pulmonary artery
+ENCSR176KYD	ENCFF013CXH	fibroblast of skin of abdomen male fetal (97 days)
+ENCSR000EMC	ENCFF205EPJ	fibroblast of the aortic adventitia female
+ENCSR000EMC	ENCFF971HIN	fibroblast of the aortic adventitia female
+ENCSR000ENK	ENCFF151PQH	fibroblast of the conjunctiva
+ENCSR000ENK	ENCFF622IXM	fibroblast of the conjunctiva
+ENCSR000ELX	ENCFF161YZC	fibroblast of upper leg skin male fetal (12 weeks)
+ENCSR000ELX	ENCFF074QAQ	fibroblast of upper leg skin male fetal (12 weeks)
+ENCSR166TEE	ENCFF087NWS	forelimb muscle female fetal (108 days)
+ENCSR000EME	ENCFF669EGA	foreskin fibroblast male newborn
+ENCSR000EME	ENCFF738NWG	foreskin fibroblast male newborn
+ENCSR251UPG	ENCFF206AEV	foreskin fibroblast male newborn
+ENCSR724CND	ENCFF471MGO	foreskin keratinocyte male newborn
+ENCSR724CND	ENCFF525STZ	foreskin keratinocyte male newborn
+ENCSR518JGY	ENCFF034YQE	foreskin melanocyte male newborn
+ENCSR269SIA	ENCFF242FCD	G401
+ENCSR269SIA	ENCFF759CXU	G401
+ENCSR171ETY	ENCFF545GYK	gastrocnemius medialis male adult (54 years)
+ENCSR771DAX	ENCFF638JLJ	globus pallidus male adult (78 years) and male adult (84 years)
+ENCSR771DAX	ENCFF040AAB	globus pallidus male adult (78 years) and male adult (84 years)
+ENCSR000EOM	ENCFF683WKN	glomerular endothelial cell
+ENCSR000EOM	ENCFF284RFI	glomerular endothelial cell
+ENCSR785BDQ	ENCFF239LHL	glomerular visceral epithelial cell child (3 years)
+ENCSR785BDQ	ENCFF555AMP	glomerular visceral epithelial cell child (3 years)
+ENCSR000EMQ	ENCFF916ZEO	GM06990
+ENCSR000EMQ	ENCFF151OXV	GM06990
+ENCSR000EMR	ENCFF847BDK	GM12864
+ENCSR000EMT	ENCFF699GLX	GM12878
+ENCSR000EMT	ENCFF419QKF	GM12878
+ENCSR000EMU	ENCFF837NIC	H1-hESC
+ENCSR794OFW	ENCFF990OJZ	H1-hESC
+ENCSR809CEA	ENCFF014ARU	H4
+ENCSR809CEA	ENCFF381UXQ	H4
+ENCSR000EMZ	ENCFF983NWK	H7-hESC
+ENCSR000EMZ	ENCFF260MVD	H7-hESC
+ENCSR754LIN	ENCFF030MTW	H9 G1 phase transiently expressing fusion protein
+ENCSR754LIN	ENCFF739EII	H9 G1 phase transiently expressing fusion protein
+ENCSR964WHY	ENCFF395TJB	H9 G1 phase transiently expressing fusion protein
+ENCSR964WHY	ENCFF283UVJ	H9 G1 phase transiently expressing fusion protein
+ENCSR915BSC	ENCFF495NIW	H9
+ENCSR017OZH	ENCFF843LRZ	H9 S1 phase transiently expressing fusion protein
+ENCSR017OZH	ENCFF600QOZ	H9 S1 phase transiently expressing fusion protein
+ENCSR943SYS	ENCFF778YAH	H9 G2 phase transiently expressing fusion protein
+ENCSR943SYS	ENCFF898FNC	H9 G2 phase transiently expressing fusion protein
+ENCSR620QNS	ENCFF870ZAW	HAP-1
+ENCSR620QNS	ENCFF355JHZ	HAP-1
+ENCSR000ENM	ENCFF658EFC	HCT116
+ENCSR000ENM	ENCFF246DJA	HCT116
+ENCSR366EGE	ENCFF063DTT	heart fetal (101 day)
+ENCSR705CNJ	ENCFF718ITI	heart male fetal (72 days) and male fetal (76 days)
+ENCSR705CNJ	ENCFF374DCP	heart male fetal (72 days) and male fetal (76 days)
+ENCSR664PKM	ENCFF607OLJ	heart female fetal (76 days) and fetal (59 days)
+ENCSR664PKM	ENCFF785FPS	heart female fetal (76 days) and fetal (59 days)
+ENCSR320PGJ	ENCFF486ZVD	heart male fetal (105 days)
+ENCSR749BWV	ENCFF948CVJ	heart female fetal (116 days) and female fetal (98 days)
+ENCSR749BWV	ENCFF478UOG	heart female fetal (116 days) and female fetal (98 days)
+ENCSR064GBK	ENCFF669RDJ	heart female fetal (91 day)
+ENCSR174JMM	ENCFF146DIE	heart female fetal (117 days)
+ENCSR311LLZ	ENCFF557WVL	heart male fetal (110 days)
+ENCSR154ZNQ	ENCFF597GET	heart female fetal (105 days)
+ENCSR392GCE	ENCFF626VUG	heart male fetal (120 days)
+ENCSR804RSI	ENCFF015LNH	heart fetal (80 days)
+ENCSR533VAF	ENCFF717QBC	heart female fetal (147 days)
+ENCSR189YJQ	ENCFF713YZI	heart female fetal (110 days)
+ENCSR914DOH	ENCFF154OPO	heart female fetal (103 days)
+ENCSR536NGW	ENCFF243NYI	heart male fetal (96 days)
+ENCSR911LTI	ENCFF176HSL	heart fetal (96 days)
+ENCSR305UJX	ENCFF346XGP	heart male child (3 years)
+ENCSR501FWC	ENCFF843EDD	heart left ventricle female fetal (101 day) and female fetal (136 days)
+ENCSR501FWC	ENCFF405RUP	heart left ventricle female fetal (101 day) and female fetal (136 days)
+ENCSR959ZXU	ENCFF792CTF	HeLa-S3
+ENCSR959ZXU	ENCFF398QPF	HeLa-S3
+ENCSR000ENO	ENCFF472FHT	HeLa-S3 G1b phase
+ENCSR000ENO	ENCFF991QSE	HeLa-S3 G1b phase
+ENCSR098PTC	ENCFF834IAD	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR098PTC	ENCFF546NXF	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR362JSZ	ENCFF935EAP	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR362JSZ	ENCFF228TCV	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR845CFB	ENCFF311CBH	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR845CFB	ENCFF408AKJ	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR855FOP	ENCFF658HXJ	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR855FOP	ENCFF190FJQ	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR420NOA	ENCFF413IZH	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR420NOA	ENCFF987XGY	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR564JUY	ENCFF545AYK	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR564JUY	ENCFF646NBQ	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR328UMC	ENCFF382RFA	hematopoietic multipotent progenitor cell female adult (34 years)
+ENCSR000EMK	ENCFF450GDI	hematopoietic multipotent progenitor cell male
+ENCSR493IAY	ENCFF853UZU	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR148VUP	ENCFF732DHA	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR148VUP	ENCFF580OOC	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR937UWI	ENCFF054JNM	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR937UWI	ENCFF631HFM	hematopoietic multipotent progenitor cell male adult (25 years) treated with interleukin-3 , kit ligand , hydrocortisone succinate , erythropoietin
+ENCSR364MFN	ENCFF679JRE	hepatocyte derived from H9
+ENCSR364MFN	ENCFF445WRY	hepatocyte derived from H9
+ENCSR000ENP	ENCFF719QUI	HepG2
+ENCSR000ENP	ENCFF748KLV	HepG2
+ENCSR149XIL	ENCFF373RBB	HepG2
+ENCSR149XIL	ENCFF942AZB	HepG2
+ENCSR000ENR	ENCFF406KWG	HFF-Myc male postnatal derived from foreskin fibroblast
+ENCSR000ENR	ENCFF697QJA	HFF-Myc male postnatal derived from foreskin fibroblast
+ENCSR385AMY	ENCFF701FOV	hindlimb muscle male fetal (120 days)
+ENCSR000ENU	ENCFF823YUJ	HL-60
+ENCSR000ENU	ENCFF714FMN	HL-60
+ENCSR000EMF	ENCFF881XPJ	HS-27A
+ENCSR000EMG	ENCFF930NLD	HS-5
+ENCSR814KRX	ENCFF664MAX	HT-29
+ENCSR814KRX	ENCFF160ESR	HT-29
+ENCSR477RTP	ENCFF924ESB	IMR-90 female fetal (16 weeks)
+ENCSR477RTP	ENCFF475ELF	IMR-90 female fetal (16 weeks)
+ENCSR477RTP	ENCFF647CXD	IMR-90 female fetal (16 weeks)
+ENCSR477RTP	ENCFF125FGY	IMR-90 female fetal (16 weeks)
+ENCSR004SUL	ENCFF274RJV	induced pluripotent stem cell male adult (53 years) derived from fibroblast of arm
+ENCSR004SUL	ENCFF297DLE	induced pluripotent stem cell male adult (53 years) derived from fibroblast of arm
+ENCSR986YWZ	ENCFF191XJF	inferior parietal cortex male adult (84 years)
+ENCSR383SNM	ENCFF752WEM	iPS DF 19.11 male newborn
+ENCSR440QMR	ENCFF196MPR	iPS DF 19.7 male newborn
+ENCSR014FPY	ENCFF195HCD	iPS DF 4.7 male newborn
+ENCSR261SMF	ENCFF532UDK	iPS DF 6.9 male newborn
+ENCSR000EOS	ENCFF013XEB	Jurkat clone E61
+ENCSR000EOS	ENCFF525JPO	Jurkat clone E61
+ENCSR000EPC	ENCFF848ZCQ	K562
+ENCSR000EPC	ENCFF068ZVJ	K562
+ENCSR019JDO	ENCFF277BDT	Karpas-422
+ENCSR019JDO	ENCFF519NOX	Karpas-422
+ENCSR426IEA	ENCFF696TPP	KBM-7
+ENCSR426IEA	ENCFF387COX	KBM-7
+ENCSR000EPQ	ENCFF089HVJ	keratinocyte female
+ENCSR000EPQ	ENCFF984EIQ	keratinocyte female
+ENCSR106OKX	ENCFF274VYX	kidney female fetal (120 days)
+ENCSR941DTJ	ENCFF696IGL	kidney female fetal (108 days)
+ENCSR979BPU	ENCFF145BNE	kidney female fetal (82 days)
+ENCSR262QJC	ENCFF444XQK	kidney male fetal (87 days)
+ENCSR645GJD	ENCFF443EVV	kidney female fetal (113 days)
+ENCSR437KLY	ENCFF241EII	kidney female fetal (85 days)
+ENCSR082JCE	ENCFF616EPX	kidney female fetal (121 day)
+ENCSR527PAX	ENCFF034VNG	kidney female fetal (113 days)
+ENCSR499PZA	ENCFF810VVX	kidney male fetal (105 days)
+ENCSR757EPJ	ENCFF705LTB	kidney male fetal (85 days)
+ENCSR953JVX	ENCFF363CHE	kidney female fetal (105 days)
+ENCSR066WZJ	ENCFF164JGM	kidney fetal (80 days)
+ENCSR000EOL	ENCFF519MIC	kidney epithelial cell
+ENCSR000EOL	ENCFF437ALV	kidney epithelial cell
+ENCSR314EZY	ENCFF007HYJ	L1-S8
+ENCSR314EZY	ENCFF458QOG	L1-S8
+ENCSR746ZPP	ENCFF139DDC	L1-S8R
+ENCSR746ZPP	ENCFF700EEC	L1-S8R
+ENCSR531HPD	ENCFF671OXB	large intestine male fetal (105 days)
+ENCSR762FCX	ENCFF994OCD	large intestine male fetal (91 day)
+ENCSR047FNH	ENCFF988AIH	large intestine male fetal (113 days)
+ENCSR857AEB	ENCFF993HTO	large intestine male fetal (108 days)
+ENCSR796SJV	ENCFF886YAL	large intestine female fetal (98 days)
+ENCSR962MFI	ENCFF366UUX	large intestine female fetal (85 days)
+ENCSR214QEO	ENCFF549PFO	large intestine female fetal (91 day)
+ENCSR666YVE	ENCFF664EGU	large intestine male fetal (105 days)
+ENCSR444VTC	ENCFF664DBA	large intestine female fetal (105 days)
+ENCSR133SPH	ENCFF012XTC	large intestine female fetal (120 days)
+ENCSR366EQH	ENCFF223JXX	large intestine male fetal (115 days)
+ENCSR800QGE	ENCFF881BVQ	large intestine female fetal (103 days)
+ENCSR563XRP	ENCFF623QIP	large intestine female fetal (107 days)
+ENCSR874CAK	ENCFF880PBK	large intestine female fetal (108 days)
+ENCSR154YPL	ENCFF906ADL	large intestine female fetal (110 days)
+ENCSR184DFF	ENCFF812BQU	left kidney male fetal (96 days)
+ENCSR120LVW	ENCFF129WZU	left kidney female fetal (98 days)
+ENCSR543YPH	ENCFF880SCV	left kidney male fetal (115 days)
+ENCSR097BWW	ENCFF221VFW	left kidney female fetal (59 days) and male fetal (91 day)
+ENCSR097BWW	ENCFF423ISR	left kidney female fetal (59 days) and male fetal (91 day)
+ENCSR600RAA	ENCFF601TAR	left kidney male fetal (87 days)
+ENCSR974TXT	ENCFF878JNP	left kidney female fetal (110 days)
+ENCSR953XJU	ENCFF409HQB	left kidney female fetal (107 days)
+ENCSR295DUI	ENCFF502YNF	left kidney female fetal (87 days)
+ENCSR422PVL	ENCFF815BWK	left kidney female fetal (147 days)
+ENCSR456KDF	ENCFF710EKR	left lung female fetal (108 days)
+ENCSR680SDS	ENCFF180SVO	left lung female fetal (107 days)
+ENCSR510ITB	ENCFF719HZS	left lung male fetal (91 day)
+ENCSR960EJV	ENCFF786QSZ	left lung female fetal (110 days)
+ENCSR639XWF	ENCFF111DAO	left lung male fetal (96 days)
+ENCSR488PHT	ENCFF107GKA	left lung male fetal (113 days)
+ENCSR468OVW	ENCFF222TDS	left lung female fetal (105 days)
+ENCSR935EVZ	ENCFF199HXB	left lung male fetal (115 days)
+ENCSR803VCR	ENCFF223VFF	left lung female fetal (91 day)
+ENCSR006XED	ENCFF934CEH	left lung female fetal (98 days)
+ENCSR541AVF	ENCFF681ANT	left lung female fetal (117 days)
+ENCSR441OGH	ENCFF467VDD	left lung male fetal (87 days)
+ENCSR953WJO	ENCFF517JZW	left lung male fetal (105 days)
+ENCSR928SYE	ENCFF102MFI	left renal cortex interstitium male fetal (105 days)
+ENCSR588JXI	ENCFF565KLE	left renal cortex interstitium male fetal (105 days)
+ENCSR039ZVQ	ENCFF004VQM	left renal cortex interstitium male fetal (120 days)
+ENCSR092WMD	ENCFF671MFT	left renal cortex interstitium male fetal (105 days)
+ENCSR318JAA	ENCFF378QXH	left renal pelvis male fetal (105 days)
+ENCSR016THC	ENCFF276OPY	left renal pelvis male fetal (105 days)
+ENCSR258IBL	ENCFF476RSI	left renal pelvis male fetal (105 days)
+ENCSR320SVK	ENCFF195JUM	left renal pelvis male fetal (120 days)
+ENCSR532CRI	ENCFF682YKZ	limb fetal (58 days) and fetal (59 days)
+ENCSR532CRI	ENCFF377CSO	limb fetal (58 days) and fetal (59 days)
+ENCSR818JGZ	ENCFF817TLL	limb fetal (53 days) and fetal (56 days)
+ENCSR818JGZ	ENCFF840FNP	limb fetal (53 days) and fetal (56 days)
+ENCSR000EPF	ENCFF703FKO	LNCaP clone FGC
+ENCSR000EPF	ENCFF271OFD	LNCaP clone FGC
+ENCSR503BEM	ENCFF628XUH	LoVo
+ENCSR503BEM	ENCFF299KHL	LoVo
+ENCSR582IPV	ENCFF866LKD	lung fetal (80 days) and male fetal (76 days)
+ENCSR582IPV	ENCFF422PXQ	lung fetal (80 days) and male fetal (76 days)
+ENCSR214XJO	ENCFF217XOC	lung female fetal (120 days)
+ENCSR847RSJ	ENCFF915WMB	lung female fetal (96 days)
+ENCSR587HPR	ENCFF013WBJ	lung male fetal (82 days)
+ENCSR318WOD	ENCFF456LSV	lung male fetal (103 days)
+ENCSR006IJP	ENCFF425JLV	lung fetal (112 days)
+ENCSR141VGA	ENCFF098PYA	lung female fetal (85 days)
+ENCSR482HQE	ENCFF254TFP	lung female fetal (108 days)
+ENCSR076YBB	ENCFF601AVI	lung male fetal (108 days)
+ENCSR986XLW	ENCFF498SJM	lung fetal (101 day)
+ENCSR504KZE	ENCFF206NXX	lung fetal (67 days)
+ENCSR000ENV	ENCFF936ZXO	mammary epithelial cell female
+ENCSR000ENV	ENCFF493SYG	mammary epithelial cell female
+ENCSR000EPH	ENCFF841CUS	MCF-7
+ENCSR000EPH	ENCFF400DJF	MCF-7
+ENCSR000EPJ	ENCFF152HGY	MCF-7
+ENCSR000EPJ	ENCFF718QVA	MCF-7
+ENCSR000EPI	ENCFF257TXQ	MCF-7 treated with estradiol
+ENCSR000EPI	ENCFF835OLW	MCF-7 treated with estradiol
+ENCSR224IYD	ENCFF939VQK	medulla oblongata male adult (78 years) and male adult (84 years)
+ENCSR224IYD	ENCFF234WHQ	medulla oblongata male adult (78 years) and male adult (84 years)
+ENCSR083STA	ENCFF121POU	MG63
+ENCSR083STA	ENCFF049MBS	MG63
+ENCSR706IDL	ENCFF877USU	midbrain male adult (78 years) and male adult (84 years)
+ENCSR706IDL	ENCFF398NMN	midbrain male adult (78 years) and male adult (84 years)
+ENCSR318PRQ	ENCFF853VLZ	middle frontal gyrus male adult (78 years)
+ENCSR318PRQ	ENCFF889NRF	middle frontal gyrus male adult (78 years)
+ENCSR458LIB	ENCFF321IOL	MM.1S
+ENCSR458LIB	ENCFF253UVX	MM.1S
+ENCSR956NOL	ENCFF763MFY	muscle of arm male fetal (127 days)
+ENCSR357PMV	ENCFF941MXZ	muscle of arm female fetal (120 days)
+ENCSR826ERZ	ENCFF112YET	muscle of arm fetal (101 day)
+ENCSR309YDN	ENCFF144MZT	muscle of arm female fetal (85 days)
+ENCSR517NHP	ENCFF747WCT	muscle of arm female fetal (105 days)
+ENCSR888GBS	ENCFF440DXT	muscle of arm male fetal (96 days)
+ENCSR303YII	ENCFF457XWP	muscle of arm male fetal (96 days)
+ENCSR753QKD	ENCFF836TVC	muscle of arm female fetal (98 days)
+ENCSR840QVX	ENCFF644KNU	muscle of arm male fetal (91 day)
+ENCSR619BNL	ENCFF796ATB	muscle of arm male fetal (97 days)
+ENCSR951XEN	ENCFF619NOM	muscle of arm male fetal (104 days)
+ENCSR949JYS	ENCFF018MQU	muscle of arm male fetal (105 days)
+ENCSR270LZE	ENCFF328PTA	muscle of arm male fetal (113 days)
+ENCSR868XPR	ENCFF946XPY	muscle of arm male fetal (115 days)
+ENCSR649PJN	ENCFF577XUL	muscle of arm male fetal (97 days)
+ENCSR452EGE	ENCFF935BDE	muscle of arm male fetal (120 days)
+ENCSR062DXC	ENCFF140YWN	muscle of arm female fetal (115 days)
+ENCSR356QCD	ENCFF697ACM	muscle of arm male fetal (101 day)
+ENCSR786FWF	ENCFF945ZIU	muscle of back male fetal (127 days)
+ENCSR106RBR	ENCFF186TCQ	muscle of back female fetal (115 days)
+ENCSR174GXG	ENCFF191SLZ	muscle of back male fetal (101 day)
+ENCSR585CGU	ENCFF053TOL	muscle of back female fetal (105 days)
+ENCSR141NSQ	ENCFF117MAG	muscle of back male fetal (104 days)
+ENCSR438TWI	ENCFF207XQQ	muscle of back male fetal (96 days)
+ENCSR357RED	ENCFF481YWL	muscle of back male fetal (105 days)
+ENCSR295ELC	ENCFF600GRS	muscle of back male fetal (97 days)
+ENCSR476SDZ	ENCFF622CYO	muscle of back male fetal (108 days)
+ENCSR072NBR	ENCFF521ZFM	muscle of back female fetal (98 days)
+ENCSR317SIH	ENCFF101CST	muscle of back male fetal (91 day)
+ENCSR698CUE	ENCFF542JXU	muscle of back male fetal (96 days)
+ENCSR193LYA	ENCFF226NJP	muscle of back female fetal (85 days)
+ENCSR010ZMK	ENCFF286GLX	muscle of back female fetal (113 days)
+ENCSR033STL	ENCFF066GCS	muscle of back female fetal (105 days)
+ENCSR294QCR	ENCFF846VYL	muscle of leg male fetal (97 days)
+ENCSR622CAH	ENCFF320NVG	muscle of leg male fetal (127 days)
+ENCSR059LXL	ENCFF575ZWL	muscle of leg male fetal (96 days)
+ENCSR249BYV	ENCFF946RUK	muscle of leg male fetal (113 days)
+ENCSR861NUH	ENCFF236RHY	muscle of leg male fetal (104 days)
+ENCSR167XSQ	ENCFF840DMT	muscle of leg male fetal (101 day)
+ENCSR938UOR	ENCFF777YWZ	muscle of leg female fetal (115 days)
+ENCSR514QHN	ENCFF131TCV	muscle of leg male fetal (105 days)
+ENCSR297ORG	ENCFF905HSN	muscle of leg male fetal (96 days)
+ENCSR033DQS	ENCFF488QOS	muscle of leg male fetal (97 days)
+ENCSR272RQX	ENCFF026EVC	muscle of leg female fetal (113 days)
+ENCSR937RVN	ENCFF158TEN	muscle of leg male fetal (115 days)
+ENCSR198JXW	ENCFF935HWY	muscle of leg female fetal (85 days)
+ENCSR286WIA	ENCFF455PCU	muscle of leg female fetal (105 days)
+ENCSR440FZS	ENCFF623YQT	muscle of trunk female fetal (113 days)
+ENCSR217YRJ	ENCFF129SRH	muscle of trunk female fetal (120 days)
+ENCSR411MGY	ENCFF179KIJ	muscle of trunk female fetal (121 day)
+ENCSR000EOP	ENCFF450GPM	myotube derived from skeletal muscle myoblast
+ENCSR000EOP	ENCFF338JJZ	myotube derived from skeletal muscle myoblast
+ENCSR000EMM	ENCFF947DHP	naive thymus-derived CD4-positive, alpha-beta T cell female adult (35 years)
+ENCSR662HMO	ENCFF264OVS	NAMALWA
+ENCSR662HMO	ENCFF942NIF	NAMALWA
+ENCSR723JLG	ENCFF482SAP	natural killer cell female adult (34 years)
+ENCSR718AAB	ENCFF778PKW	natural killer cell male adult (37 years)
+ENCSR265TEK	ENCFF300DNB	NCI-H226
+ENCSR265TEK	ENCFF138ZXM	NCI-H226
+ENCSR278FVO	ENCFF410SCO	neuronal stem cell
+ENCSR278FVO	ENCFF979REO	neuronal stem cell
+ENCSR000EOF	ENCFF535YLA	non-pigmented ciliary epithelial cell
+ENCSR000EOF	ENCFF756RXC	non-pigmented ciliary epithelial cell
+ENCSR000EPS	ENCFF554XCA	NT2/D1
+ENCSR000EPS	ENCFF907SVU	NT2/D1
+ENCSR859CZM	ENCFF338BLS	occipital lobe male adult (84 years)
+ENCSR489NAM	ENCFF882EHI	OCI-LY7
+ENCSR489NAM	ENCFF250VAO	OCI-LY7
+ENCSR712PYJ	ENCFF745QDG	ovary female adult (30 years)
+ENCSR855DJV	ENCFF454WFN	ovary female adult (51 year)
+ENCSR428XAX	ENCFF839AVM	ovary female
+ENCSR000EPT	ENCFF501CXB	Panc1
+ENCSR000EPT	ENCFF355UBT	Panc1
+ENCSR595HZQ	ENCFF094JKL	pancreas female adult (30 years)
+ENCSR178JBL	ENCFF137KLD	pancreas male adult (34 years)
+ENCSR052AWE	ENCFF146WUK	PC-3
+ENCSR052AWE	ENCFF683CUE	PC-3
+ENCSR940NLN	ENCFF695LYU	PC-9
+ENCSR940NLN	ENCFF545REN	PC-9
+ENCSR575VMI	ENCFF005KRN	placenta female fetal (101 day) and male fetal (105 days)
+ENCSR575VMI	ENCFF779IST	placenta female fetal (101 day) and male fetal (105 days)
+ENCSR989YIV	ENCFF230MUG	placenta male fetal (91 day)
+ENCSR802AJE	ENCFF397XYY	placenta male fetal (85 days)
+ENCSR648RAX	ENCFF357ABO	placenta female fetal (85 days)
+ENCSR129TSG	ENCFF937QRE	placenta female fetal (108 days)
+ENCSR499IFY	ENCFF993ORH	placenta fetal (53 days)
+ENCSR545KQR	ENCFF065TZD	placenta female fetal (105 days)
+ENCSR829MXU	ENCFF094CLD	pons male adult (78 years)
+ENCSR456SOX	ENCFF529MYU	prostate gland male adult (54 years)
+ENCSR000EOG	ENCFF263TNG	pulmonary artery endothelial cell female
+ENCSR037PGI	ENCFF413YRT	RCC 7860
+ENCSR037PGI	ENCFF405QQS	RCC 7860
+ENCSR000EQK	ENCFF871DFU	regulatory T-lymphocyte male adult (28 years)
+ENCSR849OKE	ENCFF722LAF	renal cortex interstitium male fetal (127 days)
+ENCSR129KIV	ENCFF956RBR	renal cortex interstitium male fetal (108 days)
+ENCSR022ECC	ENCFF859EEZ	renal cortex interstitium female fetal (96 days)
+ENCSR656QYL	ENCFF429SMH	renal cortex interstitium female fetal (103 days)
+ENCSR851ZFT	ENCFF372EFE	renal cortex interstitium female fetal (89 days)
+ENCSR828RNY	ENCFF156WFX	renal cortex interstitium male fetal (108 days)
+ENCSR524DWS	ENCFF441QSB	renal cortex interstitium female fetal (120 days)
+ENCSR254AGA	ENCFF736BUG	renal cortex interstitium male fetal (91 day)
+ENCSR155NPL	ENCFF373GBY	renal cortex interstitium male fetal (113 days)
+ENCSR550UWM	ENCFF452UFP	renal cortex interstitium male fetal (97 days)
+ENCSR932DHT	ENCFF929XHF	renal cortex interstitium female adult (96 days)
+ENCSR000EOK	ENCFF198QAV	renal cortical epithelial cell
+ENCSR000EOK	ENCFF444FHJ	renal cortical epithelial cell
+ENCSR619DRM	ENCFF551WIT	renal pelvis female fetal (105 days)
+ENCSR956ZHU	ENCFF512FBG	renal pelvis male fetal (113 days)
+ENCSR913NYL	ENCFF173CRM	renal pelvis male fetal (108 days)
+ENCSR580OAH	ENCFF651PFL	renal pelvis male fetal (91 day)
+ENCSR141DMX	ENCFF265XHK	renal pelvis female fetal (96 days)
+ENCSR911YVV	ENCFF719ICX	renal pelvis female fetal (89 days)
+ENCSR606UAR	ENCFF574SOK	renal pelvis female adult (96 days)
+ENCSR554WUJ	ENCFF467EBE	renal pelvis female fetal (103 days)
+ENCSR301RCD	ENCFF849ZBT	renal pelvis male fetal (127 days)
+ENCSR364TKL	ENCFF279UDT	renal pelvis male fetal (97 days)
+ENCSR820ICX	ENCFF175TXH	retina female fetal (89 days)
+ENCSR000EON	ENCFF881NZP	retinal pigment epithelial cell
+ENCSR000EON	ENCFF234LFJ	retinal pigment epithelial cell
+ENCSR036VRV	ENCFF482QLZ	right kidney female fetal (107 days)
+ENCSR017TFH	ENCFF462VWZ	right kidney female fetal (87 days)
+ENCSR768OLL	ENCFF069GYO	right kidney male fetal (91 day)
+ENCSR414ZUA	ENCFF410SUO	right kidney male fetal (108 days)
+ENCSR884MCZ	ENCFF970EGZ	right kidney female fetal (98 days)
+ENCSR871APX	ENCFF636TCJ	right kidney female fetal (147 days)
+ENCSR765BSU	ENCFF787HVY	right kidney female fetal (117 days)
+ENCSR990XXC	ENCFF385NYE	right kidney male fetal (115 days)
+ENCSR670ZSA	ENCFF416IVO	right kidney male fetal (96 days)
+ENCSR332BSB	ENCFF195IVX	right kidney male fetal (87 days)
+ENCSR174TIP	ENCFF146TAJ	right lobe of liver female adult (53 years)
+ENCSR441MMO	ENCFF609JAO	right lung female fetal (110 days)
+ENCSR947VPG	ENCFF744NDJ	right lung male fetal (87 days)
+ENCSR263IGU	ENCFF056ZXP	right lung female fetal (91 day)
+ENCSR445XYW	ENCFF866ESU	right lung female fetal (98 days)
+ENCSR964VVW	ENCFF246OIS	right lung male fetal (96 days)
+ENCSR846CTA	ENCFF716EXB	right lung male fetal (105 days)
+ENCSR859KGQ	ENCFF148JQJ	right lung female fetal (107 days)
+ENCSR845MEJ	ENCFF472NLO	right lung female fetal (117 days)
+ENCSR930AUG	ENCFF640MTK	right lung female fetal (108 days)
+ENCSR228BOM	ENCFF796ACO	right lung male fetal (115 days)
+ENCSR299INS	ENCFF173NEB	right lung female fetal (105 days)
+ENCSR268QCH	ENCFF400NIU	right renal cortex interstitium male fetal (105 days)
+ENCSR014VAC	ENCFF845ELC	right renal cortex interstitium male fetal (105 days)
+ENCSR887BNC	ENCFF609VAF	right renal cortex interstitium male fetal (120 days)
+ENCSR752NTF	ENCFF416URI	right renal pelvis male fetal (105 days)
+ENCSR761ZFA	ENCFF815YFD	right renal pelvis male fetal (105 days)
+ENCSR540PVZ	ENCFF336NKZ	right renal pelvis male fetal (120 days)
+ENCSR986HEN	ENCFF194GUW	right renal pelvis male fetal (105 days)
+ENCSR429RHR	ENCFF764GCL	RKO
+ENCSR429RHR	ENCFF394XFG	RKO
+ENCSR594NOE	ENCFF523SMY	RPMI8226
+ENCSR594NOE	ENCFF323KSG	RPMI8226
+ENCSR592DQC	ENCFF753RJB	sigmoid colon male adult (37 years)
+ENCSR907VOR	ENCFF682LGC	sigmoid colon female adult (53 years)
+ENCSR000FFJ	ENCFF209UDB	SJCRH30
+ENCSR000FFJ	ENCFF961CDE	SJCRH30
+ENCSR700ILE	ENCFF493CDJ	SJCRH30
+ENCSR620WAR	ENCFF253AAM	SJSA1
+ENCSR620WAR	ENCFF880TIR	SJSA1
+ENCSR946MVP	ENCFF279BCQ	SK-N-DZ
+ENCSR946MVP	ENCFF882JKR	SK-N-DZ
+ENCSR000EPY	ENCFF762MGA	SK-N-MC
+ENCSR000EPY	ENCFF174YAR	SK-N-MC
+ENCSR000EPZ	ENCFF899IXG	SK-N-SH treated with all-trans-retinoic acid
+ENCSR000EPZ	ENCFF251ETM	SK-N-SH treated with all-trans-retinoic acid
+ENCSR670VQZ	ENCFF571RJC	skin fibroblast male fetal (97 days)
+ENCSR371KRY	ENCFF955IYA	skin fibroblast male fetal (97 days)
+ENCSR587STM	ENCFF889CQB	skin fibroblast male fetal (97 days)
+ENCSR562ACY	ENCFF504JOU	skin fibroblast male fetal (97 days)
+ENCSR000EMO	ENCFF942PLS	skin fibroblast female adult (31 year)
+ENCSR000EMO	ENCFF322SVZ	skin fibroblast female adult (31 year)
+ENCSR067XUN	ENCFF471BXP	skin fibroblast male fetal (97 days)
+ENCSR835BNW	ENCFF666HYB	skin fibroblast male fetal (97 days)
+ENCSR648GDP	ENCFF858BCT	skin fibroblast male fetal (97 days)
+ENCSR555TFE	ENCFF920ZZV	skin fibroblast male fetal (97 days)
+ENCSR000EMP	ENCFF971SVP	skin fibroblast female adult (31 year)
+ENCSR000EMP	ENCFF840FAS	skin fibroblast female adult (31 year)
+ENCSR360LBD	ENCFF938TYF	skin fibroblast male fetal (97 days)
+ENCSR092OFK	ENCFF489RUM	skin of body female fetal (82 days)
+ENCSR970ZLG	ENCFF116VHO	small intestine male fetal (87 days)
+ENCSR502NDK	ENCFF849VBA	small intestine female fetal (108 days)
+ENCSR188JLO	ENCFF750AGA	small intestine male fetal (105 days)
+ENCSR672DWH	ENCFF498QTJ	small intestine male fetal (115 days)
+ENCSR860NDZ	ENCFF798JKB	small intestine female fetal (105 days)
+ENCSR354FBA	ENCFF571BCD	small intestine male fetal (115 days)
+ENCSR116WWW	ENCFF621VVA	small intestine female fetal (120 days)
+ENCSR565EBN	ENCFF784RQH	small intestine female fetal (98 days)
+ENCSR133KBX	ENCFF580BDA	small intestine female fetal (107 days)
+ENCSR594OWA	ENCFF382HTQ	small intestine male fetal (91 day)
+ENCSR945RWN	ENCFF472SHB	small intestine male fetal (108 days)
+ENCSR457ILW	ENCFF567FEI	small intestine female fetal (91 day)
+ENCSR083FBK	ENCFF915RKG	small intestine female fetal (110 days)
+ENCSR000ENG	ENCFF513GJP	smooth muscle cell of the brain vasculature female
+ENCSR000ENG	ENCFF460BXV	smooth muscle cell of the brain vasculature female
+ENCSR678PDD	ENCFF484RKY	spinal cord female fetal (113 days)
+ENCSR910OQF	ENCFF260IOW	spinal cord female fetal (59 days) and male fetal (72 days)
+ENCSR910OQF	ENCFF294BZK	spinal cord female fetal (59 days) and male fetal (72 days)
+ENCSR788SOI	ENCFF346NDW	spinal cord male fetal (96 days)
+ENCSR973MKT	ENCFF312IEQ	spinal cord female fetal (87 days)
+ENCSR615WIN	ENCFF881HJD	spinal cord female fetal (89 days)
+ENCSR148MFM	ENCFF742ZTM	spinal cord male fetal (105 days)
+ENCSR679IFH	ENCFF900GMQ	spleen fetal (112 days)
+ENCSR782SSS	ENCFF276WUL	stomach male adult (34 years)
+ENCSR246PXX	ENCFF429CQP	stomach male child (3 years)
+ENCSR511GQA	ENCFF217IGU	stomach female fetal (108 days)
+ENCSR726YMS	ENCFF132MFK	stomach female fetal
+ENCSR627KFV	ENCFF946GVE	stomach female fetal (147 days)
+ENCSR095GWE	ENCFF619QCV	stomach male fetal (58 days) and male fetal (76 days)
+ENCSR095GWE	ENCFF381ILB	stomach male fetal (58 days) and male fetal (76 days)
+ENCSR941SMM	ENCFF154LWZ	stomach fetal (101 day)
+ENCSR282QFE	ENCFF799KPM	stomach female fetal (121 day)
+ENCSR930YSB	ENCFF673AIY	stomach female fetal (96 days)
+ENCSR683YLO	ENCFF282KJN	stomach female adult (96 days)
+ENCSR082XEU	ENCFF952EON	stomach female fetal (107 days)
+ENCSR608AHQ	ENCFF735AVD	stomach male fetal (127 days)
+ENCSR172PVJ	ENCFF119RVA	stomach male fetal (91 day)
+ENCSR062DUU	ENCFF839PVN	stomach female fetal (105 days)
+ENCSR208DMX	ENCFF534RTH	stomach female fetal (98 days)
+ENCSR522FGG	ENCFF723XAE	stomach male fetal (108 days)
+ENCSR119HXE	ENCFF991LUP	stomach female fetal (105 days)
+ENCSR000EMH	ENCFF662HNC	stromal cell of bone marrow male
+ENCSR000EMH	ENCFF439GON	stromal cell of bone marrow male
+ENCSR382JUJ	ENCFF835REN	superior temporal gyrus male adult (84 years)
+ENCSR217SET	ENCFF663CAU	SW480
+ENCSR217SET	ENCFF028NIS	SW480
+ENCSR366YTD	ENCFF234UHM	T-cell male adult (37 years)
+ENCSR627UDJ	ENCFF189VXN	T-cell male adult (36 years)
+ENCSR414IHC	ENCFF046QLK	T-cell male adult (21 year)
+ENCSR628IRM	ENCFF804VZF	T-cell male adult (21 year)
+ENCSR040DGJ	ENCFF392GMW	T-cell
+ENCSR000EQE	ENCFF394ILF	T-helper 1 cell male adult (33 years)
+ENCSR000EQE	ENCFF762JIY	T-helper 1 cell male adult (33 years)
+ENCSR000EQH	ENCFF875PNK	T-helper 2 cell female adult (26 years)
+ENCSR475SYH	ENCFF320PLC	testis male adult (37 years)
+ENCSR278FHC	ENCFF075JMM	testis male fetal
+ENCSR729DRB	ENCFF447TOO	testis male fetal
+ENCSR637IGL	ENCFF836BIL	thoracic segment muscle female fetal (108 days)
+ENCSR342NCX	ENCFF903UWW	thymus female fetal (113 days)
+ENCSR962EAP	ENCFF773IGO	thymus male fetal (104 days)
+ENCSR917VCP	ENCFF080WFQ	thymus male fetal (97 days)
+ENCSR541UPY	ENCFF626JPD	thymus female fetal (98 days)
+ENCSR541UPY	ENCFF401MKN	thymus female fetal (98 days)
+ENCSR777USE	ENCFF642WZJ	thymus female fetal (147 days)
+ENCSR888UPQ	ENCFF898GOT	thymus male fetal (108 days)
+ENCSR164PQJ	ENCFF822OWN	thymus male fetal (127 days)
+ENCSR838IPF	ENCFF860NRE	thymus female fetal (105 days)
+ENCSR544KDB	ENCFF918EAU	thymus male fetal (113 days)
+ENCSR682PKY	ENCFF818ZNY	thymus female fetal
+ENCSR158VAT	ENCFF296JRC	thyroid gland male adult (37 years)
+ENCSR158VAT	ENCFF989TYL	thyroid gland male adult (37 years)
+ENCSR902XFY	ENCFF762TJH	thyroid gland male adult (54 years)
+ENCSR902XFY	ENCFF864EAM	thyroid gland male adult (54 years)
+ENCSR759UNY	ENCFF015ADC	tongue female fetal (59 days) and female fetal (76 days)
+ENCSR759UNY	ENCFF368WPS	tongue female fetal (59 days) and female fetal (76 days)
+ENCSR559WMK	ENCFF970NFP	tongue male fetal (72 days)
+ENCSR790FIS	ENCFF941ZKH	transverse colon male adult (54 years)
+ENCSR179CDH	ENCFF576LQF	trophoblast cell male embryo
+ENCSR121ZSL	ENCFF929FBU	trophoblast cell fetal (21 week)
+ENCSR121ZSL	ENCFF693HME	trophoblast cell fetal (21 week)
+ENCSR809LCE	ENCFF805YVD	trophoblast cell fetal (23 weeks)
+ENCSR964MZQ	ENCFF077SFE	trophoblast cell fetal (39 weeks) and fetal (40 weeks)
+ENCSR964MZQ	ENCFF258TFH	trophoblast cell fetal (39 weeks) and fetal (40 weeks)
+ENCSR593LTJ	ENCFF140JNA	trophoblast cell fetal (17 weeks) and fetal (18 weeks)
+ENCSR593LTJ	ENCFF412NKU	trophoblast cell fetal (17 weeks) and fetal (18 weeks)
+ENCSR512CWR	ENCFF935SZI	umbilical cord male fetal (76 days)
+ENCSR813CKU	ENCFF397CTJ	urinary bladder male fetal (76 days)
+ENCSR237WJY	ENCFF587PSM	uterus female adult (53 years)
+ENCSR000EQL	ENCFF560FRY	WERI-Rb-1
+ENCSR000EQL	ENCFF901JCH	WERI-Rb-1
+ENCSR000EQN	ENCFF349QFJ	WI38 derived from WI38 stably expressing fusion protein
+ENCSR000EQN	ENCFF480VFR	WI38 derived from WI38 stably expressing fusion protein
+ENCSR000EQM	ENCFF943QEY	WI38 derived from WI38 stably treated with afimoxifene expressing fusion protein
+ENCSR000EQM	ENCFF055WAE	WI38 derived from WI38 stably treated with afimoxifene expressing fusion protein
