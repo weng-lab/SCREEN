@@ -1,3 +1,11 @@
+export const asum = (a) => {
+    var retval = [];
+    a.map((_a) => {
+	retval = retval.concat(_a);
+    });
+    return retval;
+};
+
 export const chr_sort = (a, b) => (
     +a.replace(/chr/g, '').replace(/Y/g, '24').replace(/X/g, '23')
     - +b.replace(/chr/g, '').replace(/Y/g, '24').replace(/X/g, '23')
