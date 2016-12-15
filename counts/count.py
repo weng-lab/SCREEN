@@ -10,9 +10,11 @@ from exp import Exp
 from querydcc import QueryDCC
 from cache_memcache import MemCacheWrapper
 
+assaysToCts = {}
+
 d = "/home/purcarom/regElmViz/counts"
 for fn in os.listdir(d):
-    if not fn.startswith("hg19"):
+    if not fn.startswith("hg19") or "bigwig" not in fn:
         continue
     fnp = os.path.join(d, fn)
     print(fnp)
@@ -26,5 +28,15 @@ for fn in os.listdir(d):
         exp = Exp.fromJsonFile(expID)
         cts.add(exp.biosample_term_name)
 
-    print("\t", len(cts), len(cellTypes), len(data))
+    assay = fn.split('.')[1]
+    assaysToCts[assay] = cts
 
+assays = assaysToCts.keys()
+for assay, cts in assaysToCts.iteritems():
+    print(assay, len(cts))
+    for oassay in assays:
+        if assay == oassay:
+            continue
+        print('\t', assay, 'to', oassay,
+              'intersection of cell types',
+              len(cts.intersection(assaysToCts[oassay])))
