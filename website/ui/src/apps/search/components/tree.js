@@ -2,7 +2,7 @@ var React = require('react')
 import {connect} from 'react-redux';
 
 import Tree from '../../../common/components/tree'
-import {invalidate_results} from '../helpers/invalidate_results'
+import {invalidate_results, invalidate_tree_comparison} from '../helpers/invalidate_results'
 import {SET_TREE_FIELDS} from '../reducers/root_reducer'
 
 import REComponent from '../../../common/components/re_component'
@@ -19,11 +19,16 @@ class ResultsTree extends REComponent {
 
     constructor(props) {
 	super(props);
+	this._on_click = this._on_click.bind(this);
     }
 
     onChange(s) {
 	var p = s.split("$");
 	if (this.props.onChange) this.props.onChange(p[0], p[1]);
+    }
+
+    _on_click(d) {
+	if (this.props.onClick) this.props.onClick(d);
     }
     
     render() {
@@ -33,7 +38,7 @@ class ResultsTree extends REComponent {
 	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
-	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} /></div>;
+	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
 	}) : "");
 	return super.render(<div>
 		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
@@ -78,6 +83,12 @@ const dispatch_map = (store) => (f) => (_dispatch) => {
 		inner
 	    });
 	    dispatch(invalidate_results(store.getState()));
+	},
+	onClick: (d) => {
+	    dispatch(invalidate_tree_comparison({
+		left: d.children[0],
+		right: d.children[1]
+	    }));
 	}
     };
 };
