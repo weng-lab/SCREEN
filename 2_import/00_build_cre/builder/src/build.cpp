@@ -89,33 +89,33 @@ public:
         std::string name;
         std::string distance;
     };
+    using AccessionToGenes = std::unordered_map<std::string, std::vector<Gene>>;
+
     // 0    1      2      3                   4    5      6      7                     8 9 10
     // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
-    std::unordered_map<std::string, std::vector<Gene>> allGenes(){
+    AccessionToGenes allGenes(){
         return loadGenes(paths_.allGenes(), "all");
     }
 
-    std::unordered_map<std::string, std::vector<Gene>> pcGenes(){
+    AccessionToGenes pcGenes(){
         return loadGenes(paths_.pcGenes(), "pc");
     }
 
-    std::unordered_map<std::string, std::vector<Gene>>
-                                                loadGenes(bfs::path fnp,
-                                                          std::string typ){
+    AccessionToGenes loadGenes(bfs::path fnp, std::string typ){
         auto lines = bib::files::readStrings(fnp);
 
         uint32_t count;
-        std::unordered_map<std::string, std::vector<Gene>> ret;
-    for(const auto& g : lines){
-        auto toks = bib::str::split(g, '\t');
-        auto mpToks = bib::str::split(toks[3], '-');
-        std::string accession = mpToks[1];
-        ret[accession].emplace_back(Gene{toks[7], toks[10]});
-        ++count;
+        AccessionToGenes ret;
+        for(const auto& g : lines){
+            auto toks = bib::str::split(g, '\t');
+            auto mpToks = bib::str::split(toks[3], '-');
+            std::string accession = mpToks[1];
+            ret[accession].emplace_back(Gene{toks[7], toks[10]});
+            ++count;
+        }
+        std::cout << "loaded " << count << " " << typ << " genes\n";
+        return ret;
     }
-    std::cout << "loaded " << count << " " << typ << " genes\n";
-    return ret;
-}
 };
 
 template <typename T>
