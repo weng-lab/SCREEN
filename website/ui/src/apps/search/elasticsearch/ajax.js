@@ -37,6 +37,26 @@ const format_venn = (venn_query) => {
     }));
 };
 
+const format_tc_query = (query) => {
+    return JSON.stringify(Object.assign({}, query, {
+	action: "tree_comparison"
+    }));
+}
+
+export const TreeComparisonAJAX = (query, f_success, f_error) => {
+    console.log(query);
+    console.log(format_tc_query(query));
+    $.ajax({
+        type: "POST",
+        url: AJAX_URL,
+        data: format_tc_query(query),
+        dataType: "json",
+        contentType : "application/json",
+        success: f_success,
+	error: f_error
+    });    
+};
+
 const QueryAJAX = (query, f_success, f_error) => {
     $.ajax({
         type: "POST",
