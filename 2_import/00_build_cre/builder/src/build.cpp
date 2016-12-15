@@ -26,8 +26,29 @@ ZiARG_int32(j, zi::system::cpu_count, "num threads");
 
 namespace bib {
 
-struct MousePaths {
+namespace bfs = boost::filesystem;
 
+class MousePaths {
+public:
+    const std::string chr_;
+    const bfs::path base_ = "/home/purcarom/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
+    bfs::path path_;
+
+    MousePaths(std::string chr)
+        : chr_("chr" + chr)
+    {
+        path_ = base_ / chr_;
+    }
+
+    bfs::path allGenes(){
+        return path_ / (chr_ + "_AllGenes");
+    }
+    bfs::path pcGenes(){
+        return path_ / (chr_ + "_PCGenes");
+    }
+    bfs::path peaks(){
+        return path_ / (chr_ + "sorted-peaks");
+    }
 
 };
 
@@ -52,7 +73,7 @@ int main(int argc, char* argv[]){
     const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
     try {
-        bib::MousePaths paths;
+        bib::MousePaths paths("Y");
         bib::Builder<bib::MousePaths> b(paths);
         b.build();
     } catch(const std::exception& ex){
