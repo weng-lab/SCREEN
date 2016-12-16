@@ -51,6 +51,10 @@ export const DO_NAV = 'DO_NAV';
 
 export const default_state = (tabs) => {return {
     facet_boxes: {},
+    tree_comparison: {
+	left: [],
+	right: []
+    },
     results: {
 	query: {},
 	hits: [],
@@ -136,8 +140,12 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
     switch (action.type) {
 
     case SET_TREE_COMPARISON:
-	console.log(action);
-	break;
+	return Object.assign({}, state, {
+	    tree_comparison: Object.assign({}, state.tree_comparison, {
+		left: action.response.tfs.left,
+		right: action.response.tfs.right
+	    })
+	});
 	
     case UPDATE_EXPRESSION_BOXPLOT:
 	return Object.assign({}, state, {
@@ -303,6 +311,14 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	    })
 	});
 
+    case TREE_COMPARISON_DONE:
+	var n_state = Object.assign({}, state);
+	n_state["main_tabs"] = TabReducer(n_state["main_tabs"], {
+	    type: 'SELECT_TAB',
+	    selection: "gcompare"
+	});
+	return n_state;
+	
     case TAB_ACTION:
 	var n_state = Object.assign({}, state);
 	n_state[action.target] = TabReducer(n_state[action.target], action.subaction);
