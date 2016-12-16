@@ -183,7 +183,7 @@ const tree_comparison_loading = () => {
 };
 
 const get_children = (node) => {
-    if (!node.children) return [node.data.name];
+    if (!node.children) return [node.data.name.split("(")[0].replace(/^\s+|\s+$/g, '').replace(/ /g, "_")];
     return asum(node.children.map(get_children));
 };
 
