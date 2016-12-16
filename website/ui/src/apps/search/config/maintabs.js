@@ -1,4 +1,5 @@
 var React = require('react');
+import {connect} from 'react-redux'
 
 import ResultsApp from '../components/results_app'
 import ResultsDisplayApp from '../components/results_display_app'
@@ -9,6 +10,8 @@ import {tabs} from './details'
 
 import {main_comparison_connector} from '../reducers/root_reducer'
 import {main_tree_connector} from '../reducers/root_reducer'
+
+import TFDisplay from '../../../common/components/tf_display'
 
 export const maintabs = {
     id: "main",
@@ -36,6 +39,19 @@ export const maintabs = {
 	    render: (store, key) => {
 		var Details = details_connector(DetailsApp);
 		return <Details store={store} tabs={tabs} key={key} />;
+	    }
+	},
+	gcompare: {
+	    title: "Group comparison",
+	    visible: false,
+	    render: (store, key) => {
+		var Comparison = connect((state) => {
+		    return {
+			left: state.tree_comparison.left,
+			right: state.tree_comparison.right
+		    };
+		})(TFDisplay);
+		return <Comparison store={store} key={key} />;
 	    }
 	}
     }
