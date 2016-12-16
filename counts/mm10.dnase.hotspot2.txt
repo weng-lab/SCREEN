@@ -1,0 +1,114 @@
+Experiment	BigWig	Tissue
+ENCSR000CNA	ENCFF603YVF	C57BL/6 fibroblast male adult (8 weeks)
+ENCSR000CNA	ENCFF021YZO	C57BL/6 fibroblast male adult (8 weeks)
+ENCSR000CNR	ENCFF346KBC	DBA/2 erythroblast derived from MEL-GATA-1-ER treated with estradiol
+ENCSR000CNR	ENCFF633YNU	DBA/2 erythroblast derived from MEL-GATA-1-ER treated with estradiol
+ENCSR000CNY	ENCFF277JLM	C57BL/6 spleen male adult (8 weeks)
+ENCSR000CNY	ENCFF228SQB	C57BL/6 spleen male adult (8 weeks)
+ENCSR000CNH	ENCFF178JIT	C57BL/6 large intestine male adult (8 weeks)
+ENCSR000CNH	ENCFF024RLR	C57BL/6 large intestine male adult (8 weeks)
+ENCSR000CMU	ENCFF781TKY	CD-1 c-Kit-positive CD71-positive TER-119-positive erythroid progenitor cells male embryo (14.5 days)
+ENCSR000CMQ	ENCFF518OHJ	B10.H-2aH-4bp/Wts CH12.LX
+ENCSR000CMQ	ENCFF258NBN	B10.H-2aH-4bp/Wts CH12.LX
+ENCSR000COJ	ENCFF555YZO	129 ZHBTc4-mESC treated with doxycycline hyclate
+ENCSR000COJ	ENCFF348YDH	129 ZHBTc4-mESC treated with doxycycline hyclate
+ENCSR179PIH	ENCFF600NOU	C57BL/6 hindbrain embryo (14.5 days)
+ENCSR179PIH	ENCFF460KCY	C57BL/6 hindbrain embryo (14.5 days)
+ENCSR969OPE	ENCFF284NJQ	C57BL/6 stomach postnatal (0 days)
+ENCSR969OPE	ENCFF831ZYY	C57BL/6 stomach postnatal (0 days)
+ENCSR774TQO	ENCFF520ZJU	C57BL/6 embryo embryo (11 day)
+ENCSR774TQO	ENCFF192GQX	C57BL/6 embryo embryo (11 day)
+ENCSR000CNB	ENCFF379VIC	CD-1 forelimb bud male embryo (11.5 days)
+ENCSR000CNB	ENCFF541IHT	CD-1 forelimb bud male embryo (11.5 days)
+ENCSR000CNU	ENCFF515LDR	C57BL/6 retina male postnatal (7 days)
+ENCSR000CNL	ENCFF530XKG	129 liver male embryo (14.5 days)
+ENCSR000CNK	ENCFF507GMY	129 liver male embryo (14.5 days)
+ENCSR000CNK	ENCFF419KIW	129 liver male embryo (14.5 days)
+ENCSR000CNO	ENCFF686IWN	CD-1 mesoderm male embryo (11.5 days)
+ENCSR000CNO	ENCFF562FNA	CD-1 mesoderm male embryo (11.5 days)
+ENCSR000CMO	ENCFF863XNJ	C57BL/6 cerebellum male adult (8 weeks)
+ENCSR000CMO	ENCFF147BFB	C57BL/6 cerebellum male adult (8 weeks)
+ENCSR000CMO	ENCFF062RXD	C57BL/6 cerebellum male adult (8 weeks)
+ENCSR000CMZ	ENCFF324IWW	C57BL/6 fat pad male adult (8 weeks)
+ENCSR000CMZ	ENCFF485RRJ	C57BL/6 fat pad male adult (8 weeks)
+ENCSR000CNF	ENCFF960CAM	CD-1 hindlimb bud male embryo (11.5 days)
+ENCSR000CNF	ENCFF369MSI	CD-1 hindlimb bud male embryo (11.5 days)
+ENCSR000CND	ENCFF389YBM	CD-1 embryoid body male embryo (11.5 days)
+ENCSR000CND	ENCFF091MUW	CD-1 embryoid body male embryo (11.5 days)
+ENCSR000CMR	ENCFF592KHZ	CD-1 c-Kit-negative CD71-positive TER-119-positive erythroid progenitor cells male embryo (14.5 days)
+ENCSR000CNW	ENCFF031JUW	C57BL/6 retina male adult (8 weeks)
+ENCSR000CMW	ENCFF560SLS	129 ES-E14
+ENCSR000CMW	ENCFF945WIX	129 ES-E14
+ENCSR000CNP	ENCFF245RGF	DBA/2 MEL-GATA-1-ER
+ENCSR000CNP	ENCFF156PVQ	DBA/2 MEL-GATA-1-ER
+ENCSR000CMS	ENCFF681UWF	CD-1 c-Kit-positive CD71-negative TER-119-negative erythroid progenitor cells male embryo (14.5 days)
+ENCSR000CNJ	ENCFF149WTF	C57BL/6 liver male embryo (14.5 days)
+ENCSR000CNT	ENCFF310CWA	M.spretus x C57BL/6J Patski
+ENCSR000CNT	ENCFF209AZH	M.spretus x C57BL/6J Patski
+ENCSR855ASN	ENCFF181HPE	C57BL/6 acute myeloid leukemia
+ENCSR855ASN	ENCFF755KMX	C57BL/6 acute myeloid leukemia
+ENCSR742DUR	ENCFF116LVY	C57BL/6 lung embryo (14.5 days)
+ENCSR312QVY	ENCFF882TYQ	C57BL/6 neural tube embryo (11.5 days)
+ENCSR312QVY	ENCFF677XBR	C57BL/6 neural tube embryo (11.5 days)
+ENCSR959HKR	ENCFF113IAK	C57BL/6 embryonic facial prominence embryo (14.5 days)
+ENCSR959HKR	ENCFF234NRL	C57BL/6 embryonic facial prominence embryo (14.5 days)
+ENCSR000CMT	ENCFF454JBW	CD-1 c-Kit-positive CD71-positive TER-119-negative erythroid progenitor cells male embryo (14.5 days)
+ENCSR000CNQ	ENCFF688YGT	DBA/2 erythroblast derived from MEL-GATA-1-ER treated with estradiol
+ENCSR000CNQ	ENCFF395TUP	DBA/2 erythroblast derived from MEL-GATA-1-ER treated with estradiol
+ENCSR000CMY	ENCFF593YDI	mixed WW6
+ENCSR000CMY	ENCFF183CUL	mixed WW6
+ENCSR000CNC	ENCFF183MCM	C57BL/6 gonadal fat pad male adult (8 weeks)
+ENCSR000CNC	ENCFF507JNE	C57BL/6 gonadal fat pad male adult (8 weeks)
+ENCSR292QBA	ENCFF691KFW	C57BL/6 midbrain embryo (11.5 days)
+ENCSR292QBA	ENCFF708VGP	C57BL/6 midbrain embryo (11.5 days)
+ENCSR666HFH	ENCFF318GJH	C57BL/6 Muller cell postnatal (12 days)
+ENCSR666HFH	ENCFF363DOD	C57BL/6 Muller cell postnatal (12 days)
+ENCSR666HFH	ENCFF050AWC	C57BL/6 Muller cell postnatal (12 days)
+ENCSR358ESL	ENCFF150NWR	C57BL/6 hindbrain embryo (11.5 days)
+ENCSR358ESL	ENCFF190YXE	C57BL/6 hindbrain embryo (11.5 days)
+ENCSR196VDE	ENCFF775ETC	C57BL/6 embryonic facial prominence embryo (11.5 days)
+ENCSR196VDE	ENCFF018HJW	C57BL/6 embryonic facial prominence embryo (11.5 days)
+ENCSR469VGZ	ENCFF515UXA	C57BL/6 hindbrain postnatal (0 days)
+ENCSR469VGZ	ENCFF266QRZ	C57BL/6 hindbrain postnatal (0 days)
+ENCSR000CMX	ENCFF948DOH	mixed WW6
+ENCSR000CMX	ENCFF597PYT	mixed WW6
+ENCSR000COG	ENCFF289MOK	C57BL/6 brain male embryo (18.5 days)
+ENCSR000COG	ENCFF371YID	C57BL/6 brain male embryo (18.5 days)
+ENCSR000CNX	ENCFF313KOW	C57BL/6 skeletal muscle tissue male adult (8 weeks)
+ENCSR000CNX	ENCFF644QMD	C57BL/6 skeletal muscle tissue male adult (8 weeks)
+ENCSR000CMP	ENCFF554LDN	C57BL/6 telencephalon male adult (8 weeks)
+ENCSR000CMP	ENCFF982VXT	C57BL/6 telencephalon male adult (8 weeks)
+ENCSR000CMP	ENCFF801NNI	C57BL/6 telencephalon male adult (8 weeks)
+ENCSR935RRY	ENCFF519BSW	C57BL/6 thymus postnatal (0 days)
+ENCSR935RRY	ENCFF221AFF	C57BL/6 thymus postnatal (0 days)
+ENCSR661HDP	ENCFF537JUQ	C57BL/6 limb embryo (11.5 days)
+ENCSR661HDP	ENCFF732YQI	C57BL/6 limb embryo (11.5 days)
+ENCSR732IZK	ENCFF854IVT	C57BL/6 MN1
+ENCSR732IZK	ENCFF192FNI	C57BL/6 MN1
+ENCSR372SMH	ENCFF790SOJ	DBA/2 MEL cell line treated with zinc dichloride
+ENCSR372SMH	ENCFF382KQN	DBA/2 MEL cell line treated with zinc dichloride
+ENCSR005WPU	ENCFF871ZRV	C57BL/6 heart postnatal (0 days)
+ENCSR005WPU	ENCFF063GKK	C57BL/6 heart postnatal (0 days)
+ENCSR367FCW	ENCFF538GHV	C57BL/6 midbrain embryo (14.5 days)
+ENCSR367FCW	ENCFF420FSL	C57BL/6 midbrain embryo (14.5 days)
+ENCSR898KAX	ENCFF068RRI	C57BL/6 MN1 treated with methyltrienolone
+ENCSR898KAX	ENCFF261CKW	C57BL/6 MN1 treated with methyltrienolone
+ENCSR337EDG	ENCFF380PSC	C57BL/6 forebrain embryo (14.5 days)
+ENCSR337EDG	ENCFF604HAB	C57BL/6 forebrain embryo (14.5 days)
+ENCSR767AJS	ENCFF472EXJ	C57BL/6 midbrain postnatal (0 days)
+ENCSR767AJS	ENCFF674RMD	C57BL/6 midbrain postnatal (0 days)
+ENCSR172RHR	ENCFF784YUW	C57BL/6 embryo embryo (10.5 days)
+ENCSR172RHR	ENCFF413CFX	C57BL/6 embryo embryo (10.5 days)
+ENCSR446MUM	ENCFF049CSP	DBA/2 MEL cell line
+ENCSR446MUM	ENCFF153AHX	DBA/2 MEL cell line
+ENCSR723IXU	ENCFF887MVZ	C57BL/6 embryo embryo (10 days)
+ENCSR687EAW	ENCFF538CGB	C57BL/6 3T3-L1
+ENCSR687EAW	ENCFF615SLZ	C57BL/6 3T3-L1
+ENCSR094XAY	ENCFF948VIF	C57BL/6 lung postnatal (0 days)
+ENCSR094XAY	ENCFF512UHE	C57BL/6 lung postnatal (0 days)
+ENCSR488VEQ	ENCFF313NSB	C57BL/6 retina embryo (14.5 days)
+ENCSR488VEQ	ENCFF634EVS	C57BL/6 retina embryo (14.5 days)
+ENCSR791AJY	ENCFF218MZB	C57BL/6 forebrain postnatal (0 days)
+ENCSR636NXY	ENCFF242HFY	C57BL/6 limb embryo (14.5 days)
+ENCSR636NXY	ENCFF769OSQ	C57BL/6 limb embryo (14.5 days)
+ENCSR216UMD	ENCFF796WJP	C57BL/6 liver postnatal (0 days)

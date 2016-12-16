@@ -15,6 +15,7 @@
 #include <zi/system.hpp>
 
 #include "cpp/utility.hpp"
+#include "cpp/files.hpp"
 #include "cpp/gzip_reader.hpp"
 #include "cpp/tictoc.hpp"
 #include "cpp/gzstream.hpp"
@@ -47,9 +48,83 @@ public:
         return path_ / (chr_ + "_PCGenes");
     }
     bfs::path peaks(){
-        return path_ / (chr_ + "sorted-peaks");
+        return path_ / (chr_ + "_sorted-peaks");
+    }
+    bfs::path signalDir(){
+        return path_ / "signal";
+    }
+};
+
+template <typename T>
+class GetData {
+    T paths_;
+
+public:
+    GetData(T paths)
+        : paths_(paths)
+    {}
+
+    // chrY    808996  809318  MP-2173311-100.000000   EE0756098
+    struct Peak {
+        std::string chrom;
+        std::string start;
+        std::string end;
+        std::string mpID;
+        std::string negLogP;
+        std::string accession;
+    };
+    std::vector<Peak> peaks(){
+        auto lines = bib::files::readStrings(paths_.peaks());
+
+        std::vector<Peak> ret;
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            auto mpToks = bib::str::split(toks[3], '-');
+            ret.emplace_back(Peak{toks[0], toks[1], toks[2],
+                        mpToks[1], mpToks[2], toks[4]});
+        }
+        std::cout << "loaded " << ret.size() << " peaks\n";
+        return ret;
     }
 
+    struct Gene {
+        std::string name;
+        std::string distance;
+    };
+    using AccessionToGenes = std::unordered_map<std::string, std::vector<Gene>>;
+
+    // 0    1      2      3                   4    5      6      7                     8 9 10
+    // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
+    AccessionToGenes allGenes(){
+        return loadGenes(paths_.allGenes(), "all");
+    }
+
+    AccessionToGenes pcGenes(){
+        return loadGenes(paths_.pcGenes(), "pc");
+    }
+
+    AccessionToGenes loadGenes(bfs::path fnp, std::string typ){
+        auto lines = bib::files::readStrings(fnp);
+
+        uint32_t count;
+        AccessionToGenes ret;
+        for(const auto& g : lines){
+            auto toks = bib::str::split(g, '\t');
+            auto mpToks = bib::str::split(toks[3], '-');
+            std::string accession = mpToks[1];
+            ret[accession].emplace_back(Gene{toks[7], toks[10]});
+            ++count;
+        }
+        std::cout << "loaded " << count << " " << typ << " genes\n";
+        return ret;
+    }
+
+    void loadSignals(){
+        bfs::path dir = paths_.signalDir();
+        for(const auto& f : bib::files::dir(dir)){
+            std::cout << f << std::endl;
+        }
+    }
 };
 
 template <typename T>
@@ -62,7 +137,11 @@ public:
     {}
 
     void build(){
-
+        GetData<T> d(paths_);
+        const auto peaks = d.peaks();
+        const auto allGenes = d.allGenes();
+        const auto pcGenes = d.pcGenes();
+        d.loadSignals();
     }
 };
 
