@@ -210,11 +210,7 @@ class ElasticSearchWrapper:
         path = field.split(".")
         url = os.path.join(index, "_mapping", doc_type)
 
-        print(url)
         result = requests.get(ElasticSearchWrapper.default_url(url))
-
-        print(result.content)
-        
         result = json.loads(result.content)[index]["mappings"][doc_type]["properties"]
         for subfield in path:
             if subfield in result and "properties" in result[subfield]:
