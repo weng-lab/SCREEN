@@ -54,14 +54,25 @@ class paths:
                          "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
                          "index": "regulatory_elements_7",
                          "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
-                         "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")}
+                         "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
+                     8: { "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
+                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.json.gz")),
+                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.peaks.json.gz")),
+                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.similarity.json.gz")),
+                                    "re_bed": os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.bed.gz"),
+                                    "bedLsjFnp" : os.path.join(v4d, "ver8/beds.lsj"),
+                                    "index": "regulatory_elements_8_mm10",
+                                    "tssFnp": os.path.join(v4d, "ver8/proximal-genes.V8.json.gz"),
+                                    "rewriteTssFnp": os.path.join(v4d, "ver8/proximal-genes.rewrite.V8.json.gz")}
+                     }
                      }
 
     @staticmethod
-    def get_paths(version, chrs = None):
+    def get_paths(version, assembly, chrs = None):
         ret = {}
-        if version not in paths.re_json_vers: return ret
-        for k, v in paths.re_json_vers[version].iteritems():
+        if version not in paths.re_json_vers:
+            return ret
+        for k, v in paths.re_json_vers[version][assembly].iteritems():
             if not hasattr(v, "__call__"):
                 ret[k] = v
             else:
