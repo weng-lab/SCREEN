@@ -19,7 +19,8 @@ def parse_args():
 def main():
     args = parse_args()
     LoadCellTypes.Import(args)
-    importer = executable_importer(os.path.join(os.path.dirname(__file__), "../../celltypes.lsj"),
+    importer = executable_importer(os.path.join(os.path.dirname(__file__),
+                                                "../../celltypes.lsj"),
                                    "cell_types", "cell_type",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
