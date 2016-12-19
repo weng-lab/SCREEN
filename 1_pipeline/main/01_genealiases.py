@@ -110,15 +110,16 @@ def rewrite(inFnp, outFnp, emap):
                     print(inFnp, "working with entry", idx)
                 d = json.loads(line)
 
-                for geneCat in ["nearest-pc", "nearest-all"]:
-                    gpca = []
-                    for gi in xrange(5):
-                        g = d["genes"][geneCat][gi]
-                        pc = g["gene-name"].split(".")[0]
-                        if pc in emap:
-                            g["gene-name"] = emap[pc]
-                        gpca.append(g)
-                    d["genes"][geneCat] = gpca
+                if emap:
+                    for geneCat in ["nearest-pc", "nearest-all"]:
+                        gpca = []
+                        for gi in xrange(5):
+                            g = d["genes"][geneCat][gi]
+                            pc = g["gene-name"].split(".")[0]
+                            if pc in emap:
+                                g["gene-name"] = emap[pc]
+                            gpca.append(g)
+                        d["genes"][geneCat] = gpca
 
                 for rk in ["ctcf", "dnase", "promoter", "enhancer"]:
                     cts = d["ranks"][rk].keys()
@@ -133,7 +134,7 @@ def rewrite(inFnp, outFnp, emap):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
-    parser.add_argument('--version', type=int, default=7)
+    parser.add_argument('--version', type=int, default=8)
     parser.add_argument('--assembly', type=str, default="mm10")
     args = parser.parse_args()
     return args
@@ -141,8 +142,10 @@ def parse_args():
 def main():
     args = parse_args()
 
-    gi = GeneInfo(args.assembly)
-    emap = gi.getGeneList()
+    emap = None
+    if "hg19" == args.assembly:
+        gi = GeneInfo(args.assembly)
+        emap = gi.getGeneList()
 
     fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
 
