@@ -56,7 +56,7 @@ class paths:
                          "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
                          "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
                      8: { "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
-                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.json.gz")),
+                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.json.gz")),
                                     "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.peaks.json.gz")),
                                     "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.similarity.json.gz")),
                                     "re_bed": os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.bed.gz"),
@@ -92,9 +92,12 @@ class paths:
                 ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
 
-    reVer = 7
+    reVer = 8
     reVerStr = "reVer" + str(reVer)
-    re_json_index = "regulatory_elements_" + str(reVer)
+
+    @staticmethod
+    def reJsonIndex(assembly):
+        return "regulatory_elements_" + str(paths.reVer) + "_" + assembly
 
     cellTypeTissueTable = "cellTypesAndTissues"
 
