@@ -18,7 +18,7 @@ chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
                    'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
                    'chr19', 'chr2',
                    'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
-                   'chr9', 'chrM', 'chrX', 'chrY'] }
+                   'chr9', 'chrX', 'chrY'] } # chrM
 
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373, "chr3": 198022430, "chr4": 191154276,
                           "chr5": 180915260, "chr6": 171115067, "chr7": 159138663, "chrX": 155270560,
@@ -41,7 +41,7 @@ class paths:
         return addChr
 
     cytobands = {"hg19": os.path.join(v4d, "hg19.cytoBand.txt.gz")}
-    
+
     re_json_vers = { 6: {"origFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
                          "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
                          "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
@@ -80,11 +80,16 @@ class paths:
         return ret
 
     hexplots_dir = os.path.join(v4d, "hexplots")
-    gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff")}
+    gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
+                  "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf")
+                  }
 
-    genelist = {"hg19" : os.path.join(v4d, "genelist.hg19.tsv")}
-    genelsj = {"hg19" : os.path.join(v4d, "genelist.hg19.lsj")}
-    geneJsonFnp = {"hg19" : os.path.join(v4d, "genelist.hg19.json")}
+    genelist = {"hg19" : os.path.join(v4d, "genelist.hg19.tsv"),
+                "mm10" : os.path.join(v4d, "genelist.mm10.tsv")}
+    genelsj = {"hg19" : os.path.join(v4d, "genelist.hg19.lsj"),
+               "mm10" : os.path.join(v4d, "genelist.mm10.lsj")}
+    geneJsonFnp = {"hg19" : os.path.join(v4d, "genelist.hg19.json"),
+                   "mm10" : os.path.join(v4d, "genelist.mm10.json")}
 
     genedb = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
     genedb_lsj = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
