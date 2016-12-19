@@ -134,7 +134,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--version', type=int, default=7)
-    parser.add_argument('--assembly', type=str, default="hg19")
+    parser.add_argument('--assembly', type=str, default="mm10")
     args = parser.parse_args()
     return args
 
@@ -144,7 +144,7 @@ def main():
     gi = GeneInfo(args.assembly)
     emap = gi.getGeneList()
 
-    fnps = paths.get_paths(args.version, chroms[args.assembly])
+    fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
 
     jobs = []
     for i in xrange(len(fnps["origFnp"])):
