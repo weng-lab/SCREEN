@@ -208,7 +208,13 @@ class ElasticSearchWrapper:
 
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
-        result = requests.get(ElasticSearchWrapper.default_url("%s/_mapping/%s" % (index, doc_type)))
+        url = os.path.join(index, "_mapping", doc_type)
+
+        print(url)
+        result = requests.get(ElasticSearchWrapper.default_url(url))
+
+        print(result.content)
+        
         result = json.loads(result.content)[index]["mappings"][doc_type]["properties"]
         for subfield in path:
             if subfield in result and "properties" in result[subfield]:

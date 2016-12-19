@@ -6,16 +6,16 @@ from elasticsearch import Elasticsearch
 import os, sys, json, psycopg2, argparse, fileinput
 import cStringIO
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 from elastic_search_wrapper import ElasticSearchWrapper
 from constants import paths
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from db_utils import getcursor
 
 class LoadCellTypes:
-    def __init__(self, curs):
+    def __init__(self, assembly, curs):
+        self.assembly = assembly
         self.curs = curs
         self.tableName = paths.cellTypeTissueTable
 
@@ -43,7 +43,7 @@ class LoadCellTypes:
     def Import(args):
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "10_cellTypes") as curs:
-            loadCts = LoadCellTypes(curs)
+            loadCts = LoadCellTypes(args.assembly, curs)
             loadCts._setupDb()
             loadCts._import()
 
@@ -65,14 +65,9 @@ class LoadCellTypes:
     def _import(self):
         es = ElasticSearchWrapper(Elasticsearch())
 
-        j = {"name": "cell_line",
-             "index": paths.re_json_index,
-             "doc_type": "element",
-             "field": "ranks.dnase" }
-
-        r = es.get_field_mapping(index=j["index"],
-                                 doc_type=j["doc_type"],
-                                 field=j["field"])
+        r = es.get_field_mapping(index = paths.reJsonIndex(self.assembly),
+                                 doc_type = "element",
+                                 field = "ranks.dnase")
 
         ctsRaw = sorted(r["datapairs"], key=lambda s: s[0].lower())
         cts = []
@@ -106,7 +101,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    #LoadCellTypes.Import(args)
+    LoadCellTypes.Import(args)
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     with getcursor(DBCONN, "08_setup_log") as curs:
