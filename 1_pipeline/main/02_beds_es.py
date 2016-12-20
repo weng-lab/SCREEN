@@ -231,7 +231,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    fnps = paths.get_paths(args.version, chroms[args.assembly])
+    fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
 
     if args.updateOnly:
         return updateREfiles(args, fnps)
