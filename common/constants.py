@@ -46,16 +46,16 @@ class paths:
                          "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
                          "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
                          "index": "regulatory_elements_6"},
-                     7: {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
-                         "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
-                         "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
-                         "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
-                         "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
-                         "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
-                         "index": "regulatory_elements_7",
-                         "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
-                         "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
-                     8: { "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
+                     7: { "hg19" : {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
+                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
+                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
+                                    "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
+                                    "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
+                                    "index": "regulatory_elements_7",
+                                    "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
+                                    "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
+                          "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
                                     "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.json.gz")),
                                     "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.peaks.json.gz")),
                                     "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.similarity.json.gz")),
@@ -64,9 +64,9 @@ class paths:
                                     "index": "regulatory_elements_8_mm10",
                                     "tssFnp": os.path.join(v4d, "ver8/proximal-genes.V8.json.gz"),
                                     "rewriteTssFnp": os.path.join(v4d, "ver8/proximal-genes.rewrite.V8.json.gz")}
+                          }
                      }
-                     }
-
+    
     @staticmethod
     def get_paths(version, assembly, chrs = None):
         ret = {}
@@ -97,15 +97,24 @@ class paths:
                 ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
     snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
 
-    reVer = 8
+    reVer = 7
     reVerStr = "reVer" + str(reVer)
 
     @staticmethod
     def reJsonIndex(assembly):
-        return "regulatory_elements_" + str(paths.reVer) + "_" + assembly
+        # TODO: fixme!
+        if "hg19" == assembly:
+            return "regulatory_elements_" + "7" #str(paths.reVer)
+        return "regulatory_elements_8_mm10" #" + str(paths.reVer) + "_" + assembly
 
-    cellTypeTissueTable = "cellTypesAndTissues"
+    @staticmethod
+    def IndexCellTypesAndTissues(assembly):
+        r = {"hg19" : "cellTypesAndTissues_hg19",
+             "mm10" : "cellTypesAndTissues_mm10"}
+        return r[assembly]
+        
 
+    
 def main():
     fnps = paths.get_paths(7, chroms["hg19"])
 

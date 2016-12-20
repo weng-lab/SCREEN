@@ -17,16 +17,17 @@ class LoadCellTypes:
     def __init__(self, assembly, curs):
         self.assembly = assembly
         self.curs = curs
-        self.tableName = paths.cellTypeTissueTable
+        self.tableName = paths.IndexCellTypesAndTissues(assembly)
 
-        ctFnp = os.path.join(os.path.dirname(__file__), "../celltypes.json")
+        ctFn = "cellTypeToTissue." + assembly + ".json"
+        ctFnp = os.path.join(os.path.dirname(__file__), "../", ctFn)
         with open(ctFnp) as f:
             self.ctToTissue = json.load(f)
 
     @staticmethod
-    def Load(DBCONN):
+    def Load(DBCONN, assembly):
         with getcursor(DBCONN, "10_cellTypes") as curs:
-            loadCts = LoadCellTypes(curs)
+            loadCts = LoadCellTypes(assembly, curs)
             return loadCts.load()
 
     def load(self):
@@ -40,10 +41,10 @@ class LoadCellTypes:
         return [{"value": r[0], "tissue": r[1]} for r in rets]
             
     @staticmethod
-    def Import(args):
-        DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    def Import(local, assembly):
+        DBCONN = db_connect(os.path.realpath(__file__), local)
         with getcursor(DBCONN, "10_cellTypes") as curs:
-            loadCts = LoadCellTypes(args.assembly, curs)
+            loadCts = LoadCellTypes(assembly, curs)
             loadCts._setupDb()
             loadCts._import()
 
@@ -78,7 +79,7 @@ class LoadCellTypes:
         count = 0
         for ctTissue in cts:
             self.curs.execute("""
-INSERT INTO {tableName}
+            INSERT INTO {tableName}
             (cellType, tissue)
             VALUES (
             %(cellType)s,
