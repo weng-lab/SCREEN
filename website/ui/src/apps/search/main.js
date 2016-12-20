@@ -22,7 +22,8 @@ class SearchPage extends React.Component {
 
     constructor(props) {
 	super(props);
-	this.store = createStore(get_root_reducer(maintabs), applyMiddleware(thunkMiddleware));
+	this.store = createStore(get_root_reducer(maintabs),
+				 applyMiddleware(thunkMiddleware));
     }
     
     render() {
