@@ -11,7 +11,7 @@ class RegElements:
     @staticmethod
     def process_for_javascript(raw_results):
         retval = {"type": "query_results",
-                  "index": paths.re_json_index,
+                  "index": paths.reJsonIndex(assembly),
                   "aggs": {}}
         retval["results"] = raw_results["hits"]
         if "aggregations" not in raw_results:

@@ -41,9 +41,10 @@ class AjaxWebServiceWrapper:
             "mm10" : AjaxWebService(args, es, ps, cache, staticDir, "mm10") }
 
     def process(self, j):
-        if "assembly" not in j:
-            raise Exception("assembly not defined")
-        return self.ajws[j["assembly"]].process(j)
+        if "GlobalAssembly" not in j:
+            print(sorted(list(j.keys())))
+            raise Exception("GlobalAssembly not defined")
+        return self.ajws[j["GlobalAssembly"]].process(j)
 
 class AjaxWebService:
 
@@ -219,7 +220,7 @@ class AjaxWebService:
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000,
                                       "_source": ["accession", "position"]},
-                                index=paths.re_json_index)["hits"]["hits"]
+                                index=paths.reJsonIndex(self.assembly))["hits"]["hits"]
         return [x["_source"] for x in retval]
     
     
@@ -394,7 +395,7 @@ class AjaxWebService:
 
 
         # do search
-        raw_results = self.es.search(body = query, index = paths.re_json_index)["aggregations"]
+        raw_results = self.es.search(body = query, index = paths.reJsonIndex(self.assembly))["aggregations"]
         rank_range = [min([raw_results[cell_type + "min"]["value"] for cell_type in j["cell_types"]]),
                       max([raw_results[cell_type + "max"]["value"] for cell_type in j["cell_types"]]) ]
         totals = {cell_type: raw_results[cell_type]["doc_count"] for cell_type in j["cell_types"]}
@@ -482,7 +483,7 @@ class AjaxWebService:
         j["object"]["_source"] = ["ranks"]
         with Timer('ElasticSearch time'):
             _ret = self._query({"object": j["object"],
-                               "index": paths.re_json_index,
+                                "index": paths.reJsonIndex(self.assembly),
                                "callback": "" })
         
         if "hits" in _ret:
@@ -526,7 +527,7 @@ class AjaxWebService:
         
         with Timer('ElasticSearch time'):
             ret = self._query({"object": j["object"],
-                               "index": paths.re_json_index,
+                               "index": paths.reJsonIndex(self.assembly),
                                "callback": j["callback"] })
         if "post_processing" in j:
             if "tss_bins" in j["post_processing"]:
@@ -582,7 +583,7 @@ class AjaxWebService:
 
     def downloadAsSomething(self, uid, j, formt, writeFunc):
         ret = self._query({"object": j["object"],
-                           "index": paths.re_json_index,
+                           "index": paths.reJsonIndex(self.assembly),
                            "callback": "regulatory_elements" })
         outFn, outFnp = self.downloadFileName(uid, formt)
 
