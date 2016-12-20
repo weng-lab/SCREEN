@@ -16,14 +16,12 @@ class PageInfoMain:
         self.es = es
         self.ps = ps
         self.cache = cache
-        self.regElements = RegElements(es)
-        self.regElementDetails = RegElementDetails(es, ps)
 
-    def wholePage(self, indexPage = False):
+    def wholePage(self, assembly, indexPage = False):
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index,
+                "re_json_index" : paths.reJsonIndex(assembly),
                 "globalCellCompartments" : json.dumps([])
         }
 
@@ -44,7 +42,10 @@ class PageInfoMain:
         return retval
 
     def searchPage(self, args, kwargs, uuid):
-        retval = self.wholePage()
+        if "assembly" not in kwargs:
+            raise Exception("assembly not found" + str(kwargs))
+        assembly = kwargs["assembly"]
+        retval = self.wholePage(assembly)
 
         parsed = ""
         if "q" in kwargs:
@@ -55,7 +56,7 @@ class PageInfoMain:
         retval.update({"globalParsedQuery" : json.dumps(parsed),
                        "globalSessionUid" : uuid,
                        "globalTfs" : self.cache.tf_list_json,
-                       "globalCellTypes" : self.cache.cellTypesAndTissues_json,
+                       "globalCellTypes" : self.cache.getCTTjson(assembly),
                        "searchPage": True,
                        "tissueMap": self.cache.tissueMap })
 
