@@ -6,7 +6,7 @@ from controllers.main_controller import MainController
 from controllers.geneexp_controller import GeneExpController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
-from controllers.ajax_ws import AjaxWebService
+from controllers.ajax_ws import AjaxWebServiceWrapper
 from controllers.comparison import ComparisonController
 
 from common.session import Sessions
@@ -24,7 +24,7 @@ class MainApp():
         self.cp = ComparisonController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
-        self.ajaxWS = AjaxWebService(args, es, ps, cache, staticDir)
+        self.ajaxWS = AjaxWebServiceWrapper(args, es, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):

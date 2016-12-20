@@ -27,7 +27,7 @@ class CachedObjects:
             "hg19" : LoadCellTypes.Load(self.ps.DBCONN, "hg19"),
             "mm10" : LoadCellTypes.Load(self.ps.DBCONN, "mm10") }
 
-        def makeTissueMap(m, assembly):
+        def makeTissueMap(assembly):
             return {x["value"]: x["tissue"] for x in
                     self.cellTypesAndTissues[assembly]}
         self.tissueMap = { "hg19" : makeTissueMap("hg19"),
@@ -44,6 +44,9 @@ class CachedObjects:
         print("missing tissue for", ct)
         return ""
 
+    def getCTTjson(self, assembly):
+        return self.cellTypesAndTissues_json[assembly]
+    
     def getTissueAsMap(self, ct):
         if ct in self.tissueMap:
             return self.tissueMap[ct]

@@ -113,8 +113,6 @@ class paths:
              "mm10" : "cellTypesAndTissues_mm10"}
         return r[assembly]
         
-
-    
 def main():
     fnps = paths.get_paths(7, chroms["hg19"])
 
