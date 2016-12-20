@@ -7,8 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
 
 class RegElementDetails:
-    def __init__(self, es, ps):
-        self.index = paths.re_json_index
+    def __init__(self, es, ps, assembly):
+        self.index = paths.reJsonIndex(assembly)
         self.es = es
         self.ps = ps
 

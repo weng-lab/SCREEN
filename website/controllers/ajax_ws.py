@@ -34,6 +34,17 @@ from heatmaps.heatmap import Heatmap
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
 
+class AjaxWebServiceWrapper:
+    def __init__(self, args, es, ps, cache, staticDir):
+        self.ajws = {
+            "hg19" : AjaxWebService(args, es, ps, cache, staticDir, "hg19"),
+            "mm10" : AjaxWebService(args, es, ps, cache, staticDir, "mm10") }
+
+    def process(self, j):
+        if "assembly" not in j:
+            raise Exception("assembly not defined")
+        return self.ajws[j["assembly"]].process(j)
+
 class AjaxWebService:
 
     _default_fields = ["accession", "neg-log-p",
@@ -41,25 +52,27 @@ class AjaxWebService:
                        "position.end", "genes.nearest-all",
                        "genes.nearest-pc", "in_cart"]
     
-    def __init__(self, args, es, ps, cache, staticDir):
+    def __init__(self, args, es, ps, cache, staticDir, assembly):
         self._rank_types = { "DNase": ("dnase", ""),
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
                              "Promoter": ("promoter", ".H3K4me3-Only"),
                              "CTCF": ("ctcf", ".CTCF-Only") }
-        
+
+        self.assembly = assembly
         self.args = args
         self.es = es
         self.ps = ps
-        self.rh = RankHeatmap(cache.cellTypesAndTissues, self._rank_types)
+        self.rh = RankHeatmap(cache.cellTypesAndTissues[assembly],
+                              self._rank_types)
         self.cache = cache
         self.cg = ComputeGeneExpression(self.es, self.ps, self.cache)
         self.cytobands = {assembly: Cytoband(v)
                           for assembly, v in paths.cytobands.iteritems()}
         
         self.em = ExpressionMatrix(self.es)
-        self.details = RegElementDetails(es, ps)
+        self.details = RegElementDetails(es, ps, assembly)
         self.ac = Autocompleter(es)
-        self.regElements = RegElements(es)
+        self.regElements = RegElements(es, assembly)
 
         self.staticDir = staticDir
         
