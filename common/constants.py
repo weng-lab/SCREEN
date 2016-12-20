@@ -42,11 +42,7 @@ class paths:
 
     cytobands = {"hg19": os.path.join(v4d, "hg19.cytoBand.txt.gz")}
 
-    re_json_vers = { 6: {"origFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.json.gz")),
-                         "rewriteFnp": insChr(os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.mod.json._tmp.gz")),
-                         "re_bed": os.path.join(v4d, "ver6/regulatory-element-registry-hg19.V6.bed.gz"),
-                         "index": "regulatory_elements_6"},
-                     7: { "hg19" : {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+    re_json_vers = { 7: { "hg19" : {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
                                     "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
                                     "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
                                     "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
@@ -57,22 +53,23 @@ class paths:
                                     "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
                           "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
                                     "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.json.gz")),
-                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.gene.peaks.json.gz")),
-                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.mod.similarity.json.gz")),
-                                    "re_bed": os.path.join(v4d, "ver8/regulatory-element-registry-hg19.V8.bed.gz"),
-                                    "bedLsjFnp" : os.path.join(v4d, "ver8/beds.lsj"),
+                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.json.gz")),
+                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.similarity.json.gz")),
+                                    "re_bed": os.path.join(v4d, "ver8/mm10/regulatory-element-registry-mm10.V8.bed.gz"),
+                                    "bedLsjFnp" : os.path.join(v4d, "ver8/mm10/beds.lsj"),
                                     "index": "regulatory_elements_8_mm10",
-                                    "tssFnp": os.path.join(v4d, "ver8/proximal-genes.V8.json.gz"),
-                                    "rewriteTssFnp": os.path.join(v4d, "ver8/proximal-genes.rewrite.V8.json.gz")}
+                                    "tssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.V8.json.gz"),
+                                    "rewriteTssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.rewrite.V8.json.gz")}
                           }
                      }
-    
+
     @staticmethod
     def get_paths(version, assembly, chrs = None):
         ret = {}
         if version not in paths.re_json_vers:
             return ret
-        for k, v in paths.re_json_vers[version][assembly].iteritems():
+        fnps = paths.re_json_vers[version][assembly]
+        for k, v in fnps.iteritems():
             if not hasattr(v, "__call__"):
                 ret[k] = v
             else:
@@ -112,7 +109,7 @@ class paths:
         r = {"hg19" : "cellTypesAndTissues_hg19",
              "mm10" : "cellTypesAndTissues_mm10"}
         return r[assembly]
-        
+
 def main():
     fnps = paths.get_paths(7, chroms["hg19"])
 
