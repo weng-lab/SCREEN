@@ -200,8 +200,8 @@ class ElasticSearchWrapper:
         raw_results = self.es.search(index = "cell_types", body = query.query_obj)
         return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
     
-    def get_overlapping_res(self, coord):
-        return self._get_overlaps_generic(coord, paths.re_json_index)
+    def get_overlapping_res(self, coord, assembly):
+        return self._get_overlaps_generic(coord, paths.reJsonIndex(assembly))
 
     def get_overlapping_genes(self, coord):
         return self._get_overlaps_generic(coord, "gene_aliases")
