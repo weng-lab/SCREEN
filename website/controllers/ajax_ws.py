@@ -183,11 +183,15 @@ class AjaxWebService:
         accession = j["accession"]
         j = self.details.reFull(accession)
         pos = j["position"]
+
         output = {"type": "re_details",
                   "q": {"accession": accession,
                         "position": pos},
-                  "data": {k: self._peak_format(v)
-                           for k, v in j["peak_intersections"].iteritems()} }
+                  "data": {} }
+
+        if "peak_intersections" in j:
+            output["data"] = {k: self._peak_format(v)
+                              for k, v in j["peak_intersections"].iteritems()}
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
@@ -195,14 +199,14 @@ class AjaxWebService:
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords, "hg19")
+        snp_results = self.es.get_overlapping_snps(expanded_coords, self.assembly)
 
         overlapBP = 1000000 # 1MB
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
 #        gene_results = self.es.get_overlapping_genes(expanded_coords)
-        re_results = self.es.get_overlapping_res(expanded_coords)
+        re_results = self.es.get_overlapping_res(expanded_coords, self.assembly)
         
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
@@ -304,9 +308,10 @@ class AjaxWebService:
         if len(results) > 0:
             results = results[0]
             results_lists = {"Nearest Linearly": (results["_source"]["genes"]["nearest-all"] + results["_source"]["genes"]["nearest-pc"],
-                                                  lambda gene: gene["gene-name"]),
-                             "Within TAD": (results["_source"]["genes"]["tads"],
-                                            lambda gene: gene) }
+                                                  lambda gene: gene["gene-name"])}
+            if "tads" in results["_source"]["genes"]:
+                results_lists["Within TAD"] = (results["_source"]["genes"]["tads"],
+                                               lambda gene: gene)
             for title, v in results_lists.iteritems():
                 ret[title] = []
                 genelist, f = v
@@ -488,24 +493,32 @@ class AjaxWebService:
                                "callback": "" })
         
         if "hits" in _ret:
-            results = {}
-            for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
-                                ("tissue", lambda ct: "tissue" in ct),
-                                ("immortalized cell lines", lambda ct: "immortalized" in ct)]:
-                with Timer("spearman correlation time"):
-                    c = Correlation(_ret["hits"]["hits"])
-                    labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
-                                               None if "inner" not in j else j["inner"],
-                                               lambda_pair[1] )
-                rho, pval = corr
-                _heatmap = Heatmap(rho.tolist())
-                with Timer("hierarchical clustering time"):
-                    roworder, rowtree = _heatmap.cluster_by_rows()
-                results[lambda_pair[0]] = {"tree": rowtree,
-                                           "labels": labels}
-            return {"results": {"tree": results}}
+            try:
+                return self._process_tree_hits(_ret)
+            except:
+                print("ERROR in ajaxws: _tree")
+                pass
         return {"results": {"tree": {"tree": None, "labels": []}}}
-    
+
+    def _process_tree_hits(self, _ret):
+        results = {}
+        for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
+                            ("tissue", lambda ct: "tissue" in ct),
+                            ("immortalized cell lines", lambda ct: "immortalized" in ct)]:
+            with Timer("spearman correlation time"):
+                c = Correlation(_ret["hits"]["hits"])
+                labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
+                                           None if "inner" not in j else j["inner"],
+                                           lambda_pair[1] )
+            rho, pval = corr
+            rhoList = rho.tolist()
+            _heatmap = Heatmap(rhoList)
+            with Timer("hierarchical clustering time"):
+                roworder, rowtree = _heatmap.cluster_by_rows()
+            results[lambda_pair[0]] = {"tree": rowtree,
+                                       "labels": labels}
+        return {"results": {"tree": results}}
+
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
         # http://stackoverflow.com/a/27297611
         j["object"]["_source"] = fields
