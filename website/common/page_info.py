@@ -21,6 +21,7 @@ class PageInfoMain:
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
+                "Assembly" : assembly,
                 "re_json_index" : paths.reJsonIndex(assembly),
                 "globalCellCompartments" : json.dumps([])
         }
@@ -45,7 +46,7 @@ class PageInfoMain:
         if "assembly" not in kwargs:
             raise Exception("assembly not found" + str(kwargs))
         assembly = kwargs["assembly"]
-        retval = self.wholePage(assembly)
+        ret = self.wholePage(assembly)
 
         parsed = ""
         if "q" in kwargs:
@@ -53,14 +54,14 @@ class PageInfoMain:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
-        retval.update({"globalParsedQuery" : json.dumps(parsed),
-                       "globalSessionUid" : uuid,
-                       "globalTfs" : self.cache.tf_list_json,
-                       "globalCellTypes" : self.cache.getCTTjson(assembly),
-                       "searchPage": True,
-                       "tissueMap": self.cache.tissueMap })
+        ret.update({"globalParsedQuery" : json.dumps(parsed),
+                    "globalSessionUid" : uuid,
+                    "globalTfs" : self.cache.tf_list_json,
+                    "globalCellTypes" : self.cache.getCTTjson(assembly),
+                    "searchPage": True,
+                    "tissueMap": self.cache.tissueMap })
 
-        return retval
+        return ret
 
     def rawQueryPage(self, q, url):
         pageinfo = self.wholePage()

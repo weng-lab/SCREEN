@@ -142,7 +142,9 @@ export const invalidate_results = (state) => {
 	    dispatch(set_searchtext(FacetsToSearchText(state)));
 	};
 	var f_error = (jqxhr, status, error) => {
-	    dispatch(results_error(jqxhr, error));
+	    //dispatch(results_error(jqxhr, error));
+	    console.log(jqxhr, status, error);
+	    console.log("TODO: FIXME");
 	};
 
 	var t_success = (response, status, jqxhr) => {
