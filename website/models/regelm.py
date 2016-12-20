@@ -9,7 +9,7 @@ class RegElements:
         self.es = es
 
     @staticmethod
-    def process_for_javascript(raw_results):
+    def process_for_javascript(raw_results, assembly):
         retval = {"type": "query_results",
                   "index": paths.reJsonIndex(assembly),
                   "aggs": {}}

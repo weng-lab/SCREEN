@@ -287,7 +287,8 @@ class AjaxWebService:
         ret = self.es.search(body=j["object"], index=j["index"])
 
         if j["callback"] in self.cmap:
-            ret = self.cmap[j["callback"]].process_for_javascript(ret)
+            ret = self.cmap[j["callback"]].process_for_javascript(ret,
+                                                                  self.assembly)
 
         ret["callback"] = j["callback"]
         self.ps.logQuery(j, ret, "")
