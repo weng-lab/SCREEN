@@ -23,11 +23,20 @@ class CachedObjects:
         self.tf_list = sorted(ac.get_suggestions({"userQuery": "",
                                                   "indices": "tfs" })["results"])
 
-        self.cellTypesAndTissues = LoadCellTypes.Load(self.ps.DBCONN)
-        self.tissueMap = {x["value"]: x["tissue"] for x in self.cellTypesAndTissues}
+        self.cellTypesAndTissues = {
+            "hg19" : LoadCellTypes.Load(self.ps.DBCONN, "hg19"),
+            "mm10" : LoadCellTypes.Load(self.ps.DBCONN, "mm10") }
 
+        def makeTissueMap(m, assembly):
+            return {x["value"]: x["tissue"] for x in
+                    self.cellTypesAndTissues[assembly]}
+        self.tissueMap = { "hg19" : makeTissueMap("hg19"),
+                           "mm10" : makeTissueMap("mm10") }
+        self.cellTypesAndTissues_json = {
+            "hg19" : json.dumps(self.cellTypesAndTissues["hg19"]),
+            "mm10" : json.dumps(self.cellTypesAndTissues["mm10"]) }
+                           
         self.tf_list_json = json.dumps(self.tf_list)
-        self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
 
     def getTissue(self, ct):
         if ct in self.cellTypesAndTissues:

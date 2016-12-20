@@ -18,13 +18,18 @@ def parse_args():
 
 def main():
     args = parse_args()
-    LoadCellTypes.Import(args)
-    importer = executable_importer(os.path.join(os.path.dirname(__file__),
-                                                "../../celltypes.lsj"),
-                                   "cell_types", "cell_type",
-                                   args.elasticsearch_server,
-                                   args.elasticsearch_port)
-    importer.exe()
+
+    for assembly in ["hg19", "mm10"]:
+        LoadCellTypes.Import(args.local, assembly)
+
+        fn = "cellTypeToTissue." + assembly + ".lsj"
+        importer = executable_importer(os.path.join(os.path.dirname(__file__),
+                                                    "../../../", fn),
+                                       "cell_types_" + assembly,
+                                       "cell_type",
+                                       args.elasticsearch_server,
+                                       args.elasticsearch_port)
+        importer.exe()
     return 0
 
 if __name__ == '__main__':
