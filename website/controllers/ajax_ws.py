@@ -494,13 +494,14 @@ class AjaxWebService:
         
         if "hits" in _ret:
             try:
-                return self._process_tree_hits(_ret)
+                return self._process_tree_hits(j, _ret)
             except:
+                raise
                 print("ERROR in ajaxws: _tree")
                 pass
         return {"results": {"tree": {"tree": None, "labels": []}}}
 
-    def _process_tree_hits(self, _ret):
+    def _process_tree_hits(self, j, _ret):
         results = {}
         for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
                             ("tissue", lambda ct: "tissue" in ct),
@@ -511,6 +512,7 @@ class AjaxWebService:
                                            None if "inner" not in j else j["inner"],
                                            lambda_pair[1] )
             rho, pval = corr
+            print("heatmap:", rho, pval)
             rhoList = rho.tolist()
             _heatmap = Heatmap(rhoList)
             with Timer("hierarchical clustering time"):
