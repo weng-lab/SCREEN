@@ -1,4 +1,5 @@
-"129_E14Tg2a_4" : "",
+{
+    "129_E14Tg2a_4" : "",
 "129_ES-E14" : "",
 "129_G1E" : "",
 "129_liver_male_embryo_14_5_days" : "",
@@ -44,7 +45,7 @@
 "C57BL-6_heart_embryo_15_5_days" : "heart",
 "C57BL-6_heart_embryo_16_5_days" : "heart",
 "C57BL-6_heart_male_adult_8_weeks" : "heart",
-"C57BL-6_heart_postnatal_0_days" : "heart"
+    "C57BL-6_heart_postnatal_0_days" : "heart",
 "C57BL-6_heart_postnatal_0_days" : "heart",
 "C57BL-6_hindbrain_embryo_10_5_days" : "brain",
 "C57BL-6_hindbrain_embryo_11_5_days" : "brain",
@@ -130,4 +131,5 @@
 "DBA-2_MEL_cell_line_treated_with_zinc_dichloride" : "",
 "DBA-2_MEL-GATA-1-ER" : "",
 "mixed_WW6" : "",
-"M_spretus_x_C57BL-6J_Patski" : "",
+"M_spretus_x_C57BL-6J_Patski" : ""
+}
