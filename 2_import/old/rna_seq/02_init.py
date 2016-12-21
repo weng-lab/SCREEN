@@ -13,7 +13,7 @@ from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 
-def setupDB(cur, species):
+def setupDB(cur, assembly):
     cur.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -28,9 +28,9 @@ lab text,
 assay_term_name text,
 biosample_type text,
 description text
-    ) """.format(tableName = "r_rnas_" + species))
+    ) """.format(tableName = "r_rnas_" + assembly))
 
-def insertRNAs(cur, species):
+def insertRNAs(cur, assembly):
     tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
     with open(tissueFixesFnp) as f:
         rows = f.readlines()
@@ -42,7 +42,7 @@ def insertRNAs(cur, species):
                             + r + "found " + str(len(toks)))
         lookup[toks[0]] = toks[1].strip()
 
-    cur.execute("select distinct(dataset) from r_expression_" + species)
+    cur.execute("select distinct(dataset) from r_expression_" + assembly)
     rows = cur.fetchall()
     print("found", len(rows), "rows")
     counter = 0
@@ -88,7 +88,7 @@ VALUES (
 %(assay)s,
 %(biosample_type)s,
 %(desc)s
-        )""".format(tableName = "r_rnas_" + species),
+        )""".format(tableName = "r_rnas_" + assembly),
                     {"encode_id" : exp.encodeID,
                      "cellType" : exp.biosample_term_name,
                      "organ" : organ,
@@ -100,7 +100,7 @@ VALUES (
                      "desc" : exp.description
                     })
         counter += 1
-    print("inserted", counter, "RNA-seq for", species)
+    print("inserted", counter, "RNA-seq for", assembly)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -111,11 +111,11 @@ def parse_args():
 def main():
     args = parse_args()
 
-    for species in ["mouse", "human"]:
+    for assembly in ["mm10", "hg19"]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "02_init") as curs:
-            setupDB(curs, species)
-            insertRNAs(curs, species)
+            setupDB(curs, assembly)
+            insertRNAs(curs, assembly)
 
 if __name__ == '__main__':
     main()

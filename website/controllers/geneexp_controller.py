@@ -18,6 +18,11 @@ class GeneExpController:
         return self.t('main/geneexp', **pageInfo.geneexpPage(args, kwargs, uuid))
     
     def geneexpjson(self, j):
+        if "GlobalAssembly" not in j:
+            print(sorted(list(j.keys())))
+            raise Exception("GlobalAssembly not defined")
+        assembly = j["GlobalAssembly"]
+
         gene = j["geneID"]
         # TODO: check for valid gene
 
@@ -28,5 +33,5 @@ class GeneExpController:
         if not compartments:
             return {"items" : [] }
 
-        cge = ComputeGeneExpression(self.es, self.ps, self.cache)
+        cge = ComputeGeneExpression(self.es, self.ps, self.cache, assembly)
         return cge.computeHorBars(gene, compartments)

@@ -66,7 +66,7 @@ class AjaxWebService:
         self.rh = RankHeatmap(cache.cellTypesAndTissues[assembly],
                               self._rank_types)
         self.cache = cache
-        self.cg = ComputeGeneExpression(self.es, self.ps, self.cache)
+        self.cg = ComputeGeneExpression(self.es, self.ps, self.cache, self.assembly)
         self.cytobands = {assembly: Cytoband(v)
                           for assembly, v in paths.cytobands.iteritems()}
         
