@@ -18,6 +18,7 @@ class GeneExpPage extends React.Component {
     constructor(props) {
 	super(props);
 	this.store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
+	this.store.assembly = this.props.params.assembly
 	this.store.geneID = this.props.params.geneID
     }
 

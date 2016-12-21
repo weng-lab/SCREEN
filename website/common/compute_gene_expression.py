@@ -82,10 +82,11 @@ class TissueColors:
         return self.tissueColors[t]
 
 class ComputeGeneExpression:
-    def __init__(self, es, ps, cache):
+    def __init__(self, es, ps, cache, assembly):
         self.es = es
         self.ps = ps
         self.cache = cache
+        self.assembly = assembly
         self.tissueColors = TissueColors()
                 
     def getTissueColor(self, t):
@@ -164,9 +165,12 @@ class ComputeGeneExpression:
         fc = {}
         counts = {ct1: {}, ct2: {}}
         with getcursor(self.ps.DBCONN, "ComputeGeneExpression::computeFoldChange") as curs:
-            curs.execute("""SELECT r.tpm, r.fpkm, r_rnas.cellType, r.gene_name
-                            FROM r_expression as r INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
-                            WHERE r_rnas.cellType = %(ct1)s OR r_rnas.cellType = %(ct2)s""",
+            curs.execute("""
+SELECT r.tpm, r.fpkm, r_rnas_{assembly}.cellType, r.gene_name
+FROM r_expression_{assembly} as r 
+INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2)s
+""".format(assembly = self.assembly),
                          {"ct1": ct1, "ct2": ct2})
             rows = curs.fetchall()
         for row in rows:
@@ -182,17 +186,16 @@ class ComputeGeneExpression:
                 fc[gene] = math.log((exp[ct1][gene] + 0.01) / (exp[ct2][gene] + 0.01), 2)
         print(fc)
         return fc
-            
-    
+                
     def computeHorBars(self, gene, compartments):
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
-            SELECT r.tpm, r_rnas.organ, r_rnas.cellType, r.dataset, r.replicate, r.fpkm
-            FROM r_expression AS r
-            INNER JOIN r_rnas ON r_rnas.encode_id = r.dataset
+            SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r.replicate, r.fpkm
+            FROM r_expression_{assembly} AS r
+            INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
             WHERE gene_name = %(gene)s
-            AND r_rnas.cellCompartment IN %(compartments)s
-            """,
+            AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
+            """.format(assembly = self.assembly),
                          { "gene" : gene,
                            "compartments" : tuple(compartments)})
             rows = curs.fetchall()

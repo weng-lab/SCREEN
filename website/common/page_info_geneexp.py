@@ -12,23 +12,26 @@ class PageInfoGeneExp:
         self.ps = ps
         self.cache = cache
 
-    def wholePage(self, indexPage = False):
+    def wholePage(self, assembly, indexPage = False):
         return {"page": {"title" : "Regulatory Element Visualizer"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index,
+                "Assembly" : assembly,
+                "re_json_index" : paths.reJsonIndex(assembly),
                 "globalSessionUid" : "",
                 "globalTfs" : [],
                 "globalCellTypes" : []
         }
     
     def geneexpPage(self, args, kwargs, uuid):
-        ret = self.wholePage()
-
+        assembly = ""
         gene = ""
         if len(args):
-            gene = args[0]
+            assembly = args[0]
+            gene = args[1]
             # TODO: check gene
+
+        ret = self.wholePage(assembly)
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 

@@ -2,22 +2,22 @@
 
 import os, sys, json, psycopg2, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 from utils import Utils
 from metadataws import MetadataWS
 
-def setupDB(cur, species):
+def setupDB(cur, assembly):
     cur.execute("""
-DROP TABLE IF EXISTS r_genes;
-CREATE TABLE r_genes AS
-SELECT DISTINCT r.ensembl_id, r.gene_name FROM r_expression AS r
-""")
+DROP TABLE IF EXISTS r_genes_{assembly};
+CREATE TABLE r_genes_{assembly} AS
+SELECT DISTINCT r.ensembl_id, r.gene_name FROM r_expression_{assembly} AS r
+""".format(assembly = assembly))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -28,10 +28,10 @@ def parse_args():
 def main():
     args = parse_args()
 
-    for dataset in [Datasets.all_human]:
+    for assembly in ["mm10", "hg19"]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
         with getcursor(DBCONN, "03_genes") as curs:
-            setupDB(curs, dataset.species)
+            setupDB(curs, assembly)
 
 if __name__ == '__main__':
     main()

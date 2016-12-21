@@ -11,8 +11,8 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
-def setupAndCopy(cur, species, fnp):
-    tableName = "r_expression_" + species
+def setupAndCopy(cur, assembly, fnp):
+    tableName = "r_expression_" + assembly
     
     cur.execute("""
 DROP TABLE IF EXISTS {tableName};
@@ -42,12 +42,12 @@ def main():
 
     d = "/project/umw_zhiping_weng/0_metadata/roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/"
     fnps = {}
-    fnps["human"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
-    fnps["mouse"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
+    fnps["hg19"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
+    fnps["mm10"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
 
-    for species in ["mouse", "human"]:
+    for assembly in ["mm10", "hg19"]:
         DBCONN = db_connect(os.path.realpath(__file__), args.local)
-        inFnp = fnps[species]
+        inFnp = fnps[assembly]
         outFnp = inFnp + ".csv"
 
         if not os.path.exists(outFnp):
@@ -60,7 +60,7 @@ def main():
             print("using", outFnp)
             
         with getcursor(DBCONN, "08_setup_log") as curs:
-            setupAndCopy(curs, species, outFnp)
+            setupAndCopy(curs, assembly, outFnp)
 
 if __name__ == '__main__':
     main()

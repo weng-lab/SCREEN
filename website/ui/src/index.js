@@ -13,6 +13,6 @@ import ComparisonPage from './apps/comparison/main';
 ReactDOM.render((<Router history={browserHistory}>
 		    <Route path="/search(.*)" component={SearchPage} />
 		    <Route path="/cart" component={CartPage} />
-		    <Route path="/geneexp/:geneID" component={GeneExpPage} />
+		    <Route path="/geneexp/:assembly/:geneID" component={GeneExpPage} />
 		    <Route path="/comparison" component={ComparisonPage} />
 		 </Router>), document.getElementById('root'));
