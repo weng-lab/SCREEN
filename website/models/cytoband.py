@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import os
+import sys
 import gzip
 
 class Cytoband:
@@ -13,9 +19,21 @@ class Cytoband:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
                                              "feature": p[4],
-                                             "color": float(p[4].replace("gpos", "")) / 100.0 })
+                                             "color": float(p[4].replace("gpos", "")) / 101.0 })
                 else:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
                                              "feature": p[4] })
                 
+def main():
+    fn = "ucsc.mm10.cytoBand.txt.gz"
+    fn = "ucsc.hg19.cytoBand.txt.gz"
+    fnp = os.path.join("/home/mjp/0_metadata/encyclopedia/Version-4/", fn)
+    
+    cb = Cytoband(fnp)
+
+    for chrom, bands in cb.bands.iteritems():
+        print(chrom, len(bands), bands[0])
+
+if __name__ == "__main__":
+    sys.exit(main())

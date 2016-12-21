@@ -122,7 +122,14 @@ export const draw_chromosome = (g, size, features, _f = null) => {
 		.attr("height", size.height);
 	}
     });
-    if (cens[0].start > cens[1].start) cens.reverse();
+
+    if(0 == cens.length){
+	return;
+    }
+    
+    if(cens[0].start > cens[1].start) {
+	cens.reverse();
+    }
 
     // draw p arm
     g.append("path").attr("d", inv_parm(cens[0].end, size.height,
