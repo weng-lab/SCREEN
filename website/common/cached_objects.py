@@ -44,6 +44,9 @@ class CachedObjects:
         print("missing tissue for", ct)
         return ""
 
+    def getTissueMap(self, assembly):
+        return self.tissueMap[assembly]
+    
     def getCTTjson(self, assembly):
         return self.cellTypesAndTissues_json[assembly]
     
@@ -52,3 +55,6 @@ class CachedObjects:
             return self.tissueMap[ct]
         print("missing tissue for", ct)
         return ""
+
+    def getTFListJson(self, assembly):
+        return self.tf_list_json[assembly]

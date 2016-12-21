@@ -6,7 +6,8 @@ const format_query = (query, action = "venn") => {
     delete eso.extras;
     return JSON.stringify(Object.assign({
 	action,
-	object: eso
+	object: eso,
+	GlobalAssembly
     }, query.extras));
 };
 
