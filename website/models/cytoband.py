@@ -19,7 +19,7 @@ class Cytoband:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
                                              "feature": p[4],
-                                             "color": float(p[4].replace("gpos", "")) / 101.0 })
+                                             "color": float(p[4].replace("gpos", "")) / 100.0 })
                 else:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
