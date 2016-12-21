@@ -121,12 +121,13 @@ def rewrite(inFnp, outFnp, emap):
                             gpca.append(g)
                         d["genes"][geneCat] = gpca
 
-                for rk in ["ctcf", "dnase", "promoter", "enhancer"]:
-                    cts = d["ranks"][rk].keys()
-                    for ct in cts:
-                        nct = ct.replace('.', '_')
-                        if nct != ct:
-                            d["ranks"][rk][nct] = d["ranks"][rk].pop(ct)
+                if 0:
+                    for rk in ["ctcf", "dnase", "promoter", "enhancer"]:
+                        cts = d["ranks"][rk].keys()
+                        for ct in cts:
+                            if '.' in ct:
+                                nct = ct.replace('.', '_')
+                                d["ranks"][rk][nct] = d["ranks"][rk].pop(ct)
 
                 o.write(json.dumps(d) + "\n")
     print("wrote", outFnp)
@@ -134,7 +135,7 @@ def rewrite(inFnp, outFnp, emap):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
-    parser.add_argument('--version', type=int, default=8)
+    parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="mm10")
     args = parser.parse_args()
     return args
@@ -142,17 +143,38 @@ def parse_args():
 def main():
     args = parse_args()
 
-    emap = None
-    if "hg19" == args.assembly:
-        gi = GeneInfo(args.assembly)
-        emap = gi.getGeneList()
+    if 0:
+        emap = None
+        if "hg19" == args.assembly:
+            gi = GeneInfo(args.assembly)
+            emap = gi.getGeneList()
 
-    fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+        fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
 
-    jobs = []
-    for i in xrange(len(fnps["origFnp"])):
-        jobs.append((fnps["origFnp"][i], fnps["rewriteGeneFnp"][i], emap))
-    ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
+        jobs = []
+        for i in xrange(len(fnps["origFnp"])):
+            jobs.append((fnps["origFnp"][i], fnps["rewriteGeneFnp"][i], emap))
+        ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
+    else:
+        gene_files = paths.gene_files
+        if args.assembly not in gene_files:
+            raise Exception("unknown assembly")
+
+        fnp, filetype = gene_files[args.assembly]
+        ggff = Genes(fnp, filetype)
+        emap = {}
+        for g in ggff.getGenes():
+            eid = g.geneid_.split('.')[0]
+            emap[eid] = g.genename_
+        print("found", len(emap))
+
+        fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+
+        jobs = []
+        for i in xrange(len(fnps["rewriteGeneFnp"])):
+            jobs.append((fnps["rewriteGeneFnp"][i], fnps["rewriteGenePeaks2Fnp"][i], emap))
+        ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
+
 
     return 0
 
