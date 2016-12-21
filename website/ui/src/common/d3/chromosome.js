@@ -124,6 +124,8 @@ export const draw_chromosome = (g, size, features, _f = null) => {
     });
 
     if(0 == cens.length){
+	// mice don't have interesting centromeres...
+	// https://www.biostars.org/p/179847/
 	return;
     }
     
