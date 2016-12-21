@@ -24,7 +24,7 @@ class NavBarApp extends React.Component {
 	}
 	
 	return (<div className="navbar-header">
-		   <a className="navbar-brand" href={HOMEPAGE.url}>{HOMEPAGE.title}</a>
+		<a className="navbar-brand" href={HOMEPAGE.url}>{HOMEPAGE.title} {GlobalAssembly}</a>
 		   {SearchBox}
 		   <form className="navbar-form navbar-right">
 		      <a href="http://www.encodeproject.org" target="_blank" className="btn btn-success btn-lg encodeButton">ENCODE</a>
