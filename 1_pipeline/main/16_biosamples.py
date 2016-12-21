@@ -47,7 +47,7 @@ def main():
 
     d = os.path.join(os.path.dirname(__file__), "../../counts/")
 
-    tbl = string.maketrans(' .()', '____')
+    tbl = string.maketrans(' ./', '__-')
     
     for assembly in ["mm10", "hg19"]:
         rows = set()
@@ -71,7 +71,7 @@ def main():
                 summary = exp.jsondata.get("biosample_summary", "")
                 if not summary:
                     summary = ct
-                es_name = str(summary).translate(tbl)
+                es_name = str(summary).translate(tbl, '()').replace('__', '_')
                 e = (assembly, exp.biosample_type,
                      exp.biosample_term_name,
                      summary,
