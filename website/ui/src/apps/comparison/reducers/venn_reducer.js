@@ -15,7 +15,9 @@ const default_state = {
 
 const VennReducer = (state = default_state, action) => {
 
-    if (action == null || !("type" in action)) return state;
+    if (null == action || !("type" in action)){
+	return state;
+    }
 
     switch (action.type) {
     case SET_THRESHOLD:
@@ -31,7 +33,7 @@ const VennReducer = (state = default_state, action) => {
 		rowlabels: action.results.rowlabels,
 		collabels: action.results.collabels,
 		matrix: action.results.matrix,
-		table_cell_types: [action.results.rowlabels[0], action.results.rowlabels[1]]
+		table_cell_types: action.results.rowlabels
 	    }
 	});
 

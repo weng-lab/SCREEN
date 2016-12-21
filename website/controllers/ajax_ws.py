@@ -374,7 +374,6 @@ class AjaxWebService:
         return "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
         
     def _run_venn_queries(self, j, basequery):
-        
         if len(j["cell_types"]) < 2:
             return {"rank_range": [],
                     "totals": {},
@@ -463,30 +462,48 @@ class AjaxWebService:
         return ret
     
     def _venn_search(self, j):
-
         j["post_processing"] = {}
-        results = {"results": self._search(j),
-                   "sep_results": {}}
-        assembly = "hg19" if "assembly" not in j else j["assembly"]
+
+        cts = self._filterCellTypes(j["table_cell_types"])
+        if 2 != len(cts):
+            return {}
+        
+        ret = {"results": self._search(j),
+               "sep_results": {}}
 
         # for drawing the venn or heatmap
-        results["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
-        if j["table_cell_types"][1] is None:
-            return results
-
+        ret["results"]["venn"] = self._run_venn_queries(j["venn"], j["object"])
         # for results tables
-        results["sep_results"] = self._venn_ct_results(j["object"]["query"]["bool"]["filter"],
+        ret["sep_results"] = self._venn_ct_results(j["object"]["query"]["bool"]["filter"],
                                                        j["table_cell_types"], j["venn"]["rank_type"],
                                                        j["venn"]["rank_threshold"])
 
-        return results
+        return ret
 
+    def _filterCellTypes(self, cts):
+        cts = filter(lambda x: x, cts)
+        # http://stackoverflow.com/a/17016257
+        from collections import OrderedDict
+        return list(OrderedDict.fromkeys(cts))
+    
     def _venn_chr(self, j):
-        assembly = "hg19" if "assembly" not in j else j["assembly"]
-        ret = {"sep_results": self._venn_ct_results([], j["table_cell_types"], "DNase", 5000, 500),
-               "fold_changes": self.cg.computeFoldChange("K562", "HepG2")} #j["table_cell_types"][0], j["table_cell_types"][1])}
-        for chrom in chroms[assembly]:
-            ret[chrom] = {"cytobands": self.cytobands["hg19"].bands[chrom] if chrom in self.cytobands["hg19"].bands else [] }
+        cts = self._filterCellTypes(j["table_cell_types"])
+
+        ret = {"sep_results": {},
+               "fold_changes": {}}
+        
+        if 2 != len(cts):
+            return ret;
+        
+        ret["sep_results"] = self._venn_ct_results([], cts, "DNase", 5000, 500)
+        ret["fold_changes"] = self.cg.computeFoldChange(cts[0], cts[1])
+
+        if self.assembly not in self.cytobands:
+            raise Exception("missing cytobands for " + self.assembly)
+        for chrom in chroms[self.assembly]:
+            ret[chrom] = {"cytobands": []}
+            if chrom in self.cytobands["hg19"].bands:
+                ret[chrom]["cytobands"] = self.cytobands[self.assembly].bands[chrom]
         return ret
                                                        
     def _tree(self, j):
