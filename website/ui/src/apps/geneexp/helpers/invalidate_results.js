@@ -64,7 +64,8 @@ export const invalidate_boxplot = (q) => {
     return (dispatch) => {
 	var query = JSON.stringify({
 	    "geneID" : GlobalParsedQuery["gene"],
-	    "compartments" : collectCompartments(q)
+	    "compartments" : collectCompartments(q),
+	    GlobalAssembly
 	});
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(update_expression_boxplot(Object.assign({}, response, {
@@ -83,7 +84,8 @@ export const invalidate_boxplot = (q) => {
 export const invalidate_res = () => {
     return (dispatch) => {
 	var query = {
-	    "name": GlobalParsedQuery["gene"]
+	    "name": GlobalParsedQuery["gene"],
+	    GlobalAssembly
 	};
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(set_candidate_res(response));
