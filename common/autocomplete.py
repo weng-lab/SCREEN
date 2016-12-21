@@ -4,10 +4,19 @@ def _second_onward(arr):
     if len(arr) == 1: return []
     return arr[1:]
 
-class Autocompleter:
-
+class AutocompleterWrapper:
     def __init__(self, es):
+        self.acs = {
+            "hg19" : Autocompleter(es, "hg19"),
+            "mm10" : Autocompleter(es, "mm10")}
+
+    def __getitem__(self, assembly):
+        return self.acs[assembly]
+
+class Autocompleter:
+    def __init__(self, es, assembly):
         self.es = es
+        self.assembly = assembly
         self.indices = {"misc": self.get_misc_suggestions,
                         "gene_aliases": self.get_gene_suggestions,
                         "snp_aliases": self.get_snp_suggestions,
@@ -93,3 +102,7 @@ class Autocompleter:
             if q in result["_source"]["accession"]:
                 retval.append(result["_source"]["accession"])
         return retval
+
+    def tf_list(self):
+        return sorted(self.get_suggestions({"userQuery": "",
+                                            "indices": "tfs" })["results"])
