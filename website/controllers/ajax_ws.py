@@ -42,7 +42,6 @@ class AjaxWebServiceWrapper:
 
     def process(self, j):
         if "GlobalAssembly" not in j:
-            print(sorted(list(j.keys())))
             raise Exception("GlobalAssembly not defined")
         return self.ajws[j["GlobalAssembly"]].process(j)
 
@@ -500,10 +499,8 @@ class AjaxWebService:
 
         if self.assembly not in self.cytobands:
             raise Exception("missing cytobands for " + self.assembly)
-        for chrom in chroms[self.assembly]:
-            ret[chrom] = {"cytobands": []}
-            if chrom in self.cytobands["hg19"].bands:
-                ret[chrom]["cytobands"] = self.cytobands[self.assembly].bands[chrom]
+        for chrom, band in self.cytobands[self.assembly].bands.iteritems():
+            ret[chrom] = {"cytobands": band}
         return ret
                                                        
     def _tree(self, j):
