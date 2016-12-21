@@ -1,6 +1,17 @@
 {% include '_header.html' -%}
 {% import 'Helpers/_helpers.html' as hh -%}
 
+<script>
+  function searchHg19() {
+  $("#searchform").submit();
+  }
+
+  function searchMm10() {
+  $("#searchformassembly").attr("value", "mm10")
+  $("#searchform").submit();
+  }
+</script>
+
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
   <div class="container text-center">
@@ -9,7 +20,11 @@
     <br>
     <form action="search" method="get" id="searchform">
       <input class="searchbox" type="text" size="125" name="q" id="queryBox" value="chr14:35792756-39819812">
-      <a class="btn btn-primary btn-lg" href="javascript:searchform.submit();" role="button">Search</a>
+      <input id="searchformassembly" name="assembly" value="hg19" type="hidden">
+      <div>
+	<a class="btn btn-primary btn-lg" href="javascript:searchHg19();" role="button">Search hg19</a>
+	<a class="btn btn-success btn-lg" href="javascript:searchMm10();" role="button">Search mm10</a>
+      </div>
     </form>
     <br>
     <i>Examples: "HepG2 dnase chrX:123-456", "Liver RSXXXX", "Sox4 enhancer", "Sox4"</i>
