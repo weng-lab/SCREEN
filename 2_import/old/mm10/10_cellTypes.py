@@ -23,8 +23,9 @@ def main():
         LoadCellTypes.Import(args.local, assembly)
 
         fn = "cellTypeToTissue." + assembly + ".lsj"
-        importer = executable_importer(os.path.join(os.path.dirname(__file__),
-                                                    "../../../", fn),
+        fnp = os.path.join(os.path.dirname(__file__),
+                           "../../../", fn)
+        importer = executable_importer(fnp,
                                        "cell_types_" + assembly,
                                        "cell_type",
                                        args.elasticsearch_server,
