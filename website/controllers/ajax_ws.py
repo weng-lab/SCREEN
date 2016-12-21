@@ -434,13 +434,17 @@ class AjaxWebService:
                 "collabels": [j["cell_types"][x] for x in colorder],
                 "matrix": matrix }
 
-    def _venn_ct_results(self, basequery, celltypes, ranktype, threshold, limit = 100):
+    def _venn_ct_results(self, basequery, cellTypes, ranktype, threshold, limit = 100):
         ret = {}
+
+        cellTypes = filter(lambda x: x, cellTypes)
+        if 2 != len(cellTypes):
+            return ret
         
         # build query for individual result sets
         ctqs = []
-        for cell_type in celltypes:
-            field = self._get_rankfield(ranktype, cell_type)
+        for ct in cellTypes:
+            field = self._get_rankfield(ranktype, ct)
             ctqs.append(({"range": {field: {"lte": threshold}}},
                          {"range": {field: {"gte": threshold}}}))
 
@@ -452,9 +456,9 @@ class AjaxWebService:
 
         # results for each cell type individually
         q["query"]["bool"]["must"] = q["query"]["bool"]["must"][:-2] + [ctqs[0][1], ctqs[1][0]]
-        ret[celltypes[1] + " only"] = self._search({"object": q, "post_processing": {}})
+        ret[cellTypes[1] + " only"] = self._search({"object": q, "post_processing": {}})
         q["query"]["bool"]["must"] = q["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
-        ret[celltypes[0] + " only"] = self._search({"object": q, "post_processing": {}})
+        ret[cellTypes[0] + " only"] = self._search({"object": q, "post_processing": {}})
         
         return ret
     
