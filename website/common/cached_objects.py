@@ -8,7 +8,7 @@ from constants import paths
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 from elasticsearch import Elasticsearch
-from autocomplete import Autocompleter
+from autocomplete import AutocompleterWrapper
 from load_cell_types import LoadCellTypes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
@@ -19,9 +19,11 @@ class CachedObjects:
         self.es = es
         self.ps = ps
 
-        ac = Autocompleter(es)
-        self.tf_list = sorted(ac.get_suggestions({"userQuery": "",
-                                                  "indices": "tfs" })["results"])
+        acs = AutocompleterWrapper(es)
+        self.tf_list = {"hg19" : acs["hg19"].tf_list(),
+                        "mm10" : acs["mm10"].tf_list()}
+        self.tf_list_json = {"hg19" : json.dumps(self.tf_list["hg19"]),
+                             "mm10" : json.dumps(self.tf_list["mm10"])}
 
         self.cellTypesAndTissues = {
             "hg19" : LoadCellTypes.Load(self.ps.DBCONN, "hg19"),
@@ -36,8 +38,6 @@ class CachedObjects:
             "hg19" : json.dumps(self.cellTypesAndTissues["hg19"]),
             "mm10" : json.dumps(self.cellTypesAndTissues["mm10"]) }
                            
-        self.tf_list_json = json.dumps(self.tf_list)
-
     def getTissue(self, ct):
         if ct in self.cellTypesAndTissues:
             return self.cellTypesAndTissues[ct]
