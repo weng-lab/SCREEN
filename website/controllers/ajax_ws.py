@@ -72,7 +72,7 @@ class AjaxWebService:
         
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps, assembly)
-        self.ac = Autocompleter(es)
+        self.ac = Autocompleter(es, assembly)
         self.regElements = RegElements(es, assembly)
 
         self.staticDir = staticDir
