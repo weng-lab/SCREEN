@@ -13,7 +13,10 @@ export const ExpressionBoxplotAJAX = (query, f_success, f_error) => {
 };
 
 const format_candidate_re_query = (query) => (
-    JSON.stringify(Object.assign(query, {"action": "gene_regulators"}))
+    JSON.stringify(Object.assign(query, {
+	"action": "gene_regulators",
+	GlobalAssembly
+    }))
 );
 
 export const CandidateREsAJAX = (query, f_success, f_error) => {

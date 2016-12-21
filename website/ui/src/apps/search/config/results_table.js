@@ -21,7 +21,7 @@ const render_array = (m) => (array) => (
 
 const render_gene_button = (d) => {
     var g = render_gene(d);
-    return '<a href="/geneexp/' + g + '" target="_blank">' + g + '</a>';
+    return '<a href="/geneexp/' + GlobalAssembly + '/' + g + '" target="_blank">' + g + '</a>';
 };
 
 const ResultsTableColumns = [
