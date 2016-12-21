@@ -15,18 +15,20 @@ class PageInfoComparison:
         self.es = es
         self.ps = ps
         self.cache = cache
-        self.regElements = RegElements(es)
-        self.regElementDetails = RegElementDetails(es, ps)
 
-    def wholePage(self, indexPage = False):
+    def wholePage(self, assembly, indexPage = False):
         return {"page": {"title" : "Regulatory Element Visualizer - cell type comparison"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
-                "re_json_index" : paths.re_json_index
+                "Assembly" : assembly,
+                "re_json_index" : paths.reJsonIndex(assembly)
         }
 
     def comparisonPage(self, args, kwargs, uuid):
-        retval = self.wholePage()
+        if "assembly" not in kwargs:
+            raise Exception("assembly not found" + str(kwargs))
+        assembly = kwargs["assembly"]
+        ret = self.wholePage(assembly)
 
         parsed = ""
         if "q" in kwargs:
@@ -34,12 +36,12 @@ class PageInfoComparison:
             parsed = p.parse(comparison=True)
             parsedStr = p.parseStr()
 
-        retval.update({"globalParsedQuery": json.dumps(parsed),
-                       "globalSessionUid": uuid,
-                       "globalTfs": json.dumps({}),
-                       "globalCellTypes": self.cache.cellTypesAndTissues_json,
-                       "searchPage": False,
-                       "tissueMap": self.cache.tissueMap })
+        ret.update({"globalParsedQuery": json.dumps(parsed),
+                    "globalSessionUid": uuid,
+                    "globalTfs": json.dumps({}),
+                    "globalCellTypes" : self.cache.getCTTjson(assembly),
+                    "searchPage": False,
+                    "tissueMap": self.cache.getTissue(assembly) })
 
-        return retval
+        return ret
     

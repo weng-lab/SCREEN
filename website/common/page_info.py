@@ -56,7 +56,7 @@ class PageInfoMain:
 
         ret.update({"globalParsedQuery" : json.dumps(parsed),
                     "globalSessionUid" : uuid,
-                    "globalTfs" : self.cache.tf_list_json,
+                    "globalTfs" : self.cache.getTFListJson(assembly),
                     "globalCellTypes" : self.cache.getCTTjson(assembly),
                     "searchPage": True,
                     "tissueMap": self.cache.tissueMap })
