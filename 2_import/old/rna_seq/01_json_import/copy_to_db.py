@@ -12,6 +12,8 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
 def setupAndCopy(cur, species, fnp):
+    tableName = "r_expression_" + species
+    
     cur.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -22,10 +24,10 @@ dataset VARCHAR(256) NOT NULL,
 replicate INT NOT NULL,
 fpkm NUMERIC NOT NULL,
 tpm NUMERIC NOT NULL);
-    """.format(tableName = "r_expression_" + species))
+    """.format(tableName = tableName))
 
     with open(fnp) as f:
-        cur.copy_from(f, "r_expression", ',',
+        cur.copy_from(f, tableName, ',',
                       columns=("ensembl_id", "gene_name", "dataset", "replicate", "fpkm", "tpm"))
     print("imported", fnp)
 
