@@ -529,14 +529,15 @@ class AjaxWebService:
     
     def _process_tree_hits(self, j, _ret):
         results = {}
-        for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
-                            ("tissue", lambda ct: "tissue" in ct),
-                            ("immortalized cell lines", lambda ct: "immortalized" in ct)]:
+        biosampleTypes = self.cache.biosamples.biosampleTypes()
+        for typ in biosampleTypes:
+            def ctFilter(ct):
+                return typ == self.cache.biosamples[ct].biosample_typ 
             with Timer("spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
                 labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
                                            None if "inner" not in j else j["inner"],
-                                           lambda_pair[1] )
+                                           ctFilter )
             rho, pval = corr
             print("heatmap:", rho, pval)
             rhoList = rho.tolist()
