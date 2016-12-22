@@ -15,6 +15,9 @@ from db_utils import getcursor
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from dbconnect import db_connect
+from elastic_search_wrapper import ElasticSearchWrapper
+from elasticsearch import Elasticsearch
+from constants import paths
 
 Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
@@ -88,7 +91,7 @@ class BiosamplesMaker(BiosamplesBase):
     def run(self):
         rows = self._load()
         for r in rows:
-            print('; '.join(r))
+            if 0: print('; '.join(r))
         self._setupDb()
         for r in rows:
             self._insertDb(r)
@@ -97,10 +100,21 @@ class BiosamplesMaker(BiosamplesBase):
         rows = set()
         # hack in old cell type names (pre V8)
         if "hg19" == self.assembly:
+            es = ElasticSearchWrapper(Elasticsearch())
+            r = es.get_field_mapping(index = paths.reJsonIndex(self.assembly),
+                                     doc_type = "element",
+                                     field = "ranks.dnase")
+            ctsRaw = sorted(r["datapairs"], key=lambda s: s[0].lower())
+            cts = [e[0] for e in ctsRaw]
+                        
             fnp = os.path.join(os.path.dirname(__file__),
                                "../../cellTypeToTissue.hg19.json.old")
-            data = json.load(open(fnp))
-            for ct, tissue in data.iteritems():
+            lookup = json.load(open(fnp))
+            for ct in cts:
+                if ct in lookup and lookup[ct]: 
+                    tissue = lookup[ct]
+                else:
+                    print("missing " + ct)
                 typ = "tissue"
                 if "primary_cell" in ct:
                     typ = "primary cell"
