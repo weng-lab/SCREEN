@@ -191,10 +191,14 @@ class Biosamples(BiosamplesBase):
 select biosample_type, biosample_term_name, summary, es_name, tissue
 from {tableName}""".format(tableName = self.tableName))
             self.rows = [Biosample(*r) for r in curs.fetchall()]
-
+        self.esToBio = {b.es_name : b for b in self.rows}
+            
     def __iter__(self):
         return iter(self.rows)
 
+    def __getitem__(self, es_name):
+        return self.esToBio[es_name]
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--assembly', type=str, default="mm10")
@@ -210,6 +214,7 @@ def main():
     
     for b in biosamples:
         print(b)
-            
+    print('***************')
+    print(biosamples["C57BL-6_brain_male_embryo_18_5_days"])
 if __name__ == "__main__":
     sys.exit(main())
