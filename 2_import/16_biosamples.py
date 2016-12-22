@@ -32,42 +32,55 @@ class BiosampleRow:
     lookupBTN = {}
     lookupBTN["hg19"] = {}
     lookupBTN["mm10"] = {"limb" : "limb",
-                  "intestine" : "intestine",
-                  "adipocyte" : "adipose",
-                  "brown adipose tissue" : "adipose",
-                  "embryo" : "embryonic structure",
-                  "embryonic facial prominence" : "embryonic structure",
-                  "neural tube" : "brain",
-                  "brain" : "brain",
-                  "cerebellum" : "brain",
-                  "3T3-L1" : "adipose",
-                  "acute myeloid leukemia" : "blood",
-                  "CH12.LX" : "blood",
-                  "erythroblast" : "blood",
-                  "fat pad" : "adipose",
-                  "forebrain" : "brain",
-                  "heart" : "heart",
-                  "gonadal fat pad" : "adipose",
-                  "forelimb bud" : "limb",
-                  "midbrain" : "brain",
-                  "Muller cell" : "eye",
-                  "testis" : "gonad",
-                  "thymus" : "thymus",
-                  "telencephalon" : "brain",
-                  "stomach" : "stomach",
-                  "spleen" : "spleen",
-                  "skeletal muscle tissue" : "muscle",
-                  "retina" : "eye",
-                  "placenta" : "placenta",
-                  "hindbrain" : "brain",
-                  "hindlimb bud" : "limb",
-                  "kidney" : "kidney",
-                  "liver" : "liver",
-                  "lung" : "lung",
-                  "MEL cell line" : "blood",
-                  "olfactory bulb" : "brain",
+                         "intestine" : "intestine",
+                         "adipocyte" : "adipose",
+                         "brown adipose tissue" : "adipose",
+                         "embryo" : "embryonic structure",
+                         "embryonic facial prominence" : "embryonic structure",
+                         "neural tube" : "brain",
+                         "brain" : "brain",
+                         "cerebellum" : "brain",
+                         "3T3-L1" : "adipose",
+                         "acute myeloid leukemia" : "blood",
+                         "CH12.LX" : "blood",
+                         "erythroblast" : "blood",
+                         "fat pad" : "adipose",
+                         "forebrain" : "brain",
+                         "heart" : "heart",
+                         "gonadal fat pad" : "adipose",
+                         "forelimb bud" : "limb",
+                         "midbrain" : "brain",
+                         "Muller cell" : "eye",
+                         "testis" : "gonad",
+                         "thymus" : "thymus",
+                         "telencephalon" : "brain",
+                         "stomach" : "stomach",
+                         "spleen" : "spleen",
+                         "skeletal muscle tissue" : "muscle",
+                         "retina" : "eye",
+                         "placenta" : "placenta",
+                         "hindbrain" : "brain",
+                         "hindlimb bud" : "limb",
+                         "kidney" : "kidney",
+                         "liver" : "liver",
+                         "lung" : "lung",
+                         "MEL cell line" : "blood",
+                         "olfactory bulb" : "brain",
+                         "WW6" : "ESC",
+                         "MEL-GATA-1-ER": "blood",
+                         "embryoid body": "ESC",
+                         "E14TG2a.4": "ESC",
+                         "Patski": "kidney",
+                         "cortical plate": "brain",
+                         "embryonic fibroblast": "embryonic structure",
+                         "mesoderm": "embryonic structure",
+                         "ES-E14": "embryonic structure",
+                         "fibroblast": "",
+                         "ZHBTc4-mESC": "ESC",
+                         "MN1": "brain",
+                         "ES-Bruce4": "ESC"
         }
-    
+
     def __init__(self, expID, assembly):
         self.expID = expID
         self.assembly = assembly
@@ -78,7 +91,7 @@ class BiosampleRow:
             t = t[0]
         else:
             t = ""
-        lookup = BiosampleRow.lookupTissue[self.assembly]
+            lookup = BiosampleRow.lookupTissue[self.assembly]
         if t in lookup:
             return lookup[t]
         ct = exp.biosample_term_name
@@ -90,7 +103,7 @@ class BiosampleRow:
 
         "select  distinct tissue from biosamples_mm10 where tissue = ''"
         return ""
-    
+
     def parse(self):
         exp = Exp.fromJsonFile(self.expID)
         ct = exp.biosample_term_name
@@ -105,7 +118,7 @@ class BiosampleRow:
                          summary,
                          es_name,
                          tissue)
-                
+
 class BiosamplesBase(object):
     def __init__(self, assembly, curs):
         self.assembly = assembly
@@ -120,10 +133,10 @@ class BiosamplesMaker(BiosamplesBase):
         rows = self._load()
         for r in rows:
             print('; '.join(r))
-        self._setupDb()
+            self._setupDb()
         for r in rows:
             self._insertDb(r)
-        
+
     def _load(self):
         d = os.path.join(os.path.dirname(__file__), "../counts/")
 
@@ -135,13 +148,13 @@ class BiosamplesMaker(BiosamplesBase):
             print(fnp)
             with open(fnp) as f:
                 data = [line.rstrip().split('\t') for line in f.readlines()[1:]]
-            expIDs = list(set([x[0] for x in data]))
+                expIDs = list(set([x[0] for x in data]))
 
             for expID in expIDs:
                 row = BiosampleRow(expID, self.assembly).parse()
                 rows.add(row)
         return rows
-        
+
     def _setupDb(self):
         print("\tdropping and creating", self.tableName)
         self.curs.execute("""
@@ -152,7 +165,7 @@ class BiosamplesMaker(BiosamplesBase):
         biosample_term_name text NOT NULL,
         summary text NOT NULL,
         es_name text NOT NULL,
-        tissue text     
+        tissue text
         ) """.format(tableName = self.tableName))
 
     def _insertDb(self, r):
@@ -165,17 +178,17 @@ class BiosamplesMaker(BiosamplesBase):
         %(summary)s,
         %(es_name)s,
         %(tissue)s)""".format(tableName = self.tableName),
-                    {"biosample_type" : r.biosample_type,
-                     "biosample_term_name" : r.biosample_term_name,
-                     "summary" : r.summary,
-                     "es_name" : r.es_name,
-                     "tissue" : r.tissue   
-        })
-        
+                          {"biosample_type" : r.biosample_type,
+                           "biosample_term_name" : r.biosample_term_name,
+                           "summary" : r.summary,
+                           "es_name" : r.es_name,
+                           "tissue" : r.tissue
+                          })
+
 class Biosamples(BiosamplesBase):
     def __init__(self, assembly, curs):
         BiosamplesBase.__init__(self, assembly, curs)
-        
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
