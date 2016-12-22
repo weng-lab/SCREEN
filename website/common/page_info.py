@@ -12,10 +12,10 @@ from autocomplete import Autocompleter
 from constants import paths
 
 class PageInfoMain:
-    def __init__(self, es, ps, cache):
+    def __init__(self, es, ps, cacheW):
         self.es = es
         self.ps = ps
-        self.cache = cache
+        self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
         return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
@@ -56,10 +56,10 @@ class PageInfoMain:
 
         ret.update({"globalParsedQuery" : json.dumps(parsed),
                     "globalSessionUid" : uuid,
-                    "globalTfs" : self.cache.getTFListJson(assembly),
-                    "globalCellTypes" : self.cache.getCTTjson(assembly),
+                    "globalTfs" : self.cacheW.getTFListJson(assembly),
+                    "globalCellTypes" : self.cacheW.getCTTjson(assembly),
                     "searchPage": True,
-                    "tissueMap": self.cache.tissueMap })
+                    "tissueMap": self.cacheW.getTissueMap(assembly) })
 
         return ret
 
@@ -136,8 +136,8 @@ class PageInfoMain:
 
         retval.update({"reAccessions": json.dumps(reAccessions),
                        "uuid" : uuid,
-                       "globalTfs" : self.cache.tf_list_json,
-                       "globalCellTypes" : self.cache.cellTypesAndTissues_json })
+                       "globalTfs" : self.cacheW.getTFListJson(assembly),
+                       "globalCellTypes" : self.cacheW.getCTTjson(assembly) })
         return retval
 
     def setCart(self, uuid, reAccessions):

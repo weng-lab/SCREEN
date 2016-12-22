@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
 from app_main import MainApp
-from common.cached_objects import CachedObjects
+from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from elastic_search_wrapper import ElasticSearchWrapper
@@ -77,10 +77,10 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
-    cache = CachedObjects(es, ps)
+    cow = CachedObjectsWrapper(es, ps)
     
     config = Config("main")
-    main = MainApp(args, config.viewDir, config.staticDir, es, ps, cache)
+    main = MainApp(args, config.viewDir, config.staticDir, es, ps, cow)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
 
     if args.dev:
