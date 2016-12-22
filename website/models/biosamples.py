@@ -6,10 +6,14 @@ from collections import namedtuple
 import string
 import os
 import sys
+import argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from exp import Exp
 from db_utils import getcursor
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from dbconnect import db_connect
 
 Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
@@ -183,7 +187,29 @@ class Biosamples(BiosamplesBase):
         BiosamplesBase.__init__(self, assembly, DBCONN)
 
         with getcursor(DBCONN, "biosample") as curs:
-            cur.execute("""
+            curs.execute("""
 select biosample_type, biosample_term_name, summary, es_name, tissue
 from {tableName}""".format(tableName = self.tableName))
-            self.rows = [Biosample(*r) for r in cur.fetchall()]
+            self.rows = [Biosample(*r) for r in curs.fetchall()]
+
+    def __iter__(self):
+        return iter(self.rows)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--assembly', type=str, default="mm10")
+    parser.add_argument('--local', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    biosamples = Biosamples(args.assembly, DBCONN)
+    
+    for b in biosamples:
+        print(b)
+            
+if __name__ == "__main__":
+    sys.exit(main())
