@@ -75,7 +75,7 @@ class BiosampleRow:
                          "embryonic fibroblast": "embryonic structure",
                          "mesoderm": "embryonic structure",
                          "ES-E14": "embryonic structure",
-                         "fibroblast": "",
+                         "fibroblast": "connective",
                          "ZHBTc4-mESC": "ESC",
                          "MN1": "brain",
                          "ES-Bruce4": "ESC"
@@ -91,7 +91,7 @@ class BiosampleRow:
             t = t[0]
         else:
             t = ""
-            lookup = BiosampleRow.lookupTissue[self.assembly]
+        lookup = BiosampleRow.lookupTissue[self.assembly]
         if t in lookup:
             return lookup[t]
         ct = exp.biosample_term_name
@@ -133,7 +133,7 @@ class BiosamplesMaker(BiosamplesBase):
         rows = self._load()
         for r in rows:
             print('; '.join(r))
-            self._setupDb()
+        self._setupDb()
         for r in rows:
             self._insertDb(r)
 
@@ -148,7 +148,7 @@ class BiosamplesMaker(BiosamplesBase):
             print(fnp)
             with open(fnp) as f:
                 data = [line.rstrip().split('\t') for line in f.readlines()[1:]]
-                expIDs = list(set([x[0] for x in data]))
+            expIDs = list(set([x[0] for x in data]))
 
             for expID in expIDs:
                 row = BiosampleRow(expID, self.assembly).parse()
