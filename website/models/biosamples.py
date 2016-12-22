@@ -28,56 +28,12 @@ class BiosampleRow:
 
     # translate biosample term name
     lookupBTN = {}
-    lookupBTN["hg19"] = {}
-    lookupBTN["mm10"] = {"limb" : "limb",
-                         "intestine" : "intestine",
-                         "adipocyte" : "adipose",
-                         "brown adipose tissue" : "adipose",
-                         "embryo" : "embryonic structure",
-                         "embryonic facial prominence" : "embryonic structure",
-                         "neural tube" : "brain",
-                         "brain" : "brain",
-                         "cerebellum" : "brain",
-                         "3T3-L1" : "adipose",
-                         "acute myeloid leukemia" : "blood",
-                         "CH12.LX" : "blood",
-                         "erythroblast" : "blood",
-                         "fat pad" : "adipose",
-                         "forebrain" : "brain",
-                         "heart" : "heart",
-                         "gonadal fat pad" : "adipose",
-                         "forelimb bud" : "limb",
-                         "midbrain" : "brain",
-                         "Muller cell" : "eye",
-                         "testis" : "gonad",
-                         "thymus" : "thymus",
-                         "telencephalon" : "brain",
-                         "stomach" : "stomach",
-                         "spleen" : "spleen",
-                         "skeletal muscle tissue" : "muscle",
-                         "retina" : "eye",
-                         "placenta" : "placenta",
-                         "hindbrain" : "brain",
-                         "hindlimb bud" : "limb",
-                         "kidney" : "kidney",
-                         "liver" : "liver",
-                         "lung" : "lung",
-                         "MEL cell line" : "blood",
-                         "olfactory bulb" : "brain",
-                         "WW6" : "ESC",
-                         "MEL-GATA-1-ER": "blood",
-                         "embryoid body": "ESC",
-                         "E14TG2a.4": "ESC",
-                         "Patski": "kidney",
-                         "cortical plate": "brain",
-                         "embryonic fibroblast": "embryonic structure",
-                         "mesoderm": "embryonic structure",
-                         "ES-E14": "embryonic structure",
-                         "fibroblast": "connective",
-                         "ZHBTc4-mESC": "ESC",
-                         "MN1": "brain",
-                         "ES-Bruce4": "ESC"
-    }
+    fnp = os.path.join(os.path.dirname(__file__),
+                       "../../cellTypeToTissue.hg19.json.new")
+    lookupBTN["hg19"] = json.load(open(fnp))
+    fnp = os.path.join(os.path.dirname(__file__),
+                       "../../cellTypeToTissue.mm10.json")
+    lookupBTN["mm10"] = json.load(open(fnp))
 
     def __init__(self, expID, assembly):
         self.expID = expID
@@ -104,11 +60,13 @@ class BiosampleRow:
         exp = Exp.fromJsonFile(self.expID)
         ct = exp.biosample_term_name
 
-        tissue = self._translateTissue(exp)
         summary = exp.jsondata.get("biosample_summary", ct)
 
         tbl = string.maketrans(' ./', '__-')
         es_name = str(summary).translate(tbl, '()').replace('__', '_')
+        
+        tissue = self._translateTissue(exp)
+        
         return Biosample(exp.biosample_type,
                          exp.biosample_term_name,
                          summary,
@@ -137,18 +95,32 @@ class BiosamplesMaker(BiosamplesBase):
 
     def _load(self):
         rows = set()
-        for fn in os.listdir(self.d):
-            if not fn.startswith(self.assembly) or "bigwig" not in fn:
-                continue
-            fnp = os.path.join(self.d, fn)
-            print(fnp)
-            with open(fnp) as f:
-                data = [line.rstrip().split('\t') for line in f.readlines()[1:]]
-            expIDs = list(set([x[0] for x in data]))
+        # hack in old cell type names (pre V8)
+        if "hg19" == self.assembly:
+            fnp = os.path.join(os.path.dirname(__file__),
+                               "../../cellTypeToTissue.hg19.json.old")
+            data = json.load(open(fnp))
+            for ct, tissue in data.iteritems():
+                typ = "tissue"
+                if "primary_cell" in ct:
+                    typ = "primary cell"
+                elif "immortalized" in ct:
+                    typ = "immortalized cell lines"
+                b = Biosample(typ, ct, ct, ct, tissue)
+                rows.add(b)
+        else:
+            for fn in os.listdir(self.d):
+                if not fn.startswith(self.assembly) or "bigwig" not in fn:
+                    continue
+                fnp = os.path.join(self.d, fn)
+                print(fnp)
+                with open(fnp) as f:
+                    data = [line.rstrip().split('\t') for line in f.readlines()[1:]]
+                expIDs = list(set([x[0] for x in data]))
 
-            for expID in expIDs:
-                row = BiosampleRow(expID, self.assembly).parse()
-                rows.add(row)
+                for expID in expIDs:
+                    row = BiosampleRow(expID, self.assembly).parse()
+                    rows.add(row)
         return rows
 
     def _setupDb(self):
