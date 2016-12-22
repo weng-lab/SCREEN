@@ -64,6 +64,8 @@ class Heatmap:
         self.values = values
         self.width = len(values)
         self.height = 0 if self.width == 0 else len(values[0])
+        if self.width != self.height:
+            raise Exception("Heatmap C++ wrapper: width != height: " + str(self.width) + " vs " + str(self.height))
 
     def _do_cluster(self, f, out):
         n_values = Heatmap._collapse_2d_arr(self.values)

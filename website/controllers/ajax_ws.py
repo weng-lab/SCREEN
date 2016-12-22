@@ -153,7 +153,7 @@ class AjaxWebService:
         return 1e12 if label not in v else v[label]["rank"]
 
     def _tissue(self, k):
-        return self.cache.getTissueAsMap(k)
+        return self.cache.getTissueAsMap(self.assembly, k)
     
     def _format_ranks(self, ranks):
         return {"dnase": [{"tissue": self._tissue(k),
@@ -422,7 +422,12 @@ class AjaxWebService:
                     matrix[-1].append(0)
                 else:
                     matrix[-1].append(raw_results[ct1][ct2]["buckets"][0]["doc_count"] / float(raw_results[ct1]["doc_count"] + raw_results[ct2]["doc_count"]))
-        _heatmap = Heatmap(matrix)
+        try:
+            if len(matrix) != len(matrix[0]):
+                raise Exception("heatmap not square: " + str(len(matrix)) + " vs " + str(len(matrix[0])))
+            _heatmap = Heatmap(matrix)
+        except:
+            raise
         roworder, colorder = _heatmap.cluster_by_both()
         roworder, rowtree = roworder
         colorder, coltree = colorder
@@ -519,6 +524,8 @@ class AjaxWebService:
                 pass
         return {"results": {"tree": {"tree": None, "labels": []}}}
 
+
+    
     def _process_tree_hits(self, j, _ret):
         results = {}
         for lambda_pair in [("primary cell", lambda ct: "primary_cell" in ct),
@@ -532,6 +539,8 @@ class AjaxWebService:
             rho, pval = corr
             print("heatmap:", rho, pval)
             rhoList = rho.tolist()
+            if len(rhoList) != len(rhoList[0]):
+                raise Exception("heatmap not square: " + str(len(matrix)) + " vs " + str(len(matrix[0])))
             _heatmap = Heatmap(rhoList)
             with Timer("hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
