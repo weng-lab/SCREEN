@@ -21,11 +21,16 @@ from dbconnect import db_connect
 Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
 class BiosampleRow:
+    # translate tissue name to tissue name
     lookupTissue = {}
+    lookupTissue["hg19"] = {}
     lookupTissue["mm10"] = {"small intestine" : "intestine",
                             "large intestine" : "intestine",
                             "bone element" : "bone"}
+
+    # translate biosample term name
     lookupBTN = {}
+    lookupBTN["hg19"] = {}
     lookupBTN["mm10"] = {"limb" : "limb",
                   "intestine" : "intestine",
                   "adipocyte" : "adipose",
@@ -80,6 +85,10 @@ class BiosampleRow:
         lookup = BiosampleRow.lookupBTN[self.assembly]
         if ct in lookup:
             return lookup[ct]
+        if ct.endswith("erythroid progenitor cells"):
+            return "blood"
+
+        "select  distinct tissue from biosamples_mm10 where tissue = ''"
         return ""
     
     def parse(self):
