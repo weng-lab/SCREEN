@@ -30,7 +30,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     with getcursor(DBCONN, "biosample") as curs:
-        for assembly in ["mm10", "hg19"]:
+        for assembly in ["hg19", "mm10"]:
             d = os.path.join(os.path.dirname(__file__), "../counts/")
             b = BiosamplesMaker(assembly, DBCONN, curs, d)
             b.run()
