@@ -1,20 +1,11 @@
 #!/usr/bin/env python
 
 import os, sys, json
-import time
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from constants import paths
-from elastic_search_wrapper import ElasticSearchWrapper
-from postgres_wrapper import PostgresWrapper
-from elasticsearch import Elasticsearch
-from autocomplete import AutocompleterWrapper
-from load_cell_types import LoadCellTypes
 
 from models.biosamples import Biosamples
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
-from utils import Utils
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from autocomplete import AutocompleterWrapper
 
 class CachedObjectsWrapper:
     def __init__(self, es, ps):
