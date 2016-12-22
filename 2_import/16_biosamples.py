@@ -8,21 +8,21 @@ import argparse
 import string
 from collections import namedtuple
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from get_tss import Genes
 from exp import Exp
 from db_utils import getcursor
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from constants import paths, chroms
 from dbconnect import db_connect
 
-Biosample = namedtuple("Biosample", "assembly biosample_type biosample_term_name summary es_name tissue")
+Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
 class BiosampleRow:
     @staticmethod
-    def parse(assembly, expID):
+    def parse(expID):
         exp = Exp.fromJsonFile(expID)
         ct = exp.biosample_term_name
         tissue = exp.jsondata["organ_slims"]
@@ -30,13 +30,12 @@ class BiosampleRow:
             tissue = tissue[0]
         else:
             tissue = ""
-        summary = exp.jsondata.get("biosample_summary", "")
-        if not summary:
-            summary = ct
+
+        summary = exp.jsondata.get("biosample_summary", ct)
 
         tbl = string.maketrans(' ./', '__-')
         es_name = str(summary).translate(tbl, '()').replace('__', '_')
-        return Biosample(assembly, exp.biosample_type,
+        return Biosample(exp.biosample_type,
                          exp.biosample_term_name,
                          summary,
                          es_name,
@@ -57,9 +56,11 @@ class BiosamplesMaker(BiosamplesBase):
         for r in rows:
             print('; '.join(r))
         self._setupDb()
-            
+        for r in rows:
+            self._insertDb(r)
+        
     def _load(self):
-        d = os.path.join(os.path.dirname(__file__), "../../counts/")
+        d = os.path.join(os.path.dirname(__file__), "../counts/")
 
         rows = set()
         for fn in os.listdir(d):
@@ -72,7 +73,7 @@ class BiosamplesMaker(BiosamplesBase):
             expIDs = list(set([x[0] for x in data]))
 
             for expID in expIDs:
-                row = BiosampleRow.parse(self.assembly, expID)
+                row = BiosampleRow.parse(expID)
                 rows.add(row)
         return rows
         
@@ -82,13 +83,30 @@ class BiosamplesMaker(BiosamplesBase):
         DROP TABLE IF EXISTS {tableName};
         CREATE TABLE {tableName}
         (id serial PRIMARY KEY,
-        biosample_term_name text,
-        biosample_summary text,
-        es_name text,
-        tissue text,
-        biosample_type text
+        biosample_type text NOT NULL,
+        biosample_term_name text NOT NULL,
+        summary text NOT NULL,
+        es_name text NOT NULL,
+        tissue text     
         ) """.format(tableName = self.tableName))
 
+    def _insertDb(self, r):
+        self.curs.execute("""
+        INSERT INTO {tableName}
+        (biosample_type, biosample_term_name, summary, es_name, tissue)
+        VALUES (
+        %(biosample_type)s,
+        %(biosample_term_name)s,
+        %(summary)s,
+        %(es_name)s,
+        %(tissue)s)""".format(tableName = self.tableName),
+                    {"biosample_type" : r.biosample_type,
+                     "biosample_term_name" : r.biosample_term_name,
+                     "summary" : r.summary,
+                     "es_name" : r.es_name,
+                     "tissue" : r.tissue   
+        })
+        
 class Biosamples(BiosamplesBase):
     def __init__(self, assembly, curs):
         BiosamplesBase.__init__(self, assembly, curs)
