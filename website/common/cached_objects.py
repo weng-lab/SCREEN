@@ -38,9 +38,10 @@ class CachedObjects:
             "hg19" : json.dumps(self.cellTypesAndTissues["hg19"]),
             "mm10" : json.dumps(self.cellTypesAndTissues["mm10"]) }
                            
-    def getTissue(self, ct):
-        if ct in self.cellTypesAndTissues:
-            return self.cellTypesAndTissues[ct]
+    def getTissue(self, assembly, ct):
+        if ct in self.cellTypesAndTissues[assembly]:
+            return self.cellTypesAndTissues[assembly][ct]
+        #raise Exception("missing tissue")
         print("missing tissue for", ct)
         return ""
 
@@ -50,9 +51,10 @@ class CachedObjects:
     def getCTTjson(self, assembly):
         return self.cellTypesAndTissues_json[assembly]
     
-    def getTissueAsMap(self, ct):
+    def getTissueAsMap(self, assembly, ct):
         if ct in self.tissueMap:
             return self.tissueMap[ct]
+        #raise Exception("missing tissue")
         print("missing tissue for", ct)
         return ""
 
