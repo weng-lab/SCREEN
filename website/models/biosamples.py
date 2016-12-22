@@ -77,7 +77,7 @@ class BiosampleRow:
                          "ZHBTc4-mESC": "ESC",
                          "MN1": "brain",
                          "ES-Bruce4": "ESC"
-        }
+    }
 
     def __init__(self, expID, assembly):
         self.expID = expID
@@ -98,8 +98,6 @@ class BiosampleRow:
             return lookup[ct]
         if ct.endswith("erythroid progenitor cells"):
             return "blood"
-
-        "select  distinct tissue from biosamples_mm10 where tissue = ''"
         return ""
 
     def parse(self):
@@ -202,12 +200,17 @@ ORDER BY LOWER(biosample_term_name), LOWER(tissue)
         self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
         self.tissueMap = {x["value"]: x["tissue"] for x in
                           self.cellTypesAndTissues}
+
+        self.biosample_types = sorted(list(set([b.biosample_type for b in self.rows])))
         
     def __iter__(self):
         return iter(self.rows)
 
     def __getitem__(self, es_name):
         return self.esToBio[es_name]
+
+    def biosampleTypes(self):
+        return self.biosample_types
     
 def parse_args():
     parser = argparse.ArgumentParser()

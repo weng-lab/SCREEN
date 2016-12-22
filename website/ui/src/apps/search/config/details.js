@@ -30,6 +30,7 @@ const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 export const tabs = [
     {
 	title: "Top tissues",
+	enabled: true,
 	numCols : 2,
 	tables: {
 	    "promoter": {
@@ -139,6 +140,7 @@ export const tabs = [
     },
     {
 	title: "Candidate Target Genes",
+	enabled: "mm10" != GlobalAssembly,
 	numCols: 1,
 	tables: {
 	    "candidate_links": {
@@ -192,6 +194,7 @@ export const tabs = [
     },
     {
 	title: "Nearby Genomic Features",
+	enabled: true,
 	tables: {
 	    "nearby_genes": {
 		title: "Nearby genes",
@@ -307,6 +310,7 @@ export const tabs = [
     },
     {
 	title: "TF and Histone Intersection",
+	enabled: true,
 	numCols : 2,
 	tables: {
 	    "tf": {
@@ -347,6 +351,7 @@ export const tabs = [
     },
     {
 	title: "Related Gene Expression",
+	enabled: true,
 	render: (store, key) => {
 	    var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression_matrices))(ExpressionHeatmapSet);
 	    return <ExpressionHeatmap store={store} key={key} />;
@@ -354,6 +359,7 @@ export const tabs = [
     },
     {
 	title: "Associated TSS Expression",
+	enabled: true,
 	render: (store, key) => {
 	    var TSS = main_tss_connector(TSSExpressionPlot);
 	    return <TSS store={store} key={key} />;

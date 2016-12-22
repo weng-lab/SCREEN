@@ -82,19 +82,22 @@ class DetailsApp extends React.Component {
 	    }
 	    return (<div>{ret}</div>);
 	}
+
+	// only showed enabled tabs
+	var tabsf = tabs.filter(t => t.enabled)
 	
 	return (<div className="container" style={{width: "100%"}}>
 		    <h3>{this.props.q.accession}</h3>
 		    <ul className="nav nav-tabs">
-  		        {Object.keys(tabs).map((k) => (
+  		    {Object.keys(tabsf).map((k) => (
 			    <li key={"tab_" + k} className={k == tab_selection ? "active" : ""} >
-				<a onClick={() => {onClick(k, dispatch)}}>{tabs[k].title}</a>
+				<a onClick={() => {onClick(k, dispatch)}}>{tabsf[k].title}</a>
 		            </li>
 		        ))}
 		    </ul>
 		    <div className="tab-content clearfix">
-		        {Object.keys(tabs).map((k) => {
-		            var tab = tabs[k];
+		        {Object.keys(tabsf).map((k) => {
+		            var tab = tabsf[k];
 			    var content = (tab.render ? tab.render(store, k) : tabEles(tab.tables, tab.numCols));
 			    return (<div className={k == tab_selection ? "tab-pane active" : "tab-pane"} id={"tab_" + k} key={"tpane_" + k}>
 		                        {content}
