@@ -36,9 +36,10 @@ from utils import Utils, Timer
 
 class AjaxWebServiceWrapper:
     def __init__(self, args, es, ps, cache, staticDir):
-        self.ajws = {
-            "hg19" : AjaxWebService(args, es, ps, cache, staticDir, "hg19"),
-            "mm10" : AjaxWebService(args, es, ps, cache, staticDir, "mm10") }
+        def makeAWS(a):
+            return AjaxWebService(args, es, ps, cache[a], staticDir, a)
+        self.ajws = { "hg19" : makeAWS("hg19"),
+                      "mm10" : makeAWS("mm10") }
 
     def process(self, j):
         if "GlobalAssembly" not in j:
@@ -62,7 +63,7 @@ class AjaxWebService:
         self.args = args
         self.es = es
         self.ps = ps
-        self.rh = RankHeatmap(cache.cellTypesAndTissues[assembly],
+        self.rh = RankHeatmap(cache.cellTypesAndTissues,
                               self._rank_types)
         self.cache = cache
         self.cg = ComputeGeneExpression(self.es, self.ps, self.cache, self.assembly)
@@ -153,7 +154,7 @@ class AjaxWebService:
         return 1e12 if label not in v else v[label]["rank"]
 
     def _tissue(self, k):
-        return self.cache.getTissueAsMap(self.assembly, k)
+        return self.cache.getTissueAsMap(k)
     
     def _format_ranks(self, ranks):
         return {"dnase": [{"tissue": self._tissue(k),
