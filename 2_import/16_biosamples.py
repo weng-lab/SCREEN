@@ -21,16 +21,43 @@ from dbconnect import db_connect
 Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
 class BiosampleRow:
-    @staticmethod
-    def parse(expID):
-        exp = Exp.fromJsonFile(expID)
-        ct = exp.biosample_term_name
-        tissue = exp.jsondata["organ_slims"]
-        if tissue:
-            tissue = tissue[0]
-        else:
-            tissue = ""
+    def __init__(self, expID):
+        self.expID = expID
 
+    def _translateTissue(self, exp):
+        t = exp.jsondata["organ_slims"]
+        if t:
+            t = t[0]
+        else:
+            t = ""
+        lookup = {"small intestine" : "intestine",
+                  "large intestine" : "intestine",
+                  "bone element" : "bone"}
+        if t in lookup:
+            return lookup[t]
+        ct = exp.biosample_term_name
+        lookup = {"limb" : "limb",
+                  "intestine" : "intestine",
+                  "adipocyte" : "adipose",
+                  "brown adipose tissue" : "adipose",
+                  "embryo" : "embryonic structure",
+                  "embryonic facial prominence" : "embryonic structure",
+                  "neural tube" : "brain",
+                  "brain" : "brain",
+                  "cerebellum" : "brain",
+                  "3T3-L1" : "adipose",
+                  "acute myeloid leukemia" : "blood",
+
+        }
+        if ct in lookup:
+            return lookup[ct]
+        return ""
+    
+    def parse(self):
+        exp = Exp.fromJsonFile(self.expID)
+        ct = exp.biosample_term_name
+
+        tissue = self._translateTissue(exp)
         summary = exp.jsondata.get("biosample_summary", ct)
 
         tbl = string.maketrans(' ./', '__-')
@@ -73,7 +100,7 @@ class BiosamplesMaker(BiosamplesBase):
             expIDs = list(set([x[0] for x in data]))
 
             for expID in expIDs:
-                row = BiosampleRow.parse(expID)
+                row = BiosampleRow(expID).parse()
                 rows.add(row)
         return rows
         
