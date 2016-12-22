@@ -20,12 +20,6 @@ from dbconnect import db_connect
 
 Biosample = namedtuple("Biosample", "assembly biosample_type biosample_term_name summary es_name tissue")
 
-class BiosamplesBase(object):
-    def __init__(self, assembly, curs):
-        self.assembly = assembly
-        self.curs = curs
-        self.tableName = "biosamples_" + assembly
-
 class BiosampleRow:
     @staticmethod
     def parse(assembly, expID):
@@ -48,6 +42,12 @@ class BiosampleRow:
                          es_name,
                          tissue)
                 
+class BiosamplesBase(object):
+    def __init__(self, assembly, curs):
+        self.assembly = assembly
+        self.curs = curs
+        self.tableName = "biosamples_" + assembly
+
 class BiosamplesMaker(BiosamplesBase):
     def __init__(self, assembly, curs):
         BiosamplesBase.__init__(self, assembly, curs)
@@ -56,7 +56,8 @@ class BiosamplesMaker(BiosamplesBase):
         rows = self._load()
         for r in rows:
             print('; '.join(r))
-
+        self._setupDb()
+            
     def _load(self):
         d = os.path.join(os.path.dirname(__file__), "../../counts/")
 
