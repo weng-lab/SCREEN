@@ -11,52 +11,68 @@ from elasticsearch import Elasticsearch
 from autocomplete import AutocompleterWrapper
 from load_cell_types import LoadCellTypes
 
+from models.biosamples import Biosamples
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils
 
-class CachedObjects:
+class CachedObjectsWrapper:
     def __init__(self, es, ps):
+        self.cos = {"hg19" : CachedObjects(es, ps, "hg19"),
+                    "mm10" : CachedObjects(es, ps, "mm10")}
+
+    def __getitem__(self, assembly):
+        return self.cos[assembly]
+                        
+    def getTissue(self, assembly, ct):
+        return self.cos[assembly].getTissue(ct)
+    
+    def getTissueMap(self, assembly):
+        return self.cos[assembly].getTissueMap()
+    
+    def getCTTjson(self, assembly):
+        return self.cos[assembly].getCTTjson()
+    
+    def getTissueAsMap(self, assembly, ct):
+        return self.cos[assembly].getTissueAsMap(ct)
+
+    def getTFListJson(self, assembly):
+        return self.cos[assembly].getTFListJson()
+
+class CachedObjects:
+    def __init__(self, es, ps, assembly):
         self.es = es
         self.ps = ps
+        self.assembly = assembly
 
         acs = AutocompleterWrapper(es)
-        self.tf_list = {"hg19" : acs["hg19"].tf_list(),
-                        "mm10" : acs["mm10"].tf_list()}
-        self.tf_list_json = {"hg19" : json.dumps(self.tf_list["hg19"]),
-                             "mm10" : json.dumps(self.tf_list["mm10"])}
+        self.tf_list = acs[assembly].tf_list()
+        self.tf_list_json = json.dumps(self.tf_list)
 
-        self.cellTypesAndTissues = {
-            "hg19" : LoadCellTypes.Load(self.ps.DBCONN, "hg19"),
-            "mm10" : LoadCellTypes.Load(self.ps.DBCONN, "mm10") }
-
-        def makeTissueMap(assembly):
-            return {x["value"]: x["tissue"] for x in
-                    self.cellTypesAndTissues[assembly]}
-        self.tissueMap = { "hg19" : makeTissueMap("hg19"),
-                           "mm10" : makeTissueMap("mm10") }
-        self.cellTypesAndTissues_json = {
-            "hg19" : json.dumps(self.cellTypesAndTissues["hg19"]),
-            "mm10" : json.dumps(self.cellTypesAndTissues["mm10"]) }
-                           
-    def getTissue(self, assembly, ct):
-        if ct in self.cellTypesAndTissues[assembly]:
-            return self.cellTypesAndTissues[assembly][ct]
+        self.biosamples = Biosamples(assembly, ps.DBCONN)
+        self.cellTypesAndTissues = self.biosamples.cellTypesAndTissues
+        self.tissueMap = self.biosamples.tissueMap
+        self.cellTypesAndTissues_json = self.biosamples.cellTypesAndTissues_json
+                                   
+    def getTissue(self, ct):
+        if ct in self.cellTypesAndTissues:
+            return self.cellTypesAndTissues[ct]
         #raise Exception("missing tissue")
         print("missing tissue for", ct)
         return ""
 
-    def getTissueMap(self, assembly):
-        return self.tissueMap[assembly]
+    def getTissueMap(self):
+        return self.tissueMap
     
-    def getCTTjson(self, assembly):
-        return self.cellTypesAndTissues_json[assembly]
+    def getCTTjson(self):
+        return self.cellTypesAndTissues_json
     
-    def getTissueAsMap(self, assembly, ct):
+    def getTissueAsMap(self, ct):
         if ct in self.tissueMap:
             return self.tissueMap[ct]
         #raise Exception("missing tissue")
         print("missing tissue for", ct)
         return ""
 
-    def getTFListJson(self, assembly):
-        return self.tf_list_json[assembly]
+    def getTFListJson(self):
+        return self.tf_list_json

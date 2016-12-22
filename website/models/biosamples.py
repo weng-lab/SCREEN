@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from collections import namedtuple
 import string
+import json
 import os
 import sys
 import argparse
@@ -189,10 +190,19 @@ class Biosamples(BiosamplesBase):
         with getcursor(DBCONN, "biosample") as curs:
             curs.execute("""
 select biosample_type, biosample_term_name, summary, es_name, tissue
-from {tableName}""".format(tableName = self.tableName))
+from {tableName}
+ORDER BY LOWER(biosample_term_name), LOWER(tissue)
+""".format(tableName = self.tableName))
             self.rows = [Biosample(*r) for r in curs.fetchall()]
         self.esToBio = {b.es_name : b for b in self.rows}
-            
+
+        # for reactjs 
+        self.cellTypesAndTissues = [{"value": b.es_name,
+                                     "tissue": b.tissue} for b in self.rows]
+        self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
+        self.tissueMap = {x["value"]: x["tissue"] for x in
+                          self.cellTypesAndTissues}
+        
     def __iter__(self):
         return iter(self.rows)
 
@@ -216,5 +226,8 @@ def main():
         print(b)
     print('***************')
     print(biosamples["C57BL-6_brain_male_embryo_18_5_days"])
+
+
+
 if __name__ == "__main__":
     sys.exit(main())
