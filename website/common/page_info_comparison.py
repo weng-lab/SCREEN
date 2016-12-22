@@ -17,7 +17,7 @@ class PageInfoComparison:
         self.cache = cache
 
     def wholePage(self, assembly, indexPage = False):
-        return {"page": {"title" : "Regulatory Element Visualizer - cell type comparison"},
+        return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
