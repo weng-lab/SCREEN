@@ -21,22 +21,12 @@ from dbconnect import db_connect
 Biosample = namedtuple("Biosample", "biosample_type biosample_term_name summary es_name tissue")
 
 class BiosampleRow:
-    def __init__(self, expID):
-        self.expID = expID
-
-    def _translateTissue(self, exp):
-        t = exp.jsondata["organ_slims"]
-        if t:
-            t = t[0]
-        else:
-            t = ""
-        lookup = {"small intestine" : "intestine",
-                  "large intestine" : "intestine",
-                  "bone element" : "bone"}
-        if t in lookup:
-            return lookup[t]
-        ct = exp.biosample_term_name
-        lookup = {"limb" : "limb",
+    lookupTissue = {}
+    lookupTissue["mm10"] = {"small intestine" : "intestine",
+                            "large intestine" : "intestine",
+                            "bone element" : "bone"}
+    lookupBTN = {}
+    lookupBTN["mm10"] = {"limb" : "limb",
                   "intestine" : "intestine",
                   "adipocyte" : "adipose",
                   "brown adipose tissue" : "adipose",
@@ -72,6 +62,22 @@ class BiosampleRow:
                   "MEL cell line" : "blood",
                   "olfactory bulb" : "brain",
         }
+    
+    def __init__(self, expID, assembly):
+        self.expID = expID
+        self.assembly = assembly
+
+    def _translateTissue(self, exp):
+        t = exp.jsondata["organ_slims"]
+        if t:
+            t = t[0]
+        else:
+            t = ""
+        lookup = BiosampleRow.lookupTissue[self.assembly]
+        if t in lookup:
+            return lookup[t]
+        ct = exp.biosample_term_name
+        lookup = BiosampleRow.lookupBTN[self.assembly]
         if ct in lookup:
             return lookup[ct]
         return ""
@@ -123,7 +129,7 @@ class BiosamplesMaker(BiosamplesBase):
             expIDs = list(set([x[0] for x in data]))
 
             for expID in expIDs:
-                row = BiosampleRow(expID).parse()
+                row = BiosampleRow(expID, self.assembly).parse()
                 rows.add(row)
         return rows
         
