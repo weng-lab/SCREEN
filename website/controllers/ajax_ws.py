@@ -67,8 +67,7 @@ class AjaxWebService:
                               self._rank_types)
         self.cache = cache
         self.cg = ComputeGeneExpression(self.es, self.ps, self.cache, self.assembly)
-        self.cytobands = {assembly: Cytoband(v)
-                          for assembly, v in paths.cytobands.iteritems()}
+        self.cytobands = Cytoband(paths.cytobands[assembly])
         
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps, assembly)
@@ -503,9 +502,7 @@ class AjaxWebService:
         ret["sep_results"] = self._venn_ct_results([], cts, "DNase", 5000, 500)
         ret["fold_changes"] = self.cg.computeFoldChange(cts[0], cts[1])
 
-        if self.assembly not in self.cytobands:
-            raise Exception("missing cytobands for " + self.assembly)
-        for chrom, band in self.cytobands[self.assembly].bands.iteritems():
+        for chrom, band in self.cytobands.bands.iteritems():
             ret[chrom] = {"cytobands": band}
         return ret
                                                        
