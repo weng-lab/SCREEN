@@ -212,8 +212,8 @@ def updateREjson(inFnp, outFnp):
 def updateREfiles(args, fnps):
     printt("updating RE JSON")
 
-    inFnps = fnps["rewriteGeneFnp"]
-    outFnps = fnps["rewriteGenePeaksFnp"]
+    inFnps = fnps["rewriteGenePeaks2Fnp"]
+    outFnps = fnps["rewriteGenePeaks3Fnp"]
 
     printt("running RE file rewrite....")
     Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, outFnp)
