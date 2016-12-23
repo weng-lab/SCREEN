@@ -43,7 +43,7 @@ class ResultsTree extends REComponent {
 	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
-	    return <div ref="container"><h1>{title}</h1><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
+	    return <div ref="container"><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
 	}) : "");
 	return super.render(<div>
 		   <select onChange={() => {$(this.refs.container).empty(); this.onChange(this.refs.field.value)}} ref="field">
@@ -54,7 +54,8 @@ class ResultsTree extends REComponent {
 		      <option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
 		      <option value="ctcf$CTCF-Only">CTCF Only</option>
 		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
-	           </select>
+		   </select>
+		   <h1>{title}</h1>
 	           <span ref="help_icon" />
 		   {trees}
 		</div>);
