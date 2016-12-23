@@ -4,7 +4,8 @@ var $ = require('jquery');
 const format_query = (key) => {
     return JSON.stringify({
 	action: "helpkey",
-	key
+	key,
+	GlobalAssembly
     });
 };
 
