@@ -9,7 +9,7 @@ from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from autocomplete import Autocompleter
-from constants import paths
+from constants import paths, PageTitle
 
 class PageInfoMain:
     def __init__(self, es, ps, cacheW):
@@ -18,7 +18,7 @@ class PageInfoMain:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
-        return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
+        return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,

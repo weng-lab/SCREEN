@@ -4,7 +4,7 @@ import subprocess
 from compute_gene_expression import ComputeGeneExpression, Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
-from constants import paths
+from constants import paths, PageTitle
 
 class PageInfoGeneExp:
     def __init__(self, es, ps, cache):
@@ -13,7 +13,7 @@ class PageInfoGeneExp:
         self.cache = cache
 
     def wholePage(self, assembly, indexPage = False):
-        return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
+        return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
