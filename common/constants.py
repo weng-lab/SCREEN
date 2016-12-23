@@ -9,6 +9,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from files_and_paths import Dirs
 from v4_config import V4Config
 
+PageTitle = "ScREEN: Search candidate Regulatory Elements by ENCODE"
+
 chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
                    'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
                    'chr19', 'chr2', 'chr20', 'chr21', 'chr22',
