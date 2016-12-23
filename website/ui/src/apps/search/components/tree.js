@@ -38,11 +38,12 @@ class ResultsTree extends REComponent {
     render() {
 	var _formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
 	var tr = this.props.tree_results;
+	var title = this.props.tree_title;
 	var trees = (tr ? Object.keys(tr).map((k) => {
 	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
-	    return <div ref="container"><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
+	    return <div ref="container"><h1>{title}</h1><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
 	}) : "");
 	return super.render(<div>
 		   <select onChange={() => {$(this.refs.container).empty(); this.onChange(this.refs.field.value)}} ref="field">
