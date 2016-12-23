@@ -26,4 +26,6 @@ class Correlation:
                 else:
                     value = result["ranks"][outerkey][cell_type]["rank"]
                 observations[-1].append(value)
+        print("Correlation: about to run spearman:", len(observations))
+        print(observations)
         return (ctlabels, scipy.stats.spearmanr(observations))
