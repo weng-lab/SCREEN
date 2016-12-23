@@ -8,7 +8,7 @@ from parse_search import ParseSearch
 from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
-from constants import paths
+from constants import paths, PageTitle
 
 class PageInfoComparison:
     def __init__(self, es, ps, cacheW):
@@ -17,7 +17,7 @@ class PageInfoComparison:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
-        return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
+        return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
