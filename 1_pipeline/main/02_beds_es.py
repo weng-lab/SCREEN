@@ -3,7 +3,6 @@
 from __future__ import print_function
 import os, sys
 import ujson as json
-import psycopg2
 import argparse
 import fileinput, StringIO
 import gzip
