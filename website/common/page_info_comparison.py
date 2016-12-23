@@ -11,10 +11,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths
 
 class PageInfoComparison:
-    def __init__(self, es, ps, cache):
+    def __init__(self, es, ps, cacheW):
         self.es = es
         self.ps = ps
-        self.cache = cache
+        self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
         return {"page": {"title" : "SCREEN: Search Candidate Regulatory Elements by ENCODE"},
@@ -39,9 +39,9 @@ class PageInfoComparison:
         ret.update({"globalParsedQuery": json.dumps(parsed),
                     "globalSessionUid": uuid,
                     "globalTfs": json.dumps({}),
-                    "globalCellTypes" : self.cache.getCTTjson(assembly),
+                    "globalCellTypes" : self.cacheW.getCTTjson(assembly),
                     "searchPage": False,
-                    "tissueMap": self.cache.getTissue(assembly) })
+                    "tissueMap": self.cacheW.getTissueMap(assembly) })
 
         return ret
     
