@@ -119,7 +119,8 @@ class AjaxWebService:
         tfs = [process(hits[i]) for i in [0, 1]]
         tfa = {}
         for k, v in tfs[0].iteritems():
-            tfa[k] = {"left": v, "right": tfs[1][k] if k in tfs[1] else 0.01}
+            tfa[k] = {"left": v,
+                      "right": tfs[1].get(k, 0.01)}
         for k, v in tfs[1].iteritems():
             if k not in tfs[0]:
                 tfa[k] = {"left": 0.01, "right": v}
@@ -229,7 +230,7 @@ class AjaxWebService:
     
     def _tad_details(self, ensembl_list):
         return [{"approved_symbol": x["approved_symbol"],
-                 "coordinates": x["coordinates"] if "coordinates" in x else ""}
+                 "coordinates": x.get("coordinates", "")}
                 for x in self.es.genes_from_ensemblids(ensembl_list)]
 
     def _re_genes(self, j):
