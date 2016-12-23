@@ -3,7 +3,6 @@
 from __future__ import print_function
 import os, sys
 import ujson as json
-import psycopg2
 import argparse
 import fileinput, StringIO
 import gzip
@@ -69,6 +68,7 @@ def makeJobs(args, assembly):
                (m.dnases_useful(assembly, args), "dnase")]
     allExpsIndiv = []
     for exps, etype in allExps:
+        print("found", len(exps), etype)
         for exp in exps:
             allExpsIndiv.append((exp, etype))
     random.shuffle(allExpsIndiv)
@@ -93,6 +93,7 @@ def makeJobs(args, assembly):
             print(str(e))
             print("bad exp:", exp)
 
+    print("will run", len(jobs), "jobs")
     return jobs
 
 def runIntersectJob(jobargs, bedfnp):
@@ -105,20 +106,22 @@ def runIntersectJob(jobargs, bedfnp):
         return (fileJson, None)
 
     ret = []
-    if "hg19" == jobargs["assembly"]:
-        printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
-               "intersecting", jobargs["etype"], label)
-        accessions = doIntersection(bed, bedfnp)
-        if accessions is None:
-            print("warning: unable to intersect REs with bed %s" % bed.fnp())
-        else:
-            ret.append((jobargs["etype"], label, bed.fileID, accessions))
+    printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
+           "intersecting", jobargs["etype"], label)
+    accessions = doIntersection(bed, bedfnp)
+    if accessions is None:
+        print("warning: unable to intersect REs with bed %s" % bed.fnp())
+    else:
+        ret.append((jobargs["etype"], label, bed.fileID, accessions))
     return (fileJson, ret)
 
 def computeIntersections(args, assembly, fnps):
     bedFnp = fnps["re_bed"]
 
     jobs = makeJobs(args, assembly)
+
+    if args.dryrun:
+        return 
     results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
                                         for job in jobs)
 
@@ -209,8 +212,8 @@ def updateREjson(inFnp, outFnp):
 def updateREfiles(args, fnps):
     printt("updating RE JSON")
 
-    inFnps = fnps["rewriteGeneFnp"]
-    outFnps = fnps["rewriteGenePeaksFnp"]
+    inFnps = fnps["rewriteGenePeaks2Fnp"]
+    outFnps = fnps["rewriteGenePeaks3Fnp"]
 
     printt("running RE file rewrite....")
     Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, outFnp)
@@ -222,8 +225,9 @@ def parse_args():
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--remakeBed', action="store_true", default=False)
     parser.add_argument('--updateOnly', action="store_true", default=False)
+    parser.add_argument('--dryrun', action="store_true", default=False)
     parser.add_argument('--version', type=int, default=7)
-    parser.add_argument('--assembly', type=str, default="hg19")
+    parser.add_argument('--assembly', type=str, default="mm10")
     parser.add_argument('--test', action="store_true", default=False)
     args = parser.parse_args()
     return args
