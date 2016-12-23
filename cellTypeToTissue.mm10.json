@@ -41,7 +41,7 @@
  "cortical plate": "brain",
  "embryonic fibroblast": "embryonic structure",
  "mesoderm": "embryonic structure",
- "ES-E14": "embryonic structure",
+ "ES-E14": "ESC",
  "fibroblast": "connective",
  "ZHBTc4-mESC": "ESC",
  "MN1": "brain",
