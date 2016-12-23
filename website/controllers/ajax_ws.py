@@ -43,7 +43,8 @@ class AjaxWebServiceWrapper:
 
     def process(self, j):
         if "GlobalAssembly" not in j:
-            raise Exception("GlobalAssembly not defined")
+            j["GlobalAssembly"] = "hg19"
+            #raise Exception("GlobalAssembly not defined")
         return self.ajws[j["GlobalAssembly"]].process(j)
 
 class AjaxWebService:
@@ -102,7 +103,7 @@ class AjaxWebService:
 
         def search(q):
             return self.es.search(body={"query": {"bool": q}, "size": 100},
-                                  index="regulatory_elements_7")
+                                  index=paths.reJsonIndex(self.assembly))
 
         def process(r):
             tfs = {}
