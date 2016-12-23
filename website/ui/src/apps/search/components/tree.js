@@ -24,11 +24,15 @@ class ResultsTree extends REComponent {
 
     onChange(s) {
 	var p = s.split("$");
-	if (this.props.onChange) this.props.onChange(p[0], p[1]);
+	if (this.props.onChange) {
+	    this.props.onChange(p[0], p[1]);
+	}
     }
 
     _on_click(d) {
-	if (this.props.onClick) this.props.onClick(d);
+	if (this.props.onClick) {
+	    this.props.onClick(d);
+	}
     }
     
     render() {
@@ -38,10 +42,10 @@ class ResultsTree extends REComponent {
 	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
 	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
 	    var height = (labels ? labels.length * 15 : 0);
-	    return <div><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
+	    return <div ref="container"><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
 	}) : "");
 	return super.render(<div>
-		   <select onChange={() => {this.onChange(this.refs.field.value)}} ref="field">
+		   <select onChange={() => {$(this.refs.container).empty(); this.onChange(this.refs.field.value)}} ref="field">
 		      <option value="dnase">DNase</option>
 		      <option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
 		      <option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
