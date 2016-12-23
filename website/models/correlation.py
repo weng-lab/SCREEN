@@ -10,8 +10,14 @@ class Correlation:
         if len(self.hits) == 0:
             return ([], [[], []])
         
-        ctlabels = [ct for ct, v in self.hits[0]["_source"]["ranks"][outerkey].iteritems()
-                    if (innerkey is None or innerkey in v) and (_ctfilter is None or _ctfilter(ct))]
+        ctlabels = []
+        for ct, v in self.hits[0]["_source"]["ranks"][outerkey].iteritems():
+            if (innerkey is None or innerkey in v) and (_ctfilter is None or _ctfilter(ct)):
+                ctlabels.append(ct)
+        if not ctlabels:
+            print("ERROR: Correlation: spearman: no ct labels")
+            return None, None
+
         observations = []
         for result in self.hits:
             result = result["_source"]

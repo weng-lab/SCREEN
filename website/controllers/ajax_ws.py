@@ -536,15 +536,23 @@ class AjaxWebService:
                     print("missing", ct)
                     return False
                 return typ == self.cache.biosamples[ct].biosample_type
-            with Timer("spearman correlation time"):
+            with Timer(typ + ": spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
                 labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
                                            None if "inner" not in j else j["inner"],
                                            ctFilter )
+            if not labels:
+                continue
             rho, pval = corr
-            rhoList = rho.tolist()
-            _heatmap = Heatmap(rhoList)
-            with Timer("hierarchical clustering time"):
+
+            try:
+                rhoList = rho.tolist()
+                _heatmap = Heatmap(rhoList)
+            except:
+                print("rho", rho)
+                print("pval", pval)
+                continue
+            with Timer(typ + ": hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
             results[typ] = {"tree": rowtree,
                                      "labels": labels}
