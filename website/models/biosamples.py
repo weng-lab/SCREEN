@@ -122,6 +122,21 @@ class BiosamplesMaker(BiosamplesBase):
                     typ = "immortalized cell lines"
                 b = Biosample(typ, ct, ct, ct, tissue)
                 rows.add(b)
+
+            cts = set(cts)
+            for ct, tissues in lookup.iteritems():
+                if ct in cts:
+                    continue
+                if not tissue:
+                    print("missing tissue for " + ct)
+                typ = "tissue"
+                if "primary_cell" in ct:
+                    typ = "primary cell"
+                elif "immortalized" in ct:
+                    typ = "immortalized cell lines"
+                b = Biosample(typ, ct, ct, ct, tissue)
+                rows.add(b)
+                
         else:
             for fn in os.listdir(self.d):
                 if not fn.startswith(self.assembly) or "bigwig" not in fn:
@@ -192,6 +207,9 @@ ORDER BY LOWER(biosample_term_name), LOWER(tissue)
     def __iter__(self):
         return iter(self.rows)
 
+    def __contains__(self, es_name):
+        return es_name in self.esToBio            
+    
     def __getitem__(self, es_name):
         return self.esToBio[es_name]
 
@@ -209,14 +227,17 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
-    biosamples = Biosamples(args.assembly, DBCONN)
-    
-    for b in biosamples:
-        print(b)
-    print('***************')
-    print(biosamples["C57BL-6_brain_male_embryo_18_5_days"])
 
-
+    if 0:
+        biosamples = Biosamples(args.assembly, DBCONN)
+        for b in biosamples:
+            print(b)
+        print('***************')
+        print(biosamples["C57BL-6_brain_male_embryo_18_5_days"])
+    if 1:
+        biosamples = Biosamples("hg19", DBCONN)
+        print('***************')
+        print(biosamples["foreskin_fibroblast_primary_cell_male_newborn_1"])
 
 if __name__ == "__main__":
     sys.exit(main())

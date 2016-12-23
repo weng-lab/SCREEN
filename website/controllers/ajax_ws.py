@@ -6,7 +6,7 @@ import os, sys, json
 import time
 import StringIO
 import zipfile
-import numpy
+import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.regelm import RegElements
@@ -532,22 +532,22 @@ class AjaxWebService:
         biosampleTypes = self.cache.biosamples.biosampleTypes()
         for typ in biosampleTypes:
             def ctFilter(ct):
-                return typ == self.cache.biosamples[ct].biosample_typ 
+                if not ct in self.cache.biosamples:
+                    print("missing", ct)
+                    return False
+                return typ == self.cache.biosamples[ct].biosample_type
             with Timer("spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
                 labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
                                            None if "inner" not in j else j["inner"],
                                            ctFilter )
             rho, pval = corr
-            print("heatmap:", rho, pval)
             rhoList = rho.tolist()
-            if len(rhoList) != len(rhoList[0]):
-                raise Exception("heatmap not square: " + str(len(matrix)) + " vs " + str(len(matrix[0])))
             _heatmap = Heatmap(rhoList)
             with Timer("hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
-            results[lambda_pair[0]] = {"tree": rowtree,
-                                       "labels": labels}
+            results[typ] = {"tree": rowtree,
+                                     "labels": labels}
         return {"results": {"tree": results}}
 
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
@@ -659,7 +659,7 @@ class AjaxWebService:
                     r = re["ranks"][rank][ct][subRank]
                     signalKeys = [x for x in r.keys() if x != "rank"]
                     signalValues = [r[x]["signal"] for x in signalKeys]
-                    signal = numpy.mean(signalValues)
+                    signal = np.mean(signalValues)
                 else:
                     return None
             rankVal = r["rank"]
