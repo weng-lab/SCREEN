@@ -193,7 +193,8 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	});		       
 
     case DO_NAV:
-	window.location.href = action.url + "?q=" + state.searchbox.value;
+	window.location.href = action.url + "?q=" + state.searchbox.value
+	    + '&' + "assembly=" + GlobalAssembly;
 	return state;
 
     case EXPRESSION_MATRIX_ACTION:
