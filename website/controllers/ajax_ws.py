@@ -522,8 +522,6 @@ class AjaxWebService:
                 pass
         return {"results": {"tree": {"tree": None, "labels": []}}}
 
-
-    
     def _process_tree_hits(self, j, _ret):
         results = {}
         biosampleTypes = self.cache.biosamples.biosampleTypes()
@@ -535,8 +533,8 @@ class AjaxWebService:
                 return typ == self.cache.biosamples[ct].biosample_type
             with Timer(typ + ": spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
-                labels, corr = c.spearmanr("dnase" if "outer" not in j else j["outer"],
-                                           None if "inner" not in j else j["inner"],
+                labels, corr = c.spearmanr(j.get("outer", "dnase"),
+                                           j.get("inner", None),
                                            ctFilter )
             if not labels:
                 continue
@@ -551,9 +549,13 @@ class AjaxWebService:
                 continue
             with Timer(typ + ": hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
-            results[typ] = {"tree": rowtree,
-                                     "labels": labels}
-        return {"results": {"tree": results}}
+            results[typ] = {"tree": rowtree, "labels": labels}
+            
+        title = ' / '.join([x for x in
+                             [j.get("outer", "dnase"), j.get("inner", None)]
+                             if x])
+        return {"results": {"tree": results,
+                            "tree_title" : title }}
 
     def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
         # http://stackoverflow.com/a/27297611
