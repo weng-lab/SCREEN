@@ -197,6 +197,17 @@ export const invalidate_tree_comparison = ({left, right}) => {
 	    left: get_children(left),
 	    right: get_children(right)
 	};
+	var items = [...n_query.left, ...n_query.right];
+	var n_left = ["C57BL-6_forebrain_postnatal_0_days"];
+	var n_right = ["C57BL-6_forebrain_embryo_14_5_days"];
+	for (var i in items) {
+	    if (items[i].includes("hemaatopoi")) n_right.push(items[i]);
+	    if (items[i].includes("T-helpear_1")) n_right.push(items[i]);
+	}
+	n_query = {
+	    left: n_left,
+	    right: n_right
+	};
 	var f_success = (response, status, jqxhr) => {
 	    dispatch(tree_comparison_done(response));
 	    dispatch(set_tree_comparison(response));
