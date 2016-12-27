@@ -122,6 +122,7 @@ def computeIntersections(args, assembly, fnps):
 
     if args.dryrun:
         return 
+
     results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
                                         for job in jobs)
 
@@ -226,6 +227,7 @@ def parse_args():
     parser.add_argument('--remakeBed', action="store_true", default=False)
     parser.add_argument('--updateOnly', action="store_true", default=False)
     parser.add_argument('--dryrun', action="store_true", default=False)
+    parser.add_argument('--list', action="store_true", default=False)
     parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="mm10")
     parser.add_argument('--test', action="store_true", default=False)
@@ -236,6 +238,13 @@ def main():
     args = parse_args()
 
     fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+
+    if args.list:
+        jobs = makeJobs(args, args.assembly)
+        for j in jobs:
+            if j["etype"] in ("tf", "histone"):
+                print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+        return 0
 
     if args.updateOnly:
         return updateREfiles(args, fnps)
