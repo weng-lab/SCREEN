@@ -6,6 +6,11 @@ from models.biosamples import Biosamples
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import AutocompleterWrapper
+from constants import paths
+
+MAX = 20000
+NCHUNKS = 50
+CHUNKSIZE = MAX / NCHUNKS
 
 class CachedObjectsWrapper:
     def __init__(self, es, ps):
@@ -44,7 +49,19 @@ class CachedObjects:
         self.cellTypesAndTissues = self.biosamples.cellTypesAndTissues
         self.tissueMap = self.biosamples.tissueMap
         self.cellTypesAndTissues_json = self.biosamples.cellTypesAndTissues_json
-                                   
+
+        self.topelems = {ct["value"]: self.get20k(ct["value"], 7)
+                         for ct in self.cellTypesAndTissues}
+
+    def get20k(self, ct, version):
+        results = []
+        for i in xrange(NCHUNKS):
+            results += self.es.search(body={"query": {"bool": {"must": [{"range": {"ranks.dnase." + ct + ".rank": {"lte": (i + 1) * CHUNKSIZE,
+                                                                                                                   "gte": i * CHUNKSIZE + 1 }}}]}},
+                                       "size": 1000, "_source": ["accession"]},
+                                 index=paths.re_json_vers[version][self.assembly]["index"])["hits"]["hits"]
+            return {k: 1 for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
+
     def getTissue(self, ct):
         if ct in self.cellTypesAndTissues:
             return self.cellTypesAndTissues[ct]

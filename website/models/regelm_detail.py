@@ -7,11 +7,27 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
 
 class RegElementDetails:
-    def __init__(self, es, ps, assembly):
+    def __init__(self, es, ps, assembly, cache):
         self.index = paths.reJsonIndex(assembly)
         self.es = es
         self.ps = ps
+        self.cache = cache
 
+    def most_similar(self, result):
+        _map = {}
+        c2 = []
+        ctc = len(result["ranks"]["dnase"])
+        for ct, v in result["ranks"]["dnase"].iteritems():
+            if v["rank"] <= 20000:
+                c2 += self.cache.topelems[ct]
+        c2 = list(set(c2))
+        for ct, v in result["ranks"]["dnase"].iteritems():
+            for e in c2:
+                if e not in _map: _map[e] = 0
+                if v["rank"] <= 20000 and e not in self.cache.topelems[ct] or v["rank"] > 20000 and e in self.cache.topelems[ct]:
+                    _map[e] += 1
+        return {k: ctc - v for k, v in _map.iteritems() if ctc - v > 0}
+        
     def reFull(self, reAccession):
         q = { "query" :{
                   "bool" : {
@@ -29,6 +45,7 @@ class RegElementDetails:
             print("ERROR: too many hits for " + reAccession)
         result = retval["hits"]["hits"][0]["_source"]
         allgenes = result["genes"]["nearest-all"] + result["genes"]["nearest-pc"]
+        result["most_similar"] = self.most_similar(result)
         result["nearby_genes"] = [{"name": x["gene-name"],
                                    "distance": x["distance"] } for x in allgenes]
         return result

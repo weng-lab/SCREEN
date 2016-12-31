@@ -23,5 +23,5 @@ class RankHeatmap:
             if not k.startswith("rank_"): continue
             rank_type = k.split("_")[1]
             cell_type = "_".join(k.split("_")[2:])
-            retval[cell_type][rank_type] = math.log(v["doc_count"] / float(total) + 0.01)
+            retval[cell_type][rank_type] = math.log((v["doc_count"] + 0.01) / (float(total) + 0.01))
         return retval

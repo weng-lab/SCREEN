@@ -43,6 +43,7 @@ class AjaxWebServiceWrapper:
 
     def process(self, j):
         if "GlobalAssembly" not in j:
+            j["GlobalAssembly"] = "mm10"
             raise Exception("GlobalAssembly not defined")
         return self.ajws[j["GlobalAssembly"]].process(j)
 
@@ -70,7 +71,7 @@ class AjaxWebService:
         self.cytobands = Cytoband(paths.cytobands[assembly])
         
         self.em = ExpressionMatrix(self.es)
-        self.details = RegElementDetails(es, ps, assembly)
+        self.details = RegElementDetails(es, ps, assembly, cache)
         self.ac = Autocompleter(es, assembly)
         self.regElements = RegElements(es, assembly)
 
@@ -178,7 +179,7 @@ class AjaxWebService:
         for k, v in peaks.iteritems():
             ret.append({"name": k, "n": len(v)})
         return ret
-        
+    
     def _re_detail(self, j):
         accession = j["accession"]
         j = self.details.reFull(accession)
@@ -213,7 +214,8 @@ class AjaxWebService:
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
-                               "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])] })
+                               "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])],
+                               "most_similar": j["most_similar"] })
 
         return output
 
