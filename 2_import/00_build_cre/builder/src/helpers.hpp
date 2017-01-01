@@ -13,6 +13,7 @@
 #include <json/json.h>
 #include <json/reader.h>
 #include <array>
+#include <boost/optional.hpp>
 #include <zi/concurrency/concurrency.hpp>
 #include <zi/system.hpp>
 
@@ -83,11 +84,55 @@ namespace bib {
     uint32_t rank;
   };
 
+  struct ExpFileHelper {
+    std::string expID_;
+    std::string fileID_;
+
+    ExpFileHelper(const std::string& s){
+      const auto assayToks = bib::str::split(s, '-');
+      expID_ = assayToks[0];
+      fileID_ = assayToks[1];
+    }
+
+    friend std::ostream& operator<<(std::ostream& s,
+				    const ExpFileHelper& e){
+      s << e.expID_ << " " << e.fileID_;
+      return s;
+    }
+
+  };
+  
   struct SignalFile {
-    bfs::path fnp;
-    std::string leftExps;
-    std::string rightExps;
-    std::unordered_map<std::string, SignalLine> lines;
+    std::string fn_;
+    std::string fnp_;
+
+    boost::optional<ExpFileHelper> e1_;
+    boost::optional<ExpFileHelper> e2_;
+
+    std::unordered_map<std::string, SignalLine> lines_;
+
+    void setFnp(const std::string fnp){
+      fnp_ = fnp;
+      fn_ = bfs::path(fnp).filename().string();
+      
+      if(bib::str::startswith(fn_, "EN")){
+	const auto toks = bib::str::split(fn_, '.');
+
+	if(bib::str::startswith(toks[1], "EN")){
+	  // assay vs assay
+	  e1_ = ExpFileHelper(toks[0]);
+	  e2_ = ExpFileHelper(toks[1]);
+	  std::cout << *e1_ << " vs " << *e2_ << std::endl;
+	  
+
+	} else {
+	  // assay only
+	  e1_ = ExpFileHelper(toks[0]);
+	  std::cout << *e1_ << std::endl;
+	  
+	}
+      }
+    }
   };
 
   class MousePaths {
@@ -191,18 +236,13 @@ namespace bib {
 	
 	const auto lines = bib::files::readStrings(fnp);
 	SignalFile sf;
-	sf.fnp = fnp;
+	sf.setFnp(fnp);
 
-	if(bib::str::startswith(fnp, "EN")){
-	  const auto toks = bib::str::split(fnp, '\t');
-
-	}
-	
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
-	  sf.lines[toks[0]] = SignalLine{std::stof(toks[1]),
-					 std::stof(toks[2]),
-					 std::stoi(toks[3])};
+	  sf.lines_[toks[0]] = SignalLine{std::stof(toks[1]),
+					  std::stof(toks[2]),
+					  std::stoi(toks[3])};
 	}
 	ret[i] = std::move(sf);
       }
