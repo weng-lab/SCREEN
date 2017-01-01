@@ -132,11 +132,17 @@ namespace bib {
     };
 
     std::vector<SignalFile> loadSignals(){
-      bfs::path dir = paths_.signalDir();
-      std::vector<SignalFile> ret;
-      
-      for(const auto& fnp : bib::files::dir(dir)){
+      auto dir = bib::files::dir(paths_.signalDir());
+      std::vector<bfs::path> fnps(dir.begin(), dir.end());
+      std::cout << "found " << fnps.size() << " files" << std::endl;
+            
+      std::vector<SignalFile> ret(fnps.size());
+
+#pragma omp parallel for
+      for(size_t i = 0; i < fnps.size(); ++i){
+	const auto& fnp = fnps[i];
 	std::cout << fnp << std::endl;
+	
 	auto lines = bib::files::readStrings(fnp);
 	SignalFile sf;
 	sf.fnp = fnp;
@@ -147,8 +153,10 @@ namespace bib {
 		std::stof(toks[2]),
 		std::stoi(toks[3])});
 	}
-	ret.emplace_back(sf);
+	ret[i] = std::move(sf);
       }
+
+      std::cout << "loaded " << ret.size() << " files" << std::endl;
       return ret;
     }
   };
