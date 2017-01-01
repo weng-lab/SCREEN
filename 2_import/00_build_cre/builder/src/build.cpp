@@ -29,22 +29,25 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
+  struct Gene {
+    std::string name;
+    uint32_t distance;
+  };
+
   class Peak {
   public:
     std::string chrom;
     uint32_t start;
     uint32_t end;
-    std::string mpID;
+    std::string mpName;
     std::string negLogP;
     std::string accession;
+
+    std::vector<Gene> gene_nearest_all;
+    std::vector<Gene> gene_nearest_pc;
   };
 
-  struct Gene {
-    std::string name;
-    std::string distance;
-  };
-
-  using AccessionToGenes = std::unordered_map<std::string, std::vector<Gene>>;
+  using MpNameToGenes = std::unordered_map<std::string, std::vector<Gene>>;
 
   using Peaks = std::unordered_map<std::string, Peak>;
 
@@ -108,7 +111,9 @@ namespace bib {
 	ret[toks[4]] = Peak{toks[0],
 			    std::stoi(toks[1]),
 			    std::stoi(toks[2]),
-			    mpToks[1], mpToks[2], toks[4]};
+			    toks[3],
+			    mpToks[2],
+			    toks[4]};
       }
       std::cout << "loaded " << ret.size() << " peaks\n";
       return ret;
@@ -116,25 +121,24 @@ namespace bib {
 
     // 0    1      2      3                   4    5      6      7                     8 9 10
     // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
-    AccessionToGenes allGenes(){
+    MpNameToGenes allGenes(){
       return loadGenes(paths_.allGenes(), "all");
     }
 
-    AccessionToGenes pcGenes(){
+    MpNameToGenes pcGenes(){
       return loadGenes(paths_.pcGenes(), "pc");
     }
 
-    AccessionToGenes loadGenes(bfs::path fnp, std::string typ){
+    MpNameToGenes loadGenes(bfs::path fnp, std::string typ){
       auto lines = bib::files::readStrings(fnp);
       std::cout << "loading " << typ << " genes " << fnp << std::endl;
 
       uint32_t count{0};
-      AccessionToGenes ret;
+      MpNameToGenes ret;
       for(const auto& g : lines){
 	auto toks = bib::str::split(g, '\t');
-	auto mpToks = bib::str::split(toks[3], '-');
-	std::string accession = mpToks[1];
-	ret[accession].emplace_back(Gene{toks[7], toks[10]});
+	ret[toks[3]].emplace_back(Gene{toks[7],
+	      std::stoi(toks[10])});
 	++count;
       }
       std::cout << "loaded " << count << " " << typ << " genes\n";
@@ -187,7 +191,7 @@ namespace bib {
       const auto pcGenes = d.pcGenes();
       const auto signalFiles = d.loadSignals();
 
-      auto peaks = d.peaks(); // map by accession
+      Peaks peaks = d.peaks(); // map of peaks by accession
 
       std::vector<std::string> accessions;
       accessions.reserve(peaks.size());
@@ -200,7 +204,16 @@ namespace bib {
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks[accession];
-	const auto& i = p.mpID;
+	const auto& i = p.mpName;
+
+	if(bib::in(i, allGenes)){
+	  std::cout << i << " all\n";
+	  p.gene_nearest_all = allGenes[i];
+	}
+	if(bib::in(i, pcGenes)){
+	  std::cout << i << " pc\n";
+	  p.gene_nearest_pc = pcGenes[i];
+	}
       }
 
       return peaks;
