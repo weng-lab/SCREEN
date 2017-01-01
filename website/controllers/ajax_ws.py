@@ -59,6 +59,10 @@ class AjaxWebService:
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
                              "Promoter": ("promoter", ".H3K4me3-Only"),
                              "CTCF": ("ctcf", ".CTCF-Only") }
+        self._bigwig_keys = {"dnase": None,
+                             "enhancer": "h3k27ac",
+                             "promoter": "h3k4me3",
+                             "ctcf": "ctcf" }
 
         self.assembly = assembly
         self.args = args
@@ -180,6 +184,13 @@ class AjaxWebService:
             ret.append({"name": k, "n": len(v)})
         return ret
     
+    def _get_bigwigs(self, j, ranktype):
+        retval = []
+        r = self._bigwig_keys[ranktype[0]]
+        for ct, v in j["ranks"][ranktype[0]].iteritems():
+            retval.append(v if ranktype[1] is None else v[ranktype[1]][r])
+        return retval
+    
     def _re_detail(self, j):
         accession = j["accession"]
         j = self.details.reFull(accession)
@@ -215,7 +226,8 @@ class AjaxWebService:
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
                                "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])],
-                               "most_similar": j["most_similar"] })
+                               "most_similar": j["most_similar"],
+                               "bigwigs": self._get_bigwigs(j, self._rank_types["DNase"]) })
 
         return output
 
