@@ -40,7 +40,7 @@ namespace bib {
     }
 
     friend std::ostream& operator<<(std::ostream& s, const Gene& g){
-      s << g.name << ":" << g.distance;
+      s << g.name << "\t" << g.distance;
       return s;
     }
   };
@@ -61,17 +61,15 @@ namespace bib {
 
     friend std::ostream& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
-      s << "\t" << p.chrom << ":" << p.start << "-" << p.end << "\n";
-      s << "\tall genes: ";
+      s << "\tposition: " << p.chrom << ":" << p.start << "-" << p.end << "\n";
+      s << "\tall genes:\n";
       for(const auto& g : p.gene_nearest_all){
-	s << "\t" << g;
+	s << "\t\t" << g << "\n";
       }
-      s << "\n";
-      s << "\tpc genes: ";
+      s << "\tpc genes:\n";
       for(const auto& g : p.gene_nearest_pc){
-	s << "\t" << g;
+	s << "\t\t" << g << "\n";
       }
-      s << "\n";
       s << "\tgenome: " << p.genome << "\n";
       s << "\tneg-log-p: " << p.negLogP << "\n";
       return s;
@@ -172,6 +170,7 @@ namespace bib {
 	auto toks = bib::str::split(g, '\t');
 	std::string ensembl = toks[7];
 	bib::string::rtrim(ensembl);
+	// TODO: translate Ensembl ID to gene alias....
 	ret[toks[3]].emplace_back(Gene{ensembl,
 	      std::stoi(toks[10])});
 	++count;
@@ -196,6 +195,9 @@ namespace bib {
 	const auto lines = bib::files::readStrings(fnp);
 	SignalFile sf;
 	sf.fnp = fnp;
+
+
+	
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
 	  sf.lines[toks[0]] = SignalLine{std::stof(toks[1]),
