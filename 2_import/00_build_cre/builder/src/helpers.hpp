@@ -122,15 +122,17 @@ namespace bib {
 	  // assay vs assay
 	  e1_ = ExpFileHelper(toks[0]);
 	  e2_ = ExpFileHelper(toks[1]);
-	  std::cout << *e1_ << " vs " << *e2_ << std::endl;
+	  //std::cout << *e1_ << " vs " << *e2_ << std::endl;
 	  
 
 	} else {
 	  // assay only
 	  e1_ = ExpFileHelper(toks[0]);
-	  std::cout << *e1_ << std::endl;
+	  //std::cout << *e1_ << std::endl;
 	  
 	}
+      } else {
+	std::cerr << "unknown file " << fnp << std::endl;
       }
     }
   };
