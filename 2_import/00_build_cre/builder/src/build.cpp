@@ -37,6 +37,11 @@ namespace bib {
       return std::tie(a.distance, a.name) <
 	std::tie(b.distance, b.name);
     }
+
+    friend std::ostream& operator<<(std::ostream& s, const Gene& g){
+      s << g.name << ":" << g.distance;
+      return s;
+    }
   };
 
   class Peak {
@@ -52,6 +57,24 @@ namespace bib {
     
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
+
+    friend std::ostream& operator<<(std::ostream& s, const Peak& p){
+      s << p.accession << "\n";
+      s << "\t" << p.chrom << ":" << p.start << "-" << p.end << "\n";
+      s << "\tall genes: ";
+      for(const auto& g : p.gene_nearest_all){
+	s << "\t" << g;
+      }
+      s << "\n";
+      s << "\tpc genes: ";
+      for(const auto& g : p.gene_nearest_pc){
+	s << "\t" << g;
+      }
+      s << "\n";
+      s << "\tgenome: " << p.genome << "\n";
+      s << "\tneg-log-p: " << p.negLogP << "\n";
+      return s;
+    }
   };
 
   using MpNameToGenes = std::unordered_map<std::string, std::vector<Gene>>;
@@ -73,12 +96,14 @@ namespace bib {
 
   class MousePaths {
   public:
+    const std::string genome_;
     const std::string chr_;
     const bfs::path base_ = "/home/purcarom/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
     bfs::path path_;
 
     MousePaths(std::string chr)
-      : chr_("chr" + chr)
+      : genome_("mm10")
+      , chr_("chr" + chr)
     {
       path_ = base_ / chr_;
     }
@@ -214,6 +239,8 @@ namespace bib {
 	processPeak(allGenes, pcGenes, signalFiles, p);
       }
 
+      std::cout << peaks[accessions[0]] << std::endl;
+      
       return peaks;
     }
 
@@ -222,6 +249,7 @@ namespace bib {
 		     const std::vector<SignalFile>& signalFiles,
 		     Peak& p){
       const auto& i = p.mpName;
+      p.genome = paths_.genome_;
       
       if(bib::in(i, allGenes)){
 	//std::cout << i << " all\n";
