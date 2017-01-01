@@ -16,6 +16,7 @@ from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.correlation import Correlation
 from models.cytoband import Cytoband
+from models.bigwig import BigWig
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from compute_gene_expression import ComputeGeneExpression
@@ -188,8 +189,20 @@ class AjaxWebService:
         retval = []
         r = self._bigwig_keys[ranktype[0]]
         for ct, v in j["ranks"][ranktype[0]].iteritems():
-            retval.append(v if ranktype[1] is None else v[ranktype[1]][r])
+            retval.append(v if r is None else v[ranktype[1]][r])
+            retval[-1]["ct"] = ct
         return retval
+
+    def _get_bigwig_regions(self, bigwigs, accs):
+        q = [{"match": {"accession": acc}} for acc in accs]
+        bfnp = [{"path": "/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (bigwig["accession"], bigwig["bigwig"]),
+                 "ct": bigwig["ct"] } for bigwig in bigwigs]
+        results = self.es.search(body={"query": {"bool": {"should": q}}, "size": 11,
+                                       "_source": ["accession", "position"]},
+                                 index="regulatory_elements_7")["hits"]["hits"]
+        return BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
+                                   "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
+                                  for x in results], bfnp, 100)
     
     def _re_detail(self, j):
         accession = j["accession"]
@@ -219,6 +232,7 @@ class AjaxWebService:
                            "end": pos["end"] + overlapBP}
 #        gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords, self.assembly)
+        similaracclist = [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): (-v, k))][:10] + [j["accession"]]
         
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
@@ -227,7 +241,7 @@ class AjaxWebService:
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
                                "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])],
                                "most_similar": j["most_similar"],
-                               "bigwigs": self._get_bigwigs(j, self._rank_types["DNase"]) })
+                               "regions": self._get_bigwig_regions(self._get_bigwigs(j, self._rank_types["DNase"]), similaracclist) })
 
         return output
 
