@@ -370,8 +370,8 @@ export const tabs = [
 	title: "Similar REs",
 	enabled: true,
 	render: (store, key) => {
-	    var MiniPeaks = main_minipeaks_connector(MiniPeaks);
-	    return <MiniPeaks store={store} key={key} />;
+	    var Peaks = main_minipeaks_connector(MiniPeaks);
+	    return <Peaks store={store} key={key} />;
 	}
     }
 ];
