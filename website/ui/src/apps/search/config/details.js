@@ -1,12 +1,13 @@
 const React = require('react');
 import {render_int, render_cell_type} from './results_table'
 import {invalidate_detail} from '../helpers/invalidate_results'
-import {SET_DETAIL_TAB, main_tss_connector} from '../reducers/root_reducer'
+import {SET_DETAIL_TAB, main_tss_connector, main_minipeaks_connector} from '../reducers/root_reducer'
 
 import {expression_heatmap_connector} from '../components/expression_heatmap'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
 
 import TSSExpressionPlot from '../components/tss'
+import MiniPeaks from '../components/minipeaks'
 
 import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
 
@@ -363,6 +364,14 @@ export const tabs = [
 	render: (store, key) => {
 	    var TSS = main_tss_connector(TSSExpressionPlot);
 	    return <TSS store={store} key={key} />;
+	}
+    },
+    {
+	title: "Similar REs",
+	enabled: true,
+	render: (store, key) => {
+	    var MiniPeaks = main_minipeaks_connector(MiniPeaks);
+	    return <MiniPeaks store={store} key={key} />;
 	}
     }
 ];

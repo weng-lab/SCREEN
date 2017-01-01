@@ -10,6 +10,7 @@ import {MainTabsConnector} from '../components/maintab'
 import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 import {tree_connector} from '../components/tree'
 import {tss_connector} from '../components/tss'
+import {minipeaks_connector} from '../components/minipeaks'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -113,6 +114,10 @@ export const main_tab_connector = MainTabsConnector(
 
 export const main_tss_connector = tss_connector(
     (state) => (state.results.expression_boxplot)
+);
+
+export const main_minipeaks_connector = minipeaks_connector(
+    (state) => (state.re_details.regions)
 );
 
 export const main_tree_connector = (store) => tree_connector(store)(
