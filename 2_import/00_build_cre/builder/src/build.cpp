@@ -32,6 +32,11 @@ namespace bib {
   struct Gene {
     std::string name;
     uint32_t distance;
+
+    friend bool operator<(const Gene& a, const Gene& b){
+      return std::tie(a.distance, a.name) <
+	std::tie(b.distance, b.name);
+    }
   };
 
   class Peak {
@@ -43,6 +48,8 @@ namespace bib {
     std::string negLogP;
     std::string accession;
 
+    std::string genome;
+    
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
   };
@@ -209,10 +216,14 @@ namespace bib {
 	if(bib::in(i, allGenes)){
 	  std::cout << i << " all\n";
 	  p.gene_nearest_all = allGenes[i];
+	  std::sort(p.gene_nearest_all.begin(),
+		    p.gene_nearest_all.end());
 	}
 	if(bib::in(i, pcGenes)){
 	  std::cout << i << " pc\n";
 	  p.gene_nearest_pc = pcGenes[i];
+	  std::sort(p.gene_nearest_pc.begin(),
+		    p.gene_nearest_pc.end());
 	}
       }
 
