@@ -211,23 +211,31 @@ namespace bib {
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks[accession];
-	const auto& i = p.mpName;
-
-	if(bib::in(i, allGenes)){
-	  std::cout << i << " all\n";
-	  p.gene_nearest_all = allGenes[i];
-	  std::sort(p.gene_nearest_all.begin(),
-		    p.gene_nearest_all.end());
-	}
-	if(bib::in(i, pcGenes)){
-	  std::cout << i << " pc\n";
-	  p.gene_nearest_pc = pcGenes[i];
-	  std::sort(p.gene_nearest_pc.begin(),
-		    p.gene_nearest_pc.end());
-	}
+	processPeak(allGenes, pcGenes, signalFiles, p);
       }
 
       return peaks;
+    }
+
+    void processPeak(const MpNameToGenes& allGenes,
+		     const MpNameToGenes& pcGenes,
+		     const std::vector<SignalFile>& signalFiles,
+		     Peak& p){
+      const auto& i = p.mpName;
+      
+      if(bib::in(i, allGenes)){
+	//std::cout << i << " all\n";
+	p.gene_nearest_all = allGenes.at(i);
+	std::sort(p.gene_nearest_all.begin(),
+		  p.gene_nearest_all.end());
+      }
+
+      if(bib::in(i, pcGenes)){
+	//std::cout << i << " pc\n";
+	p.gene_nearest_pc = pcGenes.at(i);
+	std::sort(p.gene_nearest_pc.begin(),
+		  p.gene_nearest_pc.end());
+      }
     }
   };
 
