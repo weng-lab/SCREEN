@@ -29,6 +29,38 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
+  class Peak {
+  public:
+    std::string chrom;
+    uint32_t start;
+    uint32_t end;
+    std::string mpID;
+    std::string negLogP;
+    std::string accession;
+  };
+
+  struct Gene {
+    std::string name;
+    std::string distance;
+  };
+
+  using AccessionToGenes = std::unordered_map<std::string, std::vector<Gene>>;
+
+  using Peaks = std::unordered_map<std::string, Peak>;
+
+  struct SignalLine {
+    float zscore;
+    float avgSignal;
+    uint32_t rank;
+  };
+
+  struct SignalFile {
+    bfs::path fnp;
+    std::string leftExps;
+    std::string rightExps;
+    std::unordered_map<std::string, SignalLine> lines;
+  };
+
   class MousePaths {
   public:
     const std::string chr_;
@@ -65,33 +97,22 @@ namespace bib {
     {}
 
     // chrY    808996  809318  MP-2173311-100.000000   EE0756098
-    struct Peak {
-      std::string chrom;
-      std::string start;
-      std::string end;
-      std::string mpID;
-      std::string negLogP;
-      std::string accession;
-    };
-    std::vector<Peak> peaks(){
+    Peaks peaks(){
       auto lines = bib::files::readStrings(paths_.peaks());
-
-      std::vector<Peak> ret;
+      std::cout << "loading peaks " << paths_.peaks() << std::endl;
+      
+      Peaks ret;
       for(const auto& p : lines){
 	auto toks = bib::str::split(p, '\t');
 	auto mpToks = bib::str::split(toks[3], '-');
-	ret.emplace_back(Peak{toks[0], toks[1], toks[2],
-	      mpToks[1], mpToks[2], toks[4]});
+	ret[toks[4]] = Peak{toks[0],
+			    std::stoi(toks[1]),
+			    std::stoi(toks[2]),
+			    mpToks[1], mpToks[2], toks[4]};
       }
       std::cout << "loaded " << ret.size() << " peaks\n";
       return ret;
     }
-
-    struct Gene {
-      std::string name;
-      std::string distance;
-    };
-    using AccessionToGenes = std::unordered_map<std::string, std::vector<Gene>>;
 
     // 0    1      2      3                   4    5      6      7                     8 9 10
     // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
@@ -105,6 +126,7 @@ namespace bib {
 
     AccessionToGenes loadGenes(bfs::path fnp, std::string typ){
       auto lines = bib::files::readStrings(fnp);
+      std::cout << "loading " << typ << " genes " << fnp << std::endl;
 
       uint32_t count{0};
       AccessionToGenes ret;
@@ -119,44 +141,33 @@ namespace bib {
       return ret;
     }
 
-    struct SignalLine {
-      std::string name;
-      float zscore;
-      float signal;
-      uint32_t rank;
-    };
-
-    struct SignalFile {
-      bfs::path fnp;
-      std::vector<SignalLine> lines;
-    };
-
     std::vector<SignalFile> loadSignals(){
       auto dir = bib::files::dir(paths_.signalDir());
-      std::vector<bfs::path> fnps(dir.begin(), dir.end());
-      std::cout << "found " << fnps.size() << " files" << std::endl;
+      const std::vector<bfs::path> fnps(dir.begin(), dir.end());
+      std::cout << "found " << fnps.size() << " signal files"
+		<< std::endl;
             
       std::vector<SignalFile> ret(fnps.size());
 
 #pragma omp parallel for
       for(size_t i = 0; i < fnps.size(); ++i){
 	const auto& fnp = fnps[i];
-	std::cout << fnp << std::endl;
+	//std::cout << fnp << std::endl;
 	
-	auto lines = bib::files::readStrings(fnp);
+	const auto lines = bib::files::readStrings(fnp);
 	SignalFile sf;
 	sf.fnp = fnp;
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
-	  sf.lines.emplace_back(SignalLine{toks[0],
-		std::stof(toks[1]),
-		std::stof(toks[2]),
-		std::stoi(toks[3])});
+	  sf.lines[toks[0]] = SignalLine{std::stof(toks[1]),
+					 std::stof(toks[2]),
+					 std::stoi(toks[3])};
 	}
 	ret[i] = std::move(sf);
       }
 
-      std::cout << "loaded " << ret.size() << " files" << std::endl;
+      std::cout << "loaded " << ret.size() << " signal files"
+		<< std::endl;
       return ret;
     }
   };
@@ -170,12 +181,29 @@ namespace bib {
       : paths_(paths)
     {}
 
-    void build(){
+    Peaks build(){
       GetData<T> d(paths_);
-      const auto peaks = d.peaks();
       const auto allGenes = d.allGenes();
       const auto pcGenes = d.pcGenes();
-      d.loadSignals();
+      const auto signalFiles = d.loadSignals();
+
+      auto peaks = d.peaks(); // map by accession
+
+      std::vector<std::string> accessions;
+      accessions.reserve(peaks.size());
+      for(auto& kv : peaks){
+	accessions.push_back(kv.first);
+      }
+
+      std::cout << "merging genes and signals into peaks...\n";
+#pragma omp parallel for
+      for(size_t i = 0; i < accessions.size(); ++i){
+	const auto& accession = accessions[i];
+	Peak& p = peaks[accession];
+	const auto& i = p.mpID;
+      }
+
+      return peaks;
     }
   };
 
