@@ -15,6 +15,7 @@
 #include <zi/system.hpp>
 
 #include "cpp/utility.hpp"
+#include "cpp/string_utils.hpp"
 #include "cpp/files.hpp"
 #include "cpp/gzip_reader.hpp"
 #include "cpp/tictoc.hpp"
@@ -169,7 +170,9 @@ namespace bib {
       MpNameToGenes ret;
       for(const auto& g : lines){
 	auto toks = bib::str::split(g, '\t');
-	ret[toks[3]].emplace_back(Gene{toks[7],
+	std::string ensembl = toks[7];
+	bib::string::rtrim(ensembl);
+	ret[toks[3]].emplace_back(Gene{ensembl,
 	      std::stoi(toks[10])});
 	++count;
       }
