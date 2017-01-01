@@ -117,7 +117,7 @@ export const main_tss_connector = tss_connector(
 );
 
 export const main_minipeaks_connector = minipeaks_connector(
-    (state) => (state.re_details.regions)
+    (state) => (state.re_detail.data.regions)
 );
 
 export const main_tree_connector = (store) => tree_connector(store)(
