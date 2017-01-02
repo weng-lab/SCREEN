@@ -202,7 +202,7 @@ class AjaxWebService:
                                  index="regulatory_elements_7")["hits"]["hits"]
         return BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
                                    "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
-                                  for x in results], bfnp, 100)
+                                  for x in results], bfnp, 50)
     
     def _re_detail(self, j):
         accession = j["accession"]
