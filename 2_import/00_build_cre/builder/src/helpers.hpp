@@ -498,6 +498,10 @@ namespace bib {
 	const auto lines = bib::files::readStrings(fnp);
 	SignalFile sf(fnp);
 
+	if(bib::str::startswith(fnp, "mm10.60way.")){
+	  continue;
+	}
+	
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
 	  if(toks.size() > 5){
