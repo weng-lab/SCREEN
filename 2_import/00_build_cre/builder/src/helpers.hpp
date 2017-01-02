@@ -16,6 +16,8 @@
 #include <boost/optional.hpp>
 #include <zi/concurrency/concurrency.hpp>
 #include <zi/system.hpp>
+#include <zi/parallel/algorithm.hpp>
+#include <zi/parallel/numeric.hpp>
 
 #include "cpp/utility.hpp"
 #include "cpp/string_utils.hpp"
@@ -37,7 +39,7 @@ namespace bib {
 	std::tie(b.distance, b.name);
     }
 
-    friend std::ostream& operator<<(std::ostream& s, const Gene& g){
+    friend auto& operator<<(std::ostream& s, const Gene& g){
       s << g.name << "\t" << g.distance;
       return s;
     }
@@ -57,7 +59,7 @@ namespace bib {
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
 
-    friend std::ostream& operator<<(std::ostream& s, const Peak& p){
+    friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
       s << "\tposition: " << p.chrom << ":" << p.start << "-" << p.end << "\n";
       s << "\tall genes:\n";
@@ -94,8 +96,7 @@ namespace bib {
       fileID_ = assayToks[1];
     }
 
-    friend std::ostream& operator<<(std::ostream& s,
-				    const ExpFileHelper& e){
+    friend auto& operator<<(std::ostream& s, const ExpFileHelper& e){
       s << e.expID_ << " " << e.fileID_;
       return s;
     }
@@ -191,20 +192,12 @@ namespace bib {
       path_ = base_ / chr_;
     }
 
-    bfs::path allGenes(){
-      return path_ / (chr_ + "_AllGenes");
-    }
-    bfs::path pcGenes(){
-      return path_ / (chr_ + "_PCGenes");
-    }
-    bfs::path peaks(){
-      return path_ / (chr_ + "_sorted-peaks");
-    }
-    bfs::path signalDir(){
-      return path_ / "signal";
-    }
+    bfs::path allGenes(){ return path_ / (chr_ + "_AllGenes"); }
+    bfs::path pcGenes(){ return path_ / (chr_ + "_PCGenes"); }
+    bfs::path peaks(){ return path_ / (chr_ + "_sorted-peaks"); }
+    bfs::path signalDir(){ return path_ / "signal"; }
 
-    bfs::path listFile(const std::string name){
+    bfs::path listFile(const std::string name){ 
       return base_ / (name + "-List.txt");
     }   
   };
@@ -331,35 +324,32 @@ namespace bib {
       for(auto& kv : peaks_){
 	accessions_.push_back(kv.first);
       }
-      std::sort(accessions_.begin(), accessions_.end());
-
+      zi::sort(accessions_.begin(), accessions_.end());
     }
 
     Peaks& peaks(){ return peaks_; }
 
-    const std::vector<std::string>& accessions() const {
-      return accessions_;
-    }
+    const auto& accessions() const { return accessions_; }
 
     template <typename T>
     void setAllGenes(const std::string& mpName, T& field) const {
       if(bib::in(mpName, allGenes_)){
-	//std::cout << i << " all\n";
+	//std::cout << mpName << " all\n";
 	field = allGenes_.at(mpName);
 	std::sort(field.begin(), field.end());
       } else {
-	std::cerr << "no all gene info found for " << mpName << "\n";
+	std::cerr << "no all gene found for " << mpName << "\n";
       }
     }
     
     template <typename T>
     void setPcGenes(const std::string& mpName, T& field) const {
       if(bib::in(mpName, pcGenes_)){
-	//std::cout << i << " pc\n";
+	//std::cout << mpName << " pc\n";
 	field = pcGenes_.at(mpName);
 	std::sort(field.begin(), field.end());
       } else {
-	std::cerr << "no pc gene info found for " << mpName << "\n";
+	std::cerr << "no pc gene found for " << mpName << "\n";
       }
     }
   };
