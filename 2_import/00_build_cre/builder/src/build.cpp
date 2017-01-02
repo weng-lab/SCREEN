@@ -17,13 +17,14 @@ namespace bib {
     {}
 
     Peaks build(){
-      GetData<T> d(paths_);
-      const auto allGenes = d.allGenes();
-      const auto pcGenes = d.pcGenes();
-      const auto signalFiles = d.loadSignals();
-      const auto assayInfos = d.assayInfos();
+      GetData<T> gd(paths_);
+      HelperData d;
+      d.assayInfos_ = gd.assayInfos();
+      d.allGenes_ = gd.allGenes();
+      d.pcGenes_ = gd.pcGenes();
+      d.signalFiles_ = gd.loadSignals();
 
-      Peaks peaks = d.peaks(); // map of peaks by accession
+      Peaks peaks = gd.peaks(); // map of peaks by accession
 
       std::vector<std::string> accessions;
       accessions.reserve(peaks.size());
@@ -36,7 +37,7 @@ namespace bib {
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks[accession];
-	processPeak(allGenes, pcGenes, signalFiles, p);
+	processPeak(d, p);
       }
 
       std::cout << peaks[accessions[0]] << std::endl;
@@ -44,23 +45,21 @@ namespace bib {
       return peaks;
     }
 
-    void processPeak(const MpNameToGenes& allGenes,
-		     const MpNameToGenes& pcGenes,
-		     const std::vector<SignalFile>& signalFiles,
+    void processPeak(const HelperData& d,
 		     Peak& p){
       const auto& i = p.mpName;
       p.genome = paths_.genome_;
       
-      if(bib::in(i, allGenes)){
+      if(bib::in(i, d.allGenes_)){
 	//std::cout << i << " all\n";
-	p.gene_nearest_all = allGenes.at(i);
+	p.gene_nearest_all = d.allGenes_.at(i);
 	std::sort(p.gene_nearest_all.begin(),
 		  p.gene_nearest_all.end());
       }
 
-      if(bib::in(i, pcGenes)){
+      if(bib::in(i, d.pcGenes_)){
 	//std::cout << i << " pc\n";
-	p.gene_nearest_pc = pcGenes.at(i);
+	p.gene_nearest_pc = d.pcGenes_.at(i);
 	std::sort(p.gene_nearest_pc.begin(),
 		  p.gene_nearest_pc.end());
       }
