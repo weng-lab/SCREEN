@@ -298,6 +298,7 @@ namespace bib {
     }
 
     AssayInfos assayInfos(){
+      std::cout << "loading ENCODE exp infos...\n";
       AssayInfos ret;
       for(const auto& a : {"CTCF", "DNase", "Enhancer",
 	    "H3K27ac", "H3K4me3", "Insulator", "Promoter"}){
@@ -313,6 +314,53 @@ namespace bib {
     MpNameToGenes pcGenes_;
     std::vector<SignalFile> signalFiles_;
     AssayInfos assayInfos_;
+    Peaks peaks_; // map of peaks by accession
+    std::vector<std::string> accessions_;
+
+    template <typename T>
+    HelperData(T& paths){
+      GetData<T> gd(paths);
+      assayInfos_ = gd.assayInfos();
+      allGenes_ = gd.allGenes();
+      pcGenes_ = gd.pcGenes();
+      signalFiles_ = gd.loadSignals();
+      peaks_ = gd.peaks();
+
+      accessions_.reserve(peaks_.size());
+      for(auto& kv : peaks_){
+	accessions_.push_back(kv.first);
+      }
+      std::sort(accessions_.begin(), accessions_.end());
+
+    }
+
+    Peaks& peaks(){ return peaks_; }
+
+    const std::vector<std::string>& accessions() const {
+      return accessions_;
+    }
+
+    template <typename T>
+    void setAllGenes(const std::string& mpName, T& field) const {
+      if(bib::in(mpName, allGenes_)){
+	//std::cout << i << " all\n";
+	field = allGenes_.at(mpName);
+	std::sort(field.begin(), field.end());
+      } else {
+	std::cerr << "no all gene info found for " << mpName << "\n";
+      }
+    }
+    
+    template <typename T>
+    void setPcGenes(const std::string& mpName, T& field) const {
+      if(bib::in(mpName, pcGenes_)){
+	//std::cout << i << " pc\n";
+	field = pcGenes_.at(mpName);
+	std::sort(field.begin(), field.end());
+      } else {
+	std::cerr << "no pc gene info found for " << mpName << "\n";
+      }
+    }
   };
 
 } // namspace bib
