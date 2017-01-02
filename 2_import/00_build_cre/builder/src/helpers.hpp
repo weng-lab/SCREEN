@@ -502,13 +502,14 @@ namespace bib {
 
 #pragma omp parallel for
       for(size_t i = 0; i < fnps.size(); ++i){
+	const std::string fn = fnps[i].filename().string();
 	const std::string fnp = fnps[i].string();
 	std::cout << fnp << std::endl;
 	
 	const auto lines = readGzStrings(fnp);
 	SignalFile sf(fnp);
 
-	if(bib::str::startswith(fnp, "mm10.60way.")){
+	if(bib::str::startswith(fn, "mm10.60way.")){
 	  continue;
 	}
 	
