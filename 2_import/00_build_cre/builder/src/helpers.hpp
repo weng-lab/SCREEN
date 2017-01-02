@@ -29,20 +29,6 @@
 namespace bib {
 
   namespace bfs = boost::filesystem;
-
-  struct RankDNase {
-    std::string accession_;
-    std::string bigwig_;
-    uint32_t rank_;
-    float signal_;
-    float zscore_;
-
-    friend auto& operator<<(std::ostream& s, const RankDNase& r){
-      s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
-	<< " " << r.signal_ << " " << r.zscore_;
-      return s;
-    }
-  };
   
   struct Gene {
     std::string name;
@@ -59,6 +45,61 @@ namespace bib {
     }
   };
 
+  struct RankDNase {
+    std::string accession_;
+    std::string bigwig_;
+    uint32_t rank_;
+    float signal_;
+    float zscore_;
+
+    friend auto& operator<<(std::ostream& s, const RankDNase& r){
+      s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
+	<< " " << r.signal_ << " " << r.zscore_;
+      return s;
+    }
+  };
+
+  struct RankSimple {
+    std::string accession_;
+    std::string bigwig_;
+    float signal_;
+    
+    friend auto& operator<<(std::ostream& s, const RankSimple& r){
+      s << r.accession_ << " " << r.bigwig_ << " " << r.signal_;
+      return s;
+    }
+  };
+  
+  struct RankMulti {
+    std::unordered_map<std::string, RankSimple> parts_;
+    uint32_t rank_;
+    float zscore_;
+
+    friend auto& operator<<(std::ostream& s, const RankMulti& rm){
+      s << rm.rank_ << " " << rm.zscore_ << "\n";
+      for(const auto& kv : rm.parts_){
+	s << "\t\t\t\t" << kv.first << " " << kv.second << "\n";
+      }
+      return s;
+    }
+  };
+
+  class RankContainer {
+    std::unordered_map<std::string, RankMulti> rankTypeToRank_;
+
+  public:
+    void add(std::string rankType, RankMulti& rm){
+      rankTypeToRank_[rankType] = rm;
+    }
+
+    friend auto& operator<<(std::ostream& s, const RankContainer& rm){
+      for(const auto& kv : rm.rankTypeToRank_){
+	s << "\t\t\t" << kv.first << "\t" << kv.second << "\n";
+      }
+      return s;
+    }
+  };
+  
   class Peak {
   public:
     std::string chrom;
@@ -75,9 +116,13 @@ namespace bib {
 
     // celltype to rank info
     std::unordered_map<std::string, RankDNase> ranksDNase_;
+
+    // celltype to multi-ranks
+    std::unordered_map<std::string, RankContainer> ranksCTCF_;
     
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
+      s << "\t" << p.mpName << "\n";
       s << "\tposition: " << p.chrom << ":" << p.start << "-" << p.end << "\n";
       s << "\tall genes:\n";
       for(const auto& g : p.gene_nearest_all){
@@ -94,6 +139,11 @@ namespace bib {
       for(const auto& kv: p.ranksDNase_){
 	s << "\t\t" << kv.first << " " << kv.second << "\n";
       }
+
+      s << "\tRanks: CTCF:\n";
+      for(const auto& kv: p.ranksCTCF_){
+	s << "\t\t" << kv.first << "\n" << kv.second;
+      }
       return s;
     }
   };
@@ -103,9 +153,13 @@ namespace bib {
   using Peaks = std::unordered_map<std::string, Peak>;
 
   struct SignalLine {
-    float zscore;
-    float avgSignal;
     uint32_t rank;
+    float signal;
+    float zscore;
+    
+    float avg_zscore;
+    float left_zscore;
+    float right_zscore;
   };
 
   struct ExpFileHelper {
@@ -177,8 +231,12 @@ namespace bib {
       }
     }
     
-    bool isDNaseOnly(const std::string& expID) const {
+    bool isDNase(const std::string& expID) const {
       return bib::in(expID, infos_.at("DNase").expIDtoMeta_);
+    }
+
+    bool isCTCF(const std::string& expID) const {
+      return bib::in(expID, infos_.at("CTCF").expIDtoMeta_);
     }
 
     const std::string& cellType(std::string assay, std::string expID) const {
@@ -188,7 +246,12 @@ namespace bib {
     const std::string& cellType(const RankDNase& rd) const {
       return cellType("DNase", rd.accession_);
     }
-  };
+
+    const std::string& cellType(const std::string assay,
+				const RankSimple& rs) const {
+      return cellType(assay, rs.accession_);
+    }
+};
   
   class SignalFile {
     bfs::path fnp_;
@@ -230,16 +293,46 @@ namespace bib {
     }
 
     void setSignalLine(const auto& toks){
-      lines_[toks[0]] = SignalLine{std::stof(toks[1]),
-				   std::stof(toks[2]),
-				   std::stoi(toks[3])};
+      if(4 == toks.size()){
+	// MP-2175312-100.000000  -0.08  0.95  635383
+	// mpName                 zscore signal rank
+	SignalLine s;
+	s.zscore = std::stof(toks[1]);
+	s.signal = std::stof(toks[2]);
+	s.rank = std::stoi(toks[3]);
+	lines_[toks[0]] = std::move(s);
+	
+      } else if(5 == toks.size()){
+	// MP-2175312-100.000000  -0.70  1060099  -0.08  -1.33
+	// mpName                 avgZ   rank     leftZ  rightZ
+	SignalLine s;
+	s.avg_zscore = std::stof(toks[1]);
+	s.rank = std::stoi(toks[2]);
+	s.left_zscore = std::stof(toks[3]);
+	s.right_zscore = std::stof(toks[4]);
+	lines_[toks[0]] = std::move(s);
+
+      } else {
+	throw std::runtime_error("invalid num toks");
+      }
+    }
+     
+    bool hasMpName(const std::string& mpName) const {
+      return bib::in(mpName, lines_);
     }
     
     bool isDNaseOnly(const AssayInfos& ai) const {
       if(e2_){
 	return false;
       }
-      return ai.isDNaseOnly(e1_->expID_);
+      return ai.isDNase(e1_->expID_);
+    }
+
+    bool isCTCFonly(const AssayInfos& ai) const {
+      if(e2_){
+	return false;
+      }
+      return ai.isCTCF(e1_->expID_);
     }
 
     RankDNase getDNaseOnlyRank(const std::string& mpName) const {
@@ -248,11 +341,27 @@ namespace bib {
       r.bigwig_ = e1_->fileID_;
       const SignalLine& s = lines_.at(mpName);
       r.rank_ = s.rank;
-      r.signal_ = s.avgSignal;
+      r.signal_ = s.signal;
       r.zscore_ = s.zscore;
       return r;
     }
-  };
+    
+    RankMulti getSingleAssayRank(const std::string typ,
+				 const std::string& mpName) const {
+      RankMulti rm;
+
+      RankSimple r;
+      r.accession_ = e1_->expID_;
+      r.bigwig_ = e1_->fileID_;
+      const SignalLine& s = lines_.at(mpName);
+      r.signal_ = s.signal;
+
+      rm.parts_[typ] = r;
+      rm.rank_ = s.rank;
+      rm.zscore_ = s.zscore;
+      return rm;
+    }
+};
 
   class MousePaths {
   public:
@@ -354,6 +463,10 @@ namespace bib {
 
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
+	  if(toks.size() > 5){
+	    std::cerr << "too many toks for " << fnp << std::endl;
+	    throw std::runtime_error("too many toks");
+	  }
 	  sf.setSignalLine(toks);
 	}
 	ret[i] = std::move(sf);
@@ -433,6 +546,22 @@ namespace bib {
 	auto rd = sf.getDNaseOnlyRank(mpName);
 	const auto& ct = assayInfos_.cellType(rd);
 	p.ranksDNase_[ct] = std::move(rd);	
+      }
+    }
+
+    void setCTCFRanks(Peak& p, const std::string& mpName) const {
+      for(const auto& sf : signalFiles_){
+	if(!sf.isCTCFonly(assayInfos_)){
+	  continue;
+	}
+	if(!sf.hasMpName(mpName)){
+	  //std::cout << "\tskipping " << mpName << std::endl;
+	  continue;
+	}
+	auto rm = sf.getSingleAssayRank("ctcf", mpName);
+	const auto& ct = assayInfos_.cellType("CTCF",
+					      rm.parts_["ctcf"]);
+	p.ranksCTCF_[ct].add("CTCF-Only", rm);
       }
     }
 
