@@ -103,17 +103,21 @@ namespace bib {
   };
   
   struct SignalFile {
+    bfs::path fnp_;
     std::string fn_;
-    std::string fnp_;
 
     boost::optional<ExpFileHelper> e1_;
     boost::optional<ExpFileHelper> e2_;
 
     std::unordered_map<std::string, SignalLine> lines_;
 
-    void setFnp(const std::string fnp){
-      fnp_ = fnp;
-      fn_ = bfs::path(fnp).filename().string();
+    SignalFile()
+    {}
+	  
+    SignalFile(const bfs::path fnp)
+      : fnp_(fnp)
+    {
+      fn_ = fnp.filename().string();
       
       if(bib::str::startswith(fn_, "EN")){
 	const auto toks = bib::str::split(fn_, '.');
@@ -237,8 +241,7 @@ namespace bib {
 	//std::cout << fnp << std::endl;
 	
 	const auto lines = bib::files::readStrings(fnp);
-	SignalFile sf;
-	sf.setFnp(fnp);
+	SignalFile sf(fnp);
 
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
