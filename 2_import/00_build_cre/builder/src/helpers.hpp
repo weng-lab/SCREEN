@@ -36,6 +36,12 @@ namespace bib {
     uint32_t rank_;
     float signal_;
     float zscore_;
+
+    friend auto& operator<<(std::ostream& s, const RankDNase& r){
+      s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
+	<< " " << r.signal_ << " " << r.zscore_;
+      return s;
+    }
   };
   
   struct Gene {
@@ -67,6 +73,7 @@ namespace bib {
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
 
+    // celltype to rank info
     std::unordered_map<std::string, RankDNase> ranksDNase_;
     
     friend auto& operator<<(std::ostream& s, const Peak& p){
@@ -82,6 +89,11 @@ namespace bib {
       }
       s << "\tgenome: " << p.genome << "\n";
       s << "\tneg-log-p: " << p.negLogP << "\n";
+
+      s << "\tRanks: DNase:\n";
+      for(const auto& kv: p.ranksDNase_){
+	s << "\t\t" << kv.first << " " << kv.second << "\n";
+      }
       return s;
     }
   };
@@ -147,7 +159,36 @@ namespace bib {
     }
   };
   
-  using AssayInfos = std::map<std::string, AssayMetadataFile>;
+  class AssayInfos {
+    // assay ("DNase", "CTCF", etc.) to info
+    std::map<std::string, AssayMetadataFile> infos_;
+  public:
+
+    AssayInfos()
+    {}
+    
+    template <typename T>
+    AssayInfos(T& paths){
+      for(const auto& a : {"CTCF", "DNase", "Enhancer",
+	    "H3K27ac", "H3K4me3", "Insulator", "Promoter"}){
+	auto fnp = paths.listFile(a);
+	std::cout << "\tloading " << fnp << "\n";
+	infos_[a] = AssayMetadataFile(fnp);
+      }
+    }
+    
+    bool isDNaseOnly(const std::string& expID) const {
+      return bib::in(expID, infos_.at("DNase").expIDtoMeta_);
+    }
+
+    const std::string& cellType(std::string assay, std::string expID) const {
+      return infos_.at(assay).expIDtoMeta_.at(expID).cellType_;
+    }
+
+    const std::string& cellType(const RankDNase& rd) const {
+      return cellType("DNase", rd.accession_);
+    }
+  };
   
   class SignalFile {
     bfs::path fnp_;
@@ -198,10 +239,10 @@ namespace bib {
       if(e2_){
 	return false;
       }
-      return bib::in(e1_->expID_, ai.at("DNase").expIDtoMeta_);
+      return ai.isDNaseOnly(e1_->expID_);
     }
 
-    RankDNase getDNaseOnlyRank(const std::string& mpName){
+    RankDNase getDNaseOnlyRank(const std::string& mpName) const {
       RankDNase r;
       r.accession_ = e1_->expID_;
       r.bigwig_ = e1_->fileID_;
@@ -325,13 +366,7 @@ namespace bib {
 
     AssayInfos assayInfos(){
       std::cout << "loading ENCODE exp infos...\n";
-      AssayInfos ret;
-      for(const auto& a : {"CTCF", "DNase", "Enhancer",
-	    "H3K27ac", "H3K4me3", "Insulator", "Promoter"}){
-	std::cout << "\tloading " << paths_.listFile(a) << "\n";
-	ret[a] = AssayMetadataFile(paths_.listFile(a));
-      }
-      return ret;
+      return AssayInfos(paths_);
     }
   };
 
@@ -395,9 +430,9 @@ namespace bib {
 	if(!sf.isDNaseOnly(assayInfos_)){
 	  continue;
 	}
-	std::cout << "found DNase-only\n";
-
-	
+	auto rd = sf.getDNaseOnlyRank(mpName);
+	const auto& ct = assayInfos_.cellType(rd);
+	p.ranksDNase_[ct] = std::move(rd);	
       }
     }
 
