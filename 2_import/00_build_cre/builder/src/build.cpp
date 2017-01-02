@@ -17,7 +17,7 @@ namespace bib {
     {}
 
     Peaks build(){
-      HelperData d(paths_);
+      DataHelper d(paths_);
 
       Peaks& peaks = d.peaks();
       const auto& accessions = d.accessions();
@@ -35,7 +35,7 @@ namespace bib {
       return peaks;
     }
 
-    void processPeak(const HelperData& d, Peak& p){
+    void processPeak(const DataHelper& d, Peak& p){
       const auto& mpName = p.mpName;
       p.genome = paths_.genome_;
 

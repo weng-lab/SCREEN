@@ -309,7 +309,7 @@ namespace bib {
     }
   };
 
-  struct HelperData {
+  class DataHelper {
     MpNameToGenes allGenes_;
     MpNameToGenes pcGenes_;
     std::vector<SignalFile> signalFiles_;
@@ -317,8 +317,9 @@ namespace bib {
     Peaks peaks_; // map of peaks by accession
     std::vector<std::string> accessions_;
 
+  public:
     template <typename T>
-    HelperData(T& paths){
+    DataHelper(T& paths){
       GetData<T> gd(paths);
       assayInfos_ = gd.assayInfos();
       allGenes_ = gd.allGenes();
