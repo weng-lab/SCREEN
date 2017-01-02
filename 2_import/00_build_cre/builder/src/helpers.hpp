@@ -29,7 +29,17 @@
 namespace bib {
 
   namespace bfs = boost::filesystem;
-  
+
+  inline std::vector<std::string> readGzStrings(bfs::path fnp){
+    Gzip_reader r(fnp);
+    std::vector<std::string> ret;
+    std::string str;
+    while(r.getline(str)){
+        ret.push_back(str);
+    }
+    return ret;
+  }
+ 
   struct Gene {
     std::string name;
     uint32_t distance;
@@ -495,7 +505,7 @@ namespace bib {
 	const std::string fnp = fnps[i].string();
 	std::cout << fnp << std::endl;
 	
-	const auto lines = bib::files::readStrings(fnp);
+	const auto lines = readGzStrings(fnp);
 	SignalFile sf(fnp);
 
 	if(bib::str::startswith(fnp, "mm10.60way.")){
