@@ -47,8 +47,9 @@ public:
         d.setAllGenes(mpName, p.gene_nearest_all);
         d.setPcGenes(mpName, p.gene_nearest_pc);
 
-        d.setDNaseRanks(p, mpName);
-        d.setCTCFRanks(p, mpName);
+	d.setDNaseRanks(p);
+	d.setCTCFRanks(p);
+	d.setEnhancerRanks(p);
     }
 };
 
@@ -59,7 +60,7 @@ int main(int argc, char* argv[]){
     const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
     try {
-        bib::MousePaths paths("Y");
+        bib::MousePaths paths("19");
         bib::Builder<bib::MousePaths> b(paths);
         b.build();
     } catch(const std::exception& ex){
