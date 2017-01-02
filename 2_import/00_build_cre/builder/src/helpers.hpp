@@ -136,6 +136,8 @@ namespace bib {
     }
   };
   
+  using AssayInfos = std::map<std::string, AssayMetadataFile>;
+  
   struct SignalFile {
     bfs::path fnp_;
     std::string fn_;
@@ -295,8 +297,8 @@ namespace bib {
       return ret;
     }
 
-    std::map<std::string, AssayMetadataFile> assayInfos(){
-      std::map<std::string, AssayMetadataFile> ret;
+    AssayInfos assayInfos(){
+      AssayInfos ret;
       for(const auto& a : {"CTCF", "DNase", "Enhancer",
 	    "H3K27ac", "H3K4me3", "Insulator", "Promoter"}){
 	std::cout << "\tloading " << paths_.listFile(a) << "\n";
@@ -304,6 +306,13 @@ namespace bib {
       }
       return ret;
     }
+  };
+
+  struct HelperData {
+    MpNameToGenes allGenes_;
+    MpNameToGenes pcGenes_;
+    std::vector<SignalFile> signalFiles_;
+    AssayInfos assayInfos_;
   };
 
 } // namspace bib
