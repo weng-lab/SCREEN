@@ -36,12 +36,13 @@ namespace bib {
     }
 
     void processPeak(const DataHelper& d, Peak& p){
-      const auto& mpName = p.mpName;
+      const std::string& mpName = p.mpName;
       p.genome = paths_.genome_;
 
       d.setAllGenes(mpName, p.gene_nearest_all);
       d.setPcGenes(mpName, p.gene_nearest_pc);
 
+      d.setDNaseRanks(p, mpName);
     }
   };
 
