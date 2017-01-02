@@ -21,6 +21,7 @@ namespace bib {
       const auto allGenes = d.allGenes();
       const auto pcGenes = d.pcGenes();
       const auto signalFiles = d.loadSignals();
+      const auto assayInfos = d.assayInfos();
 
       Peaks peaks = d.peaks(); // map of peaks by accession
 
@@ -63,6 +64,7 @@ namespace bib {
 	std::sort(p.gene_nearest_pc.begin(),
 		  p.gene_nearest_pc.end());
       }
+
     }
   };
 
