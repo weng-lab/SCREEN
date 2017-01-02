@@ -101,6 +101,40 @@ namespace bib {
     }
 
   };
+
+  struct AssayMetadata {
+    std::string expID_;
+    std::string fileID_;
+    std::string cellType_;
+
+    AssayMetadata()
+    {}
+    
+    template <typename C>
+    AssayMetadata(const C& c){
+      expID_ = c[0];
+      fileID_ = c[1];
+      cellType_ = c[2];
+    }    
+  };
+  
+  struct AssayMetadataFile {
+    bfs::path fnp_;
+    std::unordered_map<std::string, AssayMetadata> expIDtoMeta_;
+    
+    AssayMetadataFile()
+    {}
+
+    AssayMetadataFile(const bfs::path fnp)
+      : fnp_(fnp)
+    {
+      auto lines = bib::files::readStrings(fnp);
+      for(const auto& p : lines){
+	auto toks = bib::str::split(p, '\t');
+	expIDtoMeta_[toks[0]] = AssayMetadata(toks);
+      }
+    }
+  };
   
   struct SignalFile {
     bfs::path fnp_;
@@ -123,14 +157,14 @@ namespace bib {
 	const auto toks = bib::str::split(fn_, '.');
 
 	if(bib::str::startswith(toks[1], "EN")){
-	  // assay vs assay
+	  // 2 assays
 	  e1_ = ExpFileHelper(toks[0]);
 	  e2_ = ExpFileHelper(toks[1]);
 	  //std::cout << *e1_ << " vs " << *e2_ << std::endl;
 	  
 
 	} else {
-	  // assay only
+	  // 1 assay
 	  e1_ = ExpFileHelper(toks[0]);
 	  //std::cout << *e1_ << std::endl;
 	  
@@ -148,7 +182,7 @@ namespace bib {
     const bfs::path base_ = "/home/purcarom/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
     bfs::path path_;
 
-    MousePaths(std::string chr)
+    MousePaths(const std::string chr)
       : genome_("mm10")
       , chr_("chr" + chr)
     {
@@ -167,6 +201,10 @@ namespace bib {
     bfs::path signalDir(){
       return path_ / "signal";
     }
+
+    bfs::path listFile(const std::string name){
+      return base_ / (name + "-List.txt");
+    }   
   };
 
   template <typename T>
@@ -254,6 +292,16 @@ namespace bib {
 
       std::cout << "loaded " << ret.size() << " signal files"
 		<< std::endl;
+      return ret;
+    }
+
+    std::map<std::string, AssayMetadataFile> assayInfos(){
+      std::map<std::string, AssayMetadataFile> ret;
+      for(const auto& a : {"CTCF", "DNase", "Enhancer",
+	    "H3K27ac", "H3K4me3", "Insulator", "Promoter"}){
+	std::cout << "\tloading " << paths_.listFile(a) << "\n";
+	ret[a] = AssayMetadataFile(paths_.listFile(a));
+      }
       return ret;
     }
   };
