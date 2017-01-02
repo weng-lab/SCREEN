@@ -63,9 +63,16 @@ namespace bib {
     std::string accession_;
     std::string bigwig_;
     float signal_;
+    float zscore_;
+    bool only_ = true;
     
     friend auto& operator<<(std::ostream& s, const RankSimple& r){
-      s << r.accession_ << " " << r.bigwig_ << " " << r.signal_;
+      s << r.accession_ << " " << r.bigwig_ << " ";
+      if(r.only_){
+	s << r.signal_;
+      } else {
+	s << r.zscore_;
+      }
       return s;
     }
   };
@@ -335,6 +342,13 @@ namespace bib {
       return ai.isCTCF(e1_->expID_);
     }
 
+    bool isDNaseAndCTCF(const AssayInfos& ai) const {
+      if(!e2_){
+	return false;
+      }
+      return ai.isDNase(e1_->expID_) and ai.isCTCF(e2_->expID_);
+    }
+    
     RankDNase getDNaseOnlyRank(const std::string& mpName) const {
       RankDNase r;
       r.accession_ = e1_->expID_;
@@ -361,6 +375,29 @@ namespace bib {
       rm.zscore_ = s.zscore;
       return rm;
     }
+    
+    RankMulti getDoubleAssayRank(const std::string typ1,
+				 const std::string typ2,
+				 const std::string& mpName) const {
+      RankSimple r1;
+      r1.accession_ = e1_->expID_;
+      r1.bigwig_ = e1_->fileID_;
+      r1.only_ = false;
+      
+      RankSimple r2;
+      r2.accession_ = e2_->expID_;
+      r2.bigwig_ = e2_->fileID_;
+      r2.only_ = false;
+
+      RankMulti rm;
+      rm.parts_[typ1] = r1;
+      rm.parts_[typ2] = r2;
+
+      const SignalLine& s = lines_.at(mpName);
+      rm.rank_ = s.rank;
+      rm.zscore_ = s.avg_zscore;
+      return rm;
+    }
 };
 
   class MousePaths {
@@ -380,7 +417,7 @@ namespace bib {
     bfs::path allGenes(){ return path_ / (chr_ + "_AllGenes"); }
     bfs::path pcGenes(){ return path_ / (chr_ + "_PCGenes"); }
     bfs::path peaks(){ return path_ / (chr_ + "_sorted-peaks"); }
-    bfs::path signalDir(){ return path_ / "signal"; }
+    bfs::path signalDir(){ return base_ / "signal-output-orig"; }
 
     bfs::path listFile(const std::string name){ 
       return base_ / (name + "-List.txt");
@@ -456,7 +493,7 @@ namespace bib {
 #pragma omp parallel for
       for(size_t i = 0; i < fnps.size(); ++i){
 	const std::string fnp = fnps[i].string();
-	//std::cout << fnp << std::endl;
+	std::cout << fnp << std::endl;
 	
 	const auto lines = bib::files::readStrings(fnp);
 	SignalFile sf(fnp);
@@ -562,6 +599,20 @@ namespace bib {
 	const auto& ct = assayInfos_.cellType("CTCF",
 					      rm.parts_["ctcf"]);
 	p.ranksCTCF_[ct].add("CTCF-Only", rm);
+      }
+
+      for(const auto& sf : signalFiles_){
+	if(!sf.isDNaseAndCTCF(assayInfos_)){
+	  continue;
+	}
+	if(!sf.hasMpName(mpName)){
+	  //std::cout << "\tskipping " << mpName << std::endl;
+	  continue;
+	}
+	auto rm = sf.getDoubleAssayRank("dnase", "ctcf", mpName);
+	const auto& ct = assayInfos_.cellType("CTCF",
+					      rm.parts_["ctcf"]);
+	p.ranksCTCF_[ct].add("DNase+CTCF", rm);
       }
     }
 
