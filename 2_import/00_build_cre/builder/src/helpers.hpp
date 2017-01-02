@@ -30,6 +30,14 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
+  struct RankDNase {
+    std::string accession_;
+    std::string bigwig_;
+    uint32_t rank_;
+    float signal_;
+    float zscore_;
+  };
+  
   struct Gene {
     std::string name;
     uint32_t distance;
@@ -59,6 +67,8 @@ namespace bib {
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
 
+    std::unordered_map<std::string, RankDNase> ranksDNase_;
+    
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
       s << "\tposition: " << p.chrom << ":" << p.start << "-" << p.end << "\n";
@@ -139,7 +149,7 @@ namespace bib {
   
   using AssayInfos = std::map<std::string, AssayMetadataFile>;
   
-  struct SignalFile {
+  class SignalFile {
     bfs::path fnp_;
     std::string fn_;
 
@@ -148,6 +158,7 @@ namespace bib {
 
     std::unordered_map<std::string, SignalLine> lines_;
 
+  public:
     SignalFile()
     {}
 	  
@@ -175,6 +186,30 @@ namespace bib {
       } else {
 	std::cerr << "unknown file " << fnp << std::endl;
       }
+    }
+
+    void setSignalLine(const auto& toks){
+      lines_[toks[0]] = SignalLine{std::stof(toks[1]),
+				   std::stof(toks[2]),
+				   std::stoi(toks[3])};
+    }
+    
+    bool isDNaseOnly(const AssayInfos& ai) const {
+      if(e2_){
+	return false;
+      }
+      return bib::in(e1_->expID_, ai.at("DNase").expIDtoMeta_);
+    }
+
+    RankDNase getDNaseOnlyRank(const std::string& mpName){
+      RankDNase r;
+      r.accession_ = e1_->expID_;
+      r.bigwig_ = e1_->fileID_;
+      const SignalLine& s = lines_.at(mpName);
+      r.rank_ = s.rank;
+      r.signal_ = s.avgSignal;
+      r.zscore_ = s.zscore;
+      return r;
     }
   };
 
@@ -278,9 +313,7 @@ namespace bib {
 
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
-	  sf.lines_[toks[0]] = SignalLine{std::stof(toks[1]),
-					  std::stof(toks[2]),
-					  std::stoi(toks[3])};
+	  sf.setSignalLine(toks);
 	}
 	ret[i] = std::move(sf);
       }
@@ -310,6 +343,14 @@ namespace bib {
     Peaks peaks_; // map of peaks by accession
     std::vector<std::string> accessions_;
 
+    void setAccessions() {
+      accessions_.reserve(peaks_.size());
+      for(auto& kv : peaks_){
+	accessions_.push_back(kv.first);
+      }
+      zi::sort(accessions_.begin(), accessions_.end());
+    }
+
   public:
     template <typename T>
     DataHelper(T& paths){
@@ -320,11 +361,7 @@ namespace bib {
       signalFiles_ = gd.loadSignals();
       peaks_ = gd.peaks();
 
-      accessions_.reserve(peaks_.size());
-      for(auto& kv : peaks_){
-	accessions_.push_back(kv.first);
-      }
-      zi::sort(accessions_.begin(), accessions_.end());
+      setAccessions();
     }
 
     Peaks& peaks(){ return peaks_; }
@@ -352,6 +389,18 @@ namespace bib {
 	std::cerr << "no pc gene found for " << mpName << "\n";
       }
     }
+
+    void setDNaseRanks(Peak& p, const std::string& mpName) const {
+      for(const auto& sf : signalFiles_){
+	if(!sf.isDNaseOnly(assayInfos_)){
+	  continue;
+	}
+	std::cout << "found DNase-only\n";
+
+	
+      }
+    }
+
   };
 
 } // namspace bib
