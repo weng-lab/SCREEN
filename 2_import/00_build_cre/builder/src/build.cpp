@@ -30,7 +30,12 @@ namespace bib {
 	processPeak(d, p);
       }
 
-      std::cout << peaks[accessions[0]] << std::endl;
+      const std::string a = "EE0757257";
+      if(bib::in(a, peaks)){
+	std::cout << peaks[a] << std::endl;
+      } else {
+	std::cout << peaks[accessions[0]] << std::endl;
+      }
       
       return peaks;
     }
@@ -43,6 +48,7 @@ namespace bib {
       d.setPcGenes(mpName, p.gene_nearest_pc);
 
       d.setDNaseRanks(p, mpName);
+      d.setCTCFRanks(p, mpName);
     }
   };
 
