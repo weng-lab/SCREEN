@@ -31,12 +31,17 @@ namespace bib {
 namespace bfs = boost::filesystem;
 
 inline std::vector<std::string> readGzStrings(bfs::path fnp){
-    Gzip_reader r(fnp);
+    uint32_t N = 65536;
+    char buffer[N];
+    GZSTREAM::igzstream in(buffer);
+    in.open(fnp.string());
+
     std::vector<std::string> ret;
     std::string str;
-    while(r.getline(str)){
+    while(std::getline(in, str)){
         ret.push_back(str);
     }
+    in.close();
     return ret;
 }
 
