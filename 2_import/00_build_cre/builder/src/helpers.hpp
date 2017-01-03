@@ -535,7 +535,7 @@ namespace bib {
 
     MousePaths(const std::string chr)
       : genome_("mm10")
-      , chr_("chr" + chr)
+      , chr_(chr)
     {
       path_ = base_ / chr_;
     }
@@ -655,11 +655,12 @@ namespace bib {
   };
 
   class DataHelper {
+    Peaks& peaks_;
+
     MpNameToGenes allGenes_;
     MpNameToGenes pcGenes_;
     std::vector<SignalFile> signalFiles_;
     AssayInfos assayInfos_;
-    Peaks peaks_; // map of peaks by accession
     std::vector<std::string> accessions_;
 
     void setAccessions() {
@@ -672,7 +673,9 @@ namespace bib {
 
   public:
     template <typename T>
-    DataHelper(T& paths){
+    DataHelper(T& paths, Peaks& peaks)
+      : peaks_(peaks)
+    {
       GetData<T> gd(paths);
       assayInfos_ = gd.assayInfos();
       allGenes_ = gd.allGenes();
@@ -682,8 +685,6 @@ namespace bib {
 
       setAccessions();
     }
-
-    Peaks& peaks(){ return peaks_; }
 
     const auto& accessions() const { return accessions_; }
 
