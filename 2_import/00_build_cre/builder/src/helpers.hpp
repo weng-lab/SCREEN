@@ -157,6 +157,12 @@ namespace bib {
     std::unordered_map<std::string, RankContainer> ranksEnhancer_;
     std::unordered_map<std::string, RankContainer> ranksPromoter_;
 
+    Json::Value toJson() const {
+      Json::Value r;
+
+      return r;
+    }
+    
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
       s << "\t" << p.mpName << "\n";
@@ -198,7 +204,21 @@ namespace bib {
 
   using MpNameToGenes = std::unordered_map<std::string, std::vector<Gene>>;
 
-  using Peaks = std::unordered_map<std::string, Peak>;
+  class Peaks : public std::unordered_map<std::string, Peak> {
+    std::vector<std::string> accessions_;
+
+  public:
+    void setAccessions() {
+      accessions_.clear();
+      accessions_.reserve(size());
+      for(auto& kv : *this){
+	accessions_.push_back(kv.first);
+      }
+      zi::sort(accessions_.begin(), accessions_.end());
+    }
+
+    const auto& accessions() const { return accessions_; }
+  };
 
   struct SignalLine {
     uint32_t rank;
@@ -661,15 +681,6 @@ namespace bib {
     MpNameToGenes pcGenes_;
     std::vector<SignalFile> signalFiles_;
     AssayInfos assayInfos_;
-    std::vector<std::string> accessions_;
-
-    void setAccessions() {
-      accessions_.reserve(peaks_.size());
-      for(auto& kv : peaks_){
-	accessions_.push_back(kv.first);
-      }
-      zi::sort(accessions_.begin(), accessions_.end());
-    }
 
   public:
     template <typename T>
@@ -682,11 +693,8 @@ namespace bib {
       pcGenes_ = gd.pcGenes();
       signalFiles_ = gd.loadSignals(assayInfos_);
       peaks_ = gd.peaks();
-
-      setAccessions();
+      peaks_.setAccessions();
     }
-
-    const auto& accessions() const { return accessions_; }
 
     template <typename T>
     void setAllGenes(const std::string& mpName, T& field) const {
