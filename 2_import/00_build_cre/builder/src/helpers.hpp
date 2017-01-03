@@ -84,7 +84,7 @@ namespace bib {
 
   struct Gene {
     std::string name;
-    uint32_t distance;
+    int32_t distance;
 
     Json::Value toJson() const {
       Json::Value r;
@@ -107,7 +107,7 @@ namespace bib {
   struct RankDNase {
     std::string accession_;
     std::string bigwig_;
-    uint32_t rank_;
+    int32_t rank_;
     float signal_;
     float zscore_;
 
@@ -129,7 +129,7 @@ namespace bib {
   };
 
   struct RankConservation {
-    uint32_t rank_;
+    int32_t rank_;
     float signal_;
 
     Json::Value toJson() const {
@@ -177,7 +177,7 @@ namespace bib {
 
   struct RankMulti {
     std::unordered_map<std::string, RankSimple> parts_;
-    uint32_t rank_;
+    int32_t rank_;
     float zscore_;
 
     Json::Value toJson() const {
@@ -226,8 +226,8 @@ namespace bib {
   class Peak {
   public:
     std::string chrom;
-    uint32_t start;
-    uint32_t end;
+    int32_t start;
+    int32_t end;
     std::string mpName;
     std::string negLogP;
     std::string accession;
@@ -344,7 +344,7 @@ namespace bib {
   };
 
   struct SignalLine {
-    uint32_t rank;
+    int32_t rank;
     float signal;
     float zscore;
 
@@ -586,7 +586,8 @@ namespace bib {
       if(!e1_){
 	return false;
       }
-      return ai.is(assay1, e1_->expID_) && ai.is(assay2, e2_->expID_) || ai.is(assay2, e1_->expID_) && ai.is(assay1, e2_->expID_);
+      return (ai.is(assay1, e1_->expID_) && ai.is(assay2, e2_->expID_)) ||
+	(ai.is(assay2, e1_->expID_) && ai.is(assay1, e2_->expID_));
     }
 
     bool isDNaseAndCTCF(const AssayInfos& ai) const {
