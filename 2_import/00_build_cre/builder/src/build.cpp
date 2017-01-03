@@ -50,6 +50,8 @@ public:
 	d.setDNaseRanks(p);
 	d.setCTCFRanks(p);
 	d.setEnhancerRanks(p);
+	d.setPromoterRanks(p);
+	d.setConservationRanks(p);
     }
 };
 
