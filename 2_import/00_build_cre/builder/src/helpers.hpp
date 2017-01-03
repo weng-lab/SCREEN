@@ -84,9 +84,9 @@ namespace bib {
     friend auto& operator<<(std::ostream& s, const RankSimple& r){
       s << r.accession_ << " " << r.bigwig_ << " ";
       if(r.only_){
-	s << r.signal_;
+	s << "signal: " << r.signal_;
       } else {
-	s << r.zscore_;
+	s << "zscore: " << r.zscore_;
       }
       return s;
     }
@@ -137,7 +137,7 @@ namespace bib {
     std::vector<Gene> gene_nearest_pc;
 
     // celltype to rank info
-    std::unordered_map<std::string, RankDNase> ranksDNase_;
+    std::map<std::string, RankDNase> ranksDNase_;
 
     // celltype to multi-ranks
     std::unordered_map<std::string, RankContainer> ranksCTCF_;
@@ -329,6 +329,10 @@ namespace bib {
       }
     }
 
+    void reserve(size_t s){
+      lines_.reserve(s);
+    }
+    
     void setSignalLine(const auto& toks){
       if(4 == toks.size()){
 	// MP-2175312-100.000000  -0.08  0.95  635383
@@ -460,21 +464,23 @@ namespace bib {
     RankMulti getDoubleAssayRank(const std::string typ1,
                                  const std::string typ2,
                                  const std::string& mpName) const {
+      const SignalLine& s = lines_.at(mpName);
+
       RankSimple r1;
       r1.accession_ = e1_->expID_;
       r1.bigwig_ = e1_->fileID_;
       r1.only_ = false;
+      r1.zscore_ = s.left_zscore;
 
       RankSimple r2;
       r2.accession_ = e2_->expID_;
       r2.bigwig_ = e2_->fileID_;
       r2.only_ = false;
+      r2.zscore_ = s.right_zscore;
 
       RankMulti rm;
       rm.parts_[typ1] = r1;
       rm.parts_[typ2] = r2;
-
-      const SignalLine& s = lines_.at(mpName);
       rm.rank_ = s.rank;
       rm.zscore_ = s.avg_zscore;
       return rm;
@@ -485,7 +491,7 @@ namespace bib {
   public:
     const std::string genome_;
     const std::string chr_;
-    const bfs::path base_ = "/home/purcarom/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
+    const bfs::path base_ = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
     bfs::path path_;
 
     MousePaths(const std::string chr)
@@ -523,6 +529,7 @@ namespace bib {
       std::cout << "loading peaks " << paths_.peaks() << std::endl;
 
       Peaks ret;
+      ret.reserve(lines.size());
       for(const auto& p : lines){
 	auto toks = bib::str::split(p, '\t');
 	auto mpToks = bib::str::split(toks[3], '-');
@@ -553,6 +560,7 @@ namespace bib {
 
       uint32_t count{0};
       MpNameToGenes ret;
+      ret.reserve(lines.size());
       for(const auto& g : lines){
 	auto toks = bib::str::split(g, '\t');
 	std::string ensembl = toks[7];
@@ -582,6 +590,7 @@ namespace bib {
 
 	const auto lines = bib::files::readStrings(fnp); // readGzStrings(fnp);
 	SignalFile sf(fnp);
+	sf.reserve(lines.size());
 	std::cout << i << "\t" << fnp << " " << sf.isDNaseOnly(ai)
 		  << " " << sf.isCTCFonly(ai)
 		  << " " << sf.isDNaseAndCTCF(ai)
