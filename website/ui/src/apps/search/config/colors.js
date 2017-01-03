@@ -36,7 +36,7 @@ const primary_cell_colors = {
     "unknown": "#000000"
 };
 
-const infer_primary_type = (cell_type, tissue) => {
+export const infer_primary_type = (cell_type, tissue) => {
     if (cell_type.includes("fibroblast"))
 	return "paraxial mesoderm derivative";
     else if (cell_type.includes("endotheli"))
@@ -54,7 +54,7 @@ export const primary_cell_color = (d) => {
     return primary_cell_colors[infer_primary_type(d, tissue_name(d))];
 };
 
-const tissue_name = (cell_type) => (
+export const tissue_name = (cell_type) => (
     (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
 );
 

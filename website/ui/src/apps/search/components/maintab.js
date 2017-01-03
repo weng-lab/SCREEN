@@ -35,7 +35,7 @@ class MainTabControl extends React.Component {
 	              ))}
                    </ul>
 		   <div className="tab-content clearfix">
-		      {Object.keys(tabs).map((key) => (
+		   {Object.keys(tabs).map((key) => (key != selection ? <div /> :
 		  	 <div className={key == selection ? "tab-pane active" : "tab-pane"} key={"tab_" + key} id={"tab_" + id + "_" + key} key={"tcontent_" + key}>
 			     {this._tab_components[key]}
 			 </div>

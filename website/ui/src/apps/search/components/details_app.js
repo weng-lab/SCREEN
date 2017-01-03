@@ -97,6 +97,7 @@ class DetailsApp extends React.Component {
 		    </ul>
 		    <div className="tab-content clearfix">
 		        {Object.keys(tabsf).map((k) => {
+		            if (k != tab_selection) return <div />;
 		            var tab = tabsf[k];
 			    var content = (tab.render ? tab.render(store, k) : tabEles(tab.tables, tab.numCols));
 			    return (<div className={k == tab_selection ? "tab-pane active" : "tab-pane"} id={"tab_" + k} key={"tpane_" + k}>

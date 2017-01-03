@@ -2,22 +2,35 @@ import scipy
 import scipy.stats
 from numpy import *
 
+def _bpearson(_2da):
+    _len = len(_2da)
+    rm = [[0.0 for i in xrange(0, _len)] for j in xrange(0, _len)]
+    pv = [[0.0 for i in xrange(0, _len)] for j in xrange(0, _len)]
+    for i in xrange(_len):
+        for j in range(i, _len):
+            r = scipy.stats.pearsonr(_2da[i], _2da[j])
+            rm[i][j], pv[i][j] = r
+            rm[j][i], pv[j][i] = r
+    return (rm, pv)
+
 class Correlation:
     def __init__(self, hits):
         self.hits = hits
 
-    def spearmanr(self, outerkey, innerkey = None, _ctfilter = None):
+    def _get_ctlabels(self, outerkey, innerkey = None, _ctfilter = None):
         if len(self.hits) == 0:
-            return ([], [[], []])
-        
+            return []
         ctlabels = []
         for ct, v in self.hits[0]["_source"]["ranks"][outerkey].iteritems():
             if (innerkey is None or innerkey in v) and (_ctfilter is None or _ctfilter(ct)):
                 ctlabels.append(ct)
+        return ctlabels
+        
+    def spearmanr(self, outerkey, innerkey = None, _ctfilter = None):
+        ctlabels = self._get_ctlabels(outerkey, innerkey, _ctfilter)
         if not ctlabels:
-            print("ERROR: Correlation: spearman: no ct labels")
-            return None, None
-
+            print("ERROR: no ctlabels for Spearman Correlation")
+            return (ctlabels, [[], []])
         observations = []
         for result in self.hits:
             result = result["_source"]
@@ -33,3 +46,31 @@ class Correlation:
                     value = result["ranks"][outerkey][cell_type]["rank"]
                 observations[-1].append(value)
         return (ctlabels, scipy.stats.spearmanr(observations))
+
+    def pearsonr(self, outerkey, innerkey = None, _ctfilter = None):
+        ctlabels = self._get_ctlabels(outerkey, innerkey, _ctfilter)
+        if not ctlabels:
+            print("ERROR: no ctlabels for Pearson Correlation")
+            return (ctlabels, [[], []])
+        _obs = {}
+        observations = []
+        ctl = []
+        for i in xrange(len(ctlabels)):
+            cell_type = ctlabels[i]
+            for result in self.hits:
+                result = result["_source"]
+                if outerkey not in result["ranks"]:
+                    continue
+                if innerkey is not None and innerkey not in result["ranks"][outerkey][cell_type]:
+                    continue
+                if innerkey is not None:
+                    value = result["ranks"][outerkey][cell_type][innerkey]["z-score"]
+                else:
+                    value = result["ranks"][outerkey][cell_type]["z-score"]
+                if ctlabels[i] not in _obs: _obs[ctlabels[i]] = []
+                _obs[ctlabels[i]].append(value)
+        for k, v in _obs.iteritems():
+            ctl.append(k)
+            observations.append(v)
+        return (ctl, _bpearson(observations))
+    
