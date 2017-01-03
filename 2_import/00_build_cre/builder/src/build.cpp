@@ -85,11 +85,17 @@ int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
+  auto chroms{"chr01", "chr02", "chr03", "chr04", "chr05", "chr06",
+      "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
+      "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
+  
   try {
-    bib::MousePaths paths("chr19");
-    bib::Builder<bib::MousePaths> b(paths);
-    b.build();
-    b.dumpToJson("/tmp/");
+    for(const auto& chrom : chroms){
+      bib::MousePaths paths(chrom);
+      bib::Builder<bib::MousePaths> b(paths);
+      b.build();
+      b.dumpToJson("/tmp/");
+    }
   } catch(const std::exception& ex){
     std::cerr << ex.what() << std::endl;
     return 1;
