@@ -232,7 +232,7 @@ class AjaxWebService:
                            "end": pos["end"] + overlapBP}
 #        gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords, self.assembly)
-        similaracclist = [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): (-v, k))][:10] + [j["accession"]]
+        similaracclist = [j["accession"]] + [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): -v)][:10]
         
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
@@ -240,7 +240,7 @@ class AjaxWebService:
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
                                "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])],
-                               "most_similar": j["most_similar"],
+                               "most_similar": similaracclist,
                                "regions": self._get_bigwig_regions(self._get_bigwigs(j, self._rank_types["DNase"]), similaracclist) })
 
         return output
@@ -562,19 +562,26 @@ class AjaxWebService:
                 return typ == self.cache.biosamples[ct].biosample_type
             with Timer(typ + ": spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
-                labels, corr = c.spearmanr(j.get("outer", "dnase"),
-                                           j.get("inner", None),
-                                           ctFilter )
+                if self.assembly == "hg19":
+                    labels, corr = c.spearmanr(j.get("outer", "dnase"),
+                                               j.get("inner", None),
+                                               ctFilter )
+                else:
+                    labels, corr = c.pearsonr(j.get("outer", "dnase"),
+                                              j.get("inner", None),
+                                              ctFilter )
             if not labels:
                 continue
             rho, pval = corr
 
             try:
-                rhoList = rho.tolist()
+                rhoList = rho.tolist() if type(rho) is not list else rho
+                print(rhoList)
                 _heatmap = Heatmap(rhoList)
             except:
                 print("rho", rho)
                 print("pval", pval)
+                raise
                 continue
             with Timer(typ + ": hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
