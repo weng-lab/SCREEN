@@ -159,7 +159,30 @@ namespace bib {
 
     Json::Value toJson() const {
       Json::Value r;
+      r["accession"] = accession;
+      r["stam_id"] = mpName;
+      r["genome"] = genome;
+      r["neg-log-p"] = negLogP;
 
+      Json::Value pos;
+      pos["chrom"] = chrom;
+      pos["start"] = start;
+      pos["end"] = end;
+      r["position"] = pos;
+      
+      for(const auto& gene : gene_nearest_all){
+	Json::Value g;
+	g["distance"] = gene.distance;
+	g["gene-name"] = gene.name;
+	r["genes"]["nearest-all"].append(g);
+      }
+      for(const auto& gene : gene_nearest_pc){
+	Json::Value g;
+	g["distance"] = gene.distance;
+	g["gene-name"] = gene.name;
+	r["genes"]["nearest-pc"].append(g);
+      }
+      
       return r;
     }
     
