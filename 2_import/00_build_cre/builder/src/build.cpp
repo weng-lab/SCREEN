@@ -31,15 +31,16 @@ namespace bib {
 	processPeak(d, p);
       }
 
-      const std::string a = "EE0022963";
-      if(bib::in(a, peaks_)){
-	Peak& p = peaks_[a];
-	if(0){
-	  std::cout << p << std::endl;
-	}else {
-
-	  Json::StyledWriter styledWriter;
-	  std::cout << styledWriter.write(p.toJson());
+      if(0){
+	const std::string a = "EE0022963";
+	if(bib::in(a, peaks_)){
+	  Peak& p = peaks_[a];
+	  if(0){
+	    std::cout << p << std::endl;
+	  }else {
+	    Json::StyledWriter styledWriter;
+	    std::cout << styledWriter.write(p.toJson());
+	  }
 	}
       }
     }
@@ -58,16 +59,23 @@ namespace bib {
       d.setConservationRanks(p);
     }
 
-    void dumpToJson(){
+    void dumpToJson(bfs::path d){
       const auto& accessions = peaks_.accessions();
+      bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json.gz");
+      
+      LockedFileWriter<GZSTREAM::ogzstream> out(fnp);
 
       std::cout << "dumping to JSON...\n";
+#pragma omp parallel for
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks_[accession];
-	const auto j = p.toJson();
-	break;
+	Json::FastWriter fastWriter;
+	std::string j = fastWriter.write(p.toJson());
+	out.write(j);
       }
+
+      std::cout << "wrote " << fnp << " " << out.count() << std::endl;
     }
   };
 
@@ -81,6 +89,7 @@ int main(int argc, char* argv[]){
     bib::MousePaths paths("chr19");
     bib::Builder<bib::MousePaths> b(paths);
     b.build();
+    b.dumpToJson("/tmp/");
   } catch(const std::exception& ex){
     std::cerr << ex.what() << std::endl;
     return 1;
