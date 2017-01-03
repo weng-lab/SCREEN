@@ -49,6 +49,13 @@ namespace bib {
     std::string name;
     uint32_t distance;
 
+    Json::Value toJson() const {
+      Json::Value r;
+      r["distance"] = distance;
+      r["gene-name"] = name;
+      return r;
+    }
+    
     friend bool operator<(const Gene& a, const Gene& b){
       return std::tie(a.distance, a.name) <
 	std::tie(b.distance, b.name);
@@ -67,6 +74,16 @@ namespace bib {
     float signal_;
     float zscore_;
 
+    Json::Value toJson() const {
+      Json::Value r;
+      r["accession"] = accession_;
+      r["bigwig"] = bigwig_;
+      r["rank"] = rank_;
+      r["signal"] = signal_;
+      r["z-score"] = zscore_;
+      return r;
+    }
+
     friend auto& operator<<(std::ostream& s, const RankDNase& r){
       s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
 	<< " " << r.signal_ << " " << r.zscore_;
@@ -78,6 +95,13 @@ namespace bib {
     uint32_t rank_;
     float signal_;
 
+    Json::Value toJson() const {
+      Json::Value r;
+      r["rank"] = rank_;
+      r["signal"] = signal_;
+      return r;
+    }
+    
     friend auto& operator<<(std::ostream& s, const RankConservation& r){
       s << r.rank_ << " " << r.signal_;
       return s;
@@ -91,6 +115,18 @@ namespace bib {
     float zscore_;
     bool only_ = true;
 
+    Json::Value toJson() const {
+      Json::Value r;
+      r["accession"] = accession_;
+      r["bigwig"] = bigwig_;
+      if(only_){
+	r["signal"] = signal_;
+      } else {
+	r["zscore"] = zscore_;
+      }
+      return r;
+    }
+      
     friend auto& operator<<(std::ostream& s, const RankSimple& r){
       s << r.accession_ << " " << r.bigwig_ << " ";
       if(r.only_){
@@ -107,6 +143,16 @@ namespace bib {
     uint32_t rank_;
     float zscore_;
 
+    Json::Value toJson() const {
+      Json::Value r;
+      r["rank"] = rank_;
+      r["z-score"] = zscore_;
+      for(const auto& kv : parts_){
+	r[kv.first] =  kv.second.toJson();
+      }
+      return r;
+    }
+      
     friend auto& operator<<(std::ostream& s, const RankMulti& rm){
       s << rm.rank_ << " " << rm.zscore_ << "\n";
       for(const auto& kv : rm.parts_){
@@ -122,6 +168,14 @@ namespace bib {
   public:
     void add(std::string rankType, RankMulti& rm){
       rankTypeToRank_[rankType] = rm;
+    }
+
+    Json::Value toJson() const {
+      Json::Value r;
+      for(const auto& kv : rankTypeToRank_){
+	r[kv.first] =  kv.second.toJson();
+      }
+      return r;
     }
 
     friend auto& operator<<(std::ostream& s, const RankContainer& rm){
@@ -170,19 +224,28 @@ namespace bib {
       pos["end"] = end;
       r["position"] = pos;
       
-      for(const auto& gene : gene_nearest_all){
-	Json::Value g;
-	g["distance"] = gene.distance;
-	g["gene-name"] = gene.name;
-	r["genes"]["nearest-all"].append(g);
+      for(const auto& g : gene_nearest_all){
+	r["genes"]["nearest-all"].append(g.toJson());
       }
-      for(const auto& gene : gene_nearest_pc){
-	Json::Value g;
-	g["distance"] = gene.distance;
-	g["gene-name"] = gene.name;
-	r["genes"]["nearest-pc"].append(g);
+      for(const auto& g : gene_nearest_pc){
+	r["genes"]["nearest-pc"].append(g.toJson());
       }
-      
+
+      for(const auto& kv: ranksConservation_){
+	r["ranks"]["conservation"][kv.first] = kv.second.toJson();
+      }
+      for(const auto& kv: ranksDNase_){
+	r["ranks"]["dnase"][kv.first] = kv.second.toJson();
+      }
+      for(const auto& kv: ranksCTCF_){
+	r["ranks"]["ctcf"][kv.first] = kv.second.toJson();
+      }
+      for(const auto& kv: ranksEnhancer_){
+	r["ranks"]["enhancer"][kv.first] = kv.second.toJson();
+      }
+      for(const auto& kv: ranksPromoter_){
+	r["ranks"]["promoter"][kv.first] = kv.second.toJson();
+      }
       return r;
     }
     
