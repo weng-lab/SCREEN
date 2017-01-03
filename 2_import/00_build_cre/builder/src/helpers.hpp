@@ -30,6 +30,43 @@ namespace bib {
 
   namespace bfs = boost::filesystem;
 
+  template <typename T>
+  class LockedFileWriter{
+    bfs::path fnp_;
+    std::mutex mutex_;
+    std::unique_ptr<T> out_;
+    uint32_t count_ = 0;
+    
+  public:
+    LockedFileWriter(bfs::path fnp)
+      : fnp_(fnp)
+    {
+      out_ = std::make_unique<T>(fnp_.string(), std::ios::out | std::ios::trunc);
+    }
+
+    template <typename C>
+    void write(const C& lines, const size_t len){
+      std::lock_guard<std::mutex> lock(mutex_);
+      auto& out = *out_;
+      for(size_t i = 0; i < len; ++i){
+	out << lines[i];
+      }
+      count_ += 10;
+    }
+
+    void write(const std::string& line){
+      std::lock_guard<std::mutex> lock(mutex_);
+      auto& out = *out_;
+      out << line;
+      ++count_;
+    }
+
+    uint32_t count(){
+      std::lock_guard<std::mutex> lock(mutex_);
+      return count_;
+    }
+  };
+
   inline std::vector<std::string> readGzStrings(bfs::path fnp){
     uint32_t N = 65536;
     char buffer[N];
