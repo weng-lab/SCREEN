@@ -33,8 +33,15 @@ namespace bib {
 
       const std::string a = "EE0022963";
       if(bib::in(a, peaks_)){
-	std::cout << peaks_[a] << std::endl;
-      } 
+	Peak& p = peaks_[a];
+	if(0){
+	  std::cout << p << std::endl;
+	}else {
+
+	  Json::StyledWriter styledWriter;
+	  std::cout << styledWriter.write(p.toJson());
+	}
+      }
     }
 
     void processPeak(const DataHelper& d, Peak& p){
@@ -54,7 +61,7 @@ namespace bib {
     void dumpToJson(){
       const auto& accessions = peaks_.accessions();
 
-      std::cout << "merging genes and signals into peaks...\n";
+      std::cout << "dumping to JSON...\n";
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks_[accession];
