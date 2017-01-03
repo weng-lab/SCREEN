@@ -30,7 +30,7 @@ public:
             processPeak(d, p);
         }
 
-        const std::string a = "EE0757257";
+        const std::string a = "EE0022963";
         if(bib::in(a, peaks)){
             std::cout << peaks[a] << std::endl;
         } else {
