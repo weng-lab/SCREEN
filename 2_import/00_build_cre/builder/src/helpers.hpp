@@ -74,6 +74,16 @@ namespace bib {
     }
   };
 
+  struct RankConservation {
+    uint32_t rank_;
+    float signal_;
+
+    friend auto& operator<<(std::ostream& s, const RankConservation& r){
+      s << r.rank_ << " " << r.signal_;
+      return s;
+    }
+  };
+
   struct RankSimple {
     std::string accession_;
     std::string bigwig_;
@@ -139,9 +149,13 @@ namespace bib {
     // celltype to rank info
     std::map<std::string, RankDNase> ranksDNase_;
 
+    // convservation type to rank info
+    std::map<std::string, RankConservation> ranksConservation_;
+
     // celltype to multi-ranks
     std::unordered_map<std::string, RankContainer> ranksCTCF_;
     std::unordered_map<std::string, RankContainer> ranksEnhancer_;
+    std::unordered_map<std::string, RankContainer> ranksPromoter_;
 
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
@@ -158,18 +172,24 @@ namespace bib {
       s << "\tgenome: " << p.genome << "\n";
       s << "\tneg-log-p: " << p.negLogP << "\n";
 
-      s << "\tRanks: DNase:\n";
-      for(const auto& kv: p.ranksDNase_){
+      s << "\tRanks: Conservation:\n";
+      for(const auto& kv: p.ranksConservation_){
 	s << "\t\t" << kv.first << " " << kv.second << "\n";
       }
-
       s << "\tRanks: CTCF:\n";
       for(const auto& kv: p.ranksCTCF_){
 	s << "\t\t" << kv.first << "\n" << kv.second;
       }
-
+      s << "\tRanks: DNase:\n";
+      for(const auto& kv: p.ranksDNase_){
+	s << "\t\t" << kv.first << " " << kv.second << "\n";
+      }
       s << "\tRanks: Enhancer:\n";
       for(const auto& kv: p.ranksEnhancer_){
+	s << "\t\t" << kv.first << "\n" << kv.second;
+      }
+      s << "\tRanks: Promoter:\n";
+      for(const auto& kv: p.ranksPromoter_){
 	s << "\t\t" << kv.first << "\n" << kv.second;
       }
       return s;
@@ -296,7 +316,8 @@ namespace bib {
 
     boost::optional<ExpFileHelper> e1_;
     boost::optional<ExpFileHelper> e2_;
-
+    std::string conservation_;
+    
     std::unordered_map<std::string, SignalLine> lines_;
 
   public:
@@ -325,43 +346,54 @@ namespace bib {
 
 	}
       } else {
-	std::cerr << "unknown file " << fnp << std::endl;
+	// must be conservation...
+	const auto toks = bib::str::split(fn_, '.');
+	if(toks.size() > 3){
+	  conservation_ = toks[2];
+	}
+	// std::cerr << "unknown file " << fnp << std::endl;
       }
     }
 
     void reserve(size_t s){
       lines_.reserve(s);
     }
+
+    const std::string& Conservation() const { return conservation_; }
     
     void setSignalLine(const auto& toks){
+      SignalLine s;      
       if(4 == toks.size()){
 	// MP-2175312-100.000000  -0.08  0.95  635383
 	// mpName                 zscore signal rank
-	SignalLine s;
 	s.zscore = std::stof(toks[1]);
 	s.signal = std::stof(toks[2]);
 	s.rank = std::stoi(toks[3]);
-	lines_[toks[0]] = std::move(s);
-
+      } else if(3 == toks.size()){
+	// MP-1034943-3.371610     0.0183822       611359
+	s.signal = std::stof(toks[1]);
+	s.rank = std::stoi(toks[2]);
       } else if(5 == toks.size()){
 	// MP-2175312-100.000000  -0.70  1060099  -0.08  -1.33
 	// mpName                 avgZ   rank     leftZ  rightZ
-	SignalLine s;
 	s.avg_zscore = std::stof(toks[1]);
 	s.rank = std::stoi(toks[2]);
 	s.left_zscore = std::stof(toks[3]);
 	s.right_zscore = std::stof(toks[4]);
-	lines_[toks[0]] = std::move(s);
-
       } else {
 	throw std::runtime_error("invalid num toks");
       }
+      lines_[toks[0]] = std::move(s);
     }
 
     bool hasMpName(const std::string& mpName) const {
       return bib::in(mpName, lines_);
     }
 
+    bool isConservation() const {
+      return bib::str::startswith(fn_, "mm10.60way.");
+    }
+    
     bool isOnly(const AssayInfos& ai, const std::string& assay) const {
       if(e2_){
 	return false;
@@ -444,17 +476,24 @@ namespace bib {
       r.zscore_ = s.zscore;
       return r;
     }
+    
+    RankConservation getConservationRank(const std::string& mpName) const {
+      const SignalLine& s = lines_.at(mpName);
+      RankConservation r;
+      r.rank_ = s.rank;
+      r.signal_ = s.signal;
+      return r;
+    }
 
     RankMulti getSingleAssayRank(const std::string typ,
                                  const std::string& mpName) const {
-      RankMulti rm;
-
       RankSimple r;
       r.accession_ = e1_->expID_;
       r.bigwig_ = e1_->fileID_;
       const SignalLine& s = lines_.at(mpName);
       r.signal_ = s.signal;
 
+      RankMulti rm;
       rm.parts_[typ] = r;
       rm.rank_ = s.rank;
       rm.zscore_ = s.zscore;
@@ -595,10 +634,6 @@ namespace bib {
 		  << " " << sf.isCTCFonly(ai)
 		  << " " << sf.isDNaseAndCTCF(ai)
 		  << std::endl;
-
-	if(bib::str::startswith(fn, "mm10.60way.")){
-	  continue;
-	}
 
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
@@ -745,6 +780,25 @@ namespace bib {
       MultiAssayRank m{"DNase", "H3K27ac", "dnase", "h3k27ac", "DNase+H3K27ac"};
       setRanks(p.mpName, p.ranksEnhancer_, only, m);
     }
+
+    void setPromoterRanks(Peak& p) const {
+      OnlyAssayRank only{"H3K4me3", "h3k4me3", "H3K4me3-only"};
+      MultiAssayRank m{"DNase", "H3K4me3", "dnase", "h3k4me3", "DNase+H3K4me3"};
+      setRanks(p.mpName, p.ranksPromoter_, only, m);
+    }
+
+    void setConservationRanks(Peak& p) const {
+      const std::string& mpName = p.mpName;
+      for(const auto& sf : signalFiles_){
+	if(!sf.isConservation()){
+	  continue;
+	}
+	auto rd = sf.getConservationRank(mpName);
+	const auto& typ = sf.Conservation();
+	p.ranksConservation_[typ] = std::move(rd);
+      }
+    }
+
 
   };
 
