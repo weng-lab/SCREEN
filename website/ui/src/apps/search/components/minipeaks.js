@@ -3,6 +3,8 @@ import {connect} from 'react-redux'
 
 import REComponent from '../../../common/components/re_component'
 
+import {primary_cell_color, tissue_color, friendly_celltype, tissue_name, infer_primary_type} from '../config/colors'
+
 const ROWHEIGHT = 30.0;
 const ROWMARGIN = 15;
 const COLMARGIN = 10;
@@ -10,6 +12,17 @@ const LEFTMARGIN = 450;
 const TOPMARGIN = 100;
 const TOPANGLED = 60.0;
 const TOPANGLE = TOPANGLED * Math.PI / 180.0;
+
+const ctindex = (d) => {
+    var t = tissue_name(d);
+    if (d.includes("primary_cell")) {
+	t = infer_primary_type(d, tissue_name(d));
+	return 1000 + t.charCodeAt(0) + t.charCodeAt(1) + t.charCodeAt(2);
+    } else if (d.includes("tissue")) {
+	return 2000 + d.charCodeAt(0) + d.charCodeAt(1) + d.charCodeAt(2);
+    }
+    return 3000 + d.charCodeAt(0) + d.charCodeAt(1) + d.charCodeAt(2);
+}
 
 class MiniPeaks extends REComponent {
 
@@ -25,23 +38,19 @@ class MiniPeaks extends REComponent {
 		</g>);
     }
 
-    _render_regionset(regions, width, order, transform, text, mfactor) {
+    _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
+	var mfactor = ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k])))));
+	text = friendly_celltype(text);
+	var color = (text.includes("primary cell") ? primary_cell_color(text) : tissue_color(text));
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>
 		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end">{text}</text>
 		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>
 		      {order.map((k, i) => (
-		          _render_histogram(regions[k].map((d) => (d * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", "#000")
+		          regions[k] ? _render_histogram(regions[k].map((d) => (d * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", color) : <g />
 		      ))}
 		   </g>
 		</g>);
-    }
-
-    _putfirst(regions, acc) {
-	var retval = [];
-	Object.keys(regions).map((k) => {if (k == acc) retval[0] = regions[k]});
-	Object.keys(regions).map((k) => {if (k != acc) retval.push(regions[k])});
-	return retval;
     }
     
     render() {
@@ -49,16 +58,12 @@ class MiniPeaks extends REComponent {
 	// make sure regions are present, count values
 	if (!this.props.regions || Object.keys(this.props.regions).length == 0) return <div />;
 	var cts = Object.keys(this.props.regions);
-	var elems = Object.keys(this.props.regions[cts[0]]);
+	cts.sort((a, b) => (ctindex(a) - ctindex(b)));
+	var elems = (this.props.accorder ? this.props.accorder : Object.keys(this.props.regions[cts[0]]));
 	var regions = this.props.regions;
 	if (elems.length == 0) return <g />;
 	var nbars = regions[cts[0]][elems[0]].length;
 	var _render_regionset = this._render_regionset;
-	if (this.props.firstacc) elems = this._putfirst(elems, this.props.firstacc);
-	var mfactor = ROWHEIGHT / Math.max(...(Object.keys(regions).map((k) => {
-	    var _regions = regions[k];
-	    return Math.max(...(Object.keys(_regions).map((_k) => (Math.max(..._regions[_k])))));
-	})));
 	
 	// get dimensions, render
 	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN;
@@ -71,8 +76,8 @@ class MiniPeaks extends REComponent {
 		         return <text textAnchor="start" x={_x * Math.cos(TOPANGLE)} y={_x * Math.sin(TOPANGLE)} transform={"rotate(-" + TOPANGLED + ")"}>{e}</text>;
 		      })}
 		   </g>
-		   {Object.keys(regions).map((k, i) => (
-		       _render_regionset(regions[k], nbars, elems, "translate(0," + ((ROWHEIGHT + ROWMARGIN) * i) + ")", k, mfactor)
+		   {cts.map((k, i) => (
+		       _render_regionset(regions[k], nbars, elems, "translate(0," + ((ROWHEIGHT + ROWMARGIN) * i) + ")", k)
 		   ))}
 	           </g>
 		</svg>);
@@ -95,7 +100,7 @@ export const props_map = (f) => (_state) => {
     var state = f(_state);
     return {
 	regions: state,
-	firstacc: _state.re_detail.q.accession
+	accorder: _state.re_detail.data.most_similar
     };
 };
 
