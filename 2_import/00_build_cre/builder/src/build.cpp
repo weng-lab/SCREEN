@@ -81,6 +81,13 @@ namespace bib {
 
 } // namespace bib
 
+void runChrom(const std::string chrom, const bfs::path d){
+  bib::MousePaths paths(chrom);
+  bib::Builder<bib::MousePaths> b(paths);
+  b.build();
+  b.dumpToJson(d);
+}
+
 int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   const auto args = std::vector<std::string>(argv + 1, argv + argc);
@@ -88,14 +95,18 @@ int main(int argc, char* argv[]){
   auto chroms{"chr01", "chr02", "chr03", "chr04", "chr05", "chr06",
       "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
       "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
+
+  uint32_t numThreads = 12;
+  bfs::path d = "/tmp/";
   
   try {
-    for(const auto& chrom : chroms){
-      bib::MousePaths paths(chrom);
-      bib::Builder<bib::MousePaths> b(paths);
-      b.build();
-      b.dumpToJson("/tmp/");
-    }
+      zi::task_manager::simple tm(numThreads);
+      tm.start();
+      for(const auto& chrom : chroms){
+	tm.insert(zi::run_fn(zi::bind(&runChrom, chrom, d)));
+      }
+      tm.join();
+
   } catch(const std::exception& ex){
     std::cerr << ex.what() << std::endl;
     return 1;
