@@ -576,12 +576,10 @@ class AjaxWebService:
 
             try:
                 rhoList = rho.tolist() if type(rho) is not list else rho
-                print(rhoList)
                 _heatmap = Heatmap(rhoList)
             except:
                 print("rho", rho)
                 print("pval", pval)
-                raise
                 continue
             with Timer(typ + ": hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
