@@ -21,7 +21,7 @@ namespace bib {
     void build(){
       DataHelper d(paths_, peaks_);
 
-      const auto& accessions = d.accessions();
+      const auto& accessions = peaks_.accessions();
 
       std::cout << "merging genes and signals into peaks...\n";
 #pragma omp parallel for
@@ -49,6 +49,18 @@ namespace bib {
       d.setEnhancerRanks(p);
       d.setPromoterRanks(p);
       d.setConservationRanks(p);
+    }
+
+    void dumpToJson(){
+      const auto& accessions = peaks_.accessions();
+
+      std::cout << "merging genes and signals into peaks...\n";
+      for(size_t i = 0; i < accessions.size(); ++i){
+	const auto& accession = accessions[i];
+	Peak& p = peaks_[accession];
+	const auto j = p.toJson();
+	break;
+      }
     }
   };
 
