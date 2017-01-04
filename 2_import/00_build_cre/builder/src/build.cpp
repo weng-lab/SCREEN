@@ -66,20 +66,26 @@ namespace bib {
       std::vector<std::string> lsj(accessions.size());
       
       std::cout << "dumping to JSON...\n";
+      {
+	TicToc tt("dump to JSON strings");
 #pragma omp parallel for
-      for(size_t i = 0; i < accessions.size(); ++i){
-	const auto& accession = accessions[i];
-	Peak& p = peaks_[accession];
-	Json::FastWriter fastWriter;
-	lsj[i] = fastWriter.write(p.toJson());
+	for(size_t i = 0; i < accessions.size(); ++i){
+	  const auto& accession = accessions[i];
+	  Peak& p = peaks_[accession];
+	  Json::FastWriter fastWriter;
+	  lsj[i] = fastWriter.write(p.toJson());
+	}
       }
 
-      GZSTREAM::ogzstream out(fnp.string(), std::ios::out | std::ios::trunc);
-      for(const auto& j : lsj){
-	out << j;
+      {
+	TicToc tt("write to file");
+	GZSTREAM::ogzstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	for(const auto& j : lsj){
+	  out << j;
+	}
       }
 
-      std::cout << "wrote " << fnp << " " << lsj.size() << std::endl;
+      std::cout << "\twrote " << fnp << " " << lsj.size() << std::endl;
     }
   };
 
