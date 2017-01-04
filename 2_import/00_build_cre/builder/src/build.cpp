@@ -1,9 +1,9 @@
 #include "helpers.hpp"
 
 #include <zi/zargs/zargs.hpp>
-ZiARG_string(file, "", "file to load");
+ZiARG_string(chr, "", "chrom to load");
 ZiARG_bool(first, false, "show first line");
-ZiARG_int32(j, zi::system::cpu_count, "num threads");
+ZiARG_int32(j, 5, "num threads");
 
 namespace bib {
 
@@ -95,12 +95,14 @@ int main(int argc, char* argv[]){
   std::vector<std::string> chroms{"chr01", "chr02", "chr03", "chr04", "chr05",
       "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
       "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
+  if(ZiARG_chr > ""){
+    chroms = {ZiARG_chr};
+  }
 
-  uint32_t numThreads = 5;
   bfs::path d = "/tmp/";
 
   try {
-      zi::task_manager::simple tm(numThreads);
+      zi::task_manager::simple tm(ZiARG_j);
       tm.start();
       for(const auto& chrom : chroms){
 	tm.insert(zi::run_fn(zi::bind(&runChrom, chrom, d)));
