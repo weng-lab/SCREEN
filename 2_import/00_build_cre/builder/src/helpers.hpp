@@ -15,7 +15,6 @@
 #include <array>
 #include <boost/optional.hpp>
 #include <zi/concurrency/concurrency.hpp>
-#include <zi/system.hpp>
 #include <zi/parallel/algorithm.hpp>
 #include <zi/parallel/numeric.hpp>
 
