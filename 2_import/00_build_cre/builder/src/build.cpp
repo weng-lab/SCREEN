@@ -12,7 +12,7 @@ namespace bib {
     T paths_;
 
     Peaks peaks_; // map of peaks by accession
-  
+
   public:
     Builder(MousePaths paths)
       : paths_(paths)
@@ -62,7 +62,7 @@ namespace bib {
     void dumpToJson(bfs::path d){
       const auto& accessions = peaks_.accessions();
       bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json.gz");
-      
+
       LockedFileWriter<GZSTREAM::ogzstream> out(fnp);
 
       std::cout << "dumping to JSON...\n";
@@ -96,9 +96,9 @@ int main(int argc, char* argv[]){
       "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
       "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
 
-  uint32_t numThreads = 12;
+  uint32_t numThreads = 5;
   bfs::path d = "/tmp/";
-  
+
   try {
       zi::task_manager::simple tm(numThreads);
       tm.start();
