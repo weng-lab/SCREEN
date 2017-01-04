@@ -61,7 +61,7 @@ namespace bib {
 
     void dumpToJson(bfs::path d){
       const auto& accessions = peaks_.accessions();
-      bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json.gz");
+      bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json");
 
       std::vector<std::string> lsj(accessions.size());
       
@@ -79,7 +79,7 @@ namespace bib {
 
       {
 	TicToc tt("write to file");
-	GZSTREAM::ogzstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
 	for(const auto& j : lsj){
 	  out << j;
 	}
