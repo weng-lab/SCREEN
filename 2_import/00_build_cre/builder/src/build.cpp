@@ -63,19 +63,23 @@ namespace bib {
       const auto& accessions = peaks_.accessions();
       bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json.gz");
 
-      LockedFileWriter<GZSTREAM::ogzstream> out(fnp);
-
+      std::vector<std::string> lsj(accessions.size());
+      
       std::cout << "dumping to JSON...\n";
 #pragma omp parallel for
       for(size_t i = 0; i < accessions.size(); ++i){
 	const auto& accession = accessions[i];
 	Peak& p = peaks_[accession];
 	Json::FastWriter fastWriter;
-	std::string j = fastWriter.write(p.toJson());
-	out.write(j);
+	lsj[i] = fastWriter.write(p.toJson());
       }
 
-      std::cout << "wrote " << fnp << " " << out.count() << std::endl;
+      GZSTREAM::ogzstream out(fnp.string(), std::ios::out | std::ios::trunc);
+      for(const auto& j : lsj){
+	out << j;
+      }
+
+      std::cout << "wrote " << fnp << " " << lsj.size() << std::endl;
     }
   };
 
@@ -84,8 +88,15 @@ namespace bib {
 void runChrom(const std::string chrom, const bfs::path d){
   bib::MousePaths paths(chrom);
   bib::Builder<bib::MousePaths> b(paths);
-  b.build();
-  b.dumpToJson(d);
+
+  {
+    bib::TicToc tt("build time");
+    b.build();
+  }
+  {
+    bib::TicToc tt("json dump time");
+    b.dumpToJson(d);
+  }
 }
 
 int main(int argc, char* argv[]){
