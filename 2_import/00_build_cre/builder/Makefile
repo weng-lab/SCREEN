@@ -6,8 +6,8 @@ include makefile-common.mk
 
 OBJ_DIR := build
 BIGWIG := $(COMMON_PATH)/zentLib
-OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, src/, *.cpp)))\
-	$(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, bedtools/, *.cpp)))\
+OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, src/, *.cpp)))
+#	$(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, bedtools/, *.cpp)))
 HEADERS = $(call rwildcard, src/, *.h) \
 	$(call rwildcard, src/, *.hpp) \
 	$(call rwildcard, $(COMMON_PATH)/cpp/, *.h) \
