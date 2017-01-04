@@ -242,8 +242,7 @@ def main():
     if args.list:
         jobs = makeJobs(args, args.assembly)
         for j in jobs:
-            if j["etype"] in ("tf", "histone"):
-                print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+            print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
         return 0
 
     if args.updateOnly:
