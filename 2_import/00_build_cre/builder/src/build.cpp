@@ -92,8 +92,8 @@ int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-  auto chroms{"chr01", "chr02", "chr03", "chr04", "chr05", "chr06",
-      "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
+  std::vector<std::string> chroms{"chr01", "chr02", "chr03", "chr04", "chr05",
+      "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
       "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
 
   uint32_t numThreads = 5;
