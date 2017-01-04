@@ -810,6 +810,7 @@ namespace bib {
     DataHelper(T& paths, Peaks& peaks)
       : peaks_(peaks)
     {
+      TicToc tt("data load time");
       GetData<T> gd(paths);
       assayInfos_ = gd.assayInfos();
       allGenes_ = gd.allGenes();
@@ -934,4 +935,4 @@ namespace bib {
 
   };
 
-} // namspace bib
+} // namespace bib
