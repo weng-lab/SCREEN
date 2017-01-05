@@ -132,7 +132,7 @@ namespace bib {
 	      "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
 	      "h3k4me3_only_rank", "h3k4me3_only_zscore",
 	      "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore"};
-	  out << bib::string::join(header, "\t");
+	  out << bib::string::join(header, "\t") << "\n";
 	  for(const auto& j : tsvRank){
 	    out << j;
 	  }
