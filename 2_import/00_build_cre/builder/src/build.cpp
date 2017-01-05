@@ -87,7 +87,50 @@ namespace bib {
 
       std::cout << "\twrote " << fnp << " " << lsj.size() << std::endl;
     }
-  };
+
+    void dumpToTsv(bfs::path d){
+      const auto& accessions = peaks_.accessions();
+
+      std::vector<std::string> tsvCre(accessions.size());
+      std::vector<std::string> tsvRank(accessions.size());
+      
+      std::cout << "dumping to TSV...\n";
+      {
+	TicToc tt("dump to TSV strings");
+#pragma omp parallel for
+	for(size_t i = 0; i < accessions.size(); ++i){
+	  const auto& accession = accessions[i];
+	  Peak& p = peaks_[accession];
+	  tsvCre[i] = p.toTsvCre();
+	  tsvRank[i] = p.toTsvRank();
+	}
+      }
+
+      {
+	bfs::path fnp = d / ("parsed.cre." + paths_.chr_ + ".tsv");
+	TicToc tt("write to " + fnp.string());
+	{
+	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	  for(const auto& j : tsvCre){
+	    out << j;
+	  }
+	}
+	std::cout << "\twrote " << fnp << " " << tsvCre.size() << std::endl;
+      }
+      
+      {
+	bfs::path fnp = d / ("parsed.rank." + paths_.chr_ + ".tsv");
+	TicToc tt("write to " + fnp.string());
+	{
+	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	  for(const auto& j : tsvRank){
+	    out << j;
+	  }
+	}
+	std::cout << "\twrote " << fnp << " " << tsvRank.size() << std::endl;
+      }
+    }
+};
 
 } // namespace bib
 
@@ -100,8 +143,13 @@ void runChrom(const std::string chrom, const bfs::path d){
     b.build();
   }
   {
-    bib::TicToc tt("json dump time");
-    b.dumpToJson(d);
+    if(0){
+      bib::TicToc tt("JSON dump time");
+      b.dumpToJson(d);
+    } else {
+      bib::TicToc tt("tsv dump time");
+      b.dumpToTsv(d);
+    }
   }
 }
 

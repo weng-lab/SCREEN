@@ -284,6 +284,29 @@ namespace bib {
       }
       return r;
     }
+
+    std::string toTsvCre() const {
+      const char d = '\t';
+      std::stringstream ss;
+      ss << accession << d
+	 << mpName << d
+	 << genome << d
+	 << negLogP << d
+	 << chrom << d
+	 << start << d
+	 << end;
+
+      ss << '\n';
+      return ss.str();
+    }
+
+    std::string toTsvRank() const {
+      const char d = '\t';
+      std::stringstream ss;
+
+      ss << '\n';
+      return ss.str();
+    }
     
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
@@ -773,11 +796,13 @@ namespace bib {
 	const auto lines = bib::files::readStrings(fnp); // readGzStrings(fnp);
 	SignalFile sf(fnp);
 	sf.reserve(lines.size());
-	std::cout << i << "\t" << fnp << " " << sf.isDNaseOnly(ai)
-		  << " " << sf.isCTCFonly(ai)
-		  << " " << sf.isDNaseAndCTCF(ai)
-		  << std::endl;
-
+	if(0){
+	  std::cout << i << "\t" << fnp << " " << sf.isDNaseOnly(ai)
+		    << " " << sf.isCTCFonly(ai)
+		    << " " << sf.isDNaseAndCTCF(ai)
+		    << std::endl;
+	}
+	
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
 	  if(toks.size() > 5){
