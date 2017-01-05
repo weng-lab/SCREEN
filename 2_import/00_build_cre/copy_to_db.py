@@ -56,9 +56,39 @@ def importTsv(curs, tableName, fnp):
         curs.copy_from(f, tableName, '\t', columns=cols)
     print("imported", fnp)
 
+def doIndex(curs, tableName):
+    cols = ("conservation_rank", "conservation_signal",
+	    "dnase_rank", "dnase_signal", "dnase_zscore",
+	    "ctcf_only_rank", "ctcf_only_zscore",
+	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
+	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
+	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
+	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
+	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+    for col in cols:
+        idx = col + "_idx"
+        print("indexing", col)
+        curs.execute("""
+CREATE INDEX {idx} on {tableName} USING GIN ({col});
+""".format(idx = idx, tableName = tableName, col = col))
+
+def doSetup(curs, tableName):
+    setupTable(curs, tableName)
+
+    chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
+            "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
+            "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+            "chrX", "chrY"]
+
+    for chrom in chrs:
+        fnp = os.path.join(d, "parsed.rank." + chrom + ".tsv")
+        importTsv(curs, tableName, fnp)
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--setup', action="store_true", default=False)
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -70,15 +100,11 @@ def main():
 
     with getcursor(DBCONN, "08_setup_log") as curs:
         tableName = "mm10_cre_ranks"
-        setupTable(curs, tableName)
 
-        chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
-                "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
-                "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
-                "chrX", "chrY"]
-        for chrom in chrs:
-            fnp = os.path.join(d, "parsed.rank." + chrom + ".tsv")
-            importTsv(curs, tableName, fnp)
-
+        if args.setup:
+            doSetup(curs, tableName)
+        if args.index:
+            doIndex(curs, tableName)
+            
 if __name__ == '__main__':
     main()
