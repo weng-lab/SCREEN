@@ -123,6 +123,10 @@ namespace bib {
 	TicToc tt("write to " + fnp.string());
 	{
 	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	  std::vector<std::string> header {"accession",
+	      "conservation_rank", "conservation_signal",
+	      "dnase_rank", "dnase_signal", "dnase_zscore"};
+	  out << bib::string::join(header, "\t");
 	  for(const auto& j : tsvRank){
 	    out << j;
 	  }

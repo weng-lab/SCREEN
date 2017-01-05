@@ -176,7 +176,7 @@ namespace bib {
   };
 
   struct RankMulti {
-    std::unordered_map<std::string, RankSimple> parts_;
+    std::map<std::string, RankSimple> parts_;
     int32_t rank_;
     float zscore_;
 
@@ -200,7 +200,7 @@ namespace bib {
   };
 
   class RankContainer {
-    std::unordered_map<std::string, RankMulti> rankTypeToRank_;
+    std::map<std::string, RankMulti> rankTypeToRank_;
 
   public:
     void add(std::string rankType, RankMulti& rm){
@@ -215,6 +215,14 @@ namespace bib {
       return r;
     }
 
+    const auto& at(const std::string& k) const {
+      return rankTypeToRank_.at(k);
+    }
+
+    const bool has(const std::string& k) const {
+      return bib::in(k, rankTypeToRank_);
+    }
+    
     friend auto& operator<<(std::ostream& s, const RankContainer& rm){
       for(const auto& kv : rm.rankTypeToRank_){
 	s << "\t\t\t" << kv.first << "\t" << kv.second << "\n";
@@ -334,7 +342,29 @@ namespace bib {
 	s << kv.second.zscore_ << c;
       }
       s << '}' << d << '{';
-
+      // CTCF-only
+      for(const auto& kv: ranksCTCF_){
+	s << kv.second.at("CTCF-only").rank_ << c;
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: ranksCTCF_){
+	s << kv.second.at("CTCF-only").zscore_ << c;
+      }
+      s << '}' << d << '{';
+      // DNase+CTCF
+      for(const auto& kv: ranksCTCF_){
+	if(kv.second.has("DNase+CTCF")){
+	  s << kv.second.at("DNase+CTCF").rank_ << c;
+	}
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: ranksCTCF_){
+	if(kv.second.has("DNase+CTCF")){
+	  s << kv.second.at("DNase+CTCF").zscore_ << c;
+	}
+      }
+      
+      
       s << '}';
 
       s << '\n';
