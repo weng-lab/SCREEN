@@ -36,7 +36,7 @@ namespace bib {
     std::mutex mutex_;
     std::unique_ptr<T> out_;
     uint32_t count_ = 0;
-    
+
   public:
     LockedFileWriter(bfs::path fnp)
       : fnp_(fnp)
@@ -92,7 +92,7 @@ namespace bib {
       r["gene-name"] = name;
       return r;
     }
-    
+
     friend bool operator<(const Gene& a, const Gene& b){
       return std::tie(a.distance, a.name) <
 	std::tie(b.distance, b.name);
@@ -138,7 +138,7 @@ namespace bib {
       r["signal"] = signal_;
       return r;
     }
-    
+
     friend auto& operator<<(std::ostream& s, const RankConservation& r){
       s << r.rank_ << " " << r.signal_;
       return s;
@@ -163,7 +163,7 @@ namespace bib {
       }
       return r;
     }
-      
+
     friend auto& operator<<(std::ostream& s, const RankSimple& r){
       s << r.accession_ << " " << r.bigwig_ << " ";
       if(r.only_){
@@ -189,7 +189,7 @@ namespace bib {
       }
       return r;
     }
-      
+
     friend auto& operator<<(std::ostream& s, const RankMulti& rm){
       s << rm.rank_ << " " << rm.zscore_ << "\n";
       for(const auto& kv : rm.parts_){
@@ -222,7 +222,7 @@ namespace bib {
     const bool has(const std::string& k) const {
       return bib::in(k, rankTypeToRank_);
     }
-    
+
     friend auto& operator<<(std::ostream& s, const RankContainer& rm){
       for(const auto& kv : rm.rankTypeToRank_){
 	s << "\t\t\t" << kv.first << "\t" << kv.second << "\n";
@@ -268,7 +268,7 @@ namespace bib {
       pos["start"] = start;
       pos["end"] = end;
       r["position"] = pos;
-      
+
       for(const auto& g : gene_nearest_all){
 	r["genes"]["nearest-all"].append(g.toJson());
       }
@@ -330,21 +330,21 @@ namespace bib {
 	}
       }
     }
-    
+
     std::string toTsv() const {
       static const char d = '\t';
       static const char c = ',';
       std::stringstream s;
 
       s << accession << d
-	<< '"' << mpName << '"' << d
+	<< mpName << d
 	<< negLogP << d
-	<< '"' << chrom << '"' << d
+	<< chrom << d
 	<< start << d
 	<< end << d;
 
       s << std::setprecision(4);
-	
+
       // conservation
       s << "{ ";
       for(const auto& kv: ranksConservation_){
@@ -374,13 +374,13 @@ namespace bib {
       toTsvRankContainer(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
       s.seekp(-1, s.cur); s << '}' << d << "{ ";
       toTsvRankContainer(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
-      s.seekp(-1, s.cur);                  
+      s.seekp(-1, s.cur);
       s << '}';
 
       s << '\n';
       return s.str();
     }
-    
+
     friend auto& operator<<(std::ostream& s, const Peak& p){
       s << p.accession << "\n";
       s << "\t" << p.mpName << "\n";
@@ -521,7 +521,7 @@ namespace bib {
 	    const std::string& expID) const {
       return bib::in(expID, infos_.at(assay).expIDtoMeta_);
     }
-    
+
     bool isDNase(const std::string& expID) const {
       return bib::in(expID, infos_.at("DNase").expIDtoMeta_);
     }
@@ -555,7 +555,7 @@ namespace bib {
     boost::optional<ExpFileHelper> e1_;
     boost::optional<ExpFileHelper> e2_;
     std::string conservation_;
-    
+
     std::unordered_map<std::string, SignalLine> lines_;
 
   public:
@@ -598,9 +598,9 @@ namespace bib {
     }
 
     const std::string& Conservation() const { return conservation_; }
-    
+
     void setSignalLine(const auto& toks){
-      SignalLine s;      
+      SignalLine s;
       if(4 == toks.size()){
 	// MP-2175312-100.000000  -0.08  0.95  635383
 	// mpName                 zscore signal rank
@@ -631,7 +631,7 @@ namespace bib {
     bool isConservation() const {
       return bib::str::startswith(fn_, "mm10.60way.");
     }
-    
+
     bool isOnly(const AssayInfos& ai, const std::string& assay) const {
       if(e2_){
 	return false;
@@ -715,7 +715,7 @@ namespace bib {
       r.zscore_ = s.zscore;
       return r;
     }
-    
+
     RankConservation getConservationRank(const std::string& mpName) const {
       const SignalLine& s = lines_.at(mpName);
       RankConservation r;
@@ -875,7 +875,7 @@ namespace bib {
 		    << " " << sf.isDNaseAndCTCF(ai)
 		    << std::endl;
 	}
-	
+
 	for(const auto& g : lines){
 	  auto toks = bib::str::split(g, '\t');
 	  if(toks.size() > 5){
@@ -983,7 +983,7 @@ namespace bib {
 					      rm.parts_[only.outputKey]);
 	ranks[ct].add(only.outputTitle, rm);
       }
-    
+
       for(const auto& sf : signalFiles_){
 	if(!sf.isAnd(assayInfos_, m.assay1, m.assay2)){
 	  continue;
