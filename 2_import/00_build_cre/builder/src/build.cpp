@@ -91,8 +91,7 @@ namespace bib {
     void dumpToTsv(bfs::path d){
       const auto& accessions = peaks_.accessions();
 
-      std::vector<std::string> tsvCre(accessions.size());
-      std::vector<std::string> tsvRank(accessions.size());
+      std::vector<std::string> tsv(accessions.size());
       
       std::cout << "dumping to TSV...\n";
       {
@@ -101,29 +100,17 @@ namespace bib {
 	for(size_t i = 0; i < accessions.size(); ++i){
 	  const auto& accession = accessions[i];
 	  Peak& p = peaks_[accession];
-	  tsvCre[i] = p.toTsvCre();
-	  tsvRank[i] = p.toTsvRank();
+	  tsv[i] = p.toTsv();
 	}
       }
 
       {
-	bfs::path fnp = d / ("parsed.cre." + paths_.chr_ + ".tsv");
-	TicToc tt("write to " + fnp.string());
-	{
-	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
-	  for(const auto& j : tsvCre){
-	    out << j;
-	  }
-	}
-	std::cout << "\twrote " << fnp << " " << tsvCre.size() << std::endl;
-      }
-      
-      {
-	bfs::path fnp = d / ("parsed.rank." + paths_.chr_ + ".tsv");
+	bfs::path fnp = d / ("parsed.headers." + paths_.chr_ + ".tsv");
 	TicToc tt("write to " + fnp.string());
 	{
 	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
 	  std::vector<std::string> header {"accession",
+	      "mpName", "negLogP", "chrom", "start", "end",
 	      "conservation_rank", "conservation_signal",
 	      "dnase_rank", "dnase_signal", "dnase_zscore",
 	      "ctcf_only_rank", "ctcf_only_zscore",
@@ -133,11 +120,19 @@ namespace bib {
 	      "h3k4me3_only_rank", "h3k4me3_only_zscore",
 	      "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore"};
 	  out << bib::string::join(header, "\t") << "\n";
-	  for(const auto& j : tsvRank){
+	}
+	std::cout << "\twrote " << fnp << std::endl;
+      }
+      {
+	bfs::path fnp = d / ("parsed." + paths_.chr_ + ".tsv");
+	TicToc tt("write to " + fnp.string());
+	{
+	  std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
+	  for(const auto& j : tsv){
 	    out << j;
 	  }
 	}
-	std::cout << "\twrote " << fnp << " " << tsvRank.size() << std::endl;
+	std::cout << "\twrote " << fnp << " " << tsv.size() << std::endl;
       }
     }
 };

@@ -19,6 +19,11 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName} 
     (id serial PRIMARY KEY,
     accession VARCHAR(20),
+    mpName test,
+    negLogP real,
+    chrom VARCHAR(5),
+    start integer,
+    end integer,
     conservation_rank integer[],
     conservation_signal real[],
     dnase_rank integer[],
@@ -40,7 +45,8 @@ CREATE TABLE {tableName}
     print("rebuilt", tableName)
     
 def importTsv(curs, tableName, fnp):    
-    cols = ("accession",
+    cols = ("accession", "mpName", "negLogP",
+            "chrom", "start", "end",
 	    "conservation_rank", "conservation_signal",
 	    "dnase_rank", "dnase_signal", "dnase_zscore",
 	    "ctcf_only_rank", "ctcf_only_zscore",
@@ -51,12 +57,11 @@ def importTsv(curs, tableName, fnp):
 	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
     
     with open(fnp) as f:
-        header = f.readline()
         print("importing", tableName, fnp)
         curs.copy_from(f, tableName, '\t', columns=cols)
     print("imported", fnp)
 
-def doIndex(curs, tableName):
+def doIndexGin(curs, tableName):
     cols = ("conservation_rank", "conservation_signal",
 	    "dnase_rank", "dnase_signal", "dnase_zscore",
 	    "ctcf_only_rank", "ctcf_only_zscore",
@@ -81,7 +86,7 @@ def doSetup(curs, tableName):
             "chrX", "chrY"]
 
     for chrom in chrs:
-        fnp = os.path.join(d, "parsed.rank." + chrom + ".tsv")
+        fnp = os.path.join(d, "parsed." + chrom + ".tsv")
         importTsv(curs, tableName, fnp)
         
 def parse_args():
@@ -89,6 +94,7 @@ def parse_args():
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
+    parser.add_argument('--indexGin', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -99,12 +105,15 @@ def main():
     d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/"
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        tableName = "mm10_cre_ranks"
+        tableName = "mm10_cre"
 
         if args.setup:
             doSetup(curs, tableName)
-        if args.index:
-            doIndex(curs, tableName)
-            
+        elif args.indexGin:
+            doIndexGin(curs, tableName)
+        else:
+            doSetup(curs, tableName)
+            doIndexGin(curs, tableName)
+               
 if __name__ == '__main__':
     main()
