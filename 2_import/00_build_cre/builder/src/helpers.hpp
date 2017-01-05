@@ -294,21 +294,6 @@ namespace bib {
       return r;
     }
 
-    std::string toTsvCre() const {
-      const char d = '\t';
-      std::stringstream s;
-      s << accession << d
-	 << mpName << d
-	 << genome << d
-	 << negLogP << d
-	 << chrom << d
-	 << start << d
-	 << end;
-
-      s << '\n';
-      return s.str();
-    }
-
     void toTsvRankContainer(std::stringstream& s,
 			    const std::map<std::string, RankContainer>& rc,
 			    const std::string onlyKey,
@@ -346,12 +331,17 @@ namespace bib {
       }
     }
     
-    std::string toTsvRank() const {
+    std::string toTsv() const {
       static const char d = '\t';
       static const char c = ',';
       std::stringstream s;
 
-      s << accession << d;
+      s << accession << d
+	<< '"' << mpName << '"' << d
+	<< negLogP << d
+	<< '"' << chrom << '"' << d
+	<< start << d
+	<< end << d;
 
       s << std::setprecision(4);
 	
