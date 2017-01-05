@@ -3,7 +3,7 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
@@ -11,22 +11,49 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
-def setupAndCopy(cur, fnp):
-    cur.execute("""
-DROP TABLE IF EXISTS r_expression;
+def setupTable(curs, tableName):
+    print("rebuilding", tableName, "...")
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
 
-CREATE TABLE r_expression(
-ensembl_id VARCHAR(256) NOT NULL,
-gene_name VARCHAR(256) NOT NULL,
-dataset VARCHAR(256) NOT NULL,
-replicate INT NOT NULL,
-fpkm NUMERIC NOT NULL,
-tpm NUMERIC NOT NULL);
-""")
-
+CREATE TABLE {tableName} 
+    (id serial PRIMARY KEY,
+    accession VARCHAR(20),
+    conservation_rank integer[],
+    conservation_signal real[],
+    dnase_rank integer[],
+    dnase_signal real[],
+    dnase_zscore real[],
+    ctcf_only_rank integer[],
+    ctcf_only_zscore real[],
+    ctcf_dnase_rank integer[],
+    ctcf_dnase_zscore real[],
+    h3k27ac_only_rank integer[],
+    h3k27ac_only_zscore real[],
+    h3k27ac_dnase_rank integer[],
+    h3k27ac_dnase_zscore real[],
+    h3k4me3_only_rank integer[],
+    h3k4me3_only_zscore real[],
+    h3k4me3_dnase_rank integer[],
+    h3k4me3_dnase_zscore real[]
+    ); """.format(tableName = tableName))
+    print("rebuilt", tableName)
+    
+def importTsv(curs, tableName, fnp):    
+    cols = ("accession",
+	    "conservation_rank", "conservation_signal",
+	    "dnase_rank", "dnase_signal", "dnase_zscore",
+	    "ctcf_only_rank", "ctcf_only_zscore",
+	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
+	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
+	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
+	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
+	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+    
     with open(fnp) as f:
-        cur.copy_from(f, "r_expression", ',',
-                      columns=("ensembl_id", "gene_name", "dataset", "replicate", "fpkm", "tpm"))
+        header = f.readline()
+        print("importing", tableName, fnp)
+        curs.copy_from(f, tableName, '\t', columns=cols)
     print("imported", fnp)
 
 def parse_args():
@@ -38,27 +65,20 @@ def parse_args():
 def main():
     args = parse_args()
 
-    d = "/project/umw_zhiping_weng/0_metadata/roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/"
-    fnps = {}
-    fnps["human"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
-    fnps["mouse"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/"
 
-    for dataset in [Datasets.all_human]:
-        DBCONN = db_connect(os.path.realpath(__file__), args.local)
-        inFnp = fnps[dataset.species]
-        outFnp = inFnp + ".csv"
+    with getcursor(DBCONN, "08_setup_log") as curs:
+        tableName = "mm10_cre_ranks"
+        setupTable(curs, tableName)
 
-        if not os.path.exists(outFnp):
-            cmds = [os.path.join(os.path.dirname(__file__),
-                                 "json_parser/bin/read_json"),
-                    inFnp]
-            print("writing csv from", inFnp)
-            Utils.runCmds(cmds)
-        else:
-            print("using", outFnp)
-            
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            setupAndCopy(curs, outFnp)
+        chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
+                "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
+                "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+                "chrX", "chrY"]
+        for chrom in chrs:
+            fnp = os.path.join(d, "parsed.rank." + chrom + ".tsv")
+            importTsv(curs, tableName, fnp)
 
 if __name__ == '__main__':
     main()
