@@ -311,7 +311,8 @@ namespace bib {
 
     void toTsvRankContainer(std::stringstream& s,
 			    const std::map<std::string, RankContainer>& rc,
-			    const std::string onlyKey, const std::string multiKey) const {
+			    const std::string onlyKey,
+			    const std::string multiKey) const {
       static const char d = '\t';
       static const char c = ',';
 
@@ -352,7 +353,7 @@ namespace bib {
 
       s << accession << d;
 
-      s << std::setprecision(2);
+      s << std::setprecision(4);
 	
       // conservation
       s << "{ ";
