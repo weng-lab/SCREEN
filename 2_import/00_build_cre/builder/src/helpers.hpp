@@ -321,20 +321,23 @@ namespace bib {
 	  s << kv.second.at(onlyKey).rank_ << c;
 	}
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur);
+      s << '}' << d << "{ ";
       for(const auto& kv: rc){
 	if(kv.second.has(onlyKey)){
 	  s << kv.second.at(onlyKey).zscore_ << c;
 	}
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur);
+      s << '}' << d << "{ ";
       // multi
       for(const auto& kv: rc){
 	if(kv.second.has(multiKey)){
 	  s << kv.second.at(multiKey).rank_ << c;
 	}
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur);
+      s << '}' << d << "{ ";
       for(const auto& kv: rc){
 	if(kv.second.has(multiKey)){
 	  s << kv.second.at(multiKey).zscore_ << c;
@@ -352,35 +355,35 @@ namespace bib {
       s << std::setprecision(2);
 	
       // conservation
-      s << '{';
+      s << "{ ";
       for(const auto& kv: ranksConservation_){
 	s << kv.second.rank_ << c;
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       for(const auto& kv: ranksConservation_){
 	s << kv.second.signal_ << c;
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
 
       // DNase
       for(const auto& kv: ranksDNase_){
 	s << kv.second.rank_ << c;
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       for(const auto& kv: ranksDNase_){
 	s << kv.second.signal_ << c;
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       for(const auto& kv: ranksDNase_){
 	s << kv.second.zscore_ << c;
       }
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       toTsvRankContainer(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       toTsvRankContainer(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
-      s << '}' << d << '{';
+      s.seekp(-1, s.cur); s << '}' << d << "{ ";
       toTsvRankContainer(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
-                  
+      s.seekp(-1, s.cur);                  
       s << '}';
 
       s << '\n';
