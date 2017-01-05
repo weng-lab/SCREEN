@@ -309,6 +309,39 @@ namespace bib {
       return s.str();
     }
 
+    void toTsvRankContainer(std::stringstream& s,
+			    const std::map<std::string, RankContainer>& rc,
+			    const std::string onlyKey, const std::string multiKey) const {
+      static const char d = '\t';
+      static const char c = ',';
+
+      // only
+      for(const auto& kv: rc){
+	if(kv.second.has(onlyKey)){
+	  s << kv.second.at(onlyKey).rank_ << c;
+	}
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: rc){
+	if(kv.second.has(onlyKey)){
+	  s << kv.second.at(onlyKey).zscore_ << c;
+	}
+      }
+      s << '}' << d << '{';
+      // multi
+      for(const auto& kv: rc){
+	if(kv.second.has(multiKey)){
+	  s << kv.second.at(multiKey).rank_ << c;
+	}
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: rc){
+	if(kv.second.has(multiKey)){
+	  s << kv.second.at(multiKey).zscore_ << c;
+	}
+      }
+    }
+    
     std::string toTsvRank() const {
       static const char d = '\t';
       static const char c = ',';
@@ -342,29 +375,12 @@ namespace bib {
 	s << kv.second.zscore_ << c;
       }
       s << '}' << d << '{';
-      // CTCF-only
-      for(const auto& kv: ranksCTCF_){
-	s << kv.second.at("CTCF-only").rank_ << c;
-      }
+      toTsvRankContainer(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
       s << '}' << d << '{';
-      for(const auto& kv: ranksCTCF_){
-	s << kv.second.at("CTCF-only").zscore_ << c;
-      }
+      toTsvRankContainer(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
       s << '}' << d << '{';
-      // DNase+CTCF
-      for(const auto& kv: ranksCTCF_){
-	if(kv.second.has("DNase+CTCF")){
-	  s << kv.second.at("DNase+CTCF").rank_ << c;
-	}
-      }
-      s << '}' << d << '{';
-      for(const auto& kv: ranksCTCF_){
-	if(kv.second.has("DNase+CTCF")){
-	  s << kv.second.at("DNase+CTCF").zscore_ << c;
-	}
-      }
-      
-      
+      toTsvRankContainer(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
+                  
       s << '}';
 
       s << '\n';
