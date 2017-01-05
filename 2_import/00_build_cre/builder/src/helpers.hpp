@@ -1,19 +1,20 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup.hpp>
-#include <mutex>
-
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <mutex>
+
 #include <json/json.h>
 #include <json/reader.h>
-#include <array>
 #include <boost/optional.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup.hpp>
+
 #include <zi/concurrency/concurrency.hpp>
 #include <zi/parallel/algorithm.hpp>
 #include <zi/parallel/numeric.hpp>
@@ -236,16 +237,16 @@ namespace bib {
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
 
-    // celltype to rank info
+    // celltype to rank info (order matters)
     std::map<std::string, RankDNase> ranksDNase_;
 
-    // convservation type to rank info
+    // convservation type to rank info (order matters)
     std::map<std::string, RankConservation> ranksConservation_;
 
-    // celltype to multi-ranks
-    std::unordered_map<std::string, RankContainer> ranksCTCF_;
-    std::unordered_map<std::string, RankContainer> ranksEnhancer_;
-    std::unordered_map<std::string, RankContainer> ranksPromoter_;
+    // celltype to multi-ranks (order matters)
+    std::map<std::string, RankContainer> ranksCTCF_;
+    std::map<std::string, RankContainer> ranksEnhancer_;
+    std::map<std::string, RankContainer> ranksPromoter_;
 
     Json::Value toJson() const {
       Json::Value r;
@@ -287,8 +288,8 @@ namespace bib {
 
     std::string toTsvCre() const {
       const char d = '\t';
-      std::stringstream ss;
-      ss << accession << d
+      std::stringstream s;
+      s << accession << d
 	 << mpName << d
 	 << genome << d
 	 << negLogP << d
@@ -296,16 +297,48 @@ namespace bib {
 	 << start << d
 	 << end;
 
-      ss << '\n';
-      return ss.str();
+      s << '\n';
+      return s.str();
     }
 
     std::string toTsvRank() const {
-      const char d = '\t';
-      std::stringstream ss;
+      static const char d = '\t';
+      static const char c = ',';
+      std::stringstream s;
 
-      ss << '\n';
-      return ss.str();
+      s << accession << d;
+
+      s << std::setprecision(2);
+	
+      // conservation
+      s << '{';
+      for(const auto& kv: ranksConservation_){
+	s << kv.second.rank_ << c;
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: ranksConservation_){
+	s << kv.second.signal_ << c;
+      }
+      s << '}' << d << '{';
+
+      // DNase
+      for(const auto& kv: ranksDNase_){
+	s << kv.second.rank_ << c;
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: ranksDNase_){
+	s << kv.second.signal_ << c;
+      }
+      s << '}' << d << '{';
+      for(const auto& kv: ranksDNase_){
+	s << kv.second.zscore_ << c;
+      }
+      s << '}' << d << '{';
+
+      s << '}';
+
+      s << '\n';
+      return s.str();
     }
     
     friend auto& operator<<(std::ostream& s, const Peak& p){
