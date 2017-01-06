@@ -104,7 +104,10 @@ def doSetup(curs, tableName, d):
     for chrom in chrs:
         fnp = os.path.join(d, "parsed." + chrom + ".tsv")
         importTsv(curs, tableName, fnp)
-        
+    print("about to analyze", tableName)
+    curs.execute("analyze " + tableName)
+    print("done")
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
