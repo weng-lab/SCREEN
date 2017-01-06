@@ -57,26 +57,36 @@ def importTsv(curs, tableName, fnp):
 	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
     
     with open(fnp) as f:
-        print("importing", tableName, fnp)
+        print("importing", fnp, "into", tableName)
         curs.copy_from(f, tableName, '\t', columns=cols)
     print("imported", fnp)
 
 def doIndex(curs, tableName):
-    cols = ("conservation_rank", "conservation_signal",
-	    "dnase_rank", "dnase_signal", "dnase_zscore",
-	    "ctcf_only_rank", "ctcf_only_zscore",
-	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
-	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
-	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
-	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
-	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+    cols = ("accession", "chrom", "start", "stop",)
     for col in cols:
         idx = col + "_idx"
         print("indexing", col)
         curs.execute("""
-CREATE INDEX {idx} on {tableName} USING GIN ({col});
+DROP INDEX IF EXISTS {idx};
+CREATE INDEX {idx} on {tableName} ({col});
 """.format(idx = idx, tableName = tableName, col = col))
 
+    cols = ("neglogp",)
+    for col in cols:
+        idx = col + "_idx"
+        print("indexing", col)
+        curs.execute("""
+DROP INDEX IF EXISTS {idx};
+CREATE INDEX {idx} on {tableName} ({col}) DESC;
+""".format(idx = idx, tableName = tableName, col = col))
+
+def setupIndicies(curs, tableName, chrs):
+    doIndex(curs, tableName)
+
+    for chrom in chrs:
+        chromTableName = tableName + '_' + chrom
+        doIndex(curs, chromTableName)
+        
 def doIndexGin(curs, tableName):
     cols = ("conservation_rank", "conservation_signal",
 	    "dnase_rank", "dnase_signal", "dnase_zscore",
@@ -90,24 +100,27 @@ def doIndexGin(curs, tableName):
         idx = col + "_idx"
         print("indexing", col)
         curs.execute("""
+DROP INDEX IF EXISTS {idx};
 CREATE INDEX {idx} on {tableName} USING GIN ({col});
 """.format(idx = idx, tableName = tableName, col = col))
 
-def doSetup(curs, tableName, d):
+def doSetup(curs, tableName, d, chrs):
     setupTable(curs, tableName)
-
-    chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
-            "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
-            "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
-            "chrX", "chrY"]
 
     for chrom in chrs:
         fnp = os.path.join(d, "parsed." + chrom + ".tsv")
         importTsv(curs, tableName, fnp)
+        chromTableName = tableName + '_' + chrom
+        setupTable(curs, chromTableName)
+        importTsv(curs, chromTableName, fnp)
+
     print("about to analyze", tableName)
     curs.execute("analyze " + tableName)
+    for chrom in chrs:
+        chromTableName = tableName + '_' + chrom
+        curs.execute("analyze " + chromTableName)
     print("done")
-    
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -123,18 +136,25 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/"
 
+    mm10_chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
+                 "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
+                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+                 "chrX", "chrY"]
+
+    chrs = mm10_chrs
+    
     with getcursor(DBCONN, "08_setup_log") as curs:
         tableName = "mm10_cre"
 
         if args.setup:
-            doSetup(curs, tableName, d)
+            doSetup(curs, tableName, d, chrs)
         elif args.index:
-            doIndex(curs, tableName, d)
+            setupIndicies(curs, tableName, chrs)
         elif args.indexGin:
             # doIndexGin(curs, tableName, d)
             pass
         else:
-            doSetup(curs, tableName, d)
+            doSetup(curs, tableName, d, chrs)
             #doIndexGin(curs, tableName, d)
                
 if __name__ == '__main__':
