@@ -19,11 +19,11 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName} 
     (id serial PRIMARY KEY,
     accession VARCHAR(20),
-    mpName test,
+    mpName text,
     negLogP real,
-    chrom VARCHAR(5),
+    chrom VARCHAR(7),
     start integer,
-    end integer,
+    stop integer,
     conservation_rank integer[],
     conservation_signal real[],
     dnase_rank integer[],
@@ -46,7 +46,7 @@ CREATE TABLE {tableName}
     
 def importTsv(curs, tableName, fnp):    
     cols = ("accession", "mpName", "negLogP",
-            "chrom", "start", "end",
+            "chrom", "start", "stop",
 	    "conservation_rank", "conservation_signal",
 	    "dnase_rank", "dnase_signal", "dnase_zscore",
 	    "ctcf_only_rank", "ctcf_only_zscore",
@@ -60,6 +60,22 @@ def importTsv(curs, tableName, fnp):
         print("importing", tableName, fnp)
         curs.copy_from(f, tableName, '\t', columns=cols)
     print("imported", fnp)
+
+def doIndex(curs, tableName):
+    cols = ("conservation_rank", "conservation_signal",
+	    "dnase_rank", "dnase_signal", "dnase_zscore",
+	    "ctcf_only_rank", "ctcf_only_zscore",
+	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
+	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
+	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
+	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
+	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+    for col in cols:
+        idx = col + "_idx"
+        print("indexing", col)
+        curs.execute("""
+CREATE INDEX {idx} on {tableName} USING GIN ({col});
+""".format(idx = idx, tableName = tableName, col = col))
 
 def doIndexGin(curs, tableName):
     cols = ("conservation_rank", "conservation_signal",
@@ -77,7 +93,7 @@ def doIndexGin(curs, tableName):
 CREATE INDEX {idx} on {tableName} USING GIN ({col});
 """.format(idx = idx, tableName = tableName, col = col))
 
-def doSetup(curs, tableName):
+def doSetup(curs, tableName, d):
     setupTable(curs, tableName)
 
     chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
@@ -108,12 +124,15 @@ def main():
         tableName = "mm10_cre"
 
         if args.setup:
-            doSetup(curs, tableName)
+            doSetup(curs, tableName, d)
+        elif args.index:
+            doIndex(curs, tableName, d)
         elif args.indexGin:
-            doIndexGin(curs, tableName)
+            # doIndexGin(curs, tableName, d)
+            pass
         else:
-            doSetup(curs, tableName)
-            doIndexGin(curs, tableName)
+            doSetup(curs, tableName, d)
+            #doIndexGin(curs, tableName, d)
                
 if __name__ == '__main__':
     main()
