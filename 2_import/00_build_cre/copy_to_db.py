@@ -12,7 +12,7 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
 def setupTable(curs, tableName):
-    print("rebuilding", tableName, "...")
+    print("dropping and creating", tableName, "...")
     curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -21,29 +21,29 @@ CREATE TABLE {tableName}
     accession VARCHAR(20),
     mpName text,
     negLogP real,
-    chrom VARCHAR(7),
+    chrom VARCHAR(5),
     start integer,
     stop integer,
     conservation_rank integer[],
-    conservation_signal real[],
+    conservation_signal numeric(8,3)[],
     dnase_rank integer[],
-    dnase_signal real[],
-    dnase_zscore real[],
+    dnase_signal numeric(8,3)[],
+    dnase_zscore numeric(8,3)[],
     ctcf_only_rank integer[],
-    ctcf_only_zscore real[],
+    ctcf_only_zscore numeric(8,3)[],
     ctcf_dnase_rank integer[],
-    ctcf_dnase_zscore real[],
+    ctcf_dnase_zscore numeric(8,3)[],
     h3k27ac_only_rank integer[],
-    h3k27ac_only_zscore real[],
+    h3k27ac_only_zscore numeric(8,3)[],
     h3k27ac_dnase_rank integer[],
-    h3k27ac_dnase_zscore real[],
+    h3k27ac_dnase_zscore numeric(8,3)[],
     h3k4me3_only_rank integer[],
-    h3k4me3_only_zscore real[],
+    h3k4me3_only_zscore numeric(8,3)[],
     h3k4me3_dnase_rank integer[],
-    h3k4me3_dnase_zscore real[]
+    h3k4me3_dnase_zscore numeric(8,3)[]
     ); """.format(tableName = tableName))
-    print("rebuilt", tableName)
-    
+    #print("created", tableName)
+
 def importTsv(curs, tableName, fnp):    
     cols = ("accession", "mpName", "negLogP",
             "chrom", "start", "stop",
@@ -59,7 +59,7 @@ def importTsv(curs, tableName, fnp):
     with open(fnp) as f:
         print("importing", fnp, "into", tableName)
         curs.copy_from(f, tableName, '\t', columns=cols)
-    print("imported", fnp)
+    #print("imported", os.path.basename(fnp))
 
 def doIndex(curs, tableName):
     cols = ("accession", "chrom", "start", "stop",)
@@ -73,35 +73,66 @@ CREATE INDEX {idx} on {tableName} ({col});
 
     cols = ("neglogp",)
     for col in cols:
-        idx = col + "_idx"
-        print("indexing", tableName, col)
+        idx = tableName + '_' + col + "_idx"
+        print("indexing", tableName, col, "DESC")
         curs.execute("""
 DROP INDEX IF EXISTS {idx};
 CREATE INDEX {idx} on {tableName} ({col} DESC);
 """.format(idx = idx, tableName = tableName, col = col))
 
-def setupIndicies(curs, tableName, chrs):
-    doIndex(curs, tableName)
+def setupRangeFunction(curs):
+    print("create range function...")
+    curs.execute("""
+create or replace function intarray2int4range(arr int[]) returns int4range as $$
+    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
 
+create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
+    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+""")
+           
+def setupIndicies(curs, tableName, chrs):
+    setupRangeFunction(curs)
+    doIndexRange(curs, tableName)
+    doIndex(curs, tableName)
+    
     for chrom in chrs:
         chromTableName = tableName + '_' + chrom
         doIndex(curs, chromTableName)
+        doIndexRange(curs, chromTableName)
         
-def doIndexGin(curs, tableName):
-    cols = ("conservation_rank", "conservation_signal",
-	    "dnase_rank", "dnase_signal", "dnase_zscore",
-	    "ctcf_only_rank", "ctcf_only_zscore",
-	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
-	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
-	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
-	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
-	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+def doIndexRange(curs, tableName):
+    cols = ("conservation_rank", 
+	    "dnase_rank", 
+	    "ctcf_only_rank",
+	    "ctcf_dnase_rank",
+	    "h3k27ac_only_rank",
+	    "h3k27ac_dnase_rank",
+	    "h3k4me3_only_rank",
+	    "h3k4me3_dnase_rank")
     for col in cols:
-        idx = col + "_idx"
-        print("indexing", col)
+        idx = tableName + '_' + col + "_idx"
+        print("indexing int range", col)
         curs.execute("""
 DROP INDEX IF EXISTS {idx};
-CREATE INDEX {idx} on {tableName} USING GIN ({col});
+create index {idx} on {tableName} using gist(intarray2int4range({col}));
+""".format(idx = idx, tableName = tableName, col = col))
+
+    cols = ("conservation_signal",
+	    "dnase_signal", "dnase_zscore",
+	    "ctcf_only_zscore",
+	    "ctcf_dnase_zscore",
+	    "h3k27ac_only_zscore",
+	    "h3k27ac_dnase_zscore",
+	    "h3k4me3_only_zscore",
+	    "h3k4me3_dnase_zscore")
+    for col in cols:
+        idx = tableName + '_' + col + "_idx"
+        print("indexing numeric range", col)
+        curs.execute("""
+DROP INDEX IF EXISTS {idx};
+create index {idx} on {tableName} using gist(numarray2numrange({col}));
 """.format(idx = idx, tableName = tableName, col = col))
 
 def doSetup(curs, tableName, d, chrs):
@@ -114,12 +145,12 @@ def doSetup(curs, tableName, d, chrs):
         setupTable(curs, chromTableName)
         importTsv(curs, chromTableName, fnp)
 
-    print("about to analyze", tableName)
-    curs.execute("analyze " + tableName)
+    print("about to vacuum analyze", tableName)
+    curs.execute("vacuum analyze " + tableName)
     for chrom in chrs:
         chromTableName = tableName + '_' + chrom
-        print("about to analyze", chromTableName)
-        curs.execute("analyze " + chromTableName)
+        print("about to vacuum analyze", chromTableName)
+        curs.execute("vacuum analyze " + chromTableName)
     print("done")
         
 def parse_args():
@@ -151,12 +182,9 @@ def main():
             doSetup(curs, tableName, d, chrs)
         elif args.index:
             setupIndicies(curs, tableName, chrs)
-        elif args.indexGin:
-            # doIndexGin(curs, tableName, d)
-            pass
         else:
             doSetup(curs, tableName, d, chrs)
-            #doIndexGin(curs, tableName, d)
+            setupIndicies(curs, tableName, chrs)
                
 if __name__ == '__main__':
     main()
