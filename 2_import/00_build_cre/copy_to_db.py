@@ -192,12 +192,14 @@ def main():
             
         if args.setup:
             im.run(d)
+            ci.vacumnAnalyze(DBCONN.getconn())
         elif args.index:
             ci.run()
         elif args.vac:
             ci.vacumnAnalyze(DBCONN.getconn())
         else:
             im.run(d)
+            ci.vacumnAnalyze(DBCONN.getconn())
             ci.run()
                
 if __name__ == '__main__':
