@@ -68,23 +68,10 @@ class ImportData:
             self.importTsv(self.baseTableName, fnp)
             self.importTsv(ctn, fnp)
 
-def vacumnAnalyze(self, conn, baseTableName, chrs):
-    # http://stackoverflow.com/a/1017655
-    print("about to vacuum analyze", baseTableName)
-    old_isolation_level = self.conn.isolation_level
-    conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-    curs = conn.cursor()
-    curs.execute("vacuum analyze " + baseTableName)
-    for chrom in chrs:
-        ctn = self.baseTableName + '_' + chrom
-        print("about to vacuum analyze", ctn)
-        curs.execute("vacuum analyze " + ctn)
-    conn.set_isolation_level(old_isolation_level)
-    print("done")
-
 class CreateIndices:
-    def __init__(self, curs, baseTableName, cols):
+    def __init__(self, curs, chrs, baseTableName, cols):
         self.curs = curs
+        self.chrs = chrs
         self.baseTableName = baseTableName
         self.all_cols = cols
         self.rank_cols = [x for x in cols if x.endswith("_rank")]
@@ -151,12 +138,26 @@ class CreateIndices:
     create index {idx} on {tableName} using gist(numarray2numrange({col}));
     """.format(idx = idx, tableName = tableName, col = col))
 
+    def vacumnAnalyze(self, conn):
+        # http://stackoverflow.com/a/1017655
+        print("about to vacuum analyze", self.baseTableName)
+        old_isolation_level = conn.isolation_level
+        conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+        curs = conn.cursor()
+        curs.execute("vacuum analyze " + self.baseTableName)
+        for chrom in self.chrs:
+            ctn = self.baseTableName + '_' + chrom
+            print("about to vacuum analyze", ctn)
+            curs.execute("vacuum analyze " + ctn)
+        conn.set_isolation_level(old_isolation_level)
+        print("done")
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
-    parser.add_argument('--indexGin', action="store_true", default=False)
+    parser.add_argument('--vac', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -186,13 +187,15 @@ def main():
     with getcursor(DBCONN, "08_setup_log") as curs:
         tableName = "mm10_cre"
 
-        im = ImportData(curs, chrs, "mm10_cre", cols)
-        ci = CreateIndices(curs, "mm10_cre", cols)
+        im = ImportData(curs, chrs, tableName, cols)
+        ci = CreateIndices(curs, chrs, tableName, cols)
             
         if args.setup:
             im.run(d)
         elif args.index:
             ci.run()
+        elif args.vac:
+            ci.vacumnAnalyze(DBCONN.getconn())
         else:
             im.run(d)
             ci.run()
