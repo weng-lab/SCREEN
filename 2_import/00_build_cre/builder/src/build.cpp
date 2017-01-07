@@ -162,14 +162,14 @@ int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-  std::vector<std::string> chroms{"chr01", "chr02", "chr03", "chr04", "chr05",
-      "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chr13",
+  std::vector<std::string> chroms{"chr1", "chr2", "chr3", "chr4", "chr5",
+      "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13",
       "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
   if(ZiARG_chr > ""){
     chroms = {ZiARG_chr};
   }
 
-  bfs::path d = "/tmp/";
+  bfs::path d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/";
 
   try {
       zi::task_manager::simple tm(ZiARG_j);
