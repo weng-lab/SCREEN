@@ -65,7 +65,7 @@ def doIndex(curs, tableName):
     cols = ("accession", "chrom", "start", "stop",)
     for col in cols:
         idx = col + "_idx"
-        print("indexing", col)
+        print("indexing", tableName, col)
         curs.execute("""
 DROP INDEX IF EXISTS {idx};
 CREATE INDEX {idx} on {tableName} ({col});
@@ -74,10 +74,10 @@ CREATE INDEX {idx} on {tableName} ({col});
     cols = ("neglogp",)
     for col in cols:
         idx = col + "_idx"
-        print("indexing", col)
+        print("indexing", tableName, col)
         curs.execute("""
 DROP INDEX IF EXISTS {idx};
-CREATE INDEX {idx} on {tableName} ({col}) DESC;
+CREATE INDEX {idx} on {tableName} ({col} DESC);
 """.format(idx = idx, tableName = tableName, col = col))
 
 def setupIndicies(curs, tableName, chrs):
