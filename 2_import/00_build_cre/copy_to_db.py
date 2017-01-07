@@ -77,12 +77,15 @@ class CreateIndices:
         self.rank_cols = [x for x in cols if x.endswith("_rank")]
         self.signal_cols = [x for x in cols if x.endswith("_signal")]
         self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
-    
+
+    def _idx(self, tn, col):
+        return tn + '_' + col + "_idx"
+        
     def doIndex(self, tableName):
         cols = ("accession", "chrom", "start", "stop",)
         for col in cols:
-            idx = col + "_idx"
-            print("indexing", tableName, col)
+            idx = self._idx(tableName, col)
+            print("indexing", idx)
             self.curs.execute("""
     DROP INDEX IF EXISTS {idx};
     CREATE INDEX {idx} on {tableName} ({col});
@@ -90,8 +93,8 @@ class CreateIndices:
 
         cols = ("neglogp",)
         for col in cols:
-            idx = tableName + '_' + col + "_idx"
-            print("indexing", tableName, col, "DESC")
+            idx = self._idx(tableName, col)
+            print("indexing", idx, "DESC")
             self.curs.execute("""
     DROP INDEX IF EXISTS {idx};
     CREATE INDEX {idx} on {tableName} ({col} DESC);
@@ -122,8 +125,8 @@ class CreateIndices:
     def doIndexRange(self, tableName):
         cols = self.rank_cols
         for col in cols:
-            idx = tableName + '_' + col + "_idx"
-            print("indexing int range", col)
+            idx = self._idx(tableName, col)
+            print("indexing int range", idx)
             self.curs.execute("""
     DROP INDEX IF EXISTS {idx};
     create index {idx} on {tableName} using gist(intarray2int4range({col}));
@@ -131,8 +134,8 @@ class CreateIndices:
 
         cols = self.signal_cols + self.zscore_cols
         for col in cols:
-            idx = tableName + '_' + col + "_idx"
-            print("indexing numeric range", col)
+            idx = self._idx(tableName, col)
+            print("indexing numeric range", idx)
             self.curs.execute("""
     DROP INDEX IF EXISTS {idx};
     create index {idx} on {tableName} using gist(numarray2numrange({col}));
