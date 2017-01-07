@@ -118,6 +118,7 @@ def doSetup(curs, tableName, d, chrs):
     curs.execute("analyze " + tableName)
     for chrom in chrs:
         chromTableName = tableName + '_' + chrom
+        print("about to analyze", chromTableName)
         curs.execute("analyze " + chromTableName)
     print("done")
         
@@ -136,8 +137,8 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/"
 
-    mm10_chrs = ["chr01", "chr02", "chr03", "chr04", "chr05",
-                 "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12",
+    mm10_chrs = ["chr1", "chr2", "chr3", "chr4", "chr5",
+                 "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
                  "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
                  "chrX", "chrY"]
 
