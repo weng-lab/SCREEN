@@ -131,9 +131,9 @@ _c_heatmaps.simple_cluster.argtypes = [POINTER(c_double), c_int, c_int, POINTER(
 if __name__ == "__main__":
     H = Heatmap([[1.0, 0.5, 0.9, 0.4], [0.5, 1.0, 0.7, 0.1], [0.9, 0.7, 1.0, 0.2], [0.4, 0.1, 0.2, 1.0]])
     print(H.values)
-    roworder = H.simple_cluster()
-    print(roworder)
-    print(H.values)
+#    roworder = H.simple_cluster()
+#    print(roworder)
+#    print(H.values)
     roworder, colorder = H.cluster_by_both()
     print(H.values)
     print(roworder)
