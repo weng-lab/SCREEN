@@ -81,7 +81,7 @@ public:
     }
 
     // make note of which clusters were merged for the tree and original distance
-    int io = indices_[i][0], jo = indices_[j][0], no;
+    int io = indices_[i][0], jo = indices_[j][0], no = 0;
     tree_[node_ptr_] = nodei_[i] * distance_matrix_.size() * 2 + nodei_[j];
     nodei_[i] = nodei_[j] = node_ptr_++;
     
@@ -91,17 +91,17 @@ public:
       std::reverse(indices_[j].begin(), indices_[j].end());
     case 0:
       indices_[i].insert(indices_[i].end(), indices_[j].begin(), indices_[j].end());
+      no = indices_[i][0];
       indices_.erase(indices_.begin() + j);
       nodei_.erase(nodei_.begin() + j);
-      no = indices_[i][0];
       break;
     case 2:
       std::reverse(indices_[j].begin(), indices_[j].end());
     case 3:
       indices_[j].insert(indices_[j].end(), indices_[i].begin(), indices_[i].end());
+      no = indices_[j][0];
       indices_.erase(indices_.begin() + i);
       nodei_.erase(nodei_.begin() + i);
-      no = indices_[j][0];
       break;
     }
 
