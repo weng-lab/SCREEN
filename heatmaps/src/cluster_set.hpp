@@ -64,7 +64,7 @@ private:
   }
   
   static double rowdist(const Heatmap &h, int i, int j) {
-    return h.SimpleDistance(i, j);
+    return h.RowDistance(i, j);
   }
 
 public:
@@ -80,10 +80,11 @@ public:
       throw std::invalid_argument("cannot merge clusters: right index is out of range");
     }
 
-    // make note of which clusters were merged for the tree
+    // make note of which clusters were merged for the tree and original distance
+    int io = indices_[i][0], jo = indices_[j][0], no;
     tree_[node_ptr_] = nodei_[i] * distance_matrix_.size() * 2 + nodei_[j];
     nodei_[i] = nodei_[j] = node_ptr_++;
-
+    
     // find best orientation for the clusters and merge
     switch(best_orientation(i, j)) {
     case 1:
@@ -92,6 +93,7 @@ public:
       indices_[i].insert(indices_[i].end(), indices_[j].begin(), indices_[j].end());
       indices_.erase(indices_.begin() + j);
       nodei_.erase(nodei_.begin() + j);
+      no = indices_[i][0];
       break;
     case 2:
       std::reverse(indices_[j].begin(), indices_[j].end());
@@ -99,7 +101,20 @@ public:
       indices_[j].insert(indices_[j].end(), indices_[i].begin(), indices_[i].end());
       indices_.erase(indices_.begin() + i);
       nodei_.erase(nodei_.begin() + i);
+      no = indices_[j][0];
       break;
+    }
+
+    // update distance matrix
+    for (auto n = 0; n < indices_.size(); ++n) {
+      int _n = indices_[n][0];
+      if (_n == no) {
+	distance_matrix_[_n][no] = distance_matrix_[no][_n] = 0.0;
+	continue;
+      }
+      distance_matrix_[_n][no] = distance_matrix_[no][_n] = (distance_matrix_[_n][io]
+							    + distance_matrix_[_n][jo]
+							    - distance_matrix_[io][jo]) / 2.0;
     }
 
   }
@@ -112,16 +127,13 @@ public:
       throw std::invalid_argument("cannot compute cluster distance: right index is out of range");
     }
 
-    double ret = distance_matrix_[indices_[i][0]][indices_[j][0]];
-
-    for (int n = 0; n < indices_[i].size(); ++n) {
-      for (int m = 0; m < indices_[j].size(); ++m) {
-	double d = distance_matrix_[indices_[i][n]][indices_[j][m]];
-	if (d < ret) {
-	  ret = d;
-	}
-      }
+    int l = Length();
+    double ret = (l - 2) * distance_matrix_[indices_[i][0]][indices_[j][0]];
+    for (int n = 0; n < l; ++n) {
+      ret -= distance_matrix_[indices_[i][0]][indices_[n][0]];
+      ret -= distance_matrix_[indices_[j][0]][indices_[n][0]];      
     }
+    
     return ret;
   }
 
