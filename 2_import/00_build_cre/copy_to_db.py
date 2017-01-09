@@ -17,13 +17,13 @@ class ImportData:
         self.chrs = chrs
         self.baseTableName = baseTableName
         self.all_cols = cols
-        
+
     def setupTable(self, tableName):
         print("dropping and creating", tableName, "...")
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
 
-    CREATE TABLE {tableName} 
+    CREATE TABLE {tableName}
         (id serial PRIMARY KEY,
         accession VARCHAR(20),
         mpName text,
@@ -51,7 +51,7 @@ class ImportData:
         ); """.format(tableName = tableName))
         #print("created", tableName)
 
-    def importTsv(self, tn, fnp):    
+    def importTsv(self, tn, fnp):
         cols = self.all_cols
         with open(fnp) as f:
             print("importing", fnp, "into", tn)
@@ -78,9 +78,11 @@ class CreateIndices:
         self.signal_cols = [x for x in cols if x.endswith("_signal")]
         self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
 
-    def _idx(self, tn, col):
+    def _idx(self, tn, col, suf = ""):
+        if suf:
+            return tn + '_' + col + '_' + suf + "_idx"
         return tn + '_' + col + "_idx"
-        
+
     def doIndex(self, tableName):
         cols = ("accession", "chrom", "start", "stop",)
         for col in cols:
@@ -100,6 +102,15 @@ class CreateIndices:
     CREATE INDEX {idx} on {tableName} ({col} DESC);
     """.format(idx = idx, tableName = tableName, col = col))
 
+    def doIndexGin(self, tableName): # best for '<@' operator on element of array
+        cols = self.rank_cols + self.signal_cols + self.zscore_cols
+        for col in cols:
+            idx = self._idx(tableName, col, "gin")
+            print("indexing", idx)
+            self.curs.execute("""
+    CREATE INDEX {idx} on {tableName} USING GIN ({col});
+    """.format(idx = idx, tableName = tableName, col = col))
+
     def setupRangeFunction(self):
         print("create range function...")
         self.curs.execute("""
@@ -114,12 +125,14 @@ class CreateIndices:
 
     def run(self):
         self.setupRangeFunction()
-        self.doIndexRange(self.baseTableName)
         self.doIndex(self.baseTableName)
+        self.doIndexGin(self.baseTableName)
+        self.doIndexRange(self.baseTableName)
 
         for chrom in self.chrs:
             ctn = self.baseTableName + '_' + chrom
             self.doIndex(ctn)
+            self.doIndexGin(ctn)
             self.doIndexRange(ctn)
 
     def doIndexRange(self, tableName):
@@ -186,13 +199,13 @@ def main():
  	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
 
     chrs = mm10_chrs
-    
+
     with getcursor(DBCONN, "08_setup_log") as curs:
         tableName = "mm10_cre"
 
         im = ImportData(curs, chrs, tableName, cols)
         ci = CreateIndices(curs, chrs, tableName, cols)
-            
+
         if args.setup:
             im.run(d)
             ci.vacumnAnalyze(DBCONN.getconn())
@@ -204,6 +217,6 @@ def main():
             im.run(d)
             ci.vacumnAnalyze(DBCONN.getconn())
             ci.run()
-               
+
 if __name__ == '__main__':
     main()
