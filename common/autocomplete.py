@@ -7,8 +7,8 @@ def _second_onward(arr):
 class AutocompleterWrapper:
     def __init__(self, es):
         self.acs = {
-            "hg19" : Autocompleter(es, "hg19"),
-            "mm10" : Autocompleter(es, "mm10")}
+            "hg19" : Autocompleter(es["hg19"], "hg19"),
+            "mm10" : Autocompleter(es["mm10"], "mm10")}
 
     def __getitem__(self, assembly):
         return self.acs[assembly]
@@ -35,7 +35,7 @@ class Autocompleter:
         if raw_results["hits"]["total"] > 0:
             return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
         return self.es.cell_type_query(q)
-    
+
     def get_suggestions(self, j):
         _uq = j["userQuery"].split(" ") #.lower()
         ret = []

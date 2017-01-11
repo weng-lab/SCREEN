@@ -24,9 +24,9 @@ def main():
     args = parse_args()
 
     print("importing", args.version)
-    re_json = paths.re_json_vers[args.version][args.assembly]
+    re_json = paths.getCREs(args.version, args.assembly)
 
-    fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+    fnps = paths.get_paths(args.version, args.assembly)
     if args.fnp:
         fnps["rewriteFnp"] = args.fnp
 
