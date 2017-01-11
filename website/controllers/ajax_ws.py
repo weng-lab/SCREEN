@@ -200,9 +200,12 @@ class AjaxWebService:
         results = self.es.search(body={"query": {"bool": {"should": q}}, "size": 11,
                                        "_source": ["accession", "position"]},
                                  index="regulatory_elements_7")["hits"]["hits"]
-        return BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
-                                   "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
-                                  for x in results], bfnp, 50)
+        results = BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
+                                      "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
+                                     for x in results], bfnp, 50)
+        for bigwig in bigwigs:
+            results[bigwig["ct"]]["max"] = self.cache.bigwigmaxes[bigwig["accession"]] if bigwig["accession"] in self.cache.bigwigmaxes else 0
+        return results
     
     def _re_detail(self, j):
         accession = j["accession"]
@@ -275,6 +278,7 @@ class AjaxWebService:
         return [x["_source"] for x in link_results]
     
     def _expression_matrix(self, accession):
+        if self.assembly == "mm10": return {}
         matrix = []
         genelists = self._get_genelist(accession)
         ret = {}
@@ -538,9 +542,10 @@ class AjaxWebService:
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
         with Timer('ElasticSearch time'):
-            _ret = self._query({"object": j["object"],
+            """_ret = self._query({"object": j["object"],
                                 "index": paths.reJsonIndex(self.assembly),
-                               "callback": "" })
+                               "callback": "" })"""
+            _ret = self.cache.alltop()
         
         if "hits" in _ret:
             try:
@@ -560,6 +565,7 @@ class AjaxWebService:
                     print("missing", ct)
                     return False
                 return typ == self.cache.biosamples[ct].biosample_type
+            print("!correlating")
             with Timer(typ + ": spearman correlation time"):
                 c = Correlation(_ret["hits"]["hits"])
                 if self.assembly == "hg19":
@@ -570,9 +576,13 @@ class AjaxWebService:
                     labels, corr = c.pearsonr(j.get("outer", "dnase"),
                                               j.get("inner", None),
                                               ctFilter )
+                    print("!got correlation")
             if not labels:
                 continue
             rho, pval = corr
+            print(len(rho))
+            print(len(rho[0]) if len(rho) > 0 else "")
+            return {"results": {"tree": None, "tree_title": title}}
 
             try:
                 rhoList = rho.tolist() if type(rho) is not list else rho
@@ -619,7 +629,7 @@ class AjaxWebService:
             if "tss_bins" in j["post_processing"]:
                 tss = TSSBarGraph(ret["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
                 ret["tss_histogram"] = tss.format()
-            if "rank_heatmap" in j["post_processing"]:
+            if "rank_heatmap" in j["post_processing"] and self.assembly != "mm10":
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
