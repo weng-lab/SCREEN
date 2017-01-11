@@ -49,7 +49,7 @@ class ImportData:
         h3k4me3_dnase_rank integer[],
         h3k4me3_dnase_zscore numeric(8,3)[]
         ); """.format(tableName = tableName))
-        #print("created", tableName)
+        print("created", tableName)
 
     def importTsv(self, tn, fnp):
         cols = self.all_cols
@@ -154,19 +154,19 @@ class CreateIndices:
     create index {idx} on {tableName} using gist(numarray2numrange({col}));
     """.format(idx = idx, tableName = tableName, col = col))
 
-    def vacumnAnalyze(self, conn):
-        # http://stackoverflow.com/a/1017655
-        print("about to vacuum analyze", self.baseTableName)
-        old_isolation_level = conn.isolation_level
-        conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-        curs = conn.cursor()
-        curs.execute("vacuum analyze " + self.baseTableName)
-        for chrom in self.chrs:
-            ctn = self.baseTableName + '_' + chrom
-            print("about to vacuum analyze", ctn)
-            curs.execute("vacuum verbose analyze " + ctn)
-        conn.set_isolation_level(old_isolation_level)
-        print("done")
+def vacumnAnalyze(conn, baseTableName, chrs):
+    # http://stackoverflow.com/a/1017655
+    print("about to vacuum analyze", baseTableName)
+    old_isolation_level = conn.isolation_level
+    conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    curs = conn.cursor()
+    curs.execute("vacuum analyze " + baseTableName)
+    for chrom in chrs:
+        ctn = baseTableName + '_' + chrom
+        print("about to vacuum analyze", ctn)
+        curs.execute("vacuum verbose analyze " + ctn)
+    conn.set_isolation_level(old_isolation_level)
+    print("done")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -199,24 +199,29 @@ def main():
  	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
 
     chrs = mm10_chrs
+    tableName = "mm10_cre"
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        tableName = "mm10_cre"
-
         im = ImportData(curs, chrs, tableName, cols)
         ci = CreateIndices(curs, chrs, tableName, cols)
-
         if args.setup:
             im.run(d)
-            ci.vacumnAnalyze(DBCONN.getconn())
         elif args.index:
             ci.run()
         elif args.vac:
-            ci.vacumnAnalyze(DBCONN.getconn())
+            pass
         else:
             im.run(d)
-            ci.vacumnAnalyze(DBCONN.getconn())
+
+    if args.setup or args.vac:
+        vacumnAnalyze(DBCONN.getconn())
+
+    with getcursor(DBCONN, "08_setup_log") as curs:
+        ci = CreateIndices(curs, chrs, tableName, cols)
+        if not args.setup and not args.index and not args.vac:
             ci.run()
+            
+    return 0
 
 if __name__ == '__main__':
     main()
