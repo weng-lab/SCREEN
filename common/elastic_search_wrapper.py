@@ -192,9 +192,8 @@ class ElasticSearchWrapper:
         return self.es.search(index=index, body=query.query_obj)
 
     def get_overlapping_snps(self, coord):
-        index = "snp_aliases"
+        index = "snp_aliases_" + self.assembly
         query = and_query()
-        query.append_exact_match("assembly", self.assembly)
         query.append_exact_match("position.chrom", coord["chrom"])
         query.append({"range": {"position.start": {"gte": coord["start"]}}})
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
@@ -271,9 +270,9 @@ class ElasticSearchWrapper:
 
     def run_snp_query(self, q, fuzziness, field_to_return=""):
         query = and_query()
-        query.append_exact_match("assembly", self.assembly)
         query.append_fuzzy_match("accession", q, fuzziness=fuzziness)
-        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "snp_aliases_" + self.assembly,
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
             results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
