@@ -1,24 +1,19 @@
 #!/usr/bin/env python
 
-#import nltk
-#sentence = """At eight o'clock on Thursday morning  Arthur didn't feel very good."""
-#tokens = nltk.word_tokenize(sentence)
-#print tokens
-
 from coord import Coord
 
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
 
 class ParseSearch:
-    def __init__(self, rawInput, es):
+    def __init__(self, rawInput, es, assembly):
         self.es = es
         self.rawInput = rawInput
 
         self.halfWindow = 7500
         self.userErrMsg = ""
 
-        self.assembly = "hg19"
+        self.assembly = assembly
 
     def _sanitize(self):
         # TODO: add more here!
@@ -28,8 +23,8 @@ class ParseSearch:
         return self.sanitizedStr
 
     def find_celltypes_in_query(self, q):
-        return self.es.cell_type_query(q)
-    
+        return self.es.cell_type_query(q, self.assembly)
+
     def parse(self, comparison = False):
         s = self._sanitize()
         self.sanitizedStr = s
@@ -51,7 +46,7 @@ class ParseSearch:
             coord.resize(self.halfWindow)
         if len(gene_coords) > 0:
             coord = Coord.parse(gene_coords[-1])
-        
+
         try:
             for t in toks:
                 print(t)
