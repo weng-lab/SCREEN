@@ -40,7 +40,9 @@ class MiniPeaks extends REComponent {
 
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
-	var mfactor = ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k])))));
+	var mfactor = (regions.max
+		       ? ROWHEIGHT / regions.max
+		       : ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k]))))));
 	text = friendly_celltype(text);
 	var color = (text.includes("primary cell") ? primary_cell_color(text) : tissue_color(text));
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>

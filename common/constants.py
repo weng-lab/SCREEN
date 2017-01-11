@@ -35,7 +35,8 @@ class helptext:
 
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
-
+    bigwigmaxes = os.path.join(v4d, "bigwig.tsv")
+    
     def insChr(fnp):
         def addChr(chrom):
             toks = fnp.split(".")

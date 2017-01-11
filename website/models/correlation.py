@@ -63,14 +63,18 @@ class Correlation:
                     continue
                 if innerkey is not None and innerkey not in result["ranks"][outerkey][cell_type]:
                     continue
-                if innerkey is not None:
-                    value = result["ranks"][outerkey][cell_type][innerkey]["z-score"]
+                if innerkey is None:
+                    value = result["ranks"][outerkey][cell_type]["signal"]
+#                elif "Only" in innerkey:
+#                    value = result["ranks"][outerkey][cell_type][innerkey][innerkey.split("-")[0].lower()]["signal"]
                 else:
-                    value = result["ranks"][outerkey][cell_type]["z-score"]
+                    value = result["ranks"][outerkey][cell_type][innerkey]["z-score"]
+                print(value)
                 if ctlabels[i] not in _obs: _obs[ctlabels[i]] = []
                 _obs[ctlabels[i]].append(value)
         for k, v in _obs.iteritems():
             ctl.append(k)
             observations.append(v)
+        print("!got observations")
         return (ctl, _bpearson(observations))
     
