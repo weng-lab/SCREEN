@@ -129,11 +129,11 @@ class ElasticSearchWrapper:
                                 index="gene_aliases")["hits"]["hits"]
         return [x["_source"] for x in retval]
 
-    def _find_within(self, q, rf):
+    def _find_within(self, q, rf, assembly):
         _tk = q.split(" ")
         retval = []
         while len(retval) == 0:
-            retval = rf(" ".join(_tk))
+            retval = rf(" ".join(_tk), assembly)
             if len(_tk) == 1: break
             _tk = _tk[1:]
         _tk = q.split(" ")[:-1]
@@ -195,13 +195,13 @@ class ElasticSearchWrapper:
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
         return self.es.search(index=index, body=query.query_obj)
 
-    def cell_type_query(self, q):
-        return self._find_within(q, self._cell_type_query)
+    def cell_type_query(self, q, assembly):
+        return self._find_within(q, self._cell_type_query, assembly)
 
-    def _cell_type_query(self, q):
+    def _cell_type_query(self, q, assembly):
         query = or_query()
         query.append_fuzzy_match("cell_type", q.replace(" ", "_"), fuzziness=1)
-        raw_results = self.es.search(index = "cell_types", body = query.query_obj)
+        raw_results = self.es.search(index = "cell_types_" + assembly, body = query.query_obj)
         return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
 
     def get_overlapping_res(self, coord, assembly):
