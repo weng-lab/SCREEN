@@ -2,11 +2,11 @@
 
 import os, sys, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common"))
 from bulk_es_import import executable_importer
 from constants import paths, chroms
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
 from files_and_paths import Dirs
 
 def parse_args():
