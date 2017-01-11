@@ -47,32 +47,39 @@ class paths:
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
         "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}
 
-    re_json_vers = { 7: { "hg19" : {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
-                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
-                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
-                                    "rewriteGenePeaksFnpSubsample": insChr(os.path.join("/home/mjp" + v4d, "ver7/sample/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
-                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
-                                    "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
-                                    "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
-                                    "index": "regulatory_elements_7",
-                                    "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
-                                    "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
-                          "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
-                                    "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.json.gz")),
-                                    "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.json.gz")),
-                                    "rewriteGenePeaks2Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.2.json.gz")),
-                                    "rewriteGenePeaks3Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.3.json.gz")),
-                                    "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.similarity.json.gz")),
-                                    "re_bed": os.path.join(v4d, "ver8/mm10/regulatory-element-registry-mm10.V8.bed.gz"),
-                                    "bedLsjFnp" : os.path.join(v4d, "ver8/mm10/beds.lsj"),
-                                    "index": "regulatory_elements_8_mm10",
-                                    "tssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.V8.json.gz"),
-                                    "rewriteTssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.rewrite.V8.json.gz")}
-                          }
-                     }
+    re_json_vers = {
+        7: { "hg19" : {"origFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.json.gz")),
+                       "rewriteGeneFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.json.gz")),
+                       "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
+                       "rewriteGenePeaksFnpSubsample": insChr(os.path.join(v4d, "ver7/sample/regulatory-element-registry-hg19.V7.mod.gene.peaks.json.gz")),
+                       "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.mod.similarity.json.gz")),
+                       "re_bed": os.path.join(v4d, "ver7/regulatory-element-registry-hg19.V7.bed.gz"),
+                       "bedLsjFnp" : os.path.join(v4d, "ver7/beds.lsj"),
+                       "index": "regulatory_elements_7",
+                       "tssFnp": os.path.join(v4d, "ver7/proximal-genes.V7.json.gz"),
+                       "rewriteTssFnp": os.path.join(v4d, "ver7/proximal-genes.rewrite.V7.json.gz")},
+             "mm10" : {"origFnp": insChr(os.path.join(v4d, "ver8/mm10/orig/regulatory-element-registry-mm10.V8.json.gz")),
+                       "rewriteGeneFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.json.gz")),
+                       "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.json.gz")),
+                       "rewriteGenePeaks2Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.2.json.gz")),
+                       "rewriteGenePeaks3Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.3.json.gz")),
+                       "rewriteGenePeaks2FnpSample": insChr(os.path.join(v4d, "ver8/mm10/rewrite/sample/regulatory-element-registry-mm10.V8.mod.gene.peaks.2.json.gz")),
+                       "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.similarity.json.gz")),
+                       "re_bed": os.path.join(v4d, "ver8/mm10/regulatory-element-registry-mm10.V8.bed.gz"),
+                       "bedLsjFnp" : os.path.join(v4d, "ver8/mm10/beds.lsj"),
+                       "index": "regulatory_elements_8_mm10",
+                       "tssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.V8.json.gz"),
+                       "rewriteTssFnp": os.path.join(v4d, "ver8/mm10/proximal-genes.rewrite.V8.json.gz")}
+             }
+        }
 
     @staticmethod
-    def get_paths(version, assembly, chrs = None):
+    def getCREs(version, assembly):
+        return paths.re_json_vers[version][assembly]
+
+    @staticmethod
+    def get_paths(version, assembly):
+        chrs = chroms[assembly]
         ret = {}
         if version not in paths.re_json_vers:
             return ret
@@ -86,8 +93,7 @@ class paths:
 
     hexplots_dir = os.path.join(v4d, "hexplots")
     gene_files = {"hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
-                  "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf")
-                  }
+                  "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf") }
 
     genelist = {"hg19" : os.path.join(v4d, "genelist.hg19.tsv"),
                 "mm10" : os.path.join(v4d, "genelist.mm10.tsv")}
@@ -98,9 +104,10 @@ class paths:
 
     genedb = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
     genedb_lsj = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
-    snp_csvs = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
-                ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
-    snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
+    snp_csvs = {"mm10" : os.path.join(Dirs.dbsnps, "snps142common.mm10.csv"),
+                "hg19" : os.path.join(Dirs.dbsnps, "snps144common.hg19.csv")}
+    snp_lsjs = {"mm10" : os.path.join(v4d, "snplist.mm10.lsj.gz"),
+                "hg19" : os.path.join(v4d, "snplist.hg19.lsj.gz")}
 
     reVer = 7
     reVerStr = "reVer" + str(reVer)

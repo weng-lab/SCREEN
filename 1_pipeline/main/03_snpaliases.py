@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import json
+import ujson as json
 import sys
 import os
 import requests
@@ -14,22 +14,22 @@ sys.path.append("../../common")
 from constants import paths
 
 def main():
-    component_fnps = paths.snp_csvs
-    outfnp = paths.snp_lsj
+    for assembly in ["hg19", "mm10"]:
+        print("working with assembly", assembly)
+        inFnp = paths.snp_csvs[assembly]
+        outFnp = paths.snp_lsjs[assembly]
 
-    with gzip.open(outfnp, "wb") as o:
-        for assembly, infnp in component_fnps:
-            print("working with assembly %s" % assembly)
-            with open(infnp, "r") as f:
-                lines = [line for line in f]
-                for line in lines[1:]:
+        with open(inFnp, "r") as f:
+            with gzip.open(outFnp, "wb") as o:
+                header = f.readline()
+                for line in f:
                     line = line.split(",")
-                    snpobj = {"accession": line[3].strip(),
-                              "position": {"chrom": line[0],
-                                           "start": int(line[1]),
-                                           "end": int(line[2]) },
-                              "assembly": assembly }
-                    o.write(json.dumps(snpobj) + "\n")
+                    s = {"accession": line[3].strip(),
+                         "position": {"chrom": line[0],
+                                      "start": int(line[1]),
+                                      "end": int(line[2]) }}
+                    o.write(json.dumps(s) + "\n")
+        print("wrote", outFnp)
     return 0
 
 if __name__ == "__main__":
