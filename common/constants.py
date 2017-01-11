@@ -61,6 +61,7 @@ class paths:
                                     "rewriteGenePeaksFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.json.gz")),
                                     "rewriteGenePeaks2Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.2.json.gz")),
                                     "rewriteGenePeaks3Fnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.gene.peaks.3.json.gz")),
+                                    "rewriteGenePeaks2FnpSample": insChr(os.path.join("/home/mjp" + v4d, "ver8/mm10/rewrite/sample/regulatory-element-registry-mm10.V8.mod.gene.peaks.2.json.gz")),
                                     "rewriteSimilarFnp": insChr(os.path.join(v4d, "ver8/mm10/rewrite/regulatory-element-registry-mm10.V8.mod.similarity.json.gz")),
                                     "re_bed": os.path.join(v4d, "ver8/mm10/regulatory-element-registry-mm10.V8.bed.gz"),
                                     "bedLsjFnp" : os.path.join(v4d, "ver8/mm10/beds.lsj"),

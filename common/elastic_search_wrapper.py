@@ -100,7 +100,7 @@ def snp_query(accession, assembly="", fuzziness=0):
     return retval
 
 class ElasticSearchWrapper:
-    
+
     def __init__(self, es):
         self.es = es
         self.search = self.es.search
@@ -128,7 +128,7 @@ class ElasticSearchWrapper:
                                       "size": 1000},
                                 index="gene_aliases")["hits"]["hits"]
         return [x["_source"] for x in retval]
-    
+
     def _find_within(self, q, rf):
         _tk = q.split(" ")
         retval = []
@@ -158,16 +158,20 @@ class ElasticSearchWrapper:
             if len(_tk) == 1: break
             _tk = _tk[:-1]
         return (s, retval)
-    
+
     def get_tf_list(self):
         results = []
         query = terms_aggregation()
         query.append("tf", "label")
-        raw_results = self.es.search(index="peak_beds", body=query.query_obj)
+        try:
+            raw_results = self.es.search(index="peak_beds", body=query.query_obj)
+        except:
+            print("ES ERROR", "peak_beds", query.query_obj)
+            raise
         for bucket in raw_results["aggregations"]["tf"]["buckets"]:
             results.append(bucket["key"])
         return results
-    
+
     def get_bed_list(self, acc_list):
         query = or_query()
         for acc in acc_list:
@@ -193,13 +197,13 @@ class ElasticSearchWrapper:
 
     def cell_type_query(self, q):
         return self._find_within(q, self._cell_type_query)
-    
+
     def _cell_type_query(self, q):
         query = or_query()
         query.append_fuzzy_match("cell_type", q.replace(" ", "_"), fuzziness=1)
         raw_results = self.es.search(index = "cell_types", body = query.query_obj)
         return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
-    
+
     def get_overlapping_res(self, coord, assembly):
         return self._get_overlaps_generic(coord, paths.reJsonIndex(assembly))
 
