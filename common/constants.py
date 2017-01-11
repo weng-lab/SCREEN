@@ -72,7 +72,12 @@ class paths:
                      }
 
     @staticmethod
-    def get_paths(version, assembly, chrs = None):
+    def getCREs(version, assembly):
+        return paths.re_json_vers[version][assembly]
+
+    @staticmethod
+    def get_paths(version, assembly):
+        chrs = chroms[assembly]
         ret = {}
         if version not in paths.re_json_vers:
             return ret

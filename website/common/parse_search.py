@@ -23,7 +23,7 @@ class ParseSearch:
         return self.sanitizedStr
 
     def find_celltypes_in_query(self, q):
-        return self.es.cell_type_query(q, self.assembly)
+        return self.es.cell_type_query(q)
 
     def parse(self, comparison = False):
         s = self._sanitize()

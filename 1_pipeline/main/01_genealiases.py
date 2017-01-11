@@ -143,13 +143,13 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if 0:
+    if "hg19" == args.assembly
         emap = None
         if "hg19" == args.assembly:
             gi = GeneInfo(args.assembly)
             emap = gi.getGeneList()
 
-        fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+        fnps = paths.get_paths(args.version, args.assembly)
 
         jobs = []
         for i in xrange(len(fnps["origFnp"])):
@@ -168,7 +168,7 @@ def main():
             emap[eid] = g.genename_
         print("found", len(emap))
 
-        fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
+        fnps = paths.get_paths(args.version, args.assembly)
 
         jobs = []
         for i in xrange(len(fnps["rewriteGeneFnp"])):
