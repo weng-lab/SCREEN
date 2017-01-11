@@ -22,16 +22,16 @@ class CachedObjectsWrapper:
 
     def __getitem__(self, assembly):
         return self.cos[assembly]
-                        
+
     def getTissue(self, assembly, ct):
         return self.cos[assembly].getTissue(ct)
-    
+
     def getTissueMap(self, assembly):
         return self.cos[assembly].getTissueMap()
-    
+
     def getCTTjson(self, assembly):
         return self.cos[assembly].getCTTjson()
-    
+
     def getTissueAsMap(self, assembly, ct):
         return self.cos[assembly].getTissueAsMap(ct)
 
@@ -59,11 +59,23 @@ class CachedObjects:
 
     def get20k(self, ct, version):
         results = []
+
+        index = paths.re_json_vers[version][self.assembly]["index"]
+
         for i in xrange(NCHUNKS):
-            results += self.es.search(body={"query": {"bool": {"must": [{"range": {"ranks.dnase." + ct + ".rank": {"lte": (i + 1) * CHUNKSIZE,
-                                                                                                                   "gte": i * CHUNKSIZE + 1 }}}]}},
-                                       "size": 1000, "_source": ["accession"]},
-                                 index=paths.re_json_vers[version][self.assembly]["index"])["hits"]["hits"]
+            try:
+                r = self.es.search(body={"query": {"bool": {"must": [{"range": {"ranks.dnase." + ct + ".rank": {"lte": (i + 1) * CHUNKSIZE,
+                                                                                                                "gte": i * CHUNKSIZE + 1 }}}]}},
+                                         "size": 1000, "_source": ["accession"]},
+                                   index=index)
+            except:
+                print("ES ERROR:", index)
+                raise
+            try:
+                results += r["hits"]["hits"]
+            except:
+                print("ES ERROR: no hits")
+                raise
             return {k: 1 for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
 
     def getTissue(self, ct):
@@ -75,10 +87,10 @@ class CachedObjects:
 
     def getTissueMap(self):
         return self.tissueMap
-    
+
     def getCTTjson(self):
         return self.cellTypesAndTissues_json
-    
+
     def getTissueAsMap(self, ct):
         if ct in self.tissueMap:
             return self.tissueMap[ct]
