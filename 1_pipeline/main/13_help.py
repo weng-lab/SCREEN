@@ -34,7 +34,7 @@ class DB:
             curs.execute("""INSERT INTO helpkeys (key, title, summary, link)
                                          VALUES (%(key)s, %(summary)s, %(title)s, %(link)s)""",
                          {"key": key, "summary": summary, "title": title, "link": link})
-            
+
 def parseargs():
     parser = argparse.ArgumentParser(parents = [tools.argparser])
     parser.add_argument('--local', action="store_true", default=False)
@@ -63,7 +63,7 @@ def main():
         print("no help text could be downloaded; please check GoogleDoc contents at https://docs.google.com/document/d/%s" % helptext.docid)
         return 1
     db.recreate_tables()
-    
+
     """
       " load from the cached Google Doc and parse
       " file format is:
