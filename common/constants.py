@@ -103,9 +103,10 @@ class paths:
 
     genedb = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.json.gz")
     genedb_lsj = os.path.join(v4d, "geneid_genename_with_tpmallrep_fpkmallrep.V19.hg19.lsj.gz")
-    snp_csvs = [("mm10", os.path.join(Dirs.dbsnps, "snps142common.mm10.csv")),
-                ("hg19", os.path.join(Dirs.dbsnps, "snps144common.hg19.csv"))]
-    snp_lsj = os.path.join(v4d, "snplist.lsj.gz")
+    snp_csvs = {"mm10" : os.path.join(Dirs.dbsnps, "snps142common.mm10.csv"),
+                "hg19" : os.path.join(Dirs.dbsnps, "snps144common.hg19.csv")}
+    snp_lsjs = {"mm10" : os.path.join(v4d, "snplist.mm10.lsj.gz"),
+                "hg19" : os.path.join(v4d, "snplist.hg19.lsj.gz")}
 
     reVer = 7
     reVerStr = "reVer" + str(reVer)
