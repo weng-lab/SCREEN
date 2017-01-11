@@ -164,7 +164,7 @@ class CreateIndices:
         for chrom in self.chrs:
             ctn = self.baseTableName + '_' + chrom
             print("about to vacuum analyze", ctn)
-            curs.execute("vacuum analyze " + ctn)
+            curs.execute("vacuum verbose analyze " + ctn)
         conn.set_isolation_level(old_isolation_level)
         print("done")
 
