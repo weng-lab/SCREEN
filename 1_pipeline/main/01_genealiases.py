@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import json
+import ujson as json
 import sys
 import os
 import requests
@@ -22,7 +22,7 @@ class GeneInfo:
         self.assembly = assembly
         self.gene_files = paths.gene_files
 
-    def get_gene_map(self):
+    def getGeneCoords(self):
         if self.assembly not in self.gene_files:
             print("WARNING: cannot get gene coordinates for assembly",
                   self.assembly, "-- no gene file found")
@@ -45,136 +45,102 @@ class GeneInfo:
                 "start": int(v[0]),
                 "end": int(v[1]) }
 
-    def processGeneList(self):
-        emap = {}
-        skipped = 0
+    def _parseLineHg19(self, line):
+        line = line.strip().split("\t")
+        while len(line) < 19:
+            line.append("")
+        g = {"ensemblid": line[9].strip(),
+             "HGNC_ID": line[0],
+             "approved_symbol": line[1],
+             "approved_name": line[2],
+             "previous_symbols": line[4].split(","),
+             "synonyms": line[5].split(","),
+             "accession_numbers": line[7],
+             "RefSeq_ID": line[10],
+             "UniProt_ID": line[14],
+             "Vega_ID": line[16],
+             "UCSC_ID": line[17],
+             "mouse_genome_ID": line[18] }
+        return g
 
+    def processGeneListHg19(self):
         print(self.assembly, "getting gene coordinates...")
-        gene_map = self.get_gene_map()
+        geneCoords = self.getGeneCoords()
+        inFnp = paths.genelist[self.assembly]
+        outFnp = paths.genelsj[self.assembly]
+        skipped = 0
+        counter = 0
 
         print(self.assembly, "processing genelist...")
-        with open(paths.genelist[self.assembly], "r") as f:
-            with open(paths.genelsj[self.assembly], "wb") as o:
-                for idx, line in enumerate(f):
-                    if idx == 0:
-                        continue
-                    line = line.strip().split("\t")
-                    while len(line) < 19:
-                        line.append("")
-                    geneobj = {"ensemblid": line[9].strip(),
-                               "HGNC_ID": line[0],
-                               "approved_symbol": line[1],
-                               "approved_name": line[2],
-                               "previous_symbols": line[4].split(","),
-                               "synonyms": line[5].split(","),
-                               "accession_numbers": line[7],
-                               "RefSeq_ID": line[10],
-                               "UniProt_ID": line[14],
-                               "Vega_ID": line[16],
-                               "UCSC_ID": line[17],
-                               "mouse_genome_ID": line[18] }
-                    emap[geneobj["ensemblid"]] = geneobj["approved_symbol"]
-                    if geneobj["ensemblid"] == "":
+        with open(inFnp, "r") as f:
+            with open(outFnp, "wb") as o:
+                header = f.readline()
+                for line in f:
+                    g = self._parseLineHg19(line)
+                    if "" == g["ensemblid"]:
                         skipped += 1
                         continue
-                    if geneobj["approved_symbol"] in gene_map:
-                        geneobj["coordinates"] = gene_map[geneobj["approved_symbol"]]
-                        geneobj["position"] = self.tryparse(geneobj["coordinates"])
-                    o.write(json.dumps(geneobj) + "\n")
-        print("wrote", paths.genelsj[self.assembly])
-        print("wrote", idx + 1, " and skipped", skipped)
-        with open(paths.geneJsonFnp[self.assembly], 'w') as f:
-            json.dump(emap, f)
-        print("wrote", paths.geneJsonFnp[self.assembly])
-        return emap
+                    if g["approved_symbol"] in geneCoords:
+                        g["coordinates"] = geneCoords[g["approved_symbol"]]
+                        g["position"] = self.tryparse(g["coordinates"])
+                    o.write(json.dumps(g) + "\n")
+                    counter += 1
+        print("wrote", outFnp)
+        print("\twrote", counter, "and skipped", skipped)
 
-    def getGeneList(self):
-        fnp = paths.geneJsonFnp[self.assembly]
-        if os.path.exists(fnp):
-            with open(fnp) as f:
-                emap = json.load(f)
-            print("loaded from", fnp)
-            return emap
+    def _parseLineMm10(self, g):
+        eid = g.geneid_.split('.')[0]
+        gn = g.genename_
+        # TODO: fixme!
+        return {"ensemblid": eid,
+                "HGNC_ID": gn,
+                "approved_symbol": gn,
+                "approved_name": gn,
+                "previous_symbols": gn,
+                "synonyms": gn,
+                "accession_numbers": gn,
+                "RefSeq_ID": gn,
+                "UniProt_ID": gn,
+                "Vega_ID": gn,
+                "UCSC_ID": gn,
+                "mouse_genome_ID": gn }
 
-        return self.processGeneList()
+    def processGeneListMm10(self):
+        outFnp = paths.genelsj[self.assembly]
+        skipped = 0
+        counter = 0
 
-def rewrite(inFnp, outFnp, emap):
-    print("rewriting", os.path.basename(inFnp),
-          ": converting ensembl IDs to gene symbols",
-          "and fixing cell line names")
-
-    with gzip.open(inFnp, "r") as f:
-        with gzip.open(outFnp, "w") as o:
-            for idx, line in enumerate(f):
-                if idx % 1000 == 0:
-                    print(inFnp, "working with entry", idx)
-                d = json.loads(line)
-
-                if emap:
-                    for geneCat in ["nearest-pc", "nearest-all"]:
-                        gpca = []
-                        for gi in xrange(5):
-                            g = d["genes"][geneCat][gi]
-                            pc = g["gene-name"].split(".")[0]
-                            if pc in emap:
-                                g["gene-name"] = emap[pc]
-                            gpca.append(g)
-                        d["genes"][geneCat] = gpca
-
-                if 0:
-                    for rk in ["ctcf", "dnase", "promoter", "enhancer"]:
-                        cts = d["ranks"][rk].keys()
-                        for ct in cts:
-                            if '.' in ct:
-                                nct = ct.replace('.', '_')
-                                d["ranks"][rk][nct] = d["ranks"][rk].pop(ct)
-
-                o.write(json.dumps(d) + "\n")
-    print("wrote", outFnp)
+        fnp, filetype = paths.gene_files[self.assembly]
+        ggff = Genes(fnp, filetype)
+        outFnp = paths.genelsj[self.assembly]
+        with open(outFnp, "wb") as o:
+            for gene in ggff.getGenes():
+                g = self._parseLineMm10(gene)
+                if "" == g["ensemblid"]:
+                    skipped += 1
+                    continue
+                o.write(json.dumps(g) + "\n")
+                counter += 1
+        print("wrote", outFnp)
+        print("\twrote", counter, "and skipped", skipped)
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--version', type=int, default=7)
-    parser.add_argument('--assembly', type=str, default="mm10")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    if "hg19" == args.assembly
-        emap = None
-        if "hg19" == args.assembly:
-            gi = GeneInfo(args.assembly)
-            emap = gi.getGeneList()
+    # hg19
+    gi = GeneInfo("hg19")
+    gi.processGeneListHg19()
 
-        fnps = paths.get_paths(args.version, args.assembly)
-
-        jobs = []
-        for i in xrange(len(fnps["origFnp"])):
-            jobs.append((fnps["origFnp"][i], fnps["rewriteGeneFnp"][i], emap))
-        ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
-    else:
-        gene_files = paths.gene_files
-        if args.assembly not in gene_files:
-            raise Exception("unknown assembly")
-
-        fnp, filetype = gene_files[args.assembly]
-        ggff = Genes(fnp, filetype)
-        emap = {}
-        for g in ggff.getGenes():
-            eid = g.geneid_.split('.')[0]
-            emap[eid] = g.genename_
-        print("found", len(emap))
-
-        fnps = paths.get_paths(args.version, args.assembly)
-
-        jobs = []
-        for i in xrange(len(fnps["rewriteGeneFnp"])):
-            jobs.append((fnps["rewriteGeneFnp"][i], fnps["rewriteGenePeaks2Fnp"][i], emap))
-        ret = Parallel(n_jobs = args.j)(delayed(rewrite)(*job) for job in jobs)
-
+    # mm10
+    gi = GeneInfo("mm10")
+    gi.processGeneListMm10()
 
     return 0
 
