@@ -47,11 +47,7 @@ class Autocompleter:
                 if "indices" in j and k not in j["indices"]: continue
                 for item in v(uq):
                     item = prefix + item
-                    if 0:
-                        ret.append({"name" : item,
-                                    "value" : counter})
-                    else:
-                        ret.append(item)
+                    ret.append(item)
                     counter += 1
             prefix += _uq[0] + " "
             _uq = _second_onward(_uq)
