@@ -8,6 +8,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import AutocompleterWrapper
 from constants import paths
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+from utils import Timer
+
 MAX = 20000
 NCHUNKS = 50
 CHUNKSIZE = MAX / NCHUNKS
@@ -41,6 +44,7 @@ class CachedObjects:
         self.ps = ps
         self.assembly = assembly
 
+        t = Timer("load CachedObjects " + assembly)
         acs = AutocompleterWrapper(es)
         self.tf_list = acs[assembly].tf_list()
         self.tf_list_json = json.dumps(self.tf_list)

@@ -3,7 +3,7 @@
 from __future__ import print_function
 import sys, os, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
 from load_cell_types import LoadCellTypes
 from bulk_es_import import executable_importer
 
@@ -18,7 +18,7 @@ def parse_args():
 def main():
     args = parse_args()
     LoadCellTypes.Import(args)
-    importer = executable_importer(os.path.join(os.path.dirname(__file__), "../../celltypes.lsj"),
+    importer = executable_importer(os.path.join(os.path.dirname(__file__), "../../../celltypes.lsj"),
                                    "cell_types", "cell_type",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
