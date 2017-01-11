@@ -100,7 +100,7 @@ class BiosamplesMaker(BiosamplesBase):
         rows = set()
         # hack in old cell type names (pre V8)
         if "hg19" == self.assembly:
-            es = ElasticSearchWrapper(Elasticsearch())
+            es = ElasticSearchWrapper(Elasticsearch(), "hg19")
             r = es.get_field_mapping(index = paths.reJsonIndex(self.assembly),
                                      doc_type = "element",
                                      field = "ranks.dnase")
