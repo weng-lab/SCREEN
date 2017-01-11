@@ -30,11 +30,11 @@ def main():
     if args.fnp:
         fnps["rewriteFnp"] = args.fnp
 
-    importer = executable_importer(fnps["rewriteGenePeaks3Fnp"],
+    importer = executable_importer(fnps["rewriteGenePeaks2FnpSample"],
                                    fnps["index"], "element",
                                    args.elasticsearch_server,
                                    args.elasticsearch_port)
-    importer.exe(500)
+    importer.exe(50)
 
     LoadCellTypes.Import(args)
 

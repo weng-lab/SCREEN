@@ -1,7 +1,5 @@
-Installing
-
+Installing:
 sudo npm install -g webpack webpack-dev-server
+sudo apt-get install nodejs-legacy
 
 
-To debug search:
-http://127.0.0.1:9000/webpack-dev-server/search.html
