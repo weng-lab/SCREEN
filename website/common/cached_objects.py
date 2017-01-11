@@ -5,7 +5,7 @@ import os, sys, json
 from models.biosamples import Biosamples
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from autocomplete import AutocompleterWrapper
+from autocomplete import Autocompleter
 from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
@@ -17,8 +17,8 @@ CHUNKSIZE = MAX / NCHUNKS
 
 class CachedObjectsWrapper:
     def __init__(self, es, ps):
-        self.cos = {"hg19" : CachedObjects(es, ps, "hg19"),
-                    "mm10" : CachedObjects(es, ps, "mm10")}
+        self.cos = {"hg19" : CachedObjects(es["hg19"], ps, "hg19"),
+                    "mm10" : CachedObjects(es["mm10"], ps, "mm10")}
 
     def __getitem__(self, assembly):
         return self.cos[assembly]
@@ -45,8 +45,8 @@ class CachedObjects:
         self.assembly = assembly
 
         t = Timer("load CachedObjects " + assembly)
-        acs = AutocompleterWrapper(es)
-        self.tf_list = acs[assembly].tf_list()
+        acs = Autocompleter(es, assembly)
+        self.tf_list = acs.tf_list()
         self.tf_list_json = json.dumps(self.tf_list)
 
         self.biosamples = Biosamples(assembly, ps.DBCONN)

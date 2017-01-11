@@ -9,7 +9,7 @@ from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
-from elastic_search_wrapper import ElasticSearchWrapper
+from elastic_search_wrapper import ElasticSearchWrapperWrapper
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 
@@ -73,12 +73,12 @@ def main():
     if args.production:
         args.dev = False
 
-    es = ElasticSearchWrapper(Elasticsearch())
+    es = ElasticSearchWrapperWrapper(Elasticsearch())
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(es, ps)
-    
+
     config = Config("main")
     main = MainApp(args, config.viewDir, config.staticDir, es, ps, cow)
     cherrypy.tree.mount(main, '/', config.getRootConfig())

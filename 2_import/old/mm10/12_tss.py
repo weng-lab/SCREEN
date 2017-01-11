@@ -2,11 +2,11 @@
 
 import os, sys, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common"))
 from bulk_es_import import executable_importer
 from constants import paths, chroms
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
 from files_and_paths import Dirs
 
 def parse_args():
@@ -20,7 +20,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print("importing", args.version)
+    print("importing", args.version, args.assembly)
+
+    for assembly in ["hg19", "mm10"]:
 
     fnps = paths.get_paths(args.version, chroms[args.assembly])
     importer = executable_importer(fnps["tssFnp"],
