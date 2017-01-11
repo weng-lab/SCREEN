@@ -24,7 +24,7 @@ def main():
 
     for assembly in ["hg19", "mm10"]:
 
-    fnps = paths.get_paths(args.version, chroms[args.assembly])
+    fnps = paths.get_paths(args.version, argschroms[args.assembly])
     importer = executable_importer(fnps["tssFnp"],
                                    "associated_tss", "element",
                                    args.elasticsearch_server,
