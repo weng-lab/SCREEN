@@ -20,6 +20,8 @@ class LoadCellTypes:
         self.tableName = paths.IndexCellTypesAndTissues(assembly)
 
         ctFn = "cellTypeToTissue." + assembly + ".json"
+        if "hg19" == assembly:
+            ctFn += ".old"
         ctFnp = os.path.join(os.path.dirname(__file__), "../", ctFn)
         with open(ctFnp) as f:
             self.ctToTissue = json.load(f)
@@ -37,9 +39,9 @@ class LoadCellTypes:
         ORDER BY LOWER(cellType), LOWER(tissue)
         '''.format(tableName = self.tableName))
         rets = self.curs.fetchall()
-        
+
         return [{"value": r[0], "tissue": r[1]} for r in rets]
-            
+
     @staticmethod
     def Import(local, assembly):
         DBCONN = db_connect(os.path.realpath(__file__), local)
@@ -57,12 +59,12 @@ class LoadCellTypes:
         cellType text,
         tissue text
         ) """.format(tableName = self.tableName))
-        
+
     def _get_tissue(self, celltype):
         if celltype in self.ctToTissue:
             return self.ctToTissue[celltype]
         return ""
-    
+
     def _import(self):
         es = ElasticSearchWrapper(Elasticsearch())
 

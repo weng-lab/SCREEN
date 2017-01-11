@@ -2,7 +2,6 @@ var $ = require('jquery');
 import {AJAX_URL} from '../config/constants'
 
 const format_tree_query = (query, outer, inner) => {
-    console.log("GlobalAssembly is", GlobalAssembly);
     var retval = JSON.parse(format_query(query, "tree"));
     return JSON.stringify(Object.assign({}, retval, {
 	outer,
@@ -12,7 +11,6 @@ const format_tree_query = (query, outer, inner) => {
 };
 
 export const format_query = (query, action = "search") => {
-    console.log("format_query: GlobalAssembly is", GlobalAssembly);
     var eso = Object.assign({}, query);
     delete eso.extras;
     return JSON.stringify({
@@ -24,7 +22,6 @@ export const format_query = (query, action = "search") => {
 };
 
 const format_detail = (detail_query) => {
-    console.log("GlobalAssembly is", GlobalAssembly);
     return JSON.stringify(Object.assign(detail_query, {
 	action: "re_detail",
 	GlobalAssembly
@@ -32,7 +29,6 @@ const format_detail = (detail_query) => {
 };
 
 const format_detail_gene = (detail_gene_query) => {
-    console.log("GlobalAssembly is", GlobalAssembly);
     return JSON.stringify(Object.assign(detail_gene_query, {
 	action: "re_genes",
 	GlobalAssembly
@@ -40,7 +36,6 @@ const format_detail_gene = (detail_gene_query) => {
 };
 
 const format_venn = (venn_query) => {
-    console.log("GlobalAssembly is", GlobalAssembly);
     return JSON.stringify(Object.assign(venn_query, {
 	action: "venn",
 	assembly : GlobalAssembly
@@ -48,7 +43,6 @@ const format_venn = (venn_query) => {
 };
 
 const format_tc_query = (query) => {
-    console.log("GlobalAssembly is", GlobalAssembly);
     return JSON.stringify(Object.assign({}, query, {
 	action: "tree_comparison",
 	assembly : GlobalAssembly
@@ -66,11 +60,10 @@ export const TreeComparisonAJAX = (query, f_success, f_error) => {
         contentType : "application/json",
         success: f_success,
 	error: f_error
-    });    
+    });
 };
 
 const QueryAJAX = (query, f_success, f_error) => {
-    console.log("QueryAJAX: GlobalAssembly is", GlobalAssembly);
     $.ajax({
         type: "POST",
         url: AJAX_URL,

@@ -38,7 +38,7 @@ from utils import Utils, Timer
 class AjaxWebServiceWrapper:
     def __init__(self, args, es, ps, cache, staticDir):
         def makeAWS(a):
-            return AjaxWebService(args, es, ps, cache[a], staticDir, a)
+            return AjaxWebService(args, es[a], ps, cache[a], staticDir, a)
         self.ajws = { "hg19" : makeAWS("hg19"),
                       "mm10" : makeAWS("mm10") }
 
@@ -54,7 +54,7 @@ class AjaxWebService:
                        "position.chrom", "position.start",
                        "position.end", "genes.nearest-all",
                        "genes.nearest-pc", "in_cart"]
-    
+
     def __init__(self, args, es, ps, cache, staticDir, assembly):
         self._rank_types = { "DNase": ("dnase", ""),
                              "Enhancer": ("enhancer", ".H3K27ac-Only"),
@@ -74,14 +74,14 @@ class AjaxWebService:
         self.cache = cache
         self.cg = ComputeGeneExpression(self.es, self.ps, self.cache, self.assembly)
         self.cytobands = Cytoband(paths.cytobands[assembly])
-        
+
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps, assembly, cache)
         self.ac = Autocompleter(es, assembly)
         self.regElements = RegElements(es, assembly)
 
         self.staticDir = staticDir
-        
+
         self.cmap = {"regulatory_elements": RegElements,
                      "expression_matrix": ExpressionMatrix}
 
@@ -99,7 +99,7 @@ class AjaxWebService:
                         "venn_chr": self._venn_chr,
                         "tree_comparison": self._tree_comparison }
         self._cached_results = {}
-        
+
     def _tree_comparison(self, j):
 
         def tree_comparison_query(cts, ncts):
@@ -118,7 +118,7 @@ class AjaxWebService:
                     if tf not in tfs: tfs[tf] = 0
                     tfs[tf] += _il
             return tfs
-                    
+
         hits = [search(tree_comparison_query(j["left"], j["right"])),
                 search(tree_comparison_query(j["right"], j["left"]))]
 
@@ -139,7 +139,7 @@ class AjaxWebService:
                         "right": sorted([{"key": k, "left": v["left"], "right": v["right"]}
                                          for k, v in tfa.iteritems() if v["left"] - v["right"] < 0],
                                         key=lambda x: x["left"] / x["right"]) }}
-        
+
     def _get_associated_genes(self, accession):
         results = self.es.search(body={"query": {"bool": {"must": {"match": {"accession": accession}}}}},
                                  index="associated_tss")["hits"]["hits"]
@@ -147,7 +147,7 @@ class AjaxWebService:
         if len(results) > 1:
             print("warning: too many results in index associated_tss for accession=%s; returning the first" % accession)
         return self.es.genes_from_ensemblids(results[0]["_source"]["proximal-genes"])
-        
+
     def _helpkey(self, j):
         if "key" not in j: return {}
         data = self.ps.get_helpkey(j["key"])
@@ -161,7 +161,7 @@ class AjaxWebService:
 
     def _tissue(self, k):
         return self.cache.getTissueAsMap(k)
-    
+
     def _format_ranks(self, ranks):
         return {"dnase": [{"tissue": self._tissue(k),
                            "cell_type": k,
@@ -178,35 +178,41 @@ class AjaxWebService:
                           "cell_type": k,
                           "ctcf": self._get_rank("CTCF-Only", v),
                           "ctcf_DNase": self._get_rank("DNase+CTCF", v) } for k, v in ranks["ctcf"].iteritems()] }
-    
+
     def _peak_format(self, peaks):
         ret = []
         for k, v in peaks.iteritems():
             ret.append({"name": k, "n": len(v)})
         return ret
-    
+
     def _get_bigwigs(self, j, ranktype):
-        retval = []
-        r = self._bigwig_keys[ranktype[0]]
-        for ct, v in j["ranks"][ranktype[0]].iteritems():
-            retval.append(v if r is None else v[ranktype[1]][r])
-            retval[-1]["ct"] = ct
-        return retval
+        ret = []
+        try:
+            r = self._bigwig_keys[ranktype[0]]
+            for ct, v in j["ranks"][ranktype[0]].iteritems():
+                ret.append(v if r is None else v[ranktype[1]][r])
+                ret[-1]["ct"] = ct
+        except:
+            print("ERROR in _get_bigwigs")
+        return ret
 
     def _get_bigwig_regions(self, bigwigs, accs):
-        q = [{"match": {"accession": acc}} for acc in accs]
-        bfnp = [{"path": "/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (bigwig["accession"], bigwig["bigwig"]),
-                 "ct": bigwig["ct"] } for bigwig in bigwigs]
-        results = self.es.search(body={"query": {"bool": {"should": q}}, "size": 11,
-                                       "_source": ["accession", "position"]},
-                                 index="regulatory_elements_7")["hits"]["hits"]
-        results = BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
-                                      "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
-                                     for x in results], bfnp, 50)
-        for bigwig in bigwigs:
-            results[bigwig["ct"]]["max"] = self.cache.bigwigmaxes[bigwig["accession"]] if bigwig["accession"] in self.cache.bigwigmaxes else 0
-        return results
-    
+        try:
+            q = [{"match": {"accession": acc}} for acc in accs]
+            bfnp = [{"path": "/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (bigwig["accession"], bigwig["bigwig"]),
+                     "ct": bigwig["ct"] } for bigwig in bigwigs]
+            results = self.es.search(body={"query": {"bool": {"should": q}}, "size": 11,
+                                           "_source": ["accession", "position"]},
+                                     index="regulatory_elements_7")["hits"]["hits"]
+            results = BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
+                                          "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
+                                         for x in results], bfnp, 50)
+            for bigwig in bigwigs:
+                results[bigwig["ct"]]["max"] = self.cache.bigwigmaxes[bigwig["accession"]] if bigwig["accession"] in self.cache.bigwigmaxes else 0
+            return results
+        except:
+            print("ERROR in _get_bigwig_regions")
+
     def _re_detail(self, j):
         accession = j["accession"]
         j = self.details.reFull(accession)
@@ -227,16 +233,16 @@ class AjaxWebService:
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords, self.assembly)
+        snp_results = self.es.get_overlapping_snps(expanded_coords)
 
         overlapBP = 1000000 # 1MB
         expanded_coords = {"chrom": pos["chrom"],
                            "start": max(0, pos["start"] - overlapBP),
                            "end": pos["end"] + overlapBP}
 #        gene_results = self.es.get_overlapping_genes(expanded_coords)
-        re_results = self.es.get_overlapping_res(expanded_coords, self.assembly)
+        re_results = self.es.get_overlapping_res(expanded_coords)
         similaracclist = [j["accession"]] + [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): -v)][:10]
-        
+
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
                                "tads": self._tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
@@ -257,8 +263,8 @@ class AjaxWebService:
                                       "_source": ["accession", "position"]},
                                 index=paths.reJsonIndex(self.assembly))["hits"]["hits"]
         return [x["_source"] for x in retval]
-    
-    
+
+
     def _tad_details(self, ensembl_list):
         return [{"approved_symbol": x["approved_symbol"],
                  "coordinates": x.get("coordinates", "")}
@@ -276,23 +282,26 @@ class AjaxWebService:
                                             "size": 1000},
                                       index="candidate_links")["hits"]["hits"]
         return [x["_source"] for x in link_results]
-    
+
     def _expression_matrix(self, accession):
         if self.assembly == "mm10": return {}
         matrix = []
         genelists = self._get_genelist(accession)
         ret = {}
-        for title, _list in genelists.iteritems():
-            ret[title] = self.em.search(_list)
-            matrix = []
-            for i in range(0, len(ret[title]["matrix"])):
-                for j in range(0, len(ret[title]["matrix"][0])):
-                    matrix.append({"row": i + 1,
-                                   "col": j + 1,
-                                   "value": ret[title]["matrix"][i][j]})
-            ret[title].update({"matrix": matrix})
+        try:
+            for title, _list in genelists.iteritems():
+                ret[title] = self.em.search(_list)
+                matrix = []
+                for i in range(0, len(ret[title]["matrix"])):
+                    for j in range(0, len(ret[title]["matrix"][0])):
+                        matrix.append({"row": i + 1,
+                                       "col": j + 1,
+                                       "value": ret[title]["matrix"][i][j]})
+                ret[title].update({"matrix": matrix})
+        except:
+            print("ERROR in _expression_matrix")
         return ret
-    
+
     def _peaks_detail(self, j):
         output = {"type": "peak_details",
                   "q": {"accession": j["accession"],
@@ -307,7 +316,7 @@ class AjaxWebService:
                "callback": j["callback"]}
         ret.update(self.ac.get_suggestions(j))
         return ret
-    
+
     def _enumerate(self, j):
         if "cell_line" == j["name"]:
             r = {"results": self.cache.cellTypesAndTissues}
@@ -359,7 +368,7 @@ class AjaxWebService:
             ret[title] = []
             for hit in link_results:
                 ret[title].append(hit["_source"]["gene"]["ensemble-id"])
-                
+
         return ret
 
     def _gene_regulators(self, j):
@@ -370,14 +379,14 @@ class AjaxWebService:
                                                                                        "fields": fields}}]}}},
                                     index="gene_aliases")["hits"]["hits"]
         ensembl_id = ensembl_id[0]["_source"]["ensemblid"] if len(ensembl_id) > 0 else "~" # no IDs start with '~'
-        
+
         # search for matching links
         link_results = self.es.search(body={"query": {"bool": {"should": [{"match_phrase_prefix": {"gene.ensemble-id": ensembl_id}},
                                                                           {"match": {"gene.common-gene-name": j["name"]}}]}},
                                             "size": 1000},
                                       index="candidate_links")["hits"]["hits"]
         return [x["_source"] for x in link_results]
-            
+
     def process(self, j):
         try:
             if "action" in j:
@@ -400,17 +409,17 @@ class AjaxWebService:
                 for _field in query[field]["bool"]:
                     retval["bool"]["must"] += query[field]["bool"][_field]
         return retval
-        
+
     def _get_rankfield(self, rank_type, cell_type):
         rt1, rt2 = self._rank_types[rank_type]
         return "ranks.%s.%s%s.rank" % (rt1, cell_type, rt2)
-        
+
     def _run_venn_queries(self, j, basequery):
         if len(j["cell_types"]) < 2:
             return {"rank_range": [],
                     "totals": {},
                     "overlaps": {} }
-        
+
         fields = {}
         query = { "aggs": {},
                   "query": self._combine(basequery) }
@@ -443,7 +452,7 @@ class AjaxWebService:
                     "totals": totals,
                     "overlaps": {ct: {cct: raw_results[ct][cct]["buckets"][0]["doc_count"]
                                       for cct in j["cell_types"] if cct != ct } for ct in j["cell_types"] } }
-        
+
         # more than two cell types: format as a heatmap
         matrix = []
         for ct1 in j["cell_types"]:
@@ -476,7 +485,7 @@ class AjaxWebService:
         cellTypes = filter(lambda x: x, cellTypes)
         if 2 != len(cellTypes):
             return ret
-        
+
         # build query for individual result sets
         ctqs = []
         for ct in cellTypes:
@@ -495,16 +504,16 @@ class AjaxWebService:
         ret[cellTypes[1] + " only"] = self._search({"object": q, "post_processing": {}})
         q["query"]["bool"]["must"] = q["query"]["bool"]["must"][:-2] + [ctqs[0][0], ctqs[1][1]]
         ret[cellTypes[0] + " only"] = self._search({"object": q, "post_processing": {}})
-        
+
         return ret
-    
+
     def _venn_search(self, j):
         j["post_processing"] = {}
 
         cts = self._filterCellTypes(j["table_cell_types"])
         if 2 != len(cts):
             return {}
-        
+
         ret = {"results": self._search(j),
                "sep_results": {}}
 
@@ -522,23 +531,23 @@ class AjaxWebService:
         # http://stackoverflow.com/a/17016257
         from collections import OrderedDict
         return list(OrderedDict.fromkeys(cts))
-    
+
     def _venn_chr(self, j):
         cts = self._filterCellTypes(j["table_cell_types"])
 
         ret = {"sep_results": {},
                "fold_changes": {}}
-        
+
         if 2 != len(cts):
             return ret;
-        
+
         ret["sep_results"] = self._venn_ct_results([], cts, "DNase", 5000, 500)
         ret["fold_changes"] = self.cg.computeFoldChange(cts[0], cts[1])
 
         for chrom, band in self.cytobands.bands.iteritems():
             ret[chrom] = {"cytobands": band}
         return ret
-                                                       
+
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
         with Timer('ElasticSearch time'):
@@ -546,7 +555,7 @@ class AjaxWebService:
                                 "index": paths.reJsonIndex(self.assembly),
                                "callback": "" })"""
             _ret = self.cache.alltop()
-        
+       
         if "hits" in _ret:
             try:
                 return self._process_tree_hits(j, _ret)
@@ -594,7 +603,7 @@ class AjaxWebService:
             with Timer(typ + ": hierarchical clustering time"):
                 roworder, rowtree = _heatmap.cluster_by_rows()
             results[typ] = {"tree": rowtree, "labels": labels}
-            
+
         title = ' / '.join([x for x in
                              [j.get("outer", "dnase"), j.get("inner", None)]
                              if x])
@@ -620,7 +629,7 @@ class AjaxWebService:
                 j["object"].pop("post_filter", None)
                 j["object"]["query"]["bool"].pop("filter", None)
                 j["callback"] = ""
-        
+
         with Timer('ElasticSearch time'):
             ret = self._query({"object": j["object"],
                                "index": paths.reJsonIndex(self.assembly),
@@ -633,7 +642,7 @@ class AjaxWebService:
                 ret["rank_heatmap"] = self.rh.process(ret)
             if "venn" in j["post_processing"]:
                 ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-                
+
         if self.args.dump:
             self._dump(j, ret)
         return ret
@@ -684,15 +693,15 @@ class AjaxWebService:
         outFn, outFnp = self.downloadFileName(uid, formt)
 
         data = writeFunc(ret["results"]["hits"])
-        
+
         with open(outFnp, mode='w') as f:
             f.write(data)
-                
+
         print("wrote", outFnp)
 
         url = os.path.join('/', "static", "downloads", uid, outFn)
         return {"url" : url}
-        
+
     def downloadAsBed(self, j, uid):
         rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
                      "dnase": [],
@@ -715,7 +724,7 @@ class AjaxWebService:
                     return None
             rankVal = r["rank"]
             signal = round(signal, 2)
-            
+
             score = int(Utils.scale(rankVal, (1, 250 * 100), (1000, 1)))
             toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
                     score, '.', signal, re["neg-log-p"], -1, -1]
@@ -753,7 +762,7 @@ class AjaxWebService:
                                     zf.writestr(fn, data)
             return mf.getvalue()
         return self.downloadAsSomething(uid, j, "beds", writeBeds)
-    
+
     def downloadAsJson(self, j, uid):
         def writeJson(rows):
             mf = StringIO.StringIO()

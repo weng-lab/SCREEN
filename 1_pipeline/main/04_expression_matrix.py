@@ -4,17 +4,16 @@ from __future__ import print_function
 import gzip
 import json
 import os
-
 import sys
-sys.path.append("../../../metadata/utils")
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from exp import Exp
 from files_and_paths import Dirs
 
-sys.path.append("../../common")
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common")
 from constants import paths
 
 def main():
-
     genelist_fnp = paths.genelist
     infnp = paths.genedb
     outfnp = paths.genedb_lsj

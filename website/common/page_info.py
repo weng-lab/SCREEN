@@ -50,7 +50,7 @@ class PageInfoMain:
 
         parsed = ""
         if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.es)
+            p = ParseSearch(kwargs["q"], self.es[assembly], assembly)
             parsed = p.parse()
             parsedStr = p.parseStr()
 
