@@ -131,7 +131,7 @@ class ElasticSearchWrapper:
             query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000},
-                                index="gene_aliases")["hits"]["hits"]
+                                index="gene_aliases_" + self.assembly)["hits"]["hits"]
         return [x["_source"] for x in retval]
 
     def _find_within(self, q, rf):
@@ -214,7 +214,7 @@ class ElasticSearchWrapper:
         return self._get_overlaps_generic(coord, paths.reJsonIndex(self.assembly))
 
     def get_overlapping_genes(self, coord):
-        return self._get_overlaps_generic(coord, "gene_aliases")
+        return self._get_overlaps_generic(coord, "gene_aliases_" + self.assembly)
 
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
@@ -258,16 +258,14 @@ class ElasticSearchWrapper:
                 retval.append((result["accession"], coordinates))
         return (suggestions, retval)
 
-    def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
+    def run_gene_query(self, fields, q, fuzziness):
         query = or_query()
         for field in fields:
             query.append_fuzzy_match(field, q, fuzziness=fuzziness)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases_" + self.assembly,
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
-        if field_to_return != "":
-            results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
-        else:
-            results = [r["_source"] for r in raw_results["hits"]["hits"]]
+        results = [r["_source"] for r in raw_results["hits"]["hits"]]
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
                 results)
 
