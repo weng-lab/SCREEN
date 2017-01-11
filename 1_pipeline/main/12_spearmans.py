@@ -56,7 +56,7 @@ class DB:
                               resolution integer,
                               chr text,
                               bintotals integer[] )""" % self.assembly)
-            
+
     def get_celltypes(self):
         with getcursor(self.DBCONN, "DB::get_celltypes") as curs:
             curs.execute("""SELECT id, celltype FROM celltypesandtissues""")
@@ -76,7 +76,7 @@ class DB:
                 curs.execute("""INSERT INTO {table} (ct1, ct2, chr, resolution, correlation)
                                              VALUES (%(ct1)s, %(ct2)s, %(chr)s, %(resolution)s, %(correlation)s)""".format(table = table),
                              correlation)
-            
+
 class Correlator:
     def __init__(self, es, ds, assembly):
         self.es = es
@@ -90,7 +90,7 @@ class Correlator:
         self.cell_types = [None for i in range(0, len(self.cts))]
         for k, v in self.cts.iteritems():
             self.cell_types[v - 1] = k
-        
+
     def do_correlation(self, _chr, res, fields = {"DNase": ("dnase", None)}):
         start = 0
         _ret = {k: [] for k, v in fields.iteritems()}
@@ -109,7 +109,7 @@ class Correlator:
                 _ret[k].append(Correlation(results).spearmanr(field[0], field[1]))
 
         for field, _ in fields.iteritems():
-                
+
             # reorder according to cell type pair
             ret = [[[] for j in range(0, len(self.cell_types))] for i in range(0, len(self.cell_types))]
             for labels, _corr in _ret[field]:
@@ -130,9 +130,9 @@ class Correlator:
                                      "ct2": self.cts[self.cell_types[j]],
                                      "chr": _chr, "resolution": res,
                                      "correlation": ret[i][j] })
-        
+
         return (totals, r)
-            
+
 def parseargs():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -163,11 +163,11 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     if args.resetdb:
         DB(DBCONN, args.assembly).recreate_tables()
-    
+
     # do correlation for each combo and insert
     for res in [300000]:
         Parallel(n_jobs = args.j)(delayed(run)(_chr, res, args.local, args.assembly) for _chr in chroms[args.assembly])
-            
+
     return 0
 
 if __name__ == "__main__":
