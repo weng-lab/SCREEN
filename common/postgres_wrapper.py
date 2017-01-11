@@ -21,13 +21,6 @@ class PostgresWrapper:
         self.chroms = {}
         self.chroms = constants.chroms
 
-    def findBedOverlapAllAssays(self, assembly, chrom, start, end,
-                                overlap_fraction = 0.0, overlap_bp = 0):
-        retval = self.findBedOverlap("dnase", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
-        retval += self.findBedOverlap("tf", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
-        retval += self.findBedOverlap("histone", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
-        return retval
-
     def get_helpkey(self, key):
         with getcursor(self.DBCONN, "get_helpkey") as curs:
             curs.execute("""SELECT title, summary, link FROM helpkeys
@@ -35,47 +28,13 @@ class PostgresWrapper:
                          {"key": key})
             r = curs.fetchall()
         return r[0] if r else None
-    
-    def recreate_re_tables(self, fnp):
-        with getcursor(self.DBCONN, "recreate_re_table") as curs:
 
-            for assembly in self.assemblies:
-                for chrom in self.chroms[assembly]:
-                    tablename = "re_" + "_".join((assembly, chrom))
-                    if tablename == "re_": continue
-                    curs.execute("DROP TABLE IF EXISTS %(table)s", {"table": table})
-                    curs.execute("""
-                    CREATE TABLE {tablename} (
-                    id serial PRIMARY KEY,
-                    accession text,
-                    startend int4range )
-                    """.format(tablename = tablename))
-            
-            with gzip.open(fnp, "r") as f:
-                i = 0
-                for line in f:
-                    if i % 100000 == 0: print("working with row %d" % i)
-                    re = json.loads(line)
-                    curs.execute("""
-                    INSERT INTO {tablename} (accession, startend)
-                    VALUES (%(acc)s, int4range(%(start)s, %(end)s))
-                    """.format(tablename = tablename), {"acc": re["accession"], "start": re["position"]["start"], "end": re["position"]["end"],
-                                                        "table": "re_" + "_".join((assembly, chrom))})
-                    i += 1
-        return i
-
-    def get_table_suffix(self, assay, assembly, chrom):
-        if assembly not in self.assemblies:
-            print("PostgresWrapper: findBedOverlap: bad assembly", assembly)
-            return ""
-        if chrom not in self.chroms[assembly]:
-            print("PostgresWrapper: findBedOverlap: bad chrom", chrom)
-            return ""
-        if assay not in self.assays:
-            print("PostgresWrapper: findBedOverlap: bad assay", assay)
-            return ""
-        return "{assembly}_{assay}_{chrom}".format(
-            assembly = assembly.replace('-', '_'), assay=assay, chrom=chrom)
+    def findBedOverlapAllAssays(self, assembly, chrom, start, end,
+                                overlap_fraction = 0.0, overlap_bp = 0):
+        retval = self.findBedOverlap("dnase", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        retval += self.findBedOverlap("tf", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        retval += self.findBedOverlap("histone", assembly, chrom, start, end, overlap_fraction = overlap_fraction, overlap_bp = overlap_bp)
+        return retval
 
     def findBedOverlap(self, assay, assembly, chrom, start, end,
                        overlap_fraction = 0.0, overlap_bp = 0):
@@ -109,36 +68,6 @@ class PostgresWrapper:
                 retval.append((x[0], r, r / (end - start)))
             return retval
 
-    def recreate_all_mvs(self):
-        for assembly in self.assemblies:
-            for chrom in self.chroms[assembly]:
-                for assay in self.assays:
-                    tablesuffix = self.get_table_suffix(assay, assembly, chrom)
-                    if tablesuffix == "": continue
-                    print("recreating view for %s" % tablesuffix)
-                    self.recreate_intersection_mv(tablesuffix, "_".join((assembly, chrom)))
-
-    def refresh_all_mvs(self):
-        for assembly in self.assemblies:
-            for chrom in self.chroms[assembly]:
-                for assay in self.assays:
-                    tablesuffix = self.get_table_suffix(assay, assembly, chrom)
-                    if tablesuffix == "": continue
-                    print("refreshing view for %s" % tablesuffix)
-                    self.refresh_intersection_mv(tablesuffix, "_".join((assembly, chrom)))
-
-    def recreate_intersection_mv(self, tablesuffix, resuffix):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.recreate_mv.sql"), "r") as f:
-            with getcursor(self.DBCONN, "recreate_intersection_mv") as curs:
-                curs.execute(f.read().format(tablesuffix=tablesuffix,
-                                             resuffix = resuffix))
-
-    def refresh_intersection_mv(self, tablesuffix, resuffix):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "postgres_wrapper.refresh_mv.sql"), "r") as f:
-            with getcursor(self.DBCONN, "refresh_intersection_mv") as curs:
-                curs.execute(f.read().format(tablesuffix=tablesuffix,
-                                             resuffix = resuffix))
-
     def logQuery(self, query, ret, ip):
         userQuery = query.get("userQuery", "")
         esIndex = query.get("index", "")
@@ -170,7 +99,7 @@ class PostgresWrapper:
         if r:
             return r[0][0]
         return None
-    
+
     def addToCart(self, uuid, reAccessions):
         with getcursor(self.DBCONN, "addToCart") as curs:
             curs.execute("""

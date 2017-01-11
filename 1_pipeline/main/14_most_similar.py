@@ -71,7 +71,7 @@ class _helpers:
             ret["most-similar"][k] = [x[0] for x in bw["best"][k]]
             ret["least-similar"][k] = [x[0] for x in bw["worst"][k]]
         return ret
-            
+
     """
       " initializes a rank binarizer
       " uses a single regulatory element as a prototype to map cell types to indices
@@ -149,7 +149,7 @@ def main():
     # construct binarizer based on first present file
     with gzip.open(inps[i], "r") as f:
         ibin = _helpers(json.loads(f.readline())["ranks"])
-    
+
     # load all regulatory elements and binarize ranks
     for _file in inps:
         if not os.path.exists(_file):
@@ -189,7 +189,7 @@ def main():
                     o.write(json.dumps(j) + "\n")
                     i += 1
                     if i % 100000 == 0: print("@%d: write %s" % (i, _file))
-    
+
     return 0
 
 if __name__ == "__main__":

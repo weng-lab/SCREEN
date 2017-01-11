@@ -3,8 +3,8 @@
 import os, sys, json, psycopg2, argparse, cherrypy
 import uuid
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common'))
 from dbconnect import db_connect
 from utils import Utils
 from dbs import DBS

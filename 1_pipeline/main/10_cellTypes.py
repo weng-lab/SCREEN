@@ -7,13 +7,15 @@ import json
 def main():
     for assembly in ["hg19", "mm10"]:
         fn = "cellTypeToTissue." + assembly + ".json"
+        if "hg19" == assembly:
+            fn += ".old"
         fnp = os.path.join(os.path.dirname(__file__),
                            "../../", fn)
         print(fnp)
         output = []
         with open(fnp) as f:
             ct = json.loads(f.read())
-            
+
         for k, v in ct.iteritems():
             output.append({ "cell_type": k, "tissue": v })
 

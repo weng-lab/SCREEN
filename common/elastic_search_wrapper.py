@@ -90,20 +90,25 @@ class terms_aggregation:
     def append(self, name, term):
         self.query_obj["aggs"][name] = {"terms": {"field": term, "size": self.size}}
 
-def snp_query(accession, assembly="", fuzziness=0):
+def snp_query(accession, fuzziness=0):
     retval = copy(_snp_query)
-    if assembly != "":
-        retval.query.bool.must.assembly = assembly
-    else:
-        retval.query.bool.must.remove
+    retval.query.bool.must.assembly = self.assembly
     retval.query.bool.must.accession = accession
     return retval
 
-class ElasticSearchWrapper:
-    
+class ElasticSearchWrapperWrapper:
     def __init__(self, es):
+        self.esw = {"hg19" : ElasticSearchWrapper(es, "hg19"),
+                    "mm10" : ElasticSearchWrapper(es, "mm10")}
+
+    def __getitem__(self, assembly):
+        return self.esw[assembly]
+
+class ElasticSearchWrapper:
+    def __init__(self, es, assembly):
         self.es = es
         self.search = self.es.search
+        self.assembly = assembly
 
     @staticmethod
     def default_url(uri):
@@ -126,9 +131,9 @@ class ElasticSearchWrapper:
             query.append({"match": {"ensemblid": ensembl_id.split(".")[0]}})
         retval = self.es.search(body={"query": {"bool": {"should": query}},
                                       "size": 1000},
-                                index="gene_aliases")["hits"]["hits"]
+                                index="gene_aliases_" + self.assembly)["hits"]["hits"]
         return [x["_source"] for x in retval]
-    
+
     def _find_within(self, q, rf):
         _tk = q.split(" ")
         retval = []
@@ -158,16 +163,20 @@ class ElasticSearchWrapper:
             if len(_tk) == 1: break
             _tk = _tk[:-1]
         return (s, retval)
-    
+
     def get_tf_list(self):
         results = []
         query = terms_aggregation()
         query.append("tf", "label")
-        raw_results = self.es.search(index="peak_beds", body=query.query_obj)
+        try:
+            raw_results = self.es.search(index="peak_beds", body=query.query_obj)
+        except:
+            print("ES ERROR", "peak_beds", query.query_obj)
+            raise
         for bucket in raw_results["aggregations"]["tf"]["buckets"]:
             results.append(bucket["key"])
         return results
-    
+
     def get_bed_list(self, acc_list):
         query = or_query()
         for acc in acc_list:
@@ -182,10 +191,9 @@ class ElasticSearchWrapper:
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
         return self.es.search(index=index, body=query.query_obj)
 
-    def get_overlapping_snps(self, coord, assembly):
-        index = "snp_aliases"
+    def get_overlapping_snps(self, coord):
+        index = "snp_aliases_" + self.assembly
         query = and_query()
-        query.append_exact_match("assembly", assembly)
         query.append_exact_match("position.chrom", coord["chrom"])
         query.append({"range": {"position.start": {"gte": coord["start"]}}})
         query.append({"range": {"position.end": {"lte": coord["end"]}}})
@@ -193,18 +201,19 @@ class ElasticSearchWrapper:
 
     def cell_type_query(self, q):
         return self._find_within(q, self._cell_type_query)
-    
+
     def _cell_type_query(self, q):
         query = or_query()
         query.append_fuzzy_match("cell_type", q.replace(" ", "_"), fuzziness=1)
-        raw_results = self.es.search(index = "cell_types", body = query.query_obj)
+        raw_results = self.es.search(index = "cell_types_" + self.assembly,
+                                     body = query.query_obj)
         return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
-    
-    def get_overlapping_res(self, coord, assembly):
-        return self._get_overlaps_generic(coord, paths.reJsonIndex(assembly))
+
+    def get_overlapping_res(self, coord):
+        return self._get_overlaps_generic(coord, paths.reJsonIndex(self.assembly))
 
     def get_overlapping_genes(self, coord):
-        return self._get_overlaps_generic(coord, "gene_aliases")
+        return self._get_overlaps_generic(coord, "gene_aliases_" + self.assembly)
 
     def get_field_mapping(self, index, doc_type, field):
         path = field.split(".")
@@ -248,25 +257,22 @@ class ElasticSearchWrapper:
                 retval.append((result["accession"], coordinates))
         return (suggestions, retval)
 
-    def run_gene_query(self, fields, q, fuzziness, field_to_return=""):
+    def run_gene_query(self, fields, q, fuzziness):
         query = or_query()
         for field in fields:
             query.append_fuzzy_match(field, q, fuzziness=fuzziness)
-        raw_results = self.es.search(index = "gene_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "gene_aliases_" + self.assembly,
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
-        if field_to_return != "":
-            results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
-        else:
-            results = [r["_source"] for r in raw_results["hits"]["hits"]]
+        results = [r["_source"] for r in raw_results["hits"]["hits"]]
         return ([r for r in raw_results["hits"]["hits"] if r["_source"]["approved_symbol"] not in q],
                 results)
 
-    def run_snp_query(self, q, fuzziness, assembly="", field_to_return=""):
+    def run_snp_query(self, q, fuzziness, field_to_return=""):
         query = and_query()
-        if assembly != "":
-            query.append_exact_match("assembly", assembly)
         query.append_fuzzy_match("accession", q, fuzziness=fuzziness)
-        raw_results = self.es.search(index = "snp_aliases", body = query.query_obj)
+        raw_results = self.es.search(index = "snp_aliases_" + self.assembly,
+                                     body = query.query_obj)
         if raw_results["hits"]["total"] <= 0: return ([], [])
         if field_to_return != "":
             results = [r["_source"][field_to_return] for r in raw_results["hits"]["hits"]]
