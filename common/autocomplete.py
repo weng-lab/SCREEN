@@ -22,7 +22,7 @@ class Autocompleter:
                         "snp_aliases": self.get_snp_suggestions,
                         "tfs": self.get_tf_suggestions,
                         "cell_types": self.get_celltype_suggestions }
-        self.tfs = self.es.get_tf_list()
+        self.tfs = [] # TODO: fixme! self.es.get_tf_list()
         self.misc_dict = ["promoter", "enhancer", "DNase"]
 
     def recognizes_index(self, index):
