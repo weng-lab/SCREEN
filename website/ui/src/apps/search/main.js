@@ -25,7 +25,7 @@ class SearchPage extends React.Component {
 	this.store = createStore(get_root_reducer(maintabs),
 				 applyMiddleware(thunkMiddleware));
     }
-    
+
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
 	var SearchBoxC = main_searchbox_connector(SearchBox);
@@ -47,6 +47,6 @@ class SearchPage extends React.Component {
                    </div>
 		</div>);
     }
-    
+
 }
 export default SearchPage;
