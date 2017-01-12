@@ -59,7 +59,7 @@ class FacetBoxen extends React.Component {
                 <MainListFacet visible={true}
                 title={""}
                 items={{"chr1": 10000}}
-                selection={null} onchange={null} />
+                selection={"chr1"} onchange={null} />
 	        </div>
 	        </div>
 	        </div>
@@ -72,7 +72,8 @@ class FacetBoxen extends React.Component {
                 <MainRangeFacet visible={true}
                 title={""}
 		range={[0, 200000000]}
-		selection_range={[0, 200000000]}
+		selection_range={[this.props.pquery.coord.start,
+                                  this.props.pquery.coord.end]}
 		h_margin={default_margin}
 		h_interval={200000}
 		h_width={200}
@@ -102,6 +103,19 @@ class FacetBoxen extends React.Component {
                 onModeChange={null}
                 mode={CHECKLIST_MATCH_ALL}
                 />
+	        </div>
+	        </div>
+	        </div>
+
+                {/*  */}
+	        <div className="panel-group facet">
+	            <div className="panel panel-primary">
+	                <div className="panel-heading">Chromosome</div>
+	                <div className="panel-body" ref="facet_container">
+                <MainListFacet visible={true}
+                title={""}
+                items={{"chr1": 10000}}
+                selection={null} onchange={null} />
 	        </div>
 	        </div>
 	        </div>
