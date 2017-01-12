@@ -12,10 +12,11 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
 class ImportData:
-    def __init__(self, curs, chrs, baseTableName, cols):
+    def __init__(self, curs, info, cols):
         self.curs = curs
-        self.chrs = chrs
-        self.baseTableName = baseTableName
+        self.chrs = info["chrs"]
+        self.baseTableName = info["tableName"]
+        self.d = info["d"]
         self.all_cols = cols
 
     def setupTable(self, tableName):
@@ -62,21 +63,22 @@ class ImportData:
             self.curs.copy_from(f, tn, '\t', columns=cols)
         #print("imported", os.path.basename(fnp))
 
-    def run(self, d):
+    def run(self):
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:
-            fnp = os.path.join(d, "parsed." + chrom + ".tsv")
+            fnp = os.path.join(self.d, "parsed." + chrom + ".tsv")
             ctn = self.baseTableName + '_' + chrom
             self.setupTable(ctn)
             self.importTsv(self.baseTableName, fnp)
             self.importTsv(ctn, fnp)
 
 class CreateIndices:
-    def __init__(self, curs, chrs, baseTableName, cols):
+    def __init__(self, curs, info, cols):
         self.curs = curs
-        self.chrs = chrs
-        self.baseTableName = baseTableName
+        self.chrs = info["chrs"]
+        self.baseTableName = info["tableName"]
+        self.d = info["d"]
         self.all_cols = cols
         self.rank_cols = [x for x in cols if x.endswith("_rank")]
         self.signal_cols = [x for x in cols if x.endswith("_signal")]
@@ -208,22 +210,22 @@ def main():
     m = mm10Info
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        im = ImportData(curs, m["chrs"], m["tableName"], cols)
-        ci = CreateIndices(curs, m["chrs"], m["tableName"], cols)
+        im = ImportData(curs, m, cols)
+        ci = CreateIndices(curs, m, cols)
         if args.setup:
-            im.run(m["d"])
+            im.run()
         elif args.index:
             ci.run()
         elif args.vac:
             pass
         else:
-            im.run(m["d"])
+            im.run()
 
     if args.setup or args.vac:
         vacumnAnalyze(DBCONN.getconn())
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        ci = CreateIndices(curs, m["chrs"], m["tableName"], cols)
+        ci = CreateIndices(curs, m, cols)
         if not args.setup and not args.index and not args.vac:
             ci.run()
 
