@@ -30,7 +30,7 @@ class PolishData:
     def setupCREhistograms(self):
         numBins = 100
         with open(Genome.ChrLenByAssembly(self.assembly)) as f:
-            lens = [x.split('\t') for x in f.readlines() if x]
+            lens = [x.rstrip().split('\t') for x in f.readlines() if x]
             chrLens = { x[0] : x[1] for x in lens }
         for chrom in chroms[self.assembly]:
             mmax = chrLens[chrom]
@@ -39,7 +39,7 @@ class PolishData:
 SELECT WIDTH_BUCKET(start, 0, {mmax}, {numBins}), COUNT(start) FROM {tn}
 GROUP BY 1 ORDER BY 1""".format(mmax=mmax, numBins=numBins, tn=tn))
             bucketVals = [x[1] for x in self.curs.fetchall()]
-
+            print(chrom, mmax, len(bucketVals))
 
     def run(self):
         self.setupCREhistograms()
