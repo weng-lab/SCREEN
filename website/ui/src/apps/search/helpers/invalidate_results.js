@@ -116,7 +116,8 @@ export const invalidate_boxplot = (q) => {
 	    dispatch(expression_boxplot_done(response));
 	};
 	var f_error = (jqxhr, status, error) => {
-	    dispatch(results_error(jqxhr, error));
+            console.log("err invalidate_boxplot");
+	    //dispatch(results_error(jqxhr, error));
 	};
 	dispatch(expression_boxplot_loading());
 	ExpressionBoxplotAJAX(query, f_success, f_error);
@@ -134,7 +135,7 @@ export const invalidate_results = (state) => {
 	    if (r.dispatch_result) r.dispatch_result(response, r.dispatcher(dispatch));
 	    r.dispatcher(dispatch)({type: SET_COMPLETE});
 	};
-	
+
 	var f_success = (response, status, jqxhr) => {
 	    ResultsDispatchMap(state, response, dispatch);
 	    dispatch(set_table_results(response.results.hits));
@@ -163,7 +164,7 @@ export const invalidate_results = (state) => {
 	    QueryAJAX(r.append_query(n_query), d_success(k), d_error(k))
 	    r.dispatcher(dispatch)({type: SET_LOADING});
 	});
-	
+
     }
 };
 
@@ -213,7 +214,8 @@ export const invalidate_tree_comparison = ({left, right}) => {
 	    dispatch(set_tree_comparison(response));
 	};
 	var f_error = (jqxhr, status, error) => {
-	    dispatch(results_error(jqxhr, error));
+	    console.log("err invalidate_tree_comparison");
+            //dispatch(results_error(jqxhr, error));
 	};
 	dispatch(tree_comparison_loading());
 	TreeComparisonAJAX(n_query, f_success, f_error);
@@ -243,7 +245,8 @@ export const invalidate_detail = (re) => {
 	    dispatch(results_error(jqxhr, error));
 	};
 	var f_error = (jqxhr, status, error) => {
-	    dispatch(results_error(jqxhr, error));
+	    console.log("err invalidate_detail");
+            //dispatch(results_error(jqxhr, error));
 	};
 	var e_success = (response, status, jqxhr) => {
 	};
