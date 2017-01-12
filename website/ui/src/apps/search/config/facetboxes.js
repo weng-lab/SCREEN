@@ -11,197 +11,211 @@ import {render_int, render_cell_type} from './results_table'
 
 export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").replace(/27AC/g, "27ac").replace(/ME1/g, "me1").replace(/ME2/g, "me2").replace(/ME3/g, "me3"));
 
-export const facetboxes = {
-    "accessions": {
-	title: "Accessions",
-	visible: (GlobalParsedQuery != "" && "accessions" in GlobalParsedQuery && GlobalParsedQuery.accessions.length != 0),
-	facets: {
-	    "accessions": {
-		type: CHECKLIST_FACET,
-		visible: true,
-		title: "",
-		state: {
-		    items: (GlobalParsedQuery && "accessions" in GlobalParsedQuery ? GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}) : []),
-		    match_mode_enabled: false,
-		    mode: CHECKLIST_MATCH_ANY,
-		    autocomplete_source: []
-		}
-	    }
-	}
-    },
-    "cell_lines": {
-	title: "Cell Types",
-	visible: true,
-	facets: {
-	    "cell_lines": {
-		type: LONGLIST_FACET,
-		visible: true,
-		title: "",
-		state: {
-		    data: GlobalCellTypes,
-		    order: [],
-		    cols: [
-			{
-			    title: "cell type",
-			    data: "value",
-			    className: "dt-right",
-			    render: render_cell_type
-			},
-			{
-			    title: "tissue",
-			    data: "tissue",
-			    className: "dt-right"
-			}
-		    ],
-		    selection: null
-		}
-	    }
-	}
-    },
-    "chromosome": {
-	title: "Chromosome",
-	visible: true,
-	facets: {
-	    "chromosome": {
-		type: LIST_FACET,
-		visible: true,
-		title: "",
-		state: {
-		    items: {
-			"chr1": 10000
-		    },
-		    selection: null
-		}
-	    }
-	}
-    },
-    "coordinates": {
-	title: "Coordinates",
-	visible: true,
-	display_map: (state) => (state.facet_boxes.chromosome.facets.chromosome.state.selection != null),
-	facets: {
-	    "coordinates": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "",
-		state: {
-		    range: [0, 200000000],
-		    selection_range: [0, 200000000],
-		    h_margin: default_margin,
-		    h_interval: 200000,
-		    h_width: 200
-		}
-	    }
-	}
-    },
-    "TFs": {
-	title: "Intersect TF/histone/DNase peaks",
-	visible: true,
-	facets: {
-	    "TF": {
-		type: LONGCHECKLIST_FACET,
-		visible: true,
-		title: "",
-		match_mode_enabled: true,
-		state: {
-		    data: (GlobalTfs.map ? GlobalTfs.map((tf) => {return {key: tf, selected: false}}) : []),
-		    order: [],
-		    cols: [{
-			title: "Assay",
-			data: "key",
-			className: "dt-right",
-			render: render_histone_tf
-		    }],
-		    mode: CHECKLIST_MATCH_ALL
-		}
-	    }
-	}
-    },
-    "gene_distance": {
-	title: "Distance to Genes",
-	visible: true,
-	facets: {
-	    "genedistpc": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "Protein-coding genes",
-		state: {
-		    range: [0, 500000000],
-		    selection_range: [0, 500000000],
-		    h_margin: default_margin,
-		    h_interval: 5000,
-		    h_width: 200
-		}
-	    },
-	    "genedistall": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "All genes",
-		state: {
-		    range: [0, 500000000],
-		    selection_range: [0, 500000000],
-		    h_margin: default_margin,
-		    h_interval: 5000,
-		    h_width: 200
-		}
-	    },
-	}
-    },
-    "ranks": {
-	title: "Rank",
-	visible: true,
-	display_map: (state) => (state.facet_boxes.cell_lines.facets.cell_lines.state.selection != null),
-	facets: {
-	    "dnase": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "DNase",
-		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
-		    h_margin: default_margin,
-		    h_interval: 500,
-		    h_width: 200
-		}
-	    },
-	    "promoter": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "promoter",
-		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
-		    h_margin: default_margin,
-		    h_interval: 500,
-		    h_width: 200
-		}
-	    },
-	    "enhancer": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "enhancer",
-		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
-		    h_margin: default_margin,
-		    h_interval: 500,
-		    h_width: 200
-		}
-	    },
-	    "ctcf": {
-		type: RANGE_FACET,
-		visible: true,
-		title: "CTCF",
-		state: {
-		    range: [0, 20000],
-		    selection_range: [0, 20000],
-		    h_margin: default_margin,
-		    h_interval: 500,
-		    h_width: 200
-		}
+const accessionsBox = {
+    title: "Accessions",
+    visible: (GlobalParsedQuery != "" && "accessions" in GlobalParsedQuery && GlobalParsedQuery.accessions.length != 0),
+    facets: {
+	"accessions": {
+	    type: CHECKLIST_FACET,
+	    visible: true,
+	    title: "",
+	    state: {
+		items: (GlobalParsedQuery && "accessions" in GlobalParsedQuery ? GlobalParsedQuery.accessions.map((d) => {return {value: d, checked: true}}) : []),
+		match_mode_enabled: false,
+		mode: CHECKLIST_MATCH_ANY,
+		autocomplete_source: []
 	    }
 	}
     }
+};
+
+const cellTypesBox = {
+    title: "Cell Types",
+    visible: true,
+    facets: {
+	"cell_lines": {
+	    type: LONGLIST_FACET,
+	    visible: true,
+	    title: "",
+	    state: {
+		data: GlobalCellTypes,
+		order: [],
+		cols: [
+		    {
+			title: "cell type",
+			data: "value",
+			className: "dt-right",
+			render: render_cell_type
+		    },
+		    {
+			title: "tissue",
+			data: "tissue",
+			className: "dt-right"
+		    }
+		],
+		selection: null
+	    }
+	}
+    }
+};
+
+const chromBox = {
+    title: "Chromosome",
+    visible: true,
+    facets: {
+	"chromosome": {
+	    type: LIST_FACET,
+	    visible: true,
+	    title: "",
+	    state: {
+		items: {
+		    "chr1": 10000
+		},
+		selection: null
+	    }
+	}
+    }
+};
+
+const coordBox = {
+    title: "Coordinates",
+    visible: true,
+    display_map: (state) => (state.facet_boxes.chromosome.facets.chromosome.state.selection != null),
+    facets: {
+	"coordinates": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "",
+	    state: {
+		range: [0, 200000000],
+		selection_range: [0, 200000000],
+		h_margin: default_margin,
+		h_interval: 200000,
+		h_width: 200
+	    }
+	}
+    }
+};
+
+const tfBox = {
+    title: "Intersect TF/histone/DNase peaks",
+    visible: true,
+    facets: {
+	"TF": {
+	    type: LONGCHECKLIST_FACET,
+	    visible: true,
+	    title: "",
+	    match_mode_enabled: true,
+	    state: {
+		data: (GlobalTfs.map ? GlobalTfs.map((tf) => {return {key: tf, selected: false}}) : []),
+		order: [],
+		cols: [{
+		    title: "Assay",
+		    data: "key",
+		    className: "dt-right",
+		    render: render_histone_tf
+		}],
+		mode: CHECKLIST_MATCH_ALL
+	    }
+	}
+    }
+};
+
+const geneBox = {
+    title: "Distance to Genes",
+    visible: true,
+    facets: {
+	"genedistpc": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "Protein-coding genes",
+	    state: {
+		range: [0, 500000000],
+		selection_range: [0, 500000000],
+		h_margin: default_margin,
+		h_interval: 5000,
+		h_width: 200
+	    }
+	},
+	"genedistall": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "All genes",
+	    state: {
+		range: [0, 500000000],
+		selection_range: [0, 500000000],
+		h_margin: default_margin,
+		h_interval: 5000,
+		h_width: 200
+	    }
+	},
+    }
+};
+
+const rankBox = {
+    title: "Rank",
+    visible: true,
+    display_map: (state) => (state.facet_boxes.cell_lines.facets.cell_lines.state.selection != null),
+    facets: {
+	"dnase": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "DNase",
+	    state: {
+		range: [0, 20000],
+		selection_range: [0, 20000],
+		h_margin: default_margin,
+		h_interval: 500,
+		h_width: 200
+	    }
+	},
+	"promoter": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "promoter",
+	    state: {
+		range: [0, 20000],
+		selection_range: [0, 20000],
+		h_margin: default_margin,
+		h_interval: 500,
+		h_width: 200
+	    }
+	},
+	"enhancer": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "enhancer",
+	    state: {
+		range: [0, 20000],
+		selection_range: [0, 20000],
+		h_margin: default_margin,
+		h_interval: 500,
+		h_width: 200
+	    }
+	},
+	"ctcf": {
+	    type: RANGE_FACET,
+	    visible: true,
+	    title: "CTCF",
+	    state: {
+		range: [0, 20000],
+		selection_range: [0, 20000],
+		h_margin: default_margin,
+		h_interval: 500,
+		h_width: 200
+	    }
+	}
+    }
+};
+
+export const facetboxes = {
+    "cell_lines": cellTypesBox,
+    "accessions": accessionsBox,
+    "chromosome": chromBox,
+    "coordinates": coordBox,
+    "TFs": tfBox,
+    "gene_distance":  geneBox,
+    "ranks": rankBox
 };
 
 export const facetbox_render_order = [
@@ -262,7 +276,7 @@ export const es_links = {
 	    f_query: [RangeQueryMap, RangeAggMap],
 	    f_results: [RangeResultsMap],
 	    field: "genes.nearest-all.distance"
-	}	
+	}
     },
     "ranks": {
 	"dnase": {
