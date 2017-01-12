@@ -7,6 +7,7 @@ from controllers.geneexp_controller import GeneExpController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.ajax_ws import AjaxWebServiceWrapper
+from controllers.data_ws import DataWebServiceWrapper
 from controllers.comparison import ComparisonController
 
 from common.session import Sessions
@@ -25,6 +26,7 @@ class MainApp():
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
         self.ajaxWS = AjaxWebServiceWrapper(args, es, ps, cache, staticDir)
+        self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
     def session_uuid(self):
@@ -131,6 +133,14 @@ class MainApp():
         #print(cherrypy.request)
         j = cherrypy.request.json
         return self.ajaxWS.process(j)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def dataws(self):
+        #print(cherrypy.request)
+        j = cherrypy.request.json
+        return self.dataWS.process(j)
 
     @cherrypy.expose
     def geneexp(self, *args, **kwargs):
