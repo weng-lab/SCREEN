@@ -3,7 +3,7 @@
 from __future__ import print_function
 import sys, os, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from load_cell_types import LoadCellTypes
 from bulk_es_import import executable_importer
 
@@ -24,7 +24,7 @@ def main():
 
         fn = "cellTypeToTissue." + assembly + ".lsj"
         fnp = os.path.join(os.path.dirname(__file__),
-                           "../../../", fn)
+                           "../", fn)
         importer = executable_importer(fnp,
                                        "cell_types_" + assembly,
                                        "cell_type",

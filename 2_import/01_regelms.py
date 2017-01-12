@@ -40,7 +40,7 @@ def main():
                                        args.elasticsearch_port)
         importer.exe(50)
 
-        LoadCellTypes.Import(args, assembly)
+        #LoadCellTypes.Import(args, assembly)
 
 if __name__ == "__main__":
     sys.exit(main())
