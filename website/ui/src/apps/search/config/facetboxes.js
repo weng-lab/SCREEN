@@ -209,8 +209,8 @@ const rankBox = {
 };
 
 export const facetboxes = {
-    "cell_lines": cellTypesBox,
     "accessions": accessionsBox,
+    "cell_lines": cellTypesBox,
     "chromosome": chromBox,
     "coordinates": coordBox,
     "TFs": tfBox,
