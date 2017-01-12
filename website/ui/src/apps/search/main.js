@@ -6,7 +6,7 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
 import {get_root_reducer} from './reducers/root_reducer'
-import FacetApp from './components/facet_app'
+import FacetBoxen from './components/facetboxen'
 
 import SearchBox from '../../common/components/searchbox'
 
@@ -31,14 +31,14 @@ class SearchPage extends React.Component {
 	var SearchBoxC = main_searchbox_connector(SearchBox);
 	return (<div>
 		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse navbar-main">
-		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={true} searchbox={SearchBoxC} store={this.store} /></div>
+		      <div className="container-fluid" id="navbar-main">
+                       <NavBarApp show_cartimage={true} searchbox={SearchBoxC} store={this.store} />
+                      </div>
 		   </nav>
 		   <div className="container" style={{width: "100%"}}>
                       <div className="row" style={{width: "100%"}}>
                          <div className="col-md-3 nopadding-right" id="facets-container">
-		         <FacetApp store={this.store} pquery={GlobalParsedQuery} facetboxes={facetboxes}
-		               facetbox_render_order={facetbox_render_order} es_links={es_links}
- 		               invalidator={invalidate_results} />
+                <FacetBoxen store={this.store} />
                          </div>
                          <div className="col-md-9 nopadding-left" id="tabs-container">
 		            <Tabs store={this.store} tabs={maintabs} />
