@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, re, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import chroms
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -26,7 +27,22 @@ class PolishData:
         """.format(tableName = tableName, src=src))
         print("created", tableName)
 
+    def setupCREhistograms(self):
+        numBins = 100
+        with open(Genome.ChrLenByAssembly(self.assembly)) as f:
+            lens = [x.split('\t') for x in f.readlines() if x]
+            chrLens = { x[0] : x[1] for x in lens }
+        for chrom in chroms[self.assembly]:
+            mmax = chrLens[chrom]
+            tn = self.assembly + "_cre_" + chrom
+            self.curs.execute("""
+SELECT WIDTH_BUCKET(start, 0, {mmax}, {numBins}), COUNT(start) FROM {tn}
+GROUP BY 1 ORDER BY 1""".format(mmax=mmax, numBins=numBins, tn=tn))
+            bucketVals = [x[1] for x in self.curs.fetchall()]
+
+
     def run(self):
+        self.setupCREhistograms()
         self.setupCREcounts()
 
 def parse_args():
