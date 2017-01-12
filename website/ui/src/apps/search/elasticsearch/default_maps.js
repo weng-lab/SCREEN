@@ -64,7 +64,6 @@ export const LongListResultsMap = (key, facet, dispatch, results) => {
 };
 
 export const RangeResultsMap = (key, facet, dispatch, results) => {
-    if(0){
     if (results.aggs[key].type == "histogram") {
 	dispatch({
 	    type: SET_RANGE,
@@ -81,7 +80,6 @@ export const RangeResultsMap = (key, facet, dispatch, results) => {
 	dispatch({
 	    type: HIDE_FACET
 	});
-    }
     }
 }
 
