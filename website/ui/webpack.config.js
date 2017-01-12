@@ -22,7 +22,7 @@ module.exports = {
 	    {
 		test: /\.jsx?$/,
 		exclude: /node_modules/,
-		loader: 'react-hot!babel',
+		loader: 'babel',
 		include: path.join(__dirname, 'src')
 	    }
 	]
@@ -41,14 +41,16 @@ module.exports = {
     },
     plugins: [
 	//new webpack.HotModuleReplacementPlugin(),
-	//new webpack.optimize.UglifyJsPlugin(),
 	new webpack.ProvidePlugin({
 	    "$": "jquery",
 	    "jQuery": "jquery",
 	    "window.jQuery": "jquery"}),
 	new webpack.DefinePlugin({
-	    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-	})
+	    'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+	}),
+	new webpack.optimize.UglifyJsPlugin()
     ],
     externals: {
 	'react': 'React',
