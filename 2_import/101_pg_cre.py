@@ -28,7 +28,7 @@ class PolishData:
         print("created", tableName)
 
     def setupCREhistograms(self):
-        numBins = 100
+        numBins = 100 # open end, so will get numBins + 1
         with open(Genome.ChrLenByAssembly(self.assembly)) as f:
             lens = [x.rstrip().split('\t') for x in f.readlines() if x]
             chrLens = { x[0] : x[1] for x in lens }
@@ -38,8 +38,10 @@ class PolishData:
             self.curs.execute("""
 SELECT WIDTH_BUCKET(start, 0, {mmax}, {numBins}), COUNT(start) FROM {tn}
 GROUP BY 1 ORDER BY 1""".format(mmax=mmax, numBins=numBins, tn=tn))
-            bucketVals = [x[1] for x in self.curs.fetchall()]
-            print(chrom, mmax, len(bucketVals))
+            buckets = [0] * (numBins+1)
+            for r in self.curs.fetchall():
+                buckets[r[0]] = r[1]
+            print(chrom, mmax, len(buckets), buckets)
 
     def run(self):
         self.setupCREhistograms()
