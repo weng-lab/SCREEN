@@ -47,7 +47,11 @@ class ImportData:
         h3k4me3_only_rank integer[],
         h3k4me3_only_zscore numeric(8,3)[],
         h3k4me3_dnase_rank integer[],
-        h3k4me3_dnase_zscore numeric(8,3)[]
+        h3k4me3_dnase_zscore numeric(8,3)[],
+        gene_all_distance integer[],
+        gene_all_name text[],
+        gene_pc_distance integer[],
+        gene_pc_name text[]
         ); """.format(tableName = tableName))
         print("created", tableName)
 
@@ -177,16 +181,17 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+mm10Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                      "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+                      "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                      "chr19", "chrX", "chrY"],
+            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/",
+            "tableName" : "mm10_cre"}
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
-    d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/"
-
-    mm10_chrs = ["chr1", "chr2", "chr3", "chr4", "chr5",
-                 "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
-                 "chrX", "chrY"]
 
     cols = ("accession", "mpName", "negLogP", "chrom", "start", "stop",
             "conservation_rank", "conservation_signal",
@@ -196,31 +201,32 @@ def main():
  	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
  	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
  	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
- 	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore")
+ 	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
+            "gene_all_distance", "gene_all_name",
+            "gene_pc_distance", "gene_pc_name")
 
-    chrs = mm10_chrs
-    tableName = "mm10_cre"
+    m = mm10Info
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        im = ImportData(curs, chrs, tableName, cols)
-        ci = CreateIndices(curs, chrs, tableName, cols)
+        im = ImportData(curs, m["chrs"], m["tableName"], cols)
+        ci = CreateIndices(curs, m["chrs"], m["tableName"], cols)
         if args.setup:
-            im.run(d)
+            im.run(m["d"])
         elif args.index:
             ci.run()
         elif args.vac:
             pass
         else:
-            im.run(d)
+            im.run(m["d"])
 
     if args.setup or args.vac:
         vacumnAnalyze(DBCONN.getconn())
 
     with getcursor(DBCONN, "08_setup_log") as curs:
-        ci = CreateIndices(curs, chrs, tableName, cols)
+        ci = CreateIndices(curs, m["chrs"], m["tableName"], cols)
         if not args.setup and not args.index and not args.vac:
             ci.run()
-            
+
     return 0
 
 if __name__ == '__main__':
