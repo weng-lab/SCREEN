@@ -45,7 +45,6 @@ class AjaxWebServiceWrapper:
 
     def process(self, j):
         if "GlobalAssembly" not in j:
-            j["GlobalAssembly"] = "mm10"
             raise Exception("GlobalAssembly not defined")
         return self.ajws[j["GlobalAssembly"]].process(j)
 
