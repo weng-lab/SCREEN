@@ -20,6 +20,7 @@ from models.bigwig import BigWig
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from compute_gene_expression import ComputeGeneExpression
+from pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -69,6 +70,7 @@ class AjaxWebService:
         self.args = args
         self.es = es
         self.ps = ps
+        self.pgSearch = PGsearch(ps, assembly)
         self.rh = RankHeatmap(cache.cellTypesAndTissues,
                               self._rank_types)
         self.cache = cache
@@ -555,7 +557,7 @@ class AjaxWebService:
                                 "index": paths.reJsonIndex(self.assembly),
                                "callback": "" })"""
             _ret = self.cache.alltop()
-       
+
         if "hits" in _ret:
             try:
                 return self._process_tree_hits(j, _ret)
@@ -631,6 +633,10 @@ class AjaxWebService:
                 j["callback"] = ""
 
         with Timer('ElasticSearch time'):
+
+            print("object", j["object"])
+            raise Exception(j["object"])
+
             ret = self._query({"object": j["object"],
                                "index": paths.reJsonIndex(self.assembly),
                                "callback": j["callback"] })

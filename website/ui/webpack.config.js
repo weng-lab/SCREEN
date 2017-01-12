@@ -9,8 +9,9 @@ require.extensions['.css'] = () => {
 };
 
 module.exports = {
-    debug: true,
-    devtool: 'eval-source-map',
+    //debug: true,
+    debug: false,
+    //devtool: 'eval-source-map',
     entry: [
 	//'webpack-dev-server/client?http://0.0.0.0:9000/',
 	//'webpack/hot/only-dev-server',
@@ -39,7 +40,8 @@ module.exports = {
 	hot: true
     },
     plugins: [
-	new webpack.HotModuleReplacementPlugin(),
+	//new webpack.HotModuleReplacementPlugin(),
+	//new webpack.optimize.UglifyJsPlugin(),
 	new webpack.ProvidePlugin({
 	    "$": "jquery",
 	    "jQuery": "jquery",
