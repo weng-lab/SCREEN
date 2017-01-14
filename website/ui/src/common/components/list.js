@@ -9,13 +9,12 @@ export class ListItem extends React.Component {
     }
 
     onclick() {
-	if (this.props.onclick) this.props.onclick(this.props.value);
+	if (this.props.onclick) {
+            this.props.onclick(this.props.value);
+        }
     }
 
     render() {
-
-	//console.log(this.props);
-
 	var classname, rtxt;
 	if (this.props.selected) {
 	    classname = "result_row_selected";
@@ -32,9 +31,7 @@ export class ListItem extends React.Component {
 		   </div>
 		</a>
 	       );
-
     }
-
 }
 
 class ListFacet extends React.Component {
@@ -45,8 +42,12 @@ class ListFacet extends React.Component {
     }
 
     click_handler(k) {
-	if (k == this.props.selection) k = null;
-	if (this.props.onchange) this.props.onchange(k);
+	if (k == this.props.selection) {
+            k = null;
+        }
+	if (this.props.onchange) {
+            this.props.onchange(k);
+        }
     }
 
     render() {
@@ -58,13 +59,16 @@ class ListFacet extends React.Component {
             var key = kv[0];
             var val = kv[1];
 	    var selected = (key == s);
-	    var style = (s == null || selected ? {display: "block"} : {display: "none"});
-	    return <ListItem onclick={click_handler} value={key} key={key}
-            n={val} selected={selected} style={style} />;
+
+	    if(s == null || selected){
+	        return <ListItem onclick={click_handler} value={key} key={key}
+                n={val} selected={selected} style={{display: "block"}} />;
+            } else {
+                return <div />;
+            }
 	});
 	return <div>{items}</div>;
     }
-
 }
 export default ListFacet;
 
