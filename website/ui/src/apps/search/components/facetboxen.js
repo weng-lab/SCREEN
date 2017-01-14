@@ -88,15 +88,16 @@ const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
     if(null == coord_chrom){
         return (<div />);
     }
+    var chromLen = GlobalChromLens[coord_chrom];
+    var histBins = GlobalCreHistBins[coord_chrom];
     return panelize("Coordinates",
                     <MainRangeFacet visible={true}
                     title={""}
-                    h_data={GlobalCreHistBins[coord_chrom]}
-	            range={[0, GlobalChromLens[coord_chrom]]}
+                    h_data={histBins}
+	            range={[0, chromLen]}
 	            selection_range={[coord_start, coord_end]}
 	            h_margin={default_margin}
-	            h_interval={200000}
-	            h_width={200}
+	            h_interval={chromLen / histBins.numBins}
                     onchange={(se) => { actions.setCoords(se[0], se[1]) }}
                     />);
 }
