@@ -6,3 +6,6 @@ export const setChrom = (chrom) => ({ type: SET_CHROM, chrom });
 
 export const SET_COORDS = 'SET_COORDS';
 export const setCoords = (start, end) => ({ type: SET_COORDS, start, end });
+
+export const SET_ACCESSIONS = 'SET_ACCESSIONS'
+export const setAccessions = (accs) => ({ type: SET_ACCESSIONS, accs });
