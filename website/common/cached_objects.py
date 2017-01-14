@@ -7,6 +7,7 @@ from models.biosamples import Biosamples
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import Autocompleter
 from constants import paths
+from pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
@@ -42,9 +43,17 @@ class CachedObjects:
     def __init__(self, es, ps, assembly):
         self.es = es
         self.ps = ps
+        self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly
 
-        t = Timer("load CachedObjects " + assembly)
+        try:
+            self.chromCounts = self.pgSearch.chromCounts()
+        except:
+            if "mm10" == assembly:
+                raise
+            print("ERROR: chromCount", assembly)
+
+        #t = Timer("load CachedObjects " + assembly)
         acs = Autocompleter(es, assembly)
         self.tf_list = acs.tf_list()
         self.tf_list_json = json.dumps(self.tf_list)
@@ -65,7 +74,7 @@ class CachedObjects:
 
     def alltop(self):
         return sum([[_k for _k, _v in v.iteritems()] for k, v in self.topelems.iteritems()])
-                    
+
     def get20k(self, ct, version):
         results = []
 
