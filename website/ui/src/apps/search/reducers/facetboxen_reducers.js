@@ -6,6 +6,8 @@ const facetboxen_reducers = (state, action) => {
 
     case Actions.SET_CELL_TYPE: return {...state, cellType: action.cellType };
     case Actions.SET_CHROM: return {...state, coord_chrom: action.chrom };
+    case Actions.SET_COORDS: return {...state, coord_start: action.start,
+                                     coord_end: action.end };
 
     default:
       return state;

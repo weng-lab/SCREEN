@@ -80,7 +80,7 @@ const startEndBox = (coord_start, coord_end, actions) => {
 	    h_margin={default_margin}
 	    h_interval={200000}
 	    h_width={200}
-            onchange={null}
+            onchange={(se) => { actions.setCoords(se[0], se[1]) }}
             />
 	    </div>
 	    </div>
