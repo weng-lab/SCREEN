@@ -5,7 +5,7 @@ import os, sys, json, psycopg2, re, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
-from constants import chroms
+from constants import chroms, chrom_lengths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -28,20 +28,35 @@ class PolishData:
         print("created", tableName)
 
     def setupCREhistograms(self):
+        outTableName = self.assembly + "_cre_bins"
+        print("dropping and creating", outTableName, "...")
+        self.curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+CREATE TABLE {tableName}
+(id serial PRIMARY KEY,
+chrom VARCHAR(5),
+buckets jsonb);""".format(tableName = outTableName))
+        print("created", outTableName)
+
         numBins = 100 # open end, so will get numBins + 1
-        with open(Genome.ChrLenByAssembly(self.assembly)) as f:
-            lens = [x.rstrip().split('\t') for x in f.readlines() if x]
-            chrLens = { x[0] : int(x[1]) for x in lens }
-        for chrom in chroms[self.assembly]:
-            mmax = chrLens[chrom]
+        for chrom, mmax in chrom_lengths[self.assembly].iteritems():
+            if chrom not in chroms[self.assembly]:
+                continue
             tn = self.assembly + "_cre_" + chrom
             self.curs.execute("""
-SELECT WIDTH_BUCKET(start, 0, {mmax}, {numBins}), COUNT(start) FROM {tn}
-GROUP BY 1 ORDER BY 1""".format(mmax=mmax, numBins=numBins, tn=tn))
-            buckets = [0] * (numBins+1)
+SELECT min(start) as left,
+WIDTH_BUCKET(start, 0, {mmax}, {numBins}) as bucket_num,
+COUNT(start) FROM {tn}
+GROUP BY 2 ORDER BY 2""".format(outTableName = outTableName,
+                                chrom = chrom, mmax = mmax, numBins = numBins, tn = tn))
+            buckets = {}
             for r in self.curs.fetchall():
-                buckets[r[0]] = r[1]
-            print(chrom, mmax, len(buckets), buckets)
+                buckets[r[0]] = r[2]
+            print(chrom, buckets)
+            self.curs.execute("""
+INSERT INTO {outTableName} (chrom, buckets)
+VALUES (%s, %s)""".format(outTableName =  outTableName),
+                         (chrom, json.dumps(buckets)))
 
     def run(self):
         self.setupCREhistograms()
