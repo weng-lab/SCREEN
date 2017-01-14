@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import * as Actions from '../actions';
+import * as Actions from '../actions/facetboxen_actions';
 
 const facetboxen_reducers = (state, action) => {
     switch (action.type) {
