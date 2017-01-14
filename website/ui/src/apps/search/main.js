@@ -50,7 +50,7 @@ class SearchPage extends React.Component {
 
 		<nav id="mainNavBar" className="navbar navbar-default navbar-inverse navbar-main">
 		<div className="container-fluid" id="navbar-main">
-                <NavBarApp show_cartimage={false} />
+                <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
                 </div>
 		</nav>
 

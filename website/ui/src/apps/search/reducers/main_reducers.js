@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import * as Actions from '../actions/facetboxen_actions';
+import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 
 const facetboxen_reducers = (state, action) => {
     switch (action.type) {
@@ -25,6 +26,10 @@ const facetboxen_reducers = (state, action) => {
         return {...state, gene_all_start: action.start, gene_all_end: action.end };
     case Actions.SET_GENE_PC_DISTANCE:
         return {...state, gene_pc_start: action.start, gene_pc_end: action.end };
+
+    case SearchAction.MAKE_SEARCH_QUERY:
+        console.log("new query", action.q);
+        return state;
 
     default:
       return state;
