@@ -60,8 +60,10 @@ const FacetBoxen = ({coord, cellType, actions}) => {
 	    <div className="panel-body">
             <MainListFacet visible={true}
             title={""}
-            items={{"chr1": 10000}}
-            selection={"chr1"} onchange={null} />
+            items={GlobalChromCounts}
+            selection={null}
+            onchange={(chrom) => { actions.setChrom(chrom) }}
+            />
 	    </div>
 	    </div>
 	    </div>
@@ -104,19 +106,6 @@ const FacetBoxen = ({coord, cellType, actions}) => {
             onModeChange={null}
             mode={CHECKLIST_MATCH_ALL}
             />
-	    </div>
-	    </div>
-	    </div>
-
-            {/*  */}
-	    <div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">Chromosome</div>
-	    <div className="panel-body">
-            <MainListFacet visible={true}
-            title={""}
-            items={{"chr1": 10000}}
-            selection={null} onchange={null} />
 	    </div>
 	    </div>
 	    </div>
