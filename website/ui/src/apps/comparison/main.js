@@ -11,7 +11,7 @@ import MainVennDiagram from './components/venn'
 
 import SearchBox from '../../common/components/searchbox'
 
-import MainTabControl from '../search/components/maintab'
+import MainTabControl from './components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
 import {main_tab_connector, main_searchbox_connector} from '../search/reducers/root_reducer'
 import {main_venn_connector} from './reducers/comparison_reducer'
@@ -28,7 +28,7 @@ class ComparisonPage extends React.Component {
 	super(props);
 	this.store = createStore(get_root_comparison_reducer(maintabs), applyMiddleware(thunkMiddleware));
     }
-    
+
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
 	var SearchBoxC = main_searchbox_connector(SearchBox);
@@ -50,6 +50,6 @@ class ComparisonPage extends React.Component {
                    </div>
 		</div>);
     }
-    
+
 }
 export default ComparisonPage;

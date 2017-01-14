@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react'
 import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
@@ -7,6 +7,8 @@ import createLogger from 'redux-logger'
 import NavBarApp from '../../common/components/navbar_app'
 import SearchBox from '../../common/components/searchbox'
 import FacetBoxen from './components/facetboxen'
+import MainTabs from './components/maintabs'
+
 import main_reducers from './reducers/main_reducers'
 
 const loggerMiddleware = createLogger();
