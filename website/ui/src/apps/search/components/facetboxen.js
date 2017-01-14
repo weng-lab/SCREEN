@@ -115,8 +115,7 @@ const tfBox = (actions) => {
                     cols={[{
 		        title: "Assay",
 		        data: "key",
-		        className: "dt-right",
-		        render: render_histone_tf
+		        className: "dt-right"
 	            }]}
                     order={[]}
                     match_mode_enable={true}

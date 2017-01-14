@@ -21,7 +21,8 @@ const initialState = {
     rank_dnase_start: 0, rank_dnase_end: 20000,
     rank_promoter_start: 0, rank_promoter_end: 20000,
     rank_enhancer_start: 0, rank_enhancer_end: 20000,
-    rank_ctcf_start: 0, rank_ctcf_end: 20000
+    rank_ctcf_start: 0, rank_ctcf_end: 20000,
+    maintabs_active: "results"
 };
 
 const store = createStore(main_reducers,
@@ -39,7 +40,8 @@ class SearchPage extends React.Component {
                 <Provider store={store}>
 	        <div>
 
-		<nav id="mainNavBar" className="navbar navbar-default navbar-inverse navbar-main">
+		<nav id="mainNavBar"
+                     className="navbar navbar-default navbar-inverse navbar-main">
 		<div className="container-fluid" id="navbar-main">
                 <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
                 </div>
@@ -51,9 +53,10 @@ class SearchPage extends React.Component {
                     <FacetBoxen />
                     </div>
                   <div className="col-md-9 nopadding-left" id="tabs-container">
-
+                     <MainTabs />
                   </div>
                 </div>
+
                 </div>
 		</div>
                 </Provider>
