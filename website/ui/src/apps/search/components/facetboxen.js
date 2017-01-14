@@ -90,15 +90,8 @@ const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
 	    </div>);
 }
 
-const FacetBoxen = ({coord_chrom, coord_start, coord_end,
-                     cellType, actions}) => {
-    return (<div>
-            {cellTypesBox(cellType, actions)}
-            {chromBox(coord_chrom, actions)}
-            {startEndBox(coord_chrom, coord_start, coord_end, actions)}
-
-            {/* TFs */}
-	    <div className="panel-group facet">
+const tfBox = (actions) => {
+    return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">Intersect TF/histone/DNase peaks</div>
 	    <div className="panel-body">
@@ -119,8 +112,16 @@ const FacetBoxen = ({coord_chrom, coord_start, coord_end,
             />
 	    </div>
 	    </div>
-	    </div>
+	    </div>);
+}
 
+const FacetBoxen = ({coord_chrom, coord_start, coord_end,
+                     cellType, actions}) => {
+    return (<div>
+            {cellTypesBox(cellType, actions)}
+            {chromBox(coord_chrom, actions)}
+            {startEndBox(coord_chrom, coord_start, coord_end, actions)}
+            {tfBox(actions)}
             </div>);
 }
 
