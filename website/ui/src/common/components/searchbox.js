@@ -16,11 +16,17 @@ class SearchBox extends React.Component {
             this.props.actions.makeSearchQuery(this.refs.input.value);
         }
 
+        let val = "";
+        let p = this.props;
+        if(p.coord_chrom && p.coord_start && p.coord_end){
+            val += p.coord_chrom + ":" + p.coord_start + "-" + p.coord_end + " ";
+        }
+
 	return (<form action="search" method="get" onSubmit={doSubmit}
                 className="navbar-collapse navbar-searchform">
 
 	        <input className="searchbox" type="text" size="100" name="q"
-                ref="input" value={this.props.value}/>&nbsp;
+                ref="input" value={val}/>&nbsp;
 
                 <a className="btn btn-primary btn-lg searchButton" onClick={doSubmit} role="button">Search</a>
 

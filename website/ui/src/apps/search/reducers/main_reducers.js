@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 import * as Actions from '../actions/facetboxen_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 
-const facetboxen_reducers = (state, action) => {
+const main_reducers = (state, action) => {
     switch (action.type) {
 
     case Actions.SET_CELL_TYPE: return {...state, cellType: action.cellType };
@@ -36,4 +36,4 @@ const facetboxen_reducers = (state, action) => {
   }
 };
 
-export default facetboxen_reducers;
+export default main_reducers;
