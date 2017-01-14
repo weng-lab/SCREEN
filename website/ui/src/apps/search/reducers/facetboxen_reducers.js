@@ -9,6 +9,11 @@ const facetboxen_reducers = (state, action) => {
     case Actions.SET_COORDS: return {...state, coord_start: action.start,
                                      coord_end: action.end };
     case Actions.SET_ACCESSIONS: return {...state, accessions: action.accs};
+    case Actions.SET_GENE_ALL_DISTANCE:
+        return {...state, gene_all_start: action.start, gene_all_end: action.end };
+    case Actions.SET_GENE_PC_DISTANCE:
+        return {...state, gene_pc_start: action.start, gene_pc_end: action.end };
+
     default:
       return state;
   }

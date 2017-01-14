@@ -50,7 +50,8 @@ SELECT min(start) as left,
 WIDTH_BUCKET(start, 0, {mmax}, {numBins}) as bucket_num,
 COUNT(start) FROM {tn}
 GROUP BY 2 ORDER BY 2""".format(outTableName = outTableName,
-                                chrom = chrom, mmax = mmax, numBins = numBins, tn = tn))
+                                chrom = chrom, mmax = mmax, numBins = numBins,
+                                tn = tn))
             buckets = [[0,0]] * (numBins+1)
             mmax = 0
             for r in self.curs.fetchall():

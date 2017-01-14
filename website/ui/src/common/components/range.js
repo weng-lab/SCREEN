@@ -137,18 +137,16 @@ class RangeSlider extends React.Component {
             this.props.onchange(r);
         }
     }
-
 }
 
 const zeros = (range, interval) => {
-    var retval = [];
+    var bins = [];
     for (var i = range[0]; i < range[1]; i += interval) {
-	retval.push({
-	    key: i,
-	    doc_count: 0
-	});
+	bins.push([i, 0]);
     }
-    return retval;
+    return {"bins" : bins,
+            "numBins" : bins.lengths,
+            "binMax" : 0}
 };
 
 class RangeFacet extends React.Component {
@@ -159,7 +157,9 @@ class RangeFacet extends React.Component {
     }
 
     selection_change_handler(r) {
-	if (this.props.onchange) this.props.onchange(r);
+	if (this.props.onchange) {
+            this.props.onchange(r);
+        }
     }
 
     render() {
