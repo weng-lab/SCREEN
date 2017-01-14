@@ -97,17 +97,6 @@ export const default_state = (tabs) => {return {
     }
 }};
 
-export const main_tab_connector = MainTabsConnector(
-    (state) => (state.main_tabs),
-    (dispatch) => ((action) => {
-	dispatch({
-	    type: TAB_ACTION,
-	    target: "main_tabs",
-	    subaction: action
-	});
-    })
-);
-
 export const main_tss_connector = tss_connector(
     (state) => (state.results.expression_boxplot)
 );

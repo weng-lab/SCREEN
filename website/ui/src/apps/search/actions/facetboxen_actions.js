@@ -34,3 +34,6 @@ export const setRankEnhancer = (start, end) => ({ type: SET_RANK_ENHANCER,
 export const SET_RANK_CTCF = 'SET_RANK_CTCF'
 export const setRankCtcf = (start, end) => ({ type: SET_RANK_CTCF,
                                                      start, end });
+
+export const SET_MAIN_TAB = 'SET_MAIN_TAB'
+export const setMainTab = (name) => ({ type: SET_MAIN_TAB, name });
