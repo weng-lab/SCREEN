@@ -68,14 +68,17 @@ const chromBox = (coord_chrom, actions) => {
 	    </div>);
 }
 
-const startEndBox = (coord_start, coord_end, actions) => {
+const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
+    if(null == coord_chrom){
+        return (<div />);
+    }
     return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">Coordinates</div>
 	    <div className="panel-body">
             <MainRangeFacet visible={true}
             title={""}
-	    range={[0, 200000000]}
+	    range={[0, GlobalChromLens[coord_chrom]]}
 	    selection_range={[coord_start, coord_end]}
 	    h_margin={default_margin}
 	    h_interval={200000}
@@ -92,7 +95,7 @@ const FacetBoxen = ({coord_chrom, coord_start, coord_end,
     return (<div>
             {cellTypesBox(cellType, actions)}
             {chromBox(coord_chrom, actions)}
-            {startEndBox(coord_start, coord_end, actions)}
+            {startEndBox(coord_chrom, coord_start, coord_end, actions)}
 
             {/* TFs */}
 	    <div className="panel-group facet">
