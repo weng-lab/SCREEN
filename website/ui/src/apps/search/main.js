@@ -25,6 +25,7 @@ const loggerMiddleware = createLogger();
 
 const initialState = {
         ...GlobalParsedQuery,
+    tfs_selection: new Set(), tfs_mode: null,
     gene_all_start: 0, gene_all_end: 5000000,
     gene_pc_start: 0, gene_pc_end: 5000000,
     rank_dnase_start: 0, rank_dnase_end: 20000,

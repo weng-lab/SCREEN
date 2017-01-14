@@ -33,6 +33,17 @@ const panelize = (title, facet) => {
 	    </div>);
 };
 
+const rangeBox = (title, start, end, action) => {
+    return (<MainRangeFacet visible={true}
+            title={title}
+	    range={[start, end]}
+	    selection_range={[start, end]}
+	    h_margin={default_margin}
+	    h_interval={(end - start) / 500}
+            onchange={(se) => { action(se[0], se[1])}}
+            />);
+}
+
 const accessionsBox = (accessions, actions) => {
     if(0 == accessions.length){
         return (<div />);
@@ -115,21 +126,10 @@ const tfBox = (actions) => {
 	            }]}
                     order={[]}
                     match_mode_enable={true}
-                    onTdClick={null}
-                    onModeChange={null}
+                    onTdClick={(tf) => { actions.toggleTf(tf) } }
+                    onModeChange={(mode) => { actions.setTfsMode(mode) }}
                     mode={CHECKLIST_MATCH_ALL}
                     />);
-}
-
-const rangeBox = (title, start, end, action) => {
-    return (<MainRangeFacet visible={true}
-            title={title}
-	    range={[start, end]}
-	    selection_range={[start, end]}
-	    h_margin={default_margin}
-	    h_interval={(end - start) / 500}
-            onchange={(se) => { action(se[0], se[1])}}
-            />);
 }
 
 const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
