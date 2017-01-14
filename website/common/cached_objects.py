@@ -48,6 +48,7 @@ class CachedObjects:
 
         try:
             self.chromCounts = self.pgSearch.chromCounts()
+            self.creHist = self.pgSearch.creHist()
         except:
             if "mm10" == assembly:
                 raise
