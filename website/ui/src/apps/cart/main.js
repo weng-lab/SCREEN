@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react'
 
 import {createStore, applyMiddleware} from 'redux'
 import {render} from 'react-dom'
@@ -8,7 +8,7 @@ import thunkMiddleware from 'redux-thunk'
 import {RootReducer} from './reducers/root_reducer'
 
 import NavBarApp from '../../common/components/navbar_app'
-import MainTabControl from '../search/components/maintab'
+import MainTabControl from './components/maintab'
 import {main_tab_connector, SET_ACCLIST} from './reducers/root_reducer'
 
 class CartPage extends React.Component {
@@ -40,6 +40,6 @@ class CartPage extends React.Component {
 	    acc_list: INITIAL_ACCLIST
 	});
     }
-    
+
 }
 export default CartPage;
