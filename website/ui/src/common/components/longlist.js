@@ -11,16 +11,20 @@ class LongListFacet extends React.Component {
 	this._td_handler = this._td_handler.bind(this);
 	this._clear = this._clear.bind(this);
     }
-    
+
     _td_handler(r, k) {
-	if (this.props.onTdClick) this.props.onTdClick(k.value);
+	if (this.props.onTdClick) {
+            this.props.onTdClick(k.value);
+        }
     }
 
     _clear() {
-	if (this.props.onTdClick) this.props.onTdClick(null);
+	if (this.props.onTdClick) {
+            this.props.onTdClick(null);
+        }
 	$(this.refs.container).empty();
     }
-    
+
     render() {
 	var table_display = (this.props.selection == null ? "block" : "none");
 	var sdisplay = (this.props.selection == null ? "none" : "block");
@@ -36,6 +40,6 @@ class LongListFacet extends React.Component {
 		    </div>
 		</div>);
     }
-    
+
 }
 export default LongListFacet;
