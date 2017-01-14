@@ -22,97 +22,84 @@ export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").
 
 import * as Actions from '../actions';
 
-const cellTypesBox = (cellType, actions) => {
+const panelize = (title, facet) => {
     return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
-	    <div className="panel-heading">Cell types</div>
+	    <div className="panel-heading">{title}</div>
 	    <div className="panel-body">
-            <MainLongListFacet visible={true}
-            title={""}
-            data={GlobalCellTypes}
-            cols={[
-		{
-		    title: "cell type",
-		    data: "value",
-		    className: "dt-right",
-		    render: render_cell_type
-		},
-		{
-		    title: "tissue",
-		    data: "tissue",
-		    className: "dt-right"
-		}
-	    ]}
-            order={[]}
-            selection={cellType}
-            onTdClick={(ct) => { actions.setCellType(ct) }}
-            />
+            {facet}
 	    </div>
 	    </div>
 	    </div>);
+};
+
+const cellTypesBox = (cellType, actions) => {
+    return panelize("Cell types",
+                    <MainLongListFacet visible={true}
+                    title={""}
+                    data={GlobalCellTypes}
+                    cols={[
+		        {
+		            title: "cell type",
+		            data: "value",
+		            className: "dt-right",
+		            render: render_cell_type
+		        },
+		        {
+		            title: "tissue",
+		            data: "tissue",
+		            className: "dt-right"
+		        }
+	            ]}
+                    order={[]}
+                    selection={cellType}
+                    onTdClick={(ct) => { actions.setCellType(ct) }}
+                    />);
 }
 
 const chromBox = (coord_chrom, actions) => {
-    return (<div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">Chromosome</div>
-	    <div className="panel-body">
-            <MainListFacet visible={true}
-            title={""}
-            items={GlobalChromCounts}
-            selection={coord_chrom}
-            onchange={(chrom) => { actions.setChrom(chrom) }}
-            />
-	    </div>
-	    </div>
-	    </div>);
+    return panelize("Chromosome",
+	            <MainListFacet visible={true}
+                    title={""}
+                    items={GlobalChromCounts}
+                    selection={coord_chrom}
+                    onchange={(chrom) => { actions.setChrom(chrom) }}
+                    />);
 }
 
 const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
     if(null == coord_chrom){
         return (<div />);
     }
-    return (<div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">Coordinates</div>
-	    <div className="panel-body">
-            <MainRangeFacet visible={true}
-            title={""}
-	    range={[0, GlobalChromLens[coord_chrom]]}
-	    selection_range={[coord_start, coord_end]}
-	    h_margin={default_margin}
-	    h_interval={200000}
-	    h_width={200}
-            onchange={(se) => { actions.setCoords(se[0], se[1]) }}
-            />
-	    </div>
-	    </div>
-	    </div>);
+    return panelize("Coordinates",
+                    <MainRangeFacet visible={true}
+                    title={""}
+	            range={[0, GlobalChromLens[coord_chrom]]}
+	            selection_range={[coord_start, coord_end]}
+	            h_margin={default_margin}
+	            h_interval={200000}
+	            h_width={200}
+                    onchange={(se) => { actions.setCoords(se[0], se[1]) }}
+                    />);
 }
 
 const tfBox = (actions) => {
-    return (<div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">Intersect TF/histone/DNase peaks</div>
-	    <div className="panel-body">
-            <MainLongChecklistFacet visible={true}
-            title={""}
-            data={GlobalTfs.map((tf) => {return {key: tf, selected: false}})}
-            cols={[{
-		title: "Assay",
-		data: "key",
-		className: "dt-right",
-		render: render_histone_tf
-	    }]}
-            order={[]}
-            match_mode_enable={true}
-            onTdClick={null}
-            onModeChange={null}
-            mode={CHECKLIST_MATCH_ALL}
-            />
-	    </div>
-	    </div>
-	    </div>);
+    return panelize("Intersect TF/histone/DNase peaks",
+                    <MainLongChecklistFacet visible={true}
+                    title={""}
+                    data={GlobalTfs.map((tf) => {return {key: tf, selected: false}})}
+                    cols={[{
+		        title: "Assay",
+		        data: "key",
+		        className: "dt-right",
+		        render: render_histone_tf
+	            }]}
+                    order={[]}
+                    match_mode_enable={true}
+                    onTdClick={null}
+                    onModeChange={null}
+                    mode={CHECKLIST_MATCH_ALL}
+                    />);
 }
 
 const FacetBoxen = ({coord_chrom, coord_start, coord_end,
