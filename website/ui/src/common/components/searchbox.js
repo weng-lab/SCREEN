@@ -13,7 +13,9 @@ class SearchBox extends React.Component {
     }
 
     onchange() {
-	if (this.props.onChange) this.props.onChange(this.refs.input.value);
+	if (this.props.onChange){
+            this.props.onChange(this.refs.input.value);
+        }
     }
 
     submit() {
@@ -26,7 +28,7 @@ class SearchBox extends React.Component {
 	           <a className="btn btn-primary btn-lg searchButton" href={this.submit} role="button">Search</a>
 		</form>);
     }
-    
+
 }
 export default SearchBox;
 

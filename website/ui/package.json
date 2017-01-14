@@ -31,14 +31,14 @@
       "react",
       "stage-2"
     ],
-      "env": {
-          "production": {
-              "plugins": [
-                  "transform-react-constant-elements",
-                  "transform-react-inline-elements"
-              ]
-          }
+    "env": {
+      "production": {
+        "plugins": [
+          "transform-react-constant-elements",
+          "transform-react-inline-elements"
+        ]
       }
+    }
   },
   "dependencies": {
     "axios": "^0.13.1",
@@ -50,6 +50,7 @@
     "datatables.net": "^1.10.12",
     "datatables.net-bs": "^1.10.12",
     "immutable": "^3.8.1",
+    "isomorphic-fetch": "^2.2.1",
     "jquery": "^2.1.4",
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.11.3",

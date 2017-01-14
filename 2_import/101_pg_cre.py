@@ -31,7 +31,7 @@ class PolishData:
         numBins = 100 # open end, so will get numBins + 1
         with open(Genome.ChrLenByAssembly(self.assembly)) as f:
             lens = [x.rstrip().split('\t') for x in f.readlines() if x]
-            chrLens = { x[0] : x[1] for x in lens }
+            chrLens = { x[0] : int(x[1]) for x in lens }
         for chrom in chroms[self.assembly]:
             mmax = chrLens[chrom]
             tn = self.assembly + "_cre_" + chrom
