@@ -4,42 +4,9 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/facetboxen_actions';
 
-const resultsTab  = ({accessions, actions}) => {
-    return (<div>
-            results
-            </div>);
-}
-
-const treeTab  = ({accessions, actions}) => {
-    return (<div>
-            tree
-            </div>);
-}
-
-const detailsTab = ({accessions, actions}) => {
-    return (<div>
-            details
-            </div>);
-}
-
-const gcompareTab = ({accessions, actions}) => {
-    return (<div>
-            gcompare
-            </div>);
-}
-
 const MainTabs = (props) => {
-    let tabs = { results : {title: "Search results", visible: true,
-                            f: resultsTab},
-                 ct_tree: {title: "Cell Type Clustering", visible: true,
-                           f: treeTab},
-	         details: {title: "RE Details", visible: false,
-                           f: detailsTab},
-	         gcompare: {title: "Group comparison", visible: false,
-                            f: gcompareTab} };
-
+    let tabs = props.maintabs;
     let maintabs_active = props.maintabs_active;
-    console.log(maintabs_active);
 
     const makeTabTitle = (key, tab) => {
         let active = key == maintabs_active;
