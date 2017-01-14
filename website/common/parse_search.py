@@ -33,7 +33,6 @@ class ParseSearch:
 
         coord = None
         cellTypes = self.find_celltypes_in_query(s)
-        ret = {"cellType": None if len(cellTypes) == 0 else cellTypes[0].replace(" ", "_"), "coord" : None, "range_preset": None}
 
         gene_suggestions, gene_results = self.es.gene_aliases_to_coordinates(s)
         gene_toks, gene_coords = _unpack_tuple_array(gene_results)
@@ -70,10 +69,19 @@ class ParseSearch:
         elif "insulator" in toks:
             ret["range_preset"] = "insulator"
 
+        ct = None
+        if len(cellTypes) > 0:
+            ct = cellTypes[0].replace(" ", "_")
+        ret = {"cellType": ct,
+               "coord_chrom" : None,
+               "coord_start" : None,
+               "coord_end" : None,
+               "range_preset": None}
+
         print(coord, ret["cellType"])
         if coord:
-            ret.update({"coord": {"chrom": coord.chrom,
-                                   "start": coord.start,
-                                   "end": coord.end}})
-        ret.update({"accessions": accessions})
+            ret["coord_chrom"] = coord.chrom
+            ret["coord_start"] = coord.start
+            ret["coord_end"] = coord.end
+        ret["accessions"] = accessions
         return ret

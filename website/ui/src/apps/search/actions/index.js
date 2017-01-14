@@ -11,10 +11,3 @@ export const setChrom = (chrom) => ({
     type: SET_CHROM,
     chrom
 });
-
-export const toggleCell = ({x, y}) => ({
-    type: TOGGLE_CELL,
-    x,
-  y
-});
-
