@@ -10,7 +10,8 @@ const initialState = {
     rank_enhancer_start: 0, rank_enhancer_end: 20000,
     rank_ctcf_start: 0, rank_ctcf_end: 20000,
     maintabs,
-    maintabs_active: "results"
+    maintabs_active: "results",
+    maintabs_visible: false
 };
 
 export default initialState;
