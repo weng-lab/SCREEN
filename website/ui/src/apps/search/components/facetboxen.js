@@ -121,27 +121,26 @@ const tfBox = (actions) => {
                     />);
 }
 
+const rangeBox = (title, start, end, action) => {
+    return (<MainRangeFacet visible={true}
+            title={title}
+	    range={[start, end]}
+	    selection_range={[start, end]}
+	    h_margin={default_margin}
+	    h_interval={(end - start) / 500}
+            onchange={(se) => { action(se[0], se[1])}}
+            />);
+}
+
 const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
                          actions) => {
     return panelize("Distance to Genes",
                     (<div>
-                     <MainRangeFacet visible={true}
-                     title={"Protein-coding genes"}
-		     range={[gene_pc_start, gene_pc_end]}
-		     selection_range={[gene_pc_start, gene_pc_end]}
-		     h_margin={default_margin}
-		     h_interval={(gene_pc_end - gene_pc_start) / 500}
-                     onchange={(se) => { actions.setGenePcDistance(se[0], se[1])}}
-                     />
-                     <MainRangeFacet visible={true}
-                     title={"All genes"}
-		     range={[gene_all_start, gene_all_end]}
-		     selection_range={[gene_all_start, gene_all_end]}
-		     h_margin={default_margin}
-		     h_interval={(gene_all_end - gene_all_start) / 500}
-                     onchange={(se) => { actions.setGeneAllDistance(se[0], se[1])}}
-                     />
-                    </div>))
+                     {rangeBox("Protein-coding genes", gene_pc_start, gene_pc_end,
+                               actions.setGenePcDistance)}
+                     {rangeBox("All genes", gene_all_start, gene_all_end,
+                               actions.setGeneAllDistance)}
+                     </div>))
 }
 
 const rankBox = (rank_dnase_start, rank_dnase_end,
@@ -154,38 +153,14 @@ const rankBox = (rank_dnase_start, rank_dnase_end,
     }
     return panelize("Ranks",
                     (<div>
-                     <MainRangeFacet visible={true}
-                     title={"DNase"}
-		     range={[rank_dnase_start, rank_dnase_end]}
-		     selection_range={[rank_dnase_start, rank_dnase_end]}
-		     h_margin={default_margin}
-		     h_interval={(rank_dnase_end - rank_dnase_start) / 500}
-                     onchange={(se) => { actions.setRankDnase(se[0], se[1])}}
-                     />
-                     <MainRangeFacet visible={true}
-                     title={"promoter"}
-		     range={[rank_promoter_start, rank_promoter_end]}
-		     selection_range={[rank_promoter_start, rank_promoter_end]}
-		     h_margin={default_margin}
-		     h_interval={(rank_promoter_end - rank_promoter_start) / 500}
-                     onchange={(se) => { actions.setRankPromoter(se[0], se[1])}}
-                     />
-                     <MainRangeFacet visible={true}
-                     title={"enhancer"}
-		     range={[rank_enhancer_start, rank_enhancer_end]}
-		     selection_range={[rank_enhancer_start, rank_enhancer_end]}
-		     h_margin={default_margin}
-		     h_interval={(rank_enhancer_end - rank_enhancer_start) / 500}
-                     onchange={(se) => { actions.setRankEnhancer(se[0], se[1])}}
-                     />
-                     <MainRangeFacet visible={true}
-                     title={"CTCF"}
-		     range={[rank_ctcf_start, rank_ctcf_end]}
-		     selection_range={[rank_ctcf_start, rank_ctcf_end]}
-		     h_margin={default_margin}
-		     h_interval={(rank_ctcf_end - rank_ctcf_start) / 500}
-                     onchange={(se) => { actions.setRankCtcf(se[0], se[1])}}
-                     />
+                     {rangeBox("DNase", rank_dnase_start, rank_dnase_end,
+                               actions.setRankDnase)}
+                     {rangeBox("promoter", rank_promoter_start, rank_promoter_end,
+                               actions.setRankPromoter)}
+                     {rangeBox("enhancer", rank_enhancer_start, rank_enhancer_end,
+                               actions.setRankEnhancer)}
+                     {rangeBox("CTCF", rank_ctcf_start, rank_ctcf_end,
+                               actions.setRankCtcf)}
                      </div>));
 };
 
