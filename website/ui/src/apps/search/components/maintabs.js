@@ -31,8 +31,11 @@ class MainTabs extends React.Component {
                    )
         }
 
-        let tabs = this.props.maintabs;
+        if(!this.props.maintabs_visible){
+            return (<div />);
+        }
 
+        let tabs = this.props.maintabs;
         return (<div id="exTab1" className="container">
 
 	        <ul className="nav nav-tabs">
