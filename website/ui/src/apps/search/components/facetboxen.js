@@ -157,26 +157,39 @@ const rankBox = (rank_dnase_start, rank_dnase_end,
                      </div>));
 };
 
-const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
-                     gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-                     rank_dnase_start, rank_dnase_end,
-                     rank_promoter_start, rank_promoter_end,
-                     rank_enhancer_start, rank_enhancer_end,
-                     rank_ctcf_start, rank_ctcf_end,
-                     cellType, actions}) => {
-    return (<div>
-            {accessionsBox(accessions, actions)}
-            {cellTypesBox(cellType, actions)}
-            {chromBox(coord_chrom, actions)}
-            {startEndBox(coord_chrom, coord_start, coord_end, actions)}
-            {tfBox(actions)}
-            {geneDistanceBox(gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions)}
-            {rankBox(rank_dnase_start, rank_dnase_end,
-                     rank_promoter_start, rank_promoter_end,
-                     rank_enhancer_start, rank_enhancer_end,
-                     rank_ctcf_start, rank_ctcf_end,
-                     cellType, actions)}
-            </div>);
+class FacetBoxen  extends React.Component {
+    componentDidMount() {
+        if(!this.props.maintabs_visible){
+            this.props.actions.showMainTabs(true);
+        }
+    }
+
+    doRender ({accessions, coord_chrom, coord_start, coord_end,
+               gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
+               rank_dnase_start, rank_dnase_end,
+               rank_promoter_start, rank_promoter_end,
+               rank_enhancer_start, rank_enhancer_end,
+               rank_ctcf_start, rank_ctcf_end,
+               cellType, actions})
+    {
+        return (<div>
+                {accessionsBox(accessions, actions)}
+                {cellTypesBox(cellType, actions)}
+                {chromBox(coord_chrom, actions)}
+                {startEndBox(coord_chrom, coord_start, coord_end, actions)}
+                {tfBox(actions)}
+                {geneDistanceBox(gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions)}
+                {rankBox(rank_dnase_start, rank_dnase_end,
+                         rank_promoter_start, rank_promoter_end,
+                         rank_enhancer_start, rank_enhancer_end,
+                         rank_ctcf_start, rank_ctcf_end,
+                         cellType, actions)}
+                </div>);
+    }
+
+    render() {
+        return this.doRender(this.props)
+    }
 }
 
 const mapStateToProps = (state) => ({
