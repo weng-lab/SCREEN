@@ -1,25 +1,14 @@
 var React = require('react');
 
 import {createStore, applyMiddleware} from 'redux'
-import {render} from 'react-dom'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 
-import {get_root_reducer} from './reducers/root_reducer'
 import FacetBoxen from './components/facetboxen'
-
 import SearchBox from '../../common/components/searchbox'
-
-import MainTabControl from './components/maintab'
 import NavBarApp from '../../common/components/navbar_app'
-import {main_tab_connector, main_searchbox_connector, default_state} from './reducers/root_reducer'
-import {facetboxes, facetbox_render_order, es_links} from './config/facetboxes'
-import {maintabs} from './config/maintabs'
-
 import main_reducers from './reducers/main_reducers'
-
-import {invalidate_results} from './helpers/invalidate_results'
 
 const loggerMiddleware = createLogger();
 
@@ -34,7 +23,8 @@ const initialState = {
     rank_ctcf_start: 0, rank_ctcf_end: 20000
 };
 
-const store = createStore(main_reducers, initialState,
+const store = createStore(main_reducers,
+                          initialState,
                           applyMiddleware(
                               thunkMiddleware,
                               loggerMiddleware

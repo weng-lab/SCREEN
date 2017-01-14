@@ -1,10 +1,7 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-
-import {SET_VALUE} from '../reducers/searchbox'
 
 import * as Actions from '../actions/searchbox_actions';
 
@@ -36,11 +33,11 @@ class SearchBox extends React.Component {
 	        <input className="searchbox" type="text" size="100" name="q"
                 ref="input" value={this.makeVal(this.props)}/>&nbsp;
 
-                <a className="btn btn-primary btn-lg searchButton" onClick={doSubmit} role="button">Search</a>
+                <a className="btn btn-primary btn-lg searchButton"
+                onClick={doSubmit} role="button">Search</a>
 
 		</form>);
     }
-
 }
 
 const mapStateToProps = (state) => ({
