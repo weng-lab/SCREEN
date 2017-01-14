@@ -20,7 +20,7 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").replace(/27AC/g, "27ac").replace(/ME1/g, "me1").replace(/ME2/g, "me2").replace(/ME3/g, "me3"));
 
-import * as Actions from '../actions';
+import * as Actions from '../actions/facetboxen_actions';
 
 const panelize = (title, facet) => {
     return (<div className="panel-group facet">
@@ -117,7 +117,8 @@ const tfBox = (actions) => {
     return panelize("Intersect TF/histone/DNase peaks",
                     <MainLongChecklistFacet visible={true}
                     title={""}
-                    data={GlobalTfs.map((tf) => {return {key: tf, selected: false}})}
+                    data={GlobalTfs.map((tf) => {return {key: tf,
+                                                         selected: false}})}
                     cols={[{
 		        title: "Assay",
 		        data: "key",
