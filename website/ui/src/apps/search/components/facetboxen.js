@@ -91,6 +91,7 @@ const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
     return panelize("Coordinates",
                     <MainRangeFacet visible={true}
                     title={""}
+                    h_data={GlobalCreHistBins[coord_chrom]}
 	            range={[0, GlobalChromLens[coord_chrom]]}
 	            selection_range={[coord_start, coord_end]}
 	            h_margin={default_margin}

@@ -63,6 +63,7 @@ class PageInfoMain:
                     "searchPage": True,
                     "globalChromCounts" : json.dumps(cache.chromCounts),
                     "globalChromLens" : json.dumps(chrom_lengths[assembly]),
+                    "globalCreHistBins" : json.dumps(cache.creHist),
                     "tissueMap": cache.getTissueMap() })
 
         return ret

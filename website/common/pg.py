@@ -31,3 +31,15 @@ class PGsearch:
         arr = [(e[0], e[1]) for e in r]
         return natsorted(arr, key=lambda y: y[0])
 
+    def creHist(self):
+        tableName = self.assembly + "_cre_bins"
+        q = """SELECT chrom, buckets, numBins, binMax from {tn}""".format(
+            tn = tableName)
+        with getcursor(self.pg.DBCONN, "pg") as curs:
+            curs.execute(q)
+            r = curs.fetchall()
+        return {e[0] : {"bins" : e[1],
+                        "numBins" : e[2],
+                        "binMax" : e[3]} for e in r}
+
+
