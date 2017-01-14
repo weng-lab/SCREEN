@@ -144,8 +144,57 @@ const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_en
                     </div>))
 }
 
+const rankBox = (rank_dnase_start, rank_dnase_end,
+                 rank_promoter_start, rank_promoter_end,
+                 rank_enhancer_start, rank_enhancer_end,
+                 rank_ctcf_start, rank_ctcf_end,
+                 cellType, actions) => {
+    if(null == cellType){
+        return (<div />);
+    }
+    return panelize("Ranks",
+                    (<div>
+                     <MainRangeFacet visible={true}
+                     title={"DNase"}
+		     range={[rank_dnase_start, rank_dnase_end]}
+		     selection_range={[rank_dnase_start, rank_dnase_end]}
+		     h_margin={default_margin}
+		     h_interval={(rank_dnase_end - rank_dnase_start) / 500}
+                     onchange={(se) => { actions.setRankDnase(se[0], se[1])}}
+                     />
+                     <MainRangeFacet visible={true}
+                     title={"promoter"}
+		     range={[rank_promoter_start, rank_promoter_end]}
+		     selection_range={[rank_promoter_start, rank_promoter_end]}
+		     h_margin={default_margin}
+		     h_interval={(rank_promoter_end - rank_promoter_start) / 500}
+                     onchange={(se) => { actions.setRankPromoter(se[0], se[1])}}
+                     />
+                     <MainRangeFacet visible={true}
+                     title={"enhancer"}
+		     range={[rank_enhancer_start, rank_enhancer_end]}
+		     selection_range={[rank_enhancer_start, rank_enhancer_end]}
+		     h_margin={default_margin}
+		     h_interval={(rank_enhancer_end - rank_enhancer_start) / 500}
+                     onchange={(se) => { actions.setRankEnhancer(se[0], se[1])}}
+                     />
+                     <MainRangeFacet visible={true}
+                     title={"CTCF"}
+		     range={[rank_ctcf_start, rank_ctcf_end]}
+		     selection_range={[rank_ctcf_start, rank_ctcf_end]}
+		     h_margin={default_margin}
+		     h_interval={(rank_ctcf_end - rank_ctcf_start) / 500}
+                     onchange={(se) => { actions.setRankCtcf(se[0], se[1])}}
+                     />
+                     </div>));
+};
+
 const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
                      gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
+                     rank_dnase_start, rank_dnase_end,
+                     rank_promoter_start, rank_promoter_end,
+                     rank_enhancer_start, rank_enhancer_end,
+                     rank_ctcf_start, rank_ctcf_end,
                      cellType, actions}) => {
     return (<div>
             {accessionsBox(accessions, actions)}
@@ -154,6 +203,11 @@ const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
             {startEndBox(coord_chrom, coord_start, coord_end, actions)}
             {tfBox(actions)}
             {geneDistanceBox(gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions)}
+            {rankBox(rank_dnase_start, rank_dnase_end,
+                     rank_promoter_start, rank_promoter_end,
+                     rank_enhancer_start, rank_enhancer_end,
+                     rank_ctcf_start, rank_ctcf_end,
+                     cellType, actions)}
             </div>);
 }
 

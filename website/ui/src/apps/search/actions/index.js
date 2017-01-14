@@ -16,3 +16,16 @@ export const setGeneAllDistance = (start, end) => ({ type: SET_GENE_ALL_DISTANCE
 export const SET_GENE_PC_DISTANCE = 'SET_GENE_PC_DISTANCE'
 export const setGenePcDistance = (start, end) => ({ type: SET_GENE_PC_DISTANCE,
                                                      start, end });
+
+export const SET_RANK_DNASE = 'SET_RANK_DNASE'
+export const setRankDnase = (start, end) => ({ type: SET_RANK_DNASE,
+                                                     start, end });
+export const SET_RANK_PROMOTER = 'SET_RANK_PROMOTER'
+export const setRankPromoter = (start, end) => ({ type: SET_RANK_PROMOTER,
+                                                     start, end });
+export const SET_RANK_ENHANCER = 'SET_RANK_ENHANCER'
+export const setRankEnhancer = (start, end) => ({ type: SET_RANK_ENHANCER,
+                                                     start, end });
+export const SET_RANK_CTCF = 'SET_RANK_CTCF'
+export const setRankCtcf = (start, end) => ({ type: SET_RANK_CTCF,
+                                                     start, end });
