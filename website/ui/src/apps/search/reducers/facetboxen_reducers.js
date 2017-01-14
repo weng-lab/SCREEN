@@ -8,7 +8,7 @@ const facetboxen_reducers = (state, action) => {
     case Actions.SET_CHROM: return {...state, coord_chrom: action.chrom };
     case Actions.SET_COORDS: return {...state, coord_start: action.start,
                                      coord_end: action.end };
-
+    case Actions.SET_ACCESSIONS: return {...state, accessions: action.accs};
     default:
       return state;
   }

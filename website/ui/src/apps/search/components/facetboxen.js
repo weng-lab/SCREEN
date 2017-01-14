@@ -33,6 +33,23 @@ const panelize = (title, facet) => {
 	    </div>);
 };
 
+const accessionsBox = (accessions, actions) => {
+    if(0 == accessions.length){
+        return (<div />);
+    }
+    return panelize("Accessions",
+                    <MainChecklistFacet
+                    visible={true}
+                    title={""}
+                    items={accessions.map((d) => {return {value: d, checked: true}})}
+                    match_mode_enabled={false}
+                    mode={CHECKLIST_MATCH_ANY}
+                    autocomplete_source={[]}
+		    onchange={(accs) => { actions.setAccessions(accs) }}
+		    onModeChange={null}
+		    />);
+}
+
 const cellTypesBox = (cellType, actions) => {
     return panelize("Cell types",
                     <MainLongListFacet visible={true}
@@ -102,9 +119,10 @@ const tfBox = (actions) => {
                     />);
 }
 
-const FacetBoxen = ({coord_chrom, coord_start, coord_end,
+const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
                      cellType, actions}) => {
     return (<div>
+            {accessionsBox(accessions, actions)}
             {cellTypesBox(cellType, actions)}
             {chromBox(coord_chrom, actions)}
             {startEndBox(coord_chrom, coord_start, coord_end, actions)}

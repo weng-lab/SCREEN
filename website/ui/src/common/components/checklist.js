@@ -15,11 +15,13 @@ class CheckBox extends React.Component {
 	super(props);
 	this.change_handler = this.change_handler.bind(this);
     }
-    
+
     change_handler() {
-	if (this.props.onchange) this.props.onchange(this.props.k);
+	if (this.props.onchange){
+            this.props.onchange(this.props.k);
+        }
     }
-    
+
     render() {
 	return (this.props.checked
 		? <div><input checked ref="box" type="checkbox" onChange={this.change_handler} /> {this.props.value}</div>
@@ -29,32 +31,34 @@ class CheckBox extends React.Component {
 }
 
 class ChecklistFacet extends React.Component {
-    
+
     constructor(props) {
 	super(props);
 
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
-	
+
 	this.state = Object.assign({
 	    items: this.props.items,
 	    text: "",
 	    mode
 	});
-	
+
 	this.onChange = this.onChange.bind(this);
 	this.handleSubmit = this.handleSubmit.bind(this);
 	this.check_handler = this.check_handler.bind(this);
 	this.modeChange = this.modeChange.bind(this);
     }
-    
+
     onChange(e) {
 	this.setState({text: e.target.value});
     }
 
     modeChange() {
-	if (this.props.onModeChange) this.props.onModeChange(this.refs.mode.value);
+	if (this.props.onModeChange) {
+            this.props.onModeChange(this.refs.mode.value);
+        }
     }
-    
+
     handleSubmit(e) {
 	e.preventDefault();
 	if ($.trim(this.state.text) == "") return;
@@ -63,9 +67,11 @@ class ChecklistFacet extends React.Component {
 	    checked: true
 	}];
 	this.setState({items: next_items, text: ""});
-	if (this.props.onchange) this.props.onchange(next_items);
+	if (this.props.onchange) {
+            this.props.onchange(next_items);
+        }
     }
-    
+
     check_handler(key) {
 	var next_items = [...this.state.items];
 	next_items[key].checked = !next_items[key].checked;
@@ -80,24 +86,24 @@ class ChecklistFacet extends React.Component {
 	    change: this.modeChange
 	});
     }
-    
+
     render() {
 
 	var items = this.state.items;
 	var onchange = this.check_handler;
-	
+
 	var create_item = function(key) {
 	    var item = items[key];
 	    return <CheckBox key={key} k={key} value={item.value} onchange={onchange} checked={item.checked} />;
 	};
-	
+
 	var checks = (!this.props.match_mode_enabled ? ""
 		      : (<div><select ref="mode">
 		            <option value={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
 		            <option value={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
 		         </select></div>
 		        ));
-	
+
 	return (<div>
 		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>
 		  {checks}
@@ -108,8 +114,7 @@ class ChecklistFacet extends React.Component {
 		  {Object.keys(this.state.items).map(create_item)}
 		</div>
 	       );
-	
     }
-    
 }
+
 export default ChecklistFacet;
