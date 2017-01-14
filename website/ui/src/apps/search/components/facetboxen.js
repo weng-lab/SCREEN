@@ -1,10 +1,8 @@
-var React = require('react')
-
+import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {invalidate_results} from '../helpers/invalidate_results'
-import ParsedQueryMap from '../helpers/parsed_query_map'
+import * as Actions from '../actions/facetboxen_actions';
 
 import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
@@ -17,10 +15,6 @@ import {default_margin} from '../config/constants'
 import {render_int, render_cell_type} from '../config/results_table'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-
-export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").replace(/27AC/g, "27ac").replace(/ME1/g, "me1").replace(/ME2/g, "me2").replace(/ME3/g, "me3"));
-
-import * as Actions from '../actions/facetboxen_actions';
 
 const panelize = (title, facet) => {
     return (<div className="panel-group facet">
@@ -70,8 +64,7 @@ const cellTypesBox = (cellType, actions) => {
 		        {
 		            title: "cell type",
 		            data: "value",
-		            className: "dt-right",
-		            render: render_cell_type
+		            className: "dt-right"
 		        },
 		        {
 		            title: "tissue",

@@ -1,12 +1,9 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
-import FacetboxReducer from './facetbox_reducer'
-import TabReducer from './tab_reducer'
 import SearchBoxReducer from '../../../common/reducers/searchbox'
 import ExpressionMatrixReducer from './expression_matrix_reducer'
 
 import {tissue_label_formatter} from '../config/colors'
 
-import {MainTabsConnector} from '../components/maintab'
 import {tree_connector} from '../components/tree'
 import {tss_connector} from '../components/tss'
 import {minipeaks_connector} from '../components/minipeaks'

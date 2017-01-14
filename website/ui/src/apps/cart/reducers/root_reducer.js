@@ -1,7 +1,7 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
 
 import {maintabs} from '../config/maintabs'
-import {MainTabsConnector} from '../../search/components/maintab'
+import {MainTabsConnector} from '../components/maintab'
 
 export const RESULTS_FETCHING = 'RESULTS_FETCHING';
 export const RESULTS_DONE = 'RESULTS_DONE';
@@ -76,7 +76,7 @@ export const RootReducer = (state = root_default_state, action) => {
 
     case RESULTS_ERROR:
 	console.log("RESULTS_ERROR:", action.requestobj);
-	
+
     case RESULTS_DONE:
 	//console.log("results done");
 	return Object.assign({}, state, {
