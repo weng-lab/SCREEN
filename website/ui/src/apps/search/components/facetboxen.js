@@ -121,7 +121,31 @@ const tfBox = (actions) => {
                     />);
 }
 
+const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
+                         actions) => {
+    return panelize("Distance to Genes",
+                    (<div>
+                     <MainRangeFacet visible={true}
+                     title={"Protein-coding genes"}
+		     range={[gene_pc_start, gene_pc_end]}
+		     selection_range={[gene_pc_start, gene_pc_end]}
+		     h_margin={default_margin}
+		     h_interval={(gene_pc_end - gene_pc_start) / 500}
+                     onchange={(se) => { actions.setGenePcDistance(se[0], se[1])}}
+                     />
+                     <MainRangeFacet visible={true}
+                     title={"All genes"}
+		     range={[gene_all_start, gene_all_end]}
+		     selection_range={[gene_all_start, gene_all_end]}
+		     h_margin={default_margin}
+		     h_interval={(gene_all_end - gene_all_start) / 500}
+                     onchange={(se) => { actions.setGeneAllDistance(se[0], se[1])}}
+                     />
+                    </div>))
+}
+
 const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
+                     gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
                      cellType, actions}) => {
     return (<div>
             {accessionsBox(accessions, actions)}
@@ -129,6 +153,7 @@ const FacetBoxen = ({accessions, coord_chrom, coord_start, coord_end,
             {chromBox(coord_chrom, actions)}
             {startEndBox(coord_chrom, coord_start, coord_end, actions)}
             {tfBox(actions)}
+            {geneDistanceBox(gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions)}
             </div>);
 }
 
