@@ -25,7 +25,7 @@ export class ListItem extends React.Component {
 	}
 
 	return (<a onClick={this.onclick}>
-		   <div className={classname} style={this.props.style} key={this.props.value}>
+		   <div className={classname} key={this.props.value}>
 		      <span>{this.props.value}</span>
 		      <span className="pull-right">{rtxt}</span>
 		   </div>
@@ -62,7 +62,7 @@ class ListFacet extends React.Component {
 
 	    if(s == null || selected){
 	        return <ListItem onclick={click_handler} value={key} key={key}
-                n={val} selected={selected} style={{display: "block"}} />;
+                n={val} selected={selected} />;
             } else {
                 return <div />;
             }
