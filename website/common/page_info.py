@@ -54,12 +54,15 @@ class PageInfoMain:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
+        cache = self.cacheW[assembly]
+
         ret.update({"globalParsedQuery" : json.dumps(parsed),
                     "globalSessionUid" : uuid,
-                    "globalTfs" : self.cacheW.getTFListJson(assembly),
-                    "globalCellTypes" : self.cacheW.getCTTjson(assembly),
+                    "globalTfs" : cache.getTFListJson(),
+                    "globalCellTypes" : cache.getCTTjson(),
                     "searchPage": True,
-                    "tissueMap": self.cacheW.getTissueMap(assembly) })
+                    "globalChromCounts" : json.dumps(cache.chromCounts),
+                    "tissueMap": cache.getTissueMap() })
 
         return ret
 
