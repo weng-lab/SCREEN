@@ -11,11 +11,6 @@ import FacetQueryMap from '../elasticsearch/facets_to_query'
 import QueryAJAX, {format_query} from '../elasticsearch/ajax'
 
 class TableWithCart extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     downloadBed() {
 	var n_query = FacetQueryMap(this.props.store.getState());
 	$.ajax({
@@ -60,7 +55,7 @@ class TableWithCart extends React.Component {
             }
 	});
     }
-    
+
     render() {
 	var n_data = [...this.props.data];
 	var total = (n_data.length < this.props.total
@@ -154,7 +149,7 @@ const button_click_handler = (name, rowdata, dispatch) => {
     case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
     case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
     case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
-    }    
+    }
 };
 
 const table_props_map = (state) => {

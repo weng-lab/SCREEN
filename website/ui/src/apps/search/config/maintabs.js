@@ -35,14 +35,10 @@ const gcompareTab = ({accessions, actions}) => {
 }
 
 const maintabs = {
-    results : {title: "Search results", visible: true,
-               f: resultsTab},
-    ct_tree: {title: "Cell Type Clustering", visible: true,
-              f: treeTab},
-    details: {title: "RE Details", visible: false,
-              f: detailsTab},
-    gcompare: {title: "Group comparison", visible: false,
-               f: gcompareTab}
+    results : {title: "Search results", visible: true, f: resultsTab},
+    ct_tree: {title: "Cell Type Clustering", visible: true, f: treeTab},
+    details: {title: "RE Details", visible: false, f: detailsTab},
+    gcompare: {title: "Group comparison", visible: false, f: gcompareTab}
 };
 
 export default maintabs;
