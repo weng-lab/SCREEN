@@ -35,6 +35,8 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 chrom VARCHAR(5),
+numBins integer,
+binMax integer,
 buckets jsonb);""".format(tableName = outTableName))
         print("created", outTableName)
 
@@ -50,13 +52,18 @@ COUNT(start) FROM {tn}
 GROUP BY 2 ORDER BY 2""".format(outTableName = outTableName,
                                 chrom = chrom, mmax = mmax, numBins = numBins, tn = tn))
             buckets = {}
+            mmax = 0
             for r in self.curs.fetchall():
                 buckets[r[0]] = r[2]
-            print(chrom, buckets)
+                mmax = max(mmax, r[2])
+            print(chrom, numBins, buckets, mmax)
             self.curs.execute("""
-INSERT INTO {outTableName} (chrom, buckets)
-VALUES (%s, %s)""".format(outTableName =  outTableName),
-                         (chrom, json.dumps(buckets)))
+INSERT INTO {outTableName} (chrom, numBins, binMax, buckets)
+VALUES (%s, %s, %s, %s)""".format(outTableName =  outTableName),
+                              (chrom,
+                               numBins,
+                               mmax,
+                               json.dumps(buckets)))
 
     def run(self):
         self.setupCREhistograms()
