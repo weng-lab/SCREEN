@@ -40,7 +40,7 @@ binMax integer,
 buckets jsonb);""".format(tableName = outTableName))
         print("created", outTableName)
 
-        numBins = 100 # open end, so will get numBins + 1
+        numBins = 500 # open end, so will get numBins + 1
         for chrom, mmax in chrom_lengths[self.assembly].iteritems():
             if chrom not in chroms[self.assembly]:
                 continue
@@ -51,17 +51,17 @@ WIDTH_BUCKET(start, 0, {mmax}, {numBins}) as bucket_num,
 COUNT(start) FROM {tn}
 GROUP BY 2 ORDER BY 2""".format(outTableName = outTableName,
                                 chrom = chrom, mmax = mmax, numBins = numBins, tn = tn))
-            buckets = {}
+            buckets = [[0,0]] * (numBins+1)
             mmax = 0
             for r in self.curs.fetchall():
-                buckets[r[0]] = r[2]
+                buckets[r[1]] = [r[0], r[2]]
                 mmax = max(mmax, r[2])
-            print(chrom, numBins, buckets, mmax)
+            #print(chrom, numBins, buckets, mmax)
             self.curs.execute("""
 INSERT INTO {outTableName} (chrom, numBins, binMax, buckets)
 VALUES (%s, %s, %s, %s)""".format(outTableName =  outTableName),
                               (chrom,
-                               numBins,
+                               numBins + 1,
                                mmax,
                                json.dumps(buckets)))
 

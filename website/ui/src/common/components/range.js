@@ -67,16 +67,15 @@ class RangeSlider extends React.Component {
 	    .data(this.props.data.bins)
 	    .enter().append("g")
 	    .attr("class", function(d) {
-                console.log(d);
-		return (d.key >= +srange[0] && d.key < +srange[1]
+		return (d[0] >= +srange[0] && d[0] < +srange[1]
 			? "barselected" : "bardeselected");
 	    })
-	    .attr("transform", function(d) { return "translate(" + x(d.key) + "," + y(d.doc_count) + ")"; });
+	    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
 
 	bar.append("rect")
 	    .attr("x", 1)
 	    .attr("width", x(this.props.interval + xrange[0]))
-	    .attr("height", function(d) { return height - y(d.doc_count); });
+	    .attr("height", function(d) { return height - y(d[1]); });
 
 	return svg;
 
