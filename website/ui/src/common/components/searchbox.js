@@ -20,6 +20,12 @@ class SearchBox extends React.Component {
         let p = this.props;
         if(p.coord_chrom && p.coord_start && p.coord_end){
             val += p.coord_chrom + ":" + p.coord_start + "-" + p.coord_end + " ";
+        } else if(p.coord_start && p.coord_end){
+            val += p.coord_start + "-" + p.coord_end + " ";
+        }
+
+        if(p.cellType){
+            val += p.cellType;
         }
 
 	return (<form action="search" method="get" onSubmit={doSubmit}
