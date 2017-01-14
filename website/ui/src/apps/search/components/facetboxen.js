@@ -22,10 +22,8 @@ export const render_histone_tf = (s) => (s.toUpperCase().replace(/9AC/g, "9ac").
 
 import * as Actions from '../actions';
 
-const FacetBoxen = ({coord, cellType, actions}) => {
-    return (<div>
-            {/* cell types */}
-	    <div className="panel-group facet">
+const cellTypesBox = (cellType, actions) => {
+    return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">Cell types</div>
 	    <div className="panel-body">
@@ -51,32 +49,34 @@ const FacetBoxen = ({coord, cellType, actions}) => {
             />
 	    </div>
 	    </div>
-	    </div>
+	    </div>);
+}
 
-            {/* chroms */}
-	    <div className="panel-group facet">
+const chromBox = (coord_chrom, actions) => {
+    return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">Chromosome</div>
 	    <div className="panel-body">
             <MainListFacet visible={true}
             title={""}
             items={GlobalChromCounts}
-            selection={null}
+            selection={coord_chrom}
             onchange={(chrom) => { actions.setChrom(chrom) }}
             />
 	    </div>
 	    </div>
-	    </div>
+	    </div>);
+}
 
-            {/* coords */}
-	    <div className="panel-group facet">
+const startEndBox = (coord_start, coord_end, actions) => {
+    return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">Coordinates</div>
 	    <div className="panel-body">
             <MainRangeFacet visible={true}
             title={""}
 	    range={[0, 200000000]}
-	    selection_range={[coord.start, coord.end]}
+	    selection_range={[coord_start, coord_end]}
 	    h_margin={default_margin}
 	    h_interval={200000}
 	    h_width={200}
@@ -84,7 +84,15 @@ const FacetBoxen = ({coord, cellType, actions}) => {
             />
 	    </div>
 	    </div>
-	    </div>
+	    </div>);
+}
+
+const FacetBoxen = ({coord_chrom, coord_start, coord_end,
+                     cellType, actions}) => {
+    return (<div>
+            {cellTypesBox(cellType, actions)}
+            {chromBox(coord_chrom, actions)}
+            {startEndBox(coord_start, coord_end, actions)}
 
             {/* TFs */}
 	    <div className="panel-group facet">
