@@ -1,25 +1,18 @@
-var React = require('react');
+import React from 'react'
 
-import TableWithCart, {table_connector} from './table_with_cart'
+import TableWithCart from './table_with_cart'
 import ResultsTableColumns, {table_order} from '../config/results_table'
 
-import create_table from '../helpers/create_table'
-
 class ResultsApp extends React.Component {
-
     constructor(props) {
 	super(props);
     }
 
     render() {
-	var Retval = table_connector(TableWithCart);
-	return <Retval store={this.props.store} />;
+	return (<TableWithCart data={[]}
+                order={table_order} cols={ResultsTableColumns} />);
     }
-
-    componentWillMount() {
-	create_table(this.props.store.dispatch)(ResultsTableColumns, table_order);
-    }
-    
 }
+
 export default ResultsApp;
 

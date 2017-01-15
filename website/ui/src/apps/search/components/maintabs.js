@@ -26,7 +26,7 @@ class MainTabs extends React.Component {
                     key={"tab_" + key}
                     id={"tab_main_" + key}
                     key={"tcontent_" + key}>
-		    {tab.f(this.props)}
+		    {React.createElement(tab.f, this.props)}
 		    </div>
                    )
         }

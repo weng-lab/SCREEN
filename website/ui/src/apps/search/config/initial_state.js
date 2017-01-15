@@ -1,4 +1,4 @@
-import maintabs from './maintabs.js'
+import MainTabInfo from './maintabs.js'
 
 const initialState = {
         ...GlobalParsedQuery,
@@ -9,7 +9,7 @@ const initialState = {
     rank_promoter_start: 0, rank_promoter_end: 20000,
     rank_enhancer_start: 0, rank_enhancer_end: 20000,
     rank_ctcf_start: 0, rank_ctcf_end: 20000,
-    maintabs,
+    maintabs: MainTabInfo,
     maintabs_active: "results",
     maintabs_visible: false
 };
