@@ -18,9 +18,6 @@ class MainTabs extends React.Component {
 
         const makeTab = (key, tab) => {
             let active = key == this.props.maintabs_active;
-            if(!active){
-                return (<div />);
-            }
             return (<div
                     className={active ? "tab-pane active" : "tab-pane"}
                     key={"tab_" + key}

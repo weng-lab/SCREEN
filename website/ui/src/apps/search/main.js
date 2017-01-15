@@ -19,10 +19,10 @@ const store = createStore(main_reducers,
                           initialState,
                           applyMiddleware(
                               thunkMiddleware,
-                              loggerMiddleware
+                              // loggerMiddleware
                           ));
 
-console.log(store.getState());
+//console.log(store.getState());
 
 class SearchPage extends React.Component {
     render() {
