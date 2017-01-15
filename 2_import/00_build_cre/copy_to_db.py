@@ -222,7 +222,7 @@ def main():
             im.run()
 
     if args.setup or args.vac:
-        vacumnAnalyze(DBCONN.getconn())
+        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
     with getcursor(DBCONN, "08_setup_log") as curs:
         ci = CreateIndices(curs, m, cols)
