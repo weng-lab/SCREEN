@@ -8,9 +8,10 @@ class MainTabs extends React.Component {
     render(){
         const makeTabTitle = (key, tab) => {
             let active = key == this.props.maintabs_active;
+            let visible = active || tab.visible;
 	    return (<li className={active ? "active" : ""}
                     key={"tab_" + key}
-	            style={{display: (tab.visible ? "list-item" : "none") }}
+	            style={{display: (visible ? "list-item" : "none") }}
 	            onClick={ () => { this.props.actions.setMainTab(key) } }>
                     <a data-toggle="tab">{tab.title}</a>
                     </li>);
