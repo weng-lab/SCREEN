@@ -1,17 +1,12 @@
-var React = require('react');
+import React from 'react'
+
 var $ = require('jquery');
 var _dt = require('datatables.net');
 require('datatables.net-bs');
 
 class ResultsTable extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     render() {
-	return (<div style={{"width": "100%",
-			     "display": (this.props.loading ? "none" : "block")}}>
+	return (<div style={{"width": "100%"}}>
 		    <table ref="root" style={{width: "100%"}} />
 		</div>);
     }
@@ -19,13 +14,8 @@ class ResultsTable extends React.Component {
     componentDidUpdate() {
 	this._datatable.clear().rows.add(this.props.data).draw();
     }
-    
+
     componentDidMount() {
-	var backButton = this.props.backButton;
-	var onTdClick = this.props.onTdClick;
-	var onButtonClick = this.props.onButtonClick;
-	var onMouseEnter = this.props.onMouseEnter;
-	var onMouseExit = this.props.onMouseExit;
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
@@ -39,6 +29,10 @@ class ResultsTable extends React.Component {
 	    pageLength: this.props.pageLength,
 	    dom: '<"top"f>t<"bottom"p><"clear">'
 	});
+
+	var onTdClick = this.props.onTdClick;
+	var onButtonClick = this.props.onButtonClick;
+	var onMouseEnter = this.props.onMouseEnter;
 	$(this.refs.root)
 	    .on("click", "td", function() {
 		if (onTdClick) {
@@ -60,7 +54,7 @@ class ResultsTable extends React.Component {
 	    })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
-	
+
 	this._datatable = _datatable;
     }
 }

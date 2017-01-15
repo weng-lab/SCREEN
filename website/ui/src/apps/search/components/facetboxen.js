@@ -38,7 +38,7 @@ const rangeBox = (title, start, end, action) => {
             />);
 }
 
-const accessionsBox = (accessions, actions) => {
+const accessionsBox = ({accessions, actions}) => {
     if(0 == accessions.length){
         return (<div />);
     }
@@ -55,7 +55,7 @@ const accessionsBox = (accessions, actions) => {
 		    />);
 }
 
-const cellTypesBox = (cellType, actions) => {
+const cellTypesBox = ({cellType, actions}) => {
     return panelize("Cell types",
                     <MainLongListFacet visible={true}
                     title={""}
@@ -78,7 +78,7 @@ const cellTypesBox = (cellType, actions) => {
                     />);
 }
 
-const chromBox = (coord_chrom, actions) => {
+const chromBox = ({coord_chrom, actions}) => {
     return panelize("Chromosome",
 	            <MainListFacet visible={true}
                     title={""}
@@ -88,7 +88,7 @@ const chromBox = (coord_chrom, actions) => {
                     />);
 }
 
-const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
+const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     if(null == coord_chrom){
         return (<div />);
     }
@@ -106,7 +106,7 @@ const startEndBox = (coord_chrom, coord_start, coord_end, actions) => {
                     />);
 }
 
-const tfBox = (actions) => {
+const tfBox = ({actions}) => {
     return panelize("Intersect TF/histone/DNase peaks",
                     <MainLongChecklistFacet visible={true}
                     title={""}
@@ -125,8 +125,8 @@ const tfBox = (actions) => {
                     />);
 }
 
-const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-                         actions) => {
+const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
+                          actions}) => {
     return panelize("Distance to Genes",
                     (<div>
                      {rangeBox("Protein-coding genes", gene_pc_start, gene_pc_end,
@@ -136,11 +136,11 @@ const geneDistanceBox = (gene_all_start, gene_all_end, gene_pc_start, gene_pc_en
                      </div>))
 }
 
-const rankBox = (rank_dnase_start, rank_dnase_end,
-                 rank_promoter_start, rank_promoter_end,
-                 rank_enhancer_start, rank_enhancer_end,
-                 rank_ctcf_start, rank_ctcf_end,
-                 cellType, actions) => {
+const rankBox = ({rank_dnase_start, rank_dnase_end,
+                  rank_promoter_start, rank_promoter_end,
+                  rank_enhancer_start, rank_enhancer_end,
+                  rank_ctcf_start, rank_ctcf_end,
+                  cellType, actions}) => {
     if(null == cellType){
         return (<div />);
     }
@@ -164,27 +164,15 @@ class FacetBoxen extends React.Component {
         }
     }
 
-    doRender ({accessions, coord_chrom, coord_start, coord_end,
-               gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-               rank_dnase_start, rank_dnase_end,
-               rank_promoter_start, rank_promoter_end,
-               rank_enhancer_start, rank_enhancer_end,
-               rank_ctcf_start, rank_ctcf_end,
-               cellType, actions})
-    {
+    doRender(p){
         return (<div>
-                {accessionsBox(accessions, actions)}
-                {cellTypesBox(cellType, actions)}
-                {chromBox(coord_chrom, actions)}
-                {startEndBox(coord_chrom, coord_start, coord_end, actions)}
-                {tfBox(actions)}
-                {geneDistanceBox(gene_all_start, gene_all_end,
-                                 gene_pc_start, gene_pc_end, actions)}
-                {rankBox(rank_dnase_start, rank_dnase_end,
-                         rank_promoter_start, rank_promoter_end,
-                         rank_enhancer_start, rank_enhancer_end,
-                         rank_ctcf_start, rank_ctcf_end,
-                         cellType, actions)}
+                {accessionsBox(p)}
+                {cellTypesBox(p)}
+                {chromBox(p)}
+                {startEndBox(p)}
+                {tfBox(p)}
+                {geneDistanceBox(p)}
+                {rankBox(p)}
                 </div>);
     }
 
