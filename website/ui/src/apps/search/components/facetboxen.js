@@ -157,7 +157,7 @@ const rankBox = (rank_dnase_start, rank_dnase_end,
                      </div>));
 };
 
-class FacetBoxen  extends React.Component {
+class FacetBoxen extends React.Component {
     componentDidMount() {
         if(!this.props.maintabs_visible){
             this.props.actions.showMainTabs(true);
@@ -178,7 +178,8 @@ class FacetBoxen  extends React.Component {
                 {chromBox(coord_chrom, actions)}
                 {startEndBox(coord_chrom, coord_start, coord_end, actions)}
                 {tfBox(actions)}
-                {geneDistanceBox(gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions)}
+                {geneDistanceBox(gene_all_start, gene_all_end,
+                                 gene_pc_start, gene_pc_end, actions)}
                 {rankBox(rank_dnase_start, rank_dnase_end,
                          rank_promoter_start, rank_promoter_end,
                          rank_enhancer_start, rank_enhancer_end,

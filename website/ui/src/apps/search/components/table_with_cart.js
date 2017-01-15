@@ -10,6 +10,63 @@ import {invalidate_detail} from '../helpers/invalidate_results'
 import FacetQueryMap from '../elasticsearch/facets_to_query'
 import QueryAJAX, {format_query} from '../elasticsearch/ajax'
 
+const table_click_handler = (td, rowdata, dispatch) => {
+    if (td.className.indexOf("browser") != -1) return;
+    if (td.className.indexOf("geneexp") != -1) return;
+    if (td.className.indexOf("cart") != -1) {
+	dispatch(toggle_cart_item(rowdata._source.accession));
+	return;
+    }
+    dispatch(invalidate_detail(rowdata));
+    dispatch({
+	type: TAB_ACTION,
+	target: "main_tabs",
+	subaction: {
+	    type: SELECT_TAB,
+	    selection: "details"
+	}
+    });
+};
+
+const openGenomeBrowser = (data, url) => {
+    $.ajax({
+	type: "POST",
+	url: url,
+	data: data,
+	dataType: "json",
+	contentType : "application/json",
+	async: false, // http://stackoverflow.com/a/20235765
+	success: (response) => {
+	    if ("err" in response) {
+		$("#errMsg").text(response["err"]);
+		$("#errBox").show()
+		return true;
+	    }
+	    //console.log(response["trackhubUrl"]);
+	    window.open(response["url"], '_blank');
+	},
+	error: (a, b, c) => {
+	    console.log(a);
+	}
+    });
+};
+
+const button_click_handler = (name, rowdata, dispatch) => {
+    var re = rowdata._source;
+    var half_window = 7500;
+    var arr = window.location.href.split("/");
+    var host = arr[0] + "//" + arr[2];
+    var data = JSON.stringify({"accession" : re["accession"],
+                               "halfWindow" : half_window,
+                               "host" : host});
+
+    switch (name) {
+    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
+    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
+    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
+    }
+};
+
 class TableWithCart extends React.Component {
     downloadBed() {
 	var n_query = FacetQueryMap(this.props.store.getState());
@@ -87,92 +144,3 @@ class TableWithCart extends React.Component {
 }
 
 export default TableWithCart;
-
-export const toggle_cart_item = (accession) => {
-    return {
-	type: TOGGLE_CART_ITEM,
-	accession
-    };
-};
-
-const table_click_handler = (td, rowdata, dispatch) => {
-    if (td.className.indexOf("browser") != -1) return;
-    if (td.className.indexOf("geneexp") != -1) return;
-    if (td.className.indexOf("cart") != -1) {
-	dispatch(toggle_cart_item(rowdata._source.accession));
-	return;
-    }
-    dispatch(invalidate_detail(rowdata));
-    dispatch({
-	type: TAB_ACTION,
-	target: "main_tabs",
-	subaction: {
-	    type: SELECT_TAB,
-	    selection: "details"
-	}
-    });
-};
-
-const openGenomeBrowser = (data, url) => {
-    $.ajax({
-	type: "POST",
-	url: url,
-	data: data,
-	dataType: "json",
-	contentType : "application/json",
-	async: false, // http://stackoverflow.com/a/20235765
-	success: (response) => {
-	    if ("err" in response) {
-		$("#errMsg").text(response["err"]);
-		$("#errBox").show()
-		return true;
-	    }
-	    //console.log(response["trackhubUrl"]);
-	    window.open(response["url"], '_blank');
-	},
-	error: (a, b, c) => {
-	    console.log(a);
-	}
-    });
-};
-
-const button_click_handler = (name, rowdata, dispatch) => {
-    var re = rowdata._source;
-    var half_window = 7500;
-    var arr = window.location.href.split("/");
-    var host = arr[0] + "//" + arr[2];
-    var data = JSON.stringify({"accession" : re["accession"],
-                               "halfWindow" : half_window,
-                               "host" : host});
-
-    switch (name) {
-    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
-    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
-    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
-    }
-};
-
-const table_props_map = (state) => {
-    return {
-	data: state.results.hits,
-	cart_list: state.results.cart_list,
-	order: state.results.order,
-	cols: state.results.columns,
-	fetching: state.results.fetching,
-	total: state.results.total
-    };
-};
-
-export const table_dispatch_map = (dispatch) => {
-    var retval = {
-	onTdClick: (td, rowdata) => {
-	    table_click_handler(td, rowdata, dispatch);
-	},
-	onButtonClick: (button, rowdata) => {
-	    button_click_handler(button, rowdata, dispatch);
-	}
-    };
-    return retval;
-};
-
-export const table_connector = connect(table_props_map, table_dispatch_map);

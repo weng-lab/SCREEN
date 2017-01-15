@@ -10,35 +10,43 @@ import {tabs} from './details'
 
 import TFDisplay from '../../../common/components/tf_display'
 
-const resultsTab  = ({accessions, actions}) => {
-    return (<div>
-            results
-            </div>);
+class ResultsTab extends React.Component{
+    render() {
+        return (<div>
+                <ResultsApp />
+                </div>);
+    }
 }
 
-const treeTab  = ({accessions, actions}) => {
-    return (<div>
-            tree
-            </div>);
+class TreeTab extends React.Component{
+    render() {
+        return (<div>
+                tree
+                </div>);
+    }
 }
 
-const detailsTab = ({accessions, actions}) => {
-    return (<div>
-            details
-            </div>);
+class DetailsTab extends React.Component{
+    render() {
+        return (<div>
+                details
+                </div>);
+    }
 }
 
-const gcompareTab = ({accessions, actions}) => {
-    return (<div>
-            gcompare
-            </div>);
+class GcompareTab extends React.Component{
+    render() {
+        return (<div>
+                gcompare
+                </div>);
+    }
 }
 
-const maintabs = {
-    results : {title: "Search results", visible: true, f: resultsTab},
-    ct_tree: {title: "Cell Type Clustering", visible: true, f: treeTab},
-    details: {title: "RE Details", visible: false, f: detailsTab},
-    gcompare: {title: "Group comparison", visible: false, f: gcompareTab}
+const MainTabInfo = {
+    results : {title: "Search results", visible: true, f: ResultsTab},
+    ct_tree: {title: "Cell Type Clustering", visible: true, f: TreeTab},
+    details: {title: "RE Details", visible: false, f: DetailsTab},
+    gcompare: {title: "Group comparison", visible: false, f: GcompareTab}
 };
 
-export default maintabs;
+export default MainTabInfo;
