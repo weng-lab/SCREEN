@@ -83,7 +83,8 @@ const ResultsTableColumns = [
 	    "Ensembl"
 	])
     }
-];    
+];
+
 export default ResultsTableColumns;
 
 export const table_order = [
