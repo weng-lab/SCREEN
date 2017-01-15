@@ -30,7 +30,10 @@ const main_reducers = (state, action) => {
     case Actions.SHOW_MAIN_TABS:
         return {...state, maintabs_visible: action.show };
     case Actions.SET_MAIN_TAB:
-        return {...state, maintabs_active: action.name };
+        var ret = {...state,
+                   maintabs_active: action.name}
+        ret.maintabs[action.name].visible = true;
+        return ret;
 
     case Actions.TOGGLE_CART: {
         let cart = new Set(state.cart_accessions);
