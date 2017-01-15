@@ -10,6 +10,7 @@ class ResultsApp extends React.Component {
 
     render() {
 	return (<TableWithCart data={[]}
+                total={0}
                 order={table_order} cols={ResultsTableColumns} />);
     }
 }
