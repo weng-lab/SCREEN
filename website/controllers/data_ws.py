@@ -34,12 +34,12 @@ class DataWebServiceWrapper:
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
 
-    def process(self, j):
+    def process(self, j, args, kwargs):
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
         if j["GlobalAssembly"] not in ["mm10", "hg19"]:
             raise Exception("invalid GlobalAssembly")
-        return self.dwss[j["GlobalAssembly"]].process(j)
+        return self.dwss[j["GlobalAssembly"]].process(j, args, kwargs)
 
 class DataWebService:
     def __init__(self, args, ps, cache, staticDir, assembly):
@@ -52,12 +52,10 @@ class DataWebService:
 
         self.actions = {"cre_table" : self._cre_table}
 
-    def process(self, j):
-        #print("DataWebService", "process", j)
-        if "action" not in j:
-            raise Exception("no action found")
+    def process(self, j, args, kwargs):
+        action = args[0]
         try:
-            return self.actions[j["action"]](j)
+            return self.actions[action](j)
         except:
             raise
 
