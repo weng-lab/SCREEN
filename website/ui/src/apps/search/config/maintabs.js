@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-import ResultsApp from '../components/results_app'
+import ResultsTableContainer from '../components/results_app'
 import ResultsDisplayApp from '../components/results_display_app'
 import ResultsTree from '../components/tree'
 
@@ -13,7 +13,7 @@ import TFDisplay from '../../../common/components/tf_display'
 class ResultsTab extends React.Component{
     render() {
         return (<div>
-                <ResultsApp />
+                <ResultsTableContainer />
                 </div>);
     }
 }

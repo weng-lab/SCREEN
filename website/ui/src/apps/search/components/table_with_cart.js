@@ -1,31 +1,19 @@
 var React = require('react');
 import {connect} from 'react-redux'
 
-import {array_contains, numberWithCommas} from '../../../common/common'
-import {TOGGLE_CART_ITEM, TAB_ACTION} from '../reducers/root_reducer'
-import {SELECT_TAB} from '../reducers/tab_reducer'
 import ResultsDataTable from '../../../common/components/results_table'
 
-import {invalidate_detail} from '../helpers/invalidate_results'
-import FacetQueryMap from '../elasticsearch/facets_to_query'
-import QueryAJAX, {format_query} from '../elasticsearch/ajax'
+import ResultsTableColumns, {table_order} from '../config/results_table'
+import {numberWithCommas} from '../../../common/common'
 
-const table_click_handler = (td, rowdata, dispatch) => {
+const table_click_handler = (td, rowdata, actions) => {
     if (td.className.indexOf("browser") != -1) return;
     if (td.className.indexOf("geneexp") != -1) return;
     if (td.className.indexOf("cart") != -1) {
-	dispatch(toggle_cart_item(rowdata._source.accession));
+	actions.toggleCart(rowdata.accession);
 	return;
     }
-    dispatch(invalidate_detail(rowdata));
-    dispatch({
-	type: TAB_ACTION,
-	target: "main_tabs",
-	subaction: {
-	    type: SELECT_TAB,
-	    selection: "details"
-	}
-    });
+    actions.setMainTab("details");
 };
 
 const openGenomeBrowser = (data, url) => {
@@ -144,16 +132,21 @@ class TableWithCart extends React.Component {
 		</div>);
     }
 
-    table(data, {cols, onTdClick, onButtonClick, order}){
-	return (<ResultsDataTable data={data} cols={cols}
-                onTdClick={onTdClick}
-                onButtonClick={onButtonClick}
-		order={order} bFilter={true} bLengthChange={true}
+    table(data, actions){
+	return (<ResultsDataTable data={data}
+                order={table_order}
+                cols={ResultsTableColumns}
+                onTdClick={(td, rowdata) =>
+                           table_click_handler(td, rowdata, actions)}
+                onButtonClick={(td, rowdata) =>
+                               button_click_handler(td, rowdata, actions)}
+		bFilter={true} bLengthChange={true}
 		onMouseEnter={true} onMouseExit={true}/>);
     }
 
     render() {
 	var data = [...this.props.data];
+        var actions = this.props.actions;
 
 	for (var i in data) {
 	    data[i].in_cart = this.props.cart_accessions.has(data[i].accession);
@@ -161,7 +154,7 @@ class TableWithCart extends React.Component {
 
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
                 {this.loading(this.props)}
-                {this.table(data, this.props)}
+                {this.table(data, actions)}
                 {this.tableFooter(data)}
      		</div>);
     }

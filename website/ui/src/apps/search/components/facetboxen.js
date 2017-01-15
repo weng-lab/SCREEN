@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import * as Actions from '../actions/facetboxen_actions';
+import * as Actions from '../actions/main_actions';
 
 import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'

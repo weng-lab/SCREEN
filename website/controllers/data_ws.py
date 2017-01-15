@@ -90,12 +90,12 @@ WHERE int4range(start, stop) && int4range(%s, %s)
 ORDER BY neglogp desc limit 100) r
 """.format(fields = fields, tn = tableName),
                          (j["coord_start"], j["coord_end"]))
-            rows = curs.fetchall()
+            rows = curs.fetchall()[0][0]
 
             curs.execute("""
 SELECT count(0) FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
                          (j["coord_start"], j["coord_end"]))
             total = curs.fetchone()[0]
-        return {"cres": rows[0][0], "total" : total}
+        return {"cres": rows, "total" : total}
 
