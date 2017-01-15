@@ -1,5 +1,8 @@
 const React = require('react');
 
+import ResultsTable from '../../../common/components/results_table'
+import BarGraphTable from '../components/bar_graph_table'
+
 import {render_int, render_cell_type} from './results_table'
 
 import ExpressionHeatmapSet from '../components/expression_heatmap'
@@ -27,6 +30,13 @@ const render_gene_link = (d) => (
 const render_re_link = (d) => ('<a>' + d + '</a>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
+
+const loading = ({isFetching}) => {
+    return (<div className={"loading"}
+            style={{"display": (isFetching ? "block" : "none")}}>
+	    Loading...
+	    </div>);
+}
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
@@ -73,8 +83,52 @@ function tabEles(data, tables, numCols){
 }
 
 class TopTissuesTab extends React.Component{
+    constructor(props) {
+	super(props);
+        this.state = { isFetching: true, isError: false };
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.loadCRE(nextProps);
+    }
+
+    loadCRE({cre_accession_detail}){
+        if(cre_accession_detail in this.state){
+            return;
+        }
+        var q = {GlobalAssembly, cre_accession_detail};
+        var jq = JSON.stringify(q);
+        //console.log("loadCRE....", jq);
+        this.setState({isFetching: true});
+        $.ajax({
+            url: "/dataws/re_detail/topTissues",
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({cre_accession_detail: r["cre"],
+                               jq, isFetching: false, isError: false});
+            }.bind(this)
+        });
+    }
+
+    doRender(){
+        if(this.props.cre_accession_detail in this.state){
+            return tabEles(this.state[cre_accession_detail],
+                           TopTissuesTables, 2);
+        }
+        return loading(this.state);
+    }
+
     render(){
-        return tabEles({}, TopTissuesTables, 2);
+        return (<div style={{"width": "100%"}} >
+
+                </div>);
     }
 }
 
