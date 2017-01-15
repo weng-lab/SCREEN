@@ -42,4 +42,33 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
+    def creTable(self, chrom, start, stop):
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+        print(tableName)
 
+        fields = ', '.join(["accession", "negLogP",
+                            "chrom", "start", "stop",
+                            "gene_all_name[1] AS gene_all" ,
+                            "gene_pc_name[1] AS gene_pc",
+                            "0::int as in_cart"])
+
+        with getcursor(self.pg.DBCONN, "_cre_table") as curs:
+            curs.execute("""
+SELECT JSON_AGG(r) from(
+SELECT {fields} FROM {tn}
+WHERE int4range(start, stop) && int4range(%s, %s)
+ORDER BY neglogp desc limit 100) r
+""".format(fields = fields, tn = tableName), (start, stop))
+            rows = curs.fetchall()[0][0]
+            if not rows:
+                rows = []
+
+            curs.execute("""
+SELECT count(0) FROM {tn}
+WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
+                         (start, stop))
+            total = curs.fetchone()[0]
+        return {"cres": rows, "total" : total}
