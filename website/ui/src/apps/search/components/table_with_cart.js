@@ -40,7 +40,7 @@ const openGenomeBrowser = (data, url) => {
 };
 
 const button_click_handler = (name, rowdata, dispatch) => {
-    var re = rowdata._source;
+    var re = rowdata;
     var half_window = 7500;
     var arr = window.location.href.split("/");
     var host = arr[0] + "//" + arr[2];
