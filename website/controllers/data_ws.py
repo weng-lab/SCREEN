@@ -82,7 +82,7 @@ class DataWebService:
                             "gene_pc_name[1] AS gene_pc",
                             "0::int as in_cart"])
 
-        with getcursor(self.ps.DBCONN, "08_setup_log") as curs:
+        with getcursor(self.ps.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
 SELECT {fields} FROM {tn}
@@ -91,5 +91,11 @@ ORDER BY neglogp desc limit 100) r
 """.format(fields = fields, tn = tableName),
                          (j["coord_start"], j["coord_end"]))
             rows = curs.fetchall()
-        return rows[0][0]
+
+            curs.execute("""
+SELECT count(0) FROM {tn}
+WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
+                         (j["coord_start"], j["coord_end"]))
+            total = curs.fetchone()[0]
+        return {"cres": rows[0][0], "total" : total}
 
