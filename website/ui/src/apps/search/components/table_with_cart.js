@@ -156,8 +156,7 @@ class TableWithCart extends React.Component {
 	var data = [...this.props.data];
 
 	for (var i in data) {
-	    data[i]._source.in_cart = array_contains(this.props.cart_list,
-						     data[i]._source.accession);
+	    data[i].in_cart = this.props.cart_accessions.has(data[i].accession);
 	}
 
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
