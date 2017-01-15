@@ -13,11 +13,8 @@ class ResultsTableContainer extends React.Component {
                        jq : null}
     }
 
-    componentDidMount(){
-        this.loadCREs(this.props);
-    }
-
     componentWillReceiveProps(nextProps){
+        //console.log("in componentWillReceiveProps");
         this.loadCREs(nextProps);
     }
 
@@ -40,7 +37,7 @@ class ResultsTableContainer extends React.Component {
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", q);
+        //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
             url: "/dataws/cre_table",
