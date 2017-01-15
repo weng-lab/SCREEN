@@ -55,7 +55,7 @@ function tabEle(data, key, table, numCols) {
 	    </div>);
 }
 
-function tabEles(data, tables, numCols = 4){
+function tabEles(data, tables, numCols){
     var cols = [];
     for(var key of Object.keys(tables)){
 	cols.push(tabEle(data, key, tables[key], numCols));
@@ -115,18 +115,20 @@ class SimilarREsTab extends React.Component{
 }
 
 const DetailsTabInfo = {
-    topTissues : {title: "Top tissues", enabled: true, f: TopTissuesTab},
+    topTissues : {title: "Top tissues", enabled: true,
+                  f: TopTissuesTab},
     targetGene : {title: "Candidate Target Genes",
                   enabled: "mm10" != GlobalAssembly, f: TargetGeneTab},
-    nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
+    nearbyGenomic: {title: "Nearby Genomic Features", enabled: false,
                     f: NearbyGenomicTab},
-    tfIntersection: {title: "TF and Histone Intersection", enabled: true,
+    tfIntersection: {title: "TF and Histone Intersection", enabled: false,
                      f: TfIntersectionTab},
-    relatedGene: {title: "Related Gene Expression", enabled: true,
+    relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated TSS Expression", enabled: true,
+    assocTSS: {title: "Associated TSS Expression", enabled: false,
                f: AssocTssTab},
-    similarREs: {title: "Similar REs", enabled: true, f: SimilarREsTab}
+    similarREs: {title: "Similar REs", enabled: false,
+                 f: SimilarREsTab}
 };
 
 export default DetailsTabInfo;

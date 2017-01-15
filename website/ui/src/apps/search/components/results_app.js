@@ -28,7 +28,7 @@ class ResultsTableContainer extends React.Component {
               rank_enhancer_start, rank_enhancer_end,
               rank_ctcf_start, rank_ctcf_end,
               cellType}){
-        var q = {"action": "cre_table", GlobalAssembly,
+        var q = {GlobalAssembly,
                  accessions, coord_chrom, coord_start, coord_end,
                  gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
                  rank_dnase_start, rank_dnase_end,
@@ -43,7 +43,7 @@ class ResultsTableContainer extends React.Component {
         //console.log("loadCREs....", q);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/dataws",
+            url: "/dataws/cre_table",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
