@@ -1,8 +1,17 @@
-import fetch from 'isomorphic-fetch';
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 
 const main_reducers = (state, action) => {
+    const doToggle = (oldSet, item) => {
+        let ret = new Set(oldSet);
+        if(ret.has(item)){
+            ret.delete(item);
+        } else {
+            ret.add(item);
+        }
+        return ret;
+    }
+
     switch (action.type) {
 
     case Actions.SET_CELL_TYPE: return {...state, cellType: action.cellType };
@@ -10,14 +19,8 @@ const main_reducers = (state, action) => {
     case Actions.SET_COORDS: return {...state, coord_start: action.start,
                                      coord_end: action.end };
     case Actions.TOGGLE_TF: {
-        let tfs = new Set(state.tfs_selection);
-        let tf = action.tf;
-        if(tfs.has(tf)){
-            tfs.delete(tf);
-        } else {
-            tfs.add(tf);
-        }
-        return { ...state, tfs_selection: tfs}
+        return { ...state,
+                 tfs_selection: doToggle(state.tfs_selection, action.tf)}
     }
     case Actions.SET_TFS_MODE: return { ...state, tfs_mode: action.mode};
     case Actions.SET_ACCESSIONS: return {...state, accessions: action.accs};
@@ -36,14 +39,9 @@ const main_reducers = (state, action) => {
         return ret;
 
     case Actions.TOGGLE_CART: {
-        let cart = new Set(state.cart_accessions);
-        let cre = action.accession
-        if(cart.has(cre)){
-            cart.delete(cre);
-        } else {
-            cart.add(cre);
-        }
-        return { ...state, cart_accessions: cart}
+        return { ...state,
+                 cart_accessions: doToggle(state.cart_accessions,
+                                           action.accession)}
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:
