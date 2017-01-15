@@ -19,6 +19,6 @@ class REComponent extends React.Component {
 	var help = (this.props.helpkey ? <HelpIcon helpkey={this.props.helpkey} /> : <span />);
 	render(help, this.refs.help_icon);
     }
-    
+
 }
 export default REComponent;

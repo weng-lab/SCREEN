@@ -83,27 +83,27 @@ class DataWebService:
         if action not in self.reDetailActions:
             raise Exception("unknown action")
         try:
-            return self.reDetailActions[action](j)
+            return self.reDetailActions[action](j, j["accession"])
         except:
             raise
 
-    def _re_detail_topTissues(self, j):
-        return {}
+    def _re_detail_topTissues(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_targetGene(self, j):
-        return {}
+    def _re_detail_targetGene(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_nearbyGenomic(self, j):
-        return {}
+    def _re_detail_nearbyGenomic(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_tfIntersection(self, j):
-        return {}
+    def _re_detail_tfIntersection(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_relatedGene(self, j):
-        return {}
+    def _re_detail_relatedGene(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_assocTSS(self, j):
-        return {}
+    def _re_detail_assocTSS(self, j, accession):
+        return { accession : {} }
 
-    def _re_detail_similarREs(self, j):
-        return {}
+    def _re_detail_similarREs(self, j, accession):
+        return { accession : {} }
