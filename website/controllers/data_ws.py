@@ -50,12 +50,21 @@ class DataWebService:
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
 
-        self.actions = {"cre_table" : self._cre_table}
+        self.actions = {"cre_table" : self._cre_table,
+                        "re_detail" : self._re_detail}
+        self.reDetailActions = {
+            "topTissues" : self._re_detail_topTissues,
+            "targetGene" self._re_detail_targetGene,
+            "nearbyGenomic" : self._re_detail_nearbyGenomic,
+            "tfIntersection" : self._re_detail_tfIntersection,
+            "relatedGene" : self._re_detail_relatedGene,
+            "assocTSS" : self._re_detail_assocTSS,
+            "similarREs" : self._re_detail_similarREs}
 
     def process(self, j, args, kwargs):
         action = args[0]
         try:
-            return self.actions[action](j)
+            return self.actions[action](j, args[1:])
         except:
             raise
 
@@ -65,7 +74,7 @@ class DataWebService:
             raise Exception("unknown chrom")
         return chrom
 
-    def _cre_table(self, j):
+    def _cre_table(self, j, args):
         chrom = self._checkChrom(j)
 
         if chrom:
@@ -97,3 +106,32 @@ WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
 
+    def _re_detail(self, j, args):
+        action = args[0]
+        if action not in self.reDetailActions:
+            raise Exception("unknown action")
+        try:
+            return self.reDetailActions[action](j)
+        except:
+            raise
+
+    def _re_detail_topTissues(self, j):
+        return {}
+
+    def _re_detail_targetGene(self, j):
+        return {}
+
+    def _re_detail_nearbyGenomic(self, j):
+        return {}
+
+    def _re_detail_tfIntersection(self, j):
+        return {}
+
+    def _re_detail_relatedGene(self, j):
+        return {}
+
+    def _re_detail_assocTSS(self, j):
+        return {}
+
+    def _re_detail_similarREs(self, j):
+        return {}
