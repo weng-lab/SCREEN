@@ -3,7 +3,7 @@ var React = require('react');
 import ResultsApp from '../../search/components/results_app'
 import {main_venn_connector, main_results_connector, main_histogram_connector} from '../reducers/comparison_reducer'
 
-import DetailsApp, {details_connector} from '../../search/components/details_app'
+import DetailsApp, {details_connector} from '../../search/components/details_container'
 import {tabs} from '../../search/config/details'
 
 import MainVennDiagram from '../components/venn'

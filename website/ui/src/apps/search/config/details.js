@@ -28,7 +28,8 @@ const render_re_link = (d) => ('<a>' + d + '</a>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 
-export const tabs = [
+/*
+const DeailsTabInfo = [
     {
 	title: "Top tissues",
 	enabled: true,
@@ -375,3 +376,82 @@ export const tabs = [
 	}
     }
 ];
+*/
+
+
+/*
+function chunkArr(arr, chunk){
+    // from https://jsperf.com/array-splice-vs-underscore
+    // TODO: move to common
+    var i, j, temparray = [];
+    for (i = 0, j = arr.length; i < j; i += chunk) {
+	temparray.push(arr.slice(i, i + chunk));
+    }
+    return temparray;
+}
+
+
+    barGraphTable(table, _data){
+	return <BarGraphTable
+        cols={table.cols} order={table.order} paging={table.paging}
+	bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
+	bLengthChange={false} emptyText={table.emptyText}
+	pageLength={table.pageLength} rank_f={table.bg_rank_f} />;
+    }
+
+    resultsTable(table, _data){
+	var tclick = (table.onTdClick ? table.onTdClick(dispatch) : null);
+	return <ResultsTable
+        cols={table.cols} order={table.order} paging={table.paging}
+	bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
+	bLengthChange={true} emptyText={table.emptyText}
+        pageLength={table.pageLength}
+  	onTdClick={tclick} />;
+    }
+
+	function makeTable(key, table){
+	    var _data = (data[key] ? data[key] : []);
+	    if(table.bar_graph){
+		return barGraphTable(table, _data);
+	    }
+            return resultsTable(table, _data);
+	}
+
+	function tabEle(key, table, numCols) {
+	    return (<div className={"col-md-" + (12/numCols)} key={key}>
+		        <h4>{table.title}</h4>
+		        {makeTable(key, table)}<br/>
+		    </div>);
+	}
+
+	function tabEles(tables, numCols = 4){
+	    var cols = [];
+	    for(var key of Object.keys(tables)){
+		cols.push(tabEle(key, tables[key], numCols));
+	    };
+	    if(0 == numCols){
+		return cols;
+	    }
+	    var chunks = chunkArr(cols, numCols);
+	    var ret = []
+	    for(var i = 0; i < chunks.length; i++) {
+		var chunk = chunks[i];
+		ret.push(<div className="row" key={"chunk" + i}>{chunk}</div>);
+	    }
+	    return (<div>{ret}</div>);
+	}
+        */
+
+const DetailsTabInfo = {
+    topTissues : {title: "Top tissues", enabled: true, f: null},
+    targetGene : {title: "Candidate Target Genes",
+                  enabled: "mm10" != GlobalAssembly, f: null},
+    nearbyGenomic: {title: "Nearby Genomic Features", enabled: true, f: null},
+    tfIntersection: {title: "TF and Histone Intersection", enabled: true,
+                     f:null},
+    relatedGene: {title: "Related Gene Expression", enabled: true, f: null},
+    assocTSS: {title: "Associated TSS Expression", enabled: true, f: null},
+    similarREs: {title: "Similar REs", enabled: true, f: null}
+};
+
+export default DetailsTabInfo;
