@@ -1,7 +1,5 @@
-var React = require('react');
+import React from 'react'
 import {connect} from 'react-redux';
-
-import {SET_DETAIL_TAB} from '../reducers/root_reducer'
 
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
@@ -24,7 +22,7 @@ class DetailsApp extends React.Component {
 	dispatch(set_tab_selection(k));
 	if (this.props.tabs[k].onClick) this.props.tabs[k].onClick(dispatch);
     }
-    
+
     render() {
 	var tabs = this.props.tabs;
 	var tables = this.props.tables;
@@ -48,7 +46,7 @@ class DetailsApp extends React.Component {
 	               bLengthChange={true} emptyText={table.emptyText} pageLength={table.pageLength}
   	               onTdClick={tclick} />;
 	}
-	
+
 	function tabEle(key, table, numCols) {
 	    return (<div className={"col-md-" + (12/numCols)} key={key}>
 		        <h4>{table.title}</h4>
@@ -65,7 +63,7 @@ class DetailsApp extends React.Component {
 	    }
 	    return temparray;
 	}
-	
+
 	function tabEles(tables, numCols = 4){
 	    var cols = [];
 	    for(var key of Object.keys(tables)){
@@ -85,7 +83,7 @@ class DetailsApp extends React.Component {
 
 	// only showed enabled tabs
 	var tabsf = tabs.filter(t => t.enabled)
-	
+
 	return (<div className="container" style={{width: "100%"}}>
 		    <h3>{this.props.q.accession}</h3>
 		    <ul className="nav nav-tabs">
@@ -107,7 +105,7 @@ class DetailsApp extends React.Component {
 		    </div>
 		</div>);
     }
-    
+
 }
 export default DetailsApp;
 
