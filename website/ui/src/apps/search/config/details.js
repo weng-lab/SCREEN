@@ -89,7 +89,12 @@ class ReTabBase extends React.Component{
         this.loadCRE = this.loadCRE.bind(this);
     }
 
-    loadCRE(url, {cre_accession_detail}){
+    componentWillReceiveProps(nextProps){
+        this.loadCRE(nextProps);
+        this.doRenderWrapper = this.doRenderWrapper.bind(this);
+    }
+
+    loadCRE({cre_accession_detail}){
         if(cre_accession_detail in this.state){
             return;
         }
@@ -98,7 +103,7 @@ class ReTabBase extends React.Component{
         //console.log("loadCRE....", jq);
         this.setState({isFetching: true});
         $.ajax({
-            url: url,
+            url: this.url,
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -112,29 +117,31 @@ class ReTabBase extends React.Component{
             }.bind(this)
         });
     }
-};
 
-class TopTissuesTab extends ReTabBase{
-    constructor(props) {
-	super(props);
-    }
-
-    componentWillReceiveProps(nextProps){
-        this.loadCRE("/dataws/re_detail/topTissues", nextProps);
-    }
-
-    doRender(){
+    doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
-            return tabEles(this.state[accession], TopTissuesTables, 2);
+            return this.doRender(accession);
         }
         return loading(this.state);
     }
 
     render(){
         return (<div style={{"width": "100%"}} >
-                {this.doRender()}
+                {this.doRenderWrapper()}
                 </div>);
+    }
+};
+
+class TopTissuesTab extends ReTabBase{
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/topTissues";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return tabEles(this.state[accession], TopTissuesTables, 2);
     }
 }
 
