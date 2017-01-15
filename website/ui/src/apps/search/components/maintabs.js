@@ -7,6 +7,7 @@ import * as Actions from '../actions/main_actions';
 class MainTabs extends React.Component {
     render(){
         const makeTabTitle = (key, tab) => {
+            if(!tab.visible){ return (<div />) }
             let active = key == this.props.maintabs_active;
 	    return (<li className={active ? "active" : ""}
                     key={"tab_" + key}
@@ -17,6 +18,7 @@ class MainTabs extends React.Component {
         }
 
         const makeTab = (key, tab) => {
+            if(!tab.visible){ return (<div />) }
             let active = key == this.props.maintabs_active;
             return (<div
                     className={active ? "tab-pane active" : "tab-pane"}
@@ -24,8 +26,7 @@ class MainTabs extends React.Component {
                     id={"tab_main_" + key}
                     key={"tcontent_" + key}>
 		    {React.createElement(tab.f, this.props)}
-		    </div>
-                   )
+		    </div>);
         }
 
         let tabs = this.props.maintabs;
