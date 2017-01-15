@@ -4,11 +4,10 @@ import {connect} from 'react-redux'
 import ResultsTableContainer from '../components/results_app'
 import ResultsDisplayApp from '../components/results_display_app'
 import ResultsTree from '../components/tree'
-
-import DetailsApp from '../components/details_app'
-import {tabs} from './details'
-
+import DetailsContainer from '../components/details_container'
 import TFDisplay from '../../../common/components/tf_display'
+
+import DetailsTabInfo from './details'
 
 class ResultsTab extends React.Component{
     componentDidMount(){
@@ -24,6 +23,7 @@ class ResultsTab extends React.Component{
 class TreeTab extends React.Component{
     render() {
         return (<div>
+
                 tree
                 </div>);
     }
@@ -32,7 +32,7 @@ class TreeTab extends React.Component{
 class DetailsTab extends React.Component{
     render() {
         return (<div>
-                details
+                <DetailsContainer tabs={DetailsTabInfo} />
                 </div>);
     }
 }

@@ -14,6 +14,7 @@ const initialState = {
     maintabs_visible: false,
     cart_accessions: new Set(),
     cre_accession_detail: null,
+    re_details_tab_active: "topTissues"
 };
 
 export default initialState;
