@@ -40,6 +40,8 @@ const main_reducers = (state, action) => {
 
     case Actions.SHOW_RE_DETAIL:
         return {...state, cre_accession_detail: action.accession};
+    case Actions.SET_RE_DETAIL_TAB:
+        return {...state, re_details_tab_active: action.name};
 
     case Actions.TOGGLE_CART: {
         return { ...state,

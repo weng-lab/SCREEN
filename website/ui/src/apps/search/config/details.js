@@ -146,7 +146,7 @@ class TopTissuesTab extends ReTabBase{
     }
 }
 
-class TargetGeneTab extends React.Component{
+class TargetGeneTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/targetGene";
@@ -159,7 +159,7 @@ class TargetGeneTab extends React.Component{
     }
 }
 
-class NearbyGenomicTab extends React.Component{
+class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/nearbyGenomic";
@@ -172,7 +172,7 @@ class NearbyGenomicTab extends React.Component{
     }
 }
 
-class TfIntersectionTab extends React.Component{
+class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/tfIntersection";
@@ -185,7 +185,7 @@ class TfIntersectionTab extends React.Component{
     }
 }
 
-class RelatedGeneTab extends React.Component{
+class RelatedGeneTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/relatedGene";
@@ -198,7 +198,7 @@ class RelatedGeneTab extends React.Component{
     }
 }
 
-class AssocTssTab extends React.Component{
+class AssocTssTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/assocTSS";
@@ -211,7 +211,7 @@ class AssocTssTab extends React.Component{
     }
 }
 
-class SimilarREsTab extends React.Component{
+class SimilarREsTab extends ReTabBase{
     constructor(props) {
 	super(props);
         this.url = "/dataws/re_detail/similarREs";
@@ -219,7 +219,7 @@ class SimilarREsTab extends React.Component{
     }
 
     doRender(accession){
-        return (<div>hi!</div>);
+        return (<div>hi from minipea</div>);
         return (<MiniPeaks />);
     }
 }
@@ -229,15 +229,15 @@ const DetailsTabInfo = {
                   f: TopTissuesTab},
     targetGene : {title: "Candidate Target Genes",
                   enabled: "mm10" != GlobalAssembly, f: TargetGeneTab},
-    nearbyGenomic: {title: "Nearby Genomic Features", enabled: false,
+    nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
                     f: NearbyGenomicTab},
-    tfIntersection: {title: "TF and Histone Intersection", enabled: false,
+    tfIntersection: {title: "TF and Histone Intersection", enabled: true,
                      f: TfIntersectionTab},
-    relatedGene: {title: "Related Gene Expression", enabled: false,
+    relatedGene: {title: "Related Gene Expression", enabled: true,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated TSS Expression", enabled: false,
+    assocTSS: {title: "Associated TSS Expression", enabled: true,
                f: AssocTssTab},
-    similarREs: {title: "Similar REs", enabled: false,
+    similarREs: {title: "Similar REs", enabled: true,
                  f: SimilarREsTab}
 };
 
