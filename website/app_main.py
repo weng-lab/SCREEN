@@ -137,10 +137,10 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def dataws(self):
+    def dataws(self, *args, **kwargs):
         #print(cherrypy.request)
         j = cherrypy.request.json
-        return self.dataWS.process(j)
+        return self.dataWS.process(j, args, kwargs)
 
     @cherrypy.expose
     def geneexp(self, *args, **kwargs):
