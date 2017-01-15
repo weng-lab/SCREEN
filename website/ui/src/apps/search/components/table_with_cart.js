@@ -137,27 +137,33 @@ class TableWithCart extends React.Component {
 		</span>);
     }
 
-    render() {
-	var n_data = [...this.props.data];
+    loading({fetching}){
+        return (<div className={"loading"}
+                style={{"display": (fetching ? "block" : "none")}}>
+		Loading...
+		</div>);
+    }
 
-	for (var i in n_data) {
-	    n_data[i]._source.in_cart = array_contains(this.props.cart_list,
-						       n_data[i]._source.accession);
+    table(data, {cols, onTdClick, onButtonClick, order}){
+	return (<ResultsDataTable data={data} cols={cols}
+                onTdClick={onTdClick}
+                onButtonClick={onButtonClick}
+		order={order} bFilter={true} bLengthChange={true}
+		onMouseEnter={true} onMouseExit={true}/>);
+    }
+
+    render() {
+	var data = [...this.props.data];
+
+	for (var i in data) {
+	    data[i]._source.in_cart = array_contains(this.props.cart_list,
+						     data[i]._source.accession);
 	}
 
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
-		    <div className={"loading"} style={{"display": (this.props.fetching ? "block" : "none")}}>
-		        Loading...
-		    </div>
-		    <ResultsDataTable data={n_data} cols={this.props.cols}
-                onTdClick={this.props.onTdClick}
-	        loading={this.props.fetching}
-                onButtonClick={this.props.onButtonClick}
-		order={this.props.order} bFilter={true} bLengthChange={true}
-		onMouseEnter={true} onMouseExit={true}/>
-
-                {this.tableFooter(n_data)}
-
+                {this.loading(this.props)}
+                {this.table(data, this.props)}
+                {this.tableFooter(data)}
      		</div>);
     }
 }
