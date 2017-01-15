@@ -1,7 +1,6 @@
 import React from 'react'
-
-import ResultsTable from '../../../common/components/results_table'
-import BarGraphTable from '../components/bar_graph_table'
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
@@ -46,4 +45,16 @@ class DetailsContainer extends React.Component {
     }
 }
 
-export default DetailsContainer;
+
+const mapStateToProps = (state) => ({
+        ...state
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(DetailsContainer);
