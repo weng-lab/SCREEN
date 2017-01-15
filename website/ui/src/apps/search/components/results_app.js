@@ -10,16 +10,16 @@ import * as Actions from '../actions/facetboxen_actions';
 class ResultsApp extends React.Component {
     constructor(props) {
 	super(props);
-        this.state = { cres: [],
-                       isFetching: true}
+        this.state = { cres: [], isFetching: true, isError: false,
+                       jq : null}
     }
 
     componentDidMount(){
         this.loadCREs(this.props);
     }
 
-    componentDidUpdate(){
-        this.loadCREs(this.props);
+    componentWillReceiveProps(nextProps){
+        this.loadCREs(nextProps);
     }
 
     loadCREs({accessions, coord_chrom, coord_start, coord_end,
@@ -29,25 +29,37 @@ class ResultsApp extends React.Component {
               rank_enhancer_start, rank_enhancer_end,
               rank_ctcf_start, rank_ctcf_end,
               cellType}){
-        var q = {accessions, coord_chrom, coord_start, coord_end,
+        var q = {"action": "cre_table", GlobalAssembly,
+                 accessions, coord_chrom, coord_start, coord_end,
                  gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
                  rank_dnase_start, rank_dnase_end,
                  rank_promoter_start, rank_promoter_end,
                  rank_enhancer_start, rank_enhancer_end,
                  rank_ctcf_start, rank_ctcf_end, cellType};
-        console.log(q);
+        var jq = JSON.stringify(q);
+        if(this.state.jq == jq){
+            return;
+        }
+        console.log("loadCREs....", q);
+        this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/my-comments.json",
-            dataType: 'json',
+            url: "/dataws",
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({cres: [], jq, isFetching: false, isError: true});
+            },
             success: function(cres) {
-                this.setState({cres,
-                               isFetching: false});
+                this.setState({cres, jq, isFetching: false, isError: false});
             }.bind(this)
         });
     }
 
     render() {
-	return (<TableWithCart data={[]}
+	return (<TableWithCart data={this.state.cres}
                 total={0}
                 fetching={this.state.isFetching}
                 order={table_order} cols={ResultsTableColumns} />);

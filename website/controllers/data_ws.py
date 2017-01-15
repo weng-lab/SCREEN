@@ -40,6 +40,8 @@ class DataWebServiceWrapper:
     def process(self, j):
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
+        if j["GlobalAssembly"] not in ["mm10", "hg19"]:
+            raise Exception("invalid GlobalAssembly")
         return self.dwss[j["GlobalAssembly"]].process(j)
 
 class DataWebService:
@@ -50,6 +52,31 @@ class DataWebService:
         self.staticDir = staticDir
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
-        
+
+        self.actions = {"cre_table" : self._cre_table}
+
     def process(self, j):
-        print("DataWebService", "process", j)
+        #print("DataWebService", "process", j)
+        if "action" not in j:
+            raise Exception("no action found")
+        try:
+            return self.actions[j["action"]](j)
+        except:
+            raise
+
+    def _checkChrom(self, j):
+        chrom = j["coord_chrom"]
+        if chrom and chrom not in chroms[self.assembly]:
+            raise Exception("unknown chrom")
+        return chrom
+
+    def _cre_table(self, j):
+        chrom = self._checkChrom(j)
+
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+        print(tableName)
+
+        return []
