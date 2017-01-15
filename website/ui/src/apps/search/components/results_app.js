@@ -38,6 +38,7 @@ class ResultsApp extends React.Component {
                  rank_ctcf_start, rank_ctcf_end, cellType};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
+            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
         console.log("loadCREs....", q);
