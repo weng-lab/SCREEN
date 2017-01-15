@@ -82,26 +82,23 @@ function tabEles(data, tables, numCols){
     return (<div>{ret}</div>);
 }
 
-class TopTissuesTab extends React.Component{
+class ReTabBase extends React.Component{
     constructor(props) {
 	super(props);
         this.state = { isFetching: true, isError: false };
+        this.loadCRE = this.loadCRE.bind(this);
     }
 
-    componentWillReceiveProps(nextProps){
-        this.loadCRE(nextProps);
-    }
-
-    loadCRE({cre_accession_detail}){
+    loadCRE(url, {cre_accession_detail}){
         if(cre_accession_detail in this.state){
             return;
         }
-        var q = {GlobalAssembly, cre_accession_detail};
+        var q = {GlobalAssembly, "accession" : cre_accession_detail};
         var jq = JSON.stringify(q);
         //console.log("loadCRE....", jq);
         this.setState({isFetching: true});
         $.ajax({
-            url: "/dataws/re_detail/topTissues",
+            url: url,
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -111,23 +108,32 @@ class TopTissuesTab extends React.Component{
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cre_accession_detail: r["cre"],
-                               jq, isFetching: false, isError: false});
+                this.setState({...r, isFetching: false, isError: false});
             }.bind(this)
         });
     }
+};
+
+class TopTissuesTab extends ReTabBase{
+    constructor(props) {
+	super(props);
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.loadCRE("/dataws/re_detail/topTissues", nextProps);
+    }
 
     doRender(){
-        if(this.props.cre_accession_detail in this.state){
-            return tabEles(this.state[cre_accession_detail],
-                           TopTissuesTables, 2);
+        let accession = this.props.cre_accession_detail;
+        if(accession in this.state){
+            return tabEles(this.state[accession], TopTissuesTables, 2);
         }
         return loading(this.state);
     }
 
     render(){
         return (<div style={{"width": "100%"}} >
-
+                {this.doRender()}
                 </div>);
     }
 }
