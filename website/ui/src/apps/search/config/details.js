@@ -93,6 +93,7 @@ class ReTabBase extends React.Component{
     }
 
     componentWillReceiveProps(nextProps){
+        // only check/get data if we will become active tab...
         if(this.key == nextProps.re_details_tab_active){
             this.loadCRE(nextProps);
         }
@@ -140,84 +141,70 @@ class ReTabBase extends React.Component{
 class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-        return tabEles(this.state[accession], TopTissuesTables, 2);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+            return tabEles(this.state[accession], TopTissuesTables, 2);
+        }
     }
 }
 
 class TargetGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "targetGene");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-        return tabEles({}, TargetGeneTable, 1);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+            return tabEles({}, TargetGeneTable, 1);
+        }
     }
 }
 
 class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
 	super(props, "nearbyGenomic");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-        return tabEles({}, NearbyGenomicTable, 4);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+            return tabEles({}, NearbyGenomicTable, 4);
+        }
     }
 }
 
 class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-        return tabEles({}, TfIntersectionTable, 2);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+            return tabEles({}, TfIntersectionTable, 2);
+        }
     }
 }
 
 class RelatedGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "relatedGene");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-	return (<ExpressionHeatmapSet />);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+	    return (<ExpressionHeatmapSet />);
+        }
     }
 }
 
 class AssocTssTab extends ReTabBase{
     constructor(props) {
 	super(props, "assocTSS");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi!</div>);
-        return (<TSSExpressionPlot />);
+        this.doRender = (accession) => {
+            return (<div>hi!</div>);
+            return (<TSSExpressionPlot />);
+        }
     }
 }
 
 class SimilarREsTab extends ReTabBase{
     constructor(props) {
 	super(props, "similarREs");
-        this.doRender = this.doRender.bind(this);
-    }
-
-    doRender(accession){
-        return (<div>hi from minipea</div>);
-        return (<MiniPeaks />);
+        this.doRender = (accession) => {
+            return (<div>hi from minipea</div>);
+            return (<MiniPeaks />);
+        }
     }
 }
 
