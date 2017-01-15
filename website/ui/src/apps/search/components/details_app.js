@@ -4,47 +4,51 @@ import {connect} from 'react-redux';
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
 
-const set_tab_selection = (k) => {
-    return {
-	type: SET_DETAIL_TAB,
-	tab_selection: k
-    };
-};
+function chunkArr(arr, chunk){
+    // from https://jsperf.com/array-splice-vs-underscore
+    // TODO: move to common
+    var i, j, temparray = [];
+    for (i = 0, j = arr.length; i < j; i += chunk) {
+	temparray.push(arr.slice(i, i + chunk));
+    }
+    return temparray;
+}
 
 class DetailsApp extends React.Component {
-
     constructor(props) {
 	super(props);
-	this.onClick = this.onClick.bind(this);
     }
 
-    onClick(k, dispatch) {
-	dispatch(set_tab_selection(k));
-	if (this.props.tabs[k].onClick) this.props.tabs[k].onClick(dispatch);
+    barGraphTable(table, _data){
+	return <BarGraphTable
+        cols={table.cols} order={table.order} paging={table.paging}
+	bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
+	bLengthChange={false} emptyText={table.emptyText}
+	pageLength={table.pageLength} rank_f={table.bg_rank_f} />;
+    }
+
+    resultsTable(table, _data){
+	var tclick = (table.onTdClick ? table.onTdClick(dispatch) : null);
+	return <ResultsTable
+        cols={table.cols} order={table.order} paging={table.paging}
+	bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
+	bLengthChange={true} emptyText={table.emptyText}
+        pageLength={table.pageLength}
+  	onTdClick={tclick} />;
     }
 
     render() {
 	var tabs = this.props.tabs;
 	var tables = this.props.tables;
 	var data = this.props.data;
-	var dispatch = this.props.store.dispatch;
-	var store = this.props.store;
 	var tab_selection = this.props.tab_selection;
-	var onClick = this.onClick;
 
 	function makeTable(key, table){
 	    var _data = (data[key] ? data[key] : []);
 	    if(table.bar_graph){
-		return <BarGraphTable cols={table.cols} order={table.order} paging={table.paging}
-			    bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
-			    bLengthChange={false} emptyText={table.emptyText}
-			    pageLength={table.pageLength} rank_f={table.bg_rank_f} />;
+		return barGraphTable(table, _data);
 	    }
-	    var tclick = (table.onTdClick ? table.onTdClick(dispatch) : null);
-	    return <ResultsTable cols={table.cols} order={table.order} paging={table.paging}
-		       bInfo={table.bInfo} bFilter={table.bFilter} data={_data}
-	               bLengthChange={true} emptyText={table.emptyText} pageLength={table.pageLength}
-  	               onTdClick={tclick} />;
+            return resultsTable(table, _data);
 	}
 
 	function tabEle(key, table, numCols) {
@@ -52,16 +56,6 @@ class DetailsApp extends React.Component {
 		        <h4>{table.title}</h4>
 		        {makeTable(key, table)}<br/>
 		    </div>);
-	}
-
-	function chunkArr(arr, chunk){
-	    // from https://jsperf.com/array-splice-vs-underscore
-	    // TODO: move to common
-	    var i, j, temparray = [];
-	    for (i = 0, j = arr.length; i < j; i += chunk) {
-		temparray.push(arr.slice(i, i + chunk));
-	    }
-	    return temparray;
 	}
 
 	function tabEles(tables, numCols = 4){
