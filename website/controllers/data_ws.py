@@ -54,7 +54,7 @@ class DataWebService:
                         "re_detail" : self._re_detail}
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
-            "targetGene" self._re_detail_targetGene,
+            "targetGene" : self._re_detail_targetGene,
             "nearbyGenomic" : self._re_detail_nearbyGenomic,
             "tfIntersection" : self._re_detail_tfIntersection,
             "relatedGene" : self._re_detail_relatedGene,
@@ -76,35 +76,7 @@ class DataWebService:
 
     def _cre_table(self, j, args):
         chrom = self._checkChrom(j)
-
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
-        print(tableName)
-
-        fields = ', '.join(["accession", "negLogP",
-                            "chrom", "start", "stop",
-                            "gene_all_name[1] AS gene_all" ,
-                            "gene_pc_name[1] AS gene_pc",
-                            "0::int as in_cart"])
-
-        with getcursor(self.ps.DBCONN, "_cre_table") as curs:
-            curs.execute("""
-SELECT JSON_AGG(r) from(
-SELECT {fields} FROM {tn}
-WHERE int4range(start, stop) && int4range(%s, %s)
-ORDER BY neglogp desc limit 100) r
-""".format(fields = fields, tn = tableName),
-                         (j["coord_start"], j["coord_end"]))
-            rows = curs.fetchall()[0][0]
-
-            curs.execute("""
-SELECT count(0) FROM {tn}
-WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
-                         (j["coord_start"], j["coord_end"]))
-            total = curs.fetchone()[0]
-        return {"cres": rows, "total" : total}
+        return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"])
 
     def _re_detail(self, j, args):
         action = args[0]
