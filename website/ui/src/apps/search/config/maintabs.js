@@ -11,6 +11,9 @@ import {tabs} from './details'
 import TFDisplay from '../../../common/components/tf_display'
 
 class ResultsTab extends React.Component{
+    componentDidMount(){
+        //console.log("just made ResultsTab");
+    }
     render() {
         return (<div>
                 <ResultsTableContainer />

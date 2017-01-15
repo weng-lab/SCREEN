@@ -40,6 +40,9 @@ export const showMainTabs = (show) => ({ type: SHOW_MAIN_TABS, show });
 export const SET_MAIN_TAB = 'SET_MAIN_TAB'
 export const setMainTab = (name) => ({ type: SET_MAIN_TAB, name });
 
+export const SHOW_RE_DETAIL = 'SHOW_RE_DETAIL'
+export const showReDetail = (accession) => ({ type: SHOW_RE_DETAIL, accession})
+
 export const TOGGLE_CART = 'TOGGLE_CART'
 export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
 

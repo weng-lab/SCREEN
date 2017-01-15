@@ -19,7 +19,7 @@ const store = createStore(main_reducers,
                           initialState,
                           applyMiddleware(
                               thunkMiddleware,
-                              // loggerMiddleware
+                              loggerMiddleware
                           ));
 
 //console.log(store.getState());
