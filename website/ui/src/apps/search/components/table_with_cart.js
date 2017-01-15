@@ -113,33 +113,52 @@ class TableWithCart extends React.Component {
 	});
     }
 
+    totalText(data){
+        if(data.length < this.props.total){
+		return "displaying top " + data.length +
+                " results of " + numberWithCommas(this.props.total) + " total";
+        }
+        return "found " + this.props.total + " results";
+    }
+
+    tableFooter(data){
+	var total = this.totalText(data);
+        return (<span className="tableInfo">
+
+                <div className={"btn-group"} role={"group"}>
+		<button type={"button"} className={"btn btn-default btn-xs"}
+		onClick={() => {this.downloadBed()}}>Download bed</button>
+
+		<button type={"button"} className={"btn btn-default btn-xs"}
+		onClick={() => {this.downloadJSON()}}>Download JSON</button>
+		</div>
+
+		&nbsp;&nbsp;{total}
+		</span>);
+    }
+
     render() {
 	var n_data = [...this.props.data];
-	var total = (n_data.length < this.props.total
-		     ? "displaying top " + n_data.length + " results of " + numberWithCommas(this.props.total) + " total"
-		     : "found " + this.props.total + " results");
+
 	for (var i in n_data) {
 	    n_data[i]._source.in_cart = array_contains(this.props.cart_list,
 						       n_data[i]._source.accession);
 	}
+
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
 		    <div className={"loading"} style={{"display": (this.props.fetching ? "block" : "none")}}>
 		        Loading...
 		    </div>
-		    <ResultsDataTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
-	                loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
+		    <ResultsDataTable data={n_data} cols={this.props.cols}
+                onTdClick={this.props.onTdClick}
+	        loading={this.props.fetching}
+                onButtonClick={this.props.onButtonClick}
 		order={this.props.order} bFilter={true} bLengthChange={true}
 		onMouseEnter={true} onMouseExit={true}/>
-		<span className="tableInfo">
-		<div className={"btn-group"} role={"group"}>
-		<button type={"button"} className={"btn btn-default btn-xs"}
-		onClick={() => {this.downloadBed()}}>Download bed</button>
-		<button type={"button"} className={"btn btn-default btn-xs"}
-		onClick={() => {this.downloadJSON()}}>Download JSON</button>
-		</div>
-		&nbsp;&nbsp;{total}
-		</span>
-		</div>);
+
+                {this.tableFooter(n_data)}
+
+     		</div>);
     }
 }
 
