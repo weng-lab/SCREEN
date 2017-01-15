@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import * as Actions from '../actions/facetboxen_actions';
+import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 
 const main_reducers = (state, action) => {
@@ -31,6 +31,17 @@ const main_reducers = (state, action) => {
         return {...state, maintabs_visible: action.show };
     case Actions.SET_MAIN_TAB:
         return {...state, maintabs_active: action.name };
+
+    case Actions.TOGGLE_CART: {
+        let cart = new Set(state.cart_accessions);
+        let cre = action.accession
+        if(cart.has(cre)){
+            cart.delete(cre);
+        } else {
+            cart.add(cre);
+        }
+        return { ...state, cart_accessions: cart}
+    }
 
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
