@@ -10,7 +10,7 @@ import * as Actions from '../actions/facetboxen_actions';
 class ResultsApp extends React.Component {
     constructor(props) {
 	super(props);
-        this.state = { cres: [], isFetching: true, isError: false,
+        this.state = { cres: [], total: 0, isFetching: true, isError: false,
                        jq : null}
     }
 
@@ -41,7 +41,7 @@ class ResultsApp extends React.Component {
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        console.log("loadCREs....", q);
+        //console.log("loadCREs....", q);
         this.setState({jq, isFetching: true});
         $.ajax({
             url: "/dataws",
@@ -51,20 +51,23 @@ class ResultsApp extends React.Component {
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
                 console.log("err loading cres for table");
-                this.setState({cres: [], jq, isFetching: false, isError: true});
-            },
-            success: function(cres) {
-                this.setState({cres, jq, isFetching: false, isError: false});
+                this.setState({cres: [], total: 0,
+                               jq, isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({cres: r["cres"], total: r["total"],
+                               jq, isFetching: false, isError: false});
             }.bind(this)
         });
     }
 
     render() {
 	return (<TableWithCart data={this.state.cres}
-                total={0}
+                total={this.state.total}
                 cart_accessions={this.props.cart_accessions}
                 fetching={this.state.isFetching}
-                order={table_order} cols={ResultsTableColumns} />);
+                order={table_order}
+                cols={ResultsTableColumns} />);
     }
 }
 
