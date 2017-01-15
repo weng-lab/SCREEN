@@ -11,7 +11,8 @@ const initialState = {
     rank_ctcf_start: 0, rank_ctcf_end: 20000,
     maintabs: MainTabInfo,
     maintabs_active: "results",
-    maintabs_visible: false
+    maintabs_visible: false,
+    cart_accessions: new Set()
 };
 
 export default initialState;

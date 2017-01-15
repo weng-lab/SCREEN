@@ -78,16 +78,18 @@ class DataWebService:
 
         fields = ', '.join(["accession", "negLogP",
                             "chrom", "start", "stop",
-                            "gene_all_name", "gene_pc_name"])
+                            "gene_all_name[1] AS gene_all" ,
+                            "gene_pc_name[1] AS gene_pc",
+                            "0::int as in_cart"])
 
         with getcursor(self.ps.DBCONN, "08_setup_log") as curs:
             curs.execute("""
+SELECT JSON_AGG(r) from(
 SELECT {fields} FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)
-ORDER BY neglogp desc limit 100
+ORDER BY neglogp desc limit 100) r
 """.format(fields = fields, tn = tableName),
                          (j["coord_start"], j["coord_end"]))
             rows = curs.fetchall()
-
-        return rows
+        return rows[0][0]
 

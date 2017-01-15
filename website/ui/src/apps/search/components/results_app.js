@@ -62,6 +62,7 @@ class ResultsApp extends React.Component {
     render() {
 	return (<TableWithCart data={this.state.cres}
                 total={0}
+                cart_accessions={this.props.cart_accessions}
                 fetching={this.state.isFetching}
                 order={table_order} cols={ResultsTableColumns} />);
     }
