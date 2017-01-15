@@ -141,42 +141,85 @@ class TopTissuesTab extends ReTabBase{
     }
 
     doRender(accession){
+        return (<div>hi!</div>);
         return tabEles(this.state[accession], TopTissuesTables, 2);
     }
 }
 
 class TargetGeneTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/targetGene";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
         return tabEles({}, TargetGeneTable, 1);
     }
 }
 
 class NearbyGenomicTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/nearbyGenomic";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
         return tabEles({}, NearbyGenomicTable, 4);
     }
 }
 
 class TfIntersectionTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/tfIntersection";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
         return tabEles({}, TfIntersectionTable, 2);
     }
 }
 
 class RelatedGeneTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/relatedGene";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
 	return (<ExpressionHeatmapSet />);
     }
 }
 
 class AssocTssTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/assocTSS";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
         return (<TSSExpressionPlot />);
     }
 }
 
 class SimilarREsTab extends React.Component{
-    render(){
+    constructor(props) {
+	super(props);
+        this.url = "/dataws/re_detail/similarREs";
+        this.doRender = this.doRender.bind(this);
+    }
+
+    doRender(accession){
+        return (<div>hi!</div>);
         return (<MiniPeaks />);
     }
 }
