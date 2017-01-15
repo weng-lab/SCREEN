@@ -30,8 +30,8 @@ const main_reducers = (state, action) => {
     case Actions.SHOW_MAIN_TABS:
         return {...state, maintabs_visible: action.show };
     case Actions.SET_MAIN_TAB:
-        var ret = {...state,
-                   maintabs_active: action.name}
+        var ret = {...state, maintabs_active: action.name}
+        ret.maintabs = {...state.maintabs};
         ret.maintabs[action.name].visible = true;
         return ret;
 
