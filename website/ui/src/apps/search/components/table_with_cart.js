@@ -6,14 +6,15 @@ import ResultsDataTable from '../../../common/components/results_table'
 import ResultsTableColumns, {table_order} from '../config/results_table'
 import {numberWithCommas} from '../../../common/common'
 
-const table_click_handler = (td, rowdata, actions) => {
+const table_click_handler = (td, re, actions) => {
     if (td.className.indexOf("browser") != -1) return;
     if (td.className.indexOf("geneexp") != -1) return;
     if (td.className.indexOf("cart") != -1) {
-	actions.toggleCart(rowdata.accession);
+	actions.toggleCart(re.accession);
 	return;
     }
     actions.setMainTab("details");
+    actions.showReDetail(re.accession)
 };
 
 const openGenomeBrowser = (data, url) => {
@@ -39,12 +40,11 @@ const openGenomeBrowser = (data, url) => {
     });
 };
 
-const button_click_handler = (name, rowdata, dispatch) => {
-    var re = rowdata;
+const button_click_handler = (name, re, dispatch) => {
     var half_window = 7500;
     var arr = window.location.href.split("/");
     var host = arr[0] + "//" + arr[2];
-    var data = JSON.stringify({"accession" : re["accession"],
+    var data = JSON.stringify({"accession" : re.accession,
                                "halfWindow" : half_window,
                                "host" : host});
 

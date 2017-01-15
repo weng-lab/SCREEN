@@ -38,6 +38,9 @@ const main_reducers = (state, action) => {
         ret.maintabs[action.name].visible = true;
         return ret;
 
+    case Actions.SHOW_RE_DETAIL:
+        return {...state, cre_accession_detail: action.accession};
+
     case Actions.TOGGLE_CART: {
         return { ...state,
                  cart_accessions: doToggle(state.cart_accessions,

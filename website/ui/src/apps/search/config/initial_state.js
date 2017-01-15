@@ -12,7 +12,8 @@ const initialState = {
     maintabs: MainTabInfo,
     maintabs_active: "results",
     maintabs_visible: false,
-    cart_accessions: new Set()
+    cart_accessions: new Set(),
+    cre_accession_detail: null,
 };
 
 export default initialState;
