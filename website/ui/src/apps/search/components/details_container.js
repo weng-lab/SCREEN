@@ -20,7 +20,6 @@ class DetailsContainer extends React.Component {
         const makeTab = (key, tab) => {
             if(!tab.enabled){ return (<div />) }
             let active = key == this.props.re_details_tab_active;
-            /* var content = (tab.render ? tab.render(store, k) : tabEles(tab.tables, tab.numCols));*/
             return (<div
                     className={active ? "tab-pane active" : "tab-pane"}
                     id={"tab_" + key}
