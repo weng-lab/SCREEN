@@ -83,15 +83,19 @@ function tabEles(data, tables, numCols){
 }
 
 class ReTabBase extends React.Component{
-    constructor(props) {
+    constructor(props, key) {
 	super(props);
+        this.key = key;
+        this.url = "/dataws/re_detail/" + key;
         this.state = { isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
+        this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
-        this.loadCRE(nextProps);
-        this.doRenderWrapper = this.doRenderWrapper.bind(this);
+        if(this.key == nextProps.re_details_tab_active){
+            this.loadCRE(nextProps);
+        }
     }
 
     loadCRE({cre_accession_detail}){
@@ -135,8 +139,7 @@ class ReTabBase extends React.Component{
 
 class TopTissuesTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/topTissues";
+	super(props, "topTissues");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -148,8 +151,7 @@ class TopTissuesTab extends ReTabBase{
 
 class TargetGeneTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/targetGene";
+	super(props, "targetGene");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -161,8 +163,7 @@ class TargetGeneTab extends ReTabBase{
 
 class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/nearbyGenomic";
+	super(props, "nearbyGenomic");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -174,8 +175,7 @@ class NearbyGenomicTab extends ReTabBase{
 
 class TfIntersectionTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/tfIntersection";
+	super(props, "tfIntersection");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -187,8 +187,7 @@ class TfIntersectionTab extends ReTabBase{
 
 class RelatedGeneTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/relatedGene";
+	super(props, "relatedGene");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -200,8 +199,7 @@ class RelatedGeneTab extends ReTabBase{
 
 class AssocTssTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/assocTSS";
+	super(props, "assocTSS");
         this.doRender = this.doRender.bind(this);
     }
 
@@ -213,8 +211,7 @@ class AssocTssTab extends ReTabBase{
 
 class SimilarREsTab extends ReTabBase{
     constructor(props) {
-	super(props);
-        this.url = "/dataws/re_detail/similarREs";
+	super(props, "similarREs");
         this.doRender = this.doRender.bind(this);
     }
 
