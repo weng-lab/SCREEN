@@ -3,11 +3,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import TableWithCart from './table_with_cart'
-import ResultsTableColumns, {table_order} from '../config/results_table'
 
-import * as Actions from '../actions/facetboxen_actions';
+import * as Actions from '../actions/main_actions';
 
-class ResultsApp extends React.Component {
+class ResultsTableContainer extends React.Component {
     constructor(props) {
 	super(props);
         this.state = { cres: [], total: 0, isFetching: true, isError: false,
@@ -62,12 +61,13 @@ class ResultsApp extends React.Component {
     }
 
     render() {
-	return (<TableWithCart data={this.state.cres}
+	return (<TableWithCart
+                actions={this.props.actions}
+                data={this.state.cres}
                 total={this.state.total}
                 cart_accessions={this.props.cart_accessions}
                 fetching={this.state.isFetching}
-                order={table_order}
-                cols={ResultsTableColumns} />);
+                />);
     }
 }
 
@@ -82,5 +82,5 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ResultsApp);
+)(ResultsTableContainer);
 
