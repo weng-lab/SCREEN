@@ -192,8 +192,9 @@ int main(int argc, char* argv[]){
         chroms = {ZiARG_chr};
     }
 
-    bfs::path base =  "/project/umw_zhiping_weng/0_metadata/encyclopedia/" /
-        base / "Version-4" / "ver9/" / ZiARG_assembly;
+    bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
+    base /= "ver9";
+    base /= ZiARG_assembly;
     bfs::path d =  base / "raw";
 
     if(ZiARG_geneIDs){
