@@ -211,7 +211,7 @@ mm10Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
                       "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
                       "chr19", "chrX", "chrY"],
             "assembly" : "mm10",
-            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/",
+            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
             "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
             "tableName" : "mm10_cre"}
 
@@ -229,8 +229,8 @@ def main():
  	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
  	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
  	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
-            "gene_all_distance", "gene_all_name",
-            "gene_pc_distance", "gene_pc_name", "tads")
+            "gene_all_distance", "gene_all_id",
+            "gene_pc_distance", "gene_pc_id", "tads")
 
     m = mm10Info
 
