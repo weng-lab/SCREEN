@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os, sys, json, psycopg2, re, argparse, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
@@ -61,7 +61,7 @@ class ImportData:
 
     def importTsv(self, tn, fnp):
         cols = self.all_cols
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             print("importing", fnp, "into", tn)
             self.curs.copy_from(f, tn, '\t', columns=cols)
         #print("imported", os.path.basename(fnp))
@@ -90,7 +90,7 @@ class ImportData:
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:
-            fnp = os.path.join(self.d, "parsed." + chrom + ".tsv")
+            fnp = os.path.join(self.d, "parsed." + chrom + ".tsv.gz")
             ctn = self.baseTableName + '_' + chrom
             self.setupTable(ctn)
             self.importTsv(self.baseTableName, fnp)
