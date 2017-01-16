@@ -51,10 +51,11 @@ public:
                 continue;
             }
             bfs::path outFnp = d_ / chrom / "signal-output" / inFnp.filename();
-            std::cout << "about to write " << outFnp << std::endl;
+            //std::cout << "about to write " << outFnp << std::endl;
             bfs::create_directories(outFnp.parent_path());
             bib::files::writeStrings(outFnp, kv.second);
         }
+        std::cout << "finished " << inFnp << std::endl;
     }
 
     void splitBedFile(const bfs::path inFnp){
