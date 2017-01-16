@@ -81,7 +81,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    for assembly in ["mm10"]:
+    for assembly in ["hg19", "mm10"]:
         with getcursor(DBCONN, "08_setup_log") as curs:
             pd = PolishData(curs, assembly)
             pd.run()
