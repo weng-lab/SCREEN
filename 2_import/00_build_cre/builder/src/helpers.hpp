@@ -32,6 +32,20 @@ namespace bib {
 
 namespace bfs = boost::filesystem;
 
+  struct OnlyAssayRank {
+    std::string assay; // CTCF
+    std::string outputKey; // ctcf
+    std::string outputTitle; // CTCF-only
+  };
+
+  struct MultiAssayRank {
+    std::string assay1; // DNase
+    std::string assay2; // CTCF
+    std::string outputKey1; // dnase
+    std::string outputKey2; // ctcf
+    std::string outputTitle; // DNase+CTCF
+  };
+
 using MpNameToGenes = std::unordered_map<std::string, std::vector<Gene>>;
 
 class Peaks : public std::unordered_map<std::string, Peak> {
@@ -626,20 +640,6 @@ public:
             p.ranksDNase_[ct] = std::move(rd);
         }
     }
-
-    struct OnlyAssayRank {
-        std::string assay; // CTCF
-        std::string outputKey; // ctcf
-        std::string outputTitle; // CTCF-only
-    };
-
-    struct MultiAssayRank {
-        std::string assay1; // DNase
-        std::string assay2; // CTCF
-        std::string outputKey1; // dnase
-        std::string outputKey2; // ctcf
-        std::string outputTitle; // DNase+CTCF
-    };
 
     template <typename T>
     void setRanks(const std::string& mpName,
