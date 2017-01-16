@@ -172,7 +172,26 @@ public:
              const std::vector<std::string>& chroms)
         : d_(d)
         , chroms_(chroms)
-    {}
+    {
+        loadMasterPeaks();
+    }
+
+    void loadMasterPeaks(){
+        bfs::path inFnp = d_ / "masterPeaks.bed";
+
+        std::cout << "loading peaks " << inFnp << std::endl;
+        auto lines = bib::files::readStrings(inFnp);
+
+        mpToChr_.reserve(3000000);
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            mpToChr_[toks[3]] = toks[0];
+        }
+        std::cout << "\tfound " << mpToChr_.size() << " peaks\n";
+        if("mm10" == ZiARG_assembly){
+            std::cout << mpToChr_["MP-3-100.000000"] << std::endl;
+        }
+    }
 
     void splitSignalFile(const bfs::path inFnp){
         std::unordered_map<std::string, std::vector<std::string>> chromToLines;
@@ -222,6 +241,39 @@ public:
         }
     }
 
+    void splitTAD(const bfs::path inFnp){
+        std::unordered_map<std::string, std::vector<std::string>> chromToLines;
+        std::cout << "loading TAD " << inFnp << std::endl;
+        auto lines = bib::files::readStrings(inFnp);
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            try{
+                std::string chrom = mpToChr_.at(toks[0]);
+                chromToLines[chrom].push_back(p);
+            } catch(...){
+                std::cerr << "ERROR: missing " << toks[0] << " from " << inFnp << std::endl;
+            }
+        }
+
+        for(const auto& kv : chromToLines){
+            const auto& chrom = kv.first;
+            if(!bib::in(chrom, chroms_)){
+                continue;
+            }
+            bfs::path outFnp = d_ / chrom / inFnp.filename();
+            std::cout << "about to write " << outFnp << std::endl;
+            bfs::create_directories(outFnp.parent_path());
+            bib::files::writeStrings(outFnp, kv.second);
+        }
+    }
+
+    void runTAD(){
+        if("hg19" == ZiARG_assembly){
+            bfs::path inFnp = d_ / "TADs.txt";
+            splitTAD(inFnp);
+        }
+    }
+
     void runBeds(){
         for(const auto& fn : {"AllGenes.bed", "PCGenes.bed", "masterPeaks.bed"}){
             bfs::path inFnp = d_ / fn;
@@ -230,21 +282,6 @@ public:
     }
 
     void runSignalFiles(){
-        bfs::path inFnp = d_ / "masterPeaks.bed";
-
-        std::cout << "loading peaks " << inFnp << std::endl;
-        auto lines = bib::files::readStrings(inFnp);
-
-        mpToChr_.reserve(3000000);
-        for(const auto& p : lines){
-            auto toks = bib::str::split(p, '\t');
-            mpToChr_[toks[3]] = toks[0];
-        }
-        std::cout << "\tfound " << mpToChr_.size() << " peaks\n";
-        if("mm10" == ZiARG_assembly){
-            std::cout << mpToChr_["MP-3-100.000000"] << std::endl;
-        }
-
         auto dir = bib::files::dir(d_ / "signal-output");
         const std::vector<bfs::path> fnps(dir.begin(), dir.end());
         std::cout << "found " << fnps.size() << " signal files\n";
@@ -289,8 +326,9 @@ int main(int argc, char* argv[]){
 
     if(ZiARG_split){
         Splitter s(d, chroms);
-        //s.runSignalFiles();
+        s.runTAD();
         s.runBeds();
+        s.runSignalFiles();
         return 0;
     }
 
