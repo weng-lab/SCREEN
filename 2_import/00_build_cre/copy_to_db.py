@@ -20,6 +20,7 @@ class ImportData:
         self.base = info["base"]
         self.all_cols = cols
         self.assembly = info["assembly"]
+        self.subsample = info["subsample"]
 
     def setupTable(self, tableName):
         print("dropping and creating", tableName, "...")
@@ -90,7 +91,10 @@ class ImportData:
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:
-            fnp = os.path.join(self.d, "parsed." + chrom + ".tsv.gz")
+            fn = "parsed." + chrom + ".tsv.gz"
+            fnp = os.path.join(self.d, fn)
+            if self.subsample:
+                fnp = os.path.join(self.d, "sample", fn)
             ctn = self.baseTableName + '_' + chrom
             self.setupTable(ctn)
             self.importTsv(self.baseTableName, fnp)
@@ -202,6 +206,7 @@ def parse_args():
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="mm10")
     parser.add_argument('--setup', action="store_true", default=False)
+    parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
     args = parser.parse_args()
@@ -245,7 +250,8 @@ def main():
     m = mm10Info
     if "hg19" == args.assembly:
         m = hg19Info
-    
+    m["subsample"] = args.sample
+
     with getcursor(DBCONN, "08_setup_log") as curs:
         im = ImportData(curs, m, cols)
         ci = CreateIndices(curs, m, cols)

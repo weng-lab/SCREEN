@@ -72,6 +72,7 @@ ORDER BY neglogp desc limit 100) r
             if not rows:
                 rows = []
 
+            # TODO: could be slow......
             curs.execute("""
 SELECT count(0) FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
