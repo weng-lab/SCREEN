@@ -200,6 +200,7 @@ def vacumnAnalyze(conn, baseTableName, chrs):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument("--assembly", type=str, default="mm10")
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
@@ -214,6 +215,15 @@ mm10Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
             "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
             "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
             "tableName" : "mm10_cre"}
+
+hg19Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                      "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+                      "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                      "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
+            "assembly" : "hg19",
+            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
+            "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
+            "tableName" : "hg19_cre"}
 
 def main():
     args = parse_args()
@@ -233,7 +243,9 @@ def main():
             "gene_pc_distance", "gene_pc_id", "tads")
 
     m = mm10Info
-
+    if "hg19" == args.assembly:
+        m = hg19Info
+    
     with getcursor(DBCONN, "08_setup_log") as curs:
         im = ImportData(curs, m, cols)
         ci = CreateIndices(curs, m, cols)
