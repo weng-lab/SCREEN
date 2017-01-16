@@ -149,7 +149,7 @@ public:
 
 } // namespace bib
 
-void runChrom(const std::string chrom, const bfs::path d){
+void runChrom(const std::string chrom, const bfs::path d, const bfs::path base){
     bib::HumanMousePaths paths(ZiARG_assembly, chrom, d);
     bib::Builder<bib::HumanMousePaths> b(paths);
 
@@ -158,13 +158,10 @@ void runChrom(const std::string chrom, const bfs::path d){
         b.build();
     }
     {
-        if(0){
-            bib::TicToc tt("JSON dump time");
-            b.dumpToJson(d);
-        } else {
-            bib::TicToc tt("tsv dump time");
-            b.dumpToTsv(d);
-        }
+        bfs::path outD = base / "newway";
+        bfs::create_directories(outD);
+        bib::TicToc tt("tsv dump time");
+        b.dumpToTsv(outD);
     }
 }
 
@@ -195,8 +192,9 @@ int main(int argc, char* argv[]){
         chroms = {ZiARG_chr};
     }
 
-    bfs::path base =  "/project/umw_zhiping_weng/0_metadata/encyclopedia/";
-    bfs::path d = base / "Version-4" / "ver9/" / ZiARG_assembly / "raw";
+    bfs::path base =  "/project/umw_zhiping_weng/0_metadata/encyclopedia/" /
+        base / "Version-4" / "ver9/" / ZiARG_assembly;
+    bfs::path d =  base / "raw";
 
     if(ZiARG_geneIDs){
         GeneIDer g(d);
@@ -214,7 +212,7 @@ int main(int argc, char* argv[]){
         zi::task_manager::simple tm(ZiARG_j);
         tm.start();
         for(const auto& chrom : chroms){
-            tm.insert(zi::run_fn(zi::bind(&runChrom, chrom, d)));
+            tm.insert(zi::run_fn(zi::bind(&runChrom, chrom, d, base)));
         }
         tm.join();
 
