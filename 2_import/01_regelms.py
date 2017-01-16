@@ -144,20 +144,7 @@ class CreateIndices:
     CREATE INDEX {idx} on {tableName} USING GIN ({col});
     """.format(idx = idx, tableName = tableName, col = col))
 
-    def setupRangeFunction(self):
-        print("create range function...")
-        self.curs.execute("""
-    create or replace function intarray2int4range(arr int[]) returns int4range as $$
-        select int4range(min(val), max(val) + 1) from unnest(arr) as val;
-    $$ language sql immutable;
-
-    create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
-        select numrange(min(val), max(val) + 1) from unnest(arr) as val;
-    $$ language sql immutable;
-    """)
-
     def run(self):
-        self.setupRangeFunction()
         self.doIndex(self.baseTableName)
         self.doIndexGin(self.baseTableName)
         self.doIndexRange(self.baseTableName)
@@ -186,6 +173,18 @@ class CreateIndices:
     DROP INDEX IF EXISTS {idx};
     create index {idx} on {tableName} using gist(numarray2numrange({col}));
     """.format(idx = idx, tableName = tableName, col = col))
+
+def setupRangeFunction(curs):
+    print("create range function...")
+    curs.execute("""
+create or replace function intarray2int4range(arr int[]) returns int4range as $$
+    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+
+create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
+    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+""")
 
 def vacumnAnalyze(conn, baseTableName, chrs):
     # http://stackoverflow.com/a/1017655
@@ -253,6 +252,8 @@ def main():
     m["subsample"] = args.sample
 
     with getcursor(DBCONN, "08_setup_log") as curs:
+        setupRangeFunction(curs)
+
         im = ImportData(curs, m, cols)
         ci = CreateIndices(curs, m, cols)
         if args.setup:
