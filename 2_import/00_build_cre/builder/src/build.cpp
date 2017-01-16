@@ -189,7 +189,7 @@ public:
         }
         std::cout << "\tfound " << mpToChr_.size() << " peaks\n";
         if("mm10" == ZiARG_assembly){
-            std::cout << mpToChr_["MP-3-100.000000"] << std::endl;
+            std::cout << mpToChr_.at("MP-3-100.000000") << std::endl;
         }
     }
 
