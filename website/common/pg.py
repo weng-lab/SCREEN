@@ -51,17 +51,23 @@ class PGsearch:
 
         fields = ', '.join(["accession", "negLogP",
                             "chrom", "start", "stop",
-                            "gene_all_name[1] AS gene_all" ,
-                            "gene_pc_name[1] AS gene_pc",
+                            "infoAll.ensembl AS gene_all" ,
+                            "infoPc.ensembl AS gene_pc",
                             "0::int as in_cart"])
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
-SELECT {fields} FROM {tn}
+SELECT {fields}
+FROM {tn} as cre
+inner join {gtn} as infoAll
+on cre.gene_all_id[1] = infoAll.geneid
+inner join {gtn} as infoPc
+on cre.gene_pc_id[1] = infoPc.geneid
 WHERE int4range(start, stop) && int4range(%s, %s)
 ORDER BY neglogp desc limit 100) r
-""".format(fields = fields, tn = tableName), (start, stop))
+""".format(fields = fields, tn = tableName,
+           gtn = self.assembly + "_gene_info"), (start, stop))
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
