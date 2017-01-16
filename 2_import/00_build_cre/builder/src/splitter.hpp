@@ -86,11 +86,11 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
+            bib::string::rtrim(toks[0]);
+            bib::string::rtrim(toks[1]);
             try{
-                std::string mpName = toks[0];
-                bib::string::rtrim(mpName);
-                std::string chrom = mpToChr_.at(mpName);
-                chromToLines[chrom].push_back(p);
+                std::string chrom = mpToChr_.at(toks[0]);
+                chromToLines[chrom].push_back(toks[0] + '\t' + toks[1]);
             } catch(...){
                 std::cerr << "ERROR: missing '" << toks[0] << "' from " << inFnp << std::endl;
             }
