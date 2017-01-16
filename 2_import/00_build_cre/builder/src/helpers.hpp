@@ -31,6 +31,7 @@ namespace bfs = boost::filesystem;
 
 struct Gene {
     std::string name;
+    uint32_t geneID;
     int32_t distance;
 
     Json::Value toJson() const {
@@ -41,8 +42,8 @@ struct Gene {
     }
 
     friend bool operator<(const Gene& a, const Gene& b){
-        return std::tie(a.distance, a.name) <
-            std::tie(b.distance, b.name);
+        return std::tie(a.distance) <
+            std::tie(b.distance);
     }
 
     friend auto& operator<<(std::ostream& s, const Gene& g){
@@ -287,7 +288,7 @@ public:
         }
         s.seekp(-1, s.cur); s << '}' << d << "{ ";
         for(const auto& g : genes){
-            s << g.name << c;
+            s << g.geneID << c;
         }
     }
 
@@ -746,6 +747,7 @@ public:
     bfs::path allGenes(){ return path_ / "AllGenes.bed"; }
     bfs::path pcGenes(){ return path_ / "PCGenes.bed"; }
     bfs::path peaks(){ return path_ / "masterPeaks.bed"; }
+    bfs::path geneIDfnp(){ return base_ / "ensebleToID.txt"; }
     bfs::path signalDir(){
         return path_ / "signal-output";
     }
@@ -759,10 +761,22 @@ template <typename T>
 class GetData {
     T paths_;
 
+    std::unordered_map<std::string, uint32_t> geneNameToID_;
+
 public:
     GetData(T paths)
         : paths_(paths)
-    {}
+    {
+        {
+            bfs::path geneIDfnp = paths_.geneIDfnp();
+            std::cout << "loading gene to ID " << geneIDfnp << std::endl;
+            auto lines = bib::files::readStrings(geneIDfnp);
+            for(const auto& p : lines){
+                auto toks = bib::str::split(p, ',');
+                geneNameToID_[toks[0]] = std::stoi(toks[2]);
+            }
+        }
+    }
 
     // chrY    808996  809318  MP-2173311-100.000000   EE0756098
     Peaks peaks(){
@@ -807,7 +821,7 @@ public:
             std::string ensembl = toks[7];
             bib::string::rtrim(ensembl);
             // TODO: translate Ensembl ID to gene alias....
-            ret[toks[3]].emplace_back(Gene{ensembl,
+            ret[toks[3]].emplace_back(Gene{ensembl, geneNameToID_.at(ensembl),
                         std::stoi(toks[10])});
             ++count;
         }
