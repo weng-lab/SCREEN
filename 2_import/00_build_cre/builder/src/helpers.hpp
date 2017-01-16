@@ -813,12 +813,17 @@ public:
     }
 
     MpNameToGenes tads(){
+        MpNameToGenes ret;
+
         auto fnp = paths_.tads();
+        if(!bfs::exists(fnp)){
+            std::cerr << "TADs missing: " << fnp << std::endl;
+            return ret;
+        }
         auto lines = bib::files::readStrings(fnp);
         std::cout << "loading " << " tads " << fnp << std::endl;
 
         uint32_t count{0};
-        MpNameToGenes ret;
         ret.reserve(lines.size());
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
