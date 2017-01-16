@@ -2,7 +2,9 @@
 
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
+ZiARG_string(assembly, "mm10", "assembly");
 ZiARG_bool(first, false, "show first line");
+ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 5, "num threads");
 
 namespace bib {
@@ -14,7 +16,7 @@ class Builder {
     Peaks peaks_; // map of peaks by accession
 
 public:
-    Builder(MousePaths paths)
+    Builder(const T& paths)
         : paths_(paths)
     {}
 
@@ -142,8 +144,8 @@ public:
 } // namespace bib
 
 void runChrom(const std::string chrom, const bfs::path d){
-    bib::MousePaths paths(chrom);
-    bib::Builder<bib::MousePaths> b(paths);
+    bib::HumanMousePaths paths(ZiARG_assembly, chrom, d);
+    bib::Builder<bib::HumanMousePaths> b(paths);
 
     {
         bib::TicToc tt("build time");
@@ -160,18 +162,103 @@ void runChrom(const std::string chrom, const bfs::path d){
     }
 }
 
+class Splitter {
+    const bfs::path d_;
+    const std::vector<std::string>& chroms_;
+    std::unordered_map<std::string, std::string> mpToChr_;
+
+public:
+    Splitter(const bfs::path d,
+             const std::vector<std::string>& chroms)
+        : d_(d)
+        , chroms_(chroms)
+    {}
+
+    void splitSignalFile(const bfs::path inFnp){
+        std::unordered_map<std::string, std::vector<std::string>> chromToLines;
+        std::cout << "loading peaks " << inFnp << std::endl;
+        auto lines = bib::files::readStrings(inFnp);
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            std::string chrom = mpToChr_.at(toks[0]);
+            chromToLines[chrom].push_back(p);
+        }
+
+        for(const auto& kv : chromToLines){
+            const auto& chrom = kv.first;
+            if(!bib::in(chrom, chroms_)){
+                continue;
+            }
+            bfs::path outFnp = d_ / chrom / inFnp.filename();
+            std::cout << "about to write " << outFnp << std::endl;
+            bfs::create_directories(outFnp.parent_path());
+            bib::files::writeStrings(outFnp, kv.second);
+        }
+    }
+
+    void run(){
+        bfs::path inFnp = d_ / "masterPeaks.bed";
+
+        std::cout << "loading peaks " << inFnp << std::endl;
+        auto lines = bib::files::readStrings(inFnp);
+
+        mpToChr_.reserve(3000000);
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            mpToChr_[toks[3]] = toks[0];
+        }
+        std::cout << "\tfound " << mpToChr_.size() << " peaks\n";
+        if("mm10" == ZiARG_assembly){
+            std::cout << mpToChr_["MP-3-100.000000"] << std::endl;
+        }
+
+        auto dir = bib::files::dir(d_ / "signal-output");
+        const std::vector<bfs::path> fnps(dir.begin(), dir.end());
+        std::cout << "found " << fnps.size() << " signal files\n";
+        zi::task_manager::simple tm(ZiARG_j);
+        tm.start();
+        for(const auto& fnp : fnps){
+            tm.insert(zi::run_fn(zi::bind(&Splitter::splitSignalFile,
+                                          this, fnp)));
+        }
+        tm.join();
+    }
+};
+
 int main(int argc, char* argv[]){
     zi::parse_arguments(argc, argv, true);  // modifies argc and argv
     const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-    std::vector<std::string> chroms{"chr1", "chr2", "chr3", "chr4", "chr5",
-            "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13",
-            "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY"};
+    const std::vector<std::string> hg19_chroms{"chr1", "chr2", "chr3", "chr4",
+            "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+            "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+            "chr20", "chr21", "chr22", "chrX", "chrY"};
+    const std::vector<std::string> mm10_chroms{"chr1", "chr2", "chr3", "chr4",
+            "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+            "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+            "chrX", "chrY"};
+
+    std::vector<std::string> chroms;
+    if("hg19" == ZiARG_assembly){
+        chroms = hg19_chroms;
+    } else if("mm10" == ZiARG_assembly){
+        chroms = mm10_chroms;
+    } else {
+        throw std::runtime_error("unknown assembly: " + ZiARG_assembly);
+    }
+
     if(ZiARG_chr > ""){
         chroms = {ZiARG_chr};
     }
 
-    bfs::path d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/";
+    bfs::path base =  "/project/umw_zhiping_weng/0_metadata/encyclopedia/";
+    bfs::path d = base / "Version-4" / "ver9/" / ZiARG_assembly / "raw";
+
+    if(ZiARG_split){
+        Splitter s(d, chroms);
+        s.run();
+        return 0;
+    }
 
     try {
         zi::task_manager::simple tm(ZiARG_j);
