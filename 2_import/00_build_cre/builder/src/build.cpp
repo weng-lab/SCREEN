@@ -267,26 +267,25 @@ public:
         }
     }
 
-    void runTAD(){
+    void run(){
+        zi::task_manager::simple tm(ZiARG_j);
+        tm.start();
+
         if("hg19" == ZiARG_assembly){
             bfs::path inFnp = d_ / "TADs.txt";
-            splitTAD(inFnp);
+            tm.insert(zi::run_fn(zi::bind(&Splitter::splitTAD,
+                                          this, inFnp)));
         }
-    }
 
-    void runBeds(){
         for(const auto& fn : {"AllGenes.bed", "PCGenes.bed", "masterPeaks.bed"}){
             bfs::path inFnp = d_ / fn;
-            splitBedFile(inFnp);
+            tm.insert(zi::run_fn(zi::bind(&Splitter::splitBedFile,
+                                          this, inFnp)));
         }
-    }
 
-    void runSignalFiles(){
         auto dir = bib::files::dir(d_ / "signal-output");
         const std::vector<bfs::path> fnps(dir.begin(), dir.end());
         std::cout << "found " << fnps.size() << " signal files\n";
-        zi::task_manager::simple tm(ZiARG_j);
-        tm.start();
         for(const auto& fnp : fnps){
             tm.insert(zi::run_fn(zi::bind(&Splitter::splitSignalFile,
                                           this, fnp)));
@@ -326,9 +325,7 @@ int main(int argc, char* argv[]){
 
     if(ZiARG_split){
         Splitter s(d, chroms);
-        s.runTAD();
-        s.runBeds();
-        s.runSignalFiles();
+        s.run();
         return 0;
     }
 
