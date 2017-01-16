@@ -17,7 +17,9 @@ class ImportData:
         self.chrs = info["chrs"]
         self.baseTableName = info["tableName"]
         self.d = info["d"]
+        self.base = info["base"]
         self.all_cols = cols
+        self.assembly = info["assembly"]
 
     def setupTable(self, tableName):
         print("dropping and creating", tableName, "...")
@@ -64,7 +66,27 @@ class ImportData:
             self.curs.copy_from(f, tn, '\t', columns=cols)
         #print("imported", os.path.basename(fnp))
 
+    def setupGeneToID(self):
+        tableName = self.assembly + "_gene_info"
+        print("dropping and creating", tableName, "...")
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableName};
+    CREATE TABLE {tableName}
+        (id serial PRIMARY KEY,
+        ensembl_ver text,
+        ensembl text,
+        geneid integer
+        ); """.format(tableName = tableName))
+        print("created", tableName)
+
+        cols = ["ensembl_ver", "ensembl", "geneid"]
+        fnp = os.path.join(self.base, "raw", "ensebleToID.txt")
+        with open(fnp) as f:
+            print("importing", fnp, "into", tableName)
+            self.curs.copy_from(f, tableName, ',', columns=cols)
+
     def run(self):
+        self.setupGeneToID()
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:
@@ -188,7 +210,9 @@ mm10Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
                       "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
                       "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
                       "chr19", "chrX", "chrY"],
+            "assembly" : "mm10",
             "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/newway/",
+            "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
             "tableName" : "mm10_cre"}
 
 def main():
@@ -206,7 +230,7 @@ def main():
  	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
  	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
             "gene_all_distance", "gene_all_name",
-            "gene_pc_distance", "gene_pc_name")
+            "gene_pc_distance", "gene_pc_name", "tads")
 
     m = mm10Info
 
