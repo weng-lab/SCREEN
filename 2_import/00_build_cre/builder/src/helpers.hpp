@@ -880,6 +880,11 @@ public:
 #pragma omp parallel for
         for(size_t i = 0; i < fnps.size(); ++i){
             const std::string fn = fnps[i].filename().string();
+
+            if(bib::str::startswith(fn, "mm10.H3K27ac")){
+                continue;
+            }
+
             const std::string fnp = fnps[i].string();
 
             const auto lines = bib::files::readStrings(fnp);
