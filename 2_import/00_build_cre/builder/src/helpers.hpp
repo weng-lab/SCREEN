@@ -192,6 +192,7 @@ public:
 
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
+    std::vector<Gene> tads;
 
     // celltype to rank info (order matters)
     std::map<std::string, RankDNase> ranksDNase_;
@@ -292,6 +293,15 @@ public:
         }
     }
 
+    void toTsvTads(std::stringstream& s,
+                   const std::vector<Gene>& genes) const {
+        static const char c = ',';
+
+        for(const auto& g : genes){
+            s << g.geneID << c;
+        }
+    }
+
     std::string toTsv() const {
         static const char d = '\t';
         static const char c = ',';
@@ -339,6 +349,8 @@ public:
         toTsvGene(s, gene_nearest_all);
         s.seekp(-1, s.cur); s << '}' << d << "{ ";
         toTsvGene(s, gene_nearest_pc);
+        s.seekp(-1, s.cur); s << '}' << d << "{ ";
+        toTsvTads(s, tads);
         s.seekp(-1, s.cur); s << '}';
 
         s << '\n';
@@ -747,6 +759,7 @@ public:
     bfs::path allGenes(){ return path_ / "AllGenes.bed"; }
     bfs::path pcGenes(){ return path_ / "PCGenes.bed"; }
     bfs::path peaks(){ return path_ / "masterPeaks.bed"; }
+    bfs::path tads(){ return path_ / "TADs.txt"; }
     bfs::path geneIDfnp(){ return base_ / "ensebleToID.txt"; }
     bfs::path signalDir(){
         return path_ / "signal-output";
@@ -798,6 +811,32 @@ public:
         std::cout << "loaded " << ret.size() << " peaks\n";
         return ret;
     }
+
+    MpNameToGenes tads(){
+        auto fnp = paths_.tads();
+        auto lines = bib::files::readStrings(fnp);
+        std::cout << "loading " << " tads " << fnp << std::endl;
+
+        uint32_t count{0};
+        MpNameToGenes ret;
+        ret.reserve(lines.size());
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            auto genes = bib::str::split(toks[1], ',');
+            for(const auto& gene : genes){
+                std::string ensembl = gene;
+                bib::string::rtrim(ensembl);
+                ret[toks[0]].emplace_back(Gene{ensembl,
+                            geneNameToID_.at(ensembl),
+                            0});
+            }
+            ++count;
+        }
+        std::cout << "loaded " << count << " tads\n";
+        return ret;
+
+    }
+
 
     // 0    1      2      3                   4    5      6      7                     8 9 10
     // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
@@ -875,6 +914,7 @@ public:
 class DataHelper {
     Peaks& peaks_;
 
+    MpNameToGenes tads_;
     MpNameToGenes allGenes_;
     MpNameToGenes pcGenes_;
     std::vector<SignalFile> signalFiles_;
@@ -888,11 +928,23 @@ public:
         TicToc tt("data load time");
         GetData<T> gd(paths);
         assayInfos_ = gd.assayInfos();
+        if("hg19" == ZiARG_assembly){
+            tads_ = gd.tads();
+        }
         allGenes_ = gd.allGenes();
         pcGenes_ = gd.pcGenes();
         signalFiles_ = gd.loadSignals(assayInfos_);
         peaks_ = gd.peaks();
         peaks_.setAccessions();
+    }
+
+    template <typename T>
+    void setTads(const std::string& mpName, T& field) const {
+        if(bib::in(mpName, tads_)){
+            field = tads_.at(mpName);
+        } else {
+            std::cerr << "no TAD found for " << mpName << "\n";
+        }
     }
 
     template <typename T>

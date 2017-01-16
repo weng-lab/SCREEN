@@ -1,5 +1,3 @@
-#include "helpers.hpp"
-
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "mm10", "assembly");
@@ -8,6 +6,7 @@ ZiARG_bool(split, false, "split up files");
 ZiARG_bool(geneIDs, false, "calc gene IDs");
 ZiARG_int32(j, 5, "num threads");
 
+#include "helpers.hpp"
 #include "splitter.hpp"
 #include "geneIDer.hpp"
 
@@ -53,6 +52,10 @@ public:
     void processPeak(const DataHelper& d, Peak& p){
         const std::string& mpName = p.mpName;
         p.genome = paths_.genome_;
+
+        if("hg19" == ZiARG_assembly){
+            d.setTads(mpName, p.tads);
+        }
 
         d.setAllGenes(mpName, p.gene_nearest_all);
         d.setPcGenes(mpName, p.gene_nearest_pc);
@@ -125,7 +128,7 @@ public:
                         "h3k4me3_only_rank", "h3k4me3_only_zscore",
                         "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
                         "gene_all_distance", "gene_all_name",
-                        "gene_pc_distance", "gene_pc_name"};
+                        "gene_pc_distance", "gene_pc_name", "tads"};
                 out << bib::string::join(header, "\t") << "\n";
             }
             std::cout << "\twrote " << fnp << std::endl;
