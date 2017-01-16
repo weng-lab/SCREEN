@@ -189,48 +189,37 @@ public:
 		    const std::string onlyKey,
 		    const std::string multiKey) const {
     static const char d = '\t';
-    
-    std::set<std::string> cts;
-    
+
+    int32_t counter = 1;
     for(const auto& kv : rc){
       if(kv.second.has(onlyKey)){
-	cts.insert(kv.first);
+	s << onlyKey << d << kv.first << d << counter++ << "\n";
       }
     }
 
-    s << onlyKey << d;
-    s << bib::str::join(cts, ",") << "\n";
-
-    cts.clear();
-
+    counter = 1;
     for(const auto& kv: rc){
       if(kv.second.has(multiKey)){
-      	cts.insert(kv.first);
+	s << multiKey << d << kv.first << d << counter++ << "\n";
       }
     }
-    
-    s << multiKey << d;
-    s << bib::str::join(cts, ",") << "\n";
   }
 
   std::string toTsvCellTypeInfo() const {
-        static const char d = '\t';
-        static const char c = ',';
-        std::stringstream s;
-
-	s << "DNase" << d;
-        for(const auto& kv: ranksDNase_){
-            s << kv.first << c;
-        }
-        s.seekp(-1, s.cur); s << '\n';
-
-	getCellTypes(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
-	getCellTypes(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
-	getCellTypes(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
-
-        s << '\n';
-        return s.str();
+    static const char d = '\t';
+    std::stringstream s;
+    
+    int32_t counter = 1;
+    for(const auto& kv: ranksDNase_){
+      s << "DNase" << d << kv.first << d << counter++ << "\n";
     }
+    
+    getCellTypes(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
+    getCellTypes(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
+    getCellTypes(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
+    
+    return s.str();
+  }
 
     friend auto& operator<<(std::ostream& s, const Peak& p){
         s << p.accession << "\n";
