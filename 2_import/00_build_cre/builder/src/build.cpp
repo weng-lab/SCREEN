@@ -196,7 +196,36 @@ public:
         }
     }
 
-    void run(){
+    void splitBedFile(const bfs::path inFnp){
+        std::unordered_map<std::string, std::vector<std::string>> chromToLines;
+        std::cout << "loading bed " << inFnp << std::endl;
+        auto lines = bib::files::readStrings(inFnp);
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            std::string chrom = toks[0];
+            chromToLines[chrom].push_back(p);
+        }
+
+        for(const auto& kv : chromToLines){
+            const auto& chrom = kv.first;
+            if(!bib::in(chrom, chroms_)){
+                continue;
+            }
+            bfs::path outFnp = d_ / chrom / inFnp.filename();
+            std::cout << "about to write " << outFnp << std::endl;
+            bfs::create_directories(outFnp.parent_path());
+            bib::files::writeStrings(outFnp, kv.second);
+        }
+    }
+
+    void runBeds(){
+        for(const auto& fn : {"AllGenes.bed", "PCGenes.bed", "masterPeaks.bed"}){
+            bfs::path inFnp = d_ / fn;
+            splitBedFile(inFnp);
+        }
+    }
+
+    void runSignalFiles(){
         bfs::path inFnp = d_ / "masterPeaks.bed";
 
         std::cout << "loading peaks " << inFnp << std::endl;
@@ -256,7 +285,8 @@ int main(int argc, char* argv[]){
 
     if(ZiARG_split){
         Splitter s(d, chroms);
-        s.run();
+        //s.runSignalFiles();
+        s.runBeds();
         return 0;
     }
 
