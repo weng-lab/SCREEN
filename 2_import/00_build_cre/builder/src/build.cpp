@@ -18,7 +18,6 @@ class Builder {
     T paths_;
 
     Peaks peaks_; // map of peaks by accession
-
 public:
     Builder(const T& paths)
         : paths_(paths)
