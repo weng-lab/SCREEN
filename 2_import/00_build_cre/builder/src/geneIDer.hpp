@@ -47,7 +47,8 @@ public:
         bfs::path outFnp = d_ / "ensebleToID.txt";
         std::ofstream out(outFnp.string(), std::ios::out | std::ios::trunc);
         for(const auto& kv : geneNameToID_){
-            out << kv.first << ',' << kv.second << '\n';
+            auto toks = bib::str::split(kv.first, '.');
+            out << kv.first << ',' << toks[0] << ',' << kv.second << '\n';
         }
         std::cout << "wrote " << outFnp << std::endl;
     }
