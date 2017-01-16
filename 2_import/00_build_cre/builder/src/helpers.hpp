@@ -781,26 +781,26 @@ public:
     }
 };
 
-class MousePaths {
+class HumanMousePaths {
 public:
     const std::string genome_;
     const std::string chr_;
-    const bfs::path base_ = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver8/mm10/raw";
+    const bfs::path base_;
     bfs::path path_;
 
-    MousePaths(const std::string chr)
-        : genome_("mm10")
+    HumanMousePaths(std::string assembly, const std::string chr, bfs::path base)
+        : genome_(assembly)
         , chr_(chr)
+        , base_(base)
     {
         path_ = base_ / chr_;
     }
 
-    bfs::path allGenes(){ return path_ / (chr_ + "_AllGenes"); }
-    bfs::path pcGenes(){ return path_ / (chr_ + "_PCGenes"); }
-    bfs::path peaks(){ return path_ / (chr_ + "_sorted-peaks"); }
+    bfs::path allGenes(){ return path_ / "AllGenes.bed"; }
+    bfs::path pcGenes(){ return path_ / "PCGenes.bed"; }
+    bfs::path peaks(){ return path_ / "masterPeaks.bed"; }
     bfs::path signalDir(){
-        return path_ / "signal";
-        return base_ / "signal-output-orig";
+        return path_ / "signal-output";
     }
 
     bfs::path listFile(const std::string name){
