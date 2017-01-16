@@ -180,8 +180,12 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            std::string chrom = mpToChr_.at(toks[0]);
-            chromToLines[chrom].push_back(p);
+            try{
+                std::string chrom = mpToChr_.at(toks[0]);
+                chromToLines[chrom].push_back(p);
+            } catch(...){
+                std::cerr << "ERROR: missing " << toks[0] << " from " << inFnp << std::endl;
+            }
         }
 
         for(const auto& kv : chromToLines){
@@ -189,7 +193,7 @@ public:
             if(!bib::in(chrom, chroms_)){
                 continue;
             }
-            bfs::path outFnp = d_ / chrom / inFnp.filename();
+            bfs::path outFnp = d_ / chrom / "signal-output" / inFnp.filename();
             std::cout << "about to write " << outFnp << std::endl;
             bfs::create_directories(outFnp.parent_path());
             bib::files::writeStrings(outFnp, kv.second);
