@@ -50,9 +50,10 @@ class ImportData:
         h3k4me3_dnase_rank integer[],
         h3k4me3_dnase_zscore numeric(8,3)[],
         gene_all_distance integer[],
-        gene_all_name text[],
+        gene_all_id integer[],
         gene_pc_distance integer[],
-        gene_pc_name text[]
+        gene_pc_id integer[],
+        tads integer[]
         ); """.format(tableName = tableName))
         print("created", tableName)
 
