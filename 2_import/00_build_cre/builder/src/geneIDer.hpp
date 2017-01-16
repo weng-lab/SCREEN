@@ -23,7 +23,9 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            getGeneID(toks[7]);
+            std::string ensembl = toks[7];
+            bib::string::rtrim(ensembl);
+            getGeneID(ensembl);
         }
     }
 
@@ -34,7 +36,9 @@ public:
             auto toks = bib::str::split(p, '\t');
             auto genes = bib::str::split(toks[1], ',');
             for(const auto& gene : genes){
-                getGeneID(gene);
+                std::string ensembl = gene;
+                bib::string::rtrim(ensembl);
+                getGeneID(ensembl);
             }
         }
     }
