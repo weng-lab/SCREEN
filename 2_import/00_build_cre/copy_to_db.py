@@ -9,7 +9,53 @@ from dbconnect import db_connect
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils
+from utils import Utils, Timer
+
+class Correlate:
+    
+    def __init__(self, DBCONN, assembly):
+        self.DBCONN = DBCONN
+        self.tableName = "correlations_" + assembly
+        self.qTableName = assembly + "_cre"
+        
+    def setupTable(self):
+        print("dropping and creating", self.tableName, "...")
+        with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+            curs.execute("""
+            DROP TABLE IF EXISTS {tableName};
+            CREATE TABLE {tableName}
+            (id serial PRIMARY KEY,
+            assay VARCHAR(20),
+            correlations integer[][]);""".format(tableName = self.tableName))
+
+    def _getarrlen(self, field):
+        with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+            curs.execute("SELECT array_length((SELECT {field} from {tableName} LIMIT 1), 1)".format(field = field, tableName = self.qTableName))
+            r = curs.fetchone()[0]
+        return r
+
+    def _getcorr(self, field, i, l, threshold):
+        with Timer("computing correlation for ct %d/%d, assay %s" % (i, l, field)):
+            q = ", ".join(["corr(%s[%d], %s[%d])" % (field + "_zscore", i + 1, field + "_zscore", j + 1)
+                           for j in range(i + 1, l)])
+            with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+                curs.execute("SELECT {q} FROM {tableName} WHERE intarray2int4range({field}) && int4range(0, {threshold})".format(tableName=self.qTableName,
+                                                                                                                                 threshold=threshold,
+                                                                                                                                 field=field + "_rank",
+                                                                                                                                 q=q))
+                r = curs.fetchone()
+        return r
+
+    def run(self, assay):
+        l = self._getarrlen(assay + "_rank")
+        corrs = [[1.0 for ct in xrange(l)] for ct in xrange(l)]
+        for ct in xrange(l - 1):
+            r = [self._getcorr(assay, ct, l, 20000) for ct in xrange(l)]
+            for i in range(ct + 1, l):
+                corrs[ct][i] = r[i - ct - 1]
+                corrs[i][ct] = r[i - ct - 1]
+        self.curs.execute("INSERT INTO {tableName} (assay, correlations) VALUES (%(assay)s, %(corrs)s)".format(tableName = self.tableName),
+                          {"assay": assay, "corrs": corrs})
 
 class ImportData:
     def __init__(self, curs, chrs, baseTableName, cols):
@@ -174,6 +220,7 @@ def parse_args():
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
+    parser.add_argument('--correlate', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -200,6 +247,14 @@ def main():
 
     chrs = mm10_chrs
 
+    if args.correlate:
+        c = Correlate(DBCONN, "mm10")
+        c.setupTable()
+        for assay in ["dnase", "ctcf_only", "h3k27ac_only", "h3k4me3_only",
+                      "h3k27ac_dnase", "h3k4me3_dnase", "ctcf_dnase" ]:
+            c.run(assay)
+        return 0
+    
     with getcursor(DBCONN, "08_setup_log") as curs:
         tableName = "mm10_cre"
 
