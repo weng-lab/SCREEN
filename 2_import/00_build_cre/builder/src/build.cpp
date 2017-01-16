@@ -5,9 +5,11 @@ ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "mm10", "assembly");
 ZiARG_bool(first, false, "show first line");
 ZiARG_bool(split, false, "split up files");
+ZiARG_bool(geneIDs, false, "calc gene IDs");
 ZiARG_int32(j, 5, "num threads");
 
 #include "splitter.hpp"
+#include "geneIDer.hpp"
 
 namespace bib {
 
@@ -193,6 +195,12 @@ int main(int argc, char* argv[]){
 
     bfs::path base =  "/project/umw_zhiping_weng/0_metadata/encyclopedia/";
     bfs::path d = base / "Version-4" / "ver9/" / ZiARG_assembly / "raw";
+
+    if(ZiARG_geneIDs){
+        GeneIDer g(d);
+        g.run();
+        return 0;
+    }
 
     if(ZiARG_split){
         Splitter s(d, chroms);
