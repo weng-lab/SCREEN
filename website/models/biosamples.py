@@ -67,9 +67,9 @@ class BiosampleRow:
 
         tbl = string.maketrans(' ./', '__-')
         es_name = str(summary).translate(tbl, '()').replace('__', '_')
-        
+
         tissue = self._translateTissue(exp)
-        
+
         return Biosample(exp.biosample_type,
                          exp.biosample_term_name,
                          summary,
@@ -87,7 +87,7 @@ class BiosamplesMaker(BiosamplesBase):
         BiosamplesBase.__init__(self, assembly, DBCONN)
         self.curs = curs
         self.d = d
-        
+
     def run(self):
         rows = self._load()
         for r in rows:
@@ -106,12 +106,12 @@ class BiosamplesMaker(BiosamplesBase):
                                      field = "ranks.dnase")
             ctsRaw = sorted(r["datapairs"], key=lambda s: s[0].lower())
             cts = [e[0] for e in ctsRaw]
-                        
+
             fnp = os.path.join(os.path.dirname(__file__),
                                "../../cellTypeToTissue.hg19.json.old")
             lookup = json.load(open(fnp))
             for ct in cts:
-                if ct in lookup and lookup[ct]: 
+                if ct in lookup and lookup[ct]:
                     tissue = lookup[ct]
                 else:
                     print("missing " + ct)
@@ -136,7 +136,7 @@ class BiosamplesMaker(BiosamplesBase):
                     typ = "immortalized cell lines"
                 b = Biosample(typ, ct, ct, ct, tissue)
                 rows.add(b)
-                
+
         else:
             for fn in os.listdir(self.d):
                 if not fn.startswith(self.assembly) or "bigwig" not in fn:
@@ -195,7 +195,7 @@ ORDER BY LOWER(biosample_term_name), LOWER(tissue)
             self.rows = [Biosample(*r) for r in curs.fetchall()]
         self.esToBio = {b.es_name : b for b in self.rows}
 
-        # for reactjs 
+        # for reactjs
         self.cellTypesAndTissues = [{"value": b.es_name,
                                      "tissue": b.tissue} for b in self.rows]
         self.cellTypesAndTissues_json = json.dumps(self.cellTypesAndTissues)
@@ -203,19 +203,19 @@ ORDER BY LOWER(biosample_term_name), LOWER(tissue)
                           self.cellTypesAndTissues}
 
         self.biosample_types = sorted(list(set([b.biosample_type for b in self.rows])))
-        
+
     def __iter__(self):
         return iter(self.rows)
 
     def __contains__(self, es_name):
-        return es_name in self.esToBio            
-    
+        return es_name in self.esToBio
+
     def __getitem__(self, es_name):
         return self.esToBio[es_name]
 
     def biosampleTypes(self):
         return self.biosample_types
-    
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--assembly', type=str, default="mm10")
