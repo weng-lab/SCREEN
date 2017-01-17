@@ -39,6 +39,7 @@ SELECT {cols} FROM {tn}""".format(tn = tableName, cols = ','.join(cols)))
             self.globalCellTypeInfo[r.cellTypeName]["tissue"] = r.tissue
             self.globalCellTypeInfo[r.cellTypeName]["name"] = r.biosample_summary
 
+        # used by CellTypes facet
         self.globalCellTypeInfoArr = []
         for k, v in self.globalCellTypeInfo.iteritems():
             self.globalCellTypeInfoArr.append({"value": k,
@@ -50,7 +51,6 @@ SELECT {cols} FROM {tn}""".format(tn = tableName, cols = ','.join(cols)))
                                                 for b in rows])))
 
         self.globalCellTypeInfo_json = json.dumps(self.globalCellTypeInfo)
-
         self.globalCellTypeInfoArr_json = json.dumps(self.globalCellTypeInfoArr)
 
     def tissue(self, ct):
