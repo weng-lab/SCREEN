@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys, json, psycopg2, argparse, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -63,6 +64,7 @@ def setupAll(curs):
             outF.write('\t'.join([left, right] + d) + '\n')
         outF.seek(0)
         curs.copy_from(outF, tableName, '\t', columns=cols)
+        print("\tcopied in", len(data))
 
 def parse_args():
     parser = argparse.ArgumentParser()
