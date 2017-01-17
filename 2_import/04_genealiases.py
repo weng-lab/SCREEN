@@ -118,6 +118,7 @@ class GeneInfo:
 
 class GeneRow:
     def __init__(self, ensembleToInfo, toks):
+        self.ensemblid_ver = toks[0]
         try:
             self.ver = toks[0].split('.')[1]
         except:
@@ -143,6 +144,7 @@ class GeneRow:
 
     def output(self):
         return '\t'.join([self.geneId, self.ensemblid, self.ver,
+                          self.ensemblid_ver,
                           self.approved_symbol, json.dumps(self.info)])
 
 class AddGeneAliases:
@@ -172,10 +174,11 @@ CREATE TABLE {tableName}
 geneid integer,
 ensemblid text,
 ver integer,
+ensemblid_ver text,
 approved_symbol text,
 info jsonb);""".format(tableName = tableName))
 
-        cols = ["geneid", "ensemblid", "ver", "approved_symbol", "info"]
+        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol", "info"]
 
         outF = StringIO.StringIO()
         for r in rows:
