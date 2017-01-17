@@ -131,7 +131,9 @@ def computeIntersections(args, assembly):
     outFnp = os.path.join(d, "newway", "peakIntersections")
     with open(outFnp, 'w') as f:
         for k,v in tfImap.iteritems():
-            f.write(k + '\t' + json.dumps(v) + '\n')
+            f.write('\t'.join([k, json.dumps(v["tf"]),
+                               json.dumps(v["histone"]),
+                               json.dumps(v["dnase"])]) + '\n')
     printt("wrote", outFnp)
 
 def parse_args():
