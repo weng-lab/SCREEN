@@ -148,8 +148,7 @@ cellTypeName text);""".format(tableName = tableName))
 
     def run(self):
         self.importDatasets()
-        #self.importRankIndexes()
-
+        self.importRankIndexes()
 
 def parse_args():
     parser = argparse.ArgumentParser()
