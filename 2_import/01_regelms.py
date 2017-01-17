@@ -67,27 +67,7 @@ class ImportData:
             self.curs.copy_from(f, tn, '\t', columns=cols)
         #print("imported", os.path.basename(fnp))
 
-    def setupGeneToID(self):
-        tableName = self.assembly + "_gene_info"
-        print("dropping and creating", tableName, "...")
-        self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
-    CREATE TABLE {tableName}
-        (id serial PRIMARY KEY,
-        ensembl_ver text,
-        ensembl text,
-        geneid integer
-        ); """.format(tableName = tableName))
-        print("created", tableName)
-
-        cols = ["ensembl_ver", "ensembl", "geneid"]
-        fnp = os.path.join(self.base, "raw", "ensebleToID.txt")
-        with open(fnp) as f:
-            print("importing", fnp, "into", tableName)
-            self.curs.copy_from(f, tableName, ',', columns=cols)
-
     def run(self):
-        self.setupGeneToID()
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:

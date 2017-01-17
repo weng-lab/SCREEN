@@ -51,8 +51,8 @@ class PGsearch:
 
         fields = ', '.join(["accession", "negLogP",
                             "chrom", "start", "stop",
-                            "infoAll.ensembl AS gene_all" ,
-                            "infoPc.ensembl AS gene_pc",
+                            "infoAll.approved_symbol AS gene_all" ,
+                            "infoPc.approved_symbol AS gene_pc",
                             "0::int as in_cart"])
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
