@@ -146,23 +146,23 @@ public:
         }
         {
             bfs::path fnp = d / ("parsed.cellTypeIndexes." + paths_.chr_ + ".tsv");
-	    std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
+            std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
 
-	    std::vector<std::string> cellTypeInfos(accessions.size());
+            std::vector<std::string> cellTypeInfos(accessions.size());
 #pragma omp parallel for
             for(size_t i = 0; i < accessions.size(); ++i){
                 const auto& accession = accessions[i];
                 Peak& p = peaks_[accession];
-		cellTypeInfos[i] = p.toTsvCellTypeInfo();
-	    }
+                cellTypeInfos[i] = p.toTsvCellTypeInfo();
+            }
 
-	    if(std::all_of(cellTypeInfos.begin()+1, cellTypeInfos.end(),
-			   [&](const auto& r) {return r == cellTypeInfos.front();})){
-	      out << cellTypeInfos[0];
-	    } else {
-	      throw std::runtime_error("unequal");
-	    }
-	    std::cout << "\twrote " << fnp << std::endl;
+            if(std::all_of(cellTypeInfos.begin()+1, cellTypeInfos.end(),
+                           [&](const auto& r) {return r == cellTypeInfos.front();})){
+                out << cellTypeInfos[0];
+            } else {
+                throw std::runtime_error("unequal");
+            }
+            std::cout << "\twrote " << fnp << std::endl;
         }
     }
 };
