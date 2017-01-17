@@ -13,13 +13,13 @@ class HorizontalBars extends React.Component {
 		    </div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
 		</div>);
-		
+
     }
 
     componentDidMount() {
 	this.componentDidUpdate();
     }
-    
+
     componentDidUpdate() {
 	if(this.refs.container.style.display != "block") {
 	    return;
@@ -27,9 +27,9 @@ class HorizontalBars extends React.Component {
 	if(this.props.width < 200){
 	    return; // hack to avoid rerender if items not in "view"
 	}
-	
+
 	$(this.refs.container).empty();
-	
+
 	var grid = d3.range(this.props.items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
 	});
@@ -45,7 +45,7 @@ class HorizontalBars extends React.Component {
 	    d = d3.max(this.props.items[i].items, this.props.rank_f);
 	    if (d > cmax) cmax = d;
 	}
-	
+
 	var itemsets = this.props.items;
 	var rank_f = this.props.rank_f;
 	var barheight = this.props.barheight;
@@ -102,7 +102,7 @@ class HorizontalBars extends React.Component {
 		.attr({'x': (d) => (xscale(-rank_f(d)) + 5), 'y': (d, i) => (+yscale(i) + +barheight * 0.75)})
 		.text((d) => (rank_f(d))).style({'fill': '#000', 'font-size': (+barheight * 0.75) + 'px'});
 	}
-	
+
 	var ylabels = canvas.append('g')
 	    .attr("transform", "translate(0,0)")
 	    .selectAll('text')
@@ -112,9 +112,9 @@ class HorizontalBars extends React.Component {
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(140,0)")
 	    .text((d) => (itemsets[d].name)).style({'fill': '#000', 'font-size': (+barheight < 8 ? 8 : barheight) + "px", "text-anchor": "end"});
-	
+
     }
-    
+
 }
 
 export default HorizontalBars;
