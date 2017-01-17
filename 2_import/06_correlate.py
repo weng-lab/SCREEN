@@ -44,16 +44,20 @@ WHERE intarray2int4range({field}) && int4range(0, {threshold})
            threshold=threshold,
            field=field + "_rank",
            q=q))
-            return curs.fetchone()
+            return self.curs.fetchone()
 
     def run(self, assay):
+        print("running", assay)
         l = self._getarrlen(assay + "_rank")
         corrs = [[1.0 for ct in xrange(l)] for ct in xrange(l)]
         for ct in xrange(l - 1):
+            print("computing corrs...")
             r = [self._getcorr(assay, ct, l, 20000) for ct in xrange(l)]
+            print("merging corrs...")
             for i in range(ct + 1, l):
                 corrs[ct][i] = r[i - ct - 1]
                 corrs[i][ct] = r[i - ct - 1]
+        print("saving corrs...")
         self.curs.execute("""
 INSERT INTO {tableName} (assay, correlations)
 VALUES (%(assay)s, %(corrs)s)
