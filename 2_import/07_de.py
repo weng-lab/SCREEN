@@ -12,6 +12,7 @@ from db_utils import getcursor
 from files_and_paths import Dirs
 
 def setupAndCopy(curs, tableName):
+    print("dropping and creating", tableName)
     curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -28,6 +29,7 @@ pvalue numeric,
 padj numeric
 );
 """.format(tableName = tableName))
+    print("\tok")
 
 def setupAll(curs):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
@@ -38,6 +40,7 @@ def setupAll(curs):
     setupAndCopy(curs, tableName)
 
     cols = ["leftName", "rightName", "ensembl", "log2FoldChange", "padj"]
+    # baseMean	log2FoldChange	lfcSE	stat	pvalue	padj
 
     with open(fnp) as f:
         pairs = json.load(f)
@@ -57,9 +60,13 @@ def setupAll(curs):
             f.readline() # consume header
             data = []
             for r in f:
-                if "NA" in r:
+                toks = r.rstrip().split('\t')
+                if "NA" == toks[2]:
                     continue
-                data.append(r.rstrip().split('\t'))
+                padj = toks[5]
+                if 'NA' == padj:
+                    padj = "1"
+                data.append([toks[0], toks[1], padj])
 
         outF = StringIO.StringIO()
         for d in data:
