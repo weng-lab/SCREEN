@@ -1,8 +1,8 @@
-import ResultsTable from './results_table'
-import {ListItem} from './list'
-
 var React = require('react');
 var ReactDOM = require('react-dom');
+
+import ResultsTable from './results_table'
+import {ListItem} from './list'
 
 class LongListFacet extends React.Component {
 
