@@ -481,9 +481,7 @@ public:
             for(const auto& gene : genes){
                 std::string ensembl = gene;
                 bib::string::rtrim(ensembl);
-                ret[toks[0]].emplace_back(Gene{ensembl,
-                            geneNameToID_.at(ensembl),
-                            0});
+                ret[toks[0]].emplace_back(Gene{geneNameToID_.at(ensembl), 0});
             }
             ++count;
         }
@@ -514,8 +512,7 @@ public:
             auto toks = bib::str::split(g, '\t');
             std::string ensembl = toks[7];
             bib::string::rtrim(ensembl);
-            // TODO: translate Ensembl ID to gene alias....
-            ret[toks[3]].emplace_back(Gene{ensembl, geneNameToID_.at(ensembl),
+            ret[toks[3]].emplace_back(Gene{geneNameToID_.at(ensembl),
                         std::stoi(toks[10])});
             ++count;
         }
