@@ -99,7 +99,7 @@ def runIntersectJob(jobargs, bedfnp):
         ret.append((jobargs["etype"], label, bed.fileID, accessions))
     return (fileJson, ret)
 
-def computeIntersections(args, assembly, fnps):
+def computeIntersections(args, assembly):
     d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/",
                      "ver9", assembly)
     bedFnp = os.path.join(d, "raw", "masterPeaks.bed")
@@ -152,7 +152,7 @@ def main():
         return 0
 
     printt("intersecting TFs, Histones, and DNases")
-    computeIntersections(args, args.assembly, fnps)
+    computeIntersections(args, args.assembly)
 
     return 0
 
