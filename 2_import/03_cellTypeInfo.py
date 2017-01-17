@@ -142,11 +142,52 @@ cellTypeName text);""".format(tableName = tableName))
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
         print("updated", tableName)
 
-        fns = {"Enhancer" : "Enhancer-List.txt",
-               "Insulator" : "Insulator-List.txt",
-               "Promoter" : "Promoter-List.txt"}
+    def importDatasetsMulti(self):
+        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
+                         "Version-4", "ver9", self.assembly, "raw")
+
+        fns = {"Enhancer" : ("Enhancer-List.txt", "H3K27ac"),
+               "Insulator" : ("Insulator-List.txt", "CTCF"),
+               "Promoter" : ("Promoter-List.txt", "H3K4me3")}
+
+        outRows = []
+        for assay, fnAndAssay in fns.iteritems():
+            fn = fnAndAssay[0]
+            fnp = os.path.join(d, fn)
+            with open(fnp) as f:
+                rows = f.readlines()
+            assayTypes = fn.split('-')[0]
+            other_assay = fnAndAssay[1]
+            for r in rows:
+                toks = r.rstrip().split('\t')
+                # assay, exp accession, file accession, cellType
+                outRows.append([assayTypes, toks[0], toks[1], other_assay,
+                                toks[2], toks[3], toks[4]])
+
+        tableName = self.assembly + "_datasets_multi"
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableName};
+CREATE TABLE {tableName}
+(id serial PRIMARY KEY,
+assays text,
+dnase_expID text,
+dnase_fileID text,
+other_assay text,
+other_expID text,
+other_fileID text,
+cellTypeName text);""".format(tableName = tableName))
+
+        cols = "assays dnase_expID dnase_fileID other_assay other_expID other_fileID cellTypeName".split(' ')
+
+        outF = StringIO.StringIO()
+        for r in outRows:
+            outF.write('\t'.join(r) + '\n')
+        outF.seek(0)
+        self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        print("updated", tableName)
 
     def run(self):
+        self.importDatasetsMulti()
         self.importDatasets()
         self.importRankIndexes()
 
