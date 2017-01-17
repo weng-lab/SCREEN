@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os, sys, json, psycopg2, re, argparse, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -119,13 +119,36 @@ idx integer);""".format(tableName = tableName))
                 # assay, exp accession, file accession, cellType
                 outRows.append(CellTypeInfoRow(self.assembly, assay, toks))
 
+        tableName = self.assembly + "_datasets"
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableName};
+CREATE TABLE {tableName}
+(id serial PRIMARY KEY,
+assay text,
+expID text,
+fileID text,
+tissue text,
+biosample_summary text,
+biosample_type text,
+cellTypeName text);""".format(tableName = tableName))
+
+        cols = ["assay", "expID", "fileID", "tissue", "biosample_summary",
+                "biosample_type", "cellTypeName"]
+
+        outF = StringIO.StringIO()
+        for r in outRows:
+            outF.write(r.output() + '\n')
+        outF.seek(0)
+        self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        print("updated", tableName)
+
         fns = {"Enhancer" : "Enhancer-List.txt",
                "Insulator" : "Insulator-List.txt",
                "Promoter" : "Promoter-List.txt"}
 
     def run(self):
         self.importDatasets()
-        self.importRankIndexes()
+        #self.importRankIndexes()
 
 
 def parse_args():
