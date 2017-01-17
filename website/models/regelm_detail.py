@@ -6,29 +6,34 @@ from collections import defaultdict
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+from db_utils import getcursor
+from utils import Timer
+
 class RegElementDetails:
     def __init__(self, es, ps, assembly, cache):
         self.index = paths.reJsonIndex(assembly)
         self.es = es
         self.ps = ps
         self.cache = cache
-
-    def most_similar(self, result):
-        _map = {}
-        c2 = []
-        ctc = len(result["ranks"]["dnase"])
-        for ct, v in result["ranks"]["dnase"].iteritems():
-            if v["rank"] <= 20000:
-                c2 += self.cache.topelems[ct]
-        c2 = list(set(c2))
-        for ct, v in result["ranks"]["dnase"].iteritems():
-            for e in c2:
-                if e not in _map: _map[e] = 0
-                if v["rank"] <= 20000 and e not in self.cache.topelems[ct] or v["rank"] > 20000 and e in self.cache.topelems[ct]:
-                    _map[e] += 1
-        return {k: ctc - v for k, v in _map.iteritems() if ctc - v > 0}
+        self.assembly = assembly
         
-    def reFull(self, reAccession):
+    def mostsimilar(self, acc, assay, threshold=20000):
+        acc = acc.replace("EE", "")
+        def whereclause(r):
+            return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold) for i in xrange(len(r)) if r[i] < threshold])
+        with getcursor(self.ps.DBCONN, "regelm_detail$RegElementDetails::testmostsimilar") as curs:
+            curs.execute("""SELECT {assay}_rank FROM {assembly}_cre
+                            WHERE accession LIKE 'E%E{accession}'""".format(assay=assay, assembly=self.assembly, accession=acc))
+            r = curs.fetchone()[0]
+            curs.execute("""SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity FROM {assembly}_cre
+                            WHERE {whereclause}
+                            ORDER BY similarity DESC LIMIT 20""".format(assay=assay, assembly=self.assembly,
+                                                                        threshold=threshold, whereclause=whereclause(r)), {"r": r})
+            r = curs.fetchall()
+        return r
+        
+    def reFull(self, reAccession, similarity_assay = "dnase"):
         q = { "query" :{
                   "bool" : {
                       "must" : [
@@ -45,7 +50,8 @@ class RegElementDetails:
             print("ERROR: too many hits for " + reAccession)
         result = retval["hits"]["hits"][0]["_source"]
         allgenes = result["genes"]["nearest-all"] + result["genes"]["nearest-pc"]
-        result["most_similar"] = self.most_similar(result)
+        with Timer("most similar"):
+            result["most_similar"] = self.mostsimilar(reAccession, similarity_assay)
         result["nearby_genes"] = [{"name": x["gene-name"],
                                    "distance": x["distance"] } for x in allgenes]
         return result
