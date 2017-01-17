@@ -5,14 +5,13 @@ namespace bib {
 namespace bfs = boost::filesystem;
 
 struct Gene {
-    std::string name;
     uint32_t geneID;
     int32_t distance;
 
     Json::Value toJson() const {
         Json::Value r;
         r["distance"] = distance;
-        r["gene-name"] = name;
+        r["gene-id"] = geneID;
         return r;
     }
 
@@ -22,7 +21,7 @@ struct Gene {
     }
 
     friend auto& operator<<(std::ostream& s, const Gene& g){
-        s << g.name << "\t" << g.distance;
+        s << g.geneID << "\t" << g.distance;
         return s;
     }
 };
