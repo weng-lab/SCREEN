@@ -1,11 +1,10 @@
 import sys, os
 
-from common.page_info_geneexp import PageInfoGeneExp
+from common.page_info_de import PageInfoDe
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from compute_gene_expression import ComputeGeneExpression, Compartments
 
-class GeneExpController:
+class DeController:
     def __init__(self, templates, es, ps, cache):
         self.t = templates
         self.es = es
@@ -13,15 +12,12 @@ class GeneExpController:
         self.cache = cache
         self.params = (es, ps, cache)
 
-    def geneexp(self, args, kwargs, uuid):
-        pageInfo = PageInfoGeneExp(*self.params)
-        return self.t('main/geneexp', **pageInfo.geneexpPage(args, kwargs, uuid))
+    def de(self, args, kwargs, uuid):
+        pageInfo = PageInfoDe(*self.params)
+        return self.t('main/de', **pageInfo.dePage(args, kwargs, uuid))
 
     def geneexpjson(self, j):
-        if "GlobalAssembly" not in j:
-            print(sorted(list(j.keys())))
-            raise Exception("GlobalAssembly not defined")
-        assembly = j["GlobalAssembly"]
+        assembly = "mm10"
 
         gene = j["geneID"]
         # TODO: check for valid gene

@@ -1,0 +1,15 @@
+{% include '_header.html' -%}
+{% import 'Helpers/_helpers.html' as hh -%}
+
+{{ hh.css("/static/controls/histogram.css") }}
+{{ hh.css("/static/controls/range_slider.css") }}
+{{ hh.css("/static/controls/heatmap.css") }}
+
+<script type="text/javascript">
+  var GlobalParsedQuery = {{ globalParsedQuery }};
+</script>
+
+<div id="root"></div>
+hi!
+
+{% include '_footer.html' -%}
