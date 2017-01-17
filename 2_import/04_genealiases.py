@@ -135,6 +135,9 @@ class GeneRow:
         if self.ensemblid in ensembleToInfo:
             self.info = ensembleToInfo[self.ensemblid]
             self.approved_symbol = self.info["approved_symbol"]
+        elif toks[0] in ensembleToInfo:
+            self.info = ensembleToInfo[toks[0]]
+            self.approved_symbol = self.info["approved_symbol"]
         else:
             self.info = []
             self.approved_symbol = self.ensemblid
@@ -162,18 +165,18 @@ class AddGeneAliases:
 
         print(rows[0].output())
 
-        tableName = self.assembly + "_geneInfo"
+        tableName = self.assembly + "_gene_info"
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-geneId integer,
+geneid integer,
 ensemblid text,
 ver integer,
 approved_symbol text,
 info jsonb);""".format(tableName = tableName))
 
-        cols = ["geneId", "ensemblid", "ver", "approved_symbol", "info"]
+        cols = ["geneid", "ensemblid", "ver", "approved_symbol", "info"]
 
         outF = StringIO.StringIO()
         for r in rows:
