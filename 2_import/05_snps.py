@@ -37,9 +37,9 @@ CREATE INDEX {table}_idx01 ON {table}(name);
 def setupAll(curs):
     d = Dirs.dbsnps
     setupAndCopy(curs, os.path.join(d, "snps142common.mm10.csv"),
-                 "dbsnps_mm10")
+                 "mm10_snps")
     setupAndCopy(curs, os.path.join(d, "snps144common.hg19.csv"),
-                 "dbsnps_hg19")
+                 "hg19_snps")
 
 def parse_args():
     parser = argparse.ArgumentParser()
