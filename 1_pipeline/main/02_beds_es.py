@@ -20,22 +20,6 @@ from utils import Utils, printWroteNumLines
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 
-def as_bed(re):
-    return "\t".join([re["position"]["chrom"],
-                      str(re["position"]["start"]),
-                      str(re["position"]["end"]),
-                      re["accession"]])
-
-def lsj_to_beds(inFnp):
-    ret = []
-    with gzip.open(inFnp, "r") as f:
-        for idx, line in enumerate(f):
-            re = json.loads(line.strip())
-            ret.append(as_bed(re))
-            if idx % 100000 == 0:
-                print("working with", idx, inFnp)
-    return ret
-
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
@@ -55,7 +39,7 @@ def doIntersection(bed, refnp):
         print("failed to run", " ".join(cmds))
         return None
 
-    return [p.rstrip().split("\t")[3] for p in peaks] # return accessions?
+    return [p.rstrip().split("\t")[4] for p in peaks] # return cRE accessions
 
 def makeJobs(args, assembly):
     if "mm10" == assembly:
@@ -116,12 +100,11 @@ def runIntersectJob(jobargs, bedfnp):
     return (fileJson, ret)
 
 def computeIntersections(args, assembly, fnps):
-    bedFnp = fnps["re_bed"]
+    d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/",
+                     "ver9", assembly)
+    bedFnp = os.path.join(d, "raw", "masterPeaks.bed")
 
     jobs = makeJobs(args, assembly)
-
-    if args.dryrun:
-        return 
 
     results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
                                         for job in jobs)
@@ -145,99 +128,22 @@ def computeIntersections(args, assembly, fnps):
 
     printt("completed hash merge")
 
-    r = redis.StrictRedis()
-    for k,v in tfImap.iteritems():
-        r.set(paths.reVerStr + k, json.dumps(v))
-    printt("wrote to redis")
-
-    bedsLsjFnp = fnps["bedLsjFnp"]
-    with open(bedsLsjFnp, "wb") as f:
-        for fj in fileJsons:
-            f.write(json.dumps(fj) + "\n")
-    printt("wrote", bedsLsjFnp)
-
-def extractREbeds(args, fnps):
-    printt("generating RE bed file")
-    bedFnp = fnps["re_bed"]
-    inFnps = fnps["rewriteGeneFnp"]
-
-    jobs = []
-    for inFnp in inFnps:
-        if not os.path.exists(inFnp):
-            continue
-        jobs.append(inFnp)
-
-    outputs = Parallel(n_jobs = args.j)(delayed(lsj_to_beds)(j) for j in jobs)
-
-    with gzip.open(bedFnp, "w") as o:
-        for output in outputs:
-            for re in output:
-                o.write(re + "\n")
-    print("wrote", bedFnp)
-
-def updateREjson(inFnp, outFnp):
-    if not os.path.exists(inFnp):
-        print("missing", inFnp)
-        return
-
-    r = redis.StrictRedis()
-
-    with gzip.open(inFnp, "r") as inF:
-        with gzip.open(outFnp, "w") as outF:
-            for idx, line in enumerate(inF):
-                if 0 == idx % 10000:
-                    print(inFnp, idx)
-                re = json.loads(line)
-
-                try:
-                    acc = re["accession"]
-                    info = r.get(paths.reVerStr + acc)
-
-                    if info:
-                        re["peak_intersections"] = json.loads(info)
-                    else:
-                        re["peak_intersections"] = {"tf": {}, "histone": {}, "dnase": {}}
-                        print("no intersections found for", re["accession"])
-                except:
-                    print("error with", inFnp, "line", idx)
-                    continue
-
-                try:
-                    outF.write(json.dumps(re) + "\n")
-                except:
-                    print("could not rewrite", inFnp, "line", idx)
-                    continue
-
-    print("wrote", outFnp)
-
-def updateREfiles(args, fnps):
-    printt("updating RE JSON")
-
-    inFnps = fnps["rewriteGenePeaks2Fnp"]
-    outFnps = fnps["rewriteGenePeaks3Fnp"]
-
-    printt("running RE file rewrite....")
-    Parallel(n_jobs = args.j)(delayed(updateREjson)(inFnp, outFnp)
-                              for (inFnp, outFnp) in zip(inFnps, outFnps))
+    outFnp = os.path.join(d, "newway", "peakIntersections")
+    with open(outFnp, 'w') as f:
+        for k,v in tfImap.iteritems():
+            f.write(k + '\t' + json.dumps(v) + '\n')
+    printt("wrote", outFnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--process', action="store_true", default=True)
     parser.add_argument('-j', type=int, default=32)
-    parser.add_argument('--remakeBed', action="store_true", default=False)
-    parser.add_argument('--updateOnly', action="store_true", default=False)
-    parser.add_argument('--dryrun', action="store_true", default=False)
     parser.add_argument('--list', action="store_true", default=False)
-    parser.add_argument('--version', type=int, default=7)
     parser.add_argument('--assembly', type=str, default="mm10")
-    parser.add_argument('--test', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
-
-    fnps = paths.get_paths(args.version, args.assembly, chroms[args.assembly])
 
     if args.list:
         jobs = makeJobs(args, args.assembly)
@@ -245,16 +151,8 @@ def main():
             print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
         return 0
 
-    if args.updateOnly:
-        return updateREfiles(args, fnps)
-
-    if not os.path.exists(fnps["re_bed"]) or args.remakeBed:
-        extractREbeds(args, fnps)
-
     printt("intersecting TFs, Histones, and DNases")
     computeIntersections(args, args.assembly, fnps)
-
-    updateREfiles(args, fnps)
 
     return 0
 
