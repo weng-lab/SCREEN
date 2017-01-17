@@ -33,6 +33,7 @@ class LongListFacet extends React.Component {
         if(title && this.props.friendlySelectionLookup){
             title = this.props.friendlySelectionLookup(title)
         }
+
 	return (<div>
 
                 <div style={{display: table_display}}>

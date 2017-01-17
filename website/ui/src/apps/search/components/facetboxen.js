@@ -76,9 +76,9 @@ const cellTypesBox = ({cellType, actions}) => {
 	            ]}
                     order={[]}
                     selection={cellType}
-                    friendlySelectionLookup={(v) => {
-                        return GlobalCellTypeInfo[v]["name"] }}
-                    onTdClick={(ct) => { actions.setCellType(ct) }}
+                    friendlySelectionLookup={(value) => {
+                        return GlobalCellTypeInfo[value]["name"] }}
+                    onTdClick={(value) => { actions.setCellType(value) }}
                     />);
 }
 
