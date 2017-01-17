@@ -169,8 +169,22 @@ class CreateIndices:
     $$ language sql immutable;
     """)
 
+    def setupSimilarFunction(self):
+        print("create similarity function...")
+        self.curs.execute("""
+        create or replace function intarraysimilarity(arr1 int[], arr2 int[], threshold int) returns int as $$
+        declare ret int := 0; begin
+        for i in array_lower(arr1, 1)..array_upper(arr1, 1) loop
+           ret := case when arr1[i] < threshold and arr2[i] < threshold then ret + 1
+                       when arr1[i] >= threshold and arr2[i] >= threshold then ret + 1
+                       else ret
+                  end;
+        end loop;
+        return ret; end; $$ language plpgsql stable returns null on null input;""")
+
     def run(self):
         self.setupRangeFunction()
+        self.setupSimilarFunction()
         self.doIndex(self.baseTableName)
         self.doIndexGin(self.baseTableName)
         self.doIndexRange(self.baseTableName)
@@ -221,6 +235,7 @@ def parse_args():
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
     parser.add_argument('--correlate', action="store_true", default=False)
+    parser.add_argument('--setupsimilar', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -253,6 +268,11 @@ def main():
         for assay in ["dnase", "ctcf_only", "h3k27ac_only", "h3k4me3_only",
                       "h3k27ac_dnase", "h3k4me3_dnase", "ctcf_dnase" ]:
             c.run(assay)
+        return 0
+
+    if args.setupsimilar:
+        with getcursor(DBCONN, "08_setup_log") as curs:
+            CreateIndices(curs, chrs, "", cols).setupSimilarFunction()
         return 0
     
     with getcursor(DBCONN, "08_setup_log") as curs:

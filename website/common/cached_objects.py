@@ -54,17 +54,22 @@ class CachedObjects:
         self.tissueMap = self.biosamples.tissueMap
         self.cellTypesAndTissues_json = self.biosamples.cellTypesAndTissues_json
 
-        self.topelems = {ct["value"]: self.get20k(ct["value"], 7)
-                         for ct in self.cellTypesAndTissues}
         self.bigwigmaxes = {}
         if os.path.exists(paths.bigwigmaxes):
             with open(paths.bigwigmaxes, "r") as f:
                 for line in f:
                     p = line.strip().split("\t")
                     self.bigwigmaxes[p[0]] = int(p[1])
+        print(self.bigwigmaxes)
 
     def alltop(self):
-        return sum([[_k for _k, _v in v.iteritems()] for k, v in self.topelems.iteritems()])
+        results = {}
+        retval = []
+        for k, v in self.topelems.iteritems():
+            for _k, _v in v.iteritems():
+                if _k not in results: retval.append(_v)
+                results[_k] = 1
+        return retval
                     
     def get20k(self, ct, version):
         results = []
@@ -85,7 +90,7 @@ class CachedObjects:
             except:
                 print("ES ERROR: no hits")
                 raise
-            return {k: 1 for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
+            return {k: x for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
 
     def getTissue(self, ct):
         if ct in self.cellTypesAndTissues:
