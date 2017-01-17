@@ -59,12 +59,13 @@ class PageInfoMain:
         ret.update({"globalParsedQuery" : json.dumps(parsed),
                     "globalSessionUid" : uuid,
                     "globalTfs" : cache.getTFListJson(),
-                    "globalCellTypes" : cache.getCTTjson(),
                     "searchPage": True,
                     "globalChromCounts" : json.dumps(cache.chromCounts),
                     "globalChromLens" : json.dumps(chrom_lengths[assembly]),
                     "globalCreHistBins" : json.dumps(cache.creHist),
-                    "tissueMap": cache.getTissueMap() })
+                    "globalCellTypeInfo": cache.globalCellTypeInfo(),
+                    "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
+                    })
 
         return ret
 

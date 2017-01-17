@@ -25,7 +25,7 @@ export const facetboxes = {
 		visible: true,
 		title: "",
 		state: {
-		    data: (GlobalCellTypes ? GlobalCellTypes.map((ct) => {return {key: ct.value, tissue: ct.tissue, selected: false}}) : []),
+		    data: "(GlobalCellTypeInfo ? GlobalCellTypeInfo.map((ct) => {return {key: ct.name, tissue: ct.tissue, selected: false}}) : [])",
 		    order: [],
 		    cols: [
 			{

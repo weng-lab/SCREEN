@@ -2,7 +2,7 @@
 
 import os, sys, json
 
-from models.biosamples import Biosamples
+from models.datasets import Datasets
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import Autocompleter
@@ -48,16 +48,13 @@ class CachedObjects:
 
         self.chromCounts = self.pgSearch.chromCounts()
         self.creHist = self.pgSearch.creHist()
-        
+
         #t = Timer("load CachedObjects " + assembly)
         acs = Autocompleter(es, assembly)
         self.tf_list = acs.tf_list()
         self.tf_list_json = json.dumps(self.tf_list)
 
-        self.biosamples = Biosamples(assembly, ps.DBCONN)
-        self.cellTypesAndTissues = self.biosamples.cellTypesAndTissues
-        self.tissueMap = self.biosamples.tissueMap
-        self.cellTypesAndTissues_json = self.biosamples.cellTypesAndTissues_json
+        self.datasets = Datasets(assembly, ps.DBCONN)
 
         if 0:
             self.topelems = {ct["value"]: self.get20k(ct["value"], 7)
@@ -94,8 +91,8 @@ class CachedObjects:
             return {k: 1 for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
 
     def getTissue(self, ct):
-        if ct in self.cellTypesAndTissues:
-            return self.cellTypesAndTissues[ct]
+        if ct in self.cellTypeToTissue:
+            return self.cellTypesToTissue[ct]
         #raise Exception("missing tissue")
         print("missing tissue for", ct)
         return ""
@@ -104,7 +101,7 @@ class CachedObjects:
         return self.tissueMap
 
     def getCTTjson(self):
-        return self.cellTypesAndTissues_json
+        return self.cellTypesToTissue_json
 
     def getTissueAsMap(self, ct):
         if ct in self.tissueMap:
@@ -115,3 +112,9 @@ class CachedObjects:
 
     def getTFListJson(self):
         return self.tf_list_json
+
+    def globalCellTypeInfo(self):
+        return self.datasets.globalCellTypeInfoJson()
+
+    def globalCellTypeInfoArr(self):
+        return self.datasets.globalCellTypeInfoArrJson()
