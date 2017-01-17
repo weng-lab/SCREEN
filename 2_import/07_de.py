@@ -21,11 +21,7 @@ id serial PRIMARY KEY,
 leftName text,
 rightName text,
 ensembl text,
-baseMean numeric,
 log2FoldChange numeric,
-lfcSE numeric,
-stat numeric,
-pvalue numeric,
 padj numeric
 );
 """.format(tableName = tableName))
@@ -56,12 +52,14 @@ def setupAll(curs):
         fnp = os.path.join(dataF, "data", fn)
         print(counter + 1, total, fnp)
         counter += 1
+        skipped = 0
         with open(fnp) as f:
             f.readline() # consume header
             data = []
             for r in f:
                 toks = r.rstrip().split('\t')
                 if "NA" == toks[2]:
+                    skipped += 1
                     continue
                 padj = toks[5]
                 if 'NA' == padj:
@@ -73,7 +71,7 @@ def setupAll(curs):
             outF.write('\t'.join([left, right] + d) + '\n')
         outF.seek(0)
         curs.copy_from(outF, tableName, '\t', columns=cols)
-        print("\tcopied in", len(data))
+        print("\tcopied in", len(data), "skipped", skipped)
 
 def parse_args():
     parser = argparse.ArgumentParser()
