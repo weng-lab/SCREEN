@@ -27,9 +27,8 @@ class GeneInfo:
 
     def getGeneCoords(self):
         if self.assembly not in self.gene_files:
-            print("WARNING: cannot get gene coordinates for assembly",
-                  self.assembly, "-- no gene file found")
-            return
+            raise Exception("ERROR: cannot get gene coordinates for assembly " +
+                            self.assembly + "-- no gene file found")
         fnp, filetype = self.gene_files[self.assembly]
         ggff = Genes(fnp, filetype)
         ret = {}
