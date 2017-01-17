@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+import os, sys, json, psycopg2, argparse, StringIO
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from dbconnect import db_connect
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+from utils import Utils
+from db_utils import getcursor
+from files_and_paths import Dirs
+
+def setupAndCopy(curs, tableName):
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+
+CREATE TABLE {tableName}(
+id serial PRIMARY KEY,
+leftName text,
+rightName text,
+ensembl text,
+baseMean numeric,
+log2FoldChange numeric,
+lfcSE numeric,
+stat numeric,
+pvalue numeric,
+padj numeric
+);
+""".format(tableName = tableName))
+
+def setupAll(curs):
+    dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
+    dataF = os.path.join(dataF, "mouse_epigenome/de_all_pairs")
+    fnp = os.path.join(dataF, "DE_files.json")
+
+    tableName = "mm10_de"
+    setupAndCopy(curs, tableName)
+
+    cols = ["leftName", "rightName", "ensembl", "baseMean", "log2FoldChange",
+            "lfcSE", "stat", "pvalue", "padj"]
+
+    with open(fnp) as f:
+        pairs = json.load(f)
+
+    for p, fn in pairs.iteritems():
+        toks = p.split(':')
+        left = toks[0]
+        right = toks[1]
+        if left == right:
+            continue
+        fnp = os.path.join(dataF, "data", fn)
+        print(fnp)
+        with open(fnp) as f:
+            f.readline() # consume header
+            data = []
+            for r in f:
+                if "NA" in r:
+                    continue
+                data.append(r.rstrip().split('\t'))
+
+        outF = StringIO.StringIO()
+        for d in data:
+            outF.write('\t'.join([left, right] + d) + '\n')
+        outF.seek(0)
+        curs.copy_from(outF, tableName, '\t', columns=cols)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--local', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+
+    with getcursor(DBCONN, "main") as curs:
+        setupAll(curs)
+
+if __name__ == '__main__':
+    main()

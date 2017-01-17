@@ -15,6 +15,8 @@ hi!
 
 <script type="text/javascript">
 
+// from http://bl.ocks.org/mbostock/3887118
+
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -58,7 +60,7 @@ var svg = d3.select("body").append("svg")
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text("Sepal Width (cm)");
+      .text("day");
 
   svg.append("g")
       .attr("class", "y axis")
