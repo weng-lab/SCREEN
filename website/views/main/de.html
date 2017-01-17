@@ -60,7 +60,7 @@ var svg = d3.select("body").append("svg")
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text("day");
+      .text("coord");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -71,7 +71,7 @@ var svg = d3.select("body").append("svg")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Sepal Length (cm)")
+      .text("log2 fold change")
 
   svg.selectAll(".dot")
       .data(data)
