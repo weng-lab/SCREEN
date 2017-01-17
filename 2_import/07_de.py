@@ -43,6 +43,8 @@ def setupAll(curs):
     with open(fnp) as f:
         pairs = json.load(f)
 
+    counter = 0
+    total = len(pairs)
     for p, fn in pairs.iteritems():
         toks = p.split(':')
         left = toks[0]
@@ -50,7 +52,8 @@ def setupAll(curs):
         if left == right:
             continue
         fnp = os.path.join(dataF, "data", fn)
-        print(fnp)
+        print(counter + 1, total, fnp)
+        counter += 1
         with open(fnp) as f:
             f.readline() # consume header
             data = []
