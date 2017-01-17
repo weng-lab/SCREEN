@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
+import LongListFacet from '../../../common/components/longlist'
+
 import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
 import MainChecklistFacet from '../components/checklist'
@@ -57,13 +59,13 @@ const accessionsBox = ({accessions, actions}) => {
 
 const cellTypesBox = ({cellType, actions}) => {
     return panelize("Cell types",
-                    <MainLongListFacet visible={true}
+                    <LongListFacet
                     title={""}
-                    data={GlobalCellTypes}
+                    data={GlobalCellTypeInfoArr}
                     cols={[
 		        {
 		            title: "cell type",
-		            data: "value",
+		            data: "name",
 		            className: "dt-right"
 		        },
 		        {

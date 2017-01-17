@@ -49,6 +49,15 @@ class AjaxWebServiceWrapper:
         return self.ajws[j["GlobalAssembly"]].process(j)
 
 class AjaxWebService:
+    _default_fields = ["accession", "neg-log-p",
+                       "position.chrom", "position.start",
+                       "position.end", "genes.nearest-all",
+                       "genes.nearest-pc", "in_cart"]
+
+    def __init__(self, args, es, ps, cache, staticDir, assembly):
+        pass
+
+class AjaxWebServiceOld:
 
     _default_fields = ["accession", "neg-log-p",
                        "position.chrom", "position.start",
