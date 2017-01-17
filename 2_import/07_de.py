@@ -37,8 +37,7 @@ def setupAll(curs):
     tableName = "mm10_de"
     setupAndCopy(curs, tableName)
 
-    cols = ["leftName", "rightName", "ensembl", "baseMean", "log2FoldChange",
-            "lfcSE", "stat", "pvalue", "padj"]
+    cols = ["leftName", "rightName", "ensembl", "log2FoldChange", "padj"]
 
     with open(fnp) as f:
         pairs = json.load(f)
