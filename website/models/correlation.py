@@ -23,10 +23,11 @@ class Correlation:
         self.DBCONN = DBCONN
 
     def dbcorr(self, assembly, assay):
+        assay = assay.replace("-", "_").replace("+", "_")
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute("""SELECT correlations FROM correlations_{assembly}
                             WHERE assay = '{assay}'""".format(assembly = assembly, assay = assay))
-            r = curs.fetchone()
+            r = curs.fetchone()[0]
         return r
         
     def _get_ctlabels(self, outerkey, innerkey = None, _ctfilter = None):
