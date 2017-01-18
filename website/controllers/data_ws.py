@@ -98,8 +98,9 @@ class DataWebService:
         snps = cre.intersectingSnps(10000) # 10 KB
         nearbyCREs = cre.nearbyCREs(1000000) # 1 MB
         nearbyGenes = cre.nearbyGenes()
+        genesInTad = cre.genesInTad()
         return { accession : {"nearby_genes": nearbyGenes,
-                              "tads": [],
+                              "tads": genesInTad,
                               "re_tads": [],
                               "nearby_res": nearbyCREs,
                               "overlapping_snps": snps} }
