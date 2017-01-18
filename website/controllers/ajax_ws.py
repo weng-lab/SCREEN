@@ -239,7 +239,8 @@ class AjaxWebServiceOld:
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        similaracclist = [j["accession"]] + [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): -v)][:10]
+        re_results = self.es.get_overlapping_res(expanded_coords)
+        similaracclist = [j["accession"]] + [k for k, v in j["most_similar"]]
 
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
@@ -548,12 +549,9 @@ class AjaxWebServiceOld:
 
     def _tree(self, j):
         j["object"]["_source"] = ["ranks"]
-        with Timer('ElasticSearch time'):
-            """_ret = self._query({"object": j["object"],
-                                "index": paths.reJsonIndex(self.assembly),
-                               "callback": "" })"""
-            _ret = self.cache.alltop()
-
+        r =  []
+        _ret = {"hits": {"hits": r, "total": len(r)}}
+       
         if "hits" in _ret:
             try:
                 return self._process_tree_hits(j, _ret)
@@ -572,24 +570,20 @@ class AjaxWebServiceOld:
                     print("missing", ct)
                     return False
                 return typ == self.cache.biosamples[ct].biosample_type
-            print("!correlating")
+            c = Correlation(_ret["hits"]["hits"], self.ps.DBCONN)
+            k = "dnase" if j["inner"] is None else j["inner"].lower()
             with Timer(typ + ": spearman correlation time"):
-                c = Correlation(_ret["hits"]["hits"])
                 if self.assembly == "hg19":
                     labels, corr = c.spearmanr(j.get("outer", "dnase"),
                                                j.get("inner", None),
                                                ctFilter )
                 else:
-                    labels, corr = c.pearsonr(j.get("outer", "dnase"),
-                                              j.get("inner", None),
-                                              ctFilter )
+                    labels = self.cache.celltypemap[k]
+                    labels, corr = c.dbcorr(self.assembly, k, labels, lambda x: "bryo" in x)
                     print("!got correlation")
             if not labels:
                 continue
-            rho, pval = corr
-            print(len(rho))
-            print(len(rho[0]) if len(rho) > 0 else "")
-            return {"results": {"tree": None, "tree_title": title}}
+            rho = corr[0] if len(corr) == 2 else corr
 
             try:
                 rhoList = rho.tolist() if type(rho) is not list else rho

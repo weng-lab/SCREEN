@@ -1,6 +1,10 @@
+import sys
 import scipy
 import scipy.stats
 from numpy import *
+
+sys.path.append("../../../metadata/utils")
+from db_utils import getcursor
 
 def _bpearson(_2da):
     _len = len(_2da)
@@ -14,9 +18,28 @@ def _bpearson(_2da):
     return (rm, pv)
 
 class Correlation:
-    def __init__(self, hits):
+    def __init__(self, hits, DBCONN = None):
         self.hits = hits
+        self.DBCONN = DBCONN
 
+    def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
+        assay = assay.replace("-", "_").replace("+", "_")
+        with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
+            curs.execute("""SELECT correlations FROM correlations_{assembly}
+                            WHERE assay = '{assay}'""".format(assembly = assembly, assay = assay))
+            r = curs.fetchone()[0]
+        tokeep = []
+        flabels = []
+        for i in xrange(len(labels)):
+            if _filter(labels[i]):
+                tokeep.append(i)
+                flabels.append(labels[i])
+        ret = [[0 for j in xrange(len(tokeep))] for i in xrange(len(tokeep))]
+        for i in xrange(len(tokeep)):
+            for j in xrange(len(tokeep)):
+                ret[i][j] = r[tokeep[i]][tokeep[j]]
+        return (flabels, ret)
+        
     def _get_ctlabels(self, outerkey, innerkey = None, _ctfilter = None):
         if len(self.hits) == 0:
             return []

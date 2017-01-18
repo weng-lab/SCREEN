@@ -4,27 +4,17 @@ import argparse
 from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 import subprocess
+import glob
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../website/common"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../website"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from models.biosamples import Biosamples
 from constants import paths, chroms
 from cached_objects import CachedObjectsWrapper
-from elastic_search_wrapper import ElasticSearchWrapper
+from elastic_search_wrapper import ElasticSearchWrapperWrapper
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
-
-NCHUNKS = 20
-CHUNKSIZE = 20000 / NCHUNKS
-
-def get_20k(ct, es, version, assembly):
-    results = []
-    for i in xrange(20000 / NCHUNKS):
-        results += es.search(body={"query": {"bool": {"must": [{"range": {"ranks.dnase." + ct + ".rank": {"lte": (i + 1) * CHUNKSIZE,
-                                                                                                          "gte": i * CHUNKSIZE + 1 }}}]}},
-                                   "size": 10000, "_source": ["accession"]},
-                             index=paths.re_json_vers[version][assembly]["index"])["hits"]["hits"]
-    return results
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -40,12 +30,12 @@ def get_maxsignal(targetfile, chrs, v):
             r = subprocess.check_output(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigSummary", targetfile, _chr, "0", "250000000", "1", "-type=max"])
             signals.append(int(r))
         except:
-            pass
+            print("WARNING: failed to get data for %s:%s; skipping" % (targetfile, _chr))
     return max(signals) if len(signals) > 0 else 0
 
 def main():
     args = parse_args()
-    es = ElasticSearchWrapper(Elasticsearch())
+    es = ElasticSearchWrapperWrapper(Elasticsearch())
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
     cache = CachedObjectsWrapper(es, ps)[args.assembly]
@@ -61,9 +51,9 @@ def main():
                             "bigwig": line[1] })
     
     # use first element to get bigwig paths
-    result = es.search(body={"query": {"bool": {"must": [{"match": {"accession": "EE0000001"}}]}},
-                             "_source": ["ranks"]},
-                       index=paths.re_json_vers[args.version][args.assembly]["index"])["hits"]["hits"]
+    result = es[args.assembly].search(body={"query": {"bool": {"must": [{"match": {"accession": "EE0000001"}}]}},
+                                            "_source": ["ranks"]},
+                                      index=paths.re_json_vers[args.version][args.assembly]["index"])["hits"]["hits"]
     if len(result) == 0:
         print("ERROR: failed to find first element, required to load bigwig paths; aborting")
         return 1
@@ -72,11 +62,16 @@ def main():
     # for each BigWig, get maximum
     maxes = {}
     for v in results:
-        targetfile = os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (v["accession"], v["bigwig"]))
-        if not os.path.exists(targetfile):
-            print("WARNING: file %s does not exist; skipping" % targetfile)
-            continue
-        maxes[v["bigwig"]] = get_maxsignal(targetfile, chroms[args.assembly], v)
+        for targetfile in glob.glob(os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/*.bigWig" % (v["accession"]))):
+#        targetfile = os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (v["accession"], v["bigwig"]))
+            if not os.path.exists(targetfile):
+                print("WARNING: file %s does not exist; skipping" % targetfile)
+                continue
+            maxes[v["bigwig"]] = get_maxsignal(targetfile, chroms[args.assembly], v)
+            if maxes[v["bigwig"]] == 0:
+                print("WARNING: max signal of 0 for %s" % targetfile)
+
+    print(maxes)
 
     with open(os.path.expanduser("~/bigwig.tsv"), "wb") as o:
         for bigwig, _max in maxes.iteritems():
