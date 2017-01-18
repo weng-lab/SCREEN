@@ -140,7 +140,7 @@ class GeneRow:
             self.approved_symbol = self.info["approved_symbol"]
         else:
             self.info = []
-            self.approved_symbol = self.ensemblid
+            self.approved_symbol = self.ensemblid_ver
 
     def output(self):
         return '\t'.join([self.geneId, self.ensemblid, self.ver,

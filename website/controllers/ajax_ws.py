@@ -239,18 +239,6 @@ class AjaxWebServiceOld:
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        overlapBP = 10000 #10KB
-        expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, pos["start"] - overlapBP),
-                           "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords)
-
-        overlapBP = 1000000 # 1MB
-        expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, pos["start"] - overlapBP),
-                           "end": pos["end"] + overlapBP}
-#        gene_results = self.es.get_overlapping_genes(expanded_coords)
-        re_results = self.es.get_overlapping_res(expanded_coords)
         similaracclist = [j["accession"]] + [k for k, v in sorted(j["most_similar"].iteritems(), key = lambda(k, v): -v)][:10]
 
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
