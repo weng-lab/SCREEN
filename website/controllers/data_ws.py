@@ -14,6 +14,7 @@ from models.rank_heatmap import RankHeatmap
 from models.correlation import Correlation
 from models.cytoband import Cytoband
 from models.bigwig import BigWig
+from models.trees import Trees
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from pg import PGsearch
@@ -121,4 +122,5 @@ class DataWebService:
 
     def _trees(self, j):
         tree_assay = j["tree_assay"]
+        t = Trees(self.cache, self.ps, k)
         return {}
