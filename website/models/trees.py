@@ -4,7 +4,7 @@ class Trees:
         self.pg = pg
         self.j = j
 
-    def _process_tree_hits(self, j, _ret):
+    def process_tree_hits(self, j, _ret):
         results = {}
         biosampleTypes = self.cache.biosampleTypes
         for typ in biosampleTypes:

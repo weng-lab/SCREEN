@@ -123,4 +123,5 @@ class DataWebService:
     def _trees(self, j):
         tree_assay = j["tree_assay"]
         t = Trees(self.cache, self.ps, k)
+        ret = t.process_tree_hits(j, "")
         return {}
