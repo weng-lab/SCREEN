@@ -15,7 +15,7 @@ const initialState = {
     cart_accessions: new Set(),
     cre_accession_detail: null,
     re_details_tab_active: "topTissues",
-    tree_assay: "dnase"
+    tree_rank_method: "dnase"
 };
 
 export default initialState;
