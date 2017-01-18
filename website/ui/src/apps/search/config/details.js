@@ -10,12 +10,7 @@ import MiniPeaks from '../components/minipeaks'
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
         TfIntersectionTable} from './details_tables'
 
-const loading = ({isFetching}) => {
-    return (<div className={"loading"}
-            style={{"display": (isFetching ? "block" : "none")}}>
-	    Loading...
-	    </div>);
-}
+import loading from '../components/loading'
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
