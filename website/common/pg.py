@@ -111,3 +111,23 @@ int4range(%s, %s)
                                          abs(coord.start - start))})
         return ret
 
+    def nearbyCREs(self, accession, coord, halfWindow):
+        c = coord.expanded(halfWindow)
+        tableName = self.assembly + "_cre_" + c.chrom
+        with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
+            curs.execute("""
+SELECT start, stop, accession FROM {tn} WHERE int4range(start, stop) &&
+int4range(%s, %s)
+""".format(tn = tableName), (c.start, c.end))
+            cres = curs.fetchall()
+        ret = []
+        for c in cres:
+            acc = c[2]
+            if acc == accession:
+                continue
+            start = c[0]
+            end = c[1]
+            ret.append({"name" : acc,
+                        "distance" : min(abs(coord.end - end),
+                                         abs(coord.start - start))})
+        return ret
