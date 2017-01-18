@@ -5,16 +5,21 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils
 from db_utils import getcursor
 
 class Correlation:
-    def __init__(self, DBCONN):
+    def __init__(self, assembly, DBCONN):
+        self.assembly = assembly
         self.DBCONN = DBCONN
 
     def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
         assay = assay.replace("-", "_").replace("+", "_")
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute(
-                """SELECT correlations FROM {tn}WHERE assay = %s
-""".format(tn = "correlations_" + self.assembly), (assay = assay))
-            r = curs.fetchone()[0]
+                """SELECT correlations FROM {tn} WHERE assay = %(assay)s
+""".format(tn = self.assembly + "_correlations"), {"assay" : assay})
+            try:
+                r = curs.fetchone()[0]
+            except:
+                print("ERROR", assay)
+
         tokeep = []
         flabels = []
         for i in xrange(len(labels)):
