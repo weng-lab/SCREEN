@@ -49,8 +49,8 @@ const main_reducers = (state, action) => {
                                            action.accession)}
     }
 
-    case Actions.SET_TREE_ASSAY: {
-	return { ...state, tree_assay : action.assay};
+    case Actions.SET_TREE_RANK_METHOD: {
+	return { ...state, tree_rank_method : action.rank_method};
     }
 	
     case SearchAction.MAKE_SEARCH_QUERY:
