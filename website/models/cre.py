@@ -7,6 +7,8 @@ class CRE:
         self.pgSearch = pgSearch
         self.accession = accession
         self.pos = None
+        self.genesAll = None
+        self.genesPC = None
 
     def coord(self):
         if not self.pos:
@@ -19,4 +21,12 @@ class CRE:
     def nearbyCREs(self, halfWindow):
         return self.pgSearch.nearbyCREs(self.accession, self.coord(), halfWindow)
 
-
+    def nearbyGenes(self):
+        coord = self.coord()
+        if not self.genesAll or not self.genesPC:
+            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
+                                                                 coord.chrom)
+        ret = []
+        for g in list(set(self.genesAll + self.genesPC)):
+            ret.append({"name" : g[0], "distance" : g[1]})
+        return ret
