@@ -1,7 +1,13 @@
+import sys
+import os
+
 from correlation import Correlation
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
 from heatmaps.heatmap import Heatmap
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
+from utils import Utils, Timer
 
 class Trees:
     def __init__(self, cache, pg, assembly, tree_rank_method):
@@ -23,7 +29,7 @@ class Trees:
         biosampleTypes = self.cache.biosampleTypes
         for typ in biosampleTypes:
             ret[typ] = self._processTyp(typ)
-        title = ' / '.join([x for x in [self.outer, self.inner)] if x])
+        title = ' / '.join([x for x in [self.outer, self.inner] if x])
         return {"tree": ret, "title" : title }
 
     def _processTyp(self, typ):
@@ -33,7 +39,7 @@ class Trees:
                 return False
             return typ == self.cache.biosamples[ct].biosample_type
 
-        c = Correlation(_ret["hits"]["hits"], self.ps.DBCONN)
+        c = Correlation(self.assembly, self.pg.DBCONN)
 
         with Timer(typ + ": spearman correlation time"):
             if self.assembly == "hg19":
@@ -45,7 +51,7 @@ class Trees:
                 print("!got correlation")
 
         if not labels:
-            return
+            return []
 
         if 2 == len(corr):
             rho = corr[0]
@@ -61,7 +67,7 @@ class Trees:
         except:
             print("rho", rho)
             print("pval", pval)
-            continue
+            return []
         with Timer(typ + ": hierarchical clustering time"):
             roworder, rowtree = _heatmap.cluster_by_rows()
         return {"tree": rowtree, "labels": labels}
