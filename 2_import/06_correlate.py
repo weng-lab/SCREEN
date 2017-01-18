@@ -28,7 +28,7 @@ class Correlate:
     def importTable(self, fnp):
         self.setupTable()
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
-            with gzip.open(fnp, 'wb') as f:
+            with gzip.open(fnp) as f:
                 curs.copy_from(f, self.tableName)
         
     def setupTable(self):
