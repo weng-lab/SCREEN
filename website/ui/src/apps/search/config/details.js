@@ -32,9 +32,7 @@ function makeTable(data, key, table){
                                                    bLengthChange: false,
                                                    rank_f: bg_rank_f});
     }
-    return React.createElement(ResultsTable, {data, ...table,
-                                              info: table.bInfo,
-                                              bLengthChange: true});
+    return React.createElement(ResultsTable, {data, ...table});
 }
 
 function tabEle(data, key, table, numCols) {
