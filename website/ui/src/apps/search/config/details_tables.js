@@ -148,11 +148,10 @@ export const NearbyGenomicTable = {
         bLengthChange: true,
 	emptyText: "No genes within TAD",
 	cols: [
-	    {title: "symbol", data: "approved_symbol",
+	    {title: "symbol", data: "name",
 	     render: render_gene_link},
-	    {title: "coordinates",
-	     data: "coordinates"
-	    }],
+	    //{title: "coordinates", data: "coordinates"}
+        ],
         pageLength: 5,
 	order: [[0, "asc"]]
     },

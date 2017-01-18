@@ -149,3 +149,18 @@ int4range(%s, %s)
                         "distance" : min(abs(coord.end - end),
                                          abs(coord.start - start))})
         return ret
+
+    def creTad(self, accession, chrom):
+        with getcursor(self.pg.DBCONN, "creTad") as curs:
+            curs.execute("""
+SELECT gi.approved_symbol AS name
+FROM
+(SELECT UNNEST(tads) geneid
+FROM {tn} WHERE accession = %s) AS g
+INNER JOIN {gtn} AS gi
+ON g.geneid = gi.geneid
+""".format(tn = self.assembly + "_cre_" + chrom,
+           gtn = self.assembly + "_gene_info"), (accession, ))
+            rows = curs.fetchall()
+        return [{"name" : r[0]} for r in rows]
+
