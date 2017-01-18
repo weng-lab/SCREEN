@@ -23,8 +23,7 @@ class ResultsTab extends React.Component{
 class TreeTab extends React.Component{
     render() {
         return (<div>
-
-                tree
+		<ResultsTree />
                 </div>);
     }
 }

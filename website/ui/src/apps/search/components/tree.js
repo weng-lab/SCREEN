@@ -70,33 +70,16 @@ class ResultsTree extends REComponent {
     }
     
 };
-export default ResultsTree;
-    
-const props_map = (f) => (_state) => {
-    var state = f(_state);
-    return Object.assign({}, state, {
-	helpkey: "celltype_tree"
-    });
-};
 
-const dispatch_map = (store) => (f) => (_dispatch) => {
-    var dispatch = f(_dispatch);
-    return {
-	onChange: (outer, inner) => {
-	    dispatch({
-		type: SET_TREE_FIELDS,
-		outer,
-		inner
-	    });
-	    dispatch(invalidate_results(store.getState()));
-	},
-	onClick: (d) => {
-	    dispatch(invalidate_tree_comparison({
-		left: d.children[0],
-		right: d.children[1]
-	    }));
-	}
-    };
-};
+const mapStateToProps = (state) => ({
+        ...state
+});
 
-export const tree_connector = (store) => (pf, df) => connect(props_map(pf), dispatch_map(store)(df));
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ResultsTree);
