@@ -75,7 +75,7 @@ class DataWebService:
 
     def _cre_table(self, j, args):
         chrom = self._checkChrom(j)
-        return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"])
+        return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"], j)
 
     def _re_detail(self, j, args):
         action = args[0]
