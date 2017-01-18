@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO
+import os, sys, json, psycopg2, argparse, StringIO, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -38,7 +38,7 @@ class ImportPeakIntersections:
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         print("\tcopied in", fnp, self.curs.rowcount)
 
