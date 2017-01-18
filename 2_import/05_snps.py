@@ -19,10 +19,10 @@ class SetupSnps:
 
     def setupAndCopy(self, tableName, f):
         print("creating table and copying in", tableName)
-        
+
         self.curs.execute("""
         DROP TABLE IF EXISTS {tableName};
-        
+
         CREATE TABLE {tableName}(
         id serial PRIMARY KEY,
         start numeric,
@@ -34,12 +34,12 @@ class SetupSnps:
         self.curs.copy_from(f, tableName, '\t',
                           columns=("start", "stop", "name"))
         print("\tok", self.curs.rowcount)
-        
+
         self.curs.execute("""
         CREATE INDEX {tableName}_idx01 ON {tableName}(name);
     """.format(tableName=tableName))
         print("\tok index")
-        
+
     def run(self):
         fns = {"mm10" : "snps142common.mm10.bed",
                "hg19" : "snps144common.hg19.bed"}
@@ -49,7 +49,7 @@ class SetupSnps:
         rowsByChrom = {}
         for chrom in chroms[self.assembly]:
             rowsByChrom[chrom] = StringIO.StringIO()
-            
+
         with open(fnp) as f:
             for r in f:
                 toks = r.rstrip().split('\t')
