@@ -13,10 +13,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils
 from utils import Timer
 from db_utils import getcursor
 
-MAX = 20000
-NCHUNKS = 50
-CHUNKSIZE = MAX / NCHUNKS
-
 class CachedObjectsWrapper:
     def __init__(self, es, ps):
         self.cos = {"hg19" : CachedObjects(es["hg19"], ps, "hg19"),
