@@ -33,13 +33,10 @@ class ResultsTree extends React.Component { //REComponent {
     }
 
     loadTrees({tree_rank_method}){
-	console.log("hi from loadTrees");
 	if(tree_rank_method in this.state){
 	    return;
 	}
-	return;
-
-	var q = {tree_rank_method}
+	var q = {GlobalAssembly, tree_rank_method}
         var jq = JSON.stringify(q);
         this.setState({isFetching: true});
         $.ajax({
@@ -70,11 +67,11 @@ class ResultsTree extends React.Component { //REComponent {
 		labels={labels} onClick={this._on_click} />
 		</div>);
     }
-    
+
     render() {
 	var title = "";
 	var actions = this.props.actions;
-	
+
 	return (<div>
 		<select onChange={() => {
 		    actions.setTreeRankMethod(this.refs.field.value)}}

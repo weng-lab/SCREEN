@@ -28,9 +28,9 @@ from utils import Utils, Timer
 from db_utils import getcursor
 
 class DataWebServiceWrapper:
-    def __init__(self, args, ps, cache, staticDir):
+    def __init__(self, args, ps, cacheW, staticDir):
         def makeDWS(assembly):
-            return DataWebService(args, ps, cache, staticDir, assembly)
+            return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
 
@@ -50,10 +50,10 @@ class DataWebService:
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
 
-        self.actions = {"cre_table" : self._cre_table,
-                        "re_detail" : self._re_detail,
-                        "trees" : self._trees}
-        
+        self.actions = {"cre_table" : self.cre_table,
+                        "re_detail" : self.re_detail,
+                        "trees" : self.trees}
+
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
             "targetGene" : self._re_detail_targetGene,
@@ -76,11 +76,11 @@ class DataWebService:
             raise Exception("unknown chrom")
         return chrom
 
-    def _cre_table(self, j, args):
+    def cre_table(self, j, args):
         chrom = self._checkChrom(j)
         return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"], j)
 
-    def _re_detail(self, j, args):
+    def re_detail(self, j, args):
         action = args[0]
         if action not in self.reDetailActions:
             raise Exception("unknown action")
@@ -120,8 +120,9 @@ class DataWebService:
     def _re_detail_similarREs(self, j, accession):
         return { accession : {} }
 
-    def _trees(self, j):
-        tree_assay = j["tree_assay"]
-        t = Trees(self.cache, self.ps, k)
-        ret = t.process_tree_hits(j, "")
+    def trees(self, j, args):
+        print(j)
+        tree_rank_method = j["tree_rank_method"]
+        t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)
+        ret = t.getTree()
         return {}

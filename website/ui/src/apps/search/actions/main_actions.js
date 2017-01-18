@@ -49,4 +49,5 @@ export const TOGGLE_CART = 'TOGGLE_CART'
 export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
 
 export const SET_TREE_RANK_METHOD = 'SET_TREE_RANK_METHOD'
-export const setTreeRankMethod = (rankMethod) => ({ type: SET_TREE_RANK_METHOD, rankMethod });
+export const setTreeRankMethod = (tree_rank_method) => ({
+    type: SET_TREE_RANK_METHOD, tree_rank_method });
