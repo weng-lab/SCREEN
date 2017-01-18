@@ -22,13 +22,23 @@ class Correlation:
         self.hits = hits
         self.DBCONN = DBCONN
 
-    def dbcorr(self, assembly, assay):
+    def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
         assay = assay.replace("-", "_").replace("+", "_")
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute("""SELECT correlations FROM correlations_{assembly}
                             WHERE assay = '{assay}'""".format(assembly = assembly, assay = assay))
             r = curs.fetchone()[0]
-        return r
+        tokeep = []
+        flabels = []
+        for i in xrange(len(labels)):
+            if _filter(labels[i]):
+                tokeep.append(i)
+                flabels.append(labels[i])
+        ret = [[0 for j in xrange(len(tokeep))] for i in xrange(len(tokeep))]
+        for i in xrange(len(tokeep)):
+            for j in xrange(len(tokeep)):
+                ret[i][j] = r[tokeep[i]][tokeep[j]]
+        return (flabels, ret)
         
     def _get_ctlabels(self, outerkey, innerkey = None, _ctfilter = None):
         if len(self.hits) == 0:

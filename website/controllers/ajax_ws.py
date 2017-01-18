@@ -580,11 +580,11 @@ class AjaxWebService:
                                                ctFilter )
                 else:
                     labels = self.cache.celltypemap[k]
-                    corr = (c.dbcorr(self.assembly, k), None)
+                    labels, corr = c.dbcorr(self.assembly, k, labels, lambda x: "bryo" in x)
                     print("!got correlation")
             if not labels:
                 continue
-            rho, pval = corr
+            rho = corr[0] if len(corr) == 2 else corr
 
             try:
                 rhoList = rho.tolist() if type(rho) is not list else rho
