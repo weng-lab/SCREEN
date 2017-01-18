@@ -44,7 +44,7 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
-    def creTable(self, chrom, start, stop):
+    def creTable(self, chrom, start, stop, j):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
         else:
@@ -57,6 +57,14 @@ class PGsearch:
                             "infoPc.approved_symbol AS gene_pc",
                             "0::int as in_cart"])
 
+        print("TODO need more variables here:",
+              "accessions, gene_all_start, gene_all_end, 
+              gene_pc_start, gene_pc_end,
+              rank_dnase_start, rank_dnase_end,
+              rank_promoter_start, rank_promoter_end,
+              rank_enhancer_start, rank_enhancer_end,
+              rank_ctcf_start, rank_ctcf_end")
+        
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
