@@ -100,7 +100,7 @@ double Heatmap::ColDistance(int i, int j) const {
 
   std::vector<int> Heatmap::RowCluster(int use_simple_distance) {
 
-    ClusterSet c = ClusterSet::FromRows(*this, use_simple_distance);
+    ClusterSet c = ClusterSet::FromRows(*this);
     std::vector<int> ret;
 
     // for two or less elements, the result is constant
@@ -132,7 +132,7 @@ double Heatmap::ColDistance(int i, int j) const {
 
   std::vector<int> Heatmap::ColCluster(int use_simple_distance) {
 
-    ClusterSet c = ClusterSet::FromCols(*this, use_simple_distance);
+    ClusterSet c = ClusterSet::FromCols(*this);
     std::vector<int> ret;
 
     // for two or less elements, the result is constant
