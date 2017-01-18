@@ -12,56 +12,49 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
 class Correlate:
-    def __init__(self, curs, assembly):
-        self.curs = curs
+    
+    def __init__(self, DBCONN, assembly):
+        self.DBCONN = DBCONN
         self.tableName = "correlations_" + assembly
         self.qTableName = assembly + "_cre"
-
+        
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
-        self.curs.execute("""
+        with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+            curs.execute("""
             DROP TABLE IF EXISTS {tableName};
             CREATE TABLE {tableName}
             (id serial PRIMARY KEY,
             assay VARCHAR(20),
-            correlations integer[][]);
-""".format(tableName = self.tableName))
-        print("\tok")
+            correlations integer[][]);""".format(tableName = self.tableName))
 
     def _getarrlen(self, field):
-        self.curs.execute("SELECT array_length((SELECT {field} from {tableName} LIMIT 1), 1)".format(field = field, tableName = self.qTableName))
-        r = self.curs.fetchone()[0]
+        with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+            curs.execute("SELECT array_length((SELECT {field} from {tableName} LIMIT 1), 1)".format(field = field, tableName = self.qTableName))
+            r = curs.fetchone()[0]
         return r
 
     def _getcorr(self, field, i, l, threshold):
         with Timer("computing correlation for ct %d/%d, assay %s" % (i, l, field)):
             q = ", ".join(["corr(%s[%d], %s[%d])" % (field + "_zscore", i + 1, field + "_zscore", j + 1)
                            for j in range(i + 1, l)])
-            self.curs.execute("""
-SELECT {q} FROM {tableName}
-WHERE intarray2int4range({field}) && int4range(0, {threshold})
-""".format(tableName=self.qTableName,
-           threshold=threshold,
-           field=field + "_rank",
-           q=q))
-            return self.curs.fetchone()
+            with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
+                curs.execute("SELECT {q} FROM {tableName} WHERE intarray2int4range({field}) && int4range(0, {threshold})".format(tableName=self.qTableName,
+                                                                                                                                 threshold=threshold,
+                                                                                                                                 field=field + "_rank",
+                                                                                                                                 q=q))
+                r = curs.fetchone()
+        return r
 
     def run(self, assay):
-        print("running", assay)
         l = self._getarrlen(assay + "_rank")
         corrs = [[1.0 for ct in xrange(l)] for ct in xrange(l)]
         for ct in xrange(l - 1):
-            print("computing corrs...")
             r = [self._getcorr(assay, ct, l, 20000) for ct in xrange(l)]
-            print("merging corrs...")
             for i in range(ct + 1, l):
                 corrs[ct][i] = r[i - ct - 1]
                 corrs[i][ct] = r[i - ct - 1]
-        print("saving corrs...")
-        self.curs.execute("""
-INSERT INTO {tableName} (assay, correlations)
-VALUES (%(assay)s, %(corrs)s)
-""".format(tableName = self.tableName),
+        self.curs.execute("INSERT INTO {tableName} (assay, correlations) VALUES (%(assay)s, %(corrs)s)".format(tableName = self.tableName),
                           {"assay": assay, "corrs": corrs})
 
 def parse_args():

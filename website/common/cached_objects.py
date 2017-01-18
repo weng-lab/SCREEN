@@ -11,6 +11,7 @@ from pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
+from db_utils import getcursor
 
 MAX = 20000
 NCHUNKS = 50
@@ -56,19 +57,34 @@ class CachedObjects:
 
         self.datasets = Datasets(assembly, ps.DBCONN)
 
-        if 0:
-            self.topelems = {ct["value"]: self.get20k(ct["value"], 7)
-                             for ct in self.cellTypesAndTissues}
-            self.bigwigmaxes = {}
-            if os.path.exists(paths.bigwigmaxes):
-                with open(paths.bigwigmaxes, "r") as f:
-                    for line in f:
-                        p = line.strip().split("\t")
-                        self.bigwigmaxes[p[0]] = int(p[1])
+        self.bigwigmaxes = {}
+        if os.path.exists(paths.bigwigmaxes):
+            with open(paths.bigwigmaxes, "r") as f:
+                for line in f:
+                    p = line.strip().split("\t")
+                    self.bigwigmaxes[p[0]] = int(p[1])
+        print(self.bigwigmaxes)
+
+        self.celltypemap = {}
+        with getcursor(self.ps.DBCONN, "cached_objects$CachedObjects::__init__") as curs:
+            curs.execute("select idx, celltype, rankmethod from {assembly}_rankcelltypeindexex".format(assembly=assembly))
+            _map = {}
+            for result in curs.fetchall():
+                _map[result[2]] = [(result[0], result[1])] if result[2] not in _map else _map[result[2]] + [(result[0], result[1])]
+            for k, v in _map.iteritems():
+                k = k.lower()
+                self.celltypemap[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
+                print(k)
 
     def alltop(self):
-        return sum([[_k for _k, _v in v.iteritems()] for k, v in self.topelems.iteritems()])
-
+        results = {}
+        retval = []
+        for k, v in self.topelems.iteritems():
+            for _k, _v in v.iteritems():
+                if _k not in results: retval.append(_v)
+                results[_k] = 1
+        return retval
+                    
     def get20k(self, ct, version):
         results = []
 
@@ -88,7 +104,7 @@ class CachedObjects:
             except:
                 print("ES ERROR: no hits")
                 raise
-            return {k: 1 for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
+            return {k: x for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
 
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
