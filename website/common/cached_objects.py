@@ -63,7 +63,7 @@ class CachedObjects:
 
         self.celltypemap = self.pgSearch.getRankIdxToCellType()
         self.biosampleTypes = self.pgSearch.biosampleTypes()
-        
+
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
             return self.cellTypesToTissue[ct]
