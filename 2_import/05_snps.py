@@ -25,8 +25,8 @@ class SetupSnps:
 
         CREATE TABLE {tableName}(
         id serial PRIMARY KEY,
-        start numeric,
-        stop numeric,
+        start integer,
+        stop integer,
         name varchar(15)
     );
     """.format(tableName=tableName))

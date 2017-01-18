@@ -31,3 +31,7 @@ class Coord:
         except:
             return None
 
+    def expanded(self, halfWindow):
+        s = max(0, self.start - halfWindow)
+        e = self.end + halfWindow
+        return Coord(self.chrom, s, e)
