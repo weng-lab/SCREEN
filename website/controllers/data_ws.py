@@ -97,7 +97,8 @@ class DataWebService:
         coord = cre.coord()
         snps = cre.intersectingSnps(10000) # 10 KB
         nearbyCREs = cre.nearbyCREs(1000000) # 1 MB
-        return { accession : {"nearby_genes": [],
+        nearbyGenes = cre.nearbyGenes()
+        return { accession : {"nearby_genes": nearbyGenes,
                               "tads": [],
                               "re_tads": [],
                               "nearby_res": nearbyCREs,

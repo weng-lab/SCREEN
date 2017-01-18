@@ -93,6 +93,24 @@ SELECT chrom, start, stop FROM {tn} WHERE accession = %s
             return None
         return Coord(r[0], r[1], r[2])
 
+    def _getGenes(self, accession, chrom, curs, group):
+        curs.execute("""
+SELECT gi.approved_symbol, g.distance
+FROM
+(SELECT UNNEST(gene_{group}_id) geneid, UNNEST(gene_{group}_distance) distance
+FROM {tn} WHERE accession = %s) AS g
+INNER JOIN {gtn} AS gi
+ON g.geneid = gi.geneid
+""".format(tn = self.assembly + "_cre_" + chrom,
+           gtn = self.assembly + "_gene_info",
+           group = group), (accession, ))
+        return curs.fetchall()
+
+    def creGenes(self, accession, chrom):
+        with getcursor(self.pg.DBCONN, "cre_genes") as curs:
+            return (self._getGenes(accession, chrom, curs, "all"),
+                    self._getGenes(accession, chrom, curs, "pc"))
+
     def intersectingSnps(self, coord, halfWindow):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_snps_" + c.chrom
