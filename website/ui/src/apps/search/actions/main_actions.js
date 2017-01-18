@@ -48,3 +48,5 @@ export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });
 export const TOGGLE_CART = 'TOGGLE_CART'
 export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
 
+export const SET_TREE_ASSAY = 'SET_TREE_ASSAY'
+export const setTreeAssay = (assay) => ({ type: SET_TREE_ASSAY, assay });
