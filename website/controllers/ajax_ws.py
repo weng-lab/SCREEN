@@ -572,16 +572,15 @@ class AjaxWebService:
                     return False
                 return typ == self.cache.biosamples[ct].biosample_type
             c = Correlation(_ret["hits"]["hits"], self.ps.DBCONN)
-            print(c.dbcorr(self.assembly, "dnase"))
+            k = "dnase" if j["inner"] is None else j["inner"].lower()
             with Timer(typ + ": spearman correlation time"):
                 if self.assembly == "hg19":
                     labels, corr = c.spearmanr(j.get("outer", "dnase"),
                                                j.get("inner", None),
                                                ctFilter )
                 else:
-                    labels, corr = c.pearsonr(j.get("outer", "dnase"),
-                                              j.get("inner", None),
-                                              ctFilter )
+                    labels = self.cache.celltypemap[k]
+                    corr = (c.dbcorr(self.assembly, k), None)
                     print("!got correlation")
             if not labels:
                 continue
