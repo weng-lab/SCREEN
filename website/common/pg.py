@@ -172,3 +172,24 @@ ON g.geneid = gi.geneid
             rows = curs.fetchall()
         return [{"name" : r[0]} for r in rows]
 
+    def getRankIdxToCellType(self):
+        with getcursor(self.ps.DBCONN, "pg$getRanIdxToCellType") as curs:
+            curs.execute("""
+SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
+""".format(assembly = self.assembly))
+            _map = {}
+            for r in curs.fetchall():
+                _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
+            ret = {}
+            for k, v in _map.iteritems():
+                k = k.lower()
+                ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
+                #print(k)
+            return ret
+
+    def biosampleTypes(self):
+        with getcursor(self.ps.DBCONN, "pg$biosampleTypes") as curs:
+            curs.execute("""
+            select distinct biosample_type from {tn}
+            """.format(tn = self.assembly + "_datasets"))
+            return curs.fetchall()

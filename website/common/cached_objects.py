@@ -65,47 +65,9 @@ class CachedObjects:
                     self.bigwigmaxes[p[0]] = int(p[1])
         print(self.bigwigmaxes)
 
-        self.celltypemap = {}
-        with getcursor(self.ps.DBCONN, "cached_objects$CachedObjects::__init__") as curs:
-            curs.execute("select idx, celltype, rankmethod from {assembly}_rankcelltypeindexex".format(assembly=assembly))
-            _map = {}
-            for result in curs.fetchall():
-                _map[result[2]] = [(result[0], result[1])] if result[2] not in _map else _map[result[2]] + [(result[0], result[1])]
-            for k, v in _map.iteritems():
-                k = k.lower()
-                self.celltypemap[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
-                print(k)
-
-    def alltop(self):
-        results = {}
-        retval = []
-        for k, v in self.topelems.iteritems():
-            for _k, _v in v.iteritems():
-                if _k not in results: retval.append(_v)
-                results[_k] = 1
-        return retval
-                    
-    def get20k(self, ct, version):
-        results = []
-
-        index = paths.re_json_vers[version][self.assembly]["index"]
-
-        for i in xrange(NCHUNKS):
-            try:
-                r = self.es.search(body={"query": {"bool": {"must": [{"range": {"ranks.dnase." + ct + ".rank": {"lte": (i + 1) * CHUNKSIZE,
-                                                                                                                "gte": i * CHUNKSIZE + 1 }}}]}},
-                                         "size": 1000, "_source": ["accession"]},
-                                   index=index)
-            except:
-                print("ES ERROR:", index)
-                raise
-            try:
-                results += r["hits"]["hits"]
-            except:
-                print("ES ERROR: no hits")
-                raise
-            return {k: x for k in list(set([x["_source"]["accession"] for x in results]))} # use a dict because fast access is required when computing similar elements
-
+        self.celltypemap = self.pgSearch.getRankIdxToCellType()
+        self.biosampleTypes = self.pgSearch.biosampleTypes()
+        
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
             return self.cellTypesToTissue[ct]

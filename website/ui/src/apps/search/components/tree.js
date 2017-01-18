@@ -32,14 +32,14 @@ class ResultsTree extends React.Component { //REComponent {
 	}
     }
 
-    loadTrees({tree_assay}){
+    loadTrees({tree_rank_method}){
 	console.log("hi from loadTrees");
-	if(tree_assay in this.state){
+	if(tree_rank_method in this.state){
 	    return;
 	}
 	return;
 
-	var q = {tree_assay}
+	var q = {tree_rank_method}
         var jq = JSON.stringify(q);
         this.setState({isFetching: true});
         $.ajax({
@@ -58,14 +58,17 @@ class ResultsTree extends React.Component { //REComponent {
         });
     }
 
-    makeTree(tr, k, _formatter){
-	var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
-	var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
+    makeTree(tree_rank_method, tr, k, _formatter){
+	var formatter = (k == "primary cell" ?
+			 primary_cell_label_formatter : _formatter);
+	var data = this.state[tree_rank_method];
+	var labels = (data.labels ? data.labels.map(formatter) : null);
 	var height = (labels ? labels.length * 15 : 0);
-	return <div ref="container"><h2>{k}</h2>
-	    <Tree data={tr[k].tree} width={2000} height={height}
-	labels={labels} onClick={this._on_click} />
-	    </div>;
+	return (<div ref="container">
+		<h2>{k}</h2>
+		<Tree data={data.tree} width={2000} height={height}
+		labels={labels} onClick={this._on_click} />
+		</div>);
     }
     
     render() {
@@ -73,7 +76,8 @@ class ResultsTree extends React.Component { //REComponent {
 	var actions = this.props.actions;
 	
 	return (<div>
-		<select onChange={() => {actions.setTreeAssay(this.refs.field.value)}}
+		<select onChange={() => {
+		    actions.setTreeRankMethod(this.refs.field.value)}}
 		ref="field">
 		<option value="dnase">DNase</option>
 		<option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
