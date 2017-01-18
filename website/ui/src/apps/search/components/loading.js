@@ -6,3 +6,4 @@ const loading = ({isFetching}) => {
 }
 
 export default loading;
+

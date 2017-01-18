@@ -13,8 +13,10 @@ def Trees:
                     print("missing", ct)
                     return False
                 return typ == self.cache.biosamples[ct].biosample_type
+
             c = Correlation(_ret["hits"]["hits"], self.ps.DBCONN)
             k = "dnase" if j["inner"] is None else j["inner"].lower()
+
             with Timer(typ + ": spearman correlation time"):
                 if self.assembly == "hg19":
                     labels, corr = c.spearmanr(j.get("outer", "dnase"),
@@ -24,6 +26,7 @@ def Trees:
                     labels = self.cache.celltypemap[k]
                     labels, corr = c.dbcorr(self.assembly, k, labels, lambda x: "bryo" in x)
                     print("!got correlation")
+                    
             if not labels:
                 continue
             rho = corr[0] if len(corr) == 2 else corr
