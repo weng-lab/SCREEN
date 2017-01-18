@@ -13,10 +13,10 @@ from utils import Utils, Timer
 from get_yes_no import GetYesNoToQuestion
 
 class Correlate:
-    
+
     def __init__(self, DBCONN, assembly):
         self.DBCONN = DBCONN
-        self.tableName = "correlations_" + assembly
+        self.tableName = assembly + "_correlations"
         self.qTableName = assembly + "_cre"
 
     def exportTable(self, fnp):
@@ -30,7 +30,7 @@ class Correlate:
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
             with gzip.open(fnp) as f:
                 curs.copy_from(f, self.tableName)
-        
+
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
         with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
@@ -55,7 +55,7 @@ SELECT array_length((SELECT {field} from {tableName} LIMIT 1), 1)
                            for j in range(i + 1, l)])
             with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
                 curs.execute("""
-SELECT {q} FROM {tableName} 
+SELECT {q} FROM {tableName}
 WHERE intarray2int4range({field}) && int4range(0, {threshold})
 """.format(tableName=self.qTableName,
            threshold=threshold,
@@ -73,7 +73,7 @@ WHERE intarray2int4range({field}) && int4range(0, {threshold})
                 corrs[ct][i] = r[i - ct - 1]
                 corrs[i][ct] = r[i - ct - 1]
         self.curs.execute("""
-INSERT INTO {tableName} (assay, correlations) 
+INSERT INTO {tableName} (assay, correlations)
 VALUES (%(assay)s, %(corrs)s)
 """.format(tableName = self.tableName),
                           {"assay": assay, "corrs": corrs})
@@ -98,7 +98,7 @@ def main():
         d = os.path.join(d, assembly, "extras")
         Utils.mkdir_p(d)
         fnp = os.path.join(d, "correlationTable.csv.gz")
-        
+
         c = Correlate(DBCONN, assembly)
         if args.exportTable:
             c.exportTable(fnp)
