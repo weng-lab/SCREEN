@@ -48,14 +48,21 @@ function chunkArr(arr, chunk){
 }
 
 function makeTable(data, key, table){
-    var _data = (data[key] ? data[key] : []);
     if(table.bar_graph){
         return React.createElement(BarGraphTable, {data, ...table,
                                                    bLengthChange: false,
                                                    rank_f: bg_rank_f});
     }
-    return React.createElement(ResultsTable, {data, ...table,
-                                              bLengthChange: true});
+    return <ResultsTable data={data}
+    columns={table.cols}
+    order={table.order}
+    paging={table.paging}
+    bInfo={table.bInfo}
+    bFilter={table.bFilter}
+    bLengthChange={true}
+    emptyText={table.emptyText}
+    pageLength={table.pageLength}
+     />
 }
 
 function tabEle(data, key, table, numCols) {
@@ -68,7 +75,8 @@ function tabEle(data, key, table, numCols) {
 function tabEles(data, tables, numCols){
     var cols = [];
     for(var key of Object.keys(tables)){
-	cols.push(tabEle(data, key, tables[key], numCols));
+        var _data = (key in data ? data[key] : []);
+	cols.push(tabEle(_data, key, tables[key], numCols));
     };
     if(0 == numCols){
 	return cols;
@@ -126,7 +134,7 @@ class ReTabBase extends React.Component{
     doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
-            return this.doRender(accession);
+            return this.doRender(this.state[accession]);
         }
         return loading(this.state);
     }
@@ -148,22 +156,21 @@ class TopTissuesTab extends ReTabBase{
     }
 }
 
+class NearbyGenomicTab extends ReTabBase{
+    constructor(props) {
+	super(props, "nearbyGenomic");
+        this.doRender = (data) => {
+            return tabEles(data, NearbyGenomicTable, 4);
+        }
+    }
+}
+
 class TargetGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "targetGene");
         this.doRender = (accession) => {
             return (<div>hi!</div>);
             return tabEles({}, TargetGeneTable, 1);
-        }
-    }
-}
-
-class NearbyGenomicTab extends ReTabBase{
-    constructor(props) {
-	super(props, "nearbyGenomic");
-        this.doRender = (accession) => {
-            return (<div>hi!</div>);
-            return tabEles({}, NearbyGenomicTable, 4);
         }
     }
 }

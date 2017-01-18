@@ -19,7 +19,7 @@ const render_re_link = (d) => ('<a>' + d + '</a>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 
-var TopTissuesTables = {
+export const TopTissuesTables = {
     "promoter": {
 	title: "Promoter ranks",
 	cols: [
@@ -90,7 +90,7 @@ var TopTissuesTables = {
     }
 };
 
-const TargetGeneTable = {
+export const TargetGeneTable = {
     "candidate_links": {
 	title: "",
 	paging: true,
@@ -116,7 +116,7 @@ const TargetGeneTable = {
     }
 };
 
-const NearbyGenomicTable = {
+export const NearbyGenomicTable = {
     "nearby_genes": {
 	title: "Nearby genes",
 	paging: false,
@@ -128,7 +128,7 @@ const NearbyGenomicTable = {
 	     render: render_gene_link},
 	    {title: "distance", data: "distance",
 	     render: render_int}],
-	data: [],
+        pageLength: 5,
 	order: [[1, "asc"]]
     },
     "tads": {
@@ -143,7 +143,7 @@ const NearbyGenomicTable = {
 	    {title: "coordinates",
 	     data: "coordinates"
 	    }],
-	data: [],
+        pageLength: 5,
 	order: [[0, "asc"]]
     },
     "re_tads": {
@@ -157,7 +157,7 @@ const NearbyGenomicTable = {
 	     render: render_re_link },
 	    {title: "coordinates", data: "position",
 	     render:  render_position }	],
-	data: [],
+        pageLength: 5,
 	order: [[0, "asc"]],
 	onTdClick: (dispatch) => (i, d) => {
 	    dispatch(invalidate_detail({_source: {accession: d.accession}}));
@@ -173,7 +173,7 @@ const NearbyGenomicTable = {
 	     render: render_re_link },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
-	data: [],
+        pageLength: 5,
 	order: [[1, "asc"]],
 	onTdClick: (dispatch) => (i, d) => {
 	    dispatch(invalidate_detail({_source: {accession: d.name}}));
@@ -190,12 +190,12 @@ const NearbyGenomicTable = {
 	     render: render_snp_link },
 	    {title: "distance",	data: "distance",
 	     render: render_int }],
-	data: [],
+        pageLength: 5,
 	order: [[1, "asc"]]
     }
 }
 
-const TfIntersectionTable = {
+export const TfIntersectionTable = {
     "tf": {
 	title: "Intersecting TFs",
 	cols: [

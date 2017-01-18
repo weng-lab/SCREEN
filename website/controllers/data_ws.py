@@ -96,7 +96,11 @@ class DataWebService:
         cre = CRE(self.pgSearch, accession)
         coord = cre.coord()
         snps = cre.intersectingSnps(10000)
-        return { accession : {"snps" : snps} }
+        return { accession : {"nearby_genes": [],
+                              "tads": [],
+                              "re_tads": [],
+                              "nearby_res": [],
+                              "overlapping_snps": snps} }
 
     def _re_detail_tfIntersection(self, j, accession):
         return { accession : {} }
