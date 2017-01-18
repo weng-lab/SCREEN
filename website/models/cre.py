@@ -9,6 +9,7 @@ class CRE:
         self.pos = None
         self.genesAll = None
         self.genesPC = None
+        self.tad = None
 
     def coord(self):
         if not self.pos:
@@ -30,3 +31,9 @@ class CRE:
         for g in list(set(self.genesAll + self.genesPC)):
             ret.append({"name" : g[0], "distance" : g[1]})
         return ret
+
+    def genesInTad(self):
+        coord = self.coord()
+        if self.tad is None:
+            self.tad = self.pgSearch.creTad(self.accession, coord.chrom)
+        return self.tad
