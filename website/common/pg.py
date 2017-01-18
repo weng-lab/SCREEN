@@ -4,6 +4,8 @@ import sys
 import os
 from natsort import natsorted
 
+from coord import Coord
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from db_utils import getcursor
 
@@ -79,3 +81,33 @@ WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
                          (start, stop))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
+
+    def crePos(self, accession):
+        with getcursor(self.pg.DBCONN, "cre_pos") as curs:
+            curs.execute("""
+SELECT chrom, start, stop FROM {tn} WHERE accession = %s
+""".format(tn = self.assembly + "_cre"), (accession, ))
+            r = curs.fetchone()
+        if not r:
+            print("ERROR: missing", accession)
+            return None
+        return Coord(r[0], r[1], r[2])
+
+    def intersectingSnps(self, coord, halfWindow):
+        c = coord.expanded(halfWindow)
+        tableName = self.assembly + "_snps_" + c.chrom
+        with getcursor(self.pg.DBCONN, "intersectingSnps") as curs:
+            curs.execute("""
+SELECT start, stop, name FROM {tn} WHERE int4range(start, stop) &&
+int4range(%s, %s)
+""".format(tn = tableName), (c.start, c.end))
+            snps = curs.fetchall()
+        ret = []
+        for snp in snps:
+            start = snp[0]
+            end = snp[1]
+            ret.append({"name" : snp[2],
+                        "distance" : min(abs(coord.end - end),
+                                         abs(coord.start - start))})
+        return ret
+
