@@ -7,8 +7,7 @@ import time
 import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from models.regelm import RegElements
-from models.regelm_detail import RegElementDetails
+from models.cre import CRE
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
@@ -94,7 +93,10 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_nearbyGenomic(self, j, accession):
-        return { accession : {} }
+        cre = CRE(self.pgSearch, accession)
+        coord = cre.coord()
+        snps = cre.intersectingSnps(10000)
+        return { accession : {"snps" : snps} }
 
     def _re_detail_tfIntersection(self, j, accession):
         return { accession : {} }
