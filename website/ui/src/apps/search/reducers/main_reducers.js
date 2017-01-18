@@ -49,6 +49,10 @@ const main_reducers = (state, action) => {
                                            action.accession)}
     }
 
+    case Actions.SET_TREE_ASSAY: {
+	return { ...state, tree_assay : action.assay};
+    }
+	
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;
