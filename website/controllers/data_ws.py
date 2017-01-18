@@ -95,11 +95,12 @@ class DataWebService:
     def _re_detail_nearbyGenomic(self, j, accession):
         cre = CRE(self.pgSearch, accession)
         coord = cre.coord()
-        snps = cre.intersectingSnps(10000)
+        snps = cre.intersectingSnps(10000) # 10 KB
+        nearbyCREs = cre.nearbyCREs(1000000) # 1 MB
         return { accession : {"nearby_genes": [],
                               "tads": [],
                               "re_tads": [],
-                              "nearby_res": [],
+                              "nearby_res": nearbyCREs,
                               "overlapping_snps": snps} }
 
     def _re_detail_tfIntersection(self, j, accession):

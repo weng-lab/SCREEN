@@ -56,6 +56,7 @@ export const TopTissuesTables = {
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
+        bLengthChange: true,
 	bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
     },
     "ctcf": {
@@ -74,6 +75,7 @@ export const TopTissuesTables = {
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
+        bLengthChange: true,
 	bg_rank_f: (d) => (Math.log(d["ctcf"]))
     },
     "dnase": {
@@ -90,6 +92,7 @@ export const TopTissuesTables = {
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
+        bLengthChange: true,
 	bg_rank_f: (d) => (Math.log(d["rank"]))
     }
 };
@@ -98,8 +101,9 @@ export const TargetGeneTable = {
     "candidate_links": {
 	title: "",
 	paging: true,
-	bInfo: true,
+	info: true,
 	bFilter: true,
+        bLengthChange: true,
 	emptyText: "No target genes predicted",
 	cols: [
 	    {title: "name", data: "gene.common-gene-name",  className: "dt-right",
@@ -124,8 +128,9 @@ export const NearbyGenomicTable = {
     "nearby_genes": {
 	title: "Nearby genes",
 	paging: false,
-	bInfo: false,
+	info: false,
 	bFilter: false,
+        bLengthChange: true,
 	emptyText: "No genes within 1Mb",
 	cols: [
 	    {title: "symbol", data: "name",
@@ -138,8 +143,9 @@ export const NearbyGenomicTable = {
     "tads": {
 	title: "Genes within TAD",
 	paging: true,
-	bInfo: false,
+	info: false,
 	bFilter: false,
+        bLengthChange: true,
 	emptyText: "No genes within TAD",
 	cols: [
 	    {title: "symbol", data: "approved_symbol",
@@ -153,8 +159,9 @@ export const NearbyGenomicTable = {
     "re_tads": {
 	title: "Other REs within TAD",
 	paging: true,
-	bInfo: false,
+	info: false,
 	bFilter: false,
+        bLengthChange: true,
 	emptyText: "No REs within TAD",
 	cols: [
 	    {title: "accession", data: "accession",
@@ -163,31 +170,29 @@ export const NearbyGenomicTable = {
 	     render:  render_position }	],
         pageLength: 5,
 	order: [[0, "asc"]],
-	onTdClick: (dispatch) => (i, d) => {
-	    dispatch(invalidate_detail({_source: {accession: d.accession}}));
-	}
+	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     },
     "nearby_res": {
 	title: "Nearby candidate REs",
-	paging: false,
-	bInfo: false,
+	paging: true,
+	info: false,
 	bFilter: false,
+        bLengthChange: true,
 	cols: [
 	    {title: "accession", data: "name", className: "dt-right",
 	     render: render_re_link },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
-        pageLength: 5,
+        pageLength: 10,
 	order: [[1, "asc"]],
-	onTdClick: (dispatch) => (i, d) => {
-	    dispatch(invalidate_detail({_source: {accession: d.name}}));
-	}
+	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     },
     "overlapping_snps": {
 	title: "Nearby SNPs",
-	paging: false,
-	bInfo: false,
+	paging: true,
+	info: false,
 	bFilter: false,
+        bLengthChange: true,
 	emptyText: "No SNPs within 10Kb",
 	cols: [
 	    {title: "accession", data: "name",
