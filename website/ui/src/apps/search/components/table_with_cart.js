@@ -1,7 +1,7 @@
 var React = require('react');
 import {connect} from 'react-redux'
 
-import ResultsDataTable from '../../../common/components/results_table'
+import ResultsTable from '../../../common/components/results_table'
 
 import ResultsTableColumns, {table_order} from '../config/results_table'
 import {numberWithCommas} from '../../../common/common'
@@ -133,7 +133,7 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
-	return (<ResultsDataTable data={data}
+	return (<ResultsTable data={data}
                 order={table_order}
                 cols={ResultsTableColumns}
                 onTdClick={(td, rowdata) =>
