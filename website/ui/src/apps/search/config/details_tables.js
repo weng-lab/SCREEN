@@ -8,9 +8,13 @@ const render_factorbook_link_tf = (d) => (
 const render_factorbook_link_histone = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
 
-const render_snp_link = (d) => (
-    // TODO: support mouse SNPs!
-    '<a href="http://ensembl.org/Homo_sapiens/Variation/Explore?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>');
+const render_snp_link = (d) => {
+    var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
+    if("mm10" == GlobalAssembly){
+        url = "http://ensembl.org/Mus_musculus/Variation/Explore";
+    }
+    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>';
+}
 
 const render_gene_link = (d) => (
     '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');

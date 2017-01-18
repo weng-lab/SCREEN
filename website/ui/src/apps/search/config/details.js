@@ -3,33 +3,12 @@ const React = require('react');
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
 
-import {render_int, render_cell_type} from './results_table'
-
 import ExpressionHeatmapSet from '../components/expression_heatmap'
 import TSSExpressionPlot from '../components/tss'
 import MiniPeaks from '../components/minipeaks'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
         TfIntersectionTable} from './details_tables'
-
-import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
-
-const render_factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
-
-const render_factorbook_link_histone = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
-
-const render_snp_link = (d) => (
-    // TODO: support mouse SNPs!
-    '<a href="http://ensembl.org/Homo_sapiens/Variation/Explore?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>');
-
-const render_gene_link = (d) => (
-    '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
-
-const render_re_link = (d) => ('<a>' + d + '</a>');
-
-const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 
 const loading = ({isFetching}) => {
     return (<div className={"loading"}
@@ -53,16 +32,9 @@ function makeTable(data, key, table){
                                                    bLengthChange: false,
                                                    rank_f: bg_rank_f});
     }
-    return <ResultsTable data={data}
-    columns={table.cols}
-    order={table.order}
-    paging={table.paging}
-    bInfo={table.bInfo}
-    bFilter={table.bFilter}
-    bLengthChange={true}
-    emptyText={table.emptyText}
-    pageLength={table.pageLength}
-     />
+    return React.createElement(ResultsTable, {data, ...table,
+                                              info: table.bInfo,
+                                              bLengthChange: true});
 }
 
 function tabEle(data, key, table, numCols) {
