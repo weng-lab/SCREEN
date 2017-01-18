@@ -48,10 +48,10 @@ double Heatmap::RowDistance(int i, int j) const {
 
   double ret = 0;
   for (int n = 0; n < h; ++n) {
-      ret += std::abs(values_[i][n] - values_[j][n]);
+    ret += std::pow(std::abs(values_[i][n] - values_[j][n]), 2.0);
   }
   
-  return ret;
+  return std::sqrt(ret);
 }
 
   /*
@@ -92,9 +92,9 @@ double Heatmap::ColDistance(int i, int j) const {
 
   double ret = 0.0;
   for (int n = 0; n < w; ++n) {
-      ret += std::abs(values_[n][i] - values_[n][j]);
+    ret += std::pow(std::abs(values_[n][i] - values_[n][j]), 2.0);
   }
-  return ret;
+  return std::sqrt(ret);
 
 }
 
