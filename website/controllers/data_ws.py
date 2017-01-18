@@ -50,7 +50,9 @@ class DataWebService:
         self.pgSearch = PGsearch(ps, assembly)
 
         self.actions = {"cre_table" : self._cre_table,
-                        "re_detail" : self._re_detail}
+                        "re_detail" : self._re_detail,
+                        "trees" : self._trees}
+        
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
             "targetGene" : self._re_detail_targetGene,
@@ -116,3 +118,7 @@ class DataWebService:
 
     def _re_detail_similarREs(self, j, accession):
         return { accession : {} }
+
+    def _trees(self, j):
+        tree_assay = j["tree_assay"]
+        return {}
