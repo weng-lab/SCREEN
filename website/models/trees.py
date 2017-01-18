@@ -1,4 +1,4 @@
-def Trees:
+class Trees:
     def __init__(self, cache, pg, j):
         self.cache = cache
         self.pg = pg

@@ -173,7 +173,7 @@ ON g.geneid = gi.geneid
         return [{"name" : r[0]} for r in rows]
 
     def getRankIdxToCellType(self):
-        with getcursor(self.ps.DBCONN, "pg$getRanIdxToCellType") as curs:
+        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
 SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
 """.format(assembly = self.assembly))
@@ -188,7 +188,7 @@ SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
             return ret
 
     def biosampleTypes(self):
-        with getcursor(self.ps.DBCONN, "pg$biosampleTypes") as curs:
+        with getcursor(self.pg.DBCONN, "pg$biosampleTypes") as curs:
             curs.execute("""
             select distinct biosample_type from {tn}
             """.format(tn = self.assembly + "_datasets"))
