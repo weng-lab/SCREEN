@@ -50,9 +50,9 @@ const main_reducers = (state, action) => {
     }
 
     case Actions.SET_TREE_RANK_METHOD: {
-	return { ...state, tree_rank_method : action.rank_method};
+	return { ...state, tree_rank_method : action.tree_rank_method};
     }
-	
+
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;

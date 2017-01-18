@@ -1,10 +1,11 @@
 class Trees:
-    def __init__(self, cache, pg, j):
+    def __init__(self, cache, pg, assembly, tree_rank_method):
         self.cache = cache
         self.pg = pg
-        self.j = j
+        self.assembly = assembly
+        self.tree_rank_method = tree_rank_method
 
-    def process_tree_hits(self, j, _ret):
+    def getTree(self):
         results = {}
         biosampleTypes = self.cache.biosampleTypes
         for typ in biosampleTypes:
@@ -26,7 +27,7 @@ class Trees:
                     labels = self.cache.celltypemap[k]
                     labels, corr = c.dbcorr(self.assembly, k, labels, lambda x: "bryo" in x)
                     print("!got correlation")
-                    
+
             if not labels:
                 continue
             rho = corr[0] if len(corr) == 2 else corr
