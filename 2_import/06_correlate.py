@@ -17,6 +17,7 @@ class Correlate:
     def __init__(self, DBCONN, assembly):
         self.DBCONN = DBCONN
         self.tableName = assembly + "_correlations"
+        self.tableName = "correlations_" + assembly
         self.qTableName = assembly + "_cre"
 
     def exportTable(self, fnp):
@@ -24,14 +25,14 @@ class Correlate:
         with getcursor(self.DBCONN, "Correlate::exportTable") as curs:
             with gzip.open(fnp, 'wb') as f:
                 curs.copy_expert("""
-COPY {tableName} TO STDOUT WITH FORMAT binary""".format(tableName=tableName), f)
+COPY {tableName} TO STDOUT WITH binary""".format(tableName=self.tableName), f)
 
     def importTable(self, fnp):
         self.setupTable()
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
             with gzip.open(fnp) as f:
                 curs.copy_expert("""
-COPY {tableName} FROM STDOUT WITH FORMAT binary""".format(tableName=tableName), f)
+COPY {tableName} FROM STDOUT WITH binary""".format(tableName=self.tableName), f)
 
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
