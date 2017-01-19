@@ -23,15 +23,15 @@ class Correlate:
         print("exporting CSV to", fnp)
         with getcursor(self.DBCONN, "Correlate::exportTable") as curs:
             with gzip.open(fnp, 'wb') as f:
-                curs.copy_to(f, self.tableName, '\t',
-                             columns = ["assay", "correlations"])
+                curs.copy_expert("""
+COPY {tableName} TO STDOUT WITH FORMAT binary""".format(tableName=tableName), f)
 
     def importTable(self, fnp):
         self.setupTable()
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
             with gzip.open(fnp) as f:
-                curs.copy_from(f, self.tableName, '\t',
-                             columns = ["assay", "correlations"])
+                curs.copy_expert("""
+COPY {tableName} FROM STDOUT WITH FORMAT binary""".format(tableName=tableName), f)
 
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
