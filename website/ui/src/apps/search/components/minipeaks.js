@@ -59,15 +59,12 @@ class MiniPeaks extends REComponent {
     }
 
     render() {
+	var regions = this.props.data.regions;
+        var elems = this.props.data.mostSimilar;
+        console.log(elems)
 
-	// make sure regions are present, count values
-	if (!this.props.regions || Object.keys(this.props.regions).length == 0) return <div />;
-	var cts = Object.keys(this.props.regions);
+	var cts = Object.keys(regions);
 	cts.sort((a, b) => (ctindex(a) - ctindex(b)));
-	var elems = (this.props.accorder ?
-                     this.props.accorder :
-                     Object.keys(this.props.regions[cts[0]]));
-	var regions = this.props.regions;
 	if (elems.length == 0) return <g />;
 
 	var nbars = regions[cts[0]][elems[0]].length;
