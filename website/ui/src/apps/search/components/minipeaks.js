@@ -56,7 +56,7 @@ class MiniPeaks extends REComponent {
     }
     
     render() {
-
+	
 	// make sure regions are present, count values
 	if (!this.props.regions || Object.keys(this.props.regions).length == 0) return <div />;
 	var cts = Object.keys(this.props.regions);

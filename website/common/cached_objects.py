@@ -54,22 +54,30 @@ class CachedObjects:
         self.datasets = Datasets(assembly, ps.DBCONN)
 
         self.bigwigmaxes = {}
-        if os.path.exists(paths.bigwigmaxes):
-            with open(paths.bigwigmaxes, "r") as f:
+        bmnp = paths.bigwigmaxes(assembly)
+        if os.path.exists(bmnp):
+            with open(bmnp, "r") as f:
                 for line in f:
                     p = line.strip().split("\t")
                     self.bigwigmaxes[p[0]] = int(p[1])
-        print(self.bigwigmaxes)
 
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
         self.biosampleTypes = self.datasets.biosample_types
 
+        dnaselist = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % assembly
+        self.dnasemap = {}
+        if os.path.exists(dnaselist):
+            with open(dnaselist, "r") as f:
+                for line in f:
+                    p = line.strip().split("\t")
+                    if len(p) < 3: continue
+                    self.dnasemap[p[2]] = (p[0], p[1])
+                    
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
             return self.cellTypesToTissue[ct]
         #raise Exception("missing tissue")
-        print("missing tissue for", ct)
         return ""
 
     def getTissueMap(self):
@@ -82,7 +90,6 @@ class CachedObjects:
         if ct in self.tissueMap:
             return self.tissueMap[ct]
         #raise Exception("missing tissue")
-        print("missing tissue for", ct)
         return ""
 
     def getTFListJson(self):
