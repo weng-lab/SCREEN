@@ -15,6 +15,7 @@ class CRE:
         self.genesPC = None
         self.tad = None
         self.ranks = None
+        self.intersectCounts = None
 
     def coord(self):
         if not self.pos:
@@ -121,3 +122,9 @@ class CRE:
         cres = [me] + self.pgSearch.creMostsimilar(accession, "dnase")
         return (self._get_bigwig_regions(bigWigs, cres, cache),
                 [x["accession"] for x in cres])
+
+    def peakIntersectCount(self):
+        coord = self.coord()
+        if not self.intersectCounts:
+            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom)
+        return self.intersectCounts

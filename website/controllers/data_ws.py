@@ -111,7 +111,9 @@ class DataWebService:
                               "overlapping_snps": snps} }
 
     def _re_detail_tfIntersection(self, j, accession):
-        return { accession : {} }
+        cre = CRE(self.pgSearch, accession)
+        peakIntersectCount = cre.peakIntersectCount()
+        return { accession : peakIntersectCount }
 
     def _re_detail_relatedGene(self, j, accession):
         return { accession : {} }

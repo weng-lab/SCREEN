@@ -141,7 +141,7 @@ class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
         this.doRender = (data) => {
-            return (<div>hi!</div>);
+            console.log("hi!");
             return tabEles(data, TfIntersectionTable, 2);
         }
     }
