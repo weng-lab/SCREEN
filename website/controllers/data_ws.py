@@ -125,4 +125,4 @@ class DataWebService:
         tree_rank_method = j["tree_rank_method"]
         t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)
         ret = t.getTree()
-        return {}
+        return {tree_rank_method: ret}

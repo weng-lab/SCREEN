@@ -18,7 +18,7 @@ class Correlation:
             try:
                 r = curs.fetchone()[0]
             except:
-                print("ERROR", assay)
+                raise Exception("ERROR " + assay)
 
         tokeep = []
         flabels = []
