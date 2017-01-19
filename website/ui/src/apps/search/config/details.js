@@ -23,7 +23,7 @@ function chunkArr(arr, chunk){
 
 function makeTable(data, key, table){
     if(table.bar_graph){
-        return React.createElement(BarGraphTable, {...data, ...table});
+        return React.createElement(BarGraphTable, {data, ...table});
     }
     return React.createElement(ResultsTable, {data, ...table});
 }
@@ -39,7 +39,6 @@ function tabEles(data, tables, numCols){
     var cols = [];
     for(var key of Object.keys(tables)){
         var _data = (key in data ? data[key] : []);
-        console.log(key, _data, data);
 	cols.push(tabEle(_data, key, tables[key], numCols));
     };
     if(0 == numCols){
@@ -113,8 +112,8 @@ class ReTabBase extends React.Component{
 class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
-        this.doRender = (accession) => {
-            return tabEles(this.state[accession], TopTissuesTables, 2);
+        this.doRender = (data) => {
+            return tabEles(data, TopTissuesTables, 2);
         }
     }
 }

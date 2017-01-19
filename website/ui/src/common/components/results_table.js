@@ -16,6 +16,7 @@ class ResultsTable extends React.Component {
     }
 
     componentDidMount() {
+        console.log(this.props);
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,

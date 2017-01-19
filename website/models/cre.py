@@ -62,7 +62,7 @@ class CRE:
             ret = []
             oneAssay = arrToCtDict(ranks[rm1], rmToCts[rm1])
             for ct, v in oneAssay.iteritems():
-                r = {"tissue" : ctToTissue(ct), "ct" : ct, rm1 : v}
+                r = {"tissue" : ctToTissue(ct), "ct" : ct, "one" : v}
                 ret.append(r)
             return ret
         def makeArrMulti(rm1, rm2):
@@ -71,7 +71,7 @@ class CRE:
             multiAssay = arrToCtDict(ranks[rm2], rmToCts[rm2])
             for ct, v in oneAssay.iteritems():
                 r = {"tissue" : ctToTissue(ct), "ct" : ct,
-                     rm1 : v, rm2: get_rank(ct, multiAssay)}
+                     "one" : v, "two": get_rank(ct, multiAssay)}
                 ret.append(r)
             return ret
 
