@@ -33,7 +33,8 @@ class GeneInfo:
         ggff = Genes(fnp, filetype)
         ret = {}
         for g in ggff.getGenes():
-            ret[g.genename_] = "%s:%s-%s" % (g.chr_, g.start_, g.end_)
+            ret[g.genename_] = ["%s:%s-%s" % (g.chr_, g.start_, g.end_),
+                                g.chr_, g.start_, g.end_]
         return ret
 
     def tryparse(self, coord):
@@ -83,7 +84,7 @@ class GeneInfo:
                     skipped += 1
                     continue
                 if g["approved_symbol"] in geneCoords:
-                    g["coordinates"] = geneCoords[g["approved_symbol"]]
+                    g["coordinates"], chrom, start, end = geneCoords[g["approved_symbol"]]
                     g["position"] = self.tryparse(g["coordinates"])
                 ensembleToInfo[g["ensemblid"]] = g
                 counter += 1
@@ -95,7 +96,10 @@ class GeneInfo:
         gn = g.genename_
         # TODO: fixme!
         return {"ensemblid": eid,
-                "approved_symbol": gn}
+                "approved_symbol": gn,
+                "chrom" : g.chr_,
+                "start" : g.start_,
+                "end" : g.end_}
 
     def processGeneListMm10(self):
         skipped = 0
@@ -135,12 +139,21 @@ class GeneRow:
         if self.ensemblid in ensembleToInfo:
             self.info = ensembleToInfo[self.ensemblid]
             self.approved_symbol = self.info["approved_symbol"]
+            self.chrom = self.info["chrom"]
+            self.start = self.info["start"]
+            self.stop = self.info["stop"]
         elif toks[0] in ensembleToInfo:
             self.info = ensembleToInfo[toks[0]]
             self.approved_symbol = self.info["approved_symbol"]
+            self.chrom = self.info["chrom"]
+            self.start = self.info["start"]
+            self.stop = self.info["stop"]
         else:
             self.info = []
             self.approved_symbol = self.ensemblid_ver
+            self.chrom = ""
+            self.start = 0
+            self.stop = 0
 
     def output(self):
         return '\t'.join([self.geneId, self.ensemblid, self.ver,
@@ -176,9 +189,13 @@ ensemblid text,
 ver integer,
 ensemblid_ver text,
 approved_symbol text,
+        chrom text,
+        start integer,
+        stop integer,
 info jsonb);""".format(tableName = tableName))
 
-        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol", "info"]
+        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol",
+                "chrom", "start", "stop", "info"]
 
         outF = StringIO.StringIO()
         for r in rows:

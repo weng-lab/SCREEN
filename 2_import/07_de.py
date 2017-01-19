@@ -73,6 +73,11 @@ def setupAll(curs):
         curs.copy_from(outF, tableName, '\t', columns=cols)
         print("\tcopied in", len(data), "skipped", skipped)
 
+def index(curs):
+    curs.execute("""
+    create index leftnamerightnamede on mm10_de(leftname, rightname)""")
+                
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
