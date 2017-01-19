@@ -34,7 +34,7 @@ class BigWig:
 
     @staticmethod
     def _condense_regions(regions, n):
-        regions = [float(x) / 100.0 if x != "NA" else 0.0 for x in regions]
+        regions = [float(x) if x != "NA" else 0.0 for x in regions]
         l = len(regions) / n
         results = []
         for i in xrange(n):

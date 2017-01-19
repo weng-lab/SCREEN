@@ -26,12 +26,22 @@ class RegElementDetails:
             curs.execute("""SELECT {assay}_rank FROM {assembly}_cre
                             WHERE accession LIKE 'E%E{accession}'""".format(assay=assay, assembly=self.assembly, accession=acc))
             r = curs.fetchone()[0]
-            curs.execute("""SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity FROM {assembly}_cre
+            if not r:
+                print("regelmdetail$RegElementDetails::mostsimilar WARNING: no results for accession %s; returning empty set" % acc)
+                return []
+            whereclause = whereclause(r)
+            if len(whereclause.split(" or ")) > 25:
+                print("regelmdetails$RegElementDetails::mostsimilar NOTICE: %s is active in too many cell types (%d); returning empty set" % (acc, len(whereclause.split(" or "))))
+                return []
+            if not whereclause:
+                print("regelmdetails$RegElementDetails::mostsimilar NOTICE: %s not active in any cell types; returning empty set" % acc)
+                return []
+            curs.execute("""SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop FROM {assembly}_cre
                             WHERE {whereclause}
                             ORDER BY similarity DESC LIMIT 20""".format(assay=assay, assembly=self.assembly,
-                                                                        threshold=threshold, whereclause=whereclause(r)), {"r": r})
-            r = curs.fetchall()
-        return r
+                                                                        threshold=threshold, whereclause=whereclause), {"r": r})
+            rr = curs.fetchall()
+        return [{"accession": r[0], "position": {"chrom": r[2], "start": r[3], "end": r[4]}} for r in rr]
         
     def reFull(self, reAccession, similarity_assay = "dnase"):
         q = { "query" :{
