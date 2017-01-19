@@ -91,7 +91,7 @@ class DataWebService:
 
     def _re_detail_topTissues(self, j, accession):
         cre = CRE(self.pgSearch, accession)
-        ranks = cre.topTissues()
+        ranks = cre.topTissues(self.cache)
         return { accession : ranks }
 
     def _re_detail_targetGene(self, j, accession):

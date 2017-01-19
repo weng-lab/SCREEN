@@ -115,7 +115,6 @@ class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
         this.doRender = (accession) => {
-            return (<div>hi!</div>);
             return tabEles(this.state[accession], TopTissuesTables, 2);
         }
     }

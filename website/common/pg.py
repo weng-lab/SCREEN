@@ -198,4 +198,50 @@ SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
             k = k.lower()
             ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
             #print(k, ret[k])
+        #print(ret.keys())
+        # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
+
         return ret
+
+    def _getColsForAccession(self, accession, chrom, cols):
+        tableName = self.assembly + "_cre_" + chrom
+        with getcursor(self.pg.DBCONN, "_getColsForAccession") as curs:
+            curs.execute("""
+SELECT {cols}
+FROM {tn}
+WHERE accession = %s
+""".format(cols = ','.join(cols), tn = tableName), (accession,))
+            return curs.fetchone()
+
+    def creRanks(self, accession, chrom):
+        cols = """dnase_rank
+        ctcf_only_rank
+        ctcf_dnase_rank
+        h3k27ac_only_rank
+        h3k27ac_dnase_rank
+        h3k4me3_only_rank
+        h3k4me3_dnase_rank
+        dnase_zscore
+        ctcf_only_zscore
+        ctcf_dnase_zscore
+        h3k27ac_only_zscore
+        h3k27ac_dnase_zscore
+        h3k4me3_only_zscore
+        h3k4me3_dnase_zscore""".split('\n')
+        r = self._getColsForAccession(accession, chrom, cols)
+        return {"ranks" : { "dnase" : r[0],
+                            "ctcf-only" : r[1],
+                            "dnase+ctcf" : r[2],
+                            "h3k27ac-only" : r[3],
+                            "dnase+h3k27ac" : r[4],
+                            "h3k4me3-only" : r[5],
+                            "dnase+h3k4me3": r[6] },
+                "zscores" : { "dnase" : r[7],
+                              "ctcf-only" : r[8],
+                              "dnase+ctcf" : r[9],
+                              "h3k27ac_only_rank" : r[10],
+                              "h3k27ac_dnase_rank" : r[11],
+                              "h3k4me3-only" : r[12],
+                              "dnase+h3k4me3": r[13] }}
+
+
