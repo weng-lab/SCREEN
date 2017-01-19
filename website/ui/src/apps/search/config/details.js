@@ -161,7 +161,7 @@ class AssocTssTab extends ReTabBase{
     constructor(props) {
 	super(props, "assocTSS");
         this.doRender = (accession) => {
-            return (<div>hi!</div>);
+            return (<div></div>);
             return (<TSSExpressionPlot />);
         }
     }
