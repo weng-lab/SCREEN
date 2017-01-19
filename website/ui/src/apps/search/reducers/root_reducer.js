@@ -6,7 +6,6 @@ import {tissue_label_formatter} from '../config/colors'
 
 import {tree_connector} from '../components/tree'
 import {tss_connector} from '../components/tss'
-import {minipeaks_connector} from '../components/minipeaks'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -99,15 +98,6 @@ export const default_state = (tabs) => {return {
 
 export const main_tss_connector = tss_connector(
     (state) => (state.results.expression_boxplot)
-);
-
-export const main_minipeaks_connector = minipeaks_connector(
-    (state) => (state.re_detail.data.regions)
-);
-
-export const main_tree_connector = (store) => tree_connector(store)(
-    (state) => (state.results.tree),
-    (dispatch) => (dispatch)
 );
 
 export const get_root_reducer = (tabs) => (state = default_state(tabs), action) =>{

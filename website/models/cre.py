@@ -2,6 +2,10 @@
 
 from __future__ import print_function
 
+import os
+
+from bigwig import BigWig
+
 class CRE:
     def __init__(self, pgSearch, accession):
         self.pgSearch = pgSearch
@@ -79,3 +83,40 @@ class CRE:
                 "promoter": makeArrMulti("h3k4me3-only", "dnase+h3k4me3"),
                 "enhancer": makeArrMulti("h3k27ac-only", "dnase+h3k27ac"),
                 "ctcf": makeArrMulti("ctcf-only", "dnase+ctcf")}
+
+    def _get_bigwigs(self, cache):
+        return [{"ct": k, "bigwig": v[1], "accession": v[0]}
+                for k, v in cache.dnasemap.iteritems()]
+
+    def _get_bigwig_regions(self, bigwigs, elems, cache):
+        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
+        try:
+            bfnps = []
+            for bw in bigwigs:
+                fnp = os.path.join(d, bw["accession"], bw["bigwig"] + ".bigWig")
+                if os.path.exists(fnp):
+                    bfnps.append({"path": fnp, "ct": bw["ct"] })
+
+            regions = []
+            for x in elems:
+                regions.append({"acc": x["accession"],
+                                "start": x["position"]["start"],
+                                "end": x["position"]["end"],
+                                "chr": x["position"]["chrom"]})
+
+            results = BigWig.getregions(regions, bfnps, 50)
+
+            for bw in bigwigs:
+                results[bw["ct"]]["max"] = cache.bigwigmaxes[bw["bigwig"]] if bw["bigwig"] in cache.bigwigmaxes else 0
+            return results
+        except:
+            raise
+            print("ERROR in _get_bigwig_regions")
+
+    def getBigWigRegions(self, accession, cache):
+        coord = self.coord()
+        bigWigs = self._get_bigwigs(cache)
+        print(bigWigs)
+        me = {"accession": accession, "position": coord.toDict()}
+        cres = [me] + self.pgSearch.creMostsimilar(accession, "dnase")
+        return self._get_bigwig_regions(bigWigs, cres, cache)
