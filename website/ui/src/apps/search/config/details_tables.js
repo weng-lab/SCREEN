@@ -29,72 +29,68 @@ export const TopTissuesTables = {
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
-	    {title: "H3K4me3 and DNase", data: "dnase+h3k4me3",
+	    {title: "H3K4me3 and DNase", data: "two",
 	     render: render_int},
-	    {title: "H3K4me3 only", data: "h3k4me3-only",
+	    {title: "H3K4me3 only", data: "one",
 	     render: render_int}
 	],
-	data: [],
 	order: [[2, "asc"], [1, "asc"]],
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
         bLengthChange: false,
-	rank_f: (d) => (Math.log(d["h3k4me3-only"]))
+	rank_f: (d) => (Math.log(d["one"]))
     },
     "enhancer": {
 	title: "Enhancer ranks",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
-	    {title: "H3K27ac and DNase", data: "dnase+h3k27ac",
+	    {title: "H3K27ac and DNase", data: "two",
 	     render: render_int},
-	    {title: "H3K27ac only", data: "h3k27ac-only",
+	    {title: "H3K27ac only", data: "one",
 	     render: render_int}
 	],
-	data: [],
 	order: [[2, "asc"], [1, "asc"]],
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	rank_f: (d) => (Math.log(d["h3k27ac-only"]))
+	rank_f: (d) => (Math.log(d["one"]))
     },
     "ctcf": {
 	title: "CTCF ranks",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
-	    {title: "CTCF and DNase", data: "dnase+ctcf",
+	    {title: "CTCF and DNase", data: "two",
              render: render_int},
-	    {title: "CTCF only", data: "ctcf-only",
+	    {title: "CTCF only", data: "one",
 	     render: render_int
 	    }
 	],
-	data: [],
 	order: [[2, "asc"], [1, "asc"]],
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	rank_f: (d) => (Math.log(d["ctcf-only"]))
+	rank_f: (d) => (Math.log(d["one"]))
     },
     "dnase": {
 	title: "DNase ranks",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
-	    {title: "rank", data: "dnase",
+	    {title: "rank", data: "one",
 	     render: render_int
 	    }
 	],
-	data: [],
 	order: [[1, "asc"]],
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	rank_f: (d) => (Math.log(d["dnase"]))
+	rank_f: (d) => (Math.log(d["one"]))
     }
 };
 
@@ -120,7 +116,6 @@ export const TargetGeneTable = {
 	     render: render_length},
 	    {title: "eQTL cell types", data: "evidence.eqtls",
 	     render: render_supporting_cts}],
-	data: [],
 	order: [[2, "desc"]]
     }
 };
@@ -212,7 +207,6 @@ export const TfIntersectionTable = {
 	     render: render_factorbook_link_tf },
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
-	data: [],
 	order: [[1, "desc"]]
     },
     "histone": {
@@ -222,7 +216,6 @@ export const TfIntersectionTable = {
 	     render: render_factorbook_link_histone },
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
-	data: [],
 	order: [[1, "desc"]]
     }
 }
