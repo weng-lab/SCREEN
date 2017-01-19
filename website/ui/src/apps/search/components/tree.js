@@ -72,7 +72,7 @@ class ResultsTree extends React.Component { //REComponent {
         let tree_rank_method = this.props.tree_rank_method;
         if(tree_rank_method in this.state){
             let title = this.state[tree_rank_method].title;
-            let trees = this.state[tree_rank_method].tree;
+            let trees = this.state[tree_rank_method].trees;
             var _formatter = (this.props.label_formatter ?
                               this.props.label_formatter :
                               default_label_formatter);
