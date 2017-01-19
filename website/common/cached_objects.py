@@ -61,8 +61,9 @@ class CachedObjects:
                     self.bigwigmaxes[p[0]] = int(p[1])
         print(self.bigwigmaxes)
 
-        self.celltypemap = self.pgSearch.getRankIdxToCellType()
-        self.biosampleTypes = self.pgSearch.biosampleTypes()
+        self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
+        self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
+        self.biosampleTypes = self.datasets.biosample_types
 
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:

@@ -46,7 +46,7 @@ class Trees:
                 raise Exception("fix me")
             else:
                 k = "dnase" if self.inner is None else self.inner.lower()
-                labels = self.cache.celltypemap[k]
+                labels = self.cache.rankMethodToCellTypes[k]
                 labels, corr = c.dbcorr(self.assembly, k, labels,
                                         lambda x: "bryo" in x)
                 print("!got correlation")

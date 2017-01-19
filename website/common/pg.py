@@ -172,7 +172,20 @@ ON g.geneid = gi.geneid
             rows = curs.fetchall()
         return [{"name" : r[0]} for r in rows]
 
-    def getRankIdxToCellType(self):
+    def rankMethodToIDxToCellType(self):
+        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
+            curs.execute("""
+SELECT idx, celltype, rankmethod FROM {tn}
+""".format(tn = self.assembly + "_rankcelltypeindexex"))
+            ret = {}
+            for r in curs.fetchall():
+                rank_method = r[2]
+                if rank_method not in ret:
+                    ret[rank_method] = {}
+                ret[rank_method][r[0]] = r[1]
+        return ret
+
+    def rankMethodToCellTypes(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
 SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
@@ -180,16 +193,9 @@ SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
             _map = {}
             for r in curs.fetchall():
                 _map[r[2]] = [(r[0], r[1])] if r[2] not in _map else _map[r[2]] + [(r[0], r[1])]
-            ret = {}
-            for k, v in _map.iteritems():
-                k = k.lower()
-                ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
-                #print(k)
-            return ret
-
-    def biosampleTypes(self):
-        with getcursor(self.pg.DBCONN, "pg$biosampleTypes") as curs:
-            curs.execute("""
-            select distinct biosample_type from {tn}
-            """.format(tn = self.assembly + "_datasets"))
-            return [r[0] for r in curs.fetchall()]
+        ret = {}
+        for k, v in _map.iteritems():
+            k = k.lower()
+            ret[k] = [x[1] for x in sorted(v, lambda a, b: a[0] - b[0])]
+            #print(k, ret[k])
+        return ret

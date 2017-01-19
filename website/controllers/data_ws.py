@@ -90,7 +90,9 @@ class DataWebService:
             raise
 
     def _re_detail_topTissues(self, j, accession):
-        return { accession : {} }
+        cre = CRE(self.pgSearch, accession)
+        ranks = cre.topTissues()
+        return { accession : ranks }
 
     def _re_detail_targetGene(self, j, accession):
         return { accession : {} }
