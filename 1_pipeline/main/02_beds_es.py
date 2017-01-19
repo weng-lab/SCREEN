@@ -150,7 +150,8 @@ def main():
     if args.list:
         jobs = makeJobs(args, args.assembly)
         for j in jobs:
-            print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+            #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+            print(j["bed"].fileID)
         return 0
 
     printt("intersecting TFs, Histones, and DNases")
