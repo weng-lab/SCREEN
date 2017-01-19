@@ -180,7 +180,7 @@ const DetailsTabInfo = {
     topTissues : {title: "Top tissues", enabled: true,
                   f: TopTissuesTab},
     targetGene : {title: "Candidate Target Genes",
-                  enabled: "mm10" != GlobalAssembly, f: TargetGeneTab},
+                  enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
     nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
                     f: NearbyGenomicTab},
     tfIntersection: {title: "TF and Histone Intersection", enabled: true,
