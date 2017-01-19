@@ -1,17 +1,17 @@
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 
-const main_reducers = (state, action) => {
-    const doToggle = (oldSet, item) => {
-        let ret = new Set(oldSet);
-        if(ret.has(item)){
-            ret.delete(item);
-        } else {
-            ret.add(item);
-        }
-        return ret;
+const doToggle = (oldSet, item) => {
+    let ret = new Set(oldSet);
+    if(ret.has(item)){
+        ret.delete(item);
+    } else {
+        ret.add(item);
     }
+    return ret;
+}
 
+const main_reducers = (state, action) => {
     switch (action.type) {
 
     case Actions.SET_CELL_TYPE: return {...state, cellType: action.cellType };

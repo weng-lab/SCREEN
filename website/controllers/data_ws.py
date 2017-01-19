@@ -120,7 +120,9 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_similarREs(self, j, accession):
-        return { accession : {} }
+        cre = CRE(self.pgSearch, accession)
+        regions = cre.getBigWigRegions(accession, self.cache)
+        return { accession : {"regions" : regions }}
 
     def trees(self, j, args):
         print(j)

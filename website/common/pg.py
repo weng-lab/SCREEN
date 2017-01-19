@@ -245,3 +245,47 @@ WHERE accession = %s
                               "dnase+h3k4me3": r[13] }}
 
 
+    def creMostsimilar(self, acc, assay, threshold=20000):
+        acc = acc.replace("EE", "")
+        def whereclause(r):
+            return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold)
+                                for i in xrange(len(r)) if r[i] < threshold])
+
+        with getcursor(self.pg.DBCONN, "cre$CRE::mostsimilar") as curs:
+            curs.execute("""
+SELECT {assay}_rank
+FROM {assembly}_cre
+WHERE accession LIKE 'E%E{accession}'""".format(assay=assay,
+                                                assembly=self.assembly,
+                                                accession=acc))
+            r = curs.fetchone()
+            if not r:
+                print("cre$CRE::mostsimilar WARNING: no results for accession",
+                      acc," -- returning empty set")
+                return []
+            whereclause = whereclause(r)
+            if len(whereclause.split(" or ")) > 25:
+                print("cre$CRE::mostsimilar", "NOTICE:", acc,
+                      "is active in too many cell types",
+                      len(whereclause.split(" or ")),
+                      "returning empty set")
+                return []
+
+            if not whereclause:
+                print("cre$CRE::mostsimilar NOTICE:", acc,
+                      "not active in any cell types; returning empty set")
+                return []
+
+            curs.execute("""
+SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop
+FROM {assembly}_cre
+WHERE {whereclause}
+ORDER BY similarity DESC LIMIT 20
+""".format(assay=assay, assembly=self.assembly,
+           threshold=threshold, whereclause=whereclause), {"r": r})
+            rr = curs.fetchall()
+        return [{"accession": r[0],
+                 "position": {"chrom": r[2], "start": r[3], "end": r[4]}}
+                for r in rr]
+
+

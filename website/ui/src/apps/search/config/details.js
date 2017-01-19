@@ -130,9 +130,9 @@ class NearbyGenomicTab extends ReTabBase{
 class TargetGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "targetGene");
-        this.doRender = (accession) => {
+        this.doRender = (data) => {
             return (<div>hi!</div>);
-            return tabEles({}, TargetGeneTable, 1);
+            return tabEles(data, TargetGeneTable, 1);
         }
     }
 }
@@ -140,9 +140,9 @@ class TargetGeneTab extends ReTabBase{
 class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
-        this.doRender = (accession) => {
+        this.doRender = (data) => {
             return (<div>hi!</div>);
-            return tabEles({}, TfIntersectionTable, 2);
+            return tabEles(data, TfIntersectionTable, 2);
         }
     }
 }
@@ -150,7 +150,7 @@ class TfIntersectionTab extends ReTabBase{
 class RelatedGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "relatedGene");
-        this.doRender = (accession) => {
+        this.doRender = (data) => {
             return (<div>hi!</div>);
 	    return (<ExpressionHeatmapSet />);
         }
@@ -170,9 +170,8 @@ class AssocTssTab extends ReTabBase{
 class SimilarREsTab extends ReTabBase{
     constructor(props) {
 	super(props, "similarREs");
-        this.doRender = (accession) => {
-            return (<div>hi from minipea</div>);
-            return (<MiniPeaks />);
+        this.doRender = (data) => {
+            return (<MiniPeaks data={data} />);
         }
     }
 }
