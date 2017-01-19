@@ -30,7 +30,7 @@ class Trees:
         for typ in biosampleTypes:
             ret[typ] = self._processTyp(typ)
         title = ' / '.join([x for x in [self.outer, self.inner] if x])
-        return {"tree": ret, "title" : title }
+        return {"trees": ret, "title" : title }
 
     def _processTyp(self, typ):
         def ctFilter(ct):
