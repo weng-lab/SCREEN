@@ -263,7 +263,7 @@ def main():
     chrs = mm10_chrs
 
     if args.correlate:
-        c = Correlate(DBCONN, "mm10")
+        c = Correlate(DBCONN, "hg19")
         c.setupTable()
         for assay in ["dnase", "ctcf_only", "h3k27ac_only", "h3k4me3_only",
                       "h3k27ac_dnase", "h3k4me3_dnase", "ctcf_dnase" ]:

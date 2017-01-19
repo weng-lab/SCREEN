@@ -40,6 +40,7 @@ class MiniPeaks extends REComponent {
 
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
+	console.log("cell type " + text + " has max " + regions.max);
 	var mfactor = (regions.max
 		       ? ROWHEIGHT / regions.max
 		       : ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k]))))));
@@ -57,6 +58,8 @@ class MiniPeaks extends REComponent {
     
     render() {
 
+	console.log("!RENDERING minipeaks");
+	
 	// make sure regions are present, count values
 	if (!this.props.regions || Object.keys(this.props.regions).length == 0) return <div />;
 	var cts = Object.keys(this.props.regions);
