@@ -23,9 +23,7 @@ function chunkArr(arr, chunk){
 
 function makeTable(data, key, table){
     if(table.bar_graph){
-        return React.createElement(BarGraphTable, {data, ...table,
-                                                   bLengthChange: false,
-                                                   rank_f: bg_rank_f});
+        return React.createElement(BarGraphTable, {...data, ...table});
     }
     return React.createElement(ResultsTable, {data, ...table});
 }
@@ -41,6 +39,7 @@ function tabEles(data, tables, numCols){
     var cols = [];
     for(var key of Object.keys(tables)){
         var _data = (key in data ? data[key] : []);
+        console.log(key, _data, data);
 	cols.push(tabEle(_data, key, tables[key], numCols));
     };
     if(0 == numCols){
