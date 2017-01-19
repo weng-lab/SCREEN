@@ -35,7 +35,10 @@ class helptext:
 
 class paths:
     v4d = os.path.join(Dirs.encyclopedia, "Version-4")
-    bigwigmaxes = os.path.join(v4d, "bigwig.tsv")
+
+    @staticmethod
+    def bigwigmaxes(assembly):
+        return os.path.join(paths.v4d, "%s_bigwig.tsv" % assembly)
     
     def insChr(fnp):
         def addChr(chrom):

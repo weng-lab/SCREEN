@@ -44,7 +44,8 @@ def main():
     i = 1
 
     results = []
-    with open(os.path.expanduser("~/git/regElmViz/list.txt"), "r") as f:
+    dnaselist = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % args.assembly
+    with open(dnaselist, "r") as f:
         for line in f:
             line = line.strip().split("\t")
             results.append({"accession": line[0],
@@ -73,7 +74,7 @@ def main():
 
     print(maxes)
 
-    with open(os.path.expanduser("~/bigwig.tsv"), "wb") as o:
+    with open(os.path.expanduser("~/%s_bigwig.tsv" % args.assembly), "wb") as o:
         for bigwig, _max in maxes.iteritems():
             o.write("%s\t%d\n" % (bigwig, _max))
     print("wrote /project/umw_zhiping_weng/0_metadata/encyclopedia/bigwig.tsv")
