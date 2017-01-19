@@ -11,6 +11,7 @@ import REComponent from '../../../common/components/re_component'
 import {primary_cell_label_formatter} from '../config/colors'
 
 import * as Actions from '../actions/main_actions';
+import loading from '../components/loading'
 
 const default_label_formatter = (l) => {
     return {
@@ -55,10 +56,9 @@ class ResultsTree extends React.Component { //REComponent {
         });
     }
 
-    makeTree(tree_rank_method, tr, k, _formatter){
+    makeTree(data, k, _formatter){
 	var formatter = (k == "primary cell" ?
 			 primary_cell_label_formatter : _formatter);
-	var data = this.state[tree_rank_method];
 	var labels = (data.labels ? data.labels.map(formatter) : null);
 	var height = (labels ? labels.length * 15 : 0);
 	return (<div ref="container">
@@ -68,23 +68,39 @@ class ResultsTree extends React.Component { //REComponent {
 		</div>);
     }
 
+    doRenderWrapper(){
+        let tree_rank_method = this.props.tree_rank_method;
+        if(tree_rank_method in this.state){
+            let title = this.state[tree_rank_method].title;
+            let trees = this.state[tree_rank_method].tree;
+            var _formatter = (this.props.label_formatter ?
+                              this.props.label_formatter :
+                              default_label_formatter);
+            return (<div>
+		    <h1>{title}</h1>
+                    {Object.keys(trees).map((k) => {
+                        return this.makeTree(trees[k], k, _formatter); })}
+                    </div>);
+        }
+        return loading(this.state);
+    }
+
     render() {
-	var title = "";
 	var actions = this.props.actions;
 
 	return (<div>
 		<select onChange={() => {
-		    actions.setTreeRankMethod(this.refs.field.value)}}
+                    actions.setTreeRankMethod(this.refs.field.value)}}
 		ref="field">
 		<option value="dnase">DNase</option>
 		<option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
-		<option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
+		<option value="promoter$H3K4me3+DNase">H3K4me3 and DNase</option>
 		<option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
-		<option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
+		<option value="enhancer$H3K27ac+DNase">H3K27ac and DNase</option>
 		<option value="ctcf$CTCF-Only">CTCF Only</option>
-		<option value="ctcf$DNase+CTCF">CTCF and DNase</option>
+		<option value="ctcf$CTCF+DNase">CTCF and DNase</option>
 		</select>
-		<h1>{title}</h1>
+                {this.doRenderWrapper()}
 		<span ref="help_icon" />
 		</div>);
     }
