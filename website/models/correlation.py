@@ -11,6 +11,13 @@ class Correlation:
 
     def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
         assay = assay.replace("-", "_").replace("+", "_")
+
+        lookup = {"dnase_h3k27ac" : "h3k27ac_dnase",
+                  "dnase_h3k4me3" : "h3k4me3_dnase",
+                  "dnase_ctcf" : "ctcf_dnase"}
+        if assay in lookup:
+            assay = lookup[assay]
+
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute(
                 """SELECT correlations FROM {tn} WHERE assay = %(assay)s

@@ -94,11 +94,11 @@ class ResultsTree extends React.Component { //REComponent {
 		ref="field">
 		<option value="dnase">DNase</option>
 		<option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
-		<option value="promoter$H3K4me3+DNase">H3K4me3 and DNase</option>
+		<option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
 		<option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
-		<option value="enhancer$H3K27ac+DNase">H3K27ac and DNase</option>
+		<option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
 		<option value="ctcf$CTCF-Only">CTCF Only</option>
-		<option value="ctcf$CTCF+DNase">CTCF and DNase</option>
+		<option value="ctcf$DNase+CTCF">CTCF and DNase</option>
 		</select>
                 {this.doRenderWrapper()}
 		<span ref="help_icon" />
