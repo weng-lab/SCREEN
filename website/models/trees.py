@@ -21,7 +21,7 @@ class Trees:
             self.outer = "dnase"
         else:
             toks = tree_rank_method.split('$')
-            self.inner = toks[1].lower()
+            self.inner = toks[1]
             self.outer = toks[0]
 
     def getTree(self):
@@ -45,8 +45,9 @@ class Trees:
             if self.assembly == "hg19":
                 raise Exception("fix me")
             else:
-                labels = self.cache.celltypemap[self.inner]
-                labels, corr = c.dbcorr(self.assembly, self.inner, labels,
+                k = "dnase" if self.inner is None else self.inner.lower()
+                labels = self.cache.celltypemap[k]
+                labels, corr = c.dbcorr(self.assembly, k, labels,
                                         lambda x: "bryo" in x)
                 print("!got correlation")
 
