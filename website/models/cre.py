@@ -40,29 +40,42 @@ class CRE:
         return self.tad
 
     def allRanks(self):
+        coord = self.coord()
         if not self.ranks:
-            self.ranks = self.pgSearch.creRanks(self.accession, coord.chroms)
+            self.ranks = self.pgSearch.creRanks(self.accession, coord.chrom)
         return self.ranks
 
-    def topTissues(self):
-        ranks = self.allRanks()
-        rmToIdxToCt = self.cache.rankMethodToIDxToCellType
-        ctToTissue = self.cache.globalCellTypeInfo()
+    def topTissues(self, cache):
+        rmToCts = cache.rankMethodToCellTypes
+        ranks = self.allRanks()["ranks"]
+        def ctToTissue(ct):
+            return cache.datasets.globalCellTypeInfo[ct]["tissue"]
+        def get_rank(ct, d):
+            return 1e12 if ct not in d else d[ct]
+        def arrToCtDict(arr, cts):
+            assert(len(arr) == len(cts))
+            ret = {}
+            for idx, v in enumerate(arr):
+                ret[cts[idx]] = v
+            return ret
+        def makeArrRanks(rm1):
+            ret = []
+            oneAssay = arrToCtDict(ranks[rm1], rmToCts[rm1])
+            for ct, v in oneAssay.iteritems():
+                r = {"tissue" : ctToTissue(ct), "cell_type" : ct, "rank" : v}
+                ret.append(r)
+            return ret
+        def makeArrMulti(rm1, rm2):
+            ret = []
+            oneAssay = arrToCtDict(ranks[rm1], rmToCts[rm1])
+            multiAssay = arrToCtDict(ranks[rm2], rmToCts[rm2])
+            for ct, v in oneAssay.iteritems():
+                r = {"tissue" : ctToTissue(ct), "cell_type" : ct,
+                     rm1 : v, rm2: get_rank(ct, multiAssay)}
+                ret.append(r)
+            return ret
 
-        return {"dnase": [{"tissue": self._tissue(k),
-                           "cell_type": k,
-                           "rank": v["rank"] } for k, v in ranks["dnase"].iteritems()],
-                "promoter": [{"tissue": self._tissue(k),
-                              "cell_type": k,
-                              "H3K4me3": self._get_rank("H3K4me3-Only", v),
-                              "H3K4me3_DNase": self._get_rank("DNase+H3K4me3", v) } for k, v in ranks["promoter"].iteritems()],
-
-                "enhancer": [{"tissue": self._tissue(k),
-                              "cell_type": k,
-                              "H3K27ac": self._get_rank("H3K27ac-Only", v),
-                              "H3K27ac_DNase": self._get_rank("DNase+H3K27ac", v) } for k, v in ranks["enhancer"].iteritems()],
-
-                "ctcf": [{"tissue": self._tissue(k),
-                          "cell_type": k,
-                          "ctcf": self._get_rank("CTCF-Only", v),
-                          "ctcf_DNase": self._get_rank("DNase+CTCF", v) } for k, v in ranks["ctcf"].iteritems()] }
+        return {"dnase": makeArrRanks("dnase"),
+                "promoter": makeArrMulti("h3k4me3-only", "dnase+h3k4me3"),
+                "enhancer": makeArrMulti("h3k27ac-only", "dnase+h3k27ac"),
+                "ctcf": makeArrMulti("ctcf-only", "dnase+ctcf")}
