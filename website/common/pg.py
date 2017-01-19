@@ -288,4 +288,15 @@ ORDER BY similarity DESC LIMIT 20
                  "position": {"chrom": r[2], "start": r[3], "end": r[4]}}
                 for r in rr]
 
-
+    def peakIntersectCount(self, accession, chrom):
+        tableName = self.assembly + "_" + "peakIntersections"
+        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
+            curs.execute("""
+SELECT tf, histone
+FROM {tn}
+WHERE accession = %s
+""".format(tn = tableName), (accession,))
+            r = curs.fetchone()
+        tfs = [{"name" : k, "n" : len(v)} for k,v in r[0].iteritems()]
+        histones = [{"name" : k, "n" : len(v)} for k,v in r[1].iteritems()]
+        return {"tf" : tfs, "histone" : histones}
