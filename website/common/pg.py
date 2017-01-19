@@ -292,11 +292,12 @@ ORDER BY similarity DESC LIMIT 20
         tableName = self.assembly + "_" + "peakIntersections"
         with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
             curs.execute("""
-SELECT tf, histone
+SELECT tf, histone, dnase
 FROM {tn}
 WHERE accession = %s
 """.format(tn = tableName), (accession,))
             r = curs.fetchone()
         tfs = [{"name" : k, "n" : len(v)} for k,v in r[0].iteritems()]
         histones = [{"name" : k, "n" : len(v)} for k,v in r[1].iteritems()]
-        return {"tf" : tfs, "histone" : histones}
+        dnases = [{"name" : k, "n" : len(v)} for k,v in r[2].iteritems()]
+        return {"tf" : tfs, "histone" : histones, "dnase" : dnases}

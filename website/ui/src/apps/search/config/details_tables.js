@@ -217,5 +217,13 @@ export const TfIntersectionTable = {
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
 	order: [[1, "desc"]]
+    },
+    "dnase": {
+	title: "Intersecting DNases",
+	cols: [
+	    {title: "mark", data: "name"},
+	    {title: "# experiments", data: "n",
+	     render: render_int }],
+	order: [[1, "desc"]]
     }
 }
