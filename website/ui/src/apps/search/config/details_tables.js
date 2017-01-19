@@ -27,11 +27,11 @@ export const TopTissuesTables = {
     "promoter": {
 	title: "Promoter ranks",
 	cols: [
-	    {title: "cell type", data: "cell_type", className: "dt-right",
+	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
-	    {title: "H3K4me3 and DNase", data: "H3K4me3_DNase",
+	    {title: "H3K4me3 and DNase", data: "dnase+h3k4me3",
 	     render: render_int},
-	    {title: "H3K4me3 only", data: "H3K4me3",
+	    {title: "H3K4me3 only", data: "h3k4me3-only",
 	     render: render_int}
 	],
 	data: [],
@@ -39,16 +39,17 @@ export const TopTissuesTables = {
 	pageLength: 5,
 	paging: false,
 	bar_graph: true,
-	bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
+        bLengthChange: false,
+	rank_f: (d) => (Math.log(d["h3k4me3-only"]))
     },
     "enhancer": {
 	title: "Enhancer ranks",
 	cols: [
-	    {title: "cell type", data: "cell_type", className: "dt-right",
+	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
-	    {title: "H3K27ac and DNase", data: "H3K27ac_DNase",
+	    {title: "H3K27ac and DNase", data: "dnase+h3k27ac",
 	     render: render_int},
-	    {title: "H3K27ac only", data: "H3K27ac",
+	    {title: "H3K27ac only", data: "h3k27ac-only",
 	     render: render_int}
 	],
 	data: [],
@@ -57,16 +58,16 @@ export const TopTissuesTables = {
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
+	rank_f: (d) => (Math.log(d["h3k27ac-only"]))
     },
     "ctcf": {
 	title: "CTCF ranks",
 	cols: [
-	    {title: "cell type", data: "cell_type", className: "dt-right",
+	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
-	    {title: "CTCF and DNase", data: "ctcf_DNase",
+	    {title: "CTCF and DNase", data: "dnase+ctcf",
              render: render_int},
-	    {title: "CTCF only", data: "ctcf",
+	    {title: "CTCF only", data: "ctcf-only",
 	     render: render_int
 	    }
 	],
@@ -76,14 +77,14 @@ export const TopTissuesTables = {
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	bg_rank_f: (d) => (Math.log(d["ctcf"]))
+	rank_f: (d) => (Math.log(d["ctcf-only"]))
     },
     "dnase": {
 	title: "DNase ranks",
 	cols: [
-	    {title: "cell type", data: "cell_type", className: "dt-right",
+	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
-	    {title: "rank", data: "rank",
+	    {title: "rank", data: "dnase",
 	     render: render_int
 	    }
 	],
@@ -93,7 +94,7 @@ export const TopTissuesTables = {
 	paging: false,
 	bar_graph: true,
         bLengthChange: true,
-	bg_rank_f: (d) => (Math.log(d["rank"]))
+	rank_f: (d) => (Math.log(d["dnase"]))
     }
 };
 
