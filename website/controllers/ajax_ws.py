@@ -549,7 +549,7 @@ class AjaxWebServiceOld:
         j["object"]["_source"] = ["ranks"]
         r =  []
         _ret = {"hits": {"hits": r, "total": len(r)}}
-       
+
         if "hits" in _ret:
             try:
                 return self._process_tree_hits(j, _ret)
