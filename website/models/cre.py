@@ -10,6 +10,7 @@ class CRE:
         self.genesAll = None
         self.genesPC = None
         self.tad = None
+        self.ranks = None
 
     def coord(self):
         if not self.pos:
@@ -37,3 +38,31 @@ class CRE:
         if self.tad is None:
             self.tad = self.pgSearch.creTad(self.accession, coord.chrom)
         return self.tad
+
+    def allRanks(self):
+        if not self.ranks:
+            self.ranks = self.pgSearch.creRanks(self.accession, coord.chroms)
+        return self.ranks
+
+    def topTissues(self):
+        ranks = self.allRanks()
+        rmToIdxToCt = self.cache.rankMethodToIDxToCellType
+        ctToTissue = self.cache.globalCellTypeInfo()
+
+        return {"dnase": [{"tissue": self._tissue(k),
+                           "cell_type": k,
+                           "rank": v["rank"] } for k, v in ranks["dnase"].iteritems()],
+                "promoter": [{"tissue": self._tissue(k),
+                              "cell_type": k,
+                              "H3K4me3": self._get_rank("H3K4me3-Only", v),
+                              "H3K4me3_DNase": self._get_rank("DNase+H3K4me3", v) } for k, v in ranks["promoter"].iteritems()],
+
+                "enhancer": [{"tissue": self._tissue(k),
+                              "cell_type": k,
+                              "H3K27ac": self._get_rank("H3K27ac-Only", v),
+                              "H3K27ac_DNase": self._get_rank("DNase+H3K27ac", v) } for k, v in ranks["enhancer"].iteritems()],
+
+                "ctcf": [{"tissue": self._tissue(k),
+                          "cell_type": k,
+                          "ctcf": self._get_rank("CTCF-Only", v),
+                          "ctcf_DNase": self._get_rank("DNase+CTCF", v) } for k, v in ranks["ctcf"].iteritems()] }
