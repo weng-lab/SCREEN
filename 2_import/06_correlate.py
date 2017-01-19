@@ -17,22 +17,21 @@ class Correlate:
     def __init__(self, DBCONN, assembly):
         self.DBCONN = DBCONN
         self.tableName = assembly + "_correlations"
-        self.tableName = "correlations_" + assembly
         self.qTableName = assembly + "_cre"
 
     def exportTable(self, fnp):
         print("exporting CSV to", fnp)
         with getcursor(self.DBCONN, "Correlate::exportTable") as curs:
             with gzip.open(fnp, 'wb') as f:
-                curs.copy_expert("""
-COPY {tableName} TO STDOUT WITH binary""".format(tableName=self.tableName), f)
+                curs.copy_to(f, self.tableName, '\t',
+                             columns = ["assay", "correlations"])
 
     def importTable(self, fnp):
         self.setupTable()
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
             with gzip.open(fnp) as f:
-                curs.copy_expert("""
-COPY {tableName} FROM STDOUT WITH binary""".format(tableName=self.tableName), f)
+                curs.copy_from(f, self.tableName, '\t',
+                               columns = ["assay", "correlations"])
 
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
@@ -42,7 +41,7 @@ COPY {tableName} FROM STDOUT WITH binary""".format(tableName=self.tableName), f)
             CREATE TABLE {tableName}
             (id serial PRIMARY KEY,
             assay VARCHAR(20),
-            correlations integer[][]);""".format(tableName = self.tableName))
+            correlations double precision[][]);""".format(tableName = self.tableName))
 
     def _getarrlen(self, field):
         with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
