@@ -197,6 +197,8 @@ class AjaxWebServiceOld:
 
     def _get_bigwigs(self, j, ranktype):
         ret = []
+        return [{"ct": k, "bigwig": v[1], "accession": v[0]}
+                for k, v in self.cache.dnasemap.iteritems()]
         try:
             r = self._bigwig_keys[ranktype[0]]
             for ct, v in j["ranks"][ranktype[0]].iteritems():
@@ -206,19 +208,15 @@ class AjaxWebServiceOld:
             print("ERROR in _get_bigwigs")
         return ret
 
-    def _get_bigwig_regions(self, bigwigs, accs):
+    def _get_bigwig_regions(self, bigwigs, elems):
         try:
-            q = [{"match": {"accession": acc}} for acc in accs]
             bfnp = [{"path": "/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (bigwig["accession"], bigwig["bigwig"]),
                      "ct": bigwig["ct"] } for bigwig in bigwigs]
-            results = self.es.search(body={"query": {"bool": {"should": q}}, "size": 11,
-                                           "_source": ["accession", "position"]},
-                                     index="regulatory_elements_7")["hits"]["hits"]
-            results = BigWig.getregions([{"acc": x["_source"]["accession"], "start": x["_source"]["position"]["start"],
-                                          "end": x["_source"]["position"]["end"], "chr": x["_source"]["position"]["chrom"]}
-                                         for x in results], bfnp, 50)
+            results = BigWig.getregions([{"acc": x["accession"], "start": x["position"]["start"],
+                                          "end": x["position"]["end"], "chr": x["position"]["chrom"]}
+                                         for x in elems], bfnp, 50)
             for bigwig in bigwigs:
-                results[bigwig["ct"]]["max"] = self.cache.bigwigmaxes[bigwig["accession"]] if bigwig["accession"] in self.cache.bigwigmaxes else 0
+                results[bigwig["ct"]]["max"] = self.cache.bigwigmaxes[bigwig["bigwig"]] if bigwig["bigwig"] in self.cache.bigwigmaxes else 0
             return results
         except:
             print("ERROR in _get_bigwig_regions")
@@ -240,7 +238,7 @@ class AjaxWebServiceOld:
         output["data"].update(self._format_ranks(j["ranks"]))
 
         re_results = self.es.get_overlapping_res(expanded_coords)
-        similaracclist = [j["accession"]] + [k for k, v in j["most_similar"]]
+        similaracclist = [j] + j["most_similar"]
 
         output["data"].update({"overlapping_snps" : self.details.formatSnpsJS(snp_results, pos),
                                "nearby_genes" : j["nearby_genes"],
@@ -248,7 +246,7 @@ class AjaxWebServiceOld:
                                "re_tads": self._re_tad_details([x for x in j["genes"]["tads"]]) if "tads" in j["genes"] and j["genes"]["tads"][0] != '' else [],
                                "nearby_res" : self.details.formatResJS(re_results, pos, accession),
                                "associated_tss": [x["approved_symbol"] for x in self._get_associated_genes(j["accession"])],
-                               "most_similar": similaracclist,
+                               "most_similar": [x["accession"] for x in similaracclist],
                                "regions": self._get_bigwig_regions(self._get_bigwigs(j, self._rank_types["DNase"]), similaracclist) })
 
         return output
