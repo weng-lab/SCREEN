@@ -37,14 +37,6 @@ class LongChecklistFacet extends React.Component {
 	}
     }
 
-    componentDidMount() {
-	/*$(this.refs.mode).toggleSwitch({
-	    highlight: true,
-	    width: 25,
-	    change: this.modeChange
-	});*/
-    }
-
     render() {
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
 	var checks = "";
@@ -65,10 +57,14 @@ class LongChecklistFacet extends React.Component {
 	];
 	var paging = this.props.data.length < 10 ? false : true;
 	return (<div>
-		    {checks}
-		    <ResultsTable cols={cols} data={this.props.data} order={this.props.order}
-	             onTdClick={this._td_handler} bFilter={true} bLengthChange={false}
-		     paging={paging}
+		{checks}
+		<ResultsTable cols={cols}
+                data={this.props.data}
+                order={this.props.order}
+	        onTdClick={this._td_handler}
+                bFilter={true}
+                bLengthChange={false}
+		paging={paging}
 		/>
 		</div>
 	       );

@@ -10,7 +10,7 @@ import loading from '../../../common/components/loading'
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { isFetching: true, isError: false };
+        this.state = { jq: null, isFetching: true, isError: false };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
     }
@@ -24,16 +24,17 @@ class GeneExp extends React.Component{
         this.loadGene(nextProps);
     }
 
-    loadGene({gene}){
-        if(gene in this.state){
+    loadGene({compartments_selected, gene}){
+        var q = {GlobalAssembly, gene, compartments_selected};
+        var jq = JSON.stringify(q);
+        if(this.state.jq == jq){
+            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        var q = {GlobalAssembly, gene};
-        var jq = JSON.stringify(q);
-        console.log("loadGene....", jq);
-        this.setState({isFetching: true});
+        //console.log("loadGene....", this.state.jq, jq);
+        this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/dataws/gene_exp",
+            url: "/geneexpjson",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
