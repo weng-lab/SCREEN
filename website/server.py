@@ -17,6 +17,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
 
+class DummyEs:
+    def search(self, index, body):
+        return {"hits": {"total": 0, "hits": [] }}
+    def __init__(self):
+        pass
+
 class Config:
     def __init__(self, siteName):
         self.siteName = siteName
@@ -73,7 +79,7 @@ def main():
     if args.production:
         args.dev = False
 
-    es = ElasticSearchWrapperWrapper(Elasticsearch())
+    es = ElasticSearchWrapperWrapper(DummyEs())
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
