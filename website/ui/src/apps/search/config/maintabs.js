@@ -2,7 +2,6 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import ResultsTableContainer from '../components/results_app'
-import ResultsDisplayApp from '../components/results_display_app'
 import ResultsTree from '../components/tree'
 import DetailsContainer from '../components/details_container'
 import TFDisplay from '../../../common/components/tf_display'

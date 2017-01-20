@@ -28,7 +28,7 @@ const panelize = (title, facet) => {
 };
 
 const rangeBox = (title, start, end, action) => {
-    return (<RangeFacet
+    return (<MainRangeFacet visible={true}
             title={title}
 	    range={[start, end]}
 	    selection_range={[start, end]}
@@ -43,7 +43,8 @@ const accessionsBox = ({accessions, actions}) => {
         return (<div />);
     }
     return panelize("Accessions",
-                    <ChecklistFacet
+                    <MainChecklistFacet
+                    visible={true}
                     title={""}
                     items={accessions.map((d) => {return {value: d, checked: true}})}
                     match_mode_enabled={false}
@@ -81,7 +82,7 @@ const cellTypesBox = ({cellType, actions}) => {
 
 const chromBox = ({coord_chrom, actions}) => {
     return panelize("Chromosome",
-	            <ListFacet
+	            <MainListFacet visible={true}
                     title={""}
                     items={GlobalChromCounts}
                     selection={coord_chrom}
@@ -96,7 +97,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     var chromLen = GlobalChromLens[coord_chrom];
     var histBins = GlobalCreHistBins[coord_chrom];
     return panelize("Coordinates",
-                    <RangeFacet
+                    <MainRangeFacet visible={true}
                     title={""}
                     h_data={histBins}
 	            range={[0, chromLen]}
