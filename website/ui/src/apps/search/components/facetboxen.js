@@ -60,16 +60,10 @@ const cellTypesBox = ({cellType, actions}) => {
                     title={""}
                     data={GlobalCellTypeInfoArr}
                     cols={[
-		        {
-		            title: "cell type",
-		            data: "name",
-		            className: "dt-right"
-		        },
-		        {
-		            title: "tissue",
-		            data: "tissue",
-		            className: "dt-right"
-		        }
+		        { title: "cell type", data: "name",
+		          className: "dt-right" },
+		        { title: "tissue", data: "tissue",
+		            className: "dt-right" }
 	            ]}
                     order={[]}
                     selection={cellType}
@@ -114,8 +108,7 @@ const tfBox = ({actions}) => {
                     data={GlobalTfs.map((tf) => {return {key: tf,
                                                          selected: false}})}
                     cols={[{
-		        title: "Assay",
-		        data: "key",
+		        title: "Assay", data: "key",
 		        className: "dt-right"
 	            }]}
                     order={[]}
