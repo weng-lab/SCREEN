@@ -1,33 +1,39 @@
 import React from 'react'
+import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import LargeHorizontalBars from './large_horizontal_bars'
+import * as Actions from '../actions/main_actions';
 
 import REComponent from '../../../common/components/re_component'
 
-class ExpressionBoxplot extends REComponent {
-    render() {
-	return super.render(<div>
- 	                       <span style={{fontSize: "18pt"}}>{this.props.gene_name} <span ref="help_icon" /></span>
-		               <div style={{"width": "100%"}} ref="bargraph" />
-		            </div>);
-    }
+import LargeHorizontalBars from '../components/large_horizontal_bars'
 
+class ExpressionBoxplot extends React.Component {
     componentDidMount() {
-	super.componentDidMount();
 	this.componentDidUpdate();
     }
 
     componentDidUpdate() {
-	super.componentDidUpdate();
-
 	var width = 800;
 	var barheight = "15";
-	render(<LargeHorizontalBars width={width} items={this.props.items}
-	       loading={this.props.loading} barheight={barheight} />,
+	render(React.createElement(LargeHorizontalBars,
+                                   {...this.props, width, barheight}),
 	       this.refs.bargraph);
+    }
+
+    render() {
+	return (<div>
+ 	        <span style={{fontSize: "18pt"}}>
+                {this.props.gene} <span ref="help_icon" />
+                </span>
+		<div style={{"width": "100%"}} ref="bargraph" />
+		</div>);
     }
 }
 
-export default ExpressionBoxplot;
+const mapStateToProps = (state) => ({ ...state });
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+export default connect(mapStateToProps, mapDispatchToProps)(ExpressionBoxplot);
