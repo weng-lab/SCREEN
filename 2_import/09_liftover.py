@@ -26,16 +26,19 @@ overlap integer
 );
 """.format(tableName = tableName))
     printt("\tok")
-    
+
 def getMpToAccLookup(curs, assembly):
     print("making lookup", assembly)
     curs.execute("""
     SELECT mpName, accession from {tn}
 """.format(tn = assembly + "_cre"))
     ret = {r[0] : r[1] for r in curs.fetchall()}
+    for k, v in ret.iteritems():
+        print("'" + k + "'", v)
+        break
     printt("\tok")
     return ret
-        
+
 def setupAll(curs):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "ver9/liftover/")
@@ -47,7 +50,7 @@ def setupAll(curs):
     with open(fnp) as f:
         mmToHg = [r.rstrip().split('\t') for r in f.readlines()]
         printt("\tok")
-        
+
     mmLookup = getMpToAccLookup(curs, "mm10")
     hgLookup = getMpToAccLookup(curs, "hg19")
 
@@ -62,7 +65,7 @@ def setupAll(curs):
         except:
             print("error", idx, r)
             raise
-            
+
     cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
     print("writing stringio...")
     outF = StringIO.StringIO()
