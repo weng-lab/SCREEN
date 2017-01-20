@@ -25,7 +25,7 @@ class GeneInfo:
             return self.processGeneListHg19()
         raise Exception("unknown assembly: " + self.assembly)
 
-    def getGeneCoords(self):
+    def geneToCoord(self):
         if self.assembly not in self.gene_files:
             raise Exception("ERROR: cannot get gene coordinates for assembly " +
                             self.assembly + "-- no gene file found")
@@ -33,19 +33,8 @@ class GeneInfo:
         ggff = Genes(fnp, filetype)
         ret = {}
         for g in ggff.getGenes():
-            ret[g.genename_] = "%s:%s-%s" % (g.chr_, g.start_, g.end_)
+            ret[g.genename_] = (g.chr_, g.start_, g.end_)
         return ret
-
-    def tryparse(self, coord):
-        if "-" not in coord or ":" not in coord:
-            return {"chrom": "",
-                    "start": -1,
-                    "end": -1 }
-        p = coord.split(":")
-        v = p[1].split("-")
-        return {"chrom": p[0],
-                "start": int(v[0]),
-                "end": int(v[1]) }
 
     def _parseLineHg19(self, line):
         line = line.strip().split("\t")
@@ -67,7 +56,7 @@ class GeneInfo:
 
     def processGeneListHg19(self):
         print(self.assembly, "getting gene coordinates...")
-        geneCoords = self.getGeneCoords()
+        geneCoords = self.geneToCoord()
         inFnp = paths.genelist[self.assembly]
         skipped = 0
         counter = 0
@@ -83,8 +72,10 @@ class GeneInfo:
                     skipped += 1
                     continue
                 if g["approved_symbol"] in geneCoords:
-                    g["coordinates"] = geneCoords[g["approved_symbol"]]
-                    g["position"] = self.tryparse(g["coordinates"])
+                    chrom, start, stop = geneCoords[g["approved_symbol"]]
+                    g["chrom"] = chrom
+                    g["start"] = start
+                    g["stop"] = stop
                 ensembleToInfo[g["ensemblid"]] = g
                 counter += 1
         print("\tprocessed", counter, "and skipped", skipped)
@@ -95,7 +86,10 @@ class GeneInfo:
         gn = g.genename_
         # TODO: fixme!
         return {"ensemblid": eid,
-                "approved_symbol": gn}
+                "approved_symbol": gn,
+                "chrom" : g.chr_,
+                "start" : g.start_,
+                "stop" : g.end_}
 
     def processGeneListMm10(self):
         skipped = 0
@@ -135,17 +129,31 @@ class GeneRow:
         if self.ensemblid in ensembleToInfo:
             self.info = ensembleToInfo[self.ensemblid]
             self.approved_symbol = self.info["approved_symbol"]
+            self.chrom = self.info.get("chrom", "")
+            self.start = self.info.get("start", 0)
+            self.stop = self.info.get("stop", 0)
         elif toks[0] in ensembleToInfo:
             self.info = ensembleToInfo[toks[0]]
             self.approved_symbol = self.info["approved_symbol"]
+            self.chrom = self.info.get("chrom", "")
+            self.start = self.info.get("start", 0)
+            self.stop = self.info.get("stop", 0)
         else:
-            self.info = []
+            self.info = {}
             self.approved_symbol = self.ensemblid_ver
+            self.chrom = ""
+            self.start = 0
+            self.stop = 0
+
+        self.info = {k:v for k, v in self.info.items() if k not in
+                     ['chrom', 'start', 'stop', "approved_symbol",
+                      "ensemblid"] and v and v != [""]}
 
     def output(self):
         return '\t'.join([self.geneId, self.ensemblid, self.ver,
-                          self.ensemblid_ver,
-                          self.approved_symbol, json.dumps(self.info)])
+                          self.ensemblid_ver, self.approved_symbol,
+                          self.chrom, str(self.start), str(self.stop),
+                          json.dumps(self.info)])
 
 class AddGeneAliases:
     def __init__(self, curs, assembly):
@@ -176,9 +184,13 @@ ensemblid text,
 ver integer,
 ensemblid_ver text,
 approved_symbol text,
+        chrom text,
+        start integer,
+        stop integer,
 info jsonb);""".format(tableName = tableName))
 
-        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol", "info"]
+        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol",
+                "chrom", "start", "stop", "info"]
 
         outF = StringIO.StringIO()
         for r in rows:
