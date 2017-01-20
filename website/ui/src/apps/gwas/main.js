@@ -19,12 +19,12 @@ const store = createStore(main_reducers,
                           initialState,
                           applyMiddleware(
                               thunkMiddleware,
-                              //loggerMiddleware
+                              loggerMiddleware
                           ));
 
 //console.log(store.getState());
 
-class GwasPage extends React.Component {
+class GeneExpPage extends React.Component {
     render() {
         return (
                 <Provider store={store}>
@@ -54,4 +54,4 @@ class GwasPage extends React.Component {
     }
 }
 
-export default GwasPage;
+export default GeneExpPage;

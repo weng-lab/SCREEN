@@ -4,22 +4,31 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import ChecklistFacet from '../../../common/components/checklist'
+import LongChecklistFacet from '../../../common/components/longchecklist'
 
-const panelize = (title, facet) => {
-    return (<div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">{title}</div>
-	    <div className="panel-body">
-            {facet}
-	    </div>
-	    </div>
-	    </div>);
-};
+import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import {panelize} from '../../../common/uility'
+
+const cell_compartments = ({compartments, actions}) => {
+    return panelize("Cellular Compartments",
+                    <LongChecklistFacet
+                    title={""}
+                    data={compartments.map((e) => {return {key: e,
+                                                           selected: true}})}
+                    cols={[{
+		        title: "Assay", data: "key",
+		        className: "dt-right"
+	            }]}
+                    order={[]}
+        	    mode={CHECKLIST_MATCH_ANY}
+                    onTdClick={(c) => { actions.toggleCompartment(c) } }
+                    />);
+}
 
 class FacetBoxen extends React.Component {
     doRender(p){
         return (<div>
+                {cell_compartments(p)}
                 </div>);
     }
 
@@ -28,15 +37,8 @@ class FacetBoxen extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-        ...state
-});
-
+const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(FacetBoxen);
+export default connect(mapStateToProps, mapDispatchToProps)(FacetBoxen);
