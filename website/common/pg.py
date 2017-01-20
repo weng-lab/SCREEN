@@ -52,7 +52,7 @@ class PGsearch:
         print(tableName)
 
         fields = ', '.join(["accession", "negLogP",
-                            "chrom", "start", "stop",
+                            "cre.chrom", "cre.start", "cre.stop",
                             "infoAll.approved_symbol AS gene_all" ,
                             "infoPc.approved_symbol AS gene_pc",
                             "0::int as in_cart"])
@@ -74,7 +74,7 @@ inner join {gtn} as infoAll
 on cre.gene_all_id[1] = infoAll.geneid
 inner join {gtn} as infoPc
 on cre.gene_pc_id[1] = infoPc.geneid
-WHERE int4range(start, stop) && int4range(%s, %s)
+WHERE int4range(cre.start, cre.stop) && int4range(%s, %s)
 ORDER BY neglogp desc limit 100) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info"), (start, stop))
