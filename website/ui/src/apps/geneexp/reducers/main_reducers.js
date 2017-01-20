@@ -7,7 +7,8 @@ const main_reducers = (state, action) => {
 
     case Actions.TOGGLE_COMPARTMENT: {
         return { ...state,
-                 compartments: doToggle(state.compartments, action.c)}
+                 compartments_selected: doToggle(state.compartments_selected,
+                                                 action.c)}
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:

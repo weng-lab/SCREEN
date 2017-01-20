@@ -1,5 +1,4 @@
 import sys, os, json, cherrypy
-import subprocess
 
 from compute_gene_expression import ComputeGeneExpression, Compartments
 
@@ -36,7 +35,7 @@ class PageInfoGeneExp:
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 
-        cellcs = [{"key" : c, "selected" : True} for c in Compartments]
+        cellcs = Compartments
         ret.update({"cellCompartments" : json.dumps(cellcs),
                     "globalCellCompartments" : json.dumps(cellcs),
                     "globalCellTypeInfo": cache.globalCellTypeInfo(),
