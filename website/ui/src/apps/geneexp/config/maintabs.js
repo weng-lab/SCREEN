@@ -1,28 +1,32 @@
-var React = require('react');
+import React from 'react'
 
-import ExpressionBoxplot, {expression_boxplot_connector} from '../components/expression_boxplot'
-import CandidateREs, {candidate_res_connector} from '../components/candidate_res'
-import {main_comparison_connector} from '../reducers/root_reducer'
+import ExpressionBoxplot from '../components/expression_boxplot'
+import CandidateREs from '../components/candidate_res'
 
-export const maintabs = {
-    id: "main",
-    selection: "gene_expression",
-    tabs: {
-	gene_expression: {
-	    title: "Gene Expression",
-	    visible: true,
-	    render: (store, key) => {
-		var Ebp = expression_boxplot_connector(ExpressionBoxplot);
-		return <Ebp store={store} key={key}/>;
-	    }
-	},
-	candidate_res: {
-	    title: "Candidate Regulatory Elements",
-	    visible: true,
-	    render: (store, key) => {
-		var CandidateREList = candidate_res_connector((state) => (state.results.candidate_res))(CandidateREs);
-		return <CandidateREList store={store} key={key} />;
-	    }
-	}
+//                 <ExpressionBoxplot />
+//		<CandidateREs />
+
+class GeneExp extends React.Component{
+    render() {
+        return (<div>
+
+                </div>);
     }
+}
+
+class CanRes extends React.Component{
+    render() {
+        return (<div>
+
+                </div>);
+    }
+}
+
+
+const MainTabInfo = {
+    gene_expression: {title: "Gene Expression", visible: true, f: GeneExp},
+    candidate_res: { title: "Candidate Regulatory Elements", visible: true,
+                     f: CanRes }
 };
+
+export default MainTabInfo;

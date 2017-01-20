@@ -5,7 +5,9 @@ import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 
 import NavBarApp from '../../common/components/navbar_app'
-import MainTabs from './components/maintab'
+import SearchBox from '../../common/components/searchbox'
+import FacetBoxen from './components/facetboxen'
+import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
 
