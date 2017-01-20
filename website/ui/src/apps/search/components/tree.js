@@ -9,7 +9,7 @@ import REComponent from '../../../common/components/re_component'
 import {primary_cell_label_formatter} from '../config/colors'
 
 import * as Actions from '../actions/main_actions';
-import loading from '../components/loading'
+import loading from '../../../common/components/loading'
 
 const default_label_formatter = (l) => {
     return {
