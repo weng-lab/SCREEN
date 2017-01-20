@@ -1,12 +1,8 @@
-const React = require('react');
+import React from 'react'
 
 class LargeHorizontalBars extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-    
     render() {
+        console.log("large hi!");
 	return (<div>
 
 		<div className="container">
@@ -34,7 +30,7 @@ class LargeHorizontalBars extends React.Component {
 		</div>
 		</div>
 		</div>
-				
+
   		<div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		Loading...
 		</div>
@@ -50,7 +46,7 @@ class LargeHorizontalBars extends React.Component {
 	if(this.refs.container.style.display != "block") {
 	    return;
 	}
-	
+
 	$(this.refs.container).empty();
 
 	var items = this.props.items[this.refs.sortorder.value];
@@ -65,7 +61,7 @@ class LargeHorizontalBars extends React.Component {
 	    return val >= 0 ? val : 0;
 	};
 	var subName_f = (d) => (d["cellType"]);
-	
+
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
 	});
@@ -129,7 +125,7 @@ class LargeHorizontalBars extends React.Component {
 		    "<div>" + "TPM: " + d["rawTPM"] + "</div>" +
 		    "<div>" + "FPKM: " + d["rawFPKM"] + "</div>";
 	    })
-	
+
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
 	    var itemset = items[key];

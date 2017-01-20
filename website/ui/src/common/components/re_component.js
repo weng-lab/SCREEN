@@ -3,7 +3,6 @@ import {render} from 'react-dom'
 import HelpIcon from './help_icon'
 
 class REComponent extends React.Component {
-
     constructor(props) {
 	super(props);
     }

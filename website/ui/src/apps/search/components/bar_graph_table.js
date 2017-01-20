@@ -47,16 +47,16 @@ class BarGraphTable extends React.Component {
                </div>);
     }
 
+    componentDidMount() {
+	this.componentDidUpdate();
+    }
+
     componentDidUpdate() {
 	var width = $(this.refs.box).width();
 	render(<HorizontalBars width={width} height={500}
 	       items={format_data_for_bar_graph(this.props.data)}
 	       barheight="5" rank_f={this.props.rank_f} />,
 	       this.refs.bargraph);
-    }
-
-    componentDidMount() {
-	this.componentDidUpdate();
     }
 }
 
