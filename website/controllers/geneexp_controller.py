@@ -23,13 +23,10 @@ class GeneExpController:
             raise Exception("GlobalAssembly not defined")
         assembly = j["GlobalAssembly"]
 
-        gene = j["geneID"]
+        gene = j["gene"]
         # TODO: check for valid gene
 
-        compartments = j["compartments"]
-        compartments = filter(lambda x: x["key"] in Compartments, compartments)
-        compartments = filter(lambda x: x["selected"], compartments)
-        compartments = [x["key"] for x in compartments]
+        compartments = j["compartments_selected"]
         if not compartments:
             return {"items" : [] }
 
