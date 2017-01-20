@@ -13,7 +13,6 @@ class Tree extends React.Component {
 		    <div style={{width: this.props.width + "px", textAlign: "center", fontSize: "14pt", display: (this.props.loading ? "none" : "block")}}>{this.props.title}</div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px", height: this.props.height + "px" }} />
 		</div>);
-		
     }
 
     componentDidMount() {
@@ -39,7 +38,7 @@ class Tree extends React.Component {
 	if (tree.right) rd = this._tree_depth(tree.right);
 	return ret + (ld > rd ? ld : rd);
     }
-    
+
     _format_for_d3(tree, root_depth) {
 	if (tree.left && tree.right) {
 	    return {
@@ -65,9 +64,9 @@ class Tree extends React.Component {
 	console.log(d);
 	if (this.props.onClick) this.props.onClick(d);
     }
-    
+
     componentDidUpdate() {
-	
+
 	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
 	if (!this.props.data) return;
@@ -81,11 +80,11 @@ class Tree extends React.Component {
 
 	var _x = (x) => ((width - x) / 1.75 + margin.right);
 	var _y = (y) => (y);
-	
+
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
 	    .size([height, width]);
-	
+
 	//  assigns the data to a hierarchy using parent-child relationships
 	var nodes = d3.hierarchy(data, function(d) {
 	    return d.children;
@@ -99,7 +98,7 @@ class Tree extends React.Component {
 	    g = svg.append("g")
 	    .attr("transform",
 		  "translate(0," + margin.top + ")");
-	
+
 	// adds the links between the nodes
 	var link = g.selectAll(".link")
 	    .data(nodes.descendants().slice(1))
@@ -111,33 +110,33 @@ class Tree extends React.Component {
 		    + " " + _x((d.y + d.parent.y) / 2) + "," + _y(d.parent.x)
 		    + " " + _x(d.parent.y) + "," + _y(d.parent.x);
 	    });
-	
+
 	// adds each node as a group
 	var node = g.selectAll(".node")
 	    .data(nodes.descendants())
 	    .enter()
 	    .append("g")
-	    .attr("class", function(d) { 
-		return "node" + 
+	    .attr("class", function(d) {
+		return "node" +
 		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
-	    .attr("transform", function(d) { 
+	    .attr("transform", function(d) {
 		return "translate(" + _x(d.y) + "," + _y(d.x) + ")"; })
 	    .on("click", (d) => {this._on_click(d)});
 
 	node.append("path")
 	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))
 	    .attr("d", d3.symbol().size(5));
-	
+
 	// adds the text to the node
 	node.append("text")
 	    .attr("dy", ".35em")
-	    .style("text-anchor", function(d) { 
+	    .style("text-anchor", function(d) {
 		return d.children ? "start" : "end"; })
 	    .text(function(d) { return d.data.name; })
 	    .style("fill", (d) => (d.data.style && d.data.style.fill ? d.data.style.fill : "#000000"))
 	    .style("font-weight", "bold");
 
     }
-    
+
 }
 export default Tree;

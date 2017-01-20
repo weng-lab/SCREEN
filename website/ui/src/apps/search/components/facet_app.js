@@ -28,7 +28,7 @@ class FacetApp extends React.Component {
     componentDidMount() {
 
 	var es_links = this.props.es_links;
-	
+	console.log("es_links", es_links);
 	for (var k in es_links) {
 	    var connector = es_connect(k);
 	    for (var i in es_links[k]) {

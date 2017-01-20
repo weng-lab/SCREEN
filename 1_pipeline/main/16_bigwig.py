@@ -1,83 +1,86 @@
+#!/usr/bin/env python
+
 import sys, os
 import argparse
 
-from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 import subprocess
 import glob
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../website/common"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../website"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from models.biosamples import Biosamples
 from constants import paths, chroms
-from cached_objects import CachedObjectsWrapper
-from elastic_search_wrapper import ElasticSearchWrapperWrapper
-from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from exp import Exp
+from db_utils import getcursor
+
+class GetBigWigInfos:
+    def __init__(self, curs, assembly):
+        self.curs = curs
+        self.assembly = assembly
+        self.chroms = chroms[self.assembly]
+
+    def run(self):
+        self.getExpAndFileAccessions()
+        self.getMaxes()
+        print(self.maxes)
+
+        outFnp = paths.bigwigmaxes(self.assembly)
+        with open(outFnp, "wb") as o:
+            for bigwig, _max in self.maxes.iteritems():
+                o.write("%s\t%d\n" % (bigwig, _max))
+        print("wrote", outFnp)
+
+    def getExpAndFileAccessions(self):
+        self.curs.execute("""
+    select expid, fileid from {tn} where assay = 'DNase'
+    """.format(tn = self.assembly + "_datasets"))
+        self.exps = [{"accession" : r[0], "bigwig" : r[1]}
+                     for r in self.curs.fetchall()]
+
+    def getMaxes(self):
+        # for each BigWig, get maximum
+        self.maxes = {}
+        for v in self.exps:
+            for fnp in glob.glob(os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/*.bigWig" % (v["accession"]))):
+    #        targetfile = os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (v["accession"], v["bigwig"]))
+                print(fnp)
+                if not os.path.exists(fnp):
+                    print("WARNING: file %s does not exist; skipping" % fnp)
+                    continue
+                self.maxes[v["bigwig"]] = self.get_maxsignal(fnp, v)
+                if self.maxes[v["bigwig"]] == 0:
+                    print("WARNING: max signal of 0 for %s" % fnp)
+
+    def get_maxsignal(self, targetfile, v):
+        signals = []
+        for chrom in self.chroms:
+            try:
+                r = subprocess.check_output(
+                    ["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigSummary",
+                     targetfile, chrom, "0", "250000000", "1", "-type=max"])
+                signals.append(int(r))
+            except:
+                print("WARNING: failed to get data for %s:%s; skipping" % (targetfile, chrom))
+        return max(signals) if len(signals) > 0 else 0
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="hg19")
-    parser.add_argument('--version', type=int, default=7)    
+    parser.add_argument('--version', type=int, default=7)
     return parser.parse_args()
-
-def get_maxsignal(targetfile, chrs, v):
-    signals = []
-    for _chr in chrs:
-        try:
-            r = subprocess.check_output(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigSummary", targetfile, _chr, "0", "250000000", "1", "-type=max"])
-            signals.append(int(r))
-        except:
-            print("WARNING: failed to get data for %s:%s; skipping" % (targetfile, _chr))
-    return max(signals) if len(signals) > 0 else 0
 
 def main():
     args = parse_args()
-    es = ElasticSearchWrapperWrapper(Elasticsearch())
+
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
-    ps = PostgresWrapper(DBCONN)
-    cache = CachedObjectsWrapper(es, ps)[args.assembly]
-    cts = cache.cellTypesAndTissues
-    _map = {}
-    i = 1
 
-    results = []
-    dnaselist = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % args.assembly
-    with open(dnaselist, "r") as f:
-        for line in f:
-            line = line.strip().split("\t")
-            results.append({"accession": line[0],
-                            "bigwig": line[1] })
-    
-    # use first element to get bigwig paths
-    result = es[args.assembly].search(body={"query": {"bool": {"must": [{"match": {"accession": "EE0000001"}}]}},
-                                            "_source": ["ranks"]},
-                                      index=paths.re_json_vers[args.version][args.assembly]["index"])["hits"]["hits"]
-    if len(result) == 0:
-        print("ERROR: failed to find first element, required to load bigwig paths; aborting")
-        return 1
-    result = result[0]
-
-    # for each BigWig, get maximum
-    maxes = {}
-    for v in results:
-        for targetfile in glob.glob(os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/*.bigWig" % (v["accession"]))):
-#        targetfile = os.path.join("/project/umw_zhiping_weng/0_metadata/encode/data/%s/%s.bigWig" % (v["accession"], v["bigwig"]))
-            if not os.path.exists(targetfile):
-                print("WARNING: file %s does not exist; skipping" % targetfile)
-                continue
-            maxes[v["bigwig"]] = get_maxsignal(targetfile, chroms[args.assembly], v)
-            if maxes[v["bigwig"]] == 0:
-                print("WARNING: max signal of 0 for %s" % targetfile)
-
-    print(maxes)
-
-    with open(os.path.expanduser("~/%s_bigwig.tsv" % args.assembly), "wb") as o:
-        for bigwig, _max in maxes.iteritems():
-            o.write("%s\t%d\n" % (bigwig, _max))
-    print("wrote /project/umw_zhiping_weng/0_metadata/encyclopedia/bigwig.tsv")
+    for assembly in ["mm10", "hg19"]:
+        with getcursor(DBCONN, "16_bigwig") as curs:
+            gbw = GetBigWigInfos(curs, assembly)
+            gbw.run()
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -22,7 +22,7 @@ class Autocompleter:
                         "snp_aliases": self.get_snp_suggestions,
                         "tfs": self.get_tf_suggestions,
                         "cell_types": self.get_celltype_suggestions }
-        self.tfs = self.es.get_tf_list()
+        self.tfs = [] # TODO: fixme! self.es.get_tf_list()
         self.misc_dict = ["promoter", "enhancer", "DNase"]
 
     def recognizes_index(self, index):
@@ -47,11 +47,7 @@ class Autocompleter:
                 if "indices" in j and k not in j["indices"]: continue
                 for item in v(uq):
                     item = prefix + item
-                    if 0:
-                        ret.append({"name" : item,
-                                    "value" : counter})
-                    else:
-                        ret.append(item)
+                    ret.append(item)
                     counter += 1
             prefix += _uq[0] + " "
             _uq = _second_onward(_uq)

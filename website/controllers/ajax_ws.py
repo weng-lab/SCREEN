@@ -20,6 +20,7 @@ from models.bigwig import BigWig
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from compute_gene_expression import ComputeGeneExpression
+from pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -44,11 +45,19 @@ class AjaxWebServiceWrapper:
 
     def process(self, j):
         if "GlobalAssembly" not in j:
-            j["GlobalAssembly"] = "mm10"
             raise Exception("GlobalAssembly not defined")
         return self.ajws[j["GlobalAssembly"]].process(j)
 
 class AjaxWebService:
+    _default_fields = ["accession", "neg-log-p",
+                       "position.chrom", "position.start",
+                       "position.end", "genes.nearest-all",
+                       "genes.nearest-pc", "in_cart"]
+
+    def __init__(self, args, es, ps, cache, staticDir, assembly):
+        pass
+
+class AjaxWebServiceOld:
 
     _default_fields = ["accession", "neg-log-p",
                        "position.chrom", "position.start",
@@ -69,6 +78,7 @@ class AjaxWebService:
         self.args = args
         self.es = es
         self.ps = ps
+        self.pgSearch = PGsearch(ps, assembly)
         self.rh = RankHeatmap(cache.cellTypesAndTissues,
                               self._rank_types)
         self.cache = cache
@@ -227,17 +237,6 @@ class AjaxWebService:
 
         output["data"].update(self._format_ranks(j["ranks"]))
 
-        overlapBP = 10000 #10KB
-        expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, pos["start"] - overlapBP),
-                           "end": pos["end"] + overlapBP}
-        snp_results = self.es.get_overlapping_snps(expanded_coords)
-
-        overlapBP = 1000000 # 1MB
-        expanded_coords = {"chrom": pos["chrom"],
-                           "start": max(0, pos["start"] - overlapBP),
-                           "end": pos["end"] + overlapBP}
-#        gene_results = self.es.get_overlapping_genes(expanded_coords)
         re_results = self.es.get_overlapping_res(expanded_coords)
         similaracclist = [j] + j["most_similar"]
 
@@ -550,7 +549,7 @@ class AjaxWebService:
         j["object"]["_source"] = ["ranks"]
         r =  []
         _ret = {"hits": {"hits": r, "total": len(r)}}
-       
+
         if "hits" in _ret:
             try:
                 return self._process_tree_hits(j, _ret)
@@ -622,6 +621,10 @@ class AjaxWebService:
                 j["callback"] = ""
 
         with Timer('ElasticSearch time'):
+
+            print("object", j["object"])
+            raise Exception(j["object"])
+
             ret = self._query({"object": j["object"],
                                "index": paths.reJsonIndex(self.assembly),
                                "callback": j["callback"] })

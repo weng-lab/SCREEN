@@ -2,7 +2,7 @@ var React = require('react');
 
 import ResultsApp from '../components/results_app'
 
-import DetailsApp, {details_connector} from '../../search/components/details_app'
+import DetailsApp, {details_connector} from '../../search/components/details_container'
 import {tabs} from '../../search/config/details'
 
 import {expression_heatmap_connector} from '../../search/components/expression_heatmap'

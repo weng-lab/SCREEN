@@ -1,16 +1,11 @@
 import {obj_assign, obj_remove, array_remove, array_insert, array_contains} from '../../../common/common'
-import FacetboxReducer from './facetbox_reducer'
-import TabReducer from './tab_reducer'
 import SearchBoxReducer from '../../../common/reducers/searchbox'
 import ExpressionMatrixReducer from './expression_matrix_reducer'
 
 import {tissue_label_formatter} from '../config/colors'
 
-import {MainTabsConnector} from '../components/maintab'
-import {MainSearchBoxConnector} from '../../../common/components/searchbox'
 import {tree_connector} from '../components/tree'
 import {tss_connector} from '../components/tss'
-import {minipeaks_connector} from '../components/minipeaks'
 
 export const ADD_FACETBOX = 'ADD_FACETBOX';
 export const FACETBOX_ACTION = 'FACETBOX_ACTION';
@@ -101,43 +96,11 @@ export const default_state = (tabs) => {return {
     }
 }};
 
-export const main_tab_connector = MainTabsConnector(
-    (state) => (state.main_tabs),
-    (dispatch) => ((action) => {
-	dispatch({
-	    type: TAB_ACTION,
-	    target: "main_tabs",
-	    subaction: action
-	});
-    })
-);
-
 export const main_tss_connector = tss_connector(
     (state) => (state.results.expression_boxplot)
 );
 
-export const main_minipeaks_connector = minipeaks_connector(
-    (state) => (state.re_detail.data.regions)
-);
-
-export const main_tree_connector = (store) => tree_connector(store)(
-    (state) => (state.results.tree),
-    (dispatch) => (dispatch)
-);
-
-export const main_searchbox_connector = MainSearchBoxConnector(
-    (state) => (state.searchbox),
-    (dispatch) => ((action) => {
-	dispatch({
-	    type: SEARCHBOX_ACTION,
-	    target: "searchbox",
-	    subaction: action
-	});
-    })
-);	    
-
-export const get_root_reducer = (tabs) => (state = default_state(tabs), action) => {
-
+export const get_root_reducer = (tabs) => (state = default_state(tabs), action) =>{
     if (null == action) {
         return state;
     }
@@ -151,7 +114,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		right: action.response.tfs.right
 	    })
 	});
-	
+
     case UPDATE_EXPRESSION_BOXPLOT:
 	return Object.assign({}, state, {
 	    results: Object.assign({}, state.results, {
@@ -176,7 +139,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		})
 	    })
 	});
-	
+
     case ADD_FACETBOX:
 	return Object.assign({}, state, {
 	    facet_boxes: obj_assign(state.facet_boxes, action.key, {
@@ -195,7 +158,7 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		    inner: action.inner
 		})
 	    })
-	});		       
+	});
 
     case DO_NAV:
 	window.location.href = action.url + "?q=" + state.searchbox.value
@@ -208,14 +171,14 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 		expression_matrices: ExpressionMatrixReducer(state.re_detail.expression_matrices, action.subaction)
 	    })
 	});
-	
+
     case RESULTS_DISPLAY_ACTION:
 	if (!(action.key in state.results_displays)) return state;
 	var n_item = state.results_displays[action.key].reducer(state.results_displays[action.key], action.subaction);
 	return Object.assign({}, state, {
 	    results_displays: obj_assign(state.results_displays, action.key, n_item)
 	});
-	
+
     case FACETBOX_ACTION:
 
 	/*
@@ -324,12 +287,12 @@ export const get_root_reducer = (tabs) => (state = default_state(tabs), action) 
 	    selection: "gcompare"
 	});
 	return n_state;
-	
+
     case TAB_ACTION:
 	var n_state = Object.assign({}, state);
 	n_state[action.target] = TabReducer(n_state[action.target], action.subaction);
 	return n_state;
-	
+
     }
 
     return state;

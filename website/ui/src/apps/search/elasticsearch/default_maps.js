@@ -82,10 +82,10 @@ export const RangeResultsMap = (key, facet, dispatch, results) => {
 	});
     }
 }
-    
+
 
 export const ChecklistQueryMap = (key, facet, query) => {
-    
+
     var key = (facet.state.mode == MATCH_MODE_ALL ? "must" : "should");
     var retval = {bool: {}};
     retval.bool[key] = [];
@@ -101,5 +101,5 @@ export const ChecklistQueryMap = (key, facet, query) => {
     if (retval.bool[key].length > 0) {
 	query.query.bool.filter.push(retval);
     }
-    
+
 };

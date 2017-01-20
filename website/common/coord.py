@@ -14,6 +14,9 @@ class Coord:
         self.start = str(max(1, int(self.start) - halfWindow))
         self.end = str(int(self.end) + halfWindow)
 
+    def toDict(self):
+        return {"chrom": self.chrom, "start": self.start, "end": self.end}
+
     @classmethod
     def parse(cls, loci):
         if loci.startswith("chr") and ":" not in loci:
@@ -31,3 +34,7 @@ class Coord:
         except:
             return None
 
+    def expanded(self, halfWindow):
+        s = max(0, self.start - halfWindow)
+        e = self.end + halfWindow
+        return Coord(self.chrom, s, e)
