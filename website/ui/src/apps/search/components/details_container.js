@@ -46,15 +46,8 @@ class DetailsContainer extends React.Component {
 }
 
 
-const mapStateToProps = (state) => ({
-        ...state
-});
-
+const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(DetailsContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(DetailsContainer);
