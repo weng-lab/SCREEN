@@ -1,49 +1,54 @@
-import React from 'react';
-
+import React from 'react'
 import {createStore, applyMiddleware} from 'redux'
-import {render} from 'react-dom'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
-
-import {RootReducer} from './reducers/root_reducer'
-import FacetApp from './components/facet_app'
+import createLogger from 'redux-logger'
 
 import NavBarApp from '../../common/components/navbar_app'
-import MainTabControl from './components/maintab'
-import {main_tab_connector} from './reducers/root_reducer'
-import {invalidate_boxplot, invalidate_res} from './helpers/invalidate_results'
+import MainTabs from './components/maintab'
+
+import main_reducers from './reducers/main_reducers'
+
+import initialState from './config/initial_state'
+
+const loggerMiddleware = createLogger();
+
+const store = createStore(main_reducers,
+                          initialState,
+                          applyMiddleware(
+                              thunkMiddleware,
+                              //loggerMiddleware
+                          ));
+
+//console.log(store.getState());
 
 class GeneExpPage extends React.Component {
-
-    constructor(props) {
-	super(props);
-	this.store = createStore(RootReducer, applyMiddleware(thunkMiddleware));
-	this.store.geneID = this.props.params.geneID
-	this.store.assembly = this.props.params.assembly
-    }
-
-    componentDidMount() {
-	this.store.dispatch(invalidate_boxplot(this.store.getState()));
-	this.store.dispatch(invalidate_res());
-    }    
-
     render() {
-	var Tabs = main_tab_connector(MainTabControl);
-	return (<div>
-		   <nav id="mainNavBar" className="navbar navbar-default navbar-inverse">
-		      <div className="container-fluid" id="navbar-main"><NavBarApp show_cartimage={false} show_searchbox={true} store={this.store} /></div>
-		   </nav>
-		   <div className="container" style={{width: "100%"}}>
-                      <div className="row" style={{width: "100%"}}>
-                         <div className="col-md-3 nopadding-right" id="facets-container">
-		            <FacetApp store={this.store} pquery={GlobalParsedQuery} invalidator={invalidate_boxplot}/>
-                         </div>
-                         <div className="col-md-9 nopadding-left" id="tabs-container">
-		            <Tabs store={this.store} />
-                         </div>
-                      </div>
-                   </div>
-		</div>);
+        return (
+                <Provider store={store}>
+	        <div>
+
+		<nav id="mainNavBar"
+                     className="navbar navbar-default navbar-inverse navbar-main">
+		<div className="container-fluid" id="navbar-main">
+                <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
+                </div>
+		</nav>
+
+		<div className="container" style={{width: "100%"}}>
+                  <div className="row" style={{width: "100%"}}>
+                    <div className="col-md-3 nopadding-right" id="facets-container">
+                    <FacetBoxen />
+                    </div>
+                  <div className="col-md-9 nopadding-left" id="tabs-container">
+                     <MainTabs />
+                  </div>
+                </div>
+
+                </div>
+		</div>
+                </Provider>
+        );
     }
 }
 

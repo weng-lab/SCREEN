@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import Tree from '../../../common/components/tree'
-import {invalidate_results, invalidate_tree_comparison} from '../helpers/invalidate_results'
-import {SET_TREE_FIELDS} from '../reducers/root_reducer'
 
 import REComponent from '../../../common/components/re_component'
 
