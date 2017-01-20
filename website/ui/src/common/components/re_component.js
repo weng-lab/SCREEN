@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react'
 import {render} from 'react-dom'
 import HelpIcon from './help_icon'
 

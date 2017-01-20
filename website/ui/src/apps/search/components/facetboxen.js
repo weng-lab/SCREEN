@@ -16,16 +16,7 @@ import {render_int, render_cell_type} from '../config/results_table'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
-const panelize = (title, facet) => {
-    return (<div className="panel-group facet">
-	    <div className="panel panel-primary">
-	    <div className="panel-heading">{title}</div>
-	    <div className="panel-body">
-            {facet}
-	    </div>
-	    </div>
-	    </div>);
-};
+import {panelize} from '../../../common/uility'
 
 const rangeBox = (title, start, end, action) => {
     return (<RangeFacet
