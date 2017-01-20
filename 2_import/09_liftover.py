@@ -7,12 +7,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
 def setupLiftover(curs, tableName):
-    # chr8    56331232        56331315        MP-158-5.096910 MP-hg19-100-2294605     5
+    print("dropping and creating", tableName)
     curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}(
@@ -20,12 +20,22 @@ id serial PRIMARY KEY,
 chrom text,
 start integer,
 stop integer,
-mouseMPname text,
-humanMPname text,
+mouseAccession text,
+humanAccession text,
 overlap integer
 );
 """.format(tableName = tableName))
-
+    printt("\tok")
+    
+def getMpToAccLookup(curs, assembly):
+    print("making lookup", assembly)
+    curs.execute("""
+    SELECT mpName, accession from {tn}
+""".format(tn = assembly + "_cre"))
+    ret = {r[0] : r[1] for r in curs.fetchall()}
+    printt("\tok")
+    return ret
+        
 def setupAll(curs):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "ver9/liftover/")
@@ -33,10 +43,37 @@ def setupAll(curs):
     tableName = "mm10_liftover"
     setupLiftover(curs, tableName)
 
-    cols = "chrom start stop mouseMPname humanMPname overlap".split(' ')
+    print("reading", fnp)
     with open(fnp) as f:
-        curs.copy_from(f, tableName, '\t', columns=cols)
-    print("\tcopied in", fnp)
+        mmToHg = [r.rstrip().split('\t') for r in f.readlines()]
+        printt("\tok")
+        
+    mmLookup = getMpToAccLookup(curs, "mm10")
+    hgLookup = getMpToAccLookup(curs, "hg19")
+
+    for idx, r in enumerate(mmToHg):
+        try:
+            mmToHg[idx][3] = mmLookup[r[3]]
+        except:
+            print("error", idx, r)
+            raise
+        try:
+            mmToHg[idx][4] = hgLookup[r[4]]
+        except:
+            print("error", idx, r)
+            raise
+            
+    cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
+    print("writing stringio...")
+    outF = StringIO.StringIO()
+    for r in mmToHg:
+        outF.write("\t".join(r) + '\n')
+    outF.seek(0)
+    printt("\tok")
+
+    print("copy into db...")
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    printt("\tok")
 
 def parse_args():
     parser = argparse.ArgumentParser()
