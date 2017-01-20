@@ -10,7 +10,7 @@ import MiniPeaks from '../components/minipeaks'
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
         TfIntersectionTable} from './details_tables'
 
-import loading from '../components/loading'
+import loading from '../../../common/components/loading'
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore

@@ -11,6 +11,8 @@ class REComponent extends React.Component {
 	return subcomponent;
     }
 
+    componentWillReceiveProps(nextProps){}
+
     componentDidUpdate() {}
 
     componentDidMount() {
