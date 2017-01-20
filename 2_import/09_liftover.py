@@ -33,9 +33,6 @@ def getMpToAccLookup(curs, assembly):
     SELECT mpName, accession from {tn}
 """.format(tn = assembly + "_cre"))
     ret = {r[0] : r[1] for r in curs.fetchall()}
-    for k, v in ret.iteritems():
-        print("'" + k + "'", v)
-        break
     printt("\tok")
     return ret
 
@@ -58,11 +55,11 @@ def setupAll(curs):
         try:
             mmToHg[idx][3] = mmLookup[r[3]]
         except:
-            print("skipping", idx, r)
+            print("bad liftOver?", idx, r)
         try:
             mmToHg[idx][4] = hgLookup[r[4]]
         except:
-            print("skipping", idx, r)
+            print("bad liftOver?", idx, r)
 
     cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
     print("writing stringio...")
