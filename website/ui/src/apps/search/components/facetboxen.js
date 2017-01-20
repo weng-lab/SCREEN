@@ -10,7 +10,7 @@ import MainRangeFacet from '../components/range'
 import MainListFacet from '../components/list'
 import MainChecklistFacet from '../components/checklist'
 import MainLongListFacet from '../components/longlist'
-import MainLongChecklistFacet from '../components/longchecklist'
+import LongChecklistFacet from '../../../common/components/longchecklist'
 import MainSliderFacet from '../components/slider'
 
 import {default_margin} from '../config/constants'
@@ -112,7 +112,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
 
 const tfBox = ({actions}) => {
     return panelize("Intersect TF/histone/DNase peaks",
-                    <MainLongChecklistFacet visible={true}
+                    <LongChecklistFacet
                     title={""}
                     data={GlobalTfs.map((tf) => {return {key: tf,
                                                          selected: false}})}
@@ -129,8 +129,8 @@ const tfBox = ({actions}) => {
                     />);
 }
 
-const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-                          actions}) => {
+const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
+                          gene_pc_end, actions}) => {
     return panelize("Distance to Genes",
                     (<div>
                      {rangeBox("Protein-coding genes", gene_pc_start, gene_pc_end,
