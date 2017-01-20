@@ -19,16 +19,16 @@ class GeneExpController:
 
     def geneexpjson(self, j):
         if "GlobalAssembly" not in j:
-            print(sorted(list(j.keys())))
             raise Exception("GlobalAssembly not defined")
+        if j["GlobalAssembly"] not in ["mm10", "hg19"]:
+            raise Exception("invalid GlobalAssembly")
+
         assembly = j["GlobalAssembly"]
-
-        gene = j["gene"]
-        # TODO: check for valid gene
-
+        gene = j["gene"] # TODO: check for valid gene
         compartments = j["compartments_selected"]
         if not compartments:
             return {"items" : [] }
+        # TODO: check valie compartments
 
         cge = ComputeGeneExpression(self.es, self.ps, self.cache, assembly)
         return cge.computeHorBars(gene, compartments)
