@@ -1,4 +1,4 @@
-var React = require('react')
+import React from 'react'
 import {connect} from 'react-redux';
 
 import Heatmap from '../../../common/components/heatmap'
@@ -40,7 +40,7 @@ class ExpressionHeatmapSet extends React.Component {
 		   <div className="tab-content clearfix">{tab_contents}</div>
 		</div>);
     }
-    
+
 };
 export default ExpressionHeatmapSet;
 
