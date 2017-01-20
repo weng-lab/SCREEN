@@ -58,13 +58,11 @@ def setupAll(curs):
         try:
             mmToHg[idx][3] = mmLookup[r[3]]
         except:
-            print("error", idx, r)
-            raise
+            print("skipping", idx, r)
         try:
             mmToHg[idx][4] = hgLookup[r[4]]
         except:
-            print("error", idx, r)
-            raise
+            print("skipping", idx, r)
 
     cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
     print("writing stringio...")
