@@ -1,15 +1,6 @@
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
-
-const doToggle = (oldSet, item) => {
-    let ret = new Set(oldSet);
-    if(ret.has(item)){
-        ret.delete(item);
-    } else {
-        ret.add(item);
-    }
-    return ret;
-}
+import {doToggle} from '../../../common/uility'
 
 const main_reducers = (state, action) => {
     switch (action.type) {
@@ -44,9 +35,8 @@ const main_reducers = (state, action) => {
         return {...state, re_details_tab_active: action.name};
 
     case Actions.TOGGLE_CART: {
-        return { ...state,
-                 cart_accessions: doToggle(state.cart_accessions,
-                                           action.accession)}
+        return { ...state, cart_accessions: doToggle(state.cart_accessions,
+                                                     action.accession)}
     }
 
     case Actions.SET_TREE_RANK_METHOD: {
