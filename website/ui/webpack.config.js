@@ -9,8 +9,9 @@ require.extensions['.css'] = () => {
 };
 
 module.exports = {
-    debug: true,
-    devtool: 'eval-source-map',
+    //debug: true,
+    debug: false,
+    //devtool: 'eval-source-map',
     entry: [
 	//'webpack-dev-server/client?http://0.0.0.0:9000/',
 	//'webpack/hot/only-dev-server',
@@ -21,7 +22,7 @@ module.exports = {
 	    {
 		test: /\.jsx?$/,
 		exclude: /node_modules/,
-		loader: 'react-hot!babel',
+		loader: 'babel',
 		include: path.join(__dirname, 'src')
 	    }
 	]
@@ -39,14 +40,17 @@ module.exports = {
 	hot: true
     },
     plugins: [
-	new webpack.HotModuleReplacementPlugin(),
+	//new webpack.HotModuleReplacementPlugin(),
 	new webpack.ProvidePlugin({
 	    "$": "jquery",
 	    "jQuery": "jquery",
 	    "window.jQuery": "jquery"}),
 	new webpack.DefinePlugin({
-	    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-	})
+	    'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+	}),
+	new webpack.optimize.UglifyJsPlugin()
     ],
     externals: {
 	'react': 'React',

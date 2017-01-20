@@ -1,377 +1,196 @@
 const React = require('react');
-import {render_int, render_cell_type} from './results_table'
-import {invalidate_detail} from '../helpers/invalidate_results'
-import {SET_DETAIL_TAB, main_tss_connector, main_minipeaks_connector} from '../reducers/root_reducer'
 
-import {expression_heatmap_connector} from '../components/expression_heatmap'
+import ResultsTable from '../../../common/components/results_table'
+import BarGraphTable from '../components/bar_graph_table'
+
 import ExpressionHeatmapSet from '../components/expression_heatmap'
-
 import TSSExpressionPlot from '../components/tss'
 import MiniPeaks from '../components/minipeaks'
 
-import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
+import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
+        TfIntersectionTable} from './details_tables'
 
-const render_factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+import loading from '../components/loading'
 
-const render_factorbook_link_histone = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
-
-const render_snp_link = (d) => (
-    // TODO: support mouse SNPs!
-    '<a href="http://ensembl.org/Homo_sapiens/Variation/Explore?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>');
-
-const render_gene_link = (d) => (
-    '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
-
-const render_re_link = (d) => ('<a>' + d + '</a>');
-
-const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
-
-export const tabs = [
-    {
-	title: "Top tissues",
-	enabled: true,
-	numCols : 2,
-	tables: {
-	    "promoter": {
-		title: "Promoter ranks",
-		cols: [
-		    {
-			title: "cell type",
-			data: "cell_type",
-			className: "dt-right",
-			render: render_cell_type
-		    },
-		    {
-			title: "H3K4me3 and DNase",
-			data: "H3K4me3_DNase",
-			render: render_int
-		    },
-		    {
-			title: "H3K4me3 only",
-			data: "H3K4me3",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[2, "asc"], [1, "asc"]],
-		pageLength: 5,
-		paging: false,
-		bar_graph: true,
-		bg_rank_f: (d) => (Math.log(d["H3K4me3"]))
-	    },
-	    "enhancer": {
-		title: "Enhancer ranks",
-		cols: [
-		    {
-			title: "cell type",
-			data: "cell_type",
-			className: "dt-right",
-			render: render_cell_type
-		    },
-		    {
-			title: "H3K27ac and DNase",
-			data: "H3K27ac_DNase",
-			render: render_int
-		    },
-		    {
-			title: "H3K27ac only",
-			data: "H3K27ac",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[2, "asc"], [1, "asc"]],
-		pageLength: 5,
-		paging: false,
-		bar_graph: true,
-		bg_rank_f: (d) => (Math.log(d["H3K27ac"]))
-	    },
-	    "ctcf": {
-		title: "CTCF ranks",
-		cols: [
-		    {
-			title: "cell type",
-			data: "cell_type",
-			className: "dt-right",
-			render: render_cell_type
-		    },
-		    {
-			title: "CTCF and DNase",
-			data: "ctcf_DNase",
-			render: render_int
-		    },
-		    {
-			title: "CTCF only",
-			data: "ctcf",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[2, "asc"], [1, "asc"]],
-		pageLength: 5,
-		paging: false,
-		bar_graph: true,
-		bg_rank_f: (d) => (Math.log(d["ctcf"]))
-	    },
-	    "dnase": {
-		title: "DNase ranks",
-		cols: [
-		    {
-			title: "cell type",
-			data: "cell_type",
-			className: "dt-right",
-			render: render_cell_type
-		    },
-		    {
-			title: "rank",
-			data: "rank",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "asc"]],
-		pageLength: 5,
-		paging: false,
-		bar_graph: true,
-		bg_rank_f: (d) => (Math.log(d["rank"]))
-	    }
-	}
-    },
-    {
-	title: "Candidate Target Genes",
-	enabled: "mm10" != GlobalAssembly,
-	numCols: 1,
-	tables: {
-	    "candidate_links": {
-		title: "",
-		paging: true,
-		bInfo: true,
-		bFilter: true,
-		emptyText: "No target genes predicted",
-		cols: [
-		    {
-			title: "name",
-			data: "gene.common-gene-name",
-			className: "dt-right",
-			render: render_gene_link
-		    },
-		    {
-			title: "ensembl ID",
-			data: "gene.ensemble-id",
-			className: "dt-right"
-		    },
-		    {
-			title: "# supporting exps",
-			data: "evidence",
-			render: render_support
-		    },
-		    {
-			title: "# ChIA-PET exps",
-			data: "evidence.chiapet",
-			render: render_length
-		    },
-		    {
-			title: "ChIA-PET cell types",
-			data: "evidence.chiapet",
-			render: render_supporting_cts
-		    },
-		    {
-			title: "# eQTL exps",
-			data: "evidence.eqtls",
-			render: render_length
-		    },
-		    {
-			title: "eQTL cell types",
-			data: "evidence.eqtls",
-			render: render_supporting_cts
-		    }
-		],
-		data: [],
-		order: [[2, "desc"]]
-	    }
-	}
-    },
-    {
-	title: "Nearby Genomic Features",
-	enabled: true,
-	tables: {
-	    "nearby_genes": {
-		title: "Nearby genes",
-		paging: false,
-		bInfo: false,
-		bFilter: false,
-		emptyText: "No genes within 1Mb",
-		cols: [
-		    {
-			title: "symbol",
-			data: "name",
-			render: render_gene_link
-		    },
-		    {
-			title: "distance",
-			data: "distance",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "asc"]]
-	    },
-	    "tads": {
-		title: "Genes within TAD",
-		paging: true,
-		bInfo: false,
-		bFilter: false,
-		emptyText: "No genes within TAD",
-		cols: [
-		    {
-			title: "symbol",
-			data: "approved_symbol",
-			render: render_gene_link
-		    },
-		    {
-			title: "coordinates",
-			data: "coordinates"
-		    }
-		],
-		data: [],
-		order: [[0, "asc"]]
-	    },
-	    "re_tads": {
-		title: "Other REs within TAD",
-		paging: true,
-		bInfo: false,
-		bFilter: false,
-		emptyText: "No REs within TAD",
-		cols: [
-		    {
-			title: "accession",
-			data: "accession",
-			render: render_re_link
-		    },
-		    {
-			title: "coordinates",
-			data: "position",
-			render:  render_position
-		    }
-		],
-		data: [],
-		order: [[0, "asc"]],
-		onTdClick: (dispatch) => (i, d) => {
-		    dispatch(invalidate_detail({_source: {accession: d.accession}}));
-		}
-	    },
-	    "nearby_res": {
-		title: "Nearby candidate REs",
-		paging: false,
-		bInfo: false,
-		bFilter: false,
-		cols: [
-		    {
-			title: "accession",
-			data: "name",
-			className: "dt-right",
-			render: render_re_link
-		    },
-		    {
-			title: "distance",
-			data: "distance",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "asc"]],
-		onTdClick: (dispatch) => (i, d) => {
-		    dispatch(invalidate_detail({_source: {accession: d.name}}));
-		}
-	    },
-	    "overlapping_snps": {
-		title: "Nearby SNPs",
-		paging: false,
-		bInfo: false,
-		bFilter: false,
-		emptyText: "No SNPs within 10Kb",
-		cols: [
-		    {
-			title: "accession",
-			data: "name",
-			render: render_snp_link
-		    },
-		    {
-			title: "distance",
-			data: "distance",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "asc"]]
-	    }
-	}
-    },
-    {
-	title: "TF and Histone Intersection",
-	enabled: true,
-	numCols : 2,
-	tables: {
-	    "tf": {
-		title: "Intersecting TFs",
-		cols: [
-		    {
-			title: "factor",
-			data: "name",
-			render: render_factorbook_link_tf
-		    },
-		    {
-			title: "# experiments",
-			data: "n",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "desc"]]
-	    },
-	    "histone": {
-		title: "Intersecting Histones",
-		cols: [
-		    {
-			title: "mark",
-			data: "name",
-			render: render_factorbook_link_histone
-		    },
-		    {
-			title: "# experiments",
-			data: "n",
-			render: render_int
-		    }
-		],
-		data: [],
-		order: [[1, "desc"]]
-	    }
-	}
-    },
-    {
-	title: "Related Gene Expression",
-	enabled: true,
-	render: (store, key) => {
-	    var ExpressionHeatmap = expression_heatmap_connector((state) => (state.re_detail.expression_matrices))(ExpressionHeatmapSet);
-	    return <ExpressionHeatmap store={store} key={key} />;
-	}
-    },
-    {
-	title: "Associated TSS Expression",
-	enabled: true,
-	render: (store, key) => {
-	    var TSS = main_tss_connector(TSSExpressionPlot);
-	    return <TSS store={store} key={key} />;
-	}
-    },
-    {
-	title: "Similar REs",
-	enabled: true,
-	render: (store, key) => {
-	    var Peaks = main_minipeaks_connector(MiniPeaks);
-	    return <Peaks store={store} key={key} />;
-	}
+function chunkArr(arr, chunk){
+    // from https://jsperf.com/array-splice-vs-underscore
+    var i, j, temparray = [];
+    for (i = 0, j = arr.length; i < j; i += chunk) {
+	temparray.push(arr.slice(i, i + chunk));
     }
-];
+    return temparray;
+}
+
+function makeTable(data, key, table){
+    if(table.bar_graph){
+        return React.createElement(BarGraphTable, {data, ...table});
+    }
+    return React.createElement(ResultsTable, {data, ...table});
+}
+
+function tabEle(data, key, table, numCols) {
+    return (<div className={"col-md-" + (12/numCols)} key={key}>
+	    <h4>{table.title}</h4>
+	    {makeTable(data, key, table)}<br/>
+	    </div>);
+}
+
+function tabEles(data, tables, numCols){
+    var cols = [];
+    for(var key of Object.keys(tables)){
+        var _data = (key in data ? data[key] : []);
+	cols.push(tabEle(_data, key, tables[key], numCols));
+    };
+    if(0 == numCols){
+	return cols;
+    }
+    var chunks = chunkArr(cols, numCols);
+    var ret = []
+    for(var i = 0; i < chunks.length; i++) {
+	var chunk = chunks[i];
+	ret.push(<div className="row" key={"chunk" + i}>{chunk}</div>);
+    }
+    return (<div>{ret}</div>);
+}
+
+class ReTabBase extends React.Component{
+    constructor(props, key) {
+	super(props);
+        this.key = key;
+        this.url = "/dataws/re_detail/" + key;
+        this.state = { isFetching: true, isError: false };
+        this.loadCRE = this.loadCRE.bind(this);
+        this.doRenderWrapper = this.doRenderWrapper.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps){
+        // only check/get data if we will become active tab...
+        if(this.key == nextProps.re_details_tab_active){
+            this.loadCRE(nextProps);
+        }
+    }
+
+    loadCRE({cre_accession_detail}){
+        if(cre_accession_detail in this.state){
+            return;
+        }
+        var q = {GlobalAssembly, "accession" : cre_accession_detail};
+        var jq = JSON.stringify(q);
+        //console.log("loadCRE....", jq);
+        this.setState({isFetching: true});
+        $.ajax({
+            url: this.url,
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({...r, isFetching: false, isError: false});
+            }.bind(this)
+        });
+    }
+
+    doRenderWrapper(){
+        let accession = this.props.cre_accession_detail;
+        if(accession in this.state){
+            return this.doRender(this.state[accession]);
+        }
+        return loading(this.state);
+    }
+
+    render(){
+        return (<div style={{"width": "100%"}} >
+                {this.doRenderWrapper()}
+                </div>);
+    }
+};
+
+class TopTissuesTab extends ReTabBase{
+    constructor(props) {
+	super(props, "topTissues");
+        this.doRender = (data) => {
+            return tabEles(data, TopTissuesTables, 2);
+        }
+    }
+}
+
+class NearbyGenomicTab extends ReTabBase{
+    constructor(props) {
+	super(props, "nearbyGenomic");
+        this.doRender = (data) => {
+            return tabEles(data, NearbyGenomicTable, 4);
+        }
+    }
+}
+
+class TargetGeneTab extends ReTabBase{
+    constructor(props) {
+	super(props, "targetGene");
+        this.doRender = (data) => {
+            return (<div>hi!</div>);
+            return tabEles(data, TargetGeneTable, 1);
+        }
+    }
+}
+
+class TfIntersectionTab extends ReTabBase{
+    constructor(props) {
+	super(props, "tfIntersection");
+        this.doRender = (data) => {
+            console.log("hi!");
+            return tabEles(data, TfIntersectionTable, 2);
+        }
+    }
+}
+
+class RelatedGeneTab extends ReTabBase{
+    constructor(props) {
+	super(props, "relatedGene");
+        this.doRender = (data) => {
+            return (<div>hi!</div>);
+	    return (<ExpressionHeatmapSet />);
+        }
+    }
+}
+
+class AssocTssTab extends ReTabBase{
+    constructor(props) {
+	super(props, "assocTSS");
+        this.doRender = (accession) => {
+            return (<div></div>);
+            return (<TSSExpressionPlot />);
+        }
+    }
+}
+
+class SimilarREsTab extends ReTabBase{
+    constructor(props) {
+	super(props, "similarREs");
+        this.doRender = (data) => {
+            return (<MiniPeaks data={data} />);
+        }
+    }
+}
+
+const DetailsTabInfo = {
+    topTissues : {title: "Top tissues", enabled: true,
+                  f: TopTissuesTab},
+    targetGene : {title: "Candidate Target Genes",
+                  enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
+    nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
+                    f: NearbyGenomicTab},
+    tfIntersection: {title: "TF and Histone Intersection", enabled: true,
+                     f: TfIntersectionTab},
+    relatedGene: {title: "Related Gene Expression", enabled: true,
+                  f: RelatedGeneTab},
+    assocTSS: {title: "Associated TSS Expression", enabled: true,
+               f: AssocTssTab},
+    similarREs: {title: "Similar REs", enabled: true,
+                 f: SimilarREsTab}
+};
+
+export default DetailsTabInfo;

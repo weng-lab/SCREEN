@@ -66,7 +66,7 @@ class LoadCellTypes:
         return ""
 
     def _import(self):
-        es = ElasticSearchWrapper(Elasticsearch())
+        es = ElasticSearchWrapper(Elasticsearch(), self.assembly)
 
         r = es.get_field_mapping(index = paths.reJsonIndex(self.assembly),
                                  doc_type = "element",

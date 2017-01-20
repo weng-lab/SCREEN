@@ -1,7 +1,10 @@
-var React = require('react')
-import {connect} from 'react-redux'
+import React from 'react'
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import REComponent from '../../../common/components/re_component'
+
+import * as Actions from '../actions/main_actions';
 
 import {primary_cell_color, tissue_color, friendly_celltype, tissue_name, infer_primary_type} from '../config/colors'
 
@@ -54,19 +57,19 @@ class MiniPeaks extends REComponent {
 		   </g>
 		</g>);
     }
-    
+
     render() {
-	
-	// make sure regions are present, count values
-	if (!this.props.regions || Object.keys(this.props.regions).length == 0) return <div />;
-	var cts = Object.keys(this.props.regions);
+	var regions = this.props.data.regions;
+        var elems = this.props.data.mostSimilar;
+        console.log(elems)
+
+	var cts = Object.keys(regions);
 	cts.sort((a, b) => (ctindex(a) - ctindex(b)));
-	var elems = (this.props.accorder ? this.props.accorder : Object.keys(this.props.regions[cts[0]]));
-	var regions = this.props.regions;
 	if (elems.length == 0) return <g />;
+
 	var nbars = regions[cts[0]][elems[0]].length;
 	var _render_regionset = this._render_regionset;
-	
+
 	// get dimensions, render
 	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN;
 	var height = (ROWHEIGHT + ROWMARGIN) * cts.length + TOPMARGIN;
@@ -83,27 +86,19 @@ class MiniPeaks extends REComponent {
 		   ))}
 	           </g>
 		</svg>);
-	
-    }
 
-    
-    componentDidUpdate() {
-	super.componentDidUpdate();
     }
-
-    componentDidMount() {
-	super.componentDidMount();
-    }
-    
 }
-export default MiniPeaks;
 
-export const props_map = (f) => (_state) => {
-    var state = f(_state);
-    return {
-	regions: state,
-	accorder: _state.re_detail.data.most_similar
-    };
-};
+const mapStateToProps = (state) => ({
+        ...state
+});
 
-export const minipeaks_connector = (pf) => connect(props_map(pf));
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(MiniPeaks);

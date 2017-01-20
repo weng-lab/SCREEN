@@ -1,11 +1,13 @@
 var $ = require('jquery');
-var React = require('react');
+const React = require('react');
 import {connect} from 'react-redux'
 import {render} from 'react-dom'
 
 import ResultsTable from '../../../common/components/results_table'
 import HorizontalBars from '../../../common/components/horizontal_bars'
 import {TissueColors} from '../config/colors'
+
+import loading from '../components/loading'
 
 const format_data_for_bar_graph = (data) => {
     var retval = {};
@@ -24,39 +26,35 @@ const format_data_for_bar_graph = (data) => {
 };
 
 class BarGraphTable extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     render() {
-	var n_data = (this.props.data ? [...this.props.data] : []);
-	return (<div style={{"width": "100%"}}>
-		<div className={"loading"}
-		style={{"display": (this.props.fetching ? "block" : "none")}}>
-		Loading...
-		</div>
-		
-		<div style={{"width": "100%"}} ref="bargraph" />
+        var n_data = [...this.props.data];
+	return (<div style={{"width": "100%"}} ref="box">
 
-		<ResultsTable data={n_data} cols={this.props.cols} onTdClick={this.props.onTdClick}
-	        loading={this.props.fetching} onButtonClick={this.props.onButtonClick}
-		order={this.props.order} bFilter={this.props.bFilter}
+                <div ref="bargraph">
+                </div>
+
+                <ResultsTable data={n_data}
+                cols={this.props.cols}
+		order={this.props.order}
+                bFilter={false}
+                info={false}
+                paging={true}
 		bLengthChange={this.props.bLengthChange}
 		pageLength={this.props.pageLength}
+                emptyText={""}
 		/>
 
-		</div>);
+               </div>);
     }
 
     componentDidUpdate() {
-	var width = $(this.refs.bargraph).width();
+	var width = $(this.refs.box).width();
 	render(<HorizontalBars width={width} height={500}
 	       items={format_data_for_bar_graph(this.props.data)}
 	       barheight="5" rank_f={this.props.rank_f} />,
 	       this.refs.bargraph);
     }
-    
+
     componentDidMount() {
 	this.componentDidUpdate();
     }

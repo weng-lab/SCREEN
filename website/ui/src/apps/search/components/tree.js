@@ -1,5 +1,6 @@
-var React = require('react')
+import React from 'react'
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 import Tree from '../../../common/components/tree'
 import {invalidate_results, invalidate_tree_comparison} from '../helpers/invalidate_results'
@@ -9,94 +10,111 @@ import REComponent from '../../../common/components/re_component'
 
 import {primary_cell_label_formatter} from '../config/colors'
 
+import * as Actions from '../actions/main_actions';
+import loading from '../components/loading'
+
 const default_label_formatter = (l) => {
     return {
 	name: l
     };
 };
 
-class ResultsTree extends REComponent {
+class ResultsTree extends React.Component { //REComponent {
 
     constructor(props) {
 	super(props);
-	this._on_click = this._on_click.bind(this);
+        this.state = { isFetching: false, isError: false}
     }
 
-    onChange(s) {
-	var p = s.split("$");
-	if (this.props.onChange) {
-	    this.props.onChange(p[0], p[1]);
+    componentWillReceiveProps(nextProps){
+        //console.log("in componentWillReceiveProps");
+        if("ct_tree" == nextProps.maintabs_active){
+	    this.loadTrees(nextProps);
 	}
     }
 
-    _on_click(d) {
-	if (this.props.onClick) {
-	    this.props.onClick(d);
+    loadTrees({tree_rank_method}){
+	if(tree_rank_method in this.state){
+	    return;
 	}
+	var q = {GlobalAssembly, tree_rank_method}
+        var jq = JSON.stringify(q);
+        this.setState({isFetching: true});
+        $.ajax({
+            url: "/dataws/trees",
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({...r, isFetching: false, isError: false});
+            }.bind(this)
+        });
     }
-    
-    render() {
-	var _formatter = (this.props.label_formatter ? this.props.label_formatter : default_label_formatter);
-	var tr = this.props.tree_results;
-	var title = this.props.tree_title;
-	var trees = (tr ? Object.keys(tr).map((k) => {
-	    var formatter = (k == "primary cell" ? primary_cell_label_formatter : _formatter);
-	    var labels = (tr[k].labels ? tr[k].labels.map(formatter) : null);
-	    var height = (labels ? labels.length * 15 : 0);
-	    return <div ref="container"><h2>{k}</h2><Tree data={tr[k].tree} width={2000} height={height} labels={labels} onClick={this._on_click} /></div>;
-	}) : "");
-	return super.render(<div>
-		   <select onChange={() => {$(this.refs.container).empty(); this.onChange(this.refs.field.value)}} ref="field">
-		      <option value="dnase">DNase</option>
-		      <option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
-		      <option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
-		      <option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
-		      <option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
-		      <option value="ctcf$CTCF-Only">CTCF Only</option>
-		      <option value="ctcf$DNase+CTCF">CTCF and DNase</option>
-		   </select>
-		   <h1>{title}</h1>
-	           <span ref="help_icon" />
-		   {trees}
+
+    makeTree(data, k, _formatter){
+	var formatter = (k == "primary cell" ?
+			 primary_cell_label_formatter : _formatter);
+	var labels = (data.labels ? data.labels.map(formatter) : null);
+	var height = (labels ? labels.length * 15 : 0);
+	return (<div ref="container">
+		<h2>{k}</h2>
+		<Tree data={data.tree} width={2000} height={height}
+		labels={labels} onClick={this._on_click} />
 		</div>);
     }
 
-    componentDidMount() {
-	super.componentDidMount();
+    doRenderWrapper(){
+        let tree_rank_method = this.props.tree_rank_method;
+        if(tree_rank_method in this.state){
+            let title = this.state[tree_rank_method].title;
+            let trees = this.state[tree_rank_method].trees;
+            var _formatter = (this.props.label_formatter ?
+                              this.props.label_formatter :
+                              default_label_formatter);
+            return (<div>
+		    <h1>{title}</h1>
+                    {Object.keys(trees).map((k) => {
+                        return this.makeTree(trees[k], k, _formatter); })}
+                    </div>);
+        }
+        return loading(this.state);
     }
 
-    componentDidUpdate() {
-	super.componentDidUpdate();
+    render() {
+	var actions = this.props.actions;
+
+	return (<div>
+		<select onChange={() => {
+                    actions.setTreeRankMethod(this.refs.field.value)}}
+		ref="field">
+		<option value="dnase">DNase</option>
+		<option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
+		<option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
+		<option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
+		<option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
+		<option value="ctcf$CTCF-Only">CTCF Only</option>
+		<option value="ctcf$DNase+CTCF">CTCF and DNase</option>
+		</select>
+                {this.doRenderWrapper()}
+		<span ref="help_icon" />
+		</div>);
     }
-    
-};
-export default ResultsTree;
-    
-const props_map = (f) => (_state) => {
-    var state = f(_state);
-    return Object.assign({}, state, {
-	helpkey: "celltype_tree"
-    });
 };
 
-const dispatch_map = (store) => (f) => (_dispatch) => {
-    var dispatch = f(_dispatch);
-    return {
-	onChange: (outer, inner) => {
-	    dispatch({
-		type: SET_TREE_FIELDS,
-		outer,
-		inner
-	    });
-	    dispatch(invalidate_results(store.getState()));
-	},
-	onClick: (d) => {
-	    dispatch(invalidate_tree_comparison({
-		left: d.children[0],
-		right: d.children[1]
-	    }));
-	}
-    };
-};
+const mapStateToProps = (state) => ({
+        ...state
+});
 
-export const tree_connector = (store) => (pf, df) => connect(props_map(pf), dispatch_map(store)(df));
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ResultsTree);

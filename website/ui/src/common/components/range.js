@@ -7,7 +7,7 @@ var __jui = require('jquery-ui-bundle');
 import {chain_functions} from '../common'
 
 class RangeSlider extends React.Component {
-    
+
     constructor(props) {
 	super(props);
 	this.onMinChange = this.onMinChange.bind(this);
@@ -18,7 +18,7 @@ class RangeSlider extends React.Component {
 	this.componentDidUpdate = this.componentDidUpdate.bind(this);
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
-    
+
     render() {
 	return (<div>
 		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
@@ -41,50 +41,50 @@ class RangeSlider extends React.Component {
     create_histogram(destination_div) {
 
 	$(destination_div).empty();
-	
+
 	var div = $(destination_div);
 	var height = div.height();
 	var width = div.width();
 	var xrange = this.props.range;
 	var srange = this.props.selection_range;
-	
+
 	var svg = d3.select(destination_div).append("svg")
 	    .attr("width", width)
 	    .attr("height", height);
-	
+
 	svg.append("g")
 	    .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
-	
+
 	var x = d3.scaleLinear()
             .domain(xrange)
 	    .rangeRound([0, width]);
-	
+
 	var y = d3.scaleLinear()
-	    .domain([0, d3.max(this.props.data, function(d) { return d.doc_count; })])
+	    .domain([0, this.props.data.binMax])
 	    .range([height, 0]);
-	
+
 	var bar = svg.selectAll(".bar")
-	    .data(this.props.data)
+	    .data(this.props.data.bins)
 	    .enter().append("g")
 	    .attr("class", function(d) {
-		return (d.key >= +srange[0] && d.key < +srange[1]
+		return (d[0] >= +srange[0] && d[0] < +srange[1]
 			? "barselected" : "bardeselected");
 	    })
-	    .attr("transform", function(d) { return "translate(" + x(d.key) + "," + y(d.doc_count) + ")"; });
-	
+	    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
+
 	bar.append("rect")
 	    .attr("x", 1)
 	    .attr("width", x(this.props.interval + xrange[0]))
-	    .attr("height", function(d) { return height - y(d.doc_count); });
+	    .attr("height", function(d) { return height - y(d[1]); });
 
 	return svg;
-	
+
     }
-    
+
     componentDidMount() {
 	this.componentDidUpdate();
     }
-    
+
     componentDidUpdate() {
 	this._slider = this.create_range_slider(this.refs.container);
 	this._histogram = this.create_histogram(this.refs.histogram);
@@ -104,7 +104,7 @@ class RangeSlider extends React.Component {
 	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
 	this.set_selection(srange);
     }
-    
+
     create_range_slider(dcontainer) {
 	var container = $(dcontainer);
 	container.empty().slider({
@@ -117,7 +117,7 @@ class RangeSlider extends React.Component {
 	});
 	return container;
     }
-    
+
     update_selection(event, ui) {
 	var r = this._slider.slider("values");
 	this.refs.txmin.value = r[0];
@@ -126,27 +126,27 @@ class RangeSlider extends React.Component {
             .data(this.props.data)
             .attr("class", function(d) { return (d.key >= +r[0] && d.key < +r[1] ? "barselected" : "bardeselected"); });
     }
-    
+
     _set_selection(event, ui) {
 	var r = this._slider.slider("values");
 	this.set_selection(r);
     }
 
     set_selection(r) {
-	if (this.props.onchange) this.props.onchange(r);
+	if (this.props.onchange) {
+            this.props.onchange(r);
+        }
     }
-    
 }
 
 const zeros = (range, interval) => {
-    var retval = [];
+    var bins = [];
     for (var i = range[0]; i < range[1]; i += interval) {
-	retval.push({
-	    key: i,
-	    doc_count: 0
-	});
+	bins.push([i, 0]);
     }
-    return retval;
+    return {"bins" : bins,
+            "numBins" : bins.lengths,
+            "binMax" : 0}
 };
 
 class RangeFacet extends React.Component {
@@ -157,24 +157,30 @@ class RangeFacet extends React.Component {
     }
 
     selection_change_handler(r) {
-	if (this.props.onchange) this.props.onchange(r);
+	if (this.props.onchange) {
+            this.props.onchange(r);
+        }
     }
-    
+
     render() {
 	var h_data = (this.props.h_data == null
 		      ? zeros(this.props.range, this.props.h_interval)
 		      : this.props.h_data);
 	return (<div>
 		   <RangeSlider
-		      range={this.props.range} selection_range={this.props.selection_range}
-		      interval={this.props.h_interval} data={h_data} margin={this.props.h_margin}
-		      onchange={this.selection_change_handler} ref="slider" title={this.props.title}
+		      range={this.props.range}
+                      selection_range={this.props.selection_range}
+		      interval={this.props.h_interval} data={h_data}
+                      margin={this.props.h_margin}
+		      onchange={this.selection_change_handler}
+                      ref="slider"
+                      title={this.props.title}
 		      updateWidth={this.props.updateWidth}
 		   />
 		</div>
 	       );
     }
-    
+
 }
 export default RangeFacet;
 
@@ -191,12 +197,12 @@ export default RangeFacet;
 		   doc_count: Math.round(Math.random() * 1000)
 		  });
     }
-    
+
     var range = [0, 10000];
     var srange = [0, 4000];
     var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
     var h_interval = 10;
-    
+
     ReactDOM.render(<RangeFacet range={range} h_margin={h_margin} selection_range={srange} h_interval="10" h_data={data} />, document.getElementById("range_facet"));
 
 })();

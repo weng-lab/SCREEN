@@ -13,61 +13,59 @@ const cart_img = (rmv, src_only) => {
 
 export const render_int = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-export const render_gene = (d) => (d[0]["gene-name"] ? d[0]["gene-name"] : d[0]["gene-id"]);
 export const render_cell_type = (d) => (d.replace(/_/g, " "));
 
 const render_array = (m) => (array) => (
     array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
 const render_gene_button = (d) => {
-    var g = render_gene(d);
-    return '<a href="/geneexp/' + GlobalAssembly + '/' + g + '" target="_blank">' + g + '</a>';
+    return '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>';
 };
 
 const ResultsTableColumns = [
     {
 	title: "accession",
-	data: "_source.accession",
+	data: "accession",
 	className: "dt-right"
     },
     {
 	title: "&#8209;log(p)",
-	data: "_source.neg-log-p",
+	data: "neglogp",
 	className: "dt-right",
         render: render_float
     },
     {
 	title: "chr",
-	data: "_source.position.chrom",
+	data: "chrom",
 	className: "dt-right"
     },
     {
 	title: "start",
-	data: "_source.position.start",
+	data: "start",
 	className: "dt-right",
         render: render_int
     },
     {
 	title: "end",
-	data: "_source.position.end",
+	data: "stop",
 	className: "dt-right",
         render: render_int
     },
     {
 	title: "nearest gene",
-	data: "_source.genes.nearest-all",
+	data: "gene_all",
 	className: "dt-right geneexp",
 	render: render_gene_button
     },
     {
 	title: "nearest protein-coding gene",
-	data: "_source.genes.nearest-pc",
+	data: "gene_pc",
 	className: "dt-right geneexp",
 	render: render_gene_button
     },
     {
 	title: "cart",
-	data: "_source.in_cart",
+	data: "in_cart",
 	render: (d) => cart_img(d, false),
 	className: "cart"
     },
@@ -83,7 +81,8 @@ const ResultsTableColumns = [
 	    "Ensembl"
 	])
     }
-];    
+];
+
 export default ResultsTableColumns;
 
 export const table_order = [

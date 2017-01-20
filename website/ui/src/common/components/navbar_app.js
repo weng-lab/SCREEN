@@ -16,13 +16,13 @@ class NavBarApp extends React.Component {
 	    var SearchBoxC = this.props.searchbox;
 	    SearchBox = <SearchBoxC store={this.props.store} />;
 	}
-	
+
 	var cartimage = "";
 	if (this.props.show_cartimage) {
 	    var Cart = cart_connector(CartImage);
 	    cartimage = <form className="navbar-form navbar-right" id="cartimage-container"><Cart store={this.props.store} /></form>;
 	}
-	
+
 	return (<div className="navbar-header">
 		<a className="navbar-brand" href={HOMEPAGE.url}>{HOMEPAGE.title} {GlobalAssembly}</a>
 		   {SearchBox}

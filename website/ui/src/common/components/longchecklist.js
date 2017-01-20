@@ -22,7 +22,7 @@ class LongChecklistFacet extends React.Component {
 		: '<input type="checkbox" />'
 	       );
     }
-    
+
     _td_handler(r, k) {
 	if (this.props.onTdClick) {
 	    this.props.onTdClick(k.key);
@@ -36,7 +36,7 @@ class LongChecklistFacet extends React.Component {
 	    this.props.onModeChange(n_value);
 	}
     }
-    
+
     componentDidMount() {
 	/*$(this.refs.mode).toggleSwitch({
 	    highlight: true,
@@ -44,7 +44,7 @@ class LongChecklistFacet extends React.Component {
 	    change: this.modeChange
 	});*/
     }
-    
+
     render() {
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
 	var checks = "";
@@ -73,6 +73,6 @@ class LongChecklistFacet extends React.Component {
 		</div>
 	       );
     }
-    
+
 }
 export default LongChecklistFacet;

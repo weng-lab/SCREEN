@@ -16,7 +16,7 @@ class GeneExpController:
     def geneexp(self, args, kwargs, uuid):
         pageInfo = PageInfoGeneExp(*self.params)
         return self.t('main/geneexp', **pageInfo.geneexpPage(args, kwargs, uuid))
-    
+
     def geneexpjson(self, j):
         if "GlobalAssembly" not in j:
             print(sorted(list(j.keys())))

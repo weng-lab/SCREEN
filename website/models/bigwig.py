@@ -11,20 +11,29 @@ class BigWig:
         m = md5.new()
         m.update(str(time.gmtime()))
         return os.path.join("/tmp", m.hexdigest() + ".bed")
-    
+
     @staticmethod
     def getregions(regions, files, n_bars):
         bed = BigWig.getfile()
         retval = {}
         with open(bed, "wb") as o:
             for region in regions:
-                o.write("%s\t%d\t%d\t%s\n" % (region["chr"], region["start"] - 300, region["end"] + 300, region["acc"]))
+                o.write("%s\t%d\t%d\t%s\n" %
+                        (region["chr"],
+                         region["start"] - 300, region["end"] + 300,
+                         region["acc"]))
         for bigwig in files:
             if not os.path.exists(bigwig["path"]):
                 print("WARNING: missing bigwig %s" % bigwig["path"])
                 continue
             retval[bigwig["ct"]] = {}
-            results = subprocess.check_output(["/data/cherrypy/bin/bwtool", "extract", "bed", bed, bigwig["path"], "/dev/stdout"]).split("\n")
+
+            bwtool = "/data/cherrypy/bin/bwtool"
+            if not os.path.exists(bwtool):
+                bwtool = "/usr/local/bin/bwtool"
+
+            results = subprocess.check_output(
+                [bwtool, "extract", "bed", bed, bigwig["path"], "/dev/stdout"]).split("\n")
             for line in results:
                 p = line.split("\t")
                 if len(p) >= 6:
