@@ -54,9 +54,14 @@ export const primary_cell_color = (d) => {
     return primary_cell_colors[infer_primary_type(d, tissue_name(d))];
 };
 
-export const tissue_name = (cell_type) => (
-    (cell_type in GlobalTissueMap) ? GlobalTissueMap[cell_type] : ""
-);
+export const tissue_name = (cell_type) => {
+    if(GlobalTissueMap){
+        if(cell_type in GlobalTissueMap){
+            return GlobalTissueMap[cell_type];
+        }
+    }
+    return "";
+};
 
 export const name_and_tissue = (d) => {
     var t = tissue_name(d);
@@ -64,7 +69,8 @@ export const name_and_tissue = (d) => {
 };
 
 export const tissue_color = (cell_type) => {
-    if (!(cell_type in GlobalTissueMap)) return "#000000";
+    if(!GlobalTissueMap){ return  "#000000"; }
+    if (!(cell_type in GlobalTissueMap)) { return "#000000"; }
     var tissue = GlobalTissueMap[cell_type];
     return (tissue in TissueColors ? TissueColors[tissue] : "#000000");
 };

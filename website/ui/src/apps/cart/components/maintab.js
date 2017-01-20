@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react'
 import {connect} from 'react-redux';
 
 import {SELECT_TAB} from '../reducers/tab_reducer'
@@ -19,7 +19,7 @@ class MainTabControl extends React.Component {
 	    this.props.onClick(k);
 	}
     }
-    
+
     render() {
 	var tabs = this.props.tabs;
 	var selection = this.props.selection;
@@ -43,7 +43,7 @@ class MainTabControl extends React.Component {
 		   </div>
                 </div>);
     }
-    
+
 }
 export default MainTabControl;
 

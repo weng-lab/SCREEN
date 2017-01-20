@@ -9,7 +9,7 @@ from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from autocomplete import Autocompleter
-from constants import paths, PageTitle
+from constants import paths, PageTitle, chrom_lengths
 
 class PageInfoMain:
     def __init__(self, es, ps, cacheW):
@@ -54,12 +54,18 @@ class PageInfoMain:
             parsed = p.parse()
             parsedStr = p.parseStr()
 
+        cache = self.cacheW[assembly]
+
         ret.update({"globalParsedQuery" : json.dumps(parsed),
                     "globalSessionUid" : uuid,
-                    "globalTfs" : self.cacheW.getTFListJson(assembly),
-                    "globalCellTypes" : self.cacheW.getCTTjson(assembly),
+                    "globalTfs" : cache.getTFListJson(),
                     "searchPage": True,
-                    "tissueMap": self.cacheW.getTissueMap(assembly) })
+                    "globalChromCounts" : json.dumps(cache.chromCounts),
+                    "globalChromLens" : json.dumps(chrom_lengths[assembly]),
+                    "globalCreHistBins" : json.dumps(cache.creHist),
+                    "globalCellTypeInfo": cache.globalCellTypeInfo(),
+                    "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
+                    })
 
         return ret
 
