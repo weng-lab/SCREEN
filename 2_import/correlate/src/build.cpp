@@ -11,60 +11,66 @@ ZiARG_int32(j, 5, "num threads");
 
 namespace bib {
 
-  class Builder {
+class Builder {
     const bfs::path d_;
 
-  public:
+public:
     Builder(const bfs::path d)
-      :d_(d)
+        :d_(d)
     {}
-    
+
     void build(){
-      bfs::path fnp = d_ / "H3K27ac-List.txt";
-      
-      auto lines = bib::files::readStrings(fnp);
-      for(const auto& p : lines){
-	auto toks = bib::str::split(p, '\t');
-	std::string expID = toks[0];
-	std::string fileID = toks[1];
+        bfs::path fnp = d_ / "H3K27ac-List.txt";
 
-	bfs::path fn = expID + "-" + fileID + ".txt";
-	bfs::path sfnp = d_ / "signal-output" / fn;
+        auto lines = bib::files::readStrings(fnp);
 
-	if(!bfs::exists(fnp)){
-	  std::cout << "ERROR: missing " << sfnp << std::endl;
-	}
-      }
+        std::vector<bfs::path> files;
+
+        for(const auto& p : lines){
+            auto toks = bib::str::split(p, '\t');
+            std::string expID = toks[0];
+            std::string fileID = toks[1];
+
+            bfs::path fn = expID + "-" + fileID + ".txt";
+            bfs::path sfnp = d_ / "signal-output" / fn;
+
+            if(!bfs::exists(fnp)){
+                std::cout << "ERROR: missing " << sfnp << std::endl;
+            }
+            files.push_back(sfnp);
+        }
+        std::cout << "found " << files.size() << std::endl;
     }
-  };
+};
 
 } // namespace bib
 
 void run(const bfs::path base){
-  bfs::path d =  base / "raw";
-  bib::Builder b(d);
-  
-  {
-    bib::TicToc tt("build time");
-    b.build();
-  }
-  {
-    bfs::path outD = base / "newway";
-    bfs::create_directories(outD);
-    bib::TicToc tt("tsv dump time");
-    //b.dumpToTsv(outD);
-  }
+    bfs::path d =  base / "raw";
+    bib::Builder b(d);
+
+    {
+        bib::TicToc tt("build time");
+        b.build();
+    }
+    {
+        bfs::path outD = base / "newway";
+        bfs::create_directories(outD);
+        bib::TicToc tt("tsv dump time");
+        //b.dumpToTsv(outD);
+    }
 }
 
 
 int main(int argc, char* argv[]){
-  zi::parse_arguments(argc, argv, true);  // modifies argc and argv
-  const auto args = std::vector<std::string>(argv + 1, argv + argc);
+    zi::parse_arguments(argc, argv, true);  // modifies argc and argv
+    const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-  bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
-  base /= "ver9" / ZiARG_assembly;
+    bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
+    base /= "ver9";
+    base /= ZiARG_assembly;
 
-  run(base);
-    
-  return 0;
+    run(base);
+
+    return 0;
 }
