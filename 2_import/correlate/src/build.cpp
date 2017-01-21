@@ -4,16 +4,37 @@
 #define likely(x) __builtin_expect ((x), 1)
 #define unlikely(x) __builtin_expect ((x), 0)
 
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <mutex>
+
+#include <json/json.h>
+#include <json/reader.h>
+#include <boost/optional.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup.hpp>
+
+#include <zi/concurrency/concurrency.hpp>
+#include <zi/parallel/algorithm.hpp>
+#include <zi/parallel/numeric.hpp>
+
+#include "cpp/utility.hpp"
+#include "cpp/string_utils.hpp"
+#include "cpp/files.hpp"
+#include "cpp/gzip_reader.hpp"
+#include "cpp/tictoc.hpp"
+
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "", "assembly");
 ZiARG_bool(first, false, "show first line");
 ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 5, "num threads");
-
-#include "helpers.hpp"
-#include "splitter.hpp"
-#include "geneIDer.hpp"
 
 namespace bib {
 
