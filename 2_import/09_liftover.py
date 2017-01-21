@@ -51,27 +51,31 @@ def setupAll(curs):
     mmLookup = getMpToAccLookup(curs, "mm10")
     hgLookup = getMpToAccLookup(curs, "hg19")
 
+    ret = []
     for idx, r in enumerate(mmToHg):
         try:
             mmToHg[idx][3] = mmLookup[r[3]]
         except:
             print("bad liftOver?", idx, r)
+            continue
         try:
             mmToHg[idx][4] = hgLookup[r[4]]
         except:
             print("bad liftOver?", idx, r)
+            continue
+        ret.append(mmToHg[idx])
 
     cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
     print("writing stringio...")
     outF = StringIO.StringIO()
-    for r in mmToHg:
+    for r in ret:
         outF.write("\t".join(r) + '\n')
     outF.seek(0)
     printt("\tok")
 
     print("copy into db...")
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    printt("\tok")
+    printt("\tok", curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
