@@ -105,7 +105,7 @@ public:
             for(uint32_t j = 0; j < lines.size(); ++j){
                 const auto& p = lines[j];
                 auto toks = bib::str::split(p, '\t');
-                if(4 != toks.size()){
+                if(sfi_.numSignalCols != toks.size()){
                     throw std::runtime_error("wrong num cols " + fnp.string());
                 }
                 m.at(j, i) = std::stof(toks[sfi_.zscoreColIdx]); // zscore
