@@ -183,7 +183,7 @@ def vacumnAnalyze(conn, baseTableName, chrs):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
-    parser.add_argument("--assembly", type=str, default="mm10")
+    parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
@@ -191,24 +191,24 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-mm10Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                      "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                      "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                      "chr19", "chrX", "chrY"],
-            "assembly" : "mm10",
-            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
-            "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
-            "tableName" : "mm10_cre"}
-
-hg19Info = {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                      "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                      "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                      "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
-            "assembly" : "hg19",
-            "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
-            "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
-            "tableName" : "hg19_cre"}
-
+infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                             "chr6", "chr7", "chr8", "chr9", "chr10",
+                             "chr11", "chr12",
+                             "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                             "chr19", "chrX", "chrY"],
+                   "assembly" : "mm10",
+                   "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
+                   "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
+                   "tableName" : "mm10_cre"},
+         "hg19" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                             "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+                             "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                             "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
+                   "assembly" : "hg19",
+                   "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
+                   "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
+                   "tableName" : "hg19_cre"}
+         }
 def main():
     args = parse_args()
 
@@ -226,32 +226,28 @@ def main():
             "gene_all_distance", "gene_all_id",
             "gene_pc_distance", "gene_pc_id", "tads")
 
-    m = mm10Info
-    if "hg19" == args.assembly:
-        m = hg19Info
-    m["subsample"] = args.sample
+    assemblies = ["hg19", "mm10"]
+    if args.assembly:
+        assemblies = [args.assembly]
 
-    with getcursor(DBCONN, "08_setup_log") as curs:
-        setupRangeFunction(curs)
+    for assembly in assemblies:
+        m = infos[assembly]
+        m["subsample"] = args.sample
 
-        im = ImportData(curs, m, cols)
-        ci = CreateIndices(curs, m, cols)
-        if args.setup:
-            im.run()
-        elif args.index:
-            ci.run()
-        elif args.vac:
-            pass
-        else:
-            im.run()
+        with getcursor(DBCONN, "08_setup_log") as curs:
+            setupRangeFunction(curs)
 
-    if args.setup or args.vac:
-        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+            im = ImportData(curs, m, cols)
+            if args.setup:
+                im.run()
 
-    with getcursor(DBCONN, "08_setup_log") as curs:
-        ci = CreateIndices(curs, m, cols)
-        if not args.setup and not args.index and not args.vac:
-            ci.run()
+        if args.setup or args.vac:
+            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+
+        with getcursor(DBCONN, "08_setup_log") as curs:
+            ci = CreateIndices(curs, m, cols)
+            if args.index:
+                ci.run()
 
     return 0
 
