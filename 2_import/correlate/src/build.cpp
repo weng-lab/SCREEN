@@ -73,14 +73,14 @@ public:
 
     void run(){
         a::fmat m;
-        if(bfs::exists(matFnp_)){
-            std::cout << "loading " << matFnp_ << std::endl;
-            m.load(matFnp_.string());
-        } else {
+        if(!bfs::exists(matFnp_)){
             m = build();
         }
 
         if(0){
+            std::cout << "loading " << matFnp_ << std::endl;
+            m.load(matFnp_.string());
+
             for(size_t i = 1; i < m.n_cols; ++i){
                 const auto c = a::cor(m.col(0), m.col(i));
             }
@@ -179,11 +179,11 @@ void run(bfs::path base, std::string assembly){
                 SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
     } else if("hg19" == assembly){
         sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
-                SignalFileInfo{"DNase-List.txt", 3, 5, 1},
+                SignalFileInfo{"DNase-List.txt", 4, 5, 1},
                 SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
                 SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
                 SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
-                SignalFileInfo{"Insulator-List.txt", 5, 6, 1},
+                SignalFileInfo{"Insulator-List.txt", 6, 6, 1},
                 SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
     }
 
