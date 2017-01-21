@@ -1,3 +1,9 @@
+#define ARMA_64BIT_WORD
+#include <armadillo>
+
+#define likely(x) __builtin_expect ((x), 1)
+#define unlikely(x) __builtin_expect ((x), 0)
+
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "mm10", "assembly");
@@ -11,8 +17,13 @@ ZiARG_int32(j, 5, "num threads");
 
 namespace bib {
 
+namespace a = arma;
+
 class Builder {
     const bfs::path d_;
+
+    std::vector<bfs::path> files_;
+
 
 public:
     Builder(const bfs::path d)
@@ -20,11 +31,27 @@ public:
     {}
 
     void build(){
+        loadFileNames();
+        uint32_t numRows = numCREs();
+
+        a::fmat m(numRows, files_.size());
+
+        for(uint32_t i = 0; i < files_.size(); ++i){
+            const auto& fnp = files_[i];
+            std::cout << fnp << std::endl;
+        }
+
+    }
+
+    uint32_t numCREs(){
+        bfs::path fnp = d_ / "masterPeaks.bed";
+        return bib::files::readStrings(fnp).size();
+    }
+
+    void loadFileNames(){
         bfs::path fnp = d_ / "H3K27ac-List.txt";
 
         auto lines = bib::files::readStrings(fnp);
-
-        std::vector<bfs::path> files;
 
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
@@ -37,9 +64,9 @@ public:
             if(!bfs::exists(fnp)){
                 std::cout << "ERROR: missing " << sfnp << std::endl;
             }
-            files.push_back(sfnp);
+            files_.push_back(sfnp);
         }
-        std::cout << "found " << files.size() << std::endl;
+        std::cout << "found " << files_.size() << " files" << std::endl;
     }
 };
 
