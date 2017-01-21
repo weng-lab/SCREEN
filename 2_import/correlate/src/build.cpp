@@ -21,7 +21,8 @@ namespace a = arma;
 
 struct SignalFileInfo {
     std::string fn;
-    uint32_t numCols;
+    uint32_t numDatasetCols;
+    uint32_t numSignalCols;
     uint32_t zscoreColIdx;
 
     friend auto& operator<<(std::ostream& s, const SignalFileInfo& e){
@@ -86,7 +87,7 @@ public:
                 if(4 != toks.size()){
                     throw std::runtime_error("wrong num cols " + fnp.string());
                 }
-                m.at(j, i) = std::stof(toks[1]); // zscore
+                m.at(j, i) = std::stof(toks[sfi_.zscoreColIdx]); // zscore
             }
         }
 
@@ -108,10 +109,27 @@ public:
 
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            std::string expID = toks[0];
-            std::string fileID = toks[1];
+            bfs::path fn;
 
-            bfs::path fn = expID + "-" + fileID + ".txt";
+            if(3 == sfi_.numDatasetCols){
+                if(3 != toks.size()){
+                    throw std::runtime_error("wrong num cols ");
+                }
+                std::string expID = toks[0];
+                std::string fileID = toks[1];
+                fn = expID + "-" + fileID + ".txt";
+            } else if(5 == sfi_.numDatasetCols){
+                if(5 != toks.size()){
+                    throw std::runtime_error("wrong num cols ");
+                }
+                std::string dnaseExpID = toks[0];
+                std::string dnaseFileID = toks[1];
+                std::string expID = toks[2];
+                std::string fileID = toks[3];
+                fn = dnaseExpID + "-" + dnaseFileID +"." +
+                    expID + "-" + fileID + ".txt";
+            }
+
             bfs::path sfnp = d_ / "signal-output" / fn;
 
             if(!bfs::exists(fnp)){
@@ -128,13 +146,13 @@ void run(bfs::path base, std::string assembly){
     base /= assembly;
 
     std::vector<SignalFileInfo> sfis = {
-        SignalFileInfo{"CTCF-List.txt", 4, 1},
-        SignalFileInfo{"DNase-List.txt", 4, 1},
-        SignalFileInfo{"Enhancer-List.txt", 4, 1},
-        SignalFileInfo{"H3K27ac-List.txt", 4, 1},
-        SignalFileInfo{"H3K4me3-List.txt", 4, 1},
-        SignalFileInfo{"Insulator-List.txt", 4, 1},
-        SignalFileInfo{"Promoter-List.txt", 4, 1}
+        SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
+        SignalFileInfo{"DNase-List.txt", 3, 4, 1},
+        SignalFileInfo{"Enhancer-List.txt", 5, 4, 1},
+        SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
+        SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
+        SignalFileInfo{"Insulator-List.txt", 5, 4, 1},
+        SignalFileInfo{"Promoter-List.txt", 5, 4, 1}
     };
 
     for(const auto& sfi : sfis){
