@@ -58,7 +58,9 @@ class CRE:
         def get_rank(ct, d):
             return 1e12 if ct not in d else d[ct]
         def arrToCtDict(arr, cts):
-            assert(len(arr) == len(cts))
+            if len(arr) != len(cts):
+                print("error in top tissues", len(arr), len(cts))
+                assert(len(arr) == len(cts))
             ret = {}
             for idx, v in enumerate(arr):
                 ret[cts[idx]] = v
