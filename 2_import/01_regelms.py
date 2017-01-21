@@ -238,8 +238,7 @@ def main():
             setupRangeFunction(curs)
 
             im = ImportData(curs, m, cols)
-            if args.setup:
-                im.run()
+            im.run()
 
         if args.setup or args.vac:
             vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
