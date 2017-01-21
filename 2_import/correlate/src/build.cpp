@@ -133,8 +133,8 @@ public:
             bfs::path fn;
 
             if(3 == sfi_.numDatasetCols){
-                std::cerr << "num toks found: " << toks.size() << std::endl;
                 if(3 != toks.size()){
+                    std::cerr << "num toks found: " << toks.size() << std::endl;
                     throw std::runtime_error("3 is wrong num cols " + fnp.string());
                 }
                 std::string expID = toks[0];
