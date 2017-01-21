@@ -16,6 +16,10 @@ class Trees:
         self.assembly = assembly
         self.tree_rank_method = tree_rank_method
 
+        self.groups = {"hg19": [("tissue", lambda x: "tissue" in x),
+                                ("immortalized", lambda x: "immortalized" in x),
+                                ("primary_cell", lambda x: "primary_cell" in x) ]}
+                       
         if "dnase" == tree_rank_method:
             self.inner = None
             self.outer = "dnase"
@@ -27,8 +31,11 @@ class Trees:
     def getTree(self):
         ret = {}
         biosampleTypes = self.cache.biosampleTypes
+        if self.assembly == "hg19":
+            biosampleTypes = self.groups["hg19"]
         for typ in biosampleTypes:
-            ret[typ] = self._processTyp(typ)
+            idx = typ if type(typ) is str else typ[0]
+            ret[idx] = self._processTyp(typ)
         title = ' / '.join([x for x in [self.outer, self.inner] if x])
         return {"trees": ret, "title" : title }
 
@@ -37,19 +44,21 @@ class Trees:
             if not ct in self.cache.biosamples:
                 print("missing", ct)
                 return False
-            return typ == self.cache.biosamples[ct].biosample_type
+            return typ[1](ct) #(self.cache.biosamples[ct].biosample_type)
 
         c = Correlation(self.assembly, self.pg.DBCONN)
 
-        with Timer(typ + ": spearman correlation time"):
-            if self.assembly == "hg19":
-                raise Exception("fix me")
-            else:
-                k = "dnase" if self.inner is None else self.inner.lower()
-                labels = self.cache.rankMethodToCellTypes[k]
-                labels, corr = c.dbcorr(self.assembly, k, labels,
-                                        lambda x: "bryo" in x)
-                print("!got correlation")
+        if self.assembly == "hg19":
+            k = "dnase" if self.inner is None else self.inner.lower()
+            labels = self.cache.rankMethodToCellTypes[k]
+            k += "_" + typ[0]
+            labels, corr = c.dbcorr(self.assembly, k, labels, typ[1])
+        else:
+            k = "dnase" if self.inner is None else self.inner.lower()
+            labels = self.cache.rankMethodToCellTypes[k]
+            labels, corr = c.dbcorr(self.assembly, k, labels,
+                                    lambda x: "bryo" in x)
+            print("!got correlation")
 
         if not labels:
             return []
@@ -69,7 +78,7 @@ class Trees:
             print("rho", rho)
             print("pval", pval)
             return []
-        with Timer(typ + ": hierarchical clustering time"):
+        with Timer("tree hierarchical clustering time"):
             roworder, rowtree = _heatmap.cluster_by_rows()
         return {"tree": rowtree, "labels": labels}
 
