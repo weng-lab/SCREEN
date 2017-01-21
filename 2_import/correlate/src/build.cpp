@@ -155,10 +155,11 @@ public:
 
             bfs::path sfnp = d_ / "signal-output" / fn;
 
-            if(!bfs::exists(fnp)){
-                std::cout << "ERROR: missing " << sfnp << std::endl;
+            if(bfs::exists(fnp)){
+                files_.push_back(sfnp);
+            } else {
+                std::cerr << "ERROR: missing " << sfnp << std::endl;
             }
-            files_.push_back(sfnp);
         }
         std::cout << "found " << files_.size() << " files" << std::endl;
     }
