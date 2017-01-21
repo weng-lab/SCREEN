@@ -133,15 +133,17 @@ public:
             bfs::path fn;
 
             if(3 == sfi_.numDatasetCols){
+                std::cerr << "num toks found: " << toks.size() << std::endl;
                 if(3 != toks.size()){
-                    throw std::runtime_error("wrong num cols ");
+                    throw std::runtime_error("3 is wrong num cols " + fnp.string());
                 }
                 std::string expID = toks[0];
                 std::string fileID = toks[1];
                 fn = expID + "-" + fileID + ".txt";
             } else if(5 == sfi_.numDatasetCols){
                 if(5 != toks.size()){
-                    throw std::runtime_error("wrong num cols ");
+                    std::cerr << "num toks found: " << toks.size() << std::endl;
+                    throw std::runtime_error("5 is wrong num cols " + fnp.string());
                 }
                 std::string dnaseExpID = toks[0];
                 std::string dnaseFileID = toks[1];
@@ -166,15 +168,24 @@ void run(bfs::path base, std::string assembly){
     std::cout << assembly << std::endl;
     base /= assembly;
 
-    std::vector<SignalFileInfo> sfis = {
-        SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
-        SignalFileInfo{"DNase-List.txt", 3, 4, 1},
-        SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
-        SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
-        SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
-        SignalFileInfo{"Insulator-List.txt", 5, 5, 1},
-        SignalFileInfo{"Promoter-List.txt", 5, 5, 1}
-    };
+    std::vector<SignalFileInfo> sfis;
+    if("mm10" == assembly){
+        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
+                SignalFileInfo{"DNase-List.txt", 3, 4, 1},
+                SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
+                SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
+                SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
+                SignalFileInfo{"Insulator-List.txt", 5, 5, 1},
+                SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
+    } else if("hg19" == assembly){
+        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
+                SignalFileInfo{"DNase-List.txt", 3, 5, 1},
+                SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
+                SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
+                SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
+                SignalFileInfo{"Insulator-List.txt", 5, 6, 1},
+                SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
+    }
 
     for(const auto& sfi : sfis){
         bib::Builder b(base, assembly, sfi);
@@ -195,7 +206,7 @@ int main(int argc, char* argv[]){
     bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
     base /= "ver9";
 
-    for(const auto& assembly : {"mm10", "hg19"}){
+    for(const auto& assembly : {"hg19", "mm10"}){
         bib::run(base, assembly);
     }
 
