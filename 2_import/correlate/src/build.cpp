@@ -169,11 +169,11 @@ void run(bfs::path base, std::string assembly){
     std::vector<SignalFileInfo> sfis = {
         SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
         SignalFileInfo{"DNase-List.txt", 3, 4, 1},
-        SignalFileInfo{"Enhancer-List.txt", 5, 4, 1},
+        SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
         SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
         SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
-        SignalFileInfo{"Insulator-List.txt", 5, 4, 1},
-        SignalFileInfo{"Promoter-List.txt", 5, 4, 1}
+        SignalFileInfo{"Insulator-List.txt", 5, 5, 1},
+        SignalFileInfo{"Promoter-List.txt", 5, 5, 1}
     };
 
     for(const auto& sfi : sfis){
