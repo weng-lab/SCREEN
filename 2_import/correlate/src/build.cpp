@@ -204,6 +204,17 @@ public:
                 std::string fileID = toks[3];
                 fn = dnaseExpID + "-" + dnaseFileID +"." +
                     expID + "-" + fileID + ".txt";
+            } else if(6 == sfi_.numDatasetCols){
+                if(6 != toks.size()){
+                    std::cerr << "num toks found: " << toks.size() << std::endl;
+                    throw std::runtime_error("5 is wrong num cols " + fnp.string());
+                }
+                std::string dnaseExpID = toks[0];
+                std::string dnaseFileID = toks[1];
+                std::string expID = toks[2];
+                std::string fileID = toks[3];
+                fn = dnaseExpID + "-" + dnaseFileID +"." +
+                    expID + "-" + fileID + ".txt";
             } else {
                 throw std::runtime_error("no file present");
             }
