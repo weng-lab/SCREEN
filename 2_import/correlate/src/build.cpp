@@ -4,6 +4,7 @@
 #define likely(x) __builtin_expect ((x), 1)
 #define unlikely(x) __builtin_expect ((x), 0)
 
+#include <atomic>
 #include <iomanip>
 #include <vector>
 #include <string>
@@ -117,13 +118,16 @@ public:
         uint32_t numCols = files_.size();
         a::fmat m(numRows, numCols, a::fill::zeros);
 
+        std::atomic<size_t> left(numCols);
+
 #pragma omp parallel for
         for(uint32_t i = 0; i < files_.size(); ++i){
             const auto& fnp = files_[i];
             if(1){
                 std::cout << std::to_string(i) + " of " +
                     std::to_string(numCols) +
-                    " " + fnp.string() + "\n";
+                    " , " + std::to_string(--left) << " left "
+                    + fnp.string() + "\n";
             }
             auto lines = bib::files::readStrings(fnp);
             for(uint32_t j = 0; j < lines.size(); ++j){
