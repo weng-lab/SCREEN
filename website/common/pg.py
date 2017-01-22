@@ -183,6 +183,7 @@ SELECT idx, celltype, rankmethod FROM {tn}
                 if rank_method not in ret:
                     ret[rank_method] = {}
                 ret[rank_method][r[0]] = r[1]
+                ret[rank_method][r[1]] = r[0]
         return ret
 
     def rankMethodToCellTypes(self):

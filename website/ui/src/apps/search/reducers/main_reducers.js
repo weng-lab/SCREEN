@@ -21,6 +21,9 @@ const main_reducers = (state, action) => {
     case Actions.SET_GENE_PC_DISTANCE:
         return {...state, gene_pc_start: action.start, gene_pc_end: action.end };
 
+    case 'SET_TREE_COMPARISON':
+	return {...state, tfenrichment: action};
+
     case Actions.SHOW_MAIN_TABS:
         return {...state, maintabs_visible: action.show };
     case Actions.SET_MAIN_TAB:

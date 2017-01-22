@@ -60,8 +60,6 @@ class Tree extends React.Component {
     }
 
     _on_click(d) {
-	console.log("CLICKED");
-	console.log(d);
 	if (this.props.onClick) this.props.onClick(d);
     }
 

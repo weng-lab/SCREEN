@@ -15,6 +15,7 @@ from models.correlation import Correlation
 from models.cytoband import Cytoband
 from models.bigwig import BigWig
 from models.trees import Trees
+from models.tfenrichment import TFEnrichment
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from pg import PGsearch
@@ -49,10 +50,12 @@ class DataWebService:
         self.staticDir = staticDir
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
+        self.tfEnrichment = TFEnrichment(ps, assembly, cache)
 
         self.actions = {"cre_table" : self.cre_table,
                         "re_detail" : self.re_detail,
-                        "trees" : self.trees}
+                        "trees" : self.trees,
+                        "tfenrichment": self.tfenrichment }
 
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
@@ -88,6 +91,9 @@ class DataWebService:
             return self.reDetailActions[action](j, j["accession"])
         except:
             raise
+
+    def tfenrichment(self, j, args):
+        return self.tfEnrichment.findenrichment(j["left"], j["right"])
 
     def _re_detail_topTissues(self, j, accession):
         cre = CRE(self.pgSearch, accession)

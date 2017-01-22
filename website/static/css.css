@@ -8,7 +8,7 @@ html, body {
     stroke-width: 2px;
 }
 
-.node--internal circle {
+.node--internal path {
     fill: steelblue;
     stroke: steelblue;
     stroke-width: 2px;
@@ -16,6 +16,10 @@ html, body {
 
 .node--leaf g {
     display: none;
+}
+
+.node--internal:hover path {
+    stroke: #ff0000;
 }
 
 .navbar-form{
