@@ -58,8 +58,17 @@ class Builder {
     SignalFileInfo sfi_;
     bfs::path d_;
     bfs::path matFnp_;
+    bfs::path corFnp_;
 
     std::vector<bfs::path> files_;
+
+private:
+  void WriteMatrix(const a::fmat c) {
+    std::ofstream _file;
+    _file.open(corFnp_.string(), std::ios::out);
+    _file << c << "\n";
+    _file.close();
+  }
 
 public:
     Builder(const bfs::path base, std::string assembly, const SignalFileInfo& sfi)
@@ -69,6 +78,7 @@ public:
     {
         d_ = base / "raw";
         matFnp_ = base_ / "mat" / (sfi_.fn + ".bin");
+	corFnp_ = base_ / "mat" / (sfi_.fn + ".cormat.txt");
     }
 
     void run(){
@@ -77,21 +87,19 @@ public:
             m = build();
         }
 
-        if(0){
-            std::cout << "loading " << matFnp_ << std::endl;
-            m.load(matFnp_.string());
-
-            for(size_t i = 1; i < m.n_cols; ++i){
-                const auto c = a::cor(m.col(0), m.col(i));
-            }
-        }
+	std::cout << "loading " << matFnp_ << std::endl;
+	m.load(matFnp_.string());
+	std::cout << "correlating" << std::endl;
+	const a::fmat c = a::cor(m);
+	WriteMatrix(c);
+	std::cout << "saved correlated matrix to " << corFnp_.string() << std::endl;
     }
 
     a::fmat build(){
         loadFileNames();
         uint32_t numRows = numCREs();
         uint32_t numCols = files_.size();
-        a::fmat m(numRows, numCols);
+        a::fmat m(numRows, numCols, a::fill::zeros);
 
 #pragma omp parallel for
         for(uint32_t i = 0; i < files_.size(); ++i){
