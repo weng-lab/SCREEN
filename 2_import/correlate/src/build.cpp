@@ -64,14 +64,6 @@ class Builder {
 
 private:
 
-  void WriteMatrix(const a::fmat c) {
-    std::ofstream _file;
-    _file.open(corFnp_.string(), std::ios::out);
-    _file << c << "\n";
-    _file.close();
-    setGroupWrite(corFnp_);
-  }
-
     void setGroupWrite(bfs::path fnp){
         bfs::permissions(fnp, bfs::add_perms | bfs::owner_write | bfs::group_write);
     }
@@ -108,7 +100,12 @@ public:
             std::cerr << "WARNING: NANs present in corr matrix" << std::endl;
         }
 
-        WriteMatrix(c);
+        if(bfs::exists(corFnp_)){
+            std::cout << "removing old " << corFnp_ << std::endl;
+            bfs::remove(corFnp_);
+        }
+        m.save(corFnp_.string(), a::csv_ascii);
+        setGroupWrite(corFnp_);
         std::cout << "saved correlated matrix to " << corFnp_.string() << std::endl;
     }
 
