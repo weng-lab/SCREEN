@@ -81,7 +81,7 @@ class ImportLiftover:
 
         print("copy into db...")
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
-        printt("\tok", curs.rowcount)
+        printt("\tok", self.curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
