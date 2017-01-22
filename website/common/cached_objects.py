@@ -47,8 +47,7 @@ class CachedObjects:
         self.creHist = self.pgSearch.creHist()
 
         #t = Timer("load CachedObjects " + assembly)
-        acs = Autocompleter(es, assembly)
-        self.tf_list = acs.tf_list()
+        self.tf_list = self.pgSearch.tfHistoneDnaseList()
         self.tf_list_json = json.dumps(self.tf_list)
 
         self.datasets = Datasets(assembly, ps.DBCONN)
@@ -73,7 +72,7 @@ class CachedObjects:
                     p = line.strip().split("\t")
                     if len(p) < 3: continue
                     self.dnasemap[p[2]] = (p[0], p[1])
-                    
+
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
             return self.cellTypesToTissue[ct]
