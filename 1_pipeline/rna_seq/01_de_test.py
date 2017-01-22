@@ -85,7 +85,13 @@ def create_tsv(in_fnps, out_fnp):
 
         # write genes
         for k, v in genes.iteritems():
-            o.write(k.replace(".", "_"))
+
+            # skip lines with no expression in any replicate
+            if sum([float(x) for _, x in v.iteritems()]) == 0.0:
+                continue
+
+            # write the line out
+            o.write(k.replace(".", "_").replace("-", "_"))
             for _file in in_fnps:
                 o.write("\t" + str(int(float(v[_file]) * 1000)) if _file in v else "0")
             o.write("\n")
