@@ -301,3 +301,12 @@ WHERE accession = %s
         histones = [{"name" : k, "n" : len(v)} for k,v in r[1].iteritems()]
         dnases = [{"name" : k, "n" : len(v)} for k,v in r[2].iteritems()]
         return {"tf" : tfs, "histone" : histones, "dnase" : dnases}
+
+    def tfHistoneDnaseList(self):
+        tableName = self.assembly + "_peakIntersectionsMetadata"
+        with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
+            curs.execute("""
+SELECT distinct label
+FROM {tn}
+""".format(tn = tableName))
+            return sorted([r[0] for r in curs.fetchall()])

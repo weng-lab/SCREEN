@@ -26,9 +26,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
-from elasticsearch import Elasticsearch
+#from elasticsearch import Elasticsearch
 from autocomplete import Autocompleter
-from load_cell_types import LoadCellTypes
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
 from heatmaps.heatmap import Heatmap
