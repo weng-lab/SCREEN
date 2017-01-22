@@ -104,7 +104,7 @@ public:
             std::cout << "removing old " << corFnp_ << std::endl;
             bfs::remove(corFnp_);
         }
-        m.save(corFnp_.string(), a::csv_ascii);
+        c.save(corFnp_.string(), a::csv_ascii);
         setGroupWrite(corFnp_);
         std::cout << "saved correlated matrix to " << corFnp_.string() << std::endl;
     }
