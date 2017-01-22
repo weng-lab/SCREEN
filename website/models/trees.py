@@ -51,7 +51,6 @@ class Trees:
         if self.assembly == "hg19":
             k = "dnase" if self.inner is None else self.inner.lower()
             labels = self.cache.rankMethodToCellTypes[k]
-            k += "_" + typ[0]
             labels, corr = c.dbcorr(self.assembly, k, labels, typ[1])
         else:
             k = "dnase" if self.inner is None else self.inner.lower()
