@@ -103,10 +103,8 @@ def loadmatrix(fnp):
     r = []
     with open(fnp, "r") as f:
         for line in f:
-            p = line.strip().replace("-", " ").split("   ")
-            if len(p) <= 1: continue
-            if 'nan' in p or '' in p: return []
-            r.append([float(x) for x in p])
+            toks = line.rstrip().split('\t')
+            r.append([float(x) for x in toks])
     return r
 
 def main():
@@ -128,14 +126,19 @@ def main():
         if args.exportTable:
             c.exportTable(fnp)
         elif args.importTable:
+            c.setupTable()
             d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/mat" % assembly
             for assay in ["DNase", "H3K27ac", "H3K4me3", "Enhancer", "Promoter", "Insulator", "CTCF"]:
                 fnp = os.path.join(d, "%s-List.txt.cormat.txt" % assay)
                 if not os.path.exists(fnp):
                     print("WARNING: missing matrix for assay %s; skipping" % fnp)
                     continue
-                matrix = loadmatrix(fnp)
-                c.insertmatrix(assaymap[assay] + "v10", matrix)
+                try:
+                    matrix = loadmatrix(fnp)
+                    c.insertmatrix(assaymap[assay] + "v10", matrix)
+                except:
+                    print("error in", fnp)
+                    raise
         else:
             c.setupTable()
             for assay in ["dnase", "ctcf_only", "h3k27ac_only",
