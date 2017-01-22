@@ -103,8 +103,7 @@ def loadmatrix(fnp):
     r = []
     with open(fnp, "r") as f:
         for line in f:
-            toks = line.rstrip().split('\t')
-            r.append([float(x) for x in toks])
+            r.append([float(x) for x in line.rstrip().split(',')])
     return r
 
 def main():
