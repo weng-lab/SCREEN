@@ -3,6 +3,9 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, argparse, StringIO, gzip
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/main/'))
+peakIntersections = __import__('02_beds_es')
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
@@ -42,9 +45,47 @@ class ImportPeakIntersections:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         print("\tcopied in", fnp, self.curs.rowcount)
 
+class ImportPeakIntersectionMetadata:
+    def __init__(self, curs, assembly):
+        self.curs = curs
+        self.assembly = assembly
+        self.tableName = assembly + "_" + "peakIntersectionsMetadata"
+
+    def setupTable(self):
+        print("dropping and creating table", self.tableName)
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableName};
+    CREATE TABLE {tableName}(
+    id serial PRIMARY KEY,
+        expID text,
+        fileID text,
+        assay text,
+        label text
+    );
+    """.format(tableName = self.tableName))
+        print("\tok")
+
+    def run(self):
+        self.setupTable()
+
+        jobs = peakIntersections.makeJobs(self.assembly)
+
+        outF = StringIO.StringIO()
+        for r in jobs:
+            outF.write('\t'.join([r["bed"].expID,
+                                  r["bed"].fileID,
+                                  r["etype"],
+                                  r["exp"].label]) + '\n')
+        outF.seek(0)
+
+        cols = "expID fileID assay label".split(' ')
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
+        print("\tcopied in", self.curs.rowcount)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--metadata', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -55,8 +96,12 @@ def main():
 
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
-            ipi = ImportPeakIntersections(curs, assembly)
-            ipi.run()
+            if args.metadata:
+                ipi = ImportPeakIntersectionMetadata(curs, assembly)
+                ipi.run()
+            else:
+                ipi = ImportPeakIntersections(curs, assembly)
+                ipi.run()
 
 if __name__ == '__main__':
     main()

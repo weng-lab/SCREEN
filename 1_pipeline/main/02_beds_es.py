@@ -6,7 +6,6 @@ import ujson as json
 import argparse
 import fileinput, StringIO
 import gzip
-import redis
 import random
 
 from joblib import Parallel, delayed
@@ -41,15 +40,15 @@ def doIntersection(bed, refnp):
 
     return [p.rstrip().split("\t")[4] for p in peaks] # return cRE accessions
 
-def makeJobs(args, assembly):
+def makeJobs(assembly):
     if "mm10" == assembly:
         m = MetadataWS(Datasets.all_mouse)
     else:
         m = MetadataWS(Datasets.all_human)
 
-    allExps = [(m.chipseq_tfs_useful(assembly, args), "tf"),
-               (m.chipseq_histones_useful(assembly, args), "histone"),
-               (m.dnases_useful(assembly, args), "dnase")]
+    allExps = [(m.chipseq_tfs_useful(assembly), "tf"),
+               (m.chipseq_histones_useful(assembly), "histone"),
+               (m.dnases_useful(assembly), "dnase")]
     allExpsIndiv = []
     for exps, etype in allExps:
         print("found", len(exps), etype)
