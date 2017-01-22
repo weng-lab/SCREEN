@@ -11,9 +11,29 @@ import {primary_cell_label_formatter} from '../config/colors'
 import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
 
+import {asum} from '../../../common/common'
+
+const get_children = (node) => {
+    if (!node.children) return [node.data.name];
+    return asum(node.children.map(get_children));
+};
+
 const default_label_formatter = (l) => {
     return {
 	name: l
+    };
+};
+
+const tree_comparison_done = (response) => {
+    return {
+	type: "TREE_COMPARISON_DONE"
+    };
+};
+
+const set_tree_comparison = (response) => {
+    return {
+	type: "SET_TREE_COMPARISON",
+	response
     };
 };
 
@@ -22,6 +42,7 @@ class ResultsTree extends React.Component { //REComponent {
     constructor(props) {
 	super(props);
         this.state = { isFetching: false, isError: false}
+	this._on_click = this._on_click.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -45,13 +66,37 @@ class ResultsTree extends React.Component { //REComponent {
 	    dataType: "json",
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
+                console.log("err loading tree");
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
             }.bind(this)
         });
+    }
+
+    _on_click(d) {
+	var data = {
+	    left: get_children(d.children[0]),
+	    right: get_children(d.children[1]),
+	    action: "tfenrichment",
+	    GlobalAssembly
+	};
+	var f_success = (response, status, jqxhr) => {
+	    this.props.dispatch(tree_comparison_done(response));
+	    this.props.dispatch(set_tree_comparison(response));
+	};
+	$.ajax({
+	    url: "/dataws/tfenrichment",
+	    type: "POST",
+	    data: JSON.stringify(data),
+	    dataType: "json",
+	    contentType: "application/json",
+	    error: ((jqxhr, status, error) => {
+		console.log("error fetching TF enrichment");
+	    }).bind(this),
+	    success: f_success.bind(this)
+	});
     }
 
     makeTree(data, k, _formatter){
@@ -109,7 +154,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(Actions, dispatch)
+    actions: bindActionCreators(Actions, dispatch),
+    dispatch
 });
 
 export default connect(

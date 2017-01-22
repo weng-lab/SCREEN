@@ -12,7 +12,7 @@ class Correlation:
         self.DBCONN = DBCONN
 
     def tn(self, assembly):
-        return "correlations_HG19" if assembly == "hg19" else assembly + "_correlations"
+        return "correlations_hg19" if assembly == "hg19" else assembly + "_correlations"
         
     def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
         assay = assay.replace("-", "_").replace("+", "_")
@@ -25,8 +25,7 @@ class Correlation:
 
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute(
-                """SELECT correlations FROM {tn} WHERE assay = %(assay)s
-                """.format(tn = self.tn(assembly)), {"assay" : assay + "v9"})
+                """SELECT correlations, assay FROM {tn} WHERE assay = '{assay}'""".format(tn = self.tn(assembly), assay = assay + "v12"))
             try:
                 r = curs.fetchone()[0]
             except:

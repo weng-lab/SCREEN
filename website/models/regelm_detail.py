@@ -19,6 +19,7 @@ class RegElementDetails:
         self.assembly = assembly
         
     def mostsimilar(self, acc, assay, threshold=20000):
+        if self.assembly == "hg19": return []
         def whereclause(r):
             return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold) for i in xrange(len(r)) if r[i] < threshold])
         with getcursor(self.ps.DBCONN, "regelm_detail$RegElementDetails::testmostsimilar") as curs:

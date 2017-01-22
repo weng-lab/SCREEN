@@ -69,7 +69,7 @@ WHERE intarray2int4range({field}) && int4range(0, {threshold})
         return r
 
     def insertmatrix(self, assay, matrix):
-        print("inserting %s" % assay)
+        print("inserting %s to table %s" % (assay, self.tableName))
         with getcursor(self.DBCONN, "Correlate::insertmatrix") as curs:
             curs.execute("""
 INSERT INTO {tableName} (assay, correlations)
@@ -135,7 +135,7 @@ def main():
                     print("WARNING: missing matrix for assay %s; skipping" % fnp)
                     continue
                 matrix = loadmatrix(fnp)
-                c.insertmatrix(assaymap[assay] + "v10", matrix)
+                c.insertmatrix(assaymap[assay] + "v11", matrix)
         else:
             c.setupTable()
             for assay in ["dnase", "ctcf_only", "h3k27ac_only",
