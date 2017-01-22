@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO
+import os, sys, json, psycopg2, argparse, StringIO, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -41,8 +41,8 @@ class SetupSnps:
         print("\tok index")
 
     def run(self):
-        fns = {"mm10" : "snps142common.mm10.bed",
-               "hg19" : "snps144common.hg19.bed"}
+        fns = {"mm10" : "snps142common.mm10.bed.gz",
+               "hg19" : "snps144common.hg19.bed.gz"}
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
         print("loading", fnp)
 
@@ -50,7 +50,7 @@ class SetupSnps:
         for chrom in chroms[self.assembly]:
             rowsByChrom[chrom] = StringIO.StringIO()
 
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             for r in f:
                 toks = r.rstrip().split('\t')
                 if toks[0] in rowsByChrom:

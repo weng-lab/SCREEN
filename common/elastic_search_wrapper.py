@@ -1,7 +1,7 @@
 import sys, os
 import requests
 import json
-import elasticsearch
+#import elasticsearch
 from copy import copy
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
