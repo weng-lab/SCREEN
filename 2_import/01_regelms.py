@@ -207,13 +207,9 @@ infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
                    "assembly" : "hg19",
                    "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
                    "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
-                   "tableName" : "hg19_cre"}
-         }
-def main():
-    args = parse_args()
+                   "tableName" : "hg19_cre"}}
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
-
+def run(args, DBCONN):
     cols = ("accession", "mpName", "negLogP", "chrom", "start", "stop",
             "conservation_rank", "conservation_signal",
  	    "dnase_rank", "dnase_signal", "dnase_zscore",
@@ -234,20 +230,30 @@ def main():
         m = infos[assembly]
         m["subsample"] = args.sample
 
+        if args.vac:
+            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+            continue
+
+        if args.index:
+            with getcursor(DBCONN, "08_setup_log") as curs:
+                ci = CreateIndices(curs, m, cols)
+                if args.index:
+                    ci.run()
+            continue
+
         with getcursor(DBCONN, "08_setup_log") as curs:
             setupRangeFunction(curs)
 
             im = ImportData(curs, m, cols)
-            if args.setup:
-                im.run()
+            im.run()
 
-        if args.setup or args.vac:
-            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            ci = CreateIndices(curs, m, cols)
-            if args.index:
-                ci.run()
+def main():
+    args = parse_args()
+
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    run(args, DBCONN)
 
     return 0
 
