@@ -25,6 +25,7 @@ class TRBars extends React.Component {
 class TFDisplay extends React.Component {
 
     constructor(props) {
+	console.log(props);
 	super(props);
     }
 

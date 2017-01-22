@@ -40,9 +40,17 @@ class GcompareTab extends React.Component{
     }
 }
 
+class TFTab extends React.Component {
+    render() {
+	console.log(TFDisplay);
+	return <div />; //<TFDisplay />;
+    }
+}
+
 const MainTabInfo = {
     results : {title: "Search results", visible: true, f: ResultsTab},
     ct_tree: {title: "Cell Type Clustering", visible: true, f: TreeTab},
+    tf_enrichment: {title: "TF enrichment", visible: true, f: TFTab},
     details: {title: "RE Details", visible: false, f: DetailsTab},
     gcompare: {title: "Group comparison", visible: false, f: GcompareTab}
 };
