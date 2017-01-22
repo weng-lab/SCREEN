@@ -2,7 +2,7 @@
 
 import cherrypy, os, sys, argparse, time
 
-from elasticsearch import Elasticsearch
+#from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
 from app_main import MainApp
