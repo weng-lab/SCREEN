@@ -24,7 +24,7 @@ class Correlation:
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute(
                 """SELECT correlations FROM {tn} WHERE assay = %(assay)s
-""".format(tn = self.tn(assembly)), {"assay" : assay})
+""".format(tn = self.tn(assembly)), {"assay" : assay + "v10"})
             try:
                 r = curs.fetchone()[0]
             except:

@@ -246,7 +246,6 @@ WHERE accession = %s
 
 
     def creMostsimilar(self, acc, assay, threshold=20000):
-        acc = acc.replace("EE", "")
         def whereclause(r):
             return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold)
                                 for i in xrange(len(r)) if r[i] < threshold])
@@ -255,15 +254,15 @@ WHERE accession = %s
             curs.execute("""
 SELECT {assay}_rank
 FROM {assembly}_cre
-WHERE accession LIKE 'E%E{accession}'""".format(assay=assay,
-                                                assembly=self.assembly,
-                                                accession=acc))
+WHERE accession = '{accession}'""".format(assay=assay,
+                                          assembly=self.assembly,
+                                          accession=acc))
             r = curs.fetchone()
             if not r:
                 print("cre$CRE::mostsimilar WARNING: no results for accession",
                       acc," -- returning empty set")
                 return []
-            whereclause = whereclause(r)
+            whereclause = whereclause(r[0])
             if len(whereclause.split(" or ")) > 25:
                 print("cre$CRE::mostsimilar", "NOTICE:", acc,
                       "is active in too many cell types",

@@ -119,7 +119,6 @@ class CRE:
     def getBigWigRegions(self, accession, cache):
         coord = self.coord()
         bigWigs = self._get_bigwigs(cache)
-        print(bigWigs)
         me = {"accession": accession, "position": coord.toDict()}
         cres = [me] + self.pgSearch.creMostsimilar(accession, "dnase")
         return (self._get_bigwig_regions(bigWigs, cres, cache),
