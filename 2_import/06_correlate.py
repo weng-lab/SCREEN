@@ -17,6 +17,8 @@ class Correlate:
     def __init__(self, DBCONN, assembly):
         self.DBCONN = DBCONN
         self.tableName = assembly + "_correlations"
+        if self.tableName == "hg19_correlations":
+            self.tableName = "correlations_hg19"
         self.qTableName = assembly + "_cre"
 
     def exportTable(self, fnp):
@@ -66,6 +68,14 @@ WHERE intarray2int4range({field}) && int4range(0, {threshold})
                 r = curs.fetchone()
         return r
 
+    def insertmatrix(self, assay, matrix):
+        print("inserting %s" % assay)
+        with getcursor(self.DBCONN, "Correlate::insertmatrix") as curs:
+            curs.execute("""
+INSERT INTO {tableName} (assay, correlations)
+            VALUES (%(assay)s, %(corrs)s)
+            """.format(tableName = self.tableName), {"assay": assay, "corrs": matrix})
+
     def run(self, assay):
         l = self._getarrlen(assay + "_rank")
         corrs = [[1.0 for ct in xrange(l)] for ct in xrange(l)]
@@ -89,25 +99,43 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def loadmatrix(fnp):
+    r = []
+    with open(fnp, "r") as f:
+        for line in f:
+            p = line.strip().replace("-", " ").split("   ")
+            if len(p) <= 1: continue
+            if 'nan' in p or '' in p: return []
+            r.append([float(x) for x in p])
+    return r
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    for assembly in ["mm10"]:
+    assaymap = {"DNase": "dnase",
+                "CTCF": "ctcf_only",
+                "Insulator": "ctcf_dnase",
+                "Promoter": "h3k4me3_dnase",
+                "H3K4me3": "h3k4me3_only",
+                "H3K27ac": "h3k27ac_only",
+                "Enhancer": "h3k27ac_dnase" }
 
-        d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-        d = os.path.join(d, assembly, "extras")
-        Utils.mkdir_p(d)
-        fnp = os.path.join(d, "correlationTable.csv.gz")
-
+    for assembly in ["mm10", "hg19"]:
+        print("working with assembly %s" % assembly)
         c = Correlate(DBCONN, assembly)
         if args.exportTable:
             c.exportTable(fnp)
         elif args.importTable:
-            if GetYesNoToQuestion.immediate("are you sure you want to import?",
-                                            "no"):
-                c.importTable(fnp)
+            d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/mat" % assembly
+            for assay in ["DNase", "H3K27ac", "H3K4me3", "Enhancer", "Promoter", "Insulator", "CTCF"]:
+                fnp = os.path.join(d, "%s-List.txt.cormat.txt" % assay)
+                if not os.path.exists(fnp):
+                    print("WARNING: missing matrix for assay %s; skipping" % fnp)
+                    continue
+                matrix = loadmatrix(fnp)
+                c.insertmatrix(assaymap[assay] + "v10", matrix)
         else:
             c.setupTable()
             for assay in ["dnase", "ctcf_only", "h3k27ac_only",

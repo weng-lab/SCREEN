@@ -11,15 +11,16 @@ metadata <- paste(dir, "metadata.tsv", sep="/")
 
 # read data, metadata
 pasillaCountTable = read.table(tsv, header=TRUE, row.names=1)
+pasillaCountTable
 metadata = read.table(metadata, header=TRUE, row.names=1, sep="\t")
 
 # frame data for input to DESeq
 pasillaDesign = data.frame(row.names = colnames(pasillaCountTable),
-	                   condition = c("treated", "untreated", "treated", "untreated"), #metadata$condition,
-			   libType = c("single-end", "paired-end", "single-end", "paired-end")) #metadata$libType )
+	                   condition = c("treated", "untreated", "untreated", "untreated", "untreated"), #metadata$condition,
+			   libType = c("paired-end", "single-end", "single-end", "single-end", "single-end")) #metadata$libType )
 
 # input to DESeq, estimate size and dispersions
-cds = newCountDataSet(pasillaCountTable, metadata$condition)
+cds = newCountDataSet(pasillaCountTable, c("treated", "untreated", "untreated", "untreated", "untreated"))
 cds = estimateSizeFactors(cds)
 cds = estimateDispersions(cds)
 
