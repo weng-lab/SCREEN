@@ -19,12 +19,11 @@ class RegElementDetails:
         self.assembly = assembly
         
     def mostsimilar(self, acc, assay, threshold=20000):
-        acc = acc.replace("EE", "")
         def whereclause(r):
             return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold) for i in xrange(len(r)) if r[i] < threshold])
         with getcursor(self.ps.DBCONN, "regelm_detail$RegElementDetails::testmostsimilar") as curs:
             curs.execute("""SELECT {assay}_rank FROM {assembly}_cre
-                            WHERE accession LIKE 'E%E{accession}'""".format(assay=assay, assembly=self.assembly, accession=acc))
+                            WHERE accession == '{accession}'""".format(assay=assay, assembly=self.assembly, accession=acc))
             r = curs.fetchone()[0]
             if not r:
                 print("regelmdetail$RegElementDetails::mostsimilar WARNING: no results for accession %s; returning empty set" % acc)
