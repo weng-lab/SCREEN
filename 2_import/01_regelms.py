@@ -234,19 +234,25 @@ def main():
         m = infos[assembly]
         m["subsample"] = args.sample
 
+        if args.vac:
+            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+            continue
+
+        if args.index:
+            with getcursor(DBCONN, "08_setup_log") as curs:
+                ci = CreateIndices(curs, m, cols)
+                if args.index:
+                    ci.run()
+            continue
+
         with getcursor(DBCONN, "08_setup_log") as curs:
             setupRangeFunction(curs)
 
             im = ImportData(curs, m, cols)
             im.run()
 
-        if args.setup or args.vac:
-            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            ci = CreateIndices(curs, m, cols)
-            if args.index:
-                ci.run()
 
     return 0
 
