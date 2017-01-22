@@ -62,12 +62,18 @@ class Builder {
     std::vector<bfs::path> files_;
 
 private:
+
   void WriteMatrix(const a::fmat c) {
     std::ofstream _file;
     _file.open(corFnp_.string(), std::ios::out);
     _file << c << "\n";
     _file.close();
+    setGroupWrite(corFnp_);
   }
+
+    void setGroupWrite(bfs::path fnp){
+        bfs::permissions(fnp, bfs::add_perms | bfs::owner_write | bfs::group_write);
+    }
 
 public:
     Builder(const bfs::path base, std::string assembly, const SignalFileInfo& sfi)
@@ -130,7 +136,7 @@ public:
                         + "line was: " + p + "\n";
                     throw std::runtime_error(err);
                 }
-                if(toks.size() != sfi_.numSignalCols){
+                if(0 && toks.size() != sfi_.numSignalCols){
                     std::string err = "wrong num cols " + fnp.string()
                         + " expected " + std::to_string(sfi_.numSignalCols)
                         + "but got " + std::to_string(toks.size()) + "\n"
@@ -148,6 +154,7 @@ public:
             bfs::remove(matFnp_);
         }
         m.save(matFnp_.string());
+        setGroupWrite(matFnp_);
         std::cout << "wrote " << matFnp_ << std::endl;
         return m;
     }
