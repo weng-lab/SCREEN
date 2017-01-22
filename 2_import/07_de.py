@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO
+import os, sys, json, psycopg2, argparse, StringIO, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -49,11 +49,11 @@ def setupAll(curs):
         right = toks[1]
         if left == right:
             continue
-        fnp = os.path.join(dataF, "data", fn)
+        fnp = os.path.join(dataF, "data", fn + ".gz")
         print(counter + 1, total, fnp)
         counter += 1
         skipped = 0
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             f.readline() # consume header
             data = []
             for r in f:
@@ -76,8 +76,8 @@ def setupAll(curs):
 def index(curs):
     curs.execute("""
     create index leftnamerightnamede on mm10_de(leftname, rightname)""")
-                
-        
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
