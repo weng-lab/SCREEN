@@ -4,6 +4,7 @@
 #define likely(x) __builtin_expect ((x), 1)
 #define unlikely(x) __builtin_expect ((x), 0)
 
+#include <atomic>
 #include <iomanip>
 #include <vector>
 #include <string>
@@ -44,7 +45,6 @@ struct SignalFileInfo {
     std::string fn;
     uint32_t numDatasetCols;
     uint32_t numSignalCols;
-    uint32_t zscoreColIdx;
 
     friend auto& operator<<(std::ostream& s, const SignalFileInfo& e){
         s << e.fn;
@@ -63,12 +63,10 @@ class Builder {
     std::vector<bfs::path> files_;
 
 private:
-  void WriteMatrix(const a::fmat c) {
-    std::ofstream _file;
-    _file.open(corFnp_.string(), std::ios::out);
-    _file << c << "\n";
-    _file.close();
-  }
+
+    void setGroupWrite(bfs::path fnp){
+        bfs::permissions(fnp, bfs::add_perms | bfs::owner_write | bfs::group_write);
+    }
 
 public:
     Builder(const bfs::path base, std::string assembly, const SignalFileInfo& sfi)
@@ -78,21 +76,37 @@ public:
     {
         d_ = base / "raw";
         matFnp_ = base_ / "mat" / (sfi_.fn + ".bin");
-	corFnp_ = base_ / "mat" / (sfi_.fn + ".cormat.txt");
+        corFnp_ = base_ / "mat" / (sfi_.fn + ".cormat.txt");
     }
 
     void run(){
         a::fmat m;
+
         if(!bfs::exists(matFnp_)){
             m = build();
+        } else {
+            std::cout << "loading " << matFnp_ << std::endl;
+            m.load(matFnp_.string());
         }
 
-	std::cout << "loading " << matFnp_ << std::endl;
-	m.load(matFnp_.string());
-	std::cout << "correlating" << std::endl;
-	const a::fmat c = a::cor(m);
-	WriteMatrix(c);
-	std::cout << "saved correlated matrix to " << corFnp_.string() << std::endl;
+        if(m.has_nan()){
+            std::cerr << "WARNING: NANs present in input matrix" << std::endl;
+        }
+
+        std::cout << "correlating" << std::endl;
+        const a::fmat c = a::cor(m);
+
+        if(c.has_nan()){
+            std::cerr << "WARNING: NANs present in corr matrix" << std::endl;
+        }
+
+        if(bfs::exists(corFnp_)){
+            std::cout << "removing old " << corFnp_ << std::endl;
+            bfs::remove(corFnp_);
+        }
+        c.save(corFnp_.string(), a::csv_ascii);
+        setGroupWrite(corFnp_);
+        std::cout << "saved correlated matrix to " << corFnp_.string() << std::endl;
     }
 
     a::fmat build(){
@@ -101,27 +115,47 @@ public:
         uint32_t numCols = files_.size();
         a::fmat m(numRows, numCols, a::fill::zeros);
 
+        std::atomic<size_t> left(numCols);
+
 #pragma omp parallel for
         for(uint32_t i = 0; i < files_.size(); ++i){
             const auto& fnp = files_[i];
-            if(0){
+            if(1){
                 std::cout << std::to_string(i) + " of " +
                     std::to_string(numCols) +
-                    " " + fnp.string() + "\n";
+                    " , " + std::to_string(--left) << " left "
+                    + fnp.string() + "\n";
             }
             auto lines = bib::files::readStrings(fnp);
             for(uint32_t j = 0; j < lines.size(); ++j){
                 const auto& p = lines[j];
                 auto toks = bib::str::split(p, '\t');
-                if(sfi_.numSignalCols != toks.size()){
-                    throw std::runtime_error("wrong num cols " + fnp.string());
+                if(toks.size() < 2){
+                    std::string err = "wrong num cols " + fnp.string()
+                        + " expected " + std::to_string(sfi_.numSignalCols)
+                        + "but got " + std::to_string(toks.size()) + "\n"
+                        + "line was: " + p + "\n";
+                    throw std::runtime_error(err);
                 }
-                m.at(j, i) = std::stof(toks[sfi_.zscoreColIdx]); // zscore
+                if(0 && toks.size() != sfi_.numSignalCols){
+                    std::string err = "wrong num cols " + fnp.string()
+                        + " expected " + std::to_string(sfi_.numSignalCols)
+                        + "but got " + std::to_string(toks.size()) + "\n"
+                        + "line was: " + p + "\n";
+                    std::cout << err;
+                }
+
+                m.at(j, i) = std::stof(toks[1]); // zscore
             }
         }
 
         bfs::create_directories(matFnp_.parent_path());
+        if(bfs::exists(matFnp_)){
+            std::cout << "removing old " << matFnp_ << std::endl;
+            bfs::remove(matFnp_);
+        }
         m.save(matFnp_.string());
+        setGroupWrite(matFnp_);
         std::cout << "wrote " << matFnp_ << std::endl;
         return m;
     }
@@ -148,6 +182,14 @@ public:
                 std::string expID = toks[0];
                 std::string fileID = toks[1];
                 fn = expID + "-" + fileID + ".txt";
+            } else if(4 == sfi_.numDatasetCols){
+                if(4 != toks.size()){
+                    std::cerr << "num toks found: " << toks.size() << std::endl;
+                    throw std::runtime_error("4 is wrong num cols " + fnp.string());
+                }
+                std::string expID = toks[0];
+                std::string fileID = toks[1];
+                fn = expID + "-" + fileID + ".txt";
             } else if(5 == sfi_.numDatasetCols){
                 if(5 != toks.size()){
                     std::cerr << "num toks found: " << toks.size() << std::endl;
@@ -159,11 +201,24 @@ public:
                 std::string fileID = toks[3];
                 fn = dnaseExpID + "-" + dnaseFileID +"." +
                     expID + "-" + fileID + ".txt";
+            } else if(6 == sfi_.numDatasetCols){
+                if(6 != toks.size()){
+                    std::cerr << "num toks found: " << toks.size() << std::endl;
+                    throw std::runtime_error("5 is wrong num cols " + fnp.string());
+                }
+                std::string dnaseExpID = toks[0];
+                std::string dnaseFileID = toks[1];
+                std::string expID = toks[2];
+                std::string fileID = toks[3];
+                fn = dnaseExpID + "-" + dnaseFileID +"." +
+                    expID + "-" + fileID + ".txt";
+            } else {
+                throw std::runtime_error("no file present");
             }
 
             bfs::path sfnp = d_ / "signal-output" / fn;
 
-            if(bfs::exists(fnp)){
+            if(bfs::exists(fnp) && bfs::is_regular_file(fnp)){
                 files_.push_back(sfnp);
             } else {
                 std::cerr << "ERROR: missing " << sfnp << std::endl;
@@ -179,21 +234,27 @@ void run(bfs::path base, std::string assembly){
 
     std::vector<SignalFileInfo> sfis;
     if("mm10" == assembly){
-        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
-                SignalFileInfo{"DNase-List.txt", 3, 4, 1},
-                SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
-                SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
-                SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
-                SignalFileInfo{"Insulator-List.txt", 5, 5, 1},
-                SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
+        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4},
+                SignalFileInfo{"DNase-List.txt", 3, 4},
+                SignalFileInfo{"Enhancer-List.txt", 5, 5},
+                SignalFileInfo{"H3K27ac-List.txt", 3, 4},
+                SignalFileInfo{"H3K4me3-List.txt", 3, 4},
+                SignalFileInfo{"Insulator-List.txt", 5, 5},
+                SignalFileInfo{"Promoter-List.txt", 5, 5}};
     } else if("hg19" == assembly){
-        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4, 1},
-                SignalFileInfo{"DNase-List.txt", 4, 5, 1},
-                SignalFileInfo{"Enhancer-List.txt", 5, 5, 1},
-                SignalFileInfo{"H3K27ac-List.txt", 3, 4, 1},
-                SignalFileInfo{"H3K4me3-List.txt", 3, 4, 1},
-                SignalFileInfo{"Insulator-List.txt", 6, 6, 1},
-                SignalFileInfo{"Promoter-List.txt", 5, 5, 1}};
+        sfis = {SignalFileInfo{"CTCF-List.txt", 3, 4},
+                SignalFileInfo{"DNase-List.txt", 4, 5},
+                SignalFileInfo{"Enhancer-List.txt", 5, 5},
+                SignalFileInfo{"H3K27ac-List.txt", 3, 4},
+                SignalFileInfo{"H3K4me3-List.txt", 3, 4},
+                SignalFileInfo{"Insulator-List.txt", 6, 6},
+                SignalFileInfo{"Promoter-List.txt", 5, 5}};
+    }
+
+    if(0){ // for testing
+        sfis = {
+            SignalFileInfo{"DNase-List.txt", 4, 5},
+        };
     }
 
     for(const auto& sfi : sfis){
@@ -215,7 +276,12 @@ int main(int argc, char* argv[]){
     bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
     base /= "ver9";
 
-    for(const auto& assembly : {"hg19", "mm10"}){
+    std::vector<std::string> assemblies = {"hg19", "mm10"};
+    if(ZiARG_assembly > ""){
+        assemblies = {ZiARG_assembly};
+    }
+
+    for(const auto& assembly : assemblies){
         bib::run(base, assembly);
     }
 
