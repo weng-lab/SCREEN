@@ -40,19 +40,20 @@ class MiniPeaks extends REComponent {
 		   {values.map((v, i) => (<rect width="1" height={v} y={height - v} x={i} fill={color} />))}
 		</g>);
     }
-
+    
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
-	var mfactor = (regions.max
+	var mfactor = Math.log(regions.max
 		       ? ROWHEIGHT / regions.max
-		       : ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k]))))));
+			       : ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k]))))));
+	mfactor = ROWHEIGHT / 150.0;
 	text = friendly_celltype(text);
 	var color = (text.includes("primary cell") ? primary_cell_color(text) : tissue_color(text));
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>
 		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end">{text}</text>
 		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>
 		      {order.map((k, i) => (
-		          regions[k] ? _render_histogram(regions[k].map((d) => (d * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", color) : <g />
+		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > 150.0 ? 150.0 : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", color) : <g />
 		      ))}
 		   </g>
 		</g>);

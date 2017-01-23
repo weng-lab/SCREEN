@@ -20,7 +20,7 @@ class BigWig:
             for region in regions:
                 o.write("%s\t%d\t%d\t%s\n" %
                         (region["chr"],
-                         region["start"] - 1000, region["end"] + 1000,
+                         region["start"] - 2000, region["end"] + 2000,
                          region["acc"]))
         for bigwig in files:
             if not os.path.exists(bigwig["path"]):

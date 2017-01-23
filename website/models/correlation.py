@@ -9,9 +9,10 @@ from db_utils import getcursor
 from dbconnect import db_connect
 
 class Correlation:
-    def __init__(self, assembly, DBCONN):
+    def __init__(self, assembly, DBCONN, cache):
         self.assembly = assembly
         self.DBCONN = DBCONN
+        self.cache = cache
         self.tableName = assembly + "_correlations"
 
     def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
@@ -31,11 +32,14 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
         for i in xrange(len(labels)):
             if _filter(labels[i]):
                 tokeep.append(i)
-                flabels.append(labels[i])
+                obj = self.cache.datasets.globalCellTypeInfo[labels[i]]
+                obj["key"] = labels[i]
+                flabels.append(obj)
         ret = [[0 for j in xrange(len(tokeep))] for i in xrange(len(tokeep))]
         for i in xrange(len(tokeep)):
             for j in xrange(len(tokeep)):
                 ret[i][j] = r[tokeep[i]][tokeep[j]]
+        print(flabels)
         return (flabels, ret)
 
 if __name__ == "__main__":
