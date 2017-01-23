@@ -17,9 +17,6 @@ class Correlate:
     def __init__(self, DBCONN, assembly):
         self.DBCONN = DBCONN
         self.tableName = assembly + "_correlations"
-        if self.tableName == "hg19_correlations":
-            self.tableName = "correlations_hg19"
-        self.qTableName = assembly + "_cre"
 
     def exportTable(self, fnp):
         print("exporting CSV to", fnp)
@@ -45,29 +42,6 @@ class Correlate:
             assay VARCHAR(20),
             correlations double precision[][]);""".format(tableName = self.tableName))
 
-    def _getarrlen(self, field):
-        with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
-            curs.execute("""
-SELECT array_length((SELECT {field} from {tableName} LIMIT 1), 1)
-""".format(field = field, tableName = self.qTableName))
-            r = curs.fetchone()[0]
-        return r
-
-    def _getcorr(self, field, i, l, threshold):
-        with Timer("computing correlation for ct %d/%d, assay %s" % (i, l, field)):
-            q = ", ".join(["corr(%s[%d], %s[%d])" % (field + "_zscore", i + 1, field + "_zscore", j + 1)
-                           for j in range(i + 1, l)])
-            with getcursor(self.DBCONN, "Correlate::setupTable") as curs:
-                curs.execute("""
-SELECT {q} FROM {tableName}
-WHERE intarray2int4range({field}) && int4range(0, {threshold})
-""".format(tableName=self.qTableName,
-           threshold=threshold,
-           field=field + "_rank",
-           q=q))
-                r = curs.fetchone()
-        return r
-
     def insertmatrix(self, assay, matrix):
         print("inserting %s to table %s" % (assay, self.tableName))
         with getcursor(self.DBCONN, "Correlate::insertmatrix") as curs:
@@ -76,26 +50,12 @@ INSERT INTO {tableName} (assay, correlations)
             VALUES (%(assay)s, %(corrs)s)
             """.format(tableName = self.tableName), {"assay": assay, "corrs": matrix})
 
-    def run(self, assay):
-        l = self._getarrlen(assay + "_rank")
-        corrs = [[1.0 for ct in xrange(l)] for ct in xrange(l)]
-        for ct in xrange(l - 1):
-            r = [self._getcorr(assay, ct, l, 20000) for ct in xrange(l)]
-            for i in range(ct + 1, l):
-                corrs[ct][i] = r[i - ct - 1]
-                corrs[i][ct] = r[i - ct - 1]
-        self.curs.execute("""
-INSERT INTO {tableName} (assay, correlations)
-VALUES (%(assay)s, %(corrs)s)
-""".format(tableName = self.tableName),
-                          {"assay": assay, "corrs": corrs})
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--exportTable', action="store_true", default=False)
     parser.add_argument('--importTable', action="store_true", default=False)
-    parser.add_argument("--assembly", type=str, default="mm10")
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -111,39 +71,33 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    assaymap = {"DNase": "dnase",
-                "CTCF": "ctcf_only",
-                "Insulator": "ctcf_dnase",
-                "Promoter": "h3k4me3_dnase",
-                "H3K4me3": "h3k4me3_only",
-                "H3K27ac": "h3k27ac_only",
-                "Enhancer": "h3k27ac_dnase" }
+    assemblies = ["mm10", "hg19"]
+    if args.assembly:
+        assemblies = [args.assembly]
 
-    for assembly in ["mm10", "hg19"]:
+    for assembly in assemblies:
         print("working with assembly %s" % assembly)
         c = Correlate(DBCONN, assembly)
         if args.exportTable:
             c.exportTable(fnp)
         elif args.importTable:
             c.setupTable()
+            c.importTable(fnp)
+        else:
+            c.setupTable()
             d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/mat" % assembly
-            for assay in ["DNase", "H3K27ac", "H3K4me3", "Enhancer", "Promoter", "Insulator", "CTCF"]:
+            for assay in ["DNase", "H3K27ac", "H3K4me3", "Enhancer",
+                          "Promoter", "Insulator", "CTCF"]:
                 fnp = os.path.join(d, "%s-List.txt.cormat.txt" % assay)
                 if not os.path.exists(fnp):
                     print("WARNING: missing matrix for assay %s; skipping" % fnp)
                     continue
                 try:
                     matrix = loadmatrix(fnp)
-                    c.insertmatrix(assaymap[assay] + "v10", matrix)
+                    c.insertmatrix(assay + "_v10", matrix)
                 except:
                     print("error in", fnp)
                     raise
-        else:
-            c.setupTable()
-            for assay in ["dnase", "ctcf_only", "h3k27ac_only",
-                          "h3k4me3_only", "h3k27ac_dnase", "h3k4me3_dnase",
-                          "ctcf_dnase" ]:
-                c.run(assay)
     return 0
 
 if __name__ == '__main__':

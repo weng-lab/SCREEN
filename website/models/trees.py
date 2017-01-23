@@ -19,14 +19,6 @@ class Trees:
         self.groups = {"hg19": [("tissue", lambda x: "tissue" in x),
                                 ("immortalized", lambda x: "immortalized" in x),
                                 ("primary_cell", lambda x: "primary_cell" in x) ]}
-                       
-        if "dnase" == tree_rank_method:
-            self.inner = None
-            self.outer = "dnase"
-        else:
-            toks = tree_rank_method.split('$')
-            self.inner = toks[1]
-            self.outer = toks[0]
 
     def getTree(self):
         ret = {}
@@ -36,7 +28,16 @@ class Trees:
         for typ in biosampleTypes:
             idx = typ if type(typ) is str else typ[0]
             ret[idx] = self._processTyp(typ)
-        title = ' / '.join([x for x in [self.outer, self.inner] if x])
+
+        titleLookup = {"DNase" : "DNase",
+                       "H3K27ac" : "Enhancer / H3K27ac only",
+                       "H3K4me3" :"Promoter / H3K4me3 only",
+                       "Enhancer" : "Enhancer / DNase+H3K27ac",
+                       "Promoter" : "Promoter / DNase + H3K4me3",
+                       "Insulator" : "Insulator / DNase + CTCF",
+                       "CTCF" : "Insulator / CTCF only"}
+        title = titleLookup[self.tree_rank_method]
+
         return {"trees": ret, "title" : title }
 
     def _processTyp(self, typ):
@@ -48,13 +49,12 @@ class Trees:
 
         c = Correlation(self.assembly, self.pg.DBCONN)
 
+        k = self.tree_rank_method + "_v10"
+        labels = self.cache.rankMethodToCellTypes[self.tree_rank_method]
+
         if self.assembly == "hg19":
-            k = "dnase" if self.inner is None else self.inner.lower()
-            labels = self.cache.rankMethodToCellTypes[k]
             labels, corr = c.dbcorr(self.assembly, k, labels, typ[1])
         else:
-            k = "dnase" if self.inner is None else self.inner.lower()
-            labels = self.cache.rankMethodToCellTypes[k]
             labels, corr = c.dbcorr(self.assembly, k, labels,
                                     lambda x: "bryo" in x)
             print("!got correlation")
@@ -74,8 +74,8 @@ class Trees:
                 rhoList = rho
             _heatmap = Heatmap(rhoList)
         except:
-            print("rho", rho)
-            print("pval", pval)
+            #print("rho", rho)
+            #print("pval", pval)
             return []
         with Timer("tree hierarchical clustering time"):
             roworder, rowtree = _heatmap.cluster_by_rows()

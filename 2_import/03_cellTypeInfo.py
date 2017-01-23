@@ -95,10 +95,26 @@ rankMethod text,
 cellType text,
 idx integer);""".format(tableName = tableName))
 
+        lookup = {"CTCF-only" : "CTCF",
+                  "DNase" : "DNase",
+                  "DNase+CTCF" : "Insulator",
+                  "DNase+H3K27ac" : "Enhancer",
+                  "DNase+H3K4me3" : "Promoter",
+                  "H3K27ac-only" : "H3K27ac",
+                  "H3K4me3-only" : "H3K4me3"}
+
+        with open(fnp) as f:
+            rows = [x.rstrip().split('\t') for x in f]
+        outF = StringIO.StringIO()
+        for r in rows:
+            r[0] = lookup[r[0]]
+            outF.write('\t'.join(r) + '\n')
+        outF.seek(0)
+
         cols = ["rankMethod", "cellType", "idx"]
         with open(fnp) as f:
-            print("importing", fnp, "into", tableName)
-            self.curs.copy_from(f, tableName, '\t', columns=cols)
+            self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        print("\tok", self.curs.rowcount)
 
     def importDatasets(self):
         d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
