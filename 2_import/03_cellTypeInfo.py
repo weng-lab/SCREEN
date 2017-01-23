@@ -72,8 +72,13 @@ class CellTypeInfoRow:
 
         if "mm10" == self.assembly:
             bs = self.biosample_summary
-
-
+            bs = bs.replace("C57BL/6 ", "")
+            matches = re.findall(r"\ (\((.*) days\))", bs)
+            #print(bs, matches, len(matches))
+            if matches and 1 == len(matches):
+                bs = bs.replace(matches[0][0], "e" + matches[0][1])
+                bs = bs.replace("postnatal e", "p").replace("embryo e", "e")
+            #print("new bs", bs)
             self.biosample_summary = bs
             
         out = self.output().encode('ascii', 'ignore').decode('ascii')
@@ -218,6 +223,7 @@ cellTypeName text);""".format(tableName = tableName))
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -226,7 +232,11 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = ["mm10", "hg19"]
+    if args.assembly:
+        assemblies = [args.assembly]
+    
+    for assembly in assemblies:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             pd = ImportCellTypeInfo(curs, assembly)
             pd.run()
