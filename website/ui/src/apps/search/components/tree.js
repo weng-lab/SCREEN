@@ -135,13 +135,13 @@ class ResultsTree extends React.Component { //REComponent {
 		<select onChange={() => {
                     actions.setTreeRankMethod(this.refs.field.value)}}
 		ref="field">
-		<option value="dnase">DNase</option>
-		<option value="promoter$H3K4me3-Only">H3K4me3 Only</option>
-		<option value="promoter$DNase+H3K4me3">H3K4me3 and DNase</option>
-		<option value="enhancer$H3K27ac-Only">H3K27ac Only</option>
-		<option value="enhancer$DNase+H3K27ac">H3K27ac and DNase</option>
-		<option value="ctcf$CTCF-Only">CTCF Only</option>
-		<option value="ctcf$DNase+CTCF">CTCF and DNase</option>
+		<option value="DNase">DNase</option>
+		<option value="H3K4me3">H3K4me3 Only</option>
+		<option value="Promoter">H3K4me3 and DNase</option>
+		<option value="H3K27ac">H3K27ac Only</option>
+		<option value="Enhancer">H3K27ac and DNase</option>
+		<option value="CTCF">CTCF Only</option>
+		<option value="Insulator">CTCF and DNase</option>
 		</select>
                 {this.doRenderWrapper()}
 		<span ref="help_icon" />

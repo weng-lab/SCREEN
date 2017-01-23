@@ -11,7 +11,6 @@ from models.cre import CRE
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
-from models.correlation import Correlation
 from models.cytoband import Cytoband
 from models.bigwig import BigWig
 from models.trees import Trees
