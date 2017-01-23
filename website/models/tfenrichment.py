@@ -32,7 +32,7 @@ class TFEnrichment:
                   "Insulator" : "ctcf_dnase",
                   "Enhancer" : "h3k27ac_dnase",
                   "Promoter" : "h3k4me3_dnase",
-                  "H3K27ac" : "h3k27ac_only" : ,
+                  "H3K27ac" : "h3k27ac_only",
                   "H3K4me3" : "h3k4me3_only"}
         
         left = [cti[x] for x in leftRaw if x in cti]
