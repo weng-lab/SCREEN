@@ -45,6 +45,21 @@ class ImportPeakIntersections:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         print("\tcopied in", fnp, self.curs.rowcount)
 
+    def _idx(self, tn, col, suf = ""):
+        if suf:
+            return tn + '_' + col + '_' + suf + "_idx"
+        return tn + '_' + col + "_idx"
+
+    def index(self):
+        cols = ("accession",)
+        for col in cols:
+            idx = self._idx(self.tableName, col)
+            print("indexing", idx)
+            self.curs.execute("""
+    DROP INDEX IF EXISTS {idx};
+    CREATE INDEX {idx} on {tableName} ({col});
+    """.format(idx = idx, tableName = self.tableName, col = col))
+
 class ImportPeakIntersectionMetadata:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -85,6 +100,7 @@ class ImportPeakIntersectionMetadata:
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--metadata', action="store_true", default=False)
     args = parser.parse_args()
     return args
@@ -99,8 +115,13 @@ def main():
             if args.metadata:
                 ipi = ImportPeakIntersectionMetadata(curs, assembly)
                 ipi.run()
+            elif args.index:
+                ipi = ImportPeakIntersections(curs, assembly)
+                ipi.index()
             else:
                 ipi = ImportPeakIntersections(curs, assembly)
+                ipi.run()
+                ipi = ImportPeakIntersectionMetadata(curs, assembly)
                 ipi.run()
 
 if __name__ == '__main__':
