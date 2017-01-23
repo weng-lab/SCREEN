@@ -34,26 +34,35 @@ class TFEnrichment:
             return "(%s) and (%s)" % (inc, exc)
         with getcursor(self.ps.DBCONN, "tfenrichment$TFEnrichment::findenrichment") as curs:
             with Timer("tf query"):
-                curs.execute("""SELECT jsonb_each_text(tf) FROM {tableName}, {pTableName}
-                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession""".format(tableName=self.assembly + "_cre",
-                                                                                                                 pTableName=self.assembly + "_peakIntersections",
-                                                                                                                 whereclause=whereclause(left, right)))
+                q = """SELECT jsonb_each_text(tf) FROM {tableName}, {pTableName}
+                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession
+                """.format(tableName=self.assembly + "_cre",
+                           pTableName=self.assembly + "_peakIntersections",
+                           whereclause=whereclause(left, right))
+                curs.execute(q)
+                print(q)
                 l = curs.fetchall()
-                curs.execute("""SELECT COUNT(*) FROM {tableName}, {pTableName}
-                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession""".format(tableName=self.assembly + "_cre",
-                                                                                                                 pTableName=self.assembly + "_peakIntersections",
-                                                                                                                 whereclause=whereclause(left, right)))
+                curs.execute(
+                    """SELECT COUNT(*) FROM {tableName}, {pTableName}
+                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession
+""".format(tableName=self.assembly + "_cre",
+           pTableName=self.assembly + "_peakIntersections",
+           whereclause=whereclause(left, right)))
                 lc = curs.fetchone()[0]
             with Timer("tf query"):
-                curs.execute("""SELECT jsonb_each_text(tf) FROM {tableName}, {pTableName}
-                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession""".format(tableName=self.assembly + "_cre",
-                                                                                                                 pTableName=self.assembly + "_peakIntersections",
-                                                                                                                 whereclause=whereclause(right, left)))
+                curs.execute(
+                    """SELECT jsonb_each_text(tf) FROM {tableName}, {pTableName}
+                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession
+""".format(tableName=self.assembly + "_cre",
+           pTableName=self.assembly + "_peakIntersections",
+           whereclause=whereclause(right, left)))
                 r = curs.fetchall()
-                curs.execute("""SELECT COUNT(*) FROM {tableName}, {pTableName}
-                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession""".format(tableName=self.assembly + "_cre",
-                                                                                                                 pTableName=self.assembly + "_peakIntersections",
-                                                                                                                 whereclause=whereclause(right, left)))
+                curs.execute(
+                    """SELECT COUNT(*) FROM {tableName}, {pTableName}
+                                WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession
+""".format(tableName=self.assembly + "_cre",
+           pTableName=self.assembly + "_peakIntersections",
+           whereclause=whereclause(right, left)))
                 rc = curs.fetchone()[0]
         ret = {"left": self._process(l, lc),
                "right": self._process(r, rc)}

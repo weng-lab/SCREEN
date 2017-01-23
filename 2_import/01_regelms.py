@@ -97,7 +97,8 @@ class CreateIndices:
         return tn + '_' + col + "_idx"
 
     def doIndex(self, tableName):
-        cols = ("accession", "chrom", "start", "stop",)
+        #cols = ("accession", "chrom", "start", "stop",)
+        cols = ("accession", )
         for col in cols:
             idx = self._idx(tableName, col)
             print("indexing", idx)
@@ -106,6 +107,7 @@ class CreateIndices:
     CREATE INDEX {idx} on {tableName} ({col});
     """.format(idx = idx, tableName = tableName, col = col))
 
+    def doIndexRev(self):
         cols = ("neglogp",)
         for col in cols:
             idx = self._idx(tableName, col)
@@ -126,6 +128,8 @@ class CreateIndices:
 
     def run(self):
         self.doIndex(self.baseTableName)
+        return
+        self.doIndexRev(self.baseTableName)
         self.doIndexGin(self.baseTableName)
         self.doIndexRange(self.baseTableName)
 
