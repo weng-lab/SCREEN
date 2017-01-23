@@ -23,7 +23,7 @@ const get_children = (node) => {
 const default_label_formatter = (l) => {
     return {
 	key: l.key ? l.key : l,
-	name: (l.name ? (l.tissue ? l.name + " (" + l.tissue + ")" : l.name) : l),
+	name: (l.name ? l.name : l),
 	style: {fill: TissueColors[l.tissue]}
     };
 };
