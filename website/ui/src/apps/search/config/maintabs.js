@@ -1,50 +1,30 @@
 import React from 'react'
-import {connect} from 'react-redux'
 
 import ResultsTableContainer from '../components/results_app'
 import ResultsTree from '../components/tree'
 import DetailsContainer from '../components/details_container'
-import TFDisplay from '../../../common/components/tf_display'
+import TFDisplay from '../components/tf_display'
 
 import DetailsTabInfo from './details'
 
 class ResultsTab extends React.Component{
-    render() {
-        return (<div>
-                <ResultsTableContainer />
-                </div>);
-    }
+    render() { return (<ResultsTableContainer />); }
 }
 
 class TreeTab extends React.Component{
-    render() {
-        return (<div>
-		<ResultsTree />
-                </div>);
-    }
+    render() { return (<ResultsTree />); }
 }
 
 class DetailsTab extends React.Component{
-    render() {
-        return (<div>
-                <DetailsContainer tabs={DetailsTabInfo} />
-                </div>);
-    }
+    render() { return (<DetailsContainer tabs={DetailsTabInfo} />); }
 }
 
 class GcompareTab extends React.Component{
-    render() {
-        return (<div>
-                gcompare
-                </div>);
-    }
+    render() { return (gcompare); }
 }
 
 class TFTab extends React.Component {
-    render() {
-	console.log(TFDisplay);
-	return <div />; //<TFDisplay />;
-    }
+    render() { return (<TFDisplay />); }
 }
 
 const MainTabInfo = {

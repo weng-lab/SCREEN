@@ -14,7 +14,9 @@ import loading from '../../../common/components/loading'
 import {asum} from '../../../common/common'
 
 const get_children = (node) => {
-    if (!node.children) return [node.data.name];
+    if (!node.children) {
+        return [node.data.name];
+    }
     return asum(node.children.map(get_children));
 };
 
@@ -24,25 +26,11 @@ const default_label_formatter = (l) => {
     };
 };
 
-const tree_comparison_done = (response) => {
-    return {
-	type: "TREE_COMPARISON_DONE"
-    };
-};
-
-const set_tree_comparison = (response) => {
-    return {
-	type: "SET_TREE_COMPARISON",
-	response
-    };
-};
-
 class ResultsTree extends React.Component { //REComponent {
 
     constructor(props) {
 	super(props);
         this.state = { isFetching: false, isError: false}
-	this._on_click = this._on_click.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -75,43 +63,30 @@ class ResultsTree extends React.Component { //REComponent {
         });
     }
 
-    _on_click(d) {
-	var data = {
-	    left: get_children(d.children[0]),
-	    right: get_children(d.children[1]),
-	    action: "tfenrichment",
-	    GlobalAssembly
-	};
-	var f_success = (response, status, jqxhr) => {
-	    this.props.dispatch(tree_comparison_done(response));
-	    this.props.dispatch(set_tree_comparison(response));
-	};
-	$.ajax({
-	    url: "/dataws/tfenrichment",
-	    type: "POST",
-	    data: JSON.stringify(data),
-	    dataType: "json",
-	    contentType: "application/json",
-	    error: ((jqxhr, status, error) => {
-		console.log("error fetching TF enrichment");
-	    }).bind(this),
-	    success: f_success.bind(this)
-	});
-    }
-
-    makeTree(data, k, _formatter){
+    makeTree(data, k, _formatter, actions){
 	var formatter = (k == "primary cell" ?
 			 primary_cell_label_formatter : _formatter);
 	var labels = (data.labels ? data.labels.map(formatter) : null);
 	var height = (labels ? labels.length * 15 : 0);
 	return (<div ref="container">
 		<h2>{k}</h2>
-		<Tree data={data.tree} width={2000} height={height}
-		labels={labels} onClick={this._on_click} />
+		<Tree
+                data={data.tree}
+                width={2000}
+                height={height}
+		labels={labels}
+                onClick={(d) => {
+	            var left = get_children(d.children[0]);
+	            var right = get_children(d.children[1]);
+                    console.log(left, right);
+                    actions.setTreeNodesCompare(left, right);
+                    actions.setMainTab("tf_enrichment");
+                }}
+                />
 		</div>);
     }
 
-    doRenderWrapper(){
+    doRenderWrapper(actions){
         let tree_rank_method = this.props.tree_rank_method;
         if(tree_rank_method in this.state){
             let title = this.state[tree_rank_method].title;
@@ -122,7 +97,8 @@ class ResultsTree extends React.Component { //REComponent {
             return (<div>
 		    <h1>{title}</h1>
                     {Object.keys(trees).map((k) => {
-                        return this.makeTree(trees[k], k, _formatter); })}
+                        return this.makeTree(trees[k], k, _formatter, actions);
+                    })}
                     </div>);
         }
         return loading(this.state);
@@ -143,22 +119,13 @@ class ResultsTree extends React.Component { //REComponent {
 		<option value="CTCF">CTCF Only</option>
 		<option value="Insulator">CTCF and DNase</option>
 		</select>
-                {this.doRenderWrapper()}
+                {this.doRenderWrapper(actions)}
 		<span ref="help_icon" />
 		</div>);
     }
 };
 
-const mapStateToProps = (state) => ({
-        ...state
-});
-
+const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(Actions, dispatch),
-    dispatch
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ResultsTree);
+    actions: bindActionCreators(Actions, dispatch) });
+export default connect(mapStateToProps, mapDispatchToProps)(ResultsTree);
