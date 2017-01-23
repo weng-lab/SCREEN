@@ -95,7 +95,7 @@ def main():
     cherrypy.config.update({'server.socket_host': '0.0.0.0', })
     cherrypy.config.update({'server.socket_port': int(args.port), })
 
-    if not args.local:
+    if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512})
         cherrypy.config.update({'server.thread_pool': 30})
 
