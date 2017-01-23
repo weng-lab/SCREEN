@@ -82,10 +82,10 @@ class CRE:
                 ret.append(r)
             return ret
 
-        return {"dnase": makeArrRanks("dnase"),
-                "promoter": makeArrMulti("h3k4me3-only", "dnase+h3k4me3"),
-                "enhancer": makeArrMulti("h3k27ac-only", "dnase+h3k27ac"),
-                "ctcf": makeArrMulti("ctcf-only", "dnase+ctcf")}
+        return {"dnase": makeArrRanks("DNase"),
+                "promoter": makeArrMulti("H3K4me3", "Promoter"),
+                "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
+                "ctcf": makeArrMulti("CTCF", "Insulator")}
 
     def _get_bigwigs(self, cache):
         return [{"ct": k, "bigwig": v[1], "accession": v[0]}
