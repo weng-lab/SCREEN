@@ -308,3 +308,34 @@ SELECT distinct label
 FROM {tn}
 """.format(tn = tableName))
             return sorted([r[0] for r in curs.fetchall()])
+
+    def genePos(self, gene):
+        tableName = self.assembly + "_gene_info"
+        with getcursor(self.pg.DBCONN, "cre_pos") as curs:
+            curs.execute("""
+SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
+""".format(tn = tableName), (gene, ))
+            r = curs.fetchone()
+        if not r:
+            print("ERROR: missing", accession)
+            return None
+        return Coord(r[0], r[1], r[2])
+
+    def nearbyDEs(self, coord, halfWindow, leftName, rightName):
+        c = coord.expanded(halfWindow)
+        tableName = self.assembly + "_de"
+        with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
+            curs.execute("""
+            SELECT start, stop, log2FoldChange
+            from {deTn} as de
+            inner join {giTn as gi
+            on de.ensembl = gi.ensemblid_ver
+            where gi.chrom = %(chrom)s 
+            AND int4range(gi.start, gi.stop) && int4range(%(start)s, %(stop)s)
+            and de.leftname = %(leftName)s and de.rightname = %(rightName)s
+""".format(deTn = self.assembly + "_de",
+           giTn = self.assembly + "_gene_info"),
+                         { "chrom" : c.chrom, "start" : c.start, "stop" : c.stop,
+                           "leftName" : leftName, "rightName" : rightName})
+            des = curs.fetchall()
+        return des

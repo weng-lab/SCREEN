@@ -56,6 +56,7 @@ class Config:
                 'log.access_file' : self.accessFnp,
                 'log.error_file' : self.errorFnp,
                 'log.screen' : False,
+                'response.timeout' : 6000
             },
             '/static' : {
                 'tools.staticdir.on' : True,
