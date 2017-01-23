@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from exp import Exp
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils
+from utils import Utils, eprint
 
 class DetermineTissue:
     # translate tissue name to tissue name
@@ -46,6 +46,7 @@ class DetermineTissue:
             return lookup[ct]
         if ct.endswith("erythroid progenitor cells"):
             return "blood"
+        eprint("missing", ct)
         return ""
 
 class CellTypeInfoRow:
