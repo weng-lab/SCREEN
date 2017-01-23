@@ -25,8 +25,12 @@ class TRBars extends React.Component {
 class TFDisplay extends React.Component {
     constructor(props) {
 	super(props);
-        this.state = { left: null, right: null, isFetching: true, isError: false,
-                       jq : null}
+        this.state = { left: null, right: null, tite: null,
+                       isFetching: true, isError: false, jq : null}
+    }
+
+    componentDidMount(){
+        this.loadTFs(this.props);
     }
 
     componentWillReceiveProps(nextProps){
@@ -44,7 +48,7 @@ class TFDisplay extends React.Component {
             return;
         }
         //console.log("loadCREs....", this.state.jq, jq);
-        this.setState({jq, isFetching: true});
+        this.setState({left: null, right: null, jq, isFetching: true});
 	$.ajax({
 	    url: "/dataws/tfenrichment",
 	    type: "POST",
@@ -58,6 +62,7 @@ class TFDisplay extends React.Component {
             }.bind(this),
             success: function(r) {
                 this.setState({left: r["tfs"]["left"], right: r["tfs"]["right"],
+                               title: r["title"],
                                jq, isFetching: false, isError: false});
             }.bind(this)
 	});
@@ -67,18 +72,22 @@ class TFDisplay extends React.Component {
         let left = this.state.left;
         let right = this.state.right;
         if(left && right){
-            return (<table>
-		<tr><td><b>top</b></td><td><b>bottom</b></td></tr>
-		<tr style={{"vertical-align": "top"}}>
+            return (<div>
+                    <h2>{this.state.title}</h2>
 
-                <td style={{"vertical-align": "top"}}>
-                <TRBars items={left} /></td>
+                    <table>
+		    <tr><td><b>top</b></td><td><b>bottom</b></td></tr>
+		    <tr style={{"vertical-align": "top"}}>
 
-                <td style={{"vertical-align": "top"}}>
-                <TRBars items={right} /></td>
+                    <td style={{"vertical-align": "top"}}>
+                    <TRBars items={left} /></td>
 
-                </tr>
-		</table>);
+                    <td style={{"vertical-align": "top"}}>
+                    <TRBars items={right} /></td>
+
+                    </tr>
+		    </table>
+                   </div>);
         }
         return loading(this.state);
     }

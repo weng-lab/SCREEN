@@ -78,9 +78,8 @@ class ResultsTree extends React.Component { //REComponent {
                 onClick={(d) => {
 	            var left = get_children(d.children[0]);
 	            var right = get_children(d.children[1]);
-                    console.log(left, right);
-                    actions.setTreeNodesCompare(left, right);
                     actions.setMainTab("tf_enrichment");
+                    actions.setTreeNodesCompare(left, right);
                 }}
                 />
 		</div>);
