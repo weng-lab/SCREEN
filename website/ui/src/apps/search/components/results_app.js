@@ -2,9 +2,9 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import TableWithCart from './table_with_cart'
-
 import * as Actions from '../actions/main_actions';
+
+import TableWithCart from './table_with_cart'
 
 class ResultsTableContainer extends React.Component {
     constructor(props) {
