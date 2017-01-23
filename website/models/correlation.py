@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import os
 
@@ -10,27 +12,19 @@ class Correlation:
     def __init__(self, assembly, DBCONN):
         self.assembly = assembly
         self.DBCONN = DBCONN
+        self.tableName = assembly + "_correlations"
 
-    def tn(self, assembly):
-        return "correlations_hg19" if assembly == "hg19" else assembly + "_correlations"
-        
     def dbcorr(self, assembly, assay, labels = None, _filter = lambda x: True):
-        assay = assay.replace("-", "_").replace("+", "_")
-
-        lookup = {"dnase_h3k27ac" : "h3k27ac_dnase",
-                  "dnase_h3k4me3" : "h3k4me3_dnase",
-                  "dnase_ctcf" : "ctcf_dnase"}
-        if assay in lookup:
-            assay = lookup[assay]
-
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
-            curs.execute(
-                """SELECT correlations, assay FROM {tn} WHERE assay = '{assay}'""".format(tn = self.tn(assembly), assay = assay + "v12"))
+            curs.execute("""
+SELECT correlations, assay FROM {tn} WHERE assay = %s
+""".format(tn = self.tableName), (assay,))
             try:
                 r = curs.fetchone()[0]
             except:
                 raise Exception("correlation$Correlation::dbcorr ERROR: failed to get correlation data for assay %s" % assay)
-            if not labels: return r
+        if not labels:
+            return r
 
         tokeep = []
         flabels = []
