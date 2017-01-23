@@ -37,11 +37,11 @@ class TFDisplay extends React.Component {
         this.loadTFs(nextProps);
     }
 
-    loadTFs({tree_nodes_compare}) {
+    loadTFs({tree_nodes_compare, tree_rank_method}) {
         if(null == tree_nodes_compare){
             return;
         }
-        var q = {GlobalAssembly, tree_nodes_compare};
+        var q = {GlobalAssembly, tree_nodes_compare, tree_rank_method};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
