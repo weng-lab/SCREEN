@@ -24,7 +24,7 @@ class DetermineTissue:
     # translate biosample term name
     lookupBTN = {}
     fnp = os.path.join(os.path.dirname(__file__),
-                       "../cellTypeToTissue.hg19.json.new")
+                       "../cellTypeToTissue.hg19.json.old")
     lookupBTN["hg19"] = json.load(open(fnp))
     fnp = os.path.join(os.path.dirname(__file__),
                        "../cellTypeToTissue.mm10.json")
@@ -46,7 +46,7 @@ class DetermineTissue:
             return lookup[ct]
         if ct.endswith("erythroid progenitor cells"):
             return "blood"
-        eprint("missing", ct)
+        eprint(assembly, "missing", ct)
         return ""
 
 class CellTypeInfoRow:
@@ -70,7 +70,14 @@ class CellTypeInfoRow:
                 print("multiple items for biosample_type:", self.biosample_type)
             self.biosample_type = self.biosample_type[0]
 
-        print(self.output())
+        if "mm10" == self.assembly:
+            bs = self.biosample_summary
+
+
+            self.biosample_summary = bs
+            
+        out = self.output().encode('ascii', 'ignore').decode('ascii')
+        print(out)
 
     def output(self):
         return '\t'.join([self.assay, self.expID, self.fileID,

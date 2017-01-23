@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 from __future__ import print_function
 
@@ -93,7 +92,8 @@ class DataWebService:
 
     def tfenrichment(self, j, args):
         a = j["tree_nodes_compare"]
-        return self.tfEnrichment.findenrichment(a[0], a[1]);
+        tree_rank_method = j["tree_rank_method"]
+        return self.tfEnrichment.findenrichment(tree_rank_method, a[0], a[1]);
 
     def _re_detail_topTissues(self, j, accession):
         cre = CRE(self.pgSearch, accession)

@@ -24,11 +24,20 @@ class TFEnrichment:
                 ret[v] += i
         return ret
 
-    def findenrichment(self, leftRaw, rightRaw, threshold = 20000):
-        cti = self.cache.rankMethodToIDxToCellType["DNase"]
+    def findenrichment(self, tree_rank_method, leftRaw, rightRaw, threshold = 20000):
+        cti = self.cache.rankMethodToIDxToCellType[tree_rank_method]
+
+        lookup = {"CTCF" : "ctcf_only",
+                  "DNase" : "dnase",
+                  "Insulator" : "ctcf_dnase",
+                  "Enhancer" : "h3k27ac_dnase",
+                  "Promoter" : "h3k4me3_dnase",
+                  "H3K27ac" : "h3k27ac_only" : ,
+                  "H3K4me3" : "h3k4me3_only"}
+        
         left = [cti[x] for x in leftRaw if x in cti]
         right = [cti[x] for x in rightRaw if x in cti]
-        def whereclause(inc, exc, assay = "dnase"):
+        def whereclause(inc, exc, assay = lookup[tree_rank_method]):
             inc = " or ".join(["%s_zscore[%d] > 1.64" % (assay, x) for x in inc])
             exc = " and ".join(["%s_zscore[%d] <= 1.64" % (assay, x) for x in exc])
             return "(%s) and (%s)" % (inc, exc)
