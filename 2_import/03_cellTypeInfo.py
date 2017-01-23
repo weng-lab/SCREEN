@@ -24,7 +24,7 @@ class DetermineTissue:
     # translate biosample term name
     lookupBTN = {}
     fnp = os.path.join(os.path.dirname(__file__),
-                       "../cellTypeToTissue.hg19.json.old")
+                       "../cellTypeToTissue.hg19.json")
     lookupBTN["hg19"] = json.load(open(fnp))
     fnp = os.path.join(os.path.dirname(__file__),
                        "../cellTypeToTissue.mm10.json")
