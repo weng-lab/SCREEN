@@ -92,7 +92,8 @@ class DataWebService:
             raise
 
     def tfenrichment(self, j, args):
-        return self.tfEnrichment.findenrichment(j["left"], j["right"])
+        a = j["tree_nodes_compare"]
+        return self.tfEnrichment.findenrichment(a[0], a[1]);
 
     def _re_detail_topTissues(self, j, accession):
         cre = CRE(self.pgSearch, accession)

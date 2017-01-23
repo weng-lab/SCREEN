@@ -21,9 +21,6 @@ const main_reducers = (state, action) => {
     case Actions.SET_GENE_PC_DISTANCE:
         return {...state, gene_pc_start: action.start, gene_pc_end: action.end };
 
-    case 'SET_TREE_COMPARISON':
-	return {...state, tfenrichment: action};
-
     case Actions.SHOW_MAIN_TABS:
         return {...state, maintabs_visible: action.show };
     case Actions.SET_MAIN_TAB:
@@ -44,6 +41,10 @@ const main_reducers = (state, action) => {
 
     case Actions.SET_TREE_RANK_METHOD: {
 	return { ...state, tree_rank_method : action.tree_rank_method};
+    }
+
+    case Actions.SET_TREE_NODES_COMPARE: {
+        return { ...state, tree_nodes_compare : [action.left, action.right] };
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:
