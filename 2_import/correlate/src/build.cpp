@@ -89,6 +89,9 @@ public:
             m.load(matFnp_.string());
         }
 
+	std::vector<a::uword> ids = {1,2,3};
+	a::fmat q = m.rows(a::uvec(ids));
+	
         if(m.has_nan()){
             std::cerr << "WARNING: NANs present in input matrix" << std::endl;
         }
