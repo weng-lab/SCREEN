@@ -24,7 +24,7 @@ const store = createStore(main_reducers,
 
 //console.log(store.getState());
 
-class GeneExpPage extends React.Component {
+class DePage extends React.Component {
     render() {
         return (
                 <Provider store={store}>
@@ -54,4 +54,4 @@ class GeneExpPage extends React.Component {
     }
 }
 
-export default GeneExpPage;
+export default DePage;

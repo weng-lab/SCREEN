@@ -24,8 +24,8 @@ class GeneExp extends React.Component{
         this.loadGene(nextProps);
     }
 
-    loadGene({compartments_selected, gene}){
-        var q = {GlobalAssembly, gene, compartments_selected};
+    loadGene({gene}){
+        var q = {GlobalAssembly, gene};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html

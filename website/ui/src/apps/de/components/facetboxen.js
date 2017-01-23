@@ -9,26 +9,49 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
 
-const cell_compartments = ({compartments, actions}) => {
-    return panelize("Cellular Compartments",
-                    <LongChecklistFacet
+const cellTypesBox1 = ({cellType, actions}) => {
+    return panelize("Cell type 1",
+                    <LongListFacet
                     title={""}
-                    data={compartments.map((e) => {return {key: e,
-                                                           selected: true}})}
-                    cols={[{
-		        title: "Assay", data: "key",
-		        className: "dt-right"
-	            }]}
+                    data={GlobalCellTypeInfoArr}
+                    cols={[
+		        { title: "cell type", data: "name",
+		          className: "dt-right" },
+		        { title: "tissue", data: "tissue",
+		            className: "dt-right" }
+	            ]}
                     order={[]}
-        	    mode={CHECKLIST_MATCH_ANY}
-                    onTdClick={(c) => { actions.toggleCompartment(c) } }
+                    selection={cellType}
+                    friendlySelectionLookup={(value) => {
+                        return GlobalCellTypeInfo[value]["name"] }}
+                    onTdClick={(value) => { actions.setCellType2(value) }}
+                    />);
+}
+
+const cellTypesBox2 = ({cellType, actions}) => {
+    return panelize("Cell type 2",
+                    <LongListFacet
+                    title={""}
+                    data={GlobalCellTypeInfoArr}
+                    cols={[
+		        { title: "cell type", data: "name",
+		          className: "dt-right" },
+		        { title: "tissue", data: "tissue",
+		          className: "dt-right" }
+	            ]}
+                    order={[]}
+                    selection={cellType}
+                    friendlySelectionLookup={(value) => {
+                        return GlobalCellTypeInfo[value]["name"] }}
+                    onTdClick={(value) => { actions.setCellType2(value) }}
                     />);
 }
 
 class FacetBoxen extends React.Component {
     doRender(p){
         return (<div>
-                {cell_compartments(p)}
+                {cellTypesBox1(p)}
+                {cellTypesBox2(p)}
                 </div>);
     }
 
