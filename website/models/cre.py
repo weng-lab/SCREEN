@@ -51,9 +51,8 @@ class CRE:
         return self.ranks
 
     def topTissues(self, cache):
-        rmToCts = cache.rankMethodToCellTypes
-        ranks = self.allRanks()["ranks"]
-        print(ranks)
+        rmToCts = cache.rankMethodToCellTypes # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
+        ranks = self.allRanks()["ranks"] # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
         def ctToTissue(ct):
             return cache.datasets.globalCellTypeInfo[ct]["tissue"]
         def get_rank(ct, d):
@@ -66,27 +65,27 @@ class CRE:
             for idx, v in enumerate(arr):
                 ret[cts[idx]] = v
             return ret
-        def makeArrRanks(rm1):
+        def makeArrRanks(rm1, ctrm1):
             ret = []
-            oneAssay = arrToCtDict(ranks[rm1], rmToCts[rm1])
+            oneAssay = arrToCtDict(ranks[rm1], rmToCts[ctrm1])
             for ct, v in oneAssay.iteritems():
                 r = {"tissue" : ctToTissue(ct), "ct" : ct, "one" : v}
                 ret.append(r)
             return ret
-        def makeArrMulti(rm1, rm2):
+        def makeArrMulti(rm1, ctrm1, rm2, ctrm2):
             ret = []
-            oneAssay = arrToCtDict(ranks[rm1], rmToCts[rm1])
-            multiAssay = arrToCtDict(ranks[rm2], rmToCts[rm2])
+            oneAssay = arrToCtDict(ranks[rm1], rmToCts[ctrm1])
+            multiAssay = arrToCtDict(ranks[rm2], rmToCts[ctrm2])
             for ct, v in oneAssay.iteritems():
                 r = {"tissue" : ctToTissue(ct), "ct" : ct,
                      "one" : v, "two": get_rank(ct, multiAssay)}
                 ret.append(r)
             return ret
 
-        return {"dnase": makeArrRanks("DNase"),
-                "promoter": makeArrMulti("H3K4me3", "Promoter"),
-                "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
-                "ctcf": makeArrMulti("CTCF", "Insulator")}
+        return {"dnase": makeArrRanks("dnase", "DNase"),
+                "promoter": makeArrMulti("h3k4me3-only", "H3K4me3", "dnase+h3k4me3", "Promoter"),
+                "enhancer": makeArrMulti("h3k27ac-only", "H3K27ac", "dnase+h3k27ac", "Enhancer"),
+                "ctcf": makeArrMulti("ctcf-only", "CTCF", "dnase+ctcf", "Insulator")}
 
     def _get_bigwigs(self, cache):
         return [{"ct": k, "bigwig": v[1], "accession": v[0]}
