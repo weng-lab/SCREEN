@@ -5,7 +5,7 @@ import os, sys
 from joblib import delayed, Parallel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
-from utils import Utils, Timer
+from utils import Utils, Timer, escape_html
 from db_utils import getcursor
 
 class TFEnrichment:
@@ -23,11 +23,11 @@ class TFEnrichment:
                 if v not in ret: ret[v] = 0.0
                 ret[v] += i
         return ret
-        
-    def findenrichment(self, left, right, threshold = 20000):
+
+    def findenrichment(self, leftRaw, rightRaw, threshold = 20000):
         cti = self.cache.rankMethodToIDxToCellType["DNase"]
-        left = [cti[x] for x in left if x in cti]
-        right = [cti[x] for x in right if x in cti]
+        left = [cti[x] for x in leftRaw if x in cti]
+        right = [cti[x] for x in rightRaw if x in cti]
         def whereclause(inc, exc):
             inc = " or ".join(["dnase_rank[%d] <= %d" % (x, threshold) for x in inc])
             exc = " and ".join(["dnase_rank[%d] > %d" % (x, threshold) for x in exc])
@@ -63,7 +63,8 @@ class TFEnrichment:
         for k, v in ret["right"].iteritems():
            if k not in ret["left"]:
                tfa[k] = {"left": 0.0, "right": v}
-        return {"tfs": {"left": sorted([{"key": k, "left": v["left"], "right": v["right"]}
+        return {"title" : escape_html(leftRaw[0]) + " vs " + escape_html(rightRaw[0]),
+                "tfs": {"left": sorted([{"key": k, "left": v["left"], "right": v["right"]}
                                         for k, v in tfa.iteritems() if v["left"] - v["right"] > 0],
                                        key=lambda x: x["right"] - x["left"]),
                         "right": sorted([{"key": k, "left": v["left"], "right": v["right"]}
