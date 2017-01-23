@@ -1,8 +1,8 @@
-const React = require('react');
+import React from 'react'
+
 var d3 = require('d3');
 
 class Tree extends React.Component {
-
     constructor(props) {
 	super(props);
 	this._on_click = this._on_click.bind(this);

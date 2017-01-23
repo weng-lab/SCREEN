@@ -51,3 +51,6 @@ export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
 export const SET_TREE_RANK_METHOD = 'SET_TREE_RANK_METHOD'
 export const setTreeRankMethod = (tree_rank_method) => ({
     type: SET_TREE_RANK_METHOD, tree_rank_method });
+export const SET_TREE_NODES_COMPARE = 'SET_TREE_NODES_COMPARE'
+export const setTreeNodesCompare = (left, right) => ({
+    type: SET_TREE_NODES_COMPARE, left, right })
