@@ -28,9 +28,9 @@ class TFEnrichment:
         cti = self.cache.rankMethodToIDxToCellType["DNase"]
         left = [cti[x] for x in leftRaw if x in cti]
         right = [cti[x] for x in rightRaw if x in cti]
-        def whereclause(inc, exc):
-            inc = " or ".join(["dnase_rank[%d] <= %d" % (x, threshold) for x in inc])
-            exc = " and ".join(["dnase_rank[%d] > %d" % (x, threshold) for x in exc])
+        def whereclause(inc, exc, assay = "dnase"):
+            inc = " or ".join(["%s_zscore[%d] > 1.64" % (assay, x) for x in inc])
+            exc = " and ".join(["%s_zscore[%d] <= 1.64" % (assay, x) for x in exc])
             return "(%s) and (%s)" % (inc, exc)
         with getcursor(self.ps.DBCONN, "tfenrichment$TFEnrichment::findenrichment") as curs:
             with Timer("tf query"):

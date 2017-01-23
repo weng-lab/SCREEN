@@ -47,7 +47,7 @@ class Trees:
                 return False
             return typ[1](ct) #(self.cache.biosamples[ct].biosample_type)
 
-        c = Correlation(self.assembly, self.pg.DBCONN)
+        c = Correlation(self.assembly, self.pg.DBCONN, self.cache)
 
         k = self.tree_rank_method + "_v10"
         labels = self.cache.rankMethodToCellTypes[self.tree_rank_method]

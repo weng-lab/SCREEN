@@ -6,24 +6,33 @@ import Tree from '../../../common/components/tree'
 
 import REComponent from '../../../common/components/re_component'
 
-import {primary_cell_label_formatter} from '../config/colors'
-
 import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
 
 import {asum} from '../../../common/common'
 
+import {primary_cell_colors, infer_primary_type, TissueColors} from '../config/colors'
+
 const get_children = (node) => {
     if (!node.children) {
-        return [node.data.name];
+        return [node.data.key];
     }
     return asum(node.children.map(get_children));
 };
 
 const default_label_formatter = (l) => {
     return {
-	name: l
+	key: l.key ? l.key : l,
+	name: (l.name ? (l.tissue ? l.name + " (" + l.tissue + ")" : l.name) : l),
+	style: {fill: TissueColors[l.tissue]}
     };
+};
+
+const primary_cell_formatter = (l) => {
+    var retval = default_label_formatter(l);
+    if (!l.name) return retval;
+    retval.style.fill = primary_cell_colors[infer_primary_type(l.name, l.tissue)];
+    return retval;
 };
 
 class ResultsTree extends React.Component { //REComponent {
@@ -64,8 +73,9 @@ class ResultsTree extends React.Component { //REComponent {
     }
 
     makeTree(data, k, _formatter, actions){
+	k = k.replace(/_/g, " ");
 	var formatter = (k == "primary cell" ?
-			 primary_cell_label_formatter : _formatter);
+			 primary_cell_formatter : _formatter);
 	var labels = (data.labels ? data.labels.map(formatter) : null);
 	var height = (labels ? labels.length * 15 : 0);
 	return (<div ref="container">
