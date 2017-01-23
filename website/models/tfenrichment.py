@@ -40,8 +40,8 @@ class TFEnrichment:
                            pTableName=self.assembly + "_peakIntersections",
                            whereclause=whereclause(left, right))
                 curs.execute(q)
-                print(q)
                 l = curs.fetchall()
+                print(q, "len of l:", len(l))
                 curs.execute(
                     """SELECT COUNT(*) FROM {tableName}, {pTableName}
                                 WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession

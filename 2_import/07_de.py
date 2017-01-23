@@ -75,12 +75,16 @@ def setupAll(curs):
 
 def index(curs):
     curs.execute("""
-    create index leftnamerightnamede on mm10_de(leftname, rightname)""")
-
+    create index leftname_rightname_de on mm10_de(leftname, rightname)""")
+    print("made index", "leftname_rightname_de")
+    curs.execute("""
+    create index ensembl_de on mm10_de(ensembl)""")
+    print("made index", "ensembl_de")
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -90,7 +94,10 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
     with getcursor(DBCONN, "main") as curs:
+        if args.index:
+            return index(curs)
         setupAll(curs)
+        index(curs)
 
 if __name__ == '__main__':
     main()

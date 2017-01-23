@@ -53,6 +53,7 @@ class CRE:
     def topTissues(self, cache):
         rmToCts = cache.rankMethodToCellTypes
         ranks = self.allRanks()["ranks"]
+        print(ranks)
         def ctToTissue(ct):
             return cache.datasets.globalCellTypeInfo[ct]["tissue"]
         def get_rank(ct, d):
