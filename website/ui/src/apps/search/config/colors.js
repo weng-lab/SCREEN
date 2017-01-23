@@ -15,6 +15,7 @@ export const TissueColors = {
     "heart": "#880055",
     "intestine": "#9900AA",
     "kidney": "#77AABB",
+    "limb": "#9999FF",
     "liver": "#884400",
     "lung": "#CCCCCC",
     "mammary": "#991111",
@@ -23,11 +24,11 @@ export const TissueColors = {
     "placenta": "#FF9977",
     "prostate": "#00AA88",
     "skin": "#BBAA44",
-    "stomach": "#44AAFF",
+    "stomach": "#9900FF",
     "uterus": "#990033"
 };
 
-const primary_cell_colors = {
+export const primary_cell_colors = {
     "paraxial mesoderm derivative": "#999900",
     "endothelia": "#990099",
     "ectoderm": "009999",
