@@ -41,14 +41,14 @@ class ExpressionBoxplot extends React.Component {
         let chart = this.refs.chart;
 	$(chart).empty();
         let data = this.props.data.diffCREs.data;
-
+	let xdomain = this.props.data.xdomain;
+		
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
-        var x_domain = d3.extent(data, function(d) { return d[0]; });
         var y_domain = d3.extent(data, function(d) { return d[1]; });
         var x = d3.scale.linear()
-            .domain(x_domain).nice()
+            .domain(xdomain).nice()
             .range([0, width]);
         var y = d3.scale.linear()
             .domain(y_domain).nice()
@@ -58,8 +58,7 @@ class ExpressionBoxplot extends React.Component {
             .ticks(3)
             .scale(x)
             .orient("bottom");
-        var yAxis = d3.svg.axis()
-            .scale(y)
+        var yAxisRight = d3.svg.axis().scale(y)
             .orient("left");
         var svg = d3.select(chart).append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -78,7 +77,8 @@ class ExpressionBoxplot extends React.Component {
             .text("coord");
         svg.append("g")
             .attr("class", "y axis")
-            .call(yAxis)
+            .attr("transform", "translate(" + width + " ,0)")
+            .call(yAxisRight)
             .append("text")
             .attr("class", "ylabel")
             .attr("transform", "rotate(-90)")
@@ -135,13 +135,13 @@ class ExpressionBoxplot extends React.Component {
             .attr("height", function(d) {
                 return height - y(d[1]);
             });
-        var yAxisRight = d3.svg.axis().scale(y)
+        var yAxis = d3.svg.axis()
+            .scale(y)
             .orient("left");
         svg.append("g")
             .attr("class", "y axis")
-            .attr("transform", "translate(" + width + " ,0)")
             .style("fill", "steelblue")
-            .call(yAxisRight)
+            .call(yAxis)
             .append("text")
             .attr("class", "ylabel")
             .attr("transform", "rotate(-90)")

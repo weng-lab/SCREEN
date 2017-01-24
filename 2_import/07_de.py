@@ -64,7 +64,7 @@ def setupAll(curs):
                 padj = toks[5]
                 if 'NA' == padj:
                     padj = "1"
-                data.append([toks[0], toks[1], padj])
+                data.append([toks[0], toks[2], padj])
 
         outF = StringIO.StringIO()
         for d in data:

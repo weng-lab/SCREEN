@@ -335,8 +335,8 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             return None
         return Coord(r[0], r[1], r[2])
 
-    def nearbyDEs(self, coord, halfWindow, ct1, ct2):
-        c = coord.expanded(halfWindow)
+    def nearbyDEs(self, coord, halfWindow, ct1, ct2, pval):
+        c = coord.expandFromCenter(halfWindow)
         with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
             q = """
             SELECT start, stop, log2FoldChange, padj
@@ -344,12 +344,14 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             inner join {giTn} as gi
             on de.ensembl = gi.ensemblid_ver
             where gi.chrom = %(chrom)s
+            AND de.padj < %(pval)s
             AND int4range(gi.start, gi.stop) && int4range(%(start)s, %(stop)s)
             and de.leftname = %(leftName)s and de.rightname = %(rightName)s
 """.format(deTn = self.assembly + "_de",
            giTn = self.assembly + "_gene_info")
+            print(" ".join([x.strip() for x in q.split('\n')]))
             curs.execute(q, { "chrom" : c.chrom, "start" : c.start,
-                              "stop" : c.end,
+                              "stop" : c.end, "pval" : pval,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
         print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
