@@ -25,8 +25,9 @@ class CRE:
     def intersectingSnps(self, halfWindow):
         return self.pgSearch.intersectingSnps(self.coord(), halfWindow)
 
-    def nearbyCREs(self, halfWindow):
-        return self.pgSearch.nearbyCREs(self.accession, self.coord(), halfWindow)
+    def distToNearbyCREs(self, halfWindow):
+        return self.pgSearch.distToNearbyCREs(self.accession, self.coord(),
+                                              halfWindow)
 
     def nearbyGenes(self):
         coord = self.coord()
@@ -43,6 +44,14 @@ class CRE:
         if self.tad is None:
             self.tad = self.pgSearch.creTad(self.accession, coord.chrom)
         return self.tad
+
+    def promoterRanks(self):
+        coord = self.coord()
+        return self.pgSearch.creRanksPromoter(self.accession, coord.chrom)
+
+    def enhancerRanks(self):
+        coord = self.coord()
+        return self.pgSearch.creRanksPromoter(self.accession, coord.chrom)
 
     def allRanks(self):
         coord = self.coord()

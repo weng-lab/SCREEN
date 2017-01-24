@@ -39,7 +39,9 @@ class ExpressionBoxplot extends React.Component {
 
 	$(this.refs.chart).empty();
 
-        let data = this.props.data;
+        let data = this.props.data.diffCREs.data;
+        let xstart = this.props.data.diffCREs.xstart;
+        let xstop = this.props.data.diffCREs.xstop;
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
@@ -104,7 +106,7 @@ class ExpressionBoxplot extends React.Component {
             .attr("r", 3.5)
             .attr("cx", function(d) { return x(d[1]); })
             .attr("cy", function(d) { return y(d[0]); })
-            .style("fill", function(d) { return color(d[4]); });
+            .style("fill", function(d) { return color(d[2]); });
 
         var legend = svg.selectAll(".legend")
             .data(color.domain())
