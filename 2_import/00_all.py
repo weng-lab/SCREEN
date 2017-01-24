@@ -2,6 +2,15 @@
 
 from __future__ import print_function
 import argparse
+import sys
+import os
+import psycopg2
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from dbconnect import db_connect
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from db_utils import getcursor
 
 regelms = __import__('01_regelms')
 pg_cre =  __import__('02_pg_cre')
@@ -23,16 +32,17 @@ def vacumnAnalyze(conn, tableName):
     curs = conn.cursor()
     curs.execute("vacuum analyze " + tableName)
     conn.set_isolation_level(old_isolation_level)
-    print("done")
 
 def vacAll(DBCONN):
     with getcursor(DBCONN, "pg") as curs:
         curs.execute("""SELECT table_name FROM information_schema.tables
         WHERE table_schema = 'public'""")
-        tables = curs.fetchall():
+        tables = curs.fetchall()
     for t in tables:
-        vacumnAnalyze(DBCONN, t)
-        
+        conn = DBCONN.getconn()
+        vacumnAnalyze(conn, t[0])
+        DBCONN.putconn(conn)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
