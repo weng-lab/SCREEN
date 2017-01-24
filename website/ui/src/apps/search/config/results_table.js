@@ -19,7 +19,7 @@ const render_array = (m) => (array) => (
     array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
 const render_gene_button = (d) => {
-    return '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>' +
+    return '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>' + '&nbsp;&nbsp;' +
         '<a href="/deGene/' + GlobalAssembly + '/' + d + '" target="_blank">&Delta;</a>';
 };
 

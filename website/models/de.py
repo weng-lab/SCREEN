@@ -57,5 +57,6 @@ class DE:
                  d[0], # start
                  d[1] # stop
                  ]
+            #print(e, d[1] - d[0])
             ret.append(e)
         return {"data" : ret }
