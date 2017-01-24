@@ -50,11 +50,10 @@ class DeExp extends React.Component{
         });
     }
 
-
     doRenderWrapper(){
         let gene = this.props.gene;
         if(gene in this.state){
-            return <ExpressionBoxplo data={this.state[gene]} />;
+            return <ExpressionBoxplot data={this.state[gene]} />;
         }
         return loading(this.state);
     }
