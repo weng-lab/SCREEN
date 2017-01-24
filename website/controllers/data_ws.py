@@ -96,15 +96,15 @@ class DataWebService:
         return self.tfEnrichment.findenrichment(tree_rank_method, a[0], a[1]);
 
     def _re_detail_topTissues(self, j, accession):
-        cre = CRE(self.pgSearch, accession)
-        ranks = cre.topTissues(self.cache)
+        cre = CRE(self.pgSearch, accession, self.cache)
+        ranks = cre.topTissues()
         return { accession : ranks }
 
     def _re_detail_targetGene(self, j, accession):
         return { accession : {} }
 
     def _re_detail_nearbyGenomic(self, j, accession):
-        cre = CRE(self.pgSearch, accession)
+        cre = CRE(self.pgSearch, accession, self.cache)
         coord = cre.coord()
         snps = cre.intersectingSnps(10000) # 10 KB
         nearbyCREs = cre.distToNearbyCREs(1000000) # 1 MB
@@ -117,7 +117,7 @@ class DataWebService:
                               "overlapping_snps": snps} }
 
     def _re_detail_tfIntersection(self, j, accession):
-        cre = CRE(self.pgSearch, accession)
+        cre = CRE(self.pgSearch, accession, self.cache)
         peakIntersectCount = cre.peakIntersectCount()
         return { accession : peakIntersectCount }
 
@@ -128,10 +128,13 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_similarREs(self, j, accession):
-        cre = CRE(self.pgSearch, accession)
-        regions, mostSimilar = cre.getBigWigRegions(accession, self.cache)
+        cre = CRE(self.pgSearch, accession, self.cache)
+        regions, mostSimilar = cre.getBigWigRegions(accession)
+        order = regions["order"]
+        regions.pop("order", None)
         return { accession : {"regions" : regions,
-                              "mostSimilar": mostSimilar}}
+                              "mostSimilar": mostSimilar,
+                              "order": order}}
 
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]

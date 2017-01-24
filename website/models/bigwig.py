@@ -26,7 +26,7 @@ class BigWig:
             if not os.path.exists(bigwig["path"]):
                 print("WARNING: missing bigwig %s" % bigwig["path"])
                 continue
-            retval[bigwig["ct"]] = {}
+            retval[bigwig["ct"]] = {"tissue": bigwig["tissue"]}
 
             bwtool = "/data/cherrypy/bin/bwtool"
             if not os.path.exists(bwtool):
