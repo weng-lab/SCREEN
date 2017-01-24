@@ -11,10 +11,25 @@ class ExpressionBoxplot extends React.Component {
     }
 
     render() {
+        if(this.props.selectCT){
+            return (<div>
+                    {"Please choose 2 cell types on left"}
+                    </div>);
+        }
+
 	return (<div>
  	        <span style={{fontSize: "18pt"}}>
-                {this.props.gene} <span ref="help_icon" />
+                <span ref="help_icon" />
+                {this.props.gene}
                 </span>
+
+ 	        <span style={{fontSize: "14pt"}}>
+                {": "}
+                {GlobalCellTypeInfo[this.props.ct1]["name"]}
+                {" vs "}
+                {GlobalCellTypeInfo[this.props.ct2]["name"]}
+                </span>
+
 		<div style={{"width": "100%"}} ref="chart" />
 		</div>);
     }

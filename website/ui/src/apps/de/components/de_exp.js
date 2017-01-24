@@ -11,7 +11,8 @@ import loading from '../../../common/components/loading'
 class DeExp extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: true, isError: false };
+        this.state = { jq: null, isFetching: true, isError: false,
+                       selectCT: false };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadDe = this.loadDe.bind(this);
     }
@@ -26,6 +27,10 @@ class DeExp extends React.Component{
     }
 
     loadDe({gene, ct1, ct2}){
+        if(null == ct1 || null == ct2){
+            this.setState({selectCT: true});
+            return;
+        }
         var q = {GlobalAssembly, gene, ct1, ct2};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
@@ -33,7 +38,7 @@ class DeExp extends React.Component{
             return;
         }
         //console.log("loadGene....", this.state.jq, jq);
-        this.setState({jq, isFetching: true});
+        this.setState({jq, isFetching: true, selectCT: false});
         $.ajax({
             url: "/deGeneJson",
             type: "POST",
@@ -53,7 +58,8 @@ class DeExp extends React.Component{
     doRenderWrapper(){
         let gene = this.props.gene;
         if(gene in this.state){
-            return <ExpressionBoxplot data={this.state[gene]} />;
+            return <ExpressionBoxplot data={this.state[gene]}
+            selectCT={this.state.selectCT} />;
         }
         return loading(this.state);
     }
