@@ -1,7 +1,8 @@
 import sys, os, json, cherrypy
 import subprocess
 
-from compute_gene_expression import ComputeGeneExpression, Compartments
+from models.gwas import Gwas
+from common.pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
@@ -33,8 +34,16 @@ class PageInfoGwas:
             assembly = args[0]
 
         cache = self.cacheW[assembly]
+        g = Gwas(cache, PGsearch(self.ps, assembly))
 
+        data = {"gwas": {"gwas" : g.gwas,
+                         "enrichment" : g.enrichment,
+                         "studies" : g.studies}}
+        
         ret = self.wholePage(assembly)
-        ret.update({"globalParsedQuery" : json.dumps({}) })
+        ret.update({"globalParsedQuery" : json.dumps({}),
+                    "Globals" : json.dumps(data)
+        })
+        
         return ret
 

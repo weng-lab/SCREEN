@@ -20,8 +20,8 @@ CREATE TABLE {tableName}(
 id serial PRIMARY KEY,
 study text,
 expID text,
-foldEnrichment numeric,
-fdr numeric,
+foldEnrichment real,
+fdr real,
 ignore text
 );
 """.format(tableName = tableName))
