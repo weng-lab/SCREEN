@@ -40,17 +40,20 @@ class ExpressionBoxplot extends React.Component {
 	$(this.refs.chart).empty();
 
         let data = this.props.data.diffCREs.data;
-        let xstart = this.props.data.diffCREs.xstart;
-        let xstop = this.props.data.diffCREs.xstop;
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
+        var x_domain = d3.extent(data, function(d) { return d[0]; });
+        var y_domain = d3.extent(data, function(d) { return d[1]; });
+
         var x = d3.scale.linear()
+            .domain(x_domain).nice()
             .range([0, width]);
 
         var y = d3.scale.linear()
+            .domain(y_domain).nice()
             .range([height, 0]);
 
         var color = d3.scale.category10();
@@ -68,14 +71,6 @@ class ExpressionBoxplot extends React.Component {
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        data.forEach(function(d) {
-            d[0] = +d[0];
-            d[1] = +d[1];
-        });
-
-        x.domain(d3.extent(data, function(d) { return d[1]; })).nice();
-        y.domain(d3.extent(data, function(d) { return d[0]; })).nice();
 
         svg.append("g")
             .attr("class", "x axis")
@@ -104,8 +99,8 @@ class ExpressionBoxplot extends React.Component {
             .enter().append("circle")
             .attr("class", "dot")
             .attr("r", 3.5)
-            .attr("cx", function(d) { return x(d[1]); })
-            .attr("cy", function(d) { return y(d[0]); })
+            .attr("cx", function(d) { return x(d[0]); })
+            .attr("cy", function(d) { return y(d[1]); })
             .style("fill", function(d) { return color(d[2]); });
 
         var legend = svg.selectAll(".legend")
