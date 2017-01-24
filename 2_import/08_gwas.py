@@ -38,7 +38,7 @@ start integer,
 stop integer,
 snp text,
 taggedSNP text,
-r2 text,
+r2 real,
 ldblock text,
 trait text,
 pubmed text,
@@ -63,9 +63,16 @@ def setupAll(curs):
     tableName = "hg19_gwas"
     setupGWAS(curs, tableName)
 
-    cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author".split(' ')
+    outF = StringIO.StringIO()
     with open(fnp) as f:
-        curs.copy_from(f, tableName, '\t', columns=cols)
+        rows = [r.rstrip().split('\t') for r in f if r]
+    for r in rows:
+        if '*' == r[5]:
+            r[5] = "Null"
+    outF.seek(0)
+
+    cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author".split(' ')
+    curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", fnp)
 
 def parse_args():
