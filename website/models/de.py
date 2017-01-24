@@ -37,9 +37,12 @@ class DE:
         print("found", len(nearbyCREs))
 
         diffCREs = []
+        thres = 1.64
         for c in nearbyCREs:
-            diffCREs.append([c[1], c[4] - c[3], "promoter"])
-            diffCREs.append([c[1], c[6] - c[5], "enhancer"])
+            if abs(c[3]) > thres and abs(c[4]) > thres:
+                diffCREs.append([c[1], c[4] - c[3], "promoter"])
+            if abs(c[5]) > thres and abs(c[6]) > thres:
+                diffCREs.append([c[1], c[6] - c[5], "enhancer"])
 
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), halfWindow,
                                             self.ct1, self.ct2)
