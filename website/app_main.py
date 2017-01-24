@@ -162,6 +162,13 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
+    def deGeneJson(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.de.deGeneJson(j)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def beddownload(self):
         j = cherrypy.request.json
         return self.ajaxWS.beddownload(j, self.session_uuid())
