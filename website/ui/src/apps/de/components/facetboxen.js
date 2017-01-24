@@ -25,7 +25,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
                     selection={ct1}
                     friendlySelectionLookup={(value) => {
                         return GlobalCellTypeInfo[value]["name"]; }}
-                    onTdClick={(value) => { actions.setCellType1(value) }}
+                    onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
 
@@ -39,7 +39,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     selection={ct2}
                     friendlySelectionLookup={(value) => {
                         return GlobalCellTypeInfo[value]["name"]; }}
-                    onTdClick={(value) => { actions.setCellType2(value) }}
+                    onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }
 
