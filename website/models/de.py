@@ -12,6 +12,7 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
+        self.halfWindow = 500000
 
     def coord(self):
         if not self.pos:
@@ -19,8 +20,6 @@ class DE:
         return self.pos
 
     def diffCREs(self):
-        halfWindow = 500000
-
         rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
         #print(rankMethodToIDxToCellType["Enhancer"].keys())
         ct1EnhancerIdx = rankMethodToIDxToCellType["Enhancer"][self.ct1]
@@ -33,18 +32,21 @@ class DE:
                 "h3k4me3_dnase_zscore[%s]" % ct2PromoterIdx,
                 "h3k27ac_dnase_zscore[%s]" % ct1EnhancerIdx,
                 "h3k27ac_dnase_zscore[%s]" % ct2EnhancerIdx]
-        nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), halfWindow, cols)
+        nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), self.halfWindow, cols)
         print("found", len(nearbyCREs))
 
-        diffCREs = []
+        ret = []
         thres = 1.64
         for c in nearbyCREs:
             if abs(c[3]) > thres and abs(c[4]) > thres:
-                diffCREs.append([c[1], c[4] - c[3], "promoter"])
+                ret.append([c[1], c[4] - c[3], "promoter"])
             if abs(c[5]) > thres and abs(c[6]) > thres:
-                diffCREs.append([c[1], c[6] - c[5], "enhancer"])
+                ret.append([c[1], c[6] - c[5], "enhancer"])
+        return {"data" : ret}
 
-        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), halfWindow,
+    def nearbyDEs(self):
+        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
                                             self.ct1, self.ct2)
 
-        return {"diffCREs" : { "data" : diffCREs } }
+
+        return {"data" : {} }
