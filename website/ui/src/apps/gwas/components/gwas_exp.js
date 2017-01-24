@@ -11,7 +11,7 @@ class GwasExp extends React.Component{
     constructor(props) {
         super(props);
         this.state = { jq: null, isFetching: true, isError: false,
-                       selectCT: false };
+                       selectStudy: false };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
     }
@@ -25,17 +25,21 @@ class GwasExp extends React.Component{
         this.loadGwas(nextProps);
     }
 
-    loadGwas({compartments_selected, gene}){
-        var q = {GlobalAssembly, gene, compartments_selected};
+    loadGwas({gwas_study}){
+	if(null == gwas_study){
+	    this.setState({selectStudy: true})
+	    return;
+	}
+        var q = {GlobalAssembly, gwas_study};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
         //console.log("loadGene....", this.state.jq, jq);
-        this.setState({jq, isFetching: true});
+        this.setState({jq, isFetching: true, selectStudy: false});
         $.ajax({
-            url: "/deGeneJson",
+            url: "/gwasJson",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -51,10 +55,10 @@ class GwasExp extends React.Component{
     }
 
     doRenderWrapper(){
-        let gene = this.props.gene;
-        if(gene in this.state){
+        let gwas_study = this.props.gwas_study
+        if(gwas_study in this.state){
             return <ExpressionBoxplot data={this.state[gene]}
-            selectCT={this.state.selectCT} />;
+            selectStudy={this.state.selectStudy} />;
         }
         return loading(this.state);
     }

@@ -3,6 +3,10 @@
 import sys
 import os
 from natsort import natsorted
+from collections import namedtuple
+
+GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "study expID foldEnrichment fdr".split(' '))
+GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock trait".split(' '))
 
 from coord import Coord
 
@@ -356,3 +360,24 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             des = curs.fetchall()
         print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
+
+    def gwasEnrichment(self):
+        with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
+            q = """
+            SELECT study, expID, foldEnrichment, fdr
+            FROM {tn}
+""".format(tn = "hg19_gwas_enrichment")
+            curs.execute(q)
+            rows = curs.fetchall()
+        return [GwasEnrichmentRow(*r) for r in rows]
+
+    def gwas(self):
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+            SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, trait
+            FROM {tn}
+""".format(tn = "hg19_gwas")
+            curs.execute(q)
+            rows = curs.fetchall()
+        return [GwasRow(*r) for r in rows]
+    
