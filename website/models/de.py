@@ -38,9 +38,9 @@ class DE:
         ret = []
         thres = 1.64
         for c in nearbyCREs:
-            if abs(c[3]) > thres and abs(c[4]) > thres:
+            if c[3] > thres or c[4] > thres:
                 ret.append([c[1], c[4] - c[3], "promoter-like"])
-            if abs(c[5]) > thres and abs(c[6]) > thres:
+            if c[5] > thres or c[6] > thres:
                 ret.append([c[1], c[6] - c[5], "enhancer-like"])
         return {"data" : ret}
 
