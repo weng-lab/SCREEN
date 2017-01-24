@@ -12,7 +12,7 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
-        self.halfWindow = 400000
+        self.halfWindow = 300000
 
     def coord(self):
         if not self.pos:

@@ -289,3 +289,6 @@ select.ui-toggle-switch { display: none; }
     fill: steelblue;
     opacity: 0.5;
 }
+.ylabel {
+    font-size: 12px;
+}
