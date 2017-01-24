@@ -107,7 +107,7 @@ class DataWebService:
         cre = CRE(self.pgSearch, accession)
         coord = cre.coord()
         snps = cre.intersectingSnps(10000) # 10 KB
-        nearbyCREs = cre.nearbyCREs(1000000) # 1 MB
+        nearbyCREs = cre.distToNearbyCREs(1000000) # 1 MB
         nearbyGenes = cre.nearbyGenes()
         genesInTad = cre.genesInTad()
         return { accession : {"nearby_genes": nearbyGenes,

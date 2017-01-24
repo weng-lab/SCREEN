@@ -136,15 +136,18 @@ int4range(%s, %s)
                                          abs(coord.start - start))})
         return ret
 
-    def nearbyCREs(self, accession, coord, halfWindow):
+    def nearbyCREs(self, coord, halfWindow, cols = ["start", "stop", "accession"]):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_cre_" + c.chrom
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
             curs.execute("""
-SELECT start, stop, accession FROM {tn} WHERE int4range(start, stop) &&
+SELECT {cols} FROM {tn} WHERE int4range(start, stop) &&
 int4range(%s, %s)
-""".format(tn = tableName), (c.start, c.end))
-            cres = curs.fetchall()
+""".format(cols = ','.join(cols), tn = tableName), (c.start, c.end))
+            return curs.fetchall()
+
+    def distToNearbyCREs(self, accession, coord, halfWindow):
+        cres = self.nearbyCREs(coord, halfWindow)
         ret = []
         for c in cres:
             acc = c[2]
@@ -210,6 +213,18 @@ FROM {tn}
 WHERE accession = %s
 """.format(cols = ','.join(cols), tn = tableName), (accession,))
             return curs.fetchone()
+
+    def creRanksPromoter(self, accession, chrom):
+        cols = ["h3k4me3_dnase_rank", "h3k4me3_dnase_zscore"]
+        r = self._getColsForAccession(accession, chrom, cols)
+        return {"ranks" : { "Promoter" : r[0] },
+                "zscores" : { "Promoter" : r[1]}}
+
+    def creRanksEnhancer(self, accession, chrom):
+        cols = ["h3k27ac_dnase_rank", "h3k27ac_dnase_zscore"]
+        r = self._getColsForAccession(accession, chrom, cols)
+        return {"ranks" : { "Enhancer" : r[0] },
+                "zscores" : { "Enhancer" : r[1]}}
 
     def creRanks(self, accession, chrom):
         cols = """dnase_rank
@@ -327,14 +342,14 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             curs.execute("""
             SELECT start, stop, log2FoldChange
             from {deTn} as de
-            inner join {giTn as gi
+            inner join {giTn} as gi
             on de.ensembl = gi.ensemblid_ver
-            where gi.chrom = %(chrom)s 
+            where gi.chrom = %(chrom)s
             AND int4range(gi.start, gi.stop) && int4range(%(start)s, %(stop)s)
             and de.leftname = %(leftName)s and de.rightname = %(rightName)s
 """.format(deTn = self.assembly + "_de",
            giTn = self.assembly + "_gene_info"),
-                         { "chrom" : c.chrom, "start" : c.start, "stop" : c.stop,
+                         { "chrom" : c.chrom, "start" : c.start, "stop" : c.end,
                            "leftName" : leftName, "rightName" : rightName})
             des = curs.fetchall()
         return des
