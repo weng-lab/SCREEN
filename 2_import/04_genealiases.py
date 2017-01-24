@@ -99,7 +99,6 @@ class GeneInfo:
 
         fnp, filetype = paths.gene_files[self.assembly]
         ggff = Genes(fnp, filetype)
-        outFnp = paths.genelsj[self.assembly]
         for gene in ggff.getGenes():
             g = self._parseLineMm10(gene)
             if "" == g["ensemblid"]:
