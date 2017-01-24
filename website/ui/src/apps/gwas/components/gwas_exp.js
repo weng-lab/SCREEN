@@ -7,24 +7,25 @@ import * as Actions from '../actions/main_actions';
 import ExpressionBoxplot from '../components/expression_boxplot'
 import loading from '../../../common/components/loading'
 
-class GeneExp extends React.Component{
+class GwasExp extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: true, isError: false };
+        this.state = { jq: null, isFetching: true, isError: false,
+                       selectCT: false };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
-        this.loadGene = this.loadGene.bind(this);
+        this.loadGwas = this.loadGwas.bind(this);
     }
 
     componentDidMount(){
-        this.loadGene(this.props);
+        this.loadGwas(this.props);
     }
 
     componentWillReceiveProps(nextProps){
-        console.log("componentWillReceiveProps", nextProps);
-        this.loadGene(nextProps);
+        //console.log("componentWillReceiveProps", nextProps);
+        this.loadGwas(nextProps);
     }
 
-    loadGene({compartments_selected, gene}){
+    loadGwas({compartments_selected, gene}){
         var q = {GlobalAssembly, gene, compartments_selected};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
@@ -34,7 +35,7 @@ class GeneExp extends React.Component{
         //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/geneexpjson",
+            url: "/deGeneJson",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -49,11 +50,11 @@ class GeneExp extends React.Component{
         });
     }
 
-
     doRenderWrapper(){
         let gene = this.props.gene;
         if(gene in this.state){
-            return <ExpressionBoxplo data={this.state[gene]} />;
+            return <ExpressionBoxplot data={this.state[gene]}
+            selectCT={this.state.selectCT} />;
         }
         return loading(this.state);
     }
@@ -69,4 +70,4 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-export default connect(mapStateToProps, mapDispatchToProps)(GeneExp);
+export default connect(mapStateToProps, mapDispatchToProps)(GwasExp);
