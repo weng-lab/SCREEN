@@ -2,14 +2,13 @@
 
 from __future__ import print_function
 
-import os
-
 class DE:
     def __init__(self, pgSearch, gene, leftName, rightName):
         self.pgSearch = pgSearch
-        self.gene = None
+        self.gene = gene
         self.leftName = leftName
         self.rightName = rightName
+        self.pos = None
 
     def coord(self):
         if not self.pos:
@@ -21,4 +20,5 @@ class DE:
 
     def nearbyDEs(self, halfWindow):
         coord = self.coord()
-        return self.pgSearch.nearbyDEs(coord, halfWindow, self.leftName, self.rightName)
+        return self.pgSearch.nearbyDEs(coord, halfWindow,
+                                       self.leftName, self.rightName)
