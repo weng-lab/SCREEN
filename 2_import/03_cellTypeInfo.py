@@ -125,8 +125,7 @@ idx integer);""".format(tableName = tableName))
         outF.seek(0)
 
         cols = ["rankMethod", "cellType", "idx"]
-        with open(fnp) as f:
-            self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        self.curs.copy_from(outF, tableName, '\t', columns=cols)
         print("\tok", self.curs.rowcount)
 
     def importDatasets(self):
