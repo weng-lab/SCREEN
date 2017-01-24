@@ -63,4 +63,5 @@ class DE:
                  ]
             #print(e, d[1] - d[0])
             ret.append(e)
-        return {"data" : ret }
+        return {"data" : ret,
+                "ymax" : max([d[1] for d in nearbyDEs])}

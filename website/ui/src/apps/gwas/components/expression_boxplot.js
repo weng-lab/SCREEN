@@ -5,10 +5,6 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import REComponent from '../../../common/components/re_component'
-
-import LargeHorizontalBars from '../components/large_horizontal_bars'
-
 class ExpressionBoxplot extends React.Component {
     componentDidMount() {
 	this.componentDidUpdate();
@@ -17,9 +13,11 @@ class ExpressionBoxplot extends React.Component {
     componentDidUpdate() {
 	var width = 800;
 	var barheight = "15";
-	render(React.createElement(LargeHorizontalBars,
-                                   {...this.props, width, barheight}),
-	       this.refs.bargraph);
+	if(0){
+	    render(React.createElement(LargeHorizontalBars,
+                                       {...this.props, width, barheight}),
+		   this.refs.bargraph);
+	}
     }
 
     render() {

@@ -22,5 +22,6 @@ class GwasController:
         assembly = j["GlobalAssembly"]
         cache = self.cacheW[assembly]
 
+        de = Gwas(cache, PGsearch(self.ps, assembly))
 
         return {}

@@ -115,9 +115,8 @@ class ExpressionBoxplot extends React.Component {
             .text(function(d) { return d; });
 
         var bars = this.props.data.nearbyDEs.data;
-        y_domain = d3.extent(bars, function(d) { return d[1]; });
         y = d3.scale.linear()
-            .domain(y_domain).nice()
+            .domain([y_domain[0], this.props.data.nearbyDEs.ymax]).nice()
             .range([height, 0]);
         var bar = svg.selectAll(".bar")
             .data(bars)
