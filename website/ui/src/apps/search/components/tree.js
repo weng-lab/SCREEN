@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import Tree from '../../../common/components/tree'
 
 import REComponent from '../../../common/components/re_component'
+import AssayDropdown from './assaydropdown'
 
 import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
@@ -117,17 +118,7 @@ class ResultsTree extends React.Component { //REComponent {
 	var actions = this.props.actions;
 
 	return (<div>
-		<select onChange={() => {
-                    actions.setTreeRankMethod(this.refs.field.value)}}
-		ref="field">
-		<option value="DNase">DNase</option>
-		<option value="H3K4me3">H3K4me3 Only</option>
-		<option value="Promoter">H3K4me3 and DNase</option>
-		<option value="H3K27ac">H3K27ac Only</option>
-		<option value="Enhancer">H3K27ac and DNase</option>
-		<option value="CTCF">CTCF Only</option>
-		<option value="Insulator">CTCF and DNase</option>
-		</select>
+		<AssayDropdown onChange={(v) => {actions.setTreeRankMethod(v);}} />
                 {this.doRenderWrapper(actions)}
 		<span ref="help_icon" />
 		</div>);
