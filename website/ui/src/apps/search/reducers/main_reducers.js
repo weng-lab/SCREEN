@@ -9,6 +9,7 @@ const main_reducers = (state, action) => {
     case Actions.SET_CHROM: return {...state, coord_chrom: action.chrom };
     case Actions.SET_COORDS: return {...state, coord_start: action.start,
                                      coord_end: action.end };
+    case Actions.SET_MINIPEAKS_ASSAY: return {...state, minipeaks_assay: action.assay};
     case Actions.TOGGLE_TF: {
         return { ...state,
                  tfs_selection: doToggle(state.tfs_selection, action.tf)}
