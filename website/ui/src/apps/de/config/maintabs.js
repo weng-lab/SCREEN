@@ -10,10 +10,8 @@ class DePage extends React.Component{
     }
 }
 
-
 const MainTabInfo = {
-    de: {title: "Diff Expression", visible: true,
-         f: DePage},
+    de_expression: {title: "Diff Expression", visible: true, f: DePage},
 };
 
 export default MainTabInfo;

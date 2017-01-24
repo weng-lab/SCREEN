@@ -5,10 +5,14 @@ import {doToggle} from '../../../common/uility'
 const main_reducers = (state, action) => {
     switch (action.type) {
 
-    case Actions.TOGGLE_COMPARTMENT: {
-        return { ...state,
-                 compartments_selected: doToggle(state.compartments_selected,
-                                                 action.c)}
+    case Actions.SET_MAIN_TAB:
+        var ret = {...state, maintabs_active: action.name}
+        ret.maintabs = {...state.maintabs};
+        ret.maintabs[action.name].visible = true;
+        return ret;
+
+    case Actions.TOGGLE_CT1: {
+        return { ...state, ct1: doToggle(state.ct1, action.ct)}
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:
