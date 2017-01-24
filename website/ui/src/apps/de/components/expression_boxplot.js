@@ -10,8 +10,21 @@ class ExpressionBoxplot extends React.Component {
 	this.componentDidUpdate();
     }
 
+    render() {
+	return (<div>
+ 	        <span style={{fontSize: "18pt"}}>
+                {this.props.gene} <span ref="help_icon" />
+                </span>
+		<div style={{"width": "100%"}} ref="chart" />
+		</div>);
+    }
+
     componentDidUpdate() {
         // from http://bl.ocks.org/mbostock/3887118
+
+	$(this.refs.chart).empty();
+
+        let data = this.props.data;
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
@@ -33,13 +46,13 @@ class ExpressionBoxplot extends React.Component {
             .scale(y)
             .orient("left");
 
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select(this.refs.chart).append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        this.props.data.forEach(function(d) {
+        data.forEach(function(d) {
             d[0] = +d[0];
             d[1] = +d[1];
         });
@@ -97,15 +110,6 @@ class ExpressionBoxplot extends React.Component {
             .attr("dy", ".35em")
             .style("text-anchor", "end")
             .text(function(d) { return d; });
-    }
-
-    render() {
-	return (<div>
- 	        <span style={{fontSize: "18pt"}}>
-                {this.props.gene} <span ref="help_icon" />
-                </span>
-		<div style={{"width": "100%"}} ref="bargraph" />
-		</div>);
     }
 }
 
