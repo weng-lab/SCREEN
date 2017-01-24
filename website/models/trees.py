@@ -16,7 +16,7 @@ class Trees:
         self.assembly = assembly
         self.tree_rank_method = tree_rank_method
 
-        self.groups = {"hg19": [("tissue", lambda x: "tissue" in x),
+        self.groups = {"hg19": [("tissue", lambda x: "tissue" in x and "fetal" in x),
                                 ("immortalized", lambda x: "immortalized" in x),
                                 ("primary_cell", lambda x: "primary_cell" in x) ]}
 

@@ -12,7 +12,7 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
-        self.halfWindow = 300000
+        self.halfWindow = 600000
 
     def coord(self):
         if not self.pos:
@@ -22,16 +22,16 @@ class DE:
     def diffCREs(self):
         rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
         #print(rankMethodToIDxToCellType["Enhancer"].keys())
-        ct1EnhancerIdx = rankMethodToIDxToCellType["Enhancer"][self.ct1]
-        ct2EnhancerIdx = rankMethodToIDxToCellType["Enhancer"][self.ct2]
-        ct1PromoterIdx = rankMethodToIDxToCellType["Promoter"][self.ct1]
-        ct2PromoterIdx = rankMethodToIDxToCellType["Promoter"][self.ct2]
+        ct1EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct1]
+        ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
+        ct1PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct1]
+        ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
 
         cols = ["accession", "start", "stop",
-                "h3k4me3_dnase_zscore[%s]" % ct1PromoterIdx,
-                "h3k4me3_dnase_zscore[%s]" % ct2PromoterIdx,
-                "h3k27ac_dnase_zscore[%s]" % ct1EnhancerIdx,
-                "h3k27ac_dnase_zscore[%s]" % ct2EnhancerIdx]
+                "h3k4me3_zscore[%s]" % ct1PromoterIdx,
+                "h3k4me3_zscore[%s]" % ct2PromoterIdx,
+                "h3k27ac_zscore[%s]" % ct1EnhancerIdx,
+                "h3k27ac_zscore[%s]" % ct2EnhancerIdx]
         nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), self.halfWindow, cols)
         #print("found", len(nearbyCREs))
 
