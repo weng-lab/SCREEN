@@ -25,8 +25,8 @@ class DeExp extends React.Component{
         this.loadDe(nextProps);
     }
 
-    loadDe({gene}){
-        var q = {GlobalAssembly, gene};
+    loadDe({gene, ct1, ct2}){
+        var q = {GlobalAssembly, gene, ct1, ct2};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html

@@ -7,12 +7,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
 
 class PageInfoDe:
-    def __init__(self, es, ps, cache):
+    def __init__(self, es, ps, cacheW):
         self.es = es
         self.ps = ps
-        self.cache = cache
+        self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
+        cache = self.cacheW[assembly]
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
@@ -22,8 +23,9 @@ class PageInfoDe:
                 "globalTfs" : [],
                 "globalCellCompartments" : [],
                 "globalCellTypes" : [],
-                "globalCellTypeInfo" : {},
-                "globalCellTypeInfoArr" : []}
+                "globalCellTypeInfo": cache.globalCellTypeInfo(),
+                "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
+                }
 
     def dePage(self, args, kwargs, uuid):
         assembly = ""
@@ -33,8 +35,9 @@ class PageInfoDe:
             gene = args[1]
             # TODO: check gene
 
-        ret = self.wholePage(assembly)
+        cache = self.cacheW[assembly]
 
+        ret = self.wholePage(assembly)
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene}) })
         return ret
 

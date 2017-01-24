@@ -1,8 +1,10 @@
 import sys, os
 
 from common.page_info_de import PageInfoDe
+from models.de import DE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from common.pg import PGsearch
 
 class DeController:
     def __init__(self, templates, es, ps, cache):
@@ -17,12 +19,17 @@ class DeController:
         return self.t('main/de', **pageInfo.dePage(args, kwargs, uuid))
 
     def deGeneJson(self, j):
-        assembly = "mm10"
+        assembly = j["GlobalAssembly"]
+        gene = j["gene"] # TODO: check for valid gene
 
-        gene = j["gene"]
-        # TODO: check for valid gene
+        ct1 = j["ct1"]
+        ct2 = j["ct2"]
+        if not ct1 or not ct2:
+            raise Exception("ct1 and/or ct2 empty!")
 
-        return {"4930596D02Rik" : [
+        de = DE(PGsearch(self.ps, assembly), gene, ct1, ct2)
+
+        return {gene : [
             [5.1,3.5,1.4,0.2,"promoter"],
             [4.9,3.0,1.4,0.2,"promoter"],
             [4.7,3.2,1.3,0.2,"promoter"],

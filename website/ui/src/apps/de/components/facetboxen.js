@@ -10,40 +10,35 @@ import LongListFacet from '../../../common/components/longlist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
 
-const cellTypesBox1 = ({cellType, actions}) => {
+const cols = [{ title: "cell type", data: "name",
+		className: "dt-right" },
+	      { title: "tissue", data: "tissue",
+		className: "dt-right" }]
+
+const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
                     title={""}
-                    data={[]}
-                    cols={[
-		        { title: "cell type", data: "name",
-		          className: "dt-right" },
-		        { title: "tissue", data: "tissue",
-		            className: "dt-right" }
-	            ]}
+                    data={GlobalCellTypeInfoArr}
+                    cols={cols}
                     order={[]}
-                    selection={cellType}
+                    selection={ct1}
                     friendlySelectionLookup={(value) => {
-                        return null; }}
-                    onTdClick={(value) => { actions.setCellType2(value) }}
+                        return GlobalCellTypeInfo[value]["name"]; }}
+                    onTdClick={(value) => { actions.setCellType1(value) }}
                     />);
 }
 
-const cellTypesBox2 = ({cellType, actions}) => {
+const cellTypesBox2 = ({ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
                     title={""}
-                    data={[]}
-                    cols={[
-		        { title: "cell type", data: "name",
-		          className: "dt-right" },
-		        { title: "tissue", data: "tissue",
-		          className: "dt-right" }
-	            ]}
+                    data={GlobalCellTypeInfoArr}
+                    cols={cols}
                     order={[]}
-                    selection={cellType}
+                    selection={ct2}
                     friendlySelectionLookup={(value) => {
-                        return null }}
+                        return GlobalCellTypeInfo[value]["name"]; }}
                     onTdClick={(value) => { actions.setCellType2(value) }}
                     />);
 }
