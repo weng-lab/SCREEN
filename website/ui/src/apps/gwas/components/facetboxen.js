@@ -9,7 +9,7 @@ import LongListFacet from '../../../common/components/longlist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
 
-const cell_compartments = ({gwas_study, actions}) => {
+const gwas_studies = ({gwas_study, actions}) => {
     return panelize("GWAS Studies",
                     <LongListFacet
                     title={""}
@@ -28,7 +28,7 @@ const cell_compartments = ({gwas_study, actions}) => {
 class FacetBoxen extends React.Component {
     doRender(p){
         return (<div>
-                {cell_compartments(p)}
+                {gwas_studies(p)}
                 </div>);
     }
 
