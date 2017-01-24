@@ -8,6 +8,7 @@ import SearchPage from './apps/search/main';
 import GeneExpPage from './apps/geneexp/main';
 import DePage from './apps/de/main';
 import GwasApp from './apps/gwas/main';
+import TfApp from './apps/tf/main';
 // import ComparisonPage from './apps/comparison/main';
 
 //<Route path="/cart" component={CartPage} />
@@ -19,5 +20,6 @@ ReactDOM.render(
      <Route path="/geneexp/:assembly/:geneID" component={GeneExpPage} />
      <Route path="/deGene/:assembly/:geneID" component={DePage} />
      <Route path="/gwasApp/:assembly/" component={GwasApp} />
+     <Route path="/tfApp/:assembly/" component={TfApp} />
      </Router>),
     document.getElementById('root'));
