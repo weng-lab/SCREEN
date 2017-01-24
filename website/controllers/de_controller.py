@@ -30,5 +30,7 @@ class DeController:
         cache = self.cacheW[assembly]
         de = DE(cache, PGsearch(self.ps, assembly), gene, ct1, ct2)
         diffCREs = de.diffCREs()
+        nearbyDEs = de.nearbyDEs()
 
-        return {gene : diffCREs}
+        return {gene : {"diffCREs": diffCREs,
+                        "nearbyDEs": nearbyDEs}}
