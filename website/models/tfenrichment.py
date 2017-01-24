@@ -50,9 +50,9 @@ class TFEnrichment:
                 """.format(tableName=self.assembly + "_cre",
                            pTableName=self.assembly + "_peakIntersections",
                            whereclause=whereclause(left, right))
+                print(q)
                 curs.execute(q)
                 l = curs.fetchall()
-                #print(q, "len of l:", len(l))
                 curs.execute(
                     """SELECT COUNT(*) FROM {tableName}, {pTableName}
                                 WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession

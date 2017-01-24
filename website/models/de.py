@@ -28,10 +28,10 @@ class DE:
         ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
 
         cols = ["accession", "start", "stop",
-                "h3k4me3_zscore[%s]" % ct1PromoterIdx,
-                "h3k4me3_zscore[%s]" % ct2PromoterIdx,
-                "h3k27ac_zscore[%s]" % ct1EnhancerIdx,
-                "h3k27ac_zscore[%s]" % ct2EnhancerIdx]
+                "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
+                "h3k4me3_only_zscore[%s]" % ct2PromoterIdx,
+                "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
+                "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
         nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), self.halfWindow, cols)
         #print("found", len(nearbyCREs))
 
