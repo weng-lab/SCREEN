@@ -141,7 +141,6 @@ class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
         this.doRender = (data) => {
-            console.log("hi!");
             return tabEles(data, TfIntersectionTable, 2);
         }
     }
@@ -151,7 +150,7 @@ class RelatedGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "relatedGene");
         this.doRender = (data) => {
-            return (<div>hi!</div>);
+            return (<div></div>);
 	    return (<ExpressionHeatmapSet />);
         }
     }
