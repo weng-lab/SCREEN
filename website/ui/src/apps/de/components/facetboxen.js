@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import LongChecklistFacet from '../../../common/components/longchecklist'
+import LongListFacet from '../../../common/components/longlist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
@@ -13,7 +14,7 @@ const cellTypesBox1 = ({cellType, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
                     title={""}
-                    data={GlobalCellTypeInfoArr}
+                    data={[]}
                     cols={[
 		        { title: "cell type", data: "name",
 		          className: "dt-right" },
@@ -23,7 +24,7 @@ const cellTypesBox1 = ({cellType, actions}) => {
                     order={[]}
                     selection={cellType}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"] }}
+                        return null; }}
                     onTdClick={(value) => { actions.setCellType2(value) }}
                     />);
 }
@@ -32,7 +33,7 @@ const cellTypesBox2 = ({cellType, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
                     title={""}
-                    data={GlobalCellTypeInfoArr}
+                    data={[]}
                     cols={[
 		        { title: "cell type", data: "name",
 		          className: "dt-right" },
@@ -42,7 +43,7 @@ const cellTypesBox2 = ({cellType, actions}) => {
                     order={[]}
                     selection={cellType}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"] }}
+                        return null }}
                     onTdClick={(value) => { actions.setCellType2(value) }}
                     />);
 }
