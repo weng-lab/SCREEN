@@ -49,7 +49,6 @@ class PGsearch:
             tableName = '_'.join([self.assembly, "cre", chrom])
         else:
             tableName = '_'.join([self.assembly, "cre"])
-        print(tableName)
 
         fields = ', '.join(["accession", "negLogP",
                             "cre.chrom", "cre.start", "cre.stop",
