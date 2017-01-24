@@ -55,6 +55,7 @@ class ExpressionBoxplot extends React.Component {
             .range([height, 0]);
         var color = d3.scale.category10();
         var xAxis = d3.svg.axis()
+            .ticks(3)
             .scale(x)
             .orient("bottom");
         var yAxis = d3.svg.axis()
@@ -79,7 +80,7 @@ class ExpressionBoxplot extends React.Component {
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
-            .attr("class", "label")
+            .attr("class", "ylabel")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
             .attr("dy", ".71em")
@@ -99,13 +100,15 @@ class ExpressionBoxplot extends React.Component {
             .attr("class", "legend")
             .attr("transform", function(d, i) {
                 return "translate(0," + i * 20 + ")"; });
+        var legendX = width - 80;
+        var lengthTextX = legendX - 6;
         legend.append("rect")
-            .attr("x", width - 38)
+            .attr("x", legendX)
             .attr("width", 18)
             .attr("height", 18)
             .style("fill", color);
         legend.append("text")
-            .attr("x", width - 44)
+            .attr("x", lengthTextX)
             .attr("y", 9)
             .attr("dy", ".35em")
             .style("text-anchor", "end")
@@ -113,9 +116,6 @@ class ExpressionBoxplot extends React.Component {
 
         var bars = this.props.data.nearbyDEs.data;
         y_domain = d3.extent(bars, function(d) { return d[1]; });
-        x = d3.scale.linear()
-            .domain(x_domain).nice()
-            .range([0, width]);
         y = d3.scale.linear()
             .domain(y_domain).nice()
             .range([height, 0]);
@@ -143,13 +143,12 @@ class ExpressionBoxplot extends React.Component {
             .style("fill", "steelblue")
             .call(yAxisRight)
             .append("text")
-            .attr("class", "label")
+            .attr("class", "ylabel")
             .attr("transform", "rotate(-90)")
             .attr("y", 7)
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
             .text("log2 fold change")
-
     }
 }
 
