@@ -12,7 +12,7 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
-        self.halfWindow = 500000
+        self.halfWindow = 400000
 
     def coord(self):
         if not self.pos:
@@ -33,7 +33,7 @@ class DE:
                 "h3k27ac_dnase_zscore[%s]" % ct1EnhancerIdx,
                 "h3k27ac_dnase_zscore[%s]" % ct2EnhancerIdx]
         nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), self.halfWindow, cols)
-        print("found", len(nearbyCREs))
+        #print("found", len(nearbyCREs))
 
         ret = []
         thres = 1.64
@@ -49,10 +49,13 @@ class DE:
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
         ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
 
-        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
-                                            ct1, ct2)
+        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,ct1, ct2)
         ret = []
         for d in nearbyDEs:
-            ret.append([float(d[1] - d[0]) / 2 + d[0], d[2]])
-
+            e = [float(d[1] - d[0]) / 2 + d[0], # center
+                 float(d[2]), # log2FoldChange
+                 d[0], # start
+                 d[1] # stop
+                 ]
+            ret.append(e)
         return {"data" : ret }
