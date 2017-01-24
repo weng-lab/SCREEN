@@ -45,8 +45,12 @@ class DE:
         return {"data" : ret}
 
     def nearbyDEs(self):
+        # limb_14.5 from C57BL-6_limb_embryo_14.5_days
+        ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
+        ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
+
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
-                                            self.ct1, self.ct2)
+                                            ct1, ct2)
         ret = []
         for d in nearbyDEs:
             ret.append([float(d[1] - d[0]) / 2 + d[0], d[2]])
