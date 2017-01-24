@@ -80,9 +80,9 @@ class CellTypeInfoRow:
                 bs = bs.replace("postnatal e", "p").replace("embryo e", "e")
             #print("new bs", bs)
             self.biosample_summary = bs
-            
+
         out = self.output().encode('ascii', 'ignore').decode('ascii')
-        print(out)
+        #print(out)
 
     def output(self):
         return '\t'.join([self.assay, self.expID, self.fileID,
@@ -235,7 +235,7 @@ def main():
     assemblies = ["mm10", "hg19"]
     if args.assembly:
         assemblies = [args.assembly]
-    
+
     for assembly in assemblies:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             pd = ImportCellTypeInfo(curs, assembly)
