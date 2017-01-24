@@ -283,3 +283,9 @@ select.ui-toggle-switch { display: none; }
     top: 100%;
     left: 0;
 }
+
+/* de bars */
+.bar1 {
+    fill: steelblue;
+    opacity: 0.5;
+}
