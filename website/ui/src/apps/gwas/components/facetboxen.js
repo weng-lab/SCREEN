@@ -4,24 +4,24 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import LongChecklistFacet from '../../../common/components/longchecklist'
+import LongListFacet from '../../../common/components/longlist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
 
-const cell_compartments = ({compartments, actions}) => {
-    return panelize("Cellular Compartments",
-                    <LongChecklistFacet
+const cell_compartments = ({gwas_study, actions}) => {
+    return panelize("GWAS Studies",
+                    <LongListFacet
                     title={""}
-                    data={compartments.map((e) => {return {key: e,
-                                                           selected: true}})}
+                    data={Globals.gwas.studies}
                     cols={[{
-		        title: "Assay", data: "key",
+		        title: "Assay", data: "value",
 		        className: "dt-right"
 	            }]}
                     order={[]}
+		    selection={gwas_study}
         	    mode={CHECKLIST_MATCH_ANY}
-                    onTdClick={(c) => { actions.toggleCompartment(c) } }
+                    onTdClick={(c) => { actions.setStudy(c) } }
                     />);
 }
 
