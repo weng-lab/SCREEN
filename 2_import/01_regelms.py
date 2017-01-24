@@ -158,18 +158,6 @@ class CreateIndices:
     create index {idx} on {tableName} using gist(numarray2numrange({col}));
     """.format(idx = idx, tableName = tableName, col = col))
 
-def setupRangeFunction(curs):
-    print("create range function...")
-    curs.execute("""
-create or replace function intarray2int4range(arr int[]) returns int4range as $$
-    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
-
-create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
-    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
-""")
-
 def vacumnAnalyze(conn, baseTableName, chrs):
     # http://stackoverflow.com/a/1017655
     print("about to vacuum analyze", baseTableName)
@@ -246,8 +234,6 @@ def run(args, DBCONN):
             continue
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            setupRangeFunction(curs)
-
             im = ImportData(curs, m, cols)
             im.run()
 

@@ -66,7 +66,20 @@ VALUES (%s, %s, %s, %s)""".format(outTableName =  outTableName),
                                mmax,
                                json.dumps(buckets)))
 
+    def setupRangeFunction(self):
+        print("create range function...")
+        self.curs.execute("""
+create or replace function intarray2int4range(arr int[]) returns int4range as $$
+    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+
+create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
+    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+        """)
+
     def run(self):
+        self.setupRangeFunction()
         self.setupCREhistograms()
         self.setupCREcounts()
 

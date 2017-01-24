@@ -12,13 +12,17 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
-        self.halfWindow = 600000
+        self.halfWindow = 400000
 
     def coord(self):
         if not self.pos:
             self.pos = self.pgSearch.genePos(self.gene)
         return self.pos
 
+    def xdomain(self):
+        c = self.coord().expandFromCenter(self.halfWindow)
+        return [c.start, c.end]
+    
     def diffCREs(self):
         rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
         #print(rankMethodToIDxToCellType["Enhancer"].keys())
@@ -49,7 +53,7 @@ class DE:
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
         ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
 
-        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,ct1, ct2)
+        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,ct1, ct2, 0.05)
         ret = []
         for d in nearbyDEs:
             e = [float(d[1] - d[0]) / 2 + d[0], # center
