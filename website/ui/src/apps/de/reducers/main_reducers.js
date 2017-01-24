@@ -11,8 +11,11 @@ const main_reducers = (state, action) => {
         ret.maintabs[action.name].visible = true;
         return ret;
 
-    case Actions.TOGGLE_CT1: {
-        return { ...state, ct1: doToggle(state.ct1, action.ct)}
+    case Actions.SET_CT1: {
+        return { ...state, ct1: action.ct}
+    }
+    case Actions.SET_CT2: {
+        return { ...state, ct2: action.ct}
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:
