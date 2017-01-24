@@ -50,7 +50,7 @@ class TFEnrichment:
                            whereclause=whereclause(left, right))
                 curs.execute(q)
                 l = curs.fetchall()
-                print(q, "len of l:", len(l))
+                #print(q, "len of l:", len(l))
                 curs.execute(
                     """SELECT COUNT(*) FROM {tableName}, {pTableName}
                                 WHERE {whereclause} AND {tableName}.accession = {pTableName}.accession

@@ -39,7 +39,7 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
         for i in xrange(len(tokeep)):
             for j in xrange(len(tokeep)):
                 ret[i][j] = r[tokeep[i]][tokeep[j]]
-        print(flabels)
+        #print(flabels)
         return (flabels, ret)
 
 if __name__ == "__main__":
