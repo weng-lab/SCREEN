@@ -112,7 +112,6 @@ class ExpressionBoxplot extends React.Component {
             .text(function(d) { return d; });
 
         var bars = this.props.data.nearbyDEs.data;
-        x_domain = d3.extent(bars, function(d) { return d[0]; });
         y_domain = d3.extent(bars, function(d) { return d[1]; });
         x = d3.scale.linear()
             .domain(x_domain).nice()
