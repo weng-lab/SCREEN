@@ -37,10 +37,10 @@ def vacAll(DBCONN):
     with getcursor(DBCONN, "pg") as curs:
         curs.execute("""SELECT table_name FROM information_schema.tables
         WHERE table_schema = 'public'""")
-        tables = curs.fetchall()
-    for t in tables:
+        tables = [t[0] for t in curs.fetchall()]
+    for t in sorted(tables):
         conn = DBCONN.getconn()
-        vacumnAnalyze(conn, t[0])
+        vacumnAnalyze(conn, t)
         DBCONN.putconn(conn)
 
 def parse_args():
