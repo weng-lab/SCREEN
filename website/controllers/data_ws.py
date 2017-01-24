@@ -134,7 +134,6 @@ class DataWebService:
                               "mostSimilar": mostSimilar}}
 
     def trees(self, j, args):
-        print(j)
         tree_rank_method = j["tree_rank_method"]
         t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)
         ret = t.getTree()
