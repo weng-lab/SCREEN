@@ -44,8 +44,4 @@ class DE:
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), halfWindow,
                                             self.ct1, self.ct2)
 
-        return {"diffCREs" : { "data" : diffCREs,
-                               "xstart" : min([c[1] for c in nearbyCREs]),
-                               "xstop" : max([c[2] for c in nearbyCREs])
-                               }
-                }
+        return {"diffCREs" : { "data" : diffCREs } }
