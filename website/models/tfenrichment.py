@@ -37,6 +37,8 @@ class TFEnrichment:
         
         left = [cti[x] for x in leftRaw if x in cti]
         right = [cti[x] for x in rightRaw if x in cti]
+        print(left)
+        print(right)
         def whereclause(inc, exc, assay = lookup[tree_rank_method]):
             inc = " or ".join(["%s_zscore[%d] > 1.64" % (assay, x) for x in inc])
             exc = " and ".join(["%s_zscore[%d] <= 1.64" % (assay, x) for x in exc])

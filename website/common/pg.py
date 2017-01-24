@@ -339,7 +339,7 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
         c = coord.expanded(halfWindow)
         with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
             q = """
-            SELECT start, stop, log2FoldChange
+            SELECT start, stop, log2FoldChange, padj
             from {deTn} as de
             inner join {giTn} as gi
             on de.ensembl = gi.ensemblid_ver
@@ -352,5 +352,5 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
                               "stop" : c.end,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+        print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
