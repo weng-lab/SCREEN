@@ -36,7 +36,8 @@ class ExpressionBoxplot extends React.Component {
 
     componentDidUpdate() {
         // from http://bl.ocks.org/mbostock/3887118
-
+        // and http://stackoverflow.com/a/30955562
+        // and http://bl.ocks.org/d3noob/e34791a32a54e015f57d
         let chart = this.refs.chart;
 	$(chart).empty();
         let data = this.props.data.diffCREs.data;
@@ -83,7 +84,7 @@ class ExpressionBoxplot extends React.Component {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("log2 fold change")
+            .text("change in cRE Z-score")
         svg.selectAll(".dot")
             .data(data)
             .enter().append("circle")
@@ -99,12 +100,12 @@ class ExpressionBoxplot extends React.Component {
             .attr("transform", function(d, i) {
                 return "translate(0," + i * 20 + ")"; });
         legend.append("rect")
-            .attr("x", width - 18)
+            .attr("x", width - 38)
             .attr("width", 18)
             .attr("height", 18)
             .style("fill", color);
         legend.append("text")
-            .attr("x", width - 24)
+            .attr("x", width - 44)
             .attr("y", 9)
             .attr("dy", ".35em")
             .style("text-anchor", "end")
@@ -135,6 +136,20 @@ class ExpressionBoxplot extends React.Component {
             .attr("height", function(d) {
                 return height - y(d[1]);
             });
+        var yAxisRight = d3.svg.axis().scale(y)
+            .orient("left");
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + width + " ,0)")
+            .style("fill", "steelblue")
+            .call(yAxisRight)
+            .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 7)
+            .attr("dy", "0.71em")
+            .style("text-anchor", "end")
+            .text("log2 fold change")
 
     }
 }

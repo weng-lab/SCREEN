@@ -352,5 +352,5 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
                               "stop" : c.end,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
