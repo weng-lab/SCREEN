@@ -5,6 +5,7 @@ import cherrypy, jinja2, os, sys
 from controllers.main_controller import MainController
 from controllers.geneexp_controller import GeneExpController
 from controllers.de_controller import DeController
+from controllers.gwas_controller import GwasController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.ajax_ws import AjaxWebServiceWrapper
@@ -24,6 +25,7 @@ class MainApp():
         self.mc = MainController(self.templates, es, ps, cache)
         self.ge = GeneExpController(self.templates, es, ps, cache)
         self.de = DeController(self.templates, es, ps, cache)
+        self.gwas = GwasController(self.templates, es, ps, cache)
         self.cp = ComparisonController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
         self.trackhub = TrackhubController(self.templates, es, ps, cache)
@@ -165,6 +167,17 @@ class MainApp():
     def deGeneJson(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.de.deGeneJson(j)
+
+    @cherrypy.expose
+    def gwasApp(self, *args, **kwargs):
+        return self.gwas.gwas(args, kwargs, self.session_uuid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def gwasJson(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.gwas.gwasJson(j)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
