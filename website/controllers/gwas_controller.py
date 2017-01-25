@@ -25,4 +25,6 @@ class GwasController:
         gwas_study = j["gwas_study"]
         g = Gwas(cache, PGsearch(self.ps, assembly))
 
-        return {gwas_study : {"overlap" : g.overlapWithCres(gwas_study)}}
+        perc = g.overlapWithCres(gwas_study)
+        return {gwas_study : [["overlap", perc],
+                              ["noOverlap", 1 - perc]]}

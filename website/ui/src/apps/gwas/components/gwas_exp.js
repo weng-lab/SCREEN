@@ -57,7 +57,7 @@ class GwasExp extends React.Component{
     doRenderWrapper(){
         let gwas_study = this.props.gwas_study
         if(gwas_study in this.state){
-            return <ExpressionBoxplot data={this.state[gene]}
+            return <ExpressionBoxplot data={this.state[gwas_study]}
             selectStudy={this.state.selectStudy} />;
         }
         return loading(this.state);
