@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import Autocompleter
 from constants import paths
 from pg import PGsearch
+from models.minipeaks_cache import MiniPeaksCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
@@ -51,6 +52,8 @@ class CachedObjects:
         self.tf_list_json = json.dumps(self.tf_list)
 
         self.datasets = Datasets(assembly, ps.DBCONN)
+
+        self.minipeaks_cache = MiniPeaksCache("dnase", 1)
 
         self.bigwigmaxes = {}
         bmnp = paths.bigwigmaxes(assembly)
