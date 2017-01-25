@@ -23,7 +23,14 @@ class Trees:
             tree = self._processTyp(typ)
             if tree:
                 ret[typ] = tree
-                
+
+        if "hg19" == self.assembly:
+            typ = "tissue"
+            fil = lambda ct: "fetal" in ct
+            tree = self._processTyp(typ, fil)
+            if tree:
+                ret["fetal " + typ] = tree
+                            
         titleLookup = {"DNase" : "DNase",
                        "H3K27ac" : "Enhancer / H3K27ac only",
                        "H3K4me3" :"Promoter / H3K4me3 only",
@@ -35,7 +42,7 @@ class Trees:
 
         return {"trees": ret, "title" : title }
 
-    def _processTyp(self, typ):
+    def _processTyp(self, typ, fil = None):
         c = Correlation(self.assembly, self.pg.DBCONN, self.cache)
 
         tableName = self.tree_rank_method + "_v10"
@@ -44,10 +51,13 @@ class Trees:
         cellTypesInBiosamType = self.cache.datasets.biosampleTypeToCellTypes[typ]
         cellTypes = set(cellTypes).intersection(set(cellTypesInBiosamType))
         cellTypes = sorted(list(cellTypes))
+
+        if fil:
+            cellTypes = filter(fil, cellTypes)
         
         labels, corr = c.dbcorr(self.assembly, tableName, cellTypes)
         if not labels:
-            return []
+            return None, None
 
         if 2 == len(corr):
             rho = corr[0]
@@ -66,5 +76,5 @@ class Trees:
             return []
         with Timer("tree hierarchical clustering time"):
             roworder, rowtree = _heatmap.cluster_by_rows()
-        return {"tree": rowtree, "labels": labels}
+        return {"tree": rowtree, "labels": labels, "numCellTypes": len(cellTypes)}
 
