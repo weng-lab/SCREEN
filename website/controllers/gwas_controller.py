@@ -22,8 +22,7 @@ class GwasController:
         assembly = j["GlobalAssembly"]
         cache = self.cacheW[assembly]
 
+        gwas_study = j["gwas_study"]
         g = Gwas(cache, PGsearch(self.ps, assembly))
-        
-        return {"gwas": {"gwas" : g.gwas,
-                         "enrichment" : g.enrichemnt,
-                         "studies" : [{"value" : e} for e in studies]}}
+
+        return {gwas_study : {"overlap" : g.overlapWithCres(gwas_study)}}

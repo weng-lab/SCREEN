@@ -19,6 +19,8 @@ class Gwas:
         if not self.gwas:
             self.gwas = self.pgSearch.gwas()
         if not self.studies:
-            studies = list(set([e.authorPubmedTrait for e in self.enrichment]))
+            studies = list(set([e.authorPubmedTrait for e in self.gwas]))
             self.studies = [{"value" : e} for e in studies]
 
+    def overlapWithCres(self, gwas_study):
+         return self.pgSearch.gwasOverlapWithCres(gwas_study)
