@@ -6,7 +6,7 @@ from natsort import natsorted
 from collections import namedtuple
 
 GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock trait".split(' '))
+GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
 
 from coord import Coord
 
@@ -382,10 +382,34 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
     def gwas(self):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
-            SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, trait
+            SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, authorPubmedTrait
             FROM {tn}
 """.format(tn = "hg19_gwas")
             curs.execute(q)
             rows = curs.fetchall()
         return [GwasRow(*r) for r in rows]
+
+    def gwasOverlapWithCres(self, gwas_study):
+        print(gwas_study)
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT COUNT(0)
+FROM hg19_gwas as gwas, hg19_cre as cre
+WHERE gwas.chrom = cre.chrom
+AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+AND gwas.authorPubmedTrait = %s
+""".format(tn = "hg19_gwas")
+            curs.execute(q, (gwas_study, ))
+            overlapCount = curs.fetchone()[0]
+            print("overlapCount", overlapCount)
+
+            q = """
+SELECT COUNT(0)
+FROM hg19_gwas as gwas
+WHERE gwas.authorPubmedTrait = %s
+""".format(tn = "hg19_gwas")
+            curs.execute(q, (gwas_study, ))
+            total = curs.fetchone()[0]
+            print("total", total, gwas_study)
+        return float(overlapCount) / total
 
