@@ -26,11 +26,14 @@ class GwasController:
         g = Gwas(cache, PGsearch(self.ps, assembly))
 
         if gwas_study == "Speedy-24292274-Chronic lymphocytic leukemia":
-            ret = [["overlap", 0.3584158415841584],
-                   ["noOverlap", 0.6415841584158416]]
+            ret = [["overlap", 35.84],
+                   ["noOverlap", 64.16]]
         elif gwas_study == "Surakka-25961943-Cholesterol":
-            ret = [["overlap", 0.3046800382043935],
-                   ["noOverlap", 0.6953199617956065]]
+            ret = [["overlap", 30.47],
+                   ["noOverlap", 69.53]]
+        elif gwas_study == "Arking-24952745-QT Interval":
+            ret = [["overlap", 41.45],
+                   ["noOverlap", 58.5]]
         else:
             perc = g.overlapWithCres(gwas_study)
             ret = [["overlap", perc],
