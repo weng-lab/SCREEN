@@ -5,7 +5,7 @@ import GwasExp from '../components/gwas_exp'
 class Gwas extends React.Component{
     render() {
         return (<div>
-		{"hi!"}
+                <GwasExp />
                 </div>);
     }
 }
