@@ -55,15 +55,12 @@ class MiniPeaks extends REComponent {
     _onchange() {
 	this.setState({"assay": this.refs.assay.value});
     }
-    
+
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
-	var mfactor = Math.log(regions.max
-			       ? ROWHEIGHT / regions.max
-			       : ROWHEIGHT / Math.max(...(Object.keys(regions).map((_k) => (Math.max(...regions[_k]))))));
-	mfactor = ROWHEIGHT / 150.0;
+	var mfactor = ROWHEIGHT / 150.0;
 	text = friendly_celltype(text);
-	
+
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>
 		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end" fill={_tissuecolor(regions["tissue"])}>{text}</text>
 		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>

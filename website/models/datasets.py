@@ -47,7 +47,7 @@ SELECT {cols} FROM {tn}""".format(tn = tableName, cols = ','.join(cols)))
             if bt not in self.biosampleTypeToCellTypes:
                 self.biosampleTypeToCellTypes[bt] = []
             self.biosampleTypeToCellTypes[bt].append(r.cellTypeName)
-            
+
         # used by CellTypes facet
         self.globalCellTypeInfoArr = []
         for k, v in self.globalCellTypeInfo.iteritems():

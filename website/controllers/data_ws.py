@@ -129,7 +129,7 @@ class DataWebService:
 
     def _re_detail_similarREs(self, j, accession):
         mp = MiniPeaks(self.pgSearch, accession, self.cache)
-        regions, mostSimilar = mp.getBigWigRegions()
+        regions, mostSimilar = mp.getBigWigRegionsWithSimilar()
         order = regions["order"]
         regions.pop("order", None)
         return { accession : {"regions" : regions,

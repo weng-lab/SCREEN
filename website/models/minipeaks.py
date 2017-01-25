@@ -7,6 +7,7 @@ import os
 from bigwig import BigWig
 from cre import CRE
 
+
 def asum(_l):
     ret = []
     for r in _l: ret += r
@@ -30,27 +31,21 @@ class MiniPeaks:
             tissuegroupings[v["tissue"]].append(k)
         return asum([v for k, v in tissuegroupings.iteritems()])
 
-    def _get_bigwig_regions(self, bigwigs, elems):
+    def _get_bigwig_regions(self, bigwigs, cres):
         d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         try:
             bfnps = []
             for bw in bigwigs:
                 fnp = os.path.join(d, bw["accession"], bw["bigwig"] + ".bigWig")
                 if os.path.exists(fnp):
-                    bfnps.append({"path": fnp, "ct": bw["ct"], "tissue": self._ctToTissue(bw["ct"]) })
+                    bfnps.append({"fnp": fnp, "ct": bw["ct"],
+                                  "tissue": self._ctToTissue(bw["ct"]) })
+                else:
+                    print("WARNING: missing bigwig", fnp)
 
-            regions = []
-            for x in elems:
-                regions.append({"acc": x["accession"],
-                                "start": x["position"]["start"],
-                                "end": x["position"]["end"],
-                                "chr": x["position"]["chrom"]})
-
-            results = BigWig.getregions(regions, bfnps, 50)
+            results = BigWig(self.cache.minipeaks_cache).getregions(cres,
+                                                                    bfnps, 50)
             results["order"] = self._groupbytissue(results)
-
-            for bw in bigwigs:
-                results[bw["ct"]]["max"] = self.cache.bigwigmaxes[bw["bigwig"]] if bw["bigwig"] in self.cache.bigwigmaxes else 0
             return results
         except:
             raise
@@ -60,20 +55,26 @@ class MiniPeaks:
         try:
             return self.cache.datasets.globalCellTypeInfo[ct]["tissue"]
         except:
+            print("missing tissue for", ct)
             return ""
 
     def getBigWigRegions(self):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs()
-        me = {"accession": self.accession, "position": coord.toDict()}
+        me = {"accession": self.accession,
+              "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
         cres = [me]
-        return (self._get_bigwig_regions(bigWigs, cres),
-                [x["accession"] for x in cres])
+        regions = self._get_bigwig_regions(bigWigs, cres)
+        accs = [x["accession"] for x in cres]
+        return (regions, accs)
 
     def getBigWigRegionsWithSimilar(self):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs()
-        me = {"accession": self.accession, "position": coord.toDict()}
+        me = {"accession": self.accession,
+              "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
         cres = [me] + self.pgSearch.creMostsimilar(self.accession, "dnase")
-        return (self._get_bigwig_regions(bigWigs, cres),
-                [x["accession"] for x in cres])
+        regions = self._get_bigwig_regions(bigWigs, cres)
+        print(regions[ regions.keys()[0] ])
+        accs = [x["accession"] for x in cres]
+        return (regions, accs)
