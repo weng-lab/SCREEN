@@ -38,7 +38,16 @@ SELECT {cols} FROM {tn}""".format(tn = tableName, cols = ','.join(cols)))
             self.globalCellTypeInfo[r.cellTypeName] = {}
             self.globalCellTypeInfo[r.cellTypeName]["tissue"] = r.tissue
             self.globalCellTypeInfo[r.cellTypeName]["name"] = r.biosample_summary
+            self.globalCellTypeInfo[r.cellTypeName]["typ"] = r.biosample_type
 
+        # used by trees
+        self.biosampleTypeToCellTypes = {}
+        for r in rows:
+            bt = r.biosample_type
+            if bt not in self.biosampleTypeToCellTypes:
+                self.biosampleTypeToCellTypes[bt] = []
+            self.biosampleTypeToCellTypes[bt].append(r.cellTypeName)
+            
         # used by CellTypes facet
         self.globalCellTypeInfoArr = []
         for k, v in self.globalCellTypeInfo.iteritems():

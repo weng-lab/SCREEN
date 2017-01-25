@@ -16,18 +16,11 @@ class Trees:
         self.assembly = assembly
         self.tree_rank_method = tree_rank_method
 
-        self.groups = {"hg19": [("tissue", lambda x: "tissue" in x and "fetal" in x),
-                                ("immortalized", lambda x: "immortalized" in x),
-                                ("primary_cell", lambda x: "primary_cell" in x) ]}
-
     def getTree(self):
-        ret = {}
         biosampleTypes = self.cache.biosampleTypes
-        if self.assembly == "hg19":
-            biosampleTypes = self.groups["hg19"]
+        ret = {}
         for typ in biosampleTypes:
-            idx = typ if type(typ) is str else typ[0]
-            ret[idx] = self._processTyp(typ)
+            ret[typ] = self._processTyp(typ)
 
         titleLookup = {"DNase" : "DNase",
                        "H3K27ac" : "Enhancer / H3K27ac only",
@@ -41,24 +34,17 @@ class Trees:
         return {"trees": ret, "title" : title }
 
     def _processTyp(self, typ):
-        def ctFilter(ct):
-            if not ct in self.cache.biosamples:
-                print("missing", ct)
-                return False
-            return typ[1](ct) #(self.cache.biosamples[ct].biosample_type)
-
         c = Correlation(self.assembly, self.pg.DBCONN, self.cache)
 
-        k = self.tree_rank_method + "_v10"
-        labels = self.cache.rankMethodToCellTypes[self.tree_rank_method]
+        tableName = self.tree_rank_method + "_v10"
+        cellTypes = self.cache.rankMethodToCellTypes[self.tree_rank_method]
 
-        if self.assembly == "hg19":
-            labels, corr = c.dbcorr(self.assembly, k, labels, typ[1])
-        else:
-            labels, corr = c.dbcorr(self.assembly, k, labels,
-                                    lambda x: "bryo" in x)
-            print("!got correlation")
-
+        cellTypesInBiosamType = self.cache.datasets.biosampleTypeToCellTypes[typ]
+        cellTypes = set(cellTypes).intersection(set(cellTypesInBiosamType))
+        cellTypes = sorted(list(cellTypes))
+        
+        with Timer("Correlation matrix extraction"):
+            labels, corr = c.dbcorr(self.assembly, tableName, cellTypes)
         if not labels:
             return []
 
