@@ -21,8 +21,8 @@ id serial PRIMARY KEY,
 leftName text,
 rightName text,
 ensembl text,
-log2FoldChange numeric,
-padj numeric
+log2FoldChange real,
+padj real
 );
 """.format(tableName = tableName))
     print("\tok")

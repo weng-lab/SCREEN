@@ -42,11 +42,17 @@ class ExpressionBoxplot extends React.Component {
 	$(chart).empty();
         let data = this.props.data.diffCREs.data;
 	let xdomain = this.props.data.xdomain;
-		
+
+        let barYdomain = [Math.min(y_domain[0], this.props.data.nearbyDEs.ymin),
+                          this.props.data.nearbyDEs.ymax];
+        var y_domain = d3.extent(data, function(d) { return d[1]; });
+        console.log(barYdomain);
+
+
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
-        var y_domain = d3.extent(data, function(d) { return d[1]; });
+        console.log(y_domain);
         var x = d3.scale.linear()
             .domain(xdomain).nice()
             .range([0, width]);
@@ -116,7 +122,7 @@ class ExpressionBoxplot extends React.Component {
 
         var bars = this.props.data.nearbyDEs.data;
         y = d3.scale.linear()
-            .domain([y_domain[0], this.props.data.nearbyDEs.ymax]).nice()
+            .domain(barYdomain).nice()
             .range([height, 0]);
         var bar = svg.selectAll(".bar")
             .data(bars)
