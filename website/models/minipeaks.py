@@ -69,3 +69,37 @@ class MiniPeaks:
         #print(regions[ regions.keys()[0] ])
         accs = [x["accession"] for x in cres]
         return (regions, accs)
+
+
+def main():
+    class DummyEs:
+        def search(self, index, body):
+            return {"hits": {"total": 0, "hits": [] }}
+        def __init__(self):
+            pass
+
+    import sys, os
+    sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+    sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
+    sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+    from postgres_wrapper import PostgresWrapper
+    from pg import PGsearch
+    from elastic_search_wrapper import ElasticSearchWrapperWrapper
+    from dbconnect import db_connect
+    from cached_objects import CachedObjects
+
+    DBCONN = db_connect(os.path.realpath(__file__), True)
+    ps = PostgresWrapper(DBCONN)
+    es = ElasticSearchWrapperWrapper(DummyEs())
+
+    for assembly in ["hg19", "mm10"]:
+        pgSearch = PGsearch(ps, assembly)
+        cache = CachedObjects(es, ps, assembly)
+
+        for accession in pgSearch.allCREs():
+            mp = MiniPeaks(pgSearch, accession, cache)
+            mp.getBigWigRegions()
+            print(accession)
+
+if __name__ == "__main__":
+    main()
