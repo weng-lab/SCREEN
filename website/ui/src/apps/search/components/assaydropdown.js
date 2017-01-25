@@ -1,14 +1,15 @@
 import React from 'react'
 
 class AssayDropdown extends React.Component {
-
     constructor(props) {
 	super(props);
-	this._onchange.bind(this);
+	this._onchange = this._onchange.bind(this);
     }
 
     _onchange() {
-	if (this.props.onChange) this.props.onChange(this.refs.mainselect.value);
+	if (this.props.onChange) {
+	    this.props.onChange(this.refs.mainselect.value);
+	}
     }
     
     render() {
