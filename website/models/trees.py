@@ -30,6 +30,13 @@ class Trees:
             tree = self._processTyp(typ, fil)
             if tree:
                 ret["fetal " + typ] = tree
+
+        if "mm10" == self.assembly:
+            typ = "tissue"
+            fil = lambda ct: "embryo" in ct
+            tree = self._processTyp(typ, fil)
+            if tree:
+                ret["embryonic " + typ] = tree
                             
         titleLookup = {"DNase" : "DNase",
                        "H3K27ac" : "Enhancer / H3K27ac only",
