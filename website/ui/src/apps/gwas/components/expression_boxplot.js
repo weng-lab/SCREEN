@@ -67,7 +67,7 @@ class ExpressionBoxplot extends React.Component {
 
         g.append("path")
             .attr("d", arc)
-            .style("fill", function(d) { return color(d[0]); });
+            .style("fill", function(d) { return color(d[1]); });
 
         g.append("text")
             .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
