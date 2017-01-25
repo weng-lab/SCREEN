@@ -19,10 +19,6 @@ class DE:
             self.pos = self.pgSearch.genePos(self.gene)
         return self.pos
 
-    def xdomain(self):
-        c = self.coord().expandFromCenter(self.halfWindow)
-        return [c.start, c.end]
-    
     def diffCREs(self):
         rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
         #print(rankMethodToIDxToCellType["Enhancer"].keys())
@@ -36,7 +32,7 @@ class DE:
                 "h3k4me3_only_zscore[%s]" % ct2PromoterIdx,
                 "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
                 "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
-        nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), self.halfWindow, cols)
+        nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols)
         #print("found", len(nearbyCREs))
 
         ret = []
@@ -53,7 +49,12 @@ class DE:
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
         ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
 
-        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,ct1, ct2, 0.05)
+        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
+                                            ct1, ct2, 1) #0.05)
+
+        xdomain = [max(0, min([d[0] for d in nearbyDEs]) - self.halfWindow),
+                   max([d[1] for d in nearbyDEs]) + self.halfWindow]
+
         ret = []
         for d in nearbyDEs:
             e = [float(d[1] - d[0]) / 2 + d[0], # center
@@ -61,7 +62,10 @@ class DE:
                  d[0], # start
                  d[1] # stop
                  ]
-            #print(e, d[1] - d[0])
+            print(d, e, d[1] - d[0])
             ret.append(e)
+
         return {"data" : ret,
-                "ymax" : max([d[1] for d in nearbyDEs])}
+                "xdomain" : xdomain,
+                "ymin" : min([d[1] for d in ret]),
+                "ymax" : max([d[1] for d in ret])}
