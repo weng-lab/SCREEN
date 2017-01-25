@@ -81,6 +81,7 @@ class ResultsTree extends React.Component { //REComponent {
 	var height = (labels ? labels.length * 15 : 0);
 	return (<div ref="container">
 		<h2>{k}</h2>
+		{"(" + data.numCellTypes + " experiments)"}
 		<Tree
                 data={data.tree}
                 width={2000}
