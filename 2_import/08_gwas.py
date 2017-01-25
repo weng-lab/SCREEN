@@ -18,11 +18,12 @@ DROP TABLE IF EXISTS {tableName};
 
 CREATE TABLE {tableName}(
 id serial PRIMARY KEY,
-study text,
+author text,
+pubmed text,
+trait text,
 expID text,
 foldEnrichment real,
-fdr real,
-ignore text
+fdr real
 );
 """.format(tableName = tableName))
 
@@ -54,26 +55,38 @@ def setupAll(curs):
     tableName = "hg19_gwas_enrichment"
     setupEnrichment(curs, tableName)
 
-    cols = ["study", "expID", "foldEnrichment", "fdr", "ignore"]
+    outF = StringIO.StringIO()
     with open(fnp) as f:
-        curs.copy_from(f, tableName, '\t', columns=cols)
-    print("\tcopied in", fnp)
+        rows = [r.rstrip().split('\t') for r in f if r]
+    for r in rows:
+        toks = r[0].split('-')
+        r = toks + r[1:-1]
+        print(r)
+        outF.write('\t'.join(r) + '\n')
+    outF.seek(0)
+    cols = ["author", "pubmed", "trait", "expID", "foldEnrichment", "fdr"]
+    print(cols)
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    print("\tcopied in", curs.rowcount)
 
+    # GWAS bed
     fnp = os.path.join(dataF, "GWAS.v0.bed")
     tableName = "hg19_gwas"
     setupGWAS(curs, tableName)
-
     outF = StringIO.StringIO()
     with open(fnp) as f:
         rows = [r.rstrip().split('\t') for r in f if r]
     for r in rows:
         if '*' == r[5]:
-            r[5] = "Null"
+            r[5] = "-1"
+        if 'Lead' == r[4]:
+            r[4] = r[3]
+        outF.write('\t'.join(r) + '\n')
     outF.seek(0)
 
     cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", fnp)
+    print("\tcopied in", curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
