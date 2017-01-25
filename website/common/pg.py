@@ -5,7 +5,7 @@ import os
 from natsort import natsorted
 from collections import namedtuple
 
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "study expID foldEnrichment fdr".split(' '))
+GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
 GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock trait".split(' '))
 
 from coord import Coord
@@ -364,7 +364,7 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
     def gwasEnrichment(self):
         with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
             q = """
-            SELECT study, expID, foldEnrichment, fdr
+            SELECT authorPubmedTrait, expID, foldEnrichment, fdr
             FROM {tn}
 """.format(tn = "hg19_gwas_enrichment")
             curs.execute(q)
@@ -380,4 +380,4 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             curs.execute(q)
             rows = curs.fetchall()
         return [GwasRow(*r) for r in rows]
-    
+
