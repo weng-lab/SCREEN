@@ -21,7 +21,8 @@ class MiniPeaks:
         self.pos = None
 
     def _get_bigwigs(self):
-        return [{"ct": k, "bigwig": v[1], "accession": v[0]}
+        return [{"ct": k, "bigwig": v[1], "accession": v[0],
+                 "tissue": self._ctToTissue(k) }
                 for k, v in self.cache.dnasemap.iteritems()]
 
     def _groupbytissue(self, results):
@@ -32,19 +33,9 @@ class MiniPeaks:
         return asum([v for k, v in tissuegroupings.iteritems()])
 
     def _get_bigwig_regions(self, bigwigs, cres):
-        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         try:
-            bfnps = []
-            for bw in bigwigs:
-                fnp = os.path.join(d, bw["accession"], bw["bigwig"] + ".bigWig")
-                if os.path.exists(fnp):
-                    bfnps.append({"fnp": fnp, "ct": bw["ct"],
-                                  "tissue": self._ctToTissue(bw["ct"]) })
-                else:
-                    print("WARNING: missing bigwig", fnp)
-
             results = BigWig(self.cache.minipeaks_cache).getregions(cres,
-                                                                    bfnps, 50)
+                                                                    bigwigs, 50)
             results["order"] = self._groupbytissue(results)
             return results
         except:
@@ -75,6 +66,6 @@ class MiniPeaks:
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
         cres = [me] + self.pgSearch.creMostsimilar(self.accession, "dnase")
         regions = self._get_bigwig_regions(bigWigs, cres)
-        print(regions[ regions.keys()[0] ])
+        #print(regions[ regions.keys()[0] ])
         accs = [x["accession"] for x in cres]
         return (regions, accs)
