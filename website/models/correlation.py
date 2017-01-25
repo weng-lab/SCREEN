@@ -16,7 +16,7 @@ class Correlation:
         self.cache = cache
         self.tableName = assembly + "_correlations"
 
-    def dbcorr(self, assembly, tableName, cellTypes):
+    def dbcorr(self, assembly, tableName, rankMethod, cellTypes):
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute("""
 SELECT correlations, assay FROM {tn} WHERE assay = %s
@@ -27,14 +27,17 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
                 raise Exception("correlation$Correlation::dbcorr ERROR: failed to get correlation data for assay %s" % assay)
         if not r:
             return None, None
-                
+
+        ctToIdx = self.cache.rankMethodToIDxToCellType[rankMethod] # 1 based!
         tokeep = []
         flabels = []
-        for i, ct in enumerate(cellTypes):
-            tokeep.append(i)
+        for ct in cellTypes:
+            idx = ctToIdx[ct] - 1
+            tokeep.append(idx)
             obj = self.cache.datasets.globalCellTypeInfo[ct]
             obj["key"] = ct
             flabels.append(obj)
+            
         dim = len(tokeep)
         ret = np.empty((dim, dim))
         for i in xrange(dim):
