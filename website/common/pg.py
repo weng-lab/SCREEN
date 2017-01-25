@@ -300,8 +300,7 @@ ORDER BY similarity DESC LIMIT 20
 """.format(assay=assay, assembly=self.assembly,
            threshold=threshold, whereclause=whereclause), {"r": r})
             rr = curs.fetchall()
-        return [{"accession": r[0],
-                 "position": {"chrom": r[2], "start": r[3], "end": r[4]}}
+        return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
                 for r in rr]
 
     def peakIntersectCount(self, accession, chrom):

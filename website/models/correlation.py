@@ -37,7 +37,7 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
             obj = self.cache.datasets.globalCellTypeInfo[ct]
             obj["key"] = ct
             flabels.append(obj)
-            
+
         dim = len(tokeep)
         ret = np.empty((dim, dim))
         for i in xrange(dim):
