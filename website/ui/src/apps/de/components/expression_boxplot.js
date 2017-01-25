@@ -46,8 +46,6 @@ class ExpressionBoxplot extends React.Component {
         let barYdomain = [Math.min(y_domain[0], this.props.data.nearbyDEs.ymin),
                           this.props.data.nearbyDEs.ymax];
         var y_domain = d3.extent(data, function(d) { return d[1]; });
-        console.log(barYdomain);
-
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
