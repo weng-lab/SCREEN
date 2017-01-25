@@ -29,8 +29,15 @@ CREATE TABLE IF NOT EXISTS dnase (
             WITH compression = { 'sstable_compression' : 'LZ4Compressor' };
 """)
 
+stmt = session.prepare("INSERT INTO dnase (accession, cellType, values) values (?, ?, ?)")
 
-session.execute("""
+for e in [("ee3", "asdfasdf", json.dumps({"a": 1})),
+          ("ee4", "asdfasdqeqwef", json.dumps({"a": 1})),
+          ("ee5", "aqerqrqsdfasdf", json.dumps({"a": 1}))]:
+    session.execute(stmt, e)
+
+if 0:
+    session.execute("""
 INSERT INTO dnase (accession, cellType, values)
 values (%s, %s, %s)
  """, ("ee2", "asdfasdf", json.dumps({"a": 1})))
