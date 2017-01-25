@@ -84,6 +84,7 @@ def setupAll(curs):
             r[5] = "-1"
         if 'Lead' == r[4]:
             r[4] = r[3]
+        r[2] = str(int(r[2]) + 1)
         r.append('-'.join([r[-1], r[-2], r[-3]]))
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
