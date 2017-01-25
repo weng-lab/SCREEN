@@ -93,7 +93,7 @@ def main():
     from dbconnect import db_connect
     from cached_objects import CachedObjects
 
-    DBCONN = db_connect(os.path.realpath(__file__), True)
+    DBCONN = db_connect(os.path.realpath(__file__), False)
     ps = PostgresWrapper(DBCONN)
     es = ElasticSearchWrapperWrapper(DummyEs())
 
