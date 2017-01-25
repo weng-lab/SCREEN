@@ -2,6 +2,14 @@
 
 import sys
 
+""" examples from:
+http://stackoverflow.com/questions/24949676/difference-between-partition-key-composite-key-and-clustering-key-in-cassandra
+http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_config_compress_t.html
+http://stackoverflow.com/questions/36342531/efficient-way-to-store-a-json-string-in-a-cassandra-column
+https://datastax.github.io/python-driver/getting_started.html
+
+"""
+
 from cassandra.cluster import Cluster
 cluster = Cluster(['127.0.0.1'])
 session = cluster.connect()
