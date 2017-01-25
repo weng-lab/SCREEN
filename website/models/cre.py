@@ -6,11 +6,6 @@ import os
 
 from bigwig import BigWig
 
-def asum(_l):
-    ret = []
-    for r in _l: ret += r
-    return ret
-
 class CRE:
     def __init__(self, pgSearch, accession, cache):
         self.pgSearch = pgSearch
@@ -70,7 +65,7 @@ class CRE:
             return self.cache.datasets.globalCellTypeInfo[ct]["tissue"]
         except:
             return ""
-    
+
     def topTissues(self):
         rmToCts = self.cache.rankMethodToCellTypes # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         ranks = self.allRanks()["ranks"] # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
@@ -105,51 +100,6 @@ class CRE:
                 "promoter": makeArrMulti("h3k4me3-only", "H3K4me3", "dnase+h3k4me3", "Promoter"),
                 "enhancer": makeArrMulti("h3k27ac-only", "H3K27ac", "dnase+h3k27ac", "Enhancer"),
                 "ctcf": makeArrMulti("ctcf-only", "CTCF", "dnase+ctcf", "Insulator")}
-
-    def _get_bigwigs(self):
-        return [{"ct": k, "bigwig": v[1], "accession": v[0]}
-                for k, v in self.cache.dnasemap.iteritems()]
-
-    def _groupbytissue(self, results):
-        tissuegroupings = {}
-        for k, v in results.iteritems():
-            if v["tissue"] not in tissuegroupings: tissuegroupings[v["tissue"]] = []
-            tissuegroupings[v["tissue"]].append(k)
-        return asum([v for k, v in tissuegroupings.iteritems()])
-    
-    def _get_bigwig_regions(self, bigwigs, elems):
-        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
-        try:
-            bfnps = []
-            for bw in bigwigs:
-                fnp = os.path.join(d, bw["accession"], bw["bigwig"] + ".bigWig")
-                if os.path.exists(fnp):
-                    bfnps.append({"path": fnp, "ct": bw["ct"], "tissue": self._ctToTissue(bw["ct"]) })
-
-            regions = []
-            for x in elems:
-                regions.append({"acc": x["accession"],
-                                "start": x["position"]["start"],
-                                "end": x["position"]["end"],
-                                "chr": x["position"]["chrom"]})
-
-            results = BigWig.getregions(regions, bfnps, 50)
-            results["order"] = self._groupbytissue(results)
-            
-            for bw in bigwigs:
-                results[bw["ct"]]["max"] = self.cache.bigwigmaxes[bw["bigwig"]] if bw["bigwig"] in self.cache.bigwigmaxes else 0
-            return results
-        except:
-            raise
-            print("ERROR in _get_bigwig_regions")
-
-    def getBigWigRegions(self, accession):
-        coord = self.coord()
-        bigWigs = self._get_bigwigs()
-        me = {"accession": accession, "position": coord.toDict()}
-        cres = [me] + self.pgSearch.creMostsimilar(accession, "dnase")
-        return (self._get_bigwig_regions(bigWigs, cres),
-                [x["accession"] for x in cres])
 
     def peakIntersectCount(self):
         coord = self.coord()
