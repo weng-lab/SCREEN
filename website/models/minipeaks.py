@@ -3,10 +3,14 @@
 from __future__ import print_function
 
 import os
+import sys
 
 from bigwig import BigWig
 from cre import CRE
 
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+from utils import printt
 
 def asum(_l):
     ret = []
@@ -49,17 +53,18 @@ class MiniPeaks:
             print("missing tissue for", ct)
             return ""
 
-    def getBigWigRegions(self):
+    def getBigWigRegions(self, cres = None):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs()
         me = {"accession": self.accession,
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
-        cres = [me]
+        if not cres:
+            cres = [me]
         regions = self._get_bigwig_regions(bigWigs, cres)
         accs = [x["accession"] for x in cres]
         return (regions, accs)
 
-    def getBigWigRegionsWithSimilar(self):
+    def getBigWigRegionsWithSimilar(self, other = None):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs()
         me = {"accession": self.accession,
@@ -92,14 +97,20 @@ def main():
     ps = PostgresWrapper(DBCONN)
     es = ElasticSearchWrapperWrapper(DummyEs())
 
+    def chunks(l, n):
+        """Yield successive n-sized chunks from l."""
+        # from http://stackoverflow.com/a/312464
+        for i in xrange(0, len(l), n):
+            yield l[i:i + n]
+
     for assembly in ["hg19", "mm10"]:
         pgSearch = PGsearch(ps, assembly)
         cache = CachedObjects(es, ps, assembly)
 
-        for accession in pgSearch.allCREs():
-            mp = MiniPeaks(pgSearch, accession, cache)
-            mp.getBigWigRegions()
-            print(accession)
+        for accessions in list(chunks(pgSearch.allCREs(), 1000)):
+            mp = MiniPeaks(pgSearch, accessions[0], cache)
+            mp.getBigWigRegions([{"accession" : a} for a in accessions])
+            printt(len(accessions))
 
 if __name__ == "__main__":
     main()
