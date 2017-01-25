@@ -27,6 +27,15 @@ class PGsearch:
         self.pg = pg
         self.assembly = assembly
 
+    def allCREs(self):
+        tableName = self.assembly + "_cre"
+        q = """SELECT accession from {tn}""".format(
+            tn = tableName)
+        with getcursor(self.pg.DBCONN, "pg") as curs:
+            curs.execute(q)
+            r = curs.fetchall()
+        return [e[0] for e in r]
+
     def chromCounts(self):
         tableName = self.assembly + "_cre" + "_nums"
         q = """SELECT chrom, count from {tn}""".format(
