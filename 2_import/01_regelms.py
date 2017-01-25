@@ -97,7 +97,7 @@ class CreateIndices:
         return tn + '_' + col + "_idx"
 
     def doIndex(self, tableName):
-        cols = ("accession", "chrom")
+        cols = ("accession", "chrom", "start", "stop")
         for col in cols:
             idx = self._idx(tableName, col)
             print("indexing", idx)
@@ -127,11 +127,12 @@ class CreateIndices:
     """.format(idx = idx, tableName = tableName, col = col))
 
     def run(self):
+        self.setupRangeFunction()
         self.doIndex(self.baseTableName)
-        self.doIndexGin(self.baseTableName)
         if 0:
-            self.doIndexRev(self.baseTableName)
             self.doIndexRange(self.baseTableName)
+            self.doIndexRev(self.baseTableName)
+            self.doIndexGin(self.baseTableName)
 
             for chrom in self.chrs:
                 ctn = self.baseTableName + '_' + chrom
@@ -139,8 +140,21 @@ class CreateIndices:
                 self.doIndexGin(ctn)
                 self.doIndexRange(ctn)
 
+    def setupRangeFunction(self):
+        print("create range function...")
+        self.curs.execute("""
+create or replace function intarray2int4range(arr int[]) returns int4range as $$
+    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+
+create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
+    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
+$$ language sql immutable;
+        """)
+
     def doIndexRange(self, tableName):
         cols = self.rank_cols
+        cols = ("start", "stop")
         for col in cols:
             idx = self._idx(tableName, col)
             print("indexing int range", idx)
