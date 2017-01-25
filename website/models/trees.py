@@ -20,8 +20,10 @@ class Trees:
         biosampleTypes = self.cache.biosampleTypes
         ret = {}
         for typ in biosampleTypes:
-            ret[typ] = self._processTyp(typ)
-
+            tree = self._processTyp(typ)
+            if tree:
+                ret[typ] = tree
+                
         titleLookup = {"DNase" : "DNase",
                        "H3K27ac" : "Enhancer / H3K27ac only",
                        "H3K4me3" :"Promoter / H3K4me3 only",
@@ -43,8 +45,7 @@ class Trees:
         cellTypes = set(cellTypes).intersection(set(cellTypesInBiosamType))
         cellTypes = sorted(list(cellTypes))
         
-        with Timer("Correlation matrix extraction"):
-            labels, corr = c.dbcorr(self.assembly, tableName, cellTypes)
+        labels, corr = c.dbcorr(self.assembly, tableName, cellTypes)
         if not labels:
             return []
 
