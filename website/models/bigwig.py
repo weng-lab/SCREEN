@@ -21,6 +21,37 @@ class BigWig:
             [self.bwtool, "extract", "bed",
              bed, fnp, "/dev/stdout"]).split("\n")
 
+    def _doGetAvgSignals(self, accessionsToGet, bigWigs, cache, n_bars):
+        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
+        bfnps = []
+        for bw in bigWigs:
+            fnp = os.path.join(d, bw["accession"], bw["bigwig"] + ".bigWig")
+            if os.path.exists(fnp):
+                bfnps.append({"fnp": fnp, "ct": bw["ct"]})
+            else:
+                print("WARNING: missing bigwig", fnp)
+
+        bedFnp = self.getfile()
+        with open(bedFnp, "w") as o:
+            for c in accessionsToGet:
+                accession = c["accession"]
+                o.write("%s\t%d\t%d\t%s\n" %
+                        (c["chrom"],
+                         max(0, c["start"] - 2000),
+                         c["end"] + 2000,
+                         accession))
+        for bw in bfnps:
+            signals = self._runBw(bedFnp, bw["fnp"])
+            ct = bw["ct"]
+            for line in signals:
+                p = line.split("\t")
+                if len(p) >= 6:
+                    accession = p[3]
+                    avgSignal = self._condense_regions(p[5].split(","), n_bars)
+                    cache[accession][ct] = avgSignal
+        os.remove(bedFnp)
+        return cache
+
     def getregions(self, cres, bigWigs, n_bars):
         cache = self.minipeaks_cache.getVec([c["accession"] for c in cres])
         accessionsToGet = []
@@ -30,25 +61,8 @@ class BigWig:
                 accessionsToGet.append(c)
 
         if accessionsToGet:
-            bedFnp = self.getfile()
-            with open(bedFnp, "w") as o:
-                for c in accessionsToGet:
-                    accession = c["accession"]
-                    o.write("%s\t%d\t%d\t%s\n" %
-                            (c["chrom"],
-                             max(0, c["start"] - 2000),
-                             c["end"] + 2000,
-                             accession))
-            for bw in bigWigs:
-                signals = self._runBw(bedFnp, bw["fnp"])
-                ct = bw["ct"]
-                for line in signals:
-                    p = line.split("\t")
-                    if len(p) >= 6:
-                        accession = p[3]
-                        avgSignal = self._condense_regions(p[5].split(","), n_bars)
-                        cache[accession][ct] = avgSignal
-            os.remove(bedFnp)
+            cache = self._doGetAvgSignals(accessionsToGet, bigWigs, cache, n_bars)
+            self.minipeaks_cache.insertVec(cache)
 
         ret = {}
         for bw in bigWigs:
@@ -57,8 +71,6 @@ class BigWig:
             for c in cres:
                 accession = c["accession"]
                 ret[ct][accession] = cache[accession][ct]
-        if accessionsToGet:
-            self.minipeaks_cache.insertVec(cache)
         return ret
 
     def _condense_regions(self, regions, n):
