@@ -7,11 +7,11 @@ import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
+from models.minipeaks import MiniPeaks
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.cytoband import Cytoband
-from models.bigwig import BigWig
 from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 
@@ -128,8 +128,8 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_similarREs(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        regions, mostSimilar = cre.getBigWigRegions(accession)
+        mp = MiniPeaks(self.pgSearch, accession, self.cache)
+        regions, mostSimilar = mp.getBigWigRegions()
         order = regions["order"]
         regions.pop("order", None)
         return { accession : {"regions" : regions,
