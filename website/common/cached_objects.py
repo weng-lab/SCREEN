@@ -53,7 +53,8 @@ class CachedObjects:
 
         self.datasets = Datasets(assembly, ps.DBCONN)
 
-        self.minipeaks_cache = MiniPeaksCache("dnase", 1)
+        self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
+                                 for k in ["dnase", "h3k4me3", "h3k27ac"]}
 
         self.bigwigmaxes = {}
         bmnp = paths.bigwigmaxes(assembly)
@@ -66,15 +67,19 @@ class CachedObjects:
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
         self.biosampleTypes = self.datasets.biosample_types
-
-        dnaselist = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % assembly
-        self.dnasemap = {}
-        if os.path.exists(dnaselist):
-            with open(dnaselist, "r") as f:
+        self.assaymap = {"dnase": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % assembly),
+                         "h3k27ac": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/H3K27ac-List.txt" % assembly),
+                         "h3k4me3": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/H3K4me3-List.txt" % assembly) }
+                          
+    def _assaymap(self, fnp):
+        r = {}
+        if os.path.exists(fnp):
+            with open(fnp, "r") as f:
                 for line in f:
                     p = line.strip().split("\t")
                     if len(p) < 3: continue
-                    self.dnasemap[p[2]] = (p[0], p[1])
+                    r[p[2]] = (p[0], p[1])
+        return r
 
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:

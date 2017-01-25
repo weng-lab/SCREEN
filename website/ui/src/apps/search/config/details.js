@@ -70,11 +70,11 @@ class ReTabBase extends React.Component{
         }
     }
 
-    loadCRE({cre_accession_detail}){
-        if(cre_accession_detail in this.state){
+    loadCRE({cre_accession_detail, forcereload, extras}){
+        if(!forcereload && cre_accession_detail in this.state){
             return;
         }
-        var q = {GlobalAssembly, "accession" : cre_accession_detail};
+        var q = {GlobalAssembly, "accession" : cre_accession_detail, extras};
         var jq = JSON.stringify(q);
         //console.log("loadCRE....", jq);
         this.setState({isFetching: true});
@@ -167,10 +167,15 @@ class AssocTssTab extends ReTabBase{
 }
 
 class SimilarREsTab extends ReTabBase{
+    _onchange(v) {
+	this.loadCRE({cre_accession_detail: this.props.cre_accession_detail,
+		      forcereload: true, extras: {assay: v}});
+    }
     constructor(props) {
 	super(props, "similarREs");
+	this._onchange = this._onchange.bind(this);
         this.doRender = (data) => {
-            return (<MiniPeaks data={data} />);
+            return (<MiniPeaks data={data} onAssayChange={this._onchange} />);
         }
     }
 }
