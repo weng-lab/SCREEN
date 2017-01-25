@@ -62,7 +62,8 @@ class Trees:
         if fil:
             cellTypes = filter(fil, cellTypes)
         
-        labels, corr = c.dbcorr(self.assembly, tableName, cellTypes)
+        labels, corr = c.dbcorr(self.assembly, tableName, self.tree_rank_method,
+                                cellTypes)
         if not labels:
             return None, None
 
