@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import json
 
 """ examples from:
 http://stackoverflow.com/questions/24949676/difference-between-partition-key-composite-key-and-clustering-key-in-cassandra
@@ -11,15 +12,15 @@ https://datastax.github.io/python-driver/getting_started.html
 """
 
 from cassandra.cluster import Cluster
-cluster = Cluster(['127.0.0.1'])
+cluster = Cluster()
 session = cluster.connect()
 
-session.execute("""CREATE KEYSPACE IF NOT EXISTS test WITH replication
+session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks WITH replication
                           = {'class':'SimpleStrategy', 'replication_factor':1};""")
 session.set_keyspace("test")
 
 session.execute("""
-CREATE TABLE IF NOT EXISTS MiniPeaksDNase (
+CREATE TABLE IF NOT EXISTS dnase (
               accession text,
               cellType text,
               values text,
@@ -30,9 +31,11 @@ CREATE TABLE IF NOT EXISTS MiniPeaksDNase (
 
 
 session.execute("""
-    insert into MiniPeaksDNase (accession, cellType, values) values ('ee1', 'asdfasdf', '{"a": 1}')
-    """)
-result = session.execute("select * from MiniPeaksDNase")
+INSERT INTO dnase (accession, cellType, values)
+values (%s, %s, %s)
+ """, ("ee2", "asdfasdf", json.dumps({"a": 1})))
+
+result = session.execute("select * from dnase")
 for x in result:
     print(x)
 
