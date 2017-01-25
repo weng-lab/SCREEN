@@ -12,6 +12,8 @@ https://datastax.github.io/python-driver/getting_started.html
 """
 
 from cassandra.cluster import Cluster
+from cassandra.query import BatchStatement
+from cassandra import ConsistencyLevel
 cluster = Cluster()
 session = cluster.connect()
 
@@ -30,11 +32,14 @@ CREATE TABLE IF NOT EXISTS dnase (
 """)
 
 stmt = session.prepare("INSERT INTO dnase (accession, cellType, values) values (?, ?, ?)")
+batch = BatchStatement(consistency_level=ConsistencyLevel.QUORUM)
 
 for e in [("ee3", "asdfasdf", json.dumps({"a": 1})),
           ("ee4", "asdfasdqeqwef", json.dumps({"a": 1})),
           ("ee5", "aqerqrqsdfasdf", json.dumps({"a": 1}))]:
-    session.execute(stmt, e)
+    batch.add(stmt, e)
+session.execute(batch)
+
 
 if 0:
     session.execute("""
