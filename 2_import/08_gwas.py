@@ -21,6 +21,7 @@ id serial PRIMARY KEY,
 author text,
 pubmed text,
 trait text,
+authorPubmedTrait text,
 expID text,
 foldEnrichment real,
 fdr real
@@ -43,7 +44,8 @@ r2 real,
 ldblock text,
 trait text,
 pubmed text,
-author text
+author text,
+authorPubmedTrait text
 );
 """.format(tableName = tableName))
 
@@ -51,20 +53,21 @@ def setupAll(curs):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "GWAS")
 
+    # GWAS enrichment
     fnp = os.path.join(dataF, "GWAS.Enrichment.v0.txt")
     tableName = "hg19_gwas_enrichment"
     setupEnrichment(curs, tableName)
-
     outF = StringIO.StringIO()
     with open(fnp) as f:
         rows = [r.rstrip().split('\t') for r in f if r]
     for r in rows:
         toks = r[0].split('-')
-        r = toks + r[1:-1]
+        r = toks + r[:-1]
         print(r)
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
-    cols = ["author", "pubmed", "trait", "expID", "foldEnrichment", "fdr"]
+    cols = ["author", "pubmed", "trait", "authorPubmedTrait",
+            "expID", "foldEnrichment", "fdr"]
     print(cols)
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
@@ -81,10 +84,11 @@ def setupAll(curs):
             r[5] = "-1"
         if 'Lead' == r[4]:
             r[4] = r[3]
+        r.append('-'.join([r[-1], r[-2], r[-3]]))
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
 
-    cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author".split(' ')
+    cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
 
