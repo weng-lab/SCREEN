@@ -97,8 +97,7 @@ class CreateIndices:
         return tn + '_' + col + "_idx"
 
     def doIndex(self, tableName):
-        #cols = ("accession", "chrom", "start", "stop",)
-        cols = ("accession", )
+        cols = ("accession", "chrom")
         for col in cols:
             idx = self._idx(tableName, col)
             print("indexing", idx)
@@ -119,6 +118,7 @@ class CreateIndices:
 
     def doIndexGin(self, tableName): # best for '<@' operator on element of array
         cols = self.rank_cols + self.signal_cols + self.zscore_cols
+        cols = ("start", "stop")
         for col in cols:
             idx = self._idx(tableName, col, "gin")
             print("indexing", idx)
@@ -128,16 +128,16 @@ class CreateIndices:
 
     def run(self):
         self.doIndex(self.baseTableName)
-        return
-        self.doIndexRev(self.baseTableName)
         self.doIndexGin(self.baseTableName)
-        self.doIndexRange(self.baseTableName)
+        if 0:
+            self.doIndexRev(self.baseTableName)
+            self.doIndexRange(self.baseTableName)
 
-        for chrom in self.chrs:
-            ctn = self.baseTableName + '_' + chrom
-            self.doIndex(ctn)
-            self.doIndexGin(ctn)
-            self.doIndexRange(ctn)
+            for chrom in self.chrs:
+                ctn = self.baseTableName + '_' + chrom
+                self.doIndex(ctn)
+                self.doIndexGin(ctn)
+                self.doIndexRange(ctn)
 
     def doIndexRange(self, tableName):
         cols = self.rank_cols
