@@ -29,12 +29,15 @@ class PGsearch:
 
     def allCREs(self):
         tableName = self.assembly + "_cre"
-        q = """SELECT accession from {tn}""".format(
+        q = """SELECT accession, chrom, start, stop from {tn}""".format(
             tn = tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
             curs.execute(q)
             r = curs.fetchall()
-        return [e[0] for e in r]
+        return [{"accession" : e[0],
+                 "chrom" : e[1],
+                 "start" : e[2],
+                 "end" : e[3]} for e in r]
 
     def chromCounts(self):
         tableName = self.assembly + "_cre" + "_nums"
