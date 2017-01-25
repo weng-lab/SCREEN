@@ -108,8 +108,8 @@ def main():
         cache = CachedObjects(es, ps, assembly)
 
         for accessions in list(chunks(pgSearch.allCREs(), 1000)):
-            mp = MiniPeaks(pgSearch, accessions[0], cache)
-            mp.getBigWigRegions([{"accession" : a} for a in accessions])
+            mp = MiniPeaks(pgSearch, accessions[0]["accession"], cache)
+            mp.getBigWigRegions(accessions)
             printt(len(accessions))
 
 if __name__ == "__main__":
