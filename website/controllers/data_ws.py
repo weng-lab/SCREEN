@@ -128,8 +128,9 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_similarREs(self, j, accession):
+        assay = j["extras"]["assay"] if "extras" in j and "assay" in j["extras"] else "dnase"
         mp = MiniPeaks(self.pgSearch, accession, self.cache)
-        regions, mostSimilar = mp.getBigWigRegionsWithSimilar()
+        regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
         order = regions["order"]
         regions.pop("order", None)
         return { accession : {"regions" : regions,

@@ -24,10 +24,10 @@ class MiniPeaks:
         self.cache = cache
         self.pos = None
 
-    def _get_bigwigs(self):
+    def _get_bigwigs(self, key):
         return [{"ct": k, "bigwig": v[1], "accession": v[0],
                  "tissue": self._ctToTissue(k) }
-                for k, v in self.cache.dnasemap.iteritems()]
+                for k, v in self.cache.assaymap[key].iteritems()]
 
     def _groupbytissue(self, results):
         tissuegroupings = {}
@@ -36,10 +36,10 @@ class MiniPeaks:
             tissuegroupings[v["tissue"]].append(k)
         return asum([v for k, v in tissuegroupings.iteritems()])
 
-    def _get_bigwig_regions(self, bigwigs, cres):
+    def _get_bigwig_regions(self, bigwigs, cres, assay):
         try:
-            results = BigWig(self.cache.minipeaks_cache).getregions(cres,
-                                                                    bigwigs, 50)
+            results = BigWig(self.cache.minipeaks_caches[assay]).getregions(cres,
+                                                                            bigwigs, 50)
             results["order"] = self._groupbytissue(results)
             return results
         except:
@@ -53,24 +53,25 @@ class MiniPeaks:
             print("missing tissue for", ct)
             return ""
 
-    def getBigWigRegions(self, cres = None):
+    def getBigWigRegions(self, assay, cres = None):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
-        bigWigs = self._get_bigwigs()
+        bigWigs = self._get_bigwigs(assay)
         me = {"accession": self.accession,
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
         if not cres:
             cres = [me]
-        regions = self._get_bigwig_regions(bigWigs, cres)
+        regions = self._get_bigwig_regions(bigWigs, cres, assay)
         accs = [x["accession"] for x in cres]
         return (regions, accs)
 
-    def getBigWigRegionsWithSimilar(self, other = None):
+    def getBigWigRegionsWithSimilar(self, assay, other = None):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
-        bigWigs = self._get_bigwigs()
+        bigWigs = self._get_bigwigs(assay)
         me = {"accession": self.accession,
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
         cres = [me] + self.pgSearch.creMostsimilar(self.accession, "dnase")
-        regions = self._get_bigwig_regions(bigWigs, cres)
+        regions = self._get_bigwig_regions(bigWigs, cres, assay)
+
         #print(regions[ regions.keys()[0] ])
         accs = [x["accession"] for x in cres]
         return (regions, accs)
