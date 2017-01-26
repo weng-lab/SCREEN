@@ -53,16 +53,18 @@ class BigWig:
         return cache
 
     def getregions(self, cres, bigWigs, n_bars):
-        cache = self.minipeaks_cache.getVec([c["accession"] for c in cres])
-        accessionsToGet = []
+        cache = {k["accession"]: {} for k in cres}
+#        cache = self.minipeaks_cache.getVec([c["accession"] for c in cres])
+        _accessionsToGet = {c["accession"]: c for c in cres}
 
         for acc, ctAndAvgSignals in cache.iteritems():
-            if not ctAndAvgSignals:
-                accessionsToGet.append(c)
+            if ctAndAvgSignals:
+                _accessionsToGet.pop(acc, None)
+        accessionsToGet = [c for k, c in _accessionsToGet.iteritems()]
 
         if accessionsToGet:
             cache = self._doGetAvgSignals(accessionsToGet, bigWigs, cache, n_bars)
-            self.minipeaks_cache.insertVec(cache)
+#            self.minipeaks_cache.insertVec(cache)
 
         ret = {}
         for bw in bigWigs:
@@ -70,7 +72,11 @@ class BigWig:
             ret[ct] = {"tissue": bw["tissue"]}
             for c in cres:
                 accession = c["accession"]
-                ret[ct][accession] = cache[accession][ct]
+                if accession not in cache or ct not in cache[accession]:
+                    #print("bigwig$BigWig::getregions WARNING: missing ct %s for accession %s" % (ct, accession))
+                    ret[ct][accession] = []
+                else:
+                    ret[ct][accession] = cache[accession][ct]
         return ret
 
     def _condense_regions(self, regions, n):
