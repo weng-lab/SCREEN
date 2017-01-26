@@ -21,13 +21,13 @@ id serial PRIMARY KEY,
 leftName text,
 rightName text,
 ensembl text,
-log2FoldChange real,
-padj real
+    log2FoldChange numeric,
+padj numeric
 );
 """.format(tableName = tableName))
     print("\tok")
 
-def setupAll(curs):
+def setupAll(curs, sample):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "mouse_epigenome/de_all_pairs")
     fnp = os.path.join(dataF, "DE_files.json")
@@ -50,9 +50,15 @@ def setupAll(curs):
         if left == right:
             continue
         fnp = os.path.join(dataF, "data", fn + ".gz")
+        if sample:
+            if not "limb_11" in fnp:
+                continue
+            if not "limb_15" in fnp:
+                continue
         print(counter + 1, total, fnp)
         counter += 1
         skipped = 0
+        
         with gzip.open(fnp) as f:
             f.readline() # consume header
             data = []
@@ -85,6 +91,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
+    parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -96,7 +103,7 @@ def main():
     with getcursor(DBCONN, "main") as curs:
         if args.index:
             return index(curs)
-        setupAll(curs)
+        setupAll(curs, args.sample)
         index(curs)
 
 if __name__ == '__main__':

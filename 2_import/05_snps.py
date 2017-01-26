@@ -13,9 +13,10 @@ from db_utils import getcursor
 from files_and_paths import Dirs
 
 class SetupSnps:
-    def __init__(self, curs, assembly):
+    def __init__(self, curs, assembly, sample):
         self.curs = curs
         self.assembly = assembly
+        self.sample = sample
 
     def setupAndCopy(self, tableName, f):
         print("creating table and copying in", tableName)
@@ -44,6 +45,8 @@ class SetupSnps:
         fns = {"mm10" : "snps142common.mm10.bed.gz",
                "hg19" : "snps144common.hg19.bed.gz"}
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
+        if self.sample:
+            fnp = os.path.join(Dirs.dbsnps, "sample", fns[self.assembly])
         print("loading", fnp)
 
         rowsByChrom = {}
@@ -64,6 +67,7 @@ class SetupSnps:
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -74,7 +78,7 @@ def main():
 
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
-            ss = SetupSnps(curs, assembly)
+            ss = SetupSnps(curs, assembly, args.sample)
             ss.run()
 
 if __name__ == '__main__':
