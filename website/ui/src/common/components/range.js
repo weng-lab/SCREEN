@@ -19,15 +19,19 @@ class RangeSlider extends React.Component {
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
 
+    _value(v) {
+	return (this.props.rendervalue ? this.props.rendervalue(v) : v);
+    }
+    
     render() {
 	return (<div>
 		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
 		   <div ref="histogram" style={{width: "100%", height: "20px"}} />
   		   <div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
-		      <input ref="txmin" type="text" value={this.props.selection_range[0]} onChange={this.onMinChange}
+		<input ref="txmin" type="text" value={this._value(this.props.selection_range[0])} onChange={this.onMinChange}
 	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> -&nbsp;
-		      <input ref="txmax" type="text" value={this.props.selection_range[1]} onChange={this.onMaxChange}
+		<input ref="txmax" type="text" value={this._value(this.props.selection_range[1])} onChange={this.onMaxChange}
 		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} />
 		</div>
 		</div>
@@ -120,8 +124,8 @@ class RangeSlider extends React.Component {
 
     update_selection(event, ui) {
 	var r = this._slider.slider("values");
-	this.refs.txmin.value = r[0];
-	this.refs.txmax.value = r[1];
+	this.refs.txmin.value = this._value(r[0]);
+	this.refs.txmax.value = this._value(r[1]);
 	this._histogram.selectAll("g")
             .data(this.props.data)
             .attr("class", function(d) { return (d.key >= +r[0] && d.key < +r[1] ? "barselected" : "bardeselected"); });
@@ -176,6 +180,7 @@ class RangeFacet extends React.Component {
                       ref="slider"
                       title={this.props.title}
 		      updateWidth={this.props.updateWidth}
+		      rendervalue={this.props.rendervalue}
 		   />
 		</div>
 	       );

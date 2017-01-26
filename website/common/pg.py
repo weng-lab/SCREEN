@@ -21,11 +21,13 @@ class PGsearchWrapper:
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
-
+    
 class PGsearch:
     def __init__(self, pg, assembly):
         self.pg = pg
         self.assembly = assembly
+        amap = {"DNase": "dnase", "H3K4me3": "promoter", "H3K27ac": "enhancer", "CTCF": "ctcf"}
+        self.ctmap = {amap[k]: v for k, v in self.rankMethodToIDxToCellType().iteritems() if k in amap}
 
     def allCREs(self):
         tableName = self.assembly + "_cre"
@@ -59,7 +61,7 @@ class PGsearch:
         return {e[0] : {"bins" : e[1],
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
-
+    
     def creTable(self, chrom, start, stop, j):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
@@ -72,14 +74,30 @@ class PGsearch:
                             "infoPc.approved_symbol AS gene_pc",
                             "0::int as in_cart"])
 
+        print(j)
+        
         print("""TODO need more variables here:
-              accessions, gene_all_start, gene_all_end,
+              gene_all_start, gene_all_end,
               gene_pc_start, gene_pc_end,
               rank_dnase_start, rank_dnase_end,
               rank_promoter_start, rank_promoter_end,
               rank_enhancer_start, rank_enhancer_end,
               rank_ctcf_start, rank_ctcf_end""")
 
+        whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (start, stop)] if start and stop else []
+        if "cellType" in j and j["cellType"]:
+            for assay in [("dnase", "dnase"), ("promoter", "h3k4me3_dnase"), ("enhancer", "h3k27ac_dnase"), ("ctcf", "ctcf_dnase")]:
+                if j["cellType"] not in self.ctmap[assay[0]]:
+                    continue
+                cti = self.ctmap[assay[0]][j["cellType"]]
+                _range = [j["rank_%s_start" % assay[0]] / 100.0, j["rank_%s_end" % assay[0]] / 100.0]
+                whereclauses.append("(%s)" % " and ".join(["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
+                                                           "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+        if "accessions" in j and len(j["accessions"]) > 0:
+            whereclauses.append("(%s)" % (" or ".join(["accession = '%s'" % x.upper() for x in j["accessions"]])))
+        whereclause = ("WHERE " + " and ".join(whereclauses)) if len(whereclauses) > 0 else ""
+        print(whereclause)
+        
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
@@ -89,19 +107,18 @@ inner join {gtn} as infoAll
 on cre.gene_all_id[1] = infoAll.geneid
 inner join {gtn} as infoPc
 on cre.gene_pc_id[1] = infoPc.geneid
-WHERE int4range(cre.start, cre.stop) && int4range(%s, %s)
+{whereclause}
 ORDER BY neglogp desc limit 100) r
 """.format(fields = fields, tn = tableName,
-           gtn = self.assembly + "_gene_info"), (start, stop))
+           gtn = self.assembly + "_gene_info", whereclause = whereclause))
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
 
             # TODO: could be slow......
             curs.execute("""
-SELECT count(0) FROM {tn}
-WHERE int4range(start, stop) && int4range(%s, %s)""".format(tn = tableName),
-                         (start, stop))
+SELECT count(0) FROM {tn} as cre
+{whereclause}""".format(tn = tableName, whereclause = whereclause))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
 
@@ -292,7 +309,7 @@ WHERE accession = '{accession}'""".format(assay=assay,
                       acc," -- returning empty set")
                 return []
             whereclause = whereclause(r[0])
-            if len(whereclause.split(" or ")) > 25:
+            if len(whereclause.split(" or ")) > 200:
                 print("cre$CRE::mostsimilar", "NOTICE:", acc,
                       "is active in too many cell types",
                       len(whereclause.split(" or ")),

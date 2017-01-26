@@ -65,11 +65,12 @@ class MiniPeaks:
         return (regions, accs)
 
     def getBigWigRegionsWithSimilar(self, assay, other = None):
+        print(assay)
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs(assay)
         me = {"accession": self.accession,
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
-        cres = [me] + self.pgSearch.creMostsimilar(self.accession, "dnase")
+        cres = [me] + self.pgSearch.creMostsimilar(self.accession, assay + ("_dnase" if assay != "dnase" else ""))
         regions = self._get_bigwig_regions(bigWigs, cres, assay)
 
         #print(regions[ regions.keys()[0] ])
