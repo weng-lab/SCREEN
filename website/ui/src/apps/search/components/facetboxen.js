@@ -18,14 +18,15 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize} from '../../../common/uility'
 
-const rangeBox = (title, start, end, action) => {
+const rangeBox = (title, range, start, end, action, _f) => {
     return (<RangeFacet
             title={title}
-	    range={[start, end]}
+	    range={range}
 	    selection_range={[start, end]}
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
             onchange={(se) => { action(se[0], se[1])}}
+	    rendervalue={_f}
             />);
 }
 
@@ -112,33 +113,37 @@ const tfBox = ({actions}) => {
 
 const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
                           gene_pc_end, actions}) => {
+			      let range = [0, 500000];
     return panelize("Distance to Genes",
                     (<div>
-                     {rangeBox("Protein-coding genes", gene_pc_start, gene_pc_end,
+                     {rangeBox("Protein-coding genes", range, gene_pc_start, gene_pc_end,
                                actions.setGenePcDistance)}
-                     {rangeBox("All genes", gene_all_start, gene_all_end,
+                     {rangeBox("All genes", range, gene_all_start, gene_all_end,
                                actions.setGeneAllDistance)}
                      </div>))
 }
+
+const zscore_decimal = (v) => (v / 100.0);
 
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end,
                   cellType, actions}) => {
+		      let range = [-1000, 1000];
     if(null == cellType){
         return (<div />);
     }
-    return panelize("Ranks",
+    return panelize("Z-Score",
                     (<div>
-                     {rangeBox("DNase", rank_dnase_start, rank_dnase_end,
-                               actions.setRankDnase)}
-                     {rangeBox("promoter", rank_promoter_start, rank_promoter_end,
-                               actions.setRankPromoter)}
-                     {rangeBox("enhancer", rank_enhancer_start, rank_enhancer_end,
-                               actions.setRankEnhancer)}
-                     {rangeBox("CTCF", rank_ctcf_start, rank_ctcf_end,
-                               actions.setRankCtcf)}
+                     {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
+                               actions.setRankDnase, zscore_decimal)}
+                     {rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
+                               actions.setRankPromoter, zscore_decimal)}
+                     {rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
+                               actions.setRankEnhancer, zscore_decimal)}
+                     {rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
+                               actions.setRankCtcf, zscore_decimal)}
                      </div>));
 };
 

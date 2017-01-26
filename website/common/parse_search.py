@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
+import sys
 from coord import Coord
 
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
+
+def isaccession(s):
+    s = s.lower()
+    return (s.startswith("eh37e") or s.startswith("em10e") and len(s) == 12)
 
 class ParseSearch:
     def __init__(self, rawInput, es, assembly):
@@ -53,7 +58,7 @@ class ParseSearch:
                     # coordinate
                     coord = Coord.parse(t)
                     continue
-                elif t.startswith("ee"):
+                elif isaccession(t):
                     accessions.append(t)
                     continue
         except:

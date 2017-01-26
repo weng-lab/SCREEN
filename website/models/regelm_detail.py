@@ -18,12 +18,12 @@ class RegElementDetails:
         self.cache = cache
         self.assembly = assembly
         
-    def mostsimilar(self, acc, assay, threshold=20000):
+    def mostsimilar(self, acc, assay, threshold=1.64):
         if self.assembly == "hg19": return []
         def whereclause(r):
-            return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold) for i in xrange(len(r)) if r[i] < threshold])
+            return " or ".join(["%s_zscore[%d] > %f" % (assay, i + 1, threshold) for i in xrange(len(r)) if r[i] < threshold])
         with getcursor(self.ps.DBCONN, "regelm_detail$RegElementDetails::testmostsimilar") as curs:
-            curs.execute("""SELECT {assay}_rank FROM {assembly}_cre
+            curs.execute("""SELECT {assay}_zscore FROM {assembly}_cre
                             WHERE accession == '{accession}'""".format(assay=assay, assembly=self.assembly, accession=acc))
             r = curs.fetchone()[0]
             if not r:
@@ -36,7 +36,7 @@ class RegElementDetails:
             if not whereclause:
                 print("regelmdetails$RegElementDetails::mostsimilar NOTICE: %s not active in any cell types; returning empty set" % acc)
                 return []
-            curs.execute("""SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop FROM {assembly}_cre
+            curs.execute("""SELECT accession, intarraysimilarity(%(r)s, {assay}_zscore, {threshold}) AS similarity, chrom, start, stop FROM {assembly}_cre
                             WHERE {whereclause}
                             ORDER BY similarity DESC LIMIT 20""".format(assay=assay, assembly=self.assembly,
                                                                         threshold=threshold, whereclause=whereclause), {"r": r})
