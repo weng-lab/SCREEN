@@ -293,7 +293,8 @@ WHERE accession = %s
 
     def creMostsimilar(self, acc, assay, threshold=20000):
         def whereclause(r):
-            return " or ".join(["%s_rank[%d] < %d" % (assay, i + 1, threshold)
+            _assay = assay if assay == "dnase" else assay.replace("_dnase", "") + "_only"
+            return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
                                 for i in xrange(len(r)) if r[i] < threshold])
 
         with getcursor(self.pg.DBCONN, "cre$CRE::mostsimilar") as curs:
