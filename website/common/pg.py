@@ -85,8 +85,8 @@ class PGsearch:
               rank_ctcf_start, rank_ctcf_end""")
 
         whereclauses = []
+
         if start and stop:
-            # TODO: sanitize input
             whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
         ct = j.get("cellType", None)
         if ct:
@@ -100,10 +100,12 @@ class PGsearch:
                 _range = [j["rank_%s_start" % assay[0]] / 100.0, j["rank_%s_end" % assay[0]] / 100.0]
                 whereclauses.append("(%s)" % " and ".join(["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
                                                            "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
-        if "accessions" in j and len(j["accessions"]) > 0:
-            # TODO: switch to 'IN' where clause
-            accsQuery = "(%s)" % (" or ".join(["accession = '%s'" % x.upper() for x in j["accessions"]]))
-            whereclauses.append(accsQuery)
+        accs = j.get("accessions", [])
+        if accs and len(accs) > 0:
+            # TODO: sanitize input!
+            accs = ["'%s'" % x.upper() for x in accs]
+            accsQuery = "accession IN (%s)" % ','.join(accs)
+            whereclauses.append("(%s)" % accsQuery)
             
         whereclause = ""
         if len(whereclauses) > 0:
