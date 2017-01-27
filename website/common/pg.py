@@ -285,8 +285,8 @@ WHERE accession = %s
                 "zscores" : { "dnase" : r[7],
                               "ctcf-only" : r[8],
                               "dnase+ctcf" : r[9],
-                              "h3k27ac_only_rank" : r[10],
-                              "h3k27ac_dnase_rank" : r[11],
+                              "h3k27ac-only" : r[10],
+                              "dnase+h3k27ac" : r[11],
                               "h3k4me3-only" : r[12],
                               "dnase+h3k4me3": r[13] }}
 

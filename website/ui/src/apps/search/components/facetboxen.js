@@ -30,6 +30,8 @@ const rangeBox = (title, range, start, end, action, _f) => {
             />);
 }
 
+const make_ct_friendly = (ct) => (GlobalCellTypeInfo[ct]["name"]);
+
 const accessionsBox = ({accessions, actions}) => {
     if(0 == accessions.length){
         return (<div />);
@@ -59,8 +61,7 @@ const cellTypesBox = ({cellType, actions}) => {
 	            ]}
                     order={[]}
                     selection={cellType}
-                    friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"] }}
+                    friendlySelectionLookup={make_ct_friendly}
                     onTdClick={(value) => { actions.setCellType(value) }}
                     />);
 }
@@ -134,7 +135,7 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
     if(null == cellType){
         return (<div />);
     }
-    return panelize("Z-Score",
+	      return panelize("Z-Score: " + make_ct_friendly(cellType),
                     (<div>
                      {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
                                actions.setRankDnase, zscore_decimal)}
@@ -160,11 +161,10 @@ class FacetBoxen extends React.Component {
                 {cellTypesBox(p)}
                 {chromBox(p)}
                 {startEndBox(p)}
-                {tfBox(p)}
-                {geneDistanceBox(p)}
                 {rankBox(p)}
                 </div>);
-    }
+    } /*                 {tfBox(p)}
+                {geneDistanceBox(p)} */
 
     render() {
         return this.doRender(this.props)

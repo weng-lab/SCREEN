@@ -39,7 +39,7 @@ class MiniPeaks:
     def _get_bigwig_regions(self, bigwigs, cres, assay):
         try:
             results = BigWig(self.cache.minipeaks_caches[assay]).getregions(cres,
-                                                                            bigwigs, 50)
+                                                                            bigwigs, 20)
             results["order"] = self._groupbytissue(results)
             return results
         except:
