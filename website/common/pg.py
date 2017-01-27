@@ -62,7 +62,7 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
     
-    def creTable(self, chrom, start, stop, j):
+    def creTable(self, j, chrom, start, stop):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
         else:
@@ -84,18 +84,30 @@ class PGsearch:
               rank_enhancer_start, rank_enhancer_end,
               rank_ctcf_start, rank_ctcf_end""")
 
-        whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (start, stop)] if start and stop else []
-        if "cellType" in j and j["cellType"]:
-            for assay in [("dnase", "dnase"), ("promoter", "h3k4me3_dnase"), ("enhancer", "h3k27ac_dnase"), ("ctcf", "ctcf_dnase")]:
-                if j["cellType"] not in self.ctmap[assay[0]]:
+        whereclauses = []
+        if start and stop:
+            # TODO: sanitize input
+            whereclauses = "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))
+        ct = j.get("cellType", None)
+        if ct:
+            for assay in [("dnase", "dnase"),
+                          ("promoter", "h3k4me3_dnase"),
+                          ("enhancer", "h3k27ac_dnase"),
+                          ("ctcf", "ctcf_dnase")]:
+                if ct not in self.ctmap[assay[0]]:
                     continue
-                cti = self.ctmap[assay[0]][j["cellType"]]
+                cti = self.ctmap[assay[0]][ct]
                 _range = [j["rank_%s_start" % assay[0]] / 100.0, j["rank_%s_end" % assay[0]] / 100.0]
                 whereclauses.append("(%s)" % " and ".join(["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
                                                            "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
         if "accessions" in j and len(j["accessions"]) > 0:
-            whereclauses.append("(%s)" % (" or ".join(["accession = '%s'" % x.upper() for x in j["accessions"]])))
-        whereclause = ("WHERE " + " and ".join(whereclauses)) if len(whereclauses) > 0 else ""
+            # TODO: switch to 'IN' where clause
+            accsQuery = "(%s)" % (" or ".join(["accession = '%s'" % x.upper() for x in j["accessions"]]))
+            whereclauses.append(accsQuery)
+            
+        whereclause = ""
+        if len(whereclauses) > 0:
+            whereclause = "WHERE " + " and ".join(whereclauses)
         print(whereclause)
         
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
@@ -446,4 +458,15 @@ AND gwas.authorPubmedTrait = %s
 """.format(tn = "hg19_gwas")
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
-            
+
+    def gwasAccessions(self, gwas_study):
+        print(gwas_study)
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT accessions
+FROM hg19_gwas_overlap
+where gwas_study = %s
+""".format(tn = "hg19_gwas")
+            curs.execute(q, (gwas_study, ))
+            return curs.fetchone()[0]
+

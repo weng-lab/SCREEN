@@ -24,3 +24,7 @@ class Gwas:
 
     def overlapWithCres(self, gwas_study):
          return self.pgSearch.gwasOverlapWithCresPerc(gwas_study)
+
+    def gwasAccessions(self, gwas_study):
+         return self.pgSearch.gwasAccessions(gwas_study)
+     

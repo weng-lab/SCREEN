@@ -50,12 +50,13 @@ class GwasController:
                      ["Heart, Left Ventricle", 5.95],
                      ["Heart, Right Ventricle", 5.76],
                      ["Heart, Right Atrium", 3.88],
-                     ["CD4+ Monocytes", 0.03],
-                     ["Adrenal Gland", 0.03]]
+                     ["Muscle Layer of Colon", 1.93],
+                     ["Ectoderm Cells", 1.58]]
         else:
             v = g.overlapWithCres(gwas_study)
             pie = form(v * 100)
             table = [["Tissue", "-Log(FDR)"]]
         return {gwas_study : {"pie" : pie,
                               "table" : {"header" : table[0],
-                                         "rows" : table[1:]} } }
+                                         "rows" : table[1:]},
+                              "accessions" : g.gwasAccessions(gwas_study)}}
