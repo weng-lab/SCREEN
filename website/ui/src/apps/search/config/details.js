@@ -189,7 +189,7 @@ const DetailsTabInfo = {
                     f: NearbyGenomicTab},
     tfIntersection: {title: "TF and Histone Intersection", enabled: true,
                      f: TfIntersectionTab},
-    relatedGene: {title: "Related Gene Expression", enabled: true,
+    relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated TSS Expression", enabled: false,
                f: AssocTssTab},
