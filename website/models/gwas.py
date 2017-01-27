@@ -23,4 +23,4 @@ class Gwas:
             self.studies = [{"value" : e} for e in studies]
 
     def overlapWithCres(self, gwas_study):
-         return self.pgSearch.gwasOverlapWithCres(gwas_study)
+         return self.pgSearch.gwasOverlapWithCresPerc(gwas_study)
