@@ -34,11 +34,12 @@ class BigWig:
         bedFnp = self.getfile()
         with open(bedFnp, "w") as o:
             for c in accessionsToGet:
+                padding = (1000 - (c["end"] - c["start"])) / 2
                 accession = c["accession"]
                 o.write("%s\t%d\t%d\t%s\n" %
                         (c["chrom"],
-                         max(0, c["start"] - 2000),
-                         c["end"] + 2000,
+                         max(0, c["start"] - padding),
+                         c["end"] + padding,
                          accession))
         for bw in bfnps:
             signals = self._runBw(bedFnp, bw["fnp"])

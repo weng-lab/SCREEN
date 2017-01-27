@@ -59,14 +59,15 @@ class MiniPeaks extends REComponent {
 
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
-	var mfactor = ROWHEIGHT / (this.state.assay != "dnase" ? 50.0 : 150.0);
+	var _max = this.state.assay != "dnase" ? 20.0 : 150.0;
+	var mfactor = ROWHEIGHT / _max;
 	text = friendly_celltype(text);
 
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>
 		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end" fill={_tissuecolor(regions["tissue"])}>{text}</text>
 		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>
 		      {order.map((k, i) => (
-		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > 150.0 ? 150.0 : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", this._colors[this.state.assay]) : <g />
+		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > _max ? _max : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", this._colors[this.state.assay]) : <g />
 		      ))}
 		   </g>
 		</g>);
@@ -84,7 +85,7 @@ class MiniPeaks extends REComponent {
 	var _render_regionset = this._render_regionset;
 
 	// get dimensions, render
-	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN;
+	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN + 100;
 	var height = (ROWHEIGHT + ROWMARGIN) * cts.length + TOPMARGIN;
 	return (<div><select ref="assay" onChange={this._onchange}>
 		   <option value="dnase">DNase</option>
