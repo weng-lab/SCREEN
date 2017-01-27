@@ -72,14 +72,16 @@ class DataWebService:
             raise
 
     def _checkChrom(self, j):
-        chrom = j["coord_chrom"]
+        chrom = j.get("coord_chrom", None)
         if chrom and chrom not in chroms[self.assembly]:
             raise Exception("unknown chrom")
         return chrom
 
     def cre_table(self, j, args):
         chrom = self._checkChrom(j)
-        return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"], j)
+        return self.pgSearch.creTable(j, chrom,
+                                      j.get("coord_start", None),
+                                      j.get("coord_end", None))
 
     def re_detail(self, j, args):
         action = args[0]
