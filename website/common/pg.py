@@ -410,7 +410,7 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             rows = curs.fetchall()
         return [GwasRow(*r) for r in rows]
 
-    def gwasOverlapWithCres(self, gwas_study):
+    def gwasOverlapWithCresPerc(self, gwas_study):
         print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
@@ -434,3 +434,16 @@ WHERE gwas.authorPubmedTrait = %s
             print("total", total, gwas_study)
         return float(overlapCount) / total
 
+    def gwasOverlapWithCres(self, gwas_study):
+        print(gwas_study)
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT cre.accession
+FROM hg19_gwas as gwas, hg19_cre as cre
+WHERE gwas.chrom = cre.chrom
+AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+AND gwas.authorPubmedTrait = %s
+""".format(tn = "hg19_gwas")
+            curs.execute(q, (gwas_study, ))
+            return [r[0] for r in curs.fetchall()]
+            

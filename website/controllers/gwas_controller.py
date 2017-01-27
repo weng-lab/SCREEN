@@ -47,9 +47,9 @@ class GwasController:
         elif gwas_study == "Arking-24952745-QT Interval":
             pie = form(93)
             table = [["Tissue", "-Log(FDR)"],
-                     ["HepG2", 1.53],
-                     ["Liver", 0.95],
-                     ["Large Intestine", 0.03],
+                     ["Heart, Left Ventricle", 5.95],
+                     ["Heart, Right Ventricle", 5.76],
+                     ["Heart, Right Atrium", 3.88],
                      ["CD4+ Monocytes", 0.03],
                      ["Adrenal Gland", 0.03]]
         else:
