@@ -4,14 +4,15 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import ExpressionBoxplot from '../components/expression_boxplot'
+import Pie from '../components/pie'
+import Table from '../components/table'
 import loading from '../../../common/components/loading'
 
-class GwasExp extends React.Component{
+class GwasTab extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: true, isError: false,
-                       selectStudy: false };
+        this.state = { jq: null, isFetching: false, isError: false,
+                       selectStudy: true };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
     }
@@ -55,10 +56,22 @@ class GwasExp extends React.Component{
     }
 
     doRenderWrapper(){
+	if(this.state.selectStudy){
+            return (<div>
+                    {"Please choose a study on left"}
+                    </div>);
+        }
         let gwas_study = this.props.gwas_study
         if(gwas_study in this.state){
-            return <ExpressionBoxplot data={this.state[gwas_study]}
-            selectStudy={this.state.selectStudy} />;
+            return (<div>
+		    <h2>{this.props.gwas_study}</h2>
+		    <span>
+		    <Pie data={this.state[gwas_study].pie} />
+		    </span>
+		    <span>
+
+		    </span>
+		    </div>);
         }
         return loading(this.state);
     }
@@ -74,4 +87,4 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-export default connect(mapStateToProps, mapDispatchToProps)(GwasExp);
+export default connect(mapStateToProps, mapDispatchToProps)(GwasTab);
