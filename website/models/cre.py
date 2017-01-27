@@ -68,9 +68,9 @@ class CRE:
 
     def topTissues(self):
         rmToCts = self.cache.rankMethodToCellTypes # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
-        ranks = self.allRanks()["ranks"] # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
+        ranks = self.allRanks()["zscores"] # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
         def get_rank(ct, d):
-            return 1e12 if ct not in d else d[ct]
+            return -10 if ct not in d else d[ct]
         def arrToCtDict(arr, cts):
             if len(arr) != len(cts):
                 print("error in top tissues", len(arr), len(cts))

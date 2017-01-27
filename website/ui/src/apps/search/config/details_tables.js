@@ -1,4 +1,4 @@
-import {render_int, render_cell_type} from './results_table'
+import {render_int, render_cell_type, render_float} from './results_table'
 
 import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
 
@@ -25,70 +25,70 @@ const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 
 export const TopTissuesTables = {
     "promoter": {
-	title: "Promoter ranks",
+	title: "Promoter z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
 	    {title: "H3K4me3 and DNase", data: "two",
-	     render: render_int},
+	     render: render_float},
 	    {title: "H3K4me3 only", data: "one",
-	     render: render_int}
+	     render: render_float}
 	],
-	order: [[2, "asc"], [1, "asc"]],
+	order: [[2, "desc"], [1, "desc"]],
 	pageLength: 5,
-	paging: false,
-	bar_graph: true,
+	paging: true,
+	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: false,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "enhancer": {
-	title: "Enhancer ranks",
+	title: "Enhancer z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
 	    {title: "H3K27ac and DNase", data: "two",
-	     render: render_int},
+	     render: render_float},
 	    {title: "H3K27ac only", data: "one",
-	     render: render_int}
+	     render: render_float}
 	],
-	order: [[2, "asc"], [1, "asc"]],
+	order: [[2, "desc"], [1, "desc"]],
 	pageLength: 5,
-	paging: false,
-	bar_graph: true,
+	paging: true,
+	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "ctcf": {
-	title: "CTCF ranks",
+	title: "CTCF z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
 	    {title: "CTCF and DNase", data: "two",
-             render: render_int},
+             render: render_float},
 	    {title: "CTCF only", data: "one",
-	     render: render_int
+	     render: render_float
 	    }
 	],
-	order: [[2, "asc"], [1, "asc"]],
+	order: [[2, "desc"], [1, "desc"]],
 	pageLength: 5,
-	paging: false,
-	bar_graph: true,
+	paging: true,
+	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "dnase": {
-	title: "DNase ranks",
+	title: "DNase z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
 	    {title: "rank", data: "one",
-	     render: render_int
+	     render: render_float
 	    }
 	],
-	order: [[1, "asc"]],
+	order: [[1, "desc"]],
 	pageLength: 5,
-	paging: false,
-	bar_graph: true,
+	paging: true,
+	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     }
