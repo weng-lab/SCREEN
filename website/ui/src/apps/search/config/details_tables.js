@@ -6,7 +6,7 @@ const render_factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
 const render_factorbook_link_histone = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
+    '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
 
 const render_snp_link = (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
@@ -123,7 +123,7 @@ export const TargetGeneTable = {
 export const NearbyGenomicTable = {
     "nearby_genes": {
 	title: "Nearby genes",
-	paging: false,
+	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
@@ -178,7 +178,7 @@ export const NearbyGenomicTable = {
 	     render: render_re_link },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
-        pageLength: 10,
+        pageLength: 5,
 	order: [[1, "asc"]],
 	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     },
@@ -217,7 +217,7 @@ export const TfIntersectionTable = {
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
 	order: [[1, "desc"]]
-    },
+    } /*,
     "dnase": {
 	title: "Intersecting DNases",
 	cols: [
@@ -225,5 +225,5 @@ export const TfIntersectionTable = {
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
 	order: [[1, "desc"]]
-    }
+    } */
 }

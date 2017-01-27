@@ -193,7 +193,7 @@ const DetailsTabInfo = {
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated TSS Expression", enabled: true,
                f: AssocTssTab},
-    similarREs: {title: "Similar REs", enabled: true,
+    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar REs" : "Activity profile"), enabled: true,
                  f: SimilarREsTab}
 };
 

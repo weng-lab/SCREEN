@@ -326,7 +326,7 @@ WHERE accession = '{accession}'""".format(assay=assay,
 SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop
 FROM {assembly}_cre
 WHERE {whereclause}
-ORDER BY similarity DESC LIMIT 20
+ORDER BY similarity DESC LIMIT 10
 """.format(assay=assay, assembly=self.assembly,
            threshold=threshold, whereclause=whereclause), {"r": r})
             rr = curs.fetchall()

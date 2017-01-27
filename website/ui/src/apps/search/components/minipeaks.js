@@ -59,7 +59,7 @@ class MiniPeaks extends REComponent {
 
     _render_regionset(regions, width, order, transform, text) {
 	var _render_histogram = this._render_histogram;
-	var mfactor = ROWHEIGHT / (this.state.assay == "h3k4me3" ? 50.0 : 150.0);
+	var mfactor = ROWHEIGHT / (this.state.assay != "dnase" ? 50.0 : 150.0);
 	text = friendly_celltype(text);
 
 	return (<g transform={transform} width={width} height={ROWHEIGHT}>
