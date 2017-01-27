@@ -65,12 +65,22 @@ class GwasTab extends React.Component{
         if(gwas_study in this.state){
             return (<div>
 		    <h2>{this.props.gwas_study}</h2>
-		    <span>
-		    <Pie data={this.state[gwas_study].pie} />
-		    </span>
-		    <span>
 
-		    </span>
+		    <div className="container-fluid">
+
+		    <div className="row">
+		    <div className="col-md-6">
+		    <Pie data={this.state[gwas_study].pie} />
+		    </div>
+		    <div className="col-md-6">
+		    <Table
+		    header={this.state[gwas_study].table.header}
+		    rows={this.state[gwas_study].table.rows} />
+		    </div>
+		    </div>
+
+		    </div>
+		    
 		    </div>);
         }
         return loading(this.state);
