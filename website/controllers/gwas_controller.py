@@ -57,4 +57,5 @@ class GwasController:
             pie = form(v * 100)
             table = [["Tissue", "-Log(FDR)"]]
         return {gwas_study : {"pie" : pie,
-                              "table" : table}}
+                              "table" : {"header" : table[0],
+                                         "rows" : table[1:]} } }
