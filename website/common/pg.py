@@ -87,7 +87,7 @@ class PGsearch:
         whereclauses = []
         if start and stop:
             # TODO: sanitize input
-            whereclauses = "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))
+            whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
         ct = j.get("cellType", None)
         if ct:
             for assay in [("dnase", "dnase"),
