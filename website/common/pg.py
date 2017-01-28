@@ -103,7 +103,10 @@ class PGsearch:
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
             # TODO: sanitize input!
+            if len(accs) > 0 and type(accs[0]) is dict:
+                accs = [x["value"] for x in accs if x["checked"]]
             accs = ["'%s'" % x.upper() for x in accs]
+            print(accs)
             accsQuery = "accession IN (%s)" % ','.join(accs)
             whereclauses.append("(%s)" % accsQuery)
             
