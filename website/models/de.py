@@ -52,6 +52,11 @@ class DE:
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
                                             ct1, ct2, 1) #0.05)
 
+        #print(len(nearbyDEs))
+        if not nearbyDEs:
+            return { "data" : None,
+                     "xdomain" : 2 * self.halfWindow }
+        
         xdomain = [max(0, min([d[0] for d in nearbyDEs]) - self.halfWindow),
                    max([d[1] for d in nearbyDEs]) + self.halfWindow]
 
