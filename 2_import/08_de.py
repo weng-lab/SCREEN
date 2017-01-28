@@ -21,7 +21,7 @@ id serial PRIMARY KEY,
 leftName text,
 rightName text,
 ensembl text,
-    log2FoldChange numeric,
+log2FoldChange real,
 padj numeric
 );
 """.format(tableName = tableName))

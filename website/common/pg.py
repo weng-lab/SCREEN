@@ -372,11 +372,14 @@ FROM {tn}
         tableName = self.assembly + "_gene_info"
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
-SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
-""".format(tn = tableName), (gene, ))
+SELECT chrom, start, stop FROM {tn} 
+WHERE approved_symbol = %s
+OR ensemblid = %s
+OR ensemblid_ver = %s
+""".format(tn = tableName), (gene, gene, gene))
             r = curs.fetchone()
         if not r:
-            print("ERROR: missing", accession)
+            print("ERROR: missing", gene)
             return None
         return Coord(r[0], r[1], r[2])
 
@@ -394,12 +397,11 @@ SELECT chrom, start, stop FROM {tn} WHERE approved_symbol = %s
             and de.leftname = %(leftName)s and de.rightname = %(rightName)s
 """.format(deTn = self.assembly + "_de",
            giTn = self.assembly + "_gene_info")
-            print(" ".join([x.strip() for x in q.split('\n')]))
             curs.execute(q, { "chrom" : c.chrom, "start" : c.start,
                               "stop" : c.end, "pval" : pval,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
 
     def gwasEnrichment(self):
