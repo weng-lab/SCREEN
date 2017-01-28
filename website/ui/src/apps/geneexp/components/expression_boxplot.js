@@ -18,7 +18,7 @@ class ExpressionBoxplot extends React.Component {
 	var width = 800;
 	var barheight = "15";
 	render(React.createElement(LargeHorizontalBars,
-                                   {...this.props, width, barheight}),
+                                   {...this.props.data, width, barheight}),
 	       this.refs.bargraph);
     }
 
