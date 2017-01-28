@@ -5,18 +5,12 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-class ExpressionBoxplot extends React.Component {
+class DePlot extends React.Component {
     componentDidMount() {
 	this.componentDidUpdate();
     }
 
     render() {
-        if(this.props.selectCT){
-            return (<div>
-                    {"Please choose 2 cell types on left"}
-                    </div>);
-        }
-
 	return (<div>
  	        <span style={{fontSize: "18pt"}}>
                 <span ref="help_icon" />
@@ -45,7 +39,8 @@ class ExpressionBoxplot extends React.Component {
 
         var y_domain = d3.extent(data, function(d) { return d[1]; });
 
-        let barYdomain = [Math.min(y_domain[0], this.props.data.nearbyDEs.ymin),
+        let barYdomain = [Math.min(y_domain[0],
+				   this.props.data.nearbyDEs.ymin),
                           this.props.data.nearbyDEs.ymax];
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -160,4 +155,4 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-export default connect(mapStateToProps, mapDispatchToProps)(ExpressionBoxplot);
+export default connect(mapStateToProps, mapDispatchToProps)(DePlot);
