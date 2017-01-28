@@ -78,11 +78,7 @@ class PGsearch:
         
         print("""TODO need more variables here:
               gene_all_start, gene_all_end,
-              gene_pc_start, gene_pc_end,
-              rank_dnase_start, rank_dnase_end,
-              rank_promoter_start, rank_promoter_end,
-              rank_enhancer_start, rank_enhancer_end,
-              rank_ctcf_start, rank_ctcf_end""")
+              gene_pc_start, gene_pc_end""")
 
         whereclauses = []
 
@@ -106,7 +102,6 @@ class PGsearch:
             if len(accs) > 0 and type(accs[0]) is dict:
                 accs = [x["value"] for x in accs if x["checked"]]
             accs = ["'%s'" % x.upper() for x in accs]
-            print(accs)
             accsQuery = "accession IN (%s)" % ','.join(accs)
             whereclauses.append("(%s)" % accsQuery)
             
