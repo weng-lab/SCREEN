@@ -502,8 +502,8 @@ public:
     }
 
     MpNameToGenes loadGenes(bfs::path fnp, std::string typ){
-        auto lines = bib::files::readStrings(fnp);
         std::cout << "loading " << typ << " genes " << fnp << std::endl;
+        auto lines = bib::files::readStrings(fnp);
 
         uint32_t count{0};
         MpNameToGenes ret;
@@ -513,7 +513,7 @@ public:
             std::string ensembl = toks[7];
             bib::string::rtrim(ensembl);
             ret[toks[3]].emplace_back(Gene{geneNameToID_.at(ensembl),
-                        std::stoi(toks[10])});
+                        std::stoi(toks[toks.size() - 1])});
             ++count;
         }
         std::cout << "loaded " << count << " " << typ << " genes\n";
