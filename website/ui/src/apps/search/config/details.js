@@ -8,7 +8,7 @@ import TSSExpressionPlot from '../components/tss'
 import MiniPeaks from '../components/minipeaks'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
-        TfIntersectionTable} from './details_tables'
+        TfIntersectionTable, OrthologTable} from './details_tables'
 
 import loading from '../../../common/components/loading'
 
@@ -137,6 +137,16 @@ class TargetGeneTab extends ReTabBase{
     }
 }
 
+class OrthologTab extends ReTabBase {
+    constructor(props) {
+	super(props, "ortholog");
+	this.doRender = (data) => {
+	    console.log(data);
+	    return tabEles(data, OrthologTable, 1);
+	};
+    }
+}
+
 class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
@@ -187,12 +197,13 @@ const DetailsTabInfo = {
                   enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
     nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
                     f: NearbyGenomicTab},
-    tfIntersection: {title: "TF and Histone Intersection", enabled: true,
+    tfIntersection: {title: "TF and his-mod Intersection", enabled: true,
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated TSS Expression", enabled: false,
                f: AssocTssTab},
+    ortholog: {title: "Orthologous REs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar REs" : "Activity profile"), enabled: true,
                  f: SimilarREsTab}
 };
