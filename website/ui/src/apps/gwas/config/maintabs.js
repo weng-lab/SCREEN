@@ -1,11 +1,11 @@
 import React from 'react'
 
-import GwasExp from '../components/gwas_exp'
+import GwasTab from '../components/gwas_tab'
 
 class Gwas extends React.Component{
     render() {
         return (<div>
-                <GwasExp />
+                <GwasTab />
                 </div>);
     }
 }
