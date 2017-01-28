@@ -91,10 +91,11 @@ class ChecklistFacet extends React.Component {
 
 	var items = this.state.items;
 	var onchange = this.check_handler;
+	var formatter = (this.props.formatter ? this.props.formatter : (v) => (v));
 
 	var create_item = function(key) {
 	    var item = items[key];
-	    return <CheckBox key={key} k={key} value={item.value} onchange={onchange} checked={item.checked} />;
+	    return <CheckBox key={key} k={key} value={formatter(item.value)} onchange={onchange} checked={item.checked} />;
 	};
 
 	var checks = (!this.props.match_mode_enabled ? ""

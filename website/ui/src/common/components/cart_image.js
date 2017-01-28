@@ -12,7 +12,7 @@ class CartImage extends React.Component {
     }
 
     onClick() {
-	if (this.props.onClick) this.props.onClick(this.props.store.getState());
+	if (this.props.onClick) this.props.onClick(this.props);
     }
     
     render() {
@@ -40,10 +40,16 @@ class CartImage extends React.Component {
 export default CartImage;
 
 const click_handler = (dispatch) => (state) => {
+    let targeturl = "http://screen.umassmed.edu/search/?assembly=" + GlobalAssembly + "&q=";
+    for (let item of state.accessions) {
+	targeturl += item + "+";
+    }
+    window.location.href = targeturl.substring(0, targeturl.length - 1);
+    return;
     $.ajax({
         type: "POST",
         url: "/setCart",
-        data: JSON.stringify(state.results.cart_list),
+        data: JSON.stringify(state.cart_list),
         dataType: "json",
         contentType: "application/json",
         success: (response) => {
@@ -55,7 +61,8 @@ const click_handler = (dispatch) => (state) => {
 
 const props_map = (state) => {
     return {
-	number: state.results.cart_list.length
+	number: state.cart_accessions ? state.cart_accessions.size : 0,
+	accessions: state.cart_accessions
     };
 };
 
