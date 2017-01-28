@@ -9,6 +9,9 @@ const main_reducers = (state, action) => {
         return { ...state, gwas_study: action.s};
     }
 
+    case Actions.SET_ACCESSIONS:
+	return {...state, accessions: action.accs};
+
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;

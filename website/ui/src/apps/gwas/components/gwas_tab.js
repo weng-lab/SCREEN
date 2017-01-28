@@ -4,14 +4,17 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import ExpressionBoxplot from '../components/expression_boxplot'
+import Pie from '../components/pie'
+import Table from '../components/table'
 import loading from '../../../common/components/loading'
 
-class GwasExp extends React.Component{
+import ResultsTableContainer from '../../search/components/results_app'
+
+class GwasTab extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: true, isError: false,
-                       selectStudy: false };
+        this.state = { jq: null, isFetching: false, isError: false,
+                       selectStudy: true };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
     }
@@ -25,7 +28,7 @@ class GwasExp extends React.Component{
         this.loadGwas(nextProps);
     }
 
-    loadGwas({gwas_study}){
+    loadGwas({gwas_study, actions}){
 	if(null == gwas_study){
 	    this.setState({selectStudy: true})
 	    return;
@@ -50,22 +53,47 @@ class GwasExp extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
+		actions.setAccessions(r[gwas_study].accessions);
             }.bind(this)
         });
     }
 
-    doRenderWrapper(){
-        let gwas_study = this.props.gwas_study
+    doRenderWrapper({gwas_study, actions}){
+	if(this.state.selectStudy){
+            return (<div>
+                    {"Please choose a study on left"}
+                    </div>);
+        }
+	
         if(gwas_study in this.state){
-            return <ExpressionBoxplot data={this.state[gwas_study]}
-            selectStudy={this.state.selectStudy} />;
+	    var data = this.state[gwas_study];
+	    console.log(data);
+            return (<div>
+		    <h2>{gwas_study}</h2>
+
+		    <div className="container-fluid">
+		    <div className="row">
+		    <div className="col-md-6">
+		    <Pie data={data.pie} />
+		    </div>
+		    <div className="col-md-6">
+		    <Table
+		    header={data.table.header}
+		    rows={data.table.rows} />
+		    </div>
+		    </div>
+		    </div>
+
+		    </div>);
         }
         return loading(this.state);
     }
 
     render(){
         return (<div style={{"width": "100%"}} >
-                {this.doRenderWrapper()}
+                {this.doRenderWrapper(this.props)}
+
+		<ResultsTableContainer />
                 </div>);
     }
 }
@@ -74,4 +102,4 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-export default connect(mapStateToProps, mapDispatchToProps)(GwasExp);
+export default connect(mapStateToProps, mapDispatchToProps)(GwasTab);

@@ -5,7 +5,9 @@ const initialState = {
     maintabs: MainTabInfo,
     maintabs_active: "gwas",
     maintabs_visible: true,
-    gwas_study: null
+    gwas_study: null,
+    accessions: null,
+    cart_accessions: new Set()
 };
 
 export default initialState;
