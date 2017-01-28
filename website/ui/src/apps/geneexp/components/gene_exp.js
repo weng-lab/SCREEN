@@ -52,8 +52,8 @@ class GeneExp extends React.Component{
 
     doRenderWrapper(){
         let gene = this.props.gene;
-        if(gene in this.state){
-            return <ExpressionBoxplo data={this.state[gene]} />;
+        if("items" in this.state){
+            return <ExpressionBoxplot data={this.state} />;
         }
         return loading(this.state);
     }
