@@ -19,18 +19,24 @@ public:
     {}
 
     void loadBed(const bfs::path inFnp){
-        std::cout << "loading bed " << inFnp << std::endl;
+        std::cout << "geneIDer: loading bed " << inFnp << std::endl;
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
+            if(toks.size() < 11){
+                std::cout << "will skip" << std::endl;
+                std::cout << p << "\n" << "len" << toks.size() << "\n";
+                continue;
+            }
             std::string ensembl = toks[7];
             bib::string::rtrim(ensembl);
             getGeneID(ensembl);
         }
+        std::cout << "done" << std::endl;;
     }
 
     void loadTAD(const bfs::path inFnp){
-        std::cout << "loading TAD " << inFnp << std::endl;
+        std::cout << "geneIDer: loading TAD " << inFnp << std::endl;
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
