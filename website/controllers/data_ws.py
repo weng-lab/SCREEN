@@ -14,6 +14,7 @@ from models.rank_heatmap import RankHeatmap
 from models.cytoband import Cytoband
 from models.trees import Trees
 from models.tfenrichment import TFEnrichment
+from models.ortholog import Ortholog
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from pg import PGsearch
@@ -62,7 +63,8 @@ class DataWebService:
             "tfIntersection" : self._re_detail_tfIntersection,
             "relatedGene" : self._re_detail_relatedGene,
             "assocTSS" : self._re_detail_assocTSS,
-            "similarREs" : self._re_detail_similarREs}
+            "similarREs" : self._re_detail_similarREs,
+            "ortholog": self._ortholog }
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -77,6 +79,9 @@ class DataWebService:
             raise Exception("unknown chrom")
         return chrom
 
+    def _ortholog(self, j, accession):
+        return {accession: {"ortholog": Ortholog(self.assembly, self.ps.DBCONN, accession).as_dict()}}
+    
     def cre_table(self, j, args):
         chrom = self._checkChrom(j)
         return self.pgSearch.creTable(chrom, j["coord_start"], j["coord_end"], j)

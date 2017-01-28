@@ -39,6 +39,7 @@ const accessionsBox = ({accessions, actions}) => {
     return panelize("Accessions",
                     <ChecklistFacet
                     title={""}
+		    formatter={(v) => (v.toUpperCase())}
                     items={accessions.map((d) => {return {value: d, checked: true}})}
                     match_mode_enabled={false}
                     mode={CHECKLIST_MATCH_ANY}

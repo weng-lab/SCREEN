@@ -22,6 +22,8 @@ const render_gene_link = (d) => (
 const render_re_link = (d) => ('<a>' + d + '</a>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
+const render_bp = (v) => (v + "bp");
+const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + (a == "mm10" ? "hg19" : "mm10") + "&q=" + v + "'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {
@@ -81,7 +83,7 @@ export const TopTissuesTables = {
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
-	    {title: "rank", data: "one",
+	    {title: "Z-score", data: "one",
 	     render: render_float
 	    }
 	],
@@ -91,6 +93,24 @@ export const TopTissuesTables = {
 	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
+    }
+};
+
+export const OrthologTable = {
+    "ortholog": {
+	"title": "",
+	paging: false,
+	info: false,
+	bFilter: false,
+	bLengthChange: false,
+	emptyText: "No orthologous RE identified",
+	cols: [
+	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly)},
+	    {title: "chromosome", "data": "chrom", className: "dt-right"},
+	    {title: "start", "data": "start", render: render_int},
+	    {title: "end", "data": "stop", render: render_int},
+	    {title: "overlap", "data": "overlap", render: render_bp}
+	]
     }
 };
 
@@ -210,7 +230,7 @@ export const TfIntersectionTable = {
 	order: [[1, "desc"]]
     },
     "histone": {
-	title: "Intersecting Histones",
+	title: "Intersecting histone marks",
 	cols: [
 	    {title: "mark", data: "name",
 	     render: render_factorbook_link_histone },
