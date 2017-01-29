@@ -37,8 +37,8 @@ class ExtractRawPeaks:
                     padding = (1000 - (stop - start)) / 2.0
                     outF.write('\t'.join([str(x) for x in
                                           [chrom,
-                                           max(0, start - padding),
-                                           stop + padding,
+                                           int(max(0, start - padding)),
+                                           int(stop + padding),
                                            accession]]) + '\n')
         print("wrote", outFnp)
                 
