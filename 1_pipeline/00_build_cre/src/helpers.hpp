@@ -505,15 +505,18 @@ public:
         std::cout << "loading " << typ << " genes " << fnp << std::endl;
         auto lines = bib::files::readStrings(fnp);
 
+        std::cout << "found " << lines.size() <<  " lines for " << typ << " genes " << fnp << std::endl;
         uint32_t count{0};
         MpNameToGenes ret;
         ret.reserve(lines.size());
         for(const auto& g : lines){
             auto toks = bib::str::split(g, '\t');
             std::string ensembl = toks[8];
+            std::string mp = toks[3];
+            bib::string::rtrim(mp);
             bib::string::rtrim(ensembl);
-            ret[toks[3]].emplace_back(Gene{geneNameToID_.at(ensembl),
-		  std::stoi(toks[10])}); // distance
+            ret[mp].emplace_back(Gene{geneNameToID_.at(ensembl),
+                        std::stoi(toks[10])}); // distance
             ++count;
         }
         std::cout << "loaded " << count << " " << typ << " genes\n";
@@ -611,7 +614,8 @@ public:
             field = allGenes_.at(mpName);
             std::sort(field.begin(), field.end());
         } else {
-            std::cerr << "no all gene found for " << mpName << "\n";
+            std::cerr << "no all gene found for '" << mpName << "'\n";
+            throw std::runtime_error("missing gene!");
         }
     }
 
