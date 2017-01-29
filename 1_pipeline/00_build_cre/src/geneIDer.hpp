@@ -23,12 +23,10 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            if(toks.size() < 11){
-                std::cout << "will skip" << std::endl;
-                std::cout << p << "\n" << "len" << toks.size() << "\n";
-                continue;
+            if(toks.size() != 11){
+	      throw std::runtime_error("invalid length");
             }
-            std::string ensembl = toks[7];
+            std::string ensembl = toks[8];
             bib::string::rtrim(ensembl);
             getGeneID(ensembl);
         }
@@ -60,8 +58,9 @@ public:
     }
 
     void run(){
-        for(const auto& fn : {"AllGenes.bed", "PCGenes.bed"}){
-            bfs::path inFnp = d_ / fn;
+        for(const auto& fn : {"all_cre_genes.bed.gz",
+	      "pc_cre_genes.bed.gz"}){
+	  bfs::path inFnp = d_ / fn;
             loadBed(inFnp);
         }
         if("hg19" == ZiARG_assembly){
