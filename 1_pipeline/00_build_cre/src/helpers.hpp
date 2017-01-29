@@ -406,8 +406,8 @@ public:
         path_ = base_ / chr_;
     }
 
-    bfs::path allGenes(){ return path_ / "AllGenes.bed"; }
-    bfs::path pcGenes(){ return path_ / "PCGenes.bed"; }
+    bfs::path allGenes(){ return path_ / "all_cre_genes.bed.gz"; }
+    bfs::path pcGenes(){ return path_ / "pc_cre_genes.bed.gz"; }
     bfs::path peaks(){ return path_ / "masterPeaks.bed"; }
     bfs::path tads(){ return path_ / "TADs.txt"; }
     bfs::path geneIDfnp(){ return base_ / "ensebleToID.txt"; }
@@ -513,7 +513,7 @@ public:
             std::string ensembl = toks[7];
             bib::string::rtrim(ensembl);
             ret[toks[3]].emplace_back(Gene{geneNameToID_.at(ensembl),
-                        std::stoi(toks[toks.size() - 1])});
+		  std::stoi(toks[10])}); // distance
             ++count;
         }
         std::cout << "loaded " << count << " " << typ << " genes\n";
