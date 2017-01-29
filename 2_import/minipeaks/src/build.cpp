@@ -80,13 +80,14 @@ namespace bib {
   int bwtool(){
     std::string line;
 
-    std::vector<a::fvec> rets;
-    
+    std::stringstream s;
     while(std::getline(std::cin, line)){
-      auto toks = bib::str::split(line, '\t');
-      auto vals = bib::str::split(toks[5], ',');
+      const auto toks = bib::str::split(line, '\t');
+      const std::string& accession = toks[3];
+      const auto vals = bib::str::split(toks[5], ',');
 
       static const size_t n_bars = 20;
+      
       a::fvec regions(vals.size());
       for(size_t i = 0; i < vals.size(); ++i){
 	if(likely(vals[i] != "NA")){
@@ -108,16 +109,16 @@ namespace bib {
 	ret.push_back(sum);
       }
 
-      rets.push_back(ret);
+      s << "'" << accession << "': [" << std::setprecision(4);
+      for(const auto& v : ret){
+	s << v << ',';
+      }
+      s.seekp(-1, s.cur);
+      s << "],\n";
     }
 
-    std::cout << std::setprecision(4);    
-    for(const auto& r : rets){
-      for(const auto& v : r){
-	std::cout << v << ',';
-      }
-      std::cout << "\n";
-    }
+    std::cout << s.str();
+    
     return 0;
   }
   
