@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from get_tss import Genes
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils
+from utils import Utils, printWroteNumLines
 
 class NearestGenes:
     def __init__(self, assembly):
@@ -33,23 +33,53 @@ class NearestGenes:
         ggff = Genes(fnp, filetype)
         ret = {}
         for g in ggff.getGenes():
-            # , genename_)
-            ret[g.geneid_] = (g.chr_, g.start_, g.end_)
+            ret[g.geneid_] = [g.chr_, g.start_, g.end_, g.genename_, g.genetype_]
+        #print(set([v[4] for k,v in ret.iteritems()]))
         return ret
 
     def run(self):
         print(self.assembly, "getting gene coordinates...")
         geneCoords = self.geneToCoord()
-
         d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "extras")
+                         "Version-4", "ver9", self.assembly)
         Utils.mkdir_p(d)
-        fnp = os.path.join(d, "genes.bed")
 
+        # "all genes"
+        fnp = os.path.join(d, "extras", "all_genes.bed")
         with open(fnp, 'w') as f:
             for ensembli, coord in geneCoords.iteritems():
-                f.write('\t'.join(coord + [ensembli]) + '\n')
-        print("wrote", outFnp)
+                f.write('\t'.join([coord[0], str(coord[1]), str(coord[2]), ensembli, coord[3]]) + '\n')
+        printWroteNumLines(fnp)
+        Utils.sortFile(fnp)
+        Utils.sortFile(os.path.join(d, "raw", "masterPeaks.bed"),
+                       os.path.join(d, "raw", "masterPeaks.sorted.bed"))
+                       
+        cmds = ["bedtools closest",
+                "-a", os.path.join(d, "raw", "masterPeaks.sorted.bed"),
+                "-b", fnp,
+                "-k 5 -d",
+                '|', "gzip",
+                '>', os.path.join(d, "raw", "all_cre_genes.bed.gz")]
+        Utils.runCmds(cmds)
+        printWroteNumLines(os.path.join(d, "raw", "all_cre_genes.bed.gz"))
+
+        # "pc genes"
+        fnp = os.path.join(d, "extras", "pc_genes.bed")
+        with open(fnp, 'w') as f:
+            for ensembli, coord in geneCoords.iteritems():
+                if coord[4] == 'protein_coding':
+                    f.write('\t'.join([coord[0], str(coord[1]), str(coord[2]), ensembli, coord[3]]) + '\n')
+        printWroteNumLines(fnp)
+        Utils.sortFile(fnp)
+                       
+        cmds = ["bedtools closest",
+                "-a", os.path.join(d, "raw", "masterPeaks.sorted.bed"),
+                "-b", fnp,
+                "-k 5 -d",
+                '|', "gzip",
+                '>', os.path.join(d, "raw", "pc_cre_genes.bed.gz")]
+        Utils.runCmds(cmds)
+        printWroteNumLines(os.path.join(d, "raw", "pc_cre_genes.bed.gz"))
 
 def parse_args():
     parser = argparse.ArgumentParser()
