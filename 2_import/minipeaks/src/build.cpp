@@ -34,6 +34,7 @@
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "", "assembly");
 ZiARG_bool(first, false, "show first line");
+ZiARG_bool(bwtool, false, "process bwtool output");
 ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 5, "num threads");
 
@@ -60,7 +61,7 @@ namespace bib {
     }
 
     void run(){
-      HumanMousePaths hmp(assembly_, base)
+      //HumanMousePaths hmp(assembly_, base)
 
     }
   };
@@ -69,13 +70,57 @@ namespace bib {
     std::cout << assembly << std::endl;
     base /= assembly;
 
-    bib::Builder b(base, assembly, sfi);
+    bib::Builder b(base, assembly);
     {
       bib::TicToc tt("build time");
       b.run();
     }
   }
 
+  int bwtool(){
+    std::string line;
+
+    std::vector<a::fvec> rets;
+    
+    while(std::getline(std::cin, line)){
+      auto toks = bib::str::split(line, '\t');
+      auto vals = bib::str::split(toks[5], ',');
+
+      static const size_t n_bars = 20;
+      a::fvec regions(vals.size());
+      for(size_t i = 0; i < vals.size(); ++i){
+	if(likely(vals[i] != "NA")){
+	  regions[i] = std::stof(vals[i]);
+	} else{
+	  regions[i] = 0;
+	}
+      }
+
+      size_t chunkSize = regions.size() / n_bars;
+      std::vector<float> ret;
+      for(size_t i = 0; i < n_bars; ++i){
+	float sum = 0;
+	for(size_t j = chunkSize * i;
+	    j < chunkSize * (i + 1) && j < regions.size(); ++j){
+	  sum += regions[j];
+	}
+	sum /= chunkSize;	
+	ret.push_back(sum);
+      }
+
+      rets.push_back(ret);
+    }
+
+    std::cout << std::setprecision(4);    
+    for(const auto& r : rets){
+      for(const auto& v : r){
+	std::cout << v << ',';
+      }
+      std::cout << "\n";
+    }
+    return 0;
+  }
+  
 } // namespace bib
 
 int main(int argc, char* argv[]){
@@ -85,6 +130,10 @@ int main(int argc, char* argv[]){
   bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
   base /= "ver9";
 
+  if(ZiARG_bwtool){
+    return bib::bwtool();
+  }
+  
   std::vector<std::string> assemblies = {"hg19", "mm10"};
   if(ZiARG_assembly > ""){
     assemblies = {ZiARG_assembly};
