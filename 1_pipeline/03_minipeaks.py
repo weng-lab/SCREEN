@@ -16,12 +16,8 @@ class ExtractRawPeaks:
 
     def run(self):
         self.writeBed()
-            
-    def _runBw(self, bed, fnp):
-        return subprocess.check_output(
-            [self.bwtool, "extract", "bed",
-             bed, fnp, "/dev/stdout"]).split("\n")
-
+        self.
+        
     def writeBed(self):
         inFnp = os.path.join(self.d, "raw", "masterPeaks.bed.gz")
         outFnp = os.path.join(self.d, "raw", "miniPeakSites.bed.gz")
@@ -42,6 +38,11 @@ class ExtractRawPeaks:
                                            accession]]) + '\n')
         print("wrote", outFnp)
                 
+    def _runBw(self, bed, fnp):
+        return subprocess.check_output(
+            [self.bwtool, "extract", "bed",
+             bed, fnp, "/dev/stdout"]).split("\n")
+
     def _doGetAvgSignals(self, accessionsToGet, bigWigs, cache, n_bars):
         d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         bfnps = []
