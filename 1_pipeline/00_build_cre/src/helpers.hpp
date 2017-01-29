@@ -510,7 +510,7 @@ public:
         ret.reserve(lines.size());
         for(const auto& g : lines){
             auto toks = bib::str::split(g, '\t');
-            std::string ensembl = toks[7];
+            std::string ensembl = toks[8];
             bib::string::rtrim(ensembl);
             ret[toks[3]].emplace_back(Gene{geneNameToID_.at(ensembl),
 		  std::stoi(toks[10])}); // distance
