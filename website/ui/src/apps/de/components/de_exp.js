@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import ExpressionBoxplot from '../components/expression_boxplot'
+import DePlot from '../components/de_plot'
 import loading from '../../../common/components/loading'
 
 class DeExp extends React.Component{
@@ -56,10 +56,20 @@ class DeExp extends React.Component{
     }
 
     doRenderWrapper(){
+        if(this.state.selectCT){
+            return (<div>
+                    {"Please choose 2 cell types on left"}
+                    </div>);
+        }
         let gene = this.props.gene;
         if(gene in this.state){
-            return <ExpressionBoxplot data={this.state[gene]}
-            selectCT={this.state.selectCT} />;
+	    let data = this.state[gene];
+	    if(!data.nearbyDEs.data){
+		return (<div>
+			{"No signifigant genes found"}
+			</div>);
+            }
+	    return <DePlot data={data} />;
         }
         return loading(this.state);
     }
