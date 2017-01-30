@@ -18,6 +18,7 @@ from models.ortholog import Ortholog
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from pg import PGsearch
+from compute_gene_expression import ComputeGeneExpression, Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -132,8 +133,18 @@ class DataWebService:
         return { accession : {} }
 
     def _re_detail_assocTSS(self, j, accession):
-        return { accession : {} }
-
+        cre = CRE(self.pgSearch, accession, self.cache)
+        nearbyGenes = cre.nearbyGenes()
+        nearest = nearbyGenes[0]
+        for gene in nearbyGenes[1:]:
+            if gene["distance"] < nearest["distance"]:
+                nearest = gene
+        if nearest["distance"] > 100000:
+            return { accession : {} }
+        cge = ComputeGeneExpression(None, self.ps, self.cache, self.assembly)
+        r = cge.computeHorBars(nearest["name"], (u'cell',))
+        return {accession: r}
+    
     def _re_detail_similarREs(self, j, accession):
         assay = j["extras"]["assay"] if "extras" in j and "assay" in j["extras"] else "dnase"
         mp = MiniPeaks(self.pgSearch, accession, self.cache)

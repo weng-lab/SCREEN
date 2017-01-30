@@ -188,6 +188,7 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
         return fc
                 
     def computeHorBars(self, gene, compartments):
+        print(tuple(compartments))
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
             SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r.replicate, r.fpkm
