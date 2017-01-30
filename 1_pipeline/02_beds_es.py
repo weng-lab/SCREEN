@@ -10,11 +10,11 @@ import random
 
 from joblib import Parallel, delayed
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from constants import paths, chroms
 from common import printr, printt
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printWroteNumLines
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs

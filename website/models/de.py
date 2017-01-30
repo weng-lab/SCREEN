@@ -39,9 +39,9 @@ class DE:
         thres = 1.64
         for c in nearbyCREs:
             if c[3] > thres or c[4] > thres:
-                ret.append([c[1], c[4] - c[3], "promoter-like"])
+                ret.append([c[1], round(float(c[4] - c[3]), 3), "promoter-like"])
             if c[5] > thres or c[6] > thres:
-                ret.append([c[1], c[6] - c[5], "enhancer-like"])
+                ret.append([c[1], round(float(c[6] - c[5]), 3), "enhancer-like"])
         return {"data" : ret}
 
     def nearbyDEs(self):
@@ -52,13 +52,18 @@ class DE:
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
                                             ct1, ct2, 1) #0.05)
 
+        #print(len(nearbyDEs))
+        if not nearbyDEs:
+            return { "data" : None,
+                     "xdomain" : 2 * self.halfWindow }
+        
         xdomain = [max(0, min([d[0] for d in nearbyDEs]) - self.halfWindow),
                    max([d[1] for d in nearbyDEs]) + self.halfWindow]
 
         ret = []
         for d in nearbyDEs:
             e = [float(d[1] - d[0]) / 2 + d[0], # center
-                 float(d[2]), # log2FoldChange
+                 round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
                  d[1] # stop
                  ]

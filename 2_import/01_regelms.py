@@ -67,110 +67,18 @@ class ImportData:
             self.curs.copy_from(f, tn, '\t', columns=cols)
         #print("imported", os.path.basename(fnp))
 
-    def run(self):
+    def run(self, fullChrom):
         self.setupTable(self.baseTableName)
 
         for chrom in self.chrs:
             fn = "parsed." + chrom + ".tsv.gz"
             fnp = os.path.join(self.d, fn)
-            if self.subsample:
+            if self.subsample and chrom != fullChrom:
                 fnp = os.path.join(self.d, "sample", fn)
             ctn = self.baseTableName + '_' + chrom
             self.setupTable(ctn)
             self.importTsv(self.baseTableName, fnp)
             self.importTsv(ctn, fnp)
-
-class CreateIndices:
-    def __init__(self, curs, info, cols):
-        self.curs = curs
-        self.chrs = info["chrs"]
-        self.baseTableName = info["tableName"]
-        self.d = info["d"]
-        self.all_cols = cols
-        self.rank_cols = [x for x in cols if x.endswith("_rank")]
-        self.signal_cols = [x for x in cols if x.endswith("_signal")]
-        self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
-
-    def _idx(self, tn, col, suf = ""):
-        if suf:
-            return tn + '_' + col + '_' + suf + "_idx"
-        return tn + '_' + col + "_idx"
-
-    def doIndex(self, tableName):
-        cols = ("accession", "chrom", "start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    CREATE INDEX {idx} on {tableName} ({col});
-    """.format(idx = idx, tableName = tableName, col = col))
-
-    def doIndexRev(self):
-        cols = ("neglogp",)
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing", idx, "DESC")
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    CREATE INDEX {idx} on {tableName} ({col} DESC);
-    """.format(idx = idx, tableName = tableName, col = col))
-
-    def doIndexGin(self, tableName): # best for '<@' operator on element of array
-        cols = self.rank_cols + self.signal_cols + self.zscore_cols
-        cols = ("start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col, "gin")
-            print("indexing", idx)
-            self.curs.execute("""
-    CREATE INDEX {idx} on {tableName} USING GIN ({col});
-    """.format(idx = idx, tableName = tableName, col = col))
-
-    def run(self):
-        self.setupRangeFunction()
-        self.doIndex(self.baseTableName)
-        if 0:
-            self.doIndexRange(self.baseTableName)
-            self.doIndexRev(self.baseTableName)
-            self.doIndexGin(self.baseTableName)
-
-            for chrom in self.chrs:
-                ctn = self.baseTableName + '_' + chrom
-                self.doIndex(ctn)
-                self.doIndexGin(ctn)
-                self.doIndexRange(ctn)
-
-    def setupRangeFunction(self):
-        print("create range function...")
-        self.curs.execute("""
-create or replace function intarray2int4range(arr int[]) returns int4range as $$
-    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
-
-create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
-    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
-        """)
-
-    def doIndexRange(self, tableName):
-        cols = self.rank_cols
-        cols = ("start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing int range", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    create index {idx} on {tableName} using gist(intarray2int4range({col}));
-    """.format(idx = idx, tableName = tableName, col = col))
-
-        cols = self.signal_cols + self.zscore_cols
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing numeric range", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    create index {idx} on {tableName} using gist(numarray2numrange({col}));
-    """.format(idx = idx, tableName = tableName, col = col))
 
 def vacumnAnalyze(conn, baseTableName, chrs):
     # http://stackoverflow.com/a/1017655
@@ -190,9 +98,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument("--chrom", type=str, default="")
     parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--sample', action="store_true", default=False)
-    parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
     args = parser.parse_args()
     return args
@@ -240,17 +148,10 @@ def run(args, DBCONN):
             vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
             continue
 
-        if args.index:
-            with getcursor(DBCONN, "08_setup_log") as curs:
-                ci = CreateIndices(curs, m, cols)
-                if args.index:
-                    ci.run()
-            continue
-
         with getcursor(DBCONN, "08_setup_log") as curs:
             im = ImportData(curs, m, cols)
-            im.run()
-
+            im.run(args.chrom)
+            
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
 def main():
