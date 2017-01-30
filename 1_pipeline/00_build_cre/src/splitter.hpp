@@ -118,7 +118,7 @@ public:
                                           this, inFnp)));
         }
 
-        for(const auto& fn : {"AllGenes.bed", "PCGenes.bed", "masterPeaks.bed"}){
+        for(const auto& fn : {"all_cre_genes.bed.gz", "pc_cre_genes.bed.gz", "masterPeaks.bed"}){
             bfs::path inFnp = d_ / fn;
             tm.insert(zi::run_fn(zi::bind(&Splitter::splitBedFile,
                                           this, inFnp)));

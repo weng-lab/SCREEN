@@ -19,18 +19,22 @@ public:
     {}
 
     void loadBed(const bfs::path inFnp){
-        std::cout << "loading bed " << inFnp << std::endl;
+        std::cout << "geneIDer: loading bed " << inFnp << std::endl;
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            std::string ensembl = toks[7];
+            if(toks.size() != 11){
+	      throw std::runtime_error("invalid length");
+            }
+            std::string ensembl = toks[8];
             bib::string::rtrim(ensembl);
             getGeneID(ensembl);
         }
+        std::cout << "done" << std::endl;;
     }
 
     void loadTAD(const bfs::path inFnp){
-        std::cout << "loading TAD " << inFnp << std::endl;
+        std::cout << "geneIDer: loading TAD " << inFnp << std::endl;
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
@@ -54,8 +58,9 @@ public:
     }
 
     void run(){
-        for(const auto& fn : {"AllGenes.bed", "PCGenes.bed"}){
-            bfs::path inFnp = d_ / fn;
+        for(const auto& fn : {"all_cre_genes.bed.gz",
+	      "pc_cre_genes.bed.gz"}){
+	  bfs::path inFnp = d_ / fn;
             loadBed(inFnp);
         }
         if("hg19" == ZiARG_assembly){
