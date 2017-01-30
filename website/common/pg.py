@@ -80,6 +80,12 @@ class PGsearch:
               gene_all_start, gene_all_end,
               gene_pc_start, gene_pc_end""")
 
+        """
+        tfclause = "peakintersections.accession = cre.accession"
+        if "tfs" in j:
+            tfclause += " and peakintersections.tf ?| array(" + ",".join(["'%s'" % tf for tf in j["tfs"]]) + ")"
+        """
+        
         whereclauses = []
 
         if start and stop:

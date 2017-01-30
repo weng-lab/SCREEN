@@ -2,7 +2,12 @@ import React from 'react'
 
 class LargeHorizontalBars extends React.Component {
     render() {
-        console.log("large hi!");
+	console.log(this.props.items);
+	if (!this.props.items) {
+	    return (<div ref="container">
+		    No expression data is available for this gene
+		    </div>);
+	}
 	return (<div>
 
 		<div className="container">

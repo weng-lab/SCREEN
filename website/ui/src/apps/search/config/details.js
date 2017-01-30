@@ -3,8 +3,10 @@ const React = require('react');
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
 
+import GeneExp from '../../geneexp/components/gene_exp'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
 import TSSExpressionPlot from '../components/tss'
+import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import MiniPeaks from '../components/minipeaks'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
@@ -141,7 +143,6 @@ class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
 	this.doRender = (data) => {
-	    console.log(data);
 	    return tabEles(data, OrthologTable, 1);
 	};
     }
@@ -169,8 +170,9 @@ class RelatedGeneTab extends ReTabBase{
 class AssocTssTab extends ReTabBase{
     constructor(props) {
 	super(props, "assocTSS");
-        this.doRender = (accession) => {
-            return (<div></div>);
+        this.doRender = (data) => {
+	    console.log(data);
+            return React.createElement(LargeHorizontalBars, {...data, width: 800, barheight: "15"});
             return (<TSSExpressionPlot />);
         }
     }
@@ -201,7 +203,7 @@ const DetailsTabInfo = {
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated TSS Expression", enabled: false,
+    assocTSS: {title: "Associated TSS Expression", enabled: true,
                f: AssocTssTab},
     ortholog: {title: "Orthologous REs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar REs" : "Activity profile"), enabled: true,
