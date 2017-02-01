@@ -12,10 +12,22 @@ const main_reducers = (state, action) => {
         return ret;
 
     case Actions.SET_CT1: {
-        return { ...state, ct1: action.ct}
+	var ct1 = new Set(state.ct1);
+	if (ct1.has(action.ct)) {
+	    ct1.delete(action.ct);
+	} else {
+	    ct1.add(action.ct);
+	}
+        return {...state, ct1};
     }
     case Actions.SET_CT2: {
-        return { ...state, ct2: action.ct}
+	var ct2 = new Set(state.ct2);
+	if (ct2.has(action.ct)) {
+	    ct2.delete(action.ct);
+	} else {
+	    ct2.add(action.ct);
+	}
+	return {...state, ct2};
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:

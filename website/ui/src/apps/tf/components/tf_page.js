@@ -1,54 +1,51 @@
 import React from 'react'
+import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
+import {TRBars} from '../../search/components/tf_display'
 import loading from '../../../common/components/loading'
 
-export class TRBars extends React.Component {
-    render() {
-	return (<svg width="500" height={this.props.items.length * 30 + 30}>
-		{this.props.items.map((item, i) => (
-		        <g transform={"translate(0," + (i * 30 + 30) + ")"}>
-		        <text transform="translate(0,15)">{item.key}</text>
-		        <g transform="translate(75,0)">
-			<rect width={item.left * 450} height="10" fill="#0000ff" />
-			<rect width={item.right * 450} height="10" transform="translate(0,10)" fill="#00ff00" />
-		        </g>
-	                </g>
-		))}
-		</svg>);
-    }
-}
-
-class TFDisplay extends React.Component {
+class TfPage extends React.Component{
     constructor(props) {
-	super(props);
-        this.state = { left: null, right: null, tite: null,
-                       isFetching: true, isError: false, jq : null}
+        super(props);
+        this.state = { jq: null, isFetching: false, isError: false, isDone: false,
+                       selectCT: false };
+        this.doRenderWrapper = this.doRenderWrapper.bind(this);
+        this.loadTf = this.loadTf.bind(this);
     }
 
     componentDidMount(){
-        this.loadTFs(this.props);
+        this.loadTf(this.props);
     }
 
     componentWillReceiveProps(nextProps){
-        this.loadTFs(nextProps);
+	this.setState({isDone: false});
     }
 
-    loadTFs({tree_nodes_compare, tree_rank_method}) {
-        if(null == tree_nodes_compare){
+    loadTf({ct1, ct2}){
+        if(null == ct1 || null == ct2){
+            this.setState({selectCT: true});
             return;
         }
-        var q = {GlobalAssembly, tree_nodes_compare, tree_rank_method};
+	let tree_nodes_compare = [[], []];
+	for (let i of ct1) {
+	    tree_nodes_compare[0].push(GlobalCellTypeInfoArr[i].value);
+	}
+	for (let i of ct2) {
+	    tree_nodes_compare[1].push(GlobalCellTypeInfoArr[i].value);
+	}
+        var q = {GlobalAssembly, tree_nodes_compare, tree_rank_method: "DNase"};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq == jq || !tree_nodes_compare[0] || !tree_nodes_compare[1]){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", this.state.jq, jq);
-        this.setState({left: null, right: null, jq, isFetching: true});
+        //console.log("loadGene....", this.state.jq, jq);
+	console.log("loading...");
+        this.setState({jq, isFetching: true, selectCT: false, isDone: false});
 	$.ajax({
 	    url: "/dataws/tfenrichment",
 	    type: "POST",
@@ -57,7 +54,7 @@ class TFDisplay extends React.Component {
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
                 console.log("err loading cres for table");
-                this.setState({left: null, right: null,
+                this.setState({left: null, right: null, isDone: true,
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
@@ -69,11 +66,8 @@ class TFDisplay extends React.Component {
     }
 
     doRenderWrapper(){
-        let left = this.state.left;
-        let right = this.state.right;
-        if(left && right){
+        if (this.state.isDone && !this.state.isFetching) {
             return (<div>
-                    <h2>{this.state.title}</h2>
 
                     <table>
 		    <tr><td><b>top</b></td><td><b>bottom</b></td></tr>
@@ -88,7 +82,9 @@ class TFDisplay extends React.Component {
                     </tr>
 		    </table>
                    </div>);
-        }
+        } else if (!this.state.isFetching) {
+	    return <button onClick={() => {this.loadTf(this.props)}}>Compute</button>;
+	}
         return loading(this.state);
     }
 
@@ -101,5 +97,6 @@ class TFDisplay extends React.Component {
 
 const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(Actions, dispatch) });
-export default connect(mapStateToProps, mapDispatchToProps)(TFDisplay);
+    actions: bindActionCreators(Actions, dispatch)
+});
+export default connect(mapStateToProps, mapDispatchToProps)(TfPage);

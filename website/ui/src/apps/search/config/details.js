@@ -31,6 +31,9 @@ function makeTable(data, key, table){
 }
 
 function tabEle(data, key, table, numCols) {
+    if (!data || !table) {
+	return (<div className={"col-md-" + (12/numCols)} key={key} />);
+    }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
 	    <h4>{table.title}</h4>
 	    {makeTable(data, key, table)}<br/>
@@ -171,8 +174,13 @@ class AssocTssTab extends ReTabBase{
     constructor(props) {
 	super(props, "assocTSS");
         this.doRender = (data) => {
-	    console.log(data);
-            return React.createElement(LargeHorizontalBars, {...data, width: 800, barheight: "15"});
+	    if (data.no_nearby_tss) {
+		return <div>No TSS is associated with this CRE</div>;
+	    }
+            return (<div>
+		    <h2><em>{data.genename}</em></h2>
+		    {React.createElement(LargeHorizontalBars, {...data, width: 800, barheight: "15"})}
+		    </div>);
             return (<TSSExpressionPlot />);
         }
     }
@@ -205,8 +213,8 @@ const DetailsTabInfo = {
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated TSS Expression", enabled: true,
                f: AssocTssTab},
-    ortholog: {title: "Orthologous REs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
-    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar REs" : "Activity profile"), enabled: true,
+    ortholog: {title: "Orthologous CREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
+    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar CREs" : "Activity profile"), enabled: true,
                  f: SimilarREsTab}
 };
 
