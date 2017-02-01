@@ -60,6 +60,17 @@ FixedTissueColors = {
     'vagina' : "#BBAA44"
 }
 
+fixedmap = {"limb": "limb",
+            "embryonic facial prominence": "embryonic structure",
+            "CH12.LX": "blood",
+            "neural tube": "neural tube",
+            "intestine": "intestine",
+            "hematopoietic stem cell": "blood",
+            "G1E": "embryonic stem cell",
+            "MEP": "blood",
+            "G1E-ER4": "embryonic stem cell",
+            "CMP": "blood" }
+
 Compartments = ["cell", "nucleoplasm", "cytosol",
                 "nucleus", "membrane", "chromatin", 
                 "nucleolus"]
@@ -203,7 +214,11 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
 
         def makeEntry(row):
             base = 2
-            return {"tissue" : row[1].strip(),
+            tissue = row[1].strip()
+
+            if tissue == '{}':
+                tissue = fixedmap[row[2]] if row[2] in fixedmap else ""
+            return {"tissue" : tissue,
                     "cellType" : row[2],
                     "rawTPM" : row[0],
                     "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01, base)),

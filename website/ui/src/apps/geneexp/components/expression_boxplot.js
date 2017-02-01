@@ -25,7 +25,7 @@ class ExpressionBoxplot extends React.Component {
     render() {
 	return (<div>
  	        <span style={{fontSize: "18pt"}}>
-                {this.props.gene} <span ref="help_icon" />
+                <em>{this.props.gene}</em> <span ref="help_icon" />
                 </span>
 		<div style={{"width": "100%"}} ref="bargraph" />
 		</div>);

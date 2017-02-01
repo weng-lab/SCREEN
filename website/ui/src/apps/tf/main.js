@@ -43,7 +43,7 @@ class TfPage extends React.Component {
                     <FacetBoxen />
                     </div>
                   <div className="col-md-9 nopadding-left" id="tabs-container">
-
+	    <MainTabs />
                   </div>
                 </div>
 
