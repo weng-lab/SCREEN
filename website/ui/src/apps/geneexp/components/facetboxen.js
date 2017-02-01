@@ -9,12 +9,12 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/uility'
 
-const cell_compartments = ({compartments, actions}) => {
+const cell_compartments = ({compartments, actions, compartments_selected}) => {
     return panelize("Cellular Compartments",
                     <LongChecklistFacet
                     title={""}
                     data={compartments.map((e) => {return {key: e,
-                                                           selected: true}})}
+                                                           selected: compartments_selected.has(e)}})}
                     cols={[{
 		        title: "Assay", data: "key",
 		        className: "dt-right"

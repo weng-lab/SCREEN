@@ -1,17 +1,17 @@
 import React from 'react'
 
-import DeExp from '../components/de_exp'
+import TfPage from '../components/tf_page'
 
-class DePage extends React.Component{
+class Tfpage extends React.Component{
     render() {
         return (<div>
-                <DeExp />
+                <TfPage />
                 </div>);
     }
 }
 
 const MainTabInfo = {
-    de_expression: {title: "Diff Expression", visible: true, f: DePage},
+    tf_enrichment: {title: "TF enrichment", visible: true, f: Tfpage},
 };
 
 export default MainTabInfo;

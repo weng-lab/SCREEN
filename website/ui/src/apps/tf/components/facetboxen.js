@@ -15,20 +15,23 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }]
 
-var data = GlobalCellTypeInfoArr.map((tf) => {return {key: tf,
-                                                      selected: false}})
+console.log(GlobalCellTypeInfoArr);
+var data = (tset) => (GlobalCellTypeInfoArr.map((ct, i) => {return {key: i,
+								    name: ct.name,
+								    tissue: ct.tissue,
+								    selected: tset && tset.has(i)}}));
 
 const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongChecklistFacet
                     title={""}
-                    data={data}
+                    data={data(ct1)}
                     cols={cols}
                     order={[]}
                     selection={[]}
                     friendlySelectionLookup={(value) => {
                         return GlobalCellTypeInfo[value]["name"]; }}
-                    onTdClick={(value) => { actions.setCt1(value) }}
+                    onTdClick={(value) => { console.log(value); actions.setCt1(value) }}
                     />);
 }
 
@@ -36,7 +39,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongChecklistFacet
                     title={""}
-                    data={data}
+                    data={data(ct2)}
                     cols={cols}
                     order={[]}
                     selection={[]}

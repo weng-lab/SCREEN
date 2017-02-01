@@ -1,4 +1,4 @@
-import {render_int, render_cell_type, render_float} from './results_table'
+import {render_z_score, render_int, render_cell_type, render_float} from './results_table'
 
 import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
 
@@ -23,7 +23,7 @@ const render_re_link = (d) => ('<a>' + d + '</a>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 const render_bp = (v) => (v + "bp");
-const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + (a == "mm10" ? "hg19" : "mm10") + "&q=" + v + "'>" + v + "</a>");
+const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + (a == "mm10" ? "hg19" : "mm10") + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {
@@ -32,9 +32,9 @@ export const TopTissuesTables = {
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
 	    {title: "H3K4me3 and DNase", data: "two",
-	     render: render_float},
+	     render: render_z_score},
 	    {title: "H3K4me3 only", data: "one",
-	     render: render_float}
+	     render: render_z_score}
 	],
 	order: [[2, "desc"], [1, "desc"]],
 	pageLength: 5,
@@ -49,9 +49,9 @@ export const TopTissuesTables = {
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
 	    {title: "H3K27ac and DNase", data: "two",
-	     render: render_float},
+	     render: render_z_score},
 	    {title: "H3K27ac only", data: "one",
-	     render: render_float}
+	     render: render_z_score}
 	],
 	order: [[2, "desc"], [1, "desc"]],
 	pageLength: 5,
@@ -66,9 +66,9 @@ export const TopTissuesTables = {
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
 	    {title: "CTCF and DNase", data: "two",
-             render: render_float},
+             render: render_z_score},
 	    {title: "CTCF only", data: "one",
-	     render: render_float
+	     render: render_z_score
 	    }
 	],
 	order: [[2, "desc"], [1, "desc"]],
@@ -84,7 +84,7 @@ export const TopTissuesTables = {
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
 	    {title: "Z-score", data: "one",
-	     render: render_float
+	     render: render_z_score
 	    }
 	],
 	order: [[1, "desc"]],
@@ -103,14 +103,15 @@ export const OrthologTable = {
 	info: false,
 	bFilter: false,
 	bLengthChange: false,
-	emptyText: "No orthologous RE identified",
+	emptyText: "No orthologous CRE identified",
 	cols: [
 	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly)},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: render_int},
 	    {title: "end", "data": "stop", render: render_int},
 	    {title: "overlap", "data": "overlap", render: render_bp}
-	]
+	],
+	order: [[4, "desc"]]
     }
 };
 
@@ -156,39 +157,8 @@ export const NearbyGenomicTable = {
         pageLength: 5,
 	order: [[1, "asc"]]
     },
-    "tads": {
-	title: "Genes within TAD",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No genes within TAD",
-	cols: [
-	    {title: "symbol", data: "name",
-	     render: render_gene_link},
-	    //{title: "coordinates", data: "coordinates"}
-        ],
-        pageLength: 5,
-	order: [[0, "asc"]]
-    },
-    "re_tads": {
-	title: "Other REs within TAD",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No REs within TAD",
-	cols: [
-	    {title: "accession", data: "accession",
-	     render: render_re_link },
-	    {title: "coordinates", data: "position",
-	     render:  render_position }	],
-        pageLength: 5,
-	order: [[0, "asc"]],
-	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
-    },
     "nearby_res": {
-	title: "Nearby candidate REs",
+	title: "Nearby candidate CREs",
 	paging: true,
 	info: false,
 	bFilter: false,
@@ -216,6 +186,38 @@ export const NearbyGenomicTable = {
 	     render: render_int }],
         pageLength: 5,
 	order: [[1, "asc"]]
+    },
+    "blank": null,
+    "tads": {
+	title: "Genes within TAD",
+	paging: true,
+	info: false,
+	bFilter: false,
+        bLengthChange: true,
+	emptyText: "No genes within TAD",
+	cols: [
+	    {title: "symbol", data: "name",
+	     render: render_gene_link},
+	    //{title: "coordinates", data: "coordinates"}
+        ],
+        pageLength: 5,
+	order: [[0, "asc"]]
+    },
+    "re_tads": {
+	title: "Other CREs within TAD",
+	paging: true,
+	info: false,
+	bFilter: false,
+        bLengthChange: true,
+	emptyText: "No CREs within TAD",
+	cols: [
+	    {title: "accession", data: "accession",
+	     render: render_re_link },
+	    {title: "coordinates", data: "position",
+	     render:  render_position }	],
+        pageLength: 5,
+	order: [[0, "asc"]],
+	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     }
 }
 
