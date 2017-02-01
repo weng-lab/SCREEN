@@ -393,7 +393,7 @@ OR ensemblid_ver = %s
         c = coord.expanded(halfWindow)
         with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
             q = """
-            SELECT start, stop, log2FoldChange
+            SELECT start, stop, log2FoldChange, leftName, rightName, ensembl
             from {deTn} as de
             inner join {giTn} as gi
             on de.ensembl = gi.ensemblid_ver
