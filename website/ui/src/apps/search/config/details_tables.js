@@ -19,15 +19,13 @@ const render_snp_link = (d) => {
 const render_gene_link = (d) => (
     '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
 
-const render_re_link = (d) => ('<a>' + d + '</a>');
-
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 const render_bp = (v) => (v + "bp");
 const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + (a == "mm10" ? "hg19" : "mm10") + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {
-	title: "Promoter z-scores",
+	title: "Promoter Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
@@ -44,7 +42,7 @@ export const TopTissuesTables = {
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "enhancer": {
-	title: "Enhancer z-scores",
+	title: "Enhancer Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
@@ -61,7 +59,7 @@ export const TopTissuesTables = {
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "ctcf": {
-	title: "CTCF z-scores",
+	title: "CTCF Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: render_cell_type},
@@ -79,7 +77,7 @@ export const TopTissuesTables = {
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "dnase": {
-	title: "DNase z-scores",
+	title: "DNase Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: render_cell_type},
@@ -103,7 +101,7 @@ export const OrthologTable = {
 	info: false,
 	bFilter: false,
 	bLengthChange: false,
-	emptyText: "No orthologous CRE identified",
+	emptyText: "No orthologous cRE identified",
 	cols: [
 	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly)},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
@@ -143,7 +141,7 @@ export const TargetGeneTable = {
 
 export const NearbyGenomicTable = {
     "nearby_genes": {
-	title: "Nearby genes",
+	title: "Nearby Genes",
 	paging: true,
 	info: false,
 	bFilter: false,
@@ -158,14 +156,14 @@ export const NearbyGenomicTable = {
 	order: [[1, "asc"]]
     },
     "nearby_res": {
-	title: "Nearby candidate CREs",
+	title: "Nearby cREs",
 	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
 	cols: [
 	    {title: "accession", data: "name", className: "dt-right",
-	     render: render_re_link },
+	     render: render_relink },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
         pageLength: 5,
@@ -204,12 +202,12 @@ export const NearbyGenomicTable = {
 	order: [[0, "asc"]]
     },
     "re_tads": {
-	title: "Other CREs within TAD",
+	title: "Other cREs within TAD",
 	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
-	emptyText: "No CREs within TAD",
+	emptyText: "No cREs within TAD",
 	cols: [
 	    {title: "accession", data: "accession",
 	     render: render_re_link },
@@ -232,7 +230,7 @@ export const TfIntersectionTable = {
 	order: [[1, "desc"]]
     },
     "histone": {
-	title: "Intersecting histone marks",
+	title: "Intersecting Histone Marks",
 	cols: [
 	    {title: "mark", data: "name",
 	     render: render_factorbook_link_histone },
