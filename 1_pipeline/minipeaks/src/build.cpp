@@ -109,7 +109,7 @@ namespace bib {
 	ret.push_back(sum);
       }
 
-      s << "'" << accession << "': [" << std::setprecision(4);
+      s << "[" << std::setprecision(4);
       for(const auto& v : ret){
 	s << v << ',';
       }
