@@ -28,11 +28,11 @@ class TFTab extends React.Component {
 }
 
 const MainTabInfo = {
-    results : {title: "Search results", visible: true, f: ResultsTab},
+    results : {title: "Search Results", visible: true, f: ResultsTab},
     ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
-    tf_enrichment: {title: "TF enrichment", visible: false, f: TFTab},
+    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
     details: {title: "RE Details", visible: false, f: DetailsTab},
-    gcompare: {title: "Group comparison", visible: false, f: GcompareTab}
+    gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}
 };
 
 export default MainTabInfo;

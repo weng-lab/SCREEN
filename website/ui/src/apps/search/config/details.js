@@ -175,7 +175,7 @@ class AssocTssTab extends ReTabBase{
 	super(props, "assocTSS");
         this.doRender = (data) => {
 	    if (data.no_nearby_tss) {
-		return <div>No TSS is associated with this CRE</div>;
+		return <div>No TSS is associated with this cRE</div>;
 	    }
             return (<div>
 		    <h2><em>{data.genename}</em></h2>
@@ -201,20 +201,20 @@ class SimilarREsTab extends ReTabBase{
 }
 
 const DetailsTabInfo = {
-    topTissues : {title: "Top tissues", enabled: true,
+    topTissues : {title: "Top Tissues", enabled: true,
                   f: TopTissuesTab},
     targetGene : {title: "Candidate Target Genes",
                   enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
     nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
                     f: NearbyGenomicTab},
-    tfIntersection: {title: "TF and his-mod Intersection", enabled: true,
+    tfIntersection: {title: "TF and His-mod Intersection", enabled: true,
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated TSS Expression", enabled: true,
                f: AssocTssTab},
-    ortholog: {title: "Orthologous CREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
-    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar CREs" : "Activity profile"), enabled: true,
+    ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
+    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: true,
                  f: SimilarREsTab}
 };
 
