@@ -100,7 +100,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--list', action="store_true", default=False)
-    parser.add_argument('--assembly', type=str, default="mm10")
+    parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
 
