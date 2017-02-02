@@ -10,11 +10,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
+
+# from http://stackoverflow.com/a/19861595
+import copy_reg
+import types
+def _reduce_method(meth):
+    return (getattr, (meth.__self__, meth.__func__.__name__))
+copy_reg.pickle(types.MethodType, _reduce_method)
+
+
 class ExtractRawPeaks:
     def __init__(self, assembly, j):
         self.assembly = assembly
         self.j = j
-        
+
         self.d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9"
         self.d = os.path.join(self.d, assembly)
         self.bwtool = "/data/cherrypy/bin/bwtool"
@@ -28,9 +37,9 @@ class ExtractRawPeaks:
                                          'minipeaks/bin/read_json')
         if not os.path.exists(self.bwtoolFilter):
             raise Exception("missing C++ bwtool filter; please compile?")
-        
+
     def run(self):
-        #self.writeBed()
+        self.writeBed()
         self.extractAndDownsamplePeaks()
 
     def _runBwtool(self, outD, fnp):
@@ -40,9 +49,8 @@ class ExtractRawPeaks:
                 fnp, "/dev/stdout",
                 '|', self.bwtoolFilter, "--bwtool",
                 '>', outFnp]
-        print("would run", " ".join(cmds))
-        #Utils.runCmds(cmds)        
-        
+        Utils.runCmds(cmds)
+
     def extractAndDownsamplePeaks(self):
         d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         fns = ["DNase-List.txt", "H3K27ac-List.txt",
@@ -67,10 +75,10 @@ class ExtractRawPeaks:
             Parallel(n_jobs = self.j)(delayed(self._runBwtool)
                                             (outD, fnp)
                                       for fnp in bfnps)
-                    
+
     def writeBed(self):
         inFnp = self.masterPeakFnp
-        outFnp = self.minPeaksBedFnp
+        outFnp = self.miniPeaksBedFnp
 
         with gzip.open(inFnp) as inF:
             with gzip.open(outFnp, "wb") as outF:
