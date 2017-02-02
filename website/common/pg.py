@@ -93,9 +93,9 @@ class PGsearch:
         ct = j.get("cellType", None)
         if ct:
             for assay in [("dnase", "dnase"),
-                          ("promoter", "h3k4me3_dnase"),
-                          ("enhancer", "h3k27ac_dnase"),
-                          ("ctcf", "ctcf_dnase")]:
+                          ("promoter", "h3k4me3_only"),
+                          ("enhancer", "h3k27ac_only"),
+                          ("ctcf", "ctcf_only")]:
                 if ct not in self.ctmap[assay[0]]:
                     continue
                 cti = self.ctmap[assay[0]][ct]
