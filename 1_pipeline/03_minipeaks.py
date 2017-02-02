@@ -107,8 +107,13 @@ def parse_args():
 def main():
     args = parse_args()
 
-    ep = ExtractRawPeaks(args.assembly, args.j)
-    ep.run()
+    assemblies = ["hg19", "mm10"]
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        ep = ExtractRawPeaks(assembly, args.j)
+        ep.run()
 
     return 0
 
