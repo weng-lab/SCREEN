@@ -55,13 +55,16 @@ class ParseSearch:
         return None
     
     def _gene_alias_to_coordinates(self, s):
-        fields = ["approved_symbol", "ensemblid"]
-        whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields])
+        fields = ["approved_symbol", "ensemblid", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
+        whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) #+ " or (LOWER('%s') = ANY((info->>'synonyms')::text[]))" % s
+        print(whereclause)
         with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
-            curs.execute("""SELECT chrom, start, stop, approved_symbol FROM {tablename}
+            curs.execute("""SELECT chrom, start, stop, info FROM {tablename}
                             WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
             r = curs.fetchone()
         if not r: return r
+        print("!\n")
+        print(r[3])
         return Coord(r[0], r[1], r[2])
     
     def parse(self, comparison = False):
