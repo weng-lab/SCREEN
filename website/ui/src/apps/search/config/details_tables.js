@@ -21,7 +21,7 @@ const render_gene_link = (d) => (
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 const render_bp = (v) => (v + "bp");
-const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + (a == "mm10" ? "hg19" : "mm10") + "&q=" + v + "' target='_blank'>" + v + "</a>");
+const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {
@@ -103,7 +103,7 @@ export const OrthologTable = {
 	bLengthChange: false,
 	emptyText: "No orthologous cRE identified",
 	cols: [
-	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly)},
+	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: render_int},
 	    {title: "end", "data": "stop", render: render_int},
@@ -163,7 +163,7 @@ export const NearbyGenomicTable = {
         bLengthChange: true,
 	cols: [
 	    {title: "accession", data: "name", className: "dt-right",
-	     render: render_relink },
+	     render: render_relink(GlobalAssembly) },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
         pageLength: 5,
@@ -210,7 +210,7 @@ export const NearbyGenomicTable = {
 	emptyText: "No cREs within TAD",
 	cols: [
 	    {title: "accession", data: "accession",
-	     render: render_re_link },
+	     render: render_relink(GlobalAssembly) },
 	    {title: "coordinates", data: "position",
 	     render:  render_position }	],
         pageLength: 5,
