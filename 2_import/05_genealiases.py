@@ -45,7 +45,7 @@ class GeneInfo:
              "approved_symbol": line[1],
              "approved_name": line[2],
              "previous_symbols": line[4].split(","),
-             "synonyms": line[5].split(","),
+             "synonyms": [x.strip() for x in line[5].split(",")],
              "accession_numbers": line[7],
              "RefSeq_ID": line[10],
              "UniProt_ID": line[14],
