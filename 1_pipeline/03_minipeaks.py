@@ -4,10 +4,17 @@ import sys
 import os
 import argparse
 import gzip
+from joblib import Parallel, delayed
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+from files_and_paths import Dirs, Tools, Genome, Datasets
+from utils import Utils, Timer
 
 class ExtractRawPeaks:
-    def __init__(self, assembly):
+    def __init__(self, assembly, j):
         self.assembly = assembly
+        self.j = j
+        
         self.d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9"
         self.d = os.path.join(self.d, assembly)
         self.bwtool = "/data/cherrypy/bin/bwtool"
@@ -31,32 +38,36 @@ class ExtractRawPeaks:
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
                 fnp, "/dev/stdout",
-                '|', self.bwtoolFilter,
+                '|', self.bwtoolFilter, "--bwtool",
                 '>', outFnp]
         print("would run", " ".join(cmds))
         #Utils.runCmds(cmds)        
         
     def extractAndDownsamplePeaks(self):
+        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         fns = ["DNase-List.txt", "H3K27ac-List.txt",
                "H3K4me3-List.txt"]
-        bfnps = []
 
         for fn in fns:
+            print("***********************", fn)
             fnp = os.path.join(self.d, "raw", fn)
             with open(fnp) as f:
                 rows = [x.rstrip().split() for x in f.readlines()]
+
+            bfnps = []
             for r in rows:
                 fnp = os.path.join(d, r[0], r[1] + ".bigWig")
-            if os.path.exists(fnp):
-                bfnps.append(fnp)
-            else:
-                print("WARNING: missing bigwig", fnp)
+                if os.path.exists(fnp):
+                    bfnps.append(fnp)
+                else:
+                    print("WARNING: missing bigwig", fnp)
             outD = os.path.join(self.d, "minipeaks")
             Utils.mkdir_p(outD)
 
-            for fnp in bfnps:
-                self._runBwtool(outD, fnp)
-        
+            Parallel(n_jobs = self.j)(delayed(self._runBwtool)
+                                            (outD, fnp)
+                                      for fnp in bfnps)
+                    
     def writeBed(self):
         inFnp = self.masterPeakFnp
         outFnp = self.minPeaksBedFnp
@@ -88,7 +99,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    ep = ExtractRawPeaks(args.assembly)
+    ep = ExtractRawPeaks(args.assembly, args.j)
     ep.run()
 
     return 0
