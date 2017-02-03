@@ -55,6 +55,8 @@
     {{ hh.js("/static/d3-tip.js") }}
     {{ hh.css("/static/css.css") }}
 
+    {{ hh.js("/globalData/" + Assembly + "/ver") }}
+        
     <script type="text/javascript">
       var HOMEPAGE = {
          "url": "/",
@@ -62,9 +64,6 @@
       };
       var GlobalAssembly = "{{ Assembly }}";
       var GlobalSessionUid = "{{ globalSessionUid }}";
-      $.getJSON("/globalData/" + GlobalAssembly + "/ver", function(d){
-      Globals = d;
-      });
       console.log("assembly is", GlobalAssembly);
     </script>
 
