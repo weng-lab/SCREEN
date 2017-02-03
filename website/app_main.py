@@ -209,6 +209,5 @@ class MainApp():
         return self.ajaxWS.jsondownload(j, self.session_uuid())
 
     @cherrypy.expose
-    @cherrypy.tools.json_out()
     def globalData(self, assembly, ver):
         return self.global_data.static(assembly, ver)

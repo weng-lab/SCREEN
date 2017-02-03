@@ -108,7 +108,7 @@ class CachedObjects:
     def globalCellTypeInfoArr(self):
         return self.datasets.globalCellTypeInfoArrJson()
 
-    def global_data(self):
+    def global_data(self, ver):
         from compute_gene_expression import Compartments
         datasets = self.datasets
         return { 
