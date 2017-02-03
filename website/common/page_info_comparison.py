@@ -1,11 +1,6 @@
-import sys, os, json, cherrypy
-import subprocess
+import sys, os, json
 
-from models.regelm import RegElements
-from models.regelm_detail import RegElementDetails
 from parse_search import ParseSearch
-
-from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
@@ -17,17 +12,30 @@ class PageInfoComparison:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
+        cache = self.cacheW[assembly]
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
-                "re_json_index" : paths.reJsonIndex(assembly)
+                "re_json_index" : paths.reJsonIndex(assembly),
+                "globalTfs" : [],
+                "globalCellCompartments" : [],
+                "globalCellTypes" : [],
+                "globalCellTypeInfo": cache.globalCellTypeInfo(),
+                "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
+
         }
 
     def comparisonPage(self, args, kwargs, uuid):
-        if "assembly" not in kwargs:
-            raise Exception("assembly not found" + str(kwargs))
-        assembly = kwargs["assembly"]
+        assembly = ""
+        if len(args):
+            assembly = args[0]
+            # TODO: check gene
+        else:
+            raise Exception("no assembly")
+        
+        cache = self.cacheW[assembly]
+
         ret = self.wholePage(assembly)
 
         parsed = ""
@@ -38,10 +46,9 @@ class PageInfoComparison:
 
         ret.update({"globalParsedQuery": json.dumps(parsed),
                     "globalSessionUid": uuid,
-                    "globalTfs": json.dumps({}),
-                    "globalCellTypes" : self.cacheW.getCTTjson(assembly),
                     "searchPage": False,
-                    "tissueMap": self.cacheW.getTissueMap(assembly) })
+                    "tissueMap" : json.dumps({})
+                    })
 
         return ret
     

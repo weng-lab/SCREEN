@@ -6,6 +6,7 @@ from controllers.main_controller import MainController
 from controllers.geneexp_controller import GeneExpController
 from controllers.de_controller import DeController
 from controllers.gwas_controller import GwasController
+from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
@@ -27,6 +28,7 @@ class MainApp():
         self.ge = GeneExpController(self.templates, es, ps, cache)
         self.de = DeController(self.templates, es, ps, cache)
         self.gwas = GwasController(self.templates, es, ps, cache)
+        self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, es, ps, cache)
         self.cp = ComparisonController(self.templates, es, ps, cache)
         self.cartc = CartController(self.templates, es, ps, cache)
@@ -206,3 +208,6 @@ class MainApp():
         j = cherrypy.request.json
         return self.ajaxWS.jsondownload(j, self.session_uuid())
 
+    @cherrypy.expose
+    def globalData(self, assembly, ver):
+        return self.global_data.static(assembly, ver)
