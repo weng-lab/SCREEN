@@ -16,7 +16,7 @@ const cols = [{ title: "cell type", data: "name",
 		className: "dt-right" }]
 
 //console.log(GlobalCellTypeInfoArr);
-var data = (tset) => (GlobalCellTypeInfoArr.map((ct, i) => {return {key: i,
+var data = (tset) => (Globals.cellTypeInfoArr.map((ct, i) => {return {key: i,
 								    name: ct.name,
 								    tissue: ct.tissue,
 								    selected: tset && tset.has(i)}}));
@@ -30,7 +30,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
                     order={[]}
                     selection={[]}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"]; }}
+                        return Globals.cellTypeInfo[value]["name"]; }}
                     onTdClick={(value) => { console.log(value); actions.setCt1(value) }}
                     />);
 }
@@ -44,7 +44,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     order={[]}
                     selection={[]}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"]; }}
+                        return Globals.cellTypeInfo[value]["name"]; }}
                     onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }
