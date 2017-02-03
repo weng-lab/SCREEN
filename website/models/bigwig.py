@@ -44,6 +44,7 @@ class BigWig:
         for bw in bfnps:
             signals = self._runBw(bedFnp, bw["fnp"])
             ct = bw["ct"]
+            print(signals)
             for line in signals:
                 p = line.split("\t")
                 if len(p) >= 6:

@@ -4,6 +4,7 @@ import ResultsTableContainer from '../components/results_app'
 import ResultsTree from '../components/tree'
 import DetailsContainer from '../components/details_container'
 import TFDisplay from '../components/tf_display'
+import ActivityProfile from '../components/activity_profile'
 
 import DetailsTabInfo from './details'
 
@@ -27,8 +28,13 @@ class TFTab extends React.Component {
     render() { return (<TFDisplay />); }
 }
 
+class ActivityProfileTab extends React.Component {
+    render() { return <ActivityProfile key="aprofile" />;}
+}
+
 const MainTabInfo = {
     results : {title: "Search Results", visible: true, f: ResultsTab},
+    aprofile: {title: "Activity Profile", visible: true, f: ActivityProfileTab},
     ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
     tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
     details: {title: "RE Details", visible: false, f: DetailsTab},

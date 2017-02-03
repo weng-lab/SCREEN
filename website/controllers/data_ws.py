@@ -51,6 +51,7 @@ class DataWebService:
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
+        self.mpk = MiniPeaks(self.pgSearch, "", self.cache)
 
         self.actions = {"cre_table" : self.cre_table,
                         "re_detail" : self.re_detail,
@@ -85,9 +86,17 @@ class DataWebService:
     
     def cre_table(self, j, args):
         chrom = self._checkChrom(j)
-        return self.pgSearch.creTable(j, chrom,
-                                      j.get("coord_start", None),
-                                      j.get("coord_end", None))
+        results = self.pgSearch.creTable(j, chrom,
+                                         j.get("coord_start", None),
+                                         j.get("coord_end", None))
+        if "withpeaks" in j:
+            res = results["cres"][:20]
+            n_bars = 15
+            r, e = self.mpk.regionsFromSearchList(j["withpeaks"], res, n_bars)
+            order = r["order"]
+            r.pop("order", None)
+            results["peakdata"] = {"order": order, "mostSimilar": e, "regions": r}
+        return results
 
     def re_detail(self, j, args):
         action = args[0]

@@ -25,7 +25,7 @@ const factorbook_histones = [
 const render_factorbook_link_histone = (d) => (
     factorbook_histones.includes(d)
 	? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>'
-	: d
+	: d.replace(/F/g, ".")
 );
 
 const render_snp_link = (d) => {

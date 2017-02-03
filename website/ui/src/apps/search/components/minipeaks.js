@@ -58,8 +58,9 @@ class MiniPeaks extends REComponent {
     }
 
     _render_regionset(regions, width, order, transform, text) {
+	let assay = (this.props.assay ? this.props.assay : this.state.assay);
 	var _render_histogram = this._render_histogram;
-	var _max = this.state.assay != "dnase" ? 20.0 : 150.0;
+	var _max = assay != "dnase" ? 50.0 : 150.0;
 	var mfactor = ROWHEIGHT / _max;
 	text = friendly_celltype(text);
 
@@ -67,7 +68,7 @@ class MiniPeaks extends REComponent {
 		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end" fill={_tissuecolor(regions["tissue"])}>{text}</text>
 		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>
 		      {order.map((k, i) => (
-		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > _max ? _max : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", this._colors[this.state.assay]) : <g />
+		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > _max ? _max : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", this._colors[assay]) : <g />
 		      ))}
 		   </g>
 		</g>);
@@ -88,9 +89,9 @@ class MiniPeaks extends REComponent {
 	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN + 100;
 	var height = (ROWHEIGHT + ROWMARGIN) * cts.length + TOPMARGIN;
 	return (<div><select ref="assay" onChange={this._onchange}>
-		   <option value="dnase">DNase</option>
-		   <option value="h3k4me3">H3K4me3</option>
-		   <option value="h3k27ac">H3K27ac</option>
+		     <option value="dnase" selected={this.props.assay && this.props.assay == "dnase"}>DNase</option>
+		     <option value="h3k4me3" selected={this.props.assay && this.props.assay == "h3k4me3"}>H3K4me3</option>
+		     <option value="h3k27ac" selected={this.props.assay && this.props.assay == "h3k27ac"}>H3K27ac</option>
 		</select><br />
 		<svg width={width} height={height}>
 		   <g transform={"translate(0," + TOPMARGIN + ")"}>
