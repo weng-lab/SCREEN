@@ -8,8 +8,7 @@ from joblib import Parallel, delayed
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer
-
+from utils import Utils, Timer, numLines
 
 # from http://stackoverflow.com/a/19861595
 import copy_reg
@@ -17,7 +16,6 @@ import types
 def _reduce_method(meth):
     return (getattr, (meth.__self__, meth.__func__.__name__))
 copy_reg.pickle(types.MethodType, _reduce_method)
-
 
 class ExtractRawPeaks:
     def __init__(self, assembly, j):
@@ -29,8 +27,12 @@ class ExtractRawPeaks:
         self.bwtool = "/data/cherrypy/bin/bwtool"
         if not os.path.exists(self.bwtool):
             self.bwtool = "/usr/local/bin/bwtool"
+        if not os.path.exists(self.bwtool):
+            raise Exception("no bwtool found")
         self.masterPeakFnp = os.path.join(self.d, "raw",
                                           "masterPeaks.bed.gz")
+        self.numPeaks = numLines(self.masterPeakFnp)
+        print(self.masterPeakFnp, "has", self.numPeaks)
         self.miniPeaksBedFnp = os.path.join(self.d, "raw",
                                             "miniPeakSites.bed.gz")
         self.bwtoolFilter = os.path.join(os.path.dirname(__file__),
@@ -44,6 +46,12 @@ class ExtractRawPeaks:
 
     def _runBwtool(self, outD, fnp):
         outFnp = os.path.join(outD, os.path.basename(fnp) + ".txt")
+        if os.path.exists(outFnp):
+            if os.path.getsize(outFnp) > 0:
+                num = numLines(outFnp)
+                if num == self.numPeaks:
+                    print("skipping", outFnp, num)
+                    return
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
                 fnp, "/dev/stdout",
