@@ -30,7 +30,7 @@ const rangeBox = (title, range, start, end, action, _f) => {
             />);
 }
 
-const make_ct_friendly = (ct) => (GlobalCellTypeInfo[ct]["name"]);
+const make_ct_friendly = (ct) => (Globals.cellTypeInfo[ct]["name"]);
 
 const accessionsBox = ({accessions, actions}) => {
     if(0 == accessions.length){
@@ -53,7 +53,7 @@ const cellTypesBox = ({cellType, actions}) => {
     return panelize("Cell types",
                     <LongListFacet
                     title={""}
-                    data={GlobalCellTypeInfoArr}
+                    data={Globals.cellTypeInfoArr}
                     cols={[
 		        { title: "cell type", data: "name",
 		          className: "dt-right" },
@@ -71,7 +71,7 @@ const chromBox = ({coord_chrom, actions}) => {
     return panelize("Chromosome",
 	            <ListFacet
                     title={""}
-                    items={GlobalChromCounts}
+                    items={Globals.chromCounts}
                     selection={coord_chrom}
                     onchange={(chrom) => { actions.setChrom(chrom) }}
                     />);
@@ -81,8 +81,8 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     if(null == coord_chrom){
         return (<div />);
     }
-    var chromLen = GlobalChromLens[coord_chrom];
-    var histBins = GlobalCreHistBins[coord_chrom];
+    var chromLen = Globals.chromLens[coord_chrom];
+    var histBins = Globals.creHistBins[coord_chrom];
     return panelize("Coordinates",
                     <RangeFacet
                     title={""}
@@ -99,7 +99,7 @@ const tfBox = ({actions}) => {
     return panelize("Intersect TF/histone/DNase peaks",
                     <LongChecklistFacet
                     title={""}
-                    data={GlobalTfs.map((tf) => {return {key: tf,
+                    data={Globals.tfs.map((tf) => {return {key: tf,
                                                          selected: false}})}
                     cols={[{
 		        title: "Assay", data: "key",

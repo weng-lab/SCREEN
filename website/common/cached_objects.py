@@ -111,7 +111,7 @@ class CachedObjects:
     def global_data(self):
         from compute_gene_expression import Compartments
         datasets = self.datasets
-        return { "Globals" : {
+        return { 
             "tfs" : self.tf_list,
             "cellCompartments" : Compartments,
             "cellTypeInfo": datasets.globalCellTypeInfo,
@@ -119,5 +119,5 @@ class CachedObjects:
             "chromCounts" : self.chromCounts,
             "chromLens" : chrom_lengths[self.assembly],
             "creHistBins" : self.creHist,
-        }}
+        }
     

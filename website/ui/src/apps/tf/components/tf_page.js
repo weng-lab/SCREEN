@@ -32,10 +32,10 @@ class TfPage extends React.Component{
         }
 	let tree_nodes_compare = [[], []];
 	for (let i of ct1) {
-	    tree_nodes_compare[0].push(GlobalCellTypeInfoArr[i].value);
+	    tree_nodes_compare[0].push(Globals.cellTypeInfoArr[i].value);
 	}
 	for (let i of ct2) {
-	    tree_nodes_compare[1].push(GlobalCellTypeInfoArr[i].value);
+	    tree_nodes_compare[1].push(Globals.cellTypeInfoArr[i].value);
 	}
         var q = {GlobalAssembly, tree_nodes_compare, tree_rank_method: "DNase"};
         var jq = JSON.stringify(q);
