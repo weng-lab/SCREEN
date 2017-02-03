@@ -1,5 +1,4 @@
-import sys, os, json, cherrypy
-import subprocess
+import sys, os, json
 
 from compute_gene_expression import ComputeGeneExpression, Compartments
 

@@ -24,7 +24,7 @@ class ComparisonPage extends React.Component {
 				      loggerMiddleware
 				  ));
 
-	//console.log(store.getState());
+	console.log(store.getState());
 	// 	    <MainTabs />
 	//                     <FacetBoxen />
 	return (
