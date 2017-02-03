@@ -211,7 +211,7 @@ const DetailsTabInfo = {
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated TSS Expression", enabled: true,
+    assocTSS: {title: "Associated gene Expression", enabled: true,
                f: AssocTssTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: true,

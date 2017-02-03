@@ -16,11 +16,16 @@ class RangeSlider extends React.Component {
 	this.update_selection = this.update_selection.bind(this);
 	this._update_width = this._update_width.bind(this);
 	this.componentDidUpdate = this.componentDidUpdate.bind(this);
+	this._rvalue = this._rvalue.bind(this);
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
 
     _value(v) {
 	return (this.props.rendervalue ? this.props.rendervalue(v) : v);
+    }
+
+    _rvalue(s) {
+	return (this.props.reversevalue ? this.props.reversevalue(s) : s);
     }
     
     render() {
@@ -96,16 +101,16 @@ class RangeSlider extends React.Component {
     }
 
     onMinChange() {
-	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
-	if (srange[0] > srange[1]) srange[0] = srange[1];
-	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
+	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
+//	if (srange[0] > srange[1]) srange[0] = srange[1];
+//	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
 	this.set_selection(srange);
     }
 
     onMaxChange() {
-	var srange = [+this.refs.txmin.value, +this.refs.txmax.value];
-	if (srange[1] < srange[0]) srange[1] = srange[0];
-	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
+	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
+//	if (srange[1] < srange[0]) srange[1] = srange[0];
+//	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
 	this.set_selection(srange);
     }
 
@@ -181,6 +186,7 @@ class RangeFacet extends React.Component {
                       title={this.props.title}
 		      updateWidth={this.props.updateWidth}
 		      rendervalue={this.props.rendervalue}
+		      reversevalue={this.props.reversevalue}
 		   />
 		</div>
 	       );

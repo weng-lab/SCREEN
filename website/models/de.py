@@ -43,7 +43,7 @@ class DE:
             if c[5] > thres or c[6] > thres:
                 ret.append([c[1], round(float(c[6] - c[5]), 3), "enhancer-like"])
         return {"data" : ret}
-
+    
     def nearbyDEs(self):
         # limb_14.5 from C57BL-6_limb_embryo_14.5_days
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
@@ -51,6 +51,8 @@ class DE:
 
         nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
                                             ct1, ct2, 1) #0.05)
+
+        print(self.coord())
 
         #print(len(nearbyDEs))
         if not nearbyDEs:
@@ -66,7 +68,7 @@ class DE:
                  round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
                  d[1], # stop
-                 d[3], d[4], d[5] # names
+                 d[3], d[4], self.cache._try_genename(d[5]) # names
                  ]
             print(d, e, d[1] - d[0])
             ret.append(e)
