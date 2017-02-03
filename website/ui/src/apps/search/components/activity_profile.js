@@ -68,7 +68,7 @@ class ActivityProfileContainer extends React.Component {
     render() {
 	if (this.state.isFetching) return loading(this.state);
 	if ("aprofile" != this.props.maintabs_active) return <div />;
-	let header = (this.state.total > 20 ? "" : "Displaying first 20 of " + this.state.total + " cREs");
+	let header = (this.state.total < 20 ? "" : "Displaying first 20 of " + this.state.total + " cREs");
 	console.log(this.state.peakdata);
 	let mpk = (this.state.peakdata
 		   ? <MiniPeaks
