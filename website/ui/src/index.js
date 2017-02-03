@@ -3,23 +3,24 @@ import 'babel-polyfill'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory} from 'react-router';
 
-import SearchPage from './apps/search/main';
+import Search from './apps/search/main';
 // import CartPage from './apps/cart/main';
-import GeneExpPage from './apps/geneexp/main';
-import DePage from './apps/de/main';
-import GwasApp from './apps/gwas/main';
-import TfApp from './apps/tf/main';
-// import ComparisonPage from './apps/comparison/main';
+import GeneExp from './apps/geneexp/main';
+import De from './apps/de/main';
+import Gwas from './apps/gwas/main';
+import Tf from './apps/tf/main';
+import Comparison from './apps/comparison/main';
 
-//<Route path="/cart" component={CartPage} />
-//<Route path="/comparison" component={ComparisonPage} />
+//     <Route path="/cart" component={CartPage} />
+
 
 ReactDOM.render(
     (<Router history={browserHistory}>
-     <Route path="/search(.*)" component={SearchPage} />
-     <Route path="/geneexp/:assembly/:geneID" component={GeneExpPage} />
-     <Route path="/deGene/:assembly/:geneID" component={DePage} />
-     <Route path="/gwasApp/:assembly/" component={GwasApp} />
-     <Route path="/tfApp/:assembly/" component={TfApp} />
+     <Route path="/comparison/:assembly" component={Comparison} />
+     <Route path="/deGene/:assembly/:geneID" component={De} />
+     <Route path="/geneexp/:assembly/:geneID" component={GeneExp} />
+     <Route path="/gwasApp/:assembly" component={Gwas} />
+     <Route path="/search(.*)" component={Search} />
+     <Route path="/tfApp/:assembly/" component={Tf} />
      </Router>),
     document.getElementById('root'));

@@ -1,6 +1,7 @@
 import cherrypy
 
 from common.page_info import PageInfoMain
+from common.page_info_search import PageInfoSearch
 from common.session import Sessions
 
 class MainController:
@@ -18,7 +19,7 @@ class MainController:
         return self.t('main/query', **pageInfo.rawQueryPage(q, url))
 
     def search(self, args, kwargs, uuid):
-        pageInfo = PageInfoMain(*self.params)
+        pageInfo = PageInfoSearch(*self.params)
         return self.t('main/search', **pageInfo.searchPage(args, kwargs, uuid))
 
     def element(self, accession):

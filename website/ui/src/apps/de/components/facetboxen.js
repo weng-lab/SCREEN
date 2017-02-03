@@ -19,12 +19,12 @@ const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
                     title={""}
-                    data={GlobalCellTypeInfoArr}
+                    data={Globals.cellTypeInfoArr}
                     cols={cols}
                     order={[]}
                     selection={ct1}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"]; }}
+                        return Globals.cellTypeInfo[value]["name"]; }}
                     onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
@@ -33,12 +33,12 @@ const cellTypesBox2 = ({ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
                     title={""}
-                    data={GlobalCellTypeInfoArr}
+                    data={Globals.cellTypeInfoArr}
                     cols={cols}
                     order={[]}
                     selection={ct2}
                     friendlySelectionLookup={(value) => {
-                        return GlobalCellTypeInfo[value]["name"]; }}
+                        return Globals.cellTypeInfo[value]["name"]; }}
                     onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }

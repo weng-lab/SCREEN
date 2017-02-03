@@ -60,13 +60,16 @@
          "url": "/",
          "title": "SCREEN"
       };
+    </script>
+
+    {% if Assembly > "" -%}
+    {{ hh.js("/globalData/" + Assembly + "/ver") }}
+    <script type="text/javascript">
       var GlobalAssembly = "{{ Assembly }}";
       var GlobalSessionUid = "{{ globalSessionUid }}";
-      var GlobalTfs = {{ globalTfs }};
-      var GlobalCellTypeInfo = {{ globalCellTypeInfo }};
-      var GlobalCellTypeInfoArr = {{ globalCellTypeInfoArr }};
       console.log("assembly is", GlobalAssembly);
     </script>
+    {% endif -%}
 
   </head>
   <body>

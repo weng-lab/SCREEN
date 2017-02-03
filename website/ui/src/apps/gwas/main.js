@@ -13,19 +13,19 @@ import main_reducers from './reducers/main_reducers'
 
 import initialState from './config/initial_state'
 
-const loggerMiddleware = createLogger();
-
-const store = createStore(main_reducers,
-                          initialState,
-                          applyMiddleware(
-                              thunkMiddleware,
-                              loggerMiddleware
-                          ));
-
-//console.log(store.getState());
-
 class GwasApp extends React.Component {
     render() {
+	const loggerMiddleware = createLogger();
+
+	const store = createStore(main_reducers,
+				  initialState,
+				  applyMiddleware(
+				      thunkMiddleware,
+				      loggerMiddleware
+				  ));
+
+	//console.log(store.getState());
+
         return (
                 <Provider store={store}>
 	        <div>
