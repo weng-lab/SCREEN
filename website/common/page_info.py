@@ -42,33 +42,6 @@ class PageInfoMain:
         retval["rankB"] = kwargs["rankB"]
         return retval
 
-    def searchPage(self, args, kwargs, uuid):
-        if "assembly" not in kwargs:
-            raise Exception("assembly not found" + str(kwargs))
-        assembly = kwargs["assembly"]
-        ret = self.wholePage(assembly)
-
-        parsed = ""
-        if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.ps.DBCONN, assembly)
-            parsed = p.parse()
-            parsedStr = p.parseStr()
-
-        cache = self.cacheW[assembly]
-
-        ret.update({"globalParsedQuery" : json.dumps(parsed),
-                    "globalSessionUid" : uuid,
-                    "globalTfs" : cache.getTFListJson(),
-                    "searchPage": True,
-                    "globalChromCounts" : json.dumps(cache.chromCounts),
-                    "globalChromLens" : json.dumps(chrom_lengths[assembly]),
-                    "globalCreHistBins" : json.dumps(cache.creHist),
-                    "globalCellTypeInfo": cache.globalCellTypeInfo(),
-                    "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
-                    })
-
-        return ret
-
     def rawQueryPage(self, q, url):
         pageinfo = self.wholePage()
         try:
