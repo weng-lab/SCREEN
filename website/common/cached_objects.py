@@ -70,7 +70,23 @@ class CachedObjects:
         self.assaymap = {"dnase": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/DNase-List.txt" % assembly),
                          "h3k27ac": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/H3K27ac-List.txt" % assembly),
                          "h3k4me3": self._assaymap("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/%s/raw/H3K4me3-List.txt" % assembly) }
-                          
+        self.ensemblToSymbol = self._genemap()
+
+    def _try_genename(self, s):
+        if s in self.ensemblToSymbol:
+            return self.ensemblToSymbol[s]
+        d = s.split(".")[0]
+        if d in self.ensemblToSymbol:
+            return self.ensemblToSymbol[d]
+        return s
+        
+    def _genemap(self):
+        with getcursor(self.ps.DBCONN, "cached_objects$CachedObjects::_genemap") as curs:
+            curs.execute("""SELECT ensemblid, approved_symbol
+                                FROM {tn}""".format(tn = self.assembly + "_gene_info"))
+            results = curs.fetchall()
+        return {result[0]: result[1] for result in results}
+        
     def _assaymap(self, fnp):
         r = {}
         if os.path.exists(fnp):

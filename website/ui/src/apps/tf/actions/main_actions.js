@@ -6,3 +6,5 @@ export const setCt1 = (ct) => ({ type: SET_CT1, ct });
 export const SET_CT2 = 'SET_CT2';
 export const setCt2 = (ct) => ({ type: SET_CT2, ct });
 
+export const SET_LOADING = 'SET_LOADING';
+export const setloading = () => ({type: SET_LOADING});

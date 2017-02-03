@@ -22,14 +22,15 @@ class TfPage extends React.Component{
     }
 
     componentWillReceiveProps(nextProps){
-	this.setState({isDone: false});
+	if (this.props.needreload) this.setState({isDone: false});
     }
 
-    loadTf({ct1, ct2}){
+    loadTf({ct1, ct2, actions}){
         if(null == ct1 || null == ct2){
             this.setState({selectCT: true});
             return;
         }
+	actions.setloading();
 	let tree_nodes_compare = [[], []];
 	for (let i of ct1) {
 	    tree_nodes_compare[0].push(GlobalCellTypeInfoArr[i].value);
@@ -84,6 +85,8 @@ class TfPage extends React.Component{
                    </div>);
         } else if (!this.state.isFetching) {
 	    return <button onClick={() => {this.loadTf(this.props)}}>Compute</button>;
+	} else if (this.props.ct1.size == 0 || this.props.ct2.size == 0) {
+	    return <div>Please select at least two cell types to compare at left</div>;
 	}
         return loading(this.state);
     }

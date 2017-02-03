@@ -18,7 +18,7 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize} from '../../../common/uility'
 
-const rangeBox = (title, range, start, end, action, _f) => {
+const rangeBox = (title, range, start, end, action, _f, _rf) => {
     return (<RangeFacet
             title={title}
 	    range={range}
@@ -27,6 +27,7 @@ const rangeBox = (title, range, start, end, action, _f) => {
 	    h_interval={(end - start) / 500}
             onchange={(se) => { action(se[0], se[1])}}
 	    rendervalue={_f}
+	    reversevalue={_rf}
             />);
 }
 
@@ -126,6 +127,7 @@ const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
 }
 
 const zscore_decimal = (v) => (v / 100.0);
+const zrdecimal = (s) => (+s * 100.0);
 
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
@@ -139,13 +141,13 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
 	      return panelize("Z-Score: " + make_ct_friendly(cellType),
                     (<div>
                      {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
-                               actions.setRankDnase, zscore_decimal)}
+                               actions.setRankDnase, zscore_decimal, zrdecimal)}
                      {rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
-                               actions.setRankPromoter, zscore_decimal)}
+                               actions.setRankPromoter, zscore_decimal, zrdecimal)}
                      {rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
-                               actions.setRankEnhancer, zscore_decimal)}
+                               actions.setRankEnhancer, zscore_decimal, zrdecimal)}
                      {rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
-                               actions.setRankCtcf, zscore_decimal)}
+                               actions.setRankCtcf, zscore_decimal, zrdecimal)}
                      </div>));
 };
 

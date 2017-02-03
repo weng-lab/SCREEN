@@ -37,12 +37,10 @@ class TFEnrichment:
         
         left = [cti[x] for x in leftRaw if x in cti]
         right = [cti[x] for x in rightRaw if x in cti]
-        print(left)
-        print(right)
         def whereclause(inc, exc, assay = lookup[tree_rank_method]):
             inc = " or ".join(["%s_zscore[%d] > 1.64" % (assay, x) for x in inc])
-            exc = " and ".join(["%s_zscore[%d] <= 1.64" % (assay, x) for x in exc])
-            return "(%s) and (%s)" % (inc, exc)
+            #exc = " and ".join(["%s_zscore[%d] <= 1.64" % (assay, x) for x in exc])            
+            return "(%s)" % inc # and (%s)" % (inc, exc)
         with getcursor(self.ps.DBCONN, "tfenrichment$TFEnrichment::findenrichment") as curs:
             with Timer("tf query"):
                 q = """SELECT jsonb_each_text(tf) FROM {tableName}, {pTableName}
