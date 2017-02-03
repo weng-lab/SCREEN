@@ -16,10 +16,10 @@ import Comparison from './apps/comparison/main';
 
 ReactDOM.render(
     (<Router history={browserHistory}>
-     <Route path="/comparison/:assembly/" component={Comparison} />
+     <Route path="/comparison/:assembly" component={Comparison} />
      <Route path="/deGene/:assembly/:geneID" component={De} />
      <Route path="/geneexp/:assembly/:geneID" component={GeneExp} />
-     <Route path="/gwasApp/:assembly/" component={Gwas} />
+     <Route path="/gwasApp/:assembly" component={Gwas} />
      <Route path="/search(.*)" component={Search} />
      <Route path="/tfApp/:assembly/" component={Tf} />
      </Router>),
