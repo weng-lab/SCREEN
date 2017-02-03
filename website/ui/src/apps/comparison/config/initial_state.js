@@ -12,11 +12,6 @@ const initialState = {
     maintabs: MainTabInfo,
     maintabs_active: "results",
     maintabs_visible: false,
-    cart_accessions: new Set(),
-    cre_accession_detail: null,
-    re_details_tab_active: "topTissues",
-    tree_rank_method: "DNase",
-    tree_nodes_compare : null
 };
 
 export default initialState;
