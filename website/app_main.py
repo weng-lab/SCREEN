@@ -210,5 +210,5 @@ class MainApp():
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def globalData(self, assembly):
-        return self.globalData.static(assembly)
+    def globalData(self, assembly, ver):
+        return self.global_data.static(assembly, ver)

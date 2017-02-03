@@ -6,7 +6,7 @@ from models.datasets import Datasets
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import Autocompleter
-from constants import paths
+from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
 from models.minipeaks_cache import MiniPeaksCache
 
@@ -107,3 +107,17 @@ class CachedObjects:
 
     def globalCellTypeInfoArr(self):
         return self.datasets.globalCellTypeInfoArrJson()
+
+    def global_data(self):
+        from compute_gene_expression import Compartments
+        datasets = self.datasets
+        return { "Globals" : {
+            "tfs" : self.tf_list,
+            "cellCompartments" : Compartments,
+            "cellTypeInfo": datasets.globalCellTypeInfo,
+            "cellTypeInfoArr": datasets.globalCellTypeInfoArr,
+            "chromCounts" : self.chromCounts,
+            "chromLens" : chrom_lengths[self.assembly],
+            "creHistBins" : self.creHist,
+        }}
+    
