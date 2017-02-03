@@ -62,10 +62,9 @@
       };
       var GlobalAssembly = "{{ Assembly }}";
       var GlobalSessionUid = "{{ globalSessionUid }}";
-      var GlobalTfs = {{ globalTfs }};
-      var GlobalCellTypeInfo = {{ globalCellTypeInfo }};
-      var GlobalCellTypeInfoArr = {{ globalCellTypeInfoArr }};
-      var GlobalCellCompartments = {{ globalCellCompartments }};
+      $.getJSON("/globalData/" + GlobalAssembly + "/ver", function(d){
+      Globals = d;
+      });
       console.log("assembly is", GlobalAssembly);
     </script>
 
