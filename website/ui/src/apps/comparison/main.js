@@ -23,12 +23,6 @@ import {maintabs} from './config/comparison_tabs'
 import {invalidate_comparison} from './helpers/invalidate_results'
 
 class ComparisonPage extends React.Component {
-
-    constructor(props) {
-	super(props);
-	this.store = createStore(get_root_comparison_reducer(maintabs), applyMiddleware(thunkMiddleware));
-    }
-
     render() {
 	var Tabs = main_tab_connector(MainTabControl);
 	var SearchBoxC = main_searchbox_connector(SearchBox);
