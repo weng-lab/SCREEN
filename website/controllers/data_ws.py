@@ -142,8 +142,9 @@ class DataWebService:
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
         cge = ComputeGeneExpression(None, self.ps, self.cache, self.assembly)
-        r = cge.computeHorBars(nearest["name"], (u'cell',))
-        r["genename"] = nearest["name"]
+        name = self.cache._try_genename(nearest["name"])
+        r = cge.computeHorBars(name, (u'cell',))
+        r["genename"] = name
         return {accession: r}
     
     def _re_detail_similarREs(self, j, accession):

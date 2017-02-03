@@ -5,8 +5,28 @@ import {render_support, render_length, render_supporting_cts} from '../../geneex
 const render_factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
+const factorbook_histones = [
+    "H2AFZ",
+    "H3K27ac",
+    "H3K27me3",
+    "H3K36me3",
+    "H3K4me1",
+    "H3K4me2",
+    "H3K4me3",
+    "H3K79me2",
+    "H3K9ac",
+    "H3K9me1",
+    "H3K9me2",
+    "H3K9me3",
+    "H4K20me1"
+];
+    
+
 const render_factorbook_link_histone = (d) => (
-    '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>');
+    factorbook_histones.includes(d)
+	? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d + '</a>'
+	: d
+);
 
 const render_snp_link = (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";

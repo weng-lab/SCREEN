@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os
+import re
 from coord import Coord
 
 sys.path.append(os.path.join(os.path.realpath(__file__), "../../../metadata/utils"))
@@ -66,6 +67,14 @@ class ParseSearch:
         print("!\n")
         print(r[3])
         return Coord(r[0], r[1], r[2])
+
+    def _find_coord(self, s):
+        print(s)
+        r = re.search("^chr[0-9XYM][0-9]?[\s]*[\:]?[\s]*[0-9]+[\s\-]+[0-9]+", s)
+        print(r)
+        if not r: return None
+        p = r.group(0).replace("-", " ").replace(":", " ").split()
+        return Coord(p[0], p[1], p[2])
     
     def parse(self, comparison = False):
         s = self._sanitize()
@@ -73,9 +82,11 @@ class ParseSearch:
         toks = s.split()
         toks = [t.lower() for t in toks]
 
-        coord = None
+        coord = self._find_coord(s)
         cellTypes = self.find_celltypes_in_query(s)
-        coord = self.find_gene_in_q(s)
+        ncoord = self.find_gene_in_q(s)
+        if ncoord:
+            coord = ncoord
         
 #        gene_suggestions, gene_results = self.gene_aliases_to_coordinates(s)
 #        gene_toks, gene_coords = _unpack_tuple_array(gene_results)
@@ -86,11 +97,7 @@ class ParseSearch:
         try:
             for t in toks:
                 print(t)
-                if t.startswith("chr"):
-                    # coordinate
-                    coord = Coord.parse(t)
-                    continue
-                elif isaccession(t):
+                if isaccession(t):
                     accessions.append(t)
                     continue
                 elif t.startswith("rs"):
