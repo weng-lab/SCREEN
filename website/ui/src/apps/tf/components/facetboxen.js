@@ -15,7 +15,7 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }]
 
-//console.log(GlobalCellTypeInfoArr);
+//console.log(Globals.cellTypeInfoArr);
 var data = (tset) => (Globals.cellTypeInfoArr.map((ct, i) => {return {key: i,
 								    name: ct.name,
 								    tissue: ct.tissue,

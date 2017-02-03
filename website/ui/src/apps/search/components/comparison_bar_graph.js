@@ -35,7 +35,7 @@ const format_data_for_bar_graph = (data, rank_type, threshold) => {
 		    items: []
 		};
 	    }
-	    retval[Global.tissueMap[k]].items.push(rank_f(c_rank_f(data[i])[k]));
+	    retval[Globals.tissueMap[k]].items.push(rank_f(c_rank_f(data[i])[k]));
 	}
     }
     return retval;
