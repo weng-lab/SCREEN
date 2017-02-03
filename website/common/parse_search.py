@@ -3,7 +3,8 @@
 import sys, os
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.realpath(__file__), "../../../metadata/utils"))
+sys.path.append(os.path.join(os.path.realpath(__file__),
+                             "../../../metadata/utils"))
 from db_utils import getcursor
 
 def _unpack_tuple_array(a):
