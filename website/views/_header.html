@@ -55,17 +55,21 @@
     {{ hh.js("/static/d3-tip.js") }}
     {{ hh.css("/static/css.css") }}
 
-    {{ hh.js("/globalData/" + Assembly + "/ver") }}
-        
     <script type="text/javascript">
       var HOMEPAGE = {
          "url": "/",
          "title": "SCREEN"
       };
+    </script>
+
+    {% if Assembly > "" -%}
+    {{ hh.js("/globalData/" + Assembly + "/ver") }}
+    <script type="text/javascript">
       var GlobalAssembly = "{{ Assembly }}";
       var GlobalSessionUid = "{{ globalSessionUid }}";
       console.log("assembly is", GlobalAssembly);
     </script>
+    {% endif -%}
 
   </head>
   <body>
