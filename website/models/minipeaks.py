@@ -36,10 +36,11 @@ class MiniPeaks:
             tissuegroupings[v["tissue"]].append(k)
         return asum([v for k, v in tissuegroupings.iteritems()])
 
-    def _get_bigwig_regions(self, bigwigs, cres, assay):
+    def _get_bigwig_regions(self, bigwigs, cres, assay, n_bars = 15):
+        print(cres)
         try:
             results = BigWig(self.cache.minipeaks_caches[assay]).getregions(cres,
-                                                                            bigwigs, 20)
+                                                                            bigwigs, n_bars)
             results["order"] = self._groupbytissue(results)
             return results
         except:
@@ -53,6 +54,14 @@ class MiniPeaks:
             print("missing tissue for", ct)
             return ""
 
+    def regionsFromSearchList(self, assay, cres, n_bars):
+        for cre in cres:
+            cre["end"] = cre["stop"]
+        bigWigs = self._get_bigwigs(assay)
+        regions = self._get_bigwig_regions(bigWigs, cres, assay, n_bars)
+        accs = [x["accession"] for x in cres]
+        return (regions, accs)
+        
     def getBigWigRegions(self, assay, cres = None):
         coord = CRE(self.pgSearch, self.accession, self.cache).coord()
         bigWigs = self._get_bigwigs(assay)

@@ -60,6 +60,7 @@ function tabEles(data, tables, numCols){
 
 class ReTabBase extends React.Component{
     constructor(props, key) {
+	console.log(props);
 	super(props);
         this.key = key;
         this.url = "/dataws/re_detail/" + key;
@@ -104,7 +105,8 @@ class ReTabBase extends React.Component{
         if(accession in this.state){
             return this.doRender(this.state[accession]);
         }
-        return loading(this.state);
+	console.log(this.props);
+        return loading({...this.state, message: this.props.message});
     }
 
     render(){
@@ -192,7 +194,7 @@ class SimilarREsTab extends ReTabBase{
 		      forcereload: true, extras: {assay: v}});
     }
     constructor(props) {
-	super(props, "similarREs");
+	super({...props, message: "This computation may take several minutes."}, "similarREs");
 	this._onchange = this._onchange.bind(this);
         this.doRender = (data) => {
             return (<MiniPeaks data={data} onAssayChange={this._onchange} />);
@@ -211,7 +213,7 @@ const DetailsTabInfo = {
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated gene Expression", enabled: true,
+    assocTSS: {title: "Associated Gene Expression", enabled: true,
                f: AssocTssTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: true,
