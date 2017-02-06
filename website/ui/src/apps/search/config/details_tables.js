@@ -37,7 +37,7 @@ const render_snp_link = (d) => {
 }
 
 const render_gene_link = (d) => (
-    '<a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a>');
+    '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 const render_bp = (v) => (v + "bp");
