@@ -56,6 +56,7 @@ const cellTypesBox = ({cellType, actions}) => {
                     title={""}
                     data={Globals.cellTypeInfoArr}
                     cols={[
+			{title: "", data: "name", render: () => ("<input type='checkbox' />")},
 		        { title: "cell type", data: "name",
 		          className: "dt-right" },
 		        { title: "tissue", data: "tissue",
