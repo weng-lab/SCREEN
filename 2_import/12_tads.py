@@ -7,10 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
-from files_and_paths import Dirs
-from querydcc import QueryDCC
 
 class ImportTADs:
     def __init__(self, curs, assembly):
@@ -26,7 +24,8 @@ class ImportTADs:
  id serial PRIMARY KEY,
  accession VARCHAR(20),
  mpName text,
- tadID text
+ tadName text,
+ tadID integer
     );
     """.format(tableName = self.tableName))
 
@@ -35,17 +34,20 @@ class ImportTADs:
                          "encyclopedia", "Version-4", "ver9",
                          "hg19")
         fnp = os.path.join(d, "hg19-TAD-Accessions.txt")
+
+        printt("reading", fnp)
         with open(fnp) as f:
             rows = [line.rstrip().split('\t') for line in f]
         f = StringIO.StringIO()
         for r in rows:
-            f.write('\t'.join(r) + '\n')
+            toks = r[1].split('-')
+            f.write('\t'.join(r + [toks[-1]]) + '\n')
         f.seek(0)
 
         self.setupTable()
         self.curs.copy_from(f, self.tableName, '\t',
-                          columns=("mpName", "tadID"))
-        print("\tcopied in TADs", self.curs.rowcount)
+                          columns=("mpName", "tadName", "tadID"))
+        printt("copied in TADs", self.curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
