@@ -44,7 +44,8 @@ class ParseSearch:
         p = q.split(" ")
         for i in xrange(len(p)):
             r = self._gene_alias_to_coordinates(p[i])
-            if r: return r
+            if r:
+                return r
         return None
 
     def _get_snpcoord(self, s):
@@ -64,9 +65,8 @@ class ParseSearch:
             curs.execute("""SELECT chrom, start, stop, info FROM {tablename}
                             WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
             r = curs.fetchone()
-        if not r: return r
-        print("!\n")
-        print(r[3])
+        if not r or not r[0]:
+            return None
         return Coord(r[0], r[1], r[2])
 
     def _find_coord(self, s):
@@ -85,9 +85,7 @@ class ParseSearch:
 
         coord = self._find_coord(s)
         cellTypes = self.find_celltypes_in_query(s)
-        ncoord = self.find_gene_in_q(s)
-        if ncoord:
-            coord = ncoord
+        interpretation = None
         
 #        gene_suggestions, gene_results = self.gene_aliases_to_coordinates(s)
 #        gene_toks, gene_coords = _unpack_tuple_array(gene_results)
@@ -107,11 +105,21 @@ class ParseSearch:
             raise
             print("could not parse " + s)
 
+        if coord is None:
+            with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
+                curs.execute("SELECT name, chrom, start, stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                r = curs.fetchall()
+            if r:
+                if r[0][0].lower() not in s.lower():
+                    interpretation = r[0][0]
+                coord = Coord(r[0][1], r[0][2], r[0][3])
+            
         ret = {"cellType": None,
                "coord_chrom" : None,
                "coord_start" : None,
                "coord_end" : None,
-               "range_preset": None}
+               "range_preset": None,
+               "interpretation": interpretation}
             
         if "promoter" in toks:
             ret["range_preset"] = "promoter"
