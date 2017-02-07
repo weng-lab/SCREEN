@@ -93,8 +93,7 @@ class TissueColors:
         return self.tissueColors[t]
 
 class ComputeGeneExpression:
-    def __init__(self, es, ps, cache, assembly):
-        self.es = es
+    def __init__(self, ps, cache, assembly):
         self.ps = ps
         self.cache = cache
         self.assembly = assembly

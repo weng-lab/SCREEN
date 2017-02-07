@@ -4,10 +4,10 @@ from common.page_info_comparison import PageInfoComparison
 from common.session import Sessions
 
 class ComparisonController:
-    def __init__(self, templates, es, ps, cache):
+    def __init__(self, templates, ps, cache):
         self.t = templates
         self.ps = ps
-        self.params = (es, ps, cache)
+        self.params = (ps, cache)
 
     def comparison(self, args, kwargs, uuid):
         pageInfo = PageInfoComparison(*self.params)

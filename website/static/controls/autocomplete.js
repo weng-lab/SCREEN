@@ -31,6 +31,7 @@ function process_autocomplete_results(results){
 
 function handle_autocomplete_suggestions(results){
     var cb = results["callback"];
+    console.log(results);
     autocomplete_callbacks[cb](
 	process_autocomplete_results(results)
     );

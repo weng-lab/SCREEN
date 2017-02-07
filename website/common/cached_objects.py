@@ -15,9 +15,9 @@ from utils import Timer
 from db_utils import getcursor
 
 class CachedObjectsWrapper:
-    def __init__(self, es, ps):
-        self.cos = {"hg19" : CachedObjects(es["hg19"], ps, "hg19"),
-                    "mm10" : CachedObjects(es["mm10"], ps, "mm10")}
+    def __init__(self, ps):
+        self.cos = {"hg19" : CachedObjects(ps, "hg19"),
+                    "mm10" : CachedObjects(ps, "mm10")}
 
     def __getitem__(self, assembly):
         return self.cos[assembly]
@@ -38,8 +38,7 @@ class CachedObjectsWrapper:
         return self.cos[assembly].getTFListJson()
 
 class CachedObjects:
-    def __init__(self, es, ps, assembly):
-        self.es = es
+    def __init__(self, ps, assembly):
         self.ps = ps
         self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly

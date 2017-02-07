@@ -27,7 +27,7 @@ from constants import paths, chroms
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 #from elasticsearch import Elasticsearch
-from autocomplete import Autocompleter
+from autocomplete import AutocompleterWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
 from heatmaps.heatmap import Heatmap
@@ -41,11 +41,14 @@ class AjaxWebServiceWrapper:
             return AjaxWebService(args, es[a], ps, cache[a], staticDir, a)
         self.ajws = { "hg19" : makeAWS("hg19"),
                       "mm10" : makeAWS("mm10") }
+        self.ac = AutocompleterWrapper(ps)
 
     def process(self, j):
-        if "GlobalAssembly" not in j:
-            raise Exception("GlobalAssembly not defined")
-        return self.ajws[j["GlobalAssembly"]].process(j)
+        ret = {"results": self.ac.get_suggestions(j["userQuery"]),
+               "callback": j["callback"],
+               "type": "suggestions"}
+        print(ret)
+        return ret
 
 class AjaxWebService:
     _default_fields = ["accession", "neg-log-p",
@@ -86,7 +89,6 @@ class AjaxWebServiceOld:
 
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps, assembly, cache)
-        self.ac = Autocompleter(es, assembly)
         self.regElements = RegElements(es, assembly)
 
         self.staticDir = staticDir
@@ -522,12 +524,6 @@ class AjaxWebServiceOld:
 
         return ret
 
-    def _filterCellTypes(self, cts):
-        cts = filter(lambda x: x, cts)
-        # http://stackoverflow.com/a/17016257
-        from collections import OrderedDict
-        return list(OrderedDict.fromkeys(cts))
-
     def _venn_chr(self, j):
         cts = self._filterCellTypes(j["table_cell_types"])
 
@@ -544,226 +540,3 @@ class AjaxWebServiceOld:
             ret[chrom] = {"cytobands": band}
         return ret
 
-    def _tree(self, j):
-        j["object"]["_source"] = ["ranks"]
-        r =  []
-        _ret = {"hits": {"hits": r, "total": len(r)}}
-
-        if "hits" in _ret:
-            try:
-                return self._process_tree_hits(j, _ret)
-            except:
-                raise
-                print("ERROR in ajaxws: _tree")
-                pass
-        return {"results": {"tree": {"tree": None, "labels": []}}}
-
-    def _process_tree_hits(self, j, _ret):
-        results = {}
-        biosampleTypes = self.cache.biosamples.biosampleTypes()
-        for typ in biosampleTypes:
-            def ctFilter(ct):
-                if not ct in self.cache.biosamples:
-                    print("missing", ct)
-                    return False
-                return typ == self.cache.biosamples[ct].biosample_type
-            c = Correlation(_ret["hits"]["hits"], self.ps.DBCONN)
-            k = "dnase" if j["inner"] is None else j["inner"].lower()
-            with Timer(typ + ": spearman correlation time"):
-                if self.assembly == "hg19":
-                    labels, corr = c.spearmanr(j.get("outer", "dnase"),
-                                               j.get("inner", None),
-                                               ctFilter )
-                else:
-                    labels = self.cache.celltypemap[k]
-                    labels, corr = c.dbcorr(self.assembly, k, labels, lambda x: "bryo" in x)
-                    print("!got correlation")
-            if not labels:
-                continue
-            rho = corr[0] if len(corr) == 2 else corr
-
-            try:
-                rhoList = rho.tolist() if type(rho) is not list else rho
-                _heatmap = Heatmap(rhoList)
-            except:
-                print("rho", rho)
-                print("pval", pval)
-                continue
-            with Timer(typ + ": hierarchical clustering time"):
-                roworder, rowtree = _heatmap.cluster_by_rows()
-            results[typ] = {"tree": rowtree, "labels": labels}
-
-        title = ' / '.join([x for x in
-                             [j.get("outer", "dnase"), j.get("inner", None)]
-                             if x])
-        return {"results": {"tree": results,
-                            "tree_title" : title }}
-
-    def _search(self, j, fields = _default_fields, callback = "regulatory_elements"):
-        # http://stackoverflow.com/a/27297611
-        j["object"]["_source"] = fields
-        j["callback"] = callback
-        j["object"]["sort"] = [{ "neg-log-p": "desc" }]
-
-        if "post_processing" in j: # not present in cart
-            if "rank_heatmap" in j["post_processing"]:
-                j["object"]["aggs"] = self.rh.aggs
-                if "bool" not in j["object"]["query"]:
-                    j["object"]["query"]["bool"] = {"must": []}
-                if "must" not in j["object"]["query"]["bool"]:
-                    j["object"]["query"]["bool"]["must"] = []
-                if "filter" in j["object"]["query"]["bool"]:
-                    j["object"]["query"]["bool"]["must"] += j["object"]["query"]["bool"]["filter"]
-                j["object"]["query"]["bool"]["must"].append(j["object"]["post_filter"])
-                j["object"].pop("post_filter", None)
-                j["object"]["query"]["bool"].pop("filter", None)
-                j["callback"] = ""
-
-        with Timer('ElasticSearch time'):
-
-            print("object", j["object"])
-            raise Exception(j["object"])
-
-            ret = self._query({"object": j["object"],
-                               "index": paths.reJsonIndex(self.assembly),
-                               "callback": j["callback"] })
-        if "post_processing" in j:
-            if "tss_bins" in j["post_processing"]:
-                tss = TSSBarGraph(ret["aggs"][j["post_processing"]["tss_bins"]["aggkey"]])
-                ret["tss_histogram"] = tss.format()
-            if "rank_heatmap" in j["post_processing"] and self.assembly != "mm10":
-                ret["rank_heatmap"] = self.rh.process(ret)
-            if "venn" in j["post_processing"]:
-                ret["venn"] = self._run_venn_queries(j["post_processing"]["venn"], j["object"])
-
-        if self.args.dump:
-            self._dump(j, ret)
-        return ret
-
-    def _dump(self, j, ret):
-        base = Utils.timeDateStr() + "_" + Utils.uuidStr() + "_partial"
-        for prefix, data in [("request", j), ("response", ret)]:
-            fn = base + '_' + prefix + ".json"
-            fnp = os.path.join(os.path.dirname(__file__), "../../tmp/", fn)
-            Utils.ensureDir(fnp)
-            with open(fnp, 'w') as f:
-                json.dump(data, f, sort_keys = True, indent = 4)
-            print("wrote", fnp)
-
-    def beddownload(self, j, uid):
-        try:
-            if "action" in j and "search" == j["action"]:
-                ret = self.downloadAsBed(j, uid)
-                return ret
-            else:
-                return { "error" : "unknown action"}
-        except:
-            raise
-            return { "error" : "error running action"}
-
-    def jsondownload(self, j, uid):
-        try:
-            if "action" in j and "search" == j["action"]:
-                ret = self.downloadAsJson(j, uid)
-                return ret
-            else:
-                return { "error" : "unknown action"}
-        except:
-            raise
-            return { "error" : "error running action"}
-
-    def downloadFileName(self, uid, formt):
-        timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = '-'.join([timestr, "v4", formt]) + ".zip"
-        outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
-        Utils.ensureDir(outFnp)
-        return outFn, outFnp
-
-    def downloadAsSomething(self, uid, j, formt, writeFunc):
-        ret = self._query({"object": j["object"],
-                           "index": paths.reJsonIndex(self.assembly),
-                           "callback": "regulatory_elements" })
-        outFn, outFnp = self.downloadFileName(uid, formt)
-
-        data = writeFunc(ret["results"]["hits"])
-
-        with open(outFnp, mode='w') as f:
-            f.write(data)
-
-        print("wrote", outFnp)
-
-        url = os.path.join('/', "static", "downloads", uid, outFn)
-        return {"url" : url}
-
-    def downloadAsBed(self, j, uid):
-        rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
-                     "dnase": [],
-                     "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
-                     "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
-
-        def writeBedLine(rank, subRank, ct, cre):
-            re = cre["_source"]
-            pos = re["position"]
-            if "dnase" == rank:
-                r = re["ranks"][rank][ct]
-                signal = r["signal"]
-            else:
-                if subRank in re["ranks"][rank][ct]:
-                    r = re["ranks"][rank][ct][subRank]
-                    signalKeys = [x for x in r.keys() if x != "rank"]
-                    signalValues = [r[x]["signal"] for x in signalKeys]
-                    signal = np.mean(signalValues)
-                else:
-                    return None
-            rankVal = r["rank"]
-            signal = round(signal, 2)
-
-            score = int(Utils.scale(rankVal, (1, 250 * 100), (1000, 1)))
-            toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
-                    score, '.', signal, re["neg-log-p"], -1, -1]
-            return "\t".join([str(x) for x in toks])
-
-        def writeBed(rank, subRank, ct, rows):
-            f = StringIO.StringIO()
-            for re in rows:
-                line = writeBedLine(rank, subRank, ct, re)
-                if not line:
-                    return None
-                f.write(line  + "\n")
-            return f.getvalue()
-
-        def writeBeds(rows):
-            mf = StringIO.StringIO()
-            with zipfile.ZipFile(mf, mode='w',
-                                 compression=zipfile.ZIP_DEFLATED) as zf:
-                for rank, subRanks in rankTypes.iteritems():
-                    cts = rows[0]["_source"]["ranks"][rank].keys()
-                    if "dnase" == rank:
-                        for ct in cts:
-                            data = writeBed(rank, [], ct, rows)
-                            ct = Utils.sanitize(ct)
-                            fn = '.'.join([rank, ct, "bed"])
-                            if data:
-                                zf.writestr(fn, data)
-                    else:
-                        for subRank in subRanks:
-                            for ct in cts:
-                                data = writeBed(rank, subRank, ct, rows)
-                                ct = Utils.sanitize(ct)
-                                fn = '.'.join([rank, subRank, ct, "bed"])
-                                if data:
-                                    zf.writestr(fn, data)
-            return mf.getvalue()
-        return self.downloadAsSomething(uid, j, "beds", writeBeds)
-
-    def downloadAsJson(self, j, uid):
-        def writeJson(rows):
-            mf = StringIO.StringIO()
-            with zipfile.ZipFile(mf, mode='w',
-                                 compression=zipfile.ZIP_DEFLATED) as zf:
-                for cre in rows:
-                    re = cre["_source"]
-                    data = json.dumps(re) + "\n"
-                    zf.writestr(re["accession"] + '.json', data)
-            return mf.getvalue()
-        return self.downloadAsSomething(uid, j, "jsons", writeJson)
