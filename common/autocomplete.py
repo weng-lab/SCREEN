@@ -5,16 +5,18 @@ def _second_onward(arr):
     return arr[1:]
 
 class AutocompleterWrapper:
-    def __init__(self, es):
+    def __init__(self, ps):
         self.acs = {
-            "hg19" : Autocompleter(es["hg19"], "hg19"),
-            "mm10" : Autocompleter(es["mm10"], "mm10")}
+            "hg19" : Autocompleter(ps["hg19"], "hg19"),
+            "mm10" : Autocompleter(ps["mm10"], "mm10")}
 
     def __getitem__(self, assembly):
         return self.acs[assembly]
+    def get_suggestions(self, q):
+        return self.acs["hg19"].get_suggestions(q) + self.acs["mm10"].get_suggestions(q)
 
 class Autocompleter:
-    def __init__(self, es, assembly):
+    def __init__(self, ps, assembly):
         self.es = es
         self.assembly = assembly
         self.indices = {"misc": self.get_misc_suggestions,
@@ -37,20 +39,8 @@ class Autocompleter:
         return self.es.cell_type_query(q)
 
     def get_suggestions(self, j):
-        _uq = j["userQuery"].split(" ") #.lower()
-        ret = []
-        prefix = ""
-        while len(_uq) > 0 and len(ret) == 0:
-            uq = " ".join(_uq)
-            counter = 0
-            for k, v in self.indices.iteritems():
-                if "indices" in j and k not in j["indices"]: continue
-                for item in v(uq):
-                    item = prefix + item
-                    ret.append(item)
-                    counter += 1
-            prefix += _uq[0] + " "
-            _uq = _second_onward(_uq)
+        uq = j["userQuery"].lower()
+        ret = self.get_gene_suggestions(uq) + self.get_snp_suggestions(uq)
         return { "results" : ret }
 
     def get_misc_suggestions(self, q):
@@ -64,14 +54,6 @@ class Autocompleter:
         return filter(lambda x: x.startswith(q), self.tfs)
 
     def get_gene_suggestions(self, q):
-        query = or_query()
-        for field in _gene_alias_fields:
-            query.append({"match_phrase_prefix": {field: q}})
-        raw_results = self.es.search(index = "gene_aliases",
-                                     body = query.query_obj)
-        if raw_results["hits"]["total"] > 0:
-            return self._process_gene_suggestions(raw_results, q)
-        query.reset()
         return []
 
     def _process_gene_suggestions(self, raw_results, q):
@@ -83,13 +65,6 @@ class Autocompleter:
         return retval
 
     def get_snp_suggestions(self, q):
-        query = or_query()
-        query.append({"match_phrase_prefix": {"accession": q}})
-        raw_results = self.es.search(index = "snp_aliases",
-                                     body = query.query_obj)
-        if raw_results["hits"]["total"] > 0:
-            return self._process_snp_suggestions(raw_results, q)
-        query.reset()
         return []
 
     def _process_snp_suggestions(self, raw_results, q):
