@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
+from db_utils import getcursor, vacumnAnalyze, makeIndex
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer, printt
 
@@ -24,19 +24,6 @@ allInitialCols = ("accession", "mpName", "negLogP",
                   "gene_all_distance", "gene_all_id",
                   "gene_pc_distance", "gene_pc_id", "tads")
 
-def makeIdex(curs, cols, tableName):
-    def _idx(tn, col, suf = ""):
-        if suf:
-            return tn + '_' + col + '_' + suf + "_idx"
-        return tn + '_' + col + "_idx"
-    for col in cols:
-        idx = _idx(tableName, col)
-        printt("indexing", idx)
-        curs.execute("""
-DROP INDEX IF EXISTS {idx};
-CREATE INDEX {idx} on {tableName} ({col});
-""".format(idx = idx, tableName = tableName, col = col))
-        printt("\tok")
 
 def importProxDistal(curs, assembly):
     d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
@@ -68,7 +55,7 @@ isProximal boolean
     curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
     printt("\tok")
 
-    makeIdex(curs, ["accession"], tableName)
+    makeIndex(curs, tableName, ["accession"])
 
 def updateTable(curs, ctn, m):
     printt("updating max zscore", ctn)
@@ -165,20 +152,6 @@ CHECK (chrom = '{chrom}')
             curs.copy_from(f, ctn, '\t', columns=cols)
         printt("imported", os.path.basename(fnp))
         updateTable(curs, ctn, m)
-
-def vacumnAnalyze(conn, baseTableName, chrs):
-    # http://stackoverflow.com/a/1017655
-    print("about to vacuum analyze", baseTableName)
-    old_isolation_level = conn.isolation_level
-    conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-    curs = conn.cursor()
-    curs.execute("vacuum analyze " + baseTableName)
-    for chrom in chrs:
-        ctn = baseTableName + '_' + chrom
-        print("about to vacuum analyze", ctn)
-        curs.execute("vacuum verbose analyze " + ctn)
-    conn.set_isolation_level(old_isolation_level)
-    print("done")
 
 def parse_args():
     parser = argparse.ArgumentParser()
