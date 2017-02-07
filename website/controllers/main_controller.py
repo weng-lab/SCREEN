@@ -5,10 +5,10 @@ from common.page_info_search import PageInfoSearch
 from common.session import Sessions
 
 class MainController:
-    def __init__(self, templates, es, ps, cache):
+    def __init__(self, templates, ps, cache):
         self.t = templates
         self.ps = ps
-        self.params = (es, ps, cache)
+        self.params = (ps, cache)
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)

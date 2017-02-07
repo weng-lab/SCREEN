@@ -10,7 +10,6 @@ from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
-from controllers.ajax_ws import AjaxWebServiceWrapper
 from controllers.data_ws import DataWebServiceWrapper
 from controllers.comparison import ComparisonController
 
@@ -22,18 +21,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 
 class MainApp():
-    def __init__(self, args, viewDir, staticDir, es, ps, cache):
+    def __init__(self, args, viewDir, staticDir, ps, cache):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, es, ps, cache)
-        self.ge = GeneExpController(self.templates, es, ps, cache)
-        self.de = DeController(self.templates, es, ps, cache)
-        self.gwas = GwasController(self.templates, es, ps, cache)
+        self.mc = MainController(self.templates, ps, cache)
+        self.ge = GeneExpController(self.templates, ps, cache)
+        self.de = DeController(self.templates, ps, cache)
+        self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
-        self.tf = TfController(self.templates, es, ps, cache)
-        self.cp = ComparisonController(self.templates, es, ps, cache)
-        self.cartc = CartController(self.templates, es, ps, cache)
-        self.trackhub = TrackhubController(self.templates, es, ps, cache)
-        self.ajaxWS = AjaxWebServiceWrapper(args, es, ps, cache, staticDir)
+        self.tf = TfController(self.templates, ps, cache)
+        self.cp = ComparisonController(self.templates, ps, cache)
+        self.cartc = CartController(self.templates, ps, cache)
+        self.trackhub = TrackhubController(self.templates, ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
@@ -80,14 +78,6 @@ class MainApp():
         return self.trackhub.washu_trackhub_url(j, self.session_uuid())
 
     @cherrypy.expose
-    def query(self, q=None, url=None):
-        return self.mc.RawQuery(q, url)
-
-    @cherrypy.expose
-    def overlap(self, chrom, start, end):
-        return self.mc.Overlap(chrom, int(start), int(end))
-
-    @cherrypy.expose
     def comparison(self, *args, **kwargs):
         return self.cp.comparison(args, kwargs, self.session_uuid())
 
@@ -96,36 +86,9 @@ class MainApp():
         return self.mc.search(args, kwargs, self.session_uuid())
 
     @cherrypy.expose
-    def hexplot(self, *args, **kwargs):
-        return self.mc.HexplotView(args, kwargs)
-
-    @cherrypy.expose
-    def element(self, accession):
-        return self.mc.element(accession)
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def reDetail(self, reAccession, **kwargs):
-        return self.mc.reDetail(reAccession, kwargs)
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def rePeaks(self, reAccession, **kwargs):
-        return self.mc.rePeaks(reAccession, kwargs)
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def reSNPs(self, reAccession, **kwargs):
-        return self.mc.reSNPs(reAccession, kwargs)
-
-    @cherrypy.expose
     @cherrypy.tools.json_out()
     def autocomplete(self, *args, **kwargs):
         return self.mc.autocomplete(kwargs["userQuery"])
-
-    @cherrypy.expose
-    def cart(self):
-        return self.cartc.Cart(self.session_uuid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -133,14 +96,6 @@ class MainApp():
     def setCart(self):
         j = cherrypy.request.json
         return self.cartc.SetCart(self.session_uuid(), j)
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def ajaxws(self):
-        #print(cherrypy.request)
-        j = cherrypy.request.json
-        return self.ajaxWS.process(j)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -193,20 +148,6 @@ class MainApp():
     def tfJson(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.tf.tfJson(j)
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def beddownload(self):
-        j = cherrypy.request.json
-        return self.ajaxWS.beddownload(j, self.session_uuid())
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def jsondownload(self):
-        j = cherrypy.request.json
-        return self.ajaxWS.jsondownload(j, self.session_uuid())
 
     @cherrypy.expose
     def globalData(self, assembly, ver):

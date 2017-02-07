@@ -7,7 +7,7 @@ import * as Actions from '../actions/main_actions';
 import LongListFacet from '../../../common/components/longlist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/uility'
+import {panelize} from '../../../common/utility'
 
 const gwas_studies = ({gwas_study, actions}) => {
     return panelize("GWAS Studies",
