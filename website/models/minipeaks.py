@@ -56,7 +56,7 @@ class MiniPeaks:
 
     def regionsFromSearchList(self, assay, cres, n_bars):
         for cre in cres:
-            cre["end"] = cre["stop"]
+            cre["end"] = cre["start"] + cre["len"]
         bigWigs = self._get_bigwigs(assay)
         regions = self._get_bigwig_regions(bigWigs, cres, assay, n_bars)
         accs = [x["accession"] for x in cres]
