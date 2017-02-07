@@ -20,7 +20,7 @@ const factorbook_histones = [
     "H3K9me3",
     "H4K20me1"
 ];
-    
+
 
 const render_factorbook_link_histone = (d) => (
     factorbook_histones.includes(d)
@@ -40,8 +40,8 @@ const render_gene_link = (d) => (
     '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
-const render_bp = (v) => (v + "bp");
-const render_relink = (a) => (v) => ("<a href='http://screen.umassmed.edu/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
+const render_bp = (v) => (v + " bp");
+const render_relink = (a) => (v) => ("<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {
