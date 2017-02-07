@@ -4,7 +4,7 @@ import sys, os
 import re
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.realpath(__file__),
+sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
 from db_utils import getcursor
 

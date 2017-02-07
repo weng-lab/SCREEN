@@ -1,9 +1,3 @@
-from elastic_search_wrapper import or_query, _gene_alias_fields
-
-def _second_onward(arr):
-    if len(arr) == 1: return []
-    return arr[1:]
-
 class AutocompleterWrapper:
     def __init__(self, ps):
         self.acs = {
@@ -12,12 +6,12 @@ class AutocompleterWrapper:
 
     def __getitem__(self, assembly):
         return self.acs[assembly]
+
     def get_suggestions(self, q):
         return self.acs["hg19"].get_suggestions(q) + self.acs["mm10"].get_suggestions(q)
 
 class Autocompleter:
     def __init__(self, ps, assembly):
-        self.es = es
         self.assembly = assembly
         self.indices = {"misc": self.get_misc_suggestions,
                         "gene_aliases": self.get_gene_suggestions,

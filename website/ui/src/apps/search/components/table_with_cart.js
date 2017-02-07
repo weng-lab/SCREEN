@@ -88,7 +88,7 @@ class TableWithCart extends React.Component {
 	$.ajax({
             type: "POST",
             url: "/dataws/json_download",
-            data: format_query(n_query),
+            data: jq,
             dataType: "json",
             contentType : "application/json",
             async: false, // http://stackoverflow.com/a/20235765
@@ -152,8 +152,9 @@ class TableWithCart extends React.Component {
 	var data = [...this.props.data];
         var actions = this.props.actions;
 
+	let cas = this.props.cart_accessions;
 	for (var i in data) {
-	    data[i].in_cart = this.props.cart_accessions.has(data[i].accession);
+	    data[i].in_cart = cas.has(data[i].accession);
 	}
 
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >

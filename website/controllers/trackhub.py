@@ -7,13 +7,14 @@ import json
 import os
 import heapq
 import re
-                
+
+from models.cre import CRE
+
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColors, OtherTrackhubColors
 
 from common.db_trackhub import DbTrackhub
-from models.regelm_detail import RegElementDetails
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
@@ -42,9 +43,8 @@ class TrackInfo:
         return self.ct
 
 class TrackhubController:
-    def __init__(self, templates, es, ps, cache):
+    def __init__(self, templates, ps, cache):
         self.templates = templates
-        self.es = es
         self.ps = ps
         self.cache = cache
         
@@ -239,8 +239,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return ret
     
     def addSignals(self, re_accessions):
-        red = RegElementDetails(self.es, self.ps)
-
         for re_accession in re_accessions:
             re = red.reFull(re_accession)
             for ti in self._getTrackList(re):
