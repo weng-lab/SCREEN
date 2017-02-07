@@ -11,6 +11,19 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer, printt
 
+allInitialCols = ("accession", "mpName", "negLogP",
+                  "chrom", "start", "stop",
+                  "conservation_rank", "conservation_signal",
+                  "dnase_rank", "dnase_signal", "dnase_zscore",
+                  "ctcf_only_rank", "ctcf_only_zscore",
+                  "ctcf_dnase_rank", "ctcf_dnase_zscore",
+                  "h3k27ac_only_rank", "h3k27ac_only_zscore",
+                  "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
+                  "h3k4me3_only_rank", "h3k4me3_only_zscore",
+                  "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
+                  "gene_all_distance", "gene_all_id",
+                  "gene_pc_distance", "gene_pc_id", "tads")
+
 def makeIdex(curs, cols, tableName):
     def _idx(tn, col, suf = ""):
         if suf:
@@ -47,7 +60,7 @@ def importProxDistal(curs, assembly):
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
-(id serial PRIMARY KEY, 
+(id serial PRIMARY KEY,
 accession text,
 isProximal boolean
 );""".format(tn = tableName))
@@ -60,25 +73,103 @@ isProximal boolean
 def makeCreMC(curs, tableName, tableNameIsProx):
     printt("making mv for", tableName)
     curs.execute("""
-DROP MATERIALIZED VIEW  if {mvn};
-CREATE MATERIALIZED VIEW {mvn}
-AS 
-SELECT *, 
+DROP MATERIALIZED VIEW IF EXISTS {mvn};
+CREATE MATERIALIZED VIEW {mvn} AS
+SELECT cre.*,
 (select max(x) from unnest(dnase_zscore) x) as dnase_zscore_max,
 (select max(x) from unnest(ctcf_only_zscore) x) as ctcf_only_zscore_max,
-(select max(x) from unnest(ctcf_dnase_zscore) x) as ctcf_dnase_zscore_max, 
-(select max(x) from unnest(h3k27ac_only_zscore) x) as h3k27ac_only_zscore_max, 
-(select max(x) from unnest(h3k27ac_dnase_zscore) x) as h3k27ac_dnase_zscore_max, 
-(select max(x) from unnest(h3k4me3_only_zscore) x) as h3k4me3_only_zscore_max, 
+(select max(x) from unnest(ctcf_dnase_zscore) x) as ctcf_dnase_zscore_max,
+(select max(x) from unnest(h3k27ac_only_zscore) x) as h3k27ac_only_zscore_max,
+(select max(x) from unnest(h3k27ac_dnase_zscore) x) as h3k27ac_dnase_zscore_max,
+(select max(x) from unnest(h3k4me3_only_zscore) x) as h3k4me3_only_zscore_max,
 (select max(x) from unnest(h3k4me3_dnase_zscore) x) as h3k4me3_dnase_zscore_max
-FROM {tn}
-""".format(tn = tableName, mvn = tableName + "_mv"))
+prox.isProximal
+FROM {tn} as cre
+INNER JOIN {tnProx} as prox
+ON cre.accession = prox.accession;
+""".format(tn = tableName,
+           tnProx = tableNameIsProx,
+           mvn = tableName + "_mv"))
     printt("\tok")
+
+def doPartition(curs, tableName, m):
+    curs.execute("""
+DROP TABLE IF EXISTS {tn} CASCADE;
+""".format(tn = tableName))
+
+    curs.execute("""
+        CREATE TABLE {tableName}
+ (
+ accession VARCHAR(20),
+ mpName text,
+ negLogP real,
+ chrom VARCHAR(5),
+ start integer,
+ stop integer,
+ conservation_rank integer[],
+ conservation_signal numeric(8,3)[],
+ dnase_rank integer[],
+ dnase_signal numeric(8,3)[],
+ dnase_zscore numeric(8,3)[],
+ ctcf_only_rank integer[],
+ ctcf_only_zscore numeric(8,3)[],
+ ctcf_dnase_rank integer[],
+ ctcf_dnase_zscore numeric(8,3)[],
+ h3k27ac_only_rank integer[],
+ h3k27ac_only_zscore numeric(8,3)[],
+ h3k27ac_dnase_rank integer[],
+ h3k27ac_dnase_zscore numeric(8,3)[],
+ h3k4me3_only_rank integer[],
+ h3k4me3_only_zscore numeric(8,3)[],
+ h3k4me3_dnase_rank integer[],
+ h3k4me3_dnase_zscore numeric(8,3)[],
+ gene_all_distance integer[],
+ gene_all_id integer[],
+ gene_pc_distance integer[],
+ gene_pc_id integer[],
+ tads integer[],
+ dnase_zscore_max numeric(8,3),
+ ctcf_only_zscore_max numeric(8,3),
+ ctcf_dnase_zscore_max numeric(8,3),
+ h3k27ac_only_zscore_max numeric(8,3),
+ h3k27ac_dnase_zscore_max numeric(8,3),
+ h3k4me3_only_zscore_max numeric(8,3),
+ h3k4me3_dnase_zscore_max numeric(8,3),
+ isProximal boolean
+
+        ); """.format(tableName = tableName))
+
+    chroms = m["chrs"]
+    for chrom in chroms:
+        ctn = tableName + '_' + chrom
+        curs.execute("""
+DROP TABLE IF EXISTS {ctn} CASCADE;
+CREATE TABLE {ctn} (
+id serial PRIMARY KEY,
+CHECK (chrom = '{chrom}')
+) INHERITS ({tn});
+""".format(tn = tableName, ctn = ctn, chrom = chrom))
+        printt(ctn)
+
+    d = m["d"]
+    subsample = m["subsample"]
+    for chrom in chroms:
+        fn = "parsed." + chrom + ".tsv.gz"
+        fnp = os.path.join(d, fn)
+        if subsample:
+            fnp = os.path.join(d, "sample", fn)
+        ctn = tableName + '_' + chrom
+        cols = allInitialCols
+        with gzip.open(fnp) as f:
+            printt("importing", fnp, "into", ctn)
+            curs.copy_from(f, ctn, '\t', columns=cols)
+        printt("imported", os.path.basename(fnp))
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -111,9 +202,11 @@ def main():
 
     for assembly in assemblies:
         m = infos[assembly]
+        m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            importProxDistal(curs, assembly)            
+            #importProxDistal(curs, assembly)
+            doPartition(curs, assembly + "_cre", m)
 
     return 0
 
