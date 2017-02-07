@@ -27,7 +27,7 @@ from constants import paths, chroms
 from elastic_search_wrapper import ElasticSearchWrapper
 from postgres_wrapper import PostgresWrapper
 #from elasticsearch import Elasticsearch
-from autocomplete import Autocompleter
+from autocomplete import AutocompleterWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
 from heatmaps.heatmap import Heatmap
@@ -41,11 +41,14 @@ class AjaxWebServiceWrapper:
             return AjaxWebService(args, es[a], ps, cache[a], staticDir, a)
         self.ajws = { "hg19" : makeAWS("hg19"),
                       "mm10" : makeAWS("mm10") }
+        self.ac = AutocompleterWrapper(ps)
 
     def process(self, j):
-        if "GlobalAssembly" not in j:
-            raise Exception("GlobalAssembly not defined")
-        return self.ajws[j["GlobalAssembly"]].process(j)
+        ret = {"results": self.ac.get_suggestions(j["userQuery"]),
+               "callback": j["callback"],
+               "type": "suggestions"}
+        print(ret)
+        return ret
 
 class AjaxWebService:
     _default_fields = ["accession", "neg-log-p",
@@ -86,7 +89,6 @@ class AjaxWebServiceOld:
 
         self.em = ExpressionMatrix(self.es)
         self.details = RegElementDetails(es, ps, assembly, cache)
-        self.ac = Autocompleter(es, assembly)
         self.regElements = RegElements(es, assembly)
 
         self.staticDir = staticDir
