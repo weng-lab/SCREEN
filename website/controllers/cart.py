@@ -1,9 +1,9 @@
 from common.page_info import PageInfoMain
 
 class CartController:
-    def __init__(self, templates, es, ps, cache):
+    def __init__(self, templates, ps, cache):
         self.t = templates
-        self.params = (es, ps, cache)
+        self.params = (ps, cache)
 
     def SetCart(self, session_uuid, reAccessions):
         pageInfo = PageInfoMain(*self.params)

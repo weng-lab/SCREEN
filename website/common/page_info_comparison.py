@@ -6,8 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
 
 class PageInfoComparison:
-    def __init__(self, es, ps, cacheW):
-        self.es = es
+    def __init__(self, ps, cacheW):
         self.ps = ps
         self.cacheW = cacheW
 
@@ -40,7 +39,7 @@ class PageInfoComparison:
 
         parsed = ""
         if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.es)
+            p = ParseSearch(kwargs["q"])
             parsed = p.parse(comparison=True)
             parsedStr = p.parseStr()
 
