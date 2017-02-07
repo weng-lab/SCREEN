@@ -49,6 +49,13 @@ class ImportTADs:
                           columns=("mpName", "tadName", "tadID"))
         printt("copied in TADs", self.curs.rowcount)
 
+        self.curs.execute("""
+UPDATE {tadTableName} as tads
+SET accession = cre.accession
+FROM {tn} as cre
+where tads.mpname = cre.mpname
+""".format(tadTableName = "hg19_tads", tn = "hg19_cre"))
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
