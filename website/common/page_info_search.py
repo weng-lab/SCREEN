@@ -18,6 +18,9 @@ class PageInfoSearch:
                 "globalCellCompartments" : json.dumps([])
         }
 
+    def haveresults(self, parsed):
+        return parsed["coord_chrom"] or (parsed["accessions"] and len(parsed["accessions"])) or parsed["cellType"]
+
     def searchPage(self, args, kwargs, uuid):
         if "assembly" not in kwargs:
             raise Exception("assembly not found" + str(kwargs))
@@ -29,7 +32,7 @@ class PageInfoSearch:
             p = ParseSearch(kwargs["q"], self.ps.DBCONN, assembly)
             parsed = p.parse()
             parsedStr = p.parseStr()
-            if kwargs["q"] and not parsed["coord_chrom"]:
+            if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
 
         cache = self.cacheW[assembly]
