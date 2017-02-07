@@ -7,7 +7,7 @@ import * as Actions from '../actions/main_actions';
 import LongChecklistFacet from '../../../common/components/longchecklist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/uility'
+import {panelize} from '../../../common/utility'
 
 const cell_compartments = ({compartments, actions, compartments_selected}) => {
     return panelize("Cellular Compartments",

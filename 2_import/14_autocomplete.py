@@ -29,25 +29,27 @@ class SetupAutocomplete:
                     names.append(row[0])
         self.curs.execute("SELECT approved_symbol, ensemblid, info FROM {assembly}_gene_info".format(assembly=self.assembly))
         r = self.curs.fetchall()
+        keys = ["UniProt_ID", "RefSeq_ID", "Vega_ID", "UCSC_ID"]
         if r:
             for row in r:
                 names.append(row[0])
                 names.append(row[1])
+                print(row[2])
                 if row[2]:
-                    names.append(row[2]["UniProt_ID"])
-                    names.append(row[2]["RefSeq_ID"])
-                    names.append(row[2]["Vega_ID"])
-                    names.append(row[2]["UCSC_ID"])
-                    names += row[2]["synonyms"]
+                    for key in keys:
+                        if key in row[2]:
+                            names.append(row[2][key])
+                        if "synonyms" in row[2]:
+                            names += row[2]["synonyms"]
         d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
                          "Version-4", "ver9", self.assembly, "raw")
         fnp = os.path.join(d, "autocomplete_dictionary.txt")
         with open(fnp, "wb") as o:
             o.write("\n".join(names))
-            o.seek(0)
+        with open(fnp, "r") as f:
             self.curs.execute("DROP TABLE IF EXISTS {assembly}_autocomplete".format(assembly=self.assembly))
             self.curs.execute("CREATE TABLE {assembly}_autocomplete (id serial PRIMARY KEY, name VARCHAR(256))".format(assembly=self.assembly))
-            self.curs.copy_from(o, "%s_assembly" % self.assembly, "\t", columns=["name"])
+            self.curs.copy_from(f, "%s_autocomplete" % self.assembly, "\t", columns=["name"])
                 
 def parse_args():
     parser = argparse.ArgumentParser()

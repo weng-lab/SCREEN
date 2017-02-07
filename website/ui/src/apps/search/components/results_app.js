@@ -4,7 +4,8 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import TableWithCart from './table_with_cart'
+import TableWithCart from './table_with_cart';
+import {getCommonState} from '../../../common/utility';
 
 class ResultsTableContainer extends React.Component {
     constructor(props) {
@@ -18,20 +19,8 @@ class ResultsTableContainer extends React.Component {
         this.loadCREs(nextProps);
     }
 
-    loadCREs({accessions, coord_chrom, coord_start, coord_end,
-              gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-              rank_dnase_start, rank_dnase_end,
-              rank_promoter_start, rank_promoter_end,
-              rank_enhancer_start, rank_enhancer_end,
-              rank_ctcf_start, rank_ctcf_end,
-              cellType}){
-        var q = {GlobalAssembly,
-                 accessions, coord_chrom, coord_start, coord_end,
-                 gene_all_start, gene_all_end, gene_pc_start, gene_pc_end,
-                 rank_dnase_start, rank_dnase_end,
-                 rank_promoter_start, rank_promoter_end,
-                 rank_enhancer_start, rank_enhancer_end,
-                 rank_ctcf_start, rank_ctcf_end, cellType};
+    loadCREs(props){
+        var q = getCommonState(props);
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -63,7 +52,8 @@ class ResultsTableContainer extends React.Component {
                 data={this.state.cres}
                 total={this.state.total}
                 cart_accessions={this.props.cart_accessions}
-                fetching={this.state.isFetching}
+                isFetching={this.state.isFetching}
+		jq={this.state.jq}
                 />);
     }
 }

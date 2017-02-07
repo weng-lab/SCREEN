@@ -6,12 +6,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from compute_gene_expression import ComputeGeneExpression, Compartments
 
 class GeneExpController:
-    def __init__(self, templates, es, ps, cache):
+    def __init__(self, templates, ps, cache):
         self.t = templates
-        self.es = es
         self.ps = ps
         self.cache = cache
-        self.params = (es, ps, cache)
+        self.params = (ps, cache)
 
     def geneexp(self, args, kwargs, uuid):
         pageInfo = PageInfoGeneExp(*self.params)
@@ -30,5 +29,5 @@ class GeneExpController:
             return {"items" : [] }
         # TODO: check valie compartments
 
-        cge = ComputeGeneExpression(self.es, self.ps, self.cache, assembly)
+        cge = ComputeGeneExpression(self.ps, self.cache, assembly)
         return cge.computeHorBars(gene, compartments)
