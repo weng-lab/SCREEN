@@ -57,11 +57,11 @@ isProximal boolean
 
     makeIdex(curs, ["accession"], tableName)
 
-"""
-DROP MATERIALIZED VIEW  if exists mm10_cre_chr19_mv ;
-
-
-CREATE MATERIALIZED VIEW mm10_cre_chr19_mv 
+def makeCreMC(curs, tableName, tableNameIsProx):
+    printt("making mv for", tableName)
+    curs.execute("""
+DROP MATERIALIZED VIEW  if {mvn};
+CREATE MATERIALIZED VIEW {mvn}
 AS 
 SELECT *, 
 (select max(x) from unnest(dnase_zscore) x) as dnase_zscore_max,
@@ -71,12 +71,9 @@ SELECT *,
 (select max(x) from unnest(h3k27ac_dnase_zscore) x) as h3k27ac_dnase_zscore_max, 
 (select max(x) from unnest(h3k4me3_only_zscore) x) as h3k4me3_only_zscore_max, 
 (select max(x) from unnest(h3k4me3_dnase_zscore) x) as h3k4me3_dnase_zscore_max
-
-FROM mm10_cre_chr19
-
-
-"""
-
+FROM {tn}
+""".format(tn = tableName, mvn = tableName + "_mv"))
+    printt("\tok")
 
 def parse_args():
     parser = argparse.ArgumentParser()
