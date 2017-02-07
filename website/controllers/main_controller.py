@@ -19,8 +19,17 @@ class MainController:
         return self.t('main/query', **pageInfo.rawQueryPage(q, url))
 
     def search(self, args, kwargs, uuid):
+        if "assembly" not in kwargs:
+            pageInfo = PageInfoMain(*self.params)
+            return self.t("main/index", **pageInfo.wholePage("", True, "Error: no search assembly specified."))
         pageInfo = PageInfoSearch(*self.params)
-        return self.t('main/search', **pageInfo.searchPage(args, kwargs, uuid))
+        assembly = kwargs["assembly"]
+        info = pageInfo.searchPage(args, kwargs, uuid)
+        if "failed" in info:
+            pageInfo = PageInfoMain(*self.params)
+            failure_msg = "Error: no results for search '%s' in assembly %s. Please check your spelling and search assembly and try again." % (info["failed"], assembly)
+            return self.t("main/index", **pageInfo.wholePage(assembly, True, failure_msg))
+        return self.t('main/search', **info)
 
     def element(self, accession):
         pageInfo = PageInfoMain(*self.params)
