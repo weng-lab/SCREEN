@@ -108,6 +108,8 @@ def main():
             else:
                 ipi = ImportPeakIntersections(curs, assembly)
                 ipi.run()
+                ipi.index()
+
                 ipm = ImportPeakIntersectionMetadata(curs, assembly)
                 ipm.run()
 
