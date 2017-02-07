@@ -22,34 +22,41 @@ class SetupAutocomplete:
     def run(self):
         names = []
         for chrom in ["chr%d" % d for d in range(1, chromlimit[self.assembly] + 1)] + ["chrX", "chrY"]:
-            self.curs.execute("SELECT name FROM {assembly}_snps_{chrom}".format(chrom=chrom, assembly=self.assembly))
+            self.curs.execute("SELECT name, start, stop FROM {assembly}_snps_{chrom}".format(chrom=chrom, assembly=self.assembly))
             r = self.curs.fetchall()
             if r:
                 for row in r:
-                    names.append(row[0])
-        self.curs.execute("SELECT approved_symbol, ensemblid, info FROM {assembly}_gene_info".format(assembly=self.assembly))
+                    names.append(row[0] + "\t%s\t%d\t%d" % (chrom, row[1], row[2]))
+        self.curs.execute("SELECT approved_symbol, ensemblid, info, chrom, start, stop FROM {assembly}_gene_info".format(assembly=self.assembly))
         r = self.curs.fetchall()
-        keys = ["UniProt_ID", "RefSeq_ID", "Vega_ID", "UCSC_ID"]
+        keys = ["UniProt_ID", "RefSeq_ID", "Vega_ID", "UCSC_ID", "HGNC_ID", "approved_name"]
         if r:
             for row in r:
-                names.append(row[0])
-                names.append(row[1])
-                print(row[2])
+                c = "%s\t%d\t%d" % (row[3], row[4], row[5])
+                names.append(row[0] + "\t" + c)
+                names.append(row[1] + "\t" + c)
                 if row[2]:
                     for key in keys:
                         if key in row[2]:
-                            names.append(row[2][key])
+                            names.append(row[2][key] + "\t" + c)
                         if "synonyms" in row[2]:
-                            names += row[2]["synonyms"]
+                            names += [x.strip() + "\t" + c for x in row[2]["synonyms"]]
+                        if "previous_symbols" in row[2]:
+                            names += [x.strip() + "\t" + c for x in row[2]["previous_symbols"]]
         d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
                          "Version-4", "ver9", self.assembly, "raw")
         fnp = os.path.join(d, "autocomplete_dictionary.txt")
         with open(fnp, "wb") as o:
             o.write("\n".join(names))
+        print("wrote %d items to %s" % (len(names), fnp))
         with open(fnp, "r") as f:
+            print("inserting into table...")
             self.curs.execute("DROP TABLE IF EXISTS {assembly}_autocomplete".format(assembly=self.assembly))
-            self.curs.execute("CREATE TABLE {assembly}_autocomplete (id serial PRIMARY KEY, name VARCHAR(256))".format(assembly=self.assembly))
-            self.curs.copy_from(f, "%s_autocomplete" % self.assembly, "\t", columns=["name"])
+            self.curs.execute("CREATE TABLE {assembly}_autocomplete (id serial PRIMARY KEY, name TEXT, chrom TEXT, start INT, stop INT)".format(assembly=self.assembly))
+            self.curs.copy_from(f, "%s_autocomplete" % self.assembly, "\t", columns=["name", "chrom", "start", "stop"])
+        print("indexing table...")
+        self.curs.execute("CREATE INDEX {assembly}_autocomplete_index ON {assembly}_autocomplete USING btree (name text_pattern_ops)".format(assembly=self.assembly))
+        self.curs.execute("CREATE INDEX {assembly}_fulltext_index ON {assembly}_autocomplete USING gin (name gin_trgm_ops)".format(assembly=self.assembly))
                 
 def parse_args():
     parser = argparse.ArgumentParser()
