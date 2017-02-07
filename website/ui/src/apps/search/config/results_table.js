@@ -35,8 +35,8 @@ const ResultsTableColumns = [
 	className: "dt-right"
     },
     {
-	title: "&#8209;log(p)",
-	data: "neglogp",
+	title: "maxZ",
+	data: "maxz",
 	className: "dt-right",
         render: render_float
     },
