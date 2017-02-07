@@ -220,7 +220,7 @@ def main():
         m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            #importProxDistal(curs, assembly)
+            importProxDistal(curs, assembly)
             doPartition(curs, assembly + "_cre", m)
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
