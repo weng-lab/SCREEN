@@ -10,8 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
-from db_utils import getcursor
+from utils import Utils, printt
+from db_utils import getcursor, makeIndex
 from files_and_paths import Dirs
 
 class ImportPeakIntersections:
@@ -21,7 +21,7 @@ class ImportPeakIntersections:
         self.tableName = assembly + "_" + "peakIntersections"
 
     def setupTable(self):
-        print("dropping and creating table", self.tableName)
+        printt("dropping and creating table", self.tableName)
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
     CREATE TABLE {tableName}(
@@ -33,7 +33,6 @@ class ImportPeakIntersections:
     dnase jsonb
     );
     """.format(tableName = self.tableName))
-        print("\tok")
 
     def run(self):
         dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
@@ -42,10 +41,12 @@ class ImportPeakIntersections:
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')
+        printt("copying in data...")
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
-        print("\tcopied in", fnp, self.curs.rowcount)
+        printt("\tcopied in", fnp, self.curs.rowcount)
 
+        printt("setting accession id...")
         self.curs.execute("""
 update {piTn}
 set accessionid = {creTn}.id
@@ -53,21 +54,9 @@ from {creTn}
 where {piTn}.accession = {creTn}.accession
 """.format(creTn = self.assembly + "_cre", piTn = self.tableName))
 
-    def _idx(self, tn, col, suf = ""):
-        if suf:
-            return tn + '_' + col + '_' + suf + "_idx"
-        return tn + '_' + col + "_idx"
-
     def index(self):
-        cols = ("accessionid",)
-        for col in cols:
-            idx = self._idx(self.tableName, col)
-            print("indexing", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    CREATE INDEX {idx} on {tableName} ({col});
-    """.format(idx = idx, tableName = self.tableName, col = col))
-
+        makeIndex(self.curs, self.tableName, ["accession"])
+        
 class ImportPeakIntersectionMetadata:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -75,7 +64,7 @@ class ImportPeakIntersectionMetadata:
         self.tableName = assembly + "_" + "peakIntersectionsMetadata"
 
     def setupTable(self):
-        print("dropping and creating table", self.tableName)
+        printt("dropping and creating table", self.tableName)
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
     CREATE TABLE {tableName}(
@@ -103,7 +92,7 @@ class ImportPeakIntersectionMetadata:
 
         cols = "expID fileID assay label".split(' ')
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
-        print("\tcopied in", self.curs.rowcount)
+        printt("\tcopied in", self.curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -129,8 +118,8 @@ def main():
             else:
                 ipi = ImportPeakIntersections(curs, assembly)
                 ipi.run()
-                ipi = ImportPeakIntersectionMetadata(curs, assembly)
-                ipi.run()
+                ipm = ImportPeakIntersectionMetadata(curs, assembly)
+                ipm.run()
 
 if __name__ == '__main__':
     main()
