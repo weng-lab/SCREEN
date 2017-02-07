@@ -77,6 +77,18 @@ WHERE cre.accession = prox.accession;
 """.format(ctn = ctn,
            tnProx = m["assembly"] + "_isProximal"))
 
+    printt("updating maxZ", ctn)
+    curs.execute("""
+UPDATE {ctn}
+SET maxz = GREATEST( dnase_zscore_max,
+ctcf_only_zscore_max ,
+ctcf_dnase_zscore_max ,
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max ,
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max )
+""".format(ctn = ctn))
+
 def doPartition(curs, tableName, m):
     curs.execute("""
 DROP TABLE IF EXISTS {tn} CASCADE;
@@ -85,6 +97,7 @@ DROP TABLE IF EXISTS {tn} CASCADE;
     curs.execute("""
         CREATE TABLE {tableName}
  (
+ id serial PRIMARY KEY,
  accession VARCHAR(20),
  mpName text,
  negLogP real,
@@ -120,7 +133,8 @@ DROP TABLE IF EXISTS {tn} CASCADE;
  h3k27ac_dnase_zscore_max numeric(8,3),
  h3k4me3_only_zscore_max numeric(8,3),
  h3k4me3_dnase_zscore_max numeric(8,3),
- isProximal boolean
+ isProximal boolean,
+ maxz numeric(8,3)
         ); """.format(tableName = tableName))
 
     chroms = m["chrs"]
@@ -129,7 +143,6 @@ DROP TABLE IF EXISTS {tn} CASCADE;
         curs.execute("""
 DROP TABLE IF EXISTS {ctn} CASCADE;
 CREATE TABLE {ctn} (
-id serial PRIMARY KEY,
 CHECK (chrom = '{chrom}')
 ) INHERITS ({tn});
 """.format(tn = tableName, ctn = ctn, chrom = chrom))
@@ -190,24 +203,8 @@ def main():
         m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            if 0:
-                importProxDistal(curs, assembly)
-                doPartition(curs, assembly + "_cre", m)
-            else:
-                curs.execute("""
-ALTER TABLE {tn}
-ADD COLUMN maxz numeric(8,3);
-
-UPDATE {tn}
-SET maxz = GREATEST( dnase_zscore_max,
-ctcf_only_zscore_max ,
-ctcf_dnase_zscore_max ,
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max ,
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max )
-""".format(tn = assembly + "_cre"))
-
+            importProxDistal(curs, assembly)
+            doPartition(curs, assembly + "_cre", m)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
