@@ -16,7 +16,7 @@ import {render_int, render_cell_type} from '../config/results_table'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
-import {panelize} from '../../../common/uility'
+import {panelize} from '../../../common/utility'
 
 const rangeBox = (title, range, start, end, action, _f) => {
     return (<RangeFacet
