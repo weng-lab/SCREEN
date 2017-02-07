@@ -69,7 +69,7 @@ class PGsearch:
             tableName = '_'.join([self.assembly, "cre"])
 
         fields = ', '.join(["accession", "maxZ",
-                            "cre.chrom", "cre.start", "cre.stop",
+                            "cre.chrom", "cre.start", "cre.stop - cre.start AS len",
                             "infoAll.approved_symbol AS gene_all" ,
                             "infoPc.approved_symbol AS gene_pc",
                             "0::int as in_cart"])
