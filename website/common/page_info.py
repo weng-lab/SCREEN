@@ -11,12 +11,13 @@ class PageInfoMain:
         self.ps = ps
         self.cacheW = cacheW
 
-    def wholePage(self, assembly, indexPage = False):
+    def wholePage(self, assembly, indexPage = False, failedsearch = ""):
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
-                "re_json_index" : paths.reJsonIndex(assembly)
+                "re_json_index" : paths.reJsonIndex(assembly),
+                "failedsearch": failedsearch
         }
 
     def autocomplete(self, userQuery):

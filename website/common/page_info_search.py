@@ -29,6 +29,8 @@ class PageInfoSearch:
             p = ParseSearch(kwargs["q"], self.ps.DBCONN, assembly)
             parsed = p.parse()
             parsedStr = p.parseStr()
+            if kwargs["q"] and not parsed["coord_chrom"]:
+                ret["failed"] = kwargs["q"]
 
         cache = self.cacheW[assembly]
 
