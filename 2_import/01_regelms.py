@@ -181,7 +181,7 @@ def main():
                        "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
                        "tableName" : "hg19_cre"}}
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = ["mm10", "hg19"]
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -197,8 +197,7 @@ def main():
                 curs.execute("""
 ALTER TABLE {tn}
 ADD COLUMN maxz numeric(8,3);
-""".format(tn = assembly + "_cre"))
-                curs.execute("""
+
 UPDATE {tn}
 SET maxz = GREATEST( dnase_zscore_max,
 ctcf_only_zscore_max ,
