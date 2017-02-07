@@ -187,18 +187,28 @@ int4range(%s, %s)
                                          abs(coord.start - start))})
         return ret
 
-    def nearbyCREs(self, coord, halfWindow, cols = ["start", "stop", "accession"]):
+    def nearbyCREs(self, coord, halfWindow, cols, isProximalOrDistal):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_cre_" + c.chrom
+        q = """
+SELECT {cols} FROM {tn} 
+WHERE int4range(start, stop) && int4range(%s, %s)
+""".format(cols = ','.join(cols), tn = tableName)
+
+        if isProximalOrDistal is not None:
+            q += """
+AND isProximal is {isProx}
+""".format(isProx = str(isProximalOrDistal))
+
+        print("nearbyCREs query:", q)
+            
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
-            curs.execute("""
-SELECT {cols} FROM {tn} WHERE int4range(start, stop) &&
-int4range(%s, %s)
-""".format(cols = ','.join(cols), tn = tableName), (c.start, c.end))
+            curs.execute(q, (c.start, c.end))
             return curs.fetchall()
 
     def distToNearbyCREs(self, accession, coord, halfWindow):
-        cres = self.nearbyCREs(coord, halfWindow)
+        cols = ["start", "stop", "accession"]
+        cres = self.nearbyCREs(coord, halfWindow, cols, None)
         ret = []
         for c in cres:
             acc = c[2]
