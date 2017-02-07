@@ -50,32 +50,13 @@ class CREdownload:
         return {"url" : url}
 
     def downloadAsBed(self, j, uid):
-        rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
-                     "dnase": [],
-                     "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
-                     "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
+        print(j)
+        return ""
 
-        def writeBedLine(rank, subRank, ct, cre):
-            re = cre["_source"]
-            pos = re["position"]
-            if "dnase" == rank:
-                r = re["ranks"][rank][ct]
-                signal = r["signal"]
-            else:
-                if subRank in re["ranks"][rank][ct]:
-                    r = re["ranks"][rank][ct][subRank]
-                    signalKeys = [x for x in r.keys() if x != "rank"]
-                    signalValues = [r[x]["signal"] for x in signalKeys]
-                    signal = np.mean(signalValues)
-                else:
-                    return None
-            rankVal = r["rank"]
-            signal = round(signal, 2)
 
-            score = int(Utils.scale(rankVal, (1, 250 * 100), (1000, 1)))
-            toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
-                    score, '.', signal, re["neg-log-p"], -1, -1]
-            return "\t".join([str(x) for x in toks])
+        toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
+                score, '.', signal, re["neg-log-p"], -1, -1]
+        return "\t".join([str(x) for x in toks])
 
         def writeBed(rank, subRank, ct, rows):
             f = StringIO.StringIO()
@@ -86,28 +67,6 @@ class CREdownload:
                 f.write(line  + "\n")
             return f.getvalue()
 
-        def writeBeds(rows):
-            mf = StringIO.StringIO()
-            with zipfile.ZipFile(mf, mode='w',
-                                 compression=zipfile.ZIP_DEFLATED) as zf:
-                for rank, subRanks in rankTypes.iteritems():
-                    cts = rows[0]["_source"]["ranks"][rank].keys()
-                    if "dnase" == rank:
-                        for ct in cts:
-                            data = writeBed(rank, [], ct, rows)
-                            ct = Utils.sanitize(ct)
-                            fn = '.'.join([rank, ct, "bed"])
-                            if data:
-                                zf.writestr(fn, data)
-                    else:
-                        for subRank in subRanks:
-                            for ct in cts:
-                                data = writeBed(rank, subRank, ct, rows)
-                                ct = Utils.sanitize(ct)
-                                fn = '.'.join([rank, subRank, ct, "bed"])
-                                if data:
-                                    zf.writestr(fn, data)
-            return mf.getvalue()
         return self.downloadAsSomething(uid, j, "beds", writeBeds)
 
     def downloadAsJson(self, j, uid):
