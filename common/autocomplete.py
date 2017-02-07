@@ -1,4 +1,6 @@
-from elastic_search_wrapper import or_query, _gene_alias_fields
+import sys, os
+sys.path.append(os.path.join(os.path.realpath(__file__), "../../metadata/utils"))
+from db_utils import getcursor
 
 def _second_onward(arr):
     if len(arr) == 1: return []
@@ -7,18 +9,27 @@ def _second_onward(arr):
 class AutocompleterWrapper:
     def __init__(self, ps):
         self.acs = {
-            "hg19" : Autocompleter(ps["hg19"], "hg19"),
-            "mm10" : Autocompleter(ps["mm10"], "mm10")}
+            "hg19" : Autocompleter(ps, "hg19"),
+            "mm10" : Autocompleter(ps, "mm10")}
 
     def __getitem__(self, assembly):
         return self.acs[assembly]
+
     def get_suggestions(self, q):
-        return self.acs["hg19"].get_suggestions(q) + self.acs["mm10"].get_suggestions(q)
+        p = q.split(" ")
+        for i in xrange(len(p)):
+            prefix = " ".join(p[:i])
+            suffix = " ".join(p[i:])
+            results = list(set(self.acs["hg19"].get_suggestions(suffix) + self.acs["mm10"].get_suggestions(suffix)))
+            if len(results) > 0:
+                results = [prefix + " " + x for x in results]
+                break
+        return results
 
 class Autocompleter:
     def __init__(self, ps, assembly):
-        self.es = es
         self.assembly = assembly
+        self.ps = ps
         self.indices = {"misc": self.get_misc_suggestions,
                         "gene_aliases": self.get_gene_suggestions,
                         "snp_aliases": self.get_snp_suggestions,
@@ -38,10 +49,14 @@ class Autocompleter:
             return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
         return self.es.cell_type_query(q)
 
-    def get_suggestions(self, j):
-        uq = j["userQuery"].lower()
-        ret = self.get_gene_suggestions(uq) + self.get_snp_suggestions(uq)
-        return { "results" : ret }
+    def get_suggestions(self, q):
+        uq = q.lower()
+        if not uq:
+            return []
+        with getcursor(self.ps.DBCONN, "autocomplete$Autocomplete::get_suggestions") as curs:
+            curs.execute("SELECT name FROM {assembly}_autocomplete WHERE name LIKE '{q}%' LIMIT 10".format(assembly=self.assembly, q=uq))
+            r = curs.fetchall()
+        return [] if not r else [x[0] for x in r]
 
     def get_misc_suggestions(self, q):
         retval = []
