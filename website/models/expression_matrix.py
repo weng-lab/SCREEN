@@ -2,14 +2,12 @@ import os, sys, json
 import math
 import time
 
-#sys.path.append(os.path.join(os.path.dirname(__file__), "../../../common/python"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../heatmaps/API"))
 from heatmaps.heatmap import Heatmap
 
 class ExpressionMatrix:
-    def __init__(self, es):
+    def __init__(self):
         self.index = "expression_matrix"
-        self.es = es
 
     @staticmethod
     def process_for_javascript(raw_results):

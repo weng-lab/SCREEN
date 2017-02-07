@@ -177,7 +177,7 @@ class AssocTssTab extends ReTabBase{
 	super(props, "assocTSS");
         this.doRender = (data) => {
 	    if (data.no_nearby_tss) {
-		return <div>No TSS is associated with this cRE</div>;
+		return <div>{"No gene expression data found for this cRE"}</div>;
 	    }
             return (<div>
 		    <h2><em>{data.genename}</em></h2>

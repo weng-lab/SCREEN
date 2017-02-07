@@ -3,7 +3,7 @@
 function sendText(s) {
     $.ajax({
         type: "POST",
-        url: "/ajaxws",
+        url: "/dataws",
         data: s,
         dataType: "json",
         contentType : "application/json",
