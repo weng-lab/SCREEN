@@ -197,13 +197,6 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def beddownload(self):
-        j = cherrypy.request.json
-        return self.ajaxWS.beddownload(j, self.session_uuid())
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
     def jsondownload(self):
         j = cherrypy.request.json
         return self.ajaxWS.jsondownload(j, self.session_uuid())
