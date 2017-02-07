@@ -52,8 +52,8 @@ const ResultsTableColumns = [
         render: render_int
     },
     {
-	title: "end",
-	data: "stop",
+	title: "length",
+	data: "len",
 	className: "dt-right",
         render: render_int
     },
