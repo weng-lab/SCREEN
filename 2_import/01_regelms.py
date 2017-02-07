@@ -39,7 +39,6 @@ def importProxDistal(curs, assembly):
         row = r[0] + '\t' + ('1' if r[1] == "proximal" else '0') + '\n'
         outF.write(row)
     outF.seek(0)
-    printt("\tok")
 
     tableName = assembly + "_isProximal"
     printt("copy into db...")
@@ -53,7 +52,6 @@ isProximal boolean
 );""".format(tn = tableName))
 
     curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
-    printt("\tok")
 
     makeIndex(curs, tableName, ["accession"])
 
@@ -71,7 +69,7 @@ h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
 h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
 """.format(ctn = ctn))
 
-    printt("updating isProximal zscore", ctn)
+    printt("updating isProximal", ctn)
     curs.execute("""
 UPDATE {ctn} as cre
 SET isProximal = prox.isProximal
