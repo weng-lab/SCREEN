@@ -166,6 +166,20 @@ CHECK (chrom = '{chrom}')
         printt("imported", os.path.basename(fnp))
         updateTable(curs, ctn, m)
 
+def vacumnAnalyze(conn, baseTableName, chrs):
+    # http://stackoverflow.com/a/1017655
+    print("about to vacuum analyze", baseTableName)
+    old_isolation_level = conn.isolation_level
+    conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    curs = conn.cursor()
+    curs.execute("vacuum analyze " + baseTableName)
+    for chrom in chrs:
+        ctn = baseTableName + '_' + chrom
+        print("about to vacuum analyze", ctn)
+        curs.execute("vacuum verbose analyze " + ctn)
+    conn.set_isolation_level(old_isolation_level)
+    print("done")
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -208,6 +222,7 @@ def main():
         with getcursor(DBCONN, "08_setup_log") as curs:
             #importProxDistal(curs, assembly)
             doPartition(curs, assembly + "_cre", m)
+        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
     return 0
 
