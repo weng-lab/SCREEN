@@ -4,6 +4,7 @@ from __future__ import print_function
 import os, sys, json
 import time
 import numpy as np
+import cherrypy
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -17,9 +18,9 @@ from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
-from pg import PGsearch
-from compute_gene_expression import ComputeGeneExpression, Compartments
+from common.pg import PGsearch
+from common.compute_gene_expression import ComputeGeneExpression, Compartments
+from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -70,6 +71,16 @@ class DataWebService:
             "assocTSS" : self._re_detail_assocTSS,
             "similarREs" : self._re_detail_similarREs,
             "ortholog": self._ortholog }
+
+        self.sessions = Sessions(ps.DBCONN)
+
+    def session_uuid(self):
+        uid = self.sessions.get(cherrypy.session.id)
+        if not uid:
+            uid = self.sessions.makeUid()
+            cherrypy.session["uid"] = uid
+            self.sessions.insert(cherrypy.session.id, uid)
+        return uid
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -179,10 +190,10 @@ class DataWebService:
         return {tree_rank_method: ret}
 
     def bed_download(self, j, args):
-        cd = CREdownload(j)
-        return cd.bed()
+        cd = CREdownload(self.pgSearch, self.cache)
+        return cd.bed(j, self.session_uuid())
     
     def json_download(self, j, args):
-        cd = CREdownload(j)
-        return cd.json()
+        cd = CREdownload(self.pgSearch, self.cache)
+        return cd.json(j, self.session_uuid())
     

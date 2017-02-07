@@ -5,8 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle, chrom_lengths
 
 class PageInfoSearch:
-    def __init__(self, es, ps, cacheW):
-        self.es = es
+    def __init__(self, ps, cacheW):
         self.ps = ps
         self.cacheW = cacheW
 
