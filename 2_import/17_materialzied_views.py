@@ -70,27 +70,28 @@ isProximal boolean
 
     makeIdex(curs, ["accession"], tableName)
 
-def makeCreMC(curs, tableName, tableNameIsProx):
-    printt("making mv for", tableName)
+def updateTable(curs, ctn, m):
+    printt("updating max zscore", ctn)
     curs.execute("""
-DROP MATERIALIZED VIEW IF EXISTS {mvn};
-CREATE MATERIALIZED VIEW {mvn} AS
-SELECT cre.*,
-(select max(x) from unnest(dnase_zscore) x) as dnase_zscore_max,
-(select max(x) from unnest(ctcf_only_zscore) x) as ctcf_only_zscore_max,
-(select max(x) from unnest(ctcf_dnase_zscore) x) as ctcf_dnase_zscore_max,
-(select max(x) from unnest(h3k27ac_only_zscore) x) as h3k27ac_only_zscore_max,
-(select max(x) from unnest(h3k27ac_dnase_zscore) x) as h3k27ac_dnase_zscore_max,
-(select max(x) from unnest(h3k4me3_only_zscore) x) as h3k4me3_only_zscore_max,
-(select max(x) from unnest(h3k4me3_dnase_zscore) x) as h3k4me3_dnase_zscore_max
-prox.isProximal
-FROM {tn} as cre
-INNER JOIN {tnProx} as prox
-ON cre.accession = prox.accession;
-""".format(tn = tableName,
-           tnProx = tableNameIsProx,
-           mvn = tableName + "_mv"))
-    printt("\tok")
+UPDATE {ctn}
+SET
+dnase_zscore_max      = (select max(x) from unnest(dnase_zscore) x),
+ctcf_only_zscore_max  = (select max(x) from unnest(ctcf_only_zscore) x),
+ctcf_dnase_zscore_max = (select max(x) from unnest(ctcf_dnase_zscore) x),
+h3k27ac_only_zscore_max = (select max(x) from unnest(h3k27ac_only_zscore) x),
+h3k27ac_dnase_zscore_max = (select max(x) from unnest(h3k27ac_dnase_zscore) x),
+h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
+h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
+""".format(ctn = ctn))
+
+    printt("updating isProximal zscore", ctn)
+    curs.execute("""
+UPDATE {ctn} as cre
+SET isProximal = prox.isProximal
+FROM {tnProx} as prox
+WHERE cre.accession = prox.accession;
+""".format(ctn = ctn,
+           tnProx = m["assembly"] + "_isProximal"))
 
 def doPartition(curs, tableName, m):
     curs.execute("""
@@ -136,7 +137,6 @@ DROP TABLE IF EXISTS {tn} CASCADE;
  h3k4me3_only_zscore_max numeric(8,3),
  h3k4me3_dnase_zscore_max numeric(8,3),
  isProximal boolean
-
         ); """.format(tableName = tableName))
 
     chroms = m["chrs"]
@@ -164,6 +164,7 @@ CHECK (chrom = '{chrom}')
             printt("importing", fnp, "into", ctn)
             curs.copy_from(f, ctn, '\t', columns=cols)
         printt("imported", os.path.basename(fnp))
+        updateTable(curs, ctn, m)
 
 def parse_args():
     parser = argparse.ArgumentParser()
