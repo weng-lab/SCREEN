@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os, sys, json, psycopg2, re, argparse, gzip, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -9,76 +9,162 @@ from dbconnect import db_connect
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer
+from utils import Utils, Timer, printt
 
-class ImportData:
-    def __init__(self, curs, info, cols):
-        self.curs = curs
-        self.chrs = info["chrs"]
-        self.baseTableName = info["tableName"]
-        self.d = info["d"]
-        self.base = info["base"]
-        self.all_cols = cols
-        self.assembly = info["assembly"]
-        self.subsample = info["subsample"]
+allInitialCols = ("accession", "mpName", "negLogP",
+                  "chrom", "start", "stop",
+                  "conservation_rank", "conservation_signal",
+                  "dnase_rank", "dnase_signal", "dnase_zscore",
+                  "ctcf_only_rank", "ctcf_only_zscore",
+                  "ctcf_dnase_rank", "ctcf_dnase_zscore",
+                  "h3k27ac_only_rank", "h3k27ac_only_zscore",
+                  "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
+                  "h3k4me3_only_rank", "h3k4me3_only_zscore",
+                  "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
+                  "gene_all_distance", "gene_all_id",
+                  "gene_pc_distance", "gene_pc_id", "tads")
 
-    def setupTable(self, tableName):
-        print("dropping and creating", tableName, "...")
-        self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
+def makeIdex(curs, cols, tableName):
+    def _idx(tn, col, suf = ""):
+        if suf:
+            return tn + '_' + col + '_' + suf + "_idx"
+        return tn + '_' + col + "_idx"
+    for col in cols:
+        idx = _idx(tableName, col)
+        printt("indexing", idx)
+        curs.execute("""
+DROP INDEX IF EXISTS {idx};
+CREATE INDEX {idx} on {tableName} ({col});
+""".format(idx = idx, tableName = tableName, col = col))
+        printt("\tok")
 
-    CREATE TABLE {tableName}
-        (id serial PRIMARY KEY,
-        accession VARCHAR(20),
-        mpName text,
-        negLogP real,
-        chrom VARCHAR(5),
-        start integer,
-        stop integer,
-        conservation_rank integer[],
-        conservation_signal numeric(8,3)[],
-        dnase_rank integer[],
-        dnase_signal numeric(8,3)[],
-        dnase_zscore numeric(8,3)[],
-        ctcf_only_rank integer[],
-        ctcf_only_zscore numeric(8,3)[],
-        ctcf_dnase_rank integer[],
-        ctcf_dnase_zscore numeric(8,3)[],
-        h3k27ac_only_rank integer[],
-        h3k27ac_only_zscore numeric(8,3)[],
-        h3k27ac_dnase_rank integer[],
-        h3k27ac_dnase_zscore numeric(8,3)[],
-        h3k4me3_only_rank integer[],
-        h3k4me3_only_zscore numeric(8,3)[],
-        h3k4me3_dnase_rank integer[],
-        h3k4me3_dnase_zscore numeric(8,3)[],
-        gene_all_distance integer[],
-        gene_all_id integer[],
-        gene_pc_distance integer[],
-        gene_pc_id integer[],
-        tads integer[]
+def importProxDistal(curs, assembly):
+    d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
+                     "Version-4", "ver9", assembly)
+    fnp = os.path.join(d, assembly + "-Proximal-Distal.txt")
+    printt("reading", fnp)
+    with open(fnp) as f:
+        rows = [line.rstrip().split('\t') for line in f]
+
+    printt("rewriting")
+    outF = StringIO.StringIO()
+    for r in rows:
+        row = r[0] + '\t' + ('1' if r[1] == "proximal" else '0') + '\n'
+        outF.write(row)
+    outF.seek(0)
+    printt("\tok")
+
+    tableName = assembly + "_isProximal"
+    printt("copy into db...")
+
+    curs.execute("""
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}
+(id serial PRIMARY KEY,
+accession text,
+isProximal boolean
+);""".format(tn = tableName))
+
+    curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
+    printt("\tok")
+
+    makeIdex(curs, ["accession"], tableName)
+
+def updateTable(curs, ctn, m):
+    printt("updating max zscore", ctn)
+    curs.execute("""
+UPDATE {ctn}
+SET
+dnase_zscore_max      = (select max(x) from unnest(dnase_zscore) x),
+ctcf_only_zscore_max  = (select max(x) from unnest(ctcf_only_zscore) x),
+ctcf_dnase_zscore_max = (select max(x) from unnest(ctcf_dnase_zscore) x),
+h3k27ac_only_zscore_max = (select max(x) from unnest(h3k27ac_only_zscore) x),
+h3k27ac_dnase_zscore_max = (select max(x) from unnest(h3k27ac_dnase_zscore) x),
+h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
+h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
+""".format(ctn = ctn))
+
+    printt("updating isProximal zscore", ctn)
+    curs.execute("""
+UPDATE {ctn} as cre
+SET isProximal = prox.isProximal
+FROM {tnProx} as prox
+WHERE cre.accession = prox.accession;
+""".format(ctn = ctn,
+           tnProx = m["assembly"] + "_isProximal"))
+
+def doPartition(curs, tableName, m):
+    curs.execute("""
+DROP TABLE IF EXISTS {tn} CASCADE;
+""".format(tn = tableName))
+
+    curs.execute("""
+        CREATE TABLE {tableName}
+ (
+ accession VARCHAR(20),
+ mpName text,
+ negLogP real,
+ chrom VARCHAR(5),
+ start integer,
+ stop integer,
+ conservation_rank integer[],
+ conservation_signal numeric(8,3)[],
+ dnase_rank integer[],
+ dnase_signal numeric(8,3)[],
+ dnase_zscore numeric(8,3)[],
+ ctcf_only_rank integer[],
+ ctcf_only_zscore numeric(8,3)[],
+ ctcf_dnase_rank integer[],
+ ctcf_dnase_zscore numeric(8,3)[],
+ h3k27ac_only_rank integer[],
+ h3k27ac_only_zscore numeric(8,3)[],
+ h3k27ac_dnase_rank integer[],
+ h3k27ac_dnase_zscore numeric(8,3)[],
+ h3k4me3_only_rank integer[],
+ h3k4me3_only_zscore numeric(8,3)[],
+ h3k4me3_dnase_rank integer[],
+ h3k4me3_dnase_zscore numeric(8,3)[],
+ gene_all_distance integer[],
+ gene_all_id integer[],
+ gene_pc_distance integer[],
+ gene_pc_id integer[],
+ tads integer[],
+ dnase_zscore_max numeric(8,3),
+ ctcf_only_zscore_max numeric(8,3),
+ ctcf_dnase_zscore_max numeric(8,3),
+ h3k27ac_only_zscore_max numeric(8,3),
+ h3k27ac_dnase_zscore_max numeric(8,3),
+ h3k4me3_only_zscore_max numeric(8,3),
+ h3k4me3_dnase_zscore_max numeric(8,3),
+ isProximal boolean
         ); """.format(tableName = tableName))
-        print("created", tableName)
 
-    def importTsv(self, tn, fnp):
-        cols = self.all_cols
+    chroms = m["chrs"]
+    for chrom in chroms:
+        ctn = tableName + '_' + chrom
+        curs.execute("""
+DROP TABLE IF EXISTS {ctn} CASCADE;
+CREATE TABLE {ctn} (
+id serial PRIMARY KEY,
+CHECK (chrom = '{chrom}')
+) INHERITS ({tn});
+""".format(tn = tableName, ctn = ctn, chrom = chrom))
+        printt(ctn)
+
+    d = m["d"]
+    subsample = m["subsample"]
+    for chrom in chroms:
+        fn = "parsed." + chrom + ".tsv.gz"
+        fnp = os.path.join(d, fn)
+        if subsample:
+            fnp = os.path.join(d, "sample", fn)
+        ctn = tableName + '_' + chrom
+        cols = allInitialCols
         with gzip.open(fnp) as f:
-            print("importing", fnp, "into", tn)
-            self.curs.copy_from(f, tn, '\t', columns=cols)
-        #print("imported", os.path.basename(fnp))
-
-    def run(self, fullChrom):
-        self.setupTable(self.baseTableName)
-
-        for chrom in self.chrs:
-            fn = "parsed." + chrom + ".tsv.gz"
-            fnp = os.path.join(self.d, fn)
-            if self.subsample and chrom != fullChrom:
-                fnp = os.path.join(self.d, "sample", fn)
-            ctn = self.baseTableName + '_' + chrom
-            self.setupTable(ctn)
-            self.importTsv(self.baseTableName, fnp)
-            self.importTsv(ctn, fnp)
+            printt("importing", fnp, "into", ctn)
+            curs.copy_from(f, ctn, '\t', columns=cols)
+        printt("imported", os.path.basename(fnp))
+        updateTable(curs, ctn, m)
 
 def vacumnAnalyze(conn, baseTableName, chrs):
     # http://stackoverflow.com/a/1017655
@@ -98,43 +184,32 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
-    parser.add_argument("--chrom", type=str, default="")
-    parser.add_argument('--setup', action="store_true", default=False)
     parser.add_argument('--sample', action="store_true", default=False)
-    parser.add_argument('--vac', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
-infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                             "chr6", "chr7", "chr8", "chr9", "chr10",
-                             "chr11", "chr12",
-                             "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                             "chr19", "chrX", "chrY"],
-                   "assembly" : "mm10",
-                   "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
-                   "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
-                   "tableName" : "mm10_cre"},
-         "hg19" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                             "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                             "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                             "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
-                   "assembly" : "hg19",
-                   "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
-                   "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
-                   "tableName" : "hg19_cre"}}
+def main():
+    args = parse_args()
 
-def run(args, DBCONN):
-    cols = ("accession", "mpName", "negLogP", "chrom", "start", "stop",
-            "conservation_rank", "conservation_signal",
- 	    "dnase_rank", "dnase_signal", "dnase_zscore",
-	    "ctcf_only_rank", "ctcf_only_zscore",
- 	    "ctcf_dnase_rank", "ctcf_dnase_zscore",
- 	    "h3k27ac_only_rank", "h3k27ac_only_zscore",
- 	    "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
- 	    "h3k4me3_only_rank", "h3k4me3_only_zscore",
- 	    "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
-            "gene_all_distance", "gene_all_id",
-            "gene_pc_distance", "gene_pc_id", "tads")
+    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+
+    infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                                 "chr6", "chr7", "chr8", "chr9", "chr10",
+                                 "chr11", "chr12",
+                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                                 "chr19", "chrX", "chrY"],
+                       "assembly" : "mm10",
+                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
+                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
+                       "tableName" : "mm10_cre"},
+             "hg19" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
+                                 "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
+                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
+                                 "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
+                       "assembly" : "hg19",
+                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
+                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
+                       "tableName" : "hg19_cre"}}
 
     assemblies = ["hg19", "mm10"]
     if args.assembly:
@@ -144,21 +219,10 @@ def run(args, DBCONN):
         m = infos[assembly]
         m["subsample"] = args.sample
 
-        if args.vac:
-            vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
-            continue
-
         with getcursor(DBCONN, "08_setup_log") as curs:
-            im = ImportData(curs, m, cols)
-            im.run(args.chrom)
-            
+            importProxDistal(curs, assembly)
+            doPartition(curs, assembly + "_cre", m)
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
-
-def main():
-    args = parse_args()
-
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
-    run(args, DBCONN)
 
     return 0
 
