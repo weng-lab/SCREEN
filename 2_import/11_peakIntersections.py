@@ -27,7 +27,6 @@ class ImportPeakIntersections:
     CREATE TABLE {tableName}(
     id serial PRIMARY KEY,
     accession text,
-    accessionid integer,
     tf jsonb,
     histone jsonb,
     dnase jsonb
@@ -45,14 +44,6 @@ class ImportPeakIntersections:
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         printt("\tcopied in", fnp, self.curs.rowcount)
-
-        printt("setting accession id...")
-        self.curs.execute("""
-update {piTn}
-set accessionid = {creTn}.id
-from {creTn}
-where {piTn}.accession = {creTn}.accession
-""".format(creTn = self.assembly + "_cre", piTn = self.tableName))
 
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
@@ -75,7 +66,6 @@ class ImportPeakIntersectionMetadata:
         label text
     );
     """.format(tableName = self.tableName))
-        print("\tok")
 
     def run(self):
         self.setupTable()
