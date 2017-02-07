@@ -7,6 +7,7 @@ import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
+from models.cre_download import CREdownload
 from models.minipeaks import MiniPeaks
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
@@ -55,6 +56,8 @@ class DataWebService:
 
         self.actions = {"cre_table" : self.cre_table,
                         "re_detail" : self.re_detail,
+                        "bed_download" : self.bed_download,
+                        "json_download" : self.json_download,
                         "trees" : self.trees,
                         "tfenrichment": self.tfenrichment }
 
@@ -157,7 +160,10 @@ class DataWebService:
         return {accession: r}
     
     def _re_detail_similarREs(self, j, accession):
-        assay = j["extras"]["assay"] if "extras" in j and "assay" in j["extras"] else "dnase"
+        assay = "dnase"
+        if "extras" in j:
+            if "assay" in j["extras"]:
+                assay = j["extras"]["assay"] 
         mp = MiniPeaks(self.pgSearch, accession, self.cache)
         regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
         order = regions["order"]
@@ -171,3 +177,12 @@ class DataWebService:
         t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)
         ret = t.getTree()
         return {tree_rank_method: ret}
+
+    def bed_download(self, j, args):
+        cd = CREdownload(j)
+        return cd.bed()
+    
+    def json_download(self, j, args):
+        cd = CREdownload(j)
+        return cd.json()
+    
