@@ -62,17 +62,18 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
     
-    def creTable(self, j, chrom, start, stop):
+    def creTable(self, j, chrom, start, stop, fields = None):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
-        fields = ', '.join(["accession", "maxZ",
-                            "cre.chrom", "cre.start", "cre.stop - cre.start AS len",
-                            "infoAll.approved_symbol AS gene_all" ,
-                            "infoPc.approved_symbol AS gene_pc",
-                            "0::int as in_cart"])
+        if not fields:
+            fields = ', '.join(["accession", "maxZ",
+                                "cre.chrom", "cre.start", "cre.stop - cre.start AS len",
+                                "infoAll.approved_symbol AS gene_all" ,
+                                "infoPc.approved_symbol AS gene_pc",
+                                "0::int as in_cart"])
 
         print(j)
         
