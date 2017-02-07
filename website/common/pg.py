@@ -68,7 +68,7 @@ class PGsearch:
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
-        fields = ', '.join(["accession", "negLogP",
+        fields = ', '.join(["accession", "maxZ",
                             "cre.chrom", "cre.start", "cre.stop",
                             "infoAll.approved_symbol AS gene_all" ,
                             "infoPc.approved_symbol AS gene_pc",
@@ -126,7 +126,7 @@ on cre.gene_all_id[1] = infoAll.geneid
 inner join {gtn} as infoPc
 on cre.gene_pc_id[1] = infoPc.geneid
 {whereclause}
-ORDER BY neglogp desc limit 100) r
+ORDER BY maxz desc limit 100) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info", whereclause = whereclause))
             rows = curs.fetchall()[0][0]
