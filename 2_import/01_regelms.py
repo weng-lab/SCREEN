@@ -24,7 +24,6 @@ allInitialCols = ("accession", "mpName", "negLogP",
                   "gene_all_distance", "gene_all_id",
                   "gene_pc_distance", "gene_pc_id", "tads")
 
-
 def importProxDistal(curs, assembly):
     d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
                      "Version-4", "ver9", assembly)
@@ -191,8 +190,26 @@ def main():
         m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            importProxDistal(curs, assembly)
-            doPartition(curs, assembly + "_cre", m)
+            if 0:
+                importProxDistal(curs, assembly)
+                doPartition(curs, assembly + "_cre", m)
+            else:
+                curs.execute("""
+ALTER TABLE {tn}
+ADD COLUMN maxz numeric(8,3);
+""".format(tn = assembly + "_cre"))
+                curs.execute("""
+UPDATE {tn}
+SET maxz = GREATEST( dnase_zscore_max,
+ctcf_only_zscore_max ,
+ctcf_dnase_zscore_max ,
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max ,
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max )
+""".format(tn = assembly + "_cre"))
+
+
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
     return 0
