@@ -8,7 +8,7 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import LongListFacet from '../../../common/components/longlist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/uility'
+import {panelize} from '../../../common/utility'
 
 const cols = [{ title: "cell type", data: "name",
 		className: "dt-right" },

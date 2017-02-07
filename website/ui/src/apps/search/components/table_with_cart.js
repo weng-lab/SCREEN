@@ -1,10 +1,11 @@
-var React = require('react');
-import {connect} from 'react-redux'
+import React from 'react';
+import {connect} from 'react-redux';
 
-import ResultsTable from '../../../common/components/results_table'
+import ResultsTable from '../../../common/components/results_table';
 
-import ResultsTableColumns, {table_order} from '../config/results_table'
-import {numberWithCommas} from '../../../common/common'
+import ResultsTableColumns, {table_order} from '../config/results_table';
+import {numberWithCommas} from '../../../common/common';
+import {getCommonState} from '../../../common/utility';
 
 const table_click_handler = (td, re, actions) => {
     if (td.className.indexOf("browser") != -1) return;
@@ -57,11 +58,13 @@ const button_click_handler = (name, re, dispatch) => {
 
 class TableWithCart extends React.Component {
     downloadBed() {
-	var n_query = FacetQueryMap(this.props.store.getState());
+	var jq = this.props.jq;
+	console.log("jq", jq);
+
 	$.ajax({
             type: "POST",
-            url: "beddownload",
-            data: format_query(n_query),
+            url: "/dataws/bed_download",
+            data: jq,
             dataType: "json",
             contentType : "application/json",
             async: false, // http://stackoverflow.com/a/20235765
@@ -79,11 +82,12 @@ class TableWithCart extends React.Component {
     }
 
     downloadJSON() {
-	var n_query = FacetQueryMap(this.props.store.getState());
-	var formData = JSON.stringify({});
+	var jq = this.props.jq;
+	console.log("jq", jq);
+
 	$.ajax({
             type: "POST",
-            url: "jsondownload",
+            url: "/dataws/json_download",
             data: format_query(n_query),
             dataType: "json",
             contentType : "application/json",
@@ -125,9 +129,9 @@ class TableWithCart extends React.Component {
 		</span>);
     }
 
-    loading({fetching}){
+    loading({isFetching}){
         return (<div className={"loading"}
-                style={{"display": (fetching ? "block" : "none")}}>
+                style={{"display": (isFetching ? "block" : "none")}}>
 		Loading...
 		</div>);
     }
