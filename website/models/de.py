@@ -26,22 +26,27 @@ class DE:
         ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
         ct1PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct1]
         ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
+        
+        ret = []
+        thres = 1.64
 
         cols = ["accession", "start", "stop",
                 "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
-                "h3k4me3_only_zscore[%s]" % ct2PromoterIdx,
-                "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
-                "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
-        nearbyCREs = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols)
-        #print("found", len(nearbyCREs))
-
-        ret = []
-        thres = 1.64
-        for c in nearbyCREs:
+                "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
+        cresPromoter = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols, True)
+        print("found promoter-like CREs:", len(cresPromoter))
+        for c in cresPromoter:
             if c[3] > thres or c[4] > thres:
                 ret.append([c[1], round(float(c[4] - c[3]), 3), "promoter-like"])
-            if c[5] > thres or c[6] > thres:
-                ret.append([c[1], round(float(c[6] - c[5]), 3), "enhancer-like"])
+
+        cols = ["accession", "start", "stop",
+                "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
+                "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
+        cresEnhancer = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols, False)
+        print("found enhancer-like CREs", len(cresEnhancer))
+        for c in cresEnhancer:
+            if c[3] > thres or c[4] > thres:
+                ret.append([c[1], round(float(c[4] - c[3]), 3), "enhancer-like"])
         return {"data" : ret}
     
     def nearbyDEs(self):
