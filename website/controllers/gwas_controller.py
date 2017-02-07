@@ -7,12 +7,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from common.pg import PGsearch
 
 class GwasController:
-    def __init__(self, templates, es, ps, cacheW):
+    def __init__(self, templates, ps, cacheW):
         self.t = templates
-        self.es = es
         self.ps = ps
         self.cacheW = cacheW
-        self.params = (es, ps, cacheW)
+        self.params = (ps, cacheW)
 
     def gwas(self, args, kwargs, uuid):
         pageInfo = PageInfoGwas(*self.params)

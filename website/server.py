@@ -9,7 +9,6 @@ from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
-from elastic_search_wrapper import ElasticSearchWrapperWrapper
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 
@@ -71,8 +70,6 @@ def parse_args():
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
-    parser.add_argument("--elasticsearch_server", type=str, default="127.0.0.1")
-    parser.add_argument('--elasticsearch_port', type=int, default=9200)
     return parser.parse_args()
 
 def main():
@@ -80,14 +77,12 @@ def main():
     if args.production:
         args.dev = False
 
-    es = ElasticSearchWrapperWrapper(DummyEs())
-
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     ps = PostgresWrapper(DBCONN)
-    cow = CachedObjectsWrapper(es, ps)
+    cow = CachedObjectsWrapper(ps)
 
     config = Config("main")
-    main = MainApp(args, config.viewDir, config.staticDir, es, ps, cow)
+    main = MainApp(args, config.viewDir, config.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
 
     if args.dev:
