@@ -19,51 +19,33 @@ class ImportTADs:
         self.tableName = assembly + "_" + "tads"
 
     def setupTable(self):
-        print("dropping and creating table", self.tableName)
+        printt("dropping and creating table", self.tableName)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
-    CREATE TABLE {tableName}(
-    id serial PRIMARY KEY,
-    chrom text,
-    start integer,
-    stop integer
+ DROP TABLE IF EXISTS {tableName};
+ CREATE TABLE {tableName}(
+ id serial PRIMARY KEY,
+ accession VARCHAR(20),
+ mpName text,
+ tadID text
     );
     """.format(tableName = self.tableName))
-        print("\tok")
 
     def run(self):
-        fileIDs = """ENCFF558RGV
-ENCFF336WPU
-ENCFF451MCF
-ENCFF310FEU
-ENCFF437EBV
-ENCFF784LMI
-ENCFF032FMN
-ENCFF471EYL
-ENCFF588KUZ
-ENCFF938WXQ
-ENCFF701HCM
-ENCFF931RKD""".split('\n')
-
-        fnps = []
-        qd = QueryDCC()
-        for fileID in fileIDs:
-            fo = qd.getFileObjFromFileID(fileID)
-            fnp = fo.fnp()
-            print(fnp)
-            fnps.append(fnp)
-
-        cmds = ["zcat", " ".join(fnps),
-                '|', "sort -k1,1 -k2,2n"
-                '|', "bedtools merge"]
+        d = os.path.join("/project/umw_zhiping_weng/0_metadata/",
+                         "encyclopedia", "Version-4", "ver9",
+                         "hg19")
+        fnp = os.path.join(d, "hg19-TAD-Accessions.txt")
+        with open(fnp) as f:
+            rows = [line.rstrip().split('\t') for line in f]
         f = StringIO.StringIO()
-        f.write(''.join(Utils.runCmds(cmds)))
+        for r in rows:
+            f.write('\t'.join(r) + '\n')
         f.seek(0)
 
         self.setupTable()
         self.curs.copy_from(f, self.tableName, '\t',
-                          columns=("chrom", "start", "stop"))
-        print("\tcopied in bedtools merge TADs", self.curs.rowcount)
+                          columns=("mpName", "tadID"))
+        print("\tcopied in TADs", self.curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
