@@ -164,7 +164,7 @@ class DataWebService:
                 nearest = gene
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
-        cge = ComputeGeneExpression(None, self.ps, self.cache, self.assembly)
+        cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
         name = self.cache._try_genename(nearest["name"])
         r = cge.computeHorBars(name, (u'cell',))
         r["genename"] = name
