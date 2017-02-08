@@ -5,13 +5,17 @@ import os
 from natsort import natsorted
 from collections import namedtuple
 
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
-
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from cre_utils import isaccession
+
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils/'))
 from db_utils import getcursor
+
+GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
+GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
 
 class PGsearchWrapper:
     def __init__(self, pg):
@@ -61,36 +65,23 @@ class PGsearch:
         return {e[0] : {"bins" : e[1],
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
-    
-    def creTable(self, j, chrom, start, stop, fields = None):
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
 
-        if not fields:
-            fields = ', '.join(["accession", "maxZ",
-                                "cre.chrom", "cre.start", "cre.stop - cre.start AS len",
-                                "infoAll.approved_symbol AS gene_all" ,
-                                "infoPc.approved_symbol AS gene_pc",
-                                "0::int as in_cart"])
+    def _creTableWhereClause(self, j, chrom, start, stop):
+        whereclauses = []
 
-        print(j)
+        print(j, """TODO need more variables here:
+        gene_all_start, gene_all_end,
+        gene_pc_start, gene_pc_end""")
         
-        print("""TODO need more variables here:
-              gene_all_start, gene_all_end,
-              gene_pc_start, gene_pc_end""")
-
         """
         tfclause = "peakintersections.accession = cre.accession"
         if "tfs" in j:
             tfclause += " and peakintersections.tf ?| array(" + ",".join(["'%s'" % tf for tf in j["tfs"]]) + ")"
         """
         
-        whereclauses = []
-
         if start and stop:
             whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
+
         ct = j.get("cellType", None)
         if ct:
             for assay in [("dnase", "dnase"),
@@ -100,14 +91,17 @@ class PGsearch:
                 if ct not in self.ctmap[assay[0]]:
                     continue
                 cti = self.ctmap[assay[0]][ct]
-                _range = [j["rank_%s_start" % assay[0]] / 100.0, j["rank_%s_end" % assay[0]] / 100.0]
-                whereclauses.append("(%s)" % " and ".join(["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
-                                                           "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                _range = [j["rank_%s_start" % assay[0]] / 100.0,
+                          j["rank_%s_end" % assay[0]] / 100.0]
+                whereclauses.append("(%s)" % " and ".join(
+                    ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
+                     "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
-            # TODO: sanitize input!
-            if len(accs) > 0 and type(accs[0]) is dict:
+            if type(accs[0]) is dict:
                 accs = [x["value"] for x in accs if x["checked"]]
+            accs = filter(lambda x: isaccession(x), accs)
             accs = ["'%s'" % x.upper() for x in accs]
             accsQuery = "accession IN (%s)" % ','.join(accs)
             whereclauses.append("(%s)" % accsQuery)
@@ -116,6 +110,22 @@ class PGsearch:
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
         print(whereclause)
+        return whereclause
+    
+    def creTable(self, j, chrom, start, stop):
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        fields = ', '.join(["accession", "maxZ",
+                            "cre.chrom", "cre.start",
+                            "cre.stop - cre.start AS len",
+                            "infoAll.approved_symbol AS gene_all" ,
+                            "infoPc.approved_symbol AS gene_pc",
+                            "0::int as in_cart"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
         
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
@@ -129,7 +139,9 @@ on cre.gene_pc_id[1] = infoPc.geneid
 {whereclause}
 ORDER BY maxz desc limit 100) r
 """.format(fields = fields, tn = tableName,
-           gtn = self.assembly + "_gene_info", whereclause = whereclause))
+           gtn = self.assembly + "_gene_info",
+           whereclause = whereclause))
+            
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
