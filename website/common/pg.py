@@ -331,10 +331,12 @@ WHERE accession = %s
                               "h3k4me3-only" : r[12],
                               "dnase+h3k4me3": r[13] }}
 
-
     def creMostsimilar(self, acc, assay, threshold=20000):
         def whereclause(r):
-            _assay = assay if assay == "dnase" else assay.replace("_dnase", "") + "_only"
+            _assay = assay
+            if assay != "dnase":
+                _assay = assay.replace("_dnase", "") + "_only"
+                
             return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
                                 for i in xrange(len(r)) if r[i] < threshold])
 
@@ -364,7 +366,9 @@ WHERE accession = '{accession}'""".format(assay=assay,
                 return []
 
             curs.execute("""
-SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop
+SELECT accession, 
+intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, 
+chrom, start, stop
 FROM {assembly}_cre
 WHERE {whereclause}
 ORDER BY similarity DESC LIMIT 10
