@@ -70,10 +70,10 @@ class PGsearch:
     def _type_clauses(self, ct, assayterm):
         if not assayterm:
             return []
-        assaymap = {"chromatin-accessible": ["dnase"],
-                    "promoter-like": ["h3k4me3_only", "dnase"],
-                    "enhancer-like": ["h3k27ac_only", "dnase"],
-                    "insulator-like": ["ctcf_only"] }
+        assaymap = {"chromatin-accessible": [("dnase", "dnase")],
+                    "promoter-like": [("promoter", "h3k4me3_only"), ("dnase", "dnase")],
+                    "enhancer-like": [("enhancer", "h3k27ac_only"), ("dnase", "dnase")],
+                    "insulator-like": [("ctcf", "ctcf_only")] }
         allmap = {"chromatin-accessible": "dnase_zscore_max",
                   "promoter-like": "promoterMaxz",
                   "enhancer-like": "enhancerMaxz",
@@ -87,7 +87,7 @@ class PGsearch:
                 if ct not in self.ctmap[assay[0]]:
                     continue
                 cti = self.ctmap[assay[0]][ct]
-                ret.append(["cre.%s_zscore[%d] >= 1.64" % (assay[1], cti)])
+                ret.append("cre.%s_zscore[%d] >= 1.64" % (assay[1], cti))
             return ret
         if assayterm not in allmap:
             print("WARNING: invalid element type %s; ignoring" % assayterm)
