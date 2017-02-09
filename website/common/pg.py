@@ -8,7 +8,7 @@ from collections import namedtuple
 from coord import Coord
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession, isclose
+from cre_utils import isaccession, isclose, checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
@@ -163,6 +163,60 @@ SELECT count(0) FROM {tn} as cre
 {whereclause}""".format(tn = tableName, whereclause = whereclause))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
+
+    def creTableDownloadBed(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", None),
+        stop = j.get("coord_end", None)
+
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        fields = ', '.join(["cre.chrom", "cre.start",
+                            "cre.stop",
+                            "accession", "maxZ"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+            curs.execute("""
+copy (
+SELECT {fields}
+FROM {tn} as cre
+{whereclause}
+) to '{fnp}'
+with DELIMITER E'\t'
+""".format(fields = fields, tn = tableName,
+           whereclause = whereclause,
+           fnp = fnp))
+
+    def creTableDownloadJson(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", None),
+        stop = j.get("coord_end", None)
+
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+            curs.execute("""
+copy (
+SELECT JSON_AGG(r) from (
+SELECT *
+FROM {tn} as cre
+{whereclause}
+) r
+) to '{fnp}'
+with DELIMITER E'\t'
+""".format(tn = tableName,
+           whereclause = whereclause,
+           fnp = fnp))
 
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:

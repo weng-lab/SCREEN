@@ -3,12 +3,12 @@
 from __future__ import print_function
 
 import os
+import sys
 
 class CREdownload:
     def __init__(self, pgSearch, cache):
         self.pgSearch = pgSearch
         self.cache = cache
-
 
     def bed(self, j, uid):
         try:
@@ -27,65 +27,20 @@ class CREdownload:
             return { "error" : "error running action"}
 
     def downloadAsBed(self, j, uid):
-        print(j)
+        outFn, outFnp = self._downloadFileName(uid, "bed")
+        self.pgSearch.creTableDownloadBed(j, outFnp)
+        url = os.path.join('/', "static", "downloads", uid, outFn)
+        return {"url" : url}
 
-        q = """
-copy (
-select chrom, start, stop from mm10_cre
-) to '/tmp/a.bed'
-with DELIMITER E'\t'
-"""
-        return ""
-
-
-
-        toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
-                score, '.', signal, re["neg-log-p"], -1, -1]
-        return "\t".join([str(x) for x in toks])
-
-        def writeBed(rank, subRank, ct, rows):
-            f = StringIO.StringIO()
-            for re in rows:
-                line = writeBedLine(rank, subRank, ct, re)
-                if not line:
-                    return None
-                f.write(line  + "\n")
-            return f.getvalue()
-
-        return self.downloadAsSomething(uid, j, "beds", writeBeds)
-
-    def downloadFileName(self, uid, formt):
+    def _downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = '-'.join([timestr, "v4", formt]) + ".zip"
+        outFn = '-'.join([timestr, "v4", formt])
         outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
-    def downloadAsSomething(self, uid, j, formt, writeFunc):
-        ret = self._query({"object": j["object"],
-                           "index": paths.reJsonIndex(self.assembly),
-                           "callback": "regulatory_elements" })
-        outFn, outFnp = self.downloadFileName(uid, formt)
-
-        data = writeFunc(ret["results"]["hits"])
-
-        with open(outFnp, mode='w') as f:
-            f.write(data)
-
-        print("wrote", outFnp)
-
+    def downloadAsJson(self, j, uid):
+        outFn, outFnp = self._downloadFileName(uid, "json")
+        self.pgSearch.creTableDownloadJson(j, outFnp)
         url = os.path.join('/', "static", "downloads", uid, outFn)
         return {"url" : url}
-
-
-    def downloadAsJson(self, j, uid):
-        def writeJson(rows):
-            mf = StringIO.StringIO()
-            with zipfile.ZipFile(mf, mode='w',
-                                 compression=zipfile.ZIP_DEFLATED) as zf:
-                for cre in rows:
-                    re = cre["_source"]
-                    data = json.dumps(re) + "\n"
-                    zf.writestr(re["accession"] + '.json', data)
-            return mf.getvalue()
-        return self.downloadAsSomething(uid, j, "jsons", writeJson)
