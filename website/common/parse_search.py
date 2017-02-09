@@ -90,9 +90,9 @@ class ParseSearch:
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
-            r = re.search("^chr[0-9XYM][0-9]?[\s]*[\:]?[\s]*[0-9,]+[\s\-]+[0-9,]+", x)
+            r = re.search("^chr[0-9XYM][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+", x)
             if r:
-                p = r.group(0).replace("-", " ").replace(":", " ").split()
+                p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
                 return Coord(p[0], p[1], p[2])
         if not r: return None
         p = r.group(0).replace("-", " ").replace(":", " ").split()
@@ -143,6 +143,7 @@ class ParseSearch:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
+            ret["gene_all_end"] = 5000
         elif "enhancer" in toks:
             ret["element_type"] = "enhancer-like"
             ret["rank_enhancer_start"] = 164
