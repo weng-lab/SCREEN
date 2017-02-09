@@ -130,7 +130,17 @@ const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
 const zscore_decimal = (v) => (v / 100.0);
 const zrdecimal = (s) => (+s * 100.0);
 
-const rankBox = ({rank_dnase_start, rank_dnase_end,
+const rankBox = ({element_type, actions, cellType}) => {
+    return panelize("cRE activity" + (cellType ? " in " + make_ct_friendly(cellType) : ""),
+	            <ListFacet
+                    title={""}
+                    items={[["chromatin-accessible", ""], ["promoter-like", ""], ["enhancer-like", ""], ["insulator-like", ""]]}
+                    selection={element_type}
+                    onchange={(e) => { actions.setType(e) }}
+                    />);
+}
+
+const _rankBox_old = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end,
