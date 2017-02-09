@@ -233,10 +233,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             self.lines += [self.trackhubExp(ti)]
                 
     def getLines(self, accessions):
-        self.priority = 0
+        self.priority = 1
 
         self.lines  = []
-        #self.lines += [self.genes()]
+        if self.isUcsc:
+            self.lines += [self.genes()]
         self.lines += [self.mp()]
         self.lines += [self.phastcons()]
 
