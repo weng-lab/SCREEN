@@ -34,8 +34,9 @@ class CreateIndices:
                 makeIndexRev(curs, ctn, ["maxz",
                                          "enhancerMaxz",
                                          "promoterMaxz"])
-                for col in self.zscore_cols:
-                    makeIndexArr(curs, ctn, col)
+                if 0:
+                    for col in self.zscore_cols:
+                        makeIndexArr(curs, ctn, col)
 
     def setupRangeFunction(self):
         print("create range function...")

@@ -47,7 +47,8 @@ const button_click_handler = (name, re, dispatch) => {
     var host = arr[0] + "//" + arr[2];
     var data = JSON.stringify({"accession" : re.accession,
                                "halfWindow" : half_window,
-                               "host" : host});
+                               "host" : host,
+			       GlobalAssembly});
 
     switch (name) {
     case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
