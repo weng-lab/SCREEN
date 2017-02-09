@@ -9,12 +9,12 @@ import heapq
 import re
 
 from models.cre import CRE
+from common.pg import PGsearch
+from common.db_trackhub import DbTrackhub
 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 from common.colors_trackhub import GetTrackColorByAssay, PredictionTrackhubColors, OtherTrackhubColors
-
-from common.db_trackhub import DbTrackhub
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
@@ -43,12 +43,11 @@ class TrackInfo:
         return self.ct
 
 class TrackhubController:
-    def __init__(self, templates, ps, cache):
+    def __init__(self, templates, ps, cacheW):
         self.templates = templates
         self.ps = ps
-        self.cache = cache
-        
-        self.assembly = "hg19"
+        self.cacheW = cacheW
+
         self.debug = False
 
         self.db = DbTrackhub(self.ps.DBCONN)
@@ -75,6 +74,8 @@ class TrackhubController:
         except:
             raise
             return "error: couldn't find uuid"
+
+        self.assembly = info["assembly"]
         
         if 2 == len(args):
             loc = args[1]
@@ -207,7 +208,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 ret[(rankType, rankMethod)] = topN
         return ret
 
-    def _getTrackList(self, re):
+    def _getTrackList(self, cre):
+        return ""
         topCellLinesByRankMethod = self._getTopCellTypesByRankMethod(re)
 
         tracks = []
@@ -238,13 +240,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         #print('\n'.join([str(x) for x in ret]))
         return ret
     
-    def addSignals(self, re_accessions):
-        for re_accession in re_accessions:
-            re = red.reFull(re_accession)
-            for ti in self._getTrackList(re):
-                self.lines += [self.trackhubExp(ti)]
+    def addSignals(self, cre):
+        for ti in self._getTrackList(cre):
+            self.lines += [self.trackhubExp(ti)]
                 
-    def getLines(self, re_accessions):
+    def getLines(self, accessions):
         self.priority = 0
 
         self.lines  = []
@@ -252,19 +252,20 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.lines += [self.mp()]
         #self.lines += [self.phastcons()]
 
-        self.re_pos = []
-        red = RegElementDetails(self.es, self.ps)
-        for re_accession in re_accessions:
-            re = red.reFull(re_accession)
-            self.re_pos.append(re["position"])
+        pgSearch = PGsearch(self.ps, self.assembly)
 
-        self.addSignals([re_accessions[0]])
+        self.re_pos = []
+        for accession in accessions:
+            cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
+            self.re_pos.append(cre.coord())
+
+        self.addSignals(cre)
 
         return filter(lambda x: x, self.lines)
 
-    def makeTrackDb(self, re_accessions):
+    def makeTrackDb(self, accessions):
         self.isUcsc = True
-        lines = self.getLines(re_accessions)
+        lines = self.getLines(accessions)
 
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
@@ -273,9 +274,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def makePos(self, p):
         halfWindow = 2500
-        start = str(max(1, p["start"] - halfWindow))
-        end = str(p["end"] + halfWindow)
-        return p["chrom"] + ':' + start + '-' + end
+        start = str(max(1, p.start - halfWindow))
+        end = str(p.end + halfWindow)
+        return p.chrom + ':' + start + '-' + end
 
     def makeTrackDbWashU(self, re_accessions):
         lines = self.getLines(re_accessions)
@@ -301,6 +302,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             raise
             return {"error" : "couldn't find uuid", "args" : args }
 
+        self.assembly = info["assembly"]
+
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".json"):
             self.hubNum = loc.split('_')[1].split('.')[0]
@@ -308,84 +311,66 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         return {"error" : "invalid path", "args" : args }
 
+    def _trackhub_url_info(self, j):
+        assembly = self.assembly = j["GlobalAssembly"]
+        pgSearch = PGsearch(self.ps, assembly)
+
+        accession = j["accession"]
+        cre = CRE(pgSearch, accession, self.cacheW[assembly])
+        coord = cre.coord().resize(j["halfWindow"])
+        
+        return assembly, accession, coord
+        
     def ucsc_trackhub_url(self, j, uuid):
-        red = RegElementDetails(self.es, self.ps)
-        re = red.reFull(j["accession"])
+        assembly, accession, coord = self._trackhub_url_info(j)
+        hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
-        halfWindow = j["halfWindow"]
-	chrom = re["position"]["chrom"]
-	start = re["position"]["start"]
-	end = re["position"]["end"]
-
-	start = max(1, start - halfWindow);
-        end = end + halfWindow;
-
-        host = j["host"]
-        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
-        trackhubUrl = '/'.join([host,
+        trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
 		                "hub_" + str(hubNum) + ".txt"])
 
-        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?";
-	url += "db=hg19";
-	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
+        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?"
+	url += "db=" + assembly
+	url += "&position=" + str(coord)
 	url += "&hubClear=" + trackhubUrl;
 
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ensembl_trackhub_url(self, j, uuid):
-        red = RegElementDetails(self.es, self.ps)
-        re = red.reFull(j["accession"])
+        assembly, accession, coord = self._trackhub_url_info(j)
+        hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
-        halfWindow = j["halfWindow"]
-	chrom = re["position"]["chrom"]
-	start = re["position"]["start"]
-	end = re["position"]["end"]
-
-	start = max(1, start - halfWindow);
-        end = end + halfWindow;
-
-        url = "http://grch37.ensembl.org/Trackhub?"
-        host = j["host"]
-        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
-        trackhubUrl = '/'.join([host,
+        cname = {"hg19" :"grch37",
+                 "mm10" : "grcm38"}
+        species = {"hg19" : "Homo_sapiens",
+                   "mm10" : "Mus_musculus"}
+        
+        url = "http://" + cname[assembly] + ".ensembl.org/Trackhub?"
+        trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
 		                "hub_" + str(hubNum) + ".txt"])
 
 	url += "&url=" + trackhubUrl
-        url += ";species=Homo_sapiens;"
-        url += "r=" + chrom[3:] + ':' + str(start) + '-' + str(end);
+        url += ";species=" + species[assembly] + ";"
+        url += "r=" + coord.chrom[3:] + ':' + coord.start + '-' + coord.end;
 
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def washu_trackhub_url(self, j, uuid):
-        red = RegElementDetails(self.es, self.ps)
-        re = red.reFull(j["accession"])
+        assembly, accession, coord = self._trackhub_url_info(j)
+        hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
-        halfWindow = j["halfWindow"]
-	chrom = re["position"]["chrom"]
-	start = re["position"]["start"]
-	end = re["position"]["end"]
-
-	start = max(1, start - halfWindow);
-        end = end + halfWindow;
-
-        host = j["host"]
-        hubNum = self.db.insertOrUpdate("hg19", j["accession"], uuid)
-        trackhubUrl = '/'.join([host,
+        trackhubUrl = '/'.join([j["host"],
                                 "washu_trackhub",
 		                uuid,
-                                "hg19",
+                                assembly,
                                 "trackDb_{hn}.json".format(hn = hubNum)])
         
         url = "http://epigenomegateway.wustl.edu/browser/"
-        url += "?genome=" + "hg19"
+        url += "?genome=" + assembly
         url += "&datahub=" + trackhubUrl
-        url += "&coordinate=" + chrom + ':' + str(start) + '-' + str(end);
+        url += "&coordinate=" + str(coord)
         
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}

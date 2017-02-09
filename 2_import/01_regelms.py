@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, re, argparse, gzip, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import chroms, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor, vacumnAnalyze, makeIndex
@@ -52,6 +53,8 @@ isProximal boolean
 
     curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
 
+def indexProxDistal(curs, assembly):
+    tableName = assembly + "_isProximal"
     makeIndex(curs, tableName, ["accession"])
 
 def updateTable(curs, ctn, m):
@@ -89,13 +92,25 @@ h3k4me3_only_zscore_max ,
 h3k4me3_dnase_zscore_max )
 """.format(ctn = ctn))
 
-def doPartition(curs, tableName, m):
+    printt("updating promoterMaxz and enhancerMaxz...")
     curs.execute("""
-DROP TABLE IF EXISTS {tn} CASCADE;
+UPDATE {ctn}
+SET promoterMaxz = GREATEST(
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max ),
+enhancerMaxz = GREATEST(
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max )
+""".format(ctn = ctn))
+
+def dropTables(curs, tableName, m):
+    curs.execute("""
+    DROP TABLE IF EXISTS {tn} CASCADE;
 """.format(tn = tableName))
 
+def doPartition(curs, tableName, m):
     curs.execute("""
-        CREATE TABLE {tableName}
+    CREATE TABLE {tn}
  (
  id serial PRIMARY KEY,
  accession VARCHAR(20),
@@ -105,37 +120,39 @@ DROP TABLE IF EXISTS {tn} CASCADE;
  start integer,
  stop integer,
  conservation_rank integer[],
- conservation_signal numeric(8,3)[],
+ conservation_signal real[],
  dnase_rank integer[],
- dnase_signal numeric(8,3)[],
- dnase_zscore numeric(8,3)[],
+ dnase_signal real[],
+ dnase_zscore real[],
  ctcf_only_rank integer[],
- ctcf_only_zscore numeric(8,3)[],
+ ctcf_only_zscore real[],
  ctcf_dnase_rank integer[],
- ctcf_dnase_zscore numeric(8,3)[],
+ ctcf_dnase_zscore real[],
  h3k27ac_only_rank integer[],
- h3k27ac_only_zscore numeric(8,3)[],
+ h3k27ac_only_zscore real[],
  h3k27ac_dnase_rank integer[],
- h3k27ac_dnase_zscore numeric(8,3)[],
+ h3k27ac_dnase_zscore real[],
  h3k4me3_only_rank integer[],
- h3k4me3_only_zscore numeric(8,3)[],
+ h3k4me3_only_zscore real[],
  h3k4me3_dnase_rank integer[],
- h3k4me3_dnase_zscore numeric(8,3)[],
+ h3k4me3_dnase_zscore real[],
  gene_all_distance integer[],
  gene_all_id integer[],
  gene_pc_distance integer[],
  gene_pc_id integer[],
  tads integer[],
- dnase_zscore_max numeric(8,3),
- ctcf_only_zscore_max numeric(8,3),
- ctcf_dnase_zscore_max numeric(8,3),
- h3k27ac_only_zscore_max numeric(8,3),
- h3k27ac_dnase_zscore_max numeric(8,3),
- h3k4me3_only_zscore_max numeric(8,3),
- h3k4me3_dnase_zscore_max numeric(8,3),
+ dnase_zscore_max real,
+ ctcf_only_zscore_max real,
+ ctcf_dnase_zscore_max real,
+ h3k27ac_only_zscore_max real,
+ h3k27ac_dnase_zscore_max real,
+ h3k4me3_only_zscore_max real,
+ h3k4me3_dnase_zscore_max real,
  isProximal boolean,
- maxz numeric(8,3)
-        ); """.format(tableName = tableName))
+ maxz real,
+ promoterMaxz real,
+ enhancerMaxz real
+ ); """.format(tn = tableName))
 
     chroms = m["chrs"]
     for chrom in chroms:
@@ -163,6 +180,22 @@ CHECK (chrom = '{chrom}')
         printt("imported", os.path.basename(fnp))
         updateTable(curs, ctn, m)
 
+def addCol(curs, assembly):
+    printt("adding col...")
+    curs.execute("""
+ALTER TABLE {tn}
+ADD COLUMN promoterMaxz real,
+ADD COLUMN enhancerMaxz real;
+
+UPDATE {tn}
+SET promoterMaxz = GREATEST(
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max ),
+enhancerMaxz = GREATEST(
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max )
+""".format(tn = assembly + "_cre"))
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -176,25 +209,17 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                                 "chr6", "chr7", "chr8", "chr9", "chr10",
-                                 "chr11", "chr12",
-                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                                 "chr19", "chrX", "chrY"],
-                       "assembly" : "mm10",
-                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
-                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
-                       "tableName" : "mm10_cre"},
-             "hg19" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                                 "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                                 "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
-                       "assembly" : "hg19",
-                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
-                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
-                       "tableName" : "hg19_cre"}}
+    def makeInfo(assembly, ver):
+        return {"chrs" : chroms[assembly],
+                       "assembly" : assembly,
+                       "d" : paths.getCREs(ver, assembly)["newway"],
+                       "base" : paths.getCREs(ver, assembly)["base"],
+                       "tableName" : assembly + "_cre"}
 
-    assemblies = ["mm10", "hg19"]
+    infos = {"mm10" : makeInfo("mm10", 9),
+             "hg19" : makeInfo("hg19", 9)}
+
+    assemblies = ["hg19", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -202,9 +227,20 @@ def main():
         m = infos[assembly]
         m["subsample"] = args.sample
 
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            importProxDistal(curs, assembly)
-            doPartition(curs, assembly + "_cre", m)
+        if 1:
+            with getcursor(DBCONN, "importProxDistal") as curs:
+                importProxDistal(curs, assembly)
+            with getcursor(DBCONN, "indexProxDistal") as curs:
+                indexProxDistal(curs, assembly)
+            with getcursor(DBCONN, "dropTables") as curs:
+                dropTables(curs, assembly + "_cre", m)
+            with getcursor(DBCONN, "doPartition") as curs:
+                doPartition(curs, assembly + "_cre", m)
+        else:
+            # example to show how to add and populate column to
+            #  master and, by inheritance, children tables...
+            with getcursor(DBCONN, "08_setup_log") as curs:
+                addCol(curs, assembly)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 

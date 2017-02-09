@@ -26,6 +26,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from postgres_wrapper import PostgresWrapper
 from autocomplete import AutocompleterWrapper
+from cre_utils import checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
@@ -37,8 +38,8 @@ class DataWebServiceWrapper:
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
-        self.ac = AutocompleterWrapper(ps)        
-
+        self.ac = AutocompleterWrapper(ps)
+        
     def process(self, j, args, kwargs):
         if "action" in j and j["action"] == "suggest":
             return {"results": self.ac.get_suggestions(j["userQuery"]),
@@ -95,17 +96,11 @@ class DataWebService:
         except:
             raise
 
-    def _checkChrom(self, j):
-        chrom = j.get("coord_chrom", None)
-        if chrom and chrom not in chroms[self.assembly]:
-            raise Exception("unknown chrom")
-        return chrom
-
     def _ortholog(self, j, accession):
         return {accession: {"ortholog": Ortholog(self.assembly, self.ps.DBCONN, accession).as_dict()}}
-    
+
     def cre_table(self, j, args):
-        chrom = self._checkChrom(j)
+        chrom = checkChrom(self.assembly, j)
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
@@ -175,12 +170,12 @@ class DataWebService:
         r = cge.computeHorBars(name, (u'cell',))
         r["genename"] = name
         return {accession: r}
-    
+
     def _re_detail_similarREs(self, j, accession):
         assay = "dnase"
         if "extras" in j:
             if "assay" in j["extras"]:
-                assay = j["extras"]["assay"] 
+                assay = j["extras"]["assay"]
         mp = MiniPeaks(self.pgSearch, accession, self.cache)
         regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
         order = regions["order"]
@@ -196,10 +191,10 @@ class DataWebService:
         return {tree_rank_method: ret}
 
     def bed_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.cache)
+        cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.bed(j, self.session_uuid())
-    
+
     def json_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.cache)
+        cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.json(j, self.session_uuid())
-    
+

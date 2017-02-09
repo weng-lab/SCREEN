@@ -15,11 +15,11 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }]
 
-//console.log(Globals.cellTypeInfoArr);
-var data = (tset) => (Globals.cellTypeInfoArr.map((ct, i) => {return {key: i,
-								    name: ct.name,
-								    tissue: ct.tissue,
-								    selected: tset && tset.has(i)}}));
+var data = (tset) => (Globals.cellTypeInfoArr.map((ct, i) => {
+    return {key: i,
+	    name: ct.name,
+	    tissue: ct.tissue,
+	    selected: tset && tset.has(i)}}));
 
 const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
@@ -31,7 +31,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
                     selection={[]}
                     friendlySelectionLookup={(value) => {
                         return Globals.cellTypeInfo[value]["name"]; }}
-                    onTdClick={(value) => { console.log(value); actions.setCt1(value) }}
+                    onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
 

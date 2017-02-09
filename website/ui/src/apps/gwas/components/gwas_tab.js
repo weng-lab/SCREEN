@@ -64,10 +64,9 @@ class GwasTab extends React.Component{
                     {"Please choose a study on left"}
                     </div>);
         }
-	
+
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
-	    console.log(data);
             return (<div>
 		    <h2>{gwas_study}</h2>
 
