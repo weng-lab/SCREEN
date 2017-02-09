@@ -540,7 +540,7 @@ OR ensemblid_ver = %s
             SELECT start, stop, log2FoldChange, leftName, rightName, ensembl
             from {deTn} as de
             inner join {giTn} as gi
-            on de.ensembl = gi.ensemblid_ver
+            on de.ensembl = gi.ensemblid
             where gi.chrom = %(chrom)s
             AND de.padj <= %(pval)s
             AND int4range(gi.start, gi.stop) && int4range(%(start)s, %(stop)s)
