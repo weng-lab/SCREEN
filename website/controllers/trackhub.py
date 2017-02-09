@@ -191,15 +191,25 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def _getTrackList(self, topCellLinesByRankMethod):
         tracks = []
         cache = self.cacheW[self.assembly]
+        topN = 5
+
+        lookup = {"dnase": "dnase",
+                  "promoter": "h3k4me3",
+                  "enhancer": "h3k27ac",
+                  "ctcf": "ctcf"}            
+        
         for rm, cellTypes in topCellLinesByRankMethod.iteritems():
-            cts = sorted(cellTypes, key = lambda x: x["one"], reverse=True)[:10]
+            # get the topN of histone-only, dnase-only, or ctcf-only
+            cts = sorted(cellTypes, key = lambda x: x["one"],
+                         reverse=True)[:topN]
+            rmo = lookup[rm]
             for r in cts:
                 ct = r["ct"]
                 t = r["tissue"]
-                
-                expID = ""
-                fileID = ""
-                ti = TrackInfo(rm, t, ct, rm, expID, fileID)
+                expBigWigID = cache.assayAndCellTypeToExpAndBigWigAccessions(rmo, ct)
+                expID = expBigWigID[0]
+                fileID = expBigWigID[1]
+                ti = TrackInfo(rm, t, ct, rmo, expID, fileID)
                 #print(ti, r["one"])
                 tracks.append(ti)
 
