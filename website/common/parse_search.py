@@ -68,10 +68,32 @@ class ParseSearch:
             return None
         return Coord(r[0], r[1], r[2])
 
+    def _try_find_gene(self, s):
+        p = s.lower().split()
+        interpretation = None
+        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
+            for h in xrange(len(p)):
+                x = len(p) / (h + 1)
+                for q in [" ".join(p[x * i : x * (i + 1)]) for i in xrange(h + 1)]:
+                    print("!", q)
+                    curs.execute("SELECT name, chrom, start, stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                    r = curs.fetchall()
+                    if r:
+                        if r[0][0].lower() not in s.lower():
+                            interpretation = r[0][0]
+                        return (interpretation, Coord(r[0][1], r[0][2], r[0][3]))
+        return (interpretation, None)
+
+    def _try_find_celltype(self, s):
+        pass
+
     def _find_coord(self, s):
-        print(s)
-        r = re.search("^chr[0-9XYM][0-9]?[\s]*[\:]?[\s]*[0-9]+[\s\-]+[0-9]+", s)
-        print(r)
+        _p = s.split()
+        for x in _p:
+            r = re.search("^chr[0-9XYM][0-9]?[\s]*[\:]?[\s]*[0-9,]+[\s\-]+[0-9,]+", x)
+            if r:
+                p = r.group(0).replace("-", " ").replace(":", " ").split()
+                return Coord(p[0], p[1], p[2])
         if not r: return None
         p = r.group(0).replace("-", " ").replace(":", " ").split()
         return Coord(p[0], p[1], p[2])
@@ -83,13 +105,8 @@ class ParseSearch:
         toks = [t.lower() for t in toks]
 
         coord = self._find_coord(s)
-        cellTypes = self.find_celltypes_in_query(s)
+        cellType = None
         interpretation = None
-        
-#        gene_suggestions, gene_results = self.gene_aliases_to_coordinates(s)
-#        gene_toks, gene_coords = _unpack_tuple_array(gene_results)
-#        snp_suggestions, snp_results = self.ac.snp_aliases_to_coordinates(s)
-#        snp_toks, snp_coords = _unpack_tuple_array(snp_results)
         accessions = []
 
         try:
@@ -105,31 +122,36 @@ class ParseSearch:
             print("could not parse " + s)
 
         if coord is None:
-            with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-                curs.execute("SELECT name, chrom, start, stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
-                r = curs.fetchall()
-            if r:
-                if r[0][0].lower() not in s.lower():
-                    interpretation = r[0][0]
-                coord = Coord(r[0][1], r[0][2], r[0][3])
+            interpretation, coord = self._try_find_gene(s)
+
+        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
+            curs.execute("SELECT cellType, similarity(cellType, '{q}') AS sm FROM {assembly}_rankCellTypeIndexex WHERE cellType % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+            r = curs.fetchall()
+        if r:
+            if r[0][0].lower() not in s.lower():
+                interpretation = r[0][0] if not interpretation else interpretation + " " + r[0][0]
+            cellType = r[0][0]
             
-        ret = {"cellType": None,
+        ret = {"cellType": cellType,
                "coord_chrom" : None,
                "coord_start" : None,
                "coord_end" : None,
-               "range_preset": None,
+               "element_type": None,
                "interpretation": interpretation}
             
         if "promoter" in toks:
-            ret["range_preset"] = "promoter"
+            ret["element_type"] = "promoter-like"
+            ret["rank_promoter_start"] = 164
+            ret["rank_dnase_start"] = 164
         elif "enhancer" in toks:
-            ret["range_preset"] = "enhancer"
+            ret["element_type"] = "enhancer-like"
+            ret["rank_enhancer_start"] = 164
+            ret["rank_dnase_start"] = 164
         elif "insulator" in toks:
-            ret["range_preset"] = "insulator"
+            ret["element_type"] = "insulator-like"
+            ret["rank_ctcf_start"] = 164            
 
         ct = None
-        if len(cellTypes) > 0:
-            ct = cellTypes[0].replace(" ", "_")
 
         print(coord, ret["cellType"])
         if coord:
