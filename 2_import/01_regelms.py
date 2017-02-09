@@ -224,13 +224,15 @@ def main():
         m = infos[assembly]
         m["subsample"] = args.sample
 
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            if 1:
+        if 1:
+            with getcursor(DBCONN, "08_setup_log") as curs:
                 importProxDistal(curs, assembly)
+            with getcursor(DBCONN, "08_setup_log") as curs:
                 doPartition(curs, assembly + "_cre", m)
-            else:
-                # example to show how to add and populate column to
-                #  master and, by inheritance, children tables...
+        else:
+            # example to show how to add and populate column to
+            #  master and, by inheritance, children tables...
+            with getcursor(DBCONN, "08_setup_log") as curs:
                 addCol(curs, assembly)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
