@@ -67,6 +67,39 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
+    def _type_clauses(self, ct, assayterm):
+        if not assayterm:
+            return []
+        assaymap = {"chromatin-accessible": [("dnase", "dnase")],
+                    "promoter-like": [("promoter", "h3k4me3_only"), ("dnase", "dnase")],
+                    "enhancer-like": [("enhancer", "h3k27ac_only"), ("dnase", "dnase")],
+                    "insulator-like": [("ctcf", "ctcf_only")] }
+        allmap = {"chromatin-accessible": "dnase_zscore_max",
+                  "promoter-like": "promoterMaxz",
+                  "enhancer-like": "enhancerMaxz",
+                  "insulator-like": "ctcf_only_zscore_max" }
+        ret = []
+        if ct:
+            if assayterm not in assaymap:
+                print("WARNING: invalid element type %s; ignoring" % assayterm)
+                return ret
+            for assay in assaymap[assayterm]:
+                if ct not in self.ctmap[assay[0]]:
+                    continue
+                cti = self.ctmap[assay[0]][ct]
+                ret.append("cre.%s_zscore[%d] >= 1.64" % (assay[1], cti))
+            return ret
+        if assayterm not in allmap:
+            print("WARNING: invalid element type %s; ignoring" % assayterm)
+            return ret
+        return ["cre.%s >= 1.64" % allmap[assayterm]]
+    
+    def creTable(self, j, chrom, start, stop):
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
@@ -80,10 +113,11 @@ class PGsearch:
             tfclause += " and peakintersections.tf ?| array(" + ",".join(["'%s'" % tf for tf in j["tfs"]]) + ")"
         """
 
-        if start and stop:
-            whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
-
         ct = j.get("cellType", None)
+        whereclauses = [] # self._type_clauses(ct, j["element_type"])
+
+        if start and stop:
+            whereclauses += ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
         if ct:
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3_only"),
@@ -108,6 +142,17 @@ class PGsearch:
                     whereclauses.append("(%s)" % " and ".join(
                             ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
                              "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+        else:
+            allmap = {"dnase": "dnase_zscore_max",
+                      "promoter": "promoterMaxz",
+                      "enhancer": "enhancerMaxz",
+                      "ctcf": "ctcf_only_zscore_max" }
+            for x in ["dnase", "promoter", "enhancer", "ctcf"]:
+                _range = [j["rank_%s_start" % x] / 100.0,
+                          j["rank_%s_end" % x] / 100.0]
+                whereclauses.append("(%s)" % " and ".join(
+                    ["cre.%s >= %f" % (allmap[x], _range[0]),
+                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
 
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:

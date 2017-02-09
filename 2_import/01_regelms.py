@@ -53,6 +53,8 @@ isProximal boolean
 
     curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
 
+def indexProxDistal(curs, assembly):
+    tableName = assembly + "_isProximal"
     makeIndex(curs, tableName, ["accession"])
 
 def updateTable(curs, ctn, m):
@@ -101,13 +103,14 @@ h3k27ac_only_zscore_max ,
 h3k27ac_dnase_zscore_max )
 """.format(ctn = ctn))
 
-def doPartition(curs, tableName, m):
+def dropTables(curs, tableName, m):
     curs.execute("""
-DROP TABLE IF EXISTS {tn} CASCADE;
+    DROP TABLE IF EXISTS {tn} CASCADE;
 """.format(tn = tableName))
 
+def doPartition(curs, tableName, m):
     curs.execute("""
-        CREATE TABLE {tableName}
+    CREATE TABLE {tn}
  (
  id serial PRIMARY KEY,
  accession VARCHAR(20),
@@ -149,7 +152,7 @@ DROP TABLE IF EXISTS {tn} CASCADE;
  maxz real,
  promoterMaxz real,
  enhancerMaxz real
- ); """.format(tableName = tableName))
+ ); """.format(tn = tableName))
 
     chroms = m["chrs"]
     for chrom in chroms:
@@ -216,7 +219,7 @@ def main():
     infos = {"mm10" : makeInfo("mm10", 9),
              "hg19" : makeInfo("hg19", 9)}
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = ["hg19", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -224,13 +227,19 @@ def main():
         m = infos[assembly]
         m["subsample"] = args.sample
 
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            if 1:
+        if 1:
+            with getcursor(DBCONN, "importProxDistal") as curs:
                 importProxDistal(curs, assembly)
+            with getcursor(DBCONN, "indexProxDistal") as curs:
+                indexProxDistal(curs, assembly)
+            with getcursor(DBCONN, "dropTables") as curs:
+                dropTables(curs, assembly + "_cre", m)
+            with getcursor(DBCONN, "doPartition") as curs:
                 doPartition(curs, assembly + "_cre", m)
-            else:
-                # example to show how to add and populate column to
-                #  master and, by inheritance, children tables...
+        else:
+            # example to show how to add and populate column to
+            #  master and, by inheritance, children tables...
+            with getcursor(DBCONN, "08_setup_log") as curs:
                 addCol(curs, assembly)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])

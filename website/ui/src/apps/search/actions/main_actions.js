@@ -7,6 +7,9 @@ export const setChrom = (chrom) => ({ type: SET_CHROM, chrom });
 export const SET_COORDS = 'SET_COORDS';
 export const setCoords = (start, end) => ({ type: SET_COORDS, start, end });
 
+export const SET_CRE_TYPE = 'SET_CRE_TYPE';
+export const setType = (element_type) => ({type: SET_CRE_TYPE, element_type});
+
 export const TOGGLE_TF = 'TOGGLE_TF';
 export const toggleTf = (tf) => ({ type: TOGGLE_TF, tf });
 export const SET_TFS_MODE = 'SET_TFS_MODE';
