@@ -27,7 +27,7 @@ export const getCommonState =
       rank_promoter_start, rank_promoter_end,
       rank_enhancer_start, rank_enhancer_end,
       rank_ctcf_start, rank_ctcf_end,
-      cellType}) => {
+      cellType, element_type}) => {
 	  return {GlobalAssembly,
                   accessions, coord_chrom, coord_start, coord_end,
                   gene_all_start, gene_all_end,
@@ -35,5 +35,5 @@ export const getCommonState =
                   rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
-                  rank_ctcf_start, rank_ctcf_end, cellType};
+                  rank_ctcf_start, rank_ctcf_end, cellType, element_type};
       }
