@@ -114,11 +114,11 @@ class PGsearch:
         """
 
         ct = j.get("cellType", None)
-        whereclauses = self._type_clauses(ct, j["element_type"])
+        whereclauses = [] # self._type_clauses(ct, j["element_type"])
 
         if start and stop:
             whereclauses += ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
-        if ct and False:
+        if ct:
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3_only"),
                           ("enhancer", "h3k27ac_only"),
@@ -142,6 +142,17 @@ class PGsearch:
                     whereclauses.append("(%s)" % " and ".join(
                             ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
                              "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+        else:
+            allmap = {"dnase": "dnase_zscore_max",
+                      "promoter": "promoterMaxz",
+                      "enhancer": "enhancerMaxz",
+                      "ctcf": "ctcf_only_zscore_max" }
+            for x in ["dnase", "promoter", "enhancer", "ctcf"]:
+                _range = [j["rank_%s_start" % x] / 100.0,
+                          j["rank_%s_end" % x] / 100.0]
+                whereclauses.append("(%s)" % " and ".join(
+                    ["cre.%s >= %f" % (allmap[x], _range[0]),
+                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
 
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
