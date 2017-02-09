@@ -4,14 +4,19 @@ import sys
 import os
 from natsort import natsorted
 from collections import namedtuple
-
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
+import gzip
 
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from cre_utils import isaccession, isclose, checkChrom
+
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils/'))
 from db_utils import getcursor
+
+GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
+GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
 
 class PGsearchWrapper:
     def __init__(self, pg):
@@ -21,7 +26,7 @@ class PGsearchWrapper:
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
-    
+
 class PGsearch:
     def __init__(self, pg, assembly):
         self.pg = pg
@@ -95,17 +100,12 @@ class PGsearch:
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
-        fields = ', '.join(["accession", "maxZ",
-                            "cre.chrom", "cre.start", "cre.stop - cre.start AS len",
-                            "infoAll.approved_symbol AS gene_all" ,
-                            "infoPc.approved_symbol AS gene_pc",
-                            "0::int as in_cart"])
+    def _creTableWhereClause(self, j, chrom, start, stop):
+        whereclauses = []
 
-        print(j)
-        
-        print("""TODO need more variables here:
-              gene_all_start, gene_all_end,
-              gene_pc_start, gene_pc_end""")
+        print(j, """TODO need more variables here:
+        gene_all_start, gene_all_end,
+        gene_pc_start, gene_pc_end""")
 
         """
         tfclause = "peakintersections.accession = cre.accession"
@@ -126,23 +126,53 @@ class PGsearch:
                 if ct not in self.ctmap[assay[0]]:
                     continue
                 cti = self.ctmap[assay[0]][ct]
-                _range = [j["rank_%s_start" % assay[0]] / 100.0, j["rank_%s_end" % assay[0]] / 100.0]
-                whereclauses.append("(%s)" % " and ".join(["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
-                                                           "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                _range = [j["rank_%s_start" % assay[0]] / 100.0,
+                          j["rank_%s_end" % assay[0]] / 100.0]
+                minDefault = -10.0  # must match slider default
+                maxDefault = 10.0   # must match slider default
+                if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
+                    continue # not actually filtering on zscore, yet...
+                if not isclose(_range[0], minDefault):
+                    whereclauses.append("(%s)" %
+                                        "cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]))
+                elif not isclose(_range[1], maxDefault):
+                    whereclauses.append("(%s)" %
+                                        "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1]))
+                else:
+                    whereclauses.append("(%s)" % " and ".join(
+                            ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
+                             "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
-            # TODO: sanitize input!
-            if len(accs) > 0 and type(accs[0]) is dict:
+            if type(accs[0]) is dict:
                 accs = [x["value"] for x in accs if x["checked"]]
+            accs = filter(lambda x: isaccession(x), accs)
             accs = ["'%s'" % x.upper() for x in accs]
             accsQuery = "accession IN (%s)" % ','.join(accs)
             whereclauses.append("(%s)" % accsQuery)
-            
+
         whereclause = ""
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
         print(whereclause)
-        
+        return whereclause
+
+    def creTable(self, j, chrom, start, stop):
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        fields = ', '.join(["accession", "maxZ",
+                            "cre.chrom", "cre.start",
+                            "cre.stop - cre.start AS len",
+                            "infoAll.approved_symbol AS gene_all" ,
+                            "infoPc.approved_symbol AS gene_pc",
+                            "0::int as in_cart"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
@@ -155,7 +185,9 @@ on cre.gene_pc_id[1] = infoPc.geneid
 {whereclause}
 ORDER BY maxz desc limit 100) r
 """.format(fields = fields, tn = tableName,
-           gtn = self.assembly + "_gene_info", whereclause = whereclause))
+           gtn = self.assembly + "_gene_info",
+           whereclause = whereclause))
+
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
@@ -166,6 +198,64 @@ SELECT count(0) FROM {tn} as cre
 {whereclause}""".format(tn = tableName, whereclause = whereclause))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
+
+    def creTableDownloadBed(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", 0)
+        stop = j.get("coord_end", 0)
+
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        fields = ', '.join(["cre.chrom", "cre.start",
+                            "cre.stop",
+                            "accession", "maxZ"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
+        q = """
+COPY (
+SELECT {fields}
+FROM {tn} as cre
+{whereclause}
+) to STDOUT
+with DELIMITER E'\t'
+""".format(fields = fields, tn = tableName,
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
+
+    def creTableDownloadJson(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", None)
+        stop = j.get("coord_end", None)
+
+        if chrom:
+            tableName = '_'.join([self.assembly, "cre", chrom])
+        else:
+            tableName = '_'.join([self.assembly, "cre"])
+
+        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
+        q = """
+copy (
+SELECT JSON_AGG(r) from (
+SELECT *
+FROM {tn} as cre
+{whereclause}
+) r
+) to STDOUT
+with DELIMITER E'\t'
+""".format(tn = tableName,
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
 
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
@@ -218,7 +308,7 @@ int4range(%s, %s)
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_cre_" + c.chrom
         q = """
-SELECT {cols} FROM {tn} 
+SELECT {cols} FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)
 """.format(cols = ','.join(cols), tn = tableName)
 
@@ -228,7 +318,7 @@ AND isProximal is {isProx}
 """.format(isProx = str(isProximalOrDistal))
 
         print("nearbyCREs query:", q)
-            
+
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
             curs.execute(q, (c.start, c.end))
             return curs.fetchall()
@@ -345,10 +435,12 @@ WHERE accession = %s
                               "h3k4me3-only" : r[12],
                               "dnase+h3k4me3": r[13] }}
 
-
     def creMostsimilar(self, acc, assay, threshold=20000):
         def whereclause(r):
-            _assay = assay if assay == "dnase" else assay.replace("_dnase", "") + "_only"
+            _assay = assay
+            if assay != "dnase":
+                _assay = assay.replace("_dnase", "") + "_only"
+
             return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
                                 for i in xrange(len(r)) if r[i] < threshold])
 
@@ -378,7 +470,9 @@ WHERE accession = '{accession}'""".format(assay=assay,
                 return []
 
             curs.execute("""
-SELECT accession, intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, chrom, start, stop
+SELECT accession,
+intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity,
+chrom, start, stop
 FROM {assembly}_cre
 WHERE {whereclause}
 ORDER BY similarity DESC LIMIT 10
@@ -415,7 +509,7 @@ FROM {tn}
         tableName = self.assembly + "_gene_info"
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
-SELECT chrom, start, stop FROM {tn} 
+SELECT chrom, start, stop FROM {tn}
 WHERE approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s

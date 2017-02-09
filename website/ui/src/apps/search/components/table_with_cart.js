@@ -47,7 +47,8 @@ const button_click_handler = (name, re, dispatch) => {
     var host = arr[0] + "//" + arr[2];
     var data = JSON.stringify({"accession" : re.accession,
                                "halfWindow" : half_window,
-                               "host" : host});
+                               "host" : host,
+			       GlobalAssembly});
 
     switch (name) {
     case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
@@ -59,7 +60,6 @@ const button_click_handler = (name, re, dispatch) => {
 class TableWithCart extends React.Component {
     downloadBed() {
 	var jq = this.props.jq;
-	console.log("jq", jq);
 
 	$.ajax({
             type: "POST",
@@ -83,7 +83,6 @@ class TableWithCart extends React.Component {
 
     downloadJSON() {
 	var jq = this.props.jq;
-	console.log("jq", jq);
 
 	$.ajax({
             type: "POST",

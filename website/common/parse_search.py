@@ -4,16 +4,15 @@ import sys, os
 import re
 from coord import Coord
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+from cre_utils import isaccession
+
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
 from db_utils import getcursor
 
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
-
-def isaccession(s):
-    s = s.lower()
-    return (s.startswith("eh37e") or s.startswith("em10e") and len(s) == 12)
 
 class ParseSearch:
     def __init__(self, rawInput, DBCONN, assembly):

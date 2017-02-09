@@ -36,7 +36,6 @@ class DePlot extends React.Component {
 	$(chart).empty();
         let data = this.props.data.diffCREs.data;
 	let xdomain = this.props.data.xdomain;
-	console.log(this.props.data);
 
         var y_domain = d3.extent(data, function(d) { return d[1]; });
 
@@ -49,7 +48,6 @@ class DePlot extends React.Component {
         width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 	var color = d3.scale.ordinal().domain(["enhancer-like", "promoter-like"]).range(["#ffcd00", "#ff0000"]);
-        console.log(y_domain);
         var x = d3.scale.linear()
             .domain(xdomain).nice()
             .range([0, width]);
@@ -109,7 +107,6 @@ class DePlot extends React.Component {
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)
 	    .attr("height", this.props.data.nearbyDEs.data.length * 20);
-	console.log(genelabels);
 	genelabels.selectAll(".line")
 	    .data(this.props.data.nearbyDEs.data)
 	    .enter()
