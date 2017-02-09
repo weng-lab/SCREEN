@@ -4,6 +4,7 @@ import sys
 import os
 from natsort import natsorted
 from collections import namedtuple
+import gzip
 
 from coord import Coord
 
@@ -166,8 +167,8 @@ SELECT count(0) FROM {tn} as cre
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
-        start = j.get("coord_start", None),
-        stop = j.get("coord_end", None)
+        start = j.get("coord_start", 0)
+        stop = j.get("coord_end", 0)
 
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
@@ -180,21 +181,23 @@ SELECT count(0) FROM {tn} as cre
 
         whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
-        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
-            curs.execute("""
-copy (
+        q = """
+COPY (
 SELECT {fields}
 FROM {tn} as cre
 {whereclause}
-) to '{fnp}'
+) to STDOUT
 with DELIMITER E'\t'
 """.format(fields = fields, tn = tableName,
-           whereclause = whereclause,
-           fnp = fnp))
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
 
     def creTableDownloadJson(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
-        start = j.get("coord_start", None),
+        start = j.get("coord_start", None)
         stop = j.get("coord_end", None)
 
         if chrom:
@@ -204,19 +207,21 @@ with DELIMITER E'\t'
 
         whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
-        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
-            curs.execute("""
+        q = """
 copy (
 SELECT JSON_AGG(r) from (
 SELECT *
 FROM {tn} as cre
 {whereclause}
 ) r
-) to '{fnp}'
+) to STDOUT
 with DELIMITER E'\t'
 """.format(tn = tableName,
-           whereclause = whereclause,
-           fnp = fnp))
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
 
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:

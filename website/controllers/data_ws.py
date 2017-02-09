@@ -191,10 +191,10 @@ class DataWebService:
         return {tree_rank_method: ret}
 
     def bed_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.cache)
+        cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.bed(j, self.session_uuid())
 
     def json_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.cache)
+        cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.json(j, self.session_uuid())
 
