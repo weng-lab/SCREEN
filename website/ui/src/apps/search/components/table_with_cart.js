@@ -136,7 +136,10 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
-	return (<ResultsTable data={data}
+	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 cREs in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
+	return (<div>
+		{topmessage}
+		<ResultsTable data={data}
                 order={table_order}
                 cols={ResultsTableColumns}
                 onTdClick={(td, rowdata) =>
@@ -144,7 +147,8 @@ class TableWithCart extends React.Component {
                 onButtonClick={(td, rowdata) =>
                                button_click_handler(td, rowdata, actions)}
 		bFilter={true} bLengthChange={true}
-		onMouseEnter={true} onMouseExit={true}/>);
+		onMouseEnter={true} onMouseExit={true}/>
+	       </div>);
     }
 
     render() {
