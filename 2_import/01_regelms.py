@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, re, argparse, gzip, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import chroms, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor, vacumnAnalyze, makeIndex
@@ -163,6 +164,22 @@ CHECK (chrom = '{chrom}')
         printt("imported", os.path.basename(fnp))
         updateTable(curs, ctn, m)
 
+def addPromoterEnhancerMaxZ(curs, assembly):
+    printt("adding promoterMaxz and enhancerMaxz...")
+    curs.execute("""
+ALTER TABLE {tn}
+ADD COLUMN promoterMaxz numeric(8,3),
+ADD COLUMN enhancerMaxz numeric(8,3);
+
+UPDATE {tn}
+SET promoterMaxz = GREATEST(
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max ),
+enhancerMaxz = GREATEST(
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max )
+""".format(tn = assembly + "_cre"))
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
@@ -176,23 +193,15 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    infos = {"mm10" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                                 "chr6", "chr7", "chr8", "chr9", "chr10",
-                                 "chr11", "chr12",
-                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                                 "chr19", "chrX", "chrY"],
-                       "assembly" : "mm10",
-                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/newway/",
-                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/mm10/",
-                       "tableName" : "mm10_cre"},
-             "hg19" : {"chrs" : ["chr1", "chr2", "chr3", "chr4", "chr5",
-                                 "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12",
-                                 "chr13", "chr14", "chr15", "chr16", "chr17", "chr18",
-                                 "chr19", 'chr20', 'chr21', 'chr22', "chrX", "chrY"],
-                       "assembly" : "hg19",
-                       "d" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/newway/",
-                       "base" : "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9/hg19/",
-                       "tableName" : "hg19_cre"}}
+    def makeInfo(assembly, ver):
+        return {"chrs" : chroms[assembly],
+                       "assembly" : assembly,
+                       "d" : paths.getCREs(ver, assembly)["newway"],
+                       "base" : paths.getCREs(ver, assembly)["base"],
+                       "tableName" : assembly + "_cre"}
+
+    infos = {"mm10" : makeInfo("mm10", 9),
+             "hg19" : makeInfo("hg19", 9)}
 
     assemblies = ["mm10", "hg19"]
     if args.assembly:
@@ -203,8 +212,11 @@ def main():
         m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            importProxDistal(curs, assembly)
-            doPartition(curs, assembly + "_cre", m)
+            if 0:
+                importProxDistal(curs, assembly)
+                doPartition(curs, assembly + "_cre", m)
+            else:
+                addPromoterEnhancerMaxZ(curs, assembly)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
