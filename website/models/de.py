@@ -54,7 +54,10 @@ class DE:
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
         ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
 
-        nearbyDEs = self.pgSearch.nearbyDEs(self.coord(), self.halfWindow,
+        cd = self.coord()
+        print(self.gene, cd, ct1, ct2)
+        
+        nearbyDEs = self.pgSearch.nearbyDEs(cd, self.halfWindow,
                                             ct1, ct2, 1) #0.05)
 
         print(self.coord())

@@ -70,7 +70,8 @@ def setupAll(curs, sample):
                 padj = toks[5]
                 if 'NA' == padj:
                     padj = "1"
-                data.append([toks[0], toks[2], padj])
+                etoks = toks[0].split('.')
+                data.append([etoks[0], toks[2], padj])
 
         outF = StringIO.StringIO()
         for d in data:

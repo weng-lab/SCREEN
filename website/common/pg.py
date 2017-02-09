@@ -549,7 +549,7 @@ OR ensemblid_ver = %s
                               "stop" : c.end, "pval" : pval,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+        print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
 
     def gwasEnrichment(self):
