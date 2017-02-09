@@ -135,8 +135,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return track
 
     def mp(self):
-        ucsc_url = "http://bib5.umassmed.edu/~purcarom/cre/cre.bigBed"
-        washu_url = "http://bib5.umassmed.edu/~purcarom/cre/washu/cre.bed.gz"
+        base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
+                            "ver9", self.assembly, "public_html")
+        ucsc_url = os.path.join(base, "masterPeaks.final.bigBed")
+        washu_url = os.path.join(base, "masterPeaks.final.bed.gz")
         if self.isUcsc:
             t = BigBedTrack("Candidate Regulatory Elements",
                             self.priority, ucsc_url,
@@ -189,14 +191,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def _getTrackList(self, topCellLinesByRankMethod):
         tracks = []
         cache = self.cacheW[self.assembly]
-        for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
+        for rm, cellTypes in topCellLinesByRankMethod.iteritems():
             cts = sorted(cellTypes, key = lambda x: x["one"], reverse=True)[:10]
             for r in cts:
                 ct = r["ct"]
                 t = r["tissue"]
+                
                 expID = ""
                 fileID = ""
-                ti = TrackInfo(rtrm, t, ct, rtrm, expID, fileID)
+                ti = TrackInfo(rm, t, ct, rm, expID, fileID)
                 #print(ti, r["one"])
                 tracks.append(ti)
 
@@ -292,7 +295,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         accession = j["accession"]
         cre = CRE(pgSearch, accession, self.cacheW[assembly])
-        coord = cre.coord().resize(j["halfWindow"])
+        coord = cre.coord()
+        coord.resize(j["halfWindow"])
         
         return assembly, accession, coord
         
