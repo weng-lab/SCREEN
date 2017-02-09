@@ -447,6 +447,8 @@ WHERE accession = %s
                               "dnase+h3k4me3": r[13] }}
 
     def creMostsimilar(self, acc, assay, threshold=20000):
+        if self.assembly == "hg19":
+            return []
         def whereclause(r):
             _assay = assay
             if assay != "dnase":
