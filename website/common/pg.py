@@ -8,7 +8,7 @@ from collections import namedtuple
 from coord import Coord
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession
+from cre_utils import isaccession, isclose
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
@@ -25,7 +25,7 @@ class PGsearchWrapper:
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
-    
+
 class PGsearch:
     def __init__(self, pg, assembly):
         self.pg = pg
@@ -72,13 +72,13 @@ class PGsearch:
         print(j, """TODO need more variables here:
         gene_all_start, gene_all_end,
         gene_pc_start, gene_pc_end""")
-        
+
         """
         tfclause = "peakintersections.accession = cre.accession"
         if "tfs" in j:
             tfclause += " and peakintersections.tf ?| array(" + ",".join(["'%s'" % tf for tf in j["tfs"]]) + ")"
         """
-        
+
         if start and stop:
             whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
 
@@ -93,9 +93,20 @@ class PGsearch:
                 cti = self.ctmap[assay[0]][ct]
                 _range = [j["rank_%s_start" % assay[0]] / 100.0,
                           j["rank_%s_end" % assay[0]] / 100.0]
-                whereclauses.append("(%s)" % " and ".join(
-                    ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
-                     "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                minDefault = -10.0  # must match slider default
+                maxDefault = 10.0   # must match slider default
+                if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
+                    continue # not actually filtering on zscore, yet...
+                if not isclose(_range[0], minDefault):
+                    whereclauses.append("(%s)" %
+                                        "cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]))
+                elif not isclose(_range[1], maxDefault):
+                    whereclauses.append("(%s)" %
+                                        "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1]))
+                else:
+                    whereclauses.append("(%s)" % " and ".join(
+                            ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
+                             "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
 
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
@@ -105,13 +116,13 @@ class PGsearch:
             accs = ["'%s'" % x.upper() for x in accs]
             accsQuery = "accession IN (%s)" % ','.join(accs)
             whereclauses.append("(%s)" % accsQuery)
-            
+
         whereclause = ""
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
         print(whereclause)
         return whereclause
-    
+
     def creTable(self, j, chrom, start, stop):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
@@ -126,7 +137,7 @@ class PGsearch:
                             "0::int as in_cart"])
 
         whereclause = self._creTableWhereClause(j, chrom, start, stop)
-        
+
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
 SELECT JSON_AGG(r) from(
@@ -141,7 +152,7 @@ ORDER BY maxz desc limit 100) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause))
-            
+
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
@@ -204,7 +215,7 @@ int4range(%s, %s)
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_cre_" + c.chrom
         q = """
-SELECT {cols} FROM {tn} 
+SELECT {cols} FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)
 """.format(cols = ','.join(cols), tn = tableName)
 
@@ -214,7 +225,7 @@ AND isProximal is {isProx}
 """.format(isProx = str(isProximalOrDistal))
 
         print("nearbyCREs query:", q)
-            
+
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
             curs.execute(q, (c.start, c.end))
             return curs.fetchall()
@@ -336,7 +347,7 @@ WHERE accession = %s
             _assay = assay
             if assay != "dnase":
                 _assay = assay.replace("_dnase", "") + "_only"
-                
+
             return " or ".join(["%s_rank[%d] < %d" % (_assay, i + 1, threshold)
                                 for i in xrange(len(r)) if r[i] < threshold])
 
@@ -366,8 +377,8 @@ WHERE accession = '{accession}'""".format(assay=assay,
                 return []
 
             curs.execute("""
-SELECT accession, 
-intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity, 
+SELECT accession,
+intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity,
 chrom, start, stop
 FROM {assembly}_cre
 WHERE {whereclause}
@@ -405,7 +416,7 @@ FROM {tn}
         tableName = self.assembly + "_gene_info"
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
-SELECT chrom, start, stop FROM {tn} 
+SELECT chrom, start, stop FROM {tn}
 WHERE approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s

@@ -90,6 +90,17 @@ h3k4me3_only_zscore_max ,
 h3k4me3_dnase_zscore_max )
 """.format(ctn = ctn))
 
+    printt("updating promoterMaxz and enhancerMaxz...")
+    curs.execute("""
+UPDATE {ctn}
+SET promoterMaxz = GREATEST(
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max ),
+enhancerMaxz = GREATEST(
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max )
+""".format(ctn = ctn))
+
 def doPartition(curs, tableName, m):
     curs.execute("""
 DROP TABLE IF EXISTS {tn} CASCADE;
@@ -106,37 +117,39 @@ DROP TABLE IF EXISTS {tn} CASCADE;
  start integer,
  stop integer,
  conservation_rank integer[],
- conservation_signal numeric(8,3)[],
+ conservation_signal real[],
  dnase_rank integer[],
- dnase_signal numeric(8,3)[],
- dnase_zscore numeric(8,3)[],
+ dnase_signal real[],
+ dnase_zscore real[],
  ctcf_only_rank integer[],
- ctcf_only_zscore numeric(8,3)[],
+ ctcf_only_zscore real[],
  ctcf_dnase_rank integer[],
- ctcf_dnase_zscore numeric(8,3)[],
+ ctcf_dnase_zscore real[],
  h3k27ac_only_rank integer[],
- h3k27ac_only_zscore numeric(8,3)[],
+ h3k27ac_only_zscore real[],
  h3k27ac_dnase_rank integer[],
- h3k27ac_dnase_zscore numeric(8,3)[],
+ h3k27ac_dnase_zscore real[],
  h3k4me3_only_rank integer[],
- h3k4me3_only_zscore numeric(8,3)[],
+ h3k4me3_only_zscore real[],
  h3k4me3_dnase_rank integer[],
- h3k4me3_dnase_zscore numeric(8,3)[],
+ h3k4me3_dnase_zscore real[],
  gene_all_distance integer[],
  gene_all_id integer[],
  gene_pc_distance integer[],
  gene_pc_id integer[],
  tads integer[],
- dnase_zscore_max numeric(8,3),
- ctcf_only_zscore_max numeric(8,3),
- ctcf_dnase_zscore_max numeric(8,3),
- h3k27ac_only_zscore_max numeric(8,3),
- h3k27ac_dnase_zscore_max numeric(8,3),
- h3k4me3_only_zscore_max numeric(8,3),
- h3k4me3_dnase_zscore_max numeric(8,3),
+ dnase_zscore_max real,
+ ctcf_only_zscore_max real,
+ ctcf_dnase_zscore_max real,
+ h3k27ac_only_zscore_max real,
+ h3k27ac_dnase_zscore_max real,
+ h3k4me3_only_zscore_max real,
+ h3k4me3_dnase_zscore_max real,
  isProximal boolean,
- maxz numeric(8,3)
-        ); """.format(tableName = tableName))
+ maxz real,
+ promoterMaxz real,
+ enhancerMaxz real
+ ); """.format(tableName = tableName))
 
     chroms = m["chrs"]
     for chrom in chroms:
@@ -164,12 +177,12 @@ CHECK (chrom = '{chrom}')
         printt("imported", os.path.basename(fnp))
         updateTable(curs, ctn, m)
 
-def addPromoterEnhancerMaxZ(curs, assembly):
-    printt("adding promoterMaxz and enhancerMaxz...")
+def addCol(curs, assembly):
+    printt("adding col...")
     curs.execute("""
 ALTER TABLE {tn}
-ADD COLUMN promoterMaxz numeric(8,3),
-ADD COLUMN enhancerMaxz numeric(8,3);
+ADD COLUMN promoterMaxz real,
+ADD COLUMN enhancerMaxz real;
 
 UPDATE {tn}
 SET promoterMaxz = GREATEST(
@@ -212,11 +225,13 @@ def main():
         m["subsample"] = args.sample
 
         with getcursor(DBCONN, "08_setup_log") as curs:
-            if 0:
+            if 1:
                 importProxDistal(curs, assembly)
                 doPartition(curs, assembly + "_cre", m)
             else:
-                addPromoterEnhancerMaxZ(curs, assembly)
+                # example to show how to add and populate column to
+                #  master and, by inheritance, children tables...
+                addCol(curs, assembly)
 
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
