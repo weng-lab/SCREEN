@@ -39,7 +39,7 @@ class DataWebServiceWrapper:
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
         self.ac = AutocompleterWrapper(ps)
-
+        
     def process(self, j, args, kwargs):
         if "action" in j and j["action"] == "suggest":
             return {"results": self.ac.get_suggestions(j["userQuery"]),
