@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from autocomplete import Autocompleter
 from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
-from models.minipeaks_cache import MiniPeaksCache
+#from models.minipeaks_cache import MiniPeaksCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
@@ -52,8 +52,9 @@ class CachedObjects:
 
         self.datasets = Datasets(assembly, ps.DBCONN)
 
-        self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
-                                 for k in ["dnase", "h3k4me3", "h3k27ac"]}
+        if 0:
+            self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
+                                     for k in ["dnase", "h3k4me3", "h3k27ac"]}
 
         self.bigwigmaxes = {}
         bmnp = paths.bigwigmaxes(assembly)
