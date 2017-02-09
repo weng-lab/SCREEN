@@ -130,16 +130,26 @@ const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
 const zscore_decimal = (v) => (v / 100.0);
 const zrdecimal = (s) => (+s * 100.0);
 
+const _rankBox = ({element_type, actions, cellType}) => {
+    return panelize("cRE activity" + (cellType ? " in " + make_ct_friendly(cellType) : ""),
+	            <ListFacet
+                    title={""}
+                    items={[["chromatin-accessible", ""], ["promoter-like", ""], ["enhancer-like", ""], ["insulator-like", ""]]}
+                    selection={element_type}
+                    onchange={(e) => { actions.setType(e) }}
+                    />);
+}
+
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end,
                   cellType, actions}) => {
 		      let range = [-1000, 1000];
-    if(null == cellType){
+    if(null == cellType && 0){
         return (<div />);
     }
-	      return panelize("Z-Score: " + make_ct_friendly(cellType),
+		      return panelize("Z-Score " + (cellType ? "in " + make_ct_friendly(cellType) : "maximum across all cell types"),
                     (<div>
                      {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
                                actions.setRankDnase, zscore_decimal, zrdecimal)}
