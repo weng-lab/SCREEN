@@ -97,6 +97,15 @@ class ParseSearch:
         if not r: return None
         p = r.group(0).replace("-", " ").replace(":", " ").split()
         return Coord(p[0], p[1], p[2])
+
+    def has_overlap(self, coord):
+        if not coord: return False
+        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
+            curs.execute("SELECT accession FROM {tn} WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop".format(tn = self.assembly + "_cre_" + coord.chrom,
+                                                                                                                                           chrom = coord.chrom, start = coord.start,
+                                                                                                                                           end = coord.end))
+            if curs.fetchone(): return True
+        return False
     
     def parse(self, comparison = False):
         s = self._sanitize()
@@ -117,19 +126,23 @@ class ParseSearch:
                     continue
                 elif t.startswith("rs"):
                     coord = self._get_snpcoord(t)
+                    if coord and not self.has_overlap(coord):
+                        interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
+                        coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
         except:
             raise
             print("could not parse " + s)
 
         if coord is None:
             interpretation, coord = self._try_find_gene(s)
+            interpretation = "Showing results for \"%s\"" % interpretation
 
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             curs.execute("SELECT cellType, similarity(cellType, '{q}') AS sm FROM {assembly}_rankCellTypeIndexex WHERE cellType % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
             r = curs.fetchall()
         if r:
             if r[0][0].lower() not in s.lower():
-                interpretation = r[0][0] if not interpretation else interpretation + " " + r[0][0]
+                interpretation = "Showing results for \"%s\"" % (r[0][0] if not interpretation else interpretation + " " + r[0][0])
             cellType = r[0][0]
             
         ret = {"cellType": cellType,
