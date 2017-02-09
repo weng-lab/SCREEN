@@ -97,9 +97,12 @@ class CRE:
             return ret
 
         return {"dnase": makeArrRanks("dnase", "DNase"),
-                "promoter": makeArrMulti("h3k4me3-only", "H3K4me3", "dnase+h3k4me3", "Promoter"),
-                "enhancer": makeArrMulti("h3k27ac-only", "H3K27ac", "dnase+h3k27ac", "Enhancer"),
-                "ctcf": makeArrMulti("ctcf-only", "CTCF", "dnase+ctcf", "Insulator")}
+                "promoter": makeArrMulti("h3k4me3-only", "H3K4me3",
+                                         "dnase+h3k4me3", "Promoter"),
+                "enhancer": makeArrMulti("h3k27ac-only", "H3K27ac",
+                                         "dnase+h3k27ac", "Enhancer"),
+                "ctcf": makeArrMulti("ctcf-only", "CTCF",
+                                     "dnase+ctcf", "Insulator")}
 
     def peakIntersectCount(self):
         coord = self.coord()
