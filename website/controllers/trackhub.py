@@ -138,7 +138,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
                             "ver9", self.assembly, "public_html")
         ucsc_url = os.path.join(base, "masterPeaks.final.bigBed")
-        washu_url = os.path.join(base, "masterPeaks.final.bed.gz")
+        washu_url = os.path.join(base, "washu-masterPeaks.final.bed.gz")
         if self.isUcsc:
             t = BigBedTrack("Candidate Regulatory Elements",
                             self.priority, ucsc_url,
@@ -236,9 +236,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 0
 
         self.lines  = []
-        self.lines += [self.genes()]
+        #self.lines += [self.genes()]
         self.lines += [self.mp()]
-        #self.lines += [self.phastcons()]
+        self.lines += [self.phastcons()]
 
         pgSearch = PGsearch(self.ps, self.assembly)
 
