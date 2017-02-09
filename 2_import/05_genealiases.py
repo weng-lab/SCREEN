@@ -9,7 +9,7 @@ from constants import chroms, chrom_lengths, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from get_tss import Genes
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils
 
@@ -197,6 +197,8 @@ info jsonb);""".format(tableName = tableName))
         outF.seek(0)
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
         print("updated", tableName)
+
+        makeIndex(self.curs, tableName, ["geneid"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
