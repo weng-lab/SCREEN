@@ -20,7 +20,7 @@ class GeneExp extends React.Component{
     }
 
     componentWillReceiveProps(nextProps){
-        console.log("componentWillReceiveProps", nextProps);
+        //console.log("componentWillReceiveProps", nextProps);
         this.loadGene(nextProps);
     }
 
