@@ -60,7 +60,7 @@ function tabEles(data, tables, numCols){
 
 class ReTabBase extends React.Component{
     constructor(props, key) {
-	console.log(props);
+	//console.log(props);
 	super(props);
         this.key = key;
         this.url = "/dataws/re_detail/" + key;
@@ -105,7 +105,7 @@ class ReTabBase extends React.Component{
         if(accession in this.state){
             return this.doRender(this.state[accession]);
         }
-	console.log(this.props);
+	//console.log(this.props);
         return loading({...this.state, message: this.props.message});
     }
 

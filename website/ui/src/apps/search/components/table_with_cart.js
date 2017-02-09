@@ -59,7 +59,6 @@ const button_click_handler = (name, re, dispatch) => {
 class TableWithCart extends React.Component {
     downloadBed() {
 	var jq = this.props.jq;
-	console.log("jq", jq);
 
 	$.ajax({
             type: "POST",
@@ -83,7 +82,6 @@ class TableWithCart extends React.Component {
 
     downloadJSON() {
 	var jq = this.props.jq;
-	console.log("jq", jq);
 
 	$.ajax({
             type: "POST",
