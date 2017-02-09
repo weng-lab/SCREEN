@@ -20,7 +20,9 @@ const main_reducers = (state, action) => {
     case Actions.SET_RANK_DNASE: console.log(action); return {...state, rank_dnase_start: action.start, rank_dnase_end: action.end};
     case Actions.SET_RANK_PROMOTER: return {...state, rank_promoter_start: action.start, rank_promoter_end: action.end};
     case Actions.SET_RANK_ENHANCER: return {...state, rank_enhancer_start: action.start, rank_enhancer_end: action.end};
-    case Actions.SET_RANK_CTCF: return {...state, rank_ctcf_start: action.start, rank_ctcf_end: action.end};	
+    case Actions.SET_RANK_CTCF: return {...state, rank_ctcf_start: action.start, rank_ctcf_end: action.end};
+
+    case Actions.SET_CRE_TYPE: return {...state, element_type: action.element_type};
 	
     case Actions.SET_GENE_ALL_DISTANCE:
         return {...state, gene_all_start: action.start, gene_all_end: action.end };
