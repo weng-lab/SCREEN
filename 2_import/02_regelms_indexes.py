@@ -29,9 +29,8 @@ class CreateIndices:
         for chrom in self.chrs:
             ctn = self.baseTableName + '_' + chrom
             with getcursor(self.DBCONN, "index " + ctn) as curs:
-                if 0:
-                    for col in self.zscore_cols:
-                        makeIndexArr(curs, ctn, col)
+                for col in self.zscore_cols:
+                    makeIndexArr(curs, ctn, col)
                 makeIndex(curs, ctn, ("accession", "start", "stop"))
                 makeIndexRev(curs, ctn, ["maxz",
                                          "enhancerMaxz",
