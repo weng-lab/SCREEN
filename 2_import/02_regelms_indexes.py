@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
@@ -22,54 +22,12 @@ class CreateIndices:
         self.signal_cols = [x for x in cols if x.endswith("_signal")]
         self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
 
-    def _idx(self, tn, col, suf = ""):
-        if suf:
-            return tn + '_' + col + '_' + suf + "_idx"
-        return tn + '_' + col + "_idx"
-
-    def doIndex(self, tableName):
-        cols = ("accession", "chrom", "start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    CREATE INDEX {idx} on {tableName} ({col});
-    """.format(idx = idx, tableName = tableName, col = col))
-
-    def doIndexRev(self):
-        cols = ("neglogp",)
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing", idx, "DESC")
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    CREATE INDEX {idx} on {tableName} ({col} DESC);
-    """.format(idx = idx, tableName = tableName, col = col))
-
-    def doIndexGin(self, tableName): # best for '<@' operator on element of array
-        cols = self.rank_cols + self.signal_cols + self.zscore_cols
-        cols = ("start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col, "gin")
-            print("indexing", idx)
-            self.curs.execute("""
-    CREATE INDEX {idx} on {tableName} USING GIN ({col});
-    """.format(idx = idx, tableName = tableName, col = col))
-
     def run(self):
         self.setupRangeFunction()
-        self.doIndex(self.baseTableName)
-        if 0:
-            self.doIndexRange(self.baseTableName)
-            self.doIndexRev(self.baseTableName)
-            self.doIndexGin(self.baseTableName)
-
-            for chrom in self.chrs:
-                ctn = self.baseTableName + '_' + chrom
-                self.doIndex(ctn)
-                self.doIndexGin(ctn)
-                self.doIndexRange(ctn)
+        for chrom in self.chrs:
+            ctn = self.baseTableName + '_' + chrom
+            makeIndex(self.curs, ctn, ("accession", "start", "stop"))
+            makeIndexRev(self.curs, ctn, ["maxz"])
 
     def setupRangeFunction(self):
         print("create range function...")
@@ -82,26 +40,6 @@ create or replace function numarray2numrange(arr numeric[]) returns numrange as 
     select numrange(min(val), max(val) + 1) from unnest(arr) as val;
 $$ language sql immutable;
         """)
-
-    def doIndexRange(self, tableName):
-        cols = self.rank_cols
-        cols = ("start", "stop")
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing int range", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    create index {idx} on {tableName} using gist(intarray2int4range({col}));
-    """.format(idx = idx, tableName = tableName, col = col))
-
-        cols = self.signal_cols + self.zscore_cols
-        for col in cols:
-            idx = self._idx(tableName, col)
-            print("indexing numeric range", idx)
-            self.curs.execute("""
-    DROP INDEX IF EXISTS {idx};
-    create index {idx} on {tableName} using gist(numarray2numrange({col}));
-    """.format(idx = idx, tableName = tableName, col = col))
 
 def parse_args():
     parser = argparse.ArgumentParser()

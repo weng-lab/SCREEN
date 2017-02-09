@@ -26,6 +26,34 @@ class CREdownload:
             raise
             return { "error" : "error running action"}
 
+    def downloadAsBed(self, j, uid):
+        print(j)
+
+        q = """
+copy (
+select chrom, start, stop from mm10_cre
+) to '/tmp/a.bed'
+with DELIMITER E'\t'
+"""
+        return ""
+
+
+
+        toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
+                score, '.', signal, re["neg-log-p"], -1, -1]
+        return "\t".join([str(x) for x in toks])
+
+        def writeBed(rank, subRank, ct, rows):
+            f = StringIO.StringIO()
+            for re in rows:
+                line = writeBedLine(rank, subRank, ct, re)
+                if not line:
+                    return None
+                f.write(line  + "\n")
+            return f.getvalue()
+
+        return self.downloadAsSomething(uid, j, "beds", writeBeds)
+
     def downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
         outFn = '-'.join([timestr, "v4", formt]) + ".zip"
@@ -49,25 +77,6 @@ class CREdownload:
         url = os.path.join('/', "static", "downloads", uid, outFn)
         return {"url" : url}
 
-    def downloadAsBed(self, j, uid):
-        print(j)
-        return ""
-
-
-        toks = [pos["chrom"], pos["start"], pos["end"], re["accession"],
-                score, '.', signal, re["neg-log-p"], -1, -1]
-        return "\t".join([str(x) for x in toks])
-
-        def writeBed(rank, subRank, ct, rows):
-            f = StringIO.StringIO()
-            for re in rows:
-                line = writeBedLine(rank, subRank, ct, re)
-                if not line:
-                    return None
-                f.write(line  + "\n")
-            return f.getvalue()
-
-        return self.downloadAsSomething(uid, j, "beds", writeBeds)
 
     def downloadAsJson(self, j, uid):
         def writeJson(rows):
