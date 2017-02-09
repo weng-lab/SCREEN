@@ -27,7 +27,9 @@ class CreateIndices:
         for chrom in self.chrs:
             ctn = self.baseTableName + '_' + chrom
             makeIndex(self.curs, ctn, ("accession", "start", "stop"))
-            makeIndexRev(self.curs, ctn, ["maxz"])
+            makeIndexRev(self.curs, ctn, ["maxz",
+                                          "enhancerMaxz",
+                                          "promoterMaxz"])
 
     def setupRangeFunction(self):
         print("create range function...")
