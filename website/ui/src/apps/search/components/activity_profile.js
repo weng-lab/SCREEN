@@ -19,7 +19,7 @@ class ActivityProfileContainer extends React.Component {
     _onchange(assay) {
 	this.loadCREs({...this.props, assay});
     }
-    
+
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps")
 	if ("aprofile" == nextProps.maintabs_active)
@@ -33,7 +33,7 @@ class ActivityProfileContainer extends React.Component {
 	}
         var q = getCommonState(props);
 	q.withpeaks = assay;
-	
+
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -64,7 +64,7 @@ class ActivityProfileContainer extends React.Component {
 	if (this.state.isFetching) return loading(this.state);
 	if ("aprofile" != this.props.maintabs_active) return <div />;
 	let header = (this.state.total < 20 ? "" : "Displaying first 20 of " + this.state.total + " cREs");
-	console.log(this.state.peakdata);
+	//console.log(this.state.peakdata);
 	let mpk = (this.state.peakdata
 		   ? <MiniPeaks
 		      assay={this.state.assay}
