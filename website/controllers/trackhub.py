@@ -20,14 +20,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from files_and_paths import Dirs
 
 class TrackInfo:
-    def __init__(self, rtrm, t, ct, assay, values):
+    def __init__(self, rtrm, t, ct, assay, expID, fileID):
         self.rtrm = rtrm
         self.t = t
         self.ct = ct
         self.assay = assay
-        self.expID = values["accession"]
-        self.fileID = values["bigwig"]
-
+        self.expID = expID
+        self.fileID = fileID
+        
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay, self.rtrm]])
         
@@ -186,45 +186,19 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def _getTopCellTypesByRankMethod(self, re):
-        rankTypes = {"ctcf" : ["CTCF-Only", "DNase+CTCF"],
-                     "dnase": [],
-                     "enhancer": ["DNase+H3K27ac", "H3K27ac-Only"],
-                     "promoter": ["DNase+H3K4me3", "H3K4me3-Only"]}
-        N = 10
-        ret = {}
-        for rankType, rankMethods in rankTypes.iteritems():
-            if "dnase" == rankType:
-                ctToRank = re["ranks"]["dnase"]
-                topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
-                ret[("dnase",)] = topN
-            for rankMethod in rankMethods:
-                ctToRank = {}
-                for cellType, ranks in re["ranks"][rankType].iteritems():
-                    if rankMethod in ranks:
-                        ctToRank[cellType] = ranks[rankMethod]["rank"]
-                #http://stackoverflow.com/a/7197643
-                topN = heapq.nlargest(N, ctToRank, key=ctToRank.get)
-                ret[(rankType, rankMethod)] = topN
-        return ret
-
-    def _getTrackList(self, cre):
-        return ""
-        topCellLinesByRankMethod = self._getTopCellTypesByRankMethod(re)
-
+    def _getTrackList(self, topCellLinesByRankMethod):
         tracks = []
+        cache = self.cacheW[self.assembly]
         for rtrm, cellTypes in topCellLinesByRankMethod.iteritems():
-            for ct in cellTypes:
-                t = self.cache.getTissue(ct)
-                values = re["ranks"][rtrm[0]][ct]
-                if "dnase" == rtrm[0]:
-                    tracks.append(TrackInfo(rtrm, t, ct, "dnase", values))
-                else:
-                    for assay, info in values[rtrm[1]].iteritems():
-                        if "rank" == assay:
-                            continue
-                        tracks.append(TrackInfo(rtrm, t, ct, assay, info))
-
+            cts = sorted(cellTypes, key = lambda x: x["one"], reverse=True)[:10]
+            for r in cts:
+                ct = r["ct"]
+                t = r["tissue"]
+                expID = ""
+                fileID = ""
+                ti = TrackInfo(rtrm, t, ct, rtrm, expID, fileID)
+                #print(ti, r["one"])
+                tracks.append(ti)
 
         tracks.sort(key = lambda x: [x.t, x.ct, x.assay])
 
@@ -241,7 +215,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return ret
     
     def addSignals(self, cre):
-        for ti in self._getTrackList(cre):
+        topTissues = cre.topTissues()
+        for ti in self._getTrackList(topTissues):
             self.lines += [self.trackhubExp(ti)]
                 
     def getLines(self, accessions):
