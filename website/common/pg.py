@@ -149,7 +149,7 @@ on cre.gene_all_id[1] = infoAll.geneid
 inner join {gtn} as infoPc
 on cre.gene_pc_id[1] = infoPc.geneid
 {whereclause}
-ORDER BY maxz desc limit 100) r
+ORDER BY maxz desc limit 1000) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause))
