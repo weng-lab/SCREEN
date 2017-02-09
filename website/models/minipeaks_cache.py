@@ -3,9 +3,10 @@
 import sys
 import json
 
-from cassandra.cluster import Cluster
-from cassandra.query import BatchStatement
-from cassandra import ConsistencyLevel
+if 0:
+    from cassandra.cluster import Cluster
+    from cassandra.query import BatchStatement
+    from cassandra import ConsistencyLevel
 
 class MiniPeaksCache:
     def __init__(self, rank_method, ver = 1):

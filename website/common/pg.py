@@ -447,6 +447,8 @@ WHERE accession = %s
                               "dnase+h3k4me3": r[13] }}
 
     def creMostsimilar(self, acc, assay, threshold=20000):
+        if self.assembly == "hg19":
+            return []
         def whereclause(r):
             _assay = assay
             if assay != "dnase":
@@ -620,3 +622,24 @@ where gwas_study = %s
             curs.execute(q, (gwas_study, ))
             return curs.fetchone()[0]
 
+    def datasets(self, assay):
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT cellTypeName, expID, fileID
+FROM {tn}
+where assay = %s
+""".format(tn = self.assembly + "_datasets")
+            curs.execute(q, (assay, ))
+            rows = curs.fetchall()
+            if 0 == curs.rowcount:
+                raise Exception("no rows found--bad assay? " + assay)
+        return {r[0] : (r[1], r[2]) for r in rows}
+        
+    def genemap(self):
+        with getcursor(self.pg.DBCONN, "pg::genemap") as curs:
+            curs.execute("""
+SELECT ensemblid, approved_symbol
+FROM {tn}
+""".format(tn = self.assembly + "_gene_info"))
+            rows = curs.fetchall()
+        return {r[0]: r[1] for r in rows}
