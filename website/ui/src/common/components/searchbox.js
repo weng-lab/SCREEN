@@ -6,6 +6,11 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/searchbox_actions';
 
 class SearchBox extends React.Component {
+        constructor(props, key) {
+	super(props);
+        this.state = { jq: null };
+    }
+
     makeVal(p) {
         let r = "";
         if(p.coord_chrom && p.coord_start && p.coord_end){
@@ -21,6 +26,15 @@ class SearchBox extends React.Component {
         return r;
     }
 
+    componentWillReceiveProps(nextProps){
+	var val = this.makeVal(nextProps);
+	var jq = JSON.stringify(val);
+	if(this.state.jq != jq){
+	    this.refs.input.value = val;
+	    this.setState({jq});
+	}
+    }
+
     render() {
         const doSubmit = (e) => {
             e.preventDefault();
@@ -31,7 +45,7 @@ class SearchBox extends React.Component {
                 className="navbar-collapse navbar-searchform">
 
 	        <input className="searchbox" type="text" size="100" name="q"
-                ref="input" value={this.makeVal(this.props)}/>&nbsp;
+                ref="input" defaultValue={this.makeVal(this.props)}/>&nbsp;
 
                 <a className="btn btn-primary btn-lg searchButton"
                 onClick={doSubmit} role="button">Search</a>
