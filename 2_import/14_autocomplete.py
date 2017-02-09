@@ -8,7 +8,7 @@ from dbconnect import db_connect
 from constants import chroms
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
@@ -20,36 +20,69 @@ class SetupAutocomplete:
         self.assembly = assembly
 
     def run(self):
+
+        printt("loading snps...")
         names = []
         for chrom in ["chr%d" % d for d in range(1, chromlimit[self.assembly] + 1)] + ["chrX", "chrY"]:
-            self.curs.execute("SELECT name FROM {assembly}_snps_{chrom}".format(chrom=chrom, assembly=self.assembly))
+            self.curs.execute("""
+SELECT name, start, stop FROM {assembly}_snps_{chrom}
+""".format(chrom=chrom, assembly=self.assembly))
             r = self.curs.fetchall()
-            if r:
-                for row in r:
-                    names.append(row[0])
-        self.curs.execute("SELECT approved_symbol, ensemblid, info FROM {assembly}_gene_info".format(assembly=self.assembly))
-        r = self.curs.fetchall()
-        keys = ["UniProt_ID", "RefSeq_ID", "Vega_ID", "UCSC_ID"]
-        if r:
             for row in r:
-                names.append(row[0])
-                names.append(row[1])
-                print(row[2])
-                if row[2]:
-                    for key in keys:
-                        if key in row[2]:
-                            names.append(row[2][key])
-                        if "synonyms" in row[2]:
-                            names += row[2]["synonyms"]
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "raw")
-        fnp = os.path.join(d, "autocomplete_dictionary.txt")
-        with open(fnp, "wb") as o:
-            o.write("\n".join(names))
-        with open(fnp, "r") as f:
-            self.curs.execute("DROP TABLE IF EXISTS {assembly}_autocomplete".format(assembly=self.assembly))
-            self.curs.execute("CREATE TABLE {assembly}_autocomplete (id serial PRIMARY KEY, name VARCHAR(256))".format(assembly=self.assembly))
-            self.curs.copy_from(f, "%s_autocomplete" % self.assembly, "\t", columns=["name"])
+                names.append(row[0] + "\t%s\t%d\t%d" % (chrom, row[1], row[2]))
+
+        printt("loading gene info...")
+        self.curs.execute("""
+SELECT approved_symbol, ensemblid, info, chrom, start, stop 
+FROM {assembly}_gene_info
+""".format(assembly=self.assembly))
+        r = self.curs.fetchall()
+        keys = ["UniProt_ID", "RefSeq_ID", "Vega_ID", "UCSC_ID", "HGNC_ID", "approved_name"]
+        for row in r:
+            c = "%s\t%d\t%d" % (row[3], row[4], row[5])
+            names.append(row[0] + "\t" + c)
+            names.append(row[1] + "\t" + c)
+            if row[2]:
+                for key in keys:
+                    if key in row[2]:
+                        names.append(row[2][key] + "\t" + c)
+                    if "synonyms" in row[2]:
+                        names += [x.strip() + "\t" + c for x in row[2]["synonyms"]]
+                    if "previous_symbols" in row[2]:
+                        names += [x.strip() + "\t" + c for x in row[2]["previous_symbols"]]
+
+        outF = StringIO.StringIO()
+        outF.write("\n".join(names))
+        outF.seek(0)
+
+        printt("found", len(names), "items")
+
+        printt("inserting into table...")
+        self.curs.execute("""
+DROP TABLE IF EXISTS {assembly}_autocomplete;
+CREATE TABLE {assembly}_autocomplete 
+(id serial PRIMARY KEY, 
+name TEXT, 
+chrom TEXT, 
+start INT, 
+stop INT)
+""".format(assembly=self.assembly))
+
+        self.curs.copy_from(outF, "%s_autocomplete" % self.assembly,
+                            "\t", columns=["name", "chrom", "start", "stop"])
+
+        printt("indexing table...")
+        self.curs.execute("""
+CREATE INDEX {assembly}_autocomplete_index ON {assembly}_autocomplete 
+USING btree (name text_pattern_ops)
+""".format(assembly=self.assembly))
+
+        # will need to run as psql postgres user:
+        # \c regElmViz; CREATE EXTENSION pg_trgm;
+        self.curs.execute("""
+CREATE INDEX {assembly}_fulltext_index ON {assembly}_autocomplete 
+USING gin (name gin_trgm_ops)
+""".format(assembly=self.assembly))
                 
 def parse_args():
     parser = argparse.ArgumentParser()
