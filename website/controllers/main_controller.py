@@ -22,6 +22,7 @@ class MainController:
         if "assembly" not in kwargs:
             pageInfo = PageInfoMain(*self.params)
             return self.t("main/index", **pageInfo.wholePage("", True, "Error: no search assembly specified."))
+        
         pageInfo = PageInfoSearch(*self.params)
         assembly = kwargs["assembly"]
         info = pageInfo.searchPage(args, kwargs, uuid)
