@@ -56,7 +56,12 @@ const main_reducers = (state, action) => {
     }
 
     case SearchAction.MAKE_SEARCH_QUERY:
-        console.log("new query", action.q);
+	// TODO: avoid the full page refresh
+	var q = $.param({q : action.q,
+			 assembly: GlobalAssembly});
+	var arr = window.location.href.split("/");
+	var host = arr[0] + "//" + arr[2];
+	window.location = host + "/" + "search?" + q;
         return state;
 
     default:
