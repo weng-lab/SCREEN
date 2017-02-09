@@ -317,38 +317,28 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         accession = j["accession"]
         cre = CRE(pgSearch, accession, self.cacheW[assembly])
-        coord = cre.coord()
+        coord = cre.coord().resize(j["halfWindow"])
         
-        halfWindow = j["halfWindow"]
-	chrom = coord.chrom
-	start = coord.start
-	end = coord.end
-
-	start = max(1, start - halfWindow);
-        end = end + halfWindow;
-        
-        return assembly, accession, chrom, start, end
+        return assembly, accession, coord
         
     def ucsc_trackhub_url(self, j, uuid):
-        assembly, accession, chrom, start, end = self._trackhub_url_info(j)
+        assembly, accession, coord = self._trackhub_url_info(j)
         hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
-        host = j["host"]
-        trackhubUrl = '/'.join([host,
+        trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
 		                "hub_" + str(hubNum) + ".txt"])
 
         url = "https://genome.ucsc.edu/cgi-bin/hgTracks?"
 	url += "db=" + assembly
-	url += "&position=" + chrom + ':' + str(start) + '-' + str(end);
+	url += "&position=" + str(coord)
 	url += "&hubClear=" + trackhubUrl;
 
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ensembl_trackhub_url(self, j, uuid):
-        assembly, accession, chrom, start, end = self._trackhub_url_info(j)
+        assembly, accession, coord = self._trackhub_url_info(j)
         hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
         cname = {"hg19" :"grch37",
@@ -357,25 +347,22 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                    "mm10" : "Mus_musculus"}
         
         url = "http://" + cname[assembly] + ".ensembl.org/Trackhub?"
-        host = j["host"]
-        trackhubUrl = '/'.join([host,
+        trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
 		                "hub_" + str(hubNum) + ".txt"])
 
 	url += "&url=" + trackhubUrl
         url += ";species=" + species[assembly] + ";"
-        url += "r=" + chrom[3:] + ':' + str(start) + '-' + str(end);
+        url += "r=" + coord.chrom[3:] + ':' + coord.start + '-' + coord.end;
 
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def washu_trackhub_url(self, j, uuid):
-        assembly, accession, chrom, start, end = self._trackhub_url_info(j)
+        assembly, accession, coord = self._trackhub_url_info(j)
         hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
-        host = j["host"]
-        trackhubUrl = '/'.join([host,
+        trackhubUrl = '/'.join([j["host"],
                                 "washu_trackhub",
 		                uuid,
                                 assembly,
@@ -384,7 +371,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         url = "http://epigenomegateway.wustl.edu/browser/"
         url += "?genome=" + assembly
         url += "&datahub=" + trackhubUrl
-        url += "&coordinate=" + chrom + ':' + str(start) + '-' + str(end);
+        url += "&coordinate=" + str(coord)
         
-        return {"url" : url,
-                "trackhubUrl" : trackhubUrl}
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
