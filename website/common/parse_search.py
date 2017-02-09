@@ -118,15 +118,15 @@ class ParseSearch:
                "coord_chrom" : None,
                "coord_start" : None,
                "coord_end" : None,
-               "range_preset": None,
+               "element_type": None,
                "interpretation": interpretation}
             
         if "promoter" in toks:
-            ret["range_preset"] = "promoter"
+            ret["element_type"] = "promoter-like"
         elif "enhancer" in toks:
-            ret["range_preset"] = "enhancer"
+            ret["element_type"] = "enhancer-like"
         elif "insulator" in toks:
-            ret["range_preset"] = "insulator"
+            ret["element_type"] = "insulator-like"
 
         ct = None
         if len(cellTypes) > 0:

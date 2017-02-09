@@ -61,6 +61,33 @@ class PGsearch:
         return {e[0] : {"bins" : e[1],
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
+
+    def _type_clauses(self, ct, assayterm):
+        if not assayterm:
+            return []
+        assaymap = {"chromatin-accessible": ["dnase"],
+                    "promoter-like": ["h3k4me3_only", "dnase"],
+                    "enhancer-like": ["h3k27ac_only", "dnase"],
+                    "insulator-like": ["ctcf_only"] }
+        allmap = {"chromatin-accessible": "dnase_zscore_max",
+                  "promoter-like": "promoterMaxz",
+                  "enhancer-like": "enhancerMaxz",
+                  "insulator-like": "ctcf_only_zscore_max" }
+        ret = []
+        if ct:
+            if assayterm not in assaymap:
+                print("WARNING: invalid element type %s; ignoring" % assayterm)
+                return ret
+            for assay in assaymap[assayterm]:
+                if ct not in self.ctmap[assay[0]]:
+                    continue
+                cti = self.ctmap[assay[0]][ct]
+                ret.append(["cre.%s_zscore[%d] >= 1.64" % (assay[1], cti)])
+            return ret
+        if assayterm not in allmap:
+            print("WARNING: invalid element type %s; ignoring" % assayterm)
+            return ret
+        return ["cre.%s >= 1.64" % allmap[assayterm]]
     
     def creTable(self, j, chrom, start, stop):
         if chrom:
@@ -85,13 +112,13 @@ class PGsearch:
         if "tfs" in j:
             tfclause += " and peakintersections.tf ?| array(" + ",".join(["'%s'" % tf for tf in j["tfs"]]) + ")"
         """
-        
-        whereclauses = []
+
+        ct = j.get("cellType", None)
+        whereclauses = self._type_clauses(ct, j["element_type"])
 
         if start and stop:
-            whereclauses = ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
-        ct = j.get("cellType", None)
-        if ct:
+            whereclauses += ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
+        if ct and False:
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3_only"),
                           ("enhancer", "h3k27ac_only"),
