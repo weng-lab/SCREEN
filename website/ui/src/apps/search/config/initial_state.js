@@ -1,6 +1,7 @@
 import MainTabInfo from './maintabs.js'
 
 const initialState = {
+    rfacets: ["dnase", "promoter", "enhancer", "ctcf"],
     rank_dnase_start: 164, rank_dnase_end: 1000,
     rank_promoter_start: -1000, rank_promoter_end: 1000,
     rank_enhancer_start: -1000, rank_enhancer_end: 1000,

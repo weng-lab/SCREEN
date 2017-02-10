@@ -104,6 +104,8 @@ class DataWebService:
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
+        results["rfacets"] = self.pgSearch._rfacets_active(j) if "cellType" in j and j["cellType"] else ["dnase", "promoter", "enhancer", "ctcf"]
+        print(results["rfacets"])
         if "withpeaks" in j:
             res = results["cres"][:20]
             n_bars = 15

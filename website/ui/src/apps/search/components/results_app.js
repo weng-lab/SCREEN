@@ -22,6 +22,7 @@ class ResultsTableContainer extends React.Component {
     loadCREs(props){
         var q = getCommonState(props);
         var jq = JSON.stringify(q);
+	var setrfacets = this.props.actions.setrfacets;
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
@@ -40,8 +41,9 @@ class ResultsTableContainer extends React.Component {
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cres: r["cres"], total: r["total"],
+                this.setState({cres: r["cres"], total: r["total"], nodnase: !r["rfacets"].includes("dnase"),
                                jq, isFetching: false, isError: false});
+		setrfacets(r["rfacets"]);
             }.bind(this)
         });
     }
@@ -54,6 +56,7 @@ class ResultsTableContainer extends React.Component {
                 cart_accessions={this.props.cart_accessions}
                 isFetching={this.state.isFetching}
 		jq={this.state.jq}
+		nodnase={this.state.nodnase}
                 />);
     }
 }
