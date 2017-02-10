@@ -5,7 +5,8 @@
   var result = arr[0] + "//" + arr[2]
   
   var _script = document.createElement("script");
-  _script.setAttribute("src", result + "/static/bundle.js");
+  _script.setAttribute("src",
+      result + "/static/bundle.js?{{bundlets}}");
   document.head.appendChild(_script);
 </script>
 

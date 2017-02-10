@@ -10,12 +10,14 @@ class PageInfoSearch:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
+        bundleFnp = os.path.join(os.path.dirname(__file__),
+                                 "../ui/dist/bundle.js")
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
                 "re_json_index" : paths.reJsonIndex(assembly),
-                "globalCellCompartments" : json.dumps([])
+                "bundlets" : os.path.getmtime(bundleFnp)
         }
 
     def haveresults(self, parsed):

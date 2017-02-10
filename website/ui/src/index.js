@@ -13,7 +13,6 @@ import Comparison from './apps/comparison/main';
 
 //     <Route path="/cart" component={CartPage} />
 
-
 ReactDOM.render(
     (<Router history={browserHistory}>
      <Route path="/comparison/:assembly" component={Comparison} />
