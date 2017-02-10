@@ -69,20 +69,28 @@ class ParseSearch:
             return None
         return Coord(r[0], r[1], r[2])
 
-    def _try_find_gene(self, s):
+    def _try_find_gene(self, s, tss = False):
         p = s.lower().split()
         interpretation = None
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             for h in xrange(len(p)):
                 x = len(p) / (h + 1)
                 for q in [" ".join(p[x * i : x * (i + 1)]) for i in xrange(h + 1)]:
-                    curs.execute("SELECT name, chrom, start, stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                    curs.execute("SELECT name, {alt}chrom, {alt}start, {alt}stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s, alt="alt" if tss else ""))
                     r = curs.fetchall()
                     if r:
-                        if r[0][0].lower() not in s.lower():
-                            interpretation = r[0][0]
+                        interpretation = r[0][0]
                         return (interpretation, Coord(r[0][1], r[0][2], r[0][3]))
         return (interpretation, None)
+
+    def get_genetext(self, gene, tss = False):
+        if tss:
+            return """
+This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
+To see cREs overlapping the gene body of {q}, <a href='http://screen.umassmed.edu/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+        return """
+This search is showing cREs overlapping the gene body of {q}.<br>
+To see candidate promoters located between the first and last TSS's of {q}, <a href='http://screen.umassmed.edu/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
 
     def _try_find_celltype(self, s):
         pass
@@ -122,19 +130,20 @@ class ParseSearch:
                     curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
                     r = curs.fetchall()
             if r:
-                if r[0][0].lower() not in s.lower():
+                if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
                     k = r[0][0].replace("_", " ")
                     interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
                 return (" ".join(p[len(p) - i:]), r[0][0], interpretation)
         return (q, None, None)
     
-    def parse(self, comparison = False):
+    def parse(self, kwargs = None):
         s = self._sanitize().lower()
         self.sanitizedStr = s
 
         s, coord = self._find_coord(s)
         toks = s.split()
         toks = [t.lower() for t in toks]
+        usetss = "tss" in toks or (kwargs and "tss" in kwargs)
 
         ret = {"cellType": None,
                "coord_chrom" : None,
@@ -142,7 +151,7 @@ class ParseSearch:
                "coord_end" : None,
                "element_type": None,
                "interpretation": None}
-        if "promoter" in toks:
+        if "promoter" in toks or usetss:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
@@ -176,8 +185,8 @@ class ParseSearch:
             print("could not parse " + s)
 
         if coord is None:
-            interpretation, coord = self._try_find_gene(s)
-            if interpretation: interpretation = "Showing results for \"%s\"" % interpretation
+            interpretation, coord = self._try_find_gene(s, usetss)
+            if interpretation: interpretation = self.get_genetext(interpretation, usetss)
 
         if len(accessions) > 0:
             coord = None

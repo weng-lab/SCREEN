@@ -32,7 +32,7 @@ class PageInfoSearch:
         parsed = ""
         if "q" in kwargs:
             p = ParseSearch(kwargs["q"], self.ps.DBCONN, assembly)
-            parsed = p.parse()
+            parsed = p.parse(kwargs)
             parsedStr = p.parseStr()
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
