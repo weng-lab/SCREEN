@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
@@ -27,13 +27,14 @@ padj numeric
 """.format(tableName = tableName))
     print("\tok")
 
-def setupAll(curs, sample):
+def setupAll(DBCONN, sample):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "mouse_epigenome/de_all_pairs")
     fnp = os.path.join(dataF, "DE_files.json")
 
     tableName = "mm10_de"
-    setupAndCopy(curs, tableName)
+    with getcursor(DBCONN, "main") as curs:
+        setupAndCopy(curs, tableName)
 
     cols = ["leftName", "rightName", "ensembl", "log2FoldChange", "padj"]
     # baseMean	log2FoldChange	lfcSE	stat	pvalue	padj
@@ -44,6 +45,9 @@ def setupAll(curs, sample):
     counter = 0
     total = len(pairs)
     for p, fn in pairs.iteritems():
+        print(counter + 1, total, fnp)
+        counter += 1
+
         toks = p.split(':')
         left = toks[0]
         right = toks[1]
@@ -55,10 +59,8 @@ def setupAll(curs, sample):
                 continue
             if not "limb_15" in fnp:
                 continue
-        print(counter + 1, total, fnp)
-        counter += 1
-        skipped = 0
         
+        skipped = 0
         with gzip.open(fnp) as f:
             f.readline() # consume header
             data = []
@@ -77,16 +79,20 @@ def setupAll(curs, sample):
         for d in data:
             outF.write('\t'.join([left, right] + d) + '\n')
         outF.seek(0)
-        curs.copy_from(outF, tableName, '\t', columns=cols)
+
+        with getcursor(DBCONN, "main") as curs:
+            curs.copy_from(outF, tableName, '\t', columns=cols)
         print("\tcopied in", len(data), "skipped", skipped)
 
-def index(curs):
-    curs.execute("""
-    create index leftname_rightname_de on mm10_de(leftname, rightname)""")
-    print("made index", "leftname_rightname_de")
-    curs.execute("""
-    create index ensembl_de on mm10_de(ensembl)""")
-    print("made index", "ensembl_de")
+def index(DBCONN):
+    printt("indexing")
+    with getcursor(DBCONN, "main") as curs:
+        curs.execute("""
+        create index leftname_rightname_de on mm10_de(leftname, rightname)""")
+        print("made index", "leftname_rightname_de")
+        curs.execute("""
+        create index ensembl_de on mm10_de(ensembl)""")
+        print("made index", "ensembl_de")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -101,11 +107,10 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    with getcursor(DBCONN, "main") as curs:
-        if args.index:
-            return index(curs)
-        setupAll(curs, args.sample)
-        index(curs)
+    if args.index:
+        return index(DBCONN)
+    setupAll(DBCONN, args.sample)
+    index(DBCONN)
 
 if __name__ == '__main__':
     main()
