@@ -32,5 +32,6 @@ class DeController:
         nearbyDEs = de.nearbyDEs()
 
         return {gene : {"xdomain" : nearbyDEs["xdomain"],
+                        "coord" : de.coord().toDict(),
                         "diffCREs": diffCREs,
                         "nearbyDEs": nearbyDEs}}

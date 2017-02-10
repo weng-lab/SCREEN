@@ -76,7 +76,9 @@ class DE:
                  round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
                  d[1], # stop
-                 d[3], d[4], self.cache._try_genename(d[5]) # names
+                 d[3], # leftName
+                 d[4], # rightName
+                 self.cache._try_genename(d[5]) # names
                  ]
             print(d, e, d[1] - d[0])
             ret.append(e)
