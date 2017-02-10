@@ -22,9 +22,9 @@ class Gwas:
             studies = list(set([e.authorPubmedTrait for e in self.gwas]))
             self.studies = [{"value" : e} for e in studies]
 
-    def overlapWithCres(self, gwas_study):
+    def overlapWithCresPerc(self, gwas_study):
          return self.pgSearch.gwasOverlapWithCresPerc(gwas_study)
 
     def gwasAccessions(self, gwas_study):
          return self.pgSearch.gwasAccessions(gwas_study)
-     
+
