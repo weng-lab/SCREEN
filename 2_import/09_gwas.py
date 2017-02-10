@@ -8,7 +8,7 @@ from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from exp import Exp
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
@@ -26,7 +26,8 @@ authorPubmedTrait text,
 expID text,
 foldEnrichment real,
 fdr real,
-biosample_term_name text
+biosample_term_name text,
+cellTypeName text
 );
 """.format(tableName = tableName))
 
@@ -103,6 +104,13 @@ def setupAll(curs):
     cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
+
+    curs.execute("""
+UPDATE hg19_gwas_enrichment as ge
+set cellTypeName = d.cellTypeName
+from hg19_datasets as d
+where ge.expID = d.expID""")
+    printt("updated", curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()
