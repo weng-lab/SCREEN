@@ -176,7 +176,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if not self.isUcsc:
-            url = os.path.join("https://zlab.umassmed.edu/zlab-annotations-v4/static_data/encode_data",
+            url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
         desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
@@ -204,9 +204,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                          reverse=True)[:topN]
             rmo = lookup[rm]
             for r in cts:
-                ct = r["ct"]
+                ct = r["ct"].replace("'", "_").replace('"', '_')
                 t = r["tissue"]
-                expBigWigID = cache.assayAndCellTypeToExpAndBigWigAccessions(rmo, ct)
+                expBigWigID = cache.assayAndCellTypeToExpAndBigWigAccessions(rmo, r["ct"])
                 expID = expBigWigID[0]
                 fileID = expBigWigID[1]
                 ti = TrackInfo(rm, t, ct, rmo, expID, fileID)
@@ -267,12 +267,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         end = str(p.end + halfWindow)
         return p.chrom + ':' + start + '-' + end
 
-    def makeTrackDbWashU(self, re_accessions):
-        lines = self.getLines(re_accessions)
+    def makeTrackDbWashU(self, accessions):
+        lines = self.getLines(accessions)
 
-        pos = [self.makePos(x) for x in self.re_pos]
-        lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
-        
+        if 0:
+            pos = [self.makePos(x) for x in self.re_pos]
+            lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
+                
         return json.dumps(lines)
 
     def washu_trackhub(self, uuid, *args, **kwargs):
