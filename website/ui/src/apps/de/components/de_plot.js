@@ -63,7 +63,7 @@ class DePlot extends React.Component {
             .domain(y_domain).nice()
             .range([height, 0]);
         var xAxis = d3.svg.axis()
-            .ticks(3)
+            .ticks(6)
             .scale(x)
             .orient("bottom");
         var yAxisRight = d3.svg.axis().scale(y)
@@ -151,9 +151,6 @@ class DePlot extends React.Component {
             .text(function(d) { return d; });
 
         var bars = this.props.data.nearbyDEs.data;
-//        y = d3.scale.linear()
- //           .domain(barYdomain).nice()
-  //          .range([height, 0]);
         var bar = svg.selectAll(".bar")
             .data(bars)
             .enter().append("g");
