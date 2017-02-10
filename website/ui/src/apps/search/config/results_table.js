@@ -13,7 +13,7 @@ const cart_img = (rmv, src_only) => {
 
 export const render_int = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-export const render_z_score = (d) => (d == -1e12 ? "n/a" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
+export const render_z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
 export const render_cell_type = (d) => (d.replace(/_/g, " "));
 
 const render_array = (m) => (array) => (
@@ -78,7 +78,7 @@ const ResultsTableColumns = [
         render: render_int
     },
     {
-	title: "nearest gene",
+	title: "nearest genes",
 	data: "gene_all",
 	className: "dt-right geneexp",
 	render: render_gene_button

@@ -148,6 +148,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
         toks = s.split()
         toks = [t.lower() for t in toks]
         usetss = "tss" in toks or (kwargs and "tss" in kwargs)
+        interpretation = None
 
         ret = {"cellType": None,
                "coord_chrom" : None,
@@ -171,28 +172,27 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             ret["rank_ctcf_start"] = 164
             s = s.replace("insulator", "")
 
-        interpretation = None
+        accessions = []
+        try:
+            for t in toks:
+                if isaccession(t):
+                    accessions.append(t)
+                    s = s.replace(t, "")
+                    continue
+                elif t.startswith("rs"):
+                    coord = self._get_snpcoord(t)
+                    s = s.replace(t, "")
+                    if coord and not self.has_overlap(coord):
+                        interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
+                        coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
+        except:
+            print("could not parse " + s)
+            
         if coord is None:
             interpretation, coord, s = self._try_find_gene(s, usetss)
             if interpretation: interpretation = self.get_genetext(interpretation, usetss)
             
         s, cellType, _interpretation = self._find_celltype(s)
-        accessions = []
-        
-        try:
-            for t in toks:
-                if isaccession(t):
-                    accessions.append(t)
-                    continue
-                elif t.startswith("rs"):
-                    coord = self._get_snpcoord(t)
-                    if coord: interpretation = None
-                    if coord and not self.has_overlap(coord):
-                        interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
-                        coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
-        except:
-            raise
-            print("could not parse " + s)
 
         if cellType is None:
             s, cellType, _interpretation = self._find_celltype(s, True)
