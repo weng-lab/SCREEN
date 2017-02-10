@@ -12,6 +12,18 @@ class ResultsTableContainer extends React.Component {
 	super(props);
         this.state = { cres: [], total: 0, isFetching: true, isError: false,
                        jq : null}
+	this._all = {"dnase": "DNase-seq",
+		     "promoter": "H3K4me3 ChIP-seq",
+		     "enhancer": "H3K27ac ChIP-seq",
+		     "ctcf": "CTCF ChIP-seq" };
+    }
+
+    _get_missing(a) {
+	let r = [];
+	Object.keys(this._all).map((k) => {
+	    if (!a.includes(k)) r.push(this._all[k]);
+	});
+	return r;
     }
 
     componentWillReceiveProps(nextProps){
@@ -41,7 +53,7 @@ class ResultsTableContainer extends React.Component {
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cres: r["cres"], total: r["total"], nodnase: !r["rfacets"].includes("dnase"),
+                this.setState({cres: r["cres"], total: r["total"], nodnase: this._get_missing(r["rfacets"]),
                                jq, isFetching: false, isError: false});
 		setrfacets(r["rfacets"]);
             }.bind(this)
