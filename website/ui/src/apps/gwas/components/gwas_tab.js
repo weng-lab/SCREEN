@@ -69,7 +69,9 @@ class GwasTab extends React.Component{
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
             var ctView = (cellType ?
-                          <CelltypeView /> :
+                          <CelltypeView
+                          data={data.accs}
+                          /> :
                           "");
             return (<div>
 		    <h2>{gwas_study}</h2>

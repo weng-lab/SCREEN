@@ -25,17 +25,16 @@ class Gwas:
 
     def gwasEnrichment(self, gwas_study):
          rows = self.pgSearch.gwasEnrichment(gwas_study)
-         print("rows", rows)
          rows = [[r.biosample_term_name,
                   round(-1.0 * math.log10(r.fdr), 2),
                   r.cellTypeName]
                  for r in rows]
          rows.sort(key = lambda x: x[1], reverse=True)
-         return rows
 
-    def gwasAccessions(self, gwas_study):
-        print("\naccs", self.pgSearch.gwasPercentActive(gwas_study,
-                                              "GM12878_immortalized_cell_line"))
-        print("\n")
-        return self.pgSearch.gwasAccessions(gwas_study)
+         accs = {}
+         for r in rows:
+             ct = r[2]
+             accs[ct] = self.pgSearch.gwasPercentActive(gwas_study,
+                                                        ct)
+         return rows, accs
 
