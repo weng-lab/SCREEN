@@ -93,7 +93,7 @@ class PGsearch:
             print("WARNING: invalid element type %s; ignoring" % assayterm)
             return ret
         return ["cre.%s >= 1.64" % allmap[assayterm]]
-    
+
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
@@ -122,34 +122,37 @@ class PGsearch:
                     fields.append("'' AS %s_zscore" % (assay[0]))
                     continue
                 cti = self.ctmap[assay[0]][ct]
-                fields.append("cre.%s_zscore[%d] AS %s_zscore" % (assay[1], cti, assay[0]))                
-                _range = [j["rank_%s_start" % assay[0]] / 100.0,
-                          j["rank_%s_end" % assay[0]] / 100.0]
-                minDefault = -10.0  # must match slider default
-                maxDefault = 10.0   # must match slider default
-                if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
-                    continue # not actually filtering on zscore, yet...
-                if not isclose(_range[0], minDefault):
-                    whereclauses.append("(%s)" %
-                                        "cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]))
-                elif not isclose(_range[1], maxDefault):
-                    whereclauses.append("(%s)" %
-                                        "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1]))
-                else:
-                    whereclauses.append("(%s)" % " and ".join(
-                            ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
-                             "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                fields.append("cre.%s_zscore[%d] AS %s_zscore" % (assay[1], cti, assay[0]))
+
+                if "rank_%s_start" % assay[0] in j and "rank_%s_end" % assay[0] in j:
+                    _range = [j["rank_%s_start" % assay[0]] / 100.0,
+                              j["rank_%s_end" % assay[0]] / 100.0]
+                    minDefault = -10.0  # must match slider default
+                    maxDefault = 10.0   # must match slider default
+                    if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
+                        continue # not actually filtering on zscore, yet...
+                    if not isclose(_range[0], minDefault):
+                        whereclauses.append("(%s)" %
+                                            "cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]))
+                    elif not isclose(_range[1], maxDefault):
+                        whereclauses.append("(%s)" %
+                                            "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1]))
+                    else:
+                        whereclauses.append("(%s)" % " and ".join(
+                                ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
+                                 "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
         else:
             allmap = {"dnase": "dnase_zscore_max",
                       "promoter": "promoterMaxz",
                       "enhancer": "enhancerMaxz",
                       "ctcf": "ctcf_only_zscore_max" }
             for x in ["dnase", "promoter", "enhancer", "ctcf"]:
-                _range = [j["rank_%s_start" % x] / 100.0,
-                          j["rank_%s_end" % x] / 100.0]
-                whereclauses.append("(%s)" % " and ".join(
-                    ["cre.%s >= %f" % (allmap[x], _range[0]),
-                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
+                if "rank_%s_start" % x in j and "rank_%s_end" in j:
+                    _range = [j["rank_%s_start" % x] / 100.0,
+                              j["rank_%s_end" % x] / 100.0]
+                    whereclauses.append("(%s)" % " and ".join(
+                        ["cre.%s >= %f" % (allmap[x], _range[0]),
+                         "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
                 fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
 
         accs = j.get("accessions", [])
@@ -157,9 +160,10 @@ class PGsearch:
             if type(accs[0]) is dict:
                 accs = [x["value"] for x in accs if x["checked"]]
             accs = filter(lambda x: isaccession(x), accs)
-            accs = ["'%s'" % x.upper() for x in accs]
-            accsQuery = "accession IN (%s)" % ','.join(accs)
-            whereclauses.append("(%s)" % accsQuery)
+            if accs:
+                accs = ["'%s'" % x.upper() for x in accs]
+                accsQuery = "accession IN (%s)" % ','.join(accs)
+                whereclauses.append("(%s)" % accsQuery)
 
         whereclause = ""
         if len(whereclauses) > 0:
@@ -175,7 +179,7 @@ class PGsearch:
                 if ct in self.ctmap[assay]:
                     present.append(assay)
         return present
-    
+
     def creTable(self, j, chrom, start, stop):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])
@@ -650,7 +654,7 @@ where assay = %s
             if 0 == curs.rowcount:
                 raise Exception("no rows found--bad assay? " + assay)
         return {r[0] : (r[1], r[2]) for r in rows}
-        
+
     def genemap(self):
         with getcursor(self.pg.DBCONN, "pg::genemap") as curs:
             curs.execute("""
