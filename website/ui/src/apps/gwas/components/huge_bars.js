@@ -34,8 +34,7 @@ class HugeBars extends React.Component {
         height = height - margin.top - margin.bottom;
 
         var color = d3.scale.ordinal()
-	    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b",
-                    "#a05d56", "#d0743c", "#ff8c00"]);
+	    .range(["#F4D03F", "#2ECC71"]);
 
         var x = d3.scale.linear()
             .domain(xdomain).nice()
@@ -54,8 +53,7 @@ class HugeBars extends React.Component {
             .enter().append("rect")
             .attr("class", "rect")
             .attr("height", height)
-	    .attr("width", function(c) { console.log(c);
-                                         return x(c[1]); })
+	    .attr("width", function(c) { return x(c[1]); })
             .attr("x", function(c) { return x(c[2]); })
             .attr("y", function(c) { return y(1); })
             .style("fill", function(c) { return color(c[1]); });
