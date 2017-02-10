@@ -47,7 +47,6 @@ class Table2 extends React.Component {
 class CelltypeView extends React.Component {
     render() {
         let d = this.props.data[this.props.cellType.ct];
-        console.log(d);
 	return (<div>
                 <h3>{this.props.cellType.view}</h3>
 		<HugeBars data={d.bar} />
