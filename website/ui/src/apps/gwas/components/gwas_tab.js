@@ -66,8 +66,6 @@ class GwasTab extends React.Component{
                     </div>);
         }
 
-        // 		actions.setAccessions(r[gwas_study].accessions);
-
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
             var creTable = (accessions ?
@@ -85,15 +83,19 @@ class GwasTab extends React.Component{
 		    <HugeBars data={data.pie} />
 		    </div>
 		    <div className="col-md-6">
-		    <Table actions={actions}
+		    <Table
+                    accessions={data.accessions}
+                    actions={actions}
 		    header={data.table.header}
 		    rows={data.table.rows} />
 		    </div>
 		    </div>
 		    </div>
 
-                    {creTable}
                     {ctView}
+                    <hr />
+                    {creTable}
+
 		    </div>);
         }
         return loading(this.state);
