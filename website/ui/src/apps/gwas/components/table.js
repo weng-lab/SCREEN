@@ -10,11 +10,13 @@ class Table extends React.Component {
 		</tr>);
     }
 
-    row(rd, actions){
+    row(rd, {accessions, actions}){
 	return (<tr>
                 <td onClick={() => {
                     var ct = {"view" : rd[0], "ct" : rd[2]};
-                    actions.setCellType(ct); }} >
+                    actions.setCellType(ct);
+                    actions.setAccessions(accessions)
+                }} >
                 {rd[0]}
                 </td>
                 <td>{rd[1]}</td>
@@ -30,7 +32,7 @@ class Table extends React.Component {
 		</thead>
 		<tbody>
 		{this.props.rows.map((rd) => {
-		    return this.row(rd, this.props.actions);
+		    return this.row(rd, this.props);
 		})}
 		</tbody>
 		</table>
