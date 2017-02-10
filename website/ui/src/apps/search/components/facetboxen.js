@@ -143,7 +143,7 @@ const _rankBox = ({element_type, actions, cellType}) => {
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
-                  rank_ctcf_start, rank_ctcf_end,
+                  rank_ctcf_start, rank_ctcf_end, rfacets,
                   cellType, actions}) => {
 		      let range = [-1000, 1000];
     if(null == cellType && 0){
@@ -151,14 +151,14 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
     }
 		      return panelize("Z-Score " + (cellType ? "in " + make_ct_friendly(cellType) : "maximum across all cell types"),
                     (<div>
-                     {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
-                               actions.setRankDnase, zscore_decimal, zrdecimal)}
-                     {rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
-                               actions.setRankPromoter, zscore_decimal, zrdecimal)}
-                     {rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
-                               actions.setRankEnhancer, zscore_decimal, zrdecimal)}
-                     {rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
-                               actions.setRankCtcf, zscore_decimal, zrdecimal)}
+                     {rfacets.includes("dnase") ? rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
+							   actions.setRankDnase, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("promoter") ? rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
+							      actions.setRankPromoter, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("enhancer") ? rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
+							      actions.setRankEnhancer, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("ctcf") ? rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
+							  actions.setRankCtcf, zscore_decimal, zrdecimal) : ""}
                      </div>));
 };
 
