@@ -163,6 +163,15 @@ class PGsearch:
         print(whereclause)
         return whereclause
 
+    def _rfacets_active(self, j):
+        present = []
+        ct = j.get("cellType", None)
+        if ct:
+            for assay in ["dnase", "promoter", "enhancer", "ctcf"]:
+                if ct in self.ctmap[assay]:
+                    present.append(assay)
+        return present
+    
     def creTable(self, j, chrom, start, stop):
         if chrom:
             tableName = '_'.join([self.assembly, "cre", chrom])

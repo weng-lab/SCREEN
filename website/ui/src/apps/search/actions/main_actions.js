@@ -15,6 +15,9 @@ export const toggleTf = (tf) => ({ type: TOGGLE_TF, tf });
 export const SET_TFS_MODE = 'SET_TFS_MODE';
 export const setTfsMode = (mode) => ({ type: SET_TFS_MODE, mode });
 
+export const SET_RFACETS = 'SET_RFACETS';
+export const setrfacets = (rfacets) => ({type: SET_RFACETS, rfacets});
+
 export const SET_ACCESSIONS = 'SET_ACCESSIONS'
 export const setAccessions = (accs) => ({ type: SET_ACCESSIONS, accs });
 
