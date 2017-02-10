@@ -34,7 +34,7 @@ class ActivityProfileTab extends React.Component {
 
 const MainTabInfo = {
     results : {title: "Search Results", visible: true, f: ResultsTab},
-    aprofile: {title: "Activity Profile", visible: true, f: ActivityProfileTab},
+    aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
     ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
     tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
     details: {title: "RE Details", visible: false, f: DetailsTab},
