@@ -665,3 +665,31 @@ FROM {tn}
 """.format(tn = self.assembly + "_gene_info"))
             rows = curs.fetchall()
         return {r[0]: r[1] for r in rows}
+
+    def gwasPercentActive(self, gwas_study, ct):
+        fields = ["cre.accession", "snp",
+                  "infoAll.approved_symbol AS geneid"]
+
+        for assay in [("dnase", "dnase"),
+                      ("promoter", "h3k4me3_only"),
+                      ("enhancer", "h3k27ac_only"),
+                      ("ctcf", "ctcf_only")]:
+            if ct not in self.ctmap[assay[0]]:
+                fields.append("'' AS %s_zscore" % (assay[0]))
+                continue
+            cti = self.ctmap[assay[0]][ct]
+            fields.append("cre.%s_zscore[%d] AS %s_zscore" %
+                          (assay[1], cti, assay[0]))
+
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT {fields}
+FROM hg19_cre as cre, hg19_gwas_overlap as over, hg19_gene_info as infoAll
+WHERE cre.gene_all_id[1] = infoAll.geneid
+AND cre.accession = over.accession
+AND over.authorPubmedTrait = %s
+""".format(fields = ', '.join(fields))
+            print(q)
+            curs.execute(q, (gwas_study, ))
+            active = curs.fetchall()
+        return active
