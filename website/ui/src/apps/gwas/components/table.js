@@ -1,7 +1,10 @@
 import React from 'react'
 
 class Table extends React.Component {
-    cell(c){ return (<td>{c}</td>); }
+
+    open(ct){
+        console.log("hi", ct);
+    }
 
     headerCell(c){ return (<th>{c}</th>); }
 
@@ -13,10 +16,13 @@ class Table extends React.Component {
 
     row(rd){
 	return (<tr>
-		{rd.map((c) => { return this.cell(c); })}
+                <td onClick={() => {this.open(rd[0])}}>
+                {rd[0]}
+                </td>
+                <td>{rd[1]}</td>
 		</tr>);
     }
-    
+
     render() {
 	return (<table className="table table-bordered">
 		<thead>
