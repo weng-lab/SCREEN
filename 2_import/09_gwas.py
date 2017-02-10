@@ -7,7 +7,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from exp import Exp
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
@@ -24,7 +25,9 @@ trait text,
 authorPubmedTrait text,
 expID text,
 foldEnrichment real,
-fdr real
+fdr real,
+biosample_term_name text,
+cellTypeName text
 );
 """.format(tableName = tableName))
 
@@ -63,11 +66,20 @@ def setupAll(curs):
     for r in rows:
         toks = r[0].split('-')
         r = toks + r[:-1]
+        r[3] = r[3].replace("Arking-24952745-QTInterval",
+                            "Arking-24952745-QT Interval")
+        r[3] = r[3].replace("Speedy-24292274-Leukemia",
+                            "Speedy-24292274-Chronic lymphocytic leukemia")
+        r[3] = r[3].replace("Surakka-25961943-Cholesterol",
+                            "Surakka-25961943-Cholesterol")
+        r[4] = r[4].strip()
+        exp = Exp.fromJsonFile(r[4])
+        r.append(exp.biosample_term_name)
         print(r)
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
     cols = ["author", "pubmed", "trait", "authorPubmedTrait",
-            "expID", "foldEnrichment", "fdr"]
+            "expID", "foldEnrichment", "fdr", "biosample_term_name"]
     print(cols)
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
@@ -92,6 +104,13 @@ def setupAll(curs):
     cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
+
+    curs.execute("""
+UPDATE hg19_gwas_enrichment as ge
+set cellTypeName = d.cellTypeName
+from hg19_datasets as d
+where ge.expID = d.expID""")
+    printt("updated", curs.rowcount)
 
 def parse_args():
     parser = argparse.ArgumentParser()

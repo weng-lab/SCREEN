@@ -1,7 +1,6 @@
 import React from 'react'
 
 class Table extends React.Component {
-    cell(c){ return (<td>{c}</td>); }
 
     headerCell(c){ return (<th>{c}</th>); }
 
@@ -11,23 +10,37 @@ class Table extends React.Component {
 		</tr>);
     }
 
-    row(rd){
+    row(rd, props){
 	return (<tr>
-		{rd.map((c) => { return this.cell(c); })}
+                <td onClick={() => {
+                    var ct = {"view" : rd[0], "ct" : rd[2]};
+                    props.actions.setCellType(ct);
+                }} >
+                {rd[0]}
+                </td>
+                <td>{rd[1]}</td>
 		</tr>);
     }
-    
+
     render() {
-	return (<table className="table table-bordered">
+	return (<div>
+
+                <table className="table table-bordered">
 		<thead>
 		{this.headerRow(this.props.header)}
 		</thead>
 		<tbody>
 		{this.props.rows.map((rd) => {
-		    return this.row(rd);
+		    return this.row(rd, this.props);
 		})}
 		</tbody>
-		</table>);
+		</table>
+
+                <small>
+                {"Click on a cell type for more information"}
+                </small>
+
+               </div>);
     }
 }
 
