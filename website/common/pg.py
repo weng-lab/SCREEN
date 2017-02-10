@@ -696,9 +696,11 @@ AND over.authorPubmedTrait = %s
         # accession, snp, geneid, zscores
         totalActive = 0
         total = len(accs)
+        activeAccs = []
         for a in accs:
             if len(filter(lambda x: x >= 1.64, a[3:])) > 0:
                 totalActive += 1
+                activeAccs.append(a)
 
         percActive = 0
         if total > 0:
@@ -708,7 +710,7 @@ AND over.authorPubmedTrait = %s
             return [["%s%% CREs active" % v, v, 0],
                     ["", 100 - v, v]]
 
-        return {"accessions" : accs,
+        return {"accessions" : activeAccs,
                 "percActive" : percActive,
                 "bar" : form(percActive),
                 "header" : ["accession", "snp", "geneid"] + fieldsOut}
