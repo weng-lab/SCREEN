@@ -94,12 +94,6 @@ class PGsearch:
             return ret
         return ["cre.%s >= 1.64" % allmap[assayterm]]
     
-    def creTable(self, j, chrom, start, stop):
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
-
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 

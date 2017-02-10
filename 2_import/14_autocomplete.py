@@ -15,12 +15,12 @@ from files_and_paths import Dirs
 chromlimit = {"hg19": 22, "mm10": 19}
 
 class SetupAutocomplete:
-    def __init__(self, curs, assembly):
+    def __init__(self, curs, assembly, save):
         self.curs = curs
         self.assembly = assembly
+        self.save = save
 
     def run(self):
-
         printt("loading snps...")
         names = []
         for chrom in ["chr%d" % d for d in range(1, chromlimit[self.assembly] + 1)] + ["chrX", "chrY"]:
@@ -55,6 +55,14 @@ FROM {assembly}_gene_info
         outF.write("\n".join(names))
         outF.seek(0)
 
+        if self.save:
+            d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
+                             "Version-4", "ver9", self.assembly, "raw")
+            fnp = os.path.join(d, "autocomplete_dictionary.txt")
+            with open(fnp, "wb") as o:
+                o.write("\n".join(names))
+            printt("wrote", fnp)
+            
         printt("found", len(names), "items")
 
         printt("inserting into table...")
@@ -87,6 +95,7 @@ USING gin (name gin_trgm_ops)
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument('--save', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -95,7 +104,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
-            ss = SetupAutocomplete(curs, assembly)
+            ss = SetupAutocomplete(curs, assembly, args.save)
             ss.run()
 
 if __name__ == '__main__':
