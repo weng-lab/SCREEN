@@ -73,15 +73,14 @@ class ParseSearch:
         p = s.lower().split()
         interpretation = None
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            for h in xrange(len(p)):
-                x = len(p) / (h + 1)
-                for q in [" ".join(p[x * i : x * (i + 1)]) for i in xrange(h + 1)]:
-                    curs.execute("SELECT name, {alt}chrom, {alt}start, {alt}stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s, alt="alt" if tss else ""))
-                    r = curs.fetchall()
-                    if r:
-                        interpretation = r[0][0]
-                        return (interpretation, Coord(r[0][1], r[0][2], r[0][3]))
-        return (interpretation, None)
+            for i in xrange(len(p)):
+                s = " ".join(p[:len(p) - i])
+                curs.execute("SELECT oname, {alt}chrom, {alt}start, {alt}stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s, alt="alt" if tss else ""))
+                r = curs.fetchall()
+                if r:
+                    interpretation = r[0][0]
+                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s)
+        return (interpretation, None, " ".join(p))
 
     def get_genetext(self, gene, tss = False):
         if tss:
@@ -103,6 +102,11 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
                 return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[2]))
         for x in _p:
+            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
+            if r:
+                p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
+                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[1] + 1))            
+        for x in _p:
             r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
             if r:
                 c = r.group(0).replace("x", "X").replace("y", "Y")
@@ -118,11 +122,11 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             if curs.fetchone(): return True
         return False
 
-    def _find_celltype(self, q):
+    def _find_celltype(self, q, rev = False):
         p = q.split()
         interpretation = None
         for i in xrange(len(p)):
-            s = " ".join(p[:len(p) - i])
+            s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
             with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
                 curs.execute("SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
                 r = curs.fetchall()
@@ -133,7 +137,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                 if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
                     k = r[0][0].replace("_", " ")
                     interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
-                return (" ".join(p[len(p) - i:]), r[0][0], interpretation)
+                return (" ".join(p[len(p) - i:]) if not rev else " ".join(p[i:]), r[0][0], interpretation)
         return (q, None, None)
     
     def parse(self, kwargs = None):
@@ -167,7 +171,11 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             ret["rank_ctcf_start"] = 164
             s = s.replace("insulator", "")
 
-        s, cellType, interpretation = self._find_celltype(s)
+        if coord is None:
+            interpretation, coord, s = self._try_find_gene(s, usetss)
+            if interpretation: interpretation = self.get_genetext(interpretation, usetss)
+            
+        s, cellType, _interpretation = self._find_celltype(s)
         accessions = []
         
         try:
@@ -184,9 +192,8 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             raise
             print("could not parse " + s)
 
-        if coord is None:
-            interpretation, coord = self._try_find_gene(s, usetss)
-            if interpretation: interpretation = self.get_genetext(interpretation, usetss)
+        if cellType is None:
+            s, cellType, _interpretation = self._find_celltype(s, True)
 
         if len(accessions) > 0:
             coord = None

@@ -47,8 +47,17 @@ const main_reducers = (state, action) => {
         return {...state, re_details_tab_active: action.name};
 
     case Actions.TOGGLE_CART: {
-        return { ...state, cart_accessions: doToggle(state.cart_accessions,
-                                                     action.accession)}
+	let n_accessions = doToggle(state.cart_accessions, action.accession);
+	$.ajax({
+            type: "POST",
+            url: "/setCart",
+            data: JSON.stringify(n_accessions),
+            dataType: "json",
+            contentType: "application/json",
+            success: (response) => {}
+	});
+
+        return { ...state, cart_accessions: n_accessions}
     }
 
     case Actions.SET_TREE_RANK_METHOD: {

@@ -54,8 +54,10 @@ class Autocompleter:
         if not uq:
             return []
         with getcursor(self.ps.DBCONN, "autocomplete$Autocomplete::get_suggestions") as curs:
-            curs.execute("SELECT name FROM {assembly}_autocomplete WHERE name LIKE '{q}%' LIMIT 10".format(assembly=self.assembly, q=uq))
+            curs.execute("SELECT oname FROM {assembly}_autocomplete WHERE name LIKE '{q}%' LIMIT 10".format(assembly=self.assembly, q=uq))
             r = curs.fetchall()
+        if not r:
+            print("no results for %s in %s" % (uq, self.assembly))
         return [] if not r else [x[0] for x in r]
 
     def get_misc_suggestions(self, q):

@@ -20,6 +20,11 @@ const render_array = (m) => (array) => (
     array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
 const render_gene_button = (d) => {
+    var p = d.split(", ");
+    return p.map(_render_gene_button).join(", ");
+};
+
+const _render_gene_button = (d) => {
     var ge = '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>';
     if("mm10" != GlobalAssembly){
         return ge;
@@ -38,7 +43,22 @@ const ResultsTableColumns = [
 	title: "maxZ",
 	data: "maxz",
 	className: "dt-right",
-        render: render_float
+        render: render_float,
+	width: "5%"
+    },
+    {
+	title: "promoterZ",
+	data: "promoter_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "5%"
+    },
+    {
+	title: "enhancerZ",
+	data: "enhancer_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "5%"
     },
     {
 	title: "chr",
@@ -64,7 +84,7 @@ const ResultsTableColumns = [
 	render: render_gene_button
     },
     {
-	title: "nearest protein-coding gene",
+	title: "nearest protein-coding genes",
 	data: "gene_pc",
 	className: "dt-right geneexp",
 	render: render_gene_button
