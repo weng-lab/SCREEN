@@ -25,8 +25,8 @@ class GwasController:
         g = Gwas(cache, PGsearch(self.ps, assembly))
 
         def form(v):
-            return [["%s%% overlap w/ CREs" % v, v],
-                    ["", 100 - v]]
+            return [["%s%% overlap w/ CREs" % v, v, 0],
+                    ["", 100 - v, v]]
         if gwas_study == "Speedy-24292274-Chronic lymphocytic leukemia":
             pie = form(36)
             table = [["Tissue", "-Log(FDR)"],
