@@ -50,9 +50,9 @@ class AssayDropdownStatic extends React.Component {
     
     render() {
 	return (<select onChange={this._onchange} ref="mainselect">
+		<option value="H3K27ac">H3K27ac Only</option>
 		<option value="DNase">DNase</option>
 		<option value="CTCF">CTCF Only</option>
-		<option value="H3K27ac">H3K27ac Only</option>
 		<option value="H3K4me3">H3K4me3 Only</option>
 		</select>);
     }
@@ -68,7 +68,7 @@ class ResultsTree extends React.Component { //REComponent {
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
         if("ct_tree" == nextProps.maintabs_active){
-	    this.loadTrees(nextProps);
+	    //this.loadTrees(nextProps);
 	}
     }
 
@@ -148,7 +148,7 @@ class ResultsTree extends React.Component { //REComponent {
 
         return (<div>
 		<h1>{tree_rank_method}</h1>
-		<img src={url} alt={"static"} />
+		<img src={url} alt={"static"} style={{width: "75%"}} />
                 </div>);
     }
 
