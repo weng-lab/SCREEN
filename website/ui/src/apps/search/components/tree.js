@@ -50,9 +50,9 @@ class AssayDropdownStatic extends React.Component {
     
     render() {
 	return (<select onChange={this._onchange} ref="mainselect">
+		<option value="H3K27ac">H3K27ac Only</option>
 		<option value="DNase">DNase</option>
 		<option value="CTCF">CTCF Only</option>
-		<option value="H3K27ac">H3K27ac Only</option>
 		<option value="H3K4me3">H3K4me3 Only</option>
 		</select>);
     }
@@ -68,7 +68,7 @@ class ResultsTree extends React.Component { //REComponent {
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
         if("ct_tree" == nextProps.maintabs_active){
-	    this.loadTrees(nextProps);
+	    //this.loadTrees(nextProps);
 	}
     }
 
@@ -143,12 +143,16 @@ class ResultsTree extends React.Component { //REComponent {
 		    CTCF : "Mouse.CTCF.Tissue.Tree.png",
 		    H3K27ac : "Mouse.H3K27ac.Tissue.Tree.png",
 		    H3K4me3 : "Mouse.H3K4me3.Tissue.Tree.png"}
+	let scale = {DNase : "50%",
+		     CTCF : "10%",
+		     H3K27ac : "50%",
+		     H3K4me3 : "50%"}
 	let fn = imgs[tree_rank_method];
 	let url = "http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4/ver9/mm10/public_html/" + fn;
 
         return (<div>
 		<h1>{tree_rank_method}</h1>
-		<img src={url} alt={"static"} />
+		<img src={url} alt={"static"} style={{width: scale[tree_rank_method]}} />
                 </div>);
     }
 
