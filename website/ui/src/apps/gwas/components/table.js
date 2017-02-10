@@ -12,7 +12,9 @@ class Table extends React.Component {
 
     row(rd, actions){
 	return (<tr>
-                <td onClick={() => { actions.setCellType(rd[0]); }} >
+                <td onClick={() => {
+                    var ct = {"view" : rd[0], "ct" : rd[2]};
+                    actions.setCellType(ct); }} >
                 {rd[0]}
                 </td>
                 <td>{rd[1]}</td>
