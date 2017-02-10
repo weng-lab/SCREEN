@@ -13,7 +13,7 @@ const gwas_studies = ({gwas_study, actions}) => {
     return panelize("GWAS Studies",
                     <LongListFacet
                     title={""}
-                    data={Globals.gwas.studies}
+                    data={GwasGlobals.gwas.studies}
                     cols={[{
 		        title: "Assay", data: "value",
 		        className: "dt-right"

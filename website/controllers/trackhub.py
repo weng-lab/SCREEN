@@ -27,10 +27,10 @@ class TrackInfo:
         self.assay = assay
         self.expID = expID
         self.fileID = fileID
-        
+
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay, self.rtrm]])
-        
+
     def name(self):
         ret = "_".join([self.rtrm[0]] + [self.assay])
         ret = re.sub(r'\W+', '', ret)
@@ -76,7 +76,7 @@ class TrackhubController:
             return "error: couldn't find uuid"
 
         self.assembly = info["assembly"]
-        
+
         if 2 == len(args):
             loc = args[1]
             if loc.startswith("hub_") and loc.endswith(".txt"):
@@ -173,7 +173,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                            trackInfo.fileID + ".bigWig")
         if not os.path.exists(fnp):
             return None
-        
+
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if not self.isUcsc:
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
@@ -196,8 +196,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         lookup = {"dnase": "dnase",
                   "promoter": "h3k4me3",
                   "enhancer": "h3k27ac",
-                  "ctcf": "ctcf"}            
-        
+                  "ctcf": "ctcf"}
+
         for rm, cellTypes in topCellLinesByRankMethod.iteritems():
             # get the topN of histone-only, dnase-only, or ctcf-only
             cts = sorted(cellTypes, key = lambda x: x["one"],
@@ -223,15 +223,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 continue
             pairs.add(k)
             ret.append(t)
-            
+
         #print('\n'.join([str(x) for x in ret]))
         return ret
-    
+
     def addSignals(self, cre):
         topTissues = cre.topTissues()
         for ti in self._getTrackList(topTissues):
             self.lines += [self.trackhubExp(ti)]
-                
+
     def getLines(self, accessions):
         self.priority = 1
 
@@ -273,7 +273,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         if 0:
             pos = [self.makePos(x) for x in self.re_pos]
             lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
-                
+
         return json.dumps(lines)
 
     def washu_trackhub(self, uuid, *args, **kwargs):
@@ -284,7 +284,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         args = args[0]
         if 3 != len(args):
             return { "error" : "wrong num of args", "args" : args }
-                
+
         uuid = args[0]
         try:
             info = self.db.get(uuid)
@@ -309,9 +309,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         cre = CRE(pgSearch, accession, self.cacheW[assembly])
         coord = cre.coord()
         coord.resize(j["halfWindow"])
-        
+
         return assembly, accession, coord
-        
+
     def ucsc_trackhub_url(self, j, uuid):
         assembly, accession, coord = self._trackhub_url_info(j)
         hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
@@ -336,7 +336,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                  "mm10" : "grcm38"}
         species = {"hg19" : "Homo_sapiens",
                    "mm10" : "Mus_musculus"}
-        
+
         url = "http://" + cname[assembly] + ".ensembl.org/Trackhub?"
         trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
@@ -358,10 +358,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 		                uuid,
                                 assembly,
                                 "trackDb_{hn}.json".format(hn = hubNum)])
-        
+
         url = "http://epigenomegateway.wustl.edu/browser/"
         url += "?genome=" + assembly
         url += "&datahub=" + trackhubUrl
         url += "&coordinate=" + str(coord)
-        
+
         return {"url" : url, "trackhubUrl" : trackhubUrl}
