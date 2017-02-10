@@ -691,23 +691,24 @@ AND over.authorPubmedTrait = %s
 """.format(fields = ', '.join(fields))
             #print(q)
             curs.execute(q, (gwas_study, ))
-            active = curs.fetchall()
+            accs = curs.fetchall()
 
-            q = """
-select count(distinct(accession))
-FROM hg19_gwas_overlap
-WHERE authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
-            curs.execute(q, (gwas_study, ))
-            total = curs.fetchone()[0]
-            print("total", total, gwas_study)
+        # accession, snp, geneid, dnaseZscore, promoterZscore,
+        # enhancerZscore, ctcfZscore
+        totalActive = 0
+        total = len(accs)
+        for a in accs:
+            if a[3] > 1.64 or a[4] > 1.64 or a[5] > 1.64:
+                totalActive += 1
 
-        percActive = round(float(len(active)) / total * 100, 2)
+        percActive = 0
+        if total > 0:
+            percActive = round(float(totalActive) / total * 100, 2)
 
         def form(v):
             return [["%s%% CREs active" % v, v, 0],
                     ["", 100 - v, v]]
 
-        return {"accessions" : active,
+        return {"accessions" : accs,
                 "percActive" : percActive,
                 "bar" : form(percActive) }
