@@ -29,12 +29,13 @@ class HugeBars extends React.Component {
 	let xdomain = [0,100]
         let ydomain = [0,1]
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        var margin = {top: 2, right: 2, bottom: 3, left: 4},
         width = width - margin.left - margin.right,
         height = height - margin.top - margin.bottom;
 
         var color = d3.scale.ordinal()
-	    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b",
+                    "#a05d56", "#d0743c", "#ff8c00"]);
 
         var x = d3.scale.linear()
             .domain(xdomain).nice()
@@ -53,15 +54,16 @@ class HugeBars extends React.Component {
             .enter().append("rect")
             .attr("class", "rect")
             .attr("height", height)
-	    .attr("width", function(c) { console.log(c); return c[1]; })
-            .attr("x", function(c) { return x(0); })
+	    .attr("width", function(c) { console.log(c);
+                                         return x(c[1]); })
+            .attr("x", function(c) { return x(c[2]); })
             .attr("y", function(c) { return y(1); })
             .style("fill", function(c) { return color(c[1]); });
 
 	var genelabels = svg.append("g")
-	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
+	    .attr("transform", "translate(0,"+ (margin.top + 20) +")")
 	    .attr("width", width)
-	    .attr("height", 2 * 20);
+	    .attr("height", 20);
 	genelabels.selectAll(".label")
 	    .data(data)
 	    .enter()
