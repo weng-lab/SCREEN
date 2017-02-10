@@ -636,12 +636,12 @@ AND gwas.authorPubmedTrait = %s
         print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
-SELECT accessions
+SELECT accession
 FROM hg19_gwas_overlap
-where gwas_study = %s
+where authorPubmedTrait = %s
 """.format(tn = "hg19_gwas")
             curs.execute(q, (gwas_study, ))
-            return curs.fetchone()[0]
+            return [r[0] for r in curs.fetchall()]
 
     def datasets(self, assay):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
