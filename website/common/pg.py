@@ -706,6 +706,7 @@ GROUP BY {groupBy}
         for a in accs:
             if len(filter(lambda x: x >= 1.64, a[3:])) > 0:
                 totalActive += 1
+                a[1] = ", ".join(a[1])
                 activeAccs.append(a)
 
         percActive = 0
