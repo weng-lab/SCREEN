@@ -25,27 +25,31 @@ class GwasController:
         g = Gwas(cache, PGsearch(self.ps, assembly))
 
         def form(v):
-            return [["%s%% of LD blocksoverlap w/ CREs" % v, v, 0],
+            return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
                     ["", 100 - v, v]]
+        header = ["Tissue", "Z score"]
+
+        overlapPerc = round(g.overlapWithCresPerc(gwas_study) * 100, 2)
+        print(gwas_study, overlapPerc)
+        pie = form(overlapPerc)
+
         if gwas_study == "Speedy-24292274-Chronic lymphocytic leukemia":
-            pie = form(36)
-            table = [["Tissue", "-Log(FDR)"],
+
+            table = [header,
                      ["CD4+ Helper T cells", 8.78],
                      ["GM12878", 7.56],
                      ["Regulatory T cells", 6.70],
                      ["DND-41", 5.16],
                      ["Natural Killer Cells", 5.06]]
         elif gwas_study == "Surakka-25961943-Cholesterol":
-            pie = form(77)
-            table = [["Tissue", "-Log(FDR)"],
+            table = [header,
                      ["HepG2", 1.53],
                      ["Liver", 0.95],
                      ["Large Intestine", 0.03],
                      ["CD4+ Monocytes", 0.03],
                      ["Adrenal Gland", 0.03]]
         elif gwas_study == "Arking-24952745-QT Interval":
-            pie = form(93)
-            table = [["Tissue", "-Log(FDR)"],
+            table = [header,
                      ["Heart, Left Ventricle", 5.95],
                      ["Heart, Right Ventricle", 5.76],
                      ["Heart, Right Atrium", 3.88],
@@ -54,7 +58,7 @@ class GwasController:
         else:
             v = g.overlapWithCres(gwas_study)
             pie = form(v * 100)
-            table = [["Tissue", "-Log(FDR)"]]
+            table = [header]
         return {gwas_study : {"pie" : pie,
                               "table" : {"header" : table[0],
                                          "rows" : table[1:]},

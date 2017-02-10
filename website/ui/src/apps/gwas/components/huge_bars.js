@@ -34,7 +34,8 @@ class HugeBars extends React.Component {
         height = height - margin.top - margin.bottom;
 
         var color = d3.scale.ordinal()
-	    .range(["#F4D03F", "#2ECC71"]);
+	    .range(["#F4D03F", "#2ECC71", "#FF5733", "#DAF7A6",
+                    "#C70039"]);
 
         var x = d3.scale.linear()
             .domain(xdomain).nice()
