@@ -703,8 +703,13 @@ GROUP BY {groupBy}
         totalActive = 0
         total = len(accs)
         activeAccs = []
+
+        def any_lambda(function, iterable):
+            # http://stackoverflow.com/a/19868175
+            return any(function(i) for i in iterable)
+
         for a in accs:
-            if len(filter(lambda x: x >= 1.64, a[3:])) > 0:
+            if any_lambda(lambda x: x >= 1.64, a[3:]):
                 totalActive += 1
                 a = list(a)
                 a[1] = ", ".join(sorted(a[1]))
