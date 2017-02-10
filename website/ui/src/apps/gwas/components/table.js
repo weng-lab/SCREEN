@@ -22,7 +22,9 @@ class Table extends React.Component {
     }
 
     render() {
-	return (<table className="table table-bordered">
+	return (<div>
+
+                <table className="table table-bordered">
 		<thead>
 		{this.headerRow(this.props.header)}
 		</thead>
@@ -31,7 +33,13 @@ class Table extends React.Component {
 		    return this.row(rd, this.props.actions);
 		})}
 		</tbody>
-		</table>);
+		</table>
+
+                <small>
+                {"Click on a cell type for more information"}
+                </small>
+
+               </div>);
     }
 }
 
