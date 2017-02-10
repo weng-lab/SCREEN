@@ -144,7 +144,7 @@ class ResultsTree extends React.Component { //REComponent {
 		    H3K27ac : "Mouse.H3K27ac.Tissue.Tree.png",
 		    H3K4me3 : "Mouse.H3K4me3.Tissue.Tree.png"}
 	let scale = {DNase : "50%",
-		     CTCF : "10%",
+		     CTCF : "25%",
 		     H3K27ac : "50%",
 		     H3K4me3 : "50%"}
 	let fn = imgs[tree_rank_method];
