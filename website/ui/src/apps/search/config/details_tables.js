@@ -252,8 +252,8 @@ export const TfIntersectionTable = {
     "histone": {
 	title: "Intersecting Histone Marks",
 	cols: [
-	    {title: "mark", data: "name",
-	     render: render_factorbook_link_histone },
+	    {title: "mark", data: "name" },
+	    //render: render_factorbook_link_histone },
 	    {title: "# experiments", data: "n",
 	     render: render_int }],
 	order: [[1, "desc"]]
