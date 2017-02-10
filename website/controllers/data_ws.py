@@ -39,7 +39,7 @@ class DataWebServiceWrapper:
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
         self.ac = AutocompleterWrapper(ps)
-        
+
     def process(self, j, args, kwargs):
         if "action" in j and j["action"] == "suggest":
             return {"results": self.ac.get_suggestions(j["userQuery"]),
@@ -104,7 +104,7 @@ class DataWebService:
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
-        print(results["cres"][0])
+        #print(results["cres"][0])
         results["rfacets"] = self.pgSearch._rfacets_active(j) if "cellType" in j and j["cellType"] else ["dnase", "promoter", "enhancer", "ctcf"]
         if "withpeaks" in j:
             res = results["cres"][:20]
