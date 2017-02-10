@@ -23,9 +23,6 @@ class Gwas:
     def overlapWithCresPerc(self, gwas_study):
          return self.pgSearch.gwasOverlapWithCresPerc(gwas_study)
 
-    def gwasAccessions(self, gwas_study):
-         return self.pgSearch.gwasAccessions(gwas_study)
-
     def gwasEnrichment(self, gwas_study):
          rows = self.pgSearch.gwasEnrichment(gwas_study)
          print("rows", rows)
@@ -35,3 +32,7 @@ class Gwas:
                  for r in rows]
          rows.sort(key = lambda x: x[1], reverse=True)
          return rows
+
+    def gwasAccessions(self, gwas_study):
+         return self.pgSearch.gwasAccessions(gwas_study)
+
