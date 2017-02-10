@@ -574,12 +574,14 @@ OR ensemblid_ver = %s
         print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
 
-    def gwasEnrichment(self):
+    def gwasEnrichment(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
             q = """
-            SELECT authorPubmedTrait, expID, foldEnrichment, fdr
-            FROM {tn}
-""".format(tn = "hg19_gwas_enrichment")
+SELECT expID, fdr
+FROM hg19_gwas_enrichment
+AND authorPubmedTrait = %s
+"""
+            curs.execute(q, (gwas_study, ))
             curs.execute(q)
             rows = curs.fetchall()
         return [GwasEnrichmentRow(*r) for r in rows]
