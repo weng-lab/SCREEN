@@ -27,7 +27,7 @@ class GwasController:
         def form(v):
             return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
                     ["", 100 - v, v]]
-        header = ["Tissue", "-log(fdr)"]
+        header = ["Cell type", "-log(fdr)"]
 
         overlapPerc = round(g.overlapWithCresPerc(gwas_study) *100, 2)
         pie = form(overlapPerc)
