@@ -1,6 +1,10 @@
 import React from 'react'
 
 class Table extends React.Component {
+    constructor(props, key) {
+	super(props);
+        this.open = this.open.bind(this);
+    }
 
     open(ct){
         console.log("hi", ct);
