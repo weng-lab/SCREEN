@@ -689,7 +689,25 @@ WHERE cre.gene_all_id[1] = infoAll.geneid
 AND cre.accession = over.accession
 AND over.authorPubmedTrait = %s
 """.format(fields = ', '.join(fields))
-            print(q)
+            #print(q)
             curs.execute(q, (gwas_study, ))
             active = curs.fetchall()
-        return active
+
+            q = """
+select count(distinct(accession))
+FROM hg19_gwas_overlap
+WHERE authorPubmedTrait = %s
+""".format(tn = "hg19_gwas")
+            curs.execute(q, (gwas_study, ))
+            total = curs.fetchone()[0]
+            print("total", total, gwas_study)
+
+        percActive = round(float(len(active)) / total * 100, 2)
+
+        def form(v):
+            return [["%s%% CREs active" % v, v, 0],
+                    ["", 100 - v, v]]
+
+        return {"accessions" : active,
+                "percActive" : percActive,
+                "bar" : form(percActive) }

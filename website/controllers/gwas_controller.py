@@ -31,10 +31,10 @@ class GwasController:
 
         overlapPerc = round(g.overlapWithCresPerc(gwas_study) *100, 2)
         pie = form(overlapPerc)
-        table = g.gwasEnrichment(gwas_study)
+        table, accs = g.gwasEnrichment(gwas_study)
 
         return {gwas_study :
                 {"pie" : pie,
                  "table" : {"header" : header,
                             "rows" : table},
-                 "accessions" : g.gwasAccessions(gwas_study)}}
+                 "accs" : accs}}

@@ -10,11 +10,11 @@ class Table extends React.Component {
 		</tr>);
     }
 
-    row(rd, {accessions, actions}){
+    row(rd, props){
 	return (<tr>
                 <td onClick={() => {
                     var ct = {"view" : rd[0], "ct" : rd[2]};
-                    actions.setCellType(ct);
+                    props.actions.setCellType(ct);
                 }} >
                 {rd[0]}
                 </td>
