@@ -598,7 +598,7 @@ OR ensemblid_ver = %s
         print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
-SELECT COUNT(0)
+SELECT COUNT(DISTINCT(ldblock))
 FROM hg19_gwas as gwas, hg19_cre as cre
 WHERE gwas.chrom = cre.chrom
 AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
@@ -609,7 +609,7 @@ AND gwas.authorPubmedTrait = %s
             print("overlapCount", overlapCount)
 
             q = """
-SELECT COUNT(0)
+select count(distinct(ldblock))
 FROM hg19_gwas as gwas
 WHERE gwas.authorPubmedTrait = %s
 """.format(tn = "hg19_gwas")
