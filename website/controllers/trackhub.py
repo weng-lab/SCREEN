@@ -204,7 +204,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                          reverse=True)[:topN]
             rmo = lookup[rm]
             for r in cts:
-                ct = r["ct"].replace("'", "_").replace('"', '_')
+                ct = r["ct"].replace("'", "_").replace('"', '_') # else JSON will be invalid for WashU
                 t = r["tissue"]
                 expBigWigID = cache.assayAndCellTypeToExpAndBigWigAccessions(rmo, r["ct"])
                 expID = expBigWigID[0]
