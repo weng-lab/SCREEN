@@ -599,11 +599,12 @@ OR ensemblid_ver = %s
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT COUNT(DISTINCT(ldblock))
-FROM hg19_gwas as gwas, hg19_cre as cre
-WHERE gwas.chrom = cre.chrom
+FROM hg19_gwas as gwas, hg19_cre as cre, hg19_gwas_overlap as over
+WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
+AND cre.accession = over.accession
 AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
 AND gwas.authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
+"""
             curs.execute(q, (gwas_study, ))
             overlapCount = curs.fetchone()[0]
             print("overlapCount", overlapCount)
