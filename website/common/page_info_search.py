@@ -8,6 +8,8 @@ class PageInfoSearch:
     def __init__(self, ps, cacheW):
         self.ps = ps
         self.cacheW = cacheW
+        self._assembly_starts = {"mm10": "EM10E",
+                                 "hg19": "EH37E" }
 
     def wholePage(self, assembly, indexPage = False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
@@ -36,6 +38,11 @@ class PageInfoSearch:
             parsedStr = p.parseStr()
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
+        cart = self.ps.getCart(uuid)
+        if cart:
+            parsed["cart_accessions"] = [x for x in cart if x.startswith(self._assembly_starts[kwargs["assembly"]])]
+        if "cart" in kwargs:
+            parsed["accessions"] = parsed["cart_accessions"]
 
         cache = self.cacheW[assembly]
 

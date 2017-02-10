@@ -108,6 +108,7 @@ class PGsearch:
         """
 
         ct = j.get("cellType", None)
+        fields = []
         whereclauses = [] # self._type_clauses(ct, j["element_type"])
 
         if start and stop:
@@ -118,8 +119,10 @@ class PGsearch:
                           ("enhancer", "h3k27ac_only"),
                           ("ctcf", "ctcf_only")]:
                 if ct not in self.ctmap[assay[0]]:
+                    fields.append("'' AS %s_zscore" % (assay[0]))
                     continue
                 cti = self.ctmap[assay[0]][ct]
+                fields.append("cre.%s_zscore[%d] AS %s_zscore" % (assay[1], cti, assay[0]))                
                 _range = [j["rank_%s_start" % assay[0]] / 100.0,
                           j["rank_%s_end" % assay[0]] / 100.0]
                 minDefault = -10.0  # must match slider default
@@ -147,6 +150,7 @@ class PGsearch:
                 whereclauses.append("(%s)" % " and ".join(
                     ["cre.%s >= %f" % (allmap[x], _range[0]),
                      "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
+                fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
 
         accs = j.get("accessions", [])
         if accs and len(accs) > 0:
@@ -161,7 +165,7 @@ class PGsearch:
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
         print(whereclause)
-        return whereclause
+        return (fields, whereclause)
 
     def _rfacets_active(self, j):
         present = []
@@ -178,14 +182,14 @@ class PGsearch:
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
-        fields = ', '.join(["accession", "maxZ",
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields = ', '.join(fields + ["accession", "maxZ",
                             "cre.chrom", "cre.start",
                             "cre.stop - cre.start AS len",
-                            "infoAll.approved_symbol AS gene_all" ,
-                            "infoPc.approved_symbol AS gene_pc",
+                            "CONCAT(infoAll.approved_symbol, ', ', infoAll2.approved_symbol, ', ', infoAll3.approved_symbol) AS gene_all",
+                            "CONCAT(infoPc.approved_symbol, ', ', infoPc2.approved_symbol, ', ', infoPc3.approved_symbol) AS gene_pc",
+                            "infoAll2.approved_symbol AS gene_all",
                             "0::int as in_cart"])
-
-        whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             curs.execute("""
@@ -194,8 +198,16 @@ SELECT {fields}
 FROM {tn} as cre
 inner join {gtn} as infoAll
 on cre.gene_all_id[1] = infoAll.geneid
+inner join {gtn} as infoAll2
+            on cre.gene_all_id[2] = infoAll2.geneid
+inner join {gtn} as infoAll3
+            on cre.gene_all_id[3] = infoAll3.geneid
 inner join {gtn} as infoPc
 on cre.gene_pc_id[1] = infoPc.geneid
+inner join {gtn} as infoPc2
+            on cre.gene_pc_id[2] = infoPc2.geneid
+inner join {gtn} as infoPc3
+            on cre.gene_pc_id[3] = infoPc3.geneid
 {whereclause}
 ORDER BY maxz desc limit 1000) r
 """.format(fields = fields, tn = tableName,
@@ -205,6 +217,7 @@ ORDER BY maxz desc limit 1000) r
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
+            print(rows[0] if len(rows) > 0 else "")
 
             # TODO: could be slow......
             curs.execute("""
@@ -227,7 +240,7 @@ SELECT count(0) FROM {tn} as cre
                             "cre.stop",
                             "accession", "maxZ"])
 
-        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
         q = """
 COPY (
@@ -253,7 +266,7 @@ with DELIMITER E'\t'
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
-        whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
         q = """
 copy (
