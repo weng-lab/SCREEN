@@ -186,6 +186,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                     continue
                 elif t.startswith("rs"):
                     coord = self._get_snpcoord(t)
+                    if coord: interpretation = None
                     if coord and not self.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
