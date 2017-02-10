@@ -22,6 +22,11 @@ class DePlot extends React.Component {
                 {Globals.cellTypeInfo[this.props.ct1]["name"]}
                 {" vs "}
                 {Globals.cellTypeInfo[this.props.ct2]["name"]}
+		<small>
+		{"  ("}
+		{this.props.data.coord.chrom}
+		{")"}
+		</small>
                 </span>
 
 		<div style={{"width": "100%"}} ref="chart" />

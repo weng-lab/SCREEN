@@ -11,7 +11,7 @@ class PageInfoTf:
     def wholePage(self, assembly, indexPage = False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
-        return {"page": {"title" : PageTitle},
+        return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
