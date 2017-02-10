@@ -8,6 +8,7 @@ import Pie from '../components/pie'
 import HugeBars from '../components/huge_bars'
 import Table from '../components/table'
 import loading from '../../../common/components/loading'
+import CelltypeView from '../components/celltype_view'
 
 import ResultsTableContainer from '../../search/components/results_app'
 
@@ -58,7 +59,7 @@ class GwasTab extends React.Component{
         });
     }
 
-    doRenderWrapper({gwas_study, accessions, actions}){
+    doRenderWrapper({gwas_study, accessions, cellType, actions}){
 	if(this.state.selectStudy){
             return (<div>
                     {"Please choose a study on left"}
@@ -72,6 +73,9 @@ class GwasTab extends React.Component{
             var creTable = (accessions ?
 		            <ResultsTableContainer /> :
                             "");
+            var ctView = (cellType ?
+                          <CelltypeView /> :
+                          "");
             return (<div>
 		    <h2>{gwas_study}</h2>
 
@@ -81,7 +85,7 @@ class GwasTab extends React.Component{
 		    <HugeBars data={data.pie} />
 		    </div>
 		    <div className="col-md-6">
-		    <Table
+		    <Table actions={actions}
 		    header={data.table.header}
 		    rows={data.table.rows} />
 		    </div>
@@ -89,7 +93,7 @@ class GwasTab extends React.Component{
 		    </div>
 
                     {creTable}
-
+                    {ctView}
 		    </div>);
         }
         return loading(this.state);

@@ -1,14 +1,6 @@
 import React from 'react'
 
 class Table extends React.Component {
-    constructor(props, key) {
-	super(props);
-        this.open = this.open.bind(this);
-    }
-
-    open(ct){
-        console.log("hi", ct);
-    }
 
     headerCell(c){ return (<th>{c}</th>); }
 
@@ -18,9 +10,9 @@ class Table extends React.Component {
 		</tr>);
     }
 
-    row(rd){
+    row(rd, actions){
 	return (<tr>
-                <td onClick={() => {this.open(rd[0])}}>
+                <td onClick={() => { actions.setCellType(rd[0]); }} >
                 {rd[0]}
                 </td>
                 <td>{rd[1]}</td>
@@ -34,7 +26,7 @@ class Table extends React.Component {
 		</thead>
 		<tbody>
 		{this.props.rows.map((rd) => {
-		    return this.row(rd);
+		    return this.row(rd, this.props.actions);
 		})}
 		</tbody>
 		</table>);
