@@ -15,7 +15,6 @@ class Table extends React.Component {
                 <td onClick={() => {
                     var ct = {"view" : rd[0], "ct" : rd[2]};
                     actions.setCellType(ct);
-                    actions.setAccessions(accessions)
                 }} >
                 {rd[0]}
                 </td>
