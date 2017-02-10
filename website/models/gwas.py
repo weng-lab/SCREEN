@@ -30,7 +30,8 @@ class Gwas:
          rows = self.pgSearch.gwasEnrichment(gwas_study)
          print("rows", rows)
          rows = [[r.biosample_term_name,
-                  round(-1.0 * math.log10(r.fdr), 2)]
+                  round(-1.0 * math.log10(r.fdr), 2),
+                  r.cellTypeName]
                  for r in rows]
          rows.sort(key = lambda x: x[1], reverse=True)
          return rows
