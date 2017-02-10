@@ -35,11 +35,11 @@ class PageInfoGwas:
         data = {"gwas": {"gwas" : g.gwas,
                          "enrichment" : g.enrichment,
                          "studies" : g.studies}}
-        
+
         ret = self.wholePage(assembly)
         ret.update({"globalParsedQuery" : json.dumps({}),
-                    "Globals" : json.dumps(data)
+                    "GwasGlobals" : json.dumps(data)
         })
-        
+
         return ret
 
