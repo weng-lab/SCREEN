@@ -171,7 +171,8 @@ CHECK (chrom = '{chrom}')
         fn = "parsed." + chrom + ".tsv.gz"
         fnp = os.path.join(d, fn)
         if subsample:
-            fnp = os.path.join(d, "sample", fn)
+            if "chr13" != chrom:
+                fnp = os.path.join(d, "sample", fn)
         ctn = tableName + '_' + chrom
         cols = allInitialCols
         with gzip.open(fnp) as f:
