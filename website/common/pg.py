@@ -670,14 +670,14 @@ FROM {tn}
         fields = ["cre.accession", "snp",
                   "infoAll.approved_symbol AS geneid"]
 
+        fieldsOut = []
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3_only"),
-                      ("enhancer", "h3k27ac_only"),
-                      ("ctcf", "ctcf_only")]:
+                      ("enhancer", "h3k27ac_only")]:
             if ct not in self.ctmap[assay[0]]:
-                fields.append("'' AS %s_zscore" % (assay[0]))
                 continue
             cti = self.ctmap[assay[0]][ct]
+            fieldsOut.append(assay[0] + " zscore")
             fields.append("cre.%s_zscore[%d] AS %s_zscore" %
                           (assay[1], cti, assay[0]))
 
@@ -693,12 +693,11 @@ AND over.authorPubmedTrait = %s
             curs.execute(q, (gwas_study, ))
             accs = curs.fetchall()
 
-        # accession, snp, geneid, dnaseZscore, promoterZscore,
-        # enhancerZscore, ctcfZscore
+        # accession, snp, geneid, zscores
         totalActive = 0
         total = len(accs)
         for a in accs:
-            if a[3] > 1.64 or a[4] > 1.64 or a[5] > 1.64:
+            if len(filter(lambda x: x >= 1.64, a[3:])) > 0:
                 totalActive += 1
 
         percActive = 0
@@ -712,6 +711,4 @@ AND over.authorPubmedTrait = %s
         return {"accessions" : accs,
                 "percActive" : percActive,
                 "bar" : form(percActive),
-                "header" : ["accession", "snp", "geneid",
-                            "dnaseZscore", "promoterZscore",
-                            "enhancerZscore", "ctcfZscore"]}
+                "header" : ["accession", "snp", "geneid"] + fieldsOut}
