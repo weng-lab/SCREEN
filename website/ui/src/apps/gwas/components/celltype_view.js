@@ -11,6 +11,9 @@ class Table2 extends React.Component {
 
     headerCell(c){ return (<th>{c}</th>); }
 
+    cell(c){ return (<td>{c}</td>); }
+
+
     headerRow(rd){
 	return (<tr>
 		{rd.map((c) => { return this.headerCell(c); })}
@@ -19,13 +22,7 @@ class Table2 extends React.Component {
 
     row(rd, props){
 	return (<tr>
-                <td onClick={() => {
-                    var ct = {"view" : rd[0], "ct" : rd[2]};
-                    props.actions.setCellType(ct);
-                }} >
-                {rd[0]}
-                </td>
-                <td>{rd[1]}</td>
+		{rd.map((c) => { return this.cell(c); })}
 		</tr>);
     }
 
@@ -43,10 +40,6 @@ class Table2 extends React.Component {
 		</tbody>
 		</table>
 
-                <small>
-                {"Click on a cell type for more information"}
-                </small>
-
                </div>);
     }
 }
@@ -59,7 +52,7 @@ class CelltypeView extends React.Component {
                 <h3>{this.props.cellType.view}</h3>
 		<HugeBars data={d.bar} />
 
-
+                <Table2 rows={d.accessions} header={d.header}/>
 		</div>);
     }
 }

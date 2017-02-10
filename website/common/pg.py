@@ -711,4 +711,7 @@ AND over.authorPubmedTrait = %s
 
         return {"accessions" : accs,
                 "percActive" : percActive,
-                "bar" : form(percActive) }
+                "bar" : form(percActive),
+                "header" : ["accession", "snp", "geneid",
+                            "dnaseZscore", "promoterZscore",
+                            "enhancerZscore", "ctcfZscore"]}
