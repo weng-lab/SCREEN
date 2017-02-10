@@ -26,11 +26,11 @@ class DE:
         ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
         ct1PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct1]
         ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
-        
+
         ret = []
         thres = 1.64
         radiusScale = 10
-        
+
         cols = ["accession", "start", "stop",
                 "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
                 "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
@@ -64,7 +64,7 @@ class DE:
                 ])
 
         return {"data" : ret}
-    
+
     def nearbyDEs(self):
         # limb_14.5 from C57BL-6_limb_embryo_14.5_days
         ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
@@ -72,7 +72,7 @@ class DE:
 
         cd = self.coord()
         print(self.gene, cd, ct1, ct2)
-        
+
         nearbyDEs = self.pgSearch.nearbyDEs(cd, self.halfWindow,
                                             ct1, ct2, 0.05)
 
@@ -88,7 +88,7 @@ class DE:
         center = float(xdomain[1] - xdomain[0]) / 2 + xdomain[0]
         xdomain = [max(0, center - self.halfWindow),
                    center + self.halfWindow]
-                
+
         ret = []
         for d in nearbyDEs:
             e = [float(d[1] - d[0]) / 2 + d[0], # center

@@ -83,6 +83,8 @@ class GwasTab extends React.Component{
 		    </div>
 		    </div>
 
+		    <ResultsTableContainer />
+
 		    </div>);
         }
         return loading(this.state);
@@ -91,8 +93,6 @@ class GwasTab extends React.Component{
     render(){
         return (<div style={{"width": "100%"}} >
                 {this.doRenderWrapper(this.props)}
-
-		<ResultsTableContainer />
                 </div>);
     }
 }
