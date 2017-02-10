@@ -12,12 +12,15 @@ class PageInfoMain:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False, failedsearch = ""):
+        bundleFnp = os.path.join(os.path.dirname(__file__),
+                                 "../ui/dist/bundle.js")
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
                 "re_json_index" : paths.reJsonIndex(assembly),
-                "failedsearch": failedsearch
+                "failedsearch": failedsearch,
+                "bundlets" : os.path.getmtime(bundleFnp)
         }
 
     def autocomplete(self, userQuery):

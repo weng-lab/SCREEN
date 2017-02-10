@@ -11,18 +11,15 @@ class PageInfoDe:
         self.cacheW = cacheW
 
     def wholePage(self, assembly, indexPage = False):
-        cache = self.cacheW[assembly]
+        bundleFnp = os.path.join(os.path.dirname(__file__),
+                                 "../ui/dist/bundle.js")
         return {"page": {"title" : PageTitle},
                 "indexPage": indexPage,
                 "reAccessions" : [],
                 "Assembly" : assembly,
                 "re_json_index" : paths.reJsonIndex(assembly),
                 "globalSessionUid" : "",
-                "globalTfs" : [],
-                "globalCellCompartments" : [],
-                "globalCellTypes" : [],
-                "globalCellTypeInfo": cache.globalCellTypeInfo(),
-                "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
+                "bundlets" : os.path.getmtime(bundleFnp)
                 }
 
     def dePage(self, args, kwargs, uuid):
