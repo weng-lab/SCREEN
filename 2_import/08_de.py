@@ -42,10 +42,11 @@ def setupAll(DBCONN, sample):
     with open(fnp) as f:
         pairs = json.load(f)
 
+    fnps = set()
+
     counter = 0
     total = len(pairs)
     for p, fn in pairs.iteritems():
-        print(counter + 1, total, fnp)
         counter += 1
 
         toks = p.split(':')
@@ -54,12 +55,16 @@ def setupAll(DBCONN, sample):
         if left == right:
             continue
         fnp = os.path.join(dataF, "data", fn + ".gz")
+        if fnp in fnps:
+            continue
+        fnps.add(fnp)
         if sample:
             if not "limb_11" in fnp:
                 continue
             if not "limb_15" in fnp:
                 continue
-        
+        print(counter + 1, total, fnp)
+
         skipped = 0
         with gzip.open(fnp) as f:
             f.readline() # consume header
@@ -89,10 +94,10 @@ def index(DBCONN):
     with getcursor(DBCONN, "main") as curs:
         curs.execute("""
         create index leftname_rightname_de on mm10_de(leftname, rightname)""")
-        print("made index", "leftname_rightname_de")
+        printt("made index", "leftname_rightname_de")
         curs.execute("""
         create index ensembl_de on mm10_de(ensembl)""")
-        print("made index", "ensembl_de")
+        printt("made index", "ensembl_de")
 
 def parse_args():
     parser = argparse.ArgumentParser()
