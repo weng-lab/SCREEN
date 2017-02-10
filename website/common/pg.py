@@ -667,8 +667,10 @@ FROM {tn}
         return {r[0]: r[1] for r in rows}
 
     def gwasPercentActive(self, gwas_study, ct):
-        fields = ["cre.accession", "snp",
+        fields = ["cre.accession", "array_agg(snp)",
                   "infoAll.approved_symbol AS geneid"]
+        groupBy = ["cre.accession",
+                  "infoAll.approved_symbol"]
 
         fieldsOut = []
         for assay in [("dnase", "dnase"),
@@ -680,6 +682,8 @@ FROM {tn}
             fieldsOut.append(assay[0] + " zscore")
             fields.append("cre.%s_zscore[%d] AS %s_zscore" %
                           (assay[1], cti, assay[0]))
+            groupBy.append("cre.%s_zscore[%d]" %
+                          (assay[1], cti))
 
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
@@ -688,7 +692,9 @@ FROM hg19_cre as cre, hg19_gwas_overlap as over, hg19_gene_info as infoAll
 WHERE cre.gene_all_id[1] = infoAll.geneid
 AND cre.accession = over.accession
 AND over.authorPubmedTrait = %s
-""".format(fields = ', '.join(fields))
+GROUP BY {groupBy}
+""".format(fields = ', '.join(fields),
+           groupBy = ', '.join(groupBy))
             #print(q)
             curs.execute(q, (gwas_study, ))
             accs = curs.fetchall()
