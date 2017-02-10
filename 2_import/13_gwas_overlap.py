@@ -17,8 +17,8 @@ DROP TABLE IF EXISTS {tableName};
 
 CREATE TABLE {tableName}(
 id serial PRIMARY KEY,
-gwas_study text,
-accessions jsonb
+authorPubmedTrait text,
+accession text
 );
 """.format(tableName = tableName))
 
@@ -33,23 +33,24 @@ AND gwas.authorPubmedTrait = %s
 """.format(tn = "hg19_gwas")
     curs.execute(q, (gwas_study, ))
     return [r[0] for r in curs.fetchall()]
-            
+
 
 def setupAll(curs):
     tableName = "hg19_gwas_overlap"
     setupOverlap(curs, tableName)
 
     outF = StringIO.StringIO()
-    
+
     for gwas_study in ["Speedy-24292274-Chronic lymphocytic leukemia",
                        "Surakka-25961943-Cholesterol",
                        "Arking-24952745-QT Interval"]:
         accessions = gwasOverlapWithCres(curs, gwas_study)
-        outF.write('\t'.join([gwas_study, json.dumps(accessions)]) + '\n')
-        
+        for a in accessions:
+            outF.write('\t'.join([gwas_study, a]) + '\n')
+
     outF.seek(0)
 
-    cols = ["gwas_study", "accessions"]
+    cols = ["authorPubmedTrait", "accession"]
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
 
