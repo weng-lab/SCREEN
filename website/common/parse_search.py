@@ -83,6 +83,7 @@ class ParseSearch:
         return (interpretation, None, " ".join(p))
 
     def get_genetext(self, gene, tss = False, notss = False):
+        gene = "<em>%s</em>" % gene
         if notss:
             return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
         if tss:
