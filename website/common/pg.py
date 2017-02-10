@@ -190,9 +190,10 @@ class PGsearch:
         fields = ', '.join(fields + ["accession", "maxZ",
                             "cre.chrom", "cre.start",
                             "cre.stop - cre.start AS len",
+                                     "cre.gene_all_id AS geneall_id",
                             "CONCAT(infoAll.approved_symbol, ', ', infoAll2.approved_symbol, ', ', infoAll3.approved_symbol) AS gene_all",
                             "CONCAT(infoPc.approved_symbol, ', ', infoPc2.approved_symbol, ', ', infoPc3.approved_symbol) AS gene_pc",
-                            "infoAll2.approved_symbol AS gene_all",
+#                            "infoAll2.approved_symbol AS gene_all",
                             "0::int as in_cart"])
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
