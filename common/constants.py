@@ -10,7 +10,9 @@ from files_and_paths import Dirs
 from v4_config import V4Config
 
 def PageTitle(assembly):
-    return "SCREEN (%s): Search Candidate Regulatory Elements by ENCODE" % assembly
+    if assembly > "":
+        return "SCREEN (%s): Search Candidate Regulatory Elements by ENCODE" % assembly
+    return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
 chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
                    'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
