@@ -241,11 +241,10 @@ SELECT count(0) FROM {tn} as cre
         else:
             tableName = '_'.join([self.assembly, "cre"])
 
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
         fields = ', '.join(["cre.chrom", "cre.start",
                             "cre.stop",
                             "accession", "maxZ"])
-
-        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
         q = """
 COPY (
@@ -254,7 +253,7 @@ FROM {tn} as cre
 {whereclause}
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(fields = ", ".join(fields), tn = tableName,
+""".format(fields = fields, tn = tableName,
            whereclause = whereclause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
