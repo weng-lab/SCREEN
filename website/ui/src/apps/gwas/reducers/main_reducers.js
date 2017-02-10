@@ -8,9 +8,6 @@ const main_reducers = (state, action) => {
     case Actions.SET_STUDY:
         return { ...state, gwas_study: action.s};
 
-    case Actions.SET_ACCESSIONS:
-	return {...state, accessions: action.accs};
-
     case Actions.SET_CELLTYPE:
 	return {...state, cellType: action.ct};
 

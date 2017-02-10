@@ -59,7 +59,7 @@ class GwasTab extends React.Component{
         });
     }
 
-    doRenderWrapper({gwas_study, accessions, cellType, actions}){
+    doRenderWrapper({gwas_study, cellType, actions}){
 	if(this.state.selectStudy){
             return (<div>
                     {"Please choose a study on left"}
@@ -68,9 +68,6 @@ class GwasTab extends React.Component{
 
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
-            var creTable = (accessions ?
-		            <ResultsTableContainer /> :
-                            "");
             var ctView = (cellType ?
                           <CelltypeView /> :
                           "");
@@ -84,7 +81,6 @@ class GwasTab extends React.Component{
 		    </div>
 		    <div className="col-md-6">
 		    <Table
-                    accessions={data.accessions}
                     actions={actions}
 		    header={data.table.header}
 		    rows={data.table.rows} />
@@ -93,8 +89,6 @@ class GwasTab extends React.Component{
 		    </div>
 
                     {ctView}
-                    <hr />
-                    {creTable}
 
 		    </div>);
         }
