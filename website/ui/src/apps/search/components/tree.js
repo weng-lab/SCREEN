@@ -36,6 +36,28 @@ const primary_cell_formatter = (l) => {
     return retval;
 };
 
+class AssayDropdownStatic extends React.Component {
+    constructor(props) {
+	super(props);
+	this._onchange = this._onchange.bind(this);
+    }
+
+    _onchange() {
+	if (this.props.onChange) {
+	    this.props.onChange(this.refs.mainselect.value);
+	}
+    }
+    
+    render() {
+	return (<select onChange={this._onchange} ref="mainselect">
+		<option value="DNase">DNase</option>
+		<option value="CTCF">CTCF Only</option>
+		<option value="H3K27ac">H3K27ac Only</option>
+		<option value="H3K4me3">H3K4me3 Only</option>
+		</select>);
+    }
+}
+
 class ResultsTree extends React.Component { //REComponent {
 
     constructor(props) {
@@ -115,12 +137,27 @@ class ResultsTree extends React.Component { //REComponent {
         return loading(this.state);
     }
 
+    doRenderWrapperStatic(actions){
+        let tree_rank_method = this.props.tree_rank_method;
+	let imgs = {DNase : "Mouse.DNase.Embryo.Tree.png",
+		    CTCF : "Mouse.CTCF.Tissue.Tree.png",
+		    H3K27ac : "Mouse.H3K27ac.Tissue.Tree.png",
+		    H3K4me3 : "Mouse.H3K4me3.Tissue.Tree.png"}
+	let fn = imgs[tree_rank_method];
+	let url = "http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4/ver9/mm10/public_html/" + fn;
+
+        return (<div>
+		<h1>{tree_rank_method}</h1>
+		<img src={url} alt={"static"} />
+                </div>);
+    }
+
     render() {
 	var actions = this.props.actions;
 
 	return (<div>
-		<AssayDropdown onChange={(v) => {actions.setTreeRankMethod(v);}} />
-                {this.doRenderWrapper(actions)}
+		<AssayDropdownStatic onChange={(v) => {actions.setTreeRankMethod(v);}} />
+                {this.doRenderWrapperStatic(actions)}
 		<span ref="help_icon" />
 		</div>);
     }
