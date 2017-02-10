@@ -53,20 +53,24 @@ class GwasTab extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
-		actions.setAccessions(r[gwas_study].accessions);
             }.bind(this)
         });
     }
 
-    doRenderWrapper({gwas_study, actions}){
+    doRenderWrapper({gwas_study, accessions, actions}){
 	if(this.state.selectStudy){
             return (<div>
                     {"Please choose a study on left"}
                     </div>);
         }
 
+        // 		actions.setAccessions(r[gwas_study].accessions);
+
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
+            var creTable = (accessions ?
+		            <ResultsTableContainer /> :
+                            "");
             return (<div>
 		    <h2>{gwas_study}</h2>
 
@@ -83,7 +87,7 @@ class GwasTab extends React.Component{
 		    </div>
 		    </div>
 
-		    <ResultsTableContainer />
+                    {creTable}
 
 		    </div>);
         }
