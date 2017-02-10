@@ -105,7 +105,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[1] + 1))            
+                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))            
         for x in _p:
             r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
             if r:
@@ -171,6 +171,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             ret["rank_ctcf_start"] = 164
             s = s.replace("insulator", "")
 
+        interpretation = None
         if coord is None:
             interpretation, coord, s = self._try_find_gene(s, usetss)
             if interpretation: interpretation = self.get_genetext(interpretation, usetss)

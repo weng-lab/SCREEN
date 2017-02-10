@@ -161,9 +161,9 @@ class DataWebService:
     def _re_detail_assocTSS(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyGenes()
-        nearest = nearbyGenes[0]
-        for gene in nearbyGenes[1:]:
-            if gene["distance"] < nearest["distance"]:
+        nearest = {"distance": 1e12}
+        for gene in nearbyGenes[0:]:
+            if gene["distance"] < nearest["distance"] and not gene["name"].startswith("ENSG"):
                 nearest = gene
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
