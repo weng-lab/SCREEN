@@ -65,6 +65,12 @@ def setupAll(curs):
     for r in rows:
         toks = r[0].split('-')
         r = toks + r[:-1]
+        r[3] = r[3].replace("Arking-24952745-QTInterval",
+                            "Arking-24952745-QT Interval")
+        r[3] = r[3].replace("Speedy-24292274-Leukemia",
+                            "Speedy-24292274-Chronic lymphocytic leukemia")
+        r[3] = r[3].replace("Surakka-25961943-Cholesterol",
+                            "Surakka-25961943-Cholesterol")
         r[4] = r[4].strip()
         exp = Exp.fromJsonFile(r[4])
         r.append(exp.biosample_term_name)
