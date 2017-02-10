@@ -75,14 +75,16 @@ class ParseSearch:
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
-                curs.execute("SELECT oname, {alt}chrom, {alt}start, {alt}stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s, alt="alt" if tss else ""))
+                curs.execute("SELECT oname, chrom, start, stop, altchrom, altstart, altstop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
-                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s)
+                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
         return (interpretation, None, " ".join(p))
 
-    def get_genetext(self, gene, tss = False):
+    def get_genetext(self, gene, tss = False, notss = False):
+        if notss:
+            return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
         if tss:
             return """
 This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
@@ -189,8 +191,8 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             print("could not parse " + s)
             
         if coord is None:
-            interpretation, coord, s = self._try_find_gene(s, usetss)
-            if interpretation: interpretation = self.get_genetext(interpretation, usetss)
+            interpretation, coord, s, notss = self._try_find_gene(s, usetss)
+            if interpretation: interpretation = self.get_genetext(interpretation, usetss, notss)
             
         s, cellType, _interpretation = self._find_celltype(s)
 
