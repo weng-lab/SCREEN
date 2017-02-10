@@ -12,7 +12,7 @@ class DE:
         self.ct1 = ct1
         self.ct2 = ct2
         self.pos = None
-        self.halfWindow = 400000
+        self.halfWindow = 225 * 1000
 
     def coord(self):
         if not self.pos:
@@ -29,24 +29,40 @@ class DE:
         
         ret = []
         thres = 1.64
-
+        radiusScale = 1
+        
         cols = ["accession", "start", "stop",
                 "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
                 "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
-        cresPromoter = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols, True)
+        cresPromoter = self.pgSearch.nearbyCREs(self.coord(),
+                                                2*self.halfWindow,
+                                                cols, True)
         print("found promoter-like CREs:", len(cresPromoter))
         for c in cresPromoter:
             if c[3] > thres or c[4] > thres:
-                ret.append([c[1], round(float(c[4] - c[3]), 3), "promoter-like"])
+                radius = float(c[2] - c[1]) / 2
+                ret.append([radius + c[1], # center
+                            round(float(c[4] - c[3]), 3),
+                            "promoter-like",
+                            radiusScale * radius
+                ])
 
         cols = ["accession", "start", "stop",
                 "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
                 "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
-        cresEnhancer = self.pgSearch.nearbyCREs(self.coord(), 2*self.halfWindow, cols, False)
+        cresEnhancer = self.pgSearch.nearbyCREs(self.coord(),
+                                                2*self.halfWindow,
+                                                cols, False)
         print("found enhancer-like CREs", len(cresEnhancer))
         for c in cresEnhancer:
             if c[3] > thres or c[4] > thres:
-                ret.append([c[1], round(float(c[4] - c[3]), 3), "enhancer-like"])
+                radius = float(c[2] - c[1]) / 2
+                ret.append([radius + c[1], # center
+                            round(float(c[4] - c[3]), 3),
+                            "enhancer-like",
+                            radiusScale * radius
+                ])
+
         return {"data" : ret}
     
     def nearbyDEs(self):
@@ -80,7 +96,7 @@ class DE:
                  d[4], # rightName
                  self.cache._try_genename(d[5]) # names
                  ]
-            print(d, e, d[1] - d[0])
+            print("de", d, e, d[1] - d[0])
             ret.append(e)
 
         return {"data" : ret,
