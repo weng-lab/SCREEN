@@ -34,5 +34,8 @@ class Gwas:
          return rows
 
     def gwasAccessions(self, gwas_study):
-         return self.pgSearch.gwasAccessions(gwas_study)
+        print("\naccs", self.pgSearch.gwasPercentActive(gwas_study,
+                                              "GM12878_immortalized_cell_line"))
+        print("\n")
+        return self.pgSearch.gwasAccessions(gwas_study)
 
