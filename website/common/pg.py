@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "authorPubmedTrait expID foldEnrichment fdr".split(' '))
+GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "biosample_term_name fdr".split(' '))
 GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
 
 class PGsearchWrapper:
@@ -577,12 +577,11 @@ OR ensemblid_ver = %s
     def gwasEnrichment(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
             q = """
-SELECT expID, fdr
+SELECT biosample_term_name, fdr
 FROM hg19_gwas_enrichment
-AND authorPubmedTrait = %s
+WHERE authorPubmedTrait = %s
 """
             curs.execute(q, (gwas_study, ))
-            curs.execute(q)
             rows = curs.fetchall()
         return [GwasEnrichmentRow(*r) for r in rows]
 
