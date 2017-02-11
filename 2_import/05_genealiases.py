@@ -129,7 +129,7 @@ class GeneRow:
                         'gene_status', 'transcript_status',
                         'gene_type', 'source', 'level', 'strand',
                         'tag', "transcript_type",
-                        'gene_status', 'transcript_status',
+                        'status', 'transcript_status',
                         'transcript_type', "locus_type",
                         "locus_group", "date_modified",
                         "date_approved_reserved"]
