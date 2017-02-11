@@ -2,9 +2,9 @@ import React from 'react'
 
 class LargeHorizontalBars extends React.Component {
     render() {
-	if (!this.props.items) {
+	if (!this.props.items || !this.props.items.byTissueMaxFPKM || !Object.keys(this.props.items.byTissueMaxFPKM).length) {
 	    return (<div ref="container">
-		    No expression data is available for this gene
+		    No expression data is available for this gene.
 		    </div>);
 	}
 	return (<div>
