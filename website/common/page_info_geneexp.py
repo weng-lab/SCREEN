@@ -35,6 +35,8 @@ class PageInfoGeneExp:
         gene = p._gene_alias_to_symbol(_gene.split(".")[0])
         if not gene:
             gene = p._gene_alias_to_symbol(_gene.split(".")[0])
+        if not gene:
+            gene = _gene
 
         ret = self.wholePage(assembly)
         cache = self.cacheW[assembly]
