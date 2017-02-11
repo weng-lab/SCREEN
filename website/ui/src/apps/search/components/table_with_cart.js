@@ -144,10 +144,21 @@ class TableWithCart extends React.Component {
 	r += "or " + a[a.length - 1];
 	return r;
     }
+
+    _opposite(a) {
+	let r = {"dnase" : true, "promoter": true, "enhancer": true, "ctcf": true};
+	let map = {"DNase-seq": "dnase", "H3K4me3 ChIP-seq": "promoter", "H3K27ac ChIP-seq": "enhancer", "CTCF ChIP-seq": "ctcf"};
+	if (!a) return r;
+	for (let i in a) {
+	    r[map[a[i]]] = false
+	}
+	return r;
+    }
     
     table(data, actions){
 	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 cREs in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
 	var tmsg2 = (this.props.nodnase && this.props.nodnase.length ? <div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div> : "");
+	let cols = (this.props.hasct ? this.props.nodnase : ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 	return (<div>
 		{topmessage}
 		{tmsg2}<br />
@@ -156,6 +167,7 @@ class TableWithCart extends React.Component {
                 cols={ResultsTableColumns}
                 onTdClick={(td, rowdata) =>
                            table_click_handler(td, rowdata, actions)}
+		cvisible={this._opposite(cols)}
                 onButtonClick={(td, rowdata) =>
                                button_click_handler(td, rowdata, actions)}
 		bFilter={true} bLengthChange={true}

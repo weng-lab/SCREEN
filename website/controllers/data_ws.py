@@ -67,7 +67,8 @@ class DataWebService:
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
                         "trees" : self.trees,
-                        "tfenrichment": self.tfenrichment }
+                        "tfenrichment": self.tfenrichment,
+                        "helpkey": self.helpkey }
 
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
@@ -81,6 +82,14 @@ class DataWebService:
 
         self.sessions = Sessions(ps.DBCONN)
 
+    def helpkey(self, j, args):
+        if "key" not in j: return {}
+        data = self.ps.get_helpkey(j["key"])
+        if data is None: return {}
+        return { "title": data[0],
+                 "summary": data[1],
+                 "link": data[2] }
+        
     def session_uuid(self):
         uid = self.sessions.get(cherrypy.session.id)
         if not uid:

@@ -13,6 +13,11 @@ class ResultsTable extends React.Component {
 
     componentDidUpdate() {
 	this._datatable.clear().rows.add(this.props.data).draw();
+	if (this.props.cvisible) {
+	    Object.keys(this.props.cvisible).map((k) => {
+		this._datatable.column(k + ":name").visible(this.props.cvisible[k]);
+	    });
+	}
     }
 
     componentDidMount() {
