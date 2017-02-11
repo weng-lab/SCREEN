@@ -17,7 +17,7 @@ class CartImage extends React.Component {
     
     render() {
 	return (<object type="image/svg+xml" data="/static/re_cart.view.svg" id="shoppingcart_obj" ref="svg"
-		   onClick={this.onClick}>
+		   onClick={this.onClick} title="show cart">
 	              <img src="/static/re_cart.view.png" />
 	        </object>
 	       );
