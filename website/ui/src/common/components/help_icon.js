@@ -3,7 +3,6 @@ var $ = require('jquery');
 
 const format_query = (key) => {
     return JSON.stringify({
-	action: "helpkey",
 	key,
 	GlobalAssembly
     });
@@ -12,7 +11,7 @@ const format_query = (key) => {
 const help_query = (query, f_success, f_error) => {
     $.ajax({
         type: "POST",
-        url: "/ajaxws",
+        url: "/dataws/helpkey",
         data: format_query(query),
         dataType: "json",
         contentType : "application/json",
@@ -29,12 +28,13 @@ class HelpIcon extends React.Component {
     }
     
     render() {
+	let color = (this.props.color ? this.props.color : "#0000EE");
 	return (<span ref="pspan" style={{fontSize: "14pt"}}>
-		   <a ref="aicon"><span ref="icon" className="glyphicon glyphicon-info-sign" style={{marginLeft: "5px"}} aria-hidden="true" /></a>
+		<a ref="aicon"><span ref="icon" className="glyphicon glyphicon-info-sign" style={{marginLeft: "5px", color}} aria-hidden="true" /></a>
 		   <div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in"
-	 	      role="tooltip" ref="tt" style={{top: "0px", left: "0px", position: "absolute", display: "none" }}>
-	             <h3 ref="tt_title" className="popover-title"></h3>
-	             <div ref="tt_content" className="popover-content"></div>
+	 	role="tooltip" ref="tt" style={{top: "0px", left: "0px", position: "absolute", display: "none", maxWidth: "500px" }}>
+	        <h3 ref="tt_title" className="popover-title" style={{color: "#000000"}}></h3>
+	        <div ref="tt_content" className="popover-content" style={{color: "#000000"}}></div>
 		   </div>
 		</span>);
     }

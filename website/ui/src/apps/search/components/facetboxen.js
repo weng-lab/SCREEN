@@ -66,7 +66,7 @@ const cellTypesBox = ({cellType, actions}) => {
                     selection={cellType}
                     friendlySelectionLookup={make_ct_friendly}
                     onTdClick={(value) => { actions.setCellType(value) }}
-                    />);
+                    />, "celltype_facet");
 }
 
 const chromBox = ({coord_chrom, actions}) => {
@@ -159,7 +159,7 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
 							      actions.setRankEnhancer, zscore_decimal, zrdecimal) : ""}
                      {rfacets.includes("ctcf") ? rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
 							  actions.setRankCtcf, zscore_decimal, zrdecimal) : ""}
-                     </div>));
+                     </div>), "zscore_facet");
 };
 
 class FacetBoxen extends React.Component {
