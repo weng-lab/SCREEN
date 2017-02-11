@@ -14,16 +14,6 @@ def PageTitle(assembly):
         return "SCREEN (%s): Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
-chroms = {"hg19": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
-                   'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
-                   'chr19', 'chr2', 'chr20', 'chr21', 'chr22',
-                   'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
-                   'chr9', 'chrX', 'chrY'], #'chrM'
-          "mm10": ['chr1', 'chr10', 'chr11', 'chr12', 'chr13',
-                   'chr14', 'chr15', 'chr16', 'chr17', 'chr18',
-                   'chr19', 'chr2',
-                   'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8',
-                   'chr9', 'chrX', 'chrY'] } # chrM
 
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                           "chr3": 198022430, "chr4": 191154276,
@@ -47,7 +37,10 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                            "chr12":120129022, "chr15":104043685,
                            "chr16":98207768, "chr17":94987271,
                            "chrY":91744698, "chr18":90702639,
-                           "chr19":61431566, "chrM":16299}}
+                           "chr19":61431566}}
+
+chroms = {"hg19": chrom_lengths["hg19"].keys(),
+          "mm10": chrom_lengths["mm10"].keys()}
 
 class helptext:
     docid = "1fWphK-WAyk65d1WO8s0yBqO-_YiD2JdQwlkB3ZqqsYI"
