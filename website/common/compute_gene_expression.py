@@ -227,5 +227,7 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
                     "rep" : row[4]}
                 
         rows = [makeEntry(x) for x in rows]
-        return {"items" : self.process(rows)}
+        ret = {"items" : self.process(rows)}
+        print(ret)
+        return ret
         
