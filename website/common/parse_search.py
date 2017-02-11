@@ -80,7 +80,7 @@ class ParseSearch:
                 if r:
                     interpretation = r[0][0]
                     return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
-        return (interpretation, None, " ".join(p))
+        return (interpretation, None, " ".join(p), False)
 
     def get_genetext(self, gene, tss = False, notss = False):
         gene = "<em>%s</em>" % gene
