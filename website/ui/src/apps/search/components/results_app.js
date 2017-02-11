@@ -69,6 +69,7 @@ class ResultsTableContainer extends React.Component {
                 isFetching={this.state.isFetching}
 		jq={this.state.jq}
 		nodnase={this.state.nodnase}
+		hasct={this.props.cellType}
                 />);
     }
 }

@@ -1,4 +1,7 @@
-export const panelize = (title, facet) => {
+import HelpIcon from './components/help_icon'
+
+export const panelize = (title, facet, helpkey = null) => {
+    let helpicon = (helpkey ? <HelpIcon helpkey={helpkey} color={"#ffffff"} /> : "");
     return (<div className="panel-group facet">
 	    <div className="panel panel-primary">
 	    <div className="panel-heading">{title}</div>
