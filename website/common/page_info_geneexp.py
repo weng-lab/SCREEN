@@ -5,6 +5,9 @@ from compute_gene_expression import ComputeGeneExpression, Compartments
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from parse_search import ParseSearch
+
 class PageInfoGeneExp:
     def __init__(self, ps, cacheW):
         self.ps = ps
@@ -24,11 +27,14 @@ class PageInfoGeneExp:
 
     def geneexpPage(self, args, kwargs, uuid):
         assembly = ""
-        gene = ""
+        _gene = ""
         if len(args):
             assembly = args[0]
-            gene = args[1]
-            # TODO: check gene
+            _gene = args[1]
+        p = ParseSearch("", self.ps.DBCONN, assembly)
+        gene = p._gene_alias_to_symbol(_gene.split(".")[0])
+        if not gene:
+            gene = p._gene_alias_to_symbol(_gene.split(".")[0])
 
         ret = self.wholePage(assembly)
         cache = self.cacheW[assembly]

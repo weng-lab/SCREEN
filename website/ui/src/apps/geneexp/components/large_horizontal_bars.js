@@ -101,7 +101,7 @@ class LargeHorizontalBars extends React.Component {
 
 	var canvas = d3.select(this.refs.container)
 	    .append('svg')
-	    .attr({'width': +this.props.width, 'height': height})
+	    .attr({'width': +this.props.width + 200, 'height': height})
 	    .append('g')
 	    .attr({'width': +this.props.width, 'height': height - 10})
 	    .attr('transform', 'translate(0,10)');
@@ -144,15 +144,10 @@ class LargeHorizontalBars extends React.Component {
 		.style('fill', (d, i) => (itemset.color))
 		.attr("stroke-width", 1)
 		.attr("stroke", "white")
-		.attr('width', 0)
+		.attr('width', (d) => {return xscale(rank_f(d))})
 	    	.on("click", function(d) {
 		    window.open("http://encodeproject.org/" + d["expID"])
 		});
-	    var transit = chart.selectAll("rect")
-		.data(itemset.items)
-		.transition()
-		.duration(1000)
-		.attr("width", (d) => {return xscale(rank_f(d))});
 	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
 		.data(itemset.items)
