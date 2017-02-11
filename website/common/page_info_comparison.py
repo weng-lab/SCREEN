@@ -15,11 +15,9 @@ class PageInfoComparison:
                                  "../ui/dist/bundle.js")
         return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
-                "reAccessions" : [],
                 "Assembly" : assembly,
-                "re_json_index" : paths.reJsonIndex(assembly),
                 "bundlets" : os.path.getmtime(bundleFnp)
-        }
+                }
 
     def comparisonPage(self, args, kwargs, uuid):
         assembly = ""
@@ -28,7 +26,7 @@ class PageInfoComparison:
             # TODO: check gene
         else:
             raise Exception("no assembly")
-        
+
         cache = self.cacheW[assembly]
 
         ret = self.wholePage(assembly)
@@ -46,4 +44,4 @@ class PageInfoComparison:
                     })
 
         return ret
-    
+
