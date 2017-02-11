@@ -14,7 +14,7 @@ def PageTitle(assembly):
         return "SCREEN (%s): Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
-
+# exclude chrM
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                           "chr3": 198022430, "chr4": 191154276,
                           "chr5": 180915260, "chr6": 171115067,
