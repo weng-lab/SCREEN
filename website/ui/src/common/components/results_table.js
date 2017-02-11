@@ -53,10 +53,16 @@ class ResultsTable extends React.Component {
 		}
 	    })
 	    .on("mouseenter", "td", function() {
-		if(!onMouseEnter){
+		if(!onMouseEnter || $(this).hasClass("cart") || $(this).hasClass("browser")){
 		    return false;
 		}
 		$(this).attr("title", "click for more details")
+	    })
+	    .on("mouseenter", "th", function() {
+		if(!onMouseEnter) {
+		    return false;
+		}
+		$(this).attr("title", "click to sort");
 	    })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');

@@ -237,7 +237,9 @@ AMAAAAAYAAAAAwAAYAAAAAwAAMBA/H9qtI2zz75eiwAAAABJRU5ErkJggg==
 "
      id="image10"
      x="0"
-     y="0" />
+     y="0">
+    <title>show cart</title>
+  </image>
   <text
       id="number"
       font-family="sans-serif"
