@@ -57,17 +57,17 @@ class ParseSearch:
             if r: return Coord(chrom, r[0], r[1])
         return None
     
-    def _gene_alias_to_coordinates(self, s):
-        fields = ["approved_symbol", "ensemblid", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
+    def _gene_alias_to_symbol(self, s):
+        fields = ["approved_symbol", "ensemblid", "ensemblid_ver", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
         whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) + " or (LOWER('%s') = ANY(translate(info->>'synonyms', '[]', '{}')::text[]))" % s
         print(whereclause)
         with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
-            curs.execute("""SELECT chrom, start, stop, info FROM {tablename}
+            curs.execute("""SELECT approved_symbol FROM {tablename}
                             WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
             r = curs.fetchone()
         if not r or not r[0]:
             return None
-        return Coord(r[0], r[1], r[2])
+        return r[0]
 
     def _try_find_gene(self, s, tss = False):
         p = s.lower().split()
@@ -158,6 +158,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                "coord_start" : None,
                "coord_end" : None,
                "element_type": None,
+               "approved_symbol": None,
                "interpretation": None}
         if "promoter" in toks or usetss:
             ret["element_type"] = "promoter-like"
@@ -193,7 +194,9 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             
         if coord is None:
             interpretation, coord, s, notss = self._try_find_gene(s, usetss)
-            if interpretation: interpretation = self.get_genetext(interpretation, usetss, notss)
+            if interpretation:
+                ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
+                interpretation = self.get_genetext(interpretation, usetss, notss)
             
         s, cellType, _interpretation = self._find_celltype(s)
 
