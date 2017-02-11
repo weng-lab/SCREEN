@@ -8,7 +8,7 @@ export const browser_buttons = (names) => {
 
 const cart_img = (rmv, src_only) => {
     var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : '<img class="rowCart" src="' + src + '">');
+    return (src_only ? src : '<img class="rowCart" src="' + src + '" title="' + (rmv ? "remove cRE from cart" : "add cRE to cart") + '">');
 }
 
 export const render_int = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
