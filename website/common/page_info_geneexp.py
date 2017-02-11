@@ -15,10 +15,7 @@ class PageInfoGeneExp:
                                  "../ui/dist/bundle.js")
         return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
-                "reAccessions" : [],
                 "Assembly" : assembly,
-                "re_json_index" : paths.reJsonIndex(assembly),
-                "globalSessionUid" : "",
                 "bundlets" : os.path.getmtime(bundleFnp)
         }
 

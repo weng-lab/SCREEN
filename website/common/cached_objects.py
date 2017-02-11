@@ -62,14 +62,6 @@ class CachedObjects:
             self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
                                      for k in ["dnase", "h3k4me3", "h3k27ac"]}
 
-        self.bigwigmaxes = {}
-        bmnp = paths.bigwigmaxes(self.assembly)
-        if os.path.exists(bmnp):
-            with open(bmnp, "r") as f:
-                for line in f:
-                    p = line.strip().split("\t")
-                    self.bigwigmaxes[p[0]] = int(p[1])
-
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
         self.biosampleTypes = self.datasets.biosample_types
@@ -86,7 +78,7 @@ class CachedObjects:
         if d in self.ensemblToSymbol:
             return self.ensemblToSymbol[d]
         return s
-        
+
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
             return self.cellTypesToTissue[ct]
@@ -117,7 +109,7 @@ class CachedObjects:
     def global_data(self, ver):
         from compute_gene_expression import Compartments
         datasets = self.datasets
-        return { 
+        return {
             "tfs" : self.tf_list,
             "cellCompartments" : Compartments,
             "cellTypeInfo": datasets.globalCellTypeInfo,
@@ -129,10 +121,10 @@ class CachedObjects:
 
     def assayAndCellTypeToExpAndBigWigAccessions(self, assay, ct):
         return self.assaymap[assay][ct]
-    
+
 def main():
     DBCONN = db_connect(os.path.realpath(__file__), True)
-    
+
     ps = PostgresWrapper(DBCONN)
     cache = CachedObjects(ps, "mm10")
     pgSearch = PGsearch(ps, "mm10")
@@ -142,6 +134,6 @@ def main():
     for k, v in cache.assaymap["dnase"].iteritems():
         if v != n[k]:
             print(k, v, n[k])
-    
+
 if __name__ == '__main__':
     main()
