@@ -40,25 +40,32 @@ const ResultsTableColumns = [
 	className: "dt-right"
     },
     {
-	title: "maxZ",
-	data: "maxz",
+	title: "DNase Z",
+	data: "dnase_zscore",
 	className: "dt-right",
         render: render_float,
-	width: "5%"
+	width: "7%"
     },
     {
-	title: "promoterZ",
+	title: "Promoter Z",
 	data: "promoter_zscore",
 	className: "dt-right",
 	render: render_float,
-	width: "5%"
+	width: "7%"
     },
     {
-	title: "enhancerZ",
+	title: "Enhancer Z",
 	data: "enhancer_zscore",
 	className: "dt-right",
 	render: render_float,
-	width: "5%"
+	width: "7%"
+    },
+    {
+	title: "CTCF Z",
+	data: "ctcf_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "7%"
     },
     {
 	title: "chr",
