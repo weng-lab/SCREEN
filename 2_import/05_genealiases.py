@@ -32,7 +32,7 @@ class GeneInfo:
             header = f.readline().rstrip().split('\t')
             #print(header)
             for line in f:
-                toks = line.rstrip('\n').split('\t')
+                toks = line.rstrip('\n').replace('"', '').split('\t')
                 if len(toks) != len(header):
                     raise Exception("wrong len")
                 g = dict(zip(header, toks))
@@ -58,8 +58,8 @@ class GeneInfo:
         ret = {}
 
         for gene in genes.getGenes():
-            gid = gene.geneid_
-            if not gid.startswith("ENS"):
+            ensemblid_ver = gene.geneid_
+            if not ensemblid_ver.startswith("ENS"):
                 print(gene)
                 raise Exception("missing geneid_")
             g = gene.annot_
@@ -68,11 +68,12 @@ class GeneInfo:
                       "stop" : gene.end_,
                       "strand" : gene.strand_,
                       "source" : gene.source_})
-            if gid in info:
-                g.update(info[gid])
-            if gid == "ENSG00000138294.9": # MSMB
-                print(g)
-            ret[gid] = g
+            if ensemblid_ver in info:
+                g.update(info[ensemblid_ver])
+            ensemblid = ensemblid_ver.split('.')[0]
+            if ensemblid in info:
+                g.update(info[ensemblid])
+            ret[ensemblid_ver] = g
         printt("processed", len(ret))
         return ret
 
@@ -121,11 +122,17 @@ class GeneRow:
         self.chrom = info.get("chr", "")
         self.start = info.get("start", 0)
         self.stop = info.get("stop", 0)
+        self.strand = info.get('strand', '')
 
         keysToRemove = ['chr', 'start', 'stop', "gene_name",
                         "gene_id", "ensembl_gene_id", "ID",
                         'gene_status', 'transcript_status',
-                        'gene_type', 'source']
+                        'gene_type', 'source', 'level', 'strand',
+                        'tag', "transcript_type",
+                        'gene_status', 'transcript_status',
+                        'transcript_type', "locus_type",
+                        "locus_group", "date_modified",
+                        "date_approved_reserved"]
         self.info = {k:v for k, v in self.info.items() if k not in
                      keysToRemove and v and v != [""]}
 
@@ -133,7 +140,7 @@ class GeneRow:
         return '\t'.join([str(self.dbID), self.ensemblid, self.ver,
                           self.ensemblid_ver, self.approved_symbol,
                           self.chrom, str(self.start), str(self.stop),
-                          json.dumps(self.info)])
+                          self.strand, json.dumps(self.info)])
 
 def loadGidsToDbIds(assembly):
     fnp = paths.path(assembly, "raw", "ensebleToID.txt")
@@ -178,7 +185,7 @@ class ImportGenes:
         printt("loaded missing genes for DB", len(ret) - count)
 
         ret = ret.values()
-        print(ret[0].output())
+        print("example\n", ret[0].output())
 
         tableName = self.assembly + "_gene_info"
         self.curs.execute("""
@@ -193,11 +200,13 @@ approved_symbol text,
 chrom text,
 start integer,
 stop integer,
+strand varchar(1),
 info jsonb);
 """.format(tableName = tableName))
 
         cols = ["geneid", "ensemblid", "ver", "ensemblid_ver",
-                "approved_symbol", "chrom", "start", "stop", "info"]
+                "approved_symbol", "chrom", "start", "stop",
+                "strand", "info"]
 
         outF = StringIO.StringIO()
         for r in ret:
