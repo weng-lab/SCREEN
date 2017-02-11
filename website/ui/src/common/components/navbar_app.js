@@ -20,7 +20,7 @@ class NavBarApp extends React.Component {
 	var cartimage = "";
 	if (this.props.show_cartimage) {
 	    var Cart = cart_connector(CartImage);
-	    cartimage = <form className="navbar-form navbar-right" id="cartimage-container"><Cart store={this.props.store} /></form>;
+	    cartimage = <form className="navbar-form navbar-right" id="cartimage-container" title="view cart"><Cart store={this.props.store} /></form>;
 	}
 
 	return (<div className="navbar-header">
