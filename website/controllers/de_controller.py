@@ -27,7 +27,7 @@ class DeController:
             raise Exception("ct1 and/or ct2 empty!")
 
         cache = self.cacheW[assembly]
-        de = DE(cache, PGsearch(self.ps, assembly), gene, ct1, ct2)
+        de = DE(cache, self.ps, assembly, gene, ct1, ct2)
         diffCREs = de.diffCREs()
         nearbyDEs = de.nearbyDEs()
 

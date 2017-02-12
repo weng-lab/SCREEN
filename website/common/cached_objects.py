@@ -72,24 +72,17 @@ class CachedObjects:
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
     def lookupEnsembleGene(self, s):
-        print(s)
-        if s == "ENSMUSG00000049755":
-            print("hi", self.ensemblToSymbol.get(s, ''),
-                  self.ensemblToStrand.get(s, ''))
-            d = s.split(".")[0]
-            print("hi2", self.ensemblToSymbol.get(d, ''),
-                  self.ensemblToStrand.get(d, ''))
-
-
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
         if strand:
             return name, strand
+
         d = s.split(".")[0]
         name = self.ensemblToSymbol.get(d, '')
         strand = self.ensemblToStrand.get(d, '')
         if strand:
             return name, strand
+
         if name:
             return name, ''
         return s, ''

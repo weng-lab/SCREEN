@@ -3,16 +3,24 @@
 from __future__ import print_function
 
 from cre import CRE
+from common.pg import PGsearch
+from common.pg_de import PGde
 
 class DE:
-    def __init__(self, cache, pgSearch, gene, ct1, ct2):
+    def __init__(self, cache, ps, assembly, gene, ct1, ct2):
         self.cache = cache
-        self.pgSearch = pgSearch
+        self.ps = ps
+        self.assembly = assembly
         self.gene = gene
         self.ct1 = ct1
         self.ct2 = ct2
+
+        self.pgSearch = PGsearch(ps, assembly)
         self.pos = None
+
         self.halfWindow = 250 * 1000 * 2
+        self.thres = 1.64
+        self.radiusScale = 10
 
     def coord(self):
         if not self.pos:
@@ -21,17 +29,11 @@ class DE:
             raise Exception("invalid pos for " + self.gene)
         return self.pos
 
-    def diffCREs(self):
+    def _nearbyPromoters(self):
         rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
         #print(rankMethodToIDxToCellType["Enhancer"].keys())
-        ct1EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct1]
-        ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
         ct1PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct1]
         ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
-
-        ret = []
-        thres = 1.64
-        radiusScale = 10
 
         cols = ["accession", "start", "stop",
                 "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
@@ -40,14 +42,23 @@ class DE:
                                                 2 * self.halfWindow,
                                                 cols, True)
         #print("found promoter-like CREs:", len(cresPromoter))
+
+        ret = []
         for c in cresPromoter:
-            if c[3] > thres or c[4] > thres:
+            if c[3] > self.thres or c[4] > self.thres:
                 radius = float(c[2] - c[1]) / 2
                 ret.append([radius + c[1], # center
                             round(float(c[4] - c[3]), 3),
                             "promoter-like",
-                            radiusScale * radius
+                            self.radiusScale * radius
                 ])
+        return ret
+
+    def _nearbyEnhancers(self):
+        rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
+        #print(rankMethodToIDxToCellType["Enhancer"].keys())
+        ct1EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct1]
+        ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
 
         cols = ["accession", "start", "stop",
                 "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
@@ -56,41 +67,23 @@ class DE:
                                                 self.halfWindow,
                                                 cols, False)
         #print("found enhancer-like CREs", len(cresEnhancer))
+
+        ret = []
         for c in cresEnhancer:
-            if c[3] > thres or c[4] > thres:
+            if c[3] > self.thres or c[4] > self.thres:
                 radius = float(c[2] - c[1]) / 2
                 ret.append([radius + c[1], # center
                             round(float(c[4] - c[3]), 3),
                             "enhancer-like",
-                            radiusScale * radius
+                            self.radiusScale * radius
                 ])
+        return ret
 
+    def diffCREs(self):
+        ret = self._nearbyPromoters() + self._nearbyEnhancers()
         return {"data" : ret}
 
-    def nearbyDEs(self):
-        # limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
-        ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
-
-        cd = self.coord()
-        #print(self.gene, cd, ct1, ct2)
-
-        nearbyDEs = self.pgSearch.nearbyDEs(cd, self.halfWindow,
-                                            ct1, ct2, 0.05)
-
-        #print(self.coord())
-
-        #print(len(nearbyDEs))
-        if not nearbyDEs:
-            return { "data" : None,
-                     "xdomain" : 2 * self.halfWindow }
-
-        xdomain = [max(0, min([d[0] for d in nearbyDEs])),
-                   max([d[1] for d in nearbyDEs])]
-        center = float(xdomain[1] - xdomain[0]) / 2 + xdomain[0]
-        xdomain = [max(0, center - self.halfWindow),
-                   center + self.halfWindow]
-
+    def _DEsForDisplay(self, nearbyDEs):
         ret = []
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[5])
@@ -107,6 +100,29 @@ class DE:
             ret.append(e)
 
         ret.sort(key = lambda d: d[2]) # sort by start
+        return ret
+
+    def nearbyDEs(self):
+        # limb_14.5 from C57BL-6_limb_embryo_14.5_days
+        ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
+        ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
+
+        cd = self.coord()
+
+        pg = PGde(self.pgSearch.pg, self.assembly)
+        nearbyDEs = pg.nearbyDEs(cd, self.halfWindow, ct1, ct2, 0.05)
+
+        if not nearbyDEs:
+            return { "data" : None,
+                     "xdomain" : 2 * self.halfWindow }
+
+        xdomain = [max(0, min([d[0] for d in nearbyDEs])),
+                   max([d[1] for d in nearbyDEs])]
+        center = float(xdomain[1] - xdomain[0]) / 2 + xdomain[0]
+        xdomain = [max(0, center - self.halfWindow),
+                   center + self.halfWindow]
+
+        ret = self._DEsForDisplay(nearbyDEs)
 
         return {"names" : self.names,
                 "data" : ret,
