@@ -542,18 +542,19 @@ FROM {tn}
             ensemblid = gene.split('.')[0]
         tableName = self.assembly + "_gene_info"
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
-            curs.execute("""
-SELECT chrom, start, stop FROM {tn}
-WHERE approved_symbol = %s
+            q = """
+SELECT chrom, start, stop, approved_symbol, ensemblid_ver FROM {tn}
+WHERE chrom != ''
+AND (approved_symbol = %s
 OR ensemblid = %s
-OR ensemblid_ver = %s
-AND chrom != ''
-""".format(tn = tableName), (gene, ensemblid, gene))
+OR ensemblid_ver = %s)
+""".format(tn = tableName)
+            curs.execute(q, (gene, ensemblid, gene))
             r = curs.fetchone()
         if not r:
             print("ERROR: missing", gene)
             return None
-        return Coord(r[0], r[1], r[2])
+        return Coord(r[0], r[1], r[2]), (r[3], r[4])
 
     def nearbyDEs(self, coord, halfWindow, ct1, ct2, pval):
         c = coord.expanded(halfWindow)

@@ -16,7 +16,9 @@ class DE:
 
     def coord(self):
         if not self.pos:
-            self.pos = self.pgSearch.genePos(self.gene)
+            self.pos, self.names = self.pgSearch.genePos(self.gene)
+        if not self.pos:
+            raise Exception("invalid pos for " + self.gene)
         return self.pos
 
     def diffCREs(self):
@@ -92,7 +94,7 @@ class DE:
         ret = []
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[5])
-            print("here", d[5], genename, strand)
+            #print("here", d[5], genename, strand)
             e = [float(d[1] - d[0]) / 2 + d[0], # center
                  round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
@@ -104,7 +106,8 @@ class DE:
             #print("de", d, e, d[1] - d[0])
             ret.append(e)
 
-        return {"data" : ret,
+        return {"names" : self.names,
+                "data" : ret,
                 "xdomain" : xdomain,
                 "ymin" : min([d[1] for d in ret]),
                 "ymax" : max([d[1] for d in ret])}
