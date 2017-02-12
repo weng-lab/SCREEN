@@ -22,11 +22,7 @@ class DePlot extends React.Component {
                 {Globals.cellTypeInfo[this.props.ct1]["name"]}
                 {" vs "}
                 {Globals.cellTypeInfo[this.props.ct2]["name"]}
-		<small>
-		{"  ("}
-		{this.props.data.coord.chrom}
-		{")"}
-		</small>
+
                 </span>
 
 		<div style={{"width": "100%"}} ref="chart" />
@@ -82,7 +78,7 @@ class DePlot extends React.Component {
             .attr("x", width - 15)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text("coord");
+            .text(this.props.data.coord.chrom + " coordinates");
 	svg.append("g")
 	    .append("line")
 	    .style("stroke-dasharray", ("3,3"))
@@ -181,7 +177,7 @@ class DePlot extends React.Component {
             .attr("y", 7)
             .attr("dy", "0.71em")
             .style("text-anchor", "end")
-            .text("log2 fold change")
+            .text("log2 gene expression fold change")
     }
 }
 
