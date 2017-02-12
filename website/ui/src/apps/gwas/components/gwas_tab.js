@@ -4,12 +4,10 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import Pie from '../components/pie'
 import Table from '../components/table'
-import loading from '../../../common/components/loading'
 import CelltypeView from '../components/celltype_view'
 
-import ResultsTableContainer from '../../search/components/results_app'
+import loading from '../../../common/components/loading'
 
 class GwasTab extends React.Component{
     constructor(props) {
