@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import HugeBars from '../components/huge_bars'
 import loading from '../../../common/components/loading'
 
 class Table2 extends React.Component {
@@ -49,7 +48,6 @@ class CelltypeView extends React.Component {
         let d = this.props.data[this.props.cellType.ct];
 	return (<div>
                 <h3>{this.props.cellType.view}</h3>
-		<HugeBars data={d.bar} />
 
                 <Table2 rows={d.accessions} header={d.header}/>
 		</div>);

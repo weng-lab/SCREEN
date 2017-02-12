@@ -4,7 +4,7 @@ from common.page_info_gwas import PageInfoGwas
 from models.gwas import Gwas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from common.pg import PGsearch
+from common.pg_gwas import PGgwas
 
 class GwasController:
     def __init__(self, templates, ps, cacheW):
@@ -22,7 +22,7 @@ class GwasController:
         cache = self.cacheW[assembly]
 
         gwas_study = j["gwas_study"]
-        g = Gwas(cache, PGsearch(self.ps, assembly))
+        g = Gwas(assembly, cache, PGgwas(self.ps, assembly))
 
         def form(v):
             return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],

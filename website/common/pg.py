@@ -7,6 +7,7 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
+from pg_common import PGcommon
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -14,9 +15,6 @@ from cre_utils import isaccession, isclose, checkChrom
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
-
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "biosample_term_name fdr cellTypeName".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
 
 class PGsearchWrapper:
     def __init__(self, pg):
@@ -31,8 +29,9 @@ class PGsearch:
     def __init__(self, pg, assembly):
         self.pg = pg
         self.assembly = assembly
-        amap = {"DNase": "dnase", "H3K4me3": "promoter", "H3K27ac": "enhancer", "CTCF": "ctcf"}
-        self.ctmap = {amap[k]: v for k, v in self.rankMethodToIDxToCellType().iteritems() if k in amap}
+
+        pg = PGcommon(self.pg, self.assembly)
+        self.ctmap = pg.makeCtMap()
 
     def allCREs(self):
         tableName = self.assembly + "_cre"
@@ -382,18 +381,8 @@ ON g.geneid = gi.geneid
         return [{"name" : r[0]} for r in rows]
 
     def rankMethodToIDxToCellType(self):
-        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
-            curs.execute("""
-SELECT idx, celltype, rankmethod FROM {tn}
-""".format(tn = self.assembly + "_rankcelltypeindexex"))
-            ret = {}
-            for r in curs.fetchall():
-                rank_method = r[2]
-                if rank_method not in ret:
-                    ret[rank_method] = {}
-                ret[rank_method][r[0]] = r[1]
-                ret[rank_method][r[1]] = r[0]
-        return ret
+        pg = PGcommon(self.pg, self.assembly)
+        return pg.rankMethodToIDxToCellType()
 
     def rankMethodToCellTypes(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
@@ -577,71 +566,6 @@ OR ensemblid_ver = %s)
         #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
 
-    def gwasEnrichment(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
-            q = """
-SELECT biosample_term_name, fdr, cellTypeName
-FROM hg19_gwas_enrichment
-WHERE authorPubmedTrait = %s
-"""
-            curs.execute(q, (gwas_study, ))
-            rows = curs.fetchall()
-        return [GwasEnrichmentRow(*r) for r in rows]
-
-    def gwas(self):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-            SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, authorPubmedTrait
-            FROM {tn}
-""".format(tn = "hg19_gwas")
-            curs.execute(q)
-            rows = curs.fetchall()
-        return [GwasRow(*r) for r in rows]
-
-    def gwasOverlapWithCresPerc(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT COUNT(DISTINCT(ldblock))
-FROM hg19_gwas as gwas, hg19_cre as cre, hg19_gwas_overlap as over
-WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
-AND cre.accession = over.accession
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-"""
-            curs.execute(q, (gwas_study, ))
-            overlapCount = curs.fetchone()[0]
-
-            q = """
-select count(distinct(ldblock))
-FROM hg19_gwas as gwas
-WHERE gwas.authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
-            curs.execute(q, (gwas_study, ))
-            total = curs.fetchone()[0]
-        return float(overlapCount) / total
-
-    def gwasOverlapWithCres(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT cre.accession
-FROM hg19_gwas as gwas, hg19_cre as cre
-WHERE gwas.chrom = cre.chrom
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
-
-    def gwasAccessions(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT accession
-FROM hg19_gwas_overlap
-where authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
-
     def allDatasets(self):
         def makeDataset(r):
             return {"assay" : r[0],
@@ -664,7 +588,7 @@ SELECT {cols} FROM {tn}
             return [makeDataset(r) for r in curs.fetchall()]
 
     def datasets(self, assay):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
+        with getcursor(self.pg.DBCONN, "datasets") as curs:
             q = """
 SELECT cellTypeName, expID, fileID
 FROM {tn}
@@ -695,64 +619,3 @@ WHERE strand != ''
             toSymbol.update({r[0]: r[1] for r in rows})
             toStrand.update({r[0]: r[2] for r in rows})
         return toSymbol, toStrand
-
-    def gwasPercentActive(self, gwas_study, ct):
-        fields = ["cre.accession", "array_agg(snp)",
-                  "infoAll.approved_symbol AS geneid"]
-        groupBy = ["cre.accession",
-                  "infoAll.approved_symbol"]
-
-        fieldsOut = []
-        for assay in [("dnase", "dnase"),
-                      ("promoter", "h3k4me3_only"),
-                      ("enhancer", "h3k27ac_only")]:
-            if ct not in self.ctmap[assay[0]]:
-                continue
-            cti = self.ctmap[assay[0]][ct]
-            fieldsOut.append(assay[0] + " zscore")
-            fields.append("cre.%s_zscore[%d] AS %s_zscore" %
-                          (assay[1], cti, assay[0]))
-            groupBy.append("cre.%s_zscore[%d]" %
-                          (assay[1], cti))
-
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT {fields}
-FROM hg19_cre as cre, hg19_gwas_overlap as over, hg19_gene_info as infoAll
-WHERE cre.gene_all_id[1] = infoAll.geneid
-AND cre.accession = over.accession
-AND over.authorPubmedTrait = %s
-GROUP BY {groupBy}
-""".format(fields = ', '.join(fields),
-           groupBy = ', '.join(groupBy))
-            curs.execute(q, (gwas_study, ))
-            accs = curs.fetchall()
-
-        # accession, snp, geneid, zscores
-        totalActive = 0
-        total = len(accs)
-        activeAccs = []
-
-        def any_lambda(function, iterable):
-            # http://stackoverflow.com/a/19868175
-            return any(function(i) for i in iterable)
-
-        for a in accs:
-            if any_lambda(lambda x: x >= 1.64, a[3:]):
-                totalActive += 1
-                a = list(a)
-                a[1] = ", ".join(sorted(a[1]))
-                activeAccs.append(a)
-
-        percActive = 0
-        if total > 0:
-            percActive = round(float(totalActive) / total * 100, 2)
-
-        def form(v):
-            return [["%s%% CREs active" % v, v, 0],
-                    ["", 100 - v, v]]
-
-        return {"accessions" : activeAccs,
-                "percActive" : percActive,
-                "bar" : form(percActive),
-                "header" : ["accession", "snp", "geneid"] + fieldsOut}
