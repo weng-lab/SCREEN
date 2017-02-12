@@ -37,7 +37,7 @@ class DE:
         cresPromoter = self.pgSearch.nearbyCREs(self.coord(),
                                                 2 * self.halfWindow,
                                                 cols, True)
-        print("found promoter-like CREs:", len(cresPromoter))
+        #print("found promoter-like CREs:", len(cresPromoter))
         for c in cresPromoter:
             if c[3] > thres or c[4] > thres:
                 radius = float(c[2] - c[1]) / 2
@@ -53,7 +53,7 @@ class DE:
         cresEnhancer = self.pgSearch.nearbyCREs(self.coord(),
                                                 self.halfWindow,
                                                 cols, False)
-        print("found enhancer-like CREs", len(cresEnhancer))
+        #print("found enhancer-like CREs", len(cresEnhancer))
         for c in cresEnhancer:
             if c[3] > thres or c[4] > thres:
                 radius = float(c[2] - c[1]) / 2
@@ -71,12 +71,12 @@ class DE:
         ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
 
         cd = self.coord()
-        print(self.gene, cd, ct1, ct2)
+        #print(self.gene, cd, ct1, ct2)
 
         nearbyDEs = self.pgSearch.nearbyDEs(cd, self.halfWindow,
                                             ct1, ct2, 0.05)
 
-        print(self.coord())
+        #print(self.coord())
 
         #print(len(nearbyDEs))
         if not nearbyDEs:
@@ -91,7 +91,8 @@ class DE:
 
         ret = []
         for d in nearbyDEs:
-            genename, strand = self.cache._try_genename(d[5])
+            genename, strand = self.cache.lookupEnsembleGene(d[5])
+            print("here", d[5], genename, strand)
             e = [float(d[1] - d[0]) / 2 + d[0], # center
                  round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
@@ -100,7 +101,7 @@ class DE:
                  d[4], # rightName
                  genename, strand
                  ]
-            print("de", d, e, d[1] - d[0])
+            #print("de", d, e, d[1] - d[0])
             ret.append(e)
 
         return {"data" : ret,
