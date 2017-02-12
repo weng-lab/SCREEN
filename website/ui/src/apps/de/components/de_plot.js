@@ -12,8 +12,9 @@ class DePlot extends React.Component {
 
     render() {
 	return (<div>
- 	        <span style={{fontSize: "18pt"}}>
                 <span ref="help_icon" />
+
+ 	        <span style={{fontSize: "18pt",  fontStyle: "italic"}}>
                 {this.props.gene}
                 </span>
 
@@ -125,6 +126,7 @@ class DePlot extends React.Component {
 	    .append("text")
 	    .attr("x", (d) => (x(d[3]) + 10))
 	    .attr("y", (d, i) => (i * 20 + 4))
+            .style("font-style", "italic")
 	    .text((d) => (d[6]));
         var legend = svg.selectAll(".legend")
             .data(color.domain())
