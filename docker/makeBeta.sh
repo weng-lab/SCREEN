@@ -31,6 +31,7 @@ docker run \
        -p 127.0.0.1:8013:8000 \
        -p 127.0.0.1:8033:22 \
        --link postgresql:postgresql \
+       --link cassandra:cassandra \
        -d --restart=always \
        -m 128G \
        --cpuset="48-63" \
