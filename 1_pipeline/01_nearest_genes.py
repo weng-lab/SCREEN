@@ -16,7 +16,6 @@ from utils import Utils, printWroteNumLines
 class NearestGenes:
     def __init__(self, assembly):
         self.assembly = assembly
-        self.gene_files = paths.gene_files
 
     def getEnsembleToInfo(self):
         if "mm10" == self.assembly:
@@ -26,10 +25,7 @@ class NearestGenes:
         raise Exception("unknown assembly: " + self.assembly)
 
     def geneToCoord(self):
-        if self.assembly not in self.gene_files:
-            raise Exception("ERROR: cannot get gene coordinates for assembly " +
-                            self.assembly + "-- no gene file found")
-        fnp, filetype = self.gene_files[self.assembly]
+        fnp, filetype = paths.gene_files[self.assembly]
         ggff = Genes(fnp, filetype)
         ret = {}
         for g in ggff.getGenes():
