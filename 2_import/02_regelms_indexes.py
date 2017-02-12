@@ -58,15 +58,15 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def makeInfo(assembly, ver):
+def makeInfo(assembly):
     return {"chrs" : chroms[assembly],
-                   "assembly" : assembly,
-                   "d" : paths.getCREs(ver, assembly)["newway"],
-                   "base" : paths.getCREs(ver, assembly)["base"],
-                   "tableName" : assembly + "_cre"}
+            "assembly" : assembly,
+            "d" : paths.path(assembly, "newway"),
+            "base" : paths.path(assembly),
+            "tableName" : assembly + "_cre"}
 
-infos = {"mm10" : makeInfo("mm10", 9),
-         "hg19" : makeInfo("hg19", 9)}
+infos = {"mm10" : makeInfo("mm10"),
+         "hg19" : makeInfo("hg19")}
 
 cols = ("accession", "mpName", "negLogP",
         "chrom", "start", "stop",

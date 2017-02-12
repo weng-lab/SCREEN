@@ -210,15 +210,15 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    def makeInfo(assembly, ver):
+    def makeInfo(assembly):
         return {"chrs" : chroms[assembly],
                        "assembly" : assembly,
                        "d" : paths.path(assembly, "newway"),
                        "base" : paths.path(assembly),
                        "tableName" : assembly + "_cre"}
 
-    infos = {"mm10" : makeInfo("mm10", 9),
-             "hg19" : makeInfo("hg19", 9)}
+    infos = {"mm10" : makeInfo("mm10"),
+             "hg19" : makeInfo("hg19")}
 
     assemblies = ["hg19", "mm10"]
     if args.assembly:
