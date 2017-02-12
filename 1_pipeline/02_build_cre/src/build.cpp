@@ -3,7 +3,7 @@ ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "mm10", "assembly");
 ZiARG_bool(first, false, "show first line");
 ZiARG_bool(split, false, "split up files");
-ZiARG_int32(j, 5, "num threads");
+ZiARG_int32(j, 1, "num threads");
 
 #include "helpers.hpp"
 #include "splitter.hpp"
