@@ -23,6 +23,5 @@ class AssayDropdown extends React.Component {
 		<option value="Insulator">CTCF and DNase</option>
 		</select>);
     }
-
 }
 export default AssayDropdown;

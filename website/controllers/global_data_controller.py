@@ -12,4 +12,4 @@ class GlobalDataController:
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(g)
         return "var Globals = " + json.dumps(g)
-    
+

@@ -6,7 +6,7 @@ const initialState = {
     maintabs_active: "gwas",
     maintabs_visible: true,
     gwas_study: null,
-    accessions: null,
+    cellType: null,
     cart_accessions: new Set()
 };
 

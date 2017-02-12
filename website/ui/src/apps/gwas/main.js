@@ -21,7 +21,7 @@ class GwasApp extends React.Component {
 				  initialState,
 				  applyMiddleware(
 				      thunkMiddleware,
-				      loggerMiddleware
+				      //loggerMiddleware
 				  ));
 
 	//console.log(store.getState());

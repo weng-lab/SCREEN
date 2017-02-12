@@ -5,12 +5,11 @@ import {doToggle} from '../../../common/utility'
 const main_reducers = (state, action) => {
     switch (action.type) {
 
-    case Actions.SET_STUDY: {
+    case Actions.SET_STUDY:
         return { ...state, gwas_study: action.s};
-    }
 
-    case Actions.SET_ACCESSIONS:
-	return {...state, accessions: action.accs};
+    case Actions.SET_CELLTYPE:
+	return {...state, cellType: action.ct};
 
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);

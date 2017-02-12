@@ -15,12 +15,9 @@ class PageInfoGwas:
     def wholePage(self, assembly, indexPage = False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
-        return {"page": {"title" : PageTitle},
+        return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
-                "reAccessions" : [],
                 "Assembly" : assembly,
-                "re_json_index" : paths.reJsonIndex(assembly),
-                "globalSessionUid" : "",
                 "bundlets" : os.path.getmtime(bundleFnp)
                 }
 
@@ -33,13 +30,12 @@ class PageInfoGwas:
         g = Gwas(cache, PGsearch(self.ps, assembly))
 
         data = {"gwas": {"gwas" : g.gwas,
-                         "enrichment" : g.enrichment,
                          "studies" : g.studies}}
-        
+
         ret = self.wholePage(assembly)
         ret.update({"globalParsedQuery" : json.dumps({}),
-                    "Globals" : json.dumps(data)
+                    "GwasGlobals" : json.dumps(data)
         })
-        
+
         return ret
 
