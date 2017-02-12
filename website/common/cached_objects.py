@@ -56,7 +56,7 @@ class CachedObjects:
         self.tf_list = self.pgSearch.tfHistoneDnaseList()
         self.tf_list_json = json.dumps(self.tf_list)
 
-        self.datasets = Datasets(self.assembly, self.ps.DBCONN)
+        self.datasets = Datasets(self.assembly, self.pgSearch)
 
         if 0:
             self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
