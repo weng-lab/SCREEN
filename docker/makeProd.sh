@@ -4,17 +4,17 @@
 # runs ${IMAGE} with external file systems mounted in.
 
 export IMAGE="bib7.umassmed.edu:5000/regelmvizv4:latest"
-export NAME="screen-propd"
+export NAME="screen-prod"
 export BASE="/data/docker/screen-prod"
 
 if [ "X$1" != "Xyes" ]; then
 	echo
-	echo "--------------------------------------------------------------------"
+	echo "-------------------------------------------------------------------"
 	echo "This script destroys existing container with name \"${NAME}\" and"
 	echo "starts a new instance based on ${IMAGE}."
 	echo
 	echo "Run as '$0 yes' if this is what you intend to do."
-	echo "--------------------------------------------------------------------"
+	echo "-------------------------------------------------------------------"
 	echo
 	exit 0
 fi
