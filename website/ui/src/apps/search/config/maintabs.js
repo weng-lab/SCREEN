@@ -54,12 +54,12 @@ class ExpressionPlot extends React.Component {
 	    success: function(r) {
 		this.setState({...r, isFetching: false, isError: false});
 	    }.bind(this)
-	});	
+	});
     }
     doRenderWrapper(){
 	if (!GlobalParsedQuery.approved_symbol) return <div />;
 	let gene = this.props.gene;
-	let url = 'http://screen.umassmed.edu/geneexp/' + GlobalAssembly + "/" + this.props.gene;
+	let url = '/geneexp/' + GlobalAssembly + "/" + this.props.gene;
 	let message = <div>This plot is displaying cell-wide expression of <em>{this.props.gene}</em>. To view expression in subcellular compartments, <a href={url}>click here</a>.</div>;
 	if("items" in this.state){
 	    return (<div><h2><em>{this.props.gene}</em></h2>{message}<br /><ExpressionBoxplot data={this.state} /></div>);

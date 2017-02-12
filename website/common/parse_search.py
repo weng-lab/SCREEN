@@ -56,7 +56,7 @@ class ParseSearch:
             r = curs.fetchone()
             if r: return Coord(chrom, r[0], r[1])
         return None
-    
+
     def _gene_alias_to_symbol(self, s):
         fields = ["approved_symbol", "ensemblid", "ensemblid_ver", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
         whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) + " or (LOWER('%s') = ANY(translate(info->>'synonyms', '[]', '{}')::text[]))" % s
@@ -89,10 +89,10 @@ class ParseSearch:
         if tss:
             return """
 This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
-To see cREs overlapping the gene body of {q}, <a href='http://screen.umassmed.edu/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
         return """
 This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='http://screen.umassmed.edu/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
 
     def _try_find_celltype(self, s):
         pass
@@ -108,7 +108,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))            
+                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))
         for x in _p:
             r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
             if r:
@@ -142,7 +142,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                     interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
                 return (" ".join(p[len(p) - i:]) if not rev else " ".join(p[i:]), r[0][0], interpretation)
         return (q, None, None)
-    
+
     def parse(self, kwargs = None):
         s = self._sanitize().lower()
         self.sanitizedStr = s
@@ -191,13 +191,13 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
         except:
             print("could not parse " + s)
-            
+
         if coord is None:
             interpretation, coord, s, notss = self._try_find_gene(s, usetss)
             if interpretation:
                 ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
                 interpretation = self.get_genetext(interpretation, usetss, notss)
-            
+
         s, cellType, _interpretation = self._find_celltype(s)
 
         if cellType is None:
