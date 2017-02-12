@@ -213,8 +213,8 @@ def main():
     def makeInfo(assembly, ver):
         return {"chrs" : chroms[assembly],
                        "assembly" : assembly,
-                       "d" : paths.getCREs(ver, assembly)["newway"],
-                       "base" : paths.getCREs(ver, assembly)["base"],
+                       "d" : paths.path(assembly, "newway"),
+                       "base" : paths.path(assembly),
                        "tableName" : assembly + "_cre"}
 
     infos = {"mm10" : makeInfo("mm10", 9),
