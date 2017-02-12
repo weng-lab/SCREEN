@@ -66,8 +66,7 @@ class GeneInfo:
             g.update({"chr" : gene.chr_,
                       "start" : gene.start_,
                       "stop" : gene.end_,
-                      "strand" : gene.strand_,
-                      "source" : gene.source_})
+                      "strand" : gene.strand_})
             if ensemblid_ver in info:
                 g.update(info[ensemblid_ver])
             ensemblid = ensemblid_ver.split('.')[0]
@@ -89,8 +88,7 @@ class GeneInfo:
             g.update({"chr" : gene.chr_,
                       "start" : gene.start_,
                       "stop" : gene.end_,
-                      "strand" : gene.strand_,
-                      "source" : gene.source_})
+                      "strand" : gene.strand_})
             ret[gid] = g
         printt("processed", len(ret))
         return ret

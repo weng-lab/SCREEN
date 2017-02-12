@@ -644,6 +644,27 @@ where authorPubmedTrait = %s
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
 
+    def allDatasets(self):
+        def makeDataset(r):
+            return {"assay" : r[0],
+                    "expID" : r[1],
+                    "fileID" : r[2],
+                    "tissue" : r[3],
+                    "biosample_summary" : r[4],
+                    "biosample_type" : r[5],
+                    "cellTypeName" : r[6],
+                    "name" : r[4],
+                    "value" : r[6]} # for datatables
+
+        tableName = self.assembly + "_datasets"
+        cols = ["assay", "expID", "fileID", "tissue",
+                "biosample_summary", "biosample_type", "cellTypeName"]
+        with getcursor(self.pg.DBCONN, "datasets") as curs:
+            curs.execute("""
+SELECT {cols} FROM {tn}
+""".format(tn = tableName, cols = ','.join(cols)))
+            return [makeDataset(r) for r in curs.fetchall()]
+
     def datasets(self, assay):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
