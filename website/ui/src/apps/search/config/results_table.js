@@ -8,18 +8,23 @@ export const browser_buttons = (names) => {
 
 const cart_img = (rmv, src_only) => {
     var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : '<img class="rowCart" src="' + src + '">');
+    return (src_only ? src : '<img class="rowCart" src="' + src + '" title="' + (rmv ? "remove cRE from cart" : "add cRE to cart") + '">');
 }
 
 export const render_int = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 export const render_float = $.fn.dataTable.render.number( ',', '.', 1, '' );
-export const render_z_score = (d) => (d == -1e12 ? "n/a" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
+export const render_z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
 export const render_cell_type = (d) => (d.replace(/_/g, " "));
 
 const render_array = (m) => (array) => (
     array.length <= m ? array : [...array.slice(0, m), "..."]).join(", ");
 
 const render_gene_button = (d) => {
+    var p = d.split(", ");
+    return p.map(_render_gene_button).join(", ");
+};
+
+const _render_gene_button = (d) => {
     var ge = '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>';
     if("mm10" != GlobalAssembly){
         return ge;
@@ -35,10 +40,36 @@ const ResultsTableColumns = [
 	className: "dt-right"
     },
     {
-	title: "maxZ",
-	data: "maxz",
+	title: "DNase Z",
+	data: "dnase_zscore",
 	className: "dt-right",
-        render: render_float
+	render: render_float,
+	width: "7%",
+	name: "dnase"
+    },
+    {
+	title: "Promoter Z",
+	data: "promoter_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "7%",
+	name: "promoter"
+    },
+    {
+	title: "Enhancer Z",
+	data: "enhancer_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "7%",
+	name: "enhancer"
+    },
+    {
+	title: "CTCF Z",
+	data: "ctcf_zscore",
+	className: "dt-right",
+	render: render_float,
+	width: "7%",
+	name: "ctcf"
     },
     {
 	title: "chr",
@@ -58,13 +89,13 @@ const ResultsTableColumns = [
         render: render_int
     },
     {
-	title: "nearest gene",
+	title: "nearest genes",
 	data: "gene_all",
 	className: "dt-right geneexp",
 	render: render_gene_button
     },
     {
-	title: "nearest protein-coding gene",
+	title: "nearest protein-coding genes",
 	data: "gene_pc",
 	className: "dt-right geneexp",
 	render: render_gene_button

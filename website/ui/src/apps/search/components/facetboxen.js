@@ -18,6 +18,12 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize} from '../../../common/utility'
 
+const dccLink = (expID) => {
+    var url = 'https://www.encodeproject.org/experiments/' + expID;
+    var img = '<img src="https://www.encodeproject.org/static/img/encode-logo-small-2x.png" alt="ENCODE logo" width="42">';
+    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+}
+
 const rangeBox = (title, range, start, end, action, _f, _rf) => {
     return (<RangeFacet
             title={title}
@@ -56,17 +62,28 @@ const cellTypesBox = ({cellType, actions}) => {
                     title={""}
                     data={Globals.cellTypeInfoArr}
                     cols={[
-			{title: "", data: "name", render: () => ("<input type='checkbox' />")},
+			{ title: "", data: "name",
+                          render: () => ("<input type='checkbox' />")},
 		        { title: "cell type", data: "name",
-		          className: "dt-right" },
+		          className: "dt-right"},
 		        { title: "tissue", data: "tissue",
-		            className: "dt-right" }
+		          className: "dt-right" },
+		        { title: "", data: "expID", render: dccLink,
+		          className: "dt-right dcc" }
 	            ]}
                     order={[]}
                     selection={cellType}
                     friendlySelectionLookup={make_ct_friendly}
-                    onTdClick={(value) => { actions.setCellType(value) }}
-                    />);
+                    onTdClick={(value, td, cellObj) => {
+                        if(td){
+                            if (td.className.indexOf("dcc") == -1) {
+                                actions.setCellType(value);
+                            }
+                        } else {
+                            actions.setCellType(value);
+                        }
+                    }}
+                    />, "celltype_facet");
 }
 
 const chromBox = ({coord_chrom, actions}) => {
@@ -134,7 +151,10 @@ const _rankBox = ({element_type, actions, cellType}) => {
     return panelize("cRE activity" + (cellType ? " in " + make_ct_friendly(cellType) : ""),
 	            <ListFacet
                     title={""}
-                    items={[["chromatin-accessible", ""], ["promoter-like", ""], ["enhancer-like", ""], ["insulator-like", ""]]}
+                    items={[["chromatin-accessible", ""],
+                            ["promoter-like", ""],
+                            ["enhancer-like", ""],
+                            ["insulator-like", ""]]}
                     selection={element_type}
                     onchange={(e) => { actions.setType(e) }}
                     />);
@@ -143,7 +163,7 @@ const _rankBox = ({element_type, actions, cellType}) => {
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
-                  rank_ctcf_start, rank_ctcf_end,
+                  rank_ctcf_start, rank_ctcf_end, rfacets,
                   cellType, actions}) => {
 		      let range = [-1000, 1000];
     if(null == cellType && 0){
@@ -151,15 +171,15 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
     }
 		      return panelize("Z-Score " + (cellType ? "in " + make_ct_friendly(cellType) : "maximum across all cell types"),
                     (<div>
-                     {rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
-                               actions.setRankDnase, zscore_decimal, zrdecimal)}
-                     {rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
-                               actions.setRankPromoter, zscore_decimal, zrdecimal)}
-                     {rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
-                               actions.setRankEnhancer, zscore_decimal, zrdecimal)}
-                     {rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
-                               actions.setRankCtcf, zscore_decimal, zrdecimal)}
-                     </div>));
+                     {rfacets.includes("dnase") ? rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
+							   actions.setRankDnase, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("promoter") ? rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
+							      actions.setRankPromoter, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("enhancer") ? rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
+							      actions.setRankEnhancer, zscore_decimal, zrdecimal) : ""}
+                     {rfacets.includes("ctcf") ? rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
+							  actions.setRankCtcf, zscore_decimal, zrdecimal) : ""}
+                     </div>), "zscore_facet");
 };
 
 class FacetBoxen extends React.Component {

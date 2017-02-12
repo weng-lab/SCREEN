@@ -57,32 +57,42 @@ class ParseSearch:
             if r: return Coord(chrom, r[0], r[1])
         return None
     
-    def _gene_alias_to_coordinates(self, s):
-        fields = ["approved_symbol", "ensemblid", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
+    def _gene_alias_to_symbol(self, s):
+        fields = ["approved_symbol", "ensemblid", "ensemblid_ver", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
         whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) + " or (LOWER('%s') = ANY(translate(info->>'synonyms', '[]', '{}')::text[]))" % s
         print(whereclause)
         with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
-            curs.execute("""SELECT chrom, start, stop, info FROM {tablename}
+            curs.execute("""SELECT approved_symbol FROM {tablename}
                             WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
             r = curs.fetchone()
         if not r or not r[0]:
             return None
-        return Coord(r[0], r[1], r[2])
+        return r[0]
 
-    def _try_find_gene(self, s):
+    def _try_find_gene(self, s, tss = False):
         p = s.lower().split()
         interpretation = None
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            for h in xrange(len(p)):
-                x = len(p) / (h + 1)
-                for q in [" ".join(p[x * i : x * (i + 1)]) for i in xrange(h + 1)]:
-                    curs.execute("SELECT name, chrom, start, stop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
-                    r = curs.fetchall()
-                    if r:
-                        if r[0][0].lower() not in s.lower():
-                            interpretation = r[0][0]
-                        return (interpretation, Coord(r[0][1], r[0][2], r[0][3]))
-        return (interpretation, None)
+            for i in xrange(len(p)):
+                s = " ".join(p[:len(p) - i])
+                curs.execute("SELECT oname, chrom, start, stop, altchrom, altstart, altstop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                r = curs.fetchall()
+                if r:
+                    interpretation = r[0][0]
+                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
+        return (interpretation, None, " ".join(p), False)
+
+    def get_genetext(self, gene, tss = False, notss = False):
+        gene = "<em>%s</em>" % gene
+        if notss:
+            return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
+        if tss:
+            return """
+This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
+To see cREs overlapping the gene body of {q}, <a href='http://screen.umassmed.edu/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+        return """
+This search is showing cREs overlapping the gene body of {q}.<br>
+To see candidate promoters located between the first and last TSS's of {q}, <a href='http://screen.umassmed.edu/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
 
     def _try_find_celltype(self, s):
         pass
@@ -94,6 +104,11 @@ class ParseSearch:
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
                 return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[2]))
+        for x in _p:
+            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
+            if r:
+                p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
+                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))            
         for x in _p:
             r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
             if r:
@@ -110,11 +125,11 @@ class ParseSearch:
             if curs.fetchone(): return True
         return False
 
-    def _find_celltype(self, q):
+    def _find_celltype(self, q, rev = False):
         p = q.split()
         interpretation = None
         for i in xrange(len(p)):
-            s = " ".join(p[:len(p) - i])
+            s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
             with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
                 curs.execute("SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
                 r = curs.fetchall()
@@ -122,27 +137,30 @@ class ParseSearch:
                     curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
                     r = curs.fetchall()
             if r:
-                if r[0][0].lower() not in s.lower():
+                if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
                     k = r[0][0].replace("_", " ")
                     interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
-                return (" ".join(p[len(p) - i:]), r[0][0], interpretation)
+                return (" ".join(p[len(p) - i:]) if not rev else " ".join(p[i:]), r[0][0], interpretation)
         return (q, None, None)
     
-    def parse(self, comparison = False):
+    def parse(self, kwargs = None):
         s = self._sanitize().lower()
         self.sanitizedStr = s
 
         s, coord = self._find_coord(s)
         toks = s.split()
         toks = [t.lower() for t in toks]
+        usetss = "tss" in toks or (kwargs and "tss" in kwargs)
+        interpretation = None
 
         ret = {"cellType": None,
                "coord_chrom" : None,
                "coord_start" : None,
                "coord_end" : None,
                "element_type": None,
+               "approved_symbol": None,
                "interpretation": None}
-        if "promoter" in toks:
+        if "promoter" in toks or usetss:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
@@ -158,26 +176,32 @@ class ParseSearch:
             ret["rank_ctcf_start"] = 164
             s = s.replace("insulator", "")
 
-        s, cellType, interpretation = self._find_celltype(s)
         accessions = []
-        
         try:
             for t in toks:
                 if isaccession(t):
                     accessions.append(t)
+                    s = s.replace(t, "")
                     continue
                 elif t.startswith("rs"):
                     coord = self._get_snpcoord(t)
+                    s = s.replace(t, "")
                     if coord and not self.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
         except:
-            raise
             print("could not parse " + s)
-
+            
         if coord is None:
-            interpretation, coord = self._try_find_gene(s)
-            if interpretation: interpretation = "Showing results for \"%s\"" % interpretation
+            interpretation, coord, s, notss = self._try_find_gene(s, usetss)
+            if interpretation:
+                ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
+                interpretation = self.get_genetext(interpretation, usetss, notss)
+            
+        s, cellType, _interpretation = self._find_celltype(s)
+
+        if cellType is None:
+            s, cellType, _interpretation = self._find_celltype(s, True)
 
         if len(accessions) > 0:
             coord = None

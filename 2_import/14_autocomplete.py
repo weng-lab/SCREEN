@@ -31,6 +31,7 @@ SELECT name, start, stop FROM {assembly}_snps_{chrom}
 
         printt("loading gene info...")
         self.curs.execute("""
+<<<<<<< HEAD
 SELECT approved_symbol, ensemblid, info, g.chrom, g.start, g.stop, t.chrom, t.start, t.stop FROM {assembly}_gene_info AS g
 LEFT JOIN {assembly}_tss_info AS t
 ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
@@ -84,7 +85,6 @@ oname TEXT)
 
         self.curs.copy_from(outF, tableName, "\t",
                             columns=["name", "chrom", "start", "stop", "altchrom", "altstart", "altstop", "oname"])
-
         printt("indexing table...")
         self.curs.execute("""
 CREATE INDEX {tn}_index ON {tn}

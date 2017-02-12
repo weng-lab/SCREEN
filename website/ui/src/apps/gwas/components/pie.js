@@ -24,9 +24,9 @@ class Pie extends React.Component {
         let chart = this.refs.chart;
 	$(chart).empty();
         let data = this.props.data;
-	
-	var width = 400;
-	var height = 400;
+
+	var width = 200;
+	var height = 200;
 	var radius = Math.min(width, height) / 2;
 
 	var color = d3.scale.ordinal()

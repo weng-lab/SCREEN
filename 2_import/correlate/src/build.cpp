@@ -145,7 +145,7 @@ public:
                     std::cout << err;
                 }
 
-                m.at(j, i) = std::stof(toks[1]); // zscore
+                m.at(j, i) = (std::stof(toks[1]) >= 1.64 ? 1.0 : 0.0); // zscore
             }
         }
 

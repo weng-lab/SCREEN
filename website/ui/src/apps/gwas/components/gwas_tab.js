@@ -5,8 +5,10 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import Pie from '../components/pie'
+import HugeBars from '../components/huge_bars'
 import Table from '../components/table'
 import loading from '../../../common/components/loading'
+import CelltypeView from '../components/celltype_view'
 
 import ResultsTableContainer from '../../search/components/results_app'
 
@@ -53,12 +55,11 @@ class GwasTab extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
-		actions.setAccessions(r[gwas_study].accessions);
             }.bind(this)
         });
     }
 
-    doRenderWrapper({gwas_study, actions}){
+    doRenderWrapper({gwas_study, cellType, actions}){
 	if(this.state.selectStudy){
             return (<div>
                     {"Please choose a study on left"}
@@ -67,21 +68,29 @@ class GwasTab extends React.Component{
 
         if(gwas_study in this.state){
 	    var data = this.state[gwas_study];
+            var ctView = (cellType ?
+                          <CelltypeView
+                          data={data.accs}
+                          /> :
+                          "");
             return (<div>
 		    <h2>{gwas_study}</h2>
 
 		    <div className="container-fluid">
 		    <div className="row">
 		    <div className="col-md-6">
-		    <Pie data={data.pie} />
+		    <HugeBars data={data.pie} />
 		    </div>
 		    <div className="col-md-6">
 		    <Table
+                    actions={actions}
 		    header={data.table.header}
 		    rows={data.table.rows} />
 		    </div>
 		    </div>
 		    </div>
+
+                    {ctView}
 
 		    </div>);
         }
@@ -91,8 +100,6 @@ class GwasTab extends React.Component{
     render(){
         return (<div style={{"width": "100%"}} >
                 {this.doRenderWrapper(this.props)}
-
-		<ResultsTableContainer />
                 </div>);
     }
 }

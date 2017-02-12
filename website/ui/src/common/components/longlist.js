@@ -12,9 +12,9 @@ class LongListFacet extends React.Component {
 	this._clear = this._clear.bind(this);
     }
 
-    _td_handler(r, k) {
+    _td_handler(td, cellObj) {
 	if (this.props.onTdClick) {
-            this.props.onTdClick(k.value);
+            this.props.onTdClick(cellObj.value, td, cellObj);
         }
     }
 
@@ -37,7 +37,8 @@ class LongListFacet extends React.Component {
 	return (<div>
 
                 <div style={{display: table_display}}>
-		<ResultsTable cols={this.props.cols}
+		<ResultsTable
+                cols={this.props.cols}
                 data={this.props.data}
                 order={this.props.order}
 	        onTdClick={this._td_handler}

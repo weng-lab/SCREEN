@@ -17,7 +17,7 @@ class CartImage extends React.Component {
     
     render() {
 	return (<object type="image/svg+xml" data="/static/re_cart.view.svg" id="shoppingcart_obj" ref="svg"
-		   onClick={this.onClick}>
+		   onClick={this.onClick} title="show cart">
 	              <img src="/static/re_cart.view.png" />
 	        </object>
 	       );
@@ -29,6 +29,7 @@ class CartImage extends React.Component {
 	    var svg = this.refs.svg.contentDocument.getElementsByTagName("svg")[0];
 	    var img = svg.getElementsByTagName("image")[0];
 	    img.onclick = () => {if (this.props.number > 0) onClick();};
+	    this.refs.svg.contentDocument.getElementById("number").firstChild.nodeValue = this.props.number;
 	});
     }
     
@@ -40,21 +41,15 @@ class CartImage extends React.Component {
 export default CartImage;
 
 const click_handler = (dispatch) => (state) => {
-    let targeturl = "http://screen.umassmed.edu/search/?assembly=" + GlobalAssembly + "&q=";
-    for (let item of state.accessions) {
-	targeturl += item + "+";
-    }
-    window.location.href = targeturl.substring(0, targeturl.length - 1);
-    return;
     $.ajax({
         type: "POST",
         url: "/setCart",
-        data: JSON.stringify(state.cart_list),
+        data: JSON.stringify(state.accessions),
         dataType: "json",
         contentType: "application/json",
         success: (response) => {
             if ("err" in response) return true;
-	    window.location.href = "/cart";
+	    window.location.href = "/search?q&cart&assembly=" + GlobalAssembly;
         }
     });
 };
