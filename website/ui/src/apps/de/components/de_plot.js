@@ -11,21 +11,36 @@ class DePlot extends React.Component {
     }
 
     render() {
+        let ct1 = Globals.cellTypeInfo[this.props.ct1]["name"];
+        let ct2 = Globals.cellTypeInfo[this.props.ct2]["name"];
+        let geneName1 = this.props.data.nearbyDEs.names[0];
+        let geneName2 = this.props.data.nearbyDEs.names[1];
+
+        let subtitle = (geneName1 === geneName2 ? "" :
+                        <span className={"deSubtitle"}>{geneName2}</span>
+                       );
+
+        let title = (<div>
+                     <table className={"deTitleTable"}>
+                     <tr>
+                     <td><span className={"deGene"}>{geneName1}</span></td>
+                     <td>
+                     <span className={"deCT"}>{ct1}</span>
+                     <span className={"deVS"}>{" vs "}</span>
+                     <span className={"deCT"}>{ct2}</span>
+                     </td>
+                     </tr>
+                     <tr>
+                     <td>
+                     {subtitle}
+                     </td>
+                     </tr>
+                     </table>
+                     </div>);
+
 	return (<div>
                 <span ref="help_icon" />
-
- 	        <span style={{fontSize: "18pt",  fontStyle: "italic"}}>
-                {this.props.gene}
-                </span>
-
- 	        <span style={{fontSize: "14pt"}}>
-                {": "}
-                {Globals.cellTypeInfo[this.props.ct1]["name"]}
-                {" vs "}
-                {Globals.cellTypeInfo[this.props.ct2]["name"]}
-
-                </span>
-
+                {title}
 		<div style={{"width": "100%"}} ref="chart" />
 		</div>);
     }

@@ -53,7 +53,7 @@ class NearestGenes:
         Utils.sortFile(fnp)
         Utils.sortFile(os.path.join(d, "raw", "masterPeaks.bed"),
                        os.path.join(d, "raw", "masterPeaks.sorted.bed"))
-                       
+
         cmds = ["bedtools closest",
                 "-a", os.path.join(d, "raw", "masterPeaks.sorted.bed"),
                 "-b", fnp,
@@ -71,7 +71,7 @@ class NearestGenes:
                     f.write('\t'.join([coord[0], str(coord[1]), str(coord[2]), ensembli, coord[3]]) + '\n')
         printWroteNumLines(fnp)
         Utils.sortFile(fnp)
-                       
+
         cmds = ["bedtools closest",
                 "-a", os.path.join(d, "raw", "masterPeaks.sorted.bed"),
                 "-b", fnp,
@@ -93,7 +93,7 @@ def main():
     for assembly in ["mm10", "hg19"]:
         ng = NearestGenes(assembly)
         ng.run()
-        
+
     return 0
 
 if __name__ == '__main__':
