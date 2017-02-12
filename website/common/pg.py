@@ -348,8 +348,6 @@ WHERE int4range(start, stop) && int4range(%s, %s)
 AND isProximal is {isProx}
 """.format(isProx = str(isProximalOrDistal))
 
-        print("nearbyCREs query:", q)
-
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
             curs.execute(q, (c.start, c.end))
             return curs.fetchall()
@@ -539,6 +537,9 @@ FROM {tn}
             return sorted([r[0] for r in curs.fetchall()])
 
     def genePos(self, gene):
+        ensemblid = gene
+        if gene.startswith("ENS") and '.' in gene:
+            ensemblid = gene.split('.')[0]
         tableName = self.assembly + "_gene_info"
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
@@ -546,7 +547,8 @@ SELECT chrom, start, stop FROM {tn}
 WHERE approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s
-""".format(tn = tableName), (gene, gene, gene))
+AND chrom != ''
+""".format(tn = tableName), (gene, ensemblid, gene))
             r = curs.fetchone()
         if not r:
             print("ERROR: missing", gene)
@@ -571,7 +573,7 @@ OR ensemblid_ver = %s
                               "stop" : c.end, "pval" : pval,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
         return des
 
     def gwasEnrichment(self, gwas_study):
@@ -596,7 +598,6 @@ WHERE authorPubmedTrait = %s
         return [GwasRow(*r) for r in rows]
 
     def gwasOverlapWithCresPerc(self, gwas_study):
-        print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT COUNT(DISTINCT(ldblock))
@@ -608,7 +609,6 @@ AND gwas.authorPubmedTrait = %s
 """
             curs.execute(q, (gwas_study, ))
             overlapCount = curs.fetchone()[0]
-            print("overlapCount", overlapCount)
 
             q = """
 select count(distinct(ldblock))
@@ -617,11 +617,9 @@ WHERE gwas.authorPubmedTrait = %s
 """.format(tn = "hg19_gwas")
             curs.execute(q, (gwas_study, ))
             total = curs.fetchone()[0]
-            print("total", total, gwas_study)
         return float(overlapCount) / total
 
     def gwasOverlapWithCres(self, gwas_study):
-        print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT cre.accession
@@ -634,7 +632,6 @@ AND gwas.authorPubmedTrait = %s
             return [r[0] for r in curs.fetchall()]
 
     def gwasAccessions(self, gwas_study):
-        print(gwas_study)
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT accession
@@ -683,9 +680,20 @@ where assay = %s
             curs.execute("""
 SELECT ensemblid, approved_symbol, strand
 FROM {tn}
+WHERE strand != ''
 """.format(tn = self.assembly + "_gene_info"))
             rows = curs.fetchall()
-        return {r[0]: r[1] for r in rows}, {r[0]: r[2] for r in rows}
+            toSymbol = {r[0]: r[1] for r in rows}
+            toStrand = {r[0]: r[2] for r in rows}
+            curs.execute("""
+SELECT ensemblid_ver, approved_symbol, strand
+FROM {tn}
+WHERE strand != ''
+""".format(tn = self.assembly + "_gene_info"))
+            rows = curs.fetchall()
+            toSymbol.update({r[0]: r[1] for r in rows})
+            toStrand.update({r[0]: r[2] for r in rows})
+        return toSymbol, toStrand
 
     def gwasPercentActive(self, gwas_study, ct):
         fields = ["cre.accession", "array_agg(snp)",
@@ -716,7 +724,6 @@ AND over.authorPubmedTrait = %s
 GROUP BY {groupBy}
 """.format(fields = ', '.join(fields),
            groupBy = ', '.join(groupBy))
-            #print(q)
             curs.execute(q, (gwas_study, ))
             accs = curs.fetchall()
 
