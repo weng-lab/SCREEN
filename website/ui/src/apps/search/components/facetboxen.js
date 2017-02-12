@@ -160,26 +160,41 @@ const _rankBox = ({element_type, actions, cellType}) => {
                     />);
 }
 
+const makeRankFacet = (rfacets, assay, title, start, end, action) =>
+    {
+	let range = [-1000, 1000];
+        if(!rfacets.includes(assay)){
+            return "";
+        }
+        return rangeBox(title, range, start, end,
+		        action, zscore_decimal, zrdecimal);
+}
+
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end, rfacets,
-                  cellType, actions}) => {
-		      let range = [-1000, 1000];
-    if(null == cellType && 0){
-        return (<div />);
-    }
-		      return panelize("Z-Score " + (cellType ? "in " + make_ct_friendly(cellType) : "maximum across all cell types"),
-                    (<div>
-                     {rfacets.includes("dnase") ? rangeBox("DNase", range, rank_dnase_start, rank_dnase_end,
-							   actions.setRankDnase, zscore_decimal, zrdecimal) : ""}
-                     {rfacets.includes("promoter") ? rangeBox("promoter", range, rank_promoter_start, rank_promoter_end,
-							      actions.setRankPromoter, zscore_decimal, zrdecimal) : ""}
-                     {rfacets.includes("enhancer") ? rangeBox("enhancer", range, rank_enhancer_start, rank_enhancer_end,
-							      actions.setRankEnhancer, zscore_decimal, zrdecimal) : ""}
-                     {rfacets.includes("ctcf") ? rangeBox("CTCF", range, rank_ctcf_start, rank_ctcf_end,
-							  actions.setRankCtcf, zscore_decimal, zrdecimal) : ""}
-                     </div>), "zscore_facet");
+                  cellType, actions}) =>
+    {
+        let title = "Z-Score " + (cellType ?
+                                  "in " + make_ct_friendly(cellType) :
+                                  "maximum across all cell types");
+        let rankFacets = (<div>
+                          {makeRankFacet(rfacets, "dnase", "DNase",
+                                         rank_dnase_start, rank_dnase_end,
+			                 actions.setRankDnase)}
+                          {makeRankFacet(rfacets, "promoter", "promoter",
+                                         rank_promoter_start, rank_promoter_end,
+			                 actions.setRankPromoter)}
+                          {makeRankFacet(rfacets, "enhancer", "enhancer",
+                                        rank_enhancer_start, rank_enhancer_end,
+			                actions.setRankEnhancer)}
+                          {makeRankFacet(rfacets, "ctcf", "CTCF",
+                                         rank_ctcf_start, rank_ctcf_end,
+			                 actions.setRankCtcf)}
+                          </div>);
+
+        return panelize(title, rankFacets, "zscore_facet");
 };
 
 class FacetBoxen extends React.Component {
@@ -205,15 +220,7 @@ class FacetBoxen extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-        ...state
-});
-
+const mapStateToProps = (state) => ({...state});
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(Actions, dispatch)
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(FacetBoxen);
+    actions: bindActionCreators(Actions, dispatch)});
+export default connect(mapStateToProps, mapDispatchToProps)(FacetBoxen);
