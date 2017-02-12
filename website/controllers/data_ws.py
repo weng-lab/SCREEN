@@ -89,7 +89,7 @@ class DataWebService:
         return { "title": data[0],
                  "summary": data[1],
                  "link": data[2] }
-        
+
     def session_uuid(self):
         uid = self.sessions.get(cherrypy.session.id)
         if not uid:
@@ -177,7 +177,7 @@ class DataWebService:
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
         cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
-        name = self.cache._try_genename(nearest["name"])
+        name, strand = self.cache.lookupEnsembleGene(nearest["name"])
         r = cge.computeHorBars(name, (u'cell',))
         r["genename"] = name
         return {accession: r}
