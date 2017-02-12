@@ -27,22 +27,27 @@ SELECT name, start, stop FROM {assembly}_snps_{chrom}
 """.format(chrom=chrom, assembly=self.assembly))
             r = self.curs.fetchall()
             for row in r:
-                names.append(row[0] + "\t%s\t%d\t%d" % (chrom, row[1], row[2]))
+                names.append(row[0] + "\t%s\t%d\t%d\t%s\t%d\t%d\t%s" % (chrom, row[1], row[2], chrom, row[1], row[2], row[0]))
 
         printt("loading gene info...")
         self.curs.execute("""
-SELECT approved_symbol, ensemblid, info, chrom, start, stop
-FROM {assembly}_gene_info
-""".format(assembly=self.assembly))
+<<<<<<< HEAD
+SELECT approved_symbol, ensemblid, info, g.chrom, g.start, g.stop, t.chrom, t.start, t.stop FROM {assembly}_gene_info AS g
+LEFT JOIN {assembly}_tss_info AS t
+ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         r = self.curs.fetchall()
 
         for row in r:
-            c = "%s\t%d\t%d" % (row[3], row[4], row[5])
-            names.append(row[0] + "\t" + c)
-            names.append(row[1] + "\t" + c)
+            if not row[6]:
+                _c = row[3:6]
+            else:
+                _c = row[6:9]
+            c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5], _c[0], _c[1], _c[2])
+            names.append(row[0].lower() + "\t" + c + "\t" + row[0])
+            names.append(row[1].lower() + "\t" + c + "\t" + row[1])
             if row[2]:
                 for k, v in row[2].iteritems():
-                    names.append(v + "\t" + c)
+                    names.append(v.lower() + "\t" + c + "\t" + v)
                 if 0: # no longer present in newer HGNC data?
                     if "synonyms" in row[2]:
                         names += [x.strip() + "\t" + c for x in row[2]["synonyms"]]
@@ -71,12 +76,15 @@ CREATE TABLE {tn}
 name TEXT,
 chrom TEXT,
 start INT,
-stop INT)
+stop INT,
+altchrom TEXT,
+altstart INT,
+altstop INT,
+oname TEXT)
 """.format(tn = tableName))
 
         self.curs.copy_from(outF, tableName, "\t",
-                            columns=["name", "chrom", "start", "stop"])
-
+                            columns=["name", "chrom", "start", "stop", "altchrom", "altstart", "altstop", "oname"])
         printt("indexing table...")
         self.curs.execute("""
 CREATE INDEX {tn}_index ON {tn}
