@@ -292,3 +292,26 @@ select.ui-toggle-switch { display: none; }
 .ylabel {
     font-size: 12px;
 }
+
+.deTitleTable {
+    width: 50%;
+}
+
+.deGene {
+    font-size: 18px;
+    font-style: italic;
+}
+
+.deSubtitle {
+    font-size: 12px;
+    font-style: italic;
+}
+
+.deCT {
+    font-size: 16px;
+    font-style: bold;
+}
+
+.deVS {
+    font-size: 10px;
+}
