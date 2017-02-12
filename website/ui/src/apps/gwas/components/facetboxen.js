@@ -15,7 +15,7 @@ const gwas_studies = ({gwas_study, actions}) => {
                     title={""}
                     data={GwasGlobals.gwas.studies}
                     cols={[{
-		        title: "Assay", data: "value",
+		        title: "Study", data: "value",
 		        className: "dt-right"
 	            }]}
                     order={[]}
