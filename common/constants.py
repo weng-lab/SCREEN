@@ -11,7 +11,7 @@ from v4_config import V4Config
 
 def PageTitle(assembly):
     if assembly > "":
-        return "SCREEN (%s): Search Candidate Regulatory Elements by ENCODE" % assembly
+        return "SCREEN %s: Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
 # exclude chrM
