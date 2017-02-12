@@ -51,20 +51,26 @@ class DePlot extends React.Component {
         // and http://bl.ocks.org/d3noob/e34791a32a54e015f57d
         let chart = this.refs.chart;
 	$(chart).empty();
-        let data = this.props.data.diffCREs.data;
-	let xdomain = this.props.data.xdomain;
 
-        var y_domain = d3.extent(data, function(d) { return d[1]; });
+        let creData = this.props.data.diffCREs.data;
+        let deData = this.props.data.nearbyDEs.data;
+	let xdomain = this.props.data.xdomain;
+        let coord = this.props.data.coord;
+
+        var y_domain = d3.extent(creData, function(d) { return d[1]; });
 
         let barYdomain = [Math.min(y_domain[0],
 				   this.props.data.nearbyDEs.ymin),
                           this.props.data.nearbyDEs.ymax];
-	y_domain = [Math.min(y_domain[0], barYdomain[0]), Math.max(y_domain[1], barYdomain[1])];
+	y_domain = [Math.min(y_domain[0], barYdomain[0]),
+                    Math.max(y_domain[1], barYdomain[1])];
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
-	var color = d3.scale.ordinal().domain(["enhancer-like", "promoter-like"]).range(["#ffcd00", "#ff0000"]);
+	var color = d3.scale.ordinal()
+            .domain(["enhancer-like", "promoter-like"])
+            .range(["#ffcd00", "#ff0000"]);
         var x = d3.scale.linear()
             .domain(xdomain).nice()
             .range([0, width]);
@@ -82,7 +88,7 @@ class DePlot extends React.Component {
             .orient("right");
         var svg = d3.select(chart).append("svg")
             .attr("width", width + margin.left + margin.right + 50)
-            .attr("height", height + margin.top + margin.bottom + this.props.data.nearbyDEs.data.length * 20)
+            .attr("height", height + margin.top + margin.bottom + deData.length * 20)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top+ ")");
         svg.append("g")
@@ -94,7 +100,7 @@ class DePlot extends React.Component {
             .attr("x", width - 15)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text(this.props.data.coord.chrom + " coordinates");
+            .text(coord.chrom + " coordinates");
 	svg.append("g")
 	    .append("line")
 	    .style("stroke-dasharray", ("3,3"))
@@ -116,7 +122,7 @@ class DePlot extends React.Component {
             .style("text-anchor", "end")
             .text("change in cRE Z-score")
         svg.selectAll(".dot")
-            .data(data)
+            .data(creData)
             .enter().append("rect")
             .attr("class", "rect")
             .attr("height", 5)
@@ -127,9 +133,9 @@ class DePlot extends React.Component {
 	var genelabels = svg.append("g")
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)
-	    .attr("height", this.props.data.nearbyDEs.data.length * 20);
+	    .attr("height", deData.length * 20);
 	genelabels.selectAll(".line")
-	    .data(this.props.data.nearbyDEs.data)
+	    .data(deData)
 	    .enter()
 	    .append("line")
 	    .attr("x2", (d) => (x(d[3]))).attr("x1", (d) => (x(d[2])))
@@ -142,7 +148,7 @@ class DePlot extends React.Component {
                 default: return "#000000";
                 }})
 	genelabels.selectAll(".label")
-	    .data(this.props.data.nearbyDEs.data)
+	    .data(deData)
 	    .enter()
 	    .append("text")
 	    .attr("x", (d) => (x(d[3]) + 10))
@@ -169,9 +175,8 @@ class DePlot extends React.Component {
             .style("text-anchor", "end")
             .text(function(d) { return d; });
 
-        var bars = this.props.data.nearbyDEs.data;
         var bar = svg.selectAll(".bar")
-            .data(bars)
+            .data(deData)
             .enter().append("g");
         bar.append("rect")
             .attr("class", "bar1")
