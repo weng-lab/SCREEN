@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from get_tss import Genes
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, printWroteNumLines
+from utils import Utils, printWroteNumLines, printt
 
 class NearestGenes:
     def __init__(self, assembly):
@@ -26,6 +26,7 @@ class NearestGenes:
 
     def geneToCoord(self):
         fnp, filetype = paths.gene_files[self.assembly]
+        printt("loading", fnp)
         ggff = Genes(fnp, filetype)
         ret = {}
         for g in ggff.getGenes():
@@ -34,7 +35,7 @@ class NearestGenes:
         return ret
 
     def run(self):
-        print(self.assembly, "getting gene coordinates...")
+        printt(self.assembly, "getting gene coordinates...")
         geneCoords = self.geneToCoord()
         d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
                          "Version-4", "ver9", self.assembly)
