@@ -12,6 +12,18 @@ class ResultsTableContainer extends React.Component {
 	super(props);
         this.state = { cres: [], total: 0, isFetching: true, isError: false,
                        jq : null}
+	this._all = {"dnase": "DNase-seq",
+		     "promoter": "H3K4me3 ChIP-seq",
+		     "enhancer": "H3K27ac ChIP-seq",
+		     "ctcf": "CTCF ChIP-seq" };
+    }
+
+    _get_missing(a) {
+	let r = [];
+	Object.keys(this._all).map((k) => {
+	    if (!a.includes(k)) r.push(this._all[k]);
+	});
+	return r;
     }
 
     componentWillReceiveProps(nextProps){
@@ -22,6 +34,7 @@ class ResultsTableContainer extends React.Component {
     loadCREs(props){
         var q = getCommonState(props);
         var jq = JSON.stringify(q);
+	var setrfacets = this.props.actions.setrfacets;
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
@@ -40,8 +53,9 @@ class ResultsTableContainer extends React.Component {
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cres: r["cres"], total: r["total"],
+                this.setState({cres: r["cres"], total: r["total"], nodnase: this._get_missing(r["rfacets"]),
                                jq, isFetching: false, isError: false});
+		setrfacets(r["rfacets"]);
             }.bind(this)
         });
     }
@@ -54,6 +68,8 @@ class ResultsTableContainer extends React.Component {
                 cart_accessions={this.props.cart_accessions}
                 isFetching={this.state.isFetching}
 		jq={this.state.jq}
+		nodnase={this.state.nodnase}
+		hasct={this.props.cellType}
                 />);
     }
 }

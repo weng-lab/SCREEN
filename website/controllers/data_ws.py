@@ -39,7 +39,7 @@ class DataWebServiceWrapper:
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
         self.ac = AutocompleterWrapper(ps)
-        
+
     def process(self, j, args, kwargs):
         if "action" in j and j["action"] == "suggest":
             return {"results": self.ac.get_suggestions(j["userQuery"]),
@@ -67,7 +67,8 @@ class DataWebService:
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
                         "trees" : self.trees,
-                        "tfenrichment": self.tfenrichment }
+                        "tfenrichment": self.tfenrichment,
+                        "helpkey": self.helpkey }
 
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
@@ -81,6 +82,14 @@ class DataWebService:
 
         self.sessions = Sessions(ps.DBCONN)
 
+    def helpkey(self, j, args):
+        if "key" not in j: return {}
+        data = self.ps.get_helpkey(j["key"])
+        if data is None: return {}
+        return { "title": data[0],
+                 "summary": data[1],
+                 "link": data[2] }
+        
     def session_uuid(self):
         uid = self.sessions.get(cherrypy.session.id)
         if not uid:
@@ -104,6 +113,8 @@ class DataWebService:
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
+        #print(results["cres"][0])
+        results["rfacets"] = self.pgSearch._rfacets_active(j) if "cellType" in j and j["cellType"] else ["dnase", "promoter", "enhancer", "ctcf"]
         if "withpeaks" in j:
             res = results["cres"][:20]
             n_bars = 15
@@ -159,9 +170,9 @@ class DataWebService:
     def _re_detail_assocTSS(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyGenes()
-        nearest = nearbyGenes[0]
-        for gene in nearbyGenes[1:]:
-            if gene["distance"] < nearest["distance"]:
+        nearest = {"distance": 1e12}
+        for gene in nearbyGenes[0:]:
+            if gene["distance"] < nearest["distance"] and not gene["name"].startswith("ENSG"):
                 nearest = gene
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }

@@ -14,7 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../co
 from constants import helptext
 
 SCOPES = 'https://www.googleapis.com/auth/drive.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
+CLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__), 'client_secret.json')
 APPLICATION_NAME = 'Visualizer HelpText'
 
 def _get_credentials(flags):

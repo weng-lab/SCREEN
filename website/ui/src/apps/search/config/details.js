@@ -177,7 +177,10 @@ class AssocTssTab extends ReTabBase{
 	super(props, "assocTSS");
         this.doRender = (data) => {
 	    if (data.no_nearby_tss) {
-		return <div>{"No gene expression data found for this cRE"}</div>;
+		return <div><br />{"No gene expression data found for this cRE"}</div>;
+	    }
+	    if (data.genename.startsWith("ENSG")) {
+		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
             return (<div>
 		    <h2><em>{data.genename}</em></h2>
@@ -216,7 +219,7 @@ const DetailsTabInfo = {
     assocTSS: {title: "Associated Gene Expression", enabled: true,
                f: AssocTssTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
-    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: true,
+    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: false,
                  f: SimilarREsTab}
 };
 

@@ -11,167 +11,179 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from get_tss import Genes
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils
+from utils import Utils, printt
 
 class GeneInfo:
     def __init__(self, assembly):
         self.assembly = assembly
-        self.gene_files = paths.gene_files
+        self.genes = self._load()
 
-    def getEnsembleToInfo(self):
+    def _load(self):
         if "mm10" == self.assembly:
             return self.processGeneListMm10()
         if "hg19" == self.assembly:
             return self.processGeneListHg19()
         raise Exception("unknown assembly: " + self.assembly)
 
-    def geneToCoord(self):
-        if self.assembly not in self.gene_files:
-            raise Exception("ERROR: cannot get gene coordinates for assembly " +
-                            self.assembly + "-- no gene file found")
-        fnp, filetype = self.gene_files[self.assembly]
-        ggff = Genes(fnp, filetype)
+    def loadHgnc(self):
+        fnp = paths.hgncFnp
         ret = {}
-        for g in ggff.getGenes():
-            ret[g.genename_] = (g.chr_, g.start_, g.end_)
+        with open(fnp) as f:
+            header = f.readline().rstrip().split('\t')
+            #print(header)
+            for line in f:
+                toks = line.rstrip('\n').replace('"', '').split('\t')
+                if len(toks) != len(header):
+                    raise Exception("wrong len")
+                g = dict(zip(header, toks))
+                try:
+                    gid = g["ensembl_gene_id"]
+                except:
+                    print(g)
+                    print(header)
+                    raise
+                ret[gid] = g
+        printt("loaded HGNC", len(ret))
         return ret
 
-    def _parseLineHg19(self, line):
-        line = line.strip().split("\t")
-        while len(line) < 19:
-            line.append("")
-        g = {"ensemblid": line[9].strip(),
-             "HGNC_ID": line[0],
-             "approved_symbol": line[1],
-             "approved_name": line[2],
-             "previous_symbols": line[4].split(","),
-             "synonyms": [x.strip() for x in line[5].split(",")],
-             "accession_numbers": line[7],
-             "RefSeq_ID": line[10],
-             "UniProt_ID": line[14],
-             "Vega_ID": line[16],
-             "UCSC_ID": line[17],
-             "mouse_genome_ID": line[18] }
-        return g
-
     def processGeneListHg19(self):
-        print(self.assembly, "getting gene coordinates...")
-        geneCoords = self.geneToCoord()
-        inFnp = paths.genelist[self.assembly]
-        skipped = 0
-        counter = 0
+        printt(self.assembly, "loading HGNC gene info...")
+        info = self.loadHgnc()
 
-        ensembleToInfo = {}
+        printt(self.assembly, "loading GTF/GFF...")
+        fnp, filetype = paths.gene_files[self.assembly]
+        genes = Genes(fnp, filetype)
 
-        print(self.assembly, "processing genelist...")
-        with open(inFnp, "r") as f:
-            header = f.readline()
-            for line in f:
-                g = self._parseLineHg19(line)
-                if "" == g["ensemblid"]:
-                    skipped += 1
-                    continue
-                if g["approved_symbol"] in geneCoords:
-                    chrom, start, stop = geneCoords[g["approved_symbol"]]
-                    g["chrom"] = chrom
-                    g["start"] = start
-                    g["stop"] = stop
-                ensembleToInfo[g["ensemblid"]] = g
-                counter += 1
-        print("\tprocessed", counter, "and skipped", skipped)
-        return ensembleToInfo
+        printt(self.assembly, "processing genelist...")
+        ret = {}
 
-    def _parseLineMm10(self, g):
-        eid = g.geneid_.split('.')[0]
-        gn = g.genename_
-        # TODO: fixme!
-        return {"ensemblid": eid,
-                "approved_symbol": gn,
-                "chrom" : g.chr_,
-                "start" : g.start_,
-                "stop" : g.end_}
+        for gene in genes.getGenes():
+            ensemblid_ver = gene.geneid_
+            if not ensemblid_ver.startswith("ENS"):
+                print(gene)
+                raise Exception("missing geneid_")
+            g = gene.annot_
+            g.update({"chr" : gene.chr_,
+                      "start" : gene.start_,
+                      "stop" : gene.end_,
+                      "strand" : gene.strand_})
+            if ensemblid_ver in info:
+                g.update(info[ensemblid_ver])
+            ensemblid = ensemblid_ver.split('.')[0]
+            if ensemblid in info:
+                g.update(info[ensemblid])
+            ret[ensemblid_ver] = g
+        printt("processed", len(ret))
+        return ret
 
     def processGeneListMm10(self):
-        skipped = 0
-        counter = 0
-
-        ensembleToInfo = {}
+        ret = {}
 
         fnp, filetype = paths.gene_files[self.assembly]
         ggff = Genes(fnp, filetype)
+
         for gene in ggff.getGenes():
-            g = self._parseLineMm10(gene)
-            if "" == g["ensemblid"]:
-                skipped += 1
-                continue
-            ensembleToInfo[g["ensemblid"]] = g
-            counter += 1
-        print("\tprocessed", counter, "and skipped", skipped)
-        return ensembleToInfo
+            gid = gene.geneid_
+            g = gene.annot_
+            g.update({"chr" : gene.chr_,
+                      "start" : gene.start_,
+                      "stop" : gene.end_,
+                      "strand" : gene.strand_})
+            ret[gid] = g
+        printt("processed", len(ret))
+        return ret
 
 class GeneRow:
-    def __init__(self, ensembleToInfo, toks):
-        self.ensemblid_ver = toks[0]
+    def __init__(self, gid, info, gidsToDbID):
         try:
-            self.ver = toks[0].split('.')[1]
+            self.ensemblid_ver = gid
+            gidToks = gid.split('.')
+            self.ensemblid = gidToks[0]
+            self.ver = gidToks[1]
         except:
-            print("ERROR:", toks)
-            self.ver = "0"
+            self.ensemblid_ver = ''
+            self.ensemblid = ''
+            self.ver = '0'
 
         if not self.ver:
-            print("ERROR", toks)
-            self.ver = "0"
+            #print("Missing ver:", gid, info)
+            self.ver = '0'
 
-        self.ensemblid = toks[1]
-        self.geneId = toks[2]
+        self.dbID = -1
+        if self.ensemblid_ver in gidsToDbID:
+            self.dbID = gidsToDbID[self.ensemblid_ver]
+        elif self.ensemblid in gidsToDbID:
+            self.dbID = gidsToDbID[self.ensemblid]
 
-        if self.ensemblid in ensembleToInfo:
-            self.info = ensembleToInfo[self.ensemblid]
-            self.approved_symbol = self.info["approved_symbol"]
-            self.chrom = self.info.get("chrom", "")
-            self.start = self.info.get("start", 0)
-            self.stop = self.info.get("stop", 0)
-        elif toks[0] in ensembleToInfo:
-            self.info = ensembleToInfo[toks[0]]
-            self.approved_symbol = self.info["approved_symbol"]
-            self.chrom = self.info.get("chrom", "")
-            self.start = self.info.get("start", 0)
-            self.stop = self.info.get("stop", 0)
-        else:
-            self.info = {}
-            self.approved_symbol = self.ensemblid_ver
-            self.chrom = ""
-            self.start = 0
-            self.stop = 0
+        self.info = info
+        self.approved_symbol = info.get("gene_name", gid)
+        self.chrom = info.get("chr", "")
+        self.start = info.get("start", 0)
+        self.stop = info.get("stop", 0)
+        self.strand = info.get('strand', '')
 
+        keysToRemove = ['chr', 'start', 'stop', "gene_name",
+                        "gene_id", "ensembl_gene_id", "ID",
+                        'gene_status', 'transcript_status',
+                        'gene_type', 'source', 'level', 'strand',
+                        'tag', "transcript_type",
+                        'status', 'transcript_status',
+                        'transcript_type', "locus_type",
+                        "locus_group", "date_modified",
+                        "date_approved_reserved"]
         self.info = {k:v for k, v in self.info.items() if k not in
-                     ['chrom', 'start', 'stop', "approved_symbol",
-                      "ensemblid"] and v and v != [""]}
+                     keysToRemove and v and v != [""]}
 
     def output(self):
-        return '\t'.join([self.geneId, self.ensemblid, self.ver,
+        return '\t'.join([str(self.dbID), self.ensemblid, self.ver,
                           self.ensemblid_ver, self.approved_symbol,
                           self.chrom, str(self.start), str(self.stop),
-                          json.dumps(self.info)])
+                          self.strand, json.dumps(self.info)])
 
-class AddGeneAliases:
+def loadGidsToDbIds(assembly):
+    fnp = paths.path(assembly, "raw", "ensebleToID.txt")
+
+    printt("reading", fnp)
+    with open(fnp) as f:
+        rows = [line.rstrip('\n').split(',')
+                for line in f.readlines() if line]
+    gidsToDbID = {}
+    requiredGids = {}
+    for r in rows:
+        if 3 != len(r):
+            print(r)
+            raise Exception("wrong num toks")
+        gid = r[0]
+        gidsToDbID[gid] = r[2]
+        requiredGids[gid] = r[2]
+        gidsToDbID[r[1]] = r[2]
+    return gidsToDbID, requiredGids
+
+class ImportGenes:
     def __init__(self, curs, assembly):
         self.assembly = assembly
         self.curs = curs
-        self.ensembleToInfo = GeneInfo(assembly).getEnsembleToInfo()
 
     def run(self):
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "raw")
-        fnp = os.path.join(d, "ensebleToID.txt")
+        print('***********', self.assembly)
 
-        print("reading", fnp)
-        with open(fnp) as f:
-            rows = [GeneRow(self.ensembleToInfo, x.rstrip().split(','))
-                    for x in f if x]
-        print("loaded", len(rows))
+        gidsToDbID, requiredGids = loadGidsToDbIds(self.assembly)
 
-        print(rows[0].output())
+        genes = GeneInfo(self.assembly).genes
+
+        ret = {}
+        for gid, info in genes.iteritems():
+            ret[gid] = GeneRow(gid, info, gidsToDbID)
+        printt("merged", len(ret))
+        count = len(ret)
+
+        for gid, ver in requiredGids.iteritems():
+            if gid not in ret:
+                ret[gid] = GeneRow(gid, {}, gidsToDbID)
+        printt("loaded missing genes for DB", len(ret) - count)
+
+        ret = ret.values()
+        print("example\n", ret[0].output())
 
         tableName = self.assembly + "_gene_info"
         self.curs.execute("""
@@ -183,20 +195,23 @@ ensemblid text,
 ver integer,
 ensemblid_ver text,
 approved_symbol text,
-        chrom text,
-        start integer,
-        stop integer,
-info jsonb);""".format(tableName = tableName))
+chrom text,
+start integer,
+stop integer,
+strand varchar(1),
+info jsonb);
+""".format(tableName = tableName))
 
-        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver", "approved_symbol",
-                "chrom", "start", "stop", "info"]
+        cols = ["geneid", "ensemblid", "ver", "ensemblid_ver",
+                "approved_symbol", "chrom", "start", "stop",
+                "strand", "info"]
 
         outF = StringIO.StringIO()
-        for r in rows:
+        for r in ret:
             outF.write(r.output() + '\n')
         outF.seek(0)
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
-        print("updated", tableName)
+        print("updated", tableName, self.curs.rowcount)
 
         makeIndex(self.curs, tableName, ["geneid"])
 
@@ -211,12 +226,13 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    for assembly in ["mm10", "hg19"]:
+    for assembly in ["hg19", "mm10"]:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
-            aga = AddGeneAliases(curs, assembly)
+            aga = ImportGenes(curs, assembly)
             aga.run()
 
     return 0
 
 if __name__ == '__main__':
     main()
+

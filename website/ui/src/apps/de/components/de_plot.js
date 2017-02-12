@@ -22,6 +22,11 @@ class DePlot extends React.Component {
                 {Globals.cellTypeInfo[this.props.ct1]["name"]}
                 {" vs "}
                 {Globals.cellTypeInfo[this.props.ct2]["name"]}
+		<small>
+		{"  ("}
+		{this.props.data.coord.chrom}
+		{")"}
+		</small>
                 </span>
 
 		<div style={{"width": "100%"}} ref="chart" />
@@ -51,11 +56,14 @@ class DePlot extends React.Component {
         var x = d3.scale.linear()
             .domain(xdomain).nice()
             .range([0, width]);
+        var xr = d3.scale.linear()
+            .domain([0, xdomain[1] - xdomain[0]]).nice()
+            .range([0, width]);
         var y = d3.scale.linear()
             .domain(y_domain).nice()
             .range([height, 0]);
         var xAxis = d3.svg.axis()
-            .ticks(3)
+            .ticks(6)
             .scale(x)
             .orient("bottom");
         var yAxisRight = d3.svg.axis().scale(y)
@@ -97,12 +105,13 @@ class DePlot extends React.Component {
             .text("change in cRE Z-score")
         svg.selectAll(".dot")
             .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 3.5)
-            .attr("cx", function(d) { return x(d[0]); })
-            .attr("cy", function(d) { return y(d[1]); })
-            .style("fill", function(d) { return color(d[2]); });
+            .enter().append("rect")
+            .attr("class", "rect")
+            .attr("height", 5)
+	    .attr("width", function(c) { return xr(2 * c[3]); })
+            .attr("x", function(c) { return x(c[0] - c[3]); })
+            .attr("y", function(c) { return y(c[1]); })
+            .style("fill", function(c) { return color(c[2]); });
 	var genelabels = svg.append("g")
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)
@@ -142,9 +151,6 @@ class DePlot extends React.Component {
             .text(function(d) { return d; });
 
         var bars = this.props.data.nearbyDEs.data;
-//        y = d3.scale.linear()
- //           .domain(barYdomain).nice()
-  //          .range([height, 0]);
         var bar = svg.selectAll(".bar")
             .data(bars)
             .enter().append("g");
