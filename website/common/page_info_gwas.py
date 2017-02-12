@@ -2,7 +2,7 @@ import sys, os, json, cherrypy
 import subprocess
 
 from models.gwas import Gwas
-from common.pg import PGsearch
+from common.pg_gwas import PGgwas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
@@ -27,7 +27,7 @@ class PageInfoGwas:
             assembly = args[0]
 
         cache = self.cacheW[assembly]
-        g = Gwas(cache, PGsearch(self.ps, assembly))
+        g = Gwas(assembly, cache, PGgwas(self.ps, assembly))
 
         data = {"gwas": {"gwas" : g.gwas,
                          "studies" : g.studies}}

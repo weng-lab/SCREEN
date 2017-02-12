@@ -187,8 +187,8 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
                                          rank_promoter_start, rank_promoter_end,
 			                 actions.setRankPromoter)}
                           {makeRankFacet(rfacets, "enhancer", "enhancer",
-                                        rank_enhancer_start, rank_enhancer_end,
-			                actions.setRankEnhancer)}
+                                         rank_enhancer_start, rank_enhancer_end,
+			                 actions.setRankEnhancer)}
                           {makeRankFacet(rfacets, "ctcf", "CTCF",
                                          rank_ctcf_start, rank_ctcf_end,
 			                 actions.setRankCtcf)}

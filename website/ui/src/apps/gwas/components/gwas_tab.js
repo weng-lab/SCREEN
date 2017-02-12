@@ -5,7 +5,6 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import Pie from '../components/pie'
-import HugeBars from '../components/huge_bars'
 import Table from '../components/table'
 import loading from '../../../common/components/loading'
 import CelltypeView from '../components/celltype_view'
@@ -79,7 +78,7 @@ class GwasTab extends React.Component{
 		    <div className="container-fluid">
 		    <div className="row">
 		    <div className="col-md-6">
-		    <HugeBars data={data.pie} />
+
 		    </div>
 		    <div className="col-md-6">
 		    <Table
