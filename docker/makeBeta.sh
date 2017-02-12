@@ -9,12 +9,12 @@ export BASE="/data/docker/regelmviz"
 
 if [ "X$1" != "Xyes" ]; then
 	echo
-	echo "--------------------------------------------------------------------"
+	echo "-------------------------------------------------------------------"
 	echo "This script destroys existing container with name \"${NAME}\" and"
 	echo "starts a new instance based on ${IMAGE}."
 	echo
 	echo "Run as '$0 yes' if this is what you intend to do."
-	echo "--------------------------------------------------------------------"
+	echo "-------------------------------------------------------------------"
 	echo
 	exit 0
 fi
@@ -23,12 +23,12 @@ docker stop "${NAME}"
 docker rm "${NAME}"
 docker run \
        -v "/nfs/0_metadata@bib5/:/nfs/0_metadata@bib5/:ro" \
+       -v "/nfs/0_metadata_zlab2@zlab2/:/nfs/0_metadata_zlab2@zlab2/:ro" \
        -v "${BASE}/data:/data" \
        -v "${BASE}/var/log:/var/log" \
        -v "${BASE}/home:/home" \
        -v "${BASE}/etc/ssh:/etc/ssh" \
        -p 127.0.0.1:8013:8000 \
-       -p 127.0.0.1:8014:9000 \
        -p 127.0.0.1:8033:22 \
        --link postgresql:postgresql \
        -d --restart=always \
