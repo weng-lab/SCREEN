@@ -15,11 +15,7 @@ class Gwas:
         self.load()
 
     def load(self):
-        if not self.gwas:
-            self.gwas = self.pgSearch.gwas()
-        if not self.studies:
-            studies = list(set([e.authorPubmedTrait for e in self.gwas]))
-            self.studies = [{"value" : e} for e in studies]
+        self.studies = self.pgSearch.gwasStudies()
 
     def overlapWithCresPerc(self, gwas_study):
          return self.pgSearch.gwasOverlapWithCresPerc(gwas_study)

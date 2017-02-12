@@ -57,6 +57,17 @@ FROM {tn}
             rows = curs.fetchall()
         return [GwasRow(*r) for r in rows]
 
+    def gwasStudies(self):
+        with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
+            q = """
+select distinct(authorpubmedtrait), author, pubmed, trait
+FROM {tn}
+""".format(tn = self.assembly + "_gwas")
+            curs.execute(q)
+            rows = curs.fetchall()
+        key = ["value", "author", "pubmed", "trait"]
+        return [dict(zip(key, r)) for r in rows]
+
     def gwasOverlapWithCresPerc(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
