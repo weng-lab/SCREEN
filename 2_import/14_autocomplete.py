@@ -79,14 +79,14 @@ stop INT)
 
         printt("indexing table...")
         self.curs.execute("""
-CREATE INDEX {assembly}_autocomplete_index ON {tn}
+CREATE INDEX {tn}_index ON {tn}
 USING btree (name text_pattern_ops)
 """.format(tn = tableName))
 
         # will need to run as psql postgres user:
         # \c regElmViz; CREATE EXTENSION pg_trgm;
         self.curs.execute("""
-CREATE INDEX {assembly}_fulltext_index ON {tn}
+CREATE INDEX {tn}_fulltext_index ON {tn}
 USING gin (name gin_trgm_ops)
 """.format(tn = tableName))
 
