@@ -20,7 +20,11 @@ class SetupAutocomplete:
         self.tableName = self.assembly + "_autocomplete"
 
     def test(self, q):
-        self.curs.execute("SELECT approved_symbol FROM {assembly}_gene_info WHERE approved_symbol = '{q}'".format(assembly=self.assembly, q=q))
+        self.curs.execute("""
+SELECT approved_symbol
+FROM {assembly}_gene_info
+WHERE approved_symbol = %s
+""".format(assembly=self.assembly), (q,) )
         print(self.curs.fetchall())
 
     def _snps(self):
@@ -58,7 +62,12 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
             names.append(row[1].lower() + "\t" + c + "\t" + row[1])
             if row[2]:
                 for k, v in row[2].iteritems():
-                    names.append(v.lower() + "\t" + c + "\t" + v)
+                    if '|' in v:
+                        for e in v.split('|'):
+                            if e:
+                                names.append(e.lower() + "\t" + c + "\t" + v)
+                    else:
+                        names.append(v.lower() + "\t" + c + "\t" + v)
         return names
 
     def _save(self, names):
