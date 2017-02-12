@@ -20,7 +20,7 @@ import {panelize} from '../../../common/utility'
 
 const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="https://www.encodeproject.org/static/img/encode-logo-small-2x.png" alt="ENCODE logo" width="42">';
+    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
