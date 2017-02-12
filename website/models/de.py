@@ -106,6 +106,8 @@ class DE:
             #print("de", d, e, d[1] - d[0])
             ret.append(e)
 
+        ret.sort(key = lambda d: d[2]) # sort by start
+
         return {"names" : self.names,
                 "data" : ret,
                 "xdomain" : xdomain,
