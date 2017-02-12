@@ -6,7 +6,8 @@ import math
 from cre import CRE
 
 class Gwas:
-    def __init__(self, cache, pgSearch):
+    def __init__(self, assembly, cache, pgSearch):
+        self.assembly = assembly
         self.cache = cache
         self.pgSearch = pgSearch
         self.gwas = None
