@@ -91,13 +91,14 @@ class DE:
 
         ret = []
         for d in nearbyDEs:
+            genename, strand = self.cache._try_genename(d[5])
             e = [float(d[1] - d[0]) / 2 + d[0], # center
                  round(float(d[2]), 3), # log2FoldChange
                  d[0], # start
                  d[1], # stop
                  d[3], # leftName
                  d[4], # rightName
-                 self.cache._try_genename(d[5]) # names
+                 genename, strand
                  ]
             print("de", d, e, d[1] - d[0])
             ret.append(e)
