@@ -119,7 +119,13 @@ class DePlot extends React.Component {
 	    .append("line")
 	    .attr("x2", (d) => (x(d[3]))).attr("x1", (d) => (x(d[2])))
 	    .attr("y1", (d, i) => (i * 20)).attr("y2", (d, i) => (i * 20))
-	    .style("stroke", "#000000");
+	    .style("stroke", function(d){
+                var strand = d[7];
+                switch(strand) {
+                case '+': return "#FF0000";
+                case '-': return "#1E90FF";
+                default: return "#000000";
+                }})
 	genelabels.selectAll(".label")
 	    .data(this.props.data.nearbyDEs.data)
 	    .enter()
