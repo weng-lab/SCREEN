@@ -681,11 +681,11 @@ where assay = %s
     def genemap(self):
         with getcursor(self.pg.DBCONN, "pg::genemap") as curs:
             curs.execute("""
-SELECT ensemblid, approved_symbol
+SELECT ensemblid, approved_symbol, strand
 FROM {tn}
 """.format(tn = self.assembly + "_gene_info"))
             rows = curs.fetchall()
-        return {r[0]: r[1] for r in rows}
+        return {r[0]: r[1] for r in rows}, {r[0]: r[2] for r in rows}
 
     def gwasPercentActive(self, gwas_study, ct):
         fields = ["cre.accession", "array_agg(snp)",

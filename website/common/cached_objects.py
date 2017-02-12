@@ -69,15 +69,15 @@ class CachedObjects:
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),
                          "h3k4me3": self.pgSearch.datasets("H3K4me3"),
                          "ctcf" : self.pgSearch.datasets("CTCF")}
-        self.ensemblToSymbol = self.pgSearch.genemap()
+        self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
     def _try_genename(self, s):
         if s in self.ensemblToSymbol:
-            return self.ensemblToSymbol[s]
+            return self.ensemblToSymbol[s], self.ensemblToStrand[s]
         d = s.split(".")[0]
         if d in self.ensemblToSymbol:
-            return self.ensemblToSymbol[d]
-        return s
+            return self.ensemblToSymbol[d], self.ensemblToStrand[d]
+        return s, ''
 
     def getTissue(self, ct):
         if ct in self.cellTypeToTissue:
