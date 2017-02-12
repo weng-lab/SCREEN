@@ -17,8 +17,13 @@ class SetupAutocomplete:
         self.curs = curs
         self.assembly = assembly
         self.save = save
+        self.tableName = self.assembly + "_autocomplete"
 
-    def run(self):
+    def test(self, q):
+        self.curs.execute("SELECT approved_symbol FROM {assembly}_gene_info WHERE approved_symbol = '{q}'".format(assembly=self.assembly, q=q))
+        print(self.curs.fetchall())
+
+    def _snps(self):
         printt("loading snps...")
         names = []
         for chrom in chroms[self.assembly]:
@@ -28,16 +33,22 @@ SELECT name, start, stop FROM {assembly}_snps_{chrom}
             r = self.curs.fetchall()
             for row in r:
                 names.append(row[0] + "\t%s\t%d\t%d\t%s\t%d\t%d\t%s" % (chrom, row[1], row[2], chrom, row[1], row[2], row[0]))
+        return names
 
+    def _genes(self):
         printt("loading gene info...")
         self.curs.execute("""
-<<<<<<< HEAD
-SELECT approved_symbol, ensemblid, info, g.chrom, g.start, g.stop, t.chrom, t.start, t.stop FROM {assembly}_gene_info AS g
+SELECT approved_symbol, ensemblid, info,
+g.chrom, g.start, g.stop,
+t.chrom, t.start, t.stop
+FROM {assembly}_gene_info AS g
 LEFT JOIN {assembly}_tss_info AS t
 ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
-        r = self.curs.fetchall()
+        rows = self.curs.fetchall()
 
-        for row in r:
+        names = []
+        for row in rows:
+            row = list(row)
             if not row[6]:
                 _c = row[3:6]
             else:
@@ -48,16 +59,9 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
             if row[2]:
                 for k, v in row[2].iteritems():
                     names.append(v.lower() + "\t" + c + "\t" + v)
-                if 0: # no longer present in newer HGNC data?
-                    if "synonyms" in row[2]:
-                        names += [x.strip() + "\t" + c for x in row[2]["synonyms"]]
-                    if "previous_symbols" in row[2]:
-                        names += [x.strip() + "\t" + c for x in row[2]["previous_symbols"]]
+        return names
 
-        outF = StringIO.StringIO()
-        outF.write("\n".join(names))
-        outF.seek(0)
-
+    def _save(self, names):
         if self.save:
             fnp = paths.path(self.assembly, "extras",
                              "autocomplete_dictionary.txt")
@@ -65,10 +69,12 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
                 o.write("\n".join(names))
             printt("wrote", fnp)
 
-        printt("found", len(names), "items")
+    def _db(self, names):
+        outF = StringIO.StringIO()
+        outF.write("\n".join(names))
+        outF.seek(0)
 
         printt("inserting into table...")
-        tableName = self.assembly + "_autocomplete"
         self.curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
@@ -81,22 +87,34 @@ altchrom TEXT,
 altstart INT,
 altstop INT,
 oname TEXT)
-""".format(tn = tableName))
+""".format(tn = self.tableName))
 
-        self.curs.copy_from(outF, tableName, "\t",
-                            columns=["name", "chrom", "start", "stop", "altchrom", "altstart", "altstop", "oname"])
+        cols = ["name", "chrom", "start", "stop",
+                "altchrom", "altstart", "altstop", "oname"]
+        self.curs.copy_from(outF, self.tableName, "\t",
+                            columns=cols)
+
+    def _index(self):
         printt("indexing table...")
         self.curs.execute("""
 CREATE INDEX {tn}_index ON {tn}
 USING btree (name text_pattern_ops)
-""".format(tn = tableName))
+""".format(tn = self.tableName))
 
         # will need to run as psql postgres user:
         # \c regElmViz; CREATE EXTENSION pg_trgm;
         self.curs.execute("""
 CREATE INDEX {tn}_fulltext_index ON {tn}
 USING gin (name gin_trgm_ops)
-""".format(tn = tableName))
+""".format(tn = self.tableName))
+
+    def run(self):
+        names = self._genes() + self._snps()
+        printt("found", len(names), "items")
+
+        self._save(names)
+        self._db(names)
+        self._index()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -110,6 +128,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
+            print('***********', assembly)
             ss = SetupAutocomplete(curs, assembly, args.save)
             ss.run()
 
