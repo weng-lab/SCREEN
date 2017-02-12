@@ -18,6 +18,12 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize} from '../../../common/utility'
 
+const dccLink = (expID) => {
+    var url = 'https://www.encodeproject.org/experiments/' + expID;
+    var img = '<img src="https://www.encodeproject.org/static/img/encode-logo-small-2x.png" alt="ENCODE logo" width="42">';
+    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+}
+
 const rangeBox = (title, range, start, end, action, _f, _rf) => {
     return (<RangeFacet
             title={title}
@@ -56,16 +62,27 @@ const cellTypesBox = ({cellType, actions}) => {
                     title={""}
                     data={Globals.cellTypeInfoArr}
                     cols={[
-			{title: "", data: "name", render: () => ("<input type='checkbox' />")},
+			{ title: "", data: "name",
+                          render: () => ("<input type='checkbox' />")},
 		        { title: "cell type", data: "name",
-		          className: "dt-right" },
+		          className: "dt-right"},
 		        { title: "tissue", data: "tissue",
-		            className: "dt-right" }
+		          className: "dt-right" },
+		        { title: "", data: "expID", render: dccLink,
+		          className: "dt-right dcc" }
 	            ]}
                     order={[]}
                     selection={cellType}
                     friendlySelectionLookup={make_ct_friendly}
-                    onTdClick={(value) => { actions.setCellType(value) }}
+                    onTdClick={(value, td, cellObj) => {
+                        if(td){
+                            if (td.className.indexOf("dcc") == -1) {
+                                actions.setCellType(value);
+                            }
+                        } else {
+                            actions.setCellType(value);
+                        }
+                    }}
                     />, "celltype_facet");
 }
 
@@ -134,7 +151,10 @@ const _rankBox = ({element_type, actions, cellType}) => {
     return panelize("cRE activity" + (cellType ? " in " + make_ct_friendly(cellType) : ""),
 	            <ListFacet
                     title={""}
-                    items={[["chromatin-accessible", ""], ["promoter-like", ""], ["enhancer-like", ""], ["insulator-like", ""]]}
+                    items={[["chromatin-accessible", ""],
+                            ["promoter-like", ""],
+                            ["enhancer-like", ""],
+                            ["insulator-like", ""]]}
                     selection={element_type}
                     onchange={(e) => { actions.setType(e) }}
                     />);
