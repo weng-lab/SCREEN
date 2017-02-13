@@ -43,7 +43,9 @@ class LongListFacet extends React.Component {
                 order={this.props.order}
 	        onTdClick={this._td_handler}
                 bFilter={true}
-                bLengthChange={false} />
+                bLengthChange={false}
+	        pageLength={this.props.pageLength}
+                />
 		</div>
 
                 <div style={{display: sdisplay}}>

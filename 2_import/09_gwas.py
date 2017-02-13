@@ -158,6 +158,31 @@ def _gwas(curs, fnp):
         split.append(b)
     print("split rows", len(rows), "to", len(split))
 
+    lookup = {
+        "Arking_24952745_QT Interval" : "Arking_24952745_QTInterval",
+        "Barrett_19430480_Type 1 Diabetes" : "Barrett_19430480_T1Diabetes",
+        "Bentham_26502338_Lupus" : "Bentham_26502338_Lupus",
+        "Liu_26192919_Crohns Disease" : "Liu_26192919_Crohns",
+        "Liu_26192919_Inflammatory Bowel Disease" : "Liu_26192919_IBD",
+        "Liu_26192919_Ulcerative Colitis" : "Liu_26192919_UC",
+        "Sawcer_21833088_Multiple Sclerosis" : "Sawcer_21833088_MS",
+        "Speedy_24292274_Chronic lymphocytic leukemia" :
+        "Speedy_24292274_Leukemia",
+        "Surakka_25961943_Cholesterol" : "Surakka_25961943_Cholesterol",
+        "Surakka_25961943_HDL Cholesterol" : "Surakka_25961943_HDL",
+        "Surakka_25961943_LDL Cholesterol" : "Surakka_25961943_LDL",
+        "Teslovich_20686565_HDL Cholesterol" : "Teslovich_20686565_HDL",
+        "Teslovich_20686565_LDL Cholesterol" : "Teslovich_20686565_LDL",
+        "Teslovich_20686565_Triglyceride Levels" : "Teslovich_20686565_TriG",
+        "vanderHarst_23222517_Red Blood Cell Traits" :
+        "vanderHarst_23222517_RBCTraits",
+        "Wain_21909110_Blood Pressure" : "Wain_21909110_BloodPressure",
+        "Willer_24097068_Cholesterol" : "Willer_24097068_Cholesterol",
+        "Willer_24097068_HDL Cholesterol" : "Willer_24097068_HDL",
+        "Willer_24097068_LDL Cholesterol" : "Willer_24097068_LDL",
+        "Willer_24097068_Triglyceride Levels" : "Willer_24097068_TriG",
+        }
+
     printt("rewrite rows")
     outF = StringIO.StringIO()
     for idx, r in enumerate(split):
@@ -166,7 +191,9 @@ def _gwas(curs, fnp):
         if '*' == r[5]:
             r[5] = "-1"
         r[2] = str(int(r[2]) + 1)
-        r.append('_'.join([r[-1], r[-2], r[-3]]))
+        authorPubmedTrait = '_'.join([r[-1], r[-2], r[-3]])
+        authorPubmedTrait = lookup[authorPubmedTrait]
+        r.append(authorPubmedTrait)
         if 0 == idx:
             print("example", '\t'.join(r))
         if '*' in '\t'.join(r):
@@ -183,12 +210,12 @@ def setupAll(curs):
     dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
     dataF = os.path.join(dataF, "GWAS")
 
+    fnp = os.path.join(dataF, "GWAS.v1.bed")
+    _gwas(curs, fnp)
+
     fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
     _studies(curs, fnp)
     _enrichment(curs, fnp)
-
-    fnp = os.path.join(dataF, "GWAS.v1.bed")
-    _gwas(curs, fnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()

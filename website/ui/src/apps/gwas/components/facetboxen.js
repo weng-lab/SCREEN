@@ -22,6 +22,7 @@ const gwas_studies = ({gwas_study, actions}) => {
                     order={[]}
 		    selection={gwas_study}
         	    mode={CHECKLIST_MATCH_ANY}
+                    pageLength={5}
                     onTdClick={(c) => { actions.setStudy(c) } }
                     />);
 }
