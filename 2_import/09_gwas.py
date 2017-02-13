@@ -21,7 +21,7 @@ id serial PRIMARY KEY,
 author text,
 pubmed text,
 trait text,
-authorPubmedTrait text,
+authorPubmedTrait text
 );
 """.format(tableName = tableName))
 
@@ -33,16 +33,15 @@ def _studies(curs, fnp):
 
     tableName = "hg19_gwas_studies"
     printt("drop/create", tableName)
-    setupEnrichment(curs, tableName)
+    setupStudies(curs, tableName)
 
     printt("rewrite rows")
     outF = StringIO.StringIO()
     for authorPubmedTrait in header[2:]:
         print(authorPubmedTrait)
         toks = authorPubmedTrait.split('-')
-        author, pubmed, trait = *toks
         authorPubmedTrait = authorPubmedTrait.replace('-', '_')
-        r = [author, pubmed, trait, authorPubmedTrait]
+        r = toks + [authorPubmedTrait]
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
     cols = ["author", "pubmed", "trait", "authorPubmedTrait"]
