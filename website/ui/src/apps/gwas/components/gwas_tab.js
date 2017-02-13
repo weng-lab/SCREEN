@@ -85,7 +85,7 @@ class GwasTab extends React.Component{
                                  data: "neglogfdr", className: "dt-right"}
 	                    ]}
                             order={[[1, "desc"], [0, "asc"]]}
-                            paging={false}
+                            bFilter={true}
                             onTdClick={(td, data) => {
                                 actions.setCellType(data)
                             }}
