@@ -27,10 +27,9 @@ class PageInfoGwas:
             assembly = args[0]
 
         cache = self.cacheW[assembly]
-        g = Gwas(assembly, cache, PGgwas(self.ps, assembly))
+        g = Gwas(assembly, self.ps, assembly)
 
-        data = {"gwas": {"gwas" : g.gwas,
-                         "studies" : g.studies}}
+        data = {"gwas": {"studies" : g.studies}}
 
         ret = self.wholePage(assembly)
         ret.update({"globalParsedQuery" : json.dumps({}),
