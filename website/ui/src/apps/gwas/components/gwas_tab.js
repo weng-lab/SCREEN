@@ -17,11 +17,6 @@ class GwasTab extends React.Component{
                        selectStudy: true };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
-        this.topTableClick = this.topTableClick.bind(this);
-    }
-
-    topTableClick(td, data, actions){
-        actions.setCellType(data.cellTypeName);
     }
 
     componentDidMount(){
@@ -63,19 +58,9 @@ class GwasTab extends React.Component{
     }
 
     doRenderWrapper({gwas_study, cellType, actions}){
-	if(this.state.selectStudy){
-            return (<div>
-                    {"Please choose a study on left"}
-                    </div>);
-        }
-
-        if(!(gwas_study in this.state)){
-            return loading(this.state);
-        }
 	var data = this.state[gwas_study];
-        var ctView = (cellType ? <CelltypeView data={data.accs} /> :
+        var ctView = (cellType ? <CelltypeView /> :
                       "");
-        console.log(data);
         let mainTable = (<ResultsTable
                          data={data.mainTable}
                          cols={[
@@ -97,8 +82,9 @@ class GwasTab extends React.Component{
 	                    ]}
                             order={[[1, "desc"], [0, "asc"]]}
                             paging={false}
-                            onTdClick={(td, data) =>
-                                       this.topTableClick(td, data, actions)}
+                            onTdClick={(td, data) => {
+                                actions.setCellType(data)
+                            }}
                             />);
         return (<div>
 		<h2>{data.gwas_study.trait}</h2>
@@ -116,6 +102,14 @@ class GwasTab extends React.Component{
     }
 
     render(){
+	if(this.state.selectStudy){
+            return (<div>
+                    {"Please choose a study on left"}
+                    </div>);
+        }
+        if(!(this.props.gwas_study in this.state)){
+            return loading(this.state);
+        }
         return (<div style={{"width": "100%"}} >
                 {this.doRenderWrapper(this.props)}
                 </div>);
