@@ -9,21 +9,26 @@ import loading from '../../../common/components/loading'
 class CelltypeView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: false, isError: false};
-        this.loadGwas = this.loadGwas.bind(this);
+        this.state = { jq: null, isFetching: true, isError: false};
+        this.loadCres = this.loadCres.bind(this);
     }
 
     componentDidMount(){
-        this.loadGwas(this.props);
+        this.loadCres(this.props);
     }
 
     componentWillReceiveProps(nextProps){
         //console.log("componentWillReceiveProps", nextProps);
-        this.loadGwas(nextProps);
+        this.loadCres(nextProps);
     }
 
-    loadGwas({gwas_study, cellType, actions}){
-        var q = {GlobalAssembly, gwas_study, cellType};
+    componentWillUnmount(){
+        this.props.actions.setCellType(null);
+    }
+
+    loadCres({gwas_study, cellType, actions}){
+        var q = {GlobalAssembly, gwas_study,
+                 "cellType" : cellType.cellTypeName };
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -32,7 +37,7 @@ class CelltypeView extends React.Component {
         //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/gwasJson/accs",
+            url: "/gwasJson/cres",
             type: "POST",
 	    data: jq,
 	    dataType: "json",

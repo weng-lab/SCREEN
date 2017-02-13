@@ -39,10 +39,7 @@ class Gwas:
          rows.sort(key = lambda x: x["neglogfdr"], reverse=True)
          return rows
 
-         accs = {}
-         for r in rows:
-             ct = r[2]
-             accs[ct] = self.pgSearch.gwasPercentActive(gwas_study,
-                                                        ct)
-         return rows, accs
+    def cres(self, gwas_study, ct):
+        cres = self.pgGwas.gwasPercentActive(gwas_study, ct)
+        return cres
 
