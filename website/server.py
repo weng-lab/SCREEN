@@ -53,7 +53,7 @@ class Config:
     def getRootConfig(self):
         redisHost = "127.0.0.1"
         if self.production:
-            redisHost = "redis.docker"
+            redisHost = "redis"
 
         return {
             '/': {
