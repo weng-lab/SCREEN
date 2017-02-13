@@ -5,7 +5,9 @@ import cherrypy, os, sys, argparse, time
 #from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
-from redis_sessions import RedisJsonSession
+# https://pypi.python.org/pypi/cherrys
+import cherrys
+cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
 from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
@@ -51,7 +53,7 @@ class Config:
             '/': {
                 'tools.sessions.on' : True,
                 'tools.sessions.timeout' : 60000,
-                'tools.sessions.storage_class' : RedisJsonSession,
+                'tools.sessions.storage_type' : 'redis',
                 'log.access_file' : self.accessFnp,
                 'log.error_file' : self.errorFnp,
                 'log.screen' : False,
