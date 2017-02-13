@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import Table from '../components/table'
 import CelltypeView from '../components/celltype_view'
 
 import loading from '../../../common/components/loading'

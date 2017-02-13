@@ -40,6 +40,35 @@ class Gwas:
          return rows
 
     def cres(self, gwas_study, ct):
-        cres = self.pgGwas.gwasPercentActive(gwas_study, ct)
-        return cres
+        accs, fieldsOut = self.pgGwas.gwasPercentActive(gwas_study, ct)
+
+        # accession, snp, geneid, zscores
+        totalActive = 0
+        total = len(accs)
+        activeAccs = []
+
+        def any_lambda(function, iterable):
+            # http://stackoverflow.com/a/19868175
+            return any(function(i) for i in iterable)
+
+        for a in accs:
+            if any_lambda(lambda x: x > 1.64, a[3:]):
+                totalActive += 1
+                a = list(a)
+                a[1] = ", ".join(sorted(a[1])) # snps
+                activeAccs.append(a)
+
+        percActive = 0
+        if total > 0:
+            percActive = round(float(totalActive) / total * 100, 2)
+
+        def form(v):
+            return [["%s%% CREs active" % v, v, 0],
+                    ["", 100 - v, v]]
+
+        keys = ["accession", "snp", "geneid"] + fieldsOut
+        ret = [dict(zip(keys, r)) for r in accs]
+        return {"accessions" : ret,
+                "percActive" : percActive}
+
 
