@@ -10,3 +10,5 @@ http://127.0.0.1:9006/globalData/mm10/0
 https://pypi.python.org/pypi/cherrys
 pip install cherrys
 pip install hiredis
+
+sudo apt-get install redis-server
