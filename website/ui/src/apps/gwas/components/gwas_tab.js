@@ -8,6 +8,7 @@ import Table from '../components/table'
 import CelltypeView from '../components/celltype_view'
 
 import loading from '../../../common/components/loading'
+import ResultsTable from '../../../common/components/results_table'
 
 class GwasTab extends React.Component{
     constructor(props) {
@@ -70,20 +71,39 @@ class GwasTab extends React.Component{
                           data={data.accs}
                           /> :
                           "");
+            console.log(data);
             return (<div>
-		    <h2>{gwas_study}</h2>
+		    <h2>{data.gwas_study.trait}</h2>
 
 		    <div className="container-fluid">
 		    <div className="row">
-		    <div className="col-md-6">
 
-		    </div>
 		    <div className="col-md-6">
-		    <Table
-                    actions={actions}
-		    header={data.table.header}
-		    rows={data.table.rows} />
+                    <ResultsTable
+                    data={data.mainTable}
+                    cols={[
+                        {title: "Total LD blocks",
+                         data: "totalLDblocks", className: "dt-right"},
+                        {title: "# of LD blocks overlapping cREs",
+                         data: "numLdBlocksOverlap", className: "dt-right"}
+	            ]}
+                    paging={false}
+                    />
 		    </div>
+
+		    <div className="col-md-6">
+                    <ResultsTable
+                    data={data.topCellTypes}
+                    cols={[
+                        {title: "Cell Type",
+                         data: "biosample_term_name", className: "dt-right"},
+                        {title: "-log(FDR)",
+                         data: "neglogfdr", className: "dt-right"}
+	            ]}
+                    paging={false}
+                    />
+		    </div>
+
 		    </div>
 		    </div>
 
