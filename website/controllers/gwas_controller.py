@@ -17,24 +17,39 @@ class GwasController:
         pageInfo = PageInfoGwas(*self.params)
         return self.t('main/gwas', **pageInfo.gwasPage(args, kwargs, uuid))
 
-    def gwasJson(self, j):
+    def _mainTableInfo(self, g, gwas_study):
+        return {"totalLDblocks" : g.totalLDblocks(gwas_study),
+                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study),
+                "numCresOverlap" : g.numCresOverlap(gwas_study) }
+
+    def _main(self, j):
         assembly = j["GlobalAssembly"]
         cache = self.cacheW[assembly]
-
+        g = Gwas(assembly, self.ps, cache)
         gwas_study = j["gwas_study"]
-        g = Gwas(assembly, cache, PGgwas(self.ps, assembly))
+        if not g.checkStudy(gwas_study):
+            raise Exception("invalid study")
 
-        def form(v):
-            return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
-                    ["", 100 - v, v]]
-        header = ["Cell type", "-log(fdr)"]
+        return {gwas_study : {"gwas_study" : g.byStudy[gwas_study],
+                              "mainTable" : [self._mainTableInfo(g, gwas_study)],
+                              "topCellTypes" : g.topCellTypes(gwas_study)}}
 
-        overlapPerc = round(g.overlapWithCresPerc(gwas_study) *100, 2)
-        pie = form(overlapPerc)
-        table, accs = g.gwasEnrichment(gwas_study)
+    def _cres(self, j):
+        assembly = j["GlobalAssembly"]
+        cache = self.cacheW[assembly]
+        g = Gwas(assembly, self.ps, cache)
+        gwas_study = j["gwas_study"]
+        if not g.checkStudy(gwas_study):
+            raise Exception("invalid study")
+        ct = j["cellType"]
 
-        return {gwas_study :
-                {"pie" : pie,
-                 "table" : {"header" : header,
-                            "rows" : table},
-                 "accs" : accs}}
+        cres = g.cres(gwas_study, ct)
+        return {ct : cres}
+
+    def gwasJson(self, j, args, kwargs):
+        if not args:
+            raise Exception("unknown action")
+        if "main" == args[0]:
+            return self._main(j)
+        if "cres" == args[0]:
+            return self._cres(j)

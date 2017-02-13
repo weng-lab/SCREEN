@@ -3,53 +3,92 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders'
 
 import loading from '../../../common/components/loading'
-
-class Table2 extends React.Component {
-
-    headerCell(c){ return (<th>{c}</th>); }
-
-    cell(c){ return (<td>{c}</td>); }
-
-
-    headerRow(rd){
-	return (<tr>
-		{rd.map((c) => { return this.headerCell(c); })}
-		</tr>);
-    }
-
-    row(rd, props){
-	return (<tr>
-		{rd.map((c) => { return this.cell(c); })}
-		</tr>);
-    }
-
-    render() {
-	return (<div>
-
-                <table className="table table-bordered">
-		<thead>
-		{this.headerRow(this.props.header)}
-		</thead>
-		<tbody>
-		{this.props.rows.map((rd) => {
-		    return this.row(rd, this.props);
-		})}
-		</tbody>
-		</table>
-
-               </div>);
-    }
-}
+import ResultsTable from '../../../common/components/results_table'
 
 class CelltypeView extends React.Component {
-    render() {
-        let d = this.props.data[this.props.cellType.ct];
-	return (<div>
-                <h3>{this.props.cellType.view}</h3>
+    constructor(props) {
+        super(props);
+        this.state = { jq: null, isFetching: true, isError: false};
+        this.loadCres = this.loadCres.bind(this);
+    }
 
-                <Table2 rows={d.accessions} header={d.header}/>
+    componentDidMount(){
+        this.loadCres(this.props);
+    }
+
+    componentWillReceiveProps(nextProps){
+        //console.log("componentWillReceiveProps", nextProps);
+        this.loadCres(nextProps);
+    }
+
+    componentWillUnmount(){
+        // else next study will reuse celltype
+        this.props.actions.setCellType(null);
+    }
+
+    loadCres({gwas_study, cellType, actions}){
+        if(cellType.cellTypeName in this.state){
+            return;
+        }
+        var q = {GlobalAssembly, gwas_study,
+                 "cellType" : cellType.cellTypeName };
+        var jq = JSON.stringify(q);
+        if(this.state.jq == jq){
+            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
+            return;
+        }
+        //console.log("loadGene....", this.state.jq, jq);
+        this.setState({jq, isFetching: true});
+        $.ajax({
+            url: "/gwasJson/cres",
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({...r, isFetching: false, isError: false});
+            }.bind(this)
+        });
+    }
+
+    render() {
+        if(!(this.props.cellType.cellTypeName in this.state)){
+            return loading(this.state);
+        }
+        let data = this.state[this.props.cellType.cellTypeName];
+        let cres = data.accessions;
+        let vcols = data.vcols;
+
+        let cols = [
+            {title: "accession", data: "accession",
+             render: Render.relink(GlobalAssembly) },
+            {title: "Promoter Z", data: "promoter zscore",
+             visible: vcols["promoter zscore"]},
+            {title: "Enhancer Z", data: "enhancer zscore",
+             visible: vcols["enhancer zscore"]},
+            {title: "DNase Z", data: "dnase zscore",
+             visible: vcols["dnase zscore"]},
+            {title: "snps", data: "snps", render: Render.snpLinks},
+            {title: "gene", data: "geneid"}
+        ];
+
+        let creTable = (<ResultsTable
+                        data={cres}
+                        cols={cols}
+                        bFilter={true}
+		        cvisible={vcols}
+                        order={[[1, "desc"], [0, "asc"]]}
+                        />);
+	return (<div>
+                <h3>{this.props.cellType.biosample_term_name}</h3>
+                {creTable}
 		</div>);
     }
 }
