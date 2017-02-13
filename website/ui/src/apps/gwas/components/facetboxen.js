@@ -14,10 +14,11 @@ const gwas_studies = ({gwas_study, actions}) => {
                     <LongListFacet
                     title={""}
                     data={GwasGlobals.gwas.studies}
-                    cols={[{
-		        title: "Assay", data: "value",
-		        className: "dt-right"
-	            }]}
+                    cols={[
+                        {title: "Study", data: "trait", className: "dt-right"},
+                        {title: "Author", data: "author", className: "dt-right"},
+                        {title: "Pubmed", data: "pubmed", className: "dt-right"}
+	                ]}
                     order={[]}
 		    selection={gwas_study}
         	    mode={CHECKLIST_MATCH_ANY}

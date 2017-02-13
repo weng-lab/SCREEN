@@ -38,7 +38,7 @@ class ResultsTable extends React.Component {
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
 	var onMouseEnter = this.props.onMouseEnter;
-
+	
 	$(this.refs.root)
 	    .on("click", "td", function() {
 		if (onTdClick) {
@@ -59,9 +59,6 @@ class ResultsTable extends React.Component {
 		$(this).attr("title", "click for more details")
 	    })
 	    .on("mouseenter", "th", function() {
-		if(!onMouseEnter) {
-		    return false;
-		}
 		$(this).attr("title", "click to sort");
 	    })
 	    .removeClass('display')

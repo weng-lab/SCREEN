@@ -16,9 +16,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "biosample_term_name fdr cellTypeName".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
-
 class PGgwasWrapper:
     def __init__(self, pg):
         self.pgs = {
@@ -45,19 +42,23 @@ WHERE authorPubmedTrait = %s
 """.format(tn = self.assembly + "_gwas_enrichment")
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
-        return [GwasEnrichmentRow(*r) for r in rows]
+        keys = ["biosample_term_name", "fdr", "cellTypeName"]
+        return [dict(zip(keys, r)) for r in rows]
 
-    def gwas(self):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
+    def gwasStudies(self):
+        with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
             q = """
-SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, authorPubmedTrait
+SELECT DISTINCT(authorpubmedtrait), author, pubmed, trait, COUNT(DISTINCT(ldblock))
 FROM {tn}
+GROUP BY authorpubmedtrait, author, pubmed, trait
+ORDER BY trait
 """.format(tn = self.assembly + "_gwas")
             curs.execute(q)
             rows = curs.fetchall()
-        return [GwasRow(*r) for r in rows]
+        keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
+        return [dict(zip(keys, r)) for r in rows]
 
-    def gwasOverlapWithCresPerc(self, gwas_study):
+    def numLdBlocksOverlap(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT COUNT(DISTINCT(ldblock))
@@ -70,33 +71,22 @@ AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
 AND gwas.authorPubmedTrait = %s
 """.format(assembly = self.assembly)
             curs.execute(q, (gwas_study, ))
-            overlapCount = curs.fetchone()[0]
-
-            q = """
-select count(distinct(ldblock))
-FROM {tn}
-WHERE authorPubmedTrait = %s
-""".format(tn = self.assembly + "_gwas")
-            curs.execute(q, (gwas_study, ))
-            total = curs.fetchone()[0]
-        return float(overlapCount) / total
-
-    def gwasOverlapWithCres(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT cre.accession
-FROM {assembly}_gwas as gwas, {assembly}_cre as cre
-WHERE gwas.chrom = cre.chrom
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-""".format(assembly = self.assembly)
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
+            return curs.fetchone()[0]
 
     def gwasAccessions(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT accession
+FROM {tn}
+where authorPubmedTrait = %s
+""".format(tn = self.assembly + "_gwas_overlap")
+            curs.execute(q, (gwas_study, ))
+            return [r[0] for r in curs.fetchall()]
+
+    def numCresOverlap(self, gwas_study):
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT count(0)
 FROM {tn}
 where authorPubmedTrait = %s
 """.format(tn = self.assembly + "_gwas_overlap")
@@ -109,7 +99,7 @@ where authorPubmedTrait = %s
         groupBy = ["cre.accession",
                   "infoAll.approved_symbol"]
 
-        fieldsOut = []
+        fieldsOut = ["accession", "snps", "geneid"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3_only"),
                       ("enhancer", "h3k27ac_only")]:
@@ -136,33 +126,7 @@ GROUP BY {groupBy}
            fields = ', '.join(fields),
            groupBy = ', '.join(groupBy))
             curs.execute(q, (gwas_study, ))
-            accs = curs.fetchall()
+            rows = curs.fetchall()
+        ret = [dict(zip(fieldsOut, r)) for r in rows]
+        return ret, fieldsOut
 
-        # accession, snp, geneid, zscores
-        totalActive = 0
-        total = len(accs)
-        activeAccs = []
-
-        def any_lambda(function, iterable):
-            # http://stackoverflow.com/a/19868175
-            return any(function(i) for i in iterable)
-
-        for a in accs:
-            if any_lambda(lambda x: x >= 1.64, a[3:]):
-                totalActive += 1
-                a = list(a)
-                a[1] = ", ".join(sorted(a[1]))
-                activeAccs.append(a)
-
-        percActive = 0
-        if total > 0:
-            percActive = round(float(totalActive) / total * 100, 2)
-
-        def form(v):
-            return [["%s%% CREs active" % v, v, 0],
-                    ["", 100 - v, v]]
-
-        return {"accessions" : activeAccs,
-                "percActive" : percActive,
-                "bar" : form(percActive),
-                "header" : ["accession", "snp", "geneid"] + fieldsOut}
