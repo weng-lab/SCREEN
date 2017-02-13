@@ -215,6 +215,7 @@ AND gwas.authorPubmedTrait = %s
     return [[r[0], r[1]] for r in curs.fetchall()]
 
 def _overlap(curs, studies):
+    printt("******************* GWAS overlap")
     tableName = "hg19_gwas_overlap"
     setupOverlap(curs, tableName)
 
