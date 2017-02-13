@@ -63,7 +63,7 @@ class Gwas:
         hiddenFields = set(["promoter zscore", "enhancer zscore",
                             "dnase zscore"]) - set(fieldsOut)
         if hiddenFields:
-            for r in ret:
+            for r in cres:
                 for f in hiddenFields:
                     r[f] = ''
         vcols = {}
@@ -74,4 +74,4 @@ class Gwas:
 
 
 
-    
+
