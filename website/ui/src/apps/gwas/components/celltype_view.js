@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
+import ResultsTable from '../../../common/components/results_table'
 
 class CelltypeView extends React.Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class CelltypeView extends React.Component {
     }
 
     componentWillUnmount(){
+        // else next study will reuse celltype
         this.props.actions.setCellType(null);
     }
 
@@ -57,9 +59,25 @@ class CelltypeView extends React.Component {
             return loading(this.state);
         }
         let data = this.state[this.props.gwas_study];
+        let cres = data.accessions;
+
+        let cols = [
+            {title: "accession", data: "accession"},
+            {title: "promoter zscore", data: "promoter zscore"},
+            {title: "enhancer zscore", data: "enhancer zscore"},
+            {title: "dnase zscore", data: "dnase zscore"},
+            {title: "snps", data: "snp"},
+            {title: "gene", data: "geneid"}
+        ];
+
+        let creTable = (<ResultsTable
+                        data={cres}
+                        cols={cols}
+                        order={[[1, "desc"], [0, "asc"]]}
+                        />);
 	return (<div>
                 <h3>{this.props.cellType.biosample_term_name}</h3>
-
+                {creTable}
 		</div>);
     }
 }
