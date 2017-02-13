@@ -5,109 +5,13 @@ import os, sys, json, psycopg2, argparse, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from exp import Exp
 from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
-
-def setupStudies(curs, tableName):
-    curs.execute("""
-DROP TABLE IF EXISTS {tableName};
-
-CREATE TABLE {tableName}(
-id serial PRIMARY KEY,
-author text,
-pubmed text,
-trait text,
-authorPubmedTrait text,
-numLDblocks integer
-);
-""".format(tableName = tableName))
-
-def _studies(curs, fnp):
-    # GWAS enrichment
-    printt("reading", fnp)
-    with open(fnp) as f:
-        header = f.readline().rstrip('\n').split('\t')
-
-    tableName = "hg19_gwas_studies"
-    printt("drop/create", tableName)
-    setupStudies(curs, tableName)
-
-    printt("rewrite rows")
-    outF = StringIO.StringIO()
-    for authorPubmedTrait in header[2:]:
-        print(authorPubmedTrait)
-        toks = authorPubmedTrait.split('-')
-        authorPubmedTrait = authorPubmedTrait.replace('-', '_')
-        r = toks + [authorPubmedTrait]
-        outF.write('\t'.join(r) + '\n')
-    outF.seek(0)
-    cols = ["author", "pubmed", "trait", "authorPubmedTrait"]
-
-    printt("import to db")
-    curs.copy_from(outF, tableName, '\t', columns=cols)
-    printt("copied in", curs.rowcount)
-
-    printt("getting LD block counts...")
-    curs.execute("""
-UPDATE {tn} as studies
-set numLDblocks = (select COUNT(DISTINCT(gwas.ldblock))
-                   from {gwasTn} as gwas
-                   where studies.authorpubmedtrait = gwas.authorpubmedtrait)
-""".format(tn = tableName, gwasTn = "hg19_gwas"))
-    printt("updated", curs.rowcount)
-
-def setupEnrichment(curs, tableName, fields):
-    # author-pubMedID-trait, expEnrichedIn, foldEnrichment, fdr, ignore!
-    curs.execute("""
-DROP TABLE IF EXISTS {tableName};
-
-CREATE TABLE {tableName}(
-id serial PRIMARY KEY,
-expID text,
-cellTypeName text,
-biosample_term_name text,
-{fields}
-);
-""".format(tableName = tableName,
-           fields = ','.join([r + " real" for r in fields])))
-
-def _enrichment(curs, fnp):
-    # GWAS enrichment
-    printt("reading", fnp)
-    with open(fnp) as f:
-        header = f.readline().rstrip('\n').split('\t')
-        rows = [r.rstrip('\n').split('\t') for r in f if r]
-
-    tableName = "hg19_gwas_enrichment"
-    fields = [f.replace('-', '_') for f in header[2:]]
-    printt("drop/create", tableName)
-    setupEnrichment(curs, tableName, fields)
-
-    printt("rewrite rows")
-    outF = StringIO.StringIO()
-    for r in rows:
-        exp = Exp.fromJsonFile(r[0])
-        r.insert(2, exp.biosample_term_name)
-        outF.write('\t'.join(r) + '\n')
-    outF.seek(0)
-    cols = ["expID", "cellTypeName", "biosample_term_name"] + fields
-    print(cols)
-
-    printt("import to db")
-    curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", curs.rowcount)
-
-    if 0:
-        curs.execute("""
-UPDATE hg19_gwas_enrichment as ge
-set cellTypeName = d.cellTypeName
-from hg19_datasets as d
-where ge.expID = d.expID""")
-        printt("updated", curs.rowcount)
 
 def setupGWAS(curs, tableName):
     # chr1    62963737        62963737        rs1002687       rs11207995      0.85    25961943-2      Cholesterol     25961943        Surakka"""
@@ -131,7 +35,7 @@ authorPubmedTrait text
 """.format(tableName = tableName))
 
 def _gwas(curs, fnp):
-    # GWAS bed
+    printt("******************* GWAS")
     printt("reading", fnp)
     with open(fnp) as f:
         rows = [r.rstrip().split('\t') for r in f if r]
@@ -206,16 +110,88 @@ def _gwas(curs, fnp):
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
 
+def setupEnrichment(curs, tableName, fields):
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+
+CREATE TABLE {tableName}(
+id serial PRIMARY KEY,
+expID text,
+cellTypeName text,
+biosample_term_name text,
+{fields}
+);
+""".format(tableName = tableName,
+           fields = ','.join([r + " real" for r in fields])))
+
+def _enrichment(curs, fnp):
+    printt("******************* GWAS enrichment")
+    printt("reading", fnp)
+    with open(fnp) as f:
+        header = f.readline().rstrip('\n').split('\t')
+        rows = [r.rstrip('\n').split('\t') for r in f if r]
+
+    tableName = "hg19_gwas_enrichment"
+    fields = [f.replace('-', '_') for f in header[2:]]
+    printt("drop/create", tableName)
+    setupEnrichment(curs, tableName, fields)
+
+    printt("rewrite rows")
+    outF = StringIO.StringIO()
+    for r in rows:
+        exp = Exp.fromJsonFile(r[0])
+        r.insert(2, exp.biosample_term_name)
+        outF.write('\t'.join(r) + '\n')
+    outF.seek(0)
+    cols = ["expID", "cellTypeName", "biosample_term_name"] + fields
+    print(cols)
+
+    printt("import to db")
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    print("\tcopied in", curs.rowcount)
+
+def setupStudies(curs, tableName):
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+
+CREATE TABLE {tableName}(
+id serial PRIMARY KEY,
+author text,
+pubmed text,
+trait text,
+authorPubmedTrait text,
+numLDblocks integer
+);
+""".format(tableName = tableName))
+
+def _studies(curs, fnp):
+    printt("******************* GWAS studies")
+    printt("reading", fnp)
+    with open(fnp) as f:
+        header = f.readline().rstrip('\n').split('\t')
+
+    tableName = "hg19_gwas_studies"
+    printt("drop/create", tableName)
+    setupStudies(curs, tableName)
+
+    printt("import to db")
+    curs.execute("""
+INSERT INTO {tn} (authorpubmedtrait,  author, pubmed, trait, numLDblocks)
+SELECT DISTINCT(authorpubmedtrait), author, pubmed, trait, COUNT(DISTINCT(ldblock))
+FROM {gwasTn}
+GROUP BY authorpubmedtrait, author, pubmed, trait
+ """.format(tn = tableName, gwasTn = "hg19_gwas"))
+    printt("inserted", curs.rowcount)
+
 def setupAll(curs):
-    dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-    dataF = os.path.join(dataF, "GWAS")
+     dataF = os.path.join(paths.v4d, "GWAS")
 
-    fnp = os.path.join(dataF, "GWAS.v1.bed")
-    _gwas(curs, fnp)
+     fnp = os.path.join(dataF, "GWAS.v1.bed")
+     _gwas(curs, fnp)
 
-    fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
-    _studies(curs, fnp)
-    _enrichment(curs, fnp)
+     fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
+     _enrichment(curs, fnp)
+     _studies(curs, fnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()
