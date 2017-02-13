@@ -32,6 +32,8 @@ docker run \
        -p 127.0.0.1:8036:22 \
        --link postgresql:postgresql \
 	   --link cassandra:cassandra \
+       --link redis:redis \
+       --link memcached:memcached \
        -d --restart=always \
        -m 128G \
        --cpuset="48-63" \
