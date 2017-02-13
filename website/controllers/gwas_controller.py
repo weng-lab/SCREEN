@@ -44,8 +44,6 @@ class GwasController:
         ct = j["cellType"]
 
         cres = g.cres(gwas_study, ct)
-        for cre in cres["accessions"]:
-            print(cre)
         return {ct : cres}
 
     def gwasJson(self, j, args, kwargs):
