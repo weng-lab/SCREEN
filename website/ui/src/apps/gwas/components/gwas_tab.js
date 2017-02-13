@@ -41,7 +41,7 @@ class GwasTab extends React.Component{
         //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true, selectStudy: false});
         $.ajax({
-            url: "/gwasJson",
+            url: "/gwasJson/main",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
