@@ -42,12 +42,7 @@ class GwasController:
             raise Exception("invalid study")
         ct = j["cellType"]
 
-        def form(v):
-            return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
-                    ["", 100 - v, v]]
-
         cres = g.cres(gwas_study, ct)
-
         return {ct : cres}
 
     def gwasJson(self, j, args, kwargs):
