@@ -44,7 +44,11 @@ export const browser_buttons = (names) => {
 
 export const cart_img = (rmv, src_only) => {
     var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
-    return (src_only ? src : '<img class="rowCart" src="' + src + '" title="' + (rmv ? "remove cRE from cart" : "add cRE to cart") + '">');
+    if(src_only){
+        return src;
+    }
+    var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
+    return '<img class="rowCart" src="' + src + '" title="' +  title + '">';
 }
 
 export const geDeButton = (d) => {
