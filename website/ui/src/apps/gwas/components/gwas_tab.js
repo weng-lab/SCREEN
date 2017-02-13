@@ -17,6 +17,11 @@ class GwasTab extends React.Component{
                        selectStudy: true };
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
+        this.topTableClick = this.topTableClick.bind(this);
+    }
+
+    topTableClick(td, data, actions){
+        actions.setCellType(data.cellTypeName);
     }
 
     componentDidMount(){
@@ -64,55 +69,50 @@ class GwasTab extends React.Component{
                     </div>);
         }
 
-        if(gwas_study in this.state){
-	    var data = this.state[gwas_study];
-            var ctView = (cellType ?
-                          <CelltypeView
-                          data={data.accs}
-                          /> :
-                          "");
-            console.log(data);
-            return (<div>
-		    <h2>{data.gwas_study.trait}</h2>
-
-		    <div className="container-fluid">
-		    <div className="row">
-
-		    <div className="col-md-6">
-                    <ResultsTable
-                    data={data.mainTable}
-                    cols={[
-                        {title: "Total LD blocks",
-                         data: "totalLDblocks", className: "dt-right"},
-                        {title: "# of LD blocks overlapping cREs",
-                         data: "numLdBlocksOverlap", className: "dt-right"}
-	            ]}
-                    paging={false}
-                    />
-		    </div>
-
-		    <div className="col-md-6">
-                    <ResultsTable
-                    data={data.topCellTypes}
-                    cols={[
-                        {title: "Cell Type",
-                         data: "biosample_term_name", className: "dt-right"},
-                        {title: "-log(FDR)",
-                         data: "neglogfdr", className: "dt-right"}
-	            ]}
-                    order={[[1, "desc"], [0, "asc"]]}
-                    paging={false}
-                    />
-		    </div>
-
-		    </div>
-		    </div>
-
-                    {ctView}
-
-		    </div>);
+        if(!(gwas_study in this.state)){
+            return loading(this.state);
         }
-        return loading(this.state);
+	var data = this.state[gwas_study];
+        var ctView = (cellType ? <CelltypeView data={data.accs} /> :
+                      "");
+        console.log(data);
+        let mainTable = (<ResultsTable
+                         data={data.mainTable}
+                         cols={[
+                             {title: "Total LD blocks",
+                              data: "totalLDblocks", className: "dt-right"},
+                             {title: "# of LD blocks overlapping cREs",
+                              data: "numLdBlocksOverlap", className: "dt-right"}
+	                 ]}
+                         paging={false}
+                         />);
+        let topCellTypes = (<ResultsTable
+                            data={data.topCellTypes}
+                            cols={[
+                                {title: "Cell Type",
+                                 data: "biosample_term_name",
+                                 className: "dt-right"},
+                                {title: "-log(FDR)",
+                                 data: "neglogfdr", className: "dt-right"}
+	                    ]}
+                            order={[[1, "desc"], [0, "asc"]]}
+                            paging={false}
+                            onTdClick={(td, data) =>
+                                       this.topTableClick(td, data, actions)}
+                            />);
+        return (<div>
+		<h2>{data.gwas_study.trait}</h2>
+
+		<div className="container-fluid">
+		<div className="row">
+		<div className="col-md-6">{mainTable}</div>
+		<div className="col-md-6">{topCellTypes}</div>
+		</div>
+		</div>
+
+                {ctView}
+                </div>
+               );
     }
 
     render(){
