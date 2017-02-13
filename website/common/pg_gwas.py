@@ -73,22 +73,20 @@ AND gwas.authorPubmedTrait = %s
             curs.execute(q, (gwas_study, ))
             return curs.fetchone()[0]
 
-    def gwasOverlapWithCres(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT cre.accession
-FROM {assembly}_gwas as gwas, {assembly}_cre as cre
-WHERE gwas.chrom = cre.chrom
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-""".format(assembly = self.assembly)
-            curs.execute(q, (gwas_study, ))
-            return [r[0] for r in curs.fetchall()]
-
     def gwasAccessions(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT accession
+FROM {tn}
+where authorPubmedTrait = %s
+""".format(tn = self.assembly + "_gwas_overlap")
+            curs.execute(q, (gwas_study, ))
+            return [r[0] for r in curs.fetchall()]
+
+    def numCresOverlap(self, gwas_study):
+        with getcursor(self.pg.DBCONN, "gwas") as curs:
+            q = """
+SELECT count(0)
 FROM {tn}
 where authorPubmedTrait = %s
 """.format(tn = self.assembly + "_gwas_overlap")

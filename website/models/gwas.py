@@ -19,6 +19,9 @@ class Gwas:
     def checkStudy(self, gwas_study):
         return gwas_study in self.byStudy
 
+    def numCresOverlap(self, gwas_study):
+        return self.pgGwas.numCresOverlap(gwas_study)
+
     def totalLDblocks(self, gwas_study):
         return self.byStudy[gwas_study]["total_ldblocks"]
 

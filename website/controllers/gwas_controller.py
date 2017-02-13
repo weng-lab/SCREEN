@@ -19,7 +19,8 @@ class GwasController:
 
     def _mainTableInfo(self, g, gwas_study):
         return {"totalLDblocks" : g.totalLDblocks(gwas_study),
-                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study)}
+                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study),
+                "numCresOverlap" : g.numCresOverlap(gwas_study) }
 
     def _main(self, j):
         assembly = j["GlobalAssembly"]
