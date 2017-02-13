@@ -60,15 +60,17 @@ FROM {tn}
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
             q = """
-select distinct(authorpubmedtrait), author, pubmed, trait
+SELECT DISTINCT(authorpubmedtrait), author, pubmed, trait, COUNT(DISTINCT(ldblock))
 FROM {tn}
+GROUP BY authorpubmedtrait, author, pubmed, trait
+ORDER BY trait
 """.format(tn = self.assembly + "_gwas")
             curs.execute(q)
             rows = curs.fetchall()
-        key = ["value", "author", "pubmed", "trait"]
+        key = ["value", "author", "pubmed", "trait", "total_ldblocks"]
         return [dict(zip(key, r)) for r in rows]
 
-    def gwasOverlapWithCresPerc(self, gwas_study):
+    def numLdBlocksOverlap(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT COUNT(DISTINCT(ldblock))
@@ -81,16 +83,7 @@ AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
 AND gwas.authorPubmedTrait = %s
 """.format(assembly = self.assembly)
             curs.execute(q, (gwas_study, ))
-            overlapCount = curs.fetchone()[0]
-
-            q = """
-select count(distinct(ldblock))
-FROM {tn}
-WHERE authorPubmedTrait = %s
-""".format(tn = self.assembly + "_gwas")
-            curs.execute(q, (gwas_study, ))
-            total = curs.fetchone()[0]
-        return float(overlapCount) / total
+            return curs.fetchone()[0]
 
     def gwasOverlapWithCres(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
