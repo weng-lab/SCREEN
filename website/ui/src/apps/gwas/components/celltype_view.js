@@ -7,6 +7,8 @@ import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'
 
+const render_relink = (a) => (v) => ("<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
+
 class CelltypeView extends React.Component {
     constructor(props) {
         super(props);
@@ -66,12 +68,13 @@ class CelltypeView extends React.Component {
         let vcols = data.vcols;
 
         let cols = [
-            {title: "accession", data: "accession"},
-            {title: "promoter zscore", data: "promoter zscore",
+            {title: "accession", data: "accession",
+             render: render_relink(GlobalAssembly) },
+            {title: "Promoter Z", data: "promoter zscore",
              visible: vcols["promoter zscore"]},
-            {title: "enhancer zscore", data: "enhancer zscore",
+            {title: "Enhancer Z", data: "enhancer zscore",
              visible: vcols["enhancer zscore"]},
-            {title: "dnase zscore", data: "dnase zscore",
+            {title: "DNase Z", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
             {title: "snps", data: "snps"},
             {title: "gene", data: "geneid"}
