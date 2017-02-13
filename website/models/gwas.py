@@ -43,34 +43,22 @@ class Gwas:
          return rows
 
     def cres(self, gwas_study, ct):
-        accs, fieldsOut = self.pgGwas.gwasPercentActive(gwas_study, ct)
+        cres, fieldsOut = self.pgGwas.gwasPercentActive(gwas_study, ct)
 
         # accession, snp, geneid, zscores
         totalActive = 0
-        total = len(accs)
-        activeAccs = []
+        total = len(cres)
+        activeCres = []
 
         def any_lambda(function, iterable):
             # http://stackoverflow.com/a/19868175
             return any(function(i) for i in iterable)
 
-        for a in accs:
-            if any_lambda(lambda x: x > 1.64, a[3:]):
+        for a in cres:
+            if a.get("promoter zscore", 0) > 1.64 or a.get("enhancer zscore", 0) > 1.64 or a.get("dnase zscore", 0) > 1.64:
                 totalActive += 1
-                a = list(a)
-                a[1] = ", ".join(sorted(a[1])) # snps
-                activeAccs.append(a)
-
-        percActive = 0
-        if total > 0:
-            percActive = round(float(totalActive) / total * 100, 2)
-
-        def form(v):
-            return [["%s%% CREs active" % v, v, 0],
-                    ["", 100 - v, v]]
-
-        keys = ["accession", "snp", "geneid"] + fieldsOut
-        ret = [dict(zip(keys, r)) for r in accs]
+                a["snps"] = ", ".join(sorted(a["snps"]))
+                activeCres.append(a)
 
         hiddenFields = set(["promoter zscore", "enhancer zscore",
                             "dnase zscore"]) - set(fieldsOut)
@@ -81,8 +69,9 @@ class Gwas:
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
-        return {"accessions" : ret,
-                "vcols" : vcols,
-                "percActive" : percActive}
+        return {"accessions" : activeCres,
+                "vcols" : vcols}
 
 
+
+    

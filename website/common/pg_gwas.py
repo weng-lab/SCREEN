@@ -99,7 +99,7 @@ where authorPubmedTrait = %s
         groupBy = ["cre.accession",
                   "infoAll.approved_symbol"]
 
-        fieldsOut = []
+        fieldsOut = ["accession", "snps", "geneid"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3_only"),
                       ("enhancer", "h3k27ac_only")]:
@@ -126,6 +126,7 @@ GROUP BY {groupBy}
            fields = ', '.join(fields),
            groupBy = ', '.join(groupBy))
             curs.execute(q, (gwas_study, ))
-            ret = curs.fetchall()
-            return ret, fieldsOut
+            rows = curs.fetchall()
+        ret = [dict(zip(fieldsOut, r)) for r in rows]
+        return ret, fieldsOut
 
