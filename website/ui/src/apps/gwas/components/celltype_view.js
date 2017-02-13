@@ -29,6 +29,9 @@ class CelltypeView extends React.Component {
     }
 
     loadCres({gwas_study, cellType, actions}){
+        if(cellType.cellTypeName in this.state){
+            return;
+        }
         var q = {GlobalAssembly, gwas_study,
                  "cellType" : cellType.cellTypeName };
         var jq = JSON.stringify(q);
