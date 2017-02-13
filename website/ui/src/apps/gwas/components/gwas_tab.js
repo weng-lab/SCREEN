@@ -100,6 +100,7 @@ class GwasTab extends React.Component{
                         {title: "-log(FDR)",
                          data: "neglogfdr", className: "dt-right"}
 	            ]}
+                    order={[[1, "desc"], [0, "asc"]]}
                     paging={false}
                     />
 		    </div>
