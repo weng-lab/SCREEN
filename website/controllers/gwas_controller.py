@@ -33,23 +33,26 @@ class GwasController:
                               "mainTable" : [self._mainTableInfo(g, gwas_study)],
                               "topCellTypes" : g.topCellTypes(gwas_study)}}
 
+    def _accs(self, j):
+        assembly = j["GlobalAssembly"]
+        cache = self.cacheW[assembly]
+        g = Gwas(assembly, self.ps, cache)
+        gwas_study = j["gwas_study"]
+        if not g.checkStudy(gwas_study):
+            raise Exception("invalid study")
+
         def form(v):
             return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
                     ["", 100 - v, v]]
-        header = ["Cell type", "-log(fdr)"]
 
-        overlapPerc = round(g.overlapWithCresPerc() *100, 2)
-        pie = form(overlapPerc)
         table, accs = g.gwasEnrichment()
 
-        return {gwas_study :
-                {"pie" : pie,
-                 "table" : {"header" : header,
-                            "rows" : table},
-                 "accs" : accs}}
+        return {gwas_study : accs}
 
     def gwasJson(self, j, args, kwargs):
         if not args:
             raise Exception("unknown action")
         if "main" == args[0]:
             return self._main(j)
+        if "accs" == args[0]:
+            return self._accs(j)
