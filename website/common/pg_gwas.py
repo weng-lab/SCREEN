@@ -48,11 +48,10 @@ WHERE authorPubmedTrait = %s
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
             q = """
-SELECT DISTINCT(authorpubmedtrait), author, pubmed, trait, COUNT(DISTINCT(ldblock))
+SELECT authorpubmedtrait, author, pubmed, trait, numLDblocks
 FROM {tn}
-GROUP BY authorpubmedtrait, author, pubmed, trait
 ORDER BY trait
-""".format(tn = self.assembly + "_gwas")
+""".format(tn = self.assembly + "_gwas_studies")
             curs.execute(q)
             rows = curs.fetchall()
         keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
