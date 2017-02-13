@@ -21,7 +21,8 @@ id serial PRIMARY KEY,
 author text,
 pubmed text,
 trait text,
-authorPubmedTrait text
+authorPubmedTrait text,
+numLDblocks integer
 );
 """.format(tableName = tableName))
 
@@ -45,11 +46,19 @@ def _studies(curs, fnp):
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
     cols = ["author", "pubmed", "trait", "authorPubmedTrait"]
-    print(cols)
 
     printt("import to db")
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", curs.rowcount)
+    printt("copied in", curs.rowcount)
+
+    printt("getting LD block counts...")
+    curs.execute("""
+UPDATE {tn} as studies
+set numLDblocks = (select COUNT(DISTINCT(gwas.ldblock))
+                   from {gwasTn} as gwas
+                   where studies.authorpubmedtrait = gwas.authorpubmedtrait)
+""".format(tn = tableName, gwasTn = "hg19_gwas"))
+    printt("updated", curs.rowcount)
 
 def setupEnrichment(curs, tableName, fields):
     # author-pubMedID-trait, expEnrichedIn, foldEnrichment, fdr, ignore!
