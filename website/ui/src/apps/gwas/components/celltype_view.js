@@ -73,7 +73,7 @@ class CelltypeView extends React.Component {
              visible: vcols["enhancer zscore"]},
             {title: "dnase zscore", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
-            {title: "snps", data: "snp"},
+            {title: "snps", data: "snps"},
             {title: "gene", data: "geneid"}
         ];
 
