@@ -40,3 +40,4 @@ export const getCommonState =
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end, cellType, element_type};
       }
+

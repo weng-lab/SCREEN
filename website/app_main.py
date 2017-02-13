@@ -136,7 +136,7 @@ class MainApp():
     @cherrypy.tools.json_out()
     def gwasJson(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.gwas.gwasJson(j)
+        return self.gwas.gwasJson(j, args, kwargs)
 
     @cherrypy.expose
     def tfApp(self, *args, **kwargs):
