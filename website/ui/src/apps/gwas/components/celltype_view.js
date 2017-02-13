@@ -9,6 +9,18 @@ import ResultsTable from '../../../common/components/results_table'
 
 const render_relink = (a) => (v) => ("<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
+const render_snp_link = (d) => {
+    var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
+    if("mm10" == GlobalAssembly){
+        url = "http://ensembl.org/Mus_musculus/Variation/Explore";
+    }
+    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>';
+}
+
+const renderSnpLinks = (snps) => {
+    return snps.map(render_snp_link).join(",");
+}
+
 class CelltypeView extends React.Component {
     constructor(props) {
         super(props);
@@ -76,7 +88,7 @@ class CelltypeView extends React.Component {
              visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
-            {title: "snps", data: "snps"},
+            {title: "snps", data: "snps", render: renderSnpLinks},
             {title: "gene", data: "geneid"}
         ];
 
