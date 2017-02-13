@@ -80,6 +80,7 @@ class CelltypeView extends React.Component {
         let creTable = (<ResultsTable
                         data={cres}
                         cols={cols}
+                        bFilter={true}
 		        cvisible={vcols}
                         order={[[1, "desc"], [0, "asc"]]}
                         />);
