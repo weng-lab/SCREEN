@@ -38,7 +38,7 @@ class ResultsTable extends React.Component {
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
 	var onMouseEnter = this.props.onMouseEnter;
-	
+
 	$(this.refs.root)
 	    .on("click", "td", function() {
 		if (onTdClick) {
