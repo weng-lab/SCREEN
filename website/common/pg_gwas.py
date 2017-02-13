@@ -16,9 +16,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
-GwasEnrichmentRow = namedtuple('GwasEnrichmentRow', "biosample_term_name fdr cellTypeName".split(' '))
-GwasRow = namedtuple('GwasRow',  "chrom start stop snp taggedSNP r2 ldblock authorPubmedTrait".split(' '))
-
 class PGgwasWrapper:
     def __init__(self, pg):
         self.pgs = {
@@ -45,17 +42,8 @@ WHERE authorPubmedTrait = %s
 """.format(tn = self.assembly + "_gwas_enrichment")
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
-        return [GwasEnrichmentRow(*r) for r in rows]
-
-    def gwas(self):
-        with getcursor(self.pg.DBCONN, "gwas") as curs:
-            q = """
-SELECT chrom, start, stop, snp, taggedSNP, r2, ldblock, authorPubmedTrait
-FROM {tn}
-""".format(tn = self.assembly + "_gwas")
-            curs.execute(q)
-            rows = curs.fetchall()
-        return [GwasRow(*r) for r in rows]
+        keys = ["biosample_term_name", "fdr", "cellTypeName"]
+        return [dict(zip(keys, r)) for r in rows]
 
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
@@ -67,8 +55,8 @@ ORDER BY trait
 """.format(tn = self.assembly + "_gwas")
             curs.execute(q)
             rows = curs.fetchall()
-        key = ["value", "author", "pubmed", "trait", "total_ldblocks"]
-        return [dict(zip(key, r)) for r in rows]
+        keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
+        return [dict(zip(keys, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:

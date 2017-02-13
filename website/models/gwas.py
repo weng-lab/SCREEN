@@ -31,13 +31,13 @@ class Gwas:
     def percCresPromoter(self, gwas_study):
         return 0
 
-    def gwasEnrichment(self, gwas_study):
-         rows = self.pgGwas.gwasEnrichment(gwas_study)
-         rows = [[r.biosample_term_name,
-                  round(-1.0 * math.log10(r.fdr), 2),
-                  r.cellTypeName]
-                 for r in rows]
-         rows.sort(key = lambda x: x[1], reverse=True)
+    def topCellTypes(self, gwas_study):
+         rows = []
+         for r in self.pgGwas.gwasEnrichment(gwas_study):
+             r["neglogfdr"] = round(-1.0 * math.log10(r["fdr"]), 2)
+             rows.append(r)
+         rows.sort(key = lambda x: x["neglogfdr"], reverse=True)
+         return rows
 
          accs = {}
          for r in rows:

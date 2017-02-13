@@ -19,9 +19,7 @@ class GwasController:
 
     def _mainTableInfo(self, g, gwas_study):
         return {"totalLDblocks" : g.totalLDblocks(gwas_study),
-                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study),
-                "percCresEnhancer" : g.percCresEnhancer(gwas_study),
-                "percCresPromoter" : g.percCresPromoter(gwas_study)}
+                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study)}
 
     def _main(self, j):
         assembly = j["GlobalAssembly"]
@@ -31,10 +29,9 @@ class GwasController:
         if not g.checkStudy(gwas_study):
             raise Exception("invalid study")
 
-        ret = {}
-        ret["mainTable"] = self._mainTableInfo(g, gwas_study)
-
-        return ret
+        return {gwas_study : {"gwas_study" : g.byStudy[gwas_study],
+                              "mainTable" : [self._mainTableInfo(g, gwas_study)],
+                              "topCellTypes" : g.topCellTypes(gwas_study)}}
 
         def form(v):
             return [["%s%% of LD blocks overlap w/ CREs" % v, v, 0],
