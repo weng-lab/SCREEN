@@ -57,7 +57,6 @@ class Gwas:
         for a in cres:
             if a.get("promoter zscore", 0) > 1.64 or a.get("enhancer zscore", 0) > 1.64 or a.get("dnase zscore", 0) > 1.64:
                 totalActive += 1
-                a["snps"] = ", ".join(sorted(a["snps"]))
                 activeCres.append(a)
 
         hiddenFields = set(["promoter zscore", "enhancer zscore",
