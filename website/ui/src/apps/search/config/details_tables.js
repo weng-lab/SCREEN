@@ -113,7 +113,8 @@ export const OrthologTable = {
 	bLengthChange: false,
 	emptyText: "No orthologous cRE identified",
 	cols: [
-	    {title: "accession", "data": "accession", className: "dt-right", render: Render.relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
+	    {title: "accession", "data": "accession", className: "dt-right",
+             render: Render.relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: Render.integer},
 	    {title: "end", "data": "stop", render: Render.integer},
