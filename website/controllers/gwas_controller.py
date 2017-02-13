@@ -48,7 +48,7 @@ class GwasController:
 
         cres = g.cres(gwas_study, ct)
 
-        return {gwas_study : cres}
+        return {ct : cres}
 
     def gwasJson(self, j, args, kwargs):
         if not args:

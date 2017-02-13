@@ -68,7 +68,18 @@ class Gwas:
 
         keys = ["accession", "snp", "geneid"] + fieldsOut
         ret = [dict(zip(keys, r)) for r in accs]
+
+        hiddenFields = set(["promoter zscore", "enhancer zscore",
+                            "dnase zscore"]) - set(fieldsOut)
+        if hiddenFields:
+            for r in ret:
+                for f in hiddenFields:
+                    r[f] = ''
+        vcols = {}
+        for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
+            vcols[f] = f not in hiddenFields
         return {"accessions" : ret,
+                "vcols" : vcols,
                 "percActive" : percActive}
 
 
