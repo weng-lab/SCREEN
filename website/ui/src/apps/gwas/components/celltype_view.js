@@ -55,17 +55,21 @@ class CelltypeView extends React.Component {
     }
 
     render() {
-        if(!(this.props.gwas_study in this.state)){
+        if(!(this.props.cellType.cellTypeName in this.state)){
             return loading(this.state);
         }
-        let data = this.state[this.props.gwas_study];
+        let data = this.state[this.props.cellType.cellTypeName];
         let cres = data.accessions;
+        let vcols = data.vcols;
 
         let cols = [
             {title: "accession", data: "accession"},
-            {title: "promoter zscore", data: "promoter zscore"},
-            {title: "enhancer zscore", data: "enhancer zscore"},
-            {title: "dnase zscore", data: "dnase zscore"},
+            {title: "promoter zscore", data: "promoter zscore",
+             visible: vcols["promoter zscore"]},
+            {title: "enhancer zscore", data: "enhancer zscore",
+             visible: vcols["enhancer zscore"]},
+            {title: "dnase zscore", data: "dnase zscore",
+             visible: vcols["dnase zscore"]},
             {title: "snps", data: "snp"},
             {title: "gene", data: "geneid"}
         ];
@@ -73,6 +77,7 @@ class CelltypeView extends React.Component {
         let creTable = (<ResultsTable
                         data={cres}
                         cols={cols}
+		        cvisible={vcols}
                         order={[[1, "desc"], [0, "asc"]]}
                         />);
 	return (<div>
