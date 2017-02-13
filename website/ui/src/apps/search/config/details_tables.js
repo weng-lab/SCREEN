@@ -1,3 +1,5 @@
+import {render_snp_link, render_relink} from '../../../common/utility'
+
 import {render_z_score, render_int, render_cell_type, render_float} from './results_table'
 
 import {render_support, render_length, render_supporting_cts} from '../../geneexp/components/candidate_res'
@@ -28,20 +30,11 @@ const render_factorbook_link_histone = (d) => (
 	: d.replace(/F/g, ".")
 );
 
-const render_snp_link = (d) => {
-    var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
-    if("mm10" == GlobalAssembly){
-        url = "http://ensembl.org/Mus_musculus/Variation/Explore";
-    }
-    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>';
-}
-
 const render_gene_link = (d) => (
     '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
 
 const render_position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 const render_bp = (v) => (v + " bp");
-const render_relink = (a) => (v) => ("<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
 
 export const TopTissuesTables = {
     "promoter": {

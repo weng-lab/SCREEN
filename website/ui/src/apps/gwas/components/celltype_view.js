@@ -5,17 +5,8 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
+import {render_snp_link, render_relink} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
-
-const render_relink = (a) => (v) => ("<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>" + v + "</a>");
-
-const render_snp_link = (d) => {
-    var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
-    if("mm10" == GlobalAssembly){
-        url = "http://ensembl.org/Mus_musculus/Variation/Explore";
-    }
-    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">' + d + '</a>';
-}
 
 const renderSnpLinks = (snps) => {
     return snps.map(render_snp_link).join(",");
