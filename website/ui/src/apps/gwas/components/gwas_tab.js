@@ -12,8 +12,7 @@ import ResultsTable from '../../../common/components/results_table'
 class GwasTab extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: false, isError: false,
-                       selectStudy: true };
+        this.state = { jq: null, isFetching: false, isError: false};
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGwas = this.loadGwas.bind(this);
     }
@@ -27,9 +26,13 @@ class GwasTab extends React.Component{
         this.loadGwas(nextProps);
     }
 
+    componentWillUnmount(){
+        // else clicking on same study won't make anything happen
+        this.props.actions.setStudy(null);
+    }
+
     loadGwas({gwas_study, actions}){
 	if(null == gwas_study){
-	    this.setState({selectStudy: true})
 	    return;
 	}
         var q = {GlobalAssembly, gwas_study};
@@ -39,7 +42,7 @@ class GwasTab extends React.Component{
             return;
         }
         //console.log("loadGene....", this.state.jq, jq);
-        this.setState({jq, isFetching: true, selectStudy: false});
+        this.setState({jq, isFetching: true});
         $.ajax({
             url: "/gwasJson/main",
             type: "POST",
@@ -97,7 +100,7 @@ class GwasTab extends React.Component{
     }
 
     render(){
-	if(this.state.selectStudy){
+	if(!this.props.gwas_study){
             return (<div>
                     {"Please choose a study on left"}
                     </div>);
