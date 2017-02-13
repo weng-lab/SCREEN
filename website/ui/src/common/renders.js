@@ -61,7 +61,7 @@ export const geDeButtons = (d) => {
     return p.map(geDeButton).join(", ");
 };
 
-const dccLink = (expID) => {
+export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
