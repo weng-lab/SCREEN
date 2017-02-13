@@ -70,7 +70,7 @@ class GwasTab extends React.Component{
                               data: "totalLDblocks"},
                              {title: "# of LD blocks overlapping cREs",
                               data: "numLdBlocksOverlap"},
-                             {title: "# of overlapping CREs",
+                             {title: "# of overlapping cREs",
                               data: "numCresOverlap"}
 	                 ]}
                          paging={false}
