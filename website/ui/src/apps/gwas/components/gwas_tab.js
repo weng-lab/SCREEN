@@ -92,8 +92,17 @@ class GwasTab extends React.Component{
                             />);
         return (<div>
 		<h2>{data.gwas_study.trait}</h2>
-		<div style={{width: "50%"}}>{mainTable}</div>
-		<div style={{width: "50%"}}>{topCellTypes}</div>
+
+                <div className="container-fluid">
+                <div className="row">
+                <div className="col-md-6">
+		{mainTable}
+                <hr />
+		{topCellTypes}
+                </div>
+                </div>
+                </div>
+
                 {ctView}
                 </div>
                );
