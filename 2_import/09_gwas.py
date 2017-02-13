@@ -12,8 +12,7 @@ from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
-def setupEnrichment(curs, tableName):
-    # author-pubMedID-trait, expEnrichedIn, foldEnrichment, fdr, ignore!
+def setupStudies(curs, tableName):
     curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -23,17 +22,88 @@ author text,
 pubmed text,
 trait text,
 authorPubmedTrait text,
-expID text,
-foldEnrichment real,
-fdr real,
-biosample_term_name text,
-cellTypeName text
 );
 """.format(tableName = tableName))
 
+def _studies(curs, fnp):
+    # GWAS enrichment
+    printt("reading", fnp)
+    with open(fnp) as f:
+        header = f.readline().rstrip('\n').split('\t')
+
+    tableName = "hg19_gwas_studies"
+    printt("drop/create", tableName)
+    setupEnrichment(curs, tableName)
+
+    printt("rewrite rows")
+    outF = StringIO.StringIO()
+    for authorPubmedTrait in header[2:]:
+        print(authorPubmedTrait)
+        toks = authorPubmedTrait.split('-')
+        author, pubmed, trait = *toks
+        authorPubmedTrait = authorPubmedTrait.replace('-', '_')
+        r = [author, pubmed, trait, authorPubmedTrait]
+        outF.write('\t'.join(r) + '\n')
+    outF.seek(0)
+    cols = ["author", "pubmed", "trait", "authorPubmedTrait"]
+    print(cols)
+
+    printt("import to db")
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    print("\tcopied in", curs.rowcount)
+
+def setupEnrichment(curs, tableName, fields):
+    # author-pubMedID-trait, expEnrichedIn, foldEnrichment, fdr, ignore!
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+
+CREATE TABLE {tableName}(
+id serial PRIMARY KEY,
+expID text,
+cellTypeName text,
+biosample_term_name text,
+{fields}
+);
+""".format(tableName = tableName,
+           fields = ','.join([r + " real" for r in fields])))
+
+def _enrichment(curs, fnp):
+    # GWAS enrichment
+    printt("reading", fnp)
+    with open(fnp) as f:
+        header = f.readline().rstrip('\n').split('\t')
+        rows = [r.rstrip('\n').split('\t') for r in f if r]
+
+    tableName = "hg19_gwas_enrichment"
+    fields = [f.replace('-', '_') for f in header[2:]]
+    printt("drop/create", tableName)
+    setupEnrichment(curs, tableName, fields)
+
+    printt("rewrite rows")
+    outF = StringIO.StringIO()
+    for r in rows:
+        exp = Exp.fromJsonFile(r[0])
+        r.insert(2, exp.biosample_term_name)
+        outF.write('\t'.join(r) + '\n')
+    outF.seek(0)
+    cols = ["expID", "cellTypeName", "biosample_term_name"] + fields
+    print(cols)
+
+    printt("import to db")
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    print("\tcopied in", curs.rowcount)
+
+    if 0:
+        curs.execute("""
+UPDATE hg19_gwas_enrichment as ge
+set cellTypeName = d.cellTypeName
+from hg19_datasets as d
+where ge.expID = d.expID""")
+        printt("updated", curs.rowcount)
+
 def setupGWAS(curs, tableName):
     # chr1    62963737        62963737        rs1002687       rs11207995      0.85    25961943-2      Cholesterol     25961943        Surakka"""
-    # snpItself       taggedSNP       r2      unqiueLDblock(pubmed-num)       trait   pubmed  firstAuthor""
+    #                                         snpItself       taggedSNP       r2      unqiueLDblock(pubmed-num)       trait   pubmed  firstAuthor""
     curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}(
@@ -52,52 +122,48 @@ authorPubmedTrait text
 );
 """.format(tableName = tableName))
 
-def setupAll(curs):
-    dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-    dataF = os.path.join(dataF, "GWAS")
-
-    # GWAS enrichment
-    fnp = os.path.join(dataF, "GWAS.Enrichment.v0.txt")
-    tableName = "hg19_gwas_enrichment"
-    setupEnrichment(curs, tableName)
-    outF = StringIO.StringIO()
-    with open(fnp) as f:
-        rows = [r.rstrip().split('\t') for r in f if r]
-    for r in rows:
-        toks = r[0].split('-')
-        r = toks + r[:-1]
-        r[3] = r[3].replace("Arking-24952745-QTInterval",
-                            "Arking-24952745-QT Interval")
-        r[3] = r[3].replace("Speedy-24292274-Leukemia",
-                            "Speedy-24292274-Chronic lymphocytic leukemia")
-        r[3] = r[3].replace("Surakka-25961943-Cholesterol",
-                            "Surakka-25961943-Cholesterol")
-        r[4] = r[4].strip()
-        exp = Exp.fromJsonFile(r[4])
-        r.append(exp.biosample_term_name)
-        print(r)
-        outF.write('\t'.join(r) + '\n')
-    outF.seek(0)
-    cols = ["author", "pubmed", "trait", "authorPubmedTrait",
-            "expID", "foldEnrichment", "fdr", "biosample_term_name"]
-    print(cols)
-    curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", curs.rowcount)
-
+def _gwas(curs, fnp):
     # GWAS bed
-    fnp = os.path.join(dataF, "GWAS.v0.bed")
-    tableName = "hg19_gwas"
-    setupGWAS(curs, tableName)
-    outF = StringIO.StringIO()
+    printt("reading", fnp)
     with open(fnp) as f:
         rows = [r.rstrip().split('\t') for r in f if r]
+
+    tableName = "hg19_gwas"
+    printt("drop/create", tableName)
+    setupGWAS(curs, tableName)
+
+    printt("split rows")
+    split = []
     for r in rows:
-        if '*' == r[5]:
-            r[5] = "-1"
+        if ',' not in r[4]:
+            split.append(r)
+            continue
+        taggedSNPs = r[4].split(',')
+        r2s = r[5].split(',')
+        a = list(r)
+        b = list(r)
+        a[4] = taggedSNPs[0]
+        b[4] = taggedSNPs[1]
+        a[5] = r2s[0]
+        b[5] = r2s[1]
+        split.append(a)
+        split.append(b)
+    print("split rows", len(rows), "to", len(split))
+
+    printt("rewrite rows")
+    outF = StringIO.StringIO()
+    for idx, r in enumerate(split):
         if 'Lead' == r[4]:
             r[4] = r[3]
+        if '*' == r[5]:
+            r[5] = "-1"
         r[2] = str(int(r[2]) + 1)
-        r.append('-'.join([r[-1], r[-2], r[-3]]))
+        r.append('_'.join([r[-1], r[-2], r[-3]]))
+        if 0 == idx:
+            print("example", '\t'.join(r))
+        if '*' in '\t'.join(r):
+            print(r)
+            raise Exception("invalid line")
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
 
@@ -105,12 +171,16 @@ def setupAll(curs):
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
 
-    curs.execute("""
-UPDATE hg19_gwas_enrichment as ge
-set cellTypeName = d.cellTypeName
-from hg19_datasets as d
-where ge.expID = d.expID""")
-    printt("updated", curs.rowcount)
+def setupAll(curs):
+    dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
+    dataF = os.path.join(dataF, "GWAS")
+
+    fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
+    _studies(curs, fnp)
+    _enrichment(curs, fnp)
+
+    fnp = os.path.join(dataF, "GWAS.v1.bed")
+    _gwas(curs, fnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()

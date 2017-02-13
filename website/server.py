@@ -5,6 +5,8 @@ import cherrypy, os, sys, argparse, time
 #from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
+from redis_sessions import RedisJsonSession
+
 from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
 
@@ -26,11 +28,10 @@ class Config:
     def __init__(self, siteName):
         self.siteName = siteName
         self.root = os.path.realpath(os.path.dirname(__file__))
-        self.tmpDir = os.path.join(self.root, "tmp")
 
-        # shared sessions
-        self.sessionDir = os.path.join(self.tmpDir, "sessions")
-        Utils.mkdir_p(self.sessionDir)
+        import socket
+        hn = socket.gethostname()
+        self.tmpDir = os.path.join(self.root, "tmp", hn)
 
         self.logDir = os.path.join(self.tmpDir, "logs", siteName)
         Utils.mkdir_p(self.logDir)
@@ -50,8 +51,7 @@ class Config:
             '/': {
                 'tools.sessions.on' : True,
                 'tools.sessions.timeout' : 60000,
-                'tools.sessions.storage_type' : "file",
-                'tools.sessions.storage_path' : self.sessionDir,
+                'tools.sessions.storage_class' : RedisJsonSession,
                 'log.access_file' : self.accessFnp,
                 'log.error_file' : self.errorFnp,
                 'log.screen' : False,
