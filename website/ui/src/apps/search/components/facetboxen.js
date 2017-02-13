@@ -12,17 +12,12 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import SliderFacet from '../../../common/components/slider'
 
 import {default_margin} from '../config/constants'
-import {render_int, render_cell_type} from '../config/results_table'
+
+import * as Render from '../../../common/renders'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
 import {panelize} from '../../../common/utility'
-
-const dccLink = (expID) => {
-    var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
-}
 
 const rangeBox = (title, range, start, end, action, _f, _rf) => {
     return (<RangeFacet
@@ -68,7 +63,7 @@ const cellTypesBox = ({cellType, actions}) => {
 		          className: "dt-right"},
 		        { title: "tissue", data: "tissue",
 		          className: "dt-right" },
-		        { title: "", data: "expID", render: dccLink,
+		        { title: "", data: "expID", render: Render.dccLink,
 		          className: "dt-right dcc" }
 	            ]}
                     order={[]}
