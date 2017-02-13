@@ -1,4 +1,4 @@
-import {render_snp_link, render_relink} from '../../../common/utility'
+import * as Render from '../../../common/renders'
 
 import {render_z_score, render_int, render_cell_type, render_float} from './results_table'
 
@@ -116,7 +116,7 @@ export const OrthologTable = {
 	bLengthChange: false,
 	emptyText: "No orthologous cRE identified",
 	cols: [
-	    {title: "accession", "data": "accession", className: "dt-right", render: render_relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
+	    {title: "accession", "data": "accession", className: "dt-right", render: Render.relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: render_int},
 	    {title: "end", "data": "stop", render: render_int},
@@ -176,7 +176,7 @@ export const NearbyGenomicTable = {
         bLengthChange: true,
 	cols: [
 	    {title: "accession", data: "name", className: "dt-right",
-	     render: render_relink(GlobalAssembly) },
+	     render: Render.relink(GlobalAssembly) },
 	    {title: "distance", data: "distance",
 	     render: render_int } ],
         pageLength: 5,
@@ -192,7 +192,7 @@ export const NearbyGenomicTable = {
 	emptyText: "No SNPs within 10Kb",
 	cols: [
 	    {title: "accession", data: "name",
-	     render: render_snp_link },
+	     render: Render.snp_link },
 	    {title: "distance",	data: "distance",
 	     render: render_int }],
         pageLength: 5,
@@ -223,7 +223,7 @@ export const NearbyGenomicTable = {
 	emptyText: "No cREs within TAD",
 	cols: [
 	    {title: "accession", data: "accession",
-	     render: render_relink(GlobalAssembly) },
+	     render: Render.relink(GlobalAssembly) },
 	    {title: "coordinates", data: "position",
 	     render:  render_position }	],
         pageLength: 5,

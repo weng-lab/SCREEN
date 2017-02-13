@@ -3,14 +3,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders'
 
 import loading from '../../../common/components/loading'
-import {render_snp_link, render_relink} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
-
-const renderSnpLinks = (snps) => {
-    return snps.map(render_snp_link).join(",");
-}
 
 class CelltypeView extends React.Component {
     constructor(props) {
@@ -72,14 +68,14 @@ class CelltypeView extends React.Component {
 
         let cols = [
             {title: "accession", data: "accession",
-             render: render_relink(GlobalAssembly) },
+             render: Render.relink(GlobalAssembly) },
             {title: "Promoter Z", data: "promoter zscore",
              visible: vcols["promoter zscore"]},
             {title: "Enhancer Z", data: "enhancer zscore",
              visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
-            {title: "snps", data: "snps", render: renderSnpLinks},
+            {title: "snps", data: "snps", render: Render.snpLinks},
             {title: "gene", data: "geneid"}
         ];
 
