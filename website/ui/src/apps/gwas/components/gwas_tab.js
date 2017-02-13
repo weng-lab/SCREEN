@@ -64,9 +64,11 @@ class GwasTab extends React.Component{
                          data={data.mainTable}
                          cols={[
                              {title: "Total LD blocks",
-                              data: "totalLDblocks", className: "dt-right"},
+                              data: "totalLDblocks"},
                              {title: "# of LD blocks overlapping cREs",
-                              data: "numLdBlocksOverlap", className: "dt-right"}
+                              data: "numLdBlocksOverlap"},
+                             {title: "# of intersecting CREs",
+                              data: "numCresOverlap"}
 	                 ]}
                          paging={false}
                          />);
