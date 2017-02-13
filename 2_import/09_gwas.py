@@ -183,6 +183,54 @@ GROUP BY authorpubmedtrait, author, pubmed, trait
  """.format(tn = tableName, gwasTn = "hg19_gwas"))
     printt("inserted", curs.rowcount)
 
+    curs.execute("""
+SELECT authorpubmedtrait
+FROM {tn}
+ORDER BY authorpubmedtrait
+ """.format(tn = tableName))
+    return [r[0] for r in curs.fetchall()]
+
+def setupOverlap(curs, tableName):
+    curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+
+CREATE TABLE {tableName}(
+id serial PRIMARY KEY,
+authorPubmedTrait text,
+accession text,
+snp text
+);
+""".format(tableName = tableName))
+
+def studyOverlapWithCres(curs, gwas_study):
+    print(gwas_study)
+    q = """
+SELECT cre.accession, gwas.snp
+FROM hg19_gwas as gwas, hg19_cre as cre
+WHERE gwas.chrom = cre.chrom
+AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+AND gwas.authorPubmedTrait = %s
+""".format(tn = "hg19_gwas")
+    curs.execute(q, (gwas_study, ))
+    return [[r[0], r[1]] for r in curs.fetchall()]
+
+def _overlap(curs, studies):
+    tableName = "hg19_gwas_overlap"
+    setupOverlap(curs, tableName)
+
+    outF = StringIO.StringIO()
+
+    for gwas_study in studies:
+        accessionAndSnp = studyOverlapWithCres(curs, gwas_study)
+        for a in accessionAndSnp:
+            outF.write('\t'.join([gwas_study] + a) + '\n')
+
+    outF.seek(0)
+
+    cols = ["authorPubmedTrait", "accession", "snp"]
+    curs.copy_from(outF, tableName, '\t', columns=cols)
+    print("\tcopied in", curs.rowcount)
+
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
 
@@ -191,7 +239,8 @@ def setupAll(curs):
 
      fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
      _enrichment(curs, fnp)
-     _studies(curs, fnp)
+     studies = _studies(curs, fnp)
+     _overlap(curs, studies)
 
 def parse_args():
     parser = argparse.ArgumentParser()
