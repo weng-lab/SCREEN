@@ -33,18 +33,6 @@ class PGgwas:
         pg = PGcommon(self.pg, self.assembly)
         self.ctmap = pg.makeCtMap()
 
-    def gwasEnrichment(self, gwas_study):
-        with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
-            q = """
-SELECT biosample_term_name, fdr, cellTypeName
-FROM {tn}
-WHERE authorPubmedTrait = %s
-""".format(tn = self.assembly + "_gwas_enrichment")
-            curs.execute(q, (gwas_study, ))
-            rows = curs.fetchall()
-        keys = ["biosample_term_name", "fdr", "cellTypeName"]
-        return [dict(zip(keys, r)) for r in rows]
-
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
             q = """
@@ -56,6 +44,17 @@ ORDER BY trait
             rows = curs.fetchall()
         keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
         return [dict(zip(keys, r)) for r in rows]
+
+    def gwasEnrichment(self, gwas_study):
+        with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
+            q = """
+SELECT expID, cellTypeName, biosample_term_name, {col}
+FROM {tn}
+""".format(tn = self.assembly + "_gwas_enrichment", col = gwas_study)
+            curs.execute(q)
+            rows = curs.fetchall()
+        cols = ["expID", "cellTypeName", "biosample_term_name", "fdr"]
+        return [dict(zip(cols, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwas") as curs:
