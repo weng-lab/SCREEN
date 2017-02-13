@@ -27,8 +27,10 @@ class DummyEs:
         pass
 
 class Config:
-    def __init__(self, siteName):
+    def __init__(self, siteName, production):
         self.siteName = siteName
+        self.production = production
+
         self.root = os.path.realpath(os.path.dirname(__file__))
 
         import socket
@@ -49,11 +51,16 @@ class Config:
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
+        redisHost = "127.0.0.1"
+        if self.production:
+            redisHost = "redis.docker"
+
         return {
             '/': {
                 'tools.sessions.on' : True,
                 'tools.sessions.timeout' : 60000,
                 'tools.sessions.storage_type' : 'redis',
+                'tools.sessions.host' : redisHost,
                 'log.access_file' : self.accessFnp,
                 'log.error_file' : self.errorFnp,
                 'log.screen' : False,
@@ -83,7 +90,7 @@ def main():
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
 
-    config = Config("main")
+    config = Config("main", args.production)
     main = MainApp(args, config.viewDir, config.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', config.getRootConfig())
 
