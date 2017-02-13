@@ -19,7 +19,7 @@ const gwas_studies = ({gwas_study, actions}) => {
                         {title: "Author", data: "author", className: "dt-right"},
                         {title: "Pubmed", data: "pubmed", className: "dt-right"}
 	                ]}
-                    order={[]}
+                    order={[[0, "asc"], [1, "asc"]]}
 		    selection={gwas_study}
         	    mode={CHECKLIST_MATCH_ANY}
                     pageLength={5}
