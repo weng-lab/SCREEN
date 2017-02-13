@@ -27,17 +27,17 @@ class GwasTab extends React.Component{
     }
 
     componentWillUnmount(){
-        // else clicking on same study won't make anything happen
+        // clear store state for next user choice
         this.props.actions.setStudy(null);
     }
 
     loadGwas({gwas_study, actions}){
-	if(null == gwas_study){
+	if(!gwas_study){
 	    return;
 	}
         var q = {GlobalAssembly, gwas_study};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
