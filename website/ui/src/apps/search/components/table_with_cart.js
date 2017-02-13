@@ -160,13 +160,14 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
-	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 cREs in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
+	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
 	var tmsg2 = (this.props.nodnase && this.props.nodnase.length ? <div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div> : "");
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 	return (<div>
-		{topmessage}
-		{tmsg2}<br />
+		<em>{topmessage}
+		{tmsg2}</em><br />
+		Candidate Regulatory Elements (cREs) that meet your search criteria:
 		<ResultsTable data={data}
                 order={table_order}
                 cols={ResultsTableColumns}
