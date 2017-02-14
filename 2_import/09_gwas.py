@@ -243,19 +243,25 @@ def _overlap(curs, bedFnp):
     snpsIntersecting = Utils.runCmds(cmds)
     print("example", snpsIntersecting[0].rstrip('\n').split('\t'))
 
+    printt("rewriting...")
     outF = StringIO.StringIO()
     for r in snpsIntersecting:
         toks = r.rstrip('\n').split('\t')
         snp = toks[3]
         authorPubmedTrait = toks[4]
         accession = toks[9]
+        if '_' not in authorPubmedTrait or not snp.startswith("rs") or not accession.startswith("EH3"):
+            print(r)
+            print(toks)
+            raise Exception("bad line?")
         outF.write('\t'.join([authorPubmedTrait, accession, snp]) + '\n')
     print("example", '\t'.join([authorPubmedTrait, accession, snp]))
     outF.seek(0)
 
+    printt("copying into DB...")
     cols = "authorPubmedTrait accession snp".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    printt("\tcopied in", curs.rowcount)
+    printt("copied in", curs.rowcount)
 
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
