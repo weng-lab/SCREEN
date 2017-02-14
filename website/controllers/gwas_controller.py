@@ -32,7 +32,7 @@ class GwasController:
 
         return {gwas_study : {"gwas_study" : g.byStudy[gwas_study],
                               "mainTable" : [self._mainTableInfo(g, gwas_study)],
-                              "topCellTypes" : g.topCellTypes(gwas_study)}}
+                              "topCellTypes" : g.allCellTypes(gwas_study)}}
 
     def _cres(self, j):
         assembly = j["GlobalAssembly"]

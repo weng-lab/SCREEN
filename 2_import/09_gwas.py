@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import os, sys, json, psycopg2, argparse, StringIO
+import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -144,6 +145,8 @@ def _enrichment(curs, fnp):
     for r in rows:
         exp = Exp.fromJsonFile(r[0])
         r.insert(2, exp.biosample_term_name)
+        for idx in xrange(3, len(r)):
+            r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
     cols = ["expID", "cellTypeName", "biosample_term_name"] + fields
@@ -236,7 +239,7 @@ def _overlap(curs, studies):
 
     cols = ["authorPubmedTrait", "accession", "snp"]
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", curs.rowcount)
+    printt("\copied in", curs.rowcount, tableName)
 
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
