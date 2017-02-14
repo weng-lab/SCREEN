@@ -11,7 +11,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printt
+from utils import Utils, printt, printWroteNumLines
+from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
@@ -30,22 +31,9 @@ class ImportMinipeaks:
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
-    def importAll(self):
-        queryFnp = paths.path(self.assembly, "minipeaks", "query.cql")
-        with open(queryFnp, 'w') as outF:
-            f.write("use minipeaks;\n")
-            for assay in ["DNase", "H3K27ac", "H3K4me3"]:
-                self._doImport(assay, outF)
-        printWroteNumLines(queryFnp)
-
-        cmds = []
-        if self.host:
-            cmds = ['CQLSH_HOST="' + self.host + '"']
-        cmds += [os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
-                 "--cqlversion=3.4.2",
-                 "-f", queryFnp]
-        if GetYesNoToQuestion.immediate("import data?"):
-            print(Utils.runCmds(cmds))
+    def importAll(self, outF):
+        for assay in ["DNase", "H3K27ac", "H3K4me3"]:
+            self._doImport(assay, outF)
 
     def _doImport(self, assay, outF):
         tableName = '_'.join([self.assembly, assay,
@@ -91,10 +79,26 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-    for assembly in assemblies:
-        if GetYesNoToQuestion.immediate("remove old tables?"):
+    if not GetYesNoToQuestion.immediate("remove old tables?"):
+        return 0
+
+    queryFnp = os.path.join(paths.v4d, "insert_minipeaks.cql")
+    with open(queryFnp, 'w') as outF:
+        outF.write("use minipeaks;\n")
+        for assembly in assemblies:
             im = ImportMinipeaks(args.host, assembly, 20, 2)
-            im.importAll()
+            im.importAll(outF)
+
+    printWroteNumLines(queryFnp)
+    cmds = []
+    if args.host:
+        cmds = ['CQLSH_HOST="' + args.host + '"']
+    cmds += [os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+             "--cqlversion=3.4.2",
+             "-f", queryFnp]
+    if GetYesNoToQuestion.immediate("import data?"):
+        print(Utils.runCmds(cmds))
+
 
 if __name__ == '__main__':
     main()
