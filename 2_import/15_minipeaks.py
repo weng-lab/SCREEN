@@ -12,6 +12,7 @@ from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
+from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
     def __init__(self, host, assembly, nbins, ver):
@@ -30,10 +31,23 @@ WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
     def importAll(self):
-        for assay in ["DNase", "H3K27ac", "H3K4me3"]:
-            self._doImport(assay)
+        queryFnp = paths.path(self.assembly, "minipeaks", "query.cql")
+        with open(queryFnp, 'w') as outF:
+            f.write("use minipeaks;\n")
+            for assay in ["DNase", "H3K27ac", "H3K4me3"]:
+                self._doImport(assay, outF)
+        printWroteNumLines(queryFnp)
 
-    def _doImport(self, assay):
+        cmds = []
+        if self.host:
+            cmds = ['CQLSH_HOST="' + self.host + '"']
+        cmds += [os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+                 "--cqlversion=3.4.2",
+                 "-f", queryFnp]
+        if GetYesNoToQuestion.immediate("import data?"):
+            print(Utils.runCmds(cmds))
+
+    def _doImport(self, assay, outF):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
@@ -61,8 +75,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
             tn = tableName, fields = ",".join(cols),
             fn = mergedFnp)
-        print(q)
-        #self.session.execute(q)
+        outF.write(q + '\n\n')
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -79,8 +92,9 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        im = ImportMinipeaks(args.host, assembly, 20, 2)
-        im.importAll()
+        if GetYesNoToQuestion.immediate("remove old tables?"):
+            im = ImportMinipeaks(args.host, assembly, 20, 2)
+            im.importAll()
 
 if __name__ == '__main__':
     main()
