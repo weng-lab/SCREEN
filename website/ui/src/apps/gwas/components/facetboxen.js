@@ -38,7 +38,8 @@ const cellTypesBox = ({gwas_cell_types, actions}) => {
                cols={[
                    {title: "Cell Type", data: "biosample_term_name",
                     className: "dt-right"},
-                   {title: "-log(FDR)", data: "neglogfdr", className: "dt-right"},
+                   {title: "-log(fdr)", data: "neglogfdr",
+                    className: "dt-right"},
                    {title: "", data: "expID", render: Render.dccLink,
                     className: "dt-right dcc"},
 	       ]}
