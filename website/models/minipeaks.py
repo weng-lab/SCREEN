@@ -5,9 +5,7 @@ from __future__ import print_function
 import os
 import sys
 
-from bigwig import BigWig
-from cre import CRE
-
+from minipeaks_cache import MiniPeaksCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import printt
@@ -19,10 +17,7 @@ def asum(_l):
 
 class MiniPeaks:
     def __init__(self, pgSearch, accession, cache):
-        self.pgSearch = pgSearch
         self.accession = accession
-        self.cache = cache
-        self.pos = None
 
     def _get_bigwigs(self, key):
         return [{"ct": k, "bigwig": v[1], "accession": v[0],
@@ -39,8 +34,7 @@ class MiniPeaks:
     def _get_bigwig_regions(self, bigwigs, cres, assay, n_bars = 15):
         print(cres)
         try:
-            results = BigWig(self.cache.minipeaks_caches[assay]).getregions(cres,
-                                                                            bigwigs, n_bars)
+            results = {}
             results["order"] = self._groupbytissue(results)
             return results
         except:
@@ -55,22 +49,14 @@ class MiniPeaks:
             return ""
 
     def regionsFromSearchList(self, assay, cres, n_bars):
-        for cre in cres:
-            cre["end"] = cre["start"] + cre["len"]
-        bigWigs = self._get_bigwigs(assay)
-        regions = self._get_bigwig_regions(bigWigs, cres, assay, n_bars)
+        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, cres)
         accs = [x["accession"] for x in cres]
         return (regions, accs)
         
-    def getBigWigRegions(self, assay, cres = None):
-        coord = CRE(self.pgSearch, self.accession, self.cache).coord()
-        bigWigs = self._get_bigwigs(assay)
-        me = {"accession": self.accession,
-              "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
-        if not cres:
-            cres = [me]
-        regions = self._get_bigwig_regions(bigWigs, cres, assay)
-        accs = [x["accession"] for x in cres]
+    def getBigWigRegions(self, assay, cres = []):
+        accessions = [self.accession] + cres
+        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
+        accs = [x["accession"] for x in accessions]
         return (regions, accs)
 
     def getBigWigRegionsWithSimilar(self, assay, other = None):
@@ -86,42 +72,22 @@ class MiniPeaks:
         accs = [x["accession"] for x in cres]
         return (regions, accs)
 
-
 def main():
-    class DummyEs:
-        def search(self, index, body):
-            return {"hits": {"total": 0, "hits": [] }}
-        def __init__(self):
-            pass
-
     import sys, os
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
     sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
     from postgres_wrapper import PostgresWrapper
     from pg import PGsearch
-    from elastic_search_wrapper import ElasticSearchWrapperWrapper
     from dbconnect import db_connect
     from cached_objects import CachedObjects
 
     DBCONN = db_connect(os.path.realpath(__file__), False)
     ps = PostgresWrapper(DBCONN)
-    es = ElasticSearchWrapperWrapper(DummyEs())
-
-    def chunks(l, n):
-        """Yield successive n-sized chunks from l."""
-        # from http://stackoverflow.com/a/312464
-        for i in xrange(0, len(l), n):
-            yield l[i:i + n]
 
     for assembly in ["hg19", "mm10"]:
         pgSearch = PGsearch(ps, assembly)
         cache = CachedObjects(es, ps, assembly)
-
-        for accessions in list(chunks(pgSearch.allCREs(), 1000)):
-            mp = MiniPeaks(pgSearch, accessions[0]["accession"], cache)
-            mp.getBigWigRegions(accessions)
-            printt(len(accessions))
 
 if __name__ == "__main__":
     main()
