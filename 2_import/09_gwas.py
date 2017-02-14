@@ -206,15 +206,15 @@ snp text
 """.format(tableName = tableName))
 
 def studyOverlapWithCres(curs, gwas_study):
-    printt(gwas_study)
     q = """
 SELECT cre.accession, gwas.snp
 FROM hg19_gwas as gwas, hg19_cre as cre
 WHERE gwas.chrom = cre.chrom
 AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
 AND gwas.authorPubmedTrait = %s
-""".format(tn = "hg19_gwas")
+"""
     curs.execute(q, (gwas_study, ))
+    #print(q, gwas_study)
     return [[r[0], r[1]] for r in curs.fetchall()]
 
 def _overlap(curs, studies):
@@ -224,7 +224,8 @@ def _overlap(curs, studies):
 
     outF = StringIO.StringIO()
 
-    for gwas_study in studies:
+    for idx, gwas_study in enumerate(studies):
+        printt(idx + 1, "of", len(studies), gwas_study)
         accessionAndSnp = studyOverlapWithCres(curs, gwas_study)
         for a in accessionAndSnp:
             outF.write('\t'.join([gwas_study] + a) + '\n')
