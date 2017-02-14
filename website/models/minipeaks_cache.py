@@ -13,7 +13,7 @@ class MiniPeaksCache:
         self.nbins = nbins
         self.ver = ver
 
-    def get(self, assay, accession):
+    def get(self, assay, accessions):
         cluster = Cluster()
         session = cluster.connect()
         session.row_factory = dict_factory
@@ -23,18 +23,17 @@ class MiniPeaksCache:
                               str(self.ver), str(self.nbins)])
 
         select_stmt = session.prepare("""
-SELECT * FROM {tn} WHERE accession = ?
+SELECT * FROM {tn} WHERE accession IN ?
 """.format(tn = tableName ))
         
-        rows = list(session.execute(select_stmt, (accession,)))
-        if 1 == len(rows):
-            return rows[0]
-        return {}
+        rows = list(session.execute(select_stmt, (accessions,)))
+        return rows
 
 if __name__ == "__main__":
     mpc = MiniPeaksCache("mm10", 20, 2)
-    ret = mpc.get("DNase", "EM10E0371084")
-    print(ret)
+    ret = mpc.get("DNase", ["EM10E0371084"])
+    for r in ret:
+        print(r["accession"], r)
 
     if 0:
         j = mpc.get("EM10E0371084")
