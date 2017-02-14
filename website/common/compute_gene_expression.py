@@ -32,7 +32,7 @@ FixedTissueColors = {
     "skin": "#BBAA44",
     "stomach": "#44AAFF",
     "uterus": "#990033",
-    'adrenal gland' : "#BBAA44", 
+    'adrenal gland' : "#BBAA44",
     'blood vessel' : '#880000',
     'bone' : "#BBAA44",
     'bronchus' : "#BBAA44",
@@ -72,7 +72,7 @@ fixedmap = {"limb": "limb",
             "CMP": "blood" }
 
 Compartments = ["cell", "nucleoplasm", "cytosol",
-                "nucleus", "membrane", "chromatin", 
+                "nucleus", "membrane", "chromatin",
                 "nucleolus"]
 
 class TissueColors:
@@ -98,10 +98,10 @@ class ComputeGeneExpression:
         self.cache = cache
         self.assembly = assembly
         self.tissueColors = TissueColors()
-                
+
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
-            
+
     def groupByTissue(self, rows):
         sorter = lambda x: x["tissue"]
         rows.sort(key = sorter)
@@ -145,7 +145,7 @@ class ComputeGeneExpression:
             k = str(idx).zfill(3) + '_' + t
 	    ret[k] = row
         return ret
-    
+
     def sortByExpression(self, rows, key):
         sorter = lambda x: float(x[key])
         rows.sort(key = sorter, reverse = True)
@@ -160,7 +160,7 @@ class ComputeGeneExpression:
                       "color": c,
                       "items": [row]}
         return ret
-    
+
     def process(self, rows):
         return {"byTissue" : self.groupByTissue(rows),
                 "byTissueMaxTPM" : self.groupByTissueMax(rows, "rawTPM"),
@@ -177,7 +177,7 @@ class ComputeGeneExpression:
         with getcursor(self.ps.DBCONN, "ComputeGeneExpression::computeFoldChange") as curs:
             curs.execute("""
 SELECT r.tpm, r.fpkm, r_rnas_{assembly}.cellType, r.gene_name
-FROM r_expression_{assembly} as r 
+FROM r_expression_{assembly} as r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
 WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2)s
 """.format(assembly = self.assembly),
@@ -194,11 +194,9 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
         for gene in exp[ct1]:
             if gene in exp[ct2]:
                 fc[gene] = math.log((exp[ct1][gene] + 0.01) / (exp[ct2][gene] + 0.01), 2)
-        print(fc)
         return fc
-                
+
     def computeHorBars(self, gene, compartments):
-        print(tuple(compartments))
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute("""
             SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r.replicate, r.fpkm
@@ -225,9 +223,8 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
                     "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
                     "expID" : row[3],
                     "rep" : row[4]}
-                
+
         rows = [makeEntry(x) for x in rows]
         ret = {"items" : self.process(rows)}
-        print(ret)
         return ret
-        
+
