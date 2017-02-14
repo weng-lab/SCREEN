@@ -224,9 +224,11 @@ def _overlap(curs, studies):
 
     outF = StringIO.StringIO()
 
+    counter = 0
     for idx, gwas_study in enumerate(studies):
-        printt(idx + 1, "of", len(studies), gwas_study)
+        printt(idx + 1, "of", len(studies), gwas_study, counter)
         accessionAndSnp = studyOverlapWithCres(curs, gwas_study)
+        counter += len(accessionAndSnp)
         for a in accessionAndSnp:
             outF.write('\t'.join([gwas_study] + a) + '\n')
 
