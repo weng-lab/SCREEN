@@ -56,7 +56,6 @@ class Config:
         return {
             '/': {
                 'tools.sessions.on' : True,
-                'tools.sessions.timeout' : 60000,
                 'tools.sessions.storage_type' : 'redis',
                 'tools.sessions.host' : redisHost
             },
