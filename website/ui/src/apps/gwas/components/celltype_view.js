@@ -87,7 +87,7 @@ class CelltypeView extends React.Component {
                         order={[[1, "desc"], [0, "asc"]]}
                         />);
 	return (<div>
-                <h3>{this.props.cellType.biosample_term_name}</h3>
+                <h3>{this.props.cellType.biosample_summary}</h3>
                 {creTable}
 		</div>);
     }
