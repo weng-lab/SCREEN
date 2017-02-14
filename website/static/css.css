@@ -329,11 +329,21 @@ select.ui-toggle-switch { display: none; }
 
 #mainButtonGroup{
   text-align: center;
-
 }
 
 #mainSearchbox {
     padding: 10px;
     height: 35px;
-    width: 100%;
+    width: 50%;
+}
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
 }
