@@ -8,7 +8,7 @@ from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
 
 class ImportLiftover:
@@ -18,7 +18,7 @@ class ImportLiftover:
         self.d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9"
 
     def setupLiftover(self):
-        print("dropping and creating", self.tableName)
+        printt("dropping and creating", self.tableName)
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
     CREATE TABLE {tableName}(
@@ -31,17 +31,15 @@ class ImportLiftover:
     overlap integer
     );
     """.format(tableName = self.tableName))
-        printt("\tok")
 
     def getMpToAccLookup(self, assembly):
         fnp = os.path.join(self.d, assembly, "raw", "masterPeaks.bed.gz")
-        print("making lookup", assembly, "from", fnp)
+        printt("making lookup", assembly, "from", fnp)
         ret = {}
         with gzip.open(fnp) as f:
             for line in f:
                 toks = line.rstrip().split('\t')
                 ret[toks[3]] = toks[4]
-        printt("\tok")
         return ret
 
     def run(self):
@@ -49,10 +47,9 @@ class ImportLiftover:
 
         self.setupLiftover()
 
-        print("reading", fnp)
+        printt("reading", fnp)
         with gzip.open(fnp) as f:
             mmToHg = [r.rstrip().split('\t') for r in f.readlines()]
-            printt("\tok")
 
         mmLookup = self.getMpToAccLookup("mm10")
         hgLookup = self.getMpToAccLookup("hg19")
@@ -72,16 +69,17 @@ class ImportLiftover:
             ret.append(mmToHg[idx])
 
         cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
-        print("writing stringio...")
+        printt("writing stringio...")
         outF = StringIO.StringIO()
         for r in ret:
             outF.write("\t".join(r) + '\n')
         outF.seek(0)
-        printt("\tok")
 
-        print("copy into db...")
+        printt("copy into db...")
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("\tok", self.curs.rowcount)
+
+        makeIndex(self.curs, self.tableName, ["mouseAccession", "humanAccession"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
