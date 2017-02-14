@@ -213,15 +213,18 @@ def _overlap(curs, studies):
     tableName = "hg19_gwas_overlap"
     setupOverlap(curs, tableName)
 
-    q = """
+    for idx, gwas_study in enumerate(studies):
+        printt(idx + 1, "of", len(studies), gwas_study)
+        q = """
 INSERT INTO {tn} (authorpubmedtrait, accession, snp)
 SELECT gwas.authorPubmedTrait, cre.accession, gwas.snp
 FROM hg19_gwas as gwas, hg19_cre as cre
 WHERE gwas.chrom = cre.chrom
 AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+AND gwas.authorPubmedTrait = %s
 """.format(tn = tableName)
-    curs.execute(q)
-    printt("inserted", curs.rowcount, tableName)
+        curs.execute(q, (gwas_study, ))
+        printt("inserted", curs.rowcount, tableName)
 
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
