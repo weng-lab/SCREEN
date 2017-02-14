@@ -144,17 +144,24 @@ def _enrichment(curs, fnp):
     outF = StringIO.StringIO()
     for r in rows:
         exp = Exp.fromJsonFile(r[0])
-        r.insert(2, exp.biosample_term_name)
+        r[1] = exp.biosample_term_name
         for idx in xrange(3, len(r)):
             r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
-    cols = ["expID", "cellTypeName", "biosample_term_name"] + fields
+    cols = ["expID", "biosample_term_name"] + fields
     print(cols)
 
     printt("import to db")
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
+
+    curs.execute("""
+UPDATE hg19_gwas_enrichment as ge
+set cellTypeName = d.cellTypeName
+from hg19_datasets as d
+where ge.expID = d.expID""")
+    printt("updated", curs.rowcount)
 
 def setupStudies(curs, tableName):
     curs.execute("""
@@ -230,12 +237,12 @@ def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
 
      fnp = os.path.join(dataF, "GWAS.v1.bed")
-     _gwas(curs, fnp)
+    # _gwas(curs, fnp)
 
      fnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
      _enrichment(curs, fnp)
-     studies = _studies(curs, fnp)
-     _overlap(curs, studies)
+     #studies = _studies(curs, fnp)
+     #_overlap(curs, studies)
 
 def parse_args():
     parser = argparse.ArgumentParser()
