@@ -58,9 +58,7 @@ class Config:
                 'tools.sessions.on' : True,
                 'tools.sessions.timeout' : 60000,
                 'tools.sessions.storage_type' : 'redis',
-                'tools.sessions.host' : redisHost,
-                'log.error_file' : self.errorFnp,
-                'response.timeout' : 6000
+                'tools.sessions.host' : redisHost
             },
             '/static' : {
                 'tools.staticdir.on' : True,
@@ -93,13 +91,14 @@ def main():
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                            'server.socket_port': int(args.port),
-                            'log.screen' : False,
-                            'log.access_file' : ""})
+                            'server.socket_port': int(args.port)})
     if args.production:
-        cherrypy.config.update({'server.socket_queue_size': 512})
-        cherrypy.config.update({'server.thread_pool': 30})
-
+        cherrypy.config.update({'server.socket_queue_size': 512,
+                                'server.thread_pool': 30,
+                                'log.screen' : False,
+                                'log.access_file' : "",
+                                'log.error_file' : config.errorFnp
+                                })
     cherrypy.engine.start()
     cherrypy.engine.block()
 
