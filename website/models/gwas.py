@@ -2,8 +2,6 @@
 
 from __future__ import print_function
 
-import math
-
 from cre import CRE
 from common.pg_gwas import PGgwas
 
@@ -34,13 +32,8 @@ class Gwas:
     def percCresPromoter(self, gwas_study):
         return 0
 
-    def topCellTypes(self, gwas_study):
-         rows = []
-         for r in self.pgGwas.gwasEnrichment(gwas_study):
-             r["neglogfdr"] = round(-1.0 * math.log10(r["fdr"]), 2)
-             rows.append(r)
-         rows.sort(key = lambda x: x["neglogfdr"], reverse=True)
-         return rows
+    def allCellTypes(self, gwas_study):
+        return self.pgGwas.gwasEnrichment(gwas_study)
 
     def cres(self, gwas_study, ct):
         cres, fieldsOut = self.pgGwas.gwasPercentActive(gwas_study, ct)

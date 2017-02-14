@@ -50,10 +50,11 @@ ORDER BY trait
             q = """
 SELECT expID, cellTypeName, biosample_term_name, {col}
 FROM {tn}
+ORDER BY {col} DESC
 """.format(tn = self.assembly + "_gwas_enrichment", col = gwas_study)
             curs.execute(q)
             rows = curs.fetchall()
-        cols = ["expID", "cellTypeName", "biosample_term_name", "fdr"]
+        cols = ["expID", "cellTypeName", "biosample_term_name", "neglogfdr"]
         return [dict(zip(cols, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
