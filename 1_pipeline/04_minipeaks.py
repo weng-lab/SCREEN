@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import os
 import argparse
@@ -11,7 +12,7 @@ from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer, numLines, cat
+from utils import Utils, Timer, numLines, cat, printWroteNumLines, printt
 from paste import chunkedPaste
 
 # from http://stackoverflow.com/a/19861595
@@ -68,7 +69,7 @@ class ExtractRawPeaks:
                "H3K4me3-List.txt"]
 
         for fn in fns:
-            print("***********************", fn)
+            print("***********************", self.assembly, fn)
             fnp = os.path.join(self.d, "raw", fn)
             with open(fnp) as f:
                 rows = [x.rstrip().split() for x in f.readlines()]
@@ -107,8 +108,6 @@ class ExtractRawPeaks:
                                            accession]]) + '\n')
         print("wrote", outFnp)
 
-
-
 class MergeFiles:
     def __init__(self, assembly, nbins, ver):
         self.assembly = assembly
@@ -117,7 +116,7 @@ class MergeFiles:
 
     def _getFileIDs(self, fn):
         assay = fn.split('-')[0]
-        print("***********************", assay)
+        print("***********************", self.assembly, assay)
         fnp = paths.path(self.assembly, "raw", fn)
         with open(fnp) as f:
             rows = [x.rstrip('\n').split('\t') for x in f.readlines()]
@@ -152,9 +151,14 @@ class MergeFiles:
         if not os.path.exists(accessionFnp):
             self._makeAccesionFile(accessionFnp)
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", "merged.txt")
+        colsFnp = paths.path(self.assembly, "minipeaks", assay + "_cols.txt")
+        with open(colsFnp, 'w') as f:
+            f.write('\t'.join(fileIDs) + '\n')
+        printWroteNumLines(colsFnp)
+
+        mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
         printt("paste into", mergedFnp)
-        #chunkedPaste(mergedFnp, [accessionFnp] + fnps)
+        chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
 def parse_args():
     parser = argparse.ArgumentParser()
