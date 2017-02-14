@@ -29,6 +29,7 @@ class GwasTab extends React.Component{
     componentWillUnmount(){
         // clear store state for next user choice
         this.props.actions.setStudy(null);
+        actions.setGwasCellTypes(null);
     }
 
     loadGwas({gwas_study, actions}){
@@ -55,6 +56,7 @@ class GwasTab extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
+                actions.setGwasCellTypes(r[gwas_study].topCellTypes);
             }.bind(this)
         });
     }
@@ -75,21 +77,6 @@ class GwasTab extends React.Component{
 	                 ]}
                          paging={false}
                          />);
-        let topCellTypes = (<ResultsTable
-                            data={data.topCellTypes}
-                            cols={[
-                                {title: "Cell Type",
-                                 data: "biosample_term_name",
-                                 className: "dt-right"},
-                                {title: "-log(FDR)",
-                                 data: "neglogfdr", className: "dt-right"}
-	                    ]}
-                            order={[[1, "desc"], [0, "asc"]]}
-                            bFilter={true}
-                            onTdClick={(td, data) => {
-                                actions.setCellType(data)
-                            }}
-                            />);
         return (<div>
 		<h2>{data.gwas_study.trait}</h2>
 
@@ -97,8 +84,6 @@ class GwasTab extends React.Component{
                 <div className="row">
                 <div className="col-md-6">
 		{mainTable}
-                <hr />
-		{topCellTypes}
                 </div>
                 </div>
                 </div>

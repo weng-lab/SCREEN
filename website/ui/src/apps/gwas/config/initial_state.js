@@ -7,6 +7,7 @@ const initialState = {
     maintabs_visible: true,
     gwas_study: null,
     cellType: null,
+    gwas_cell_types: null,
     cart_accessions: new Set()
 };
 

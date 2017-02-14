@@ -11,6 +11,9 @@ const main_reducers = (state, action) => {
     case Actions.SET_CELLTYPE:
 	return {...state, cellType: action.ct};
 
+    case Actions.SET_GWAS_CELL_TYPES:
+        return {...state, gwas_cell_types: action.cts};
+
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;
