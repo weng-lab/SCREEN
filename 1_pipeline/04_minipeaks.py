@@ -29,7 +29,7 @@ class ExtractRawPeaks:
             self.bwtool = "/usr/local/bin/bwtool"
         if not os.path.exists(self.bwtool):
             raise Exception("no bwtool found")
-        self.masterPeakFnp = os.path.join(self.d, "raw",
+        self.masterPeakFnp = paths.path(assembly, "raw",
                                           "masterPeaks.bed.gz")
         self.numPeaks = numLines(self.masterPeakFnp)
         print(self.masterPeakFnp, "has", self.numPeaks)
@@ -60,7 +60,6 @@ class ExtractRawPeaks:
         Utils.runCmds(cmds)
 
     def extractAndDownsamplePeaks(self):
-        d = "/project/umw_zhiping_weng/0_metadata/encode/data"
         fns = ["DNase-List.txt", "H3K27ac-List.txt",
                "H3K4me3-List.txt"]
 
