@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import LongListFacet from '../../../common/components/longlist'
+import ResultsTable from '../../../common/components/results_table'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
@@ -27,10 +28,33 @@ const gwas_studies = ({gwas_study, actions}) => {
                     />);
 }
 
+const cellTypesBox = ({gwas_cell_types, actions}) => {
+    if(!gwas_cell_types){
+        return (<div />);
+    }
+    let cts = (<ResultsTable
+               data={gwas_cell_types}
+               cols={[
+                   {title: "Cell Type",
+                    data: "biosample_term_name",
+                    className: "dt-right"},
+                   {title: "-log(FDR)",
+                    data: "neglogfdr", className: "dt-right"}
+	       ]}
+               order={[[1, "desc"], [0, "asc"]]}
+               bFilter={true}
+               onTdClick={(td, data) => {
+                   actions.setCellType(data)
+               }}
+               />);
+    return panelize("Cell types", cts);
+}
+
 class FacetBoxen extends React.Component {
     doRender(p){
         return (<div>
                 {gwas_studies(p)}
+                {cellTypesBox(p)}
                 </div>);
     }
 
