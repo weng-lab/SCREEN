@@ -6,9 +6,13 @@ import argparse
 import gzip
 from joblib import Parallel, delayed
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from constants import paths
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer, numLines
+from utils import Utils, Timer, numLines, cat
+from paste import chunkedPaste
 
 # from http://stackoverflow.com/a/19861595
 import copy_reg
@@ -103,6 +107,55 @@ class ExtractRawPeaks:
                                            accession]]) + '\n')
         print("wrote", outFnp)
 
+
+
+class MergeFiles:
+    def __init__(self, assembly, nbins, ver):
+        self.assembly = assembly
+        self.nbins = nbins
+        self.ver = ver
+
+    def _getFileIDs(self, fn):
+        assay = fn.split('-')[0]
+        print("***********************", assay)
+        fnp = paths.path(self.assembly, "raw", fn)
+        with open(fnp) as f:
+            rows = [x.rstrip('\n').split('\t') for x in f.readlines()]
+        fileIDs = sorted([r[1] for r in rows])
+        return assay, fileIDs
+
+    def run(self):
+        fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
+
+        for fn in fns:
+            assay, fileIDs = self._getFileIDs(fn)
+            fnps = []
+            for fileID in fileIDs:
+                fnp = paths.path(self.assembly, "minipeaks",
+                                 fileID + ".bigWig.txt")
+                if os.path.exists(fnp):
+                    fnps.append(fnp)
+                else:
+                    print("WARNING: missing", fnp)
+
+            self.processRankMethod(fileIDs, fnps, assay)
+
+    def _makeAccesionFile(self, fnp):
+        cmds = [cat(paths.path(self.assembly, "raw", "masterPeaks.bed.gz")),
+                '|', "awk -v OFS='\t' '{ print($5,$1) }'",
+                '>', fnp]
+        Utils.runCmds(cmds)
+        printWroteNumLines(fnp)
+
+    def processRankMethod(self, fileIDs, fnps, assay):
+        accessionFnp = paths.path(self.assembly, "minipeaks", "accessions.txt")
+        if not os.path.exists(accessionFnp):
+            self._makeAccesionFile(accessionFnp)
+
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged.txt")
+        printt("paste into", mergedFnp)
+        #chunkedPaste(mergedFnp, [accessionFnp] + fnps)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
@@ -114,13 +167,17 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = ["mm10", "hg19"]
     if args.assembly:
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        ep = ExtractRawPeaks(assembly, args.j)
-        ep.run()
+        if 0:
+            ep = ExtractRawPeaks(assembly, args.j)
+            ep.run()
+        else:
+            mf = MergeFiles(assembly, 20, 2)
+            mf.run()
 
     return 0
 
