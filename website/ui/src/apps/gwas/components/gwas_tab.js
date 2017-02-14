@@ -29,7 +29,7 @@ class GwasTab extends React.Component{
     componentWillUnmount(){
         // clear store state for next user choice
         this.props.actions.setStudy(null);
-        actions.setGwasCellTypes(null);
+        this.props.actions.setGwasCellTypes(null);
     }
 
     loadGwas({gwas_study, actions}){
