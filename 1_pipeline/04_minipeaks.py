@@ -126,6 +126,7 @@ class MergeFiles:
     def run(self):
         fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
 
+        presentFileIDs = []
         for fn in fns:
             assay, fileIDs = self._getFileIDs(fn)
             fnps = []
@@ -134,10 +135,11 @@ class MergeFiles:
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
+                    presentFileIDs.append(fileID)
                 else:
                     print("WARNING: missing", fnp)
 
-            self.processRankMethod(fileIDs, fnps, assay)
+            self.processRankMethod(presentFileIDs, fnps, assay)
 
     def _makeAccesionFile(self, fnp):
         cmds = [cat(paths.path(self.assembly, "raw", "masterPeaks.bed.gz")),
