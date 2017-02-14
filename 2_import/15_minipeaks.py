@@ -51,10 +51,10 @@ class ImportMinipeaks:
 
             toks = fn.split('-')
             self.processRankMethod(bfnps, toks[0])
-            
+
     def processRankMethod(self, rows, rankMethod):
         tableName = rankMethod + '_' + str(self.ver)
-        
+
         self.session.execute("""
 DROP TABLE IF EXISTS """ + tableName)
 
@@ -66,8 +66,8 @@ ctAndAvgSignals text,
 PRIMARY KEY (accession, ver) )
 WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = self.tableName))
-        
-    
+
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -87,6 +87,6 @@ def main():
     for assembly in assemblies:
         im = ImportMinipeaks(assembly)
         im.importAll()
-        
+
 if __name__ == '__main__':
     main()
