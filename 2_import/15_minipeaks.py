@@ -51,13 +51,14 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
            fields = ",".join([r + " text" for r in fileIDs])))
 
         mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
-        printt("import", mergedFnp)
+        #printt("import", mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
-        q = "COPY {tn} ({fields}) from '{fn}' where NUMPROCESSES= 16 ;".format(
+        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 16 AND MAXBATCHSIZE = 1;""".format(
             tn = tableName, fields = ",".join(cols),
             fn = mergedFnp)
         print(q)
+        #self.session.execute(q)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -68,7 +69,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = ["mm10", "hg19"]
     if args.assembly:
         assemblies = [args.assembly]
 
