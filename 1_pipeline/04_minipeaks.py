@@ -81,7 +81,7 @@ class ExtractRawPeaks:
                     bfnps.append(fnp)
                 else:
                     print("WARNING: missing bigwig", fnp)
-            outD = os.path.join(self.d, "minipeaks")
+            outD = os.path.join(self.d, "minipeaks", "files")
             Utils.mkdir_p(outD)
 
             Parallel(n_jobs = self.j)(delayed(self._runBwtool)
@@ -130,7 +130,7 @@ class MergeFiles:
             assay, fileIDs = self._getFileIDs(fn)
             fnps = []
             for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks",
+                fnp = paths.path(self.assembly, "minipeaks", "files",
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
