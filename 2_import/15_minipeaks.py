@@ -9,6 +9,7 @@ from cassandra import ConsistencyLevel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
@@ -30,39 +31,12 @@ class ImportMinipeaks:
         """.format(ks = self.keyspace))
         self.session.set_keyspace(self.keyspace)
 
-    def _getFileIDs(self, fn):
-        assay = fn.split('-')[0]
-        print("***********************", assay)
-        fnp = paths.path(self.assembly, "raw", fn)
-        with open(fnp) as f:
-            rows = [x.rstrip('\n').split('\t') for x in f.readlines()]
-        fileIDs = sorted([r[1] for r in rows])
-        return assay, fileIDs
-
     def importAll(self):
         fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
 
         for fn in fns:
-            assay, fileIDs = self._getFileIDs(fn)
-            fnps = []
-            for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks",
-                                 fileID + ".bigWig.txt")
-                if os.path.exists(fnp):
-                    fnps.append(fnp)
-                else:
-                    print("WARNING: missing", fnp)
+        assay = fn.split('-')[0]
 
-            self.processRankMethod(fileIDs, fnps, assay)
-
-    def _makeAccesionFile(self, fnp):
-        cmds = [cat(paths.path(self.assembly, "raw", "masterPeaks.bed.gz")),
-                '|', "awk -v OFS='\t' '{ print($5,$1) }'",
-                '>', fnp]
-        Utils.runCmds(cmds)
-        printWroteNumLines(fnp)
-
-    def processRankMethod(self, fileIDs, fnps, assay):
         tableName = assay
 
         self.session.execute("""
@@ -78,13 +52,8 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = self.tableName,
            fields = ",".join([r + " text" for r in fileIDs])))
 
-        accessionFnp = paths.path(self.assembly, "minipeaks", "accessions.txt")
-        if not os.path.exists(accessionFnp):
-            self._makeAccesionFile(accessionFnp)
-
         mergedFnp = paths.path(self.assembly, "minipeaks", "merged.txt")
         printt("paste into", mergedFnp)
-        chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
 def parse_args():
     parser = argparse.ArgumentParser()
