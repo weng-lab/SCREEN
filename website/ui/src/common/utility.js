@@ -41,3 +41,13 @@ export const getCommonState =
                   rank_ctcf_start, rank_ctcf_end, cellType, element_type};
       }
 
+export const arrowNote = (msg) => {
+    return (<div>
+            <h3>
+            <span className="glyphicon glyphicon-arrow-left"
+            aria-hidden="true" style={{color: "red"}}>
+            </span>
+            &nbsp;&nbsp;{msg}
+            </h3>
+            </div>);
+}
