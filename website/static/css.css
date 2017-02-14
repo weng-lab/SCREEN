@@ -27,11 +27,6 @@ html, body {
     margin-top: 5px;
 }
 
-.jumbotron {
-    padding-top: 48px;
-    padding-bottom: 18px;
-}
-
 div.result_row {
     width: 100%;
 }
@@ -56,14 +51,11 @@ div.result_row_selected {
 .searchbox {
     padding: 10px;
     height: 35px;
+    width: 100%;
 }
 
 .navbar-main {
     margin-bottom: 0px;
-}
-
-.jumbotron {
-    padding-top: 0px;
 }
 
 .facet {
@@ -322,4 +314,29 @@ select.ui-toggle-switch { display: none; }
 
 .panel-body thead > tr > th.dt-right {
     white-space: nowrap;
+}
+
+/* for main page */
+#mainTitle {
+   text-align: center;
+   font-size: 32px;
+   font-style: bold;
+}
+
+#mainDesc {
+    background-color: #FFEBC8;
+    font-size: 18px;
+ }
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
+
+#mainButtonGroup{
+  text-align: center;
+
 }
