@@ -32,12 +32,15 @@ class ImportMinipeaks:
         self.session.set_keyspace(self.keyspace)
 
     def importAll(self):
-        fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
+        for assay in ["DNase", "H3K27ac", "H3K4me3"]:
+            self._doImport(assay):
 
-        for fn in fns:
-        assay = fn.split('-')[0]
-
+    def _doImport(self, assay):
         tableName = assay
+
+        colsFnp = paths.path(self.assembly, "minipeaks", assay + "_cols.txt")
+        with open(colsFnp) as f:
+            fileIDs = f.readline().rstip('\n').split('\t')
 
         self.session.execute("""
 DROP TABLE IF EXISTS """ + tableName)
@@ -52,8 +55,8 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = self.tableName,
            fields = ",".join([r + " text" for r in fileIDs])))
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", "merged.txt")
-        printt("paste into", mergedFnp)
+        mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
+        printt("import", mergedFnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()
