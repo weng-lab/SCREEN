@@ -10,7 +10,7 @@ from constants import paths
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from exp import Exp
 from utils import Utils, printt
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
 
 def setupGWAS(curs, tableName):
@@ -109,6 +109,9 @@ def _gwas(curs, fnp):
     cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
     print("\tcopied in", curs.rowcount)
+
+    makeIndex(curs, tableName, ["chrom", "authorPubmedTrait", "ldblock"])
+    makeIndexIntRange(curs, tableName, ["start", "stop"])
 
 def setupEnrichment(curs, tableName, fields):
     curs.execute("""
