@@ -42,8 +42,6 @@ class Config:
 
         # http://stackoverflow.com/a/10607768
         ts = time.strftime("%Y%m%d-%H%M%S")
-        self.accessFnp = os.path.join(self.logDir,
-                                      "access-" + ts + ".log")
         self.errorFnp = os.path.join(self.logDir,
                                      "error-" + ts + ".log")
 
@@ -61,9 +59,7 @@ class Config:
                 'tools.sessions.timeout' : 60000,
                 'tools.sessions.storage_type' : 'redis',
                 'tools.sessions.host' : redisHost,
-                'log.access_file' : self.accessFnp,
                 'log.error_file' : self.errorFnp,
-                'log.screen' : False,
                 'response.timeout' : 6000
             },
             '/static' : {
@@ -96,9 +92,10 @@ def main():
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
-    cherrypy.config.update({'server.socket_host': '0.0.0.0', })
-    cherrypy.config.update({'server.socket_port': int(args.port), })
-
+    cherrypy.config.update({'server.socket_host': '0.0.0.0',
+                            'server.socket_port': int(args.port),
+                            'log.screen' : False,
+                            'log.access_file' : ""})
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512})
         cherrypy.config.update({'server.thread_pool': 30})
