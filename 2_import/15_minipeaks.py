@@ -14,12 +14,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/')
 from utils import Utils, printt
 
 class ImportMinipeaks:
-    def __init__(self, assembly, nbins, ver):
+    def __init__(self, host, assembly, nbins, ver):
+        self.host = host
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
 
-        self.cluster = Cluster()
+        if self.host:
+            self.cluster = Cluster([self.host])
+        else:
+            self.cluster = Cluster()
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
@@ -54,7 +58,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         #printt("import", mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
-        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 16 AND MAXBATCHSIZE = 1;""".format(
+        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
             tn = tableName, fields = ",".join(cols),
             fn = mergedFnp)
         print(q)
@@ -63,6 +67,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument("--host", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -74,7 +79,7 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        im = ImportMinipeaks(assembly, 20, 2)
+        im = ImportMinipeaks(args.host, assembly, 20, 2)
         im.importAll()
 
 if __name__ == '__main__':
