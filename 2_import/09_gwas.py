@@ -208,38 +208,20 @@ snp text
 );
 """.format(tableName = tableName))
 
-def studyOverlapWithCres(curs, gwas_study):
-    q = """
-SELECT cre.accession, gwas.snp
-FROM hg19_gwas as gwas, hg19_cre as cre
-WHERE gwas.chrom = cre.chrom
-AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-AND gwas.authorPubmedTrait = %s
-"""
-    curs.execute(q, (gwas_study, ))
-    #print(q, gwas_study)
-    return [[r[0], r[1]] for r in curs.fetchall()]
-
 def _overlap(curs, studies):
     printt("******************* GWAS overlap")
     tableName = "hg19_gwas_overlap"
     setupOverlap(curs, tableName)
 
-    outF = StringIO.StringIO()
-
-    counter = 0
-    for idx, gwas_study in enumerate(studies):
-        printt(idx + 1, "of", len(studies), gwas_study, counter)
-        accessionAndSnp = studyOverlapWithCres(curs, gwas_study)
-        counter += len(accessionAndSnp)
-        for a in accessionAndSnp:
-            outF.write('\t'.join([gwas_study] + a) + '\n')
-
-    outF.seek(0)
-
-    cols = ["authorPubmedTrait", "accession", "snp"]
-    curs.copy_from(outF, tableName, '\t', columns=cols)
-    printt("\copied in", curs.rowcount, tableName)
+    q = """
+INSERT INTO {tn} (authorpubmedtrait, accession, snp)
+SELECT gwas.authorPubmedTrait, cre.accession, gwas.snp
+FROM hg19_gwas as gwas, hg19_cre as cre
+WHERE gwas.chrom = cre.chrom
+AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
+""".format(tn = tableName)
+    curs.execute(q)
+    printt("inserted", curs.rowcount, tableName)
 
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
