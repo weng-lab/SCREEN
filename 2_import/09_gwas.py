@@ -62,7 +62,7 @@ def _gwas(curs, fnp):
 
     cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
-    print("\tcopied in", curs.rowcount)
+    print("copied in", curs.rowcount)
 
     makeIndex(curs, tableName, ["chrom", "authorPubmedTrait", "ldblock"])
     makeIndexIntRange(curs, tableName, ["start", "stop"])
@@ -262,6 +262,8 @@ def _overlap(curs, bedFnp):
     cols = "authorPubmedTrait accession snp".split(' ')
     curs.copy_from(outF, tableName, '\t', columns=cols)
     printt("copied in", curs.rowcount)
+
+    makeIndex(curs, tableName, ["authorPubmedTrait"])
 
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
