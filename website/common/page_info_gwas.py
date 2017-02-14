@@ -15,10 +15,13 @@ class PageInfoGwas:
     def wholePage(self, assembly, indexPage = False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
+        cssFnp = os.path.join(os.path.dirname(__file__),
+                              "../static/css.css")
         return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
                 "Assembly" : assembly,
-                "bundlets" : os.path.getmtime(bundleFnp)
+                "bundlets" : os.path.getmtime(bundleFnp),
+                "cssts" : os.path.getmtime(cssFnp)
                 }
 
     def gwasPage(self, args, kwargs, uuid):
