@@ -203,7 +203,7 @@ snp text
 """.format(tableName = tableName))
 
 def studyOverlapWithCres(curs, gwas_study):
-    print(gwas_study)
+    printt(gwas_study)
     q = """
 SELECT cre.accession, gwas.snp
 FROM hg19_gwas as gwas, hg19_cre as cre
