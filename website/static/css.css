@@ -315,3 +315,11 @@ select.ui-toggle-switch { display: none; }
 .deVS {
     font-size: 10px;
 }
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.panel-body thead > tr > th.dt-right {
+    white-space: nowrap;
+}
