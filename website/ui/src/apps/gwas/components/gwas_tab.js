@@ -7,6 +7,7 @@ import * as Actions from '../actions/main_actions';
 import CelltypeView from '../components/celltype_view'
 
 import loading from '../../../common/components/loading'
+import {arrowNote} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
 
 class GwasTab extends React.Component{
@@ -64,7 +65,8 @@ class GwasTab extends React.Component{
     doRenderWrapper({gwas_study, cellType, actions}){
 	var data = this.state[gwas_study];
         var ctView = (cellType ? <CelltypeView /> :
-                      (<div><br /><h3>{"Please choose a cell type."}</h3></div>));
+                      arrowNote("Please choose a cell type.")
+                     );
         let mainTable = (<ResultsTable
                          data={data.mainTable}
                          cols={[
@@ -95,9 +97,7 @@ class GwasTab extends React.Component{
 
     render(){
 	if(!this.props.gwas_study){
-            return (<div>
-                    {"Please choose a study."}
-                    </div>);
+            return arrowNote("Please choose a study.");
         }
         if(!(this.props.gwas_study in this.state)){
             return loading(this.state);
