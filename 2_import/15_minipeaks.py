@@ -58,6 +58,12 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
         printt("import", mergedFnp)
 
+        cols = ["accession", "chrom"] + fileIDs
+        q = "COPY {tn} ({fields}) from '{fn}' where NUMPROCESSES= 16 ;".format(
+            tn = tableName, fields = ",".join(cols),
+            fn = mergedFnp)
+        print(q)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
