@@ -130,7 +130,7 @@ class MergeFiles:
             assay, fileIDs = self._getFileIDs(fn)
             fnps = []
             for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks", "files",
+                fnp = paths.path(self.assembly, "minipeaks", "files2",
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
