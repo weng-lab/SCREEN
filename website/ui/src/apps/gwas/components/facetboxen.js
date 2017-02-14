@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders';
 
 import LongListFacet from '../../../common/components/longlist'
 import ResultsTable from '../../../common/components/results_table'
@@ -35,16 +36,22 @@ const cellTypesBox = ({gwas_cell_types, actions}) => {
     let cts = (<ResultsTable
                data={gwas_cell_types}
                cols={[
-                   {title: "Cell Type",
-                    data: "biosample_term_name",
+                   {title: "Cell Type", data: "biosample_term_name",
                     className: "dt-right"},
-                   {title: "-log(FDR)",
-                    data: "neglogfdr", className: "dt-right"}
+                   {title: "-log(FDR)", data: "neglogfdr", className: "dt-right"},
+                   {title: "", data: "expID", render: Render.dccLink,
+                    className: "dt-right dcc"},
 	       ]}
                order={[[1, "desc"], [0, "asc"]]}
                bFilter={true}
                onTdClick={(td, data) => {
-                   actions.setCellType(data)
+                   if(td){
+                       if (td.className.indexOf("dcc") == -1) {
+                           actions.setCellType(data);
+                       }
+                   } else {
+                       actions.setCellType(data);
+                   };
                }}
                />);
     return panelize("Cell types", cts);
