@@ -29,8 +29,8 @@ const gwas_studies = ({gwas_study, actions}) => {
                     />);
 }
 
-const cellTypesBox = ({gwas_cell_types, actions}) => {
-    if(!gwas_cell_types){
+const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
+    if(!gwas_study || !gwas_cell_types){
         return (<div />);
     }
     let cts = (<ResultsTable
