@@ -19,10 +19,12 @@ session = cluster.connect()
 
 session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks WITH replication
                           = {'class':'SimpleStrategy', 'replication_factor':1};""")
-session.set_keyspace("test")
+session.set_keyspace("minipeaks")
+
+session.execute("DROP TABLE IF EXISTS dnase")
 
 session.execute("""
-CREATE TABLE IF NOT EXISTS dnase (
+CREATE TABLE dnase (
               accession text,
               cellType text,
               values text,
