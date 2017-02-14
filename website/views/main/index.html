@@ -13,37 +13,60 @@
   }
 </script>
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-  <div class="container text-center">
-    <br>
-    <img class="img-responsive center-block" src="https://www.encodeproject.org/images/c45f4d8c-0340-4fcb-abe3-e4ff0bb919be/@@download/attachment/EncodeDatatypes2013-7.png" alt="ENCODE logo">
-    <br>
-    <form action="search" method="get" id="searchform">
-      <span style="color:#ff0000;font-weight:bold">{{failedsearch}}</span><br />
-      <input class="searchbox" type="text" size="125" name="q" id="queryBox" value="K562 chr11:5226493-5403124">
-      <input id="searchformassembly" name="assembly" value="hg19" type="hidden">
-      <div>
-	<a class="btn btn-primary btn-lg" href="javascript:searchHg19();" role="button">Search hg19</a>
-	<a class="btn btn-success btn-lg" href="javascript:searchMm10();" role="button">Search mm10</a>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div id="mainTitle">
+            SCREEN: Search Candidate Regulatory Elements by ENCODE
+            <hr>
+          </div>
+        </div>
       </div>
-    </form>
-    <br>
-    <i>Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"</i>
+
+      <div class="row">
+        <div class="col-md-6">
+          <img class="img-responsive" src="/static/encodeLogo.png"
+               alt="ENCODE logo">
+        </div>
+        <div class="col-md-6">
+          <div class="jumbotron" id="mainDesc">
+            SCREEN is a web interface for searching and visualizing the Registry of candidate Regulatory Elements (cREs) derived from ENCODE data. The Registry contains 2.67M human cREs in hg19 and 1.67M mouse cREs in mm10, with orthologous cREs cross-referenced.  SCREEN presents the data that support biochemical activities of the cREs and the expression of nearby genes in specific cell and tissue types.  You may launch SCREEN using the search box below.
+          </div>
+          <div>
+            <form action="search" method="get" id="searchform">
+              <span style="color:#ff0000;font-weight:bold">{{failedsearch}}
+              </span>
+              <br />
+              <div class="form-group">
+                <input class="searchbox" type="text"
+                       name="q" id="queryBox" value="K562 chr11:5226493-5403124">
+                <input id="searchformassembly" name="assembly"
+                       value="hg19" type="hidden">
+              </div>
+              <div id="mainButtonGroup">
+	        <a class="btn btn-primary btn-lg"
+                   href="javascript:searchHg19();" role="button">Search hg19</a>
+	        <a class="btn btn-success btn-lg"
+                   href="javascript:searchMm10();" role="button">Search mm10</a>
+                <br><br>
+                <i>Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"</i>
+              </div>
+            </form>
+          </div><!-- div around form -->
+        </div><!-- col -->
+      </div><!-- row -->
+
+    </div>
   </div>
 </div>
 
-<div class="container">
-  <!-- Example row of columns -->
-  <div class="row">
-  </div>
-
-  <hr>
-
-  <footer>
-    <center><p>&copy; 2017 Weng lab, ENCODE DAC</p></center>
-  </footer>
-</div> <!-- /container -->
+<footer>
+  <center>
+    &copy; 2017 Weng Lab @ UMass Med, ENCODE Data Analysis Center
+  </center>
+</footer>
 
 {{ hh.js("/static/common.js") }}
 {{ hh.js("/static/controls/autocomplete.js") }}
