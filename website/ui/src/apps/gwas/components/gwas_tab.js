@@ -64,7 +64,7 @@ class GwasTab extends React.Component{
     doRenderWrapper({gwas_study, cellType, actions}){
 	var data = this.state[gwas_study];
         var ctView = (cellType ? <CelltypeView /> :
-                      "");
+                      (<div><br /><h3>{"Please choose cell type from left facet."}</h3></div>));
         let mainTable = (<ResultsTable
                          data={data.mainTable}
                          cols={[

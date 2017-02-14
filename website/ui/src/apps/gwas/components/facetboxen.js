@@ -36,7 +36,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     let cts = (<ResultsTable
                data={gwas_cell_types}
                cols={[
-                   {title: "Cell Type", data: "biosample_term_name",
+                   {title: "Cell Type", data: "biosample_summary",
                     className: "dt-right"},
                    {title: "-log(fdr)", data: "neglogfdr",
                     className: "dt-right"},
