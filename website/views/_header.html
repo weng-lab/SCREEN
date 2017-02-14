@@ -53,7 +53,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec=" crossorigin="anonymous"></script>
 
     {{ hh.js("/static/d3-tip.js") }}
-    {{ hh.css("/static/css.css") }}
+
+<script>
+  //from http://stackoverflow.com/a/6941624
+  var url = window.location.href;
+  var arr = url.split("/");
+  var result = arr[0] + "//" + arr[2]
+
+  var _script = document.createElement("link");
+  _script.setAttribute("href",
+      result + "/static/css.css?{{cssts}}");
+  _script.setAttribute("rel", "stylesheet");
+  document.head.appendChild(_script);
+</script>
 
     <script type="text/javascript">
       var HOMEPAGE = {

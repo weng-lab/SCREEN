@@ -14,11 +14,14 @@ class PageInfoMain:
     def wholePage(self, assembly, indexPage = False, failedsearch = ""):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
+        cssFnp = os.path.join(os.path.dirname(__file__),
+                              "../static/css.css")
         return {"page": {"title" : PageTitle(assembly)},
                 "indexPage": indexPage,
                 "Assembly" : assembly,
                 "failedsearch": failedsearch,
-                "bundlets" : os.path.getmtime(bundleFnp)
+                "bundlets" : os.path.getmtime(bundleFnp),
+                "cssts" : os.path.getmtime(cssFnp)
         }
 
     def autocomplete(self, userQuery):
