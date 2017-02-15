@@ -177,37 +177,13 @@ def processGwasBed(origBedFnp, bedFnp):
         split.append(b)
     printt("split rows", len(rows), "to", len(split))
 
-    lookup = {
-        "Arking_24952745_QT Interval" : "Arking_24952745_QTInterval",
-        "Barrett_19430480_Type 1 Diabetes" : "Barrett_19430480_T1Diabetes",
-        "Bentham_26502338_Lupus" : "Bentham_26502338_Lupus",
-        "Liu_26192919_Crohns Disease" : "Liu_26192919_Crohns",
-        "Liu_26192919_Inflammatory Bowel Disease" : "Liu_26192919_IBD",
-        "Liu_26192919_Ulcerative Colitis" : "Liu_26192919_UC",
-        "Sawcer_21833088_Multiple Sclerosis" : "Sawcer_21833088_MS",
-        "Speedy_24292274_Chronic lymphocytic leukemia" :
-        "Speedy_24292274_Leukemia",
-        "Surakka_25961943_Cholesterol" : "Surakka_25961943_Cholesterol",
-        "Surakka_25961943_HDL Cholesterol" : "Surakka_25961943_HDL",
-        "Surakka_25961943_LDL Cholesterol" : "Surakka_25961943_LDL",
-        "Teslovich_20686565_HDL Cholesterol" : "Teslovich_20686565_HDL",
-        "Teslovich_20686565_LDL Cholesterol" : "Teslovich_20686565_LDL",
-        "Teslovich_20686565_Triglyceride Levels" : "Teslovich_20686565_TriG",
-        "vanderHarst_23222517_Red Blood Cell Traits" :
-        "vanderHarst_23222517_RBCTraits",
-        "Wain_21909110_Blood Pressure" : "Wain_21909110_BloodPressure",
-        "Willer_24097068_Cholesterol" : "Willer_24097068_Cholesterol",
-        "Willer_24097068_HDL Cholesterol" : "Willer_24097068_HDL",
-        "Willer_24097068_LDL Cholesterol" : "Willer_24097068_LDL",
-        "Willer_24097068_Triglyceride Levels" : "Willer_24097068_TriG",
-        }
-
     printt("adding authorPubmedTrait")
     for r in split:
-        authorPubmedTrait = '_'.join([r[-1], r[-2], r[-3]])
-        authorPubmedTrait = lookup[authorPubmedTrait]
-        r.append(authorPubmedTrait)
-
+        authorPubmedTrait = r[-1]
+        r[-1] = authorPubmedTrait.replace('-', '_')
+        
+    print("***********", split[0][-1])
+        
     printt("writing", bedFnp)
     with open(bedFnp, 'w') as f:
         for r in split:
@@ -248,9 +224,18 @@ def _overlap(curs, bedFnp):
     for r in snpsIntersecting:
         toks = r.rstrip('\n').split('\t')
         snp = toks[3]
-        authorPubmedTrait = toks[4]
+        authorPubmedTrait = toks[4].replace('-', '_')
         accession = toks[9]
-        if '_' not in authorPubmedTrait or not snp.startswith("rs") or not accession.startswith("EH3"):
+
+        if '_' not in authorPubmedTrait:
+            print(r)
+            print(toks)
+            raise Exception("bad authorPubmedTrait?")
+        if not snp.startswith("rs"):
+            print(r)
+            print(toks)
+            raise Exception("bad rs?")
+        if not accession.startswith("EH3"):
             print(r)
             print(toks)
             raise Exception("bad line?")
@@ -268,14 +253,13 @@ def _overlap(curs, bedFnp):
 def setupAll(curs):
      dataF = os.path.join(paths.v4d, "GWAS")
 
-     origBedFnp = os.path.join(dataF, "GWAS.v1.bed")
-     bedFnp = os.path.join(dataF, "GWAS.v1.sorted.bed")
-     if not os.path.exists(bedFnp):
-         processGwasBed(origBedFnp, bedFnp)
+     origBedFnp = os.path.join(dataF, "GWAS.v2.bed")
+     bedFnp = os.path.join(dataF, "GWAS.v2.sorted.bed")
+     processGwasBed(origBedFnp, bedFnp)
 
      _gwas(curs, bedFnp)
 
-     enrichFnp = os.path.join(dataF, "GWAS.Enrichment.v1.Matrix.txt")
+     enrichFnp = os.path.join(dataF, "GWAS.Enrichment.v2.Matrix.txt")
      _enrichment(curs, enrichFnp)
      _studies(curs, enrichFnp)
      _overlap(curs, bedFnp)
