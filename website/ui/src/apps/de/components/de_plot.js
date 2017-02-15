@@ -5,6 +5,10 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
+const geneRed = "#FF0000";
+const geneBlue = "#1E90FF";
+
+
 class DePlot extends React.Component {
     componentDidMount() {
 	this.componentDidUpdate();
@@ -38,10 +42,21 @@ class DePlot extends React.Component {
                      </table>
                      </div>);
 
+        // http://biology.stackexchange.com/a/36596
+        let legend = (<div>
+                      <p style={{color: geneRed}}>
+                      {"Watson = Sense = Plus Strand"}
+                      </p>
+                      <p style={{color: geneBlue}}>
+                      {"Crick = Antisense = Negative Strand"}
+                      </p>
+                      </div>);
+
 	return (<div>
                 <span ref="help_icon" />
                 {title}
 		<div style={{"width": "100%"}} ref="chart" />
+                {legend}
 		</div>);
     }
 
@@ -143,8 +158,8 @@ class DePlot extends React.Component {
 	    .style("stroke", function(d){
                 var strand = d[7];
                 switch(strand) {
-                case '+': return "#FF0000";
-                case '-': return "#1E90FF";
+                case '+': return geneRed;
+                case '-': return geneBlue;
                 default: return "#000000";
                 }})
 	genelabels.selectAll(".label")
