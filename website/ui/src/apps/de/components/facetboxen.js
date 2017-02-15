@@ -21,7 +21,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
                     title={""}
-                    data={Globals.cellTypeInfoArr}
+                    data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
                     cols={cols}
                     order={[]}
                     selection={ct1}
@@ -35,7 +35,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
                     title={""}
-                    data={Globals.cellTypeInfoArr}
+                    data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
                     cols={cols}
                     order={[]}
                     selection={ct2}

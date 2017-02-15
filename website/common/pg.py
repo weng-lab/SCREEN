@@ -625,7 +625,8 @@ C57BL-6_stomach_postnatal_0_days""".split('\n')
                     "cellTypeName" : r[6],
                     "name" : r[4],
                     "value" : r[6], # for datatables
-                    "isde" : r[6] in dects}
+                    "isde" : r[6] in dects
+            }
 
         tableName = self.assembly + "_datasets"
         cols = ["assay", "expID", "fileID", "tissue",
