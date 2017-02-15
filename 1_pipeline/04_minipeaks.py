@@ -109,10 +109,11 @@ class ExtractRawPeaks:
         print("wrote", outFnp)
 
 class MergeFiles:
-    def __init__(self, assembly, nbins, ver):
+    def __init__(self, assembly, nbins, ver, assay):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
+        self.assay = assay
 
     def _getFileIDs(self, fn):
         assay = fn.split('-')[0]
@@ -126,18 +127,23 @@ class MergeFiles:
     def run(self):
         fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
 
+        presentFileIDs = []
         for fn in fns:
             assay, fileIDs = self._getFileIDs(fn)
+            if self.assay and self.assay != assay:
+                continue
             fnps = []
             for fileID in fileIDs:
                 fnp = paths.path(self.assembly, "minipeaks", "files2",
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
+                    presentFileIDs.append(fileID)
                 else:
                     print("WARNING: missing", fnp)
 
-            self.processRankMethod(fileIDs, fnps, assay)
+            print("filesIDs:", len(presentFileIDs), "for", len(fnps), "files")
+            self.processRankMethod(presentFileIDs, fnps, assay)
 
     def _makeAccesionFile(self, fnp):
         cmds = [cat(paths.path(self.assembly, "raw", "masterPeaks.bed.gz")),
@@ -165,6 +171,7 @@ def parse_args():
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--list', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
+    parser.add_argument('--assay', type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -175,12 +182,13 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
+
     for assembly in assemblies:
         if 0:
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
         else:
-            mf = MergeFiles(assembly, 20, 2)
+            mf = MergeFiles(assembly, 20, 2, args.assay)
             mf.run()
 
     return 0
