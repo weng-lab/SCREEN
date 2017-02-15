@@ -6,6 +6,7 @@ import os
 import sys
 
 from minipeaks_cache import MiniPeaksCache
+from cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import printt
@@ -18,7 +19,9 @@ def asum(_l):
 class MiniPeaks:
     def __init__(self, pgSearch, accession, cache):
         self.accession = accession
-
+        self.pgSearch = pgSearch
+        self.cache = cache
+        
     def _get_bigwigs(self, key):
         return [{"ct": k, "bigwig": v[1], "accession": v[0],
                  "tissue": self._ctToTissue(k) }
@@ -32,7 +35,7 @@ class MiniPeaks:
         return asum([v for k, v in tissuegroupings.iteritems()])
 
     def _get_bigwig_regions(self, bigwigs, cres, assay, n_bars = 15):
-        print(cres)
+        print("\n\nCRES........\n", cres)
         try:
             results = {}
             results["order"] = self._groupbytissue(results)
