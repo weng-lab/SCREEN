@@ -22,7 +22,7 @@ class DeExp extends React.Component{
     }
 
     componentWillUnmount(){
-        this.props.actions.setCres(null);
+        this.props.actions.setDes(null);
     }
 
     componentWillReceiveProps(nextProps){
@@ -55,7 +55,7 @@ class DeExp extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
-                actions.setCres(r[gene].diffCREs.data);
+                actions.setDes(r[gene]);
             }.bind(this)
         });
     }

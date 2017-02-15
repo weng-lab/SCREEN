@@ -6,5 +6,5 @@ export const setCt1 = (ct) => ({ type: SET_CT1, ct });
 export const SET_CT2 = 'SET_CT2';
 export const setCt2 = (ct) => ({ type: SET_CT2, ct });
 
-export const SET_CRES = 'SET_CRES';
-export const setCres = (cres) => ({ type: SET_CRES, cres });
+export const SET_DES = 'SET_DES';
+export const setDes = (des) => ({ type: SET_DES, des });
