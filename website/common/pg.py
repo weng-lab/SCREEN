@@ -598,3 +598,21 @@ WHERE strand != ''
             toSymbol.update({r[0]: r[1] for r in rows})
             toStrand.update({r[0]: r[2] for r in rows})
         return toSymbol, toStrand
+
+    def genesInRegion(self, chrom, start, stop):
+        tableName = self.assembly + "_gene_info"
+        fields = ["approved_symbol", "start", "stop", "strand"]
+        q = """
+SELECT {fields}
+FROM {tn}
+WHERE chrom = %s
+AND int4range(start, stop) && int4range(%s, %s)
+ORDER BY start
+""".format(fields = ','.join(fields), tn = tableName)
+
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+            curs.execute(q, (chrom, start, stop))
+            rows = curs.fetchall()
+        fields = ["gene", "start", "stop", "strand"]
+        return [dict(zip(fields, r)) for r in rows]
+

@@ -87,6 +87,10 @@ class DE:
         ret = self._nearbyPromoters() + self._nearbyEnhancers()
         return {"data" : ret}
 
+    def _genesInRegion(self, start, stop):
+        pos = self.coord()
+        return self.pgSearch.genesInRegion(pos.chrom, int(start), int(stop))
+
     def _DEsForDisplay(self, nearbyDEs):
         ret = []
         for d in nearbyDEs:
@@ -96,8 +100,6 @@ class DE:
                         "stop" : d[1],
                         "gene" : genename,
                         "strand" : strand})
-
-        ret.sort(key = lambda d: d["start"])
         return ret
 
     def nearbyDEs(self):
@@ -114,16 +116,24 @@ class DE:
             return { "data" : None,
                      "xdomain" : 2 * self.halfWindow }
 
-        xdomain = [max(0, min([d[0] for d in nearbyDEs])),
+        # center on middle of DEs
+        cxdomain = [max(0, min([d[0] for d in nearbyDEs])),
                    max([d[1] for d in nearbyDEs])]
-        center = float(xdomain[1] - xdomain[0]) / 2 + xdomain[0]
+        center = float(cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0]
+
+        # widen each side
         xdomain = [max(0, center - self.halfWindow),
                    center + self.halfWindow]
 
+        genes = self._genesInRegion(min(xdomain[0], cxdomain[0]),
+                                    max(xdomain[1], cxdomain[1]))
+
         ret = self._DEsForDisplay(nearbyDEs)
+
 
         return {"names" : self.names,
                 "data" : ret,
                 "xdomain" : xdomain,
+                "genes" : genes,
                 "ymin" : min([d["fc"] for d in ret]),
                 "ymax" : max([d["fc"] for d in ret])}
