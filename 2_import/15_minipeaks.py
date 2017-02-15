@@ -11,25 +11,31 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printt
+from utils import Utils, printt, printWroteNumLines
+from files_and_paths import Dirs
+from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
-    def __init__(self, assembly, nbins, ver):
+    def __init__(self, host, assembly, nbins, ver):
+        self.host = host
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
 
-        self.cluster = Cluster()
+        if self.host:
+            self.cluster = Cluster([self.host])
+        else:
+            self.cluster = Cluster()
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
-    def importAll(self):
+    def importAll(self, outF):
         for assay in ["DNase", "H3K27ac", "H3K4me3"]:
-            self._doImport(assay)
+            self._doImport(assay, outF)
 
-    def _doImport(self, assay):
+    def _doImport(self, assay, outF):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
@@ -54,15 +60,15 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         #printt("import", mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
-        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 16 AND MAXBATCHSIZE = 1;""".format(
+        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
             tn = tableName, fields = ",".join(cols),
             fn = mergedFnp)
-        print(q)
-        #self.session.execute(q)
+        outF.write(q + '\n\n')
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument("--host", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -73,9 +79,26 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-    for assembly in assemblies:
-        im = ImportMinipeaks(assembly, 20, 2)
-        im.importAll()
+    if not GetYesNoToQuestion.immediate("remove old tables?"):
+        return 0
+
+    queryFnp = os.path.join(paths.v4d, "insert_minipeaks.cql")
+    with open(queryFnp, 'w') as outF:
+        outF.write("use minipeaks;\n")
+        for assembly in assemblies:
+            im = ImportMinipeaks(args.host, assembly, 20, 2)
+            im.importAll(outF)
+
+    printWroteNumLines(queryFnp)
+    cmds = []
+    if args.host:
+        cmds = ['CQLSH_HOST="' + args.host + '"']
+    cmds += [os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+             "--cqlversion=3.4.2",
+             "-f", queryFnp]
+    if GetYesNoToQuestion.immediate("import data?"):
+        print(Utils.runCmds(cmds))
+
 
 if __name__ == '__main__':
     main()
