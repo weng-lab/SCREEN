@@ -45,19 +45,19 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     />);
 }
 
-const creBox = ({cres, actions}) => {
-    if(!cres){
+const creBox = ({cres, ct1, ct2, actions}) => {
+    if(!cres || !ct1 || !ct2){
         return (<div />);
     }
     let cts = (<ResultsTable
                data={cres}
                cols={[
-                   {title: "", data: "accession",
+                   {title: "accession", data: "accession",
                     render: Render.relink(GlobalAssembly),
                     className: "dt-right"},
-                   {title: "start", data: "start",
+                   {title: "start", data: "start", render: Render.integer,
                     className: "dt-right"},
-                   {title: "stop", data: "stop",
+                   {title: "length", data: "len", render: Render.integer,
                     className: "dt-right"},
                    {title: "Z change", data: "value",
                     className: "dt-right"}
