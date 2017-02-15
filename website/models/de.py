@@ -105,8 +105,7 @@ class DE:
         nearbyDEs = pg.nearbyDEs(cd, self.halfWindow, ct1, ct2, 0.05)
 
         if not nearbyDEs:
-            return { "data" : None,
-                     "xdomain" : 2 * self.halfWindow }
+            return { "data" : None }
 
         # center on middle of DEs
         cxdomain = [max(0, min([d[0] for d in nearbyDEs])),

@@ -36,8 +36,11 @@ class DeController:
 
     def _getDEs(self, assembly, gene, ct1, ct2, cache):
         de = DE(cache, self.ps, assembly, gene, ct1, ct2)
-        diffCREs = de.diffCREs()
         nearbyDEs = de.nearbyDEs()
+
+        diffCREs = { "data" : None }
+        if nearbyDEs["data"]:
+            diffCREs = de.diffCREs()
 
         return {gene : {"xdomain" : nearbyDEs["xdomain"],
                         "coord" : de.coord().toDict(),
