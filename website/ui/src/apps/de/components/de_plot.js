@@ -153,11 +153,12 @@ class DePlot extends React.Component {
 	    .data(deData)
 	    .enter()
 	    .append("line")
-	    .attr("x2", (d) => (x(d[3]))).attr("x1", (d) => (x(d[2])))
-	    .attr("y1", (d, i) => (i * 20)).attr("y2", (d, i) => (i * 20))
+	    .attr("x2", (d) => (x(d["stop"])))
+            .attr("x1", (d) => (x(d["start"])))
+	    .attr("y1", (d, i) => (i * 20))
+            .attr("y2", (d, i) => (i * 20))
 	    .style("stroke", function(d){
-                var strand = d[7];
-                switch(strand) {
+                switch(d["strand"]) {
                 case '+': return geneRed;
                 case '-': return geneBlue;
                 default: return "#000000";
@@ -166,10 +167,10 @@ class DePlot extends React.Component {
 	    .data(deData)
 	    .enter()
 	    .append("text")
-	    .attr("x", (d) => (x(d[3]) + 10))
+	    .attr("x", (d) => (x(d["stop"]) + 10))
 	    .attr("y", (d, i) => (i * 20 + 4))
             .style("font-style", "italic")
-	    .text((d) => (d[6]));
+	    .text((d) => (d["gene"]));
         var legend = svg.selectAll(".legend")
             .data(color.domain())
             .enter().append("g")
@@ -192,19 +193,22 @@ class DePlot extends React.Component {
 
         var bar = svg.selectAll(".bar")
             .data(deData)
-            .enter().append("g");
+            .enter()
+            .append("g");
         bar.append("rect")
             .attr("class", "bar1")
             .attr("x", function(d) {
-                return x(d[2]);
+                return x(d["start"]);
             })
             .attr("width", function(d){
-                return x(d[3]) - x(d[2]);})
+                return x(d["stop"]) - x(d["start"]);})
             .attr("y", function(d) {
-                return d[1] < 0 ? y(0) : y(d[1]);
+                return d["fc"] < 0 ? y(0) : y(d["fc"]);
             })
             .attr("height", function(d) {
-                let height = d[1] < 0 ? -y(0) + y(d[1]) : -y(d[1]) + y(0);
+                let height = d["fc"] < 0 ?
+                    -y(0) + y(d["fc"]) :
+                    -y(d["fc"]) + y(0);
 		return (height < 2 ? 2 : height);
             });
         var yAxis = d3.svg.axis()

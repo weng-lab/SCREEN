@@ -48,9 +48,9 @@ class DE:
             if c[3] > self.thres or c[4] > self.thres:
                 radius = float(c[2] - c[1]) / 2
                 ret.append({"center" : radius + c[1],
-                           "value" : round(float(c[4] - c[3]), 3),
-                           "typ" : "promoter-like",
-                           "width" : self.radiusScale * radius,
+                            "value" : round(float(c[4] - c[3]), 3),
+                            "typ" : "promoter-like",
+                            "width" : self.radiusScale * radius,
                             "accession": c[0],
                             "start": c[1],
                             "len" : c[2] - c[1]})
@@ -92,18 +92,18 @@ class DE:
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[5])
             #print("here", d[5], genename, strand)
-            e = [float(d[1] - d[0]) / 2 + d[0], # center
-                 round(float(d[2]), 3), # log2FoldChange
-                 d[0], # start
-                 d[1], # stop
-                 d[3], # leftName
-                 d[4], # rightName
-                 genename, strand
-                 ]
+            e = {"center" : float(d[1] - d[0]) / 2 + d[0],
+                 "fc" : round(float(d[2]), 3),
+                 "start" : d[0],
+                 "stop" : d[1],
+                 "leftName" : d[3],
+                 "rightName" : d[4],
+                 "gene" : genename,
+                 "strand" : strand}
             #print("de", d, e, d[1] - d[0])
             ret.append(e)
 
-        ret.sort(key = lambda d: d[2]) # sort by start
+        ret.sort(key = lambda d: d["start"])
         return ret
 
     def nearbyDEs(self):
@@ -131,5 +131,5 @@ class DE:
         return {"names" : self.names,
                 "data" : ret,
                 "xdomain" : xdomain,
-                "ymin" : min([d[1] for d in ret]),
-                "ymax" : max([d[1] for d in ret])}
+                "ymin" : min([d["fc"] for d in ret]),
+                "ymax" : max([d["fc"] for d in ret])}
