@@ -32,6 +32,7 @@ class PGde:
 
     def nearbyDEs(self, coord, halfWindow, ct1, ct2, pval):
         c = coord.expanded(halfWindow)
+        
         with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
             q = """
             SELECT start, stop, log2FoldChange, leftName, rightName, ensembl
@@ -48,6 +49,16 @@ class PGde:
                               "stop" : c.end, "pval" : pval,
                               "leftName" : ct1, "rightName" : ct2})
             des = curs.fetchall()
-        #print("des", len(des), " ".join(q.split('\n')), c, ct1, ct2)
+
+            if not des:
+                curs.execute(q, { "chrom" : c.chrom, "start" : c.start,
+                                  "stop" : c.end, "pval" : pval,
+                                  "leftName" : ct2, "rightName" : ct1})
+                fdes = curs.fetchall()
+                des = []
+                for d in fdes:
+                    d = list(d)
+                    d[2] = -1.0 * d[2]
+                    des.append(d)
         return des
 
