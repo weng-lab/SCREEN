@@ -12,7 +12,7 @@ export const snp_link = (d) => {
 }
 
 export const snpLinks = (snps) => {
-    return snps.map(snp_link).join(",");
+    return snps.map(snp_link).join(", ");
 }
 
 export const integer = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
