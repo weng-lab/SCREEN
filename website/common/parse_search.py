@@ -79,7 +79,8 @@ class ParseSearch:
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
-                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]), s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
+                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]) if not tss else Coord(r[0][4], r[0][5], r[0][6]),
+                            s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
         return (interpretation, None, " ".join(p), False)
 
     def get_genetext(self, gene, tss = False, notss = False):
