@@ -53,7 +53,7 @@ class DE:
                            "width" : self.radiusScale * radius,
                             "accession": c[0],
                             "start": c[1],
-                            "stop" : c[2]})
+                            "len" : c[2] - c[1]})
         return ret
 
     def _nearbyEnhancers(self):
@@ -80,7 +80,7 @@ class DE:
                             "width" : self.radiusScale * radius,
                             "accession": c[0],
                             "start": c[1],
-                            "stop" : c[2]})
+                            "len" : c[2] - c[1]})
         return ret
 
     def diffCREs(self):
