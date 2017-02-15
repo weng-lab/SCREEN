@@ -74,7 +74,6 @@ const geneBox = ({des, ct1, ct2, actions}) => {
         return (<div />);
     }
     let genes = des.nearbyDEs.data;
-    console.log(genes);
     let cts = (<ResultsTable
                data={genes}
                cols={[
