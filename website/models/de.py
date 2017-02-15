@@ -29,58 +29,53 @@ class DE:
             raise Exception("invalid pos for " + self.gene)
         return self.pos
 
+    def _parseCE(self, typ, c):
+        radius = float(c[2] - c[1]) / 2
+        return {"center" : radius + c[1],
+                "value" : round(float(c[4] - c[3]), 3),
+                "typ" : typ,
+                "width" : self.radiusScale * radius,
+                "accession": c[0],
+                "start": c[1],
+                "len" : c[2] - c[1]}
+
     def _nearbyPromoters(self):
-        rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
-        #print(rankMethodToIDxToCellType["Enhancer"].keys())
-        ct1PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct1]
-        ct2PromoterIdx = rankMethodToIDxToCellType["H3K4me3"][self.ct2]
+        rmLookup = self.cache.rankMethodToIDxToCellType["H3K4me3"]
+        if self.ct1 not in rmLookup or self.ct2 not in rmLookup:
+            return []
+        ct1PromoterIdx = rmLookup[self.ct1]
+        ct2PromoterIdx = rmLookup[self.ct2]
 
         cols = ["accession", "start", "stop",
                 "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
                 "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
-        cresPromoter = self.pgSearch.nearbyCREs(self.coord(),
-                                                2 * self.halfWindow,
-                                                cols, True)
+        cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
+                                        cols, True)
         #print("found promoter-like CREs:", len(cresPromoter))
 
         ret = []
         for c in cresPromoter:
             if c[3] > self.thres or c[4] > self.thres:
-                radius = float(c[2] - c[1]) / 2
-                ret.append({"center" : radius + c[1],
-                            "value" : round(float(c[4] - c[3]), 3),
-                            "typ" : "promoter-like",
-                            "width" : self.radiusScale * radius,
-                            "accession": c[0],
-                            "start": c[1],
-                            "len" : c[2] - c[1]})
+                ret.append(self._parseCE("promoter-like", c))
         return ret
 
     def _nearbyEnhancers(self):
-        rankMethodToIDxToCellType = self.cache.rankMethodToIDxToCellType
-        #print(rankMethodToIDxToCellType["Enhancer"].keys())
-        ct1EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct1]
-        ct2EnhancerIdx = rankMethodToIDxToCellType["H3K27ac"][self.ct2]
+        rmLookup = self.cache.rankMethodToIDxToCellType
+        if self.ct1 not in rmLookup or self.ct2 not in rmLookup:
+            return []
+        ct1EnhancerIdx = rmLookup[self.ct1]
+        ct2EnhancerIdx = rmLookup[self.ct2]
 
         cols = ["accession", "start", "stop",
                 "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
                 "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
-        cresEnhancer = self.pgSearch.nearbyCREs(self.coord(),
-                                                self.halfWindow,
-                                                cols, False)
-        #print("found enhancer-like CREs", len(cresEnhancer))
+        cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
+                                        cols, False)
 
         ret = []
-        for c in cresEnhancer:
+        for c in cres:
             if c[3] > self.thres or c[4] > self.thres:
-                radius = float(c[2] - c[1]) / 2
-                ret.append({"center": radius + c[1], # center
-                            "value": round(float(c[4] - c[3]), 3),
-                            "typ" : "enhancer-like",
-                            "width" : self.radiusScale * radius,
-                            "accession": c[0],
-                            "start": c[1],
-                            "len" : c[2] - c[1]})
+                ret.append(self._parseCE("enhancer-like", c))
         return ret
 
     def diffCREs(self):
