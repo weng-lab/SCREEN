@@ -74,7 +74,8 @@ class DeExp extends React.Component{
 	    let data = this.state[gene];
 	    if(!data.nearbyDEs.data){
 		return (<div>
-			{ gene + " is not differentially expressed between "
+                        <span style={{fontStyle: "italic"}}>{gene}</span>
+			{ " is not differentially expressed between "
 			  + this.props.ct1 + " and " + this.props.ct2 +
 			  " at FDR threshold of 0.05" }
 			</div>);
