@@ -7,6 +7,7 @@ import * as Actions from '../actions/main_actions';
 
 import DePlot from '../components/de_plot'
 import loading from '../../../common/components/loading'
+import {arrowNote} from '../../../common/utility'
 
 class DeExp extends React.Component{
     constructor(props) {
@@ -21,10 +22,6 @@ class DeExp extends React.Component{
         this.loadDe(this.props);
     }
 
-    componentWillUnmount(){
-        this.props.actions.setDes(null);
-    }
-
     componentWillReceiveProps(nextProps){
         //console.log("componentWillReceiveProps", nextProps);
         this.loadDe(nextProps);
@@ -32,6 +29,7 @@ class DeExp extends React.Component{
 
     loadDe({gene, ct1, ct2, actions}){
         if(null == ct1 || null == ct2){
+            this.props.actions.setDes(null);
             this.setState({selectCT: true});
             return;
         }
@@ -50,7 +48,7 @@ class DeExp extends React.Component{
 	    dataType: "json",
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
+                console.log("err during load");
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
@@ -62,10 +60,15 @@ class DeExp extends React.Component{
 
     doRenderWrapper(){
         if(this.state.selectCT){
+            return arrowNote("Please choose 2 cell types.");
+        }
+        if(this.state.isError){
             return (<div>
-                    {"Please choose 2 cell types on left"}
+                    <h2>{"Error during load; please refresh the page"}
+                    </h2>
                     </div>);
         }
+
         let gene = this.props.gene;
         if(gene in this.state){
 	    let data = this.state[gene];

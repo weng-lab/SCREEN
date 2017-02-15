@@ -69,7 +69,6 @@ class DePlot extends React.Component {
         let creData = this.props.data.diffCREs.data;
         let deData = this.props.data.nearbyDEs.data;
         let genes = this.props.data.nearbyDEs.genes;
-        console.log(genes.length);
 	let xdomain = this.props.data.xdomain;
         let coord = this.props.data.coord;
 
