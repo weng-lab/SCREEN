@@ -8,7 +8,6 @@ import * as Actions from '../actions/main_actions';
 const geneRed = "#FF0000";
 const geneBlue = "#1E90FF";
 
-
 class DePlot extends React.Component {
     componentDidMount() {
 	this.componentDidUpdate();
@@ -69,6 +68,8 @@ class DePlot extends React.Component {
 
         let creData = this.props.data.diffCREs.data;
         let deData = this.props.data.nearbyDEs.data;
+        let genes = this.props.data.nearbyDEs.genes;
+        console.log(genes.length);
 	let xdomain = this.props.data.xdomain;
         let coord = this.props.data.coord;
 
@@ -80,9 +81,10 @@ class DePlot extends React.Component {
 	y_domain = [Math.min(y_domain[0], barYdomain[0]),
                     Math.max(y_domain[1], barYdomain[1])];
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        var margin = {top: 20, right: 20, bottom: 150, left: 40};
+        var width = 1000 - margin.left - margin.right;
+        var height = 750 - margin.top - margin.bottom;
+
 	var color = d3.scale.ordinal()
             .domain(["enhancer-like", "promoter-like"])
             .range(["#ffcd00", "#ff0000"]);
@@ -148,13 +150,13 @@ class DePlot extends React.Component {
 	var genelabels = svg.append("g")
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)
-	    .attr("height", deData.length * 20);
+	    .attr("height", genes.length * 20);
 	genelabels.selectAll(".line")
-	    .data(deData)
+	    .data(genes)
 	    .enter()
 	    .append("line")
-	    .attr("x2", (d) => (x(d["stop"])))
             .attr("x1", (d) => (x(d["start"])))
+	    .attr("x2", (d) => (x(d["stop"])))
 	    .attr("y1", (d, i) => (i * 20))
             .attr("y2", (d, i) => (i * 20))
 	    .style("stroke", function(d){
@@ -164,10 +166,10 @@ class DePlot extends React.Component {
                 default: return "#000000";
                 }})
 	genelabels.selectAll(".label")
-	    .data(deData)
+	    .data(genes)
 	    .enter()
 	    .append("text")
-	    .attr("x", (d) => (x(d["stop"]) + 10))
+	    .attr("x", (d) => ( x(d["stop"]) + 10 ))
 	    .attr("y", (d, i) => (i * 20 + 4))
             .style("font-style", "italic")
 	    .text((d) => (d["gene"]));
