@@ -218,8 +218,11 @@ const DetailsTabInfo = {
                   f: RelatedGeneTab},
     assocTSS: {title: "Associated Gene Expression", enabled: true,
                f: AssocTssTab},
-    ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"), enabled: true, f: OrthologTab},
-    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" : "Activity Profile"), enabled: false,
+    ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
+	       enabled: true, f: OrthologTab},
+    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
+			 "Activity Profile"),
+		 enabled: GlobalAssembly == "mm10",
                  f: SimilarREsTab}
 };
 
