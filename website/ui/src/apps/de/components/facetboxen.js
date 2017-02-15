@@ -89,7 +89,7 @@ const geneBox = ({des, ct1, ct2, actions}) => {
                pageLength={5}
                order={[[3, "desc"]]}
                />);
-    return panelize("DE Genes", cts);
+    return panelize("Differentially Expressed Genes", cts);
 }
 
 class FacetBoxen extends React.Component {
