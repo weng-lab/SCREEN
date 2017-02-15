@@ -18,7 +18,7 @@ class Datasets:
         self.globalCellTypeInfo = {}
         for r in rows:
             self.globalCellTypeInfo[r["cellTypeName"]] = r
-
+            
         # used by trees
         self.biosampleTypeToCellTypes = {}
         for ctn, r in self.globalCellTypeInfo.iteritems():
