@@ -41,21 +41,10 @@ class DePlot extends React.Component {
                      </table>
                      </div>);
 
-        // http://biology.stackexchange.com/a/36596
-        let legend = (<div>
-                      <p style={{color: geneRed}}>
-                      {"Watson (+) strand"}
-                      </p>
-                      <p style={{color: geneBlue}}>
-                      {"Crick (-) strand"}
-                      </p>
-                      </div>);
-
 	return (<div>
                 <span ref="help_icon" />
                 {title}
 		<div style={{"width": "100%"}} ref="chart" />
-                {legend}
 		</div>);
     }
 
