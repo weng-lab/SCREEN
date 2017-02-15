@@ -94,11 +94,24 @@ const geneBox = ({des, ct1, ct2, actions}) => {
 
 class FacetBoxen extends React.Component {
     doRender(p){
+	const geneRed = "#FF0000";
+	const geneBlue = "#1E90FF";
+
+        let legend = (<div>
+                      <p style={{color: geneRed}}>
+                      {"Watson (+) strand"}
+                      </p>
+                      <p style={{color: geneBlue}}>
+                      {"Crick (-) strand"}
+                      </p>
+                      </div>);
+
         return (<div>
                 {cellTypesBox1(p)}
                 {cellTypesBox2(p)}
                 {creBox(p)}
                 {geneBox(p)}
+		{legend}
                 </div>);
     }
 
