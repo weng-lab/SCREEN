@@ -44,10 +44,10 @@ class DePlot extends React.Component {
         // http://biology.stackexchange.com/a/36596
         let legend = (<div>
                       <p style={{color: geneRed}}>
-                      {"Watson = Sense = Plus Strand"}
+                      {"Watson (+) strand"}
                       </p>
                       <p style={{color: geneBlue}}>
-                      {"Crick = Antisense = Negative Strand"}
+                      {"Crick (-) strand"}
                       </p>
                       </div>);
 
@@ -80,9 +80,9 @@ class DePlot extends React.Component {
 	y_domain = [Math.min(y_domain[0], barYdomain[0]),
                     Math.max(y_domain[1], barYdomain[1])];
 
-        var margin = {top: 20, right: 20, bottom: 150, left: 40};
+        var margin = {top: 20, right: 20, bottom: 800, left: 40};
         var width = 1000 - margin.left - margin.right;
-        var height = 750 - margin.top - margin.bottom;
+        var height = 1200 - margin.top - margin.bottom;
 
 	var color = d3.scale.ordinal()
             .domain(["enhancer-like", "promoter-like"])

@@ -67,21 +67,22 @@
   document.head.appendChild(_script);
 </script>
 
-    <script type="text/javascript">
-      var HOMEPAGE = {
-         "url": "/",
-         "title": "SCREEN"
-      };
-    </script>
+<script type="text/javascript">
+  var HOMEPAGE = {
+  "url": "/",
+  "title": "SCREEN"
+  };
+</script>
 
-    {% if Assembly > "" -%}
-    {{ hh.js("/globalData/" + Assembly + "/ver") }}
-    <script type="text/javascript">
-      var GlobalAssembly = "{{ Assembly }}";
-      var GlobalSessionUid = "{{ globalSessionUid }}";
-      console.log("assembly is", GlobalAssembly);
-    </script>
-    {% endif -%}
+{% if Assembly > "" -%}
+{{ hh.js("/globalData/" + Assembly + "/ver") }}
+<script type="text/javascript">
+  var GlobalAssembly = "{{ Assembly }}";
+  var GlobalSessionUid = "{{ globalSessionUid }}";
+  console.log("assembly is", GlobalAssembly);
+</script>
+{% endif -%}
 
   </head>
   <body>
+    
