@@ -51,16 +51,14 @@ class DE:
                 "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, True)
-        #print("found promoter-like CREs:", len(cresPromoter))
-
         ret = []
-        for c in cresPromoter:
+        for c in cres:
             if c[3] > self.thres or c[4] > self.thres:
                 ret.append(self._parseCE("promoter-like", c))
         return ret
 
     def _nearbyEnhancers(self):
-        rmLookup = self.cache.rankMethodToIDxToCellType
+        rmLookup = self.cache.rankMethodToIDxToCellType["H3K27ac"]
         if self.ct1 not in rmLookup or self.ct2 not in rmLookup:
             return []
         ct1EnhancerIdx = rmLookup[self.ct1]
@@ -71,7 +69,6 @@ class DE:
                 "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, False)
-
         ret = []
         for c in cres:
             if c[3] > self.thres or c[4] > self.thres:
