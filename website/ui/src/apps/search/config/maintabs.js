@@ -78,12 +78,12 @@ class ExpressionTab extends React.Component {
 }
 
 const MainTabInfo = {
-    results : {title: "Search Results", visible: true, f: ResultsTab},
+    results : {title: "cRE Search Results", visible: true, f: ResultsTab},
     expression: {title: GlobalParsedQuery.approved_symbol ? GlobalParsedQuery.approved_symbol + " Expression" : "", visible: !!GlobalParsedQuery.approved_symbol, f: ExpressionTab},
     aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
     ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
     tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
-    details: {title: "RE Details", visible: false, f: DetailsTab},
+    details: {title: "cRE Details", visible: false, f: DetailsTab},
     gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}
 };
 
