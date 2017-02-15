@@ -57,7 +57,7 @@ class DePlot extends React.Component {
 	let xdomain = this.props.data.xdomain;
         let coord = this.props.data.coord;
 
-        var y_domain = d3.extent(creData, function(d) { return d[1]; });
+        var y_domain = d3.extent(creData, function(d) { return d["value"]; });
 
         let barYdomain = [Math.min(y_domain[0],
 				   this.props.data.nearbyDEs.ymin),
@@ -126,10 +126,10 @@ class DePlot extends React.Component {
             .enter().append("rect")
             .attr("class", "rect")
             .attr("height", 5)
-	    .attr("width", function(c) { return xr(2 * c[3]); })
-            .attr("x", function(c) { return x(c[0] - c[3]); })
-            .attr("y", function(c) { return y(c[1]); })
-            .style("fill", function(c) { return color(c[2]); });
+	    .attr("width", function(c) { return xr(2 * c["width"]); })
+            .attr("x", function(c) { return x(c["center"] - c["width"]); })
+            .attr("y", function(c) { return y(c["value"]); })
+            .style("fill", function(c) { return color(c["typ"]); });
 	var genelabels = svg.append("g")
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)

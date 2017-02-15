@@ -21,12 +21,16 @@ class DeExp extends React.Component{
         this.loadDe(this.props);
     }
 
+    componentWillUnmount(){
+        this.props.actions.setCres(null);
+    }
+
     componentWillReceiveProps(nextProps){
         //console.log("componentWillReceiveProps", nextProps);
         this.loadDe(nextProps);
     }
 
-    loadDe({gene, ct1, ct2}){
+    loadDe({gene, ct1, ct2, actions}){
         if(null == ct1 || null == ct2){
             this.setState({selectCT: true});
             return;
@@ -51,6 +55,7 @@ class DeExp extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
+                actions.setCres(r[gene].diffCREs.data);
             }.bind(this)
         });
     }

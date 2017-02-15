@@ -47,11 +47,13 @@ class DE:
         for c in cresPromoter:
             if c[3] > self.thres or c[4] > self.thres:
                 radius = float(c[2] - c[1]) / 2
-                ret.append([radius + c[1], # center
-                            round(float(c[4] - c[3]), 3),
-                            "promoter-like",
-                            self.radiusScale * radius
-                ])
+                ret.append({"center" : radius + c[1],
+                           "value" : round(float(c[4] - c[3]), 3),
+                           "typ" : "promoter-like",
+                           "width" : self.radiusScale * radius,
+                            "accession": c[0],
+                            "start": c[1],
+                            "stop" : c[2]})
         return ret
 
     def _nearbyEnhancers(self):
@@ -72,11 +74,13 @@ class DE:
         for c in cresEnhancer:
             if c[3] > self.thres or c[4] > self.thres:
                 radius = float(c[2] - c[1]) / 2
-                ret.append([radius + c[1], # center
-                            round(float(c[4] - c[3]), 3),
-                            "enhancer-like",
-                            self.radiusScale * radius
-                ])
+                ret.append({"center": radius + c[1], # center
+                            "value": round(float(c[4] - c[3]), 3),
+                            "typ" : "enhancer-like",
+                            "width" : self.radiusScale * radius,
+                            "accession": c[0],
+                            "start": c[1],
+                            "stop" : c[2]})
         return ret
 
     def diffCREs(self):
