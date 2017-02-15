@@ -18,6 +18,10 @@ const main_reducers = (state, action) => {
         return { ...state, ct2: action.ct}
     }
 
+    case Actions.SET_CRES: {
+        return { ...state, cres: action.cres}
+    }
+
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;

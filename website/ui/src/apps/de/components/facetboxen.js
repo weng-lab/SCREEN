@@ -3,9 +3,11 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders';
 
 import LongChecklistFacet from '../../../common/components/longchecklist'
 import LongListFacet from '../../../common/components/longlist'
+import ResultsTable from '../../../common/components/results_table'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
@@ -43,11 +45,34 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     />);
 }
 
+const creBox = ({cres, actions}) => {
+    if(!cres){
+        return (<div />);
+    }
+    let cts = (<ResultsTable
+               data={cres}
+               cols={[
+                   {title: "", data: "accession",
+                    render: Render.relink(GlobalAssembly),
+                    className: "dt-right"},
+                   {title: "start", data: "start",
+                    className: "dt-right"},
+                   {title: "stop", data: "stop",
+                    className: "dt-right"},
+                   {title: "Z change", data: "value",
+                    className: "dt-right"}
+               ]}
+               order={[[3, "desc"], [1, "asc"]]}
+               />);
+    return panelize("Candidate Regulatory Elements", cts);
+}
+
 class FacetBoxen extends React.Component {
     doRender(p){
         return (<div>
                 {cellTypesBox1(p)}
                 {cellTypesBox2(p)}
+                {creBox(p)}
                 </div>);
     }
 
