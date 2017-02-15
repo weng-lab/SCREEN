@@ -45,10 +45,11 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     />);
 }
 
-const creBox = ({cres, ct1, ct2, actions}) => {
-    if(!cres || !ct1 || !ct2){
+const creBox = ({des, ct1, ct2, actions}) => {
+    if(!des || !ct1 || !ct2){
         return (<div />);
     }
+    let cres = des.diffCREs.data;
     let cts = (<ResultsTable
                data={cres}
                cols={[
@@ -62,31 +63,34 @@ const creBox = ({cres, ct1, ct2, actions}) => {
                    {title: "Z change", data: "value",
                     className: "dt-right"}
                ]}
+               pageLength={5}
                order={[[3, "desc"], [1, "asc"]]}
                />);
     return panelize("Candidate Regulatory Elements", cts);
 }
 
-const genesBox = ({genes, ct1, ct2, actions}) => {
-    if(!genes || !ct1 || !ct2){
+const geneBox = ({des, ct1, ct2, actions}) => {
+    if(!des || !ct1 || !ct2){
         return (<div />);
     }
+    let genes = des.nearbyDEs.data;
+    console.log(genes);
     let cts = (<ResultsTable
                data={genes}
                cols={[
-                   {title: "accession", data: "accession",
-                    render: Render.relink(GlobalAssembly),
+                   {title: "gene", data: "gene",
                     className: "dt-right"},
                    {title: "start", data: "start", render: Render.integer,
                     className: "dt-right"},
-                   {title: "length", data: "len", render: Render.integer,
+                   {title: "strand", data: "strand",
                     className: "dt-right"},
-                   {title: "Z change", data: "value",
+                   {title: "fold change", data: "fc", render: Render.real,
                     className: "dt-right"}
                ]}
-               order={[[3, "desc"], [1, "asc"]]}
+               pageLength={5}
+               order={[[3, "desc"]]}
                />);
-    return panelize("Candidate Regulatory Elements", cts);
+    return panelize("DE Genes", cts);
 }
 
 class FacetBoxen extends React.Component {
@@ -95,6 +99,7 @@ class FacetBoxen extends React.Component {
                 {cellTypesBox1(p)}
                 {cellTypesBox2(p)}
                 {creBox(p)}
+                {geneBox(p)}
                 </div>);
     }
 

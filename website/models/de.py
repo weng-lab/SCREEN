@@ -91,17 +91,11 @@ class DE:
         ret = []
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[5])
-            #print("here", d[5], genename, strand)
-            e = {"center" : float(d[1] - d[0]) / 2 + d[0],
-                 "fc" : round(float(d[2]), 3),
-                 "start" : d[0],
-                 "stop" : d[1],
-                 "leftName" : d[3],
-                 "rightName" : d[4],
-                 "gene" : genename,
-                 "strand" : strand}
-            #print("de", d, e, d[1] - d[0])
-            ret.append(e)
+            ret.append({"fc" : round(float(d[2]), 3),
+                        "start" : d[0],
+                        "stop" : d[1],
+                        "gene" : genename,
+                        "strand" : strand})
 
         ret.sort(key = lambda d: d["start"])
         return ret
