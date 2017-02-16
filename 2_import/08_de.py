@@ -5,70 +5,79 @@ import os, sys, json, psycopg2, argparse, StringIO, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex
 from files_and_paths import Dirs
 
-def setupAndCopy(curs, tableName):
-    print("dropping and creating", tableName)
-    curs.execute("""
-DROP TABLE IF EXISTS {tableName};
+class ImportDE:
+    def __init__(self, curs):
+        self.curs = curs
+        self.tableName = "mm10_de"
+        self.ctTableName = "mm10_de_cts"
 
-CREATE TABLE {tableName}(
-id serial PRIMARY KEY,
-leftName text,
-rightName text,
-ensembl text,
-log2FoldChange real,
-padj numeric
-);
-""".format(tableName = tableName))
-    print("\tok")
+    def setupDb(self):
+        printt("dropping and creating", self.tableName)
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tn};
+    CREATE TABLE {tn}(
+    id serial PRIMARY KEY,
+    leftCtId integer,
+    rightCtId integer,
+    ensembl text,
+    log2FoldChange real,
+    padj numeric
+    );
+    """.format(tn = self.tableName))
 
-def setupAll(DBCONN, sample):
-    dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-    dataF = os.path.join(dataF, "mouse_epigenome/de_all_pairs")
-    fnp = os.path.join(dataF, "DE_files.json")
+        printt("dropping and creating", self.ctTableName)
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tn};
+    CREATE TABLE {tn}(
+    id serial PRIMARY KEY,
+    deCtName text,
+    biosample_summary text,
+    tissues text
+    );
+    """.format(tn = self.ctTableName))
 
-    tableName = "mm10_de"
-    with getcursor(DBCONN, "main") as curs:
-        setupAndCopy(curs, tableName)
+    def setupCellTypes(self, cts):
+        outF = StringIO.StringIO()
+        for ct in sorted(list(cts)):
+            outF.write(ct + '\n')
+        outF.seek(0)
 
-    cols = ["leftName", "rightName", "ensembl", "log2FoldChange", "padj"]
-    # baseMean	log2FoldChange	lfcSE	stat	pvalue	padj
+        printt("copying into", self.ctTableName)
+        cols = ["deCtName"]
+        self.curs.copy_from(outF, self.ctTableName, '\t', columns=cols)
+        printt(self.curs.rowcount)
 
-    with open(fnp) as f:
-        pairs = json.load(f)
+        self.curs.execute("""
+        SELECT id, deCtName FROM {tn}
+    """.format(tn = self.ctTableName))
+        ctsToId = {r[1] : r[0] for r in self.curs.fetchall()}
+        return ctsToId
 
-    fnps = set()
-
-    counter = 0
-    total = len(pairs)
-    for p, fn in pairs.iteritems():
-        counter += 1
-
-        toks = p.split(':')
-        left = toks[0]
-        right = toks[1]
-        if left == right:
-            continue
-        fnp = os.path.join(dataF, "data", fn + ".gz")
-        if fnp in fnps:
-            continue
-        fnps.add(fnp)
-        if sample:
-            if not "limb_11" in fnp:
+    def loadFileLists(self):
+        cts = set()
+        d = os.path.join(paths.v4d, "mouse_epigenome/de_all_pairs/data")
+        fnps = []
+        for fn in os.listdir(d):
+            if not fn.endswith(".txt.gz"):
                 continue
-            if not "limb_15" in fnp:
-                continue
-        print(counter + 1, total, fnp)
+            toks = fn.replace(".txt.gz", '').split("_VS_")
+            cts.add(toks[0])
+            cts.add(toks[1])
+            fnps.append((os.path.join(d, fn), toks[0], toks[1]))
+        return cts, fnps
 
-        skipped = 0
+    def readFile(self, fnp):
         with gzip.open(fnp) as f:
             f.readline() # consume header
             data = []
+            skipped = 0
             for r in f:
                 toks = r.rstrip().split('\t')
                 if "NA" == toks[2]:
@@ -79,25 +88,36 @@ def setupAll(DBCONN, sample):
                     padj = "1"
                 etoks = toks[0].split('.')
                 data.append([etoks[0], toks[2], padj])
+        return data, skipped
 
-        outF = StringIO.StringIO()
-        for d in data:
-            outF.write('\t'.join([left, right] + d) + '\n')
-        outF.seek(0)
+    def setupAll(self, sample):
+        self.setupDb()
 
-        with getcursor(DBCONN, "main") as curs:
-            curs.copy_from(outF, tableName, '\t', columns=cols)
-        print("\tcopied in", len(data), "skipped", skipped)
+        cts, fnps = self.loadFileLists()
+        ctsToId = self.setupCellTypes(cts)
 
-def index(DBCONN):
-    printt("indexing")
-    with getcursor(DBCONN, "main") as curs:
-        curs.execute("""
-        create index leftname_rightname_de on mm10_de(leftname, rightname)""")
-        printt("made index", "leftname_rightname_de")
-        curs.execute("""
-        create index ensembl_de on mm10_de(ensembl)""")
-        printt("made index", "ensembl_de")
+        cols = ["leftCtId", "rightCtId", "ensembl", "log2FoldChange", "padj"]
+        # baseMean	log2FoldChange	lfcSE	stat	pvalue	padj
+
+        counter = 0
+        for fnp, ct1, ct2 in fnps:
+            if sample:
+                if "limb_15" not in ct1 or "limb_11" not in ct2:
+                    continue
+            print(counter + 1, len(fnps), fnp)
+            data, skipped = self.readFile(fnp)
+
+            outF = StringIO.StringIO()
+            for d in data:
+                outF.write('\t'.join([str(ctsToId[ct1]),
+                                      str(ctsToId[ct2])] + d) + '\n')
+            outF.seek(0)
+
+            self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
+            printt("copied in", self.curs.rowcount, "skipped", skipped)
+
+    def index(self):
+        makeIndex(self.curs, self.tableName, ["leftCtId", "rightCtId"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -112,10 +132,12 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__), args.local)
 
-    if args.index:
-        return index(DBCONN)
-    setupAll(DBCONN, args.sample)
-    index(DBCONN)
+    with getcursor(DBCONN, "import DEs") as curs:
+        ide = ImportDE(curs)
+        if args.index:
+            return ide.index()
+        ide.setupAll(args.sample)
+        ide.index()
 
 if __name__ == '__main__':
     main()
