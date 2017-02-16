@@ -32,44 +32,6 @@ public:
     std::map<std::string, RankContainer> ranksEnhancer_;
     std::map<std::string, RankContainer> ranksPromoter_;
 
-    Json::Value toJson() const {
-        Json::Value r;
-        r["accession"] = accession;
-        r["stam_id"] = mpName;
-        r["genome"] = genome;
-        r["neg-log-p"] = negLogP;
-
-        Json::Value pos;
-        pos["chrom"] = chrom;
-        pos["start"] = start;
-        pos["end"] = end;
-        r["position"] = pos;
-
-        for(const auto& g : gene_nearest_all){
-            r["genes"]["nearest-all"].append(g.toJson());
-        }
-        for(const auto& g : gene_nearest_pc){
-            r["genes"]["nearest-pc"].append(g.toJson());
-        }
-
-        for(const auto& kv: ranksConservation_){
-            r["ranks"]["conservation"][kv.first] = kv.second.toJson();
-        }
-        for(const auto& kv: ranksDNase_){
-            r["ranks"]["dnase"][kv.first] = kv.second.toJson();
-        }
-        for(const auto& kv: ranksCTCF_){
-            r["ranks"]["ctcf"][kv.first] = kv.second.toJson();
-        }
-        for(const auto& kv: ranksEnhancer_){
-            r["ranks"]["enhancer"][kv.first] = kv.second.toJson();
-        }
-        for(const auto& kv: ranksPromoter_){
-            r["ranks"]["promoter"][kv.first] = kv.second.toJson();
-        }
-        return r;
-    }
-
     void toTsvRankContainer(std::stringstream& s,
                             const std::map<std::string, RankContainer>& rc,
                             const std::string onlyKey,
@@ -203,22 +165,6 @@ public:
 	s << multiKey << d << kv.first << d << counter++ << "\n";
       }
     }
-  }
-
-  std::string toTsvCellTypeInfo() const {
-    static const char d = '\t';
-    std::stringstream s;
-    
-    int32_t counter = 1;
-    for(const auto& kv: ranksDNase_){
-      s << "DNase" << d << kv.first << d << counter++ << "\n";
-    }
-    
-    getCellTypes(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
-    getCellTypes(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
-    getCellTypes(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
-    
-    return s.str();
   }
 
     friend auto& operator<<(std::ostream& s, const Peak& p){
