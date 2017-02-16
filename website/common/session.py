@@ -57,7 +57,11 @@ VALUES (
 })
 
     def userUid(self):
-        uid = self.get(cherrypy.session.id)
+        cherrypy.session.acquire_lock()
+        sid = cherrypy.session.id
+        cherrypy.session.release_lock()
+
+        uid = self.get(sid)
         if not uid:
             uid = self.makeUid()
 
