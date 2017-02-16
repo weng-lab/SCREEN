@@ -62,7 +62,10 @@ class DePlot extends React.Component {
         let coord = this.props.data.coord;
 
         var y_domain = d3.extent(creData, function(d) { return d["value"]; });
-	y_domain = [Math.min(0, y_domain[0]), y_domain[1]];
+
+	// make sure 0 is in range to show dashed line at 0
+	y_domain = [Math.min(0, y_domain[0]),
+		    Math.max(0, y_domain[1])];
 	
         let barYdomain = [Math.min(y_domain[0],
 				   this.props.data.nearbyDEs.ymin),
