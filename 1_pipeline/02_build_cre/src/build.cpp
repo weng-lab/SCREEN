@@ -47,11 +47,14 @@ public:
         d.setAllGenes(mpName, p.gene_nearest_all);
         d.setPcGenes(mpName, p.gene_nearest_pc);
 
-        d.setDNaseRanks(p);
-        d.setCTCFRanks(p);
-        d.setEnhancerRanks(p);
-        d.setPromoterRanks(p);
-        d.setConservationRanks(p);
+	d.setConservation(mpName, p);
+	d.setDnaseOnly(mpName, p);
+	d.setCtcfOnly(mpName, p);
+	d.setCtcfDnase(mpName, p);
+	d.setH3k27acOnly(mpName, p);
+	d.setH3k27acDnase(mpName, p);
+	d.setH3k4me3Only(mpName, p);
+	d.setH3k4me3Dnase(mpName, p);
     }
 
     void dumpToTsv(bfs::path d){
