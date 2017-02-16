@@ -52,7 +52,7 @@
               <br />
               <div class="form-group text-center">
                 <input id="mainSearchbox" type="text"
-                       name="q" id="queryBox" value="K562 chr11:5226493-5403124">
+                       name="q" value="K562 chr11:5226493-5403124">
                 <input id="searchformassembly" name="assembly"
                        value="hg19" type="hidden">
               </div>
@@ -86,7 +86,7 @@
 {{ hh.js("/static/index.init.js") }}
 
 <script>
-  bind_autocomplete_textbox("queryBox", request_suggestions);
+  bind_autocomplete_textbox("mainSearchbox", request_suggestions);
 </script>
 
 {% include '_footer.html' -%}

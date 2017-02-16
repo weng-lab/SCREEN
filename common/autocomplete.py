@@ -22,7 +22,7 @@ class AutocompleterWrapper:
             suffix = " ".join(p[i:])
             results = list(set(self.acs["hg19"].get_suggestions(suffix) + self.acs["mm10"].get_suggestions(suffix)))
             if len(results) > 0:
-                results = [prefix + " " + x for x in results]
+                results = [prefix + " " + x for x in results if "|" not in x]
                 break
         return results
 
