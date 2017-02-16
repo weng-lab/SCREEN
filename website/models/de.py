@@ -86,7 +86,7 @@ class DE:
     def _DEsForDisplay(self, nearbyDEs):
         ret = []
         for d in nearbyDEs:
-            genename, strand = self.cache.lookupEnsembleGene(d[5])
+            genename, strand = self.cache.lookupEnsembleGene(d[3])
             ret.append({"fc" : round(float(d[2]), 3),
                         "start" : d[0],
                         "stop" : d[1],
