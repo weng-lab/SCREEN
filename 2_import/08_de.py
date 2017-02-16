@@ -118,7 +118,7 @@ class ImportDE:
             printt("copied in", self.curs.rowcount, "skipped", skipped)
 
     def index(self):
-        makeIndex(self.curs, self.tableName, ["leftCtId", "rightCtId"])
+        makeIndex(self.curs, self.tableName, ["leftCtId", "rightCtId", "ensembl"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
