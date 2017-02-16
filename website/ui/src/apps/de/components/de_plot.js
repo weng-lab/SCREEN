@@ -62,7 +62,8 @@ class DePlot extends React.Component {
         let coord = this.props.data.coord;
 
         var y_domain = d3.extent(creData, function(d) { return d["value"]; });
-
+	y_domain = [Math.min(0, y_domain[0]), y_domain[1]];
+	
         let barYdomain = [Math.min(y_domain[0],
 				   this.props.data.nearbyDEs.ymin),
                           this.props.data.nearbyDEs.ymax];
