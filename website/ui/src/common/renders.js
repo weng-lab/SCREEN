@@ -52,12 +52,12 @@ export const cart_img = (rmv, src_only) => {
 }
 
 export const geDeButton = (d) => {
-    d = d.replace(/\./g, "%2e");
-    var ge = '<a href="/geneexp/' + GlobalAssembly + '/' + d + '" target="_blank">' + d + '</a>';
+    let _d = d.replace(/\./g, "%2e");
+    var ge = '<a href="/geneexp/' + GlobalAssembly + '/' + _d + '" target="_blank">' + d + '</a>';
     if("mm10" != GlobalAssembly){
         return ge;
     }
-    var de = '<a href="/deGene/' + GlobalAssembly + '/' + d + '" target="_blank">&Delta;</a>';
+    var de = '<a href="/deGene/' + GlobalAssembly + '/' + _d + '" target="_blank">&Delta;</a>';
     return ge + '&nbsp;&nbsp;' + de;
 };
 

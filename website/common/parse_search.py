@@ -62,7 +62,7 @@ class ParseSearch:
         whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) + " or (LOWER('%s') = ANY(translate(info->>'synonyms', '[]', '{}')::text[]))" % s
         print(whereclause)
         with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
-            curs.execute("""SELECT approved_symbol FROM {tablename}
+            curs.execute("""SELECT approved_symbol, info FROM {tablename}
                             WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
             r = curs.fetchone()
         if not r or not r[0]:
@@ -197,7 +197,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             interpretation, coord, s, notss = self._try_find_gene(s, usetss)
             if interpretation:
                 ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
-                interpretation = self.get_genetext(interpretation, usetss, notss)
+                interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss)
 
         s, cellType, _interpretation = self._find_celltype(s)
 
