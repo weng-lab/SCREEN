@@ -57,7 +57,8 @@ class Config:
             '/': {
                 'tools.sessions.on' : True,
                 'tools.sessions.storage_type' : 'redis',
-                'tools.sessions.host' : redisHost
+                'tools.sessions.host' : redisHost,
+                'tools.sessions.locking' : 'explicit'
             },
             '/static' : {
                 'tools.staticdir.on' : True,

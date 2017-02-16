@@ -90,14 +90,6 @@ class DataWebService:
                  "summary": data[1],
                  "link": data[2] }
 
-    def session_uuid(self):
-        uid = self.sessions.get(cherrypy.session.id)
-        if not uid:
-            uid = self.sessions.makeUid()
-            cherrypy.session["uid"] = uid
-            self.sessions.insert(cherrypy.session.id, uid)
-        return uid
-
     def process(self, j, args, kwargs):
         action = args[0]
         try:
@@ -203,9 +195,9 @@ class DataWebService:
 
     def bed_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.bed(j, self.session_uuid())
+        return cd.bed(j, self.session.userUid())
 
     def json_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.json(j, self.session_uuid())
+        return cd.json(j, self.session.userUid())
 

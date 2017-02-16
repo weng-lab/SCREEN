@@ -56,6 +56,20 @@ VALUES (
        "uid" : uid
 })
 
+    def userUid(self):
+        uid = self.get(cherrypy.session.id)
+        if not uid:
+            uid = self.makeUid()
+
+            # http://stackoverflow.com/a/28205729
+            cherrypy.session.acquire_lock()
+            cherrypy.session["uid"] = uid
+            sid = cherrypy.session.id
+            cherrypy.session.release_lock()
+            
+            self.insert(sid, uid)
+        return uid
+
     def get(self, session_id):
         print(self.table)
         with getcursor(self.DBCONN, "get") as curs:
