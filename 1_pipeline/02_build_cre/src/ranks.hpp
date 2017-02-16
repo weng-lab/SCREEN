@@ -11,16 +11,6 @@ struct RankDNase {
     float signal_;
     float zscore_;
 
-    Json::Value toJson() const {
-        Json::Value r;
-        r["accession"] = accession_;
-        r["bigwig"] = bigwig_;
-        r["rank"] = rank_;
-        r["signal"] = signal_;
-        r["z-score"] = zscore_;
-        return r;
-    }
-
     friend auto& operator<<(std::ostream& s, const RankDNase& r){
         s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
           << " " << r.signal_ << " " << r.zscore_;
@@ -31,13 +21,6 @@ struct RankDNase {
 struct RankConservation {
     int32_t rank_;
     float signal_;
-
-    Json::Value toJson() const {
-        Json::Value r;
-        r["rank"] = rank_;
-        r["signal"] = signal_;
-        return r;
-    }
 
     friend auto& operator<<(std::ostream& s, const RankConservation& r){
         s << r.rank_ << " " << r.signal_;
@@ -51,18 +34,6 @@ struct RankSimple {
     float signal_;
     float zscore_;
     bool only_ = true;
-
-    Json::Value toJson() const {
-        Json::Value r;
-        r["accession"] = accession_;
-        r["bigwig"] = bigwig_;
-        if(only_){
-            r["signal"] = signal_;
-        } else {
-            r["zscore"] = zscore_;
-        }
-        return r;
-    }
 
     friend auto& operator<<(std::ostream& s, const RankSimple& r){
         s << r.accession_ << " " << r.bigwig_ << " ";
@@ -80,16 +51,6 @@ struct RankMulti {
     int32_t rank_;
     float zscore_;
 
-    Json::Value toJson() const {
-        Json::Value r;
-        r["rank"] = rank_;
-        r["z-score"] = zscore_;
-        for(const auto& kv : parts_){
-            r[kv.first] =  kv.second.toJson();
-        }
-        return r;
-    }
-
     friend auto& operator<<(std::ostream& s, const RankMulti& rm){
         s << rm.rank_ << " " << rm.zscore_ << "\n";
         for(const auto& kv : rm.parts_){
@@ -105,14 +66,6 @@ class RankContainer {
 public:
     void add(std::string rankType, RankMulti& rm){
         rankTypeToRank_[rankType] = rm;
-    }
-
-    Json::Value toJson() const {
-        Json::Value r;
-        for(const auto& kv : rankTypeToRank_){
-            r[kv.first] =  kv.second.toJson();
-        }
-        return r;
     }
 
     const auto& at(const std::string& k) const {
