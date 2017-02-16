@@ -35,14 +35,6 @@ class MainApp():
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
-    def session_uuid(self):
-        uid = self.sessions.get(cherrypy.session.id)
-        if not uid:
-            uid = self.sessions.makeUid()
-            cherrypy.session["uid"] = uid
-            self.sessions.insert(cherrypy.session.id, uid)
-        return uid
-
     @cherrypy.expose
     def index(self):
         return self.mc.Index()
@@ -50,40 +42,40 @@ class MainApp():
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(args, kwargs,
-                                           self.session_uuid())
+                                           self.sessions.userUid())
 
     @cherrypy.expose
     def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(self.session_uuid(), args, kwargs)
+        return self.trackhub.washu_trackhub(self.sessions.userUid(), args, kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ucsc_trackhub_url(j, self.session_uuid())
+        return self.trackhub.ucsc_trackhub_url(j, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ensembl_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ensembl_trackhub_url(j, self.session_uuid())
+        return self.trackhub.ensembl_trackhub_url(j, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def washu_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.washu_trackhub_url(j, self.session_uuid())
+        return self.trackhub.washu_trackhub_url(j, self.sessions.userUid())
 
     @cherrypy.expose
     def comparison(self, *args, **kwargs):
-        return self.cp.comparison(args, kwargs, self.session_uuid())
+        return self.cp.comparison(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     def search(self, *args, **kwargs):
-        return self.mc.search(args, kwargs, self.session_uuid())
+        return self.mc.search(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -95,7 +87,7 @@ class MainApp():
     @cherrypy.tools.json_out()
     def setCart(self):
         j = cherrypy.request.json
-        return self.cartc.SetCart(self.session_uuid(), j)
+        return self.cartc.SetCart(self.sessions.userUid(), j)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -107,7 +99,7 @@ class MainApp():
 
     @cherrypy.expose
     def geneexp(self, *args, **kwargs):
-        return self.ge.geneexp(args, kwargs, self.session_uuid())
+        return self.ge.geneexp(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -118,7 +110,7 @@ class MainApp():
 
     @cherrypy.expose
     def deGene(self, *args, **kwargs):
-        return self.de.de(args, kwargs, self.session_uuid())
+        return self.de.de(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -129,7 +121,7 @@ class MainApp():
 
     @cherrypy.expose
     def gwasApp(self, *args, **kwargs):
-        return self.gwas.gwas(args, kwargs, self.session_uuid())
+        return self.gwas.gwas(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -140,7 +132,7 @@ class MainApp():
 
     @cherrypy.expose
     def tfApp(self, *args, **kwargs):
-        return self.tf.tf(args, kwargs, self.session_uuid())
+        return self.tf.tf(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
