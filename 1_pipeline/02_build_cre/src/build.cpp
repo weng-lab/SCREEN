@@ -6,7 +6,7 @@ ZiARG_bool(first, false, "show first line");
 ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 1, "num threads");
 
-#include "helpers.hpp"
+#include "data_helper.hpp"
 #include "splitter.hpp"
 #include "geneIDer.hpp"
 
