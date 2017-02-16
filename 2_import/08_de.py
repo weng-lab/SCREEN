@@ -52,7 +52,7 @@ class ImportDE:
         printt("copying into", self.ctTableName)
         cols = ["deCtName"]
         self.curs.copy_from(outF, self.ctTableName, '\t', columns=cols)
-        printt(self.curs.rowcount)
+        printt("imported", self.curs.rowcount, "rows", ctTableName)
 
         self.curs.execute("""
         SELECT id, deCtName FROM {tn}
@@ -101,10 +101,11 @@ class ImportDE:
 
         counter = 0
         for fnp, ct1, ct2 in fnps:
+            counter += 1
             if sample:
                 if "limb_15" not in ct1 or "limb_11" not in ct2:
                     continue
-            print(counter + 1, len(fnps), fnp)
+            printt(counter, len(fnps), fnp)
             data, skipped = self.readFile(fnp)
 
             outF = StringIO.StringIO()
