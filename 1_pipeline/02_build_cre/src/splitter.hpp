@@ -26,9 +26,6 @@ public:
             mpToChr_[toks[3]] = toks[0];
         }
         std::cout << "\tfound " << mpToChr_.size() << " peaks\n";
-        if("mm10" == ZiARG_assembly){
-            std::cout << mpToChr_.at("MP-3-100.000000") << std::endl;
-        }
     }
 
     void splitSignalFile(const bfs::path inFnp){

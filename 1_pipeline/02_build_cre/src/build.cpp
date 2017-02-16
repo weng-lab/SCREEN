@@ -1,6 +1,7 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "mm10", "assembly");
+ZiARG_string(ver, "ver9", "version");
 ZiARG_bool(first, false, "show first line");
 ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 1, "num threads");
@@ -33,19 +34,6 @@ public:
             Peak& p = peaks_[accession];
             processPeak(d, p);
         }
-
-        if(0){
-            const std::string a = "EE0022963";
-            if(bib::in(a, peaks_)){
-                Peak& p = peaks_[a];
-                if(0){
-                    std::cout << p << std::endl;
-                }else {
-                    Json::StyledWriter styledWriter;
-                    std::cout << styledWriter.write(p.toJson());
-                }
-            }
-        }
     }
 
     void processPeak(const DataHelper& d, Peak& p){
@@ -66,35 +54,6 @@ public:
         d.setConservationRanks(p);
     }
 
-    void dumpToJson(bfs::path d){
-        const auto& accessions = peaks_.accessions();
-        bfs::path fnp = d / ("parsed." + paths_.chr_ + ".json");
-
-        std::vector<std::string> lsj(accessions.size());
-
-        std::cout << "dumping to JSON...\n";
-        {
-            TicToc tt("dump to JSON strings");
-#pragma omp parallel for
-            for(size_t i = 0; i < accessions.size(); ++i){
-                const auto& accession = accessions[i];
-                Peak& p = peaks_[accession];
-                Json::FastWriter fastWriter;
-                lsj[i] = fastWriter.write(p.toJson());
-            }
-        }
-
-        {
-            TicToc tt("write to file");
-            std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
-            for(const auto& j : lsj){
-                out << j;
-            }
-        }
-
-        std::cout << "\twrote " << fnp << " " << lsj.size() << std::endl;
-    }
-
     void dumpToTsv(bfs::path d){
         const auto& accessions = peaks_.accessions();
 
@@ -111,6 +70,7 @@ public:
             }
         }
 
+	// write header lines
         {
             bfs::path fnp = d / ("parsed.headers." + paths_.chr_ + ".tsv");
             TicToc tt("write to " + fnp.string());
@@ -132,6 +92,8 @@ public:
             }
             std::cout << "\twrote " << fnp << std::endl;
         }
+
+	// write TSVs w/ data
         {
             bfs::path fnp = d / ("parsed." + paths_.chr_ + ".tsv");
             TicToc tt("write to " + fnp.string());
@@ -142,26 +104,6 @@ public:
                 }
             }
             std::cout << "\twrote " << fnp << " " << tsv.size() << std::endl;
-        }
-        {
-            bfs::path fnp = d / ("parsed.cellTypeIndexes." + paths_.chr_ + ".tsv");
-            std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
-
-            std::vector<std::string> cellTypeInfos(accessions.size());
-#pragma omp parallel for
-            for(size_t i = 0; i < accessions.size(); ++i){
-                const auto& accession = accessions[i];
-                Peak& p = peaks_[accession];
-                cellTypeInfos[i] = p.toTsvCellTypeInfo();
-            }
-
-            if(std::all_of(cellTypeInfos.begin()+1, cellTypeInfos.end(),
-                           [&](const auto& r) {return r == cellTypeInfos.front();})){
-                out << cellTypeInfos[0];
-            } else {
-                throw std::runtime_error("unequal");
-            }
-            std::cout << "\twrote " << fnp << std::endl;
         }
     }
 };
@@ -177,7 +119,7 @@ void runChrom(const std::string chrom, const bfs::path d, const bfs::path base){
         b.build();
     }
     {
-        bfs::path outD = base / "newway";
+        bfs::path outD = base / "newway2";
         bfs::create_directories(outD);
         bib::TicToc tt("tsv dump time");
         b.dumpToTsv(outD);
@@ -212,7 +154,7 @@ int main(int argc, char* argv[]){
     }
 
     bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
-    base /= "ver9";
+    base /= ZiARG_ver;
     base /= ZiARG_assembly;
     bfs::path d =  base / "raw";
 
