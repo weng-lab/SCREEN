@@ -52,7 +52,7 @@ class ImportDE:
         printt("copying into", self.ctTableName)
         cols = ["deCtName"]
         self.curs.copy_from(outF, self.ctTableName, '\t', columns=cols)
-        printt("imported", self.curs.rowcount, "rows", ctTableName)
+        printt("imported", self.curs.rowcount, "rows", self.ctTableName)
 
         self.curs.execute("""
         SELECT id, deCtName FROM {tn}
