@@ -226,7 +226,7 @@ const DetailsTabInfo = {
 	       enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
 			 "Activity Profile"),
-		 enabled: GlobalAssembly == "mm10",
+		 enabled: true,
                  f: SimilarREsTab}
 };
 
