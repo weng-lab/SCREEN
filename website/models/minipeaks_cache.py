@@ -16,7 +16,7 @@ class MiniPeaksCache:
         self.ver = ver
 
     def get(self, assay, accessions):
-        hosts = ["127.0.0.1"]
+        hosts = ["cassandra", "127.0.0.1"]
         cluster = Cluster(hosts)
         session = cluster.connect()
         session.row_factory = dict_factory
@@ -28,7 +28,7 @@ class MiniPeaksCache:
         select_stmt = session.prepare("""
 SELECT * FROM {tn} WHERE accession IN ?
 """.format(tn = tableName ))
-        
+
         rows = list(session.execute(select_stmt, (accessions,)))
 
         ret = []
