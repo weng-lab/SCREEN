@@ -2,13 +2,15 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import REComponent from '../../../common/components/re_component'
+import ReactDOMServer from 'react-dom/server'
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders'
+
+import ResultsTable from '../../../common/components/results_table'
+import loading from '../../../common/components/loading'
 
 import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name, infer_primary_type} from '../config/colors'
-
-import loading from '../../../common/components/loading'
 
 const ROWHEIGHT = 30.0;
 const ROWMARGIN = 15;
@@ -31,7 +33,7 @@ const ctindex = (d) => {
     return 3000 + d.charCodeAt(0) + d.charCodeAt(1) + d.charCodeAt(2);
 }
 
-class MiniPeaks extends REComponent {
+class MiniPeaks extends React.Component {
     constructor(props) {
 	super(props);
 	this.state = {assay: "dnase", jq: null,
@@ -98,27 +100,39 @@ class MiniPeaks extends REComponent {
 	var mmax = (assay == "dnase") ? 150 : 50;
 	var mfactor = ROWHEIGHT / mmax;
 
-	var histograms = mp.map((r) => {
-	    let data = r[accessions[0]];
-	    data = data.map((d) => ((d > mmax ? mmax : d) * mfactor));
-	    return (<tr>
-		    <td>{r["fileID"]}</td>
-		    <td>{r["biosample_type"]}</td>
-		    <td>{r["tissue"]}</td>
-		    <td>{r["biosample_summary"]}</td>
-		    <td>
-		    <svg width={data.length} height={ROWHEIGHT} >
-		    <g>
-		    {data.map((v, i) => (<rect width="1" height={v}
-					 y={ROWHEIGHT - v} x={i}
-					 fill={"blue"} />)
-			     )}
-		    </g>
-		    </svg>
-		    </td>
-		    </tr>);
-	});
+	const renderPeaks = (dataRaw) => {
+	    let data = dataRaw.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	    let e = (<svg width={data.length} height={ROWHEIGHT} >
+		     <g>
+		     {data.map((v, i) => (<rect width="1" height={v}
+					  y={ROWHEIGHT - v} x={i}
+					  fill={"blue"} />))}
+		     </g>
+		     </svg>);
+	    return ReactDOMServer.renderToStaticMarkup(e);
+	}
 
+        let table = {title: assay + " Minipeaks",
+	             cols: [
+			 {title: accessions[0], data: accessions[0],
+			  render: renderPeaks},
+			 {title: "experiment / file", data: "expID",
+	                  render: Render.dccLink },
+			 {title: "Tissue of origin", data: "tissue"},
+			 {title: "Cell Type", data: "biosample_type"},
+			 {title: "Biosample", data: "biosample_summary"},
+		     ],
+		     bFilter: true,
+		     order: [[0, "asc"]]
+                    };
+
+	let dtable = (<div>
+	              <h4>{assay}</h4>
+                      {React.createElement(ResultsTable,
+                                           {data: mp,
+                                            ...table})}
+		      </div>);
+	
 	const isSel = (a) => (a == assay);
 	
 	return (<div>
@@ -128,9 +142,7 @@ class MiniPeaks extends REComponent {
 		<option value="h3k27ac" selected={isSel("h3k27ac")}>H3K27ac</option>
 		</select><br />
 
-		<table>
-		{histograms}
-		</table>
+		{dtable}
 		
 		</div>);
     }
