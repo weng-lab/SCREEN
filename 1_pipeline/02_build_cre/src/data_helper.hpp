@@ -113,10 +113,6 @@ namespace bib {
     }
 
     template <typename T>
-    void setConservation(const std::string& mpName, T& p) const {
-    }
-
-    template <typename T>
     void setDnaseOnly(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesDnaseOnly_){
             if(bib::in(mpName, sf.lines_)){
