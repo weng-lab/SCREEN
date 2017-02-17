@@ -4,6 +4,10 @@
 
 namespace bib {
 
+enum SignalLineEnum {
+    ONLY, CONSERVATION, RANKZSCORE
+};
+
 template <typename T>
 class GetData {
     T paths_;
@@ -107,14 +111,17 @@ public:
         return ret;
     }
 
-    template <typename V>
-    void loadSignals(const bfs::path& listFnp, std::vector<V>& ret,
-                     const uint32_t numCols){
-        const auto lines = bib::files::readStrings(listFnp);
+    std::vector<bfs::path> getFnps(const bfs::path& listFnp,
+                                   const uint32_t numCols){
         std::vector<bfs::path> fnps;
+        const auto lines = bib::files::readStrings(listFnp);
         for(const auto& g : lines){
             auto toks = bib::str::split(g, '\t');
             if(toks.size() != numCols){
+                std::cerr << listFnp << std::endl;
+                std::cerr << g << std::endl;
+                std::cerr << toks.size() << " but expected "
+                          << numCols << std::endl;
                 throw std::runtime_error("wrong num cols");
             }
             std::string fn;
@@ -140,8 +147,15 @@ public:
             fnps.push_back(fnp);
         }
         std::cout << "found " << fnps.size() << " signal files"
+                  << " from " << listFnp
                   << std::endl;
+        return fnps;
+    }
 
+    template <typename V>
+    void loadSignals(const bfs::path& listFnp, std::vector<V>& ret,
+                     const uint32_t numCols, const SignalLineEnum sle){
+        std::vector<bfs::path> fnps = getFnps(listFnp, numCols);
         ret.resize(fnps.size());
 
 #pragma omp parallel for
@@ -159,7 +173,13 @@ public:
                     std::cerr << "too many toks for " << fnp << std::endl;
                     throw std::runtime_error("too many toks");
                 }
-                sf.setSignalLine(toks);
+                switch(sle){
+                case ONLY:
+                    sf.setSignalLineOnly(toks);
+                    break;
+                case CONSERVATION: sf.setSignalLineConservation(toks); break;
+                case RANKZSCORE: sf.setSignalLineRankZscore(toks); break;
+                }
             }
             ret[i] = std::move(sf);
         }
