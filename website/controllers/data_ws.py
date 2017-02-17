@@ -63,6 +63,7 @@ class DataWebService:
         self.mpk = MiniPeaks(self.pgSearch, "", self.cache)
 
         self.actions = {"cre_table" : self.cre_table,
+                        "cre_tf_dcc" : self.cre_tf_dcc,
                         "re_detail" : self.re_detail,
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
@@ -201,3 +202,12 @@ class DataWebService:
         cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.json(j, self.session.userUid())
 
+    def cre_tf_dcc(self, j, args):
+        accession = j.get("accession", None)
+        if not accession:
+            raise Exception("invalid accession")
+        target = j.get("target", None)
+        if not target:
+            raise Exception("invalid target")
+
+        return {target : self.pgSearch.tfTargetExps(accession, target)}

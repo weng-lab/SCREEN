@@ -66,8 +66,8 @@ def makeJobs(assembly):
             if not beds:
                 print("missing", exp)
             for bed in beds:
-                jobs.append({"exp": exp,
-                             "bed": bed,
+                jobs.append({"exp": exp, # this is an Exp
+                             "bed": bed, # this is an ExpFile
                              "i": i,
                              "total": total,
                              "assembly": assembly,
