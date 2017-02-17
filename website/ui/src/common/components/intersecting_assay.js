@@ -75,8 +75,12 @@ class IntersectingAssay extends React.Component {
                        </div>);
         }
 
-	return (<div>
-                {React.createElement(ResultsTable, {data, ...table, onTdClick})}
+	return (<div className={"intersectionTable"} >
+                {React.createElement(ResultsTable, {data, ...table,
+                                                    onTdClick,
+		                                    onMouseEnter: true,
+                                                    onMouseExit: true
+                                                   })}
                 {details}
                 </div>);
     }

@@ -347,3 +347,10 @@ select.ui-toggle-switch { display: none; }
     display: flex;
     align-items: center;
 }
+
+.intersectionTable tbody tr {
+    cursor: pointer;
+}
+.intersectionTable tbody > tr:hover {
+    background-color: #FAD7A0;
+}
