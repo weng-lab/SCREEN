@@ -62,7 +62,7 @@ class IntersectingAssay extends React.Component {
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
                              {title: "experiment", data: "expID",
-	                      render: Render.dccLinkAndIcon }
+	                      render: Render.dccLinkAndIconSplit }
                              ],
 	                 order: [[0, "asc"]]
                         }
