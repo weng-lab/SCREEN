@@ -225,7 +225,7 @@ const DetailsTabInfo = {
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
 	       enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
-			 "Activity Profile"),
+			 "Signal Profile"),
 		 enabled: true,
                  f: SimilarREsTab}
 };
