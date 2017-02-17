@@ -1,6 +1,7 @@
 import * as Render from '../../../common/renders'
 
-import IntersectingAssay from '../components/intersecting_assay.js'
+import IntersectingAssayTf from '../components/intersecting_assay_tf'
+import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
 export const TopTissuesTables = {
     "promoter": {
@@ -204,7 +205,7 @@ export const NearbyGenomicTable = {
 export const TfIntersectionTable = {
     "tf": {
 	title: "Intersecting TFs",
-        typ: IntersectingAssay,
+        typ: IntersectingAssayTf,
 	cols: [
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf },
@@ -214,6 +215,7 @@ export const TfIntersectionTable = {
     },
     "histone": {
 	title: "Intersecting Histone Marks",
+        typ: IntersectingAssayHistone,
 	cols: [
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
