@@ -64,7 +64,7 @@ class IntersectingAssay extends React.Component {
             let table = {title: target + " Experiments",
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
-                             {title: "experiment", data: "expID",
+                             {title: "experiment / file", data: "expID",
 	                      render: Render.dccLinkAndIconSplit }
                              ],
 	                 order: [[0, "asc"]]

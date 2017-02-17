@@ -72,7 +72,7 @@ class ReTabBase extends React.Component{
 	super(props);
         this.key = key;
         this.url = "/dataws/re_detail/" + key;
-        this.state = { isFetching: true, isError: false };
+        this.state = { jq: null, isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
@@ -90,8 +90,12 @@ class ReTabBase extends React.Component{
         }
         var q = {GlobalAssembly, "accession" : cre_accession_detail};
         var jq = JSON.stringify(q);
-        //console.log("loadCRE....", jq);
-        this.setState({isFetching: true});
+	if(this.state.jq == jq){
+            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
+            return;
+        }
+        //console.log("loadCREs....", this.state.jq, jq);
+        this.setState({jq, isFetching: true});
         $.ajax({
             url: this.url,
             type: "POST",
@@ -100,7 +104,7 @@ class ReTabBase extends React.Component{
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
                 console.log("err loading cres for table");
-                this.setState({isFetching: false, isError: true});
+                this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
