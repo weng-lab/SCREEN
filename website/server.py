@@ -90,11 +90,8 @@ def main():
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
-        
-    host = ["127.0.0.1", "cassandra.docker"]
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                            'server.socket_port': int(args.port),
-                            'cassandra.docker' : host})
+                            'server.socket_port': int(args.port)})
     
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,
