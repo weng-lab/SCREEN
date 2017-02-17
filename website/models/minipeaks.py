@@ -11,67 +11,38 @@ from cre import CRE
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import printt
 
-def asum(_l):
-    ret = []
-    for r in _l: ret += r
-    return ret
-
 class MiniPeaks:
     def __init__(self, assembly, pgSearch, cache):
         self.assembly = assembly
         self.pgSearch = pgSearch
         self.cache = cache
 
-    def _get_bigwigs(self, key):
-        return [{"ct": k, "bigwig": v[1], "accession": v[0],
-                 "tissue": self._ctToTissue(k) }
-                for k, v in self.cache.assaymap[key].iteritems()]
-
-    def _groupbytissue(self, results):
-        tissuegroupings = {}
-        for k, v in results.iteritems():
-            if v["tissue"] not in tissuegroupings: tissuegroupings[v["tissue"]] = []
-            tissuegroupings[v["tissue"]].append(k)
-        return asum([v for k, v in tissuegroupings.iteritems()])
-
-    def _get_bigwig_regions(self, bigwigs, cres, assay, n_bars = 15):
-        print("\n\nCRES........\n", cres)
-        try:
-            results = {}
-            results["order"] = self._groupbytissue(results)
-            return results
-        except:
-            raise
-            print("ERROR in _get_bigwig_regions")
-
-    def _ctToTissue(self, ct):
-        try:
-            return self.cache.datasets.globalCellTypeInfo[ct]["tissue"]
-        except:
-            print("missing tissue for", ct)
-            return ""
-
-    def regionsFromSearchList(self, assay, cres, n_bars):
-        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, cres)
-        accs = [x["accession"] for x in cres]
-        return (regions, accs)
-
     def getBigWigRegions(self, assay, accession, cres = []):
         accessions = [accession] + cres
-        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
-        order = []
-        return (regions, order, accessions)
+         
+        mps = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
+        mp = mps[0]
+
+        lookup = self.cache.datasets.byFileID
+                
+        ret = []
+        for fileID, data in mp["data"].iteritems():
+            lu = lookup[fileID]
+            ret.append({"fileID" : fileID,
+                        mp["accession"] : data,
+                        "tissue" : lu["tissue"],
+                        "biosample_summary" : lu["biosample_summary"],
+                        "biosample_type" : lu["biosample_type"]})
+        ret.sort(key = lambda x: (x["tissue"], x["biosample_summary"]))
+        return ret, accessions
 
     def getBigWigRegionsWithSimilar(self, assay, accession, other = None):
         coord = CRE(self.pgSearch, accession, self.cache).coord()
-        bigWigs = self._get_bigwigs(assay)
-        me = {"accession": self.accession,
-              "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
-        cres = [me] + self.pgSearch.creMostsimilar(self.accession, assay + ("_dnase" if assay != "dnase" else ""))
-        regions = self._get_bigwig_regions(bigWigs, cres, assay)
-
-        #print(regions[ regions.keys()[0] ])
-        accs = [x["accession"] for x in cres]
+        sassay = ""
+        if assay != "dnase":
+            sassay += "_dnase" 
+        cres = [accession] + self.pgSearch.creMostsimilar(accession, sassay)
+        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, cres)
         return (regions, accs)
 
 def main():

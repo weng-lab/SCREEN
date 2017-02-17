@@ -11,7 +11,6 @@ from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
-#from models.minipeaks_cache import MiniPeaksCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
@@ -37,9 +36,6 @@ class CachedObjectsWrapper:
     def getTissueAsMap(self, assembly, ct):
         return self.cos[assembly].getTissueAsMap(ct)
 
-    def getTFListJson(self, assembly):
-        return self.cos[assembly].getTFListJson()
-
 class CachedObjects:
     def __init__(self, ps, assembly):
         self.ps = ps
@@ -54,13 +50,8 @@ class CachedObjects:
         self.creHist = self.pgSearch.creHist()
 
         self.tf_list = self.pgSearch.tfHistoneDnaseList()
-        self.tf_list_json = json.dumps(self.tf_list)
 
         self.datasets = Datasets(self.assembly, self.pgSearch)
-
-        if 0:
-            self.minipeaks_caches = {k: MiniPeaksCache(k, 1)
-                                     for k in ["dnase", "h3k4me3", "h3k27ac"]}
 
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
@@ -105,9 +96,6 @@ class CachedObjects:
         #raise Exception("missing tissue")
         return ""
 
-    def getTFListJson(self):
-        return self.tf_list_json
-
     def globalCellTypeInfo(self):
         return self.datasets.globalCellTypeInfoJson()
 
@@ -140,8 +128,7 @@ def main():
     n = pgSearch.datasets("DNase")
 
     for k, v in cache.assaymap["dnase"].iteritems():
-        if v != n[k]:
-            print(k, v, n[k])
+        print(k, v, n[k])
 
 if __name__ == '__main__':
     main()
