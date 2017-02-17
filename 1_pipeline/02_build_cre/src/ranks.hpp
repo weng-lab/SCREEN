@@ -4,30 +4,6 @@ namespace bib {
 
 namespace bfs = boost::filesystem;
 
-struct RankDNase {
-    std::string accession_;
-    std::string bigwig_;
-    int32_t rank_;
-    float signal_;
-    float zscore_;
-
-    friend auto& operator<<(std::ostream& s, const RankDNase& r){
-        s << r.accession_ << " " << r.bigwig_ << " " << r.rank_
-          << " " << r.signal_ << " " << r.zscore_;
-        return s;
-    }
-};
-
-struct RankConservation {
-    int32_t rank_;
-    float signal_;
-
-    friend auto& operator<<(std::ostream& s, const RankConservation& r){
-        s << r.rank_ << " " << r.signal_;
-        return s;
-    }
-};
-
 struct RankSimple {
     std::string accession_;
     std::string bigwig_;
