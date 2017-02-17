@@ -15,10 +15,7 @@ class MiniPeaksCache:
         self.ver = ver
 
     def get(self, assay, accessions):
-        host = ["127.0.0.1"]
-        if cherrypy.config.get("isProduction"):
-            host = ["cassandra.docker"]
-        cluster = Cluster(host)
+        cluster = Cluster(cherrypy.config.get("cassandra.host"))
         session = cluster.connect()
         session.row_factory = dict_factory
         session.set_keyspace("minipeaks")
