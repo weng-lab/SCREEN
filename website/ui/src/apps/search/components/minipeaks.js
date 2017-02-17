@@ -75,50 +75,50 @@ class MiniPeaks extends REComponent {
     }
 
     render() {
-	var regions = this.props.data.regions;
-        var elems = this.props.data.mostSimilar;
+	var row = this.props.data.regions[0];
+	var dataByFileID = row.data;
+	var nbars = 20;
+	var assay = 'dnase';
+	var mmax = assay != "dnase" ? 50.0 : 150.0;
+	var mfactor = ROWHEIGHT / mmax;
 
-	var cts = this.props.data.order ? this.props.data.order : Object.keys(regions);
-	//cts.sort((a, b) => (ctindex(a) - ctindex(b)));
-	if (elems.length == 0) return <g />;
-
-	var nbars = regions[cts[0]][elems[0]].length;
-	var _render_regionset = this._render_regionset;
-
-	// get dimensions, render
-	var width = (nbars + COLMARGIN) * elems.length + LEFTMARGIN + 100;
-	var height = (ROWHEIGHT + ROWMARGIN) * cts.length + TOPMARGIN;
-	return (<div><select ref="assay" onChange={this._onchange}>
-		     <option value="dnase" selected={this.props.assay && this.props.assay == "dnase"}>DNase</option>
-		     <option value="h3k4me3" selected={this.props.assay && this.props.assay == "h3k4me3"}>H3K4me3</option>
-		     <option value="h3k27ac" selected={this.props.assay && this.props.assay == "h3k27ac"}>H3K27ac</option>
+	var histograms = Object.keys(dataByFileID).map((fileID) => {
+	    let data = dataByFileID[fileID];
+	    data = data.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	    return (<tr>
+		    <td>
+		    {fileID}
+		    </td>
+		    <td>
+		    <svg width={data.length} height={ROWHEIGHT} >
+		    <g>
+		    {data.map((v, i) => (<rect width="1" height={v}
+					 y={ROWHEIGHT - v} x={i}
+					 fill={"blue"} />)
+			     )}
+		    </g>
+		    </svg>
+		    </td>
+		    </tr>);
+	});
+	
+	return (<div>
+		<select ref="assay" onChange={this._onchange}>
+		<option value="dnase" selected={this.props.assay && this.props.assay == "dnase"}>DNase</option>
+		<option value="h3k4me3" selected={this.props.assay && this.props.assay == "h3k4me3"}>H3K4me3</option>
+		<option value="h3k27ac" selected={this.props.assay && this.props.assay == "h3k27ac"}>H3K27ac</option>
 		</select><br />
-		<svg width={width} height={height}>
-		   <g transform={"translate(0," + TOPMARGIN + ")"}>
-		   <g width={width - LEFTMARGIN} height={TOPMARGIN} transform="translate(450,0)">
-		      {elems.map((e, i) => {
-		         var _x = (nbars + COLMARGIN) * i + (nbars / 2);
-		         return <text textAnchor="start" x={_x * Math.cos(TOPANGLE)} y={_x * Math.sin(TOPANGLE)} transform={"rotate(-" + TOPANGLED + ")"}>{e}</text>;
-		      })}
-		   </g>
-		   {cts.map((k, i) => (
-		       _render_regionset(regions[k], nbars, elems, "translate(0," + ((ROWHEIGHT + ROWMARGIN) * i) + ")", k)
-		   ))}
-	           </g>
-		</svg></div>);
 
+		<table>
+		{histograms}
+		</table>
+		
+		</div>);
     }
 }
 
-const mapStateToProps = (state) => ({
-    ...state
-});
-
+const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(MiniPeaks);
+export default connect(mapStateToProps, mapDispatchToProps)(MiniPeaks);

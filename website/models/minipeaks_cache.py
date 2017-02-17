@@ -27,13 +27,26 @@ SELECT * FROM {tn} WHERE accession IN ?
 """.format(tn = tableName ))
         
         rows = list(session.execute(select_stmt, (accessions,)))
-        return rows
+
+        ret = []
+        for row in rows:
+            data = {}
+            for k, v in row.iteritems():
+                if "accession" == k or "chrom" == k:
+                    continue
+                data[k.upper()] = [float(x) for x in v[1:-2].split(',')]
+            nr = {"accession" : row["accession"],
+                  "data" : data,
+                  "chrom" : row["chrom"]}
+            ret.append(nr)
+        return ret
 
 if __name__ == "__main__":
     mpc = MiniPeaksCache("mm10", 20, 2)
     ret = mpc.get("DNase", ["EM10E0371084"])
     for r in ret:
-        print(r["accession"], r)
+        for k, v in r.iteritems():
+            print(r["accession"], r)
 
     if 0:
         j = mpc.get("EM10E0371084")
