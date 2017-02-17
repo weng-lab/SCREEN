@@ -47,6 +47,7 @@ public:
         d.setAllGenes(mpName, p);
         d.setPcGenes(mpName, p);
 
+        d.setConservation(mpName, p);
         d.setDnaseOnly(mpName, p);
         d.setCtcfOnly(mpName, p);
         d.setCtcfDnase(mpName, p);
@@ -81,6 +82,7 @@ public:
                 std::vector<std::string> header {"accession",
                         "mpName", "negLogP", "chrom", "start", "end",
                         "dnase_zscore",
+                        "conservation_signal",
                         "ctcf_only_zscore",
                         "ctcf_dnase_zscore",
                         "h3k27ac_only_zscore",
