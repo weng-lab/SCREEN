@@ -695,7 +695,7 @@ ORDER BY start
 SELECT expID, biosample_term_name
 FROM {peakMetadataTn}
 WHERE fileID IN (
-SELECT jsonb_array_elements_text(histone->%s)
+SELECT distinct(jsonb_array_elements_text(histone->%s))
 FROM {peakTn}
 WHERE accession = %s
 )
@@ -716,7 +716,7 @@ ORDER BY biosample_term_name
 SELECT expID, biosample_term_name
 FROM {peakMetadataTn}
 WHERE fileID IN (
-SELECT jsonb_array_elements_text(tf->%s)
+SELECT distinct(jsonb_array_elements_text(tf->%s))
 FROM {peakTn}
 WHERE accession = %s
 )
