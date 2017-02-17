@@ -41,11 +41,11 @@ public:
         p.genome = paths_.genome_;
 
         if("hg19" == ZiARG_assembly){
-            d.setTads(mpName, p.tads);
+            d.setTads(mpName, p);
         }
 
-        d.setAllGenes(mpName, p.gene_nearest_all);
-        d.setPcGenes(mpName, p.gene_nearest_pc);
+        d.setAllGenes(mpName, p);
+        d.setPcGenes(mpName, p);
 
         d.setConservation(mpName, p);
         d.setDnaseOnly(mpName, p);
@@ -81,14 +81,13 @@ public:
                 std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
                 std::vector<std::string> header {"accession",
                         "mpName", "negLogP", "chrom", "start", "end",
-                        "conservation_rank", "conservation_signal",
-                        "dnase_rank", "dnase_signal", "dnase_zscore",
-                        "ctcf_only_rank", "ctcf_only_zscore",
-                        "ctcf_dnase_rank", "ctcf_dnase_zscore",
-                        "h3k27ac_only_rank", "h3k27ac_only_zscore",
-                        "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
-                        "h3k4me3_only_rank", "h3k4me3_only_zscore",
-                        "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
+                        "dnase_zscore",
+                        "ctcf_only_zscore",
+                        "ctcf_dnase_zscore",
+                        "h3k27ac_only_zscore",
+                        "h3k27ac_dnase_zscore",
+                        "h3k4me3_only_zscore",
+                        "h3k4me3_dnase_zscore",
                         "gene_all_distance", "gene_all_name",
                         "gene_pc_distance", "gene_pc_name", "tads"};
                 out << bib::string::join(header, "\t") << "\n";

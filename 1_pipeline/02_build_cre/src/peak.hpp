@@ -33,22 +33,12 @@ public:
     std::vector<Gene> gene_nearest_pc;
     std::vector<Gene> tads;
 
-    std::vector<int32_t> conservation_rank;
-    std::vector<float> conservation_signal;
-    std::vector<int32_t> dnase_rank;
-    std::vector<float> dnase_signal;
     std::vector<float> dnase_zscore;
-    std::vector<int32_t> ctcf_only_rank;
     std::vector<float> ctcf_only_zscore;
-    std::vector<int32_t> ctcf_dnase_rank;
     std::vector<float> ctcf_dnase_zscore;
-    std::vector<int32_t> h3k27ac_only_rank;
     std::vector<float> h3k27ac_only_zscore;
-    std::vector<int32_t> h3k27ac_dnase_rank;
     std::vector<float> h3k27ac_dnase_zscore;
-    std::vector<int32_t> h3k4me3_only_rank;
     std::vector<float> h3k4me3_only_zscore;
-    std::vector<int32_t> h3k4me3_dnase_rank;
     std::vector<float> h3k4me3_dnase_zscore;
 
     template <typename S, typename T>
@@ -98,22 +88,12 @@ public:
 
         s << std::setprecision(4);
 
-        toTsvVec(s, conservation_rank);
-        toTsvVec(s, conservation_signal);
-        toTsvVec(s, dnase_rank);
-        toTsvVec(s, dnase_signal);
         toTsvVec(s, dnase_zscore);
-        toTsvVec(s, ctcf_only_rank);
         toTsvVec(s, ctcf_only_zscore);
-        toTsvVec(s, ctcf_dnase_rank);
         toTsvVec(s, ctcf_dnase_zscore);
-        toTsvVec(s, h3k27ac_only_rank);
         toTsvVec(s, h3k27ac_only_zscore);
-        toTsvVec(s, h3k27ac_dnase_rank);
         toTsvVec(s, h3k27ac_dnase_zscore);
-        toTsvVec(s, h3k4me3_only_rank);
         toTsvVec(s, h3k4me3_only_zscore);
-        toTsvVec(s, h3k4me3_dnase_rank);
         toTsvVec(s, h3k4me3_dnase_zscore);
         toTsvGene(s, gene_nearest_all);
         toTsvGene(s, gene_nearest_pc);
@@ -135,22 +115,12 @@ public:
 
         s << std::setprecision(4);
 
-        p.toTsvVec(s, p.conservation_rank); s << "\n";
-        p.toTsvVec(s, p.conservation_signal); s << "\n";
-        p.toTsvVec(s, p.dnase_rank); s << "\n";
-        p.toTsvVec(s, p.dnase_signal); s << "\n";
         p.toTsvVec(s, p.dnase_zscore); s << "\n";
-        p.toTsvVec(s, p.ctcf_only_rank); s << "\n";
         p.toTsvVec(s, p.ctcf_only_zscore); s << "\n";
-        p.toTsvVec(s, p.ctcf_dnase_rank); s << "\n";
         p.toTsvVec(s, p.ctcf_dnase_zscore); s << "\n";
-        p.toTsvVec(s, p.h3k27ac_only_rank); s << "\n";
         p.toTsvVec(s, p.h3k27ac_only_zscore); s << "\n";
-        p.toTsvVec(s, p.h3k27ac_dnase_rank); s << "\n";
         p.toTsvVec(s, p.h3k27ac_dnase_zscore); s << "\n";
-        p.toTsvVec(s, p.h3k4me3_only_rank); s << "\n";
         p.toTsvVec(s, p.h3k4me3_only_zscore); s << "\n";
-        p.toTsvVec(s, p.h3k4me3_dnase_rank); s << "\n";
         p.toTsvVec(s, p.h3k4me3_dnase_zscore); s << "\n";
         p.toTsvGene(s, p.gene_nearest_all); s << "\n";
         p.toTsvGene(s, p.gene_nearest_pc); s << "\n";

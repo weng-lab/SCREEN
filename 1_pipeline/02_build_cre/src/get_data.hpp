@@ -5,7 +5,7 @@
 namespace bib {
 
 enum SignalLineEnum {
-    ONLY, CONSERVATION, RANKZSCORE
+    ONLY, RANKZSCORE
 };
 
 template <typename T>
@@ -174,10 +174,7 @@ public:
                     throw std::runtime_error("too many toks");
                 }
                 switch(sle){
-                case ONLY:
-                    sf.setSignalLineOnly(toks);
-                    break;
-                case CONSERVATION: sf.setSignalLineConservation(toks); break;
+                case ONLY: sf.setSignalLineOnly(toks); break;
                 case RANKZSCORE: sf.setSignalLineRankZscore(toks); break;
                 }
             }
