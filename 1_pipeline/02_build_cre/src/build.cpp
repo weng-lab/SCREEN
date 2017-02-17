@@ -165,7 +165,7 @@ int main(int argc, char* argv[]){
         return 0;
     }
 
-    if(0){
+    if(1){
         GeneIDer g(d);
         g.run();
     }else{
