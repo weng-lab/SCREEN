@@ -511,9 +511,9 @@ FROM {tn}
 WHERE accession = %s
 """.format(tn = tableName), (accession,))
             r = curs.fetchone()
-        tfs = [{"name" : k, "n" : len(v)} for k,v in r[0].iteritems()]
-        histones = [{"name" : k, "n" : len(v)} for k,v in r[1].iteritems()]
-        dnases = [{"name" : k, "n" : len(v)} for k,v in r[2].iteritems()]
+        tfs = [{"name" : k, "n" : len(set(v))} for k,v in r[0].iteritems()]
+        histones = [{"name" : k, "n" : len(set(v))} for k,v in r[1].iteritems()]
+        dnases = [{"name" : k, "n" : len(set(v))} for k,v in r[2].iteritems()]
         return {"tf" : tfs, "histone" : histones, "dnase" : dnases}
 
     def tfHistoneDnaseList(self):
