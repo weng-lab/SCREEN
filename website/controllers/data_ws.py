@@ -177,16 +177,13 @@ class DataWebService:
         return {accession: r}
 
     def _re_detail_similarREs(self, j, accession):
-        assay = "dnase"
-        if "extras" in j:
-            if "assay" in j["extras"]:
-                assay = j["extras"]["assay"]
+        assay = j["assay"]
         mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
-        #regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
+        #regions, order, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
         regions, order, mostSimilar = mp.getBigWigRegions(assay, accession)
-        return { accession : {"regions" : regions,
-                              "mostSimilar": mostSimilar,
-                              "order": order}}
+        return { assay : {"regions" : regions,
+                          "mostSimilar": mostSimilar,
+                          "order": order}}
 
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]
