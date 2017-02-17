@@ -72,3 +72,35 @@ export const dccLink = (expID) => {
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
+export const factorbook_link_tf = (d) => (
+    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+
+const factorbook_histones = [
+    "H2AFZ",
+    "H3K27ac",
+    "H3K27me3",
+    "H3K36me3",
+    "H3K4me1",
+    "H3K4me2",
+    "H3K4me3",
+    "H3K79me2",
+    "H3K9ac",
+    "H3K9me1",
+    "H3K9me2",
+    "H3K9me3",
+    "H4K20me1"
+];
+
+export const factorbook_link_histone = (d) => (
+    factorbook_histones.includes(d)
+	? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d.replace(/F/g, ".") + '</a>'
+	: d.replace(/F/g, ".")
+);
+
+export const gene_link = (d) => (
+    '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
+
+export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
+export const bp = (v) => (v + " bp");
+
+
