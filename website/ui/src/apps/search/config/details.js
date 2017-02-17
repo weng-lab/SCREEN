@@ -31,6 +31,13 @@ function makeTable(data, key, table){
 }
 
 function tabEle(data, key, table, numCols) {
+    if(table && "typ" in table){
+        return (<div className={"col-md-" + (12/numCols)} key={key}>
+	        <h4>{table.title}</h4>
+                {React.createElement(table.typ, {data, table})}
+                <br/>
+	        </div>);
+    }
     if (!data || !table) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
     }
@@ -44,7 +51,8 @@ function tabEles(data, tables, numCols){
     var cols = [];
     for(var key of Object.keys(tables)){
         var _data = (key in data ? data[key] : []);
-	cols.push(tabEle(_data, key, tables[key], numCols));
+        let table = tables[key];
+	cols.push(tabEle(_data, key, table, numCols));
     };
     if(0 == numCols){
 	return cols;
