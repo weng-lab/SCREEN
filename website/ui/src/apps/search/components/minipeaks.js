@@ -74,8 +74,7 @@ class MiniPeaks extends React.Component {
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
                 console.log("err loading cres for table");
-                this.setState({assay: null,
-                               jq: null, isFetching: false, isError: true});
+                this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
                 this.setState({assay, ...r,
@@ -117,6 +116,7 @@ class MiniPeaks extends React.Component {
 	             cols: [
 			 {title: accessions[0], data: accessions[0],
 			  render: renderPeaks},
+			 {title: "max", data: accessions[0] + "avg"},
 			 {title: "", data: "expID",
 	                  render: Render.dccLink },
 			 {title: "Tissue of origin", data: "tissue"},
@@ -124,7 +124,7 @@ class MiniPeaks extends React.Component {
 			 {title: "Biosample", data: "biosample_summary"},
 		     ],
 		     bFilter: true,
-		     order: [[0, "asc"]]
+		     order: [[1, "desc"], [5, "asc"]]
                     };
 
 	let dtable = (<div>

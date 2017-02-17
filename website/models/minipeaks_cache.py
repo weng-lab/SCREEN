@@ -3,6 +3,7 @@
 import sys
 import json
 import cherrypy
+import numpy
 
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
@@ -15,7 +16,7 @@ class MiniPeaksCache:
         self.ver = ver
 
     def get(self, assay, accessions):
-        hosts = ["cassandra", "127.0.0.1"]
+        hosts = ["127.0.0.1"]
         cluster = Cluster(hosts)
         session = cluster.connect()
         session.row_factory = dict_factory
@@ -39,6 +40,7 @@ SELECT * FROM {tn} WHERE accession IN ?
                 data[k.upper()] = [float(x) for x in v[1:-2].split(',')]
             nr = {"accession" : row["accession"],
                   "data" : data,
+                  "avgs" : {k : round(numpy.max(data[k]), 2) for k in data.keys()},
                   "chrom" : row["chrom"]}
             ret.append(nr)
         return ret
