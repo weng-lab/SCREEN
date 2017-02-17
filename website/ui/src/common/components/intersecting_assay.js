@@ -14,10 +14,13 @@ class IntersectingAssay extends React.Component {
 
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
-        this.loadTarget(nextProps);
+        this.loadTarget(nextProps, this.state.target);
     }
 
     loadTarget({cre_accession_detail}, target){
+	if(!target){
+	    return;
+	}
         if(target in this.state){
             this.setState({target});
             return;
@@ -39,7 +42,7 @@ class IntersectingAssay extends React.Component {
             error: function(jqxhr, status, error) {
                 console.log("err loading target for table");
                 this.setState({target: null,
-                               jq, isFetching: false, isError: true});
+                               jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
                 this.setState({target, ...r,
