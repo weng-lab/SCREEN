@@ -8,6 +8,8 @@ import * as Actions from '../actions/main_actions';
 
 import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name, infer_primary_type} from '../config/colors'
 
+import loading from '../../../common/components/loading'
+
 const ROWHEIGHT = 30.0;
 const ROWMARGIN = 15;
 const COLMARGIN = 10;
@@ -30,15 +32,11 @@ const ctindex = (d) => {
 }
 
 class MiniPeaks extends REComponent {
-
     constructor(props) {
 	super(props);
-	this._render_histogram = this._render_histogram.bind(this);
-	this._render_regionset = this._render_regionset.bind(this);
-	this.state = {
-	    "assay": "dnase"
-	};
-	this._onchange = this._onchange.bind(this);
+	this.state = {assay: "dnase", jq: null,
+		      isFetching: true, isError: false };
+	this.onAssaySelect = this.onAssaySelect.bind(this);
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",
@@ -46,40 +44,58 @@ class MiniPeaks extends REComponent {
 	};
     }
 
-    _render_histogram(values, height, transform, color) {
-	return (<g transform={transform} width={values.length} height={height}>
-		   {values.map((v, i) => (<rect width="1" height={v} y={height - v} x={i} fill={color} />))}
-		</g>);
+    componentWillReceiveProps(nextProps){
+        // only check/get data if we will become active tab...
+        if("similarREs" == nextProps.re_details_tab_active){
+            this.loadPeaks(nextProps, this.state.assay);
+        }
     }
-
-    _onchange() {
-	this.setState({"assay": this.refs.assay.value});
-	if (this.props.onAssayChange) this.props.onAssayChange(this.refs.assay.value);
+    
+    loadPeaks({cre_accession_detail}, assay){
+	if(assay in this.state){
+	    this.setState({assay});
+	    return;
+	}
+	var q = {GlobalAssembly, accession: cre_accession_detail, assay};
+        var jq = JSON.stringify(q);
+        if(this.state.jq == jq){
+            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
+            return;
+        }
+        //console.log("loadCREs....", this.state.jq, jq);
+        this.setState({jq, isFetching: true});
+        $.ajax({
+            url: "/dataws/re_detail/similarREs",
+            type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType: "application/json",
+            error: function(jqxhr, status, error) {
+                console.log("err loading cres for table");
+                this.setState({assay: null,
+                               jq: null, isFetching: false, isError: true});
+            }.bind(this),
+            success: function(r) {
+                this.setState({assay, ...r,
+                               jq, isFetching: false, isError: false});
+            }.bind(this)
+        });
     }
-
-    _render_regionset(regions, width, order, transform, text) {
-	let assay = (this.props.assay ? this.props.assay : this.state.assay);
-	var _render_histogram = this._render_histogram;
-	var _max = assay != "dnase" ? 50.0 : 150.0;
-	var mfactor = ROWHEIGHT / _max;
-	text = friendly_celltype(text);
-
-	return (<g transform={transform} width={width} height={ROWHEIGHT}>
-		   <text transform={"translate(" + (LEFTMARGIN - 20) + ",25)"} textAnchor="end" fill={_tissuecolor(regions["tissue"])}>{text}</text>
-		   <g transform={"translate(" + LEFTMARGIN + ",0)"}>
-		      {order.map((k, i) => (
-		          regions[k] ? _render_histogram(regions[k].map((d) => ((d > _max ? _max : d) * mfactor)), ROWHEIGHT, "translate(" + ((width + COLMARGIN) * i) + ",0)", this._colors[assay]) : <g />
-		      ))}
-		   </g>
-		</g>);
+    
+    onAssaySelect() {
+	this.loadPeaks(this.props, this.refs.assay.value);
     }
 
     render() {
-	var row = this.props.data.regions[0];
+	var assay = this.state.assay;
+	if(!(assay in this.state)){
+	    return loading({...this.state});
+	}
+
+	var row = this.state[assay].regions[0];
 	var dataByFileID = row.data;
 	var nbars = 20;
-	var assay = 'dnase';
-	var mmax = assay != "dnase" ? 50.0 : 150.0;
+	var mmax = (assay == "dnase") ? 150 : 50;
 	var mfactor = ROWHEIGHT / mmax;
 
 	var histograms = Object.keys(dataByFileID).map((fileID) => {
@@ -101,12 +117,14 @@ class MiniPeaks extends REComponent {
 		    </td>
 		    </tr>);
 	});
+
+	const isSel = (a) => (a == assay);
 	
 	return (<div>
-		<select ref="assay" onChange={this._onchange}>
-		<option value="dnase" selected={this.props.assay && this.props.assay == "dnase"}>DNase</option>
-		<option value="h3k4me3" selected={this.props.assay && this.props.assay == "h3k4me3"}>H3K4me3</option>
-		<option value="h3k27ac" selected={this.props.assay && this.props.assay == "h3k27ac"}>H3K27ac</option>
+		<select ref="assay" onChange={this.onAssaySelect}>
+		<option value="dnase" selected={isSel("dnase")}>DNase</option>
+		<option value="h3k4me3" selected={isSel("h3k4me3")}>H3K4me3</option>
+		<option value="h3k27ac" selected={isSel("h3k27ac")}>H3K27ac</option>
 		</select><br />
 
 		<table>

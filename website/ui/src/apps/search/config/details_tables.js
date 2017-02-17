@@ -204,7 +204,7 @@ export const NearbyGenomicTable = {
 
 export const TfIntersectionTable = {
     "tf": {
-	title: "Intersecting TFs",
+	title: "TFs that bind this cRE",
         typ: IntersectingAssayTf,
 	cols: [
 	    {title: "factor", data: "name",
@@ -214,7 +214,7 @@ export const TfIntersectionTable = {
 	order: [[1, "desc"]]
     },
     "histone": {
-	title: "Intersecting Histone Marks",
+	title: "Histone Marks at this cRE",
         typ: IntersectingAssayHistone,
 	cols: [
 	    {title: "mark", data: "name" },
