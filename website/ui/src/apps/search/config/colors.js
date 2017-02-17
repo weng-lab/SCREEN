@@ -6,6 +6,7 @@ export const TissueColors = {
     "blood": "#880000",
     "bone marrow": "#AACCAA",
     "brain": "#AA8888",
+    "neural tube": "#AA8888",
     "breast": "#33AA00",
     "colon": "#AAAA55",
     "embryonic structure": "#AAAAFF",
