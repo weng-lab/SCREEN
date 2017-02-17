@@ -28,7 +28,7 @@ class MiniPeaks:
         ret = []
         for fileID, data in mp["data"].iteritems():
             lu = lookup[fileID]
-            ret.append({"fileID" : fileID,
+            ret.append({"expID" : lu["expID"],
                         mp["accession"] : data,
                         "tissue" : lu["tissue"],
                         "biosample_summary" : lu["biosample_summary"],
