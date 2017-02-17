@@ -43,7 +43,7 @@ class MiniPeaks extends REComponent {
 	    "h3k27ac": "#1262EB"
 	};
     }
-
+    
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
         if("similarREs" == nextProps.re_details_tab_active){
@@ -92,19 +92,20 @@ class MiniPeaks extends REComponent {
 	    return loading({...this.state});
 	}
 
-	var row = this.state[assay].regions[0];
-	var dataByFileID = row.data;
+	var mp = this.state[assay].mpeaks;
+	var accessions = this.state[assay].accessions;
 	var nbars = 20;
 	var mmax = (assay == "dnase") ? 150 : 50;
 	var mfactor = ROWHEIGHT / mmax;
 
-	var histograms = Object.keys(dataByFileID).map((fileID) => {
-	    let data = dataByFileID[fileID];
+	var histograms = mp.map((r) => {
+	    let data = r[accessions[0]];
 	    data = data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    return (<tr>
-		    <td>
-		    {fileID}
-		    </td>
+		    <td>{r["fileID"]}</td>
+		    <td>{r["biosample_type"]}</td>
+		    <td>{r["tissue"]}</td>
+		    <td>{r["biosample_summary"]}</td>
 		    <td>
 		    <svg width={data.length} height={ROWHEIGHT} >
 		    <g>

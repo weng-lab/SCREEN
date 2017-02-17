@@ -100,32 +100,25 @@ class DataWebService:
             raise
 
     def _ortholog(self, j, accession):
-        return {accession: {"ortholog": Ortholog(self.assembly, self.ps.DBCONN, accession).as_dict()}}
+        orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
+        return {accession: {"ortholog": orth.as_dict()}}
 
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
-        #print(results["cres"][0])
-        results["rfacets"] = self.pgSearch._rfacets_active(j) if "cellType" in j and j["cellType"] else ["dnase", "promoter", "enhancer", "ctcf"]
-        if "withpeaks" in j:
-            res = results["cres"][:20]
-            n_bars = 15
-            r, e = self.mpk.regionsFromSearchList(j["withpeaks"], res, n_bars)
-            order = r["order"]
-            r.pop("order", None)
-            results["peakdata"] = {"order": order, "mostSimilar": e, "regions": r}
+        if "cellType" in j and j["cellType"]:
+            results["rfacets"] = self.pgSearch._rfacets_active(j)
+        else:
+            results["rfacets"] = ["dnase", "promoter", "enhancer", "ctcf"]
         return results
 
     def re_detail(self, j, args):
         action = args[0]
         if action not in self.reDetailActions:
             raise Exception("unknown action")
-        try:
-            return self.reDetailActions[action](j, j["accession"])
-        except:
-            raise
+        return self.reDetailActions[action](j, j["accession"])
 
     def tfenrichment(self, j, args):
         a = j["tree_nodes_compare"]
@@ -180,10 +173,9 @@ class DataWebService:
         assay = j["assay"]
         mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
         #regions, order, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
-        regions, order, mostSimilar = mp.getBigWigRegions(assay, accession)
-        return { assay : {"regions" : regions,
-                          "mostSimilar": mostSimilar,
-                          "order": order}}
+        regions, accessions = mp.getBigWigRegions(assay, accession)
+        return { assay : {"mpeaks" : regions,
+                          "accessions": accessions}}
 
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]

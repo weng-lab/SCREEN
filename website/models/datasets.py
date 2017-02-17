@@ -18,6 +18,8 @@ class Datasets:
         self.globalCellTypeInfo = {}
         for r in rows:
             self.globalCellTypeInfo[r["cellTypeName"]] = r
+
+        self.byFileID = {r["fileID"] : r for r in rows}
             
         # used by trees
         self.biosampleTypeToCellTypes = {}
