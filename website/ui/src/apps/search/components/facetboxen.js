@@ -19,7 +19,7 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize} from '../../../common/utility'
 
-const rangeBox = (title, range, start, end, action, _f, _rf) => {
+const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
     return (<RangeFacet
             title={title}
 	    range={range}
@@ -29,6 +29,7 @@ const rangeBox = (title, range, start, end, action, _f, _rf) => {
             onchange={(se) => { action(se[0], se[1])}}
 	    rendervalue={_f}
 	    reversevalue={_rf}
+	    nohistogram={nohistogram}
             />);
 }
 
@@ -106,7 +107,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
 	            h_margin={default_margin}
 	            h_interval={chromLen / histBins.numBins}
                     onchange={(se) => { actions.setCoords(se[0], se[1]) }}
-                    />);
+                    />, "coordinate_facet");
 }
 
 const tfBox = ({actions}) => {
@@ -162,7 +163,7 @@ const makeRankFacet = (rfacets, assay, title, start, end, action) =>
             return "";
         }
         return rangeBox(title, range, start, end,
-		        action, zscore_decimal, zrdecimal);
+		        action, zscore_decimal, zrdecimal, true);
 }
 
 const rankBox = ({rank_dnase_start, rank_dnase_end,
@@ -177,13 +178,13 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
         let rankFacets = (<div>
                           {makeRankFacet(rfacets, "dnase", "DNase",
                                          rank_dnase_start, rank_dnase_end,
-			                 actions.setRankDnase)}
-                          {makeRankFacet(rfacets, "promoter", "promoter",
+			                 actions.setRankDnase)}<br />
+                          {makeRankFacet(rfacets, "promoter", "candidate promoter",
                                          rank_promoter_start, rank_promoter_end,
-			                 actions.setRankPromoter)}
-                          {makeRankFacet(rfacets, "enhancer", "enhancer",
+			                 actions.setRankPromoter)}<br />
+                          {makeRankFacet(rfacets, "enhancer", "candidate enhancer",
                                          rank_enhancer_start, rank_enhancer_end,
-			                 actions.setRankEnhancer)}
+			                 actions.setRankEnhancer)}<br />
                           {makeRankFacet(rfacets, "ctcf", "CTCF",
                                          rank_ctcf_start, rank_ctcf_end,
 			                 actions.setRankCtcf)}
