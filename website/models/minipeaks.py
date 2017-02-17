@@ -30,6 +30,7 @@ class MiniPeaks:
             lu = lookup[fileID]
             ret.append({"expID" : lu["expID"],
                         mp["accession"] : data,
+                        mp["accession"] +  'avg' : mp["avgs"][fileID],
                         "tissue" : lu["tissue"],
                         "biosample_summary" : lu["biosample_summary"],
                         "biosample_type" : lu["biosample_type"]})
