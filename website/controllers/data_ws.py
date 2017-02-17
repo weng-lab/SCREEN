@@ -64,6 +64,7 @@ class DataWebService:
 
         self.actions = {"cre_table" : self.cre_table,
                         "cre_tf_dcc" : self.cre_tf_dcc,
+                        "cre_histone_dcc" : self.cre_histone_dcc,
                         "re_detail" : self.re_detail,
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
@@ -209,5 +210,13 @@ class DataWebService:
         target = j.get("target", None)
         if not target:
             raise Exception("invalid target")
-
         return {target : self.pgSearch.tfTargetExps(accession, target)}
+
+    def cre_histone_dcc(self, j, args):
+        accession = j.get("accession", None)
+        if not accession:
+            raise Exception("invalid accession")
+        target = j.get("target", None)
+        if not target:
+            raise Exception("invalid target")
+        return {target : self.pgSearch.histoneTargetExps(accession, target)}

@@ -1,15 +1,12 @@
 import React from 'react'
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
 
-import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
-
-import ResultsTable from '../../../common/components/results_table'
+import * as Render from '../renders'
+import ResultsTable from './results_table'
 
 class IntersectingAssay extends React.Component {
-    constructor(props) {
+    constructor(props, url) {
 	super(props);
+        this.url = url;
         this.state = { target: null, isFetching: true, isError: false,
                        jq : null}
         this.loadTarget = this.loadTarget.bind(this);
@@ -34,7 +31,7 @@ class IntersectingAssay extends React.Component {
         //console.log("loadTarget....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/dataws/cre_tf_dcc",
+            url: this.url,
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -85,9 +82,4 @@ class IntersectingAssay extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({ ...state });
-const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(Actions, dispatch) });
-export default connect(mapStateToProps, mapDispatchToProps)
-(IntersectingAssay);
-
+export default IntersectingAssay;
