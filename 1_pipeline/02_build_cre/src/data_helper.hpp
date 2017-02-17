@@ -72,6 +72,11 @@ namespace bib {
           dnaseCols = 3;
       }
 
+      int insulatorCols = 6;
+      if("mm10" == ZiARG_assembly){
+          insulatorCols = 5;
+      }
+
       gd.loadSignals(paths.base_ / "CTCF-List.txt",
                      signalFilesCtcfOnly_, 3, ONLY);
       gd.loadSignals(paths.base_ / "DNase-List.txt",
@@ -83,7 +88,7 @@ namespace bib {
       gd.loadSignals(paths.base_ / "H3K4me3-List.txt",
                      signalFilesH3k4me3Only_, 3, ONLY);
       gd.loadSignals(paths.base_ / "Insulator-List.txt",
-                     signalFilesCtcfDnase_,6, RANKZSCORE);
+                     signalFilesCtcfDnase_, insulatorCols, RANKZSCORE);
       gd.loadSignals(paths.base_ / "Promoter-List.txt",
                      signalFilesH3k4me3Dnase_,5, RANKZSCORE);
 
@@ -109,30 +114,73 @@ namespace bib {
 
     template <typename T>
     void setDnaseOnly(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesDnaseOnly_){
+            if(bib::in(mpName, sf.lines_)){
+                p.dnase_rank.push_back(sf.lines_.at(mpName).rank);
+                p.dnase_signal.push_back(sf.lines_.at(mpName).signal);
+                p.dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setCtcfOnly(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesCtcfOnly_){
+            if(bib::in(mpName, sf.lines_)){
+                p.ctcf_only_rank.push_back(sf.lines_.at(mpName).rank);
+                p.ctcf_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setCtcfDnase(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesCtcfDnase_){
+            if(bib::in(mpName, sf.lines_)){
+                p.ctcf_dnase_rank.push_back(sf.lines_.at(mpName).rank);
+                p.ctcf_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setH3k27acOnly(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesH3k27acOnly_){
+            if(bib::in(mpName, sf.lines_)){
+                p.h3k27ac_only_rank.push_back(sf.lines_.at(mpName).rank);
+                p.h3k27ac_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setH3k27acDnase(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesH3k27acDnase_){
+            if(bib::in(mpName, sf.lines_)){
+                p.h3k27ac_dnase_rank.push_back(sf.lines_.at(mpName).rank);
+                p.h3k27ac_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setH3k4me3Only(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesH3k4me3Only_){
+            if(bib::in(mpName, sf.lines_)){
+                p.h3k4me3_only_rank.push_back(sf.lines_.at(mpName).rank);
+                p.h3k4me3_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
     template <typename T>
     void setH3k4me3Dnase(const std::string& mpName, T& p) const {
+        for(const auto& sf : signalFilesH3k4me3Dnase_){
+            if(bib::in(mpName, sf.lines_)){
+                p.h3k4me3_dnase_rank.push_back(sf.lines_.at(mpName).rank);
+                p.h3k4me3_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+            }
+        }
     }
 
   };
