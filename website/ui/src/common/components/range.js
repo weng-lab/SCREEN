@@ -29,9 +29,10 @@ class RangeSlider extends React.Component {
     }
     
     render() {
+	let histogram = (this.props.nohistogram ? "" : <div ref="histogram" style={{width: "100%", height: "20px"}} />);
 	return (<div>
 		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
-		   <div ref="histogram" style={{width: "100%", height: "20px"}} />
+	           {histogram}
   		   <div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
 		<input ref="txmin" type="text" value={this._value(this.props.selection_range[0])} onChange={this.onMinChange}
@@ -177,6 +178,7 @@ class RangeFacet extends React.Component {
 		      : this.props.h_data);
 	return (<div>
 		   <RangeSlider
+		      nohistogram={this.props.nohistogram}
 		      range={this.props.range}
                       selection_range={this.props.selection_range}
 		      interval={this.props.h_interval} data={h_data}
