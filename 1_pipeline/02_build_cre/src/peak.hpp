@@ -6,6 +6,18 @@ namespace bib {
 
 namespace bfs = boost::filesystem;
 
+template <typename S, typename C>
+S& join(S& s, const C& vec, const std::string delim){
+    // http://stackoverflow.com/a/2519016
+    for(auto it = vec.begin(); it != vec.end(); ++it ){
+        if( it != vec.begin() ){
+            s << delim;
+        }
+        s << *it;
+    }
+    return s;
+}
+
 class Peak {
 public:
     std::string chrom;
@@ -21,79 +33,60 @@ public:
     std::vector<Gene> gene_nearest_pc;
     std::vector<Gene> tads;
 
-    // celltype to rank info (order matters)
-    std::map<std::string, RankDNase> ranksDNase_;
+    std::vector<int32_t> conservation_rank;
+    std::vector<float> conservation_signal;
+    std::vector<int32_t> dnase_rank;
+    std::vector<float> dnase_signal;
+    std::vector<float> dnase_zscore;
+    std::vector<int32_t> ctcf_only_rank;
+    std::vector<float> ctcf_only_zscore;
+    std::vector<int32_t> ctcf_dnase_rank;
+    std::vector<float> ctcf_dnase_zscore;
+    std::vector<int32_t> h3k27ac_only_rank;
+    std::vector<float> h3k27ac_only_zscore;
+    std::vector<int32_t> h3k27ac_dnase_rank;
+    std::vector<float> h3k27ac_dnase_zscore;
+    std::vector<int32_t> h3k4me3_only_rank;
+    std::vector<float> h3k4me3_only_zscore;
+    std::vector<int32_t> h3k4me3_dnase_rank;
+    std::vector<float> h3k4me3_dnase_zscore;
 
-    // convservation type to rank info (order matters)
-    std::map<std::string, RankConservation> ranksConservation_;
-
-    // celltype to multi-ranks (order matters)
-    std::map<std::string, RankContainer> ranksCTCF_;
-    std::map<std::string, RankContainer> ranksEnhancer_;
-    std::map<std::string, RankContainer> ranksPromoter_;
-
-    void toTsvRankContainer(std::stringstream& s,
-                            const std::map<std::string, RankContainer>& rc,
-                            const std::string onlyKey,
-                            const std::string multiKey) const {
+    template <typename S, typename T>
+    void toTsvVec(S& s, const std::vector<T>& v)const {
         static const char d = '\t';
-        static const char c = ',';
 
-        // only
-        for(const auto& kv: rc){
-            if(kv.second.has(onlyKey)){
-                s << kv.second.at(onlyKey).rank_ << c;
-            }
-        }
-        s.seekp(-1, s.cur);
-        s << '}' << d << "{ ";
-        for(const auto& kv: rc){
-            if(kv.second.has(onlyKey)){
-                s << kv.second.at(onlyKey).zscore_ << c;
-            }
-        }
-        s.seekp(-1, s.cur);
-        s << '}' << d << "{ ";
-        // multi
-        for(const auto& kv: rc){
-            if(kv.second.has(multiKey)){
-                s << kv.second.at(multiKey).rank_ << c;
-            }
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        for(const auto& kv: rc){
-            if(kv.second.has(multiKey)){
-                s << kv.second.at(multiKey).zscore_ << c;
-            }
-        }
+        s << d << "{ "; join(s, v, ",") << '}';
     }
 
-    void toTsvGene(std::stringstream& s,
-                   const std::vector<Gene>& genes) const {
+    template <typename S>
+    void toTsvGene(S& s, const std::vector<Gene>& genes) const {
         static const char d = '\t';
-        static const char c = ',';
 
-        for(const auto& g : genes){
-            s << g.distance << c;
+        std::vector<uint32_t> geneIDs(genes.size());
+        std::vector<int32_t> distances(genes.size());
+        for(uint32_t i = 0; i < genes.size(); ++i){
+            geneIDs[i] = genes[i].geneID;
+            distances[i] = genes[i].distance;
         }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        for(const auto& g : genes){
-            s << g.geneID << c;
-        }
+
+        s << d << "{ "; join(s, distances, ",") << '}';
+        s << d << "{ "; join(s, geneIDs, ",") << '}';
     }
 
-    void toTsvTads(std::stringstream& s,
-                   const std::vector<Gene>& genes) const {
-        static const char c = ',';
+    template <typename S>
+    void toTsvTads(S& s, const std::vector<Gene>& genes) const {
+        static const char d = '\t';
 
-        for(const auto& g : genes){
-            s << g.geneID << c;
+        std::vector<uint32_t> geneIDs(genes.size());
+        for(uint32_t i = 0; i < genes.size(); ++i){
+            geneIDs[i] = genes[i].geneID;
         }
+
+        s << d << "{ "; join(s, geneIDs, ",") << '}';
     }
 
     std::string toTsv() const {
         static const char d = '\t';
-        static const char c = ',';
         std::stringstream s;
 
         s << accession << d
@@ -105,103 +98,63 @@ public:
 
         s << std::setprecision(4);
 
-        // conservation
-        s << "{ ";
-        for(const auto& kv: ranksConservation_){
-            s << kv.second.rank_ << c;
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        for(const auto& kv: ranksConservation_){
-            s << kv.second.signal_ << c;
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-
-        // DNase
-        for(const auto& kv: ranksDNase_){
-            s << kv.second.rank_ << c;
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        for(const auto& kv: ranksDNase_){
-            s << kv.second.signal_ << c;
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        for(const auto& kv: ranksDNase_){
-            s << kv.second.zscore_ << c;
-        }
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        toTsvRankContainer(s, ranksCTCF_, "CTCF-only", "DNase+CTCF");
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        toTsvRankContainer(s, ranksEnhancer_, "H3K27ac-only", "DNase+H3K27ac");
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
-        toTsvRankContainer(s, ranksPromoter_, "H3K4me3-only", "DNase+H3K4me3");
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
+        toTsvVec(s, conservation_rank);
+        toTsvVec(s, conservation_signal);
+        toTsvVec(s, dnase_rank);
+        toTsvVec(s, dnase_signal);
+        toTsvVec(s, dnase_zscore);
+        toTsvVec(s, ctcf_only_rank);
+        toTsvVec(s, ctcf_only_zscore);
+        toTsvVec(s, ctcf_dnase_rank);
+        toTsvVec(s, ctcf_dnase_zscore);
+        toTsvVec(s, h3k27ac_only_rank);
+        toTsvVec(s, h3k27ac_only_zscore);
+        toTsvVec(s, h3k27ac_dnase_rank);
+        toTsvVec(s, h3k27ac_dnase_zscore);
+        toTsvVec(s, h3k4me3_only_rank);
+        toTsvVec(s, h3k4me3_only_zscore);
+        toTsvVec(s, h3k4me3_dnase_rank);
+        toTsvVec(s, h3k4me3_dnase_zscore);
         toTsvGene(s, gene_nearest_all);
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
         toTsvGene(s, gene_nearest_pc);
-        s.seekp(-1, s.cur); s << '}' << d << "{ ";
         toTsvTads(s, tads);
-        s.seekp(-1, s.cur); s << '}';
 
         s << '\n';
         return s.str();
     }
 
-  void getCellTypes(std::stringstream& s,
-		    const std::map<std::string, RankContainer>& rc,
-		    const std::string onlyKey,
-		    const std::string multiKey) const {
-    static const char d = '\t';
-
-    int32_t counter = 1;
-    for(const auto& kv : rc){
-      if(kv.second.has(onlyKey)){
-	s << onlyKey << d << kv.first << d << counter++ << "\n";
-      }
-    }
-
-    counter = 1;
-    for(const auto& kv: rc){
-      if(kv.second.has(multiKey)){
-	s << multiKey << d << kv.first << d << counter++ << "\n";
-      }
-    }
-  }
-
     friend auto& operator<<(std::ostream& s, const Peak& p){
-        s << p.accession << "\n";
-        s << "\t" << p.mpName << "\n";
-        s << "\tposition: " << p.chrom << ":" << p.start << "-" << p.end << "\n";
-        s << "\tall genes:\n";
-        for(const auto& g : p.gene_nearest_all){
-            s << "\t\t" << g << "\n";
-        }
-        s << "\tpc genes:\n";
-        for(const auto& g : p.gene_nearest_pc){
-            s << "\t\t" << g << "\n";
-        }
-        s << "\tgenome: " << p.genome << "\n";
-        s << "\tneg-log-p: " << p.negLogP << "\n";
+        static const char d = '\t';
 
-        s << "\tRanks: Conservation:\n";
-        for(const auto& kv: p.ranksConservation_){
-            s << "\t\t" << kv.first << " " << kv.second << "\n";
-        }
-        s << "\tRanks: CTCF:\n";
-        for(const auto& kv: p.ranksCTCF_){
-            s << "\t\t" << kv.first << "\n" << kv.second;
-        }
-        s << "\tRanks: DNase:\n";
-        for(const auto& kv: p.ranksDNase_){
-            s << "\t\t" << kv.first << " " << kv.second << "\n";
-        }
-        s << "\tRanks: Enhancer:\n";
-        for(const auto& kv: p.ranksEnhancer_){
-            s << "\t\t" << kv.first << "\n" << kv.second;
-        }
-        s << "\tRanks: Promoter:\n";
-        for(const auto& kv: p.ranksPromoter_){
-            s << "\t\t" << kv.first << "\n" << kv.second;
-        }
+        s << p.accession << d
+          << p.mpName << d
+          << p.negLogP << d
+          << p.chrom << d
+          << p.start << d
+          << p.end << "\n";
+
+        s << std::setprecision(4);
+
+        p.toTsvVec(s, p.conservation_rank); s << "\n";
+        p.toTsvVec(s, p.conservation_signal); s << "\n";
+        p.toTsvVec(s, p.dnase_rank); s << "\n";
+        p.toTsvVec(s, p.dnase_signal); s << "\n";
+        p.toTsvVec(s, p.dnase_zscore); s << "\n";
+        p.toTsvVec(s, p.ctcf_only_rank); s << "\n";
+        p.toTsvVec(s, p.ctcf_only_zscore); s << "\n";
+        p.toTsvVec(s, p.ctcf_dnase_rank); s << "\n";
+        p.toTsvVec(s, p.ctcf_dnase_zscore); s << "\n";
+        p.toTsvVec(s, p.h3k27ac_only_rank); s << "\n";
+        p.toTsvVec(s, p.h3k27ac_only_zscore); s << "\n";
+        p.toTsvVec(s, p.h3k27ac_dnase_rank); s << "\n";
+        p.toTsvVec(s, p.h3k27ac_dnase_zscore); s << "\n";
+        p.toTsvVec(s, p.h3k4me3_only_rank); s << "\n";
+        p.toTsvVec(s, p.h3k4me3_only_zscore); s << "\n";
+        p.toTsvVec(s, p.h3k4me3_dnase_rank); s << "\n";
+        p.toTsvVec(s, p.h3k4me3_dnase_zscore); s << "\n";
+        p.toTsvGene(s, p.gene_nearest_all); s << "\n";
+        p.toTsvGene(s, p.gene_nearest_pc); s << "\n";
+        p.toTsvTads(s, p.tads); s << "\n";
         return s;
     }
 };

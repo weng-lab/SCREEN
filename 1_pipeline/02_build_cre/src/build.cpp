@@ -47,14 +47,14 @@ public:
         d.setAllGenes(mpName, p.gene_nearest_all);
         d.setPcGenes(mpName, p.gene_nearest_pc);
 
-	d.setConservation(mpName, p);
-	d.setDnaseOnly(mpName, p);
-	d.setCtcfOnly(mpName, p);
-	d.setCtcfDnase(mpName, p);
-	d.setH3k27acOnly(mpName, p);
-	d.setH3k27acDnase(mpName, p);
-	d.setH3k4me3Only(mpName, p);
-	d.setH3k4me3Dnase(mpName, p);
+        d.setConservation(mpName, p);
+        d.setDnaseOnly(mpName, p);
+        d.setCtcfOnly(mpName, p);
+        d.setCtcfDnase(mpName, p);
+        d.setH3k27acOnly(mpName, p);
+        d.setH3k27acDnase(mpName, p);
+        d.setH3k4me3Only(mpName, p);
+        d.setH3k4me3Dnase(mpName, p);
     }
 
     void dumpToTsv(bfs::path d){
@@ -73,7 +73,7 @@ public:
             }
         }
 
-	// write header lines
+        // write header lines
         {
             bfs::path fnp = d / ("parsed.headers." + paths_.chr_ + ".tsv");
             TicToc tt("write to " + fnp.string());
@@ -96,7 +96,7 @@ public:
             std::cout << "\twrote " << fnp << std::endl;
         }
 
-	// write TSVs w/ data
+        // write TSVs w/ data
         {
             bfs::path fnp = d / ("parsed." + paths_.chr_ + ".tsv");
             TicToc tt("write to " + fnp.string());

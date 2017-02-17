@@ -44,7 +44,15 @@ namespace bib {
     MpNameToGenes tads_;
     MpNameToGenes allGenes_;
     MpNameToGenes pcGenes_;
-    std::vector<SignalFile> signalFiles_;
+
+      std::vector<SignalFile<SignalLineConservation>> signalFilesConservation_;
+      std::vector<SignalFile<SignalLineOnly>> signalFilesDnaseOnly_;
+      std::vector<SignalFile<SignalLineOnly>> signalFilesCtcfOnly_;
+      std::vector<SignalFile<SignalLineRankZscore>> signalFilesCtcfDnase_;
+      std::vector<SignalFile<SignalLineOnly>> signalFilesH3k27acOnly_;
+      std::vector<SignalFile<SignalLineRankZscore>> signalFilesH3k27acDnase_;
+      std::vector<SignalFile<SignalLineOnly>> signalFilesH3k4me3Only_;
+      std::vector<SignalFile<SignalLineRankZscore>> signalFilesH3k4me3Dnase_;
 
   public:
     template <typename T>
@@ -54,12 +62,18 @@ namespace bib {
       TicToc tt("data load time");
       GetData<T> gd(paths);
       if("hg19" == ZiARG_assembly){
-	tads_ = gd.tads();
+          tads_ = gd.tads();
       }
       allGenes_ = gd.allGenes();
       pcGenes_ = gd.pcGenes();
-	
-      signalFiles_ = gd.loadSignals();
+
+      gd.loadSignals(paths.base_ / "CTCF-List.txt", signalFilesCtcfOnly_, 3);
+      gd.loadSignals(paths.base_ / "DNase-List.txt", signalFilesDnaseOnly_, 4);
+      gd.loadSignals(paths.base_ / "Enhancer-List.txt", signalFilesH3k27acDnase_, 5);
+      gd.loadSignals(paths.base_ / "H3K27ac-List.txt", signalFilesH3k27acOnly_,3);
+      gd.loadSignals(paths.base_ / "H3K4me3-List.txt", signalFilesH3k4me3Only_,3);
+      gd.loadSignals(paths.base_ / "Insulator-List.txt", signalFilesCtcfDnase_,6);
+      gd.loadSignals(paths.base_ / "Promoter-List.txt", signalFilesH3k4me3Dnase_,5);
 
       peaks_ = gd.peaks();
       peaks_.setAccessions();
@@ -68,7 +82,7 @@ namespace bib {
     template <typename T>
     void setTads(const std::string& mpName, T& d) const {
     }
-    
+
     template <typename T>
     void setAllGenes(const std::string& mpName, T& d) const {
     }
@@ -108,7 +122,7 @@ namespace bib {
     template <typename T>
     void setH3k4me3Dnase(const std::string& mpName, T& p) const {
     }
-    
+
   };
-  
+
 } // namespace bib
