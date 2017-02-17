@@ -167,8 +167,12 @@ int main(int argc, char* argv[]){
         return 0;
     }
 
-    GeneIDer g(d);
-    g.run();
+    if(0){
+        GeneIDer g(d);
+        g.run();
+    }else{
+        std::cerr << "pleae turn me back on" << std::endl;
+    }
 
     try {
         zi::task_manager::simple tm(ZiARG_j);
