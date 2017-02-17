@@ -692,7 +692,7 @@ ORDER BY start
         peakMetadataTn = self.assembly + "_peakIntersectionsMetadata"
 
         q = """
-SELECT expID, biosample_term_name
+SELECT expID, fileID, biosample_term_name
 FROM {peakMetadataTn}
 WHERE fileID IN (
 SELECT distinct(jsonb_array_elements_text(histone->%s))
@@ -705,15 +705,15 @@ ORDER BY biosample_term_name
         with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))
             rows = curs.fetchall()
-        fields = ["expID", "biosample_term_name"]
-        return [dict(zip(fields, r)) for r in rows]
+        return [{"expID" : r[0] + ' / ' + r[1],
+                 "biosample_term_name" : r[2] } for r in rows]
 
     def tfTargetExps(self, accession, target):
         peakTn = self.assembly + "_peakIntersections"
         peakMetadataTn = self.assembly + "_peakIntersectionsMetadata"
 
         q = """
-SELECT expID, biosample_term_name
+SELECT expID, fileID, biosample_term_name
 FROM {peakMetadataTn}
 WHERE fileID IN (
 SELECT distinct(jsonb_array_elements_text(tf->%s))
@@ -726,8 +726,8 @@ ORDER BY biosample_term_name
         with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))
             rows = curs.fetchall()
-        fields = ["expID", "biosample_term_name"]
-        return [dict(zip(fields, r)) for r in rows]
+        return [{"expID" : r[0] + ' / ' + r[1],
+                 "biosample_term_name" : r[2] } for r in rows]
 
 
 
