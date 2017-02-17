@@ -20,8 +20,6 @@ class CreateIndices:
         self.baseTableName = info["tableName"]
         self.d = info["d"]
         self.all_cols = cols
-        self.rank_cols = [x for x in cols if x.endswith("_rank")]
-        self.signal_cols = [x for x in cols if x.endswith("_signal")]
         self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
 
     def run(self):
@@ -69,18 +67,16 @@ infos = {"mm10" : makeInfo("mm10"),
          "hg19" : makeInfo("hg19")}
 
 cols = ("accession", "mpName", "negLogP",
-        "chrom", "start", "stop",
-        "conservation_rank", "conservation_signal",
-        "dnase_rank", "dnase_signal", "dnase_zscore",
-        "ctcf_only_rank", "ctcf_only_zscore",
-        "ctcf_dnase_rank", "ctcf_dnase_zscore",
-        "h3k27ac_only_rank", "h3k27ac_only_zscore",
-        "h3k27ac_dnase_rank", "h3k27ac_dnase_zscore",
-        "h3k4me3_only_rank", "h3k4me3_only_zscore",
-        "h3k4me3_dnase_rank", "h3k4me3_dnase_zscore",
-        "gene_all_distance", "gene_all_id",
-        "gene_pc_distance", "gene_pc_id", "tads")
-
+                  "chrom", "start", "stop",
+                  "dnase_zscore",
+                  "ctcf_only_zscore",
+                  "ctcf_dnase_zscore",
+                  "h3k27ac_only_zscore",
+                  "h3k27ac_dnase_zscore",
+                  "h3k4me3_only_zscore",
+                  "h3k4me3_dnase_zscore",
+                  "gene_all_distance", "gene_all_id",
+                  "gene_pc_distance", "gene_pc_id", "tads")
 def main():
     args = parse_args()
 
