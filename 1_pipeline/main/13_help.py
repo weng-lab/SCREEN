@@ -47,7 +47,8 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "Gene Expression": "gene_expression_barplot",
           "Cell Type Tree": "celltype_tree",
           "Cell Type Facet": "celltype_facet",
-          "ZScore Facet": "zscore_facet" }
+          "Z-score Facet": "zscore_facet",
+          "Coordinate Facet": "coordinate_facet" }
 
 def main():
     args = parseargs()
