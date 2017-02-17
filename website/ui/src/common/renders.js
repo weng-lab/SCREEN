@@ -78,6 +78,13 @@ export const dccLinkAndIcon = (expID) => {
     return '<a target="_blank" href="' + url + '">' + expID + "&nbsp;" + img + '</a>';
 }
 
+export const dccLinkAndIconSplit = (expAndFileID) => {
+    let expID = expAndFileID.split(' / ')[0];
+    var url = 'https://www.encodeproject.org/experiments/' + expID;
+    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
+    return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
+}
+
 export const factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
