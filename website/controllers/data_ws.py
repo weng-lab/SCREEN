@@ -181,10 +181,9 @@ class DataWebService:
         if "extras" in j:
             if "assay" in j["extras"]:
                 assay = j["extras"]["assay"]
-        mp = MiniPeaks(self.pgSearch, accession, self.cache)
-        regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
-        order = regions["order"]
-        regions.pop("order", None)
+        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
+        #regions, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
+        regions, order, mostSimilar = mp.getBigWigRegions(assay, accession)
         return { accession : {"regions" : regions,
                               "mostSimilar": mostSimilar,
                               "order": order}}

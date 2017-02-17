@@ -17,11 +17,11 @@ def asum(_l):
     return ret
 
 class MiniPeaks:
-    def __init__(self, pgSearch, accession, cache):
-        self.accession = accession
+    def __init__(self, assembly, pgSearch, cache):
+        self.assembly = assembly
         self.pgSearch = pgSearch
         self.cache = cache
-        
+
     def _get_bigwigs(self, key):
         return [{"ct": k, "bigwig": v[1], "accession": v[0],
                  "tissue": self._ctToTissue(k) }
@@ -55,16 +55,15 @@ class MiniPeaks:
         regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, cres)
         accs = [x["accession"] for x in cres]
         return (regions, accs)
-        
-    def getBigWigRegions(self, assay, cres = []):
-        accessions = [self.accession] + cres
-        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
-        accs = [x["accession"] for x in accessions]
-        return (regions, accs)
 
-    def getBigWigRegionsWithSimilar(self, assay, other = None):
-        print(assay)
-        coord = CRE(self.pgSearch, self.accession, self.cache).coord()
+    def getBigWigRegions(self, assay, accession, cres = []):
+        accessions = [accession] + cres
+        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
+        order = []
+        return (regions, order, accessions)
+
+    def getBigWigRegionsWithSimilar(self, assay, accession, other = None):
+        coord = CRE(self.pgSearch, accession, self.cache).coord()
         bigWigs = self._get_bigwigs(assay)
         me = {"accession": self.accession,
               "chrom" : coord.chrom, "start" : coord.start, "end" : coord.end}
