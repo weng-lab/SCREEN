@@ -2,27 +2,15 @@
 
 namespace bib {
 
-struct SignalLineConservation {
-    int32_t rank;
-    float signal;
-};
-
-struct SignalLineOnly {
+struct SignalLine {
     int32_t rank;
     float signal;
     float zscore;
 };
 
-struct SignalLineRankZscore {
-    int32_t rank;
-    float zscore;
-};
-
-template <typename T>
 class SignalFile {
     bfs::path fnp_;
 
-    std::unordered_map<std::string, T> lines_;
 
 public:
     SignalFile()
@@ -32,13 +20,14 @@ public:
         : fnp_(fnp)
     {
     }
+    std::unordered_map<std::string, SignalLine> lines_;
 
     void reserve(size_t s){
         lines_.reserve(s);
     }
 
-    void setSignalLineOnly(const auto& toks){
-        SignalLineOnly s;
+    inline void setSignalLineOnly(const auto& toks){
+        SignalLine s;
         if(4 != toks.size()){
             throw std::runtime_error("wrong num toks");
         }
@@ -50,8 +39,8 @@ public:
         lines_[toks[0]] = std::move(s);
     }
 
-    void setSignalLineConservation(const auto& toks){
-        SignalLineConservation s;
+    inline void setSignalLineConservation(const auto& toks){
+        SignalLine s;
         if(3 != toks.size()){
             throw std::runtime_error("wrong num toks");
         }
@@ -61,8 +50,8 @@ public:
         lines_[toks[0]] = std::move(s);
     }
 
-    void setSignalLineRankZscore(const auto& toks){
-        SignalLineRankZscore s;
+    inline void setSignalLineRankZscore(const auto& toks){
+        SignalLine s;
         if(5 != toks.size()){
             throw std::runtime_error("invalid num toks");
         }

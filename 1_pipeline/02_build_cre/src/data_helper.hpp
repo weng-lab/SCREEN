@@ -45,14 +45,14 @@ namespace bib {
     MpNameToGenes allGenes_;
     MpNameToGenes pcGenes_;
 
-      std::vector<SignalFile<SignalLineConservation>> signalFilesConservation_;
-      std::vector<SignalFile<SignalLineOnly>> signalFilesDnaseOnly_;
-      std::vector<SignalFile<SignalLineOnly>> signalFilesCtcfOnly_;
-      std::vector<SignalFile<SignalLineRankZscore>> signalFilesCtcfDnase_;
-      std::vector<SignalFile<SignalLineOnly>> signalFilesH3k27acOnly_;
-      std::vector<SignalFile<SignalLineRankZscore>> signalFilesH3k27acDnase_;
-      std::vector<SignalFile<SignalLineOnly>> signalFilesH3k4me3Only_;
-      std::vector<SignalFile<SignalLineRankZscore>> signalFilesH3k4me3Dnase_;
+      std::vector<SignalFile> signalFilesConservation_;
+      std::vector<SignalFile> signalFilesDnaseOnly_;
+      std::vector<SignalFile> signalFilesCtcfOnly_;
+      std::vector<SignalFile> signalFilesCtcfDnase_;
+      std::vector<SignalFile> signalFilesH3k27acOnly_;
+      std::vector<SignalFile> signalFilesH3k27acDnase_;
+      std::vector<SignalFile> signalFilesH3k4me3Only_;
+      std::vector<SignalFile> signalFilesH3k4me3Dnase_;
 
   public:
     template <typename T>
@@ -67,13 +67,25 @@ namespace bib {
       allGenes_ = gd.allGenes();
       pcGenes_ = gd.pcGenes();
 
-      gd.loadSignals(paths.base_ / "CTCF-List.txt", signalFilesCtcfOnly_, 3);
-      gd.loadSignals(paths.base_ / "DNase-List.txt", signalFilesDnaseOnly_, 4);
-      gd.loadSignals(paths.base_ / "Enhancer-List.txt", signalFilesH3k27acDnase_, 5);
-      gd.loadSignals(paths.base_ / "H3K27ac-List.txt", signalFilesH3k27acOnly_,3);
-      gd.loadSignals(paths.base_ / "H3K4me3-List.txt", signalFilesH3k4me3Only_,3);
-      gd.loadSignals(paths.base_ / "Insulator-List.txt", signalFilesCtcfDnase_,6);
-      gd.loadSignals(paths.base_ / "Promoter-List.txt", signalFilesH3k4me3Dnase_,5);
+      int dnaseCols = 4;
+      if("mm10" == ZiARG_assembly){
+          dnaseCols = 3;
+      }
+
+      gd.loadSignals(paths.base_ / "CTCF-List.txt",
+                     signalFilesCtcfOnly_, 3, ONLY);
+      gd.loadSignals(paths.base_ / "DNase-List.txt",
+                     signalFilesDnaseOnly_, dnaseCols, ONLY);
+      gd.loadSignals(paths.base_ / "Enhancer-List.txt",
+                     signalFilesH3k27acDnase_, 5, RANKZSCORE);
+      gd.loadSignals(paths.base_ / "H3K27ac-List.txt",
+                     signalFilesH3k27acOnly_, 3, ONLY);
+      gd.loadSignals(paths.base_ / "H3K4me3-List.txt",
+                     signalFilesH3k4me3Only_, 3, ONLY);
+      gd.loadSignals(paths.base_ / "Insulator-List.txt",
+                     signalFilesCtcfDnase_,6, RANKZSCORE);
+      gd.loadSignals(paths.base_ / "Promoter-List.txt",
+                     signalFilesH3k4me3Dnase_,5, RANKZSCORE);
 
       peaks_ = gd.peaks();
       peaks_.setAccessions();
