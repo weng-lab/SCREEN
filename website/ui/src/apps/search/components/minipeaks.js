@@ -116,7 +116,7 @@ class MiniPeaks extends React.Component {
 	             cols: [
 			 {title: accessions[0], data: accessions[0],
 			  render: renderPeaks},
-			 {title: "experiment / file", data: "expID",
+			 {title: "", data: "expID",
 	                  render: Render.dccLink },
 			 {title: "Tissue of origin", data: "tissue"},
 			 {title: "Cell Type", data: "biosample_type"},

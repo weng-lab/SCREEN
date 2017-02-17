@@ -2,6 +2,7 @@
 
 import sys
 import json
+import cherrypy
 
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
@@ -14,7 +15,10 @@ class MiniPeaksCache:
         self.ver = ver
 
     def get(self, assay, accessions):
-        cluster = Cluster()
+        host = ["127.0.0.1"]
+        if cherrypy.config.get("isProduction"):
+            host = ["cassandra.docker"]
+        cluster = Cluster(host)
         session = cluster.connect()
         session.row_factory = dict_factory
         session.set_keyspace("minipeaks")
