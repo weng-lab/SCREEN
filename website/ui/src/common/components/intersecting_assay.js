@@ -61,7 +61,7 @@ class IntersectingAssay extends React.Component {
         let details = "";
         let target = this.state.target;
         if(target && target in this.state){
-            let table = {title: target + " Experiments",
+            let table = {title: "ChIP-seq " + target + " Experiments",
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
                              {title: "experiment / file", data: "expID",
