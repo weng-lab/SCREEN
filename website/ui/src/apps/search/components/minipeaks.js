@@ -102,11 +102,12 @@ class MiniPeaks extends React.Component {
 
 	const renderPeaks = (dataRaw) => {
 	    let data = dataRaw.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	    let color = this._colors[assay];
 	    let e = (<svg width={data.length} height={ROWHEIGHT} >
 		     <g>
 		     {data.map((v, i) => (<rect width="1" height={v}
 					  y={ROWHEIGHT - v} x={i}
-					  fill={"blue"} />))}
+					  fill={color} />))}
 		     </g>
 		     </svg>);
 	    return ReactDOMServer.renderToStaticMarkup(e);
