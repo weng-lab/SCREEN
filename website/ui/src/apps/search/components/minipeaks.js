@@ -99,7 +99,7 @@ class MiniPeaks extends React.Component {
 	var mmax = (assay == "dnase") ? 150 : 50;
 	var mfactor = ROWHEIGHT / mmax;
 
-	const renderPeaks = (dataRaw) => {
+	let renderPeaks = (assay) => (dataRaw) => {
 	    let data = dataRaw.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
 	    let e = (<svg width={data.length} height={ROWHEIGHT} >
@@ -112,10 +112,10 @@ class MiniPeaks extends React.Component {
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
 
-        let table = {title: assay + " Minipeaks",
+        let table = (assay) => ({title: assay + " Minipeaks",
 	             cols: [
 			 {title: accessions[0], data: accessions[0],
-			  render: renderPeaks},
+			  render: renderPeaks(assay)},
 			 {title: "max", data: accessions[0] + "avg"},
 			 {title: "", data: "expID",
 	                  render: Render.dccLink },
@@ -125,14 +125,17 @@ class MiniPeaks extends React.Component {
 		     ],
 		     bFilter: true,
 		     order: [[1, "desc"], [5, "asc"]]
-                    };
+				});
 
-	let dtable = (<div>
+	let _tables = Object.keys(this._colors).map((_assay) => (
+		<div style={{display: (_assay == assay ? "block" : "none")}}>
+		{assay == _assay ? (<div>
 	              <h4>{assay}</h4>
                       {React.createElement(ResultsTable,
                                            {data: mp,
-                                            ...table})}
-		      </div>);
+                                            ...(table(assay))})}
+				    </div>) : ""}
+	    </div>));
 	
 	const isSel = (a) => (a == assay);
 	
@@ -143,7 +146,7 @@ class MiniPeaks extends React.Component {
 		<option value="h3k27ac" selected={isSel("h3k27ac")}>H3K27ac</option>
 		</select><br />
 
-		{dtable}
+		{_tables}
 		
 		</div>);
     }
