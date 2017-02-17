@@ -69,7 +69,9 @@ class ParseSearch:
             return None
         return r[0]
 
-    def _try_find_gene(self, s, tss = False):
+    def _try_find_gene(self, s, tss = False, tssdist = 0):
+        if type(tssdist) is not int:
+            tssdist = int(tssdist.replace("kb", "")) * 1000
         p = s.lower().split()
         interpretation = None
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
@@ -79,21 +81,28 @@ class ParseSearch:
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
-                    return (interpretation, Coord(r[0][1], r[0][2], r[0][3]) if not tss else Coord(r[0][4], r[0][5], r[0][6]),
+                    return (interpretation, Coord(r[0][1], int(r[0][2]) - tssdist, r[0][3]) if not tss else Coord(r[0][4], int(r[0][5]) - tssdist, r[0][6]),
                             s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
         return (interpretation, None, " ".join(p), False)
 
-    def get_genetext(self, gene, tss = False, notss = False):
+    def get_genetext(self, gene, tss = False, notss = False, dist=0):
+        def orjoin(a):
+            return ", ".join(a[:-1]) + " or " + a[-1]
         gene = "<em>%s</em>" % gene
         if notss:
             return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
         if tss:
-            return """
+            if not dist:
+                return """
 This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
 To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+            return """
+This search is showing candidate promoters located between the first and last TSS's of {q} and up to {d} upstream.<br>
+To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly, d=dist)
+        dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
         return """
 This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.""".format(q=gene, assembly=self.assembly, dists=dists)
 
     def _try_find_celltype(self, s):
         pass
@@ -152,6 +161,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
         toks = s.split()
         toks = [t.lower() for t in toks]
         usetss = "tss" in toks or (kwargs and "tss" in kwargs)
+        tssdist = 0
         interpretation = None
 
         ret = {"cellType": None,
@@ -190,14 +200,17 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                     if coord and not self.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
+                elif t.startswith("tssdist"):
+                    tssdist = t.split("_")[1]
+                    usetss = True
         except:
             print("could not parse " + s)
 
         if coord is None:
-            interpretation, coord, s, notss = self._try_find_gene(s, usetss)
+            interpretation, coord, s, notss = self._try_find_gene(s, usetss, tssdist)
             if interpretation:
                 ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
-                interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss)
+                interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss, tssdist)
 
         s, cellType, _interpretation = self._find_celltype(s)
 
