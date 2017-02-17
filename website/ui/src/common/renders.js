@@ -75,7 +75,7 @@ export const dccLink = (expID) => {
 export const dccLinkAndIcon = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
-    return '<a target="_blank" href="' + url + '">' + expID + img + '</a>';
+    return '<a target="_blank" href="' + url + '">' + expID + "&nbsp;" + img + '</a>';
 }
 
 export const factorbook_link_tf = (d) => (

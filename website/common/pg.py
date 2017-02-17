@@ -687,6 +687,27 @@ ORDER BY start
         fields = ["gene", "start", "stop", "strand"]
         return [dict(zip(fields, r)) for r in rows]
 
+    def histoneTargetExps(self, accession, target):
+        peakTn = self.assembly + "_peakIntersections"
+        peakMetadataTn = self.assembly + "_peakIntersectionsMetadata"
+
+        q = """
+SELECT expID, biosample_term_name
+FROM {peakMetadataTn}
+WHERE fileID IN (
+SELECT jsonb_array_elements_text(histone->%s)
+FROM {peakTn}
+WHERE accession = %s
+)
+ORDER BY biosample_term_name
+""".format(peakTn = peakTn, peakMetadataTn = peakMetadataTn)
+
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+            curs.execute(q, (target, accession))
+            rows = curs.fetchall()
+        fields = ["expID", "biosample_term_name"]
+        return [dict(zip(fields, r)) for r in rows]
+
     def tfTargetExps(self, accession, target):
         peakTn = self.assembly + "_peakIntersections"
         peakMetadataTn = self.assembly + "_peakIntersectionsMetadata"
