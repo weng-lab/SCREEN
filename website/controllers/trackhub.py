@@ -137,7 +137,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def mp(self):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
                             "ver9", self.assembly, "public_html")
-        ucsc_url = os.path.join(base, "hg19-cREs.bigBed") #masterPeaks.final.bigBed")
+        ucsc_url = os.path.join(base, "masterPeaks.final.bigBed")
+        if "hg19" == self.assembly:
+            ucsc_url = os.path.join(base, "hg19-cREs.bigBed")
         washu_url = os.path.join(base, "washu-masterPeaks.final.bed.gz")
         if self.isUcsc:
             t = BigBedTrack("Candidate Regulatory Elements",
