@@ -29,7 +29,6 @@
 #include "paths.hpp"
 #include "signal_files.hpp"
 #include "mpname.hpp"
-#include "ranks.hpp"
 #include "peak.hpp"
 #include "peaks.hpp"
 #include "get_data.hpp"
@@ -97,15 +96,20 @@ namespace bib {
     }
 
     template <typename T>
-    void setTads(const std::string& mpName, T& d) const {
+    void setTads(const std::string& mpName, T& p) const {
+        if(bib::in(mpName, tads_)){
+            p.tads = tads_.at(mpName);
+        }
     }
 
     template <typename T>
-    void setAllGenes(const std::string& mpName, T& d) const {
+    void setAllGenes(const std::string& mpName, T& p) const {
+        p.gene_nearest_all = allGenes_.at(mpName);
     }
 
     template <typename T>
-    void setPcGenes(const std::string& mpName, T& d) const {
+    void setPcGenes(const std::string& mpName, T& p) const {
+        p.gene_nearest_pc = pcGenes_.at(mpName);
     }
 
     template <typename T>
@@ -116,9 +120,7 @@ namespace bib {
     void setDnaseOnly(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesDnaseOnly_){
             if(bib::in(mpName, sf.lines_)){
-                p.dnase_rank.push_back(sf.lines_.at(mpName).rank);
-                p.dnase_signal.push_back(sf.lines_.at(mpName).signal);
-                p.dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.dnase_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -127,8 +129,7 @@ namespace bib {
     void setCtcfOnly(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesCtcfOnly_){
             if(bib::in(mpName, sf.lines_)){
-                p.ctcf_only_rank.push_back(sf.lines_.at(mpName).rank);
-                p.ctcf_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.ctcf_only_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -137,8 +138,7 @@ namespace bib {
     void setCtcfDnase(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesCtcfDnase_){
             if(bib::in(mpName, sf.lines_)){
-                p.ctcf_dnase_rank.push_back(sf.lines_.at(mpName).rank);
-                p.ctcf_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.ctcf_dnase_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -147,8 +147,7 @@ namespace bib {
     void setH3k27acOnly(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesH3k27acOnly_){
             if(bib::in(mpName, sf.lines_)){
-                p.h3k27ac_only_rank.push_back(sf.lines_.at(mpName).rank);
-                p.h3k27ac_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.h3k27ac_only_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -157,8 +156,7 @@ namespace bib {
     void setH3k27acDnase(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesH3k27acDnase_){
             if(bib::in(mpName, sf.lines_)){
-                p.h3k27ac_dnase_rank.push_back(sf.lines_.at(mpName).rank);
-                p.h3k27ac_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.h3k27ac_dnase_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -167,8 +165,7 @@ namespace bib {
     void setH3k4me3Only(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesH3k4me3Only_){
             if(bib::in(mpName, sf.lines_)){
-                p.h3k4me3_only_rank.push_back(sf.lines_.at(mpName).rank);
-                p.h3k4me3_only_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.h3k4me3_only_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
@@ -177,8 +174,7 @@ namespace bib {
     void setH3k4me3Dnase(const std::string& mpName, T& p) const {
         for(const auto& sf : signalFilesH3k4me3Dnase_){
             if(bib::in(mpName, sf.lines_)){
-                p.h3k4me3_dnase_rank.push_back(sf.lines_.at(mpName).rank);
-                p.h3k4me3_dnase_zscore.push_back(sf.lines_.at(mpName).zscore);
+                p.h3k4me3_dnase_zscore.push_back(sf.lines_.at(mpName));
             }
         }
     }
