@@ -3,15 +3,15 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, argparse, StringIO, gzip
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/main/'))
-peakIntersections = __import__('02_beds_es')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/'))
+peakIntersections = __import__('03_beds_es')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor, makeIndex
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
 
 class ImportPeakIntersections:
@@ -47,7 +47,7 @@ class ImportPeakIntersections:
 
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
-        
+
 class ImportPeakIntersectionMetadata:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -57,15 +57,15 @@ class ImportPeakIntersectionMetadata:
     def setupTable(self):
         printt("dropping and creating table", self.tableName)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
-    CREATE TABLE {tableName}(
-    id serial PRIMARY KEY,
-        expID text,
-        fileID text,
-        assay text,
-        label text
-    );
-    """.format(tableName = self.tableName))
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}(
+id serial PRIMARY KEY,
+expID text,
+fileID text,
+assay text,
+label text,
+biosample_term_name text
+)""".format(tn = self.tableName))
 
     def run(self):
         self.setupTable()
@@ -77,12 +77,16 @@ class ImportPeakIntersectionMetadata:
             outF.write('\t'.join([r["bed"].expID,
                                   r["bed"].fileID,
                                   r["etype"],
-                                  r["exp"].label]) + '\n')
+                                  r["exp"].label,
+                                  r["exp"].biosample_term_name
+                                  ]) + '\n')
         outF.seek(0)
 
-        cols = "expID fileID assay label".split(' ')
+        cols = "expID fileID assay label biosample_term_name".split(' ')
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("\tcopied in", self.curs.rowcount)
+
+        makeIndex(self.curs, self.tableName, ["label", "fileID"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -106,12 +110,13 @@ def main():
                 ipi = ImportPeakIntersections(curs, assembly)
                 ipi.index()
             else:
+                ipm = ImportPeakIntersectionMetadata(curs, assembly)
+                ipm.run()
+
                 ipi = ImportPeakIntersections(curs, assembly)
                 ipi.run()
                 ipi.index()
 
-                ipm = ImportPeakIntersectionMetadata(curs, assembly)
-                ipm.run()
 
 if __name__ == '__main__':
     main()

@@ -614,7 +614,7 @@ C57BL-6_stomach_embryo_15.5_days
 C57BL-6_stomach_embryo_16.5_days
 C57BL-6_stomach_postnatal_0_days""".split('\n')
         dects = set(dects)
-        
+
         def makeDataset(r):
             return {"assay" : r[0],
                     "expID" : r[1],
@@ -686,4 +686,28 @@ ORDER BY start
             rows = curs.fetchall()
         fields = ["gene", "start", "stop", "strand"]
         return [dict(zip(fields, r)) for r in rows]
+
+    def tfTargetExps(self, accession, target):
+        peakTn = self.assembly + "_peakIntersections"
+        peakMetadataTn = self.assembly + "_peakIntersectionsMetadata"
+
+        q = """
+SELECT expID, biosample_term_name
+FROM {peakMetadataTn}
+WHERE fileID IN (
+SELECT jsonb_array_elements_text(tf->%s)
+FROM {peakTn}
+WHERE accession = %s
+)
+ORDER BY biosample_term_name
+""".format(peakTn = peakTn, peakMetadataTn = peakMetadataTn)
+
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
+            curs.execute(q, (target, accession))
+            rows = curs.fetchall()
+        fields = ["expID", "biosample_term_name"]
+        return [dict(zip(fields, r)) for r in rows]
+
+
+
 
