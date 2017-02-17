@@ -22,6 +22,7 @@ class IntersectingAssay extends React.Component {
 
     loadTarget({cre_accession_detail}, target){
         if(target in this.state){
+            this.setState({target});
             return;
         }
         let q = {GlobalAssembly, accession: cre_accession_detail, target};
@@ -64,12 +65,17 @@ class IntersectingAssay extends React.Component {
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
                              {title: "experiment", data: "expID",
-	                      render: Render.factorbook_link_tf }
+	                      render: Render.dccLinkAndIcon }
                              ],
 	                 order: [[0, "asc"]]
                         }
-            details = React.createElement(ResultsTable,
-                                          {data : this.state[target], ...table});
+            details = (<div>
+                       <br />
+	               <h4>{table.title}</h4>
+                       {React.createElement(ResultsTable,
+                                            {data : this.state[target],
+                                             ...table})}
+                       </div>);
         }
 
 	return (<div>
