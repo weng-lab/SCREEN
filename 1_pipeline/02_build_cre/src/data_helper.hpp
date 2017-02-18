@@ -103,6 +103,11 @@ namespace bib {
     }
 
     template <typename T>
+    void setConservation(const std::string& mpName, T& p) const {
+
+    }
+
+    template <typename T>
     void setAllGenes(const std::string& mpName, T& p) const {
         p.gene_nearest_all = allGenes_.at(mpName);
     }

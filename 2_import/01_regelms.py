@@ -14,6 +14,7 @@ from utils import Utils, Timer, printt
 
 allInitialCols = ("accession", "mpName", "negLogP",
                   "chrom", "start", "stop",
+                  "conservation_signal",
                   "dnase_zscore",
                   "ctcf_only_zscore",
                   "ctcf_dnase_zscore",
@@ -118,6 +119,7 @@ def doPartition(curs, tableName, m):
  chrom VARCHAR(5),
  start integer,
  stop integer,
+ conservation_signal real[],
  dnase_zscore real[],
  ctcf_only_zscore real[],
  ctcf_dnase_zscore real[],

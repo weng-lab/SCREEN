@@ -47,7 +47,7 @@ public:
         d.setAllGenes(mpName, p);
         d.setPcGenes(mpName, p);
 
-        d.setConservation(mpName, p);
+        //d.setConservation(mpName, p);
         d.setDnaseOnly(mpName, p);
         d.setCtcfOnly(mpName, p);
         d.setCtcfDnase(mpName, p);
