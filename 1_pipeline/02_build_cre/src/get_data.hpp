@@ -144,6 +144,9 @@ public:
                 throw std::runtime_error("invalid num toks");
             };
             bfs::path fnp = paths_.signalDir() / fn;
+            if(!bfs::exists(fnp)){
+                std::cerr << "missing " << fnp << std::endl;
+            }
             fnps.push_back(fnp);
         }
         std::cout << "found " << fnps.size() << " signal files"
