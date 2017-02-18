@@ -19,6 +19,14 @@ public:
         lines_.reserve(s);
     }
 
+    inline void setSignalLineConservation(const auto& toks){
+        if(3 != toks.size()){
+            throw std::runtime_error("wrong num toks");
+        }
+        // MP-1034943-3.371610     0.0183822       611359
+        lines_[toks[0]] = std::stof(toks[1]);
+    }
+
     inline void setSignalLineOnly(const auto& toks){
         if(4 != toks.size()){
             throw std::runtime_error("wrong num toks");
