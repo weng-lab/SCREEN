@@ -173,7 +173,7 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
                   cellType, actions}) =>
     {
         let title =  (cellType ?
-                      "Z-score in " + make_ct_friendly(cellType) :
+                      make_ct_friendly(cellType) :
                       "Maximum across cell types");
 
 	let promoterTitle = "H3K4me3 Z-score";
