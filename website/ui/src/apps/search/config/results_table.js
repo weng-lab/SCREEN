@@ -26,7 +26,7 @@ const ResultsTableColumns = [
     }, {
 	title: "nearest genes", data: "gene_all", className: "dt-right geneexp",
 	render: Render.geDeButtons
-    },{
+    }, {
         title: "nearest protein-coding genes", data: "gene_pc",
 	className: "dt-right geneexp", render: Render.geDeButtons
     }, {
