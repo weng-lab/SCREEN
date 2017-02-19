@@ -83,13 +83,17 @@ class MiniPeaks extends React.Component {
 	    var mfactor = ROWHEIGHT / mmax;
 	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
-	    let e = (<svg width={data.length} height={ROWHEIGHT} >
+	    let e = (<span className={"text-nowrap"}>
+		     <svg width={data.length} height={ROWHEIGHT} >
 		     <g>
 		     {data.map((v, i) => (<rect width="1" height={v}
 					  y={ROWHEIGHT - v} x={i}
 					  fill={color} />))}
 		     </g>
-		     </svg>);
+		     </svg>
+		     {" "}{Math.max(...allData[assay].data)}
+		     </span>
+		    );
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
 	let renderMax = (assay) => (allData) => {
@@ -107,7 +111,7 @@ class MiniPeaks extends React.Component {
 			   className: "dt-right minipeak",
 			   render: renderPeaks(assay)});
 		cols.push({title: "", data: acc,
-			   className: "dt-right minipeakSignal",
+			   visible: false,
 			   render: renderMax(assay)});
 	    }
 	}
