@@ -22,22 +22,10 @@ const TOPANGLE = TOPANGLED * Math.PI / 180.0;
 
 const _tissuecolor = (t) => (TissueColors[t] ? TissueColors[t] : "#000000");
 
-const ctindex = (d) => {
-    var t = tissue_name(d);
-    if (d.includes("primary_cell")) {
-	t = infer_primary_type(d, tissue_name(d));
-	return 1000 + t.charCodeAt(0) + t.charCodeAt(1) + t.charCodeAt(2);
-    } else if (d.includes("tissue")) {
-	return 2000 + d.charCodeAt(0) + d.charCodeAt(1) + d.charCodeAt(2);
-    }
-    return 3000 + d.charCodeAt(0) + d.charCodeAt(1) + d.charCodeAt(2);
-}
-
 class MiniPeaks extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = {jq: null,
-		      isFetching: true, isError: false };
+	this.state = {jq: null, isFetching: true, isError: false };
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",
@@ -53,6 +41,9 @@ class MiniPeaks extends React.Component {
     }
     
     loadPeaks({cre_accession_detail}){
+	if(cre_accession_detail in this.state){
+	    return;
+	}
 	var q = {GlobalAssembly, accession: cre_accession_detail};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
@@ -72,24 +63,26 @@ class MiniPeaks extends React.Component {
                 this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({results: r,
+                this.setState({...r,
                                jq, isFetching: false, isError: false});
             }.bind(this)
         });
     }
 
     render() {
-	if (!this.state.results) {
+	let accession = this.props.cre_accession_detail;
+	if (!(accession in this.state)){
 	    return <div />;
 	}
 	var nbars = 20;
-	let renderPeaks = (acc, assay) => (_data) => {
-	    if (!_data) return "";
-	    let dataRaw = _data[acc];
-	    if (!dataRaw || !dataRaw.length) return "";
+	let renderPeaks = (assay) => (allData) => {
+	    if(!allData[assay]){
+		return "";
+	    }
+	    // let fileID = dataRaw.fileID; if needed....
 	    var mmax = (assay == "dnase") ? 150 : 50;
 	    var mfactor = ROWHEIGHT / mmax;
-	    let data = dataRaw.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
 	    let e = (<svg width={data.length} height={ROWHEIGHT} >
 		     <g>
@@ -100,41 +93,41 @@ class MiniPeaks extends React.Component {
 		     </svg>);
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
-	let renderMax = (acc) => (data) => {
-	    if (!data) return "";
-	    return data[acc + "avg"];
+	let renderMax = (assay) => (allData) => {
+	    if (!allData[assay]){
+		return "";
+	    }
+	    return Math.max(...allData[assay].data);
 	}
 
+	let cols = [];
+	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac", h3k4me3 : "H3K4me3"}
+	for(let acc of this.state[accession].accessions){
+	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
+		cols.push({title: assayToTitle[assay],
+			   data: acc,
+			   render: renderPeaks(assay)});
+		cols.push({title: "signal",
+			   data: acc,
+			   render: renderMax(assay)});
+	    }
+	}
+	cols = cols.concat([{title: "", data: "expID", render: Render.dccLink },
+			    {title: "Tissue of origin", data: "tissue"},
+			    {title: "Cell Type", data: "biosample_type"},
+			    {title: "Biosample", data: "biosample_summary"}]);
+		
         let table = {title: "Minipeaks",
-	             cols: [
-			 {title: "DNase", data: "dnase",
-			  render: renderPeaks(this.props.cre_accession_detail, "dnase")},
-			 {title: "max", data: "dnase", render: renderMax(this.props.cre_accession_detail)},
-			 {title: "H3K4me3", data: "h3k4me3",
-			  render: renderPeaks(this.props.cre_accession_detail, "h3k4me3")},
-			 {title: "max", data: "h3k4me3", render: renderMax(this.props.cre_accession_detail)},
-			 {title: "H3K27ac", data: "h3k27ac",
-			  render: renderPeaks(this.props.cre_accession_detail, "h3k27ac")},
-			 {title: "max", data: "h3k27ac", render: renderMax(this.props.cre_accession_detail)},			 
-			 {title: "", data: "expID",
-	                  render: Render.dccLink },
-			 {title: "Tissue of origin", data: "tissue"},
-			 {title: "Cell Type", data: "biosample_type"},
-			 {title: "Biosample", data: "biosample_summary"},
-		     ],
+	             cols,
 		     bFilter: true,
 		     order: [[1, "desc"], [5, "asc"]]
 		    };
 
-	console.log(this.state.results);
-	
-	let _table = (<div>
-                      {React.createElement(ResultsTable,
-                                           {data: this.state.results.mpeaks,
-                                            ...table})}
-		      </div>);
-	
-	return _table;
+	return (<div>
+                {React.createElement(ResultsTable,
+                                     {data: this.state[accession].rows,
+                                      ...table})}
+		</div>);
     }
 }
 

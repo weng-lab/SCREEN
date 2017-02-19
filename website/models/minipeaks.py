@@ -16,28 +16,36 @@ class MiniPeaks:
         self.assembly = assembly
         self.pgSearch = pgSearch
         self.cache = cache
-        self.mpc = MiniPeaksCache(self.assembly, 20, 2)
+
+    def _getByAssay(self, assays, accessions):
+        byAssay = {}
+        mpc = MiniPeaksCache(self.assembly, 20, 2)
+        for assay in assays:
+            byAssay[assay] = mpc.get(assay, accessions)
+        return byAssay        
         
-    def getBigWigRegions(self, assay, accession, cres = []):
-        accessions = [accession] + cres
-         
-        mps = self.mpc.get(assay, accessions)
-        mp = mps[0]
+    def getMinipeaksForAssays(self, assays, accessions):
+        byAssay = self._getByAssay(assays, accessions)
 
         lookup = self.cache.datasets.byFileID
-                
-        ret = []
-        for fileID, data in mp["data"].iteritems():
-            lu = lookup[fileID]
-            ret.append({"expID" : lu["expID"],
-                        mp["accession"] : data,
-                        mp["accession"] +  'avg' : mp["avgs"][fileID],
-                        "tissue" : lu["tissue"],
-                        "biosample_summary" : lu["biosample_summary"],
-                        "biosample_type" : lu["biosample_type"]})
-        ret.sort(key = lambda x: (x["tissue"], x["biosample_summary"]))
-        return ret, accessions
-
+        
+        byCts = {}
+        for assay, accsAndData in byAssay.iteritems():
+            for accession, fileIdToData in accsAndData.iteritems():
+                for fileID, data in fileIdToData.iteritems():
+                    lu = lookup[fileID]
+                    ctn = lu["cellTypeName"]
+                    if ctn not in byCts:
+                        byCts[ctn] = {"tissue" : lu["tissue"],
+                                      "biosample_summary" : lu["biosample_summary"],
+                                      "biosample_type" : lu["biosample_type"],
+                                      "cellTypeName" : lu["cellTypeName"]}
+                    if accession not in byCts[ctn]:
+                        byCts[ctn][accession] = {a : None for a in assays}
+                    byCts[ctn][accession][assay] = {"fileID" : fileID,
+                                                    "data" : data}
+        return byCts.values(), accessions
+        
     def getBigWigRegionsWithSimilar(self, assay, accession, other = None):
         coord = CRE(self.pgSearch, accession, self.cache).coord()
         sassay = ""
