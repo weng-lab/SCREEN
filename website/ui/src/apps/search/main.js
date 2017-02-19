@@ -18,7 +18,7 @@ class SearchPage extends React.Component {
 	const loggerMiddleware = createLogger();
 
 	const store = createStore(main_reducers,
-				  initialState,
+				  initialState(),
 				  applyMiddleware(
 				      thunkMiddleware,
 				      //loggerMiddleware

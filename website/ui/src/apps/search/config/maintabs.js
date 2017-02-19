@@ -19,7 +19,7 @@ class TreeTab extends React.Component{
 }
 
 class DetailsTab extends React.Component{
-    render() { return (<DetailsContainer tabs={DetailsTabInfo} />); }
+    render() { return (<DetailsContainer tabs={DetailsTabInfo()} />); }
 }
 
 class GcompareTab extends React.Component{
@@ -77,14 +77,18 @@ class ExpressionTab extends React.Component {
     render() {return <ExpressionPlot gene={GlobalParsedQuery.approved_symbol} />;}
 }
 
-const MainTabInfo = {
+const MainTabInfo = () => ({
     results : {title: "cRE Search Results", visible: true, f: ResultsTab},
-    expression: {title: GlobalParsedQuery.approved_symbol ? GlobalParsedQuery.approved_symbol + " Expression" : "", visible: !!GlobalParsedQuery.approved_symbol, f: ExpressionTab},
+    expression: {title: GlobalParsedQuery.approved_symbol ?
+                 GlobalParsedQuery.approved_symbol + " Expression" :
+                 "",
+                 visible: !!GlobalParsedQuery.approved_symbol,
+                 f: ExpressionTab},
     aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
     ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
     tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
     details: {title: "cRE Details", visible: false, f: DetailsTab},
     gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}
-};
+});
 
 export default MainTabInfo;

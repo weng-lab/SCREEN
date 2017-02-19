@@ -3,7 +3,7 @@ import * as Render from '../../../common/renders'
 import IntersectingAssayTf from '../components/intersecting_assay_tf'
 import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
-export const TopTissuesTables = {
+export const TopTissuesTables = () => ({
     "promoter": {
 	title: "Promoter Z-scores",
 	cols: [
@@ -72,9 +72,9 @@ export const TopTissuesTables = {
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     }
-};
+});
 
-export const OrthologTable = {
+export const OrthologTable = () => ({
     "ortholog": {
 	"title": "",
 	paging: false,
@@ -92,9 +92,9 @@ export const OrthologTable = {
 	],
 	order: [[4, "desc"]]
     }
-};
+});
 
-export const TargetGeneTable = {
+export const TargetGeneTable = () => ({
     "candidate_links": {
 	title: "",
 	paging: true,
@@ -118,9 +118,9 @@ export const TargetGeneTable = {
 	     render: Render.supporting_cts}],
 	order: [[2, "desc"]]
     }
-};
+});
 
-export const NearbyGenomicTable = {
+export const NearbyGenomicTable = () => ({
     "nearby_genes": {
 	title: "Nearby Genes",
 	paging: true,
@@ -198,11 +198,9 @@ export const NearbyGenomicTable = {
 	order: [[0, "asc"]],
 	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     }
-}
+});
 
-
-
-export const TfIntersectionTable = {
+export const TfIntersectionTable = () => ({
     "tf": {
 	title: "TFs that bind this cRE",
         typ: IntersectingAssayTf,
@@ -233,4 +231,4 @@ export const TfIntersectionTable = {
 	     render: Render.integer }],
 	order: [[1, "desc"]]
     } */
-}
+});
