@@ -60,7 +60,6 @@ class DataWebService:
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
-        self.mpk = MiniPeaks(self.pgSearch, "", self.cache)
 
         self.actions = {"cre_table" : self.cre_table,
                         "cre_tf_dcc" : self.cre_tf_dcc,
