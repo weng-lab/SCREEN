@@ -172,20 +172,24 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_ctcf_start, rank_ctcf_end, rfacets,
                   cellType, actions}) =>
     {
-        let title = "Z-Score " + (cellType ?
-                                  "in " + make_ct_friendly(cellType) :
-                                  "maximum across all cell types");
+        let title =  (cellType ?
+                      "Z-score in " + make_ct_friendly(cellType) :
+                      "Maximum across cell types");
+
+	let promoterTitle = "H3K4me3 Z-score";
+	let enhancerTitle = "H3K27ac Z-score";
+	
         let rankFacets = (<div>
-                          {makeRankFacet(rfacets, "dnase", "DNase",
+                          {makeRankFacet(rfacets, "dnase", "DNase Z-score",
                                          rank_dnase_start, rank_dnase_end,
 			                 actions.setRankDnase)}<br />
-                          {makeRankFacet(rfacets, "promoter", "Candidate promoter",
+                          {makeRankFacet(rfacets, "promoter", promoterTitle,
                                          rank_promoter_start, rank_promoter_end,
 			                 actions.setRankPromoter)}<br />
-                          {makeRankFacet(rfacets, "enhancer", "Candidate enhancer",
+                          {makeRankFacet(rfacets, "enhancer", enhancerTitle,
                                          rank_enhancer_start, rank_enhancer_end,
 			                 actions.setRankEnhancer)}<br />
-                          {makeRankFacet(rfacets, "ctcf", "CTCF-bound",
+                          {makeRankFacet(rfacets, "ctcf", "CTCF Z-score",
                                          rank_ctcf_start, rank_ctcf_end,
 			                 actions.setRankCtcf)}
                           </div>);
