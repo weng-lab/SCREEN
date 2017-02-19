@@ -13,11 +13,11 @@ class CanRes extends React.Component{
 }
 
 
-const MainTabInfo = {
+const MainTabInfo = () => ({
     gene_expression: {title: "Gene Expression", visible: true,
                       f: GeneExp},
     candidate_res: { title: "Candidate Regulatory Elements", visible: false,
                      f: CanRes }
-};
+});
 
 export default MainTabInfo;
