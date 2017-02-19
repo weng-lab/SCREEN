@@ -2,8 +2,6 @@
 
 import sys
 import json
-import cherrypy
-import numpy
 
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
@@ -14,35 +12,31 @@ class MiniPeaksCache:
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
+        
+        self.hosts = ["cassandra", "127.0.0.1"]
+        self.cluster = Cluster(self.hosts)
+        self.session = self.cluster.connect()
+        self.session.row_factory = dict_factory
+        self.session.set_keyspace("minipeaks")
 
     def get(self, assay, accessions):
-        hosts = ["cassandra", "127.0.0.1"]
-        cluster = Cluster(hosts)
-        session = cluster.connect()
-        session.row_factory = dict_factory
-        session.set_keyspace("minipeaks")
-
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
-
-        select_stmt = session.prepare("""
+        
+        select_stmt = self.session.prepare("""
 SELECT * FROM {tn} WHERE accession IN ?
 """.format(tn = tableName ))
 
-        rows = list(session.execute(select_stmt, (accessions,)))
+        rows = list(self.session.execute(select_stmt, (accessions,)))
 
-        ret = []
+        ret = {}
         for row in rows:
             data = {}
             for k, v in row.iteritems():
                 if "accession" == k or "chrom" == k:
                     continue
                 data[k.upper()] = [float(x) for x in v[1:-2].split(',')]
-            nr = {"accession" : row["accession"],
-                  "data" : data,
-                  "avgs" : {k : round(numpy.max(data[k]), 2) for k in data.keys()},
-                  "chrom" : row["chrom"]}
-            ret.append(nr)
+            ret[row["accession"]] = data
         return ret
 
 if __name__ == "__main__":
