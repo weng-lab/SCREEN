@@ -170,7 +170,7 @@ class TableWithCart extends React.Component {
 		Candidate Regulatory Elements (cREs) that meet your search criteria:
 		<ResultsTable data={data}
                 order={table_order}
-                cols={ResultsTableColumns}
+                cols={ResultsTableColumns()}
                 onTdClick={(td, rowdata) =>
                            table_click_handler(td, rowdata, actions)}
 		cvisible={this._opposite(cols)}
