@@ -362,3 +362,17 @@ select.ui-toggle-switch { display: none; }
     padding-top: 1px;
     padding-bottom: 1px;
 }
+
+table tr td.minipeak {
+    padding-right: 0px;
+    margin-right: 0px;
+    text-align: right;
+    vertical-align: middle;
+}
+
+table tr td.minipeakSignal {
+    padding-right: 0px;
+    margin-right: 0px;
+    text-align: right;
+    vertical-align: middle;
+}
