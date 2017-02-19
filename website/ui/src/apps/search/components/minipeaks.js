@@ -116,9 +116,15 @@ class MiniPeaks extends React.Component {
 			    {title: "Tissue of origin", data: "tissue"},
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);
-		
+	
+	// move sorting of peaks to signal cols...
+	let columnDefs = [{ "orderData": 1, "targets": 0 },
+			  { "orderData": 3, "targets": 2 },
+			  { "orderData": 5, "targets": 4 }];
+			
         let table = {title: "Minipeaks",
 	             cols,
+		     columnDefs,
 		     bFilter: true,
 		     dom: '<b"top"f>t<"bottom"><"clear">',
 		     order: [[1, "desc"], //DNase signal
