@@ -33,7 +33,8 @@ class ResultsTable extends React.Component {
 	    language: { emptyTable : this.props.emptyText,
 		       	paginate: { previous: "&lt", next : "&gt" }},
 	    pageLength: this.props.pageLength,
-	    dom
+	    dom,
+	    columnDefs: this.props.columnDefs
 	});
 
 	var onTdClick = this.props.onTdClick;
