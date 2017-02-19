@@ -120,9 +120,12 @@ class MiniPeaks extends React.Component {
         let table = {title: "Minipeaks",
 	             cols,
 		     bFilter: true,
-		     order: [[1, "desc"], [5, "asc"]]
-		    };
-
+		     dom: '<b"top"f>t<"bottom"><"clear">',
+		     order: [[1, "desc"], //DNase signal
+			     [7, "asc"],  // tissue
+			     [9, "asc"]   // cell type
+			    ]};
+	
 	return (<div>
                 {React.createElement(ResultsTable,
                                      {data: this.state[accession].rows,
