@@ -179,13 +179,13 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
                           {makeRankFacet(rfacets, "dnase", "DNase",
                                          rank_dnase_start, rank_dnase_end,
 			                 actions.setRankDnase)}<br />
-                          {makeRankFacet(rfacets, "promoter", "candidate promoter",
+                          {makeRankFacet(rfacets, "promoter", "Candidate promoter",
                                          rank_promoter_start, rank_promoter_end,
 			                 actions.setRankPromoter)}<br />
-                          {makeRankFacet(rfacets, "enhancer", "candidate enhancer",
+                          {makeRankFacet(rfacets, "enhancer", "Candidate enhancer",
                                          rank_enhancer_start, rank_enhancer_end,
 			                 actions.setRankEnhancer)}<br />
-                          {makeRankFacet(rfacets, "ctcf", "CTCF",
+                          {makeRankFacet(rfacets, "ctcf", "CTCF-bound",
                                          rank_ctcf_start, rank_ctcf_end,
 			                 actions.setRankCtcf)}
                           </div>);
