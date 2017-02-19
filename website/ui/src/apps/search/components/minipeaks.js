@@ -103,11 +103,11 @@ class MiniPeaks extends React.Component {
 	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac", h3k4me3 : "H3K4me3"}
 	for(let acc of this.state[accession].accessions){
 	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
-		cols.push({title: assayToTitle[assay],
-			   data: acc,
+		cols.push({title: assayToTitle[assay], data: acc,
+			   className: "dt-right minipeak",
 			   render: renderPeaks(assay)});
-		cols.push({title: "signal",
-			   data: acc,
+		cols.push({title: "", data: acc,
+			   className: "dt-right minipeakSignal",
 			   render: renderMax(assay)});
 	    }
 	}
@@ -126,12 +126,12 @@ class MiniPeaks extends React.Component {
 		     columnDefs,
 		     bFilter: true,
 		     dom: '<b"top"f>t<"bottom"><"clear">',
-		     order: [[1, "desc"], //DNase signal
+		     order: [[1, "desc"], // DNase signal
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
 			    ]};
 	
-	return (<div>
+	return (<div className={"minipeaks"}>
                 {React.createElement(ResultsTable,
                                      {data: this.state[accession].rows,
                                       ...table})}

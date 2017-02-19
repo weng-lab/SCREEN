@@ -1,6 +1,6 @@
 import * as Render from '../../../common/renders'
 
-const ResultsTableColumns = [
+const ResultsTableColumns = () => ([
     {
 	title: "accession", data: "accession", className: "dt-right"
     }, {
@@ -38,7 +38,7 @@ const ResultsTableColumns = [
 	orderable: false,
 	defaultContent: Render.browser_buttons(["UCSC", "WashU", "Ensembl" ])
     }
-];
+]);
 
 export default ResultsTableColumns;
 
