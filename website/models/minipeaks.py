@@ -12,14 +12,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from utils import printt
 
 class MiniPeaks:
-    def __init__(self, assembly, pgSearch, cache):
+    def __init__(self, assembly, pgSearch, cache, nbins, ver):
         self.assembly = assembly
         self.pgSearch = pgSearch
         self.cache = cache
+        self.nbins = nbins
+        self.ver = ver
 
     def _getByAssay(self, assays, accessions):
         byAssay = {}
-        mpc = MiniPeaksCache(self.assembly, 20, 2)
+        mpc = MiniPeaksCache(self.assembly, self.nbins, self.ver)
         for assay in assays:
             byAssay[assay] = mpc.get(assay, accessions)
         return byAssay        

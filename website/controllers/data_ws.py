@@ -169,7 +169,9 @@ class DataWebService:
         return {accession: r}
 
     def _re_detail_similarREs(self, j, accession):
-        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
+        nbins = 20
+        ver = 2
+        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache, nbins, ver)
         rows, accessions = mp.getMinipeaksForAssays(["dnase", "h3k27ac", "h3k4me3"],
                                                     [accession])
         return {accession : {"rows" : rows,

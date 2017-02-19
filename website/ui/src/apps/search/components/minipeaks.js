@@ -74,7 +74,6 @@ class MiniPeaks extends React.Component {
 	if (!(accession in this.state)){
 	    return <div />;
 	}
-	var nbars = 20;
 	let renderPeaks = (assay) => (allData) => {
 	    if(!allData[assay]){
 		return "";
