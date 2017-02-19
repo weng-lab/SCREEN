@@ -36,9 +36,8 @@ const ctindex = (d) => {
 class MiniPeaks extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = {assay: "dnase", jq: null,
+	this.state = {jq: null,
 		      isFetching: true, isError: false };
-	this.onAssaySelect = this.onAssaySelect.bind(this);
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",
@@ -49,16 +48,12 @@ class MiniPeaks extends React.Component {
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
         if("similarREs" == nextProps.re_details_tab_active){
-            this.loadPeaks(nextProps, this.state.assay);
+            this.loadPeaks(nextProps);
         }
     }
     
-    loadPeaks({cre_accession_detail}, assay){
-	if(assay in this.state){
-	    this.setState({assay});
-	    return;
-	}
-	var q = {GlobalAssembly, accession: cre_accession_detail, assay};
+    loadPeaks({cre_accession_detail}){
+	var q = {GlobalAssembly, accession: cre_accession_detail};
         var jq = JSON.stringify(q);
         if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -77,29 +72,23 @@ class MiniPeaks extends React.Component {
                 this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({assay, ...r,
+                this.setState({results: r,
                                jq, isFetching: false, isError: false});
             }.bind(this)
         });
     }
-    
-    onAssaySelect() {
-	this.loadPeaks(this.props, this.refs.assay.value);
-    }
 
     render() {
-	var assay = this.state.assay;
-	if(!(assay in this.state)){
-	    return loading({...this.state});
+	if (!this.state.results) {
+	    return <div />;
 	}
-
-	var mp = this.state[assay].mpeaks;
-	var accessions = this.state[assay].accessions;
 	var nbars = 20;
-	var mmax = (assay == "dnase") ? 150 : 50;
-	var mfactor = ROWHEIGHT / mmax;
-
-	let renderPeaks = (assay) => (dataRaw) => {
+	let renderPeaks = (acc, assay) => (_data) => {
+	    if (!_data) return "";
+	    let dataRaw = _data[acc];
+	    if (!dataRaw || !dataRaw.length) return "";
+	    var mmax = (assay == "dnase") ? 150 : 50;
+	    var mfactor = ROWHEIGHT / mmax;
 	    let data = dataRaw.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
 	    let e = (<svg width={data.length} height={ROWHEIGHT} >
@@ -111,12 +100,22 @@ class MiniPeaks extends React.Component {
 		     </svg>);
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
+	let renderMax = (acc) => (data) => {
+	    if (!data) return "";
+	    return data[acc + "avg"];
+	}
 
-        let table = (assay) => ({title: assay + " Minipeaks",
+        let table = {title: "Minipeaks",
 	             cols: [
-			 {title: accessions[0], data: accessions[0],
-			  render: renderPeaks(assay)},
-			 {title: "max", data: accessions[0] + "avg"},
+			 {title: "DNase", data: "dnase",
+			  render: renderPeaks(this.props.cre_accession_detail, "dnase")},
+			 {title: "max", data: "dnase", render: renderMax(this.props.cre_accession_detail)},
+			 {title: "H3K4me3", data: "h3k4me3",
+			  render: renderPeaks(this.props.cre_accession_detail, "h3k4me3")},
+			 {title: "max", data: "h3k4me3", render: renderMax(this.props.cre_accession_detail)},
+			 {title: "H3K27ac", data: "h3k27ac",
+			  render: renderPeaks(this.props.cre_accession_detail, "h3k27ac")},
+			 {title: "max", data: "h3k27ac", render: renderMax(this.props.cre_accession_detail)},			 
 			 {title: "", data: "expID",
 	                  render: Render.dccLink },
 			 {title: "Tissue of origin", data: "tissue"},
@@ -125,30 +124,17 @@ class MiniPeaks extends React.Component {
 		     ],
 		     bFilter: true,
 		     order: [[1, "desc"], [5, "asc"]]
-				});
+		    };
 
-	let _tables = Object.keys(this._colors).map((_assay) => (
-		<div style={{display: (_assay == assay ? "block" : "none")}}>
-		{assay == _assay ? (<div>
-	              <h4>{assay}</h4>
+	console.log(this.state.results);
+	
+	let _table = (<div>
                       {React.createElement(ResultsTable,
-                                           {data: mp,
-                                            ...(table(assay))})}
-				    </div>) : ""}
-	    </div>));
+                                           {data: this.state.results.mpeaks,
+                                            ...table})}
+		      </div>);
 	
-	const isSel = (a) => (a == assay);
-	
-	return (<div>
-		<select ref="assay" onChange={this.onAssaySelect}>
-		<option value="dnase" selected={isSel("dnase")}>DNase</option>
-		<option value="h3k4me3" selected={isSel("h3k4me3")}>H3K4me3</option>
-		<option value="h3k27ac" selected={isSel("h3k27ac")}>H3K27ac</option>
-		</select><br />
-
-		{_tables}
-		
-		</div>);
+	return _table;
     }
 }
 

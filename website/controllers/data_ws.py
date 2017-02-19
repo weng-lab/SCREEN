@@ -170,12 +170,28 @@ class DataWebService:
         return {accession: r}
 
     def _re_detail_similarREs(self, j, accession):
-        assay = j["assay"]
-        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
-        #regions, order, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
-        regions, accessions = mp.getBigWigRegions(assay, accession)
-        return { assay : {"mpeaks" : regions,
-                          "accessions": accessions}}
+        mpeaks = {}
+        _mpeaks = []
+        for assay in ["dnase", "h3k27ac", "h3k4me3"]:
+            mp = MiniPeaks(self.assembly, self.pgSearch, self.cache)
+            #regions, order, mostSimilar = mp.getBigWigRegionsWithSimilar(assay)
+            regions, accessions = mp.getBigWigRegions(assay, accession)
+            for region in regions:
+                bs = region["biosample_summary"]
+                if bs not in mpeaks: mpeaks[bs] = {}
+                mpeaks[bs][assay] = region
+        for k, v in mpeaks.iteritems():
+            v.update({"biosample_summary": k})
+            i = False
+            for assay in ["dnase", "h3k4me3", "h3k27ac"]:
+                if assay not in v:
+                    v[assay] = None
+                else:
+                    v["tissue"] = v[assay]["tissue"]
+                    v["biosample_type"] = v[assay]["biosample_type"]
+                    i = True
+            if i: _mpeaks.append(v)
+        return {"mpeaks": _mpeaks, "accessions": [accession]}
 
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]
