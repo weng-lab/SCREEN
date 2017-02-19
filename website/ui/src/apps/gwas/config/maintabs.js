@@ -11,8 +11,8 @@ class Gwas extends React.Component{
 }
 
 
-const MainTabInfo = {
+const MainTabInfo = () => ({
     gwas: {title: "GWAS", visible: true, f: Gwas},
-};
+});
 
 export default MainTabInfo;

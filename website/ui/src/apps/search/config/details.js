@@ -132,7 +132,7 @@ class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
         this.doRender = (data) => {
-            return tabEles(data, TopTissuesTables, 2);
+            return tabEles(data, TopTissuesTables(), 2);
         }
     }
 }
@@ -141,7 +141,7 @@ class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
 	super(props, "nearbyGenomic");
         this.doRender = (data) => {
-            return tabEles(data, NearbyGenomicTable, 4);
+            return tabEles(data, NearbyGenomicTable(), 4);
         }
     }
 }
@@ -151,7 +151,7 @@ class TargetGeneTab extends ReTabBase{
 	super(props, "targetGene");
         this.doRender = (data) => {
             return (<div>hi!</div>);
-            return tabEles(data, TargetGeneTable, 1);
+            return tabEles(data, TargetGeneTable(), 1);
         }
     }
 }
@@ -160,7 +160,7 @@ class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
 	this.doRender = (data) => {
-	    return tabEles(data, OrthologTable, 1);
+	    return tabEles(data, OrthologTable(), 1);
 	};
     }
 }
@@ -169,7 +169,7 @@ class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
         this.doRender = (data) => {
-            return tabEles(data, TfIntersectionTable, 2);
+            return tabEles(data, TfIntersectionTable(), 2);
         }
     }
 }
@@ -196,7 +196,8 @@ class AssocTssTab extends ReTabBase{
 	    }
             return (<div>
 		    <h2><em>{data.genename}</em></h2>
-		    {React.createElement(LargeHorizontalBars, {...data, width: 800, barheight: "15"})}
+		    {React.createElement(LargeHorizontalBars,
+                                         {...data, width: 800, barheight: "15"})}
 		    </div>);
             return (<TSSExpressionPlot />);
         }
@@ -209,7 +210,7 @@ class SimilarREsTab extends React.Component {
     }
 }
 
-const DetailsTabInfo = {
+const DetailsTabInfo = () => ({
     topTissues : {title: "Top Tissues", enabled: true,
                   f: TopTissuesTab},
     targetGene : {title: "Candidate Target Genes",
@@ -226,8 +227,7 @@ const DetailsTabInfo = {
 	       enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
 			 "Signal Profile"),
-		 enabled: true,
-                 f: SimilarREsTab}
-};
+		 enabled: true, f: SimilarREsTab}
+});
 
 export default DetailsTabInfo;

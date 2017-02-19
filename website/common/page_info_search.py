@@ -39,6 +39,7 @@ class PageInfoSearch:
             parsedStr = p.parseStr()
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
+
         cart = self.ps.getCart(uuid)
         if cart:
             parsed["cart_accessions"] = [x for x in cart if x.startswith(self._assembly_starts[kwargs["assembly"]])]
@@ -54,4 +55,3 @@ class PageInfoSearch:
                     })
 
         return ret
-
