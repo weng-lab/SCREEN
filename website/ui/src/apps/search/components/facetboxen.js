@@ -178,7 +178,7 @@ const rankBox = ({rank_dnase_start, rank_dnase_end,
 
 	let promoterTitle = "H3K4me3 Z-score";
 	let enhancerTitle = "H3K27ac Z-score";
-	
+
         let rankFacets = (<div>
                           {makeRankFacet(rfacets, "dnase", "DNase Z-score",
                                          rank_dnase_start, rank_dnase_end,
