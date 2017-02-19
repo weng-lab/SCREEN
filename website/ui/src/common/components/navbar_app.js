@@ -33,7 +33,7 @@ class NavBarApp extends React.Component {
 		<a href="http://www.encodeproject.org"
                 target="_blank"
                 className="btn btn-success btn-lg navbarEncodeImgBtn">
-                <img src={"/static/encode/ENCODE_logo.small2.png"}
+                <img src={"/static/encode/ENCODE_logo.small3.png"}
                 alt={"ENCODE logo"}
                 className={"navbarEncodeImg"} />
                 </a>
