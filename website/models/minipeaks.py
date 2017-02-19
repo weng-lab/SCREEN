@@ -16,11 +16,12 @@ class MiniPeaks:
         self.assembly = assembly
         self.pgSearch = pgSearch
         self.cache = cache
-
+        self.mpc = MiniPeaksCache(self.assembly, 20, 2)
+        
     def getBigWigRegions(self, assay, accession, cres = []):
         accessions = [accession] + cres
          
-        mps = MiniPeaksCache(self.assembly, 20, 2).get(assay, accessions)
+        mps = self.mpc.get(assay, accessions)
         mp = mps[0]
 
         lookup = self.cache.datasets.byFileID
