@@ -21,6 +21,7 @@ class ResultsTable extends React.Component {
     }
 
     componentDidMount() {
+	let dom = this.props.dom || '<"top"f>t<"bottom"p><"clear">';
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
@@ -32,7 +33,7 @@ class ResultsTable extends React.Component {
 	    language: { emptyTable : this.props.emptyText,
 		       	paginate: { previous: "&lt", next : "&gt" }},
 	    pageLength: this.props.pageLength,
-	    dom: '<"top"f>t<"bottom"p><"clear">'
+	    dom
 	});
 
 	var onTdClick = this.props.onTdClick;
