@@ -217,14 +217,13 @@ info jsonb);
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     for assembly in ["hg19", "mm10"]:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
