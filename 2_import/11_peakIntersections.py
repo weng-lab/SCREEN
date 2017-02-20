@@ -34,9 +34,7 @@ class ImportPeakIntersections:
     """.format(tableName = self.tableName))
 
     def run(self):
-        dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-        dataF = os.path.join(dataF, "ver9", self.assembly, "newway")
-        fnp = os.path.join(dataF, "peakIntersections.tsv.gz")
+        fnp = paths.fnpCreTsvs(self.assembly, "peakIntersections.tsv.gz")
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')

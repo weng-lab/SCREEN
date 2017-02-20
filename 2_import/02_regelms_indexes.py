@@ -57,7 +57,7 @@ def parse_args():
 def makeInfo(assembly):
     return {"chrs" : chroms[assembly],
             "assembly" : assembly,
-            "d" : paths.path(assembly, "newway"),
+            "d" : paths.fnpCreTsvs(assembly),
             "base" : paths.path(assembly),
             "tableName" : assembly + "_cre"}
 
