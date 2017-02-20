@@ -51,7 +51,7 @@ class IndexPage extends React.Component {
                 <span style={{color : "#ff0000", fontWeight : "bold"}}>{"failedsearch"}</span>
                 <br />
                 <div className={"form-group text-center"}>
-                <input id={"mainSearchbox"} type={"text"} name={"q"} value={"K562 chr11:5226493-5403124"} />
+                <input id={"mainSearchbox"} type={"text"} name={"q"} defaultValue={"K562 chr11:5226493-5403124"} />
                 <input id={"searchformassembly"} name={"assembly"} value={"hg19"} type={"hidden"} />
                 </div>
                 <div id={"mainButtonGroup"}>
