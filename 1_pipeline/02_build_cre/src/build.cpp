@@ -81,19 +81,18 @@ public:
                 std::vector<std::string> header {
 		  "accession",
 		    "mpName",
-		    "chrom",
-		    "start",
-		    "end",
-                        "conservation_signal",
-                        "dnase_zscore",
-                        "ctcf_only_zscore",
-                        "ctcf_dnase_zscore",
-                        "h3k27ac_only_zscore",
-                        "h3k27ac_dnase_zscore",
-                        "h3k4me3_only_zscore",
-                        "h3k4me3_dnase_zscore",
-                        "gene_all_distance", "gene_all_name",
-                        "gene_pc_distance", "gene_pc_name", "tads"};
+		    "chrom", "start", "end",
+		    "conservation_signal",
+		    "dnase_zscore",
+		    "ctcf_only_zscore",
+		    "ctcf_dnase_zscore",
+		    "h3k27ac_only_zscore",
+		    "h3k27ac_dnase_zscore",
+		    "h3k4me3_only_zscore",
+		    "h3k4me3_dnase_zscore",
+		    "gene_all_distance", "gene_all_name",
+		    "gene_pc_distance", "gene_pc_name",
+		    "tads"};
                 out << bib::string::join(header, "\t") << "\n";
             }
             std::cout << "\twrote " << fnp << std::endl;

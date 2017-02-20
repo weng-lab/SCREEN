@@ -106,6 +106,7 @@ def doPartition(curs, tableName, m):
  gene_pc_distance integer[],
  gene_pc_id integer[],
  tads integer[],
+
  dnase_zscore_max real,
  ctcf_only_zscore_max real,
  ctcf_dnase_zscore_max real,
@@ -176,7 +177,7 @@ def main():
     def makeInfo(assembly):
         return {"chrs" : chroms[assembly],
                        "assembly" : assembly,
-                       "d" : paths.path(assembly, "newway"),
+                       "d" : paths.fnpCreTsvs(assembly),
                        "base" : paths.path(assembly),
                        "tableName" : assembly + "_cre"}
 
