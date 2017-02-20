@@ -65,7 +65,7 @@ def makeInfo(assembly):
 infos = {"mm10" : makeInfo("mm10"),
          "hg19" : makeInfo("hg19")}
 
-cols = ("accession", "mpName", "negLogP",
+cols = ("accession", "mpName", 
                   "chrom", "start", "stop",
                   "dnase_zscore",
                   "ctcf_only_zscore",
