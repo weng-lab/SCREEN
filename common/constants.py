@@ -7,7 +7,10 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from files_and_paths import Dirs
-from v4_config import V4Config
+from utils import AddPath
+
+AddPath(__file__, "..")
+from config import Config
 
 def PageTitle(assembly):
     if assembly > "":
