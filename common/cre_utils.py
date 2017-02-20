@@ -4,6 +4,7 @@ def isaccession(s):
     if len(s) != 12:
         return False
     s = s.lower()
+    # TODO: double check using regex
     return (s.startswith("eh37e") or s.startswith("em10e"))
 
 
