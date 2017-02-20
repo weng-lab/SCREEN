@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys
 import os
+from natsort import natsorted
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from files_and_paths import Dirs
@@ -57,8 +58,8 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                            "chrY":91744698, "chr18":90702639,
                            "chr19":61431566}}
 
-chroms = {"hg19": chrom_lengths["hg19"].keys(),
-          "mm10": chrom_lengths["mm10"].keys()}
+chroms = {"hg19": natsorted(chrom_lengths["hg19"].keys()),
+          "mm10": natsorted(chrom_lengths["mm10"].keys())}
 
 class helptext:
     docid = "1fWphK-WAyk65d1WO8s0yBqO-_YiD2JdQwlkB3ZqqsYI"
@@ -97,7 +98,7 @@ class paths(object):
         "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf") }
 
 def main():
-    print(paths.re_json_vers)
+    print(chroms)
 
 if __name__ == '__main__':
     sys.exit(main())
