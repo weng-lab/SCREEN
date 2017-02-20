@@ -17,7 +17,8 @@ def PageTitle(assembly):
         return "SCREEN %s: Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
-DB_COLS = ("accession", "mpName", 
+DB_COLS = ("accession",
+           "mpName", 
            "chrom", "start", "stop",
            "conservation_signal",
            "dnase_zscore",
@@ -28,7 +29,8 @@ DB_COLS = ("accession", "mpName",
            "h3k4me3_only_zscore",
            "h3k4me3_dnase_zscore",
            "gene_all_distance", "gene_all_id",
-           "gene_pc_distance", "gene_pc_id", "tads")
+           "gene_pc_distance", "gene_pc_id",
+           "tads")
 
 # exclude chrM
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
