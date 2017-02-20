@@ -3,14 +3,15 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip, StringIO
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
-from constants import chroms, paths
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from utils import AddPath, Utils, Timer, printt
 from db_utils import getcursor, vacumnAnalyze, makeIndex
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer, printt
+
+AddPath(__file__, '../common/')
+from dbconnect import db_connect
+from constants import chroms, paths
 
 allInitialCols = ("accession", "mpName", "negLogP",
                   "chrom", "start", "stop",
@@ -26,9 +27,7 @@ allInitialCols = ("accession", "mpName", "negLogP",
                   "gene_pc_distance", "gene_pc_id", "tads")
 
 def importProxDistal(curs, assembly):
-    d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                     "Version-4", "ver9", assembly)
-    fnp = os.path.join(d, assembly + "-Proximal-Distal.txt")
+    fnp = paths.path(assembly, assembly + "-Proximal-Distal.txt")
     printt("reading", fnp)
     with open(fnp) as f:
         rows = [line.rstrip().split('\t') for line in f]
@@ -115,7 +114,6 @@ def doPartition(curs, tableName, m):
  id serial PRIMARY KEY,
  accession VARCHAR(20),
  mpName text,
- negLogP real,
  chrom VARCHAR(5),
  start integer,
  stop integer,
