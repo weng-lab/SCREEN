@@ -92,7 +92,7 @@ public:
           << mpName << d
           << chrom << d
           << start << d
-          << end << d;
+          << end;
 
         s << std::setprecision(4);
 
