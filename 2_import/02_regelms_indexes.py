@@ -29,7 +29,7 @@ class CreateIndices:
             with getcursor(self.DBCONN, "index " + ctn) as curs:
                 makeIndex(curs, ctn, ["accession"])
                 makeIndexIntRange(curs, ctn, ["start", "stop"])
-                makeIndexRev(curs, ctn, ["enhancerMaxz",
+                makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
                                          "promoterMaxz"])
                 if 0:
                     for col in self.zscore_cols:
