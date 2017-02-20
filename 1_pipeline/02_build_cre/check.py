@@ -61,7 +61,8 @@ class CheckCellTypes:
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
         cres = [CRE(*x) for x in cres]
-        
+        for cre in cres:
+            print(cre)
 
 
 def parse_args():
