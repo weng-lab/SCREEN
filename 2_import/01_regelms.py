@@ -44,7 +44,7 @@ def indexProxDistal(curs, assembly):
     makeIndex(curs, tableName, ["accession"])
 
 def updateTable(curs, ctn, m):
-    printt("updating max zscore", ctn)
+    printt("updating max zscore columns", ctn)
     curs.execute("""
 UPDATE {ctn}
 SET
@@ -76,6 +76,18 @@ h3k4me3_dnase_zscore_max ),
 enhancerMaxz = GREATEST(
 h3k27ac_only_zscore_max ,
 h3k27ac_dnase_zscore_max )
+""".format(ctn = ctn))
+    
+    printt("updating maxZ", ctn)
+    curs.execute("""
+UPDATE {ctn}
+SET maxz = GREATEST( dnase_zscore_max,
+ctcf_only_zscore_max ,
+ctcf_dnase_zscore_max ,
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max ,
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max )
 """.format(ctn = ctn))
 
 def dropTables(curs, tableName, m):
@@ -115,6 +127,7 @@ def doPartition(curs, tableName, m):
  h3k4me3_only_zscore_max real,
  h3k4me3_dnase_zscore_max real,
  isProximal boolean,
+ maxz real,
  promoterMaxz real,
  enhancerMaxz real
  ); """.format(tn = tableName))
@@ -122,13 +135,13 @@ def doPartition(curs, tableName, m):
     chroms = m["chrs"]
     for chrom in chroms:
         ctn = tableName + '_' + chrom
+        printt("drop and create", ctn)
         curs.execute("""
 DROP TABLE IF EXISTS {ctn} CASCADE;
 CREATE TABLE {ctn} (
 CHECK (chrom = '{chrom}')
 ) INHERITS ({tn});
 """.format(tn = tableName, ctn = ctn, chrom = chrom))
-        printt(ctn)
 
     d = m["d"]
     subsample = m["subsample"]
@@ -143,9 +156,8 @@ CHECK (chrom = '{chrom}')
         with gzip.open(fnp) as f:
             printt("importing", fnp, "into", ctn)
             curs.copy_from(f, ctn, '\t', columns=cols)
-        printt("imported", os.path.basename(fnp))
 
-def updateTable(curs, tableName, m):
+def updateTables(curs, tableName, m):
     d = m["d"]
     for chrom in chroms:
         ctn = tableName + '_' + chrom
@@ -209,7 +221,7 @@ def main():
                 indexProxDistal(curs, assembly)
 
             with getcursor(DBCONN, "doPartition") as curs:
-                updateTables(curs, assembly + "_cre", m)
+                updateTable(curs, assembly + "_cre", m)
         else:
             # example to show how to add and populate column to
             #  master and, by inheritance, children tables...
