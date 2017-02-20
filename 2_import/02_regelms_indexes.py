@@ -14,13 +14,13 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
 class CreateIndices:
-    def __init__(self, DBCONN, info, DB_COLS):
+    def __init__(self, DBCONN, info):
         self.DBCONN = DBCONN
         self.chrs = info["chrs"]
         self.baseTableName = info["tableName"]
         self.d = info["d"]
         self.all_cols = DB_COLS
-        self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
+        self.zscore_cols = [x for x in self.all_cols if x.endswith("_zscore")]
 
     def run(self):
         self.setupRangeFunction()
