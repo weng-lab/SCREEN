@@ -68,7 +68,6 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
-    parser.add_argument("--host", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -90,12 +89,10 @@ def main():
             im.importAll(outF)
 
     printWroteNumLines(queryFnp)
-    cmds = []
-    if args.host:
-        cmds = ['CQLSH_HOST="' + args.host + '"']
-    cmds += [os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
-             "--cqlversion=3.4.2",
-             "-f", queryFnp]
+    cmds = ['CQLSH_HOST="cassandra"',
+            os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+            "--cqlversion=3.4.2",
+            "-f", queryFnp]
     if GetYesNoToQuestion.immediate("import data?"):
         print(Utils.runCmds(cmds))
 
