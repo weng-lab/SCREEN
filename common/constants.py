@@ -64,19 +64,13 @@ class paths(object):
     def dBase(assembly, *args):
         return os.path.join(V4d, CreVerStr, assembly, *args)
 
+    @staticmethod
+    def fnpCreTsvs(assembly, *args):
+        return os.path.join(V4d, CreVerStr, assembly, "newway2", *args)
+
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
         "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}
-
-    re_json_vers = {
-        9: { "hg19" : {"base" : dBase("hg19"),
-                       "newway": dBase("hg19", "newway")
-                       },
-             "mm10" : {"base" : dBase("mm10"),
-                       "newway": dBase("mm10", "newway")
-                       }
-             }
-        }
 
     hgncFnp = os.path.join(V4d, "hgnc", "hgnc_complete_set.txt")
 
