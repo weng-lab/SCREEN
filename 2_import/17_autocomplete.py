@@ -127,14 +127,13 @@ USING gin (name gin_trgm_ops)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--save', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
             print('***********', assembly)

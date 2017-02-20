@@ -190,7 +190,6 @@ h3k27ac_dnase_zscore_max )
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
@@ -199,7 +198,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     def makeInfo(assembly):
         return {"chrs" : chroms[assembly],

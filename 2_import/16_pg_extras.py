@@ -13,7 +13,6 @@ from utils import Utils, Timer
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -21,7 +20,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     with getcursor(DBCONN, "08_setup_log") as curs:
         curs.execute("""CREATE EXTENSION pg_trgm;""")

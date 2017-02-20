@@ -51,7 +51,6 @@ $$ language sql immutable;
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -80,7 +79,7 @@ cols = ("accession", "mpName", "negLogP",
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     assemblies = ["hg19", "mm10"]
     if args.assembly:
