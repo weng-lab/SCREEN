@@ -85,7 +85,7 @@ class ReTabBase extends React.Component{
     }
 
     loadCRE({cre_accession_detail}){
-        if(cre_accession_detail in this.state){
+        if(!cre_accession_detail || cre_accession_detail in this.state){
             return;
         }
         var q = {GlobalAssembly, "accession" : cre_accession_detail};
