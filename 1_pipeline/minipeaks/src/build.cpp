@@ -33,10 +33,10 @@
 #include <zi/zargs/zargs.hpp>
 ZiARG_string(chr, "", "chrom to load");
 ZiARG_string(assembly, "", "assembly");
-ZiARG_bool(first, false, "show first line");
 ZiARG_bool(bwtool, false, "process bwtool output");
-ZiARG_bool(split, false, "split up files");
 ZiARG_int32(j, 5, "num threads");
+ZiARG_int32(version, 2, "version");
+ZiARG_int32(nbins, 30, "number of downsampled bins");
 
 namespace bib {
 
@@ -87,7 +87,7 @@ namespace bib {
       const auto vals = bib::str::split(toks[5], ',');
 
       static const size_t n_bars = 20;
-      
+
       a::fvec regions(vals.size());
       for(size_t i = 0; i < vals.size(); ++i){
 	if(likely(vals[i] != "NA")){
@@ -105,7 +105,7 @@ namespace bib {
 	    j < chunkSize * (i + 1) && j < regions.size(); ++j){
 	  sum += regions[j];
 	}
-	sum /= chunkSize;	
+	sum /= chunkSize;
 	ret.push_back(sum);
       }
 
@@ -118,10 +118,10 @@ namespace bib {
     }
 
     std::cout << s.str();
-    
+
     return 0;
   }
-  
+
 } // namespace bib
 
 int main(int argc, char* argv[]){
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]){
   if(ZiARG_bwtool){
     return bib::bwtool();
   }
-  
+
   std::vector<std::string> assemblies = {"hg19", "mm10"};
   if(ZiARG_assembly > ""){
     assemblies = {ZiARG_assembly};

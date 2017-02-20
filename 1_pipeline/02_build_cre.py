@@ -15,29 +15,29 @@ from constants import paths, chroms
 from common import printr, printt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printWroteNumLines
-from metadataws import MetadataWS
-from files_and_paths import Datasets, Dirs
+from utils import Utils
+from get_yes_no import GetYesNoToQuestion
 
 def run(assembly):
     runFnp = os.path.join(os.path.dirname(__file__), '02_build_cre/bin/read_json')
     if not os.path.exists(runFnp):
         raise Exception("missing executable " + runFnp)
 
-    cmds = [runFnp, "--assembly=" + assembly]
-    printt("about to run", " ".join(cmds))
-    Utils.runCmds(cmds)
+    if GetYesNoToQuestion.immediate("rebuild cRE files?", "no"):
+        cmds = [runFnp, "--assembly=" + assembly]
+        printt("about to run", " ".join(cmds))
+        Utils.runCmds(cmds)
 
-    fnps = paths.path(assembly, "newway", "parsed.chr*.tsv")
+    fnps = paths.fnpCreTsvs(assembly, "parsed.chr*.tsv")
     cmds = ["pigz", "-f", fnps]
     printt("about to run", " ".join(cmds))
     Utils.runCmds(cmds)
 
     subsampleFnp = os.path.join(os.path.dirname(__file__),
                                 '02_build_cre/subsample.sh')
-    d = paths.path(assembly, "newway", "sample")
+    d = paths.fnpCreTsvs(assembly, "sample")
     Utils.mkdir_p(d)
-    fnps = paths.path(assembly, "newway", "parsed.chr*.tsv.gz")
+    fnps = paths.fnpCreTsvs(assembly, "parsed.chr*.tsv.gz")
     cmds = ["ls", fnps,
             '|', "parallel", "bash", subsampleFnp]
     printt("about to run", " ".join(cmds))

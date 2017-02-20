@@ -166,8 +166,9 @@ public:
             const std::string fn = fnps[i].filename().string();
             const std::string fnp = fnps[i].string();
 
-            const auto lines = bib::files::readStrings(fnp);
             V sf(fnp);
+            const auto lines = bib::files::readStrings(fnp);
+
             sf.reserve(lines.size());
 
             for(const auto& g : lines){

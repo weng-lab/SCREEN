@@ -27,23 +27,24 @@ class ExtractRawPeaks:
         self.assembly = assembly
         self.j = j
 
-        self.d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9"
-        self.d = os.path.join(self.d, assembly)
+        self.d = paths.path(assembly)
+
         self.bwtool = "/data/cherrypy/bin/bwtool"
         if not os.path.exists(self.bwtool):
             self.bwtool = "/usr/local/bin/bwtool"
         if not os.path.exists(self.bwtool):
             raise Exception("no bwtool found")
-        self.masterPeakFnp = paths.path(assembly, "raw",
-                                          "masterPeaks.bed.gz")
-        self.numPeaks = numLines(self.masterPeakFnp)
-        print(self.masterPeakFnp, "has", self.numPeaks)
-        self.miniPeaksBedFnp = os.path.join(self.d, "raw",
-                                            "miniPeakSites.bed.gz")
+
         self.bwtoolFilter = os.path.join(os.path.dirname(__file__),
                                          'minipeaks/bin/read_json')
         if not os.path.exists(self.bwtoolFilter):
             raise Exception("missing C++ bwtool filter; please compile?")
+
+        self.masterPeakFnp = paths.path(assembly, "raw", "masterPeaks.bed.gz")
+        self.numPeaks = numLines(self.masterPeakFnp)
+        print(self.masterPeakFnp, "has", self.numPeaks)
+
+        self.miniPeaksBedFnp = paths.path(assembly, "raw", "miniPeakSites.bed.gz")
 
     def run(self):
         self.writeBed()
