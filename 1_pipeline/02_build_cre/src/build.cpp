@@ -38,7 +38,6 @@ public:
 
     void processPeak(const DataHelper& d, Peak& p){
         const std::string& mpName = p.mpName;
-        p.genome = paths_.genome_;
 
         if("hg19" == ZiARG_assembly){
             d.setTads(mpName, p);
@@ -47,7 +46,7 @@ public:
         d.setAllGenes(mpName, p);
         d.setPcGenes(mpName, p);
 
-        //d.setConservation(mpName, p);
+        d.setConservation(mpName, p);
         d.setDnaseOnly(mpName, p);
         d.setCtcfOnly(mpName, p);
         d.setCtcfDnase(mpName, p);
@@ -79,10 +78,14 @@ public:
             TicToc tt("write to " + fnp.string());
             {
                 std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
-                std::vector<std::string> header {"accession",
-                        "mpName", "negLogP", "chrom", "start", "end",
-                        "dnase_zscore",
+                std::vector<std::string> header {
+		  "accession",
+		    "mpName",
+		    "chrom",
+		    "start",
+		    "end",
                         "conservation_signal",
+                        "dnase_zscore",
                         "ctcf_only_zscore",
                         "ctcf_dnase_zscore",
                         "h3k27ac_only_zscore",

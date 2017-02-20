@@ -10,13 +10,14 @@ cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from templates import Templates
+from utils import Utils, AddPath
+
+AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
-from templates import Templates
-from utils import Utils
 
 class WebServerConfig:
     def __init__(self, siteName, production):
