@@ -4,22 +4,23 @@ from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from exp import Exp
-from db_utils import getcursor
-from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, eprint, AddPath
 
 AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from postgres_wrapper import PostgresWrapper
+from cre_utils import isclose
 
 AddPath(__file__, '../../website/common/')
 from pg import PGsearch
 from cached_objects import CachedObjects
 
+AddPath(__file__, '../../website/models/')
+from cre import CRE
+
 from collections import namedtuple
-CRE = namedtuple('CRE', ["chrom", "start", "stop", "mpName", "accession"])
+CREnt = namedtuple('CREnt', ["chrom", "start", "stop", "mpName", "accession"])
 
 class CheckCellTypes:
     def __init__(self, DBCONN, assembly):
@@ -67,12 +68,22 @@ class CheckCellTypes:
         cres = [x.rstrip('\n').split('\t') for x in Utils.runCmds(cmds) if x]
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
-        cres = [CRE(*x) for x in cres]
+        cres = [CREnt(*x) for x in cres]
         for cre in cres:
+            allRanks = CRE(self.pgSearch, cre.accession, self.cache).allRanks()
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = Utils.runCmds(cmds)[0].split('\t')[1]
-                
+                zscoreDb = allRanks[rm][ct]
+                if not isclose(zscore, zscoreDb):
+                    eprint("PROBLEM")
+                    eprint(cre)
+                    eprint(rm, ct)
+                    eprint("from", fnp)
+                    eprint(zscore)
+                    eprint("from DB lookup")
+                    eprint(zscoreDb)
+                    #eprint(allRanks)
 
 
 def parse_args():
