@@ -6,11 +6,13 @@ import sys
 import os
 import psycopg2
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
 from db_utils import getcursor
+from utils import AddPath
+
+AddPath(__file__, '../common/')
+from dbconnect import db_connect
 
 regelms = __import__('01_regelms')
 pg_cre =  __import__('02_pg_cre')
