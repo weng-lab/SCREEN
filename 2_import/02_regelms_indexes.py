@@ -29,8 +29,7 @@ class CreateIndices:
             with getcursor(self.DBCONN, "index " + ctn) as curs:
                 makeIndex(curs, ctn, ["accession"])
                 makeIndexIntRange(curs, ctn, ["start", "stop"])
-                makeIndexRev(curs, ctn, ["maxz",
-                                         "enhancerMaxz",
+                makeIndexRev(curs, ctn, ["enhancerMaxz",
                                          "promoterMaxz"])
                 if 0:
                     for col in self.zscore_cols:
@@ -66,16 +65,16 @@ infos = {"mm10" : makeInfo("mm10"),
          "hg19" : makeInfo("hg19")}
 
 cols = ("accession", "mpName", 
-                  "chrom", "start", "stop",
-                  "dnase_zscore",
-                  "ctcf_only_zscore",
-                  "ctcf_dnase_zscore",
-                  "h3k27ac_only_zscore",
-                  "h3k27ac_dnase_zscore",
-                  "h3k4me3_only_zscore",
-                  "h3k4me3_dnase_zscore",
-                  "gene_all_distance", "gene_all_id",
-                  "gene_pc_distance", "gene_pc_id", "tads")
+        "chrom", "start", "stop",
+        "dnase_zscore",
+        "ctcf_only_zscore",
+        "ctcf_dnase_zscore",
+        "h3k27ac_only_zscore",
+        "h3k27ac_dnase_zscore",
+        "h3k4me3_only_zscore",
+        "h3k4me3_dnase_zscore",
+        "gene_all_distance", "gene_all_id",
+        "gene_pc_distance", "gene_pc_id", "tads")
 def main():
     args = parse_args()
 
