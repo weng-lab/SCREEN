@@ -45,7 +45,6 @@ def vacAll(DBCONN):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
@@ -54,7 +53,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     if args.vac:
         vacAll(DBCONN)
