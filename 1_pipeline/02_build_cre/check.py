@@ -62,7 +62,10 @@ class CheckCellTypes:
         print("selected", len(cres), "cres")
         cres = [CRE(*x) for x in cres]
         for cre in cres:
-            print(cre)
+            for rm, ct, fnp in self.rankMethodToCtAndFileID:
+                cmds = ['grep', cre.mpName, fnp]
+                zscore = Utils.runCmds(cmds)[0].split('\t')[1]
+                print(zscore)
 
 
 def parse_args():
