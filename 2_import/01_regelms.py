@@ -206,20 +206,26 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
+        print('***********', assembly)
+
         m = infos[assembly]
         m["subsample"] = args.sample
 
         if 1:
+            print('***********', "drop tables")
             with getcursor(DBCONN, "dropTables") as curs:
                 dropTables(curs, assembly + "_cre", m)
+            print('***********', "create tables")
             with getcursor(DBCONN, "doPartition") as curs:
                 doPartition(curs, assembly + "_cre", m)
                 
+            print('***********', "import proximal/distal info")
             with getcursor(DBCONN, "importProxDistal") as curs:
                 importProxDistal(curs, assembly)
             with getcursor(DBCONN, "indexProxDistal") as curs:
                 indexProxDistal(curs, assembly)
 
+            print('***********', "update table cols")
             with getcursor(DBCONN, "doPartition") as curs:
                 updateTable(curs, assembly + "_cre", m)
         else:
@@ -228,6 +234,7 @@ def main():
             with getcursor(DBCONN, "08_setup_log") as curs:
                 addCol(curs, assembly)
 
+        print('***********', "vacumn")
         vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
 
     return 0
