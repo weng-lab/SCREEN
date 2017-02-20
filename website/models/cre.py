@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import os
 
-from bigwig import BigWig
-
 class CRE:
     def __init__(self, pgSearch, accession, cache):
         self.pgSearch = pgSearch
