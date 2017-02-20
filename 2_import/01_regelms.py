@@ -11,20 +11,7 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
-from constants import chroms, paths
-
-allInitialCols = ("accession", "mpName", "negLogP",
-                  "chrom", "start", "stop",
-                  "conservation_signal",
-                  "dnase_zscore",
-                  "ctcf_only_zscore",
-                  "ctcf_dnase_zscore",
-                  "h3k27ac_only_zscore",
-                  "h3k27ac_dnase_zscore",
-                  "h3k4me3_only_zscore",
-                  "h3k4me3_dnase_zscore",
-                  "gene_all_distance", "gene_all_id",
-                  "gene_pc_distance", "gene_pc_id", "tads")
+from constants import chroms, paths, DB_COLS
 
 def importProxDistal(curs, assembly):
     fnp = paths.path(assembly, assembly + "-Proximal-Distal.txt")
@@ -79,24 +66,13 @@ WHERE cre.accession = prox.accession;
 """.format(ctn = ctn,
            tnProx = m["assembly"] + "_isProximal"))
 
-    printt("updating maxZ", ctn)
-    curs.execute("""
-UPDATE {ctn}
-SET maxz = GREATEST( dnase_zscore_max,
-ctcf_only_zscore_max ,
-ctcf_dnase_zscore_max ,
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max ,
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max )
-""".format(ctn = ctn))
-
     printt("updating promoterMaxz and enhancerMaxz...")
     curs.execute("""
 UPDATE {ctn}
 SET promoterMaxz = GREATEST(
 h3k4me3_only_zscore_max ,
 h3k4me3_dnase_zscore_max ),
+
 enhancerMaxz = GREATEST(
 h3k27ac_only_zscore_max ,
 h3k27ac_dnase_zscore_max )
@@ -138,7 +114,6 @@ def doPartition(curs, tableName, m):
  h3k4me3_only_zscore_max real,
  h3k4me3_dnase_zscore_max real,
  isProximal boolean,
- maxz real,
  promoterMaxz real,
  enhancerMaxz real
  ); """.format(tn = tableName))
@@ -163,7 +138,7 @@ CHECK (chrom = '{chrom}')
             if "chr13" != chrom:
                 fnp = os.path.join(d, "sample", fn)
         ctn = tableName + '_' + chrom
-        cols = allInitialCols
+        cols = DB_COLS
         with gzip.open(fnp) as f:
             printt("importing", fnp, "into", ctn)
             curs.copy_from(f, ctn, '\t', columns=cols)
