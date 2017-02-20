@@ -104,7 +104,6 @@ namespace bib {
 
     template <typename T>
     void setConservation(const std::string& mpName, T& p) const {
-
     }
 
     template <typename T>

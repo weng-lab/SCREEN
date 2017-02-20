@@ -24,15 +24,13 @@ public:
     int32_t start;
     int32_t end;
     std::string mpName;
-    std::string negLogP;
     std::string accession;
-
-    std::string genome;
 
     std::vector<Gene> gene_nearest_all;
     std::vector<Gene> gene_nearest_pc;
     std::vector<Gene> tads;
 
+    std::vector<float> conservation_signal;
     std::vector<float> dnase_zscore;
     std::vector<float> ctcf_only_zscore;
     std::vector<float> ctcf_dnase_zscore;
@@ -41,6 +39,17 @@ public:
     std::vector<float> h3k4me3_only_zscore;
     std::vector<float> h3k4me3_dnase_zscore;
 
+    Peak() {}
+  
+    Peak(const std::string& chrom, const int32_t start, const int32_t end,
+	 const std::string& mpName, const std::string& accession)
+      : chrom(chrom)
+      , start(start)
+      , end(end)
+      , mpName(mpName)
+      , accession(accession)
+    {}
+    
     template <typename S, typename T>
     void toTsvVec(S& s, const std::vector<T>& v)const {
         static const char d = '\t';
@@ -81,14 +90,14 @@ public:
 
         s << accession << d
           << mpName << d
-          << negLogP << d
           << chrom << d
           << start << d
           << end << d;
 
         s << std::setprecision(4);
 
-        toTsvVec(s, dnase_zscore);
+        toTsvVec(s, conservation_signal);
+	toTsvVec(s, dnase_zscore);
         toTsvVec(s, ctcf_only_zscore);
         toTsvVec(s, ctcf_dnase_zscore);
         toTsvVec(s, h3k27ac_only_zscore);
@@ -108,14 +117,14 @@ public:
 
         s << p.accession << d
           << p.mpName << d
-          << p.negLogP << d
           << p.chrom << d
           << p.start << d
           << p.end << "\n";
 
         s << std::setprecision(4);
 
-        p.toTsvVec(s, p.dnase_zscore); s << "\n";
+        p.toTsvVec(s, p.conservation_signal); s << "\n";
+	p.toTsvVec(s, p.dnase_zscore); s << "\n";
         p.toTsvVec(s, p.ctcf_only_zscore); s << "\n";
         p.toTsvVec(s, p.ctcf_dnase_zscore); s << "\n";
         p.toTsvVec(s, p.h3k27ac_only_zscore); s << "\n";

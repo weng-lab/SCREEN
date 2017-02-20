@@ -38,14 +38,14 @@ public:
         ret.reserve(lines.size());
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            auto mpToks = bib::str::split(toks[3], '-');
-            ret[toks[4]] = Peak{toks[0],
-                                std::stoi(toks[1]),
-                                std::stoi(toks[2]),
-                                toks[3],
-                                mpToks[2],
-                                toks[4]};
-        }
+            //auto mpToks = bib::str::split(toks[3], '-');
+            ret.emplace(std::make_pair(toks[4],
+				       Peak(toks[0],
+					    std::stoi(toks[1]),
+					    std::stoi(toks[2]),
+					    toks[3],
+					    toks[4])));
+	}
         std::cout << "loaded " << ret.size() << " peaks\n";
         return ret;
     }
