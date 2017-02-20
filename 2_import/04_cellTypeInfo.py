@@ -3,15 +3,15 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, StringIO
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
-from constants import chroms, chrom_lengths, paths
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from exp import Exp
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, eprint
+from utils import Utils, eprint, AddPath
+
+AddPath(__file__, '../common/')
+from dbconnect import db_connect
+from constants import chroms, chrom_lengths, paths
 
 class DetermineTissue:
     # translate tissue name to tissue name
