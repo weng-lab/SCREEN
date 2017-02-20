@@ -2,10 +2,8 @@
 
 import cherrypy, os, sys, argparse, time
 
-#from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
-# https://pypi.python.org/pypi/cherrys
 import cherrys
 cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
@@ -20,13 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from utils import Utils
 
-class DummyEs:
-    def search(self, index, body):
-        return {"hits": {"total": 0, "hits": [] }}
-    def __init__(self):
-        pass
-
-class Config:
+class WebServerConfig:
     def __init__(self, siteName, production):
         self.siteName = siteName
         self.production = production
@@ -83,9 +75,9 @@ def main():
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
 
-    config = Config("main", args.production)
-    main = MainApp(args, config.viewDir, config.staticDir, ps, cow)
-    cherrypy.tree.mount(main, '/', config.getRootConfig())
+    wsconfig = WebServerConfig("main", args.production)
+    main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
+    cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
@@ -97,7 +89,7 @@ def main():
                                 'server.thread_pool': 30,
                                 'log.screen' : False,
                                 'log.access_file' : "",
-                                'log.error_file' : config.errorFnp
+                                'log.error_file' : wsconfig.errorFnp
                                 })
     cherrypy.engine.start()
     cherrypy.engine.block()
