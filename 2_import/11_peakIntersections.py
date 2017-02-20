@@ -8,6 +8,7 @@ peakIntersections = __import__('03_beds_es')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import chroms, chrom_lengths, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt

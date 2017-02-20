@@ -12,14 +12,21 @@ from utils import Utils, eprint, AddPath
 AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
+from postgres_wrapper import PostgresWrapper
+
+AddPath(__file__, '../../website/common/')
+from pg import PGsearch
+from cached_objects import CachedObjects
 
 from collections import namedtuple
 CRE = namedtuple('CRE', ["chrom", "start", "stop", "mpName", "accession"])
 
 class CheckCellTypes:
-    def __init__(self, curs, assembly):
-        self.curs = curs
+    def __init__(self, DBCONN, assembly):
         self.assembly = assembly
+        self.ps = PostgresWrapper(DBCONN)
+        self.pgSearch = PGsearch(self.ps, self.assembly)
+        self.cache = CachedObjects(self.ps, self.assembly)
         self._load()
 
     def _load(self):
@@ -65,7 +72,7 @@ class CheckCellTypes:
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = Utils.runCmds(cmds)[0].split('\t')[1]
-                print(zscore)
+                
 
 
 def parse_args():
@@ -84,10 +91,9 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        with getcursor(DBCONN, "check") as curs:
-            print('***********', assembly)
-            ctt = CheckCellTypes(curs, assembly)
-            ctt.run()
+        print('***********', assembly)
+        ctt = CheckCellTypes(DBCONN, assembly)
+        ctt.run()
 
     return 0
 
