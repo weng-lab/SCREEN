@@ -19,9 +19,14 @@ class CheckCellTypes:
         self.assembly = assembly
 
     def run(self):
+        fnp = paths.path(self.assembly, "raw", "masterPeaks.bed.gz")
+        cmds = ["zcat", fnp,
+                '|',
+                """awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}'"""]
+        cres = Utils.runCmds(cmds)
+        for cre in cres:
+            print(cre)
 
-
-zcat $1 | awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}' | gzip >  $DIR/sample/$FN
 
 
 def parse_args():
