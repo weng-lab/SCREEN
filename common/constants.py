@@ -51,7 +51,7 @@ class helptext:
                         "googleapi", "helptext.txt")
 
 V4d = os.path.join(Dirs.encyclopedia, "Version-4")
-CreVer = 9
+CreVer = Config.version
 CreVerStr = "ver" + str(CreVer)
 
 class paths(object):
