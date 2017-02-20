@@ -144,8 +144,13 @@ CHECK (chrom = '{chrom}')
             printt("importing", fnp, "into", ctn)
             curs.copy_from(f, ctn, '\t', columns=cols)
         printt("imported", os.path.basename(fnp))
-        updateTable(curs, ctn, m)
 
+def updateTable(curs, tableName, m):
+    d = m["d"]
+    for chrom in chroms:
+        ctn = tableName + '_' + chrom
+        updateTable(curs, ctn, m)
+        
 def addCol(curs, assembly):
     printt("adding col...")
     curs.execute("""
@@ -193,14 +198,18 @@ def main():
         m["subsample"] = args.sample
 
         if 1:
-            with getcursor(DBCONN, "importProxDistal") as curs:
-                importProxDistal(curs, assembly)
-            with getcursor(DBCONN, "indexProxDistal") as curs:
-                indexProxDistal(curs, assembly)
             with getcursor(DBCONN, "dropTables") as curs:
                 dropTables(curs, assembly + "_cre", m)
             with getcursor(DBCONN, "doPartition") as curs:
                 doPartition(curs, assembly + "_cre", m)
+                
+            with getcursor(DBCONN, "importProxDistal") as curs:
+                importProxDistal(curs, assembly)
+            with getcursor(DBCONN, "indexProxDistal") as curs:
+                indexProxDistal(curs, assembly)
+
+            with getcursor(DBCONN, "doPartition") as curs:
+                updateTables(curs, assembly + "_cre", m)
         else:
             # example to show how to add and populate column to
             #  master and, by inheritance, children tables...
