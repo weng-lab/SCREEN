@@ -39,7 +39,7 @@ class ImportPeakIntersections:
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')
-        printt("copying in data...")
+        printt("copying in data", fnp)
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         printt("\tcopied in", fnp, self.curs.rowcount)
