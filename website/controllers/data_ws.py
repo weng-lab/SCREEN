@@ -139,9 +139,10 @@ class DataWebService:
         nearbyCREs = cre.distToNearbyCREs(1000000) # 1 MB
         nearbyGenes = cre.nearbyGenes()
         genesInTad = cre.genesInTad()
+        re_tads = cre.cresInTad()
         return { accession : {"nearby_genes": nearbyGenes,
                               "tads": genesInTad,
-                              "re_tads": [],
+                              "re_tads": re_tads,
                               "nearby_res": nearbyCREs,
                               "overlapping_snps": snps} }
 
@@ -176,7 +177,7 @@ class DataWebService:
                                                     [accession])
         return {accession : {"rows" : rows,
                              "accessions" : accessions}}
-    
+
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]
         t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)

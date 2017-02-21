@@ -41,7 +41,13 @@ class CRE:
     def genesInTad(self):
         coord = self.coord()
         if self.tad is None:
-            self.tad = self.pgSearch.creTad(self.accession, coord.chrom)
+            self.tad = self.pgSearch.genesInTad(self.accession, coord.chrom)
+        return self.tad
+
+    def cresInTad(self):
+        coord = self.coord()
+        if self.tad is None:
+            self.tad = self.pgSearch.cresInTad(self.accession, coord.chrom)
         return self.tad
 
     def promoterRanks(self):
