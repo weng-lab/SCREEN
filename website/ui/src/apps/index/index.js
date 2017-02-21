@@ -48,7 +48,7 @@ class IndexPage extends React.Component {
 		</ul>
 		
 		<div className="tab-content clearfix">
-		{this.tabContent("main", TabMain(), "active")}
+		{this.tabContent("main", (<TabMain />), "active")}
 		{this.tabContent("about", TabAbout(), "")}
 		{this.tabContent("tut", TabTutorial(), "")}
 		</div>
