@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import TabMain from './tab_main';
 import TabAbout from './tab_about';
 import TabTutorial from './tab_tutorial';
+import {tabPanelize} from '../../common/utility'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
@@ -13,7 +14,7 @@ class IndexPage extends React.Component {
     
     tabContent(href, content, cn){
 	return (<div className={"tab-pane " + cn} id={href}>
-		{content}
+		{tabPanelize(content)}
 		</div>);
     }
 
