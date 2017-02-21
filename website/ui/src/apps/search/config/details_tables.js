@@ -192,7 +192,8 @@ export const NearbyGenomicTable = () => ({
 	cols: [
 	    {title: "accession", data: "accession",
 	     render: Render.relink(GlobalAssembly) },
-	    {title: "distance", data: "distance"} ],
+	    {title: "distance", data: "distance",
+             render: Render.integer} ],
         pageLength: 5,
 	order: [[1, "asc"]],
 	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}

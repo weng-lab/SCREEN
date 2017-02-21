@@ -128,12 +128,12 @@ class MergeFiles:
     def run(self):
         fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
 
-        presentFileIDs = []
         for fn in fns:
             assay, fileIDs = self._getFileIDs(fn)
             if self.assay and self.assay != assay:
                 continue
             fnps = []
+            presentFileIDs = []
             for fileID in fileIDs:
                 fnp = paths.path(self.assembly, "minipeaks", "files2",
                                  fileID + ".bigWig.txt")
