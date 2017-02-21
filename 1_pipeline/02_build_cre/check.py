@@ -82,7 +82,7 @@ class CheckCellTypes:
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = Utils.runCmds(cmds)[0].split('\t')[1]
-                zscoreDb = allRanks[lookups[rm]][ct]
+                zscoreDb = allRanks[lookups[rm]]["zscores"][ct]
                 if not isclose(zscore, zscoreDb):
                     eprint("PROBLEM")
                     eprint(cre)
