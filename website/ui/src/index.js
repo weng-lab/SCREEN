@@ -24,7 +24,7 @@ class IndexPage extends React.Component {
 
                         <div className={"row vertical-align"}>
                         <div className={"col-md-6"}>
-                        <img className={"img-responsive"} src={"/static/encodeLogo.png"} alt={"ENCODE logo"} />
+                        <img className={"img-responsive mainLogo"} src={"/static/encodeLogo.png"} alt={"ENCODE logo"} />
                         </div>
                         <div className={"col-md-6"}>
                         <div className={"jumbotron"} id={"mainDesc"}>
@@ -34,7 +34,7 @@ class IndexPage extends React.Component {
                         <hr />
 	                {"You may launch SCREEN using the search box below or browse a curated list of SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs."}
                         <div id={"gwasGroup"}>
-                        <a className={"btn btn-primary btn-lg"} href={"/gwasApp/hg19/"} role={"button"}>{"Browse GWAS"}</a>
+                        <a className={"btn btn-primary"} href={"/gwasApp/hg19/"} role={"button"}>{"Browse GWAS"}</a>
                         </div>
                         </div>
                         </div>
