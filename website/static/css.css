@@ -371,3 +371,17 @@ table tr td.minipeak {
 .mainLogo {
     max-width: 90%;
 }
+
+/* from  http://stackoverflow.com/a/20150691 */
+.container-table {
+    display: table;
+    height: 100%;
+}
+.vertical-center-row {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#root {
+    height: 100%;
+}
