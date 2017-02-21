@@ -18,6 +18,14 @@ class IndexPage extends React.Component {
 		</div>);
     }
 
+    footer() {
+	return (<div id="footer">
+		<center>
+		&copy; 2017 Weng Lab @ UMass Med, ENCODE Data Analysis Center
+		</center>
+		</div>);
+    }
+        
     title() {
         return (<div className={"container-fluid"}>
                 <div className={"row"}>
@@ -52,6 +60,7 @@ class IndexPage extends React.Component {
         return (<div>
 		{this.title()}
                 {this.tabs()}
+		{this.footer()}
                 </div>);
     }
 }
