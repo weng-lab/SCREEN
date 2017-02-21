@@ -183,19 +183,18 @@ export const NearbyGenomicTable = () => ({
 	order: [[0, "asc"]]
     },
     "re_tads": {
-	title: "Other cREs within TAD",
+	title: "Other cREs within TAD (<1Mb)",
 	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
-	emptyText: "No cREs within TAD",
+	emptyText: "No cREs within TAD with 1Mb",
 	cols: [
 	    {title: "accession", data: "accession",
 	     render: Render.relink(GlobalAssembly) },
-	    {title: "coordinates", data: "position",
-	     render:  Render.position }	],
+	    {title: "distance", data: "distance"} ],
         pageLength: 5,
-	order: [[0, "asc"]],
+	order: [[1, "asc"]],
 	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     }
 });

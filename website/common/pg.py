@@ -366,18 +366,20 @@ AND isProximal is {isProx}
                                          abs(coord.start - start))})
         return ret
 
-    def cresInTad(self, accession, chrom):
-        return []
+    def cresInTad(self, accession, chrom, start):
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
             curs.execute("""
-SELECT DISTINCT(accession)
-FROM {tn}
-WHERE tadid IN (
-SELECT tadid FROM {tn}
-WHERE accession = %s
-""".format(tn = self.assembly + "_tads"), (accession, ))
+SELECT DISTINCT(cre.accession), abs(%s - start) as distance
+FROM {tn} tads
+INNER JOIN {ctn} as cre
+ON cre.accession = tads.accession
+WHERE tadid in (SELECT tadid FROM {tn} WHERE accession = %s)
+AND abs(%s - start) < 1000000
+ORDER BY 2
+""".format(tn = self.assembly + "_tads", ctn = self.assembly + "_cre"),
+                         (start, accession, start))
             rows = curs.fetchall()
-        return [{"accession" : r[0]} for r in rows]
+        return [{"accession" : r[0], "distance" : r[1]} for r in rows]
 
     def genesInTad(self, accession, chrom):
         with getcursor(self.pg.DBCONN, "creTad") as curs:
