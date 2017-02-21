@@ -5,14 +5,14 @@ import TabAbout from './tab_about';
 import TabTutorial from './tab_tutorial';
 
 class IndexPage extends React.Component {
-    tabTitle(href, title, className){
-	return (<li className="{className}">
-		<a  href="#{href}" data-toggle="tab">{title}</a>
+    tabTitle(href, title, cn){
+	return (<li className={cn}>
+		<a  href={"#" + href} data-toggle={"tab"}>{title}</a>
 		</li>);
     }
     
-    tabContent(href, content, className){
-	return (<div className="tab-pane {className{" id="{href}">
+    tabContent(href, content, cn){
+	return (<div className={"tab-pane " + cn} id={href}>
 		{content}
 		</div>);
     }

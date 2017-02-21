@@ -1,24 +1,28 @@
 #!/usr/bin/env python
 
-import os, sys, json, psycopg2, argparse, cherrypy
-import uuid
+from __future__ import print_function
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+import os, sys, argparse
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from db_utils import getcursor
+from utils import AddPath, printt
+
+AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from db_utils import getcursor
-
 def setupDB(DBCONN):
-    table = "sessions"
+    tableName = "sessions"
+    printt("drop and create", tableName)
     with getcursor(DBCONN, "get") as curs:
         curs.execute("""
-DROP TABLE IF EXISTS {table};
-CREATE TABLE {table}
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}
 (id serial PRIMARY KEY,
 uid text,
 session_id text
-) """.format(table = table))
+) """.format(tn = tableName))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -29,9 +33,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    for t in ["sessions"]:
-        setupDB(DBCONN)
+    setupDB(DBCONN)
 
 if __name__ == '__main__':
     main()
