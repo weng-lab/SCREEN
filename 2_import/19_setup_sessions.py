@@ -3,13 +3,11 @@
 import os, sys, json, psycopg2, argparse, cherrypy
 import uuid
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils/'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
-from utils import Utils
-from dbs import DBS
-from db_utils import getcursor
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+from db_utils import getcursor
 
 def setupDB(DBCONN):
     table = "sessions"
@@ -24,14 +22,13 @@ session_id text
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     for t in ["sessions"]:
         setupDB(DBCONN)
