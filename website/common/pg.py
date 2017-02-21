@@ -366,7 +366,20 @@ AND isProximal is {isProx}
                                          abs(coord.start - start))})
         return ret
 
-    def creTad(self, accession, chrom):
+    def cresInTad(self, accession, chrom):
+        return []
+        with getcursor(self.pg.DBCONN, "cresInTad") as curs:
+            curs.execute("""
+SELECT DISTINCT(accession)
+FROM {tn}
+WHERE tadid IN (
+SELECT tadid FROM {tn}
+WHERE accession = %s
+""".format(tn = self.assembly + "_tads"), (accession, ))
+            rows = curs.fetchall()
+        return [{"accession" : r[0]} for r in rows]
+
+    def genesInTad(self, accession, chrom):
         with getcursor(self.pg.DBCONN, "creTad") as curs:
             curs.execute("""
 SELECT gi.approved_symbol AS name
