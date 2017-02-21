@@ -67,8 +67,8 @@ class CheckCellTypes:
     def run(self):
         fnp = paths.path(self.assembly, "raw", "masterPeaks.bed.gz")
         cmds = ["zcat", fnp,
-                '|',
-                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .00001) print $0}'"""]
+                '|', "grep chr13", '|',
+                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .001) print $0}'"""]
         cres = [x.rstrip('\n').split('\t') for x in Utils.runCmds(cmds) if x]
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
@@ -84,14 +84,12 @@ class CheckCellTypes:
 
         for cre in cres:
             allRanks = CRE(self.pgSearch, cre.accession, self.cache).allRanks()
-            print(allRanks)
-            print(self.rankMethodToIDxToCellType.keys())
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = float(Utils.runCmds(cmds)[0].split('\t')[1])
-                ctIdx = self.rankMethodToIDxToCellType[rm][ct]
+                ctIdx = self.rankMethodToIDxToCellType[rm][ct] - 1
                 zscoreDb = allRanks["zscores"][lookups[rm]][ctIdx]
-                if not isclose(zscore, zscoreDb):
+                if not isclose(zscore, zscoreDb, 0.001):
                     eprint("PROBLEM")
                     eprint(cre)
                     eprint(rm, ct)
