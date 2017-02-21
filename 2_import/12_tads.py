@@ -5,10 +5,11 @@ import os, sys, json, psycopg2, argparse, StringIO, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 
 class ImportTADs:
     def __init__(self, curs, assembly):
@@ -30,13 +31,10 @@ class ImportTADs:
     """.format(tableName = self.tableName))
 
     def run(self):
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/",
-                         "encyclopedia", "Version-4", "ver9",
-                         "hg19")
-        fnp = os.path.join(d, "hg19-TAD-Accessions.txt")
+        fnp = paths.path(self.assembly, "hg19-TAD-Accessions.txt.gz")
 
         printt("reading", fnp)
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             rows = [line.rstrip().split('\t') for line in f]
         f = StringIO.StringIO()
         for r in rows:
@@ -56,6 +54,9 @@ FROM {tn} as cre
 where tads.mpname = cre.mpname
 """.format(tadTableName = "hg19_tads", tn = "hg19_cre"))
 
+    def index(self):
+        makeIndex(self.curs, self.tableName, ["accession", "tadID"])
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -70,6 +71,7 @@ def main():
         with getcursor(DBCONN, "main") as curs:
             ipi = ImportTADs(curs, assembly)
             ipi.run()
+            ipi.index()
 
 if __name__ == '__main__':
     main()

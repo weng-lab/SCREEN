@@ -14,9 +14,9 @@ from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 
 def importProxDistal(curs, assembly):
-    fnp = paths.path(assembly, assembly + "-Proximal-Distal.txt")
+    fnp = paths.path(assembly, assembly + "-Proximal-Distal.txt.gz")
     printt("reading", fnp)
-    with open(fnp) as f:
+    with gzip.open(fnp) as f:
         rows = [line.rstrip().split('\t') for line in f]
 
     printt("rewriting")
@@ -77,7 +77,7 @@ enhancerMaxz = GREATEST(
 h3k27ac_only_zscore_max ,
 h3k27ac_dnase_zscore_max )
 """.format(ctn = ctn))
-    
+
     printt("updating maxZ", ctn)
     curs.execute("""
 UPDATE {ctn}
@@ -162,7 +162,7 @@ def updateTables(curs, tableName, m):
     for chrom in chroms:
         ctn = tableName + '_' + chrom
         updateTable(curs, ctn, m)
-        
+
 def addCol(curs, assembly):
     printt("adding col...")
     curs.execute("""
@@ -218,7 +218,7 @@ def main():
             print('***********', "create tables")
             with getcursor(DBCONN, "doPartition") as curs:
                 doPartition(curs, assembly + "_cre", m)
-                
+
             print('***********', "import proximal/distal info")
             with getcursor(DBCONN, "importProxDistal") as curs:
                 importProxDistal(curs, assembly)
