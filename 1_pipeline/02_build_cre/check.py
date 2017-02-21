@@ -69,12 +69,20 @@ class CheckCellTypes:
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
         cres = [CREnt(*x) for x in cres]
+
+        lookups = {"DNase" : "dnase",
+                   "H3K4me3" : "h3k4me3-only",
+                   "Promoter" : "dnase+h3k4me3",
+                   "H3K27ac" : "h3k27ac-only",
+                   "Enhancer" : "dnase+h3k27ac",
+                   "CTCF" : "ctcf-only",
+                   "Insulator" : "dnase+ctcf"}
         for cre in cres:
             allRanks = CRE(self.pgSearch, cre.accession, self.cache).allRanks()
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = Utils.runCmds(cmds)[0].split('\t')[1]
-                zscoreDb = allRanks[rm][ct]
+                zscoreDb = allRanks[lookups[rm]][ct]
                 if not isclose(zscore, zscoreDb):
                     eprint("PROBLEM")
                     eprint(cre)
