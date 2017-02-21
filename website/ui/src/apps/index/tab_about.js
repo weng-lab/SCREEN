@@ -1,5 +1,7 @@
-const TabAbout = () => (
-	<div>
-        </div>);
+const TabAbout = () => {
+    return (<div>
+	    
+	    </div>);
+}
 
 export default TabAbout;
