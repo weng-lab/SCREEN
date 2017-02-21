@@ -61,6 +61,10 @@ class CheckCellTypes:
                 if 0:
                     if not os.path.exists(fnp):
                         raise Exception("missing", fnp)
+                if r[ctIdx].startswith("LNCaP_clone_FGC_immortalized_cell_line_treated_with_1_nM") and r[ctIdx].endswith("hydroxy-17-methylestra-4"):
+                    continue
+                if r[ctIdx].startswith("SK-N-SH_immortalized_cell_line_treated_with") and r[ctIdx].endswith("all-trans-retinoic_acid_for_48_hours"):
+                    continue
                 d = [fnBase, r[ctIdx], fnp]
                 self.rankMethodToCtAndFileID.append(d)
 
@@ -68,7 +72,7 @@ class CheckCellTypes:
         fnp = paths.path(self.assembly, "raw", "masterPeaks.bed.gz")
         cmds = ["zcat", fnp,
                 '|', "grep chr13", '|',
-                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .001) print $0}'"""]
+                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .0001) print $0}'"""]
         cres = [x.rstrip('\n').split('\t') for x in Utils.runCmds(cmds) if x]
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
@@ -99,7 +103,8 @@ class CheckCellTypes:
                     eprint(zscoreDb)
                     #eprint(allRanks)
                     raise Exception("error")
-
+                sys.stdout.write('.',)
+            print(cre.accession, "ok")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -112,7 +117,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = ["hg19", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
