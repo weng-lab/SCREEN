@@ -15,6 +15,7 @@ from cre_utils import isclose
 AddPath(__file__, '../../website/common/')
 from pg import PGsearch
 from cached_objects import CachedObjects
+from pg_common import PGcommon
 
 AddPath(__file__, '../../website/models/')
 from cre import CRE
@@ -29,6 +30,9 @@ class CheckCellTypes:
         self.pgSearch = PGsearch(self.ps, self.assembly)
         self.cache = CachedObjects(self.ps, self.assembly)
         self._load()
+
+        pg = PGcommon(self.ps, self.assembly)
+        self.rankMethodToIDxToCellType = pg.rankMethodToIDxToCellType()
 
     def _load(self):
         fnBases = [("CTCF", 2),
@@ -77,12 +81,16 @@ class CheckCellTypes:
                    "Enhancer" : "dnase+h3k27ac",
                    "CTCF" : "ctcf-only",
                    "Insulator" : "dnase+ctcf"}
+
         for cre in cres:
             allRanks = CRE(self.pgSearch, cre.accession, self.cache).allRanks()
+            print(allRanks)
+            print(self.rankMethodToIDxToCellType.keys())
             for rm, ct, fnp in self.rankMethodToCtAndFileID:
                 cmds = ['grep', cre.mpName, fnp]
-                zscore = Utils.runCmds(cmds)[0].split('\t')[1]
-                zscoreDb = allRanks[lookups[rm]]["zscores"][ct]
+                zscore = float(Utils.runCmds(cmds)[0].split('\t')[1])
+                ctIdx = self.rankMethodToIDxToCellType[rm][ct]
+                zscoreDb = allRanks["zscores"][lookups[rm]][ctIdx]
                 if not isclose(zscore, zscoreDb):
                     eprint("PROBLEM")
                     eprint(cre)
@@ -92,6 +100,7 @@ class CheckCellTypes:
                     eprint("from DB lookup")
                     eprint(zscoreDb)
                     #eprint(allRanks)
+                    raise Exception("error")
 
 
 def parse_args():
