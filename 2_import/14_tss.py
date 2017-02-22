@@ -3,7 +3,7 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse
 from itertools import groupby
-from cStringIO import StringIO
+import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
