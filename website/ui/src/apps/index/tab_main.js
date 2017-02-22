@@ -41,7 +41,7 @@ class TabMain extends React.Component {
 		    let params = jQuery.param({q: userQuery, assembly});
 		    let url = "/search/?" + params;
 		    window.location.href = url;
-		}		
+		}
 	    }.bind(this)
 	});
     }
@@ -50,29 +50,40 @@ class TabMain extends React.Component {
 	let userQuery = this.refs.searchBox.value;
 	this.loadSearch("hg19", userQuery);
     }
-    
+
     searchMm10() {
 	let userQuery = this.refs.searchBox.value;
 	this.loadSearch("mm10", userQuery);
     }
-    
+
     textBox() {
-	return (<div>
+	return (<div className="container">
+
+                <div className="row">
+                <div className="col-md-12">
 		{"SCREEN is a web interface for searching and visualizing the Registry of candidate Regulatory Elements (cREs) derived from "}
 		<a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>
 		{". The Registry contains 2.67M human cREs in hg19 and 1.67M mouse cREs in mm10, with orthologous cREs cross-referenced.  SCREEN presents the data that support biochemical activities of the cREs and the expression of nearby genes in specific cell and tissue types."}
-		<hr />
-		{"You may launch SCREEN using the search box below or browse a curated list of SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs."}
-		
-		<div id={"gwasGroup"}>
+                </div>
+                </div>
+
+                <div className="row"><br />
+                </div>
+
+                <div className="row">
+                <div className="col-md-8">
+                You may launch SCREEN using the search box below or browse a curated list of SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
+                </div>
+                <div className="col-md-4">
 		<a className={"btn btn-primary"} href={"/gwasApp/hg19/"} role={"button"}>
 		{"Browse GWAS"}
 		</a>
 		</div>
+                </div>
 
-		</div>);
+                </div>);
     }
-    
+
     logo(){
 	return (<img
 		className={"img-responsive mainLogo"}
@@ -84,12 +95,12 @@ class TabMain extends React.Component {
 	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	return (<div>
-		
+
 		<div className={"form-group text-center"}>
 		<input ref="searchBox" id={"mainSearchbox"}
 		type={"text"} defaultValue={dv} />
 		</div>
-		
+
 		<div id={"mainButtonGroup"}>
 		<a className={"btn btn-primary btn-lg"}
 		onClick={this.searchHg19} role={"button"}>Search hg19</a>
@@ -140,7 +151,7 @@ class TabMain extends React.Component {
 	    }
 	});
     }
-    
+
     render() {
 	return (<div>
 
@@ -149,15 +160,15 @@ class TabMain extends React.Component {
 		<div className={"col-md-6"}>
 		{this.logo()}
 		</div>
-		
+
 		<div className={"col-md-6"}>
 		<div className={"jumbotron"} id={"mainDesc"}>
 		{this.textBox()}
 		</div>
 		</div>
-		
+
 		</div>
-		
+
 		<div className={"row"}>
 		<div className={"col-md-12 text-center"}>
 
@@ -165,11 +176,11 @@ class TabMain extends React.Component {
 		{this.state.userQueryErr}
 		</span>
 		<br />
-		
+
 		{this.searchBox()}
 		</div>
 		</div>
-		
+
 		</div>);
     }
 }
