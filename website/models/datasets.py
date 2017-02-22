@@ -37,18 +37,3 @@ class Datasets:
 
         self.biosample_types = sorted(list(set([b["biosample_type"]
                                                 for b in rows])))
-
-        self.globalCellTypeInfo_json = json.dumps(self.globalCellTypeInfo)
-        self.globalCellTypeInfoArr_json = json.dumps(self.globalCellTypeInfoArr)
-
-    def tissue(self, ct):
-        return self.cellTypeToTissue.get(ct, "")
-
-    def biosampleName(self, ct):
-        return self.cellTypeToBiosampleName.get(ct, "")
-
-    def globalCellTypeInfoJson(self):
-        return self.globalCellTypeInfo_json
-
-    def globalCellTypeInfoArrJson(self):
-        return self.globalCellTypeInfoArr_json

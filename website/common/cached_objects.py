@@ -24,18 +24,6 @@ class CachedObjectsWrapper:
     def __getitem__(self, assembly):
         return self.cos[assembly]
 
-    def getTissue(self, assembly, ct):
-        return self.cos[assembly].getTissue(ct)
-
-    def getTissueMap(self, assembly):
-        return self.cos[assembly].getTissueMap()
-
-    def getCTTjson(self, assembly):
-        return self.cos[assembly].getCTTjson()
-
-    def getTissueAsMap(self, assembly, ct):
-        return self.cos[assembly].getTissueAsMap(ct)
-
 class CachedObjects:
     def __init__(self, ps, assembly):
         self.ps = ps
