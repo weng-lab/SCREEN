@@ -6,11 +6,13 @@ import sys
 import os
 import psycopg2
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
 from db_utils import getcursor
+from utils import AddPath
+
+AddPath(__file__, '../common/')
+from dbconnect import db_connect
 
 regelms = __import__('01_regelms')
 pg_cre =  __import__('02_pg_cre')
@@ -45,7 +47,6 @@ def vacAll(DBCONN):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--vac', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
@@ -54,7 +55,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     if args.vac:
         vacAll(DBCONN)

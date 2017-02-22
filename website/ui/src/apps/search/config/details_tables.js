@@ -5,7 +5,7 @@ import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
 export const TopTissuesTables = () => ({
     "promoter": {
-	title: "Promoter Z-scores",
+	title: "H3K4me3 Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: Render.cell_type},
@@ -22,7 +22,7 @@ export const TopTissuesTables = () => ({
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "enhancer": {
-	title: "Enhancer Z-scores",
+	title: "H3K27ac Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type},
@@ -183,19 +183,19 @@ export const NearbyGenomicTable = () => ({
 	order: [[0, "asc"]]
     },
     "re_tads": {
-	title: "Other cREs within TAD",
+	title: "Other cREs within TAD (<1Mb)",
 	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
-	emptyText: "No cREs within TAD",
+	emptyText: "No cREs within TAD with 1Mb",
 	cols: [
 	    {title: "accession", data: "accession",
 	     render: Render.relink(GlobalAssembly) },
-	    {title: "coordinates", data: "position",
-	     render:  Render.position }	],
+	    {title: "distance", data: "distance",
+             render: Render.integer} ],
         pageLength: 5,
-	order: [[0, "asc"]],
+	order: [[1, "asc"]],
 	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
     }
 });

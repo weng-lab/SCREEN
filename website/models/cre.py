@@ -4,8 +4,6 @@ from __future__ import print_function
 
 import os
 
-from bigwig import BigWig
-
 class CRE:
     def __init__(self, pgSearch, accession, cache):
         self.pgSearch = pgSearch
@@ -42,9 +40,11 @@ class CRE:
 
     def genesInTad(self):
         coord = self.coord()
-        if self.tad is None:
-            self.tad = self.pgSearch.creTad(self.accession, coord.chrom)
-        return self.tad
+        return self.pgSearch.genesInTad(self.accession, coord.chrom)
+
+    def cresInTad(self):
+        coord = self.coord()
+        return self.pgSearch.cresInTad(self.accession, coord.chrom, coord.start)
 
     def promoterRanks(self):
         coord = self.coord()
@@ -67,8 +67,12 @@ class CRE:
             return ""
 
     def topTissues(self):
-        rmToCts = self.cache.rankMethodToCellTypes # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
-        ranks = self.allRanks()["zscores"] # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
+        # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
+        rmToCts = self.cache.rankMethodToCellTypes
+
+        # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
+        ranks = self.allRanks()["zscores"]
+
         def get_rank(ct, d):
             return -11.0 if ct not in d else d[ct]
         def arrToCtDict(arr, cts):

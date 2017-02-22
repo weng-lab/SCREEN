@@ -12,7 +12,7 @@ class MainController:
 
     def Index(self):
         pageInfo = PageInfoMain(*self.params)
-        return self.t('main/index', **pageInfo.wholePage(True))
+        return self.t('main/index', **pageInfo.wholePage(""))
 
     def RawQuery(self, q, url):
         pageInfo = PageInfoMain(*self.params)
@@ -21,15 +21,16 @@ class MainController:
     def search(self, args, kwargs, uuid):
         if "assembly" not in kwargs:
             pageInfo = PageInfoMain(*self.params)
-            return self.t("main/index", **pageInfo.wholePage("", True, "Error: no search assembly specified."))
+            return self.t("main/index", **pageInfo.wholePage("Error: no search assembly specified."))
         
         pageInfo = PageInfoSearch(*self.params)
         assembly = kwargs["assembly"]
         info = pageInfo.searchPage(args, kwargs, uuid)
         if "failed" in info:
+            print("failed query", info)
             pageInfo = PageInfoMain(*self.params)
-            failure_msg = "Error: no results for search '%s' in assembly %s. Please check your spelling and search assembly and try again." % (info["failed"], assembly)
-            return self.t("main/index", **pageInfo.wholePage(assembly, True, failure_msg))
+            userQueryErr = "Error: no results for search '%s' in assembly %s. Please check your spelling and search assembly and try again." % (info["failed"], assembly)
+            return self.t("main/index", **pageInfo.wholePage(userQueryErr))
         return self.t('main/search', **info)
 
     def element(self, accession):
@@ -55,7 +56,3 @@ class MainController:
     def rePeaks(self, reAccession, kwargs):
         pageInfo = PageInfoMain(*self.params)
         return pageInfo.rePeaks(reAccession, kwargs)
-
-    def autocomplete(self, j):
-        pageInfo = PageInfoMain(*self.params)
-        return pageInfo.autocomplete(j)

@@ -13,7 +13,7 @@ class MiniPeaksCache:
         self.nbins = nbins
         self.ver = ver
         
-        self.hosts = ["cassandra", "127.0.0.1"]
+        self.hosts = ["cassandra"]
         self.cluster = Cluster(self.hosts)
         self.session = self.cluster.connect()
         self.session.row_factory = dict_factory

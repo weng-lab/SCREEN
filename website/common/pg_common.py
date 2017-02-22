@@ -44,7 +44,9 @@ SELECT idx, celltype, rankmethod FROM {tn}
         return ret
 
     def makeCtMap(self):
-        amap = {"DNase": "dnase", "H3K4me3": "promoter",
-                "H3K27ac": "enhancer", "CTCF": "ctcf"}
+        amap = {"DNase": "dnase", 
+                "H3K4me3": "promoter", # FIXME: this could be misleading
+                "H3K27ac": "enhancer", # FIXME: this too
+                "CTCF": "ctcf"}
         rmInfo = self.rankMethodToIDxToCellType()
         return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
