@@ -9,6 +9,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/ut
 from files_and_paths import Dirs
 
 def main():
+    print("FIXME")
+    sys.exit(1)
     fnp = os.path.join(Dirs.encyclopedia, "Version-4", "candidate-re-links.json.gz")
     importer = executable_importer(fnp, "candidate_links", "link")
     print("will import %s" % fnp)
