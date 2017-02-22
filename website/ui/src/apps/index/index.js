@@ -1,9 +1,15 @@
-import ReactDOM from 'react-dom';
+import React from 'react'
+import {createStore, applyMiddleware} from 'redux'
+import {Provider} from 'react-redux'
+import thunkMiddleware from 'redux-thunk'
+import createLogger from 'redux-logger'
 
 import TabMain from './tab_main';
 import TabAbout from './tab_about';
 import TabTutorial from './tab_tutorial';
 import {tabPanelize} from '../../common/utility'
+
+import main_reducers from './main_reducers'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
@@ -48,7 +54,9 @@ class IndexPage extends React.Component {
 		</ul>
 		
 		<div className="tab-content clearfix">
-		{this.tabContent("main", (<TabMain />), "active")}
+		{this.tabContent("main",
+				 React.createElement(TabMain, {}),
+				 "active")}
 		{this.tabContent("about", TabAbout(), "")}
 		{this.tabContent("tut", TabTutorial(), "")}
 		</div>
@@ -57,11 +65,22 @@ class IndexPage extends React.Component {
     }
     
     render() {
-        return (<div>
+	const loggerMiddleware = createLogger();
+
+	const store = createStore(main_reducers,
+				  {},
+				  applyMiddleware(
+				      thunkMiddleware,
+				  ));
+	
+        return (<Provider store={store}>
+		<div>
 		{this.title()}
-                {this.tabs()}
+		{this.tabs()}
 		{this.footer()}
-                </div>);
+		</div>
+	        </Provider>
+	       );
     }
 }
 
