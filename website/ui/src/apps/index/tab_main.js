@@ -76,10 +76,33 @@ class TabMain extends React.Component {
     }
 
     componentDidMount(){
-	let sb = this.refs.searchBox;
-	    sb.autocomplete({
-	    source: function (userQuery, response) {
-		f(q.term, response)
+	const loadAuto = (userQuery, callback_f) => {
+	    let jq = JSON.stringify({userQuery});
+	    $.ajax({
+		type: "POST",
+		url: "/autows",
+		data: jq,
+		dataType: "json",
+		contentType : "application/json",
+		success: function(r){
+		    console.log(r);
+		    if("suggestions" == results["type"]){
+			console.log(r);
+			callback_f(r["results"]);
+		    }
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+		    console.log("Status: " + textStatus);
+		    console.log("Error: " + errorThrown);
+		    console.log(XMLHttpRequest);
+		}
+	    });
+	}
+
+	let sb = $("#mainSearchbox");
+	sb.autocomplete({
+	    source: function (userQuery, callback_f) {
+		loadAuto(userQuery.term, callback_f)
 	    },
 	    select: function(event, ui) {
 		sb.val(ui.item.value);

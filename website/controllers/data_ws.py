@@ -25,7 +25,6 @@ from common.session import Sessions
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from postgres_wrapper import PostgresWrapper
-from autocomplete import AutocompleterWrapper
 from cre_utils import checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
@@ -38,13 +37,8 @@ class DataWebServiceWrapper:
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
-        self.ac = AutocompleterWrapper(ps)
 
     def process(self, j, args, kwargs):
-        if "action" in j and j["action"] == "suggest":
-            return {"results": self.ac.get_suggestions(j["userQuery"]),
-                    "callback": j["callback"],
-                    "type": "suggestions"}
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
         if j["GlobalAssembly"] not in ["mm10", "hg19"]:
