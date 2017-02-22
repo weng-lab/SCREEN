@@ -109,7 +109,7 @@ To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={a
         dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
         return """
 This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.""".format(q=gene, assembly=self.assembly, dists=dists)
+To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.""".format(q=gene, assembly=self.assembly, dists=dists)
 
     def _try_find_celltype(self, s):
         pass
