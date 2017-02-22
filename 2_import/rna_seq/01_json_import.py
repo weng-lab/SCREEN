@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os, sys, json, psycopg2, argparse, gzip
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils
+from utils import Utils, printt
 
 def setupAndCopy(cur, assembly, fnp):
     tableName = "r_expression_" + assembly
-    
+
+    printt("dropping and creating", tableName)
     cur.execute("""
 DROP TABLE IF EXISTS {tableName};
 
@@ -26,14 +27,13 @@ fpkm NUMERIC NOT NULL,
 tpm NUMERIC NOT NULL);
     """.format(tableName = tableName))
 
-    with open(fnp) as f:
+    printt("importing", fnp)
+    with gzip.open(fnp) as f:
         cur.copy_from(f, tableName, ',',
                       columns=("ensembl_id", "gene_name", "dataset", "replicate", "fpkm", "tpm"))
-    print("imported", fnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -46,11 +46,11 @@ def main():
     fnps["mm10"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
 
     for assembly in ["mm10", "hg19"]:
-        DBCONN = db_connect(os.path.realpath(__file__), args.local)
         inFnp = fnps[assembly]
-        outFnp = inFnp + ".csv"
+        outFnp = inFnp + ".csv.gz"
 
         if not os.path.exists(outFnp):
+            printt("missing", outFnp)
             cmds = [os.path.join(os.path.dirname(__file__),
                                  "json_parser/bin/read_json"),
                     inFnp]
@@ -59,6 +59,7 @@ def main():
         else:
             print("using", outFnp)
             
+        DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "08_setup_log") as curs:
             setupAndCopy(curs, assembly, outFnp)
 

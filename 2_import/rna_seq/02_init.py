@@ -3,21 +3,24 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, argparse
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome
 from exp import Exp
-from utils import Utils
+from utils import Utils, printt
 from metadataws import MetadataWS
 
 def setupDB(cur, assembly):
-    cur.execute("""
-DROP TABLE IF EXISTS {tableName};
+    tableName = "r_rnas_" + assembly
+    printt("dropping and creating", tableName)
 
-CREATE TABLE {tableName}
+    cur.execute("""
+DROP TABLE IF EXISTS {tn};
+
+CREATE TABLE {tn}
 (id serial PRIMARY KEY,
 encode_id text,
 cellType text,
@@ -28,10 +31,12 @@ lab text,
 assay_term_name text,
 biosample_type text,
 description text
-    ) """.format(tableName = "r_rnas_" + assembly))
+    ) """.format(tn = tableName))
 
 def insertRNAs(cur, assembly):
-    tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
+    tissueFixesFnp = os.path.join(os.path.dirname(__file__),
+                                  "cellTypeFixesEncode.txt")
+    printt("reading", tissueFixesFnp)
     with open(tissueFixesFnp) as f:
         rows = f.readlines()
     lookup = {}
@@ -42,9 +47,12 @@ def insertRNAs(cur, assembly):
                             + r + "found " + str(len(toks)))
         lookup[toks[0]] = toks[1].strip()
 
+    printt("gettings datasets")
     cur.execute("select distinct(dataset) from r_expression_" + assembly)
     rows = cur.fetchall()
-    print("found", len(rows), "rows")
+    printt("found", len(rows), "rows")
+
+    printt("loading metadata")
     counter = 0
     for row in rows:
         encodeID = row[0]
@@ -75,20 +83,22 @@ def insertRNAs(cur, assembly):
             #print(encodeID, "assuming cell compartment")
             cellCompartment = "cell"
 
+        tableName = "r_rnas_" + assembly
         cur.execute("""
-INSERT INTO {tableName}
-        (encode_id, cellType, organ, cellCompartment, target, lab, assay_term_name, biosample_type, description)
+INSERT INTO {tn}
+(encode_id, cellType, organ, cellCompartment, target, lab, 
+assay_term_name, biosample_type, description)
 VALUES (
 %(encode_id)s,
 %(cellType)s,
 %(organ)s,
-        %(cellCompartment)s,
+%(cellCompartment)s,
 %(target)s,
 %(lab)s,
 %(assay)s,
 %(biosample_type)s,
 %(desc)s
-        )""".format(tableName = "r_rnas_" + assembly),
+        )""".format(tn = tableName),
                     {"encode_id" : exp.encodeID,
                      "cellType" : exp.biosample_term_name,
                      "organ" : organ,
@@ -100,11 +110,10 @@ VALUES (
                      "desc" : exp.description
                     })
         counter += 1
-    print("inserted", counter, "RNA-seq for", assembly)
+    printt("inserted", counter, "RNA-seq for", assembly)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -112,8 +121,9 @@ def main():
     args = parse_args()
 
     for assembly in ["mm10", "hg19"]:
-        DBCONN = db_connect(os.path.realpath(__file__), args.local)
+        DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "02_init") as curs:
+            print('***********', assembly)
             setupDB(curs, assembly)
             insertRNAs(curs, assembly)
 
