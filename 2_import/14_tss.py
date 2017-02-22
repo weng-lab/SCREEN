@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, StringIO
+import os, sys, json, psycopg2, re, argparse
 from itertools import groupby
+from cStringIO import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -51,7 +52,7 @@ class AddTSS:
             ret.append(r)
 
         print("merged from", len(rows), "to", len(ret))
-            
+
         tableName = self.assembly + "_tss_info"
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
