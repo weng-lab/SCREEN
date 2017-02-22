@@ -72,6 +72,15 @@ export const dccLink = (expID) => {
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
+export const dccLinkCtGroup = (ctn) => {
+    let accs = Globals.byCellType[ctn].map((info) => {
+        return info.expID; });
+    let q = accs.join("&accession=");
+    var url = 'https://www.encodeproject.org/search/?accession=' + q;
+    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
+    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+}
+
 export const dccLinkAndIcon = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';

@@ -101,6 +101,7 @@ class CachedObjects:
             "chromCounts" : self.chromCounts,
             "chromLens" : chrom_lengths[self.assembly],
             "creHistBins" : self.creHist,
+            "byCellType" : datasets.byCellType
         }
 
     def assayAndCellTypeToExpAndBigWigAccessions(self, assay, ct):
