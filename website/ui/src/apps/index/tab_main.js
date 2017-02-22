@@ -87,9 +87,9 @@ class TabMain extends React.Component {
 
     logo(){
 	return (<img
-className={"img-responsive mainLogo"}
-src={"/static/encode/classic-image.jpg"}
-alt={"ENCODE logo"} />);
+                    className={"img-responsive mainLogo"}
+                    src={"/static/encode/classic-image2.jpg"}
+                    alt={"ENCODE logo"} />);
     }
 
     searchBox(){
