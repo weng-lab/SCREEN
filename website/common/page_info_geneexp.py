@@ -31,6 +31,7 @@ class PageInfoGeneExp:
         if len(args):
             assembly = args[0]
             _gene = kwargs["gene"]
+
         p = ParseSearch("", self.ps.DBCONN, assembly)
         gene = p._gene_alias_to_symbol(_gene.split(".")[0])
         if not gene:
@@ -39,17 +40,8 @@ class PageInfoGeneExp:
             gene = _gene
 
         ret = self.wholePage(assembly)
-        cache = self.cacheW[assembly]
 
         ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
 
-        cellcs = Compartments
-        ret.update({"cellCompartments" : json.dumps(cellcs),
-                    "globalCellCompartments" : json.dumps(cellcs),
-                    "globalCellTypeInfo": cache.globalCellTypeInfo(),
-                    "globalCellTypeInfoArr": cache.globalCellTypeInfoArr()
-                    })
-
-        ret.update({"globalParsedQuery" : json.dumps({"gene" : gene})})
         return ret
 
