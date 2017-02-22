@@ -76,7 +76,8 @@ class TabMain extends React.Component {
                         You may launch SCREEN using the search box below or browse a curated list of SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
                     </div>
                     <div className="col-md-4">
-		        <a className={"btn btn-primary"} href={"/gwasApp/hg19/"} role={"button"}>
+		        <a className={"btn btn-primary mainButtonGwas"}
+                           href={"/gwasApp/hg19/"} role={"button"}>
 		            {"Browse GWAS"}
 		        </a>
 		    </div>

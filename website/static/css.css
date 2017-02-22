@@ -410,3 +410,13 @@ table tr td.minipeak {
     background-color: #34a410;
     border-color: #34a410;
 }
+
+.mainButtonGwas {
+    background-color: #34a410;
+    border-color: #34a410;
+}
+
+.mainButtonGwas:hover {
+    background-color: #A41034;
+    border-color: #A41034;
+}
