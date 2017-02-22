@@ -45,10 +45,7 @@ class AutocompleteWebService:
         ret = {"globalParsedQuery" : json.dumps(parsed),
                "failed" : False}
         if userQuery and not self._haveresults(parsed):
-            ret = {"failed" : True,
-                   "userQueryErr" : "Error: no results for search '%s' in assembly %s. Please check your spelling and search assembly and try again." %
-                   (userQuery, assembly)}
-
+            ret = {"failed": True}
         return ret
 
 

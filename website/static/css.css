@@ -385,3 +385,8 @@ table tr td.minipeak {
 #root {
     height: 100%;
 }
+
+.mainPageErr {
+    color : #ff0000;
+    font-weight : bold;
+}
