@@ -33,9 +33,9 @@ class TabMain extends React.Component {
 		    let userQueryErr = (
 			    <span>
 			    Error: no results for your query.
-			    <p />
+			    <br />
 			    Please check your spelling and search assembly, and try again.
-			</span>)
+			    </span>);
 		    this.setState({userQueryErr})
 		} else {
 		    let params = jQuery.param({q: userQuery, assembly});
