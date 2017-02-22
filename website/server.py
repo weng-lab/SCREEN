@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import cherrypy, os, sys, argparse, time
-
+import socket
 import psycopg2, psycopg2.pool
 
 import cherrys
@@ -26,7 +26,6 @@ class WebServerConfig:
 
         self.root = os.path.realpath(os.path.dirname(__file__))
 
-        import socket
         hn = socket.gethostname()
         self.tmpDir = os.path.join(self.root, "tmp", hn)
 
