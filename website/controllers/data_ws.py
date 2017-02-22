@@ -77,6 +77,13 @@ class DataWebService:
 
         self.sessions = Sessions(ps.DBCONN)
 
+    def process(self, j, args, kwargs):
+        action = args[0]
+        try:
+            return self.actions[action](j, args[1:])
+        except:
+            raise
+
     def helpkey(self, j, args):
         if "key" not in j: return {}
         data = self.ps.get_helpkey(j["key"])
@@ -84,13 +91,6 @@ class DataWebService:
         return { "title": data[0],
                  "summary": data[1],
                  "link": data[2] }
-
-    def process(self, j, args, kwargs):
-        action = args[0]
-        try:
-            return self.actions[action](j, args[1:])
-        except:
-            raise
 
     def _ortholog(self, j, accession):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
