@@ -1,23 +1,54 @@
-import React from 'react';
+import React from 'react'
+import {render} from 'react-dom'
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+
+import * as Actions from './main_actions';
 
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
-	this.userQueries = {};
+	this.userQueries = {}; // cache autocomplete
+        this.state = { userErrMsg : null };
+	this.loadSearch = this.loadSearch.bind(this);
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
     }
-    
+
+    loadSearch(assembly, userQuery){
+	let jq = JSON.stringify({assembly, userQuery});
+	$.ajax({
+	    url: "/autows/search",
+	    type: "POST",
+	    data: jq,
+	    dataType: "json",
+	    contentType : "application/json",
+	    error: function(jqxhr, status, error) {
+		this.setState({userErrMsg : "err during load"});
+	    }.bind(this),
+	    success: function(r){
+		if(r.failed){
+		    console.log("userErrMsg", r);
+		    this.setState({userErrMsg : r.userErrMsg})
+		} else {
+		    let params = jQuery.param({q: userQuery, assembly});
+		    let url = "/search/?" + params;
+		    window.location.href = url;
+		}		
+	    }.bind(this)
+	});
+    }
+
     searchHg19() {
-	$("#searchformassembly").attr("value", "hg19")
-	$("#searchform").submit();
+	let userQuery = this.refs.searchBox.value;
+	this.loadSearch("hg19", userQuery);
     }
     
     searchMm10() {
-	$("#searchformassembly").attr("value", "mm10")
-	$("#searchform").submit();
+	let userQuery = this.refs.searchBox.value;
+	this.loadSearch("mm10", userQuery);
     }
-
+    
     textBox() {
 	return (<div>
 		{"SCREEN is a web interface for searching and visualizing the Registry of candidate Regulatory Elements (cREs) derived from "}
@@ -43,35 +74,34 @@ class TabMain extends React.Component {
     }
 
     searchErr() {
-	return (<span
-		style={{color : "#ff0000", fontWeight : "bold"}}>
-		{"failedsearch"}
+	if(!this.state.userErrMsg){
+	    return "";
+	}
+	return (<span ref="error" style={{color : "#ff0000", fontWeight : "bold"}}>
+		{this.state.userErrMsg}
 		</span>);
     }
     
     searchBox(){
+	let dv = "K562 chr11:5226493-5403124";
+	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	return (
 		<div>
-		<form action={"search"} method={"get"} id={"searchform"}>
 		{this.searchErr()}
 		<br />
 
 		<div className={"form-group text-center"}>
-		<input ref="searchBox" id={"mainSearchbox"} type={"text"} name={"q"} defaultValue={"K562 chr11:5226493-5403124"} />
-		<input id={"searchformassembly"} name={"assembly"} value={"hg19"} type={"hidden"} />
+		<input ref="searchBox" id={"mainSearchbox"} type={"text"} defaultValue={dv} />
 		</div>
 		
 		<div id={"mainButtonGroup"}>
-
 		<a className={"btn btn-primary btn-lg"} onClick={this.searchHg19} role={"button"}>Search hg19</a>
 		{" "}
 		<a className={"btn btn-success btn-lg"} onClick={this.searchMm10} role={"button"}>Search mm10</a>
 		<br />
 		<br />
-		<i>{'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"'}</i>
+		<i>{examples}</i>
 		</div>
-		
-            </form>
 		
             </div>);
     }
@@ -141,4 +171,8 @@ class TabMain extends React.Component {
     }
 }
 
-export default TabMain;
+const mapStateToProps = (state) => ({ ...state });
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+export default connect(mapStateToProps, mapDispatchToProps)(TabMain);

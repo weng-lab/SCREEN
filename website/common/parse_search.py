@@ -6,7 +6,7 @@ from coord import Coord
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession
-from constants import chrom_lengths
+from constants import chrom_lengths, chroms
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
@@ -24,7 +24,7 @@ class ParseSearch:
         self.userErrMsg = ""
 
         self.assembly = assembly
-        self.chroms = ["chr" + x for x in ([str(x) for x in range(1, 22 if assembly == "hg19" else 19)] + ["X", "Y"])]
+        self.chroms = chroms[assembly]
         self._gene_tablename = self.assembly + "_gene_info"
 
     def _snp_tablename(self, c):

@@ -8,16 +8,18 @@ class PageInfoMain:
         self.ps = ps
         self.cacheW = cacheW
 
-    def wholePage(self):
+    def wholePage(self, userQueryErr):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
         return {"page": {"title" : PageTitle("")},
                 "Assembly" : None,
+                "userQueryErr" : userQueryErr,
                 "bundlets" : os.path.getmtime(bundleFnp),
                 "cssts" : os.path.getmtime(cssFnp)
         }
 
+    # TODO: move elsewhere
     def setCart(self, uuid, reAccessions):
         return self.ps.addToCart(uuid, reAccessions)
