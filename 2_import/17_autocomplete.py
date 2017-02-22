@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO, gzip
+import os, sys, json, psycopg2, argparse, gzip
+from cStringIO import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -83,7 +84,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         outF.write("\n".join(names))
         outF.seek(0)
 
-        printt("inserting into table...")
+        printt("inserting into", self.tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}

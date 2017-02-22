@@ -80,16 +80,13 @@ class TabMain extends React.Component {
 	    let jq = JSON.stringify({userQuery});
 	    $.ajax({
 		type: "POST",
-		url: "/autows",
+		url: "/autows/suggestions",
 		data: jq,
 		dataType: "json",
 		contentType : "application/json",
 		success: function(r){
 		    console.log(r);
-		    if("suggestions" == results["type"]){
-			console.log(r);
-			callback_f(r["results"]);
-		    }
+		    callback_f(r);
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
 		    console.log("Status: " + textStatus);
