@@ -374,7 +374,7 @@ FROM {tn} tads
 INNER JOIN {ctn} as cre
 ON cre.accession = tads.accession
 WHERE tadid in (SELECT tadid FROM {tn} WHERE accession = %s)
-AND abs(%s - start) < 1000000
+AND abs(%s - start) < 100000
 ORDER BY 2
 """.format(tn = self.assembly + "_tads", ctn = self.assembly + "_cre"),
                          (start, accession, start))

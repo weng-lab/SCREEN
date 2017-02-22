@@ -183,12 +183,12 @@ export const NearbyGenomicTable = () => ({
 	order: [[0, "asc"]]
     },
     "re_tads": {
-	title: "Other cREs within TAD (<1Mb)",
+	title: "Other cREs within TAD (<100 Kb)",
 	paging: true,
 	info: false,
 	bFilter: false,
         bLengthChange: true,
-	emptyText: "No cREs within TAD with 1Mb",
+	emptyText: "No cREs within TAD with 100 Kb",
 	cols: [
 	    {title: "accession", data: "accession",
 	     render: Render.relink(GlobalAssembly) },
