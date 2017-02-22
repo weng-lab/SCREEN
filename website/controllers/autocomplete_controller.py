@@ -12,5 +12,14 @@ class AutocompleteWebService:
     def __init__(self, ps):
         self.ac = AutocompleterWrapper(ps)
 
+        self.actions = {"suggestions" : self.suggestions}
+
     def process(self, j, args, kwargs):
+        action = args[0]
+        try:
+            return self.actions[action](j, args[1:])
+        except:
+            raise
+
+    def suggestions(self, j, args):
         return self.ac.get_suggestions(j["userQuery"])
