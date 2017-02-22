@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO, gzip
+import os, sys, json, psycopg2, argparse, gzip
+from cStringIO import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -47,6 +48,7 @@ class ImportTADs:
                           columns=("mpName", "tadName", "tadID"))
         printt("copied in TADs", self.curs.rowcount)
 
+        printt("updaing accessions")
         self.curs.execute("""
 UPDATE {tadTableName} as tads
 SET accession = cre.accession
