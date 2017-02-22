@@ -30,7 +30,7 @@ class PageInfoGeneExp:
         _gene = ""
         if len(args):
             assembly = args[0]
-            _gene = args[1]
+            _gene = kwargs["gene"]
         p = ParseSearch("", self.ps.DBCONN, assembly)
         gene = p._gene_alias_to_symbol(_gene.split(".")[0])
         if not gene:

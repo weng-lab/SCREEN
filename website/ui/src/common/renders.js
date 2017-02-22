@@ -53,7 +53,7 @@ export const cart_img = (rmv, src_only) => {
 
 export const geDeButton = (d) => {
     let _d = d.replace(/\./g, "%2e");
-    var ge = '<a href="/geneexp/' + GlobalAssembly + '/' + _d + '" target="_blank">' + d + '</a>';
+    var ge = '<a href="/geneexp/' + GlobalAssembly + '/?gene=' + _d + '" target="_blank">' + d + '</a>';
     if("mm10" != GlobalAssembly){
         return ge;
     }

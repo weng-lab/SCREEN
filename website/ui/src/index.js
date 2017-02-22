@@ -24,7 +24,7 @@ ReactDOM.render(
     (<Router history={browserHistory} createElement={myCreateElement} >
      <Route path="/" component={IndexPage} />
      <Route path="/search(.*)" component={Search} />
-     <Route path="/geneexp/:assembly/:geneID" component={GeneExp} />
+     <Route path="/geneexp/:assembly/" component={GeneExp} />
      <Route path="/deGene/:assembly/:geneID" component={De} />
      <Route path="/gwasApp/:assembly" component={Gwas} />
      </Router>),
