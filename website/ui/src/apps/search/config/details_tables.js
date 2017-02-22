@@ -5,7 +5,7 @@ import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
 export const TopTissuesTables = () => ({
     "promoter": {
-	title: "Promoter Z-scores",
+	title: "H3K4me3 Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: Render.cell_type},
@@ -22,7 +22,7 @@ export const TopTissuesTables = () => ({
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "enhancer": {
-	title: "Enhancer Z-scores",
+	title: "H3K27ac Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type},
