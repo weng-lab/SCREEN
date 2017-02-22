@@ -102,10 +102,10 @@ type={"text"} defaultValue={dv} />
 	    </div>
 
 	    <div id={"mainButtonGroup"}>
-		<a className={"btn btn-primary btn-lg"}
+		<a className={"btn btn-primary btn-lg mainButtonHg19"}
                    onClick={this.searchHg19} role={"button"}>Search hg19</a>
 		{" "}
-		<a className={"btn btn-success btn-lg"}
+		<a className={"btn btn-success btn-lg mainButtonMm10"}
                    onClick={this.searchMm10} role={"button"}>Search mm10</a>
 		<br />
 		<br />
