@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys, os
 import re
 from coord import Coord
@@ -51,19 +52,29 @@ class ParseSearch:
     def _get_snpcoord(self, s):
         for chrom in self.chroms:
             with getcursor(self.DBCONN, "parse_search$ParseSearch::_get_snpcoord") as curs:
-                curs.execute("""SELECT start, stop FROM {tablename}
-                                WHERE name = '{s}'""".format(tablename=self._snp_tablename(chrom), s=s))
+                curs.execute("""
+SELECT start, stop 
+FROM {tn}
+WHERE name = %s
+""".format(tn = self._snp_tablename(chrom)), (s, ))
             r = curs.fetchone()
             if r: return Coord(chrom, r[0], r[1])
         return None
 
     def _gene_alias_to_symbol(self, s):
-        fields = ["approved_symbol", "ensemblid", "ensemblid_ver", "info->>'approved_name'", "info->>'UniProt_ID'", "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
+        fields = ["approved_symbol", "ensemblid", "ensemblid_ver",
+                  "info->>'approved_name'", "info->>'UniProt_ID'",
+                  "info->>'UCSC_ID'", "info->>'Vega_ID'", "info->>'RefSeq_ID'"]
         whereclause = " or ".join(["LOWER(%s) = LOWER('%s')" % (x, s) for x in fields]) + " or (LOWER('%s') = ANY(translate(info->>'synonyms', '[]', '{}')::text[]))" % s
         print(whereclause)
         with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
-            curs.execute("""SELECT approved_symbol, info FROM {tablename}
-                            WHERE {whereclause}""".format(tablename=self._gene_tablename, whereclause=whereclause))
+            curs.execute("""
+SELECT gi.approved_symbol, gi.info
+FROM hg19_gene_info_mv AS mv
+INNER JOIN hg19_gene_info gi
+ON gi.id = mv.geneid
+WHERE LOWER(%s) = value 
+            """.format(tn = self._gene_tablename), (s,))
             r = curs.fetchone()
         if not r or not r[0]:
             return None

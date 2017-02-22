@@ -216,6 +216,26 @@ info jsonb);
 
         makeIndex(self.curs, tableName, ["geneid"])
 
+def makeMV(curs, assembly):
+    mv = assembly + "_gene_info_mv"
+    printt("making", mv)
+    curs.execute("""
+DROP MATERIALIZED VIEW IF EXISTS {mv} CASCADE;
+
+CREATE MATERIALIZED VIEW {mv} AS
+SELECT q.id AS geneid, LOWER(d.value) AS value
+FROM hg19_gene_info as q
+JOIN jsonb_each_text(q.info) as d ON true
+UNION
+SELECT q.id AS geneid, LOWER(q.ensemblid) AS value
+FROM hg19_gene_info as q
+UNION 
+SELECT q.id AS geneid, LOWER(q.ensemblid_ver) AS value
+FROM hg19_gene_info as q
+""".format(mv = mv))
+
+    makeIndex(curs, mv, ["geneid", "value"])
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -234,8 +254,9 @@ def main():
     for assembly in assemblies:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             aga = ImportGenes(curs, assembly)
-            aga.run()
-
+            #aga.run()
+            makeMV(curs, assembly)
+                 
     return 0
 
 if __name__ == '__main__':
