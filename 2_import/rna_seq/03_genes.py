@@ -18,7 +18,7 @@ def setupDB(cur, assembly):
     etn = "r_expression_" + assembly
     printt("dropping and creating", gtn)
     cur.execute("""
-DROP TABLE IF EXISTS {gtn}
+DROP TABLE IF EXISTS {gtn};
 CREATE TABLE {gtn} AS
 SELECT DISTINCT r.ensembl_id, r.gene_name FROM {etn} AS r
 """.format(gtn = gtn, etn = etn))
