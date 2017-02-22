@@ -77,19 +77,23 @@ class ParseSearch:
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
-                # TODO: sanitize input, and use paramaterized query
                 curs.execute("""
 SELECT oname, chrom, start, stop, altchrom, altstart, altstop, 
-similarity(name, '{q}') AS sm 
+similarity(name, %s) AS sm 
 FROM {assembly}_autocomplete 
-WHERE name % '{q}' 
+WHERE name %% %s 
 ORDER BY sm DESC LIMIT 1
-""".format(assembly = self.assembly, q=s))
+                """.format(assembly = self.assembly), (s, s))
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
-                    return (interpretation, Coord(r[0][1], int(r[0][2]) - tssdist, r[0][3]) if not tss else Coord(r[0][4], int(r[0][5]) - tssdist, r[0][6]),
-                            s, r[0][1] == r[0][4] and r[0][2] == r[0][5] and r[0][3] == r[0][6])
+                    r = r[0]
+                    if tss:
+                        coord = Coord(r[4], int(r[5]) - tssdist, r[6])
+                    else:
+                        coord = Coord(r[1], int(r[2]) - tssdist, r[3])
+                    same = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
+                    return (interpretation,  coord, s, same)
         return (interpretation, None, " ".join(p), False)
 
     def get_genetext(self, gene, tss = False, notss = False, dist=0):
