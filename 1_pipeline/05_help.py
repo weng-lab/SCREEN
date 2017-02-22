@@ -5,18 +5,18 @@ import sys
 import argparse
 from oauth2client import tools
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../website/common"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../website"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../googleapi"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from db_utils import getcursor
+from utils import AddPath
 
+AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
 from constants import helptext
-from helptext import GoogleDocs
 
-sys.path.append("../../../metadata/utils")
-from db_utils import getcursor
+AddPath(__file__, "../googleapi")
+from helptext import GoogleDocs
 
 class DB:
     def __init__(self, DBCONN):
@@ -37,7 +37,6 @@ class DB:
 
 def parseargs():
     parser = argparse.ArgumentParser(parents = [tools.argparser])
-    parser.add_argument('--local', action="store_true", default=False)
     return parser.parse_args()
 
 keymap = {"Activity Heatmap": "main_rank_heatmap",
@@ -55,7 +54,7 @@ def main():
     inserted = 0
 
     # connect to DB
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
     db = DB(DBCONN)
 
     # download GoogleDoc
