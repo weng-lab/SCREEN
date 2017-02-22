@@ -39,7 +39,7 @@ export const TopTissuesTables = () => ({
 	rank_f: (d) => (Math.log(d["one"]))
     },
     "ctcf": {
-	title: "CTCF-bound Z-scores",
+	title: "CTCF Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type},
