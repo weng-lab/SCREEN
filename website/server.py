@@ -2,31 +2,24 @@
 
 import cherrypy, os, sys, argparse, time
 
-#from elasticsearch import Elasticsearch
 import psycopg2, psycopg2.pool
 
-# https://pypi.python.org/pypi/cherrys
 import cherrys
 cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
 from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from templates import Templates
+from utils import Utils, AddPath
+
+AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
-from templates import Templates
-from utils import Utils
-
-class DummyEs:
-    def search(self, index, body):
-        return {"hits": {"total": 0, "hits": [] }}
-    def __init__(self):
-        pass
-
-class Config:
+class WebServerConfig:
     def __init__(self, siteName, production):
         self.siteName = siteName
         self.production = production
@@ -71,7 +64,6 @@ def parse_args():
     parser.add_argument('--dev', action="store_false")
     parser.add_argument('--dump', action="store_true", default=False)
     parser.add_argument('--production', action="store_true")
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--port', default=8000, type=int)
     return parser.parse_args()
 
@@ -80,13 +72,13 @@ def main():
     if args.production:
         args.dev = False
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
 
-    config = Config("main", args.production)
-    main = MainApp(args, config.viewDir, config.staticDir, ps, cow)
-    cherrypy.tree.mount(main, '/', config.getRootConfig())
+    wsconfig = WebServerConfig("main", args.production)
+    main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
+    cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
@@ -98,7 +90,7 @@ def main():
                                 'server.thread_pool': 30,
                                 'log.screen' : False,
                                 'log.access_file' : "",
-                                'log.error_file' : config.errorFnp
+                                'log.error_file' : wsconfig.errorFnp
                                 })
     cherrypy.engine.start()
     cherrypy.engine.block()

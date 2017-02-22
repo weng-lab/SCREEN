@@ -11,6 +11,7 @@ from controllers.tf_controller import TfController
 from controllers.trackhub import TrackhubController
 from controllers.cart import CartController
 from controllers.data_ws import DataWebServiceWrapper
+from controllers.autocomplete_controller import AutocompleteWebService
 from controllers.comparison import ComparisonController
 
 from common.session import Sessions
@@ -33,6 +34,7 @@ class MainApp():
         self.cartc = CartController(self.templates, ps, cache)
         self.trackhub = TrackhubController(self.templates, ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
+        self.autoWS = AutocompleteWebService(ps)
         self.sessions = Sessions(ps.DBCONN)
 
     @cherrypy.expose
@@ -78,11 +80,6 @@ class MainApp():
         return self.mc.search(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def autocomplete(self, *args, **kwargs):
-        return self.mc.autocomplete(kwargs["userQuery"])
-
-    @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def setCart(self):
@@ -96,6 +93,14 @@ class MainApp():
         #print(cherrypy.request)
         j = cherrypy.request.json
         return self.dataWS.process(j, args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def autows(self, *args, **kwargs):
+        #print(cherrypy.request)
+        j = cherrypy.request.json
+        return self.autoWS.process(j, args, kwargs)
 
     @cherrypy.expose
     def geneexp(self, *args, **kwargs):

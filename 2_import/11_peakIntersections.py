@@ -8,6 +8,7 @@ peakIntersections = __import__('03_beds_es')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from constants import chroms, chrom_lengths, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
@@ -34,13 +35,11 @@ class ImportPeakIntersections:
     """.format(tableName = self.tableName))
 
     def run(self):
-        dataF = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/"
-        dataF = os.path.join(dataF, "ver9", self.assembly, "newway")
-        fnp = os.path.join(dataF, "peakIntersections.tsv.gz")
+        fnp = paths.fnpCreTsvs(self.assembly, "peakIntersections.tsv.gz")
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')
-        printt("copying in data...")
+        printt("copying in data", fnp)
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         printt("\tcopied in", fnp, self.curs.rowcount)
@@ -90,7 +89,6 @@ biosample_term_name text
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--metadata', action="store_true", default=False)
     args = parser.parse_args()
@@ -99,7 +97,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:

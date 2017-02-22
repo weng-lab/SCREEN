@@ -25,7 +25,6 @@ from common.session import Sessions
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from postgres_wrapper import PostgresWrapper
-from autocomplete import AutocompleterWrapper
 from cre_utils import checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
@@ -38,13 +37,8 @@ class DataWebServiceWrapper:
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.dwss = { "hg19" : makeDWS("hg19"),
                       "mm10" : makeDWS("mm10") }
-        self.ac = AutocompleterWrapper(ps)
 
     def process(self, j, args, kwargs):
-        if "action" in j and j["action"] == "suggest":
-            return {"results": self.ac.get_suggestions(j["userQuery"]),
-                    "callback": j["callback"],
-                    "type": "suggestions"}
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
         if j["GlobalAssembly"] not in ["mm10", "hg19"]:
@@ -83,6 +77,13 @@ class DataWebService:
 
         self.sessions = Sessions(ps.DBCONN)
 
+    def process(self, j, args, kwargs):
+        action = args[0]
+        try:
+            return self.actions[action](j, args[1:])
+        except:
+            raise
+
     def helpkey(self, j, args):
         if "key" not in j: return {}
         data = self.ps.get_helpkey(j["key"])
@@ -90,13 +91,6 @@ class DataWebService:
         return { "title": data[0],
                  "summary": data[1],
                  "link": data[2] }
-
-    def process(self, j, args, kwargs):
-        action = args[0]
-        try:
-            return self.actions[action](j, args[1:])
-        except:
-            raise
 
     def _ortholog(self, j, accession):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
@@ -139,9 +133,10 @@ class DataWebService:
         nearbyCREs = cre.distToNearbyCREs(1000000) # 1 MB
         nearbyGenes = cre.nearbyGenes()
         genesInTad = cre.genesInTad()
+        re_tads = cre.cresInTad()
         return { accession : {"nearby_genes": nearbyGenes,
                               "tads": genesInTad,
-                              "re_tads": [],
+                              "re_tads": re_tads,
                               "nearby_res": nearbyCREs,
                               "overlapping_snps": snps} }
 
@@ -176,7 +171,7 @@ class DataWebService:
                                                     [accession])
         return {accession : {"rows" : rows,
                              "accessions" : accessions}}
-    
+
     def trees(self, j, args):
         tree_rank_method = j["tree_rank_method"]
         t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)

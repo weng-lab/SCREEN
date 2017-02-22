@@ -4,15 +4,34 @@ from __future__ import print_function
 
 import sys
 import os
+from natsort import natsorted
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from files_and_paths import Dirs
-from v4_config import V4Config
+from utils import AddPath
+
+AddPath(__file__, "..")
+from config import Config
 
 def PageTitle(assembly):
     if assembly > "":
         return "SCREEN %s: Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
+
+DB_COLS = ("accession",
+           "mpName", 
+           "chrom", "start", "stop",
+           "conservation_signal",
+           "dnase_zscore",
+           "ctcf_only_zscore",
+           "ctcf_dnase_zscore",
+           "h3k27ac_only_zscore",
+           "h3k27ac_dnase_zscore",
+           "h3k4me3_only_zscore",
+           "h3k4me3_dnase_zscore",
+           "gene_all_distance", "gene_all_id",
+           "gene_pc_distance", "gene_pc_id",
+           "tads")
 
 # exclude chrM
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
@@ -39,8 +58,8 @@ chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
                            "chrY":91744698, "chr18":90702639,
                            "chr19":61431566}}
 
-chroms = {"hg19": chrom_lengths["hg19"].keys(),
-          "mm10": chrom_lengths["mm10"].keys()}
+chroms = {"hg19": natsorted(chrom_lengths["hg19"].keys()),
+          "mm10": natsorted(chrom_lengths["mm10"].keys())}
 
 class helptext:
     docid = "1fWphK-WAyk65d1WO8s0yBqO-_YiD2JdQwlkB3ZqqsYI"
@@ -48,7 +67,7 @@ class helptext:
                         "googleapi", "helptext.txt")
 
 V4d = os.path.join(Dirs.encyclopedia, "Version-4")
-CreVer = 9
+CreVer = Config.version
 CreVerStr = "ver" + str(CreVer)
 
 class paths(object):
@@ -79,7 +98,7 @@ class paths(object):
         "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf") }
 
 def main():
-    print(paths.re_json_vers)
+    print(chroms)
 
 if __name__ == '__main__':
     sys.exit(main())

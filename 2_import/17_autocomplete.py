@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO, gzip
+import os, sys, json, psycopg2, argparse, gzip
+from cStringIO import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -83,7 +84,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         outF.write("\n".join(names))
         outF.seek(0)
 
-        printt("inserting into table...")
+        printt("inserting into", self.tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
@@ -127,14 +128,13 @@ USING gin (name gin_trgm_ops)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--save', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:
             print('***********', assembly)
