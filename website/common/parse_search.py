@@ -77,7 +77,14 @@ class ParseSearch:
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
-                curs.execute("SELECT oname, chrom, start, stop, altchrom, altstart, altstop, similarity(name, '{q}') AS sm FROM {assembly}_autocomplete WHERE name % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                # TODO: sanitize input, and use paramaterized query
+                curs.execute("""
+SELECT oname, chrom, start, stop, altchrom, altstart, altstop, 
+similarity(name, '{q}') AS sm 
+FROM {assembly}_autocomplete 
+WHERE name % '{q}' 
+ORDER BY sm DESC LIMIT 1
+""".format(assembly = self.assembly, q=s))
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
@@ -110,6 +117,7 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
+            # TODO: precompile re
             r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+", x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
@@ -129,9 +137,14 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
     def has_overlap(self, coord):
         if not coord: return False
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            curs.execute("SELECT accession FROM {tn} WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop".format(tn = self.assembly + "_cre_" + coord.chrom,
-                                                                                                                                           chrom = coord.chrom, start = coord.start,
-                                                                                                                                           end = coord.end))
+            # TODO: use int4range, and sanitize input
+            curs.execute("""
+SELECT accession 
+FROM {tn} 
+WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop
+""".format(tn = self.assembly + "_cre_" + coord.chrom,
+           chrom = coord.chrom, start = coord.start,
+           end = coord.end))
             if curs.fetchone(): return True
         return False
 
