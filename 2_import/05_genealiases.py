@@ -254,7 +254,7 @@ def main():
     for assembly in assemblies:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             aga = ImportGenes(curs, assembly)
-            #aga.run()
+            aga.run()
             makeMV(curs, assembly)
                  
     return 0
