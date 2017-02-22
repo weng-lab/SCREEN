@@ -31,24 +31,6 @@ class Autocompleter:
     def __init__(self, ps, assembly):
         self.assembly = assembly
         self.ps = ps
-        self.indices = {"misc": self.get_misc_suggestions,
-                        "gene_aliases": self.get_gene_suggestions,
-                        "snp_aliases": self.get_snp_suggestions,
-                        "tfs": self.get_tf_suggestions,
-                        "cell_types": self.get_celltype_suggestions }
-        self.tfs = [] # TODO: fixme! self.es.get_tf_list()
-        self.misc_dict = ["promoter", "enhancer", "DNase"]
-
-    def recognizes_index(self, index):
-        return index in self.indices
-
-    def get_celltype_suggestions(self, q):
-        query = or_query()
-        query.append({"match_phrase_prefix": {"cell_type": q}})
-        raw_results = self.es.search(index = "cell_types", body = query.query_obj)
-        if raw_results["hits"]["total"] > 0:
-            return [x["_source"]["cell_type"].replace("_", " ") for x in raw_results["hits"]["hits"]]
-        return self.es.cell_type_query(q)
 
     def get_suggestions(self, q):
         uq = q.lower()
