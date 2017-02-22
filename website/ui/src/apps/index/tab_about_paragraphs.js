@@ -17,3 +17,15 @@ export const registry3 = () => (
 export const registry4 = () => (
         <p>We analyzed the percentage of the genome comprised of each cRE category (Figure 3). We only considered regions of the genome which is mappable by 36-nt long sequences in DNase-seq experiments (~2.65 Gb). In total, cREs cover 24.9% of the mappable genome.
         </p>);
+
+export const genomicContext = () => (
+    <p>{'Judged by GENCODE V19 annotations, 13.7% of cREs are proximal (±2Kb) to annotated GENCODE transcription start sites (TSSs) while the majority of cREs are distal from TSSs and lie in introns or intergenic regions. We annotated each cRE with genomic information including nearby genes and their expression levels, single nucleotide polymorphisms (SNPs), and element within the same topologically associated domains (TADs). These annotations can be found for each cRE on the "Nearby Genomic Features" tab.'}
+    </p>)
+
+export const occupancy1 = () => (
+    <p>In addition to chromatin accessibility measured by DNase-seq experiments, each cRE is annotated using H3K27ac and H3K4me3 levels and CTCF occupancy to determine their potential regulatory roles (e.g. enhancer-like, promoter-like, or CTCF-bound insulator-like).  Our first step was to normalize signals between experiments so that they were directly comparable. We transformed the average signal across a cRE to the Z-score of log(signal).
+    </p>);
+
+export const occupancy2 = () => (
+    <p>For each cRE, we calculated the Z-score of log(signal) across all cell and tissue types for DNase, H3K4me3, H3K27ac, and CTCF. We also computed a Promoter-like and Enhancer-like Z-score by averaging DNase & H3K4me3 and DNase & H3K27ac Z-scores respectively. This scores are available under the "Top Tissues" tab. Additionally, we also intersect each cRE all available histone mark and TF ChIP-seq peaks. We display these results in the "TF and His-mod Intersection" Tab.
+    </p>);
