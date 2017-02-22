@@ -3,6 +3,7 @@ import React from 'react';
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
+	this.userQueries = {};
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
     }
@@ -78,21 +79,24 @@ class TabMain extends React.Component {
     componentDidMount(){
 	const loadAuto = (userQuery, callback_f) => {
 	    let jq = JSON.stringify({userQuery});
+	    if(jq in this.userQueries){
+		console.log("getting cached");
+		callback_f(this.userQueries[jq]);
+		return;
+	    }
 	    $.ajax({
-		type: "POST",
 		url: "/autows/suggestions",
+		type: "POST",
 		data: jq,
 		dataType: "json",
 		contentType : "application/json",
+		error: function(jqxhr, status, error) {
+                    console.log("err during load");
+		}.bind(this),
 		success: function(r){
-		    console.log(r);
+		    this.userQueries[jq] = r;
 		    callback_f(r);
-		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		    console.log("Status: " + textStatus);
-		    console.log("Error: " + errorThrown);
-		    console.log(XMLHttpRequest);
-		}
+		}.bind(this)
 	    });
 	}
 
