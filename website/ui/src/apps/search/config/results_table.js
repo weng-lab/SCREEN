@@ -7,10 +7,10 @@ const ResultsTableColumns = () => ([
 	title: "DNase Z", data: "dnase_zscore", className: "dt-right",
 	render: Render.real, width: "7%", name: "dnase"
     }, {
-	title: "Promoter Z", data: "promoter_zscore", className: "dt-right",
+	title: "H3K4me3 Z", data: "promoter_zscore", className: "dt-right",
 	render: Render.real, width: "7%", name: "promoter"
     }, {
-	title: "Enhancer Z", data: "enhancer_zscore", className: "dt-right",
+	title: "H3K27ac Z", data: "enhancer_zscore", className: "dt-right",
 	render: Render.real, width: "7%", name: "enhancer"
     }, {
 	title: "CTCF-bound Z", data: "ctcf_zscore", className: "dt-right",

@@ -5,7 +5,7 @@ import os, sys, json, psycopg2, re, argparse, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
-from constants import chroms, paths
+from constants import chroms, paths, DB_COLS
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
@@ -14,13 +14,13 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
 class CreateIndices:
-    def __init__(self, DBCONN, info, cols):
+    def __init__(self, DBCONN, info):
         self.DBCONN = DBCONN
         self.chrs = info["chrs"]
         self.baseTableName = info["tableName"]
         self.d = info["d"]
-        self.all_cols = cols
-        self.zscore_cols = [x for x in cols if x.endswith("_zscore")]
+        self.all_cols = DB_COLS
+        self.zscore_cols = [x for x in self.all_cols if x.endswith("_zscore")]
 
     def run(self):
         self.setupRangeFunction()
@@ -29,8 +29,7 @@ class CreateIndices:
             with getcursor(self.DBCONN, "index " + ctn) as curs:
                 makeIndex(curs, ctn, ["accession"])
                 makeIndexIntRange(curs, ctn, ["start", "stop"])
-                makeIndexRev(curs, ctn, ["maxz",
-                                         "enhancerMaxz",
+                makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
                                          "promoterMaxz"])
                 if 0:
                     for col in self.zscore_cols:
@@ -51,7 +50,6 @@ $$ language sql immutable;
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -59,28 +57,17 @@ def parse_args():
 def makeInfo(assembly):
     return {"chrs" : chroms[assembly],
             "assembly" : assembly,
-            "d" : paths.path(assembly, "newway"),
+            "d" : paths.fnpCreTsvs(assembly),
             "base" : paths.path(assembly),
             "tableName" : assembly + "_cre"}
 
 infos = {"mm10" : makeInfo("mm10"),
          "hg19" : makeInfo("hg19")}
 
-cols = ("accession", "mpName", "negLogP",
-                  "chrom", "start", "stop",
-                  "dnase_zscore",
-                  "ctcf_only_zscore",
-                  "ctcf_dnase_zscore",
-                  "h3k27ac_only_zscore",
-                  "h3k27ac_dnase_zscore",
-                  "h3k4me3_only_zscore",
-                  "h3k4me3_dnase_zscore",
-                  "gene_all_distance", "gene_all_id",
-                  "gene_pc_distance", "gene_pc_id", "tads")
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     assemblies = ["hg19", "mm10"]
     if args.assembly:
@@ -89,7 +76,7 @@ def main():
     for assembly in assemblies:
         m = infos[assembly]
 
-        ci = CreateIndices(DBCONN, m, cols)
+        ci = CreateIndices(DBCONN, m)
         ci.run()
 
     return 0

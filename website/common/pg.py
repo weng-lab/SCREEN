@@ -366,7 +366,22 @@ AND isProximal is {isProx}
                                          abs(coord.start - start))})
         return ret
 
-    def creTad(self, accession, chrom):
+    def cresInTad(self, accession, chrom, start):
+        with getcursor(self.pg.DBCONN, "cresInTad") as curs:
+            curs.execute("""
+SELECT DISTINCT(cre.accession), abs(%s - start) as distance
+FROM {tn} tads
+INNER JOIN {ctn} as cre
+ON cre.accession = tads.accession
+WHERE tadid in (SELECT tadid FROM {tn} WHERE accession = %s)
+AND abs(%s - start) < 1000000
+ORDER BY 2
+""".format(tn = self.assembly + "_tads", ctn = self.assembly + "_cre"),
+                         (start, accession, start))
+            rows = curs.fetchall()
+        return [{"accession" : r[0], "distance" : r[1]} for r in rows]
+
+    def genesInTad(self, accession, chrom):
         with getcursor(self.pg.DBCONN, "creTad") as curs:
             curs.execute("""
 SELECT gi.approved_symbol AS name
@@ -411,26 +426,17 @@ WHERE accession = %s
             return curs.fetchone()
 
     def creRanksPromoter(self, accession, chrom):
-        cols = ["h3k4me3_dnase_rank", "h3k4me3_dnase_zscore"]
+        cols = ["h3k4me3_dnase_zscore"]
         r = self._getColsForAccession(accession, chrom, cols)
-        return {"ranks" : { "Promoter" : r[0] },
-                "zscores" : { "Promoter" : r[1]}}
+        return {"zscores" : { "Promoter" : r[0]} }
 
     def creRanksEnhancer(self, accession, chrom):
-        cols = ["h3k27ac_dnase_rank", "h3k27ac_dnase_zscore"]
+        cols = ["h3k27ac_dnase_zscore"]
         r = self._getColsForAccession(accession, chrom, cols)
-        return {"ranks" : { "Enhancer" : r[0] },
-                "zscores" : { "Enhancer" : r[1]}}
+        return {"zscores" : { "Enhancer" : r[0]} }
 
     def creRanks(self, accession, chrom):
-        cols = """dnase_rank
-        ctcf_only_rank
-        ctcf_dnase_rank
-        h3k27ac_only_rank
-        h3k27ac_dnase_rank
-        h3k4me3_only_rank
-        h3k4me3_dnase_rank
-        dnase_zscore
+        cols = """dnase_zscore
         ctcf_only_zscore
         ctcf_dnase_zscore
         h3k27ac_only_zscore
@@ -438,20 +444,13 @@ WHERE accession = %s
         h3k4me3_only_zscore
         h3k4me3_dnase_zscore""".split('\n')
         r = self._getColsForAccession(accession, chrom, cols)
-        return {"ranks" : { "dnase" : r[0],
-                            "ctcf-only" : r[1],
-                            "dnase+ctcf" : r[2],
-                            "h3k27ac-only" : r[3],
-                            "dnase+h3k27ac" : r[4],
-                            "h3k4me3-only" : r[5],
-                            "dnase+h3k4me3": r[6] },
-                "zscores" : { "dnase" : r[7],
-                              "ctcf-only" : r[8],
-                              "dnase+ctcf" : r[9],
-                              "h3k27ac-only" : r[10],
-                              "dnase+h3k27ac" : r[11],
-                              "h3k4me3-only" : r[12],
-                              "dnase+h3k4me3": r[13] }}
+        return {"zscores" : { "dnase" : r[0],
+                              "ctcf-only" : r[1],
+                              "dnase+ctcf" : r[2],
+                              "h3k27ac-only" : r[3],
+                              "dnase+h3k27ac" : r[4],
+                              "h3k4me3-only" : r[5],
+                              "dnase+h3k4me3": r[6] }}
 
     def creMostsimilar(self, acc, assay, threshold=20000):
         if self.assembly == "hg19":

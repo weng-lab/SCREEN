@@ -3,15 +3,15 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, StringIO
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
-from constants import chroms, chrom_lengths
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from exp import Exp
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, eprint
+from utils import Utils, eprint, AddPath
+
+AddPath(__file__, '../common/')
+from dbconnect import db_connect
+from constants import chroms, chrom_lengths, paths
 
 class DetermineTissue:
     # translate tissue name to tissue name
@@ -96,9 +96,6 @@ class ImportCellTypeInfo:
         self.determineTissue = DetermineTissue()
 
     def importRankIndexes(self):
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "newway")
-        fnp = os.path.join(d, "parsed.cellTypeIndexes.chrY.tsv")
         tableName = self.assembly + "_rankCellTypeIndexex"
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableName};
@@ -108,20 +105,28 @@ rankMethod text,
 cellType text,
 idx integer);""".format(tableName = tableName))
 
-        lookup = {"CTCF-only" : "CTCF",
-                  "DNase" : "DNase",
-                  "DNase+CTCF" : "Insulator",
-                  "DNase+H3K27ac" : "Enhancer",
-                  "DNase+H3K4me3" : "Promoter",
-                  "H3K27ac-only" : "H3K27ac",
-                  "H3K4me3-only" : "H3K4me3"}
+        fnBases = [("CTCF", 2),
+                   ("DNase", 2),
+                   ("Enhancer", 4),
+                   ("H3K27ac", 2),
+                   ("H3K4me3", 2),
+                   ("Insulator", 4),
+                   ("Promoter", 4)]
 
-        with open(fnp) as f:
-            rows = [x.rstrip().split('\t') for x in f]
         outF = StringIO.StringIO()
-        for r in rows:
-            r[0] = lookup[r[0]]
-            outF.write('\t'.join(r) + '\n')
+
+        for fnBase, ctIdx in fnBases:
+            fn = fnBase + "-List.txt"
+            fnp = paths.path(self.assembly, "raw", fn)
+            if not os.path.exists(fnp):
+                raise Exception("missing " + fnp)
+            with open(fnp) as f:
+                rows = [x.rstrip('\n').split('\t') for x in f]
+            for rowIdx, r in enumerate(rows):
+                # PostgresQL arrays are 1-based
+                s = '\t'.join([fnBase, r[ctIdx], str(rowIdx + 1)])
+                outF.write(s + '\n')
+            print("example:", s)
         outF.seek(0)
 
         cols = ["rankMethod", "cellType", "idx"]
@@ -129,8 +134,7 @@ idx integer);""".format(tableName = tableName))
         print("\tok", self.curs.rowcount)
 
     def importDatasets(self):
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "raw")
+        d = paths.path(self.assembly, "raw")
 
         fns = {"CTCF" : "CTCF-List.txt",
                "DNase" : "DNase-List.txt",
@@ -171,8 +175,7 @@ cellTypeName text);""".format(tableName = tableName))
         print("updated", tableName)
 
     def importDatasetsMulti(self):
-        d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/",
-                         "Version-4", "ver9", self.assembly, "raw")
+        d = paths.path(self.assembly, "raw")
 
         fns = {"Enhancer" : ("Enhancer-List.txt", "H3K27ac"),
                "Insulator" : ("Insulator-List.txt", "CTCF"),
@@ -221,7 +224,6 @@ cellTypeName text);""".format(tableName = tableName))
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -229,14 +231,14 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     assemblies = ["mm10", "hg19"]
     if args.assembly:
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        with getcursor(DBCONN, "3_cellTypeInfo") as curs:
+        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
             pd = ImportCellTypeInfo(curs, assembly)
             pd.run()
 

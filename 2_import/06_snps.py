@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO, gzip
+import os, sys, json, psycopg2, argparse, gzip
+from cStringIO import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printt
 from db_utils import getcursor
 from files_and_paths import Dirs
 
@@ -19,7 +20,7 @@ class SetupSnps:
         self.sample = sample
 
     def setupAndCopy(self, tableName, f):
-        print("creating table and copying in", tableName)
+        printt("creating table and copying in", tableName)
 
         self.curs.execute("""
         DROP TABLE IF EXISTS {tableName};
@@ -34,12 +35,12 @@ class SetupSnps:
 
         self.curs.copy_from(f, tableName, '\t',
                           columns=("start", "stop", "name"))
-        print("\tok", self.curs.rowcount)
+        printt("ok", self.curs.rowcount)
 
         self.curs.execute("""
         CREATE INDEX {tableName}_idx01 ON {tableName}(name);
     """.format(tableName=tableName))
-        print("\tok index")
+        printt("ok index")
 
     def run(self):
         fns = {"mm10" : "snps142common.mm10.bed.gz",
@@ -47,7 +48,7 @@ class SetupSnps:
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
         if self.sample:
             fnp = os.path.join(Dirs.dbsnps, "sample", fns[self.assembly])
-        print("loading", fnp)
+        printt("reading", fnp)
 
         rowsByChrom = {}
         for chrom in chroms[self.assembly]:
@@ -66,7 +67,6 @@ class SetupSnps:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
@@ -74,7 +74,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "main") as curs:

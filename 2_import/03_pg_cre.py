@@ -85,16 +85,20 @@ $$ language sql immutable;
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__), args.local)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["hg19", "mm10"]:
+    assemblies = ["hg19", "mm10"]
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         with getcursor(DBCONN, "08_setup_log") as curs:
             pd = PolishData(curs, assembly)
             pd.run()
