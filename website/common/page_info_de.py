@@ -27,7 +27,7 @@ class PageInfoDe:
         gene = ""
         if len(args):
             assembly = args[0]
-            gene = args[1]
+            gene = kwargs["gene"]
             # TODO: check gene
 
         cache = self.cacheW[assembly]

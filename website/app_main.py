@@ -103,7 +103,7 @@ class MainApp():
         return self.autoWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    def geneexp(self, *args, **kwargs):
+    def geApp(self, *args, **kwargs):
         return self.ge.geneexp(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
@@ -114,7 +114,7 @@ class MainApp():
         return self.ge.geneexpjson(j)
 
     @cherrypy.expose
-    def deGene(self, *args, **kwargs):
+    def deApp(self, *args, **kwargs):
         return self.de.de(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
