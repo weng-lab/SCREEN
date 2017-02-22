@@ -188,7 +188,7 @@ class ImportGenes:
 
         tableName = self.assembly + "_gene_info"
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
+DROP TABLE IF EXISTS {tableName} CASCADE;
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 geneid integer,
@@ -224,15 +224,15 @@ DROP MATERIALIZED VIEW IF EXISTS {mv} CASCADE;
 
 CREATE MATERIALIZED VIEW {mv} AS
 SELECT q.id AS geneid, LOWER(d.value) AS value
-FROM hg19_gene_info as q
+FROM {assembly}_gene_info as q
 JOIN jsonb_each_text(q.info) as d ON true
 UNION
 SELECT q.id AS geneid, LOWER(q.ensemblid) AS value
-FROM hg19_gene_info as q
+FROM {assembly}_gene_info as q
 UNION 
 SELECT q.id AS geneid, LOWER(q.ensemblid_ver) AS value
-FROM hg19_gene_info as q
-""".format(mv = mv))
+FROM {assembly}_gene_info as q
+""".format(mv = mv, assembly = assembly))
 
     makeIndex(curs, mv, ["geneid", "value"])
     
