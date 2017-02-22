@@ -23,3 +23,5 @@ pip install cherrys
 pip install hiredis
 
 sudo apt-get install redis-server
+
+pip install --user  --upgrade google-api-python-client
