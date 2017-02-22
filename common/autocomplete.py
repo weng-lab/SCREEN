@@ -38,14 +38,14 @@ class Autocompleter:
             return []
 
         tableName = self.assembly + "_autocomplete"
-        with getcursor(self.ps.DBCONN,
-                       "autocomplete$Autocomplete::get_suggestions") as curs:
+        with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
+            # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
             curs.execute("""
 SELECT oname 
 FROM {tn}
-WHERE name LIKE '{q}%' 
+WHERE name LIKE %s || '%%'
 LIMIT 10
-""".format(tn = tableName, q=uq))
+            """.format(tn = tableName), (uq,))
             r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (uq, self.assembly))
