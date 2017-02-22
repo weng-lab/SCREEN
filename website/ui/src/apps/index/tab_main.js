@@ -9,13 +9,15 @@ class TabMain extends React.Component {
     constructor(props) {
 	super(props);
 	this.userQueries = {}; // cache autocomplete
-        this.state = { userErrMsg : null };
+        this.state = { userQueryErr : null };
 	this.loadSearch = this.loadSearch.bind(this);
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
     }
 
     loadSearch(assembly, userQuery){
+	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
+				       style={{fontSize : "24px"}}></i>)});
 	let jq = JSON.stringify({assembly, userQuery});
 	$.ajax({
 	    url: "/autows/search",
@@ -24,12 +26,17 @@ class TabMain extends React.Component {
 	    dataType: "json",
 	    contentType : "application/json",
 	    error: function(jqxhr, status, error) {
-		this.setState({userErrMsg : "err during load"});
+		this.setState({userQueryErr : "err during load"});
 	    }.bind(this),
 	    success: function(r){
 		if(r.failed){
-		    console.log("userErrMsg", r);
-		    this.setState({userErrMsg : r.userErrMsg})
+		    let userQueryErr = (
+			    <span>
+			    Error: no results for your query.
+			    <p />
+			    Please check your spelling and search assembly, and try again.
+			</span>)
+		    this.setState({userQueryErr})
 		} else {
 		    let params = jQuery.param({q: userQuery, assembly});
 		    let url = "/search/?" + params;
@@ -73,44 +80,34 @@ class TabMain extends React.Component {
 		alt={"ENCODE logo"} />);
     }
 
-    searchErr() {
-	if(!this.state.userErrMsg){
-	    return "";
-	}
-	return (<span ref="error" style={{color : "#ff0000", fontWeight : "bold"}}>
-		{this.state.userErrMsg}
-		</span>);
-    }
-    
     searchBox(){
 	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
-	return (
-		<div>
-		{this.searchErr()}
-		<br />
-
+	return (<div>
+		
 		<div className={"form-group text-center"}>
-		<input ref="searchBox" id={"mainSearchbox"} type={"text"} defaultValue={dv} />
+		<input ref="searchBox" id={"mainSearchbox"}
+		type={"text"} defaultValue={dv} />
 		</div>
 		
 		<div id={"mainButtonGroup"}>
-		<a className={"btn btn-primary btn-lg"} onClick={this.searchHg19} role={"button"}>Search hg19</a>
+		<a className={"btn btn-primary btn-lg"}
+		onClick={this.searchHg19} role={"button"}>Search hg19</a>
 		{" "}
-		<a className={"btn btn-success btn-lg"} onClick={this.searchMm10} role={"button"}>Search mm10</a>
+		<a className={"btn btn-success btn-lg"}
+		onClick={this.searchMm10} role={"button"}>Search mm10</a>
 		<br />
 		<br />
 		<i>{examples}</i>
 		</div>
-		
-            </div>);
+
+		</div>);
     }
 
     componentDidMount(){
 	const loadAuto = (userQuery, callback_f) => {
 	    let jq = JSON.stringify({userQuery});
 	    if(jq in this.userQueries){
-		console.log("getting cached");
 		callback_f(this.userQueries[jq]);
 		return;
 	    }
@@ -163,6 +160,12 @@ class TabMain extends React.Component {
 		
 		<div className={"row"}>
 		<div className={"col-md-12 text-center"}>
+
+		<span className={"mainPageErr"}>
+		{this.state.userQueryErr}
+		</span>
+		<br />
+		
 		{this.searchBox()}
 		</div>
 		</div>
