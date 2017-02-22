@@ -89,7 +89,7 @@ class ExpressionPlot extends React.Component {
 	
 	let url = '/geneexp/' + GlobalAssembly + "/" + gene;
 
-	let message = <div>This plot is displaying cell-wide expression of <em>{this.props.gene}</em>. To view expression in subcellular compartments, <a href={url}>click here</a>.</div>;
+	let message = <div>This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in subcellular compartments, <a href={url}>click here</a>.</div>;
 
 	if(gene in this.state.ges){
 	    return (
