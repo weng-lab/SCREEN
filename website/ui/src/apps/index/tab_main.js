@@ -76,7 +76,18 @@ class TabMain extends React.Component {
     }
 
     componentDidMount(){
-	console.log(this.refs.searchBox);
+	let sb = this.refs.searchBox;
+	    sb.autocomplete({
+	    source: function (userQuery, response) {
+		f(q.term, response)
+	    },
+	    select: function(event, ui) {
+		sb.val(ui.item.value);
+		return false;
+	    },
+	    change: function() {
+	    }
+	});
     }
     
     render() {
