@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys, json, psycopg2, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
@@ -10,18 +11,20 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 from querydcc import QueryDCC
-from utils import Utils
+from utils import Utils, printt
 from metadataws import MetadataWS
 from cache_memcache import MemCacheWrapper
 
 def loadCellTypes():
-    tissueFixesFnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
-    with open(tissueFixesFnp) as f:
+    fnp = os.path.join(os.path.dirname(__file__), "../../celltypes.txt")
+    printt("loading",  fnp)
+    with open(fnp) as f:
         lookup = json.loads(f.read())
     return lookup
 
 def loadCellTypesFixes():
-    tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
+    fnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
+    printt("loading",  fnp)
     with open(tissueFixesFnp) as f:
         rows = f.readlines()
 
@@ -73,7 +76,6 @@ def getCellTypes():
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 

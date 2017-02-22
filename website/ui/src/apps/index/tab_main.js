@@ -56,7 +56,7 @@ class TabMain extends React.Component {
 		<br />
 
 		<div className={"form-group text-center"}>
-		<input id={"mainSearchbox"} type={"text"} name={"q"} defaultValue={"K562 chr11:5226493-5403124"} />
+		<input ref="searchBox" id={"mainSearchbox"} type={"text"} name={"q"} defaultValue={"K562 chr11:5226493-5403124"} />
 		<input id={"searchformassembly"} name={"assembly"} value={"hg19"} type={"hidden"} />
 		</div>
 		
@@ -75,6 +75,10 @@ class TabMain extends React.Component {
             </div>);
     }
 
+    componentDidMount(){
+	console.log(this.refs.searchBox);
+    }
+    
     render() {
 	return (<div>
 
