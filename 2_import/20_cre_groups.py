@@ -94,7 +94,6 @@ def main():
              "hg19" : makeInfo("hg19")}
 
     assemblies = ["hg19", "mm10"]
-    assemblies = ["mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
