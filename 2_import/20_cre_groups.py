@@ -22,20 +22,9 @@ lookup = {"ctcf-like" : 0,
 
 def importGroup(curs, assembly):
     fnp = paths.path(assembly, assembly + "-cRE-Groups.bed.gz")
-    printt("reading", fnp)
-    with gzip.open(fnp) as f:
-        rows = [line.rstrip('\n').split(' ') for line in f]
-
-    printt("rewriting")
-    outF = StringIO.StringIO()
-    for r in rows:
-        row = r[0] + '\t' + str(lookup[r[1]]) + '\n'
-        outF.write(row)
-    outF.seek(0)
 
     tableName = assembly + "_cre_group"
-    printt("copy into", tableName)
-
+    print("drop and create", tableName)
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
@@ -44,7 +33,23 @@ accession text,
 cre_group integer
 );""".format(tn = tableName))
 
-    curs.copy_from(outF, tableName, '\t', columns=('accession', 'cre_group'))
+    if not os.path.exists(fnp):
+        printt("skipping load")
+    else:
+        printt("reading", fnp)
+        with gzip.open(fnp) as f:
+            rows = [line.rstrip('\n').split(' ') for line in f]
+
+        printt("rewriting")
+        outF = StringIO.StringIO()
+        for r in rows:
+            row = r[0] + '\t' + str(lookup[r[1]]) + '\n'
+            outF.write(row)
+        outF.seek(0)
+
+        printt("copy into", tableName)
+
+        curs.copy_from(outF, tableName, '\t', columns=('accession', 'cre_group'))
 
 def indexCreGroup(curs, assembly):
     tableName = assembly + "_cre_group"
@@ -89,7 +94,7 @@ def main():
              "hg19" : makeInfo("hg19")}
 
     assemblies = ["hg19", "mm10"]
-    assemblies = ["hg19"]
+    assemblies = ["mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
