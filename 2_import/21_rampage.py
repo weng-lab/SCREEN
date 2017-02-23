@@ -125,9 +125,8 @@ def main():
     for assembly in assemblies:
         print('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
-            if 0:
-                doImport(curs, assembly)
-                doIndex(curs, assembly)
+            doImport(curs, assembly)
+            doIndex(curs, assembly)
             metadata(curs, assembly)
 
     return 0
