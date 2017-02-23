@@ -34,7 +34,8 @@ class ResultsTable extends React.Component {
 		       	paginate: { previous: "&lt", next : "&gt" }},
 	    pageLength: this.props.pageLength,
 	    dom,
-	    columnDefs: this.props.columnDefs
+	    columnDefs: this.props.columnDefs,
+            createdRow: this.props.createdRow
 	});
 
 	var onTdClick = this.props.onTdClick;

@@ -420,3 +420,19 @@ table tr td.minipeak {
     background-color: #A41034;
     border-color: #A41034;
 }
+
+.creCtcfLike {
+    color: #00B0F0;
+}
+.creEnhancerLike {
+    color: #FFCD00;
+}
+.creOther {
+    color: #DF7EFD;
+}
+.crePromoterLike {
+    color: #FF0000;
+}
+.creRdhs {
+    color: #06DA93;
+}

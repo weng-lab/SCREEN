@@ -159,26 +159,38 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
+    colorCreGroup(row, data, index){
+        let lookup = {0 : "creCtcfLike",
+                      1 : "creEnhancerLike",
+                      2 : "creOther",
+                      3 : "crePromoterLike",
+                      4 : "creRdhs"};
+        //console.log(row, data, index);
+        let klass = lookup[data.cre_group];
+        $('td', row).eq(0).addClass(klass);
+    }
+
     table(data, actions){
 	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
 	var tmsg2 = (this.props.nodnase && this.props.nodnase.length ? <div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div> : "");
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 	return (<div>
-		<em>{topmessage}
-		{tmsg2}</em><br />
-		Candidate Regulatory Elements (cREs) that meet your search criteria:
-		<ResultsTable data={data}
-                order={table_order}
-                cols={ResultsTableColumns()}
-                onTdClick={(td, rowdata) =>
-                           table_click_handler(td, rowdata, actions)}
-		cvisible={this._opposite(cols)}
-                onButtonClick={(td, rowdata) =>
-                               button_click_handler(td, rowdata, actions)}
-		bFilter={true} bLengthChange={true}
-		onMouseEnter={true} onMouseExit={true}/>
-	       </div>);
+		    <em>{topmessage}{tmsg2}</em>
+                    <br />
+		    Candidate Regulatory Elements (cREs) that meet your search criteria:
+		    <ResultsTable data={data}
+                                  createdRow={this.colorCreGroup}
+                                  order={table_order}
+                                  cols={ResultsTableColumns()}
+                                  onTdClick={(td, rowdata) =>
+                                      table_click_handler(td, rowdata, actions)}
+                                  cvisible={this._opposite(cols)}
+                                  onButtonClick={(td, rowdata) =>
+                                      button_click_handler(td, rowdata, actions)}
+                                  bFilter={true} bLengthChange={true}
+                                  onMouseEnter={true} onMouseExit={true}/>
+	</div>);
     }
 
     render() {

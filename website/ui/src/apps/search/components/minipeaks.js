@@ -32,14 +32,14 @@ class MiniPeaks extends React.Component {
 	    "h3k27ac": "#1262EB"
 	};
     }
-    
+
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
         if("similarREs" == nextProps.re_details_tab_active){
             this.loadPeaks(nextProps);
         }
     }
-    
+
     loadPeaks({cre_accession_detail}){
 	if(cre_accession_detail in this.state){
 	    return;
@@ -83,17 +83,17 @@ class MiniPeaks extends React.Component {
 	    var mfactor = ROWHEIGHT / mmax;
 	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
-	    let e = (<span className={"text-nowrap"}>
-		     <svg width={data.length} height={ROWHEIGHT} >
-		     <g>
-		     {data.map((v, i) => (<rect width="1" height={v}
-					  y={ROWHEIGHT - v} x={i}
-					  fill={color} />))}
-		     </g>
-		     </svg>
-		     {" "}{Math.max(...allData[assay].data)}
-		     </span>
-		    );
+	    let e = (
+                <span className={"text-nowrap"}>
+                    <svg width={data.length} height={ROWHEIGHT} >
+	                <g>
+		            {data.map((v, i) => (<rect width="1" height={v}
+					               y={ROWHEIGHT - v} x={i}
+					               fill={color} />))}
+		        </g>
+		    </svg>
+		    {" "}{Math.max(...allData[assay].data)}
+		</span>);
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
 	let renderMax = (assay) => (allData) => {
@@ -119,12 +119,12 @@ class MiniPeaks extends React.Component {
 			    {title: "Tissue of origin", data: "tissue"},
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);
-	
+
 	// move sorting of peaks to signal cols...
 	let columnDefs = [{ "orderData": 1, "targets": 0 },
 			  { "orderData": 3, "targets": 2 },
 			  { "orderData": 5, "targets": 4 }];
-			
+
         let table = {title: "Minipeaks",
 	             cols,
 		     columnDefs,
@@ -134,7 +134,7 @@ class MiniPeaks extends React.Component {
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
 			    ]};
-	
+
 	return (<div className={"minipeaks"}>
                 {React.createElement(ResultsTable,
                                      {data: this.state[accession].rows,

@@ -4,6 +4,8 @@ const ResultsTableColumns = () => ([
     {
 	title: "accession", data: "accession", className: "dt-right"
     }, {
+        title: "cre_group", data: "cre_group", visible: false
+    }, {
 	title: "DNase Z", data: "dnase_zscore", className: "dt-right",
 	render: Render.real, width: "7%", name: "dnase"
     }, {
