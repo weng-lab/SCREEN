@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table';
 
-import ResultsTableColumns, {table_order} from '../config/results_table';
+import TableColumns, {table_order} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
 
@@ -171,18 +171,29 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
-	var topmessage = (data.length < this.props.total ? <div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div> : "");
-	var tmsg2 = (this.props.nodnase && this.props.nodnase.length ? <div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div> : "");
+	var topmessage = "";
+	if(data.length < this.props.total){
+	    topmessage = (<div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div>);
+	}
+	
+	var tmsg2 = "";
+	if(this.props.nodnase && this.props.nodnase.length){
+	    tmsg2 = (<div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div>);
+	}
+	
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
+	
 	return (<div>
 		    <em>{topmessage}{tmsg2}</em>
                     <br />
-		    Candidate Regulatory Elements (cREs) that meet your search criteria:
+		    Candidate Regulatory Elements (cREs)
+		    that meet your search criteria:
+		    
 		    <ResultsTable data={data}
                                   createdRow={this.colorCreGroup}
                                   order={table_order}
-                                  cols={ResultsTableColumns()}
+                                  cols={TableColumns()}
                                   onTdClick={(td, rowdata) =>
                                       table_click_handler(td, rowdata, actions)}
                                   cvisible={this._opposite(cols)}
