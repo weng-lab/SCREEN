@@ -768,4 +768,13 @@ AND int4range(start, stop) && int4range(%s, %s)
             ret.append(nr)
         return ret
 
-
+    def geBiosampleTypes(self):
+        q = """
+SELECT DISTINCT(biosample_type)
+FROM {tn}
+ORDER BY 1
+""".format(tn = "r_rnas_" + self.assembly)
+        with getcursor(self.pg.DBCONN, "pg::geBiosampleTypes") as curs:
+            curs.execute(q)
+            rows = curs.fetchall()
+        return [r[0] for r in rows]
