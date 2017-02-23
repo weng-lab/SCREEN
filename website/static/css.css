@@ -445,3 +445,12 @@ table tr td.minipeak {
 #mainTabs > .nav-pills > li.active > a{
     background-color: #1034a4;
 }
+
+table.dataTable thead th.dt-head-center {
+    text-align: center;
+}
+table.dataTable tbody td.dt-body-center {
+    text-align: center;
+}
+
+

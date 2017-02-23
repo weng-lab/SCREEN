@@ -14,6 +14,8 @@ import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
 
 import loading from '../../../common/components/loading'
 
+import * as Render from '../../../common/renders'
+
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
     var i, j, temparray = [];
@@ -33,10 +35,10 @@ function makeTable(data, key, table){
 function tabEle(data, key, table, numCols) {
     if(table && "typ" in table){
         return (<div className={"col-md-" + (12/numCols)} key={key}>
-	        <h4>{table.title}</h4>
-                {React.createElement(table.typ, {data, table})}
-                <br/>
-	        </div>);
+    <h4>{table.title}</h4>
+    {React.createElement(table.typ, {data, table})}
+    <br/>
+	</div>);
     }
     if (!data || !table) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
@@ -44,7 +46,7 @@ function tabEle(data, key, table, numCols) {
     return (<div className={"col-md-" + (12/numCols)} key={key}>
 	    <h4>{table.title}</h4>
 	    {makeTable(data, key, table)}<br/>
-	    </div>);
+    </div>);
 }
 
 function tabEles(data, tables, numCols){
@@ -123,8 +125,8 @@ class ReTabBase extends React.Component{
 
     render(){
         return (<div style={{"width": "100%"}} >
-                {this.doRenderWrapper()}
-                </div>);
+        {this.doRenderWrapper()}
+        </div>);
     }
 };
 
@@ -196,10 +198,10 @@ class GeTab extends ReTabBase{
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
             return (<div>
-		    <h2><em>{data.genename}</em></h2>
-		    {React.createElement(LargeHorizontalBars,
-                                         {...data, width: 800, barheight: "15"})}
-		    </div>);
+	    <h2><em>{data.genename}</em></h2>
+	    {React.createElement(LargeHorizontalBars,
+                                 {...data, width: 800, barheight: "15"})}
+	    </div>);
         }
     }
 }
@@ -214,9 +216,9 @@ class RampageTab extends ReTabBase{
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
             return (<div>
-		    <h2><em>{}</em></h2>
-		    {React.createElement(HorizontalBars,
-                                         {...data, width: 800, barheight: "15"})}
+		<h2><em>{}</em></h2>
+		{React.createElement(HorizontalBars,
+                                     {...data, width: 800, barheight: "15"})}
 	    </div>);
         }
     }
@@ -225,13 +227,6 @@ class RampageTab extends ReTabBase{
 const DetailsTabInfo = () => {
     let otherAssembly = GlobalAssembly == "mm10" ? "hg19" : "mm10";
 
-    const w = (c) => {
-        return (
-            <span className="text-center">
-                {c[0]}<br />{c[1]}
-            </span>);
-    };
-
     let off = {
         targetGene : {title: "Candidate Target Genes",
                       enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
@@ -239,20 +234,20 @@ const DetailsTabInfo = () => {
                       f: RelatedGeneTab}};
 
     return {
-        topTissues : {title: w(["Top", "Tissues"]),
+        topTissues : {title: Render.tabTitle(["Top", "Tissues"]),
                       enabled: true, f: TopTissuesTab},
-        nearbyGenomic: {title: w(["Nearby", "Genomic Features"]),
+        nearbyGenomic: {title: Render.tabTitle(["Nearby", "Genomic Features"]),
                         enabled: true, f: NearbyGenomicTab},
-        tfIntersection: {title: w(["TF and His-mod", "Intersection"]),
+        tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
-        ge: {title: w(["Associated", "Gene Expression"]),
+        ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
-        rampage: {title: w(["Associated", "RAMPAGE Signal"]),
+        rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: false, //"mm10" != GlobalAssembly,
                   f: RampageTab},
-        ortholog: {title: w(["Orthologous cREs", "in " + otherAssembly]),
+        ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
-        similarREs: {title: w(["Signal", "Profile"]),
+        similarREs: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks}
     };
 }

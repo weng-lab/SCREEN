@@ -1,6 +1,6 @@
 export const relink = (a) => (v) => (
     "<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>"
-        + v + "</a>");
+    + v + "</a>");
 
 export const snp_link = (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
@@ -8,7 +8,7 @@ export const snp_link = (d) => {
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
     return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
-        + d + '</a>';
+         + d + '</a>';
 }
 
 export const snpLinks = (snps) => {
@@ -61,9 +61,10 @@ export const geDeButton = (d) => {
     return ge + '&nbsp;&nbsp;' + de;
 };
 
-export const geDeButtons = (d) => {
-    var p = d.split(", ");
-    return p.map(geDeButton).join(", ");
+export const geneDeLinks = (genesallpc) => {
+    let all = genesallpc[0].map(geDeButton).join(", ");
+    let pc = genesallpc[1].map(geDeButton).join(", ");
+    return "pc: " + pc + "<br />all: " + all;
 };
 
 export const dccLink = (expID) => {
@@ -115,8 +116,8 @@ const factorbook_histones = [
 
 export const factorbook_link_histone = (d) => (
     factorbook_histones.includes(d)
-	? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d.replace(/F/g, ".") + '</a>'
-	: d.replace(/F/g, ".")
+    ? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d.replace(/F/g, ".") + '</a>'
+    : d.replace(/F/g, ".")
 );
 
 export const gene_link = (d) => (
@@ -126,3 +127,11 @@ export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 export const bp = (v) => (v + " bp");
 
 export const nul = (d) => ('')
+
+export const tabTitle = (c) => {
+    return (
+        <span className="text-center">
+            {c[0]}<br />{c[1]}
+        </span>);
+};
+
