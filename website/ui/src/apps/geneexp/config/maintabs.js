@@ -3,15 +3,13 @@ import React from 'react'
 import CandidateREs from '../components/candidate_res'
 import GeneExp from '../components/gene_exp'
 
-//		<CandidateREs />
 class CanRes extends React.Component{
     render() {
-        return (<div>
-
-                </div>);
+        return (
+            <div>
+            </div>);
     }
 }
-
 
 const MainTabInfo = () => ({
     gene_expression: {title: "Gene Expression", visible: true,
