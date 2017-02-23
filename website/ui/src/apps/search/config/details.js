@@ -222,27 +222,39 @@ class RampageTab extends ReTabBase{
     }
 }
 
-const DetailsTabInfo = () => ({
-    topTissues : {title: "Top Tissues", enabled: true,
-                  f: TopTissuesTab},
-    targetGene : {title: "Candidate Target Genes",
-                  enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
-    nearbyGenomic: {title: "Nearby Genomic Features", enabled: true,
-                    f: NearbyGenomicTab},
-    tfIntersection: {title: "TF and His-mod Intersection", enabled: true,
-                     f: TfIntersectionTab},
-    relatedGene: {title: "Related Gene Expression", enabled: false,
-                  f: RelatedGeneTab},
-    ge: {title: (<span className="text-center">
-                        Associated<br />Gene Expression</span>),
-         enabled: true, f: GeTab},
-    rampage: {title: (<span className="text-center">
-                        Associated<br />RAMPAGE Signal</span>),
-              enabled: "mm10" != GlobalAssembly, f: RampageTab},
-    ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
-	       enabled: true, f: OrthologTab},
-    similarREs: {title: "Signal Profile", enabled: true,
-                 f: MiniPeaks}
-});
+const DetailsTabInfo = () => {
+    let otherAssembly = GlobalAssembly == "mm10" ? "hg19" : "mm10";
+
+    const w = (c) => {
+        return (
+            <span className="text-center">
+                {c[0]}<br />{c[1]}
+            </span>);
+    };
+
+    let off = {
+        targetGene : {title: "Candidate Target Genes",
+                      enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
+        relatedGene: {title: "Related Gene Expression", enabled: false,
+                      f: RelatedGeneTab}};
+
+    return {
+        topTissues : {title: w(["Top", "Tissues"]),
+                      enabled: true, f: TopTissuesTab},
+        nearbyGenomic: {title: w(["Nearby", "Genomic Features"]),
+                        enabled: true, f: NearbyGenomicTab},
+        tfIntersection: {title: w(["TF and His-mod", "Intersection"]),
+                         enabled: true, f: TfIntersectionTab},
+        ge: {title: w(["Associated", "Gene Expression"]),
+             enabled: true, f: GeTab},
+        rampage: {title: w(["Associated", "RAMPAGE Signal"]),
+                  enabled: false, //"mm10" != GlobalAssembly,
+                  f: RampageTab},
+        ortholog: {title: w(["Orthologous cREs", "in " + otherAssembly]),
+	           enabled: true, f: OrthologTab},
+        similarREs: {title: w(["Signal", "Profile"]),
+                     enabled: true, f: MiniPeaks}
+    };
+}
 
 export default DetailsTabInfo;
