@@ -6,6 +6,7 @@ import BarGraphTable from '../components/bar_graph_table'
 import GeneExp from '../../geneexp/components/gene_exp'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
+import HorizontalBars from '../components/horizontal_bars'
 import MiniPeaks from '../components/minipeaks'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
@@ -214,9 +215,9 @@ class RampageTab extends ReTabBase{
 	    }
             return (<div>
 		    <h2><em>{}</em></h2>
-		    {React.createElement(LargeHorizontalBars,
+		    {React.createElement(HorizontalBars,
                                          {...data, width: 800, barheight: "15"})}
-		    </div>);
+	    </div>);
         }
     }
 }

@@ -169,7 +169,31 @@ class DataWebService:
         cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
         r = self.pgSearch.rampage(cre.coord())
-        return {accession: r}
+        if not r:
+            return {accession: r}
+        ret = {}
+        ret["genename"] = r[0]["tss"]
+        ret["items"] = {}
+
+        ee = {}
+        for k, v in r[0]["data"].iteritems():
+            ee[k] = {
+                "color" : "#880000",
+                "displayName" : k,
+                "items" : [{"tissue": k,
+                            "cellType": k,
+                            "logFPKM": v,
+                            "rawTPM": v,
+                            "rep": 1,
+                            "rawFPKM": v,
+                            "logTPM" : v,
+                            "expID": k}],
+                "name" : k}
+
+        ret["items"]["byExpressionTPM"] = ee
+
+        return {accession: ret}
+
 
     def _re_detail_similarREs(self, j, accession):
         nbins = 20
