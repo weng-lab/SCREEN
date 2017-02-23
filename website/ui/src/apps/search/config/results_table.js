@@ -45,8 +45,8 @@ const ResultsTableColumns = () => ([
 export default ResultsTableColumns;
 
 export const table_order = [
-    [1, "desc"],
-    [2, "asc"],
+    [2, "desc"],
     [3, "asc"],
-    [4, "asc"]
+    [4, "asc"],
+    [5, "asc"]
 ];
