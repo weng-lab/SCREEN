@@ -4,7 +4,7 @@ import IntersectingAssayTf from '../components/intersecting_assay_tf'
 import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
 export const TopTissuesTables = () => ({
-    "promoter": {
+    promoter: {
 	title: "H3K4me3 Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -21,7 +21,7 @@ export const TopTissuesTables = () => ({
         bLengthChange: false,
 	rank_f: (d) => (Math.log(d["one"]))
     },
-    "enhancer": {
+    enhancer: {
 	title: "H3K27ac Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -38,7 +38,7 @@ export const TopTissuesTables = () => ({
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
-    "ctcf": {
+    ctcf: {
 	title: "CTCF Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -56,7 +56,7 @@ export const TopTissuesTables = () => ({
         bLengthChange: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
-    "dnase": {
+    dnase: {
 	title: "DNase Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
@@ -75,8 +75,8 @@ export const TopTissuesTables = () => ({
 });
 
 export const OrthologTable = () => ({
-    "ortholog": {
-	"title": "",
+    ortholog: {
+	title: "",
 	paging: false,
 	info: false,
 	bFilter: false,
@@ -95,7 +95,7 @@ export const OrthologTable = () => ({
 });
 
 export const TargetGeneTable = () => ({
-    "candidate_links": {
+    candidate_links: {
 	title: "",
 	paging: true,
 	info: true,
@@ -120,85 +120,92 @@ export const TargetGeneTable = () => ({
     }
 });
 
-export const NearbyGenomicTable = () => ({
-    "nearby_genes": {
-	title: "Nearby Genes",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No genes within 1Mb",
-	cols: [
-	    {title: "symbol", data: "name",
-	     render: Render.gene_link},
-	    {title: "distance", data: "distance",
-	     render: Render.integer}],
-        pageLength: 5,
-	order: [[1, "asc"]]
-    },
-    "nearby_res": {
-	title: "Nearby cREs",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	cols: [
-	    {title: "accession", data: "name", className: "dt-right",
-	     render: Render.relink(GlobalAssembly) },
-	    {title: "distance", data: "distance",
-	     render: Render.integer } ],
-        pageLength: 5,
-	order: [[1, "asc"]],
-	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
-    },
-    "overlapping_snps": {
-	title: "Nearby SNPs",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No SNPs within 10Kb",
-	cols: [
-	    {title: "accession", data: "name",
-	     render: Render.snp_link },
-	    {title: "distance",	data: "distance",
-	     render: Render.integer }],
-        pageLength: 5,
-	order: [[1, "asc"]]
-    },
-    "blank": null,
-    "tads": {
-	title: "Genes within TAD",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No genes within TAD",
-	cols: [
-	    {title: "symbol", data: "name",
-	     render: Render.gene_link},
-	    //{title: "coordinates", data: "coordinates"}
-        ],
-        pageLength: 5,
-	order: [[0, "asc"]]
-    },
-    "re_tads": {
-	title: "Other cREs within TAD (<100 Kb)",
-	paging: true,
-	info: false,
-	bFilter: false,
-        bLengthChange: true,
-	emptyText: "No cREs within TAD with 100 Kb",
-	cols: [
-	    {title: "accession", data: "accession",
-	     render: Render.relink(GlobalAssembly) },
-	    {title: "distance", data: "distance",
-             render: Render.integer} ],
-        pageLength: 5,
-	order: [[1, "asc"]],
-	onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
+export const NearbyGenomicTable = () => {
+    let ret = {
+        nearby_genes: {
+	    title: "Nearby Genes",
+	    paging: true,
+	    info: false,
+	    bFilter: false,
+            bLengthChange: true,
+	    emptyText: "No genes within 1Mb",
+	    cols: [
+	        {title: "symbol", data: "name",
+	         render: Render.gene_link},
+	        {title: "distance", data: "distance",
+	         render: Render.integer}],
+            pageLength: 5,
+	    order: [[1, "asc"]]
+        },
+        nearby_res: {
+	    title: "Nearby cREs",
+	    paging: true,
+	    info: false,
+	    bFilter: false,
+            bLengthChange: true,
+	    cols: [
+	        {title: "accession", data: "name", className: "dt-right",
+	         render: Render.relink(GlobalAssembly) },
+	        {title: "distance", data: "distance",
+	         render: Render.integer } ],
+            pageLength: 5,
+	    order: [[1, "asc"]],
+	    onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
+        },
+        overlapping_snps: {
+	    title: "Nearby SNPs",
+	    paging: true,
+	    info: false,
+	    bFilter: false,
+            bLengthChange: true,
+	    emptyText: "No SNPs within 10Kb",
+	    cols: [
+	        {title: "accession", data: "name",
+	         render: Render.snp_link },
+	        {title: "distance",	data: "distance",
+	         render: Render.integer }],
+            pageLength: 5,
+	    order: [[1, "asc"]]
+        }
+    };
+    if("hg19" == GlobalAssembly){
+        ret = {...ret,
+               tads: {
+	           title: "Genes within TAD",
+	           paging: true,
+	           info: false,
+	           bFilter: false,
+                   bLengthChange: true,
+	           emptyText: "No genes within TAD",
+	           cols: [
+	               {title: "symbol", data: "name",
+	                render: Render.gene_link},
+	               //{title: "coordinates", data: "coordinates"}
+                   ],
+                   pageLength: 5,
+	           order: [[0, "asc"]]
+               },
+               re_tads: {
+	           title: "Other cREs within TAD (<100 Kb)",
+	           paging: true,
+	           info: false,
+	           bFilter: false,
+                   bLengthChange: true,
+	           emptyText: "No cREs within TAD with 100 Kb",
+	           cols: [
+	               {title: "accession", data: "accession",
+	                render: Render.relink(GlobalAssembly) },
+	               {title: "distance", data: "distance",
+                        render: Render.integer} ],
+                   pageLength: 5,
+	           order: [[1, "asc"]],
+	           onTdClick: (actions) => (i, d) => {
+                       actions.showReDetail(d.name)}
+               }
+        };
     }
-});
+    return ret;
+};
 
 export const TfIntersectionTable = () => ({
     "tf": {

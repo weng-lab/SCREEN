@@ -8,13 +8,14 @@ class CRE:
     def __init__(self, pgSearch, accession, cache):
         self.pgSearch = pgSearch
         self.accession = accession
+        self.cache = cache
+        self.assembly = cache.assembly
         self.pos = None
         self.genesAll = None
         self.genesPC = None
         self.tad = None
         self.ranks = None
         self.intersectCounts = None
-        self.cache = cache
 
     def coord(self):
         if not self.pos:
@@ -39,10 +40,14 @@ class CRE:
         return ret
 
     def genesInTad(self):
+        if "mm10" == self.assembly:
+            return []
         coord = self.coord()
         return self.pgSearch.genesInTad(self.accession, coord.chrom)
 
     def cresInTad(self):
+        if "mm10" == self.assembly:
+            return []
         coord = self.coord()
         return self.pgSearch.cresInTad(self.accession, coord.chrom, coord.start)
 
