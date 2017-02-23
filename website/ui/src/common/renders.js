@@ -125,5 +125,4 @@ export const gene_link = (d) => (
 export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 export const bp = (v) => (v + " bp");
 
-
 export const nul = (d) => ('')
