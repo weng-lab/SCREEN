@@ -370,16 +370,22 @@ AND isProximal is {isProx}
 
     def cresInTad(self, accession, chrom, start):
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
-            curs.execute("""
-SELECT DISTINCT(cre.accession), abs(%s - start) as distance
-FROM {tn} tads
-INNER JOIN {ctn} as cre
-ON cre.accession = tads.accession
-WHERE tadid in (SELECT tadid FROM {tn} WHERE accession = %s)
+            q = """
+SELECT accession, abs(%s - start) as distance
+from {cre}
+where int4range(start, stop) && int4range(
+(SELECT int4range(min(start), max(stop))
+FROM {ti} ti
+inner join {tads} tads
+on ti.tadname = tads.tadname
+WHERE accession = %s))
 AND abs(%s - start) < 100000
 ORDER BY 2
-""".format(tn = self.assembly + "_tads", ctn = self.assembly + "_cre"),
-                         (start, accession, start))
+""".format(cre = self.assembly + "_cre_" + chrom,
+           ti = self.assembly + "_tads_info",
+           tads = self.assembly + "_tads")
+            print(q)
+            curs.execute(q, (start, accession, start))
             rows = curs.fetchall()
         return [{"accession" : r[0], "distance" : r[1]} for r in rows]
 
