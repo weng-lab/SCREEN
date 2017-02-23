@@ -6,6 +6,7 @@ import ResultsTable from '../../../common/components/results_table';
 import TableColumns, {table_order} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
+import loading from '../../../common/components/loading'
 
 const table_click_handler = (td, re, actions) => {
     if (td.className.indexOf("browser") != -1) return;
@@ -114,29 +115,32 @@ class TableWithCart extends React.Component {
 
     tableFooter(data){
 	var total = this.totalText(data);
-        return (<span className="tableInfo">
+        return (
+            <div style={{display: (this.props.isFetching ? "none" : "block")}}>
+                <span className="tableInfo">
 
-                <div className={"btn-group"} role={"group"}>
-		<button type={"button"} className={"btn btn-default btn-xs"}
-		onClick={() => {this.downloadBed()}}>Download bed</button>
-
-		<button type={"button"} className={"btn btn-default btn-xs"}
-		onClick={() => {this.downloadJSON()}}>Download JSON</button>
-		</div>
-
-		&nbsp;&nbsp;{total}
-		</span>);
-    }
-
-    loading({isFetching}){
-        return (<div className={"loading"}
-                style={{"display": (isFetching ? "block" : "none")}}>
-		Loading...
-		</div>);
+                    <div className={"btn-group"} role={"group"}>
+		        <button type={"button"}
+                                className={"btn btn-default btn-xs"}
+                                onClick={() => {
+                                        this.downloadBed()}}>
+                            Download bed
+                        </button>
+		        <button type={"button"}
+                                className={"btn btn-default btn-xs"}
+                                onClick={() => {
+                                        this.downloadJSON()}}>
+                            Download JSON
+                        </button>
+		    </div>&nbsp;&nbsp;{total}
+		</span>
+            </div>);
     }
 
     _format_message(a) {
-	if (a.length == 0) return a;
+	if (a.length == 0) {
+            return a;
+        }
 	let r = "";
 	for (let i = 0; i < a.length - 1; ++i) {
 	    r += a[i] + ", ";
@@ -175,21 +179,22 @@ class TableWithCart extends React.Component {
 	if(data.length < this.props.total){
 	    topmessage = (<div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div>);
 	}
-	
+
 	var tmsg2 = "";
 	if(this.props.nodnase && this.props.nodnase.length){
 	    tmsg2 = (<div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div>);
 	}
-	
+
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
-	
-	return (<div>
+
+	return (<div ref={"searchTable"}
+                     style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <em>{topmessage}{tmsg2}</em>
                     <br />
 		    Candidate Regulatory Elements (cREs)
 		    that meet your search criteria:
-		    
+
 		    <ResultsTable data={data}
                                   createdRow={this.colorCreGroup}
                                   order={table_order}
@@ -214,7 +219,7 @@ class TableWithCart extends React.Component {
 	}
 
 	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
-                {this.loading(this.props)}
+                {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
      		</div>);
