@@ -436,3 +436,8 @@ table tr td.minipeak {
 .creRdhs {
     color: #06DA93;
 }
+
+.nav-tabs > li > a span {
+    display: table-cell;
+    vertical-align: middle;
+}
