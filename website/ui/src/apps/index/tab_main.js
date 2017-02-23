@@ -62,9 +62,13 @@ class TabMain extends React.Component {
 
                 <div className="row">
                     <div className="col-md-12">
-		        {"SCREEN is a web interface for searching and visualizing the Registry of candidate Regulatory Elements (cREs) derived from "}
-		        <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>
-		        {". The Registry contains 2.67M human cREs in hg19 and 1.67M mouse cREs in mm10, with orthologous cREs cross-referenced.  SCREEN presents the data that support biochemical activities of the cREs and the expression of nearby genes in specific cell and tissue types."}
+		        SCREEN is a web interface for searching and visualizing the Registry of
+			candidate Regulatory Elements (cREs) derived from
+		        <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
+		        The Registry contains 2.67M human cREs in hg19 and 1.67M mouse cREs in mm10,
+			with orthologous cREs cross-referenced.  SCREEN presents the data that support
+			biochemical activities of the cREs and the expression of nearby genes in
+			specific cell and tissue types."}
                     </div>
                 </div>
 
@@ -73,7 +77,8 @@ class TabMain extends React.Component {
 
                 <div className="row">
                     <div className="col-md-8">
-                        You may launch SCREEN using the search box below or browse a curated list of SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
+                        You may launch SCREEN using the search box below or browse a curated list of 
+			SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
                     </div>
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
@@ -99,9 +104,9 @@ class TabMain extends React.Component {
 	return (<div>
 	    <div className={"form-group text-center"}>
 		<input ref="searchBox" id={"mainSearchbox"}
-type={"text"} defaultValue={dv} />
+		       type={"text"} defaultValue={dv} />
 	    </div>
-
+	    
 	    <div id={"mainButtonGroup"}>
 		<a className={"btn btn-primary btn-lg mainButtonHg19"}
                    onClick={this.searchHg19} role={"button"}>Search hg19</a>

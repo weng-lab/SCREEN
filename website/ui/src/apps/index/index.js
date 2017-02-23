@@ -13,55 +13,56 @@ import main_reducers from './main_reducers'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
-	return (<li className={cn}>
+	return (
+	    <li className={cn}>
 		<a  href={"#" + href} data-toggle={"tab"}>{title}</a>
-		</li>);
+	    </li>);
     }
     
     tabContent(href, content, cn){
-	return (<div className={"tab-pane " + cn} id={href}>
+	return (
+	    <div className={"tab-pane " + cn} id={href}>
 		{tabPanelize(content)}
-		</div>);
+	    </div>);
     }
 
     footer() {
-	return (<div id="footer">
+	return (
+	    <div id="footer">
 		<center>
-		&copy; 2017 Weng Lab @ UMass Med, ENCODE Data Analysis Center
+	    &copy; 2017 Weng Lab @ UMass Med, ENCODE Data Analysis Center
 		</center>
-		</div>);
+	    </div>);
     }
-        
+    
     title() {
-        return (<div className={"container-fluid"}>
-                <div className={"row"}>
-                <div className={"col-md-12"}>
-                <div id={"mainTitle"}>
-		{"SCREEN: Search Candidate Regulatory Elements by ENCODE"}
+        return (
+	    <div className={"container-fluid"}>
+		<div className={"row"}>
+                    <div className={"col-md-12"}>
+			<div id={"mainTitle"}>
+			    {"SCREEN: Search Candidate Regulatory Elements by ENCODE"}
+			</div>
+                    </div>
 		</div>
-                </div>
-                </div>
-                </div>);
+            </div>);
     }
 
     tabs(){
-	return (<div id="mainTabs" className="container">
-		
-                <ul  className="nav nav-pills">
-		{this.tabTitle("main", "Overview", "active")}
-		{this.tabTitle("about", "About", "")}
-		{this.tabTitle("tut", "Tutorial", "")}
+	return (
+	    <div id="mainTabs" className="container">
+		<ul className="nav nav-pills">
+		    {this.tabTitle("main", "Overview", "active")}
+		    {this.tabTitle("about", "About", "")}
+		    {this.tabTitle("tut", "Tutorial", "")}
 		</ul>
 		
 		<div className="tab-content clearfix">
-		{this.tabContent("main",
-				 React.createElement(TabMain, {}),
-				 "active")}
-		{this.tabContent("about", TabAbout(), "")}
-		{this.tabContent("tut", TabTutorial(), "")}
+		    {this.tabContent("main", <TabMain />, "active")}
+		    {this.tabContent("about", TabAbout(), "")}
+		    {this.tabContent("tut", TabTutorial(), "")}
 		</div>
-		
-                </div>);
+	    </div>);
     }
     
     render() {
@@ -73,14 +74,14 @@ class IndexPage extends React.Component {
 				      thunkMiddleware,
 				  ));
 	
-        return (<Provider store={store}>
+        return (
+	    <Provider store={store}>
 		<div>
-		{this.title()}
-		{this.tabs()}
-		{this.footer()}
+		    {this.title()}
+		    {this.tabs()}
+		    {this.footer()}
 		</div>
-	        </Provider>
-	       );
+	    </Provider>);
     }
 }
 

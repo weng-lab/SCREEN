@@ -412,13 +412,13 @@ table tr td.minipeak {
 }
 
 .mainButtonGwas {
-    background-color: #34a410;
-    border-color: #34a410;
+    background-color: #1034a4;
+    border-color: #1034a4;
 }
 
 .mainButtonGwas:hover {
-    background-color: #A41034;
-    border-color: #A41034;
+    background-color: #34a410;
+    border-color: #34a410;
 }
 
 .creCtcfLike {
@@ -440,4 +440,8 @@ table tr td.minipeak {
 .nav-tabs > li > a span {
     display: table-cell;
     vertical-align: middle;
+}
+
+#mainTabs > .nav-pills > li.active > a{
+    background-color: #1034a4;
 }
