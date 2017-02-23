@@ -5,6 +5,7 @@ import os
 from natsort import natsorted
 from collections import namedtuple
 import gzip
+import psycopg2.extras
 
 from coord import Coord
 from pg_common import PGcommon
@@ -730,6 +731,28 @@ ORDER BY biosample_term_name
         return [{"expID" : r[0] + ' / ' + r[1],
                  "biosample_term_name" : r[2] } for r in rows]
 
+    def rampage(self, coord):
+        q = """
+select * from {tn}
+WHERE chrom = %s
+AND int4range(start, stop) && int4range(%s, %s)
+""".format(tn = self.assembly + "_rampage")
 
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute(q, (coord.chrom, coord.start, coord.end))
+            rows = curs.fetchall()
+        ret = []
+        for r in rows:
+            dr = r._asdict()
+            nr = {"data" : {}}
+            for k, v in dr.iteritems():
+                if k.startswith("encs"):
+                    if 0 != v:
+                        nr["data"][k] = v
+                    continue
+                nr[k] = v
+            ret.append(nr)
+        return ret
 
 
