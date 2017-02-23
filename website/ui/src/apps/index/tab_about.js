@@ -82,6 +82,7 @@ const TabAbout = () => {
         </div>);
 
     return (<div>
+            <h2>Draft</h2>
             {content}
     </div>);
 }
