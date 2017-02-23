@@ -5,8 +5,13 @@ var _dt = require('datatables.net');
 require('datatables.net-bs');
 
 class ResultsTable extends React.Component {
+    constructor(props) {
+	super(props);
+        console.log("making ResultsTable");
+    }
+
     render() {
-	return (<div style={{"width": "100%"}}>
+	return (<div ref={"container"} style={{"width": "100%"}}>
 		    <table ref="root" style={{width: "100%"}} />
 		</div>);
     }
