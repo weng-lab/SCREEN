@@ -7,7 +7,7 @@ require('datatables.net-bs');
 class ResultsTable extends React.Component {
     constructor(props) {
 	super(props);
-        console.log("making ResultsTable");
+        //console.log("making ResultsTable");
     }
 
     render() {

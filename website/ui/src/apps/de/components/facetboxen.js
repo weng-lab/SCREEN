@@ -51,20 +51,21 @@ const creBox = ({des, ct1, ct2, actions}) => {
     }
     let cres = des.diffCREs.data;
     let cts = (<ResultsTable
-               data={cres}
-               cols={[
-                   {title: "accession", data: "accession",
-                    render: Render.relink(GlobalAssembly),
-                    className: "dt-right"},
-                   {title: "start", data: "start", render: Render.integer,
-                    className: "dt-right"},
-                   {title: "length", data: "len", render: Render.integer,
-                    className: "dt-right"},
-                   {title: "Z change", data: "value",
-                    className: "dt-right"}
-               ]}
-               pageLength={5}
-               order={[[3, "desc"], [1, "asc"]]}
+                   data={cres}
+                   cols={[
+                       {title: "accession", data: "accession",
+                        render: Render.relink(GlobalAssembly),
+                        className: "dt-right"},
+                       {title: "start", data: "start", render: Render.integer,
+                        className: "dt-right"},
+                       {title: "length", data: "len", render: Render.integer,
+                        className: "dt-right"},
+                       {title: "Z change", data: "value",
+                        className: "dt-right"}
+                   ]}
+                   pageLength={5}
+	           bFilter={true}
+                   order={[[3, "desc"], [1, "asc"]]}
                />);
     return panelize("Candidate Regulatory Elements", cts);
 }
@@ -75,19 +76,20 @@ const geneBox = ({des, ct1, ct2, actions}) => {
     }
     let genes = des.nearbyDEs.data;
     let cts = (<ResultsTable
-               data={genes}
-               cols={[
-                   {title: "gene", data: "gene",
-                    className: "dt-right"},
-                   {title: "start", data: "start", render: Render.integer,
-                    className: "dt-right"},
-                   {title: "strand", data: "strand",
-                    className: "dt-right"},
-                   {title: "fold change", data: "fc", render: Render.real,
-                    className: "dt-right"}
-               ]}
-               pageLength={5}
-               order={[[3, "desc"]]}
+                   data={genes}
+                   cols={[
+                       {title: "gene", data: "gene",
+                        className: "dt-right"},
+                       {title: "start", data: "start", render: Render.integer,
+                        className: "dt-right"},
+                       {title: "strand", data: "strand",
+                        className: "dt-right"},
+                       {title: "fold change", data: "fc", render: Render.real,
+                        className: "dt-right"}
+                   ]}
+                   pageLength={5}
+	           bFilter={true}
+                   order={[[3, "desc"]]}
                />);
     return panelize("Differentially Expressed Genes", cts);
 }
