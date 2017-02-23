@@ -19,6 +19,7 @@ export const TopTissuesTables = () => ({
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: false,
+	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     enhancer: {
@@ -36,6 +37,7 @@ export const TopTissuesTables = () => ({
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
+	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     ctcf: {
@@ -54,6 +56,7 @@ export const TopTissuesTables = () => ({
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
+	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
     },
     dnase: {
@@ -70,6 +73,7 @@ export const TopTissuesTables = () => ({
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
+	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
     }
 });
@@ -79,7 +83,7 @@ export const OrthologTable = () => ({
 	title: "",
 	paging: false,
 	info: false,
-	bFilter: false,
+	bFilter: true,
 	bLengthChange: false,
 	emptyText: "No orthologous cRE identified",
 	cols: [
@@ -126,7 +130,7 @@ export const NearbyGenomicTable = () => {
 	    title: "Nearby Genes",
 	    paging: true,
 	    info: false,
-	    bFilter: false,
+	    bFilter: true,
             bLengthChange: true,
 	    emptyText: "No genes within 1Mb",
 	    cols: [
@@ -141,7 +145,7 @@ export const NearbyGenomicTable = () => {
 	    title: "Nearby cREs",
 	    paging: true,
 	    info: false,
-	    bFilter: false,
+	    bFilter: true,
             bLengthChange: true,
 	    cols: [
 	        {title: "accession", data: "name", className: "dt-right",
@@ -156,7 +160,7 @@ export const NearbyGenomicTable = () => {
 	    title: "Nearby SNPs",
 	    paging: true,
 	    info: false,
-	    bFilter: false,
+	    bFilter: true,
             bLengthChange: true,
 	    emptyText: "No SNPs within 10Kb",
 	    cols: [
@@ -174,7 +178,7 @@ export const NearbyGenomicTable = () => {
 	           title: "Genes within TAD",
 	           paging: true,
 	           info: false,
-	           bFilter: false,
+	           bFilter: true,
                    bLengthChange: true,
 	           emptyText: "No genes within TAD",
 	           cols: [
@@ -189,7 +193,7 @@ export const NearbyGenomicTable = () => {
 	           title: "Other cREs within TAD (<100 Kb)",
 	           paging: true,
 	           info: false,
-	           bFilter: false,
+	           bFilter: true,
                    bLengthChange: true,
 	           emptyText: "No cREs within TAD with 100 Kb",
 	           cols: [
@@ -216,6 +220,7 @@ export const TfIntersectionTable = () => ({
 	     render: Render.factorbook_link_tf },
 	    {title: "# experiments", data: "n",
 	     render: Render.integer }],
+	bFilter: true,
 	order: [[1, "desc"]]
     },
     "histone": {
@@ -226,6 +231,7 @@ export const TfIntersectionTable = () => ({
 	    //render: Render.factorbook_link_histone },
 	    {title: "# experiments", data: "n",
 	     render: Render.integer }],
+	bFilter: true,
 	order: [[1, "desc"]]
     },
 
@@ -236,6 +242,7 @@ export const TfIntersectionTable = () => ({
 	    {title: "mark", data: "name"},
 	    {title: "# experiments", data: "n",
 	     render: Render.integer }],
+	bFilter: true,
 	order: [[1, "desc"]]
     } */
 });
