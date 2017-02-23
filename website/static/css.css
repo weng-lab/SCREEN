@@ -453,4 +453,9 @@ table.dataTable tbody td.dt-body-center {
     text-align: center;
 }
 
-
+#geTissueOfOrigin {
+    padding-top: 20px;
+    display: block;
+    text-indent: 90px;
+    font-weight: bold;
+}

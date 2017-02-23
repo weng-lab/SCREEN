@@ -45,12 +45,14 @@ class LargeHorizontalBars extends React.Component {
 	return (
             <div>
   		{loading(this.props)}
-                <div style={{display: (this.props.loading ? "none" : "block")}}>
+                <div style={{display: (this.props.isFetching ?
+                                       "none" : "block")}}>
 		    <div className="row">
                         {sortSelect}
                         {dataScale}
 		    </div>
 
+                    <span id="geTissueOfOrigin">Tissue of origin</span>
 		    <div ref="container" style={{width: this.props.width + "px"}}
                     />
                 </div>

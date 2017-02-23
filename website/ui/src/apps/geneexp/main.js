@@ -27,29 +27,31 @@ class GeneExpPage extends React.Component {
 	//console.log(store.getState());
 
         return (
-                <Provider store={store}>
+            <Provider store={store}>
 	        <div>
 
-		<nav id="mainNavBar"
-                     className="navbar navbar-default navbar-inverse navbar-main">
-		<div className="container-fluid" id="navbar-main">
-                <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
-                </div>
-		</nav>
+		    <nav id="mainNavBar"
+                         className="navbar navbar-default navbar-inverse navbar-main">
+		        <div className="container-fluid" id="navbar-main">
+                            <NavBarApp show_cartimage={false}
+                                       searchbox={SearchBox} />}/>
+                        </div>
+		    </nav>
 
-		<div className="container" style={{width: "100%"}}>
-                  <div className="row" style={{width: "100%"}}>
-                    <div className="col-md-3 nopadding-right" id="facets-container">
-                    <FacetBoxen />
+		    <div className="container" style={{width: "100%"}}>
+                        <div className="row" style={{width: "100%"}}>
+                            <div className="col-md-3 nopadding-right"
+                                 id="facets-container">
+                                <FacetBoxen />
+                            </div>
+                            <div className="col-md-9 nopadding-left"
+                                 id="tabs-container">
+                                <MainTabs />
+                            </div>
+                        </div>
                     </div>
-                  <div className="col-md-9 nopadding-left" id="tabs-container">
-                     <MainTabs />
-                  </div>
-                </div>
-
-                </div>
 		</div>
-                </Provider>
+            </Provider>
         );
     }
 }
