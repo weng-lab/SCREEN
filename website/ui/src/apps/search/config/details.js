@@ -202,7 +202,7 @@ class GeTab extends ReTabBase{
     }
 }
 
-class AssocTssTab extends ReTabBase{
+class RampageTab extends ReTabBase{
     constructor(props) {
 	super(props, "rampage");
         this.doRender = (data) => {
@@ -232,16 +232,16 @@ const DetailsTabInfo = () => ({
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    ge: {title: "Associated Gene Expression",
-         enabled: "mm10" != GlobalAssembly,
-         f: GeTab},
-    assocTSS: {title: "Associated RAMPAGE Signal", enabled: true,
-               f: AssocTssTab},
+    ge: {title: (<span className="text-center">
+                        Associated<br />Gene Expression</span>),
+         enabled: "mm10" != GlobalAssembly, f: GeTab},
+    rampage: {title: (<span className="text-center">
+                        Associated<br />RAMPAGE Signal</span>),
+              enabled: true, f: RampageTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
 	       enabled: true, f: OrthologTab},
-    similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
-			 "Signal Profile"),
-		 enabled: true, f: MiniPeaks}
+    similarREs: {title: "Signal Profile", enabled: true,
+                 f: MiniPeaks}
 });
 
 export default DetailsTabInfo;
