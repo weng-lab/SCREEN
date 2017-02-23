@@ -4,9 +4,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-
-import REComponent from '../../../common/components/re_component'
-
 import LargeHorizontalBars from '../components/large_horizontal_bars'
 
 class ExpressionBoxplot extends React.Component {
