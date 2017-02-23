@@ -44,19 +44,16 @@ class LargeHorizontalBars extends React.Component {
 
 	return (
             <div>
-                <div className="container">
+  		{loading(this.props)}
+                <div style={{display: (this.props.loading ? "none" : "block")}}>
 		    <div className="row">
                         {sortSelect}
                         {dataScale}
 		    </div>
-		</div>
 
-  		{loading(this.props)}
-
-		<div ref="container"
-                     style={{display: (this.props.loading ? "none" : "block"),
-                             width: this.props.width + "px"}}
-                />
+		    <div ref="container" style={{width: this.props.width + "px"}}
+                    />
+                </div>
 	    </div>);
     }
 
@@ -65,7 +62,7 @@ class LargeHorizontalBars extends React.Component {
     }
 
     componentDidUpdate() {
-	if(this.refs.container.style.display != "block") {
+	if(this.props.loading){
 	    return;
 	}
 
