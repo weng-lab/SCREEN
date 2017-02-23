@@ -2,22 +2,23 @@
 
 from __future__ import print_function
 import os, sys, json, psycopg2, argparse
+import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome
 from exp import Exp
 from utils import Utils, printt
 from metadataws import MetadataWS
 
-def setupDB(cur, assembly):
+def setupDB(curs, assembly):
     tableName = "r_rnas_" + assembly
     printt("dropping and creating", tableName)
 
-    cur.execute("""
+    curs.execute("""
 DROP TABLE IF EXISTS {tn};
 
 CREATE TABLE {tn}
@@ -33,7 +34,49 @@ biosample_type text,
 description text
     ) """.format(tn = tableName))
 
-def insertRNAs(cur, assembly):
+def processRow(row, outF, lookup):
+    encodeID = row[0]
+    exp = Exp.fromJsonFile(encodeID)
+    json = exp.getExpJson()
+
+    biosample = json["replicates"][0]["library"]["biosample"]
+    try:
+        organ = biosample["organ_slims"]
+        if 1 == len(organ):
+            organ = organ[0]
+        elif len(organ) > 1:
+            #print("multiple", organ)
+            organ = organ[0]
+    except:
+        print("missing", encodeID, biosample["biosample_term_name"])
+        organ = ""
+
+    if biosample["biosample_term_name"] in lookup:
+        organ = lookup[biosample["biosample_term_name"]]
+
+    if not organ or "na" == organ:
+        print("missing organ", biosample["biosample_term_name"])
+        organ = "" #biosample["biosample_term_name"]
+
+    try:
+        cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
+    except:
+        #print(encodeID, "assuming cell compartment")
+        cellCompartment = "cell"
+
+    a = [exp.encodeID,
+         exp.biosample_term_name,
+         organ,
+         cellCompartment,
+         exp.target,
+         exp.lab,
+         exp.assay_term_name,
+         exp.biosample_type,
+         exp.description]
+    #print(a)
+    outF.write('\t'.join(a) + '\n')
+
+def insertRNAs(curs, assembly):
     tissueFixesFnp = os.path.join(os.path.dirname(__file__),
                                   "cellTypeFixesEncode.txt")
     printt("reading", tissueFixesFnp)
@@ -48,69 +91,27 @@ def insertRNAs(cur, assembly):
         lookup[toks[0]] = toks[1].strip()
 
     printt("gettings datasets")
-    cur.execute("select distinct(dataset) from r_expression_" + assembly)
-    rows = cur.fetchall()
+    curs.execute("select distinct(dataset) from r_expression_" + assembly)
+    rows = curs.fetchall()
     printt("found", len(rows), "rows")
 
     printt("loading metadata")
-    counter = 0
+    outF = StringIO.StringIO()
     for row in rows:
-        encodeID = row[0]
-        exp = Exp.fromJsonFile(encodeID)
-        json = exp.getExpJson()
+        processRow(row, outF, lookup)
+    outF.seek(0)
 
-        biosample = json["replicates"][0]["library"]["biosample"]
-        try:
-            organ = biosample["organ_slims"]
-            if 1 == len(organ):
-                organ = organ[0]
-            elif len(organ) > 1:
-                #print("multiple", organ)
-                organ = organ[0]
-        except:
-            print("missing", encodeID, biosample["biosample_term_name"])
-            organ = ""
+    cols = ["encode_id", "cellType", "organ",
+            "cellCompartment", "target", "lab",
+            "assay_term_name", "biosample_type", "description"]
 
-        if biosample["biosample_term_name"] in lookup:
-            organ = lookup[biosample["biosample_term_name"]]
+    tableName = "r_rnas_" + assembly
+    curs.copy_from(outF, tableName, '\t', columns = cols)
+    printt("inserted", curs.rowcount)
 
-        if not organ or "na" == organ:
-            print(biosample["biosample_term_name"])
-
-        try:
-            cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
-        except:
-            #print(encodeID, "assuming cell compartment")
-            cellCompartment = "cell"
-
-        tableName = "r_rnas_" + assembly
-        cur.execute("""
-INSERT INTO {tn}
-(encode_id, cellType, organ, cellCompartment, target, lab, 
-assay_term_name, biosample_type, description)
-VALUES (
-%(encode_id)s,
-%(cellType)s,
-%(organ)s,
-%(cellCompartment)s,
-%(target)s,
-%(lab)s,
-%(assay)s,
-%(biosample_type)s,
-%(desc)s
-        )""".format(tn = tableName),
-                    {"encode_id" : exp.encodeID,
-                     "cellType" : exp.biosample_term_name,
-                     "organ" : organ,
-                     "cellCompartment" : cellCompartment,
-                     "target" : exp.target,
-                     "lab" : exp.lab,
-                     "assay" : exp.assay_term_name,
-                     "biosample_type" : exp.biosample_type,
-                     "desc" : exp.description
-                    })
-        counter += 1
-    printt("inserted", counter, "RNA-seq for", assembly)
+def doIndex(curs, assembly):
+    tableName = "r_rnas_" + assembly
+    makeIndex(curs, tableName, ["biosample_type"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -120,12 +121,14 @@ def parse_args():
 def main():
     args = parse_args()
 
+    DBCONN = db_connect(os.path.realpath(__file__))
+
     for assembly in ["mm10", "hg19"]:
-        DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "02_init") as curs:
             print('***********', assembly)
             setupDB(curs, assembly)
             insertRNAs(curs, assembly)
+            doIndex(curs, assembly)
 
 if __name__ == '__main__':
     main()

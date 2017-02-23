@@ -53,6 +53,8 @@ class CachedObjects:
                          "ctcf" : self.pgSearch.datasets("CTCF")}
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
+        self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
+
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')

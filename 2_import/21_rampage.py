@@ -59,6 +59,7 @@ strand VARCHAR(1),
 );""".format(tn = tableName, fields = ','.join([f + " real" for f in exps])))
 
     curs.copy_from(outF, tableName, '\t', columns = cols)
+    printt("inserted", curs.rowcount)
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rampage"
