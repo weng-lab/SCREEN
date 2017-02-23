@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import sys
 import os
 from natsort import natsorted
@@ -189,38 +191,37 @@ class PGsearch:
 
         fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
         fields = ', '.join(fields + [
-                "accession", "maxZ",
-                "cre.chrom", "cre.start",
-                "cre.stop - cre.start AS len",
-                "cre.gene_all_id AS geneall_id",
-                "CONCAT(infoAll.approved_symbol, ', ', infoAll2.approved_symbol, ', ', infoAll3.approved_symbol) AS gene_all",
-                "CONCAT(infoPc.approved_symbol, ', ', infoPc2.approved_symbol, ', ', infoPc3.approved_symbol) AS gene_pc",
-                "0::int as in_cart",
-                "cre.cre_group"])
+            "accession", "maxZ",
+            "cre.chrom", "cre.start",
+            "cre.stop - cre.start AS len",
+            "ARRAY[ARRAY[infoAll1.approved_symbol, infoAll2.approved_symbol, infoAll3.approved_symbol], ARRAY[infoPc1.approved_symbol, infoPc2.approved_symbol, infoPc3.approved_symbol] ] AS genesAllPc",
+            "0::int as in_cart",
+            "cre.cre_group"])
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
-            curs.execute("""
+            q = """
 SELECT JSON_AGG(r) from(
 SELECT {fields}
 FROM {tn} as cre
-inner join {gtn} as infoAll
-on cre.gene_all_id[1] = infoAll.geneid
+inner join {gtn} as infoAll1
+	on cre.gene_all_id[1] = infoAll1.geneid
 inner join {gtn} as infoAll2
-            on cre.gene_all_id[2] = infoAll2.geneid
+        on cre.gene_all_id[2] = infoAll2.geneid
 inner join {gtn} as infoAll3
-            on cre.gene_all_id[3] = infoAll3.geneid
-inner join {gtn} as infoPc
-on cre.gene_pc_id[1] = infoPc.geneid
+        on cre.gene_all_id[3] = infoAll3.geneid
+inner join {gtn} as infoPc1
+        on cre.gene_pc_id[1] = infoPc1.geneid
 inner join {gtn} as infoPc2
-            on cre.gene_pc_id[2] = infoPc2.geneid
+        on cre.gene_pc_id[2] = infoPc2.geneid
 inner join {gtn} as infoPc3
-            on cre.gene_pc_id[3] = infoPc3.geneid
+        on cre.gene_pc_id[3] = infoPc3.geneid
 {whereclause}
 ORDER BY maxz desc limit 1000) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info",
-           whereclause = whereclause))
-
+           whereclause = whereclause)
+            print(q)
+            curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []

@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import print_function
+
 import cherrypy, jinja2, os, sys
 
 from controllers.main_controller import MainController
