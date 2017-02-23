@@ -10,7 +10,7 @@ import * as Render from '../../../common/renders'
 import ResultsTable from '../../../common/components/results_table'
 import loading from '../../../common/components/loading'
 
-import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name, infer_primary_type} from '../config/colors'
+import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name} from '../config/colors'
 
 const ROWHEIGHT = 30.0;
 const ROWMARGIN = 15;
@@ -69,11 +69,7 @@ class MiniPeaks extends React.Component {
         });
     }
 
-    render() {
-	let accession = this.props.cre_accession_detail;
-	if (!(accession in this.state)){
-	    return <div />;
-	}
+    doRender(accession){
 	let renderPeaks = (assay) => (allData) => {
 	    if(!allData[assay]){
 		return "";
@@ -134,12 +130,21 @@ class MiniPeaks extends React.Component {
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
 			    ]};
+        return React.createElement(ResultsTable,
+                                   {data: this.state[accession].rows,
+                                    ...table});
+    }
 
-	return (<div className={"minipeaks"}>
-                {React.createElement(ResultsTable,
-                                     {data: this.state[accession].rows,
-                                      ...table})}
-		</div>);
+    render() {
+	let accession = this.props.cre_accession_detail;
+	if (!(accession in this.state)){
+            return loading(this.state);
+	}
+
+	return (
+            <div className={"minipeaks"}>
+                {this.doRender(accession)}
+	    </div>);
     }
 }
 
