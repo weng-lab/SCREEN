@@ -4,7 +4,6 @@ import {bindActionCreators} from 'redux';
 
 import Tree from '../../../common/components/tree'
 
-import REComponent from '../../../common/components/re_component'
 import AssayDropdown from './assaydropdown'
 
 import * as Actions from '../actions/main_actions';
@@ -47,7 +46,7 @@ class AssayDropdownStatic extends React.Component {
 	    this.props.onChange(this.refs.mainselect.value);
 	}
     }
-    
+
     render() {
 	return (<select onChange={this._onchange} ref="mainselect">
 		<option value="H3K27ac">H3K27ac Only</option>
@@ -58,7 +57,7 @@ class AssayDropdownStatic extends React.Component {
     }
 }
 
-class ResultsTree extends React.Component { //REComponent {
+class ResultsTree extends React.Component {
 
     constructor(props) {
 	super(props);

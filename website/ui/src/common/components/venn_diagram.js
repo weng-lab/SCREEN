@@ -2,9 +2,8 @@ var React = require('react');
 var $ = require('jquery');
 
 import {create_venn_diagram} from '../helpers/venn'
-import REComponent from './re_component'
 
-class VennDiagram extends REComponent {
+class VennDiagram extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -17,7 +16,7 @@ class VennDiagram extends REComponent {
 	    create_venn_diagram(this.refs.container, this.props.sets, this.props.overlaps, this.refs.tooltip);
 	}
     }
-    
+
     render() {
 	return super.render(<div>
 		   <span ref="help_icon" />
@@ -29,6 +28,6 @@ class VennDiagram extends REComponent {
     componentDidMount() {
 	super.componentDidMount();
     }
-    
+
 }
 export default VennDiagram;

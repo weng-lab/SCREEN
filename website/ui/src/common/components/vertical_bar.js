@@ -1,9 +1,7 @@
 const React = require('react');
 var d3 = require('d3');
 
-import REComponent from './re_component'
-
-class VerticalBars extends REComponent {
+class VerticalBars extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -14,22 +12,22 @@ class VerticalBars extends REComponent {
 		    <div style={{width: this.props.width + "px", fontSize: "18pt", display: (this.props.loading ? "none" : "block")}}>{this.props.title}<span ref="help_icon" /></div>
 		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px", height: this.props.height + "px" }} />
 		</div>);
-		
+
     }
 
     componentDidMount() {
 	super.componentDidMount();
 	this.componentDidUpdate();
     }
-    
+
     componentDidUpdate() {
 
 	super.componentDidUpdate();
-	
+
 	if (!this.refs.container.style.display == "block") return;
 	$(this.refs.container).empty();
 	if (this.props.data.length == 0) return;
-	
+
 	var g = d3.select(this.refs.container)
 	    .append('svg')
 	    .attr("width", this.props.width)
@@ -43,7 +41,7 @@ class VerticalBars extends REComponent {
 	    .attr("transform", "translate(50,0)")
 	    .attr("width", this.props.width - 50)
 	    .attr("height", this.props.height - 50);
-	
+
 	var width = this.props.width - 50;
 	var height = this.props.height - 50;
 
@@ -56,7 +54,7 @@ class VerticalBars extends REComponent {
 	x.domain(data.map(function(d) { return d.key; }));
 	y.domain([0, d3.max(data, function(d) { return d.value; })]);
 	var sep = (data.length == 1 ? width - 50 : (x(data[1].key) - x(data[0].key)));
-	
+
 	g.append("g")
 	    .attr("class", "axis axis--x")
 	    .attr("transform", "translate(50," + height + ")")
@@ -102,8 +100,8 @@ class VerticalBars extends REComponent {
 	    .duration(1000)
 	    .attr("y", function(d) { return y(d.value); })
 	    .attr("height", function(d) { return height - y(d.value); });
-	
+
     }
-    
+
 }
 export default VerticalBars;

@@ -5,8 +5,6 @@ default_colors.reverse();
 
 var drawDelay = 1000;
 
-import REComponent from './re_component'
-
 export const default_heatmap_layout = {
 
     "margin": {
@@ -15,24 +13,24 @@ export const default_heatmap_layout = {
 	"bottom": 50,
 	"left": 200
     },
-    
+
     "cellSize": 12,
 
     "rows": {
 	"order": [],
 	"labels": []
     },
-    
+
     "cols": {
 	"order": [],
 	"labels": []
     },
-    
+
     "colors": default_colors
-    
+
 };
 
-class Heatmap extends REComponent {
+class Heatmap extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -65,19 +63,19 @@ class Heatmap extends REComponent {
     componentDidUpdate() {
 
 	super.componentDidUpdate();
-	
+
 	$(this.refs.container).empty();
-	
+
 	var data = this.props.data;
 	var tooltip = this.refs.tooltip;
 	var get_tooltip_text = this.props.tooltip ? this.props.tooltip : this._default_tooltip;
 	var _d = this.props.data_transform ? this.props.data_transform : (d) => (d);
 	this._d = _d;
-	
+
 	if (null == data || 0 == data.length) {
 	    return;
 	};
-	
+
 	var chart_layout = {
 	    margin: Object.assign({}, this.props.chart_layout.margin),
 	    rows: {
@@ -91,7 +89,7 @@ class Heatmap extends REComponent {
 	    cellSize: this.props.chart_layout.cellSize,
 	    colors: [...this.props.chart_layout.colors]
 	};
-	
+
 	chart_layout.rows.labels = [...this.props.rowlabels];
 	chart_layout.rows.styles = (this.props.rowstyles ? [...this.props.rowstyles] : []);
 	chart_layout.rows.order = [];
@@ -103,20 +101,20 @@ class Heatmap extends REComponent {
 	for (var i = 1; i <= chart_layout.cols.labels.length; i++) chart_layout.cols.order.push(i);
 
 	chart_layout.colors = ['#FFFFFF','#F1EEF6','#E6D3E1','#DBB9CD','#D19EB9','#C684A4','#BB6990','#B14F7C','#A63467','#9B1A53','#91003F'];
-	
+
 	chart_layout.width  = chart_layout.cellSize * chart_layout.cols.order.length;
 	chart_layout.height = chart_layout.cellSize * chart_layout.rows.order.length;
 	chart_layout.legendElementWidth = chart_layout.cellSize;
 
 	var min = (this.props.min == null ? d3.min(data, function(d) {return d.value;}) : this.props.min);
 	var max = (this.props.max == null ? d3.max(data, function(d) {return d.value;}) : this.props.max);
-	
+
 	var colorScale = d3.scale.quantile()
 	    .domain([min, max])
 	    .range(chart_layout.colors);
 
 	var onClick = (row, col) => {if (this.props.onClick) this.props.onClick(row, col);};
-	
+
 	var svg = d3.select(this.refs.container).append("svg")
 	    .attr("width", chart_layout.width + chart_layout.margin.left + chart_layout.margin.right)
 	    .attr("height", chart_layout.height + chart_layout.margin.top + chart_layout.margin.bottom)
@@ -137,7 +135,7 @@ class Heatmap extends REComponent {
 	    .style("text-anchor", "end")
 	    .style("fill", (d, i) => (i < chart_layout.rows.styles.length ? chart_layout.rows.styles[i] : "#000000"))
 	    .attr("transform", "translate(-6," + chart_layout.cellSize / 1.5 + ")")
-	    .attr("class", function (d,i) { return "rowLabel mono r"+i;} ) 
+	    .attr("class", function (d,i) { return "rowLabel mono r"+i;} )
 	    .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
 	    .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
 	    .on("click", function(d,i) {rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder); d3.select(order).property("selectedIndex", 4).node().focus();;})
@@ -178,7 +176,7 @@ class Heatmap extends REComponent {
 		d3.select(this).classed("cell-hover",true);
 		svg.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
 		svg.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
-		
+
 		//Update the tooltip position and value
 		d3.select(tooltip)
 		    .text(get_tooltip_text(d, chart_layout.rows.labels, chart_layout.cols.labels));
@@ -200,33 +198,33 @@ class Heatmap extends REComponent {
 		d3.select(tooltip).classed("heatmap_tooltip_hidden", true);
 	    })
 	;
-	
+
 	var legend = svg.selectAll(".legend")
 	    .data([Math.round(_d(min)), "", "", "", "", "", "", "", "", "", Math.round(_d(max))])
 	    .enter().append("g")
 	    .attr("class", "legend");
-	
+
 	legend.append("rect")
 	    .attr("x", function(d, i) { return chart_layout.legendElementWidth * i; })
 	    .attr("y", chart_layout.height + (chart_layout.cellSize * 2))
 	    .attr("width", chart_layout.legendElementWidth)
 	    .attr("height", chart_layout.cellSize)
 	    .style("fill", function(d, i) { return chart_layout.colors[i]; });
-	
+
 	legend.append("text")
 	    .attr("class", "mono")
 	    .text(function(d) { return d; })
 	    .attr("width", chart_layout.legendElementWidth)
 	    .attr("x", function(d, i) { return chart_layout.legendElementWidth * i; })
 	    .attr("y", chart_layout.height + (chart_layout.cellSize * 4));
-	
+
 	// Change ordering of cells
-	
+
 	function sortbylabel(rORc,i,sortOrder){
 	    var t = svg.transition().duration(drawDelay);
 	    var log2r=[];
 	    var sorted; // sorted is zero-based index
-	    svg.selectAll(".c"+rORc+i) 
+	    svg.selectAll(".c"+rORc+i)
 		.filter(function(ce){
 		    log2r.push(+ce.value);
 		})
@@ -250,11 +248,11 @@ class Heatmap extends REComponent {
 		;
 	    }
 	}
-	
+
 	d3.select(order).on("change",function(){
 	    order(this.value);
 	});
-	
+
 	function order(value){
 	    if(value=="hclust"){
 		var t = svg.transition().duration(drawDelay);
@@ -262,11 +260,11 @@ class Heatmap extends REComponent {
 		    .attr("x", function(d) { return chart_layout.cols.order.indexOf(d.col) * chart_layout.cellSize; })
 		    .attr("y", function(d) { return chart_layout.rows.order.indexOf(d.row) * chart_layout.cellSize; })
 		;
-		
+
 		t.selectAll(".rowLabel")
 		    .attr("y", function (d, i) { return chart_layout.rows.order.indexOf(i+1) * chart_layout.cellSize; })
 		;
-		
+
 		t.selectAll(".colLabel")
 		    .attr("y", function (d, i) { return chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.sin(angle); })
 		    .attr("x", (d, i) => (chart_layout.cols.order.indexOf(i+1) * chart_layout.cellSize * Math.cos(angle)))
