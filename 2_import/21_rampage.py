@@ -7,7 +7,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from utils import AddPath, Utils, Timer, printt
-from db_utils import getcursor, vacumnAnalyze, makeIndex
+from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 
 AddPath(__file__, '../common/')
@@ -60,7 +60,8 @@ strand VARCHAR(1),
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rampage"
-    makeIndex(curs, tableName, ["ensemblid_ver"])
+    makeIndex(curs, tableName, ["ensemblid_ver", "chrom"])
+    makeIndexIntRange(curs, tableName, ["start", "stop"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
