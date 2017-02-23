@@ -71,7 +71,8 @@ class DataWebService:
             "nearbyGenomic" : self._re_detail_nearbyGenomic,
             "tfIntersection" : self._re_detail_tfIntersection,
             "relatedGene" : self._re_detail_relatedGene,
-            "assocTSS" : self._re_detail_assocTSS,
+            "rampage" : self._re_detail_rampage,
+            "ge" : self._re_detail_ge,
             "similarREs" : self._re_detail_similarREs,
             "ortholog": self._ortholog }
 
@@ -148,11 +149,27 @@ class DataWebService:
     def _re_detail_relatedGene(self, j, accession):
         return { accession : {} }
 
-    def _re_detail_assocTSS(self, j, accession):
+    def _re_detail_ge(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyGenes()
         nearest = {"distance": 1e12}
         for gene in nearbyGenes[0:]:
+            if gene["distance"] < nearest["distance"] and not gene["name"].startswith("ENSG"):
+                nearest = gene
+        if nearest["distance"] > 5000:
+            return { accession : {"no_nearby_tss": True} }
+        cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
+        name, strand = self.cache.lookupEnsembleGene(nearest["name"])
+        r = cge.computeHorBars(name, (u'cell',))
+        r["genename"] = name
+        return {accession: r}
+
+    def _re_detail_rampage(self, j, accession):
+        cre = CRE(self.pgSearch, accession, self.cache)
+        nearbyGenes = cre.nearbyGenes()
+        nearest = {"distance": 1e12}
+        for gene in nearbyGenes[0:]:
+            # FIXME: why remove ENSG?
             if gene["distance"] < nearest["distance"] and not gene["name"].startswith("ENSG"):
                 nearest = gene
         if nearest["distance"] > 5000:
