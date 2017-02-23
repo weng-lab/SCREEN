@@ -2,44 +2,48 @@ import React from 'react'
 
 class LargeHorizontalBars extends React.Component {
     render() {
-	if (!this.props.items || !this.props.items.byTissueMaxFPKM || !Object.keys(this.props.items.byTissueMaxFPKM).length) {
+	if (!this.props.items ||
+            !this.props.items.byTissueMaxFPKM ||
+            !Object.keys(this.props.items.byTissueMaxFPKM).length) {
 	    return (<div ref="container">
 		    No expression data is available for this gene.
 		    </div>);
 	}
-	return (<div>
+	return (
+            <div>
 
-		<div className="container">
-		<div className="row">
-		<div className="col-md-4">
-		Choose sort order:&nbsp;
-		<select ref="sortorder" defaultValue={"byExpressionTPM"}
-		   onChange={() => {this.componentDidUpdate()}}>
-		   <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
-		   <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
-		   <option value="byTissue">by tissue</option>
-		   <option value="byTissueMaxTPM">by tissue max &#40;TPM&#41;</option>
-		   <option value="byTissueMaxFPKM">by tissue max &#40;FPKM&#41;</option>
-		</select>
-		</div>
-		<div className="col-md-4">
-		Data:&nbsp;
-		<select ref="datascale" defaultValue={"logTPM"}
-		   onChange={() => {this.componentDidUpdate()}}>
-		   <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
-		   <option value="rawTPM">TPM</option>
-		   <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
-		   <option value="rawFPKM">FPKM</option>
-		</select>
-		</div>
-		</div>
+                <div className="container">
+		    <div className="row">
+		        <div className="col-md-4">
+		            Choose sort order:&nbsp;
+		            <select ref="sortorder" defaultValue={"byExpressionTPM"}
+		                    onChange={() => {this.componentDidUpdate()}}>
+		                <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
+		                <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
+		                <option value="byTissue">by tissue</option>
+		                <option value="byTissueMaxTPM">by tissue max &#40;TPM&#41;</option>
+		                <option value="byTissueMaxFPKM">by tissue max &#40;FPKM&#41;</option>
+		            </select>
+		        </div>
+		        <div className="col-md-4">
+		            Data:&nbsp;
+		            <select ref="datascale" defaultValue={"logTPM"}
+		                    onChange={() => {this.componentDidUpdate()}}>
+		                <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
+		                <option value="rawTPM">TPM</option>
+		                <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
+		                <option value="rawFPKM">FPKM</option>
+		            </select>
+		        </div>
+		    </div>
 		</div>
 
-  		<div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
-		Loading...
+  		<div ref="loading" className="loading"
+                     style={{display: (this.props.loading ? "block" : "none")}}>
+		    Loading...
 		</div>
 		<div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
-		</div>);
+	    </div>);
     }
 
     componentDidMount() {
