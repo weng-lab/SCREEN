@@ -186,8 +186,9 @@ class RelatedGeneTab extends ReTabBase{
 class GeTab extends ReTabBase{
     constructor(props) {
 	super(props, "ge");
+
         this.doRender = (data) => {
-	    if (data.no_nearby_tss) {
+	    if(data.no_nearby_tss) {
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
 	    if (data.genename.startsWith("ENSG")) {
@@ -205,15 +206,14 @@ class GeTab extends ReTabBase{
 class RampageTab extends ReTabBase{
     constructor(props) {
 	super(props, "rampage");
+
         this.doRender = (data) => {
-	    if (data.no_nearby_tss) {
+            console.log("rampage", data);
+	    if(0 == data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
-	    if (data.genename.startsWith("ENSG")) {
-		return <div><br />{"No gene expression data found for this cRE"}</div>;
-	    }
             return (<div>
-		    <h2><em>{data.genename}</em></h2>
+		    <h2><em>{}</em></h2>
 		    {React.createElement(LargeHorizontalBars,
                                          {...data, width: 800, barheight: "15"})}
 		    </div>);
@@ -234,10 +234,10 @@ const DetailsTabInfo = () => ({
                   f: RelatedGeneTab},
     ge: {title: (<span className="text-center">
                         Associated<br />Gene Expression</span>),
-         enabled: "mm10" != GlobalAssembly, f: GeTab},
+         enabled: true, f: GeTab},
     rampage: {title: (<span className="text-center">
                         Associated<br />RAMPAGE Signal</span>),
-              enabled: true, f: RampageTab},
+              enabled: "mm10" != GlobalAssembly, f: RampageTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
 	       enabled: true, f: OrthologTab},
     similarREs: {title: "Signal Profile", enabled: true,

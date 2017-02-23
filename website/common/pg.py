@@ -752,6 +752,8 @@ AND int4range(start, stop) && int4range(%s, %s)
                         nr["data"][k] = v
                     continue
                 nr[k] = v
+            if not nr["data"]:
+                continue
             ret.append(nr)
         return ret
 
