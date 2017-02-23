@@ -97,7 +97,8 @@ class PGsearch:
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
-        print(j, """TODO need more variables here:
+        if 0:
+            print(j, """TODO need more variables here:
         gene_all_start, gene_all_end,
         gene_pc_start, gene_pc_end""")
 
@@ -168,7 +169,7 @@ class PGsearch:
         whereclause = ""
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
-        print(whereclause)
+        #print(whereclause)
         return (fields, whereclause)
 
     def _rfacets_active(self, j):
@@ -223,7 +224,7 @@ ORDER BY maxz desc limit 1000) r
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
-            print(rows[0] if len(rows) > 0 else "")
+            #print(rows[0] if len(rows) > 0 else "")
 
             # TODO: could be slow......
             curs.execute("""
@@ -384,7 +385,6 @@ ORDER BY 2
 """.format(cre = self.assembly + "_cre_" + chrom,
            ti = self.assembly + "_tads_info",
            tads = self.assembly + "_tads")
-            print(q)
             curs.execute(q, (start, accession, start))
             rows = curs.fetchall()
         return [{"accession" : r[0], "distance" : r[1]} for r in rows]
@@ -480,20 +480,23 @@ WHERE accession = '{accession}'""".format(assay=assay,
                                           accession=acc))
             r = curs.fetchone()
             if not r:
-                print("cre$CRE::mostsimilar WARNING: no results for accession",
-                      acc," -- returning empty set")
+                if 0:
+                    print("cre$CRE::mostsimilar WARNING: no results for accession",
+                          acc," -- returning empty set")
                 return []
             whereclause = whereclause(r[0])
             if len(whereclause.split(" or ")) > 200:
-                print("cre$CRE::mostsimilar", "NOTICE:", acc,
-                      "is active in too many cell types",
-                      len(whereclause.split(" or ")),
-                      "returning empty set")
+                if 0:
+                    print("cre$CRE::mostsimilar", "NOTICE:", acc,
+                          "is active in too many cell types",
+                          len(whereclause.split(" or ")),
+                          "returning empty set")
                 return []
 
             if not whereclause:
-                print("cre$CRE::mostsimilar NOTICE:", acc,
-                      "not active in any cell types; returning empty set")
+                if 0:
+                    print("cre$CRE::mostsimilar NOTICE:", acc,
+                          "not active in any cell types; returning empty set")
                 return []
 
             curs.execute("""
