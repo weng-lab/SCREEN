@@ -5,7 +5,6 @@ import BarGraphTable from '../components/bar_graph_table'
 
 import GeneExp from '../../geneexp/components/gene_exp'
 import ExpressionHeatmapSet from '../components/expression_heatmap'
-import TSSExpressionPlot from '../components/tss'
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import MiniPeaks from '../components/minipeaks'
 
@@ -184,9 +183,9 @@ class RelatedGeneTab extends ReTabBase{
     }
 }
 
-class AssocTssTab extends ReTabBase{
+class GeTab extends ReTabBase{
     constructor(props) {
-	super(props, "assocTSS");
+	super(props, "ge");
         this.doRender = (data) => {
 	    if (data.no_nearby_tss) {
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
@@ -199,14 +198,26 @@ class AssocTssTab extends ReTabBase{
 		    {React.createElement(LargeHorizontalBars,
                                          {...data, width: 800, barheight: "15"})}
 		    </div>);
-            return (<TSSExpressionPlot />);
         }
     }
 }
 
-class SimilarREsTab extends React.Component {
-    render(){
-	return (<MiniPeaks />);
+class AssocTssTab extends ReTabBase{
+    constructor(props) {
+	super(props, "rampage");
+        this.doRender = (data) => {
+	    if (data.no_nearby_tss) {
+		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
+	    }
+	    if (data.genename.startsWith("ENSG")) {
+		return <div><br />{"No gene expression data found for this cRE"}</div>;
+	    }
+            return (<div>
+		    <h2><em>{data.genename}</em></h2>
+		    {React.createElement(LargeHorizontalBars,
+                                         {...data, width: 800, barheight: "15"})}
+		    </div>);
+        }
     }
 }
 
@@ -221,13 +232,16 @@ const DetailsTabInfo = () => ({
                      f: TfIntersectionTab},
     relatedGene: {title: "Related Gene Expression", enabled: false,
                   f: RelatedGeneTab},
-    assocTSS: {title: "Associated Gene Expression", enabled: true,
+    ge: {title: "Associated Gene Expression",
+         enabled: "mm10" != GlobalAssembly,
+         f: GeTab},
+    assocTSS: {title: "Associated RAMPAGE Signal", enabled: true,
                f: AssocTssTab},
     ortholog: {title: "Orthologous cREs in " + (GlobalAssembly == "mm10" ? "hg19" : "mm10"),
 	       enabled: true, f: OrthologTab},
     similarREs: {title: (GlobalAssembly == "mm10" ? "Similar cREs" :
 			 "Signal Profile"),
-		 enabled: true, f: SimilarREsTab}
+		 enabled: true, f: MiniPeaks}
 });
 
 export default DetailsTabInfo;

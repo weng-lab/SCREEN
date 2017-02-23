@@ -168,8 +168,7 @@ def addCol(curs, assembly):
     printt("adding col...")
     curs.execute("""
 ALTER TABLE {tn}
-ADD COLUMN promoterMaxz real,
-ADD COLUMN enhancerMaxz real;
+ADD COLUMN creGroup integer;
 
 UPDATE {tn}
 SET promoterMaxz = GREATEST(
