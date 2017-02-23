@@ -202,25 +202,26 @@ class PGsearch:
             q = """
 SELECT JSON_AGG(r) from(
 SELECT {fields}
-FROM {tn} as cre
-inner join {gtn} as infoAll1
+FROM {tn} AS cre
+inner join {gtn} AS infoAll1
 	on cre.gene_all_id[1] = infoAll1.geneid
-inner join {gtn} as infoAll2
+inner join {gtn} AS infoAll2
         on cre.gene_all_id[2] = infoAll2.geneid
-inner join {gtn} as infoAll3
+inner join {gtn} AS infoAll3
         on cre.gene_all_id[3] = infoAll3.geneid
-inner join {gtn} as infoPc1
+inner join {gtn} AS infoPc1
         on cre.gene_pc_id[1] = infoPc1.geneid
-inner join {gtn} as infoPc2
+inner join {gtn} AS infoPc2
         on cre.gene_pc_id[2] = infoPc2.geneid
-inner join {gtn} as infoPc3
+inner join {gtn} AS infoPc3
         on cre.gene_pc_id[3] = infoPc3.geneid
 {whereclause}
-ORDER BY maxz desc limit 1000) r
+ORDER BY maxz DESC
+LIMIT 1000) r
 """.format(fields = fields, tn = tableName,
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause)
-            print(q)
+
             curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
@@ -229,7 +230,7 @@ ORDER BY maxz desc limit 1000) r
 
             # TODO: could be slow......
             curs.execute("""
-SELECT count(0) FROM {tn} as cre
+SELECT count(0) FROM {tn} AS cre
 {whereclause}""".format(tn = tableName, whereclause = whereclause))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
@@ -252,7 +253,7 @@ SELECT count(0) FROM {tn} as cre
         q = """
 COPY (
 SELECT {fields}
-FROM {tn} as cre
+FROM {tn} AS cre
 {whereclause}
 ) to STDOUT
 with DELIMITER E'\t'
@@ -279,7 +280,7 @@ with DELIMITER E'\t'
 copy (
 SELECT JSON_AGG(r) from (
 SELECT *
-FROM {tn} as cre
+FROM {tn} AS cre
 {whereclause}
 ) r
 ) to STDOUT
@@ -373,7 +374,7 @@ AND isProximal is {isProx}
     def cresInTad(self, accession, chrom, start):
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
             q = """
-SELECT accession, abs(%s - start) as distance
+SELECT accession, abs(%s - start) AS distance
 from {cre}
 where int4range(start, stop) && int4range(
 (SELECT int4range(min(start), max(stop))
