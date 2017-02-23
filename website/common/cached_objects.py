@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os, sys, json
+
+from compute_gene_expression import Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
@@ -66,32 +69,7 @@ class CachedObjects:
             return name, ''
         return s, ''
 
-    def getTissue(self, ct):
-        if ct in self.cellTypeToTissue:
-            return self.cellTypesToTissue[ct]
-        #raise Exception("missing tissue")
-        return ""
-
-    def getTissueMap(self):
-        return self.tissueMap
-
-    def getCTTjson(self):
-        return self.cellTypesToTissue_json
-
-    def getTissueAsMap(self, ct):
-        if ct in self.tissueMap:
-            return self.tissueMap[ct]
-        #raise Exception("missing tissue")
-        return ""
-
-    def globalCellTypeInfo(self):
-        return self.datasets.globalCellTypeInfoJson()
-
-    def globalCellTypeInfoArr(self):
-        return self.datasets.globalCellTypeInfoArrJson()
-
     def global_data(self, ver):
-        from compute_gene_expression import Compartments
         datasets = self.datasets
         return {
             "tfs" : self.tf_list,
