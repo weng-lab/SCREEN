@@ -59,6 +59,11 @@ const button_click_handler = (name, re, dispatch) => {
 };
 
 class TableWithCart extends React.Component {
+    addAllToCart() {
+	let accessions = this.props.data.map((d) => ( d.accession ));
+	this.props.actions.addCart(accessions);
+    }
+    
     downloadBed() {
 	var jq = this.props.jq;
 
@@ -115,11 +120,21 @@ class TableWithCart extends React.Component {
 
     tableFooter(data){
 	var total = this.totalText(data);
+	var addTitle = "Add all to cart";
+	if(this.props.data.length >= 1000){
+	    addTitle = "Add 1,000 to cart";
+	}
         return (
             <div style={{display: (this.props.isFetching ? "none" : "block")}}>
                 <span className="tableInfo">
 
                     <div className={"btn-group"} role={"group"}>
+		        <button type={"button"}
+                                className={"btn btn-default btn-xs"}
+                                onClick={() => {
+                                        this.addAllToCart()}}>
+                            {addTitle}
+                        </button>
 		        <button type={"button"}
                                 className={"btn btn-default btn-xs"}
                                 onClick={() => {
