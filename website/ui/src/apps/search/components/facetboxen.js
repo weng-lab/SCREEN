@@ -21,15 +21,15 @@ import {panelize} from '../../../common/utility'
 
 const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
     return (<RangeFacet
-            title={title}
-	    range={range}
-	    selection_range={[start, end]}
-	    h_margin={default_margin}
-	    h_interval={(end - start) / 500}
-            onchange={(se) => { action(se[0], se[1])}}
-	    rendervalue={_f}
-	    reversevalue={_rf}
-	    nohistogram={nohistogram}
+		title={title}
+		range={range}
+		selection_range={[start, end]}
+		h_margin={default_margin}
+		h_interval={(end - start) / 500}
+		onchange={(se) => { action(se[0], se[1])}}
+		rendervalue={_f}
+		reversevalue={_rf}
+		nohistogram={nohistogram}
             />);
 }
 
@@ -41,55 +41,57 @@ const accessionsBox = ({accessions, actions}) => {
     }
     return panelize("Accessions",
                     <ChecklistFacet
-                    title={""}
-		    formatter={(v) => (v.toUpperCase())}
-                    items={accessions.map((d) => {return {value: d, checked: true}})}
-                    match_mode_enabled={false}
-                    mode={CHECKLIST_MATCH_ANY}
-                    autocomplete_source={[]}
-		    onchange={(accs) => { actions.setAccessions(accs) }}
-		    onModeChange={null}
+			title={""}
+			formatter={(v) => (v.toUpperCase())}
+			items={accessions.map((d) => {
+				return {value: d, checked: true}})}
+			match_mode_enabled={false}
+			mode={CHECKLIST_MATCH_ANY}
+			autocomplete_source={[]}
+			paging={true}
+			onchange={(accs) => { actions.setAccessions(accs) }}
+			onModeChange={null}
 		    />);
 }
 
 const cellTypesBox = ({cellType, actions}) => {
     return panelize("Cell types",
                     <LongListFacet
-                    title={""}
-                    data={Globals.cellTypeInfoArr}
-                    cols={[
-			{ title: "", data: "name",
-                          render: () => ("<input type='checkbox' />")},
-		        { title: "cell type", data: "name",
-		          className: "dt-right"},
-		        { title: "tissue", data: "tissue",
-		          className: "dt-right" },
-		        { title: "", data: "cellTypeName",
-                          render: Render.dccLinkCtGroup,
-		          className: "dt-right dcc" }
-	            ]}
-                    order={[]}
-                    selection={cellType}
-                    friendlySelectionLookup={make_ct_friendly}
-                    onTdClick={(value, td, cellObj) => {
-                        if(td){
-                            if (td.className.indexOf("dcc") == -1) {
-                                actions.setCellType(value);
-                            }
-                        } else {
-                            actions.setCellType(value);
-                        }
-                    }}
+			title={""}
+			data={Globals.cellTypeInfoArr}
+			cols={[
+			    { title: "", data: "name",
+                              render: () => ("<input type='checkbox' />")},
+		            { title: "cell type", data: "name",
+		              className: "dt-right"},
+		            { title: "tissue", data: "tissue",
+		              className: "dt-right" },
+		            { title: "", data: "cellTypeName",
+                              render: Render.dccLinkCtGroup,
+		              className: "dt-right dcc" }
+			]}
+			order={[]}
+			selection={cellType}
+			friendlySelectionLookup={make_ct_friendly}
+			onTdClick={(value, td, cellObj) => {
+				if(td){
+				    if (td.className.indexOf("dcc") == -1) {
+					actions.setCellType(value);
+				    }
+				} else {
+				    actions.setCellType(value);
+				}
+			    }}
                     />, "celltype_facet");
 }
 
 const chromBox = ({coord_chrom, actions}) => {
     return panelize("Chromosome",
 	            <ListFacet
-                    title={""}
-                    items={Globals.chromCounts}
-                    selection={coord_chrom}
-                    onchange={(chrom) => { actions.setChrom(chrom) }}
+			title={""}
+			items={Globals.chromCounts}
+			selection={coord_chrom}
+			onchange={(chrom) => { actions.setChrom(chrom) }}
                     />);
 }
 
@@ -101,59 +103,62 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     var histBins = Globals.creHistBins[coord_chrom];
     return panelize("Coordinates",
                     <RangeFacet
-                    title={""}
-                    h_data={histBins}
-	            range={[0, chromLen]}
-	            selection_range={[coord_start, coord_end]}
-	            h_margin={default_margin}
-	            h_interval={chromLen / histBins.numBins}
-                    onchange={(se) => { actions.setCoords(se[0], se[1]) }}
+			title={""}
+			h_data={histBins}
+			range={[0, chromLen]}
+			selection_range={[coord_start, coord_end]}
+			h_margin={default_margin}
+			h_interval={chromLen / histBins.numBins}
+			onchange={(se) => { actions.setCoords(se[0], se[1]) }}
                     />, "coordinate_facet");
 }
 
 const tfBox = ({actions}) => {
     return panelize("Intersect TF/histone/DNase peaks",
                     <LongChecklistFacet
-                    title={""}
-                    data={Globals.tfs.map((tf) => {return {key: tf,
-                                                         selected: false}})}
-                    cols={[{
-		        title: "Assay", data: "key",
-		        className: "dt-right"
-	            }]}
-                    order={[]}
-                    match_mode_enable={true}
-                    onTdClick={(tf) => { actions.toggleTf(tf) } }
-                    onModeChange={(mode) => { actions.setTfsMode(mode) }}
-                    mode={CHECKLIST_MATCH_ALL}
+			title={""}
+			data={Globals.tfs.map((tf) => {return {key: tf,
+                                                               selected: false}})}
+			cols={[{
+				title: "Assay", data: "key",
+				className: "dt-right"
+			    }]}
+			order={[]}
+			match_mode_enable={true}
+			onTdClick={(tf) => { actions.toggleTf(tf) } }
+			onModeChange={(mode) => { actions.setTfsMode(mode) }}
+			mode={CHECKLIST_MATCH_ALL}
                     />);
 }
 
-const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start,
-                          gene_pc_end, actions}) => {
-			      let range = [0, 500000];
+const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions}) => {
+    let range = [0, 500000];
     return panelize("Distance to Genes",
-                    (<div>
-                     {rangeBox("Protein-coding genes", range, gene_pc_start, gene_pc_end,
-                               actions.setGenePcDistance)}
-                     {rangeBox("All genes", range, gene_all_start, gene_all_end,
-                               actions.setGeneAllDistance)}
-                     </div>))
+		    (
+			<div>
+			    {rangeBox("Protein-coding genes", range,
+				      gene_pc_start, gene_pc_end,
+				      actions.setGenePcDistance)}
+			    {rangeBox("All genes", range,
+				      gene_all_start, gene_all_end,
+				      actions.setGeneAllDistance)}
+			</div>))
 }
 
 const zscore_decimal = (v) => (v / 100.0);
 const zrdecimal = (s) => (+s * 100.0);
 
 const _rankBox = ({element_type, actions, cellType}) => {
-    return panelize("cRE activity" + (cellType ? " in " + make_ct_friendly(cellType) : ""),
+    return panelize("cRE activity" + (cellType ?
+				      " in " + make_ct_friendly(cellType) : ""),
 	            <ListFacet
-                    title={""}
-                    items={[["chromatin-accessible", ""],
-                            ["promoter-like", ""],
-                            ["enhancer-like", ""],
-                            ["insulator-like", ""]]}
-                    selection={element_type}
-                    onchange={(e) => { actions.setType(e) }}
+			title={""}
+			items={[["chromatin-accessible", ""],
+				["promoter-like", ""],
+				["enhancer-like", ""],
+				["insulator-like", ""]]}
+			selection={element_type}
+			onchange={(e) => { actions.setType(e) }}
                     />);
 }
 
@@ -165,38 +170,38 @@ const makeRankFacet = (rfacets, assay, title, start, end, action) =>
         }
         return rangeBox(title, range, start, end,
 		        action, zscore_decimal, zrdecimal, true);
-}
+    }
 
 const rankBox = ({rank_dnase_start, rank_dnase_end,
                   rank_promoter_start, rank_promoter_end,
                   rank_enhancer_start, rank_enhancer_end,
                   rank_ctcf_start, rank_ctcf_end, rfacets,
                   cellType, actions}) =>
-    {
-        let title =  (cellType ?
-                      make_ct_friendly(cellType) :
-                      "Maximum across cell types");
+		      {
+			  let title =  (cellType ?
+					make_ct_friendly(cellType) :
+					"Maximum across cell types");
 
-	let promoterTitle = "H3K4me3 Z-score";
-	let enhancerTitle = "H3K27ac Z-score";
+			  let promoterTitle = "H3K4me3 Z-score";
+			  let enhancerTitle = "H3K27ac Z-score";
 
-        let rankFacets = (<div>
-                          {makeRankFacet(rfacets, "dnase", "DNase Z-score",
-                                         rank_dnase_start, rank_dnase_end,
-			                 actions.setRankDnase)}<br />
-                          {makeRankFacet(rfacets, "promoter", promoterTitle,
-                                         rank_promoter_start, rank_promoter_end,
-			                 actions.setRankPromoter)}<br />
-                          {makeRankFacet(rfacets, "enhancer", enhancerTitle,
-                                         rank_enhancer_start, rank_enhancer_end,
-			                 actions.setRankEnhancer)}<br />
-                          {makeRankFacet(rfacets, "ctcf", "CTCF Z-score",
-                                         rank_ctcf_start, rank_ctcf_end,
-			                 actions.setRankCtcf)}
+			  let rankFacets = (<div>
+                        {makeRankFacet(rfacets, "dnase", "DNase Z-score",
+                                       rank_dnase_start, rank_dnase_end,
+			               actions.setRankDnase)}<br />
+                              {makeRankFacet(rfacets, "promoter", promoterTitle,
+                                             rank_promoter_start, rank_promoter_end,
+			                     actions.setRankPromoter)}<br />
+                              {makeRankFacet(rfacets, "enhancer", enhancerTitle,
+                                             rank_enhancer_start, rank_enhancer_end,
+			                     actions.setRankEnhancer)}<br />
+                              {makeRankFacet(rfacets, "ctcf", "CTCF Z-score",
+                                             rank_ctcf_start, rank_ctcf_end,
+			                     actions.setRankCtcf)}
                           </div>);
 
-        return panelize(title, rankFacets, "zscore_facet");
-};
+			  return panelize(title, rankFacets, "zscore_facet");
+		      };
 
 class FacetBoxen extends React.Component {
     componentDidMount() {
@@ -207,14 +212,14 @@ class FacetBoxen extends React.Component {
 
     doRender(p){
         return (<div>
-                {accessionsBox(p)}
-                {cellTypesBox(p)}
-                {chromBox(p)}
-                {startEndBox(p)}
-                {rankBox(p)}
-                </div>);
+			      {accessionsBox(p)}
+			      {cellTypesBox(p)}
+			      {chromBox(p)}
+			      {startEndBox(p)}
+			      {rankBox(p)}
+        </div>);
     } /*                 {tfBox(p)}
-                {geneDistanceBox(p)} */
+         {geneDistanceBox(p)} */
 
     render() {
         return this.doRender(this.props)
