@@ -125,6 +125,41 @@ export const TargetGeneTable = () => ({
 });
 
 export const NearbyGenomicTable = () => {
+
+    const table_click_handler = (td, snp) => {
+	if (td.className.indexOf("browser") != -1){
+	    var half_window = 7500;
+	    var arr = window.location.href.split("/");
+	    var host = arr[0] + "//" + arr[2];
+	    var data = JSON.stringify({"snp" : snp,
+				       "halfWindow" : half_window,
+				       "host" : host,
+				       GlobalAssembly});
+	    var url = "/ucsc_trackhub_url_snp";
+	    
+	    $.ajax({
+		type: "POST",
+		url: url,
+		data: data,
+		dataType: "json",
+		contentType : "application/json",
+		async: false, // http://stackoverflow.com/a/20235765
+		success: (r) => {
+		    if ("err" in r) {
+			$("#errMsg").text(r.err);
+			$("#errBox").show()
+			return true;
+		    }
+		    console.log(r.url, r.trackhubUrl);
+		    window.open(r.url, '_blank');
+		},
+		error: (a, b, c) => {
+		    console.log(a);
+		}
+	    });
+	}
+    };
+
     let ret = {
         nearby_genes: {
 	    title: "Nearby Genes",
@@ -166,8 +201,17 @@ export const NearbyGenomicTable = () => {
 	    cols: [
 	        {title: "accession", data: "name",
 	         render: Render.snp_link },
-	        {title: "distance",	data: "distance",
-	         render: Render.integer }],
+	        {title: "distance", data: "distance",
+	         render: Render.integer },
+		{title: "", data: null,
+		 className: "browser",
+		 targets: -1, orderable: false,
+		 defaultContent: Render.browser_buttons(["UCSC"]) }
+	    ],
+	    onTdClick: (td, rowdata) =>
+                table_click_handler(td, rowdata),
+	    onButtonClick: (actions) => (td, rowdata) =>
+                button_click_handler(td, rowdata, actions),
             pageLength: 5,
 	    order: [[1, "asc"]]
         }
