@@ -33,7 +33,7 @@ const openGenomeBrowser = (data, url) => {
 		$("#errBox").show()
 		return true;
 	    }
-	    console.log(r.trackhubUrl);
+	    console.log(r.url, r.trackhubUrl);
 	    window.open(r.url, '_blank');
 	},
 	error: (a, b, c) => {

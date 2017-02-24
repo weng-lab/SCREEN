@@ -32,13 +32,14 @@ const TableColumns = () => {
             title: "nearest genes:<br />protein-coding / all", data: "genesallpc",
 	    className: klassLeft + "geneexp", render: Render.geneDeLinks
 	}, {
-	    title: "cart", data: "in_cart", className: "klassCenter cart",
+	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),
 	}, {
-	    title: "genome browsers", data: null, className: klassLeft + "browser",
-	    targets: -1,
-	    orderable: false,
-	    defaultContent: Render.browser_buttons(["UCSC", "WashU", "Ensembl" ])
+	    title: "genome browsers", data: null,
+	    className: klassCenter + "browser",
+	    targets: -1, orderable: false,
+	    defaultContent: Render.browser_buttons(["UCSC", "WashU"])
+	    //, "Ensembl" 
 	}
     ];
 }

@@ -8,6 +8,7 @@ import os
 import heapq
 import re
 
+from models.cre import CRE
 from models.trackdb import TrackhubDb, UCSC, WASHU, ENSEMBL
 from common.pg import PGsearch
 from common.db_trackhub import DbTrackhub
