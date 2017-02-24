@@ -36,8 +36,9 @@ class CreateIndices:
                                   for chrom in self.chroms)
 
     def _run_chr(self, chrom):
-        conn = db_connect_single(os.path.realpath(__file__))
         ctn = self.baseTableName + '_' + chrom
+
+        conn = db_connect_single(os.path.realpath(__file__))
         curs = conn.cursor()
         makeIndex(curs, ctn, ["accession"])
         makeIndexInt4Range(curs, ctn, ["start", "stop"])
@@ -46,7 +47,7 @@ class CreateIndices:
         for col in self.zscore_cols:
             makeIndexArr(curs, ctn, col)
 
-        cur.close()
+        curs.close()
         conn.close()
 
 def parse_args():
