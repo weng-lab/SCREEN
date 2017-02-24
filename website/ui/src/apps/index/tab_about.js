@@ -7,7 +7,7 @@ const TabAbout = () => {
                 <div className="col-md-12">
                     <h3>The ENCODE Encyclopedia</h3>
 		    <div className="text-center">
-			<img src="/static/about/images/image04.png"
+			<img src="/static/about/images/aimage04.png"
                              className={"img-responsive"}
                              alt={"ENCODE data levels"}
 			     style={{maxHeight: "500px"}}
