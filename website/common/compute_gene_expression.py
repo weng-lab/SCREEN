@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys, os, json
 
 from itertools import groupby
@@ -207,7 +209,7 @@ WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 """.format(assembly = self.assembly)
-
+        #print(q, gene)
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute(q, { "gene" : gene,
                               "compartments" : tuple(compartments),

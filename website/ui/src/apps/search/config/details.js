@@ -194,14 +194,22 @@ class GeTab extends ReTabBase{
 	    if(data.no_nearby_tss) {
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
-	    if (data.genename.startsWith("ENSG")) {
+	    let gene = data.genename;
+
+	    // FIXME: check if this is true
+	    if (gene.startsWith("ENSG")) {
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
-            return (<div>
-	    <h2><em>{data.genename}</em></h2>
-	    {React.createElement(LargeHorizontalBars,
-                                 {...data, width: 800, barheight: "15"})}
-	    </div>);
+
+	    return (
+		<div>
+		    <h2><em>{data.genename}</em></h2>
+		    {Render.openGeLink(gene)}
+		    <br />
+		    {React.createElement(LargeHorizontalBars,
+					 {...data, width: 800, barheight: "15",
+					 isFetching: false})}
+		</div>);
         }
     }
 }
