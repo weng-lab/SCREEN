@@ -76,12 +76,12 @@ class CachedObjects:
         return {
             "tfs" : self.tf_list,
             "cellCompartments" : Compartments,
-            "cellTypeInfo": datasets.globalCellTypeInfo,
             "cellTypeInfoArr": datasets.globalCellTypeInfoArr,
             "chromCounts" : self.chromCounts,
             "chromLens" : chrom_lengths[self.assembly],
             "creHistBins" : self.creHist,
-            "byCellType" : datasets.byCellType
+            "byCellType" : datasets.byCellType,
+            "geBiosampleTypes" : self.geBiosampleTypes
         }
 
     def assayAndCellTypeToExpAndBigWigAccessions(self, assay, ct):
