@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
 from files_and_paths import Dirs, Tools, Genome
 from exp import Exp
 from utils import Utils, printt
@@ -32,7 +32,7 @@ lab text,
 assay_term_name text,
 biosample_type text,
 description text
-    ) """.format(tn = tableName))
+)""".format(tn = tableName))
 
 def processRow(row, outF, lookup):
     encodeID = row[0]
@@ -111,10 +111,11 @@ def insertRNAs(curs, assembly):
 
 def doIndex(curs, assembly):
     tableName = "r_rnas_" + assembly
-    makeIndex(curs, tableName, ["biosample_type"])
+    makeIndexMultiCol(curs, tableName, ["biosample_type", "cellCompartment"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -126,9 +127,12 @@ def main():
     for assembly in ["mm10", "hg19"]:
         with getcursor(DBCONN, "02_init") as curs:
             print('***********', assembly)
-            setupDB(curs, assembly)
-            insertRNAs(curs, assembly)
-            doIndex(curs, assembly)
+            if args.index:
+                doIndex(curs, assembly)
+            else:
+                setupDB(curs, assembly)
+                insertRNAs(curs, assembly)
+                doIndex(curs, assembly)
 
 if __name__ == '__main__':
     main()
