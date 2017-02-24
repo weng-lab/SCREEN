@@ -207,12 +207,15 @@ WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 """.format(assembly = self.assembly)
-        print(q)
+
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute(q, { "gene" : gene,
                               "compartments" : tuple(compartments),
                               "bts" : tuple(biosample_types_selected)})
             rows = curs.fetchall()
+
+        if not rows:
+            return {"hasData" : False, "items" : {}}
 
         def makeEntry(row):
             base = 2
@@ -230,6 +233,7 @@ AND r_rnas_{assembly}.biosample_type IN %(bts)s
                     "rep" : row[4]}
 
         rows = [makeEntry(x) for x in rows]
-        ret = {"items" : self.process(rows)}
+        ret = {"hasData" : True,
+               "items" : self.process(rows)}
         return ret
 

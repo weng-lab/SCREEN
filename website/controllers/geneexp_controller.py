@@ -29,7 +29,7 @@ class GeneExpController:
         # TODO: check value of compartments, biosample_types_selected
 
         if not biosample_types_selected or not compartments:
-            return {"items" : {}}
+            return {"hasData" : False, "items" : {}}
 
         cge = ComputeGeneExpression(self.ps, self.cache, assembly)
         return cge.computeHorBars(gene, compartments, biosample_types_selected)
