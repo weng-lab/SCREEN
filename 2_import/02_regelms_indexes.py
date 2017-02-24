@@ -9,7 +9,7 @@ from constants import chroms, paths, DB_COLS
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
-from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexArr164startStop, makeIndexArr164, makeIndexInt4Range
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
@@ -28,12 +28,11 @@ class CreateIndices:
             ctn = self.baseTableName + '_' + chrom
             with getcursor(self.DBCONN, "index " + ctn) as curs:
                 makeIndex(curs, ctn, ["accession"])
-                makeIndexIntRange(curs, ctn, ["start", "stop"])
+                makeIndexInt4Range(curs, ctn, ["start", "stop"])
                 makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
                                          "promoterMaxz"])
-                if 0:
-                    for col in self.zscore_cols:
-                        makeIndexArr(curs, ctn, col)
+                for col in self.zscore_cols:
+                    makeIndexArr(curs, ctn, col)
 
     def setupRangeFunction(self):
         print("create range function...")
