@@ -29,3 +29,21 @@ export const occupancy1 = () => (
 export const occupancy2 = () => (
     <p>For each cRE, we calculated the Z-score of log(signal) across all cell and tissue types for DNase, H3K4me3, H3K27ac, and CTCF. We also computed a Promoter-like and Enhancer-like Z-score by averaging DNase & H3K4me3 and DNase & H3K27ac Z-scores respectively. This scores are available under the "Top Tissues" tab. Additionally, we also intersect each cRE all available histone mark and TF ChIP-seq peaks. We display these results in the "TF and His-mod Intersection" Tab.
     </p>);
+
+export const gwas1 = () => (
+    <div>
+        <p>Using the NHGRI-EBI GWAS Catalog, we selected studies with the following requirements:
+        </p>
+        <ul>
+            <li>Study must be performed on single population. Mixed populations will complicated LD structure.</li>
+            <li>Study must use subject from CEU (caucasian-european) population. For the time being we are curating other these studies as we are using population specific LD data. We plan to extend this other populations in the near future.</li>
+        </ul>
+        <p>For each study, we downloaded all report SNPs, even those that were just under genome wide significance.</p>
+    </div>)
+
+export const gwas2 = () => (
+    <div>
+        <p>For each study, we created a control set of SNPs accounting for minor allele frequency (in CEU population) and distance from TSS using SNPs from SNP-Chip arrays. This method was adapted and modified from the Uncovering Enrichment through Simulation (UES) method developed by the Klein Lab (Hayes et al. 2015). For each GWAS tagged SNP we generated 100 matched controls and also included all SNPs in LD (default r2 > 0.7).</p>
+
+        <p>Using all GWAS SNPs + LD and Control SNPs + LD we then intersected the SNPs with cREs. For cell type specific enrichment, we required the cRE to have a Z-score of 1.64 in that cell type. After pruning for LD, (i.e. only counting one cell-type specific cRE per LD block) we used Fisher's exact test to determine if the GWAS SNPs were enriched in cell-type specific cREs. We generated results using H3K27ac Z-scores and will also calculate enrichment for DNase in the near future.</p>
+    </div>)
