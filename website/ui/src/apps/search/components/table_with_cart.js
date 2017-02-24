@@ -27,14 +27,14 @@ const openGenomeBrowser = (data, url) => {
 	dataType: "json",
 	contentType : "application/json",
 	async: false, // http://stackoverflow.com/a/20235765
-	success: (response) => {
-	    if ("err" in response) {
-		$("#errMsg").text(response["err"]);
+	success: (r) => {
+	    if ("err" in r) {
+		$("#errMsg").text(r.err);
 		$("#errBox").show()
 		return true;
 	    }
-	    //console.log(response["trackhubUrl"]);
-	    window.open(response["url"], '_blank');
+	    console.log(r.trackhubUrl);
+	    window.open(r.url, '_blank');
 	},
 	error: (a, b, c) => {
 	    console.log(a);

@@ -47,6 +47,11 @@ class MainApp():
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(args, kwargs,
                                            self.sessions.userUid())
+    
+    @cherrypy.expose
+    def ensembl_trackhub(self, *args, **kwargs):
+        return self.trackhub.ensembl_trackhub(args, kwargs,
+                                              self.sessions.userUid())
 
     @cherrypy.expose
     def washu_trackhub(self, *args, **kwargs):
