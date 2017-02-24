@@ -26,7 +26,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
                     order={[]}
                     selection={ct1}
                     friendlySelectionLookup={(value) => {
-                        return Globals.cellTypeInfo[value]["name"]; }}
+                        return Globals.byCellType[value][0]["name"]; }}
                     onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
@@ -40,7 +40,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
                     order={[]}
                     selection={ct2}
                     friendlySelectionLookup={(value) => {
-                        return Globals.cellTypeInfo[value]["name"]; }}
+                        return Globals.byCellType[value][0]["name"]; }}
                     onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }

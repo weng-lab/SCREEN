@@ -14,8 +14,8 @@ class DePlot extends React.Component {
     }
 
     render() {
-        let ct1 = Globals.cellTypeInfo[this.props.ct1]["name"];
-        let ct2 = Globals.cellTypeInfo[this.props.ct2]["name"];
+        let ct1 = Globals.byCellType[this.props.ct1][0]["name"];
+        let ct2 = Globals.byCellType[this.props.ct2][0]["name"];
         let geneName1 = this.props.data.nearbyDEs.names[0];
         let geneName2 = this.props.data.nearbyDEs.names[1];
 
@@ -66,7 +66,7 @@ class DePlot extends React.Component {
 	// make sure 0 is in range to show dashed line at 0
 	y_domain = [Math.min(0, y_domain[0]),
 		    Math.max(0, y_domain[1])];
-	
+
         let barYdomain = [Math.min(y_domain[0],
 				   this.props.data.nearbyDEs.ymin),
                           this.props.data.nearbyDEs.ymax];
