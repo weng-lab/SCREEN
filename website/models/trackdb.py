@@ -10,6 +10,7 @@ import re
 
 from trackinfo import TrackInfo
 
+from common.coord import Coord
 from models.cre import CRE
 from common.pg import PGsearch
 from common.db_trackhub import DbTrackhub

@@ -8,6 +8,8 @@ import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
 
+import * as Render from '../../../common/renders'
+
 const table_click_handler = (td, re, actions) => {
     if (td.className.indexOf("browser") != -1) return;
     if (td.className.indexOf("geneexp") != -1) return;
@@ -112,7 +114,7 @@ class TableWithCart extends React.Component {
 
     totalText(data){
         if(data.length < this.props.total){
-		return "displaying top " + data.length +
+		return "displaying top " + Render.integer(data.length) +
                 " results of " + numberWithCommas(this.props.total) + " total";
         }
         return "found " + this.props.total + " results";
