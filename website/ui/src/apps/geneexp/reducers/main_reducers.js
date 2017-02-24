@@ -11,6 +11,12 @@ const main_reducers = (state, action) => {
                                                  action.c)}
     }
 
+    case Actions.TOGGLE_BIOSAMPLE_TYPE: {
+        return { ...state,
+                 biosample_types_selected: doToggle(state.biosample_types_selected,
+                                                    action.bt)}
+    }
+
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;
