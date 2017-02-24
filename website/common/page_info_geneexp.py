@@ -30,14 +30,20 @@ class PageInfoGeneExp:
         _gene = ""
         if len(args):
             assembly = args[0]
-            _gene = kwargs["gene"]
+            gene = kwargs["gene"]
 
-        p = ParseSearch("", self.ps.DBCONN, assembly)
-        gene = p._gene_alias_to_symbol(_gene.split(".")[0])
-        if not gene:
+        # FIXME: why do this?
+        # it break on
+        # geApp/mm10/?gene=Eml6
+        # since treating the gene as an alias changes gene to
+        # EML6, which is human!
+        if 0:
+            p = ParseSearch("", self.ps.DBCONN, assembly)
             gene = p._gene_alias_to_symbol(_gene.split(".")[0])
-        if not gene:
-            gene = _gene
+            if not gene:
+                gene = p._gene_alias_to_symbol(_gene.split(".")[0])
+            if not gene:
+                gene = _gene
 
         ret = self.wholePage(assembly)
 

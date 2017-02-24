@@ -10,6 +10,8 @@ import ExpressionBoxplot from '../../geneexp/components/expression_boxplot'
 import loading from '../../../common/components/loading'
 import DetailsTabInfo from './details'
 
+import * as Render from '../../../common/renders'
+
 class ResultsTab extends React.Component{
     render() { return (<ResultsTableContainer />); }
 }
@@ -57,7 +59,8 @@ class ExpressionPlot extends React.Component {
 	if(gene in this.state.ges){
 	    return;
 	}
-	var q = {GlobalAssembly, gene, compartments_selected: new Set(["cell"])};
+	var q = {GlobalAssembly, gene, compartments_selected: new Set(["cell"]),
+		 biosample_types_selected: new Set(Globals.geBiosampleTypes)};
 	var jq = JSON.stringify(q);
 	if(this.state.jq == jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -86,16 +89,12 @@ class ExpressionPlot extends React.Component {
 	if (!gene) {
 	    return <div />;
 	}
-	
-	let url = '/geneexp/' + GlobalAssembly + "/" + gene;
-
-	let message = <div>This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in subcellular compartments, <a href={url}>click here</a>.</div>;
-
+		
 	if(gene in this.state.ges){
 	    return (
 		<div>
 		    <h2><em>{this.props.gene}</em></h2>
-		    {message}<br />
+		    {Render.openGeLink(gene)}<br />
 		<ExpressionBoxplot data={this.state.ges[gene]} />
 		</div>);
 	}

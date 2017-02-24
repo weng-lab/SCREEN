@@ -161,7 +161,7 @@ class DataWebService:
             return { accession : {"no_nearby_tss": True} }
         cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
         name, strand = self.cache.lookupEnsembleGene(nearest["name"])
-        r = cge.computeHorBars(name, (u'cell',))
+        r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
         r["genename"] = name
         return {accession: r}
 

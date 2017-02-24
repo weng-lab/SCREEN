@@ -51,13 +51,27 @@ export const cart_img = (rmv, src_only) => {
     return '<img class="rowCart" src="' + src + '" title="' +  title + '">';
 }
 
+export const openGeLink = (gene) => {
+    return (<div>
+    This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(gene)} target={"_blank"}>click here</a>.
+    </div>);
+}
+
+export const geLink = (gene) => {
+    return '/geApp/' + GlobalAssembly + "/?gene=" + gene;
+}
+
+export const deLink = (gene) => {
+    return '/deApp/' + GlobalAssembly + "/?gene=" + gene;
+}
+
 export const geDeButton = (d) => {
     let _d = d.replace(/\./g, "%2e");
-    var ge = '<a href="/geApp/' + GlobalAssembly + '/?gene=' + _d + '" target="_blank">' + d + '</a>';
+    var ge = '<a href="' + geLink(_d) + '" target="_blank">' + d + '</a>';
     if("mm10" != GlobalAssembly){
         return ge;
     }
-    var de = '<a href="/deApp/' + GlobalAssembly + '/?gene=' + _d + '" target="_blank">&Delta;</a>';
+    var de = '<a href="' + deLink(_d) + '" target="_blank">&Delta;</a>';
     return ge + '&nbsp;&nbsp;' + de;
 };
 
