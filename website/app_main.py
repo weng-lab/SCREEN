@@ -67,6 +67,13 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
+    def ucsc_trackhub_url_snp(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.trackhub.ucsc_trackhub_url_snp(j, self.sessions.userUid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def ensembl_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.trackhub.ensembl_trackhub_url(j, self.sessions.userUid())

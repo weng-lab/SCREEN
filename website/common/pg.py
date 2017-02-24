@@ -321,7 +321,7 @@ ON g.geneid = gi.geneid
             return (self._getGenes(accession, chrom, curs, "all"),
                     self._getGenes(accession, chrom, curs, "pc"))
 
-    def intersectingSnps(self, coord, halfWindow):
+    def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_snps_" + c.chrom
         with getcursor(self.pg.DBCONN, "intersectingSnps") as curs:
@@ -334,7 +334,13 @@ int4range(%s, %s)
         for snp in snps:
             start = snp[0]
             end = snp[1]
-            ret.append({"name" : snp[2],
+            ret.append({"chrom" : c.chrom,
+                        "cre_start" : coord.start,
+                        "cre_end" : coord.end,
+                        "accession" : accession,
+                        "snp_start" : start,
+                        "snp_end" : end,
+                        "name" : snp[2],
                         "distance" : min(abs(coord.end - end),
                                          abs(coord.start - start))})
         return ret

@@ -23,7 +23,8 @@ class CRE:
         return self.pos
 
     def intersectingSnps(self, halfWindow):
-        return self.pgSearch.intersectingSnps(self.coord(), halfWindow)
+        return self.pgSearch.intersectingSnps(self.accession, self.coord(),
+                                              halfWindow)
 
     def distToNearbyCREs(self, halfWindow):
         return self.pgSearch.distToNearbyCREs(self.accession, self.coord(),

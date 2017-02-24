@@ -12,6 +12,7 @@ from models.cre import CRE
 from models.trackdb import TrackhubDb, UCSC, WASHU, ENSEMBL
 from common.pg import PGsearch
 from common.db_trackhub import DbTrackhub
+from common.coord import Coord
 
 class TrackhubController:
     def __init__(self, templates, ps, cacheW):
@@ -56,6 +57,29 @@ class TrackhubController:
 	url += "db=" + assembly
 	url += "&position=" + str(coord)
 	url += "&hubClear=" + trackhubUrl;
+
+        return {"url" : url, "trackhubUrl" : trackhubUrl}
+
+    def ucsc_trackhub_url_snp(self, j, uuid):
+        assembly = self.assembly = j["GlobalAssembly"]
+        pgSearch = PGsearch(self.ps, assembly)
+
+        snp = j["snp"]
+        c = Coord(snp["chrom"], snp["cre_start"], snp["cre_end"])
+        c.resize(2500)
+
+        hubNum = self.db.insertOrUpdate(assembly, snp["accession"], uuid)
+
+        trackhubUrl = '/'.join([j["host"],
+                                "ucsc_trackhub",
+		                uuid,
+		                "hub_" + str(hubNum) + ".txt"])
+
+        url = "https://genome.ucsc.edu/cgi-bin/hgTracks?"
+	url += "db=" + assembly
+	url += "&position=" + str(c)
+	url += "&hubClear=" + trackhubUrl;
+        url += "&highlight=" + assembly + "." + c.chrom + "%3A" + str(snp["snp_start"]) + '-' + str(snp["snp_end"])
 
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
