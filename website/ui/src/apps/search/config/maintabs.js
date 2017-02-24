@@ -79,7 +79,9 @@ class ExpressionPlot extends React.Component {
 		this.setState({isFetching: false, isError: true});
 	    }.bind(this),
 	    success: function(r) {
-		this.setState({ges : {gene : r}, isFetching: false, isError: false});
+		let nges = {...this.state.ges};
+		nges[gene] = r;
+		this.setState({ges : nges, isFetching: false, isError: false});
 	    }.bind(this)
 	});
     }
@@ -98,7 +100,6 @@ class ExpressionPlot extends React.Component {
 		<ExpressionBoxplot data={this.state.ges[gene]} />
 		</div>);
 	}
-
 	return loading(this.state);
     }
 
