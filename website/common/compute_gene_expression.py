@@ -197,17 +197,21 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
                 fc[gene] = math.log((exp[ct1][gene] + 0.01) / (exp[ct2][gene] + 0.01), 2)
         return fc
 
-    def computeHorBars(self, gene, compartments):
+    def computeHorBars(self, gene, compartments, biosample_types_selected):
+        q = """
+SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
+r.dataset, r.replicate, r.fpkm
+FROM r_expression_{assembly} AS r
+INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+WHERE gene_name = %(gene)s
+AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
+AND r_rnas_{assembly}.biosample_type IN %(bts)s
+""".format(assembly = self.assembly)
+        print(q)
         with getcursor(self.ps.DBCONN, "_gene") as curs:
-            curs.execute("""
-            SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r.replicate, r.fpkm
-            FROM r_expression_{assembly} AS r
-            INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
-            WHERE gene_name = %(gene)s
-            AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
-            """.format(assembly = self.assembly),
-                         { "gene" : gene,
-                           "compartments" : tuple(compartments)})
+            curs.execute(q, { "gene" : gene,
+                              "compartments" : tuple(compartments),
+                              "bts" : tuple(biosample_types_selected)})
             rows = curs.fetchall()
 
         def makeEntry(row):
