@@ -49,6 +49,8 @@
     "d3": "^4.2.2",
     "datatables.net": "^1.10.12",
     "datatables.net-bs": "^1.10.12",
+    "datatables.net-buttons": "^1.2.4",
+    "datatables.net-buttons-dt": "^1.2.4",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^2.1.4",

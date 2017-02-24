@@ -1,8 +1,13 @@
 import React from 'react'
 
 var $ = require('jquery');
-var _dt = require('datatables.net');
-require('datatables.net-bs');
+var _dt = require('datatables.net')
+require( 'datatables.net-bs' )
+require( 'datatables.net-buttons' )
+require( 'datatables.net-buttons/js/buttons.colVis.js' )
+require( 'datatables.net-buttons/js/buttons.html5.js' )
+require( 'datatables.net-buttons/js/buttons.flash.js' )
+require( 'datatables.net-buttons/js/buttons.print.js' )
 
 class ResultsTable extends React.Component {
     constructor(props) {
@@ -26,10 +31,12 @@ class ResultsTable extends React.Component {
     }
 
     componentDidMount() {
-	let dom = this.props.dom || '<"top"f>t<"bottom"p><"clear">';
+	let dom = this.props.dom || '<"top"f>t<B"bottom"p><"clear">';
 	var _datatable = $(this.refs.root).DataTable({
+	    buttons: ['csv'],
 	    data: this.props.data,
             columns: this.props.cols,
+	    buttons: ['csvHtml5'],
             order: this.props.order,
 	    paging: this.props.paging,
 	    bInfo: this.props.info,
