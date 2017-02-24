@@ -1,6 +1,6 @@
 const TabTutorial = () => {
     return (<div>
-	    <h2>Tutorials (Draft)</h2>
+	    <h2>Tutorials</h2>
             <h3>Main Search</h3>
             <iframe width="560" height="315" src="https://www.youtube.com/embed/iB9VUgZO8NA" frameborder="0" allowfullscreen></iframe>
 

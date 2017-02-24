@@ -76,7 +76,7 @@ class DataWebService:
             "similarREs" : self._re_detail_similarREs,
             "ortholog": self._ortholog }
 
-        self.sessions = Sessions(ps.DBCONN)
+        self.session = Sessions(ps.DBCONN)
 
     def process(self, j, args, kwargs):
         action = args[0]
