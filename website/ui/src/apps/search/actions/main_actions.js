@@ -56,6 +56,8 @@ export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });
 
 export const TOGGLE_CART = 'TOGGLE_CART'
 export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
+export const ADD_CART = 'ADD_CART'
+export const addCart = (accessions) => ({ type: ADD_CART, accessions });
 
 export const SET_TREE_RANK_METHOD = 'SET_TREE_RANK_METHOD'
 export const setTreeRankMethod = (tree_rank_method) => ({
