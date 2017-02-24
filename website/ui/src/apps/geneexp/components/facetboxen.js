@@ -47,8 +47,8 @@ class FacetBoxen extends React.Component {
     doRender(p){
         return (
             <div>
-                {cell_compartments(p)}
                 {bts(p)}
+                {cell_compartments(p)}
             </div>);
     }
 
