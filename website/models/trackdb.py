@@ -35,8 +35,7 @@ class TrackhubDb:
         self.browser = browser
         
     def ucsc_trackhub(self, *args, **kwargs):
-        print("args:", args)
-        args = args[0]
+        #print("ucsc **************** args:", args)
         uuid = args[0]
 
         try:
@@ -68,8 +67,7 @@ class TrackhubDb:
         return "invalid path"
 
     def ensembl_trackhub(self, *args, **kwargs):
-        #print("args:", args)
-        args = args[0]
+        #print("ensembl args **************** :", args)
         uuid = args[0]
         
         try:
@@ -100,14 +98,15 @@ class TrackhubDb:
 
         return "invalid path"
 
-    def washu_trackhub(self, uuid, *args, **kwargs):
+    def washu_trackhub(self, *args, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'text/plain'
 
-        args = args[0]
+        #print("washu args ************:", args)
+        uuid = args[0]
+
         if 3 != len(args):
             return { "error" : "wrong num of args", "args" : args }
 
-        uuid = args[0]
         try:
             info = self.db.get(uuid)
         except:
@@ -150,7 +149,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                          "hg19" : os.path.join(BIB5, "genes", "gencode.v24.annotation.bb")}
         url = byAssemblyURl[self.assembly]
 
-        if self.isUcsc:
+        if self.browser in [UCSC, ENSEMBL]:
             track = BigGenePredTrack(desc, self.priority, url).track()
         else:
             track = BigGenePredTrack(desc, self.priority, url).track_washu()
@@ -164,7 +163,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         if "hg19" == self.assembly:
             ucsc_url = os.path.join(base, "hg19-cREs.bigBed")
         washu_url = os.path.join(base, "washu-masterPeaks.final.bed.gz")
-        if self.isUcsc:
+        if self.browser in [UCSC, ENSEMBL]:
             t = BigBedTrack("Candidate Regulatory Elements",
                             self.priority, ucsc_url,
                             PredictionTrackhubColors.distal_regions.rgb).track()
@@ -186,7 +185,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         desc = "phastCons"
 
         color = OtherTrackhubColors.Conservation.rgb
-        if self.isUcsc:
+        if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url, color).track()
         else:
             track = BigWigTrack(desc, self.priority, url, color).track_washu()
@@ -200,13 +199,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             return None
 
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
-        if not self.isUcsc:
+        if self.browser in [WASHU, ENSEMBL]:
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
         desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
 
-        if self.isUcsc:
+        if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track()
         else:
             track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track_washu()
@@ -261,7 +260,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        if self.isUcsc:
+        if self.browser in [UCSC, ENSEMBL]:
             self.lines += [self.genes()]
         self.lines += [self.mp()]
         self.lines += [self.phastcons()]
@@ -278,7 +277,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return filter(lambda x: x, self.lines)
 
     def makeTrackDb(self, accessions):
-        self.isUcsc = True
         lines = self.getLines(accessions)
 
         f = StringIO.StringIO()
