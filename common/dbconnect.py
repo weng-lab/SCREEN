@@ -17,3 +17,11 @@ def db_connect(script):
            "dbname": Config.database,
            "application_name" : script}
     return psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+
+def db_connect_single(script):
+    # assumes .pgpass file, like http://stackoverflow.com/a/28801642
+    dbs = {"host": "postgresql",
+           "user": "regElmViz_usr",
+           "dbname": Config.database,
+           "application_name" : script}
+    return psycopg2.connect(**dbs)

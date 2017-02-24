@@ -2,9 +2,10 @@
 
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip
+from joblib import Parallel, delayed
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
+from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
@@ -13,42 +14,44 @@ from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndex
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
+# from http://stackoverflow.com/a/19861595
+import copy_reg
+import types
+def _reduce_method(meth):
+    return (getattr, (meth.__self__, meth.__func__.__name__))
+copy_reg.pickle(types.MethodType, _reduce_method)
+
 class CreateIndices:
-    def __init__(self, DBCONN, info):
-        self.DBCONN = DBCONN
-        self.chrs = info["chrs"]
+    def __init__(self, j, info):
+        self.j = 32
+        self.chroms = info["chrs"]
         self.baseTableName = info["tableName"]
         self.d = info["d"]
         self.all_cols = DB_COLS
         self.zscore_cols = [x for x in self.all_cols if x.endswith("_zscore")]
 
     def run(self):
-        self.setupRangeFunction()
-        for chrom in self.chrs:
-            ctn = self.baseTableName + '_' + chrom
-            with getcursor(self.DBCONN, "index " + ctn) as curs:
-                makeIndex(curs, ctn, ["accession"])
-                makeIndexInt4Range(curs, ctn, ["start", "stop"])
-                makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
-                                         "promoterMaxz"])
-                for col in self.zscore_cols:
-                    makeIndexArr(curs, ctn, col)
+        Parallel(n_jobs = self.j)(delayed(self._run_chr)
+                                  (chrom)
+                                  for chrom in self.chroms)
 
-    def setupRangeFunction(self):
-        print("create range function...")
-        with getcursor(self.DBCONN, "08_setup_log") as curs:
-            curs.execute("""
-create or replace function intarray2int4range(arr int[]) returns int4range as $$
-    select int4range(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
+    def _run_chr(self, chrom):
+        conn = db_connect_single(os.path.realpath(__file__))
+        ctn = self.baseTableName + '_' + chrom
+        curs = conn.cursor()
+        makeIndex(curs, ctn, ["accession"])
+        makeIndexInt4Range(curs, ctn, ["start", "stop"])
+        makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
+                                 "promoterMaxz"])
+        for col in self.zscore_cols:
+            makeIndexArr(curs, ctn, col)
 
-create or replace function numarray2numrange(arr numeric[]) returns numrange as $$
-    select numrange(min(val), max(val) + 1) from unnest(arr) as val;
-$$ language sql immutable;
-        """)
+        cur.close()
+        conn.close()
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-j', type=int, default=32)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -66,8 +69,6 @@ infos = {"mm10" : makeInfo("mm10"),
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__))
-
     assemblies = ["hg19", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
@@ -75,7 +76,7 @@ def main():
     for assembly in assemblies:
         m = infos[assembly]
 
-        ci = CreateIndices(DBCONN, m)
+        ci = CreateIndices(args.j, m)
         ci.run()
 
     return 0
