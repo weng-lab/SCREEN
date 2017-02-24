@@ -43,22 +43,22 @@ const TabAbout = () => {
                     </ul>
                 </div>
                 <div className="col-md-4">
-		    <img src="/static/about/images/image01.png"
+		    <img src="/static/about/images/aimage01.png"
                          className={"img-responsive"}
                          alt={"pie chart"} />
-		    <img src="/static/about/images/image03.png"
+		    <img src="/static/about/images/aimage03.png"
                          className={"img-responsive"}
                          alt={"pie chart"} />
-		    <img src="/static/about/images/image00.png"
+		    <img src="/static/about/images/aimage00.png"
                          className={"img-responsive"}
                          alt={"UCSC data tracks"} />
-		    <img src="/static/about/images/image06.png"
+		    <img src="/static/about/images/aimage06.png"
                          className={"img-responsive"}
                          alt={"pie chart"} />
-		    <img src="/static/about/images/image05.png"
+		    <img src="/static/about/images/aimage05.png"
                          className={"img-responsive"}
                          alt={"pie chart"} />
-		    <img src="/static/about/images/image02.png"
+		    <img src="/static/about/images/aimage02.png"
                          className={"img-responsive"}
                          alt={"pie chart"} />
                 </div>
