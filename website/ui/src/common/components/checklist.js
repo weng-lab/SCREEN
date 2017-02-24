@@ -109,7 +109,10 @@ class ChecklistFacet extends React.Component {
 		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>
 		  {checks}
 		  <form onSubmit={this.handleSubmit}>
- 		    <AutocompleteTextbox source={this.props.autocomplete_source} onChange={this.onChange} value={this.state.text} />
+ 		      <AutocompleteTextbox
+			  source={this.props.autocomplete_source}
+			  onChange={this.onChange}
+			  value={this.state.text} />
 		    <button>add</button>
 		  </form>
 		  {Object.keys(this.state.items).map(create_item)}
