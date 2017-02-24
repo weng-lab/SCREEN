@@ -51,7 +51,7 @@ class CreateIndices:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-j', type=int, default=32)
+    parser.add_argument('-j', type=int, default=1)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
