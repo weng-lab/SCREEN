@@ -111,7 +111,7 @@ def insertRNAs(curs, assembly):
 
 def doIndex(curs, assembly):
     tableName = "r_rnas_" + assembly
-    makeIndexMultiCol(curs, tableName, ["biosample_type", "cellCompartment"])
+    makeIndexMultiCol(curs, tableName, ["cellCompartment", "biosample_type"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
