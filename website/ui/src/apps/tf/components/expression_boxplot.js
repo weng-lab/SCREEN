@@ -25,9 +25,9 @@ class ExpressionBoxplot extends React.Component {
 
  	        <span style={{fontSize: "14pt"}}>
                 {": "}
-                {Globals.cellTypeInfo[this.props.ct1]["name"]}
+                {Globals.byCellType[this.props.ct1][0]["name"]}
                 {" vs "}
-                {Globals.cellTypeInfo[this.props.ct2]["name"]}
+                {Globals.byCellType[this.props.ct2][0]["name"]}
                 </span>
 
 		<div style={{"width": "100%"}} ref="chart" />

@@ -30,7 +30,7 @@ const rangeBox = (title, range, start, end, action, _f) => {
             />);
 }
 
-const make_ct_friendly = (ct) => (Globals.cellTypeInfo[ct]["name"]);
+const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 
 const accessionsBox = ({accessions, actions}) => {
     if(0 == accessions.length){
