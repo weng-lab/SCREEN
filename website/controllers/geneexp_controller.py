@@ -25,9 +25,11 @@ class GeneExpController:
         assembly = j["GlobalAssembly"]
         gene = j["gene"] # TODO: check for valid gene
         compartments = j["compartments_selected"]
-        if not compartments:
-            return {"items" : [] }
-        # TODO: check valie compartments
+        biosample_types_selected = j["biosample_types_selected"]
+        # TODO: check value of compartments, biosample_types_selected
+
+        if not biosample_types_selected or not compartments:
+            return {"items" : {}}
 
         cge = ComputeGeneExpression(self.ps, self.cache, assembly)
-        return cge.computeHorBars(gene, compartments)
+        return cge.computeHorBars(gene, compartments, biosample_types_selected)

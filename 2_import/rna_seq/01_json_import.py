@@ -6,8 +6,9 @@ import os, sys, json, psycopg2, argparse, gzip
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from db_utils import getcursor
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils'))
+from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printt
 
@@ -30,10 +31,16 @@ tpm NUMERIC NOT NULL);
     printt("importing", fnp)
     with gzip.open(fnp) as f:
         cur.copy_from(f, tableName, ',',
-                      columns=("ensembl_id", "gene_name", "dataset", "replicate", "fpkm", "tpm"))
+                      columns=("ensembl_id", "gene_name", "dataset",
+                               "replicate", "fpkm", "tpm"))
+
+def doIndex(curs, assembly):
+    tableName = "r_expression_" + assembly
+    makeIndex(curs, tableName, ["gene_name"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -56,12 +63,15 @@ def main():
                     inFnp]
             print("writing csv from", inFnp)
             Utils.runCmds(cmds)
-        else:
-            print("using", outFnp)
-            
+
         DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "08_setup_log") as curs:
-            setupAndCopy(curs, assembly, outFnp)
+            if args.index:
+                doIndex(curs, assembly)
+            else:
+                print("using", outFnp)
+                setupAndCopy(curs, assembly, outFnp)
+                doIndex(curs, assembly)
 
 if __name__ == '__main__':
     main()
