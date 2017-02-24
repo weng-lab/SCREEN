@@ -25,11 +25,31 @@ const cell_compartments = ({compartments, actions, compartments_selected}) => {
                     />);
 }
 
+const bts = ({biosample_types, biosample_types_selected, actions}) => {
+    return panelize("Biosample Types",
+                    <LongChecklistFacet
+                        title={""}
+                        data={biosample_types.map((e) => {
+                                return {key: e,
+                                        selected: biosample_types_selected.has(e)
+                                }})}
+                        cols={[{
+		                title: "Assay", data: "key",
+		                className: "dt-right"
+	                    }]}
+                        order={[]}
+        	        mode={CHECKLIST_MATCH_ANY}
+                        onTdClick={(c) => { actions.toggleBiosampleType(c) } }
+                    />);
+}
+
 class FacetBoxen extends React.Component {
     doRender(p){
-        return (<div>
+        return (
+            <div>
                 {cell_compartments(p)}
-                </div>);
+                {bts(p)}
+            </div>);
     }
 
     render() {
