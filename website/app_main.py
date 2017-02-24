@@ -45,17 +45,15 @@ class MainApp():
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
-        return self.trackhub.ucsc_trackhub(args, kwargs,
-                                           self.sessions.userUid())
+        return self.trackhub.ucsc_trackhub(*args, **kwargs)
     
     @cherrypy.expose
     def ensembl_trackhub(self, *args, **kwargs):
-        return self.trackhub.ensembl_trackhub(args, kwargs,
-                                              self.sessions.userUid())
+        return self.trackhub.ensembl_trackhub(*args, **kwargs)
 
     @cherrypy.expose
     def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(self.sessions.userUid(), args, kwargs)
+        return self.trackhub.washu_trackhub(*args, **kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
