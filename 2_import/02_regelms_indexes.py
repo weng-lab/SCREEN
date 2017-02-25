@@ -47,7 +47,7 @@ class CreateIndices:
                 conn.commit()
                 for col in self.zscore_cols:
                     makeIndexArr(curs, ctn, col)
-                conn.commit()
+                    conn.commit()
 
 def parse_args():
     parser = argparse.ArgumentParser()
