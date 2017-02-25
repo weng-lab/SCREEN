@@ -38,17 +38,16 @@ class CreateIndices:
     def _run_chr(self, chrom):
         ctn = self.baseTableName + '_' + chrom
 
-        conn = db_connect_single(os.path.realpath(__file__))
-        curs = conn.cursor()
-        makeIndex(curs, ctn, ["accession"])
-        makeIndexInt4Range(curs, ctn, ["start", "stop"])
-        makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
-                                 "promoterMaxz"])
-        for col in self.zscore_cols:
-            makeIndexArr(curs, ctn, col)
-
-        curs.close()
-        conn.close()
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            with conn.cursor() as curs:
+                makeIndex(curs, ctn, ["accession"])
+                makeIndexInt4Range(curs, ctn, ["start", "stop"])
+                makeIndexRev(curs, ctn, ["maxz", "enhancerMaxz",
+                                         "promoterMaxz"])
+                curs.commit()
+                for col in self.zscore_cols:
+                    makeIndexArr(curs, ctn, col)
+                curs.commit()
 
 def parse_args():
     parser = argparse.ArgumentParser()
