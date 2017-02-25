@@ -65,7 +65,7 @@ class TableWithCart extends React.Component {
 	let accessions = this.props.data.map((d) => ( d.accession ));
 	this.props.actions.addCart(accessions);
     }
-    
+
     downloadBed() {
 	var jq = this.props.jq;
 
@@ -114,7 +114,7 @@ class TableWithCart extends React.Component {
 
     totalText(data){
         if(data.length < this.props.total){
-		return "displaying top " + data.length +
+		return "displaying top " + numberWithCommas(data.length) +
                 " results of " + numberWithCommas(this.props.total) + " total";
         }
         return "found " + this.props.total + " results";
