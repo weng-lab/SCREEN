@@ -88,7 +88,7 @@ class MiniPeaks extends React.Component {
 					               fill={color} />))}
 		        </g>
 		    </svg>
-		    {" "}{Render.real(Math.max(...allData[assay].data))}
+		    {" "}{Math.max(...allData[assay].data).toFixed(1)}
 		</span>);
 	    return ReactDOMServer.renderToStaticMarkup(e);
 	}
