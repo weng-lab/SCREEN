@@ -46,8 +46,7 @@ class CreateIndices:
                                          "promoterMaxz"])
                 conn.commit()
                 for col in self.zscore_cols:
-                    makeIndexArr(curs, ctn, col)
-                    conn.commit()
+                    makeIndexArr(curs, ctn, col, conn)
 
 def parse_args():
     parser = argparse.ArgumentParser()
