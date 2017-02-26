@@ -12,17 +12,19 @@ from utils import AddPath, printt
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
-def setupCart(cur):
-    tableName = "cart";
+def setupCart(cur, assembly):
+    tableName = assembly + "_cart"
+
     print('\t', "dropping and creating", tableName)
+
     cur.execute("""
-    DROP TABLE IF EXISTS {tableName};
-    CREATE TABLE {tableName}
+    DROP TABLE IF EXISTS {tn};
+    CREATE TABLE {tn}
     (id serial PRIMARY KEY,
-    uid text,
-    re_accessions json,
-    unique (uid)
-    ) """.format(tableName = tableName))
+    uuid text,
+    accessions jsonb,
+    unique (uuid)
+    ) """.format(tn = tableName))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -34,7 +36,8 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
     with getcursor(DBCONN, "07_setup_cart") as curs:
-        setupCart(curs)
+        setupCart(curs, "hg19")
+        setupCart(curs, "mm10")
 
 if __name__ == '__main__':
     main()

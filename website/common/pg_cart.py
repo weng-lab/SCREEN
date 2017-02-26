@@ -26,38 +26,40 @@ class PGcart:
     def __init__(self, pg, assembly):
         self.pg = pg
         self.assembly = assembly
-
-    def get(self, guid):
+        self.tableName = assembly + "_cart"
+        
+    def get(self, uuid):
         with getcursor(self.pg.DBCONN, "getCart") as curs:
             curs.execute("""
-            SELECT re_accessions
-            FROM cart
-            WHERE uid = %(uid)s
-            """, {"uid": guid})
+            SELECT accessions
+            FROM {tn}
+            WHERE uuid = %s
+            """.format(tn = self.tableName), (uuid,))
             r = curs.fetchall()
         if r:
             return r[0][0]
         return None
 
     def set(self, uuid, reAccessions):
+        accessions = json.dumps(reAccessions)
         with getcursor(self.pg.DBCONN, "setCart") as curs:
             curs.execute("""
-            SELECT re_accessions
-            FROM cart
-            WHERE uid = %(uuid)s""",{"uuid": uuid})
+            SELECT accessions
+            FROM {tn}
+            WHERE uuid = %s
+            """.format(tn = self.tableName), (uuid,))
+            
             if (curs.rowcount > 0):
                 curs.execute("""
-                UPDATE cart
-                SET (re_accessions) = (%(re_accessions)s)
-                WHERE uid = %(uuid)s""",
-                             {"uuid": uuid,
-                              "re_accessions" : json.dumps(reAccessions)})
+                UPDATE {tn}
+                SET accessions = %s
+                WHERE uuid = %s
+                """.format(tn = self.tableName), (accessions, uuid))
             else:
                 curs.execute("""
-                INSERT into cart(uid, re_accessions)
-                VALUES (%(uuid)s, %(re_accessions)s)""",
-                            {"uuid": uuid,
-                             "re_accessions" : json.dumps(reAccessions)})
+                INSERT into {tn} (uuid, accessions)
+                VALUES (%s, %s)
+                """.format(tn = self.tableName), (uuid, accessions))
             return {"status" : "ok"}
 
 def main():
@@ -65,20 +67,20 @@ def main():
     ps = PostgresWrapper(DBCONN)
     cart = PGcart(ps, "hg19")
     
-    uid = "test"
+    uuid = "test"
     j = {"a" : [1,2,3]}
-    cart.set(uid, json.dumps(j))
-    print(cart.get(uid))
+    cart.set(uuid, json.dumps(j))
+    print(cart.get(uuid))
 
     j = {"b" : [5,6,7]}
-    cart.set(uid, json.dumps(j))
-    print(cart.get(uid))
+    cart.set(uuid, json.dumps(j))
+    print(cart.get(uuid))
 
     print(cart.get("nocart"))
 
     j = {"b" : []}
-    cart.set(uid, json.dumps(j))
-    print(cart.get(uid))
+    cart.set(uuid, json.dumps(j))
+    print(cart.get(uuid))
     
 if __name__ == '__main__':
     sys.exit(main())
