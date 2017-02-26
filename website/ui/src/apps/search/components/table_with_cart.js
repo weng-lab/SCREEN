@@ -66,6 +66,10 @@ class TableWithCart extends React.Component {
 	this.props.actions.addCart(accessions);
     }
 
+    clearCart() {
+	this.props.actions.clearCart();
+    }
+    
     downloadBed() {
 	var jq = this.props.jq;
 
@@ -136,6 +140,12 @@ class TableWithCart extends React.Component {
                                 onClick={() => {
                                         this.addAllToCart()}}>
                             {addTitle}
+                        </button>
+		        <button type={"button"}
+                                className={"btn btn-default btn-xs"}
+                                onClick={() => {
+                                        this.clearCart()}}>
+                            {"Clear cart"}
                         </button>
 		        <button type={"button"}
                                 className={"btn btn-default btn-xs"}

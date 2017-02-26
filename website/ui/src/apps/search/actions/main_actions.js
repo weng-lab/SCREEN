@@ -58,6 +58,8 @@ export const TOGGLE_CART = 'TOGGLE_CART'
 export const toggleCart = (accession) => ({ type: TOGGLE_CART, accession });
 export const ADD_CART = 'ADD_CART'
 export const addCart = (accessions) => ({ type: ADD_CART, accessions });
+export const CLEAR_CART = 'CLEAR_CART'
+export const clearCart = () => ({ type: CLEAR_CART });
 
 export const SET_TREE_RANK_METHOD = 'SET_TREE_RANK_METHOD'
 export const setTreeRankMethod = (tree_rank_method) => ({
