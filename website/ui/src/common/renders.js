@@ -149,3 +149,4 @@ export const tabTitle = (c) => {
         </span>);
 };
 
+export const upperCase = (d) => (d.toUpperCase())

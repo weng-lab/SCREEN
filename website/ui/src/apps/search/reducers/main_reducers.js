@@ -72,8 +72,12 @@ const main_reducers = (state, action) => {
 		dataType: "json",
 		contentType: "application/json",
 		success: (response) => {
-		    let url = '/search?q&cart&assembly=' + GlobalAssembly;
-		    window.location.href = url;
+		    let href = window.location.href;
+		    if(href.includes("&cart")){
+			return;
+		    }
+		    // go to cart page
+		    window.location.href = href + "&cart";
 		}
 	    });
 
@@ -90,6 +94,12 @@ const main_reducers = (state, action) => {
 		dataType: "json",
 		contentType: "application/json",
 		success: (response) => {
+		    let href = window.location.href;
+		    if(href.includes("&cart")){
+			// go back to search page
+			href = href.replace("&cart", "");
+			window.location.href = href;
+		    }
 		}
 	    });
 
