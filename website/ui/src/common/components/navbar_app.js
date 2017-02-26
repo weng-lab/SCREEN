@@ -14,34 +14,36 @@ class NavBarApp extends React.Component {
 	var cartimage = "";
 	if (this.props.show_cartimage) {
 	    var Cart = cart_connector(CartImage);
-	    cartimage = (<form
-                         className="navbar-form navbar-right"
-                         id="cartimage-container"
-                         title="view cart">
-                         <Cart store={this.props.store} />
-                         </form>);
+	    cartimage = (
+		<form
+                    className="navbar-form navbar-right"
+                    id="cartimage-container"
+                    title="view cart">
+                    <Cart store={this.props.store} />
+                </form>);
 	}
 
-	return (<div className="navbar-header">
+	return (
+	    <div className="navbar-header">
 		<a className="navbar-brand" href={HOMEPAGE.url}>
-                {HOMEPAGE.title} {GlobalAssembly}
+		    {HOMEPAGE.title} {GlobalAssembly}
                 </a>
-
+		
                 {SearchBox}
-
+		
                 <form className="navbar-form navbar-right">
-		<a href="http://www.encodeproject.org"
-                target="_blank"
-                className="btn btn-success btn-lg navbarEncodeImgBtn">
-                <img src={"/static/encode/ENCODE_logo.small3.png"}
-                alt={"ENCODE logo"}
-                className={"navbarEncodeImg"} />
-                </a>
+		    <a href="http://www.encodeproject.org"
+                       target="_blank"
+                       className="btn btn-success btn-lg navbarEncodeImgBtn">
+			<img src={"/static/encode/ENCODE_logo.small3.png"}
+			     alt={"ENCODE logo"}
+			     className={"navbarEncodeImg"} />
+                    </a>
 		</form>
-
+		
 		{cartimage}
-
-		</div>);
+		
+	    </div>);
     }
 }
 
