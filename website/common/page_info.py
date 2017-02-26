@@ -19,7 +19,3 @@ class PageInfoMain:
                 "bundlets" : os.path.getmtime(bundleFnp),
                 "cssts" : os.path.getmtime(cssFnp)
         }
-
-    # TODO: move elsewhere
-    def setCart(self, uuid, reAccessions):
-        return self.ps.addToCart(uuid, reAccessions)
