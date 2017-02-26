@@ -17,3 +17,6 @@ def checkChrom(assembly, j):
         raise Exception("unknown chrom")
     return chrom
 
+def checkAssembly(assembly):
+    if assembly not in ["hg19", "mm10"]:
+        raise Exception("invalid assembly")

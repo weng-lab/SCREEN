@@ -94,9 +94,10 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def setCart(self):
+    def cart(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.cartc.SetCart(self.sessions.userUid(), j)
+        return self.cartc.process(j, self.sessions.userUid(),
+                                  args, kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
