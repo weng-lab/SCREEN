@@ -47,26 +47,28 @@ const main_reducers = (state, action) => {
             return {...state, re_details_tab_active: action.name};
 
 	case Actions.TOGGLE_CART: {
-	    let n_accessions = doToggle(state.cart_accessions, action.accession);
+	    let accessions = doToggle(state.cart_accessions, action.accession);
+	    let j = {GlobalAssembly, accessions};
 	    $.ajax({
 		type: "POST",
-		url: "/setCart",
-		data: JSON.stringify(n_accessions),
+		url: "/cart/set",
+		data: JSON.stringify(j),
 		dataType: "json",
 		contentType: "application/json",
 		success: (response) => {}
 	    });
 
-            return { ...state, cart_accessions: n_accessions}
+            return { ...state, cart_accessions: accessions}
 	}
 
 	case Actions.ADD_CART: {
-	    let n_accessions = new Set([...state.cart_accessions,
-					...action.accessions]);
+	    let accessions = new Set([...state.cart_accessions,
+				      ...action.accessions]);
+	    let j = {GlobalAssembly, accessions};
 	    $.ajax({
 		type: "POST",
-		url: "/setCart",
-		data: JSON.stringify(n_accessions),
+		url: "/cart/set",
+		data: JSON.stringify(j),
 		dataType: "json",
 		contentType: "application/json",
 		success: (response) => {
@@ -75,7 +77,23 @@ const main_reducers = (state, action) => {
 		}
 	    });
 
-            return { ...state, cart_accessions: n_accessions}
+            return { ...state, cart_accessions: accessions}
+	}
+
+	case Actions.CLEAR_CART: {
+	    let accessions = new Set();
+	    let j = {GlobalAssembly, accessions : []};
+	    $.ajax({
+		type: "POST",
+		url: "/cart/clear",
+		data: JSON.stringify(j),
+		dataType: "json",
+		contentType: "application/json",
+		success: (response) => {
+		}
+	    });
+
+            return { ...state, cart_accessions: accessions }
 	}
 
 	case Actions.SET_TREE_RANK_METHOD: {
