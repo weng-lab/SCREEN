@@ -5,22 +5,28 @@ var ReactDOM = require('react-dom');
 import {connect} from 'react-redux'
 
 class CartImage extends React.Component {
-
     constructor(props) {
 	super(props);
 	this.onClick = this.onClick.bind(this);
     }
 
     onClick() {
-	if (this.props.onClick) this.props.onClick(this.props);
+	if (this.props.onClick) {
+	    this.props.onClick(this.props);
+	}
     }
     
     render() {
-	return (<object type="image/svg+xml" data="/static/re_cart.view.svg" id="shoppingcart_obj" ref="svg"
-		   onClick={this.onClick} title="show cart">
-	              <img src="/static/re_cart.view.png" />
-	        </object>
-	       );
+	return (
+	    <object
+		type="image/svg+xml"
+		data="/static/re_cart.view.svg"
+		id="shoppingcart_obj"
+		ref="svg"
+		onClick={this.onClick} title="show cart">
+	        <img src="/static/re_cart.view.png" />
+	    </object>
+	);
     }
 
     componentDidMount() {
@@ -38,10 +44,16 @@ class CartImage extends React.Component {
     }
     
 }
+
 export default CartImage;
 
 const click_handler = (dispatch) => (state) => {
-    window.location.href = "/search?q&cart&assembly=" + GlobalAssembly;
+    let href = window.location.href;
+    if(href.includes("&cart")){
+	return;
+    }
+    // go to cart page
+    window.location.href = href + "&cart";
 };
 
 const props_map = (state) => {
