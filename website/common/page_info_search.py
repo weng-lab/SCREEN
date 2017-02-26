@@ -1,5 +1,9 @@
+from __future__ import print_function
+
 import sys, os, json
+
 from parse_search import ParseSearch
+from pg_cart import PGcart
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle, chrom_lengths
@@ -40,7 +44,8 @@ class PageInfoSearch:
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
 
-        cart = self.ps.getCart(uuid)
+        pgc = PGcart(self.ps, assembly)
+        cart = pgc.get(uuid)
         if cart:
             parsed["cart_accessions"] = [x for x in cart if x.startswith(self._assembly_starts[kwargs["assembly"]])]
         if "cart" in kwargs:
