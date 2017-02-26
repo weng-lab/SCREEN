@@ -41,17 +41,7 @@ class CartImage extends React.Component {
 export default CartImage;
 
 const click_handler = (dispatch) => (state) => {
-    $.ajax({
-        type: "POST",
-        url: "/setCart",
-        data: JSON.stringify(state.accessions),
-        dataType: "json",
-        contentType: "application/json",
-        success: (response) => {
-            if ("err" in response) return true;
-	    window.location.href = "/search?q&cart&assembly=" + GlobalAssembly;
-        }
-    });
+    window.location.href = "/search?q&cart&assembly=" + GlobalAssembly;
 };
 
 const props_map = (state) => {
