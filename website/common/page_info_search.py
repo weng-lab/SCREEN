@@ -44,12 +44,12 @@ class PageInfoSearch:
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
 
-        pgc = PGcart(self.ps, assembly)
-        cart = pgc.get(uuid)
-        if cart:
-            parsed["cart_accessions"] = [x for x in cart if x.startswith(self._assembly_starts[kwargs["assembly"]])]
+        cart = PGcart(self.ps, assembly)
+        accessions = cart.get(uuid)
+
+        parsed["cart_accessions"] = accessions
         if "cart" in kwargs:
-            parsed["accessions"] = parsed["cart_accessions"]
+            parsed["accessions"] = accessions
 
         cache = self.cacheW[assembly]
 
