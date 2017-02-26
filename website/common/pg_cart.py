@@ -65,22 +65,25 @@ class PGcart:
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
-    cart = PGcart(ps, "hg19")
-    
-    uuid = "test"
-    j = {"a" : [1,2,3]}
-    cart.set(uuid, json.dumps(j))
-    print(cart.get(uuid))
 
-    j = {"b" : [5,6,7]}
-    cart.set(uuid, json.dumps(j))
-    print(cart.get(uuid))
+    for assembly in ["hg19", "mm10"]:
+        print("*************", assembly)
+        cart = PGcart(ps, assembly)
 
-    print(cart.get("nocart"))
+        uuid = "test"
+        j = {"a" : [1,2,3]}
+        cart.set(uuid, json.dumps(j))
+        print(cart.get(uuid))
 
-    j = {"b" : []}
-    cart.set(uuid, json.dumps(j))
-    print(cart.get(uuid))
+        j = {"b" : [5,6,7]}
+        cart.set(uuid, json.dumps(j))
+        print(cart.get(uuid))
+
+        print(cart.get("nocart"))
+
+        j = {"b" : []}
+        cart.set(uuid, json.dumps(j))
+        print(cart.get(uuid))
     
 if __name__ == '__main__':
     sys.exit(main())
