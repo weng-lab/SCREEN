@@ -4,7 +4,6 @@ import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
 
 import GeneExp from '../../geneexp/components/gene_exp'
-import ExpressionHeatmapSet from '../components/expression_heatmap'
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import HorizontalBars from '../components/horizontal_bars'
 import MiniPeaks from '../components/minipeaks'

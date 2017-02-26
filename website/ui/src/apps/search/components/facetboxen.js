@@ -40,17 +40,20 @@ const accessionsBox = ({accessions, actions}) => {
         return (<div />);
     }
     return panelize("Accessions",
-                    <ChecklistFacet
+                    <LongChecklistFacet
 			title={""}
-			formatter={(v) => (v.toUpperCase())}
-			items={accessions.map((d) => {
-				return {value: d, checked: true}})}
-			match_mode_enabled={false}
-			mode={CHECKLIST_MATCH_ANY}
-			autocomplete_source={[]}
-			paging={true}
-			onchange={(accs) => { actions.setAccessions(accs) }}
-			onModeChange={null}
+			cols={[{
+			    title: "Assay", data: "key",
+			    className: "dt-right",
+			    render: Render.upperCase
+			}]}
+			data={accessions.map((d) => {
+			    return {key: d, selected: true}})}
+			order={[]}
+			match_mode_enable={true}
+			onTdClick={(accs) => { actions.setAccessions(accs) }}
+			onModeChange={(accs) => { actions.setAccessions(accs) }}
+			mode={CHECKLIST_MATCH_ALL}
 		    />);
 }
 
