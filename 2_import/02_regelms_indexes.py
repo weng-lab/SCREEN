@@ -10,7 +10,7 @@ from constants import chroms, paths, DB_COLS
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
-from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexArr164startStop, makeIndexArr164, makeIndexInt4Range
+from db_utils import getcursor, makeIndex, makeIndexArr, makeIndexIntRange, makeIndexInt4Range, vacumnAnalyze
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 
@@ -35,6 +35,10 @@ class CreateIndices:
                                   (chrom)
                                   for chrom in self.chroms)
 
+    def vac(self):
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            vacumnAnalyze(conn, self.baseTableName, self.chroms)
+            
     def _run_chr(self, chrom):
         ctn = self.baseTableName + '_' + chrom
 
@@ -76,7 +80,8 @@ def main():
         m = infos[assembly]
 
         ci = CreateIndices(args.j, m)
-        ci.run()
+        #ci.run()
+        ci.vac()
 
     return 0
 
