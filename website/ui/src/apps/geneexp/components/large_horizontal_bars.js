@@ -75,7 +75,7 @@ class LargeHorizontalBars extends React.Component {
     componentDidUpdate() {
 	$(this.refs.container).empty();
 
-	console.log(this.props);
+	//console.log(this.props);
 	
         if(!this.props.hasData){
             return;

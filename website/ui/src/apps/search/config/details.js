@@ -78,11 +78,23 @@ class ReTabBase extends React.Component{
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+	if("details" === nextProps.maintabs_active){
+            if(this.key === nextProps.re_details_tab_active){
+		//console.log("updating", this.key);
+		return true;
+	    }
+	}
+	//console.log("not updating", this.key);
+	return false;
+    }
+    
     componentWillReceiveProps(nextProps){
-        // only check/get data if we will become active tab...
-        if(this.key == nextProps.re_details_tab_active){
-            this.loadCRE(nextProps);
-        }
+	if("details" === nextProps.maintabs_active){
+            if(this.key === nextProps.re_details_tab_active){
+		this.loadCRE(nextProps);
+	    }
+	}
     }
 
     loadCRE({cre_accession_detail}){
@@ -116,6 +128,7 @@ class ReTabBase extends React.Component{
     doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
+	    //console.log("doRenderWrapper", this.key);
             return this.doRender(this.state[accession]);
         }
 	//console.log(this.props);
@@ -190,6 +203,7 @@ class GeTab extends ReTabBase{
 	super(props, "ge");
 
         this.doRender = (data) => {
+            //console.log("geTab", data);
 	    if(data.no_nearby_tss) {
 		return <div><br />{"No gene expression data found for this cRE"}</div>;
 	    }
@@ -218,7 +232,7 @@ class RampageTab extends ReTabBase{
 	super(props, "rampage");
 
         this.doRender = (data) => {
-            console.log("rampage", data);
+            //console.log("rampage", data);
 	    if(0 == data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
@@ -250,7 +264,7 @@ const DetailsTabInfo = () => {
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
-                  enabled: false, //"mm10" != GlobalAssembly,
+                  enabled: "mm10" != GlobalAssembly,
                   f: RampageTab},
         ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
