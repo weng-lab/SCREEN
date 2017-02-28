@@ -37,7 +37,7 @@ class PGsearch:
         self.ctmap = pg.makeCtMap()
 
     def allCREs(self):
-        tableName = self.assembly + "_cre"
+        tableName = self.assembly + "_cre_all"
         q = """SELECT accession, chrom, start, stop from {tn}""".format(
             tn = tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
@@ -49,7 +49,7 @@ class PGsearch:
                  "end" : e[3]} for e in r]
 
     def chromCounts(self):
-        tableName = self.assembly + "_cre" + "_nums"
+        tableName = self.assembly + "_cre_nums"
         q = """SELECT chrom, count from {tn}""".format(
             tn = tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
@@ -114,8 +114,9 @@ class PGsearch:
         fields = []
         whereclauses = [] # self._type_clauses(ct, j["element_type"])
 
-        if start and stop:
+        if chrom and start and stop:
             whereclauses += ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
+
         if ct:
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3_only"),
@@ -184,10 +185,7 @@ class PGsearch:
         return present
 
     def creTable(self, j, chrom, start, stop):
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
+        tableName = self.assembly + "_cre_all"
 
         fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
         fields = ', '.join(fields + [
@@ -296,7 +294,7 @@ with DELIMITER E'\t'
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
 SELECT chrom, start, stop FROM {tn} WHERE accession = %s
-""".format(tn = self.assembly + "_cre"), (accession, ))
+""".format(tn = self.assembly + "_cre_all"), (accession, ))
             r = curs.fetchone()
         if not r:
             print("ERROR: missing", accession)
@@ -311,7 +309,7 @@ FROM
 FROM {tn} WHERE accession = %s) AS g
 INNER JOIN {gtn} AS gi
 ON g.geneid = gi.geneid
-""".format(tn = self.assembly + "_cre_" + chrom,
+""".format(tn = self.assembly + "_cre_all",
            gtn = self.assembly + "_gene_info",
            group = group), (accession, ))
         return curs.fetchall()
@@ -347,7 +345,7 @@ int4range(%s, %s)
 
     def nearbyCREs(self, coord, halfWindow, cols, isProximalOrDistal):
         c = coord.expanded(halfWindow)
-        tableName = self.assembly + "_cre_" + c.chrom
+        tableName = self.assembly + "_cre_all"
         q = """
 SELECT {cols} FROM {tn}
 WHERE int4range(start, stop) && int4range(%s, %s)
@@ -390,7 +388,7 @@ on ti.tadname = tads.tadname
 WHERE accession = %s))
 AND abs(%s - start) < 100000
 ORDER BY 2
-""".format(cre = self.assembly + "_cre_" + chrom,
+""".format(cre = self.assembly + "_cre_all",
            ti = self.assembly + "_tads_info",
            tads = self.assembly + "_tads")
             curs.execute(q, (start, accession, start))
@@ -406,7 +404,7 @@ FROM
 FROM {tn} WHERE accession = %s) AS g
 INNER JOIN {gtn} AS gi
 ON g.geneid = gi.geneid
-""".format(tn = self.assembly + "_cre_" + chrom,
+""".format(tn = self.assembly + "_cre_all",
            gtn = self.assembly + "_gene_info"), (accession, ))
             rows = curs.fetchall()
         return [{"name" : r[0]} for r in rows]
@@ -432,7 +430,7 @@ SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
         return ret
 
     def _getColsForAccession(self, accession, chrom, cols):
-        tableName = self.assembly + "_cre_" + chrom
+        tableName = self.assembly + "_cre_all"
         with getcursor(self.pg.DBCONN, "_getColsForAccession") as curs:
             curs.execute("""
 SELECT {cols}
@@ -482,10 +480,10 @@ WHERE accession = %s
         with getcursor(self.pg.DBCONN, "cre$CRE::mostsimilar") as curs:
             curs.execute("""
 SELECT {assay}_rank
-FROM {assembly}_cre
-WHERE accession = '{accession}'""".format(assay=assay,
-                                          assembly=self.assembly,
-                                          accession=acc))
+FROM {assembly}_cre_all
+WHERE accession = %s
+""".format(assay=assay,
+           assembly=self.assembly), acc)
             r = curs.fetchone()
             if not r:
                 if 0:
@@ -511,7 +509,7 @@ WHERE accession = '{accession}'""".format(assay=assay,
 SELECT accession,
 intarraysimilarity(%(r)s, {assay}_rank, {threshold}) AS similarity,
 chrom, start, stop
-FROM {assembly}_cre
+FROM {assembly}_cre_all
 WHERE {whereclause}
 ORDER BY similarity DESC LIMIT 10
 """.format(assay=assay, assembly=self.assembly,
