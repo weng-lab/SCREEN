@@ -26,6 +26,7 @@ class MiniPeaks extends React.Component {
     constructor(props) {
 	super(props);
 	this.state = {jq: null, isFetching: true, isError: false };
+        this.key = "similarREs";
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",
@@ -33,10 +34,21 @@ class MiniPeaks extends React.Component {
 	};
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+	if("details" === nextProps.maintabs_active){
+            if(this.key === nextProps.re_details_tab_active){
+		return true;
+	    }
+	}
+	return false;
+    }
+
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
-        if("similarREs" == nextProps.re_details_tab_active){
-            this.loadPeaks(nextProps);
+	if("details" === nextProps.maintabs_active){
+            if(this.key == nextProps.re_details_tab_active){
+                this.loadPeaks(nextProps);
+            }
         }
     }
 
