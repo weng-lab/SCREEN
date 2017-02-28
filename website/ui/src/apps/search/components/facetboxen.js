@@ -175,36 +175,41 @@ const makeRankFacet = (rfacets, assay, title, start, end, action) =>
 		        action, zscore_decimal, zrdecimal, true);
     }
 
-const rankBox = ({rank_dnase_start, rank_dnase_end,
-                  rank_promoter_start, rank_promoter_end,
-                  rank_enhancer_start, rank_enhancer_end,
-                  rank_ctcf_start, rank_ctcf_end, rfacets,
-                  cellType, actions}) =>
-		      {
-			  let title =  (cellType ?
-					make_ct_friendly(cellType) :
-					"Maximum across cell types");
+const rankBox = (
+    {rank_dnase_start, rank_dnase_end,
+     rank_promoter_start, rank_promoter_end,
+     rank_enhancer_start, rank_enhancer_end,
+     rank_ctcf_start, rank_ctcf_end, rfacets,
+     cellType, actions}) =>
+	 {
+	     let title =  (cellType ?
+			   make_ct_friendly(cellType) :
+			   "Maximum across cell types");
 
-			  let promoterTitle = "H3K4me3 Z-score";
-			  let enhancerTitle = "H3K27ac Z-score";
+	     let promoterTitle = "H3K4me3 Z-score";
+	     let enhancerTitle = "H3K27ac Z-score";
+             let sliders = [makeRankFacet(rfacets, "dnase", "DNase Z-score",
+                                          rank_dnase_start, rank_dnase_end,
+			                  actions.setRankDnase),
+                            makeRankFacet(rfacets, "promoter", promoterTitle,
+                                          rank_promoter_start, rank_promoter_end,
+			                  actions.setRankPromoter),
+                            makeRankFacet(rfacets, "enhancer", enhancerTitle,
+                                          rank_enhancer_start, rank_enhancer_end,
+			                  actions.setRankEnhancer),
+                            makeRankFacet(rfacets, "ctcf", "CTCF Z-score",
+                                          rank_ctcf_start, rank_ctcf_end,
+			                  actions.setRankCtcf)];
+             sliders = sliders.filter((s) => s > "");
 
-			  let rankFacets = (<div>
-                        {makeRankFacet(rfacets, "dnase", "DNase Z-score",
-                                       rank_dnase_start, rank_dnase_end,
-			               actions.setRankDnase)}<br />
-                              {makeRankFacet(rfacets, "promoter", promoterTitle,
-                                             rank_promoter_start, rank_promoter_end,
-			                     actions.setRankPromoter)}<br />
-                              {makeRankFacet(rfacets, "enhancer", enhancerTitle,
-                                             rank_enhancer_start, rank_enhancer_end,
-			                     actions.setRankEnhancer)}<br />
-                              {makeRankFacet(rfacets, "ctcf", "CTCF Z-score",
-                                             rank_ctcf_start, rank_ctcf_end,
-			                     actions.setRankCtcf)}
-                          </div>);
+             // http://stackoverflow.com/a/34034296
+	     let rankFacets = (
+                 <div>
+                     {sliders.map((s,i) => <span>{s}{sliders.length - 1 === i ? '' : <br />}</span>)}
+                 </div>);
 
-			  return panelize(title, rankFacets, "zscore_facet");
-		      };
+	     return panelize(title, rankFacets, "zscore_facet");
+	 };
 
 class FacetBoxen extends React.Component {
     componentDidMount() {
