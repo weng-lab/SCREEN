@@ -292,7 +292,9 @@ with DELIMITER E'\t'
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""
-SELECT chrom, start, stop FROM {tn} WHERE accession = %s
+SELECT chrom, start, stop
+FROM {tn}
+WHERE accession = %s
 """.format(tn = self.assembly + "_cre_all"), (accession, ))
             r = curs.fetchone()
         if not r:
@@ -304,7 +306,8 @@ SELECT chrom, start, stop FROM {tn} WHERE accession = %s
         curs.execute("""
 SELECT gi.approved_symbol, g.distance
 FROM
-(SELECT UNNEST(gene_{group}_id) geneid, UNNEST(gene_{group}_distance) distance
+(SELECT UNNEST(gene_{group}_id) geneid,
+UNNEST(gene_{group}_distance) distance
 FROM {tn} WHERE accession = %s) AS g
 INNER JOIN {gtn} AS gi
 ON g.geneid = gi.geneid
@@ -323,8 +326,9 @@ ON g.geneid = gi.geneid
         tableName = self.assembly + "_snps_" + c.chrom
         with getcursor(self.pg.DBCONN, "intersectingSnps") as curs:
             curs.execute("""
-SELECT start, stop, name FROM {tn} WHERE int4range(start, stop) &&
-int4range(%s, %s)
+SELECT start, stop, name
+FROM {tn}
+WHERE int4range(start, stop) && int4range(%s, %s)
 """.format(tn = tableName), (c.start, c.end))
             snps = curs.fetchall()
         ret = []
