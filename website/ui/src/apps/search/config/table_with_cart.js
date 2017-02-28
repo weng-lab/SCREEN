@@ -5,7 +5,8 @@ const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
     return [
 	{
-	    title: "accession", data: "accession", className: klassCenter
+	    title: "accession", data: "accession", className: klassCenter,
+            render: Render.creLink
 	}, {
             title: "cre_group", data: "cre_group", visible: false
 	}, {

@@ -51,6 +51,10 @@ export const cart_img = (rmv, src_only) => {
     return '<img class="rowCart" src="' + src + '" title="' +  title + '">';
 }
 
+export const creLink = (accession) => (
+    '<a href="#">' + accession + '</a>'
+)
+
 export const openGeLink = (gene) => {
     return (<div>
     This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(gene)} target={"_blank"}>click here</a>.
