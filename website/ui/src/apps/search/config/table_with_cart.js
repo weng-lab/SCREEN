@@ -5,7 +5,7 @@ const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
     return [
 	{
-	    title: "accession", data: "accession", className: klassLeft
+	    title: "accession", data: "accession", className: klassCenter
 	}, {
             title: "cre_group", data: "cre_group", visible: false
 	}, {
@@ -21,16 +21,16 @@ const TableColumns = () => {
 	    title: "CTCF-bound Z", data: "ctcf_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "ctcf"
 	}, {
-	    title: "chr", data: "chrom", className: klassLeft
+	    title: "chr", data: "chrom", className: klassCenter
 	}, {
-	    title: "start", data: "start", className: klassLeft,
+	    title: "start", data: "start", className: klassCenter,
             render: Render.integer
 	}, {
 	    title: "length", data: "len", className: klassCenter,
             render: Render.integer
 	}, {
             title: "nearest genes:<br />protein-coding / all", data: "genesallpc",
-	    className: klassLeft + "geneexp", render: Render.geneDeLinks
+	    className: klassCenter + "geneexp", render: Render.geneDeLinks
 	}, {
 	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),
@@ -39,7 +39,7 @@ const TableColumns = () => {
 	    className: klassCenter + "browser",
 	    targets: -1, orderable: false,
 	    defaultContent: Render.browser_buttons(["UCSC", "WashU"])
-	    //, "Ensembl" 
+	    //, "Ensembl"
 	}
     ];
 }
