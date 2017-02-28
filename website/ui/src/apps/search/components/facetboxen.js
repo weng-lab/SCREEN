@@ -135,7 +135,8 @@ const tfBox = ({actions}) => {
                     />);
 }
 
-const geneDistanceBox = ({gene_all_start, gene_all_end, gene_pc_start, gene_pc_end, actions}) => {
+const geneDistanceBox = ({gene_all_start, gene_all_end,
+                          gene_pc_start, gene_pc_end, actions}) => {
     let range = [0, 500000];
     return panelize("Distance to Genes",
 		    (
@@ -219,16 +220,27 @@ class FacetBoxen extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        let np = nextProps;
+        let pp  = this.props;
+	let unchanged = (pp.accessions === np.accessions) &&
+                        (pp.cellType === np.cellType) &&
+                        (pp.coord_chrom === np.coord_chrom) &&
+                        (pp.coord_start === np.coord_start) &&
+                        (pp.coord_end === np.coord_end);
+        return !unchanged;
+    }
+
     doRender(p){
-        return (<div>
-			      {accessionsBox(p)}
-			      {cellTypesBox(p)}
-			      {chromBox(p)}
-			      {startEndBox(p)}
-			      {rankBox(p)}
-        </div>);
-    } /*                 {tfBox(p)}
-         {geneDistanceBox(p)} */
+        return (
+            <div>
+		{accessionsBox(p)}
+		{cellTypesBox(p)}
+		{chromBox(p)}
+		{startEndBox(p)}
+		{rankBox(p)}
+            </div>);
+    }
 
     render() {
         return this.doRender(this.props)
