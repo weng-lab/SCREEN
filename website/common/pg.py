@@ -353,7 +353,8 @@ int4range(%s, %s)
         tableName = self.assembly + "_cre_all"
         q = """
 SELECT {cols} FROM {tn}
-WHERE int4range(start, stop) && int4range(%s, %s)
+WHERE chrom = %s
+AND int4range(start, stop) && int4range(%s, %s)
 """.format(cols = ','.join(cols), tn = tableName)
 
         if isProximalOrDistal is not None:
@@ -362,7 +363,7 @@ AND isProximal is {isProx}
 """.format(isProx = str(isProximalOrDistal))
 
         with getcursor(self.pg.DBCONN, "nearbyCREs") as curs:
-            curs.execute(q, (c.start, c.end))
+            curs.execute(q, (c.chrom, c.start, c.end))
             return curs.fetchall()
 
     def distToNearbyCREs(self, accession, coord, halfWindow):
@@ -384,8 +385,9 @@ AND isProximal is {isProx}
         with getcursor(self.pg.DBCONN, "cresInTad") as curs:
             q = """
 SELECT accession, abs(%s - start) AS distance
-from {cre}
-where int4range(start, stop) && int4range(
+FROM {cre}
+WHERE chrom = %s
+AND int4range(start, stop) && int4range(
 (SELECT int4range(min(start), max(stop))
 FROM {ti} ti
 inner join {tads} tads
@@ -396,7 +398,7 @@ ORDER BY 2
 """.format(cre = self.assembly + "_cre_all",
            ti = self.assembly + "_tads_info",
            tads = self.assembly + "_tads")
-            curs.execute(q, (start, accession, start))
+            curs.execute(q, (chrom, start, accession, start))
             rows = curs.fetchall()
         return [{"accession" : r[0], "distance" : r[1]} for r in rows]
 
@@ -421,7 +423,8 @@ ON g.geneid = gi.geneid
     def rankMethodToCellTypes(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
-SELECT idx, celltype, rankmethod FROM {assembly}_rankcelltypeindexex
+SELECT idx, celltype, rankmethod
+FROM {assembly}_rankcelltypeindexex
 """.format(assembly = self.assembly))
             _map = {}
             for r in curs.fetchall():
