@@ -8,6 +8,7 @@ import cherrypy
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
 from models.cre_download import CREdownload
+from models.rampage import Rampage
 from models.minipeaks import MiniPeaks
 from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
@@ -167,32 +168,8 @@ class DataWebService:
     def _re_detail_rampage(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
-        r = self.pgSearch.rampage(cre.coord())
-        if not r:
-            return {accession: r}
-        ret = {}
-        ret["genename"] = r[0]["tss"]
-        ret["items"] = {}
-
-        ee = {}
-        for k, v in r[0]["data"].iteritems():
-            ee[k] = {
-                "color" : "#880000",
-                "displayName" : k,
-                "items" : [{"tissue": k,
-                            "cellType": k,
-                            "logFPKM": v,
-                            "rawTPM": v,
-                            "rep": 1,
-                            "rawFPKM": v,
-                            "logTPM" : v,
-                            "expID": k}],
-                "name" : k}
-
-        ret["items"]["byExpressionTPM"] = ee
-
-        return {accession: ret}
-
+        rampage = Rampage(self.assembly, self.pgSearch)
+        return {accession: rampage.get(cre.coord())}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = 20
