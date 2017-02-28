@@ -8,6 +8,8 @@ import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import HorizontalBars from '../components/horizontal_bars'
 import MiniPeaks from '../components/minipeaks'
 
+import HelpIcon from '../../../common/components/help_icon'
+
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
         TfIntersectionTable, OrthologTable} from './details_tables'
 
@@ -32,9 +34,10 @@ function makeTable(data, key, table){
 }
 
 function tabEle(data, key, table, numCols) {
+    let helpicon = (table && table.helpkey ? <HelpIcon helpkey={table.helpkey} /> : "");
     if(table && "typ" in table){
         return (<div className={"col-md-" + (12/numCols)} key={key}>
-    <h4>{table.title}</h4>
+		<h4>{table.title} {helpicon}</h4>
     {React.createElement(table.typ, {data, table})}
     <br/>
 	</div>);
@@ -43,7 +46,7 @@ function tabEle(data, key, table, numCols) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
     }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
-	    <h4>{table.title}</h4>
+	    <h4>{table.title} {helpicon}</h4>
 	    {makeTable(data, key, table)}<br/>
     </div>);
 }
