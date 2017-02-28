@@ -1,27 +1,32 @@
 import HelpIcon from './components/help_icon'
 
 export const panelize = (title, facet, helpkey = null) => {
-    let helpicon = (helpkey ? <HelpIcon helpkey={helpkey} color={"#ffffff"} /> : "");
-    return (<div className="panel-group facet">
+    let helpicon = (helpkey ?
+                    <HelpIcon helpkey={helpkey} color={"#ffffff"} /> :
+                    "");
+    //console.log("rendering panel", title);
+    return (
+        <div className="panel-group facet">
 	    <div className="panel panel-primary">
-	    <div className="panel-heading">{title} {helpicon}</div>
-	    <div className="panel-body">
-            {facet}
+	        <div className="panel-heading">{title} {helpicon}</div>
+	        <div className="panel-body">
+                    {facet}
+	        </div>
 	    </div>
-	    </div>
-	    </div>);
+	</div>);
 };
 
 export const tabPanelize = (content) => {
-    return (<div>
+    return (
+        <div>
             <div className={"panel panel-default"}>
-            <div className={"panel-body"}>
-            <div className={"container-fluid"}>
-	    {content}
+                <div className={"panel-body"}>
+                    <div className={"container-fluid"}>
+	                {content}
+	            </div>
+	        </div>
 	    </div>
-	    </div>
-	    </div>
-            </div>);
+        </div>);
 }
 
 export const doToggle = (oldSet, item) => {
@@ -54,12 +59,13 @@ export const getCommonState =
       }
 
 export const arrowNote = (msg) => {
-    return (<div>
+    return (
+        <div>
             <h3>
-            <span className="glyphicon glyphicon-arrow-left"
-            aria-hidden="true" style={{color: "red"}}>
-            </span>
-            &nbsp;&nbsp;{msg}
+                <span className="glyphicon glyphicon-arrow-left"
+                      aria-hidden="true" style={{color: "red"}}>
+                </span>
+        &nbsp;&nbsp;{msg}
             </h3>
-            </div>);
+        </div>);
 }
