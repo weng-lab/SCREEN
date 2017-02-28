@@ -62,7 +62,7 @@ ORDER BY {col} DESC
             q = """
 SELECT COUNT(DISTINCT(ldblock))
 FROM {assembly}_gwas as gwas,
-{assembly}_cre as cre,
+{assembly}_cre_all as cre,
 {assembly}_gwas_overlap as over
 WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
 AND cre.accession = over.accession
@@ -114,7 +114,7 @@ where authorPubmedTrait = %s
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT {fields}
-FROM {assembly}_cre as cre,
+FROM {assembly}_cre_all as cre,
 {assembly}_gwas_overlap as over,
 {assembly}_gene_info as infoAll
 WHERE cre.gene_all_id[1] = infoAll.geneid
