@@ -28,7 +28,7 @@ class CreateIndices:
         tn = self.tableName
         with db_connect_single(os.path.realpath(__file__)) as conn:
             with conn.cursor() as curs:
-                makeIndex(curs, tn, ["accession"])
+                makeIndex(curs, tn, ["accession", "chrom"])
                 makeIndexInt4Range(curs, tn, ["start", "stop"])
                 makeIndexRev(curs, tn, ["maxz", "enhancerMaxz",
                                          "promoterMaxz"])
