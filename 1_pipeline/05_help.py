@@ -47,7 +47,24 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "Cell Type Tree": "celltype_tree",
           "Cell Type Facet": "celltype_facet",
           "Z-score Facet": "zscore_facet",
-          "Coordinate Facet": "coordinate_facet" }
+          "Coordinate Facet": "coordinate_facet",
+          "H3K4me3 Z-scores": "h3k4me3z",
+          "H3K27ac Z-scores": "h3k27acz",
+          "CTCF Z-scores": "ctcfz",
+          "DNase Z-scores": "dnasez",
+          "Intersecting transcription factors": "itfs",
+          "Intersecting histone marks": "ihms",
+          "Nearby genes": "nearbygenes",
+          "Nearby cREs": "nearbycres",
+          "Nearby SNPs": "nearbysnps",
+          "Genes Within TAD": "geneswithintad",
+          "cREs Within TAD": "creswithintad",
+          "GWAS Studies Facet": "gwasstudies",
+          "GWAS Cell Types Facet": "gwascelltypes",
+          "GWAS Study Table": "gwasstudytable",
+          "GWAS Results Table": "gwasresults",
+          "DE cRE Table": "decres",
+          "DE Gene Table": "degenetable" }
 
 def main():
     args = parseargs()

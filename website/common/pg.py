@@ -18,6 +18,7 @@ from cre_utils import isaccession, isclose, checkChrom
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
+from utils import eprint
 
 class PGsearchWrapper:
     def __init__(self, pg):
@@ -221,7 +222,7 @@ LIMIT 1000) r
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause)
 
-            print(q)
+            eprint(q)
             curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
