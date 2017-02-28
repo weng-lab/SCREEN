@@ -6,6 +6,7 @@ import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 export const TopTissuesTables = () => ({
     promoter: {
 	title: "H3K4me3 Z-scores",
+	helpkey: "h3k4me3z",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: Render.cell_type},
@@ -24,6 +25,7 @@ export const TopTissuesTables = () => ({
     },
     enhancer: {
 	title: "H3K27ac Z-scores",
+	helpkey: "h3k27acz",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type},
@@ -42,6 +44,7 @@ export const TopTissuesTables = () => ({
     },
     ctcf: {
 	title: "CTCF Z-scores",
+	helpkey: "ctcfz",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 	     render: Render.cell_type},
@@ -61,6 +64,7 @@ export const TopTissuesTables = () => ({
     },
     dnase: {
 	title: "DNase Z-scores",
+	helpkey: "dnasez",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
 		render: Render.cell_type},
@@ -163,6 +167,7 @@ export const NearbyGenomicTable = () => {
     let ret = {
         nearby_genes: {
 	    title: "Nearby Genes",
+	    helpkey: "nearbygenes",
 	    paging: true,
 	    info: false,
 	    bFilter: true,
@@ -178,6 +183,7 @@ export const NearbyGenomicTable = () => {
         },
         nearby_res: {
 	    title: "Nearby cREs",
+	    helpkey: "nearbycres",
 	    paging: true,
 	    info: false,
 	    bFilter: true,
@@ -193,6 +199,7 @@ export const NearbyGenomicTable = () => {
         },
         overlapping_snps: {
 	    title: "Nearby SNPs",
+	    helpkey: "nearbysnps",
 	    paging: true,
 	    info: false,
 	    bFilter: true,
@@ -221,6 +228,7 @@ export const NearbyGenomicTable = () => {
                tads: {
 	           title: "Genes within TAD",
 	           paging: true,
+		   helpkey: "geneswithintad",
 	           info: false,
 	           bFilter: true,
                    bLengthChange: true,
@@ -235,6 +243,7 @@ export const NearbyGenomicTable = () => {
                },
                re_tads: {
 	           title: "Other cREs within TAD (<100 Kb)",
+		   helpkey: "creswithintad",
 	           paging: true,
 	           info: false,
 	           bFilter: true,
@@ -259,6 +268,7 @@ export const TfIntersectionTable = () => ({
     "tf": {
 	title: "TFs that bind this cRE",
         typ: IntersectingAssayTf,
+	helpkey: "itfs",
 	cols: [
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf },
@@ -269,6 +279,7 @@ export const TfIntersectionTable = () => ({
     },
     "histone": {
 	title: "Histone Marks at this cRE",
+	helpkey: "ihms",
         typ: IntersectingAssayHistone,
 	cols: [
 	    {title: "mark", data: "name" },
