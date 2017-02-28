@@ -23,29 +23,31 @@ class DePlot extends React.Component {
                         <span className={"deSubtitle"}>{geneName2}</span>
                        );
 
-        let title = (<div>
-                     <table className={"deTitleTable"}>
-                     <tr>
-                     <td><span className={"deGene"}>{geneName1}</span></td>
-                     <td>
-                     <span className={"deCT"}>{ct1}</span>
-                     <span className={"deVS"}>{" vs "}</span>
-                     <span className={"deCT"}>{ct2}</span>
-                     </td>
-                     </tr>
-                     <tr>
-                     <td>
-                     {subtitle}
-                     </td>
-                     </tr>
-                     </table>
-                     </div>);
+        let title = (
+            <div>
+                <table className={"deTitleTable"}>
+                    <tr>
+                        <td><span className={"deGene"}>{geneName1}</span></td>
+                        <td>
+                            <span className={"deCT"}>{ct1}</span>
+                            <span className={"deVS"}>{" vs "}</span>
+                            <span className={"deCT"}>{ct2}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {subtitle}
+                        </td>
+                    </tr>
+                </table>
+            </div>);
 
-	return (<div>
+	return (
+            <div>
                 <span ref="help_icon" />
                 {title}
 		<div style={{"width": "100%"}} ref="chart" />
-		</div>);
+	    </div>);
     }
 
     componentDidUpdate() {
