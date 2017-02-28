@@ -753,6 +753,7 @@ ORDER BY biosample_term_name
 select * from {tn}
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
+ORDER BY tss
 """.format(tn = self.assembly + "_rampage")
 
         with getcursor(self.pg.DBCONN, "pg::genesInRegion",

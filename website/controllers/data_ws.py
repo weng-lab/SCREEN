@@ -169,7 +169,13 @@ class DataWebService:
         cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
         rampage = Rampage(self.assembly, self.pgSearch)
-        return {accession: rampage.get(cre.coord())}
+        tsss = rampage.get(cre.coord())
+        if not tsss:
+            return {accession: {"sortedKeys" : [],
+                                "tsss" : []}}
+        sortedKeys = sorted(tsss.keys())
+        return {accession: {"sortedKeys" : sortedKeys,
+                            "tsss" : tsss}}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = 20

@@ -231,15 +231,17 @@ class RampageTab extends ReTabBase{
     constructor(props) {
 	super(props, "rampage");
 
-        this.doRender = (data) => {
-            //console.log("rampage", data);
+        this.doRender = (keysAndData) => {
+            let sortedKeys = keysAndData.sortedKeys;
+            let data = keysAndData.tsss;
+
 	    if(0 == data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
 
             let pills = (
                 <ul className={"nav nav-pills nav-stacked col-md-3"}>
-                    {Object.keys(data).map((tss) => {
+                    {sortedKeys.map((tss) => {
                          let d = data[tss];
                          return (
                              <li className={d["tab_active"]}>
@@ -252,7 +254,7 @@ class RampageTab extends ReTabBase{
 
             let content = (
                 <div className={"tab-content col-md-9"}>
-                    {Object.keys(data).map((tss) => {
+                    {sortedKeys.map((tss) => {
                          let d = data[tss];
                          let title = (
                              <div className={"container-fluid"}

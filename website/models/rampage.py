@@ -11,10 +11,10 @@ class Rampage:
         ret["tab_active"] = ""
         if 0 == idx:
             ret["tab_active"] = "active"
+
         ret["chrom"] = r["chrom"]
         ret["start"] = r["start"]
         ret["stop"] = r["stop"]
-        ret["items"] = {}
 
         ee = {}
         for expID, v in r["data"].iteritems():
@@ -29,13 +29,14 @@ class Rampage:
                             "expID": expID}],
                 "name" : expID }
 
+        ret["items"] = {}
         ret["items"]["all"] = ee
         return r["tss"], ret
 
     def get(self, coord):
         rampage = self.pgSearch.rampage(coord)
         if not rampage:
-            return rampage
+            return None
 
         ri = self.pgSearch.rampage_info()
         ret = {}
