@@ -53,7 +53,7 @@ class ParseSearch:
         for chrom in self.chroms:
             with getcursor(self.DBCONN, "parse_search$ParseSearch::_get_snpcoord") as curs:
                 curs.execute("""
-SELECT start, stop 
+SELECT start, stop
 FROM {tn}
 WHERE name = %s
 """.format(tn = self._snp_tablename(chrom)), (s, ))
@@ -68,7 +68,7 @@ SELECT gi.approved_symbol, gi.info
 FROM hg19_gene_info_mv AS mv
 INNER JOIN hg19_gene_info gi
 ON gi.id = mv.geneid
-WHERE LOWER(%s) = value 
+WHERE LOWER(%s) = value
             """.format(tn = self._gene_tablename), (s,))
             r = curs.fetchone()
         if not r or not r[0]:
@@ -84,10 +84,10 @@ WHERE LOWER(%s) = value
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
                 curs.execute("""
-SELECT oname, chrom, start, stop, altchrom, altstart, altstop, 
-similarity(name, %s) AS sm 
-FROM {assembly}_autocomplete 
-WHERE name %% %s 
+SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
+similarity(name, %s) AS sm
+FROM {assembly}_autocomplete
+WHERE name %% %s
 ORDER BY sm DESC LIMIT 1
                 """.format(assembly = self.assembly), (s, s))
                 r = curs.fetchall()
@@ -149,10 +149,10 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
         with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
             # TODO: use int4range, and sanitize input
             curs.execute("""
-SELECT accession 
-FROM {tn} 
+SELECT accession
+FROM {tn}
 WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop
-""".format(tn = self.assembly + "_cre_" + coord.chrom,
+""".format(tn = self.assembly + "_cre_all",
            chrom = coord.chrom, start = coord.start,
            end = coord.end))
             if curs.fetchone(): return True
@@ -164,7 +164,13 @@ WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop
         for i in xrange(len(p)):
             s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
             with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-                curs.execute("SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) % '{q}' ORDER BY sm DESC LIMIT 1".format(assembly=self.assembly, q=s))
+                curs.execute("""
+SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm
+FROM {assembly}_rankCellTypeIndexex
+WHERE LOWER(cellType) % '{q}'
+ORDER BY sm DESC
+LIMIT 1
+""".format(assembly=self.assembly, q=s))
                 r = curs.fetchall()
                 if not r:
                     curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
