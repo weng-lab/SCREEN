@@ -243,10 +243,7 @@ FROM {tn} AS cre
         start = j.get("coord_start", 0)
         stop = j.get("coord_end", 0)
 
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
+        tableName = self.assembly + "_cre_all"
 
         fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
         fields = ', '.join(["cre.chrom", "cre.start",
@@ -272,10 +269,7 @@ with DELIMITER E'\t'
         start = j.get("coord_start", None)
         stop = j.get("coord_end", None)
 
-        if chrom:
-            tableName = '_'.join([self.assembly, "cre", chrom])
-        else:
-            tableName = '_'.join([self.assembly, "cre"])
+        tableName = self.assembly + "_cre_all"
 
         fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
