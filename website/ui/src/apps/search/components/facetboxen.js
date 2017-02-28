@@ -104,7 +104,8 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     }
     var chromLen = Globals.chromLens[coord_chrom];
     var histBins = Globals.creHistBins[coord_chrom];
-    return panelize("Coordinates",
+    let title = coord_chrom + ":" + coord_start + "-" + coord_end;
+    return panelize("Coordinates: " + title,
                     <RangeFacet
 			title={""}
 			h_data={histBins}
