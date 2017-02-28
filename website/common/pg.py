@@ -115,7 +115,8 @@ class PGsearch:
         whereclauses = [] # self._type_clauses(ct, j["element_type"])
 
         if chrom and start and stop:
-            whereclauses += ["int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
+            whereclauses += ["cre.chrom = '%s'" % chrom,
+                             "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
 
         if ct:
             for assay in [("dnase", "dnase"),
@@ -220,6 +221,7 @@ LIMIT 1000) r
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause)
 
+            print(q)
             curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
