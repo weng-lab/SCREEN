@@ -222,7 +222,7 @@ LIMIT 1000) r
            gtn = self.assembly + "_gene_info",
            whereclause = whereclause)
 
-            eprint(q)
+            #eprint(q)
             curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
@@ -231,8 +231,10 @@ LIMIT 1000) r
 
             # TODO: could be slow......
             curs.execute("""
-SELECT count(0) FROM {tn} AS cre
-{whereclause}""".format(tn = tableName, whereclause = whereclause))
+SELECT count(0)
+FROM {tn} AS cre
+{whereclause}
+""".format(tn = tableName, whereclause = whereclause))
             total = curs.fetchone()[0]
         return {"cres": rows, "total" : total}
 
