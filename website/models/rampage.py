@@ -3,10 +3,14 @@ class Rampage:
         self.assembly = assembly
         self.pgSearch = pgSearch
 
-    def _procees(self, ri, r):
+    def _procees(self, ri, r, idx):
         ret = {}
         ret["gene"] = r["ensemblid_ver"]
         ret["tss"] = r["tss"]
+        ret["tss_sane"] = r["tss"].replace(".", "").replace("_", "")
+        ret["tab_active"] = ""
+        if 0 == idx:
+            ret["tab_active"] = "active"
         ret["chrom"] = r["chrom"]
         ret["start"] = r["start"]
         ret["stop"] = r["stop"]
@@ -26,7 +30,7 @@ class Rampage:
                 "name" : expID }
 
         ret["items"]["all"] = ee
-        return ret
+        return r["tss"], ret
 
     def get(self, coord):
         rampage = self.pgSearch.rampage(coord)
@@ -34,7 +38,8 @@ class Rampage:
             return rampage
 
         ri = self.pgSearch.rampage_info()
-        ret = []
-        for r in rampage:
-            ret.append(self._procees(ri, r))
+        ret = {}
+        for idx, r in enumerate(rampage):
+            tss, info = self._procees(ri, r, idx)
+            ret[tss] = info
         return ret
