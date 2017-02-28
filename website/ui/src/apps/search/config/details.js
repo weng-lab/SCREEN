@@ -236,29 +236,55 @@ class RampageTab extends ReTabBase{
 	    if(0 == data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
-            return data.map((d) => {
-                let title = (
-                    <div className={"container-fluid"} style={{"width": "100%"}} >
-                        <div className={"row"}>
-                            <div className={"col-md-3"}>
-                                <span>{d.tss}</span>
-                            </div>
-                            <div className={"col-md-3"}>
-                                <span><em>{d.gene}</em></span>
-                            </div>
-                            <div className={"col-md-3"}>
-                                <span>{d.chrom}:{d.start}-{d.stop}</span>
-                            </div>
-                        </div>
-                    </div>);
 
-                return (
-                    <div>
-		        {title}
-		        {React.createElement(HorizontalBars,
-                                             {...d, width: 800, barheight: "15"})}
-	            </div>);
-            });
+            let pills = (
+                <ul className={"nav nav-pills nav-stacked col-md-3"}>
+                    {Object.keys(data).map((tss) => {
+                         let d = data[tss];
+                         return (
+                             <li className={d["tab_active"]}>
+                                 <a href={"#" + d["tss_sane"]}
+                                    data-toggle={"pill"}>{tss}
+                                 </a>
+                             </li>);
+                     })}
+                </ul>);
+
+            let content = (
+                <div className={"tab-content col-md-9"}>
+                    {Object.keys(data).map((tss) => {
+                         let d = data[tss];
+                         let title = (
+                             <div className={"container-fluid"}
+                                  style={{"width": "100%"}} >
+                                 <div className={"row"}>
+                                     <div className={"col-md-3"}>
+                                         <span>{d.tss}</span>
+                                     </div>
+                                     <div className={"col-md-3"}>
+                                         <span><em>{d.gene}</em></span>
+                                     </div>
+                                     <div className={"col-md-3"}>
+                                         <span>{d.chrom}:{d.start}-{d.stop}</span>
+                                     </div>
+                                 </div>
+                             </div>);
+                         return (
+                             <div className={"tab-pane " + d["tab_active"]}
+                                  id={d["tss_sane"]}>
+		            {title}
+		                 {React.createElement(HorizontalBars,
+                                                      {...d, width: 800,
+                                                       barheight: "15"})}
+                             </div>);
+                     })}
+                </div>);
+
+            return (
+                <div className={"container"} style={{paddingTop: "10px"}}>
+                {pills}
+                {content}
+        </div>);
         }
     }
 }
