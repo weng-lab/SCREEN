@@ -23,7 +23,7 @@ class CreateIndices:
     def vac(self):
         with db_connect_single(os.path.realpath(__file__)) as conn:
             vacumnAnalyze(conn, self.tableName, [])
-            
+
     def run(self):
         tn = self.tableName
         with db_connect_single(os.path.realpath(__file__)) as conn:
