@@ -9,23 +9,16 @@ class HorizontalBars extends React.Component {
 		    <div className="row">
 		        <div className="col-md-4">
 		            Choose sort order:&nbsp;
-		            <select ref="sortorder" defaultValue={"byExpressionTPM"}
+		            <select ref="sortorder" defaultValue={"all"}
 		                    onChange={() => {this.componentDidUpdate()}}>
-		                <option value="byExpressionTPM">by expression &#40;TPM&#41;</option>
-		                <option value="byExpressionFPKM">by expression &#40;FPKM&#41;</option>
-		                <option value="byTissue">by tissue</option>
-		                <option value="byTissueMaxTPM">by tissue max &#40;TPM&#41;</option>
-		                <option value="byTissueMaxFPKM">by tissue max &#40;FPKM&#41;</option>
+		                <option value="all">all</option>
 		            </select>
 		        </div>
 		        <div className="col-md-4">
 		            Data:&nbsp;
-		            <select ref="datascale" defaultValue={"logTPM"}
+		            <select ref="datascale" defaultValue={"counts"}
 		                    onChange={() => {this.componentDidUpdate()}}>
-		                <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
-		                <option value="rawTPM">TPM</option>
-		                <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
-		                <option value="rawFPKM">FPKM</option>
+		                <option value="counts">counts</option>
 		            </select>
 		        </div>
 		    </div>
@@ -63,7 +56,6 @@ class HorizontalBars extends React.Component {
 	};
 	var subName_f = (d) => (d["cellType"]);
 
-        console.log("items", items);
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
 	});

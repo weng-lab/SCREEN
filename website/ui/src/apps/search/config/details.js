@@ -88,7 +88,7 @@ class ReTabBase extends React.Component{
 	//console.log("not updating", this.key);
 	return false;
     }
-    
+
     componentWillReceiveProps(nextProps){
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){
@@ -236,11 +236,29 @@ class RampageTab extends ReTabBase{
 	    if(0 == data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
-            return (<div>
-		<h2><em>{}</em></h2>
-		{React.createElement(HorizontalBars,
-                                     {...data, width: 800, barheight: "15"})}
-	    </div>);
+            return data.map((d) => {
+                let title = (
+                    <div className={"container-fluid"} style={{"width": "100%"}} >
+                        <div className={"row"}>
+                            <div className={"col-md-3"}>
+                                <span>{d.tss}</span>
+                            </div>
+                            <div className={"col-md-3"}>
+                                <span><em>{d.gene}</em></span>
+                            </div>
+                            <div className={"col-md-3"}>
+                                <span>{d.chrom}:{d.start}-{d.stop}</span>
+                            </div>
+                        </div>
+                    </div>);
+
+                return (
+                    <div>
+		        {title}
+		        {React.createElement(HorizontalBars,
+                                             {...d, width: 800, barheight: "15"})}
+	            </div>);
+            });
         }
     }
 }

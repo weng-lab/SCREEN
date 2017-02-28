@@ -774,6 +774,21 @@ AND int4range(start, stop) && int4range(%s, %s)
             ret.append(nr)
         return ret
 
+    def rampage_info(self):
+        q = """
+SELECT expid, biosample_summary, biosample_term_name
+FROM {tn}
+""".format(tn = self.assembly + "_rampage_info")
+
+        with getcursor(self.pg.DBCONN, "rampge_info") as curs:
+            curs.execute(q)
+            rows = curs.fetchall()
+        ret = {}
+        for r in rows:
+            ret[r[0]] = {"bs" : r[1],
+                         "btn" : r[2]}
+        return ret
+
     def geBiosampleTypes(self):
         q = """
 SELECT DISTINCT(biosample_type)
