@@ -69,7 +69,7 @@ class TableWithCart extends React.Component {
     clearCart() {
 	this.props.actions.clearCart();
     }
-    
+
     downloadBed() {
 	var jq = this.props.jq;
 
