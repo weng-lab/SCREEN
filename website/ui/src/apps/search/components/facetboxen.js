@@ -36,7 +36,7 @@ const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
 const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 
 const accessionsBox = ({accessions, actions}) => {
-    if(0 == accessions.length){
+    if(0 === accessions.length){
         return (<div />);
     }
     return panelize("Accessions",
@@ -78,7 +78,7 @@ const cellTypesBox = ({cellType, actions}) => {
 			friendlySelectionLookup={make_ct_friendly}
 			onTdClick={(value, td, cellObj) => {
 				if(td){
-				    if (td.className.indexOf("dcc") == -1) {
+				    if (td.className.indexOf("dcc") === -1) {
 					actions.setCellType(value);
 				    }
 				} else {
@@ -99,7 +99,7 @@ const chromBox = ({coord_chrom, actions}) => {
 }
 
 const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
-    if(null == coord_chrom){
+    if(!coord_chrom){
         return (<div />);
     }
     var chromLen = Globals.chromLens[coord_chrom];
@@ -227,7 +227,8 @@ class FacetBoxen extends React.Component {
                         (pp.cellType === np.cellType) &&
                         (pp.coord_chrom === np.coord_chrom) &&
                         (pp.coord_start === np.coord_start) &&
-                        (pp.coord_end === np.coord_end);
+                        (pp.coord_end === np.coord_end) &&
+                        (pp.rfacets === np.rfacets);
         return !unchanged;
     }
 
