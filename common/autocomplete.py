@@ -36,7 +36,6 @@ class Autocompleter:
         if not uq:
             return []
 
-        tableName = self.assembly + "_autocomplete"
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
             # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
             curs.execute("""
@@ -44,7 +43,7 @@ SELECT DISTINCT(oname)
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 10
-            """.format(tn = tableName), (uq,))
+            """.format(tn = self.assembly + "_autocomplete"), (uq,))
             r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (uq, self.assembly))
