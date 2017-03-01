@@ -77,7 +77,7 @@ class TabMain extends React.Component {
                 <div className="row">
                     <div className="col-md-8">
                         You may launch SCREEN using the search box below or browse a curated list of
-			SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
+			SNPs from the NHGRI-EBI Genome Wide Association Study (GWAS) catalog to annotate genetic variants using cREs.
                     </div>
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
@@ -108,10 +108,10 @@ class TabMain extends React.Component {
 
 	    <div id={"mainButtonGroup"}>
 		<a className={"btn btn-primary btn-lg mainButtonHg19"}
-                   onClick={this.searchHg19} role={"button"}>Search hg19</a>
+                   onClick={this.searchHg19} role={"button"}>Search human<br /><small>(hg19)</small></a>
 		{" "}
 		<a className={"btn btn-success btn-lg mainButtonMm10"}
-                   onClick={this.searchMm10} role={"button"}>Search mm10</a>
+                   onClick={this.searchMm10} role={"button"}>Search mouse<br /><small>(mm10)</small></a>
 		<br />
 		<br />
 		<i>{examples}</i>
