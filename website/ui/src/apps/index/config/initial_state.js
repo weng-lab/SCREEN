@@ -1,7 +1,7 @@
-import MainTabsConfig from './tabs/maintabs_config'
+import MainTabsConfig from '../config/maintabs_config'
 
 const initialState = () => ({
-    maintabs: MainTabConfig(),
+    maintabs: MainTabsConfig(),
     maintabs_active: "results",
     maintabs_visible: true
 });
