@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions';
+import {tabPanelize} from '../../../common/utility'
 
 class TabMain extends React.Component {
     constructor(props) {
@@ -159,30 +160,31 @@ class TabMain extends React.Component {
     }
 
     render() {
-	return (<div>
+	return (tabPanelize(
+            <div>
 
-	    <div className={"row vertical-align"}>
-		<div className={"col-md-6"}>
-		    {this.logo()}
-		</div>
-		<div className={"col-md-6"}>
-		    <div className={"jumbotron"} id={"mainDesc"}>
-		        {this.textBox()}
+	        <div className={"row vertical-align"}>
+		    <div className={"col-md-6"}>
+		        {this.logo()}
 		    </div>
-		</div>
-	    </div>
+		    <div className={"col-md-6"}>
+		        <div className={"jumbotron"} id={"mainDesc"}>
+		            {this.textBox()}
+		        </div>
+		    </div>
+	        </div>
 
-	    <div className={"row"}>
-		<div className={"col-md-12 text-center"}>
-		    <span className={"mainPageErr"}>
-		        {this.state.userQueryErr}
-		    </span>
-		    <br />
-		    {this.searchBox()}
-		</div>
-	    </div>
+	        <div className={"row"}>
+		    <div className={"col-md-12 text-center"}>
+		        <span className={"mainPageErr"}>
+		            {this.state.userQueryErr}
+		        </span>
+		        <br />
+		        {this.searchBox()}
+		    </div>
+	        </div>
 
-	</div>);
+	    </div>));
     }
 }
 

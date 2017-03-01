@@ -1,8 +1,10 @@
 import React from 'react'
 
+import {tabPanelize} from '../../../common/utility'
+
 class TabTutorial extends React.Component {
     render() {
-        return (
+        return (tabPanelize(
             <div>
                 <h2>Tutorials</h2>
                 <h3>Main Search</h3>
@@ -16,7 +18,7 @@ class TabTutorial extends React.Component {
                         src="https://www.youtube.com/embed/Vs6NQRKMAdM"
                         frameborder="0" allowfullscreen>
                 </iframe>
-	    </div>);
+	    </div>));
     }
 }
 
