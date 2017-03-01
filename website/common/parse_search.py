@@ -62,14 +62,17 @@ class ParseSearch:
             if not dist:
                 return """
 This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
+To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
+""".format(q=gene, assembly=self.assembly)
             return """
 This search is showing candidate promoters located between the first and last TSS's of {q} and up to {d} upstream.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly, d=dist)
+To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
+""".format(q=gene, assembly=self.assembly, d=dist)
         dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
         return """
 This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.""".format(q=gene, assembly=self.assembly, dists=dists)
+To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.
+""".format(q=gene, assembly=self.assembly, dists=dists)
 
     def _try_find_celltype(self, s):
         pass
@@ -81,17 +84,22 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+", x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[2]))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(p[0].replace("x", "X").replace("y", "Y"),
+                              p[1], p[2]))
         for x in _p:
             r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(p[0].replace("x", "X").replace("y", "Y"),
+                              p[1], int(p[1]) + 1))
         for x in _p:
             r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
             if r:
                 c = r.group(0).replace("x", "X").replace("y", "Y")
-                return (s.replace(r.group(0), "").strip(), Coord(c, 0, chrom_lengths[self.assembly][c]))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(c, 0, chrom_lengths[self.assembly][c]))
         return (s, None)
 
 
