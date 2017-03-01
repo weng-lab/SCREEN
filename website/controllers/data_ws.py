@@ -102,6 +102,10 @@ class DataWebService:
         results = self.pgSearch.creTable(j, chrom,
                                          j.get("coord_start", None),
                                          j.get("coord_end", None))
+        lookup = self.cache.geneIDsToApprovedSymbol
+        for r in results["cres"]:
+            r["genesallpc"] = [[lookup[gid] for gid in r["gene_all_id"][:3]],
+                               [lookup[gid] for gid in r["gene_pc_id"][:3]]]
         if "cellType" in j and j["cellType"]:
             results["rfacets"] = self.pgSearch._rfacets_active(j)
         else:
