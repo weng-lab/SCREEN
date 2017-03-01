@@ -33,8 +33,9 @@ class CreateIndices:
                 makeIndexRev(curs, tn, ["maxz", "enhancerMaxz",
                                          "promoterMaxz"])
                 conn.commit()
-                for col in self.zscore_cols:
-                    makeIndexArr(curs, tn, col, conn)
+                if 0:
+                    for col in self.zscore_cols:
+                        makeIndexArr(curs, tn, col, conn)
 
 def parse_args():
     parser = argparse.ArgumentParser()
