@@ -59,16 +59,17 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
             else:
                 _c = row[6:9]
             c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5], _c[0], _c[1], _c[2])
-            names.append(row[0].lower() + "\t" + c + "\t" + row[0] + "\t1\t" + str(row[9]))
-            names.append(row[1].lower() + "\t" + c + "\t" + row[1] + "\t1\t" + str(row[9]))
+            names.append('\t'.join([row[0].lower(), c, row[0], "1", str(row[9])]))
+            names.append('\t'.join([row[1].lower(), c, row[1], "1", str(row[9])]))
+
             if row[2]:
                 for k, v in row[2].iteritems():
                     if '|' in v:
                         for e in v.split('|'):
                             if e:
-                                names.append(e.lower() + "\t" + c + "\t" + v + "\t1\t" + str(row[9]))
+                                names.append('\t'.join([e.lower(), c, e, "1", str(row[9])]))
                     else:
-                        names.append(v.lower() + "\t" + c + "\t" + v + "\t1\t" + str(row[9]))
+                        names.append('\t'.join([v.lower(), c, v, "1", str(row[9])]))
         return names
 
     def _save(self, names):
