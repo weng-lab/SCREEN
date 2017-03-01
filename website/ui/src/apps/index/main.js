@@ -10,20 +10,6 @@ import reducers from './reducers'
 import initialState from './config/initial_state'
 
 class IndexPage extends React.Component {
-    tabTitle(href, title, cn){
-	return (
-	    <li className={cn}>
-		<a  href={"#" + href} data-toggle={"tab"}>{title}</a>
-	    </li>);
-    }
-
-    tabContent(href, content, cn){
-	return (
-	    <div className={"tab-pane " + cn} id={href}>
-		{tabPanelize(content)}
-	    </div>);
-    }
-
     footer() {
 	return (
 	    <div id="footer">
@@ -46,10 +32,6 @@ class IndexPage extends React.Component {
             </div>);
     }
 
-    tabs(){
-	return (<MainTabs />);
-    }
-
     render() {
 	// const loggerMiddleware = createLogger();
 
@@ -63,7 +45,7 @@ class IndexPage extends React.Component {
 	    <Provider store={store}>
 		<div>
 		    {this.title()}
-		    {this.tabs()}
+	            <MainTabs />
 		    {this.footer()}
 		</div>
 	    </Provider>);

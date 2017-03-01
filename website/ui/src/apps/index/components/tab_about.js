@@ -1,6 +1,7 @@
 import React from 'react'
 
 import * as Para from './tab_about_paragraphs';
+import {tabPanelize} from '../../../common/utility'
 
 class TabAbout extends React.Component {
     render() {
@@ -68,10 +69,10 @@ class TabAbout extends React.Component {
 	        </div>
             </div>);
 
-        return (
+        return (tabPanelize(
             <div>
                 {content}
-            </div>);
+            </div>));
     }
 }
 
