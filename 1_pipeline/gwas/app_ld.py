@@ -31,4 +31,18 @@ WHERE snp IN %s
         
     @cherrypy.expose
     def snp_coord(self, *args, **kwargs):
-        return "snp_coord"
+        assembly = args[0]
+        snps = args[1].split(',')
+        tableName = assembly + "_snps"
+        q = """
+SELECT chrom, start, stop, snp
+FROM {tn}
+WHERE snp IN %s
+""".format(tn = tableName)
+        with getcursor(self.pg.DBCONN, "pg") as curs:
+            curs.execute(q, (tuple(snps),))
+            rows = curs.fetchall()
+        ret = []
+        for r in rows:
+            ret.append('\t'.join([str(x) for x in r]))
+        return '\n'.join(ret)
