@@ -90,7 +90,7 @@ class CachedObjects:
         return self.assaymap[assay][ct]
 
 def main():
-    DBCONN = db_connect(os.path.realpath(__file__), True)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     ps = PostgresWrapper(DBCONN)
     cache = CachedObjects(ps, "mm10")
