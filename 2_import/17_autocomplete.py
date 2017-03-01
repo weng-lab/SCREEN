@@ -58,7 +58,8 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
                 _c = row[3:6]
             else:
                 _c = row[6:9]
-            c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5], _c[0], _c[1], _c[2])
+            c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5],
+                                            _c[0], _c[1], _c[2])
             names.append(row[0].lower() + "\t" + c + "\t" + row[0])
             names.append(row[1].lower() + "\t" + c + "\t" + row[1])
             if row[2]:
@@ -66,7 +67,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
                     if '|' in v:
                         for e in v.split('|'):
                             if e:
-                                names.append(e.lower() + "\t" + c + "\t" + v)
+                                names.append(e.lower() + "\t" + c + "\t" + e)
                     else:
                         names.append(v.lower() + "\t" + c + "\t" + v)
         return names
