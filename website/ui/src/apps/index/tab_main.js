@@ -76,7 +76,7 @@ class TabMain extends React.Component {
 
                 <div className="row">
                     <div className="col-md-8">
-                        You may launch SCREEN using the search box below or browse a curated list of 
+                        You may launch SCREEN using the search box below or browse a curated list of
 			SNPs from the NHGRI-EBI GWAS catalog to annotate genetic variants using cREs.
                     </div>
                     <div className="col-md-4">
@@ -105,7 +105,7 @@ class TabMain extends React.Component {
 		<input ref="searchBox" id={"mainSearchbox"}
 		       type={"text"} defaultValue={dv} />
 	    </div>
-	    
+
 	    <div id={"mainButtonGroup"}>
 		<a className={"btn btn-primary btn-lg mainButtonHg19"}
                    onClick={this.searchHg19} role={"button"}>Search hg19</a>
@@ -145,6 +145,8 @@ class TabMain extends React.Component {
 	let sb = $("#mainSearchbox");
 	sb.autocomplete({
 	    source: function (userQuery, callback_f) {
+                // http://stackoverflow.com/a/15977052
+                //let endIdx = sb[0].selectionStart;
 		loadAuto(userQuery.term, callback_f)
 	    },
 	    select: function(event, ui) {
