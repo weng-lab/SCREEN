@@ -3,12 +3,15 @@
 from __future__ import print_function
 import sys, os
 import re
+
 from coord import Coord
+from pg_parse import PGparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession
 from constants import chrom_lengths, chroms
 from dbconnect import db_connect
+from postgres_wrapper import PostgresWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
@@ -19,18 +22,16 @@ def _unpack_tuple_array(a):
 
 class ParseSearch:
     def __init__(self, rawInput, DBCONN, assembly):
-        self.DBCONN = DBCONN
         self.rawInput = rawInput
+
+        self.pg = PostgresWrapper(DBCONN)
+        self.pgParse = PGparse(self.pg, assembly)
 
         self.halfWindow = 7500
         self.userErrMsg = ""
 
         self.assembly = assembly
-        self.chroms = chroms[assembly]
         self._gene_tablename = self.assembly + "_gene_info"
-
-    def _snp_tablename(self, c):
-        return self.assembly + "_snps_" + c
 
     def _sanitize(self):
         # TODO: add more here!
@@ -45,64 +46,11 @@ class ParseSearch:
     def find_gene_in_q(self, q):
         p = q.split(" ")
         for i in xrange(len(p)):
-            r = self._gene_alias_to_coordinates(p[i])
+            r = self.pgParse._gene_alias_to_coordinates(p[i])
             if r:
                 return r
         return None
 
-    def _get_snpcoord(self, s):
-        for chrom in self.chroms:
-            with getcursor(self.DBCONN, "parse_search$_get_snpcoord") as curs:
-                curs.execute("""
-SELECT start, stop
-FROM {tn}
-WHERE name = %s
-""".format(tn = self._snp_tablename(chrom)), (s, ))
-            r = curs.fetchone()
-            if r:
-                return Coord(chrom, r[0], r[1])
-        return None
-
-    def _gene_id_to_symbol(self, _id):
-        with getcursor(self.DBCONN, "parse_search$gene_id_to_symbol") as curs:
-            curs.execute("""
-SELECT gi.approved_symbol
-FROM {assembly}_gene_info gi
-WHERE gi.id = %s
-            """.format(assembly = self.assembly), (_id,))
-            r = curs.fetchone()
-        if not r or not r[0]:
-            return None
-        return r[0]
-
-    def _try_find_gene(self, s, tss = False, tssdist = 0):
-        if type(tssdist) is not int:
-            tssdist = int(tssdist.replace("kb", "")) * 1000
-        p = s.lower().split()
-        interpretation = None
-        with getcursor(self.DBCONN, "parse_search$parse") as curs:
-            for i in xrange(len(p)):
-                s = " ".join(p[:len(p) - i])
-                curs.execute("""
-SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
-similarity(name, %s) AS sm, pointer
-FROM {assembly}_autocomplete
-WHERE name %% %s
-ORDER BY sm DESC
-LIMIT 1
-                """.format(assembly = self.assembly), (s, s))
-                r = curs.fetchall()
-                if r:
-                    interpretation = r[0][0]
-                    pointer = r[0][8]
-                    r = r[0]
-                    if tss:
-                        coord = Coord(r[4], int(r[5]) - tssdist, r[6])
-                    else:
-                        coord = Coord(r[1], int(r[2]) - tssdist, r[3])
-                    same = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
-                    return (interpretation,  coord, s, same, pointer)
-        return (interpretation, None, " ".join(p), False, -1)
 
     def get_genetext(self, gene, tss = False, notss = False, dist=0):
         def orjoin(a):
@@ -146,45 +94,6 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
                 return (s.replace(r.group(0), "").strip(), Coord(c, 0, chrom_lengths[self.assembly][c]))
         return (s, None)
 
-    def has_overlap(self, coord):
-        if not coord: return False
-        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            # TODO: use int4range, and sanitize input
-            curs.execute("""
-SELECT accession
-FROM {tn}
-WHERE maxZ >= 1.64
-AND chrom = %s
-AND %s > start AND %s < stop
-""".format(tn = self.assembly + "_cre_all"),
-                         (coord.chrom, coord.start, coord.end))
-            if curs.fetchone():
-                return True
-        return False
-
-    def _find_celltype(self, q, rev = False):
-        p = q.split()
-        interpretation = None
-        for i in xrange(len(p)):
-            s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
-            with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-                curs.execute("""
-SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm
-FROM {assembly}_rankCellTypeIndexex
-WHERE LOWER(cellType) % '{q}'
-ORDER BY sm DESC
-LIMIT 1
-""".format(assembly=self.assembly, q=s))
-                r = curs.fetchall()
-                if not r:
-                    curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
-                    r = curs.fetchall()
-            if r:
-                if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
-                    k = r[0][0].replace("_", " ")
-                    interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
-                return (" ".join(p[len(p) - i:]) if not rev else " ".join(p[i:]), r[0][0], interpretation)
-        return (q, None, None)
 
     def parse(self, kwargs = None):
         s = self._sanitize().lower()
@@ -228,9 +137,9 @@ LIMIT 1
                     s = s.replace(t, "")
                     continue
                 elif t.startswith("rs"):
-                    coord = self._get_snpcoord(t)
+                    coord = self.pgParse._get_snpcoord(t)
                     s = s.replace(t, "")
-                    if coord and not self.has_overlap(coord):
+                    if coord and not self.pgParse.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
                 elif t.startswith("tssdist"):
@@ -240,15 +149,15 @@ LIMIT 1
             print("could not parse " + s)
 
         if coord is None:
-            interpretation, coord, s, notss, _id = self._try_find_gene(s, usetss, tssdist)
+            interpretation, coord, s, notss, _id = self.pgParse._try_find_gene(s, usetss, tssdist)
             if interpretation:
-                ret["approved_symbol"] = self._gene_id_to_symbol(_id)
+                ret["approved_symbol"] = self.pgParse._gene_id_to_symbol(_id)
                 interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss, tssdist)
 
-        s, cellType, _interpretation = self._find_celltype(s)
+        s, cellType, _interpretation = self.pgParse._find_celltype(s)
 
         if cellType is None:
-            s, cellType, _interpretation = self._find_celltype(s, True)
+            s, cellType, _interpretation = self.pgParse._find_celltype(s, True)
 
         if len(accessions) > 0:
             coord = None
@@ -265,8 +174,6 @@ LIMIT 1
         return ret
 
 def main():
-    from postgres_wrapper import PostgresWrapper
-
     DBCONN = db_connect(os.path.realpath(__file__))
 
     assembly = "mm10"
