@@ -3,7 +3,6 @@ import React from 'react'
 import TabMain from '../components/tab_main'
 import TabAbout from '../components/tab_about'
 import TabTutorial from '../components/tab_tutorial'
-import {tabPanelize} from '../../../common/utility'
 
 import loading from '../../../common/components/loading'
 
