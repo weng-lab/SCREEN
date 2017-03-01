@@ -3,7 +3,7 @@ import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import * as Actions from './main_actions';
+import * as Actions from '../actions';
 
 class TabMain extends React.Component {
     constructor(props) {
