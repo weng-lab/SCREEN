@@ -9,7 +9,7 @@ from constants import chroms, chrom_lengths, paths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
 from get_tss import Genes
-from db_utils import getcursor
+from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
 
@@ -33,11 +33,12 @@ info text);
         with gzip.open(self.fnp) as f:
             cols = ["snp", "info"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
-        print("\tok", self.curs.rowcount)
-        
+        printt("imported", self.curs.rowcount)
+
+        makeIndex(self.curs, tableName, ["snp"])
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
