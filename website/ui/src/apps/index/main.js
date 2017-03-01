@@ -43,11 +43,13 @@ class IndexPage extends React.Component {
 
         return (
 	    <Provider store={store}>
-		<div>
-		    {this.title()}
-	            <MainTabs />
-		    {this.footer()}
-		</div>
+	        <div>
+	            {this.title()}
+	            <MainTabs
+                        mainDivId={"mainTabs"}
+                        tabUlClass={"nav-pills"}/>
+	            {this.footer()}
+	        </div>
 	    </Provider>);
     }
 }
