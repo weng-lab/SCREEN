@@ -17,7 +17,7 @@ from cre_utils import isaccession, isclose, checkChrom
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
-from db_utils import getcursor
+from db_utils import getcursor, timedQuery
 from utils import eprint
 
 class PGsearchWrapper:
@@ -209,22 +209,38 @@ LIMIT 1000) r
 """.format(fields = fields, tn = tableName,
            whereclause = whereclause)
 
-            #eprint(q)
-            curs.execute(q)
+            if 0:
+                timedQuery(curs, q)
+            else:
+                curs.execute(q)
             rows = curs.fetchall()[0][0]
             if not rows:
                 rows = []
-            #print(rows[0] if len(rows) > 0 else "")
 
-            # TODO: could be slow......
-            if 0:
-                curs.execute("""
-                SELECT count(0)
-                FROM {tn} AS cre
-                {whereclause}
-                """.format(tn = tableName, whereclause = whereclause))
-                total = curs.fetchone()[0]
-        return {"cres": rows}
+            total = len(rows)
+            if 1000 == total: # reached query limit
+                total = self._creTableEstimate(curs, tableName, whereclause)
+        return {"cres": rows, "total" : total}
+
+    def _creTableEstimate(self, curs, tableName, whereclause):
+        # estimate count
+        # from https://wiki.postgresql.org/wiki/Count_estimate
+
+        # qoute escape from
+        # http://stackoverflow.com/a/12320729
+        q = '''
+SELECT count_estimate ('
+SELECT accession
+FROM {tn} AS cre
+{wc}
+')
+'''.format(tn = tableName, wc = whereclause.replace("'", "''"))
+        if 0:
+            timedQuery(curs, q)
+        else:
+            curs.execute(q)
+        # http://stackoverflow.com/a/3348866
+        return round(curs.fetchone()[0], -3)
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)

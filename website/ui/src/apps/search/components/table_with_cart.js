@@ -117,10 +117,11 @@ class TableWithCart extends React.Component {
     }
 
     totalText(data){
-        if(1000 === data.length){
-	    return "displaying top " + numberWithCommas(data.length) + " results";
+        if(data.length < this.props.total){
+		return "displaying top " + numberWithCommas(data.length) +
+                " results of ~" + numberWithCommas(this.props.total) + " total";
         }
-        return "found " + data.length + " results";
+        return "found " + this.props.total + " results";
     }
 
     tableFooter(data){
