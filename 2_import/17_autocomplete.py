@@ -37,7 +37,10 @@ WHERE approved_symbol = %s
 """.format(chrom=chrom, assembly=self.assembly))
             r = self.curs.fetchall()
             for row in r:
-                names.append(row[0] + "\t%s\t%d\t%d\t%s\t%d\t%d\t%s\t2\t%d" % (chrom, row[1], row[2], chrom, row[1], row[2], row[0], row[3]))
+                names.append('\t'.join([row[0],
+                                        chrom, str(row[1]), str(row[2]),
+                                        chrom, str(row[1]), str(row[2]),
+                                        row[0], "2", str(row[3])]))
         return names
 
     def _genes(self):
@@ -54,11 +57,11 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         names = []
         for row in rows:
             row = list(row)
-            if not row[6]:
-                _c = row[3:6]
+            if not row[6]: # no tss chrom
+                _c = row[3:6] # gene chrom, start, end
             else:
-                _c = row[6:9]
-            c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5], _c[0], _c[1], _c[2])
+                _c = row[6:9] # tss chrom, start, end
+            c = '\t'.join([row[3], str(row[4]), str(row[5]), _c[0], str(_c[1]), str(_c[2])])
             names.append('\t'.join([row[0].lower(), c, row[0], "1", str(row[9])]))
             names.append('\t'.join([row[1].lower(), c, row[1], "1", str(row[9])]))
 
