@@ -6,13 +6,8 @@ import createLogger from 'redux-logger'
 
 import MainTabs from './components/maintabs'
 
-import TabMain from './tabs/tab_main'
-import TabAbout from './tabs/tab_about'
-import TabTutorial from './tabs/tab_tutorial'
-import {tabPanelize} from '../../common/utility'
-
 import reducers from './reducers'
-import initialState from './initial_state'
+import initialState from './config/initial_state'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
