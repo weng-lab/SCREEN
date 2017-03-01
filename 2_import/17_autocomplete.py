@@ -33,11 +33,11 @@ WHERE approved_symbol = %s
         names = []
         for chrom in chroms[self.assembly]:
             self.curs.execute("""
-SELECT name, start, stop FROM {assembly}_snps_{chrom}
+            SELECT name, start, stop, id FROM {assembly}_snps_{chrom}
 """.format(chrom=chrom, assembly=self.assembly))
             r = self.curs.fetchall()
             for row in r:
-                names.append(row[0] + "\t%s\t%d\t%d\t%s\t%d\t%d\t%s" % (chrom, row[1], row[2], chrom, row[1], row[2], row[0]))
+                names.append(row[0] + "\t%s\t%d\t%d\t%s\t%d\t%d\t%s\t2\t%d" % (chrom, row[1], row[2], chrom, row[1], row[2], row[0], row[3]))
         return names
 
     def _genes(self):
@@ -45,7 +45,7 @@ SELECT name, start, stop FROM {assembly}_snps_{chrom}
         self.curs.execute("""
 SELECT approved_symbol, ensemblid, info,
 g.chrom, g.start, g.stop,
-t.chrom, t.start, t.stop
+t.chrom, t.start, t.stop, g.id
 FROM {assembly}_gene_info AS g
 LEFT JOIN {assembly}_tss_info AS t
 ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
@@ -59,16 +59,16 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
             else:
                 _c = row[6:9]
             c = "%s\t%d\t%d\t%s\t%d\t%d" % (row[3], row[4], row[5], _c[0], _c[1], _c[2])
-            names.append(row[0].lower() + "\t" + c + "\t" + row[0])
-            names.append(row[1].lower() + "\t" + c + "\t" + row[1])
+            names.append(row[0].lower() + "\t" + c + "\t" + row[0] + "\t1\t" + str(row[9]))
+            names.append(row[1].lower() + "\t" + c + "\t" + row[1] + "\t1\t" + str(row[9]))
             if row[2]:
                 for k, v in row[2].iteritems():
                     if '|' in v:
                         for e in v.split('|'):
                             if e:
-                                names.append(e.lower() + "\t" + c + "\t" + v)
+                                names.append(e.lower() + "\t" + c + "\t" + v + "\t1\t" + str(row[9]))
                     else:
-                        names.append(v.lower() + "\t" + c + "\t" + v)
+                        names.append(v.lower() + "\t" + c + "\t" + v + "\t1\t" + str(row[9]))
         return names
 
     def _save(self, names):
@@ -96,11 +96,13 @@ stop INT,
 altchrom TEXT,
 altstart INT,
 altstop INT,
-oname TEXT)
+        oname TEXT,
+        handler INT,
+        pointer INT)
 """.format(tn = self.tableName))
 
         cols = ["name", "chrom", "start", "stop",
-                "altchrom", "altstart", "altstop", "oname"]
+                "altchrom", "altstart", "altstop", "oname", "handler", "pointer"]
         self.curs.copy_from(outF, self.tableName, "\t",
                             columns=cols)
 
