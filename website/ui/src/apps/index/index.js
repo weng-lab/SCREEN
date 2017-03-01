@@ -4,12 +4,12 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 
-import TabMain from './tabs/tab_main';
-import TabAbout from './tabs/tab_about';
-import TabTutorial from './tabs/tab_tutorial';
+import TabMain from './tab_main';
+import TabAbout from './tab_about';
+import TabTutorial from './tab_tutorial';
 import {tabPanelize} from '../../common/utility'
 
-import reducers from './reducers'
+import main_reducers from './main_reducers'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
@@ -18,7 +18,7 @@ class IndexPage extends React.Component {
 		<a  href={"#" + href} data-toggle={"tab"}>{title}</a>
 	    </li>);
     }
-
+    
     tabContent(href, content, cn){
 	return (
 	    <div className={"tab-pane " + cn} id={href}>
@@ -34,7 +34,7 @@ class IndexPage extends React.Component {
 		</center>
 	    </div>);
     }
-
+    
     title() {
         return (
 	    <div className={"container-fluid"}>
@@ -56,7 +56,7 @@ class IndexPage extends React.Component {
 		    {this.tabTitle("about", "About", "")}
 		    {this.tabTitle("tut", "Tutorial", "")}
 		</ul>
-
+		
 		<div className="tab-content clearfix">
 		    {this.tabContent("main", <TabMain />, "active")}
 		    {this.tabContent("about", TabAbout(), "")}
@@ -64,16 +64,16 @@ class IndexPage extends React.Component {
 		</div>
 	    </div>);
     }
-
+    
     render() {
 	const loggerMiddleware = createLogger();
 
-	const store = createStore(reducers,
+	const store = createStore(main_reducers,
 				  {},
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
-
+	
         return (
 	    <Provider store={store}>
 		<div>
