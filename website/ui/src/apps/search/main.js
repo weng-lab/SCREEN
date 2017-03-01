@@ -15,7 +15,7 @@ import initialState from './config/initial_state'
 
 class SearchPage extends React.Component {
     render() {
-	const loggerMiddleware = createLogger();
+	// const loggerMiddleware = createLogger();
 
 	const store = createStore(main_reducers,
 				  initialState(),
@@ -27,29 +27,31 @@ class SearchPage extends React.Component {
 	//console.log(store.getState());
 
         return (
-                <Provider store={store}>
+            <Provider store={store}>
 	        <div>
+		    <nav id="mainNavBar"
+                         className="navbar navbar-default navbar-inverse navbar-main">
+		        <div className="container-fluid" id="navbar-main">
+                            <NavBarApp show_cartimage={true}
+                                       searchbox={SearchBox} />}/>
+                        </div>
+		    </nav>
 
-		<nav id="mainNavBar"
-                     className="navbar navbar-default navbar-inverse navbar-main">
-		<div className="container-fluid" id="navbar-main">
-                <NavBarApp show_cartimage={true} searchbox={SearchBox} />}/>
-                </div>
-		</nav>
+		    <div className="container" style={{width: "100%"}}>
+                        <div className="row" style={{width: "100%"}}>
+                            <div className="col-md-3 nopadding-right"
+                                 id="facets-container">
+                                <FacetBoxen />
+                            </div>
+                            <div className="col-md-9 nopadding-left"
+                                 id="tabs-container">
+                                <MainTabs />
+                            </div>
+                        </div>
 
-		<div className="container" style={{width: "100%"}}>
-                  <div className="row" style={{width: "100%"}}>
-                    <div className="col-md-3 nopadding-right" id="facets-container">
-                    <FacetBoxen />
                     </div>
-                  <div className="col-md-9 nopadding-left" id="tabs-container">
-                     <MainTabs />
-                  </div>
-                </div>
-
-                </div>
 		</div>
-                </Provider>
+            </Provider>
         );
     }
 }
