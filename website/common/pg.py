@@ -230,13 +230,14 @@ LIMIT 1000) r
             #print(rows[0] if len(rows) > 0 else "")
 
             # TODO: could be slow......
-            curs.execute("""
-SELECT count(0)
-FROM {tn} AS cre
-{whereclause}
-""".format(tn = tableName, whereclause = whereclause))
-            total = curs.fetchone()[0]
-        return {"cres": rows, "total" : total}
+            if 0:
+                curs.execute("""
+                SELECT count(0)
+                FROM {tn} AS cre
+                {whereclause}
+                """.format(tn = tableName, whereclause = whereclause))
+                total = curs.fetchone()[0]
+        return {"cres": rows}
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
