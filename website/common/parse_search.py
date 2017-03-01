@@ -8,6 +8,7 @@ from coord import Coord
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession
 from constants import chrom_lengths, chroms
+from dbconnect import db_connect
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
@@ -58,7 +59,8 @@ FROM {tn}
 WHERE name = %s
 """.format(tn = self._snp_tablename(chrom)), (s, ))
             r = curs.fetchone()
-            if r: return Coord(chrom, r[0], r[1])
+            if r:
+                return Coord(chrom, r[0], r[1])
         return None
 
     def _gene_id_to_symbol(self, _id):
@@ -83,10 +85,11 @@ WHERE gi.id = %s
                 s = " ".join(p[:len(p) - i])
                 curs.execute("""
 SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
-                similarity(name, %s) AS sm, pointer
+similarity(name, %s) AS sm, pointer
 FROM {assembly}_autocomplete
 WHERE name %% %s
-ORDER BY sm DESC LIMIT 1
+ORDER BY sm DESC
+LIMIT 1
                 """.format(assembly = self.assembly), (s, s))
                 r = curs.fetchall()
                 if r:
@@ -150,11 +153,13 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             curs.execute("""
 SELECT accession
 FROM {tn}
-WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop
-""".format(tn = self.assembly + "_cre_all",
-           chrom = coord.chrom, start = coord.start,
-           end = coord.end))
-            if curs.fetchone(): return True
+WHERE maxZ >= 1.64
+AND chrom = %s
+AND %s > start AND %s < stop
+""".format(tn = self.assembly + "_cre_all"),
+                         (coord.chrom, coord.start, coord.end))
+            if curs.fetchone():
+                return True
         return False
 
     def _find_celltype(self, q, rev = False):
@@ -258,3 +263,23 @@ LIMIT 1
             ret["coord_end"] = coord.end
         ret["accessions"] = accessions
         return ret
+
+def main():
+    from postgres_wrapper import PostgresWrapper
+
+    DBCONN = db_connect(os.path.realpath(__file__))
+
+    assembly = "mm10"
+    ps = PostgresWrapper(DBCONN)
+
+    ps = ParseSearch("HBB", DBCONN, assembly)
+
+    output = ps.parse()
+    keys = sorted(output.keys())
+    for k in keys:
+        v = output[k]
+        print(k + ':', v)
+    print(ps.parseStr())
+
+if __name__ == '__main__':
+    main()
