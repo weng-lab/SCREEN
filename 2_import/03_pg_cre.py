@@ -80,6 +80,7 @@ $$ language sql immutable;
         """)
 
     def setupEstimateCountFunction(self):
+        # https://wiki.postgresql.org/wiki/Count_estimate
         printt("creating count estimate function")
         self.curs.execute("""
 CREATE OR REPLACE FUNCTION count_estimate(query text) RETURNS INTEGER AS
