@@ -13,26 +13,32 @@ from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
 
-class GWASld:
-    def __init__(self, curs):
+class GWASsnps:
+    def __init__(self, curs, assembly):
         self.curs = curs
-        self.fnp = "/home/mjp/ld/LD_EUR.tsv.gz"
+        self.assembly = assembly
 
     def run(self):
-        tableName = "ld_eur"
+        tableName = self.assembly + "_snps"
         printt("dropping and creating", tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-snp VARCHAR(15),
-info text
+snp varchar(15),
+chrom text,
+start integer,
+stop integer
 );
 """.format(tableName = tableName))
 
-        printt("importing", self.fnp)
-        with gzip.open(self.fnp) as f:
-            cols = ["snp", "info"]
+        fns = {"mm10" : "snps142common.mm10.bed.gz",
+               "hg19" : "snps144common.hg19.bed.gz"}
+        fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
+        
+        printt("importing", fnp)
+        with gzip.open(fnp) as f:
+            cols = ["chrom", "start", "stop", "snp"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
 
@@ -47,9 +53,12 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-    with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-        g = GWASld(curs)
-        g.run()
+
+    assemblies = ["hg19", "mm10"]
+    for assembly in assemblies:
+        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
+            g = GWASsnps(curs, assembly)
+            g.run()
 
     return 0
 
