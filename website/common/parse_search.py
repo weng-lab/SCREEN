@@ -51,7 +51,7 @@ class ParseSearch:
 
     def _get_snpcoord(self, s):
         for chrom in self.chroms:
-            with getcursor(self.DBCONN, "parse_search$ParseSearch::_get_snpcoord") as curs:
+            with getcursor(self.DBCONN, "parse_search$_get_snpcoord") as curs:
                 curs.execute("""
 SELECT start, stop
 FROM {tn}
@@ -62,14 +62,14 @@ WHERE name = %s
         return None
 
     def _gene_alias_to_symbol(self, s):
-        with getcursor(self.DBCONN, "parse_search$ParseSearch::gene_aliases_to_coordinates") as curs:
+        with getcursor(self.DBCONN, "parse_search$gene_alias_to_symbol") as curs:
             curs.execute("""
 SELECT gi.approved_symbol, gi.info
-FROM hg19_gene_info_mv AS mv
-INNER JOIN hg19_gene_info gi
+FROM {assembly}_gene_info_mv AS mv
+INNER JOIN {assembly}_gene_info gi
 ON gi.id = mv.geneid
 WHERE LOWER(%s) = value
-            """.format(tn = self._gene_tablename), (s,))
+            """.format(assembly = self.assembly), (s,))
             r = curs.fetchone()
         if not r or not r[0]:
             return None
@@ -80,7 +80,7 @@ WHERE LOWER(%s) = value
             tssdist = int(tssdist.replace("kb", "")) * 1000
         p = s.lower().split()
         interpretation = None
-        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
+        with getcursor(self.DBCONN, "parse_search$parse") as curs:
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
                 curs.execute("""
