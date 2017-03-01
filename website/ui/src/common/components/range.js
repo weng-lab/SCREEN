@@ -99,6 +99,7 @@ class RangeSlider extends React.Component {
 	this._slider = this.create_range_slider(this.refs.container);
 	this._histogram = this.create_histogram(this.refs.histogram);
 	this._handles = $(this._slider).find(".ui-slider-handle");
+	$(this._handles[1]).css("margin-left", "0px");
     }
 
     onMinChange() {
