@@ -218,7 +218,7 @@ LIMIT 1000) r
                 rows = []
 
             total = len(rows)
-            if 1000 == total: # reached query limit
+            if total >= 1000: # reached query limit
                 total = self._creTableEstimate(curs, tableName, whereclause)
         return {"cres": rows, "total" : total}
 
