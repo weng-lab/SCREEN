@@ -43,7 +43,7 @@ class WebServerConfig:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--port', default=9010, type=int)
+    parser.add_argument('--port', default=9005, type=int)
     return parser.parse_args()
 
 def main():
@@ -60,7 +60,7 @@ def main():
                             'server.socket_port': int(args.port),
                             'server.socket_queue_size': 512,
                             'server.thread_pool': 30,
-                            'log.screen' : False,
+                            'log.screen' : True, #False
                             'log.access_file' : "",
                             'log.error_file' : wsconfig.errorFnp
                             })
