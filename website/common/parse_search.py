@@ -184,17 +184,19 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assembly = "mm10"
+    assembly = "hg19"
     ps = PostgresWrapper(DBCONN)
 
-    ps = ParseSearch("HBB", DBCONN, assembly)
+    for q in ["BAP1", "HBB", "+HBB"]:
+        print("***************", q)
+        ps = ParseSearch(q, DBCONN, assembly)
 
-    output = ps.parse()
-    keys = sorted(output.keys())
-    for k in keys:
-        v = output[k]
-        print(k + ':', v)
-    print(ps.parseStr())
+        output = ps.parse()
+        keys = sorted(output.keys())
+        for k in keys:
+            v = output[k]
+            print(k + ':', v)
+        print(ps.parseStr())
 
 if __name__ == '__main__':
     main()
