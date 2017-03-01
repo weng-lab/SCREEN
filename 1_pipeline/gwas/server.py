@@ -13,7 +13,7 @@ from utils import Utils, AddPath
 
 AddPath(__file__, "../../common")
 from postgres_wrapper import PostgresWrapper
-from dbconnect import db_connect
+from dbconnect import db_connect_db
 
 class WebServerConfig:
     def __init__(self, siteName):
@@ -49,7 +49,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__))
+    DBCONN = db_connect_db(os.path.realpath(__file__), "regelmvizbeta")
     ps = PostgresWrapper(DBCONN)
 
     wsconfig = WebServerConfig("snp")
@@ -60,7 +60,7 @@ def main():
                             'server.socket_port': int(args.port),
                             'server.socket_queue_size': 512,
                             'server.thread_pool': 30,
-                            'log.screen' : True, #False
+                            'log.screen' : False,
                             'log.access_file' : "",
                             'log.error_file' : wsconfig.errorFnp
                             })

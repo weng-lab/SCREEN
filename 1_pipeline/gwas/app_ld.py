@@ -6,16 +6,29 @@ import cherrypy, jinja2, os, sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from templates import Templates
+from db_utils import getcursor
 
 class SnpApp():
-    def __init__(self, args, viewDir, staticDir, ps):
+    def __init__(self, args, viewDir, staticDir, pg):
         self.templates = Templates(viewDir, staticDir)
-        self.ps = ps
+        self.pg = pg
 
     @cherrypy.expose
     def snp_ld(self, *args, **kwargs):
-        return "snp_ld"
-
+        snps = args[0].split(',')
+        q = """
+SELECT snp, info
+FROM ld_eur
+WHERE snp IN %s
+"""
+        with getcursor(self.pg.DBCONN, "pg") as curs:
+            curs.execute(q, (tuple(snps),))
+            rows = curs.fetchall()
+        ret = []
+        for r in rows:
+            ret.append('\t'.join(r))
+        return '\n'.join(ret)
+        
     @cherrypy.expose
     def snp_coord(self, *args, **kwargs):
         return "snp_coord"
