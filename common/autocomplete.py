@@ -20,10 +20,9 @@ class AutocompleterWrapper:
         for i in xrange(len(p)):
             prefix = " ".join(p[:i])
             suffix = " ".join(p[i:])
-            results = list(set(self.acs["hg19"].get_suggestions(suffix) +
-                               self.acs["mm10"].get_suggestions(suffix)))
+            results = self.acs["hg19"].get_suggestions(suffix) + self.acs["mm10"].get_suggestions(suffix)
             if len(results) > 0:
-                results = [prefix + " " + x for x in results if "|" not in x]
+                results = sorted([prefix + " " + x for x in results])
                 break
         return results
 
@@ -41,7 +40,7 @@ class Autocompleter:
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
             # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
             curs.execute("""
-SELECT oname 
+SELECT DISTINCT(oname)
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 10
@@ -49,5 +48,6 @@ LIMIT 10
             r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (uq, self.assembly))
-        return [] if not r else [x[0] for x in r]
+            return []
+        return [x[0] for x in r]
 
