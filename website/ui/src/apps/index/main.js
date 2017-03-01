@@ -47,24 +47,11 @@ class IndexPage extends React.Component {
     }
 
     tabs(){
-	return (
-	    <div id="mainTabs" className="container">
-		<ul className="nav nav-pills">
-		    {this.tabTitle("main", "Overview", "active")}
-		    {this.tabTitle("about", "About", "")}
-		    {this.tabTitle("tut", "Tutorial", "")}
-		</ul>
-
-		<div className="tab-content clearfix">
-		    {this.tabContent("main", <TabMain />, "active")}
-		    {this.tabContent("about", TabAbout(), "")}
-		    {this.tabContent("tut", TabTutorial(), "")}
-		</div>
-	    </div>);
+	return (<MainTabs />);
     }
 
     render() {
-	const loggerMiddleware = createLogger();
+	// const loggerMiddleware = createLogger();
 
 	const store = createStore(reducers,
 				  initialState(),
