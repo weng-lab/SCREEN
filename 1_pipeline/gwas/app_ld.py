@@ -14,8 +14,8 @@ class SnpApp():
 
     @cherrypy.expose
     def snp_ld(self, *args, **kwargs):
-        return []
+        return "snp_ld"
 
     @cherrypy.expose
     def snp_coord(self, *args, **kwargs):
-        return []
+        return "snp_coord"
