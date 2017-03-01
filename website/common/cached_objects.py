@@ -55,6 +55,8 @@ class CachedObjects:
 
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
 
+        self.geneIDsToApprovedSymbol = self.pgSearch.geneIDsToApprovedSymbol()
+
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')

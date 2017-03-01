@@ -194,7 +194,7 @@ class PGsearch:
             "accession", "maxZ",
             "cre.chrom", "cre.start",
             "cre.stop - cre.start AS len",
-            "ARRAY[ARRAY[infoAll1.approved_symbol, infoAll2.approved_symbol, infoAll3.approved_symbol], ARRAY[infoPc1.approved_symbol, infoPc2.approved_symbol, infoPc3.approved_symbol] ] AS genesAllPc",
+            "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
             "cre.cre_group"])
 
@@ -203,23 +203,10 @@ class PGsearch:
 SELECT JSON_AGG(r) from(
 SELECT {fields}
 FROM {tn} AS cre
-inner join {gtn} AS infoAll1
-	on cre.gene_all_id[1] = infoAll1.geneid
-inner join {gtn} AS infoAll2
-        on cre.gene_all_id[2] = infoAll2.geneid
-inner join {gtn} AS infoAll3
-        on cre.gene_all_id[3] = infoAll3.geneid
-inner join {gtn} AS infoPc1
-        on cre.gene_pc_id[1] = infoPc1.geneid
-inner join {gtn} AS infoPc2
-        on cre.gene_pc_id[2] = infoPc2.geneid
-inner join {gtn} AS infoPc3
-        on cre.gene_pc_id[3] = infoPc3.geneid
 {whereclause}
 ORDER BY maxz DESC
 LIMIT 1000) r
 """.format(fields = fields, tn = tableName,
-           gtn = self.assembly + "_gene_info",
            whereclause = whereclause)
 
             #eprint(q)
@@ -805,3 +792,14 @@ ORDER BY 1
             curs.execute(q)
             rows = curs.fetchall()
         return [r[0] for r in rows]
+
+    def geneIDsToApprovedSymbol(self):
+        q = """
+SELECT geneid, approved_symbol
+FROM {gtn}
+ORDER BY 1
+""".format(gtn = self.assembly + "_gene_info")
+        with getcursor(self.pg.DBCONN, "pg::geneIDsToApprovedSymbol") as curs:
+            curs.execute(q)
+            rows = curs.fetchall()
+        return {r[0] : r[1] for r in rows}
