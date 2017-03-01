@@ -4,15 +4,12 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 
-import MainTabs from './components/maintabs'
-
-import TabMain from './tabs/tab_main'
-import TabAbout from './tabs/tab_about'
-import TabTutorial from './tabs/tab_tutorial'
+import TabMain from './tabs/tab_main';
+import TabAbout from './tabs/tab_about';
+import TabTutorial from './tabs/tab_tutorial';
 import {tabPanelize} from '../../common/utility'
 
 import reducers from './reducers'
-import initialState from './initial_state'
 
 class IndexPage extends React.Component {
     tabTitle(href, title, cn){
@@ -72,7 +69,7 @@ class IndexPage extends React.Component {
 	const loggerMiddleware = createLogger();
 
 	const store = createStore(reducers,
-				  initialState(),
+				  {},
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
