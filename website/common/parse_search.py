@@ -61,15 +61,13 @@ WHERE name = %s
             if r: return Coord(chrom, r[0], r[1])
         return None
 
-    def _gene_alias_to_symbol(self, s):
-        with getcursor(self.DBCONN, "parse_search$gene_alias_to_symbol") as curs:
+    def _gene_id_to_symbol(self, _id):
+        with getcursor(self.DBCONN, "parse_search$gene_id_to_symbol") as curs:
             curs.execute("""
-SELECT gi.approved_symbol, gi.info
-FROM {assembly}_gene_info_mv AS mv
-INNER JOIN {assembly}_gene_info gi
-ON gi.id = mv.geneid
-WHERE LOWER(%s) = value
-            """.format(assembly = self.assembly), (s,))
+SELECT gi.approved_symbol
+FROM {assembly}_gene_info gi
+WHERE gi.id = %s
+            """.format(assembly = self.assembly), (_id,))
             r = curs.fetchone()
         if not r or not r[0]:
             return None
@@ -85,7 +83,7 @@ WHERE LOWER(%s) = value
                 s = " ".join(p[:len(p) - i])
                 curs.execute("""
 SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
-similarity(name, %s) AS sm
+                similarity(name, %s) AS sm, pointer
 FROM {assembly}_autocomplete
 WHERE name %% %s
 ORDER BY sm DESC LIMIT 1
@@ -93,14 +91,15 @@ ORDER BY sm DESC LIMIT 1
                 r = curs.fetchall()
                 if r:
                     interpretation = r[0][0]
+                    pointer = r[0][8]
                     r = r[0]
                     if tss:
                         coord = Coord(r[4], int(r[5]) - tssdist, r[6])
                     else:
                         coord = Coord(r[1], int(r[2]) - tssdist, r[3])
                     same = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
-                    return (interpretation,  coord, s, same)
-        return (interpretation, None, " ".join(p), False)
+                    return (interpretation,  coord, s, same, pointer)
+        return (interpretation, None, " ".join(p), False, -1)
 
     def get_genetext(self, gene, tss = False, notss = False, dist=0):
         def orjoin(a):
@@ -236,9 +235,9 @@ LIMIT 1
             print("could not parse " + s)
 
         if coord is None:
-            interpretation, coord, s, notss = self._try_find_gene(s, usetss, tssdist)
+            interpretation, coord, s, notss, _id = self._try_find_gene(s, usetss, tssdist)
             if interpretation:
-                ret["approved_symbol"] = self._gene_alias_to_symbol(interpretation)
+                ret["approved_symbol"] = self._gene_id_to_symbol(_id)
                 interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss, tssdist)
 
         s, cellType, _interpretation = self._find_celltype(s)
