@@ -7,7 +7,7 @@ import Search from './apps/search/main';
 import GeneExp from './apps/geneexp/main';
 import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
-import IndexPage from './apps/index/index';
+import IndexPage from './apps/index/main';
 
 //import Tf from './apps/tf/main';
 //<Route path="/comparison/:assembly" component={Comparison} />
