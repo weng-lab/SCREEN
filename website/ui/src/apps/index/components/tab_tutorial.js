@@ -3,6 +3,15 @@ import React from 'react'
 import {tabPanelize} from '../../../common/utility'
 
 class TabTutorial extends React.Component {
+    constructor(props) {
+	super(props);
+        this.key = "tutorial"
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
+    }
+
     render() {
         return (tabPanelize(
             <div>
