@@ -20,6 +20,10 @@ from db_utils import getcursor
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
 
+re_coord1 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+")
+re_coord2 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+")
+re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
+
 class ParseSearch:
     def __init__(self, rawInput, DBCONN, assembly):
         self.rawInput = rawInput
@@ -51,13 +55,13 @@ class ParseSearch:
                 return r
         return None
 
-
     def get_genetext(self, gene, tss = False, notss = False, dist=0):
         def orjoin(a):
             return ", ".join(a[:-1]) + " or " + a[-1]
         gene = "<em>%s</em>" % gene
         if notss:
             return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
+
         if tss:
             if not dist:
                 return """
@@ -74,28 +78,25 @@ This search is showing cREs overlapping the gene body of {q}.<br>
 To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.
 """.format(q=gene, assembly=self.assembly, dists=dists)
 
-    def _try_find_celltype(self, s):
-        pass
-
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
             # TODO: precompile re
-            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+", x)
+            r = re_coord1.search(x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
                 return (s.replace(r.group(0), "").strip(),
                         Coord(p[0].replace("x", "X").replace("y", "Y"),
                               p[1], p[2]))
         for x in _p:
-            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
+            r = re_coord2.search(x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
                 return (s.replace(r.group(0), "").strip(),
                         Coord(p[0].replace("x", "X").replace("y", "Y"),
                               p[1], int(p[1]) + 1))
         for x in _p:
-            r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
+            r = re_coord3.search(x)
             if r:
                 c = r.group(0).replace("x", "X").replace("y", "Y")
                 return (s.replace(r.group(0), "").strip(),
@@ -187,7 +188,7 @@ def main():
     assembly = "hg19"
     ps = PostgresWrapper(DBCONN)
 
-    for q in ["BAP1", "HBB", "+HBB"]:
+    for q in ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]:
         print("***************", q)
         ps = ParseSearch(q, DBCONN, assembly)
 
