@@ -9,11 +9,16 @@ import {tabPanelize} from '../../../common/utility'
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
+        this.key = "main"
 	this.userQueries = {}; // cache autocomplete
         this.state = { userQueryErr : null };
 	this.loadSearch = this.loadSearch.bind(this);
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
     }
 
     loadSearch(assembly, userQuery){
