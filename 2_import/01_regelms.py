@@ -44,59 +44,13 @@ def indexProxDistal(curs, assembly):
     tableName = assembly + "_isProximal"
     makeIndex(curs, tableName, ["accession"])
 
-def updateTable(curs, ctn, m):
-    printt("updating max zscore columns", ctn)
-    curs.execute("""
-UPDATE {ctn}
-SET
-dnase_zscore_max      = (select max(x) from unnest(dnase_zscore) x),
-ctcf_only_zscore_max  = (select max(x) from unnest(ctcf_only_zscore) x),
-ctcf_dnase_zscore_max = (select max(x) from unnest(ctcf_dnase_zscore) x),
-h3k27ac_only_zscore_max = (select max(x) from unnest(h3k27ac_only_zscore) x),
-h3k27ac_dnase_zscore_max = (select max(x) from unnest(h3k27ac_dnase_zscore) x),
-h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
-h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
-""".format(ctn = ctn))
-
-    printt("updating isProximal", ctn)
-    curs.execute("""
-UPDATE {ctn} as cre
-SET isProximal = prox.isProximal
-FROM {tnProx} as prox
-WHERE cre.accession = prox.accession;
-""".format(ctn = ctn,
-           tnProx = m["assembly"] + "_isProximal"))
-
-    printt("updating promoterMaxz and enhancerMaxz...")
-    curs.execute("""
-UPDATE {ctn}
-SET promoterMaxz = GREATEST(
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max ),
-
-enhancerMaxz = GREATEST(
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max )
-""".format(ctn = ctn))
-
-    printt("updating maxZ", ctn)
-    curs.execute("""
-UPDATE {ctn}
-SET maxz = GREATEST( dnase_zscore_max,
-ctcf_only_zscore_max ,
-ctcf_dnase_zscore_max ,
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max ,
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max )
-""".format(ctn = ctn))
 
 def dropTables(curs, tableName, m):
     curs.execute("""
     DROP TABLE IF EXISTS {tn} CASCADE;
 """.format(tn = tableName))
 
-def doPartition(curs, tableName, m):
+def makeTable(curs, tableName, m):
     curs.execute("""
     CREATE TABLE {tn}
  (
@@ -133,17 +87,6 @@ def doPartition(curs, tableName, m):
  enhancerMaxz real
  ); """.format(tn = tableName))
 
-    chroms = m["chrs"]
-    for chrom in chroms:
-        ctn = tableName + '_' + chrom
-        printt("drop and create", ctn)
-        curs.execute("""
-DROP TABLE IF EXISTS {ctn} CASCADE;
-CREATE TABLE {ctn} (
-CHECK (chrom = '{chrom}')
-) INHERITS ({tn});
-""".format(tn = tableName, ctn = ctn, chrom = chrom))
-
     d = m["d"]
     subsample = m["subsample"]
     for chrom in chroms:
@@ -152,17 +95,58 @@ CHECK (chrom = '{chrom}')
         if subsample:
             if "chr13" != chrom:
                 fnp = os.path.join(d, "sample", fn)
-        ctn = tableName + '_' + chrom
         cols = DB_COLS
         with gzip.open(fnp) as f:
             printt("importing", fnp, "into", ctn)
-            curs.copy_from(f, ctn, '\t', columns=cols)
+            curs.copy_from(f, tableName, '\t', columns=cols)
 
-def updateTables(curs, tableName, m):
-    d = m["d"]
-    for chrom in chroms:
-        ctn = tableName + '_' + chrom
-        updateTable(curs, ctn, m)
+def updateTables(assembly, curs, tableName):
+    printt("updating max zscore columns", tableName)
+    
+    curs.execute("""
+UPDATE {tableName}
+SET
+dnase_zscore_max      = (select max(x) from unnest(dnase_zscore) x),
+ctcf_only_zscore_max  = (select max(x) from unnest(ctcf_only_zscore) x),
+ctcf_dnase_zscore_max = (select max(x) from unnest(ctcf_dnase_zscore) x),
+h3k27ac_only_zscore_max = (select max(x) from unnest(h3k27ac_only_zscore) x),
+h3k27ac_dnase_zscore_max = (select max(x) from unnest(h3k27ac_dnase_zscore) x),
+h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
+h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
+""".format(tableName = tableName))
+
+    printt("updating isProximal", tableName)
+    curs.execute("""
+UPDATE {tableName} as cre
+SET isProximal = prox.isProximal
+FROM {tnProx} as prox
+WHERE cre.accession = prox.accession;
+""".format(tableName = tableName,
+           tnProx = assembly + "_isProximal")
+
+    printt("updating promoterMaxz and enhancerMaxz...")
+    curs.execute("""
+UPDATE {tableName}
+SET promoterMaxz = GREATEST(
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max ),
+
+enhancerMaxz = GREATEST(
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max )
+""".format(tableName = tableName))
+
+    printt("updating maxZ", tableName)
+    curs.execute("""
+UPDATE {tableName}
+SET maxz = GREATEST( dnase_zscore_max,
+ctcf_only_zscore_max ,
+ctcf_dnase_zscore_max ,
+h3k27ac_only_zscore_max ,
+h3k27ac_dnase_zscore_max ,
+h3k4me3_only_zscore_max ,
+h3k4me3_dnase_zscore_max )
+""".format(tableName = tableName))
 
 def addCol(curs, assembly):
     printt("adding col...")
