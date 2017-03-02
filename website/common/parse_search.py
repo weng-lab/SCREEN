@@ -88,8 +88,8 @@ class ParseSearch:
         s, coord = self._find_coord(s)
         toks = s.split()
         toks = [t.lower() for t in toks]
-        usetss = "tss" in toks or (kwargs and "tss" in kwargs)
-        tssdist = 0
+        useTss = "tss" in toks or (kwargs and "tss" in kwargs)
+        tssDist = 0
         interpretation = None
 
         ret = {"cellType": None,
@@ -99,7 +99,7 @@ class ParseSearch:
                "element_type": None,
                "approved_symbol": None,
                "interpretation": None}
-        if "promoter" in toks or usetss:
+        if "promoter" in toks or useTss:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
@@ -129,13 +129,13 @@ class ParseSearch:
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
                 elif t.startswith("tssdist"):
-                    tssdist = t.split("_")[1]
-                    usetss = True
+                    tssDist = t.split("_")[1]
+                    useTss = True
         except:
             print("could not parse " + s)
 
         if coord is None:
-            genes = self.pgParse._try_find_gene(s, usetss, tssdist)
+            genes = self.pgParse._try_find_gene(s, useTss, tssDist)
             if genes:
                 g = genes[0]
                 interpretation = g.get_genetext()
