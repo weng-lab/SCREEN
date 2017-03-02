@@ -55,29 +55,6 @@ class ParseSearch:
                 return r
         return None
 
-    def get_genetext(self, gene, tss = False, notss = False, dist=0):
-        def orjoin(a):
-            return ", ".join(a[:-1]) + " or " + a[-1]
-        gene = "<em>%s</em>" % gene
-        if notss:
-            return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
-
-        if tss:
-            if not dist:
-                return """
-This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
-""".format(q=gene, assembly=self.assembly)
-            return """
-This search is showing candidate promoters located between the first and last TSS's of {q} and up to {d} upstream.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
-""".format(q=gene, assembly=self.assembly, d=dist)
-        dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
-        return """
-This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.
-""".format(q=gene, assembly=self.assembly, dists=dists)
-
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
@@ -158,10 +135,12 @@ To see candidate promoters located between the first and last TSS's of {q}, <a h
             print("could not parse " + s)
 
         if coord is None:
-            interpretation, coord, s, notss, _id = self.pgParse._try_find_gene(s, usetss, tssdist)
-            if interpretation:
-                ret["approved_symbol"] = self.pgParse._gene_id_to_symbol(_id)
-                interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss, tssdist)
+            genes = self.pgParse._try_find_gene(s, usetss, tssdist)
+            if genes:
+                g = genes[0]
+                interpretation = g.get_genetext()
+                coord = g.coord
+                s = g.s
 
         s, cellType, _interpretation = self.pgParse._find_celltype(s)
 
@@ -188,7 +167,10 @@ def main():
     assembly = "hg19"
     ps = PostgresWrapper(DBCONN)
 
-    for q in ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]:
+    queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
+    queries = ["Actin alpha 1"]
+
+    for q in queries:
         print("***************", q)
         ps = ParseSearch(q, DBCONN, assembly)
 
