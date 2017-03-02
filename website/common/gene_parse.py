@@ -7,17 +7,17 @@ import os
 from coord import Coord
 
 class GeneParse:
-    def __init__(self, assembly, r, s, usetss, tssdist):
+    def __init__(self, assembly, r, s, useTss, tssDist):
         self.assembly = assembly
         self.s = s
-        self.usetss = usetss
-        self.tssdist = tssdist
+        self.useTss = useTss
+        self.tssDist = tssDist
 
         self.interpretation = r[0]
-        if usetss:
-            self.coord = Coord(r[4], int(r[5]) - tssdist, r[6])
+        if useTss:
+            self.coord = Coord(r[4], int(r[5]) - tssDist, r[6])
         else:
-            self.coord = Coord(r[1], int(r[2]) - tssdist, r[3])
+            self.coord = Coord(r[1], int(r[2]) - tssDist, r[3])
         self.noTss = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
         self.approved_symbol = r[9]
 
@@ -34,8 +34,8 @@ class GeneParse:
         if self.noTss:
             return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
 
-        if self.usetss:
-            if not self.tssdist:
+        if self.useTss:
+            if not self.tssDist:
                 return """
 This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
 To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
@@ -44,7 +44,7 @@ To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={a
             return """
 This search is showing candidate promoters located between the first and last TSS's of {q} and up to {d} upstream.<br>
 To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.
-""".format(q=gene, assembly=self.assembly, d=self.tssdist)
+""".format(q=gene, assembly=self.assembly, d=self.tssDist)
 
         dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
 
