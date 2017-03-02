@@ -116,7 +116,12 @@ LIMIT 1
 """.format(assembly=self.assembly, q=s))
                 r = curs.fetchall()
                 if not r:
-                    curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
+                    curs.execute("""
+SELECT cellType
+FROM {assembly}_rankCellTypeIndexex
+WHERE LOWER(cellType) LIKE '{q}%'
+LIMIT 1
+""".format(assembly=self.assembly, q=s))
                     r = curs.fetchall()
             if r:
                 if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
