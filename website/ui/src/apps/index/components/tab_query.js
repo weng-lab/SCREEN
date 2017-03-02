@@ -9,6 +9,11 @@ import {tabPanelize} from '../../../common/utility'
 class TabQuery extends React.Component {
     constructor(props) {
 	super(props);
+        this.key = "query"
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
     }
 
     render() {
