@@ -33,7 +33,7 @@ class CachedObjects:
         self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly
 
-        with Timer("load CachedObjects " + assembly) as t:
+        with Timer("loaded CachedObjects " + assembly) as t:
             self._load()
 
     def _load(self):
