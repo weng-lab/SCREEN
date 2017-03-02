@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import os
 from natsort import natsorted
@@ -8,6 +9,7 @@ import gzip
 
 from coord import Coord
 from pg_common import PGcommon
+from gene_parse import GeneParse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -49,51 +51,45 @@ SELECT gi.approved_symbol
 FROM {assembly}_gene_info gi
 WHERE gi.id = %s
             """.format(assembly = self.assembly), (_id,))
-            r = curs.fetchone()
-        if not r or not r[0]:
+            rows = curs.fetchall()
+        if not rows:
             return None
-        return r[0]
+        return rows[0]
 
-    def _try_find_gene(self, s, tss = False, tssdist = 0):
+    def _try_find_gene(self, s, usetss, tssdist):
         if type(tssdist) is not int:
             tssdist = int(tssdist.replace("kb", "")) * 1000
         p = s.lower().split()
-        interpretation = None
+
         with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
             for i in xrange(len(p)):
                 s = " ".join(p[:len(p) - i])
                 curs.execute("""
-SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
-similarity(name, %s) AS sm, pointer
-FROM {assembly}_autocomplete
-WHERE name %% %s
+SELECT ac.oname, ac.chrom, ac.start, ac.stop,
+ac.altchrom, ac.altstart, ac.altstop,
+similarity(ac.name, %s) AS sm, ac.pointer,
+gi.approved_symbol
+FROM {assembly}_autocomplete ac
+INNER JOIN {assembly}_gene_info gi
+ON gi.id = ac.pointer
+WHERE ac.name %% %s
 ORDER BY sm DESC
-LIMIT 1
                 """.format(assembly = self.assembly), (s, s))
-                r = curs.fetchall()
-                if r:
-                    interpretation = r[0][0]
-                    pointer = r[0][8]
-                    r = r[0]
-                    if tss:
-                        coord = Coord(r[4], int(r[5]) - tssdist, r[6])
-                    else:
-                        coord = Coord(r[1], int(r[2]) - tssdist, r[3])
-                    same = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
-                    return (interpretation,  coord, s, same, pointer)
-        return (interpretation, None, " ".join(p), False, -1)
+                rows = curs.fetchall()
+                if rows:
+                    return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
+        return None
 
     def has_overlap(self, coord):
         if not coord:
             return False
         with getcursor(self.pg.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            # TODO: use int4range, and sanitize input
             curs.execute("""
 SELECT accession
 FROM {tn}
 WHERE maxZ >= 1.64
 AND chrom = %s
-AND %s > start AND %s < stop
+AND int4range(start, stop) && int4range(%s, %s)
 """.format(tn = self.assembly + "_cre_all"),
                          (coord.chrom, coord.start, coord.end))
             if curs.fetchone():
