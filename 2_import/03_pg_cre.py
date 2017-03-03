@@ -22,8 +22,11 @@ class PolishData:
         tableName = src + "_nums"
         printt("dropping and creating", tableName, "...")
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
-    CREATE TABLE {tableName} AS SELECT chrom, count(0) FROM {src} GROUP BY chrom
+DROP TABLE IF EXISTS {tableName};
+CREATE TABLE {tableName}
+AS SELECT chrom, count(0)
+FROM {src}
+GROUP BY chrom
         """.format(tableName = tableName, src=src))
         printt("created", tableName)
 
@@ -50,9 +53,11 @@ SELECT min(start) as left,
 WIDTH_BUCKET(start, 0, {mmax}, {numBins}) as bucket_num,
 COUNT(start) FROM {tn}
 WHERE chrom = %s
-GROUP BY 2 ORDER BY 2""".format(outTableName = outTableName,
-                                chrom = chrom, mmax = mmax, numBins = numBins,
-                                tn = tn), (chrom, ))
+GROUP BY 2
+ORDER BY 2
+""".format(outTableName = outTableName,
+           chrom = chrom, mmax = mmax, numBins = numBins,
+           tn = tn), (chrom, ))
             buckets = [[0,0]] * (numBins+1)
             mmax = 0
             for r in self.curs.fetchall():
