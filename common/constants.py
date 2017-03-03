@@ -27,7 +27,6 @@ stop
 creGroup
 isProximal
 conservation_signals
-conservation_max
 ctcf_zscores
 ctcf_max
 dnase_zscores
