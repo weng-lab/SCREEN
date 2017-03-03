@@ -9,6 +9,9 @@ const reducers = (state, action) => {
             ret.maintabs[action.name].visible = true;
             return ret;
 
+	case Actions.SET_GENES:
+            return {...state, genes: action.genes};
+
     default:
       return state;
   }
