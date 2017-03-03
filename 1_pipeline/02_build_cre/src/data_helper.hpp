@@ -25,10 +25,9 @@
 #include "cpp/gzip_reader.hpp"
 #include "cpp/tictoc.hpp"
 
-#include "mpname.hpp"
+#include "rdhs.hpp"
 #include "paths.hpp"
 #include "signal_files.hpp"
-#include "mpname.hpp"
 #include "peak.hpp"
 #include "peaks.hpp"
 #include "get_data.hpp"
@@ -40,20 +39,20 @@ namespace bib {
   class DataHelper {
     Peaks& peaks_;
 
-    MpNameToGenes tads_;
-    MpNameToGenes allGenes_;
-    MpNameToGenes pcGenes_;
-
-      std::vector<SignalFile> signalFilesConservation_;
-      std::vector<SignalFile> signalFilesDnaseOnly_;
-      std::vector<SignalFile> signalFilesCtcfOnly_;
-      std::vector<SignalFile> signalFilesCtcfDnase_;
-      std::vector<SignalFile> signalFilesH3k27acOnly_;
-      std::vector<SignalFile> signalFilesH3k27acDnase_;
-      std::vector<SignalFile> signalFilesH3k4me3Only_;
-      std::vector<SignalFile> signalFilesH3k4me3Dnase_;
+    AccessionToGenes tads_;
+    AccessionToGenes allGenes_;
+    AccessionToGenes pcGenes_;
 
   public:
+    std::vector<SignalFile> conservation_files_;
+    std::vector<SignalFile> ctcf_files_;
+    std::vector<SignalFile> dnase_files_;
+    std::vector<SignalFile> enhancer_files_;
+    std::vector<SignalFile> h3k27ac_files_;
+    std::vector<SignalFile> h3k4me3_files_;
+    std::vector<SignalFile> insulator_files_;
+    std::vector<SignalFile> promoter_files_;
+
     template <typename T>
     DataHelper(T& paths, Peaks& peaks)
       : peaks_(peaks)
@@ -66,30 +65,22 @@ namespace bib {
       allGenes_ = gd.allGenes();
       pcGenes_ = gd.pcGenes();
 
-      int dnaseCols = 4;
-      if("mm10" == ZiARG_assembly){
-          dnaseCols = 3;
-      }
-
-      int insulatorCols = 6;
-      if("mm10" == ZiARG_assembly){
-          insulatorCols = 5;
-      }
-
-      gd.loadSignals(paths.base_ / "CTCF-List.txt",
-                     signalFilesCtcfOnly_, 3, ONLY);
-      gd.loadSignals(paths.base_ / "DNase-List.txt",
-                     signalFilesDnaseOnly_, dnaseCols, ONLY);
-      gd.loadSignals(paths.base_ / "Enhancer-List.txt",
-                     signalFilesH3k27acDnase_, 5, RANKZSCORE);
-      gd.loadSignals(paths.base_ / "H3K27ac-List.txt",
-                     signalFilesH3k27acOnly_, 3, ONLY);
-      gd.loadSignals(paths.base_ / "H3K4me3-List.txt",
-                     signalFilesH3k4me3Only_, 3, ONLY);
-      gd.loadSignals(paths.base_ / "Insulator-List.txt",
-                     signalFilesCtcfDnase_, insulatorCols, RANKZSCORE);
-      gd.loadSignals(paths.base_ / "Promoter-List.txt",
-                     signalFilesH3k4me3Dnase_,5, RANKZSCORE);
+      gd.loadSignals(paths.raw_ / "conservation-list.txt",
+                     conservation_files_, 1);
+      gd.loadSignals(paths.raw_ / "ctcf-list.txt",
+                     ctcf_files_, 3);
+      gd.loadSignals(paths.raw_ / "dnase-list.txt",
+                     dnase_files_, 3);
+      gd.loadSignals(paths.raw_ / "enhancer-list.txt",
+                     enhancer_files_, 5);
+      gd.loadSignals(paths.raw_ / "h3k27ac-list.txt",
+                     h3k27ac_files_, 3);
+      gd.loadSignals(paths.raw_ / "h3k4me3-list.txt",
+                     h3k4me3_files_, 3);
+      gd.loadSignals(paths.raw_ / "insulator-list.txt",
+                     insulator_files_, 5);
+      gd.loadSignals(paths.raw_ / "promoter-list.txt",
+                     promoter_files_, 5);
 
       peaks_ = gd.peaks();
       peaks_.setAccessions();
@@ -116,69 +107,14 @@ namespace bib {
         p.gene_nearest_pc = pcGenes_.at(mpName);
     }
 
-    template <typename T>
-    void setDnaseOnly(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesDnaseOnly_){
-            if(bib::in(mpName, sf.lines_)){
-                p.dnase_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
+    template <typename V, typename F>
+    void set(const std::string& rDHS, V& v, const F& files) const {
+      for(const auto& sf : files){
+	if(bib::in(rDHS, sf.lines_)){
+	  v.push_back(sf.lines_.at(rDHS));
+	}
+      }
     }
-
-    template <typename T>
-    void setCtcfOnly(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesCtcfOnly_){
-            if(bib::in(mpName, sf.lines_)){
-                p.ctcf_only_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
-    template <typename T>
-    void setCtcfDnase(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesCtcfDnase_){
-            if(bib::in(mpName, sf.lines_)){
-                p.ctcf_dnase_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
-    template <typename T>
-    void setH3k27acOnly(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesH3k27acOnly_){
-            if(bib::in(mpName, sf.lines_)){
-                p.h3k27ac_only_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
-    template <typename T>
-    void setH3k27acDnase(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesH3k27acDnase_){
-            if(bib::in(mpName, sf.lines_)){
-                p.h3k27ac_dnase_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
-    template <typename T>
-    void setH3k4me3Only(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesH3k4me3Only_){
-            if(bib::in(mpName, sf.lines_)){
-                p.h3k4me3_only_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
-    template <typename T>
-    void setH3k4me3Dnase(const std::string& mpName, T& p) const {
-        for(const auto& sf : signalFilesH3k4me3Dnase_){
-            if(bib::in(mpName, sf.lines_)){
-                p.h3k4me3_dnase_zscore.push_back(sf.lines_.at(mpName));
-            }
-        }
-    }
-
   };
 
 } // namespace bib
