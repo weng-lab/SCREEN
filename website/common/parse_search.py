@@ -134,6 +134,7 @@ class ParseSearch:
         except:
             print("could not parse " + s)
 
+        genes = []
         if coord is None:
             genes = self.pgParse._try_find_gene(s, useTss, tssDist)
             if genes:
@@ -152,6 +153,7 @@ class ParseSearch:
             cellType = None
             interpretation = None
 
+        ret["assembly"] = self.assembly
         ret["cellType"] = cellType
         ret["interpretation"] = interpretation
         if coord:
@@ -159,6 +161,8 @@ class ParseSearch:
             ret["coord_start"] = coord.start
             ret["coord_end"] = coord.end
         ret["accessions"] = accessions
+        ret["multipleGenes"] = len(genes) > 0
+        ret["genes"] = [g.toJson() for g in genes]
         return ret
 
 def main():
@@ -168,7 +172,7 @@ def main():
     ps = PostgresWrapper(DBCONN)
 
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
-    queries = ["Actin alpha 1"]
+    queries = ["Actin alpha 1", "HBB"]
 
     for q in queries:
         print("***************", q)
@@ -178,7 +182,11 @@ def main():
         keys = sorted(output.keys())
         for k in keys:
             v = output[k]
-            print(k + ':', v)
+            if "genes" == k:
+                for g in v:
+                    print(g)
+            else:
+                print(k + ':', v)
         print(ps.parseStr())
 
 if __name__ == '__main__':

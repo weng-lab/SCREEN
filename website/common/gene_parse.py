@@ -20,6 +20,16 @@ class GeneParse:
             self.coord = Coord(r[1], int(r[2]) - tssDist, r[3])
         self.noTss = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
         self.approved_symbol = r[9]
+        self.sm = r[7]
+
+    def toJson(self):
+        return {"interpretation" : self.interpretation,
+                "approved_symbol" : self.approved_symbol,
+                "chrom" : self.coord.chrom,
+                "start" : self.coord.start,
+                "stop" : self.coord.end,
+                "sm" : self.sm
+                }
 
     def get_genetext(self):
         if self.approved_symbol:

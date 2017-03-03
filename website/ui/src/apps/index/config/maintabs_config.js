@@ -9,7 +9,7 @@ import loading from '../../../common/components/loading'
 
 import * as Render from '../../../common/renders'
 
-const MainTabConfig = () => {
+const MainTabsConfig = () => {
     return {main : {title: "Overview", visible: true, f: TabMain},
             about : {title: "About", visible: true, f: TabAbout},
             tutorial : {title: "Tutorial", visible: true, f: TabTutorial},
@@ -17,4 +17,4 @@ const MainTabConfig = () => {
     }
 }
 
-export default MainTabConfig;
+export default MainTabsConfig;
