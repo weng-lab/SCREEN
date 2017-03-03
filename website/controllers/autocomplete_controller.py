@@ -39,13 +39,11 @@ class AutocompleteWebService:
         userQuery = j["userQuery"]
 
         p = ParseSearch(userQuery, self.ps.DBCONN, assembly)
-        parsed = p.parse()
-        parsedStr = p.parseStr()
+        ret = p.parse()
+        ret["failed"] = False
 
-        ret = {"globalParsedQuery" : json.dumps(parsed),
-               "failed" : False}
-        if userQuery and not self._haveresults(parsed):
-            ret = {"failed": True}
+        if userQuery and not self._haveresults(ret):
+            ret["failed"] = True
         return ret
 
 

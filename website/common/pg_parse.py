@@ -73,6 +73,10 @@ FROM {assembly}_autocomplete ac
 INNER JOIN {assembly}_gene_info gi
 ON gi.id = ac.pointer
 WHERE ac.name %% %s
+GROUP BY ac.oname, ac.chrom, ac.start, ac.stop,
+ac.altchrom, ac.altstart, ac.altstop, ac.name, ac.pointer,
+gi.approved_symbol
+HAVING count(*) = 1
 ORDER BY sm DESC
                 """.format(assembly = self.assembly), (s, s))
                 rows = curs.fetchall()
