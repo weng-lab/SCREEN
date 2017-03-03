@@ -31,10 +31,12 @@ const TableColumns = () => {
             render: Render.integer
 	}, {
             title: "nearest genes:<br />protein-coding / all", data: "genesallpc",
-	    className: klassCenter + "geneexp", render: Render.geneDeLinks
+	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
+            orderable: false,
 	}, {
 	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),
+            orderable: false,
 	}, {
 	    title: "genome browsers", data: null,
 	    className: klassCenter + "browser",
