@@ -4,9 +4,10 @@ import * as Render from '../renders'
 import ResultsTable from './results_table'
 
 class IntersectingAssay extends React.Component {
-    constructor(props, url) {
+    constructor(props, url, table) {
 	super(props);
         this.url = url;
+        this.table = table;
         this.state = { target: null, isFetching: true, isError: false,
                        jq : null}
         this.loadTarget = this.loadTarget.bind(this);
@@ -69,7 +70,7 @@ class IntersectingAssay extends React.Component {
                              ],
 	                 order: [[0, "asc"]]
                         }
-            details = (<div>
+            details = (<div id={this.table}>
                        <br />
 	               <h4>{table.title}</h4>
                        {React.createElement(ResultsTable,
