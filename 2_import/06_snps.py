@@ -1,73 +1,51 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
-import StringIO
+import os, sys, json, psycopg2, re, argparse, gzip
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
-from constants import chroms
+from constants import chroms, chrom_lengths, paths
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printt
-from db_utils import getcursor
-from files_and_paths import Dirs
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
+from get_tss import Genes
+from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
+from files_and_paths import Dirs, Tools, Genome, Datasets
+from utils import Utils, printWroteNumLines, printt
 
-class SetupSnps:
-    def __init__(self, curs, assembly, sample):
+class GWASsnps:
+    def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.sample = sample
-
-    def setupAndCopy(self, tableName, f):
-        printt("creating table and copying in", tableName)
-
-        self.curs.execute("""
-        DROP TABLE IF EXISTS {tableName};
-
-        CREATE TABLE {tableName}(
-        id serial PRIMARY KEY,
-        start integer,
-        stop integer,
-        name varchar(15)
-    );
-    """.format(tableName=tableName))
-
-        self.curs.copy_from(f, tableName, '\t',
-                          columns=("start", "stop", "name"))
-        printt("ok", self.curs.rowcount)
-
-        self.curs.execute("""
-        CREATE INDEX {tableName}_idx01 ON {tableName}(name);
-    """.format(tableName=tableName))
-        printt("ok index")
 
     def run(self):
+        tableName = self.assembly + "_snps"
+        printt("dropping and creating", tableName)
+        self.curs.execute("""
+DROP TABLE IF EXISTS {tableName};
+CREATE TABLE {tableName}
+(id serial PRIMARY KEY,
+snp varchar(15),
+chrom text,
+start integer,
+stop integer
+);
+""".format(tableName = tableName))
+
         fns = {"mm10" : "snps142common.mm10.bed.gz",
                "hg19" : "snps144common.hg19.bed.gz"}
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
-        if self.sample:
-            fnp = os.path.join(Dirs.dbsnps, "sample", fns[self.assembly])
-        printt("reading", fnp)
-
-        rowsByChrom = {}
-        for chrom in chroms[self.assembly]:
-            rowsByChrom[chrom] = StringIO.StringIO()
-
+        
+        printt("importing", fnp)
         with gzip.open(fnp) as f:
-            for r in f:
-                toks = r.rstrip().split('\t')
-                if toks[0] in rowsByChrom:
-                    rowsByChrom[toks[0]].write('\t'.join(toks[1:]) + '\n')
+            cols = ["chrom", "start", "stop", "snp"]
+            self.curs.copy_from(f, tableName, '\t', columns=cols)
+        printt("imported", self.curs.rowcount)
 
-        for chrom, snps in rowsByChrom.iteritems():
-            tableName = self.assembly + "_snps_" + chrom
-            snps.seek(0)
-            self.setupAndCopy(tableName, snps)
+        makeIndex(self.curs, tableName, ["snp"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -76,10 +54,13 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["mm10", "hg19"]:
-        with getcursor(DBCONN, "main") as curs:
-            ss = SetupSnps(curs, assembly, args.sample)
-            ss.run()
+    assemblies = ["hg19", "mm10"]
+    for assembly in assemblies:
+        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
+            g = GWASsnps(curs, assembly)
+            g.run()
+
+    return 0
 
 if __name__ == '__main__':
     main()
