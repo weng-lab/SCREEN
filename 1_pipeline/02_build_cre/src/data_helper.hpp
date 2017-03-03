@@ -25,10 +25,9 @@
 #include "cpp/gzip_reader.hpp"
 #include "cpp/tictoc.hpp"
 
-#include "mpname.hpp"
+#include "rdhs.hpp"
 #include "paths.hpp"
 #include "signal_files.hpp"
-#include "mpname.hpp"
 #include "peak.hpp"
 #include "peaks.hpp"
 #include "get_data.hpp"
@@ -40,18 +39,18 @@ namespace bib {
   class DataHelper {
     Peaks& peaks_;
 
-    MpNameToGenes tads_;
-    MpNameToGenes allGenes_;
-    MpNameToGenes pcGenes_;
+    AccessionToGenes tads_;
+    AccessionToGenes allGenes_;
+    AccessionToGenes pcGenes_;
 
-      std::vector<SignalFile> signalFilesConservation_;
-      std::vector<SignalFile> signalFilesDnaseOnly_;
-      std::vector<SignalFile> signalFilesCtcfOnly_;
-      std::vector<SignalFile> signalFilesCtcfDnase_;
-      std::vector<SignalFile> signalFilesH3k27acOnly_;
-      std::vector<SignalFile> signalFilesH3k27acDnase_;
-      std::vector<SignalFile> signalFilesH3k4me3Only_;
-      std::vector<SignalFile> signalFilesH3k4me3Dnase_;
+    std::vector<SignalFile> signalFilesConservation_;
+    std::vector<SignalFile> signalFilesDnaseOnly_;
+    std::vector<SignalFile> signalFilesCtcfOnly_;
+    std::vector<SignalFile> signalFilesCtcfDnase_;
+    std::vector<SignalFile> signalFilesH3k27acOnly_;
+    std::vector<SignalFile> signalFilesH3k27acDnase_;
+    std::vector<SignalFile> signalFilesH3k4me3Only_;
+    std::vector<SignalFile> signalFilesH3k4me3Dnase_;
 
   public:
     template <typename T>

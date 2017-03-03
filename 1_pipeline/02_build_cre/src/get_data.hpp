@@ -29,29 +29,36 @@ public:
         }
     }
 
-    // chrY    808996  809318  MP-2173311-100.000000   EE0756098
-    Peaks peaks(){
+  // chr1    842088  842520  EH37D0000193    EH37E1055318    Promoter-like   proximal
+  Peaks peaks(){
         auto lines = bib::files::readStrings(paths_.peaks());
         std::cout << "loading peaks " << paths_.peaks() << std::endl;
 
+	std::unordered_map<std::string, uint32_t> groupLookup {
+	  {"CTCF-only", 1},
+	    {"Enhancer-like", 2},
+	      {"Promoter-like", 3}};
+	
         Peaks ret;
         ret.reserve(lines.size());
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            //auto mpToks = bib::str::split(toks[3], '-');
-            ret.emplace(std::make_pair(toks[4],
+	    ret.emplace(std::make_pair(toks[4],
 				       Peak(toks[0],
 					    std::stoi(toks[1]),
 					    std::stoi(toks[2]),
 					    toks[3],
-					    toks[4])));
+					    toks[4],
+					    groupLookup.at(toks[5]),
+					    "proximal" == toks[6]
+					    )));
 	}
         std::cout << "loaded " << ret.size() << " peaks\n";
         return ret;
     }
 
-    MpNameToGenes tads(){
-        MpNameToGenes ret;
+    AccessionToGenes tads(){
+        AccessionToGenes ret;
 
         auto fnp = paths_.tads();
         if(!bfs::exists(fnp)){
@@ -79,31 +86,30 @@ public:
     }
 
 
-    // 0    1      2      3                   4    5      6      7                     8 9 10
-    // chrY,141692,141850,MP-2173235-3.088310,chrY,206151,207788,ENSMUSG00000101796.1 ,.,+,64302
-    MpNameToGenes allGenes(){
+    auto allGenes(){
         return loadGenes(paths_.allGenes(), "all");
     }
 
-    MpNameToGenes pcGenes(){
+    auto pcGenes(){
         return loadGenes(paths_.pcGenes(), "pc");
     }
 
-    MpNameToGenes loadGenes(bfs::path fnp, std::string typ){
+    // EH37E0327490    ENSG00000257357.1       8277
+    AccessionToGenes loadGenes(bfs::path fnp, std::string typ){
         std::cout << "loading " << typ << " genes " << fnp << std::endl;
         auto lines = bib::files::readStrings(fnp);
 
         std::cout << "found " << lines.size() <<  " lines for " << typ << " genes " << fnp << std::endl;
         uint32_t count{0};
-        MpNameToGenes ret;
+        AccessionToGenes ret;
         ret.reserve(lines.size());
         for(const auto& g : lines){
             auto toks = bib::str::split(g, '\t');
-            std::string ensembl = toks[8];
-            std::string mp = toks[3];
-            bib::string::rtrim(mp);
+            std::string accession = toks[0];
+            bib::string::rtrim(accession);
+            std::string ensembl = toks[1];
             bib::string::rtrim(ensembl);
-            ret[mp].emplace_back(Gene{geneNameToID_.at(ensembl),
+            ret[accession].emplace_back(Gene{geneNameToID_.at(ensembl),
                         std::stoi(toks[10])}); // distance
             ++count;
         }
