@@ -24,16 +24,22 @@ class DB:
 
     def recreate_tables(self):
         with getcursor(self.DBCONN, "DB::recreate_tables") as curs:
-            curs.execute("DROP TABLE IF EXISTS helpkeys")
-            curs.execute("""CREATE TABLE helpkeys
-                            ( id serial PRIMARY KEY,
-                              key text, title text, summary text, link text )""")
+            curs.execute("""
+DROP TABLE IF EXISTS helpkeys;
+CREATE TABLE helpkeys
+( id serial PRIMARY KEY,
+key text,
+title text,
+summary text,
+link text
+)""")
 
     def insert_value(self, key, summary, title, link = ""):
         with getcursor(self.DBCONN, "DB::insert_totals") as curs:
-            curs.execute("""INSERT INTO helpkeys (key, title, summary, link)
-                                         VALUES (%(key)s, %(summary)s, %(title)s, %(link)s)""",
-                         {"key": key, "summary": summary, "title": title, "link": link})
+            curs.execute("""
+INSERT INTO helpkeys (key, title, summary, link)
+VALUES (%s, %s, %s, %s)
+""", (key, summary, title, link))
 
 def parseargs():
     parser = argparse.ArgumentParser(parents = [tools.argparser])

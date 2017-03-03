@@ -154,3 +154,9 @@ export const tabTitle = (c) => {
 };
 
 export const upperCase = (d) => (d.toUpperCase())
+
+export const searchLink = (assembly) => (d) => {
+    let params = jQuery.param({q: d, assembly});
+    let url = "/search/?" + params;
+    return "<a href='" + url + "'>" + d + "</a>";
+}
