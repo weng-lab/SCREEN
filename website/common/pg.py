@@ -400,7 +400,7 @@ ORDER BY 2
 """.format(cre = self.assembly + "_cre_all",
            ti = self.assembly + "_tads_info",
            tads = self.assembly + "_tads")
-            curs.execute(q, (chrom, start, accession, start))
+            curs.execute(q, (start, chrom, accession, start))
             rows = curs.fetchall()
         return [{"accession" : r[0], "distance" : r[1]} for r in rows]
 

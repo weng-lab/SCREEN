@@ -140,7 +140,7 @@ export const NearbyGenomicTable = () => {
 				       "host" : host,
 				       GlobalAssembly});
 	    var url = "/ucsc_trackhub_url_snp";
-	    
+
 	    $.ajax({
 		type: "POST",
 		url: url,
@@ -273,7 +273,7 @@ export const TfIntersectionTable = () => ({
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf },
 	    {title: "# experiments", data: "n",
-	     render: Render.integer }],
+	     render: Render.integerLink("tf") }],
 	bFilter: true,
 	order: [[1, "desc"]]
     },
@@ -285,7 +285,7 @@ export const TfIntersectionTable = () => ({
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
 	    {title: "# experiments", data: "n",
-	     render: Render.integer }],
+	     render: Render.integerLink("histone") }],
 	bFilter: true,
 	order: [[1, "desc"]]
     },
