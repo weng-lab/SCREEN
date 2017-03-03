@@ -66,21 +66,21 @@ namespace bib {
       pcGenes_ = gd.pcGenes();
 
       gd.loadSignals(paths.base_ / "conservation-list.txt",
-                     conservation_files_, 1, ONLY);
+                     conservation_files_, 1);
       gd.loadSignals(paths.base_ / "ctcf-list.txt",
-                     ctcf_files_, 3, ONLY);
+                     ctcf_files_, 3);
       gd.loadSignals(paths.base_ / "dnase-list.txt",
-                     dnase_files_, 3, ONLY);
+                     dnase_files_, 3);
       gd.loadSignals(paths.base_ / "enhancer-list.txt",
-                     enhancer_files_, 5, RANKZSCORE);
+                     enhancer_files_, 5);
       gd.loadSignals(paths.base_ / "h3k27ac-list.txt",
-                     h3k27ac_files_, 3, ONLY);
+                     h3k27ac_files_, 3);
       gd.loadSignals(paths.base_ / "h3k4me3-list.txt",
-                     h3k4me3_files_, 3, ONLY);
+                     h3k4me3_files_, 3);
       gd.loadSignals(paths.base_ / "insulator-list.txt",
-                     insulator_files_, 5, RANKZSCORE);
+                     insulator_files_, 5);
       gd.loadSignals(paths.base_ / "promoter-list.txt",
-                     promoter_files_, 5, RANKZSCORE);
+                     promoter_files_, 5);
 
       peaks_ = gd.peaks();
       peaks_.setAccessions();
