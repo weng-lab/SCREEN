@@ -8,7 +8,7 @@ import IntersectingAssay from '../../../common/components/intersecting_assay'
 
 class IntersectingAssayHistone extends IntersectingAssay {
     constructor(props) {
-	super(props, "/dataws/cre_histone_dcc");
+	super(props, "/dataws/cre_histone_dcc", "histone");
     }
 }
 

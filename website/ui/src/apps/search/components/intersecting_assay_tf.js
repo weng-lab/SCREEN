@@ -8,7 +8,7 @@ import IntersectingAssay from '../../../common/components/intersecting_assay'
 
 class IntersectingAssayTf extends IntersectingAssay {
     constructor(props) {
-	super(props, "/dataws/cre_tf_dcc");
+	super(props, "/dataws/cre_tf_dcc", "tf");
     }
 }
 
