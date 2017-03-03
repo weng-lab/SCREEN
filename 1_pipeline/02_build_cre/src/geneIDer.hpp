@@ -23,10 +23,10 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            if(toks.size() != 11){
+            if(toks.size() != 3){
 	      throw std::runtime_error("invalid length");
             }
-            std::string ensembl = toks[8];
+            std::string ensembl = toks[1];
             bib::string::rtrim(ensembl);
             getGeneID(ensembl);
         }

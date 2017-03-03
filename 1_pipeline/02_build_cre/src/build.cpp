@@ -37,23 +37,23 @@ public:
     }
 
     void processPeak(const DataHelper& d, Peak& p){
-        const std::string& mpName = p.mpName;
+        const std::string& rDHS = p.rDHS;
 
         if("hg19" == ZiARG_assembly){
-            d.setTads(mpName, p);
+            d.setTads(rDHS, p);
         }
 
-        d.setAllGenes(mpName, p);
-        d.setPcGenes(mpName, p);
+        d.setAllGenes(rDHS, p);
+        d.setPcGenes(rDHS, p);
 
-        d.setConservation(mpName, p);
-        d.setDnaseOnly(mpName, p);
-        d.setCtcfOnly(mpName, p);
-        d.setCtcfDnase(mpName, p);
-        d.setH3k27acOnly(mpName, p);
-        d.setH3k27acDnase(mpName, p);
-        d.setH3k4me3Only(mpName, p);
-        d.setH3k4me3Dnase(mpName, p);
+        d.setConservation(rDHS, p);
+        d.setDnaseOnly(rDHS, p);
+        d.setCtcfOnly(rDHS, p);
+        d.setCtcfDnase(rDHS, p);
+        d.setH3k27acOnly(rDHS, p);
+        d.setH3k27acDnase(rDHS, p);
+        d.setH3k4me3Only(rDHS, p);
+        d.setH3k4me3Dnase(rDHS, p);
     }
 
     void dumpToTsv(bfs::path d){
@@ -79,17 +79,20 @@ public:
             {
                 std::ofstream out(fnp.string(), std::ios::out | std::ios::trunc);
                 std::vector<std::string> header {
-		  "accession",
-		    "mpName",
+		  "accession", 
+		    "rDHS",
 		    "chrom", "start", "end",
-		    "conservation_signal",
-		    "dnase_zscore",
-		    "ctcf_only_zscore",
-		    "ctcf_dnase_zscore",
-		    "h3k27ac_only_zscore",
-		    "h3k27ac_dnase_zscore",
-		    "h3k4me3_only_zscore",
-		    "h3k4me3_dnase_zscore",
+		    "creGroup",
+		    "isProximal",
+		    "conservation_signals", "conservation_max",
+		    "ctcf_zscores", "ctcf_max",
+		    "dnase_zscores", "dnase_max",
+		    "enhancer_zscores", "enhancer_max",
+		    "h3k27ac_zscores", "h3k27ac_max",
+		    "h3k4me3_zscores", "h3k4me3_max",
+		    "insulator_zscores", "insulator_max",
+		    "promoter_zscores", "promoter_max",
+		    "maxz",
 		    "gene_all_distance", "gene_all_name",
 		    "gene_pc_distance", "gene_pc_name",
 		    "tads"};

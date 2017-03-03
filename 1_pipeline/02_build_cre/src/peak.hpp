@@ -20,34 +20,40 @@ S& join(S& s, const C& vec, const std::string delim){
 
 class Peak {
 public:
-    std::string chrom;
-    int32_t start;
-    int32_t end;
-    std::string mpName;
-    std::string accession;
 
-    std::vector<Gene> gene_nearest_all;
-    std::vector<Gene> gene_nearest_pc;
-    std::vector<Gene> tads;
+  std::string chrom;
+  int32_t start;
+  int32_t end;
+  std::string rDHS;
+  std::string accession;
+  uint32_t creGroup;
+  bool isProximal;
+  
+  std::vector<Gene> gene_nearest_all;
+  std::vector<Gene> gene_nearest_pc;
+  std::vector<Gene> tads;
 
-    std::vector<float> conservation_signal;
-    std::vector<float> dnase_zscore;
-    std::vector<float> ctcf_only_zscore;
-    std::vector<float> ctcf_dnase_zscore;
-    std::vector<float> h3k27ac_only_zscore;
-    std::vector<float> h3k27ac_dnase_zscore;
-    std::vector<float> h3k4me3_only_zscore;
-    std::vector<float> h3k4me3_dnase_zscore;
+  std::vector<float> conservation_signal;
+  std::vector<float> dnase_zscore;
+  std::vector<float> ctcf_only_zscore;
+  std::vector<float> ctcf_dnase_zscore;
+  std::vector<float> h3k27ac_only_zscore;
+  std::vector<float> h3k27ac_dnase_zscore;
+  std::vector<float> h3k4me3_only_zscore;
+  std::vector<float> h3k4me3_dnase_zscore;
 
     Peak() {}
   
     Peak(const std::string& chrom, const int32_t start, const int32_t end,
-	 const std::string& mpName, const std::string& accession)
+	 const std::string& rDHS, const std::string& accession,
+	 const uint32_t creGroup, const bool isProximal)
       : chrom(chrom)
       , start(start)
       , end(end)
-      , mpName(mpName)
+      , rDHS(rDHS)
       , accession(accession)
+      , creGroup(creGroup)
+      , isProximal(isProximal)
     {}
     
     template <typename S, typename T>
@@ -89,10 +95,12 @@ public:
         std::stringstream s;
 
         s << accession << d
-          << mpName << d
+          << rDHS << d
           << chrom << d
           << start << d
-          << end;
+          << end << d
+	  << creGroup << d
+	  << isProximal;
 
         s << std::setprecision(4);
 
@@ -116,10 +124,12 @@ public:
         static const char d = '\t';
 
         s << p.accession << d
-          << p.mpName << d
+          << p.rDHS << d
           << p.chrom << d
           << p.start << d
-          << p.end << "\n";
+          << p.end << d
+	  << p.creGroup << d
+	  << p.isProximal << "\n";
 
         s << std::setprecision(4);
 
