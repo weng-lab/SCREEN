@@ -120,10 +120,10 @@ class TabMain extends React.Component {
 
 	    <div id={"mainButtonGroup"}>
 		<a className={"btn btn-primary btn-lg mainButtonHg19"}
-                   onClick={this.searchHg19} role={"button"}>Search human<br /><small>(hg19)</small></a>
+                   onClick={this.searchHg19} role={"button"}>Search Human<br /><small>(hg19)</small></a>
 		{" "}
 		<a className={"btn btn-success btn-lg mainButtonMm10"}
-                   onClick={this.searchMm10} role={"button"}>Search mouse<br /><small>(mm10)</small></a>
+                   onClick={this.searchMm10} role={"button"}>Search Mouse<br /><small>(mm10)</small></a>
 		<br />
 		<br />
 		<i>{examples}</i>
