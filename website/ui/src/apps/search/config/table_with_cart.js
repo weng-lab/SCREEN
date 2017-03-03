@@ -19,7 +19,7 @@ const TableColumns = () => {
 	    title: "H3K27ac Z", data: "enhancer_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "enhancer"
 	}, {
-	    title: "CTCF-bound Z", data: "ctcf_zscore", className: klassCenter,
+	    title: "CTCF Z", data: "ctcf_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "ctcf"
 	}, {
 	    title: "chr", data: "chrom", className: klassCenter
