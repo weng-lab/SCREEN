@@ -46,14 +46,30 @@ public:
         d.setAllGenes(rDHS, p);
         d.setPcGenes(rDHS, p);
 
-        d.setConservation(rDHS, p);
-        d.setDnaseOnly(rDHS, p);
-        d.setCtcfOnly(rDHS, p);
-        d.setCtcfDnase(rDHS, p);
-        d.setH3k27acOnly(rDHS, p);
-        d.setH3k27acDnase(rDHS, p);
-        d.setH3k4me3Only(rDHS, p);
-        d.setH3k4me3Dnase(rDHS, p);
+        d.set(rDHS, p.conservation_signals, d.conservation_files_);
+
+	d.set(rDHS, p.ctcf_zscores, d.ctcf_files_);
+	p.setMax(p.ctcf_zscores, p.ctcf_max);
+	
+        d.set(rDHS, p.dnase_zscores, d.dnase_files_);
+	p.setMax(p.dnase_zscores, p.dnase_max);
+	
+        d.set(rDHS, p.enhancer_zscores, d.enhancer_files_);
+	p.setMax(p.enhancer_zscores, p.enhancer_max);
+	
+        d.set(rDHS, p.h3k27ac_zscores, d.h3k27ac_files_);
+	p.setMax(p.h3k27ac_zscores, p.h3k27ac_max);
+	
+        d.set(rDHS, p.h3k4me3_zscores, d.h3k4me3_files_);
+	p.setMax(p.h3k4me3_zscores, p.h3k4me3_max);
+		 
+        d.set(rDHS, p.insulator_zscores, d.insulator_files_);
+	p.setMax(p.insulator_zscores, p.insulator_max);
+	
+        d.set(rDHS, p.promoter_zscores, d.promoter_files_);
+	p.setMax(p.promoter_zscores, p.promoter_max);
+
+	p.setMaxZ();
     }
 
     void dumpToTsv(bfs::path d){
