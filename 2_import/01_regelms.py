@@ -32,7 +32,6 @@ CREATE TABLE {tn}
  isProximal boolean,
 
  conservation_signals real[],
- conservation_max real,
  ctcf_zscores real[],
  ctcf_max real,
  dnase_zscores real[],
