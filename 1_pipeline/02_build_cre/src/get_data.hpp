@@ -4,10 +4,6 @@
 
 namespace bib {
 
-enum SignalLineEnum {
-    ONLY, CONSERVATION, RANKZSCORE
-};
-
 template <typename T>
 class GetData {
     T paths_;
@@ -163,7 +159,7 @@ public:
 
     template <typename V>
     void loadSignals(const bfs::path& listFnp, std::vector<V>& ret,
-                     const uint32_t numCols, const SignalLineEnum sle){
+                     const uint32_t numCols){
         std::vector<bfs::path> fnps = getFnps(listFnp, numCols);
         ret.resize(fnps.size());
 
@@ -183,11 +179,7 @@ public:
                     std::cerr << "too many toks for " << fnp << std::endl;
                     throw std::runtime_error("too many toks");
                 }
-                switch(sle){
-                case CONSERVATION: sf.setSignalLineConservation(toks); break;
-                case ONLY: sf.setSignalLineOnly(toks); break;
-                case RANKZSCORE: sf.setSignalLineRankZscore(toks); break;
-                }
+		sf.setSignalLine(toks);
             }
             ret[i] = std::move(sf);
         }
