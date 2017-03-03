@@ -14,45 +14,13 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 
-def importProxDistal(curs, assembly):
-    fnp = paths.path(assembly, assembly + "-Proximal-Distal.txt.gz")
-    printt("reading", fnp)
-    with gzip.open(fnp) as f:
-        rows = [line.rstrip().split('\t') for line in f]
-
-    printt("rewriting")
-    outF = StringIO.StringIO()
-    for r in rows:
-        row = r[0] + '\t' + ('1' if r[1] == "proximal" else '0') + '\n'
-        outF.write(row)
-    outF.seek(0)
-
-    tableName = assembly + "_isProximal"
-    printt("copy into db...")
-
+def makeTable(curs, m):
+    tableName = m["tableName"]
+    
     curs.execute("""
-DROP TABLE IF EXISTS {tn};
+DROP TABLE IF EXISTS {tn} CASCADE;
+
 CREATE TABLE {tn}
-(id serial PRIMARY KEY,
-accession text,
-isProximal boolean
-);""".format(tn = tableName))
-
-    curs.copy_from(outF, tableName, '\t', columns=('accession', 'isProximal'))
-
-def indexProxDistal(curs, assembly):
-    tableName = assembly + "_isProximal"
-    makeIndex(curs, tableName, ["accession"])
-
-
-def dropTables(curs, tableName, m):
-    curs.execute("""
-    DROP TABLE IF EXISTS {tn} CASCADE;
-""".format(tn = tableName))
-
-def makeTable(curs, tableName, m):
-    curs.execute("""
-    CREATE TABLE {tn}
  (
  id serial PRIMARY KEY,
  accession VARCHAR(20),
@@ -84,9 +52,12 @@ def makeTable(curs, tableName, m):
  isProximal boolean,
  maxz real,
  promoterMaxz real,
- enhancerMaxz real
- ); """.format(tn = tableName))
+ enhancerMaxz real,
+ creGroup integer
+); """.format(tn = tableName))
 
+def doImport(curs, m):
+    tableName = m["tableName"]
     d = m["d"]
     subsample = m["subsample"]
     for chrom in chroms:
@@ -100,54 +71,21 @@ def makeTable(curs, tableName, m):
             printt("importing", fnp, "into", ctn)
             curs.copy_from(f, tableName, '\t', columns=cols)
 
-def updateTables(assembly, curs, tableName):
-    printt("updating max zscore columns", tableName)
+def selectInto(curs, m):
+    tn = m["tableName"]
+    ntn = m["tableName_all"]
+
+    curs.execute("""
+    DROP TABLE IF EXISTS {ntn} CASCADE;
+
+    SELECT * 
+    INTO {ntn}
+    FROM {tn}
+    ORDER BY maxZ, chrom, start;
+
+    DROP TABLE {tn};
+    """.format(tn = tn, ntn = ntn))
     
-    curs.execute("""
-UPDATE {tableName}
-SET
-dnase_zscore_max      = (select max(x) from unnest(dnase_zscore) x),
-ctcf_only_zscore_max  = (select max(x) from unnest(ctcf_only_zscore) x),
-ctcf_dnase_zscore_max = (select max(x) from unnest(ctcf_dnase_zscore) x),
-h3k27ac_only_zscore_max = (select max(x) from unnest(h3k27ac_only_zscore) x),
-h3k27ac_dnase_zscore_max = (select max(x) from unnest(h3k27ac_dnase_zscore) x),
-h3k4me3_only_zscore_max  = (select max(x) from unnest(h3k4me3_only_zscore) x),
-h3k4me3_dnase_zscore_max = (select max(x) from unnest(h3k4me3_dnase_zscore) x)
-""".format(tableName = tableName))
-
-    printt("updating isProximal", tableName)
-    curs.execute("""
-UPDATE {tableName} as cre
-SET isProximal = prox.isProximal
-FROM {tnProx} as prox
-WHERE cre.accession = prox.accession;
-""".format(tableName = tableName,
-           tnProx = assembly + "_isProximal")
-
-    printt("updating promoterMaxz and enhancerMaxz...")
-    curs.execute("""
-UPDATE {tableName}
-SET promoterMaxz = GREATEST(
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max ),
-
-enhancerMaxz = GREATEST(
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max )
-""".format(tableName = tableName))
-
-    printt("updating maxZ", tableName)
-    curs.execute("""
-UPDATE {tableName}
-SET maxz = GREATEST( dnase_zscore_max,
-ctcf_only_zscore_max ,
-ctcf_dnase_zscore_max ,
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max ,
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max )
-""".format(tableName = tableName))
-
 def addCol(curs, assembly):
     printt("adding col...")
     curs.execute("""
@@ -155,12 +93,7 @@ ALTER TABLE {tn}
 ADD COLUMN creGroup integer;
 
 UPDATE {tn}
-SET promoterMaxz = GREATEST(
-h3k4me3_only_zscore_max ,
-h3k4me3_dnase_zscore_max ),
-enhancerMaxz = GREATEST(
-h3k27ac_only_zscore_max ,
-h3k27ac_dnase_zscore_max )
+SET ...
 """.format(tn = assembly + "_cre"))
 
 def parse_args():
@@ -170,20 +103,19 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def makeInfo(assembly, sample):
+    return {"chrs" : chroms[assembly],
+            "assembly" : assembly,
+            "d" : paths.fnpCreTsvs(assembly),
+            "base" : paths.path(assembly),
+            "tableName" : assembly + "_cre",
+            "tableName_all" : assembly + "_cre_all",
+            "subsample": sample}
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    def makeInfo(assembly):
-        return {"chrs" : chroms[assembly],
-                       "assembly" : assembly,
-                       "d" : paths.fnpCreTsvs(assembly),
-                       "base" : paths.path(assembly),
-                       "tableName" : assembly + "_cre"}
-
-    infos = {"mm10" : makeInfo("mm10"),
-             "hg19" : makeInfo("hg19")}
 
     assemblies = ["hg19", "mm10"]
     if args.assembly:
@@ -191,31 +123,23 @@ def main():
 
     for assembly in assemblies:
         print('***********', assembly)
-
-        m = infos[assembly]
-        m["subsample"] = args.sample
+        m = makeInfo(assembly, args.sample)
 
         if 1:
-            print('***********', "drop tables")
             with getcursor(DBCONN, "dropTables") as curs:
-                dropTables(curs, assembly + "_cre", m)
-            print('***********', "create tables")
-            with getcursor(DBCONN, "doPartition") as curs:
-                doPartition(curs, assembly + "_cre", m)
+                print('***********', "drop tables")
+                makeTable(curs, m)
+                
+                print('***********', "create tables")
+                doImport(curs, m)
 
-            print('***********', "import proximal/distal info")
-            with getcursor(DBCONN, "importProxDistal") as curs:
-                importProxDistal(curs, assembly)
-            with getcursor(DBCONN, "indexProxDistal") as curs:
-                indexProxDistal(curs, assembly)
-
-            print('***********', "update table cols")
-            with getcursor(DBCONN, "doPartition") as curs:
-                updateTable(curs, assembly + "_cre", m)
+                print('***********', "selecting into", ntn)
+                selectInto(curs, m)
+                
         else:
             # example to show how to add and populate column to
             #  master and, by inheritance, children tables...
-            with getcursor(DBCONN, "08_setup_log") as curs:
+            with getcursor(DBCONN, "01_regelms") as curs:
                 addCol(curs, assembly)
 
         print('***********', "vacumn")
