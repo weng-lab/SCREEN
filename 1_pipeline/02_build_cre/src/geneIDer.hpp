@@ -38,7 +38,10 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            auto genes = bib::str::split(toks[1], ',');
+            if(toks.size() != 4){
+	      throw std::runtime_error("invalid length");
+            }
+            auto genes = bib::str::split(toks[3], ',');
             for(const auto& gene : genes){
                 std::string ensembl = gene;
                 bib::string::rtrim(ensembl);
