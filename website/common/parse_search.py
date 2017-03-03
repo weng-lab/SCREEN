@@ -3,11 +3,15 @@
 from __future__ import print_function
 import sys, os
 import re
+
 from coord import Coord
+from pg_parse import PGparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession
 from constants import chrom_lengths, chroms
+from dbconnect import db_connect
+from postgres_wrapper import PostgresWrapper
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
@@ -16,20 +20,22 @@ from db_utils import getcursor
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
 
+re_coord1 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+")
+re_coord2 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+")
+re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
+
 class ParseSearch:
     def __init__(self, rawInput, DBCONN, assembly):
-        self.DBCONN = DBCONN
         self.rawInput = rawInput
+
+        self.pg = PostgresWrapper(DBCONN)
+        self.pgParse = PGparse(self.pg, assembly)
 
         self.halfWindow = 7500
         self.userErrMsg = ""
 
         self.assembly = assembly
-        self.chroms = chroms[assembly]
         self._gene_tablename = self.assembly + "_gene_info"
-
-    def _snp_tablename(self, c):
-        return self.assembly + "_snps_" + c
 
     def _sanitize(self):
         # TODO: add more here!
@@ -44,142 +50,36 @@ class ParseSearch:
     def find_gene_in_q(self, q):
         p = q.split(" ")
         for i in xrange(len(p)):
-            r = self._gene_alias_to_coordinates(p[i])
+            r = self.pgParse._gene_alias_to_coordinates(p[i])
             if r:
                 return r
         return None
-
-    def _get_snpcoord(self, s):
-        for chrom in self.chroms:
-            with getcursor(self.DBCONN, "parse_search$_get_snpcoord") as curs:
-                curs.execute("""
-SELECT start, stop
-FROM {tn}
-WHERE name = %s
-""".format(tn = self._snp_tablename(chrom)), (s, ))
-            r = curs.fetchone()
-            if r: return Coord(chrom, r[0], r[1])
-        return None
-
-    def _gene_id_to_symbol(self, _id):
-        with getcursor(self.DBCONN, "parse_search$gene_id_to_symbol") as curs:
-            curs.execute("""
-SELECT gi.approved_symbol
-FROM {assembly}_gene_info gi
-WHERE gi.id = %s
-            """.format(assembly = self.assembly), (_id,))
-            r = curs.fetchone()
-        if not r or not r[0]:
-            return None
-        return r[0]
-
-    def _try_find_gene(self, s, tss = False, tssdist = 0):
-        if type(tssdist) is not int:
-            tssdist = int(tssdist.replace("kb", "")) * 1000
-        p = s.lower().split()
-        interpretation = None
-        with getcursor(self.DBCONN, "parse_search$parse") as curs:
-            for i in xrange(len(p)):
-                s = " ".join(p[:len(p) - i])
-                curs.execute("""
-SELECT oname, chrom, start, stop, altchrom, altstart, altstop,
-                similarity(name, %s) AS sm, pointer
-FROM {assembly}_autocomplete
-WHERE name %% %s
-ORDER BY sm DESC LIMIT 1
-                """.format(assembly = self.assembly), (s, s))
-                r = curs.fetchall()
-                if r:
-                    interpretation = r[0][0]
-                    pointer = r[0][8]
-                    r = r[0]
-                    if tss:
-                        coord = Coord(r[4], int(r[5]) - tssdist, r[6])
-                    else:
-                        coord = Coord(r[1], int(r[2]) - tssdist, r[3])
-                    same = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
-                    return (interpretation,  coord, s, same, pointer)
-        return (interpretation, None, " ".join(p), False, -1)
-
-    def get_genetext(self, gene, tss = False, notss = False, dist=0):
-        def orjoin(a):
-            return ", ".join(a[:-1]) + " or " + a[-1]
-        gene = "<em>%s</em>" % gene
-        if notss:
-            return "This search is showing cREs overlapping the gene body of {q}.".format(q=gene)
-        if tss:
-            if not dist:
-                return """
-This search is showing candidate promoters located between the first and last TSS's of {q}.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly)
-            return """
-This search is showing candidate promoters located between the first and last TSS's of {q} and up to {d} upstream.<br>
-To see cREs overlapping the gene body of {q}, <a href='/search?q={q}&assembly={assembly}'>click here</a>.""".format(q=gene, assembly=self.assembly, d=dist)
-        dists = orjoin(["<a href='/search?q={q}+tssdist_{d}+promoter&assembly={assembly}'>{d}</a>".format(q=gene, assembly=self.assembly, d=d) for d in ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"]])
-        return """
-This search is showing cREs overlapping the gene body of {q}.<br>
-To see candidate promoters located between the first and last TSS's of {q}, <a href='/search?q={q}+tss+promoter&assembly={assembly}'>click here</a>, <br />or click one of the following links to see candidate promoters within {dists} upstream of the TSSs.""".format(q=gene, assembly=self.assembly, dists=dists)
-
-    def _try_find_celltype(self, s):
-        pass
 
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
             # TODO: precompile re
-            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+", x)
+            r = re_coord1.search(x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], p[2]))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(p[0].replace("x", "X").replace("y", "Y"),
+                              p[1], p[2]))
         for x in _p:
-            r = re.search("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+", x)
+            r = re_coord2.search(x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
-                return (s.replace(r.group(0), "").strip(), Coord(p[0].replace("x", "X").replace("y", "Y"), p[1], int(p[1]) + 1))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(p[0].replace("x", "X").replace("y", "Y"),
+                              p[1], int(p[1]) + 1))
         for x in _p:
-            r = re.search("^[cC][hH][rR][0-9XxYy][0-9]?", x)
+            r = re_coord3.search(x)
             if r:
                 c = r.group(0).replace("x", "X").replace("y", "Y")
-                return (s.replace(r.group(0), "").strip(), Coord(c, 0, chrom_lengths[self.assembly][c]))
+                return (s.replace(r.group(0), "").strip(),
+                        Coord(c, 0, chrom_lengths[self.assembly][c]))
         return (s, None)
 
-    def has_overlap(self, coord):
-        if not coord: return False
-        with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-            # TODO: use int4range, and sanitize input
-            curs.execute("""
-SELECT accession
-FROM {tn}
-WHERE maxZ >= 1.64 AND chrom = '{chrom}' AND {start} > start AND {end} < stop
-""".format(tn = self.assembly + "_cre_all",
-           chrom = coord.chrom, start = coord.start,
-           end = coord.end))
-            if curs.fetchone(): return True
-        return False
-
-    def _find_celltype(self, q, rev = False):
-        p = q.split()
-        interpretation = None
-        for i in xrange(len(p)):
-            s = " ".join(p[:len(p) - i]) if not rev else " ".join(p[i:])
-            with getcursor(self.DBCONN, "parse_search$ParseSearch::parse") as curs:
-                curs.execute("""
-SELECT cellType, similarity(LOWER(cellType), '{q}') AS sm
-FROM {assembly}_rankCellTypeIndexex
-WHERE LOWER(cellType) % '{q}'
-ORDER BY sm DESC
-LIMIT 1
-""".format(assembly=self.assembly, q=s))
-                r = curs.fetchall()
-                if not r:
-                    curs.execute("SELECT cellType FROM {assembly}_rankCellTypeIndexex WHERE LOWER(cellType) LIKE '{q}%' LIMIT 1".format(assembly=self.assembly, q=s))
-                    r = curs.fetchall()
-            if r:
-                if r[0][0].lower().strip() not in s.lower().strip() or s.lower().strip() not in r[0][0].lower().strip():
-                    k = r[0][0].replace("_", " ")
-                    interpretation = "Showing results for \"%s\"" % (k if not interpretation else interpretation + " " + k)
-                return (" ".join(p[len(p) - i:]) if not rev else " ".join(p[i:]), r[0][0], interpretation)
-        return (q, None, None)
 
     def parse(self, kwargs = None):
         s = self._sanitize().lower()
@@ -188,8 +88,8 @@ LIMIT 1
         s, coord = self._find_coord(s)
         toks = s.split()
         toks = [t.lower() for t in toks]
-        usetss = "tss" in toks or (kwargs and "tss" in kwargs)
-        tssdist = 0
+        useTss = "tss" in toks or (kwargs and "tss" in kwargs)
+        tssDist = 0
         interpretation = None
 
         ret = {"cellType": None,
@@ -199,7 +99,7 @@ LIMIT 1
                "element_type": None,
                "approved_symbol": None,
                "interpretation": None}
-        if "promoter" in toks or usetss:
+        if "promoter" in toks or useTss:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
@@ -223,33 +123,37 @@ LIMIT 1
                     s = s.replace(t, "")
                     continue
                 elif t.startswith("rs"):
-                    coord = self._get_snpcoord(t)
+                    coord = self.pgParse._get_snpcoord(t)
                     s = s.replace(t, "")
-                    if coord and not self.has_overlap(coord):
+                    if coord and not self.pgParse.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
                         coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
                 elif t.startswith("tssdist"):
-                    tssdist = t.split("_")[1]
-                    usetss = True
+                    tssDist = t.split("_")[1]
+                    useTss = True
         except:
             print("could not parse " + s)
 
+        genes = []
         if coord is None:
-            interpretation, coord, s, notss, _id = self._try_find_gene(s, usetss, tssdist)
-            if interpretation:
-                ret["approved_symbol"] = self._gene_id_to_symbol(_id)
-                interpretation = self.get_genetext(ret["approved_symbol"] if ret["approved_symbol"] else interpretation, usetss, notss, tssdist)
+            genes = self.pgParse._try_find_gene(s, useTss, tssDist)
+            if genes:
+                g = genes[0]
+                interpretation = g.get_genetext()
+                coord = g.coord
+                s = g.s
 
-        s, cellType, _interpretation = self._find_celltype(s)
+        s, cellType, _interpretation = self.pgParse._find_celltype(s)
 
         if cellType is None:
-            s, cellType, _interpretation = self._find_celltype(s, True)
+            s, cellType, _interpretation = self.pgParse._find_celltype(s, True)
 
         if len(accessions) > 0:
             coord = None
             cellType = None
             interpretation = None
 
+        ret["assembly"] = self.assembly
         ret["cellType"] = cellType
         ret["interpretation"] = interpretation
         if coord:
@@ -257,4 +161,33 @@ LIMIT 1
             ret["coord_start"] = coord.start
             ret["coord_end"] = coord.end
         ret["accessions"] = accessions
+        ret["multipleGenes"] = len(genes) > 0
+        ret["genes"] = [g.toJson() for g in genes]
         return ret
+
+def main():
+    DBCONN = db_connect(os.path.realpath(__file__))
+
+    assembly = "hg19"
+    ps = PostgresWrapper(DBCONN)
+
+    queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
+    queries = ["Actin alpha 1", "HBB"]
+
+    for q in queries:
+        print("***************", q)
+        ps = ParseSearch(q, DBCONN, assembly)
+
+        output = ps.parse()
+        keys = sorted(output.keys())
+        for k in keys:
+            v = output[k]
+            if "genes" == k:
+                for g in v:
+                    print(g)
+            else:
+                print(k + ':', v)
+        print(ps.parseStr())
+
+if __name__ == '__main__':
+    main()

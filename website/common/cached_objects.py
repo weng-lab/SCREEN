@@ -33,7 +33,7 @@ class CachedObjects:
         self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly
 
-        with Timer("load CachedObjects " + assembly) as t:
+        with Timer("loaded CachedObjects " + assembly) as t:
             self._load()
 
     def _load(self):
@@ -90,7 +90,7 @@ class CachedObjects:
         return self.assaymap[assay][ct]
 
 def main():
-    DBCONN = db_connect(os.path.realpath(__file__), True)
+    DBCONN = db_connect(os.path.realpath(__file__))
 
     ps = PostgresWrapper(DBCONN)
     cache = CachedObjects(ps, "mm10")

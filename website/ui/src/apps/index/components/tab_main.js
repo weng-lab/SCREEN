@@ -9,6 +9,7 @@ import {tabPanelize} from '../../../common/utility'
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
+        this.key = "main"
 	this.userQueries = {}; // cache autocomplete
         this.state = { userQueryErr : null };
 	this.loadSearch = this.loadSearch.bind(this);
@@ -16,7 +17,11 @@ class TabMain extends React.Component {
 	this.searchMm10 = this.searchMm10.bind(this);
     }
 
-    loadSearch(assembly, userQuery){
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
+    }
+
+    loadSearch(assembly, userQuery, actions){
 	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
 				          style={{fontSize : "24px"}}></i>)});
 	let jq = JSON.stringify({assembly, userQuery});
@@ -38,7 +43,13 @@ class TabMain extends React.Component {
 			    Please check your spelling and search assembly, and try again.
 			</span>);
 		    this.setState({userQueryErr})
-		} else {
+                    return;
+		}
+
+                if(r.multipleGenes){
+                    actions.setGenes(r);
+                    actions.setMainTab("query");
+                } else {
 		    let params = jQuery.param({q: userQuery, assembly});
 		    let url = "/search/?" + params;
 		    window.location.href = url;
@@ -49,12 +60,12 @@ class TabMain extends React.Component {
 
     searchHg19() {
 	let userQuery = this.refs.searchBox.value;
-	this.loadSearch("hg19", userQuery);
+	this.loadSearch("hg19", userQuery, this.props.actions);
     }
 
     searchMm10() {
 	let userQuery = this.refs.searchBox.value;
-	this.loadSearch("mm10", userQuery);
+	this.loadSearch("mm10", userQuery, this.props.actions);
     }
 
     textBox() {
