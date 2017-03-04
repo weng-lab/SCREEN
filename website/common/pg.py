@@ -70,33 +70,6 @@ class PGsearch:
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
-    def _type_clauses(self, ct, assayterm):
-        if not assayterm:
-            return []
-        assaymap = {"chromatin-accessible": [("dnase", "dnase")],
-                    "promoter-like": [("promoter", "h3k4me3_only"), ("dnase", "dnase")],
-                    "enhancer-like": [("enhancer", "h3k27ac_only"), ("dnase", "dnase")],
-                    "insulator-like": [("ctcf", "ctcf_only")] }
-        allmap = {"chromatin-accessible": "dnase_zscore_max",
-                  "promoter-like": "promoterMaxz",
-                  "enhancer-like": "enhancerMaxz",
-                  "insulator-like": "ctcf_only_zscore_max" }
-        ret = []
-        if ct:
-            if assayterm not in assaymap:
-                print("WARNING: invalid element type %s; ignoring" % assayterm)
-                return ret
-            for assay in assaymap[assayterm]:
-                if ct not in self.ctmap[assay[0]]:
-                    continue
-                cti = self.ctmap[assay[0]][ct]
-                ret.append("cre.%s_zscore[%d] >= 1.64" % (assay[1], cti))
-            return ret
-        if assayterm not in allmap:
-            print("WARNING: invalid element type %s; ignoring" % assayterm)
-            return ret
-        return ["cre.%s >= 1.64" % allmap[assayterm]]
-
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
@@ -113,7 +86,7 @@ class PGsearch:
 
         ct = j.get("cellType", None)
         fields = []
-        whereclauses = [] # self._type_clauses(ct, j["element_type"])
+        whereclauses = []
 
         if chrom and start and stop:
             whereclauses += ["cre.chrom = '%s'" % chrom,
@@ -121,14 +94,14 @@ class PGsearch:
 
         if ct:
             for assay in [("dnase", "dnase"),
-                          ("promoter", "h3k4me3_only"),
-                          ("enhancer", "h3k27ac_only"),
-                          ("ctcf", "ctcf_only")]:
+                          ("promoter", "h3k4me3"),
+                          ("enhancer", "h3k27ac"),
+                          ("ctcf", "ctcf")]:
                 if ct not in self.ctmap[assay[0]]:
                     fields.append("'' AS %s_zscore" % (assay[0]))
                     continue
                 cti = self.ctmap[assay[0]][ct]
-                fields.append("cre.%s_zscore[%d] AS %s_zscore" % (assay[1], cti, assay[0]))
+                fields.append("cre.%s_zscores[%d] AS %s_zscore" % (assay[1], cti, assay[0]))
 
                 if "rank_%s_start" % assay[0] in j and "rank_%s_end" % assay[0] in j:
                     _range = [j["rank_%s_start" % assay[0]] / 100.0,
@@ -139,19 +112,19 @@ class PGsearch:
                         continue # not actually filtering on zscore, yet...
                     if not isclose(_range[0], minDefault):
                         whereclauses.append("(%s)" %
-                                            "cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]))
+                                            "cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]))
                     elif not isclose(_range[1], maxDefault):
                         whereclauses.append("(%s)" %
-                                            "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1]))
+                                            "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1]))
                     else:
                         whereclauses.append("(%s)" % " and ".join(
-                                ["cre.%s_zscore[%d] >= %f" % (assay[1], cti, _range[0]),
-                                 "cre.%s_zscore[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                                ["cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]),
+                                 "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1])] ))
         else:
-            allmap = {"dnase": "dnase_zscore_max",
-                      "promoter": "promoterMaxz",
-                      "enhancer": "enhancerMaxz",
-                      "ctcf": "ctcf_only_zscore_max" }
+            allmap = {"dnase": "dnase_max",
+                      "promoter": "h3k4me3_max",
+                      "enhancer": "h3k27ac_max",
+                      "ctcf": "ctcf_max" }
             for x in ["dnase", "promoter", "enhancer", "ctcf"]:
                 if "rank_%s_start" % x in j and "rank_%s_end" in j:
                     _range = [j["rank_%s_start" % x] / 100.0,
@@ -196,7 +169,7 @@ class PGsearch:
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
-            "cre.cre_group"])
+            "cre.creGroup"])
 
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             q = """
@@ -450,23 +423,23 @@ WHERE accession = %s
             return curs.fetchone()
 
     def creRanksPromoter(self, accession, chrom):
-        cols = ["h3k4me3_dnase_zscore"]
+        cols = ["promoter_zscores"]
         r = self._getColsForAccession(accession, chrom, cols)
         return {"zscores" : { "Promoter" : r[0]} }
 
     def creRanksEnhancer(self, accession, chrom):
-        cols = ["h3k27ac_dnase_zscore"]
+        cols = ["enhancer_zscores"]
         r = self._getColsForAccession(accession, chrom, cols)
         return {"zscores" : { "Enhancer" : r[0]} }
 
     def creRanks(self, accession, chrom):
-        cols = """dnase_zscore
-        ctcf_only_zscore
-        ctcf_dnase_zscore
-        h3k27ac_only_zscore
-        h3k27ac_dnase_zscore
-        h3k4me3_only_zscore
-        h3k4me3_dnase_zscore""".split('\n')
+        cols = """dnase_zscores
+        ctcf_zscores
+        enhancer_zscores
+        h3k27ac_zscores
+        h3k4me3_zscores
+        insulator_zscores
+        promoter_zscores""".split('\n')
         r = self._getColsForAccession(accession, chrom, cols)
         return {"zscores" : { "dnase" : r[0],
                               "ctcf-only" : r[1],
