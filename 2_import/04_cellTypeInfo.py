@@ -137,10 +137,10 @@ idx integer);""".format(tableName = tableName))
     def importDatasets(self):
         d = paths.path(self.assembly, "raw")
 
-        fns = {"CTCF" : "CTCF-List.txt",
-               "DNase" : "DNase-List.txt",
-               "H3K27ac" : "H3K27ac-List.txt",
-               "H3K4me3" : "H3K4me3-List.txt"}
+        fns = {"CTCF" : "ctcf-list.txt",
+               "DNase" : "dnase-list.txt",
+               "H3K27ac" : "h3k27ac-list.txt",
+               "H3K4me3" : "h3k4me3-list.txt"}
 
         outRows = []
         for assay, fn in fns.iteritems():
@@ -178,9 +178,9 @@ cellTypeName text);""".format(tableName = tableName))
     def importDatasetsMulti(self):
         d = paths.path(self.assembly, "raw")
 
-        fns = {"Enhancer" : ("Enhancer-List.txt", "H3K27ac"),
-               "Insulator" : ("Insulator-List.txt", "CTCF"),
-               "Promoter" : ("Promoter-List.txt", "H3K4me3")}
+        fns = {"Enhancer" : ("enhancer-list.txt", "H3K27ac"),
+               "Insulator" : ("insulator-list.txt", "CTCF"),
+               "Promoter" : ("promoter-list.txt", "H3K4me3")}
 
         outRows = []
         for assay, fnAndAssay in fns.iteritems():
