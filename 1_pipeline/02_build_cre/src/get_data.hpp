@@ -105,7 +105,7 @@ public:
             std::string ensembl = toks[1];
             bib::string::rtrim(ensembl);
             ret[accession].emplace_back(Gene{geneNameToID_.at(ensembl),
-                        std::stoi(toks[10])}); // distance
+                        std::stoi(toks[2])}); // distance
             ++count;
         }
         std::cout << "loaded " << count << " " << typ << " genes\n";
@@ -178,7 +178,7 @@ public:
                     std::cerr << "too many toks for " << fnp << std::endl;
                     throw std::runtime_error("too many toks");
                 }
-		sf.setSignalLine(toks);
+                sf.setSignalLine(toks);
             }
             ret[i] = std::move(sf);
         }
