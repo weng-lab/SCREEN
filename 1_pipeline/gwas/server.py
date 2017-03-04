@@ -60,7 +60,7 @@ def main():
                             'server.socket_port': int(args.port),
                             'server.socket_queue_size': 512,
                             'server.thread_pool': 30,
-                            'log.screen' : False,
+                            'log.screen' : True,
                             'log.access_file' : "",
                             'log.error_file' : wsconfig.errorFnp
                             })
