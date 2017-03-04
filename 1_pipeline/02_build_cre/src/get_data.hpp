@@ -72,7 +72,7 @@ public:
             for(const auto& gene : genes){
                 std::string ensembl = gene;
                 bib::string::rtrim(ensembl);
-                ret[toks[0]].emplace_back(Gene{geneNameToID_.at(ensembl), 0});
+                ret[toks[1]].emplace_back(Gene{geneNameToID_.at(ensembl), 0});
             }
             ++count;
         }

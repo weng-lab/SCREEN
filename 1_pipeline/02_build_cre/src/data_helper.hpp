@@ -87,33 +87,29 @@ namespace bib {
     }
 
     template <typename T>
-    void setTads(const std::string& mpName, T& p) const {
-        if(bib::in(mpName, tads_)){
-            p.tads = tads_.at(mpName);
+    void setTads(const std::string& accession, T& p) const {
+        if(bib::in(accession, tads_)){
+            p.tads = tads_.at(accession);
         }
     }
 
     template <typename T>
-    void setConservation(const std::string& mpName, T& p) const {
+    void setAllGenes(const std::string& accession, T& p) const {
+        p.gene_nearest_all = allGenes_.at(accession);
     }
 
     template <typename T>
-    void setAllGenes(const std::string& mpName, T& p) const {
-        p.gene_nearest_all = allGenes_.at(mpName);
-    }
-
-    template <typename T>
-    void setPcGenes(const std::string& mpName, T& p) const {
-        p.gene_nearest_pc = pcGenes_.at(mpName);
+    void setPcGenes(const std::string& accession, T& p) const {
+        p.gene_nearest_pc = pcGenes_.at(accession);
     }
 
     template <typename V, typename F>
     void set(const std::string& rDHS, V& v, const F& files) const {
-      for(const auto& sf : files){
-	if(bib::in(rDHS, sf.lines_)){
-	  v.push_back(sf.lines_.at(rDHS));
-	}
-      }
+        for(const auto& sf : files){
+            if(bib::in(rDHS, sf.lines_)){
+                v.push_back(sf.lines_.at(rDHS));
+            }
+        }
     }
   };
 
