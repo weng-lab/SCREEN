@@ -127,6 +127,9 @@ public:
             }
             std::string fn;
             switch (numCols){
+            case 1:
+                fn = toks[0] +".txt";
+                break;
             case 3:
                 fn = toks[0] + '-' + toks[1] + ".txt";
                 break;
