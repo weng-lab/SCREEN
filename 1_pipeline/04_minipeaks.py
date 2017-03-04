@@ -28,7 +28,8 @@ class ExtractRawPeaks:
         self.j = j
 
         self.raw = paths.path(assembly, "raw")
-        self.extras = paths.path(assembly, "extras")
+        self.minipeaks = paths.path(assembly, "minipeaks")
+        Utils.mkdir_p(self.minipeaks)
 
         self.bwtool = "/data/cherrypy/bin/bwtool"
         if not os.path.exists(self.bwtool):
@@ -45,11 +46,13 @@ class ExtractRawPeaks:
         self.numPeaks = numLines(self.masterPeakFnp)
         print(self.masterPeakFnp, "has", self.numPeaks)
 
-        self.miniPeaksBedFnp = os.path.join(self.extras, "miniPeakSites.bed.gz")
+        self.miniPeaksBedFnp = os.path.join(self.minipeaks, "miniPeakSites.bed.gz")
+
+        self.debug = False
 
     def run(self):
         self.writeBed()
-        #self.extractAndDownsamplePeaks()
+        self.extractAndDownsamplePeaks()
 
     def _runBwtool(self, outD, fnp):
         outFnp = os.path.join(outD, os.path.basename(fnp) + ".txt")
@@ -65,36 +68,41 @@ class ExtractRawPeaks:
                 '|', self.bwtoolFilter, "--bwtool",
                 '>', outFnp]
         Utils.runCmds(cmds)
+        if self.debug:
+            print("wrote", outFnp)
 
     def extractAndDownsamplePeaks(self):
         fns = ["dnase-list.txt", "h3k27ac-list.txt",
                "h3k4me3-list.txt"]
 
+        bfnps = []
         for fn in fns:
             print("***********************", self.assembly, fn)
             fnp = os.path.join(self.raw, fn)
             with open(fnp) as f:
-                rows = [x.rstrip().split() for x in f.readlines()]
+                rows = [x.rstrip('\n').split() for x in f.readlines()]
 
-            bfnps = []
             for r in rows:
                 fnp = os.path.join(Dirs.encode_data, r[0], r[1] + ".bigWig")
                 if os.path.exists(fnp):
                     bfnps.append(fnp)
                 else:
                     print("WARNING: missing bigwig", fnp)
-            outD = os.path.join(self.extras, "minipeaks", "files")
-            Utils.mkdir_p(outD)
+        outD = os.path.join(self.minipeaks, "files")
+        Utils.mkdir_p(outD)
+        print("found", len(bfnps), "files to run")
 
-            Parallel(n_jobs = self.j)(delayed(self._runBwtool)
-                                            (outD, fnp)
-                                      for fnp in bfnps)
+        if self.debug:
+            bfnps = [bfnps[0]]
+        Parallel(n_jobs = self.j)(delayed(self._runBwtool)
+                                  (outD, fnp)
+                                  for fnp in bfnps)
 
     def writeBed(self):
         inFnp = self.masterPeakFnp
         outFnp = self.miniPeaksBedFnp
 
-        with gzip.open(inFnp) as inF:
+        with open(inFnp) as inF:
             with gzip.open(outFnp, "wb") as outF:
                 for line in inF:
                     toks = line.rstrip().split('\t')
@@ -103,10 +111,11 @@ class ExtractRawPeaks:
                     stop = int(toks[2])
                     accession = toks[4]
                     padding = 1000
+                    midPoint = float(stop - start) / 2.0 + start
                     outF.write('\t'.join([str(x) for x in
                                           [chrom,
-                                           int(max(0, start - padding)),
-                                           int(stop + padding),
+                                           int(max(0, midPoint - padding)),
+                                           int(midPoint + padding),
                                            accession]]) + '\n')
         print("wrote", outFnp)
 
