@@ -142,7 +142,7 @@ class GeneRow:
                           self.strand, json.dumps(self.info)])
 
 def loadGidsToDbIds(assembly):
-    fnp = paths.path(assembly, "raw", "ensebleToID.txt")
+    fnp = paths.path(assembly, "extras", "ensebleToID.txt")
 
     printt("reading", fnp)
     with open(fnp) as f:
@@ -229,13 +229,13 @@ JOIN jsonb_each_text(q.info) as d ON true
 UNION
 SELECT q.id AS geneid, LOWER(q.ensemblid) AS value
 FROM {assembly}_gene_info as q
-UNION 
+UNION
 SELECT q.id AS geneid, LOWER(q.ensemblid_ver) AS value
 FROM {assembly}_gene_info as q
 """.format(mv = mv, assembly = assembly))
 
     makeIndex(curs, mv, ["geneid", "value"])
-    
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -256,9 +256,8 @@ def main():
             aga = ImportGenes(curs, assembly)
             aga.run()
             makeMV(curs, assembly)
-                 
+
     return 0
 
 if __name__ == '__main__':
     main()
-
