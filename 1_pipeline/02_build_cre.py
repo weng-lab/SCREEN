@@ -28,7 +28,7 @@ def run(assembly):
         printt("about to run", " ".join(cmds))
         Utils.runCmds(cmds)
 
-    fnps = paths.fnpCreTsvs(assembly, "parsed.chr*.tsv")
+    fnps = paths.fnpCreTsvs(assembly, "chr*.tsv")
     cmds = ["pigz", "-f", fnps]
     printt("about to run", " ".join(cmds))
     Utils.runCmds(cmds)
@@ -37,7 +37,7 @@ def run(assembly):
                                 '02_build_cre/subsample.sh')
     d = paths.fnpCreTsvs(assembly, "sample")
     Utils.mkdir_p(d)
-    fnps = paths.fnpCreTsvs(assembly, "parsed.chr*.tsv.gz")
+    fnps = paths.fnpCreTsvs(assembly, "chr*.tsv.gz")
     cmds = ["ls", fnps,
             '|', "parallel", "bash", subsampleFnp]
     printt("about to run", " ".join(cmds))
