@@ -18,8 +18,7 @@ def PageTitle(assembly):
         return "SCREEN %s: Search Candidate Regulatory Elements by ENCODE" % assembly
     return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
 
-DB_COLS = tuple("""
-accession
+DB_COLS = tuple("""accession
 rDHS
 chrom
 start

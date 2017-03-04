@@ -14,87 +14,103 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 
-def makeTable(curs, m):
-    tableName = m["tableName"]
-    
-    curs.execute("""
-DROP TABLE IF EXISTS {tn} CASCADE;
+class ImportCREs:
+    def __init__(self, DBCONN, assembly, sample):
+        self.DBCONN = DBCONN
+        self.assembly = assembly
+        self.sample = sample
 
-CREATE TABLE {tn}
- (
- id serial PRIMARY KEY,
- accession VARCHAR(20),
- rDHS VARCHAR(20),
- chrom VARCHAR(5),
- start integer,
- stop integer,
- creGroup integer
- isProximal boolean,
+        self.chroms = chroms[assembly]
+        self.tableName_cre = assembly + "_cre"
+        self.tableName_cre_all = assembly + "_cre_all"
 
- conservation_signals real[],
- ctcf_zscores real[],
- ctcf_max real,
- dnase_zscores real[],
- dnase_max real,
- enhancer_zscores real[],
- enhancer_max real,
- h3k27ac_zscores real[],
- h3k27ac_max real,
- h3k4me3_zscores real[],
- h3k4me3_max real,
- insulator_zscores real[],
- insulator_max real,
- promoter_zscores real[],
- promoter_max real,
- maxz real,
+    def run(self):
+        with getcursor(self.DBCONN, "ImportCREs") as curs:
+            self.makeTable(curs)
+            self.doImport(curs)
+            self.selectInto(curs)
 
- gene_all_distance integer[],
- gene_all_id integer[],
- gene_pc_distance integer[],
- gene_pc_id integer[],
+    def vac(self):
+        print('***********', "vacumn")
+        vacumnAnalyze(self.DBCONN.getconn(), self.tableName_cre_all)
 
- tads integer[],
-); """.format(tn = tableName))
+    def makeTable(self, curs):
+        print('***********', "drop and create table")
+        curs.execute("""
+    DROP TABLE IF EXISTS {tn} CASCADE;
 
-def doImport(curs, m):
-    tableName = m["tableName"]
-    d = m["d"]
-    subsample = m["subsample"]
-    for chrom in chroms:
-        fn = "parsed." + chrom + ".tsv.gz"
-        fnp = os.path.join(d, fn)
-        if subsample:
-            if "chr13" != chrom:
-                fnp = os.path.join(d, "sample", fn)
-        cols = DB_COLS
-        with gzip.open(fnp) as f:
-            printt("importing", fnp, "into", ctn)
-            curs.copy_from(f, tableName, '\t', columns=cols)
+    CREATE TABLE {tn}
+     (
+     id serial PRIMARY KEY,
+     accession VARCHAR(20),
+     rDHS VARCHAR(20),
+     chrom VARCHAR(5),
+     start integer,
+     stop integer,
+     creGroup integer,
+     isProximal boolean,
 
-def selectInto(curs, m):
-    tn = m["tableName"]
-    ntn = m["tableName_all"]
+     conservation_signals real[],
+     ctcf_zscores real[],
+     ctcf_max real,
+     dnase_zscores real[],
+     dnase_max real,
+     enhancer_zscores real[],
+     enhancer_max real,
+     h3k27ac_zscores real[],
+     h3k27ac_max real,
+     h3k4me3_zscores real[],
+     h3k4me3_max real,
+     insulator_zscores real[],
+     insulator_max real,
+     promoter_zscores real[],
+     promoter_max real,
+     maxz real,
 
-    curs.execute("""
-    DROP TABLE IF EXISTS {ntn} CASCADE;
+     gene_all_distance integer[],
+     gene_all_id integer[],
+     gene_pc_distance integer[],
+     gene_pc_id integer[],
 
-    SELECT * 
-    INTO {ntn}
-    FROM {tn}
-    ORDER BY maxZ, chrom, start;
+     tads integer[]
 
-    DROP TABLE {tn};
-    """.format(tn = tn, ntn = ntn))
-    
-def addCol(curs, assembly):
-    printt("adding col...")
-    curs.execute("""
-ALTER TABLE {tn}
-ADD COLUMN creGroup integer;
+    ); """.format(tn = self.tableName_cre))
 
-UPDATE {tn}
-SET ...
-""".format(tn = assembly + "_cre"))
+    def doImport(self, curs):
+        print('***********', "create tables")
+        for chrom in self.chroms:
+            fn = chrom + ".tsv.gz"
+            fnp = paths.fnpCreTsvs(self.assembly, fn)
+            if self.sample:
+                if "chr13" != chrom:
+                    fnp = paths.fnpCreTsvs(self.assembly, "sample", fn)
+            with gzip.open(fnp) as f:
+                printt("importing", fnp, "into", self.tableName_cre)
+                curs.copy_from(f, self.tableName_cre, '\t', columns = DB_COLS)
+
+    def selectInto(self, curs):
+        print('***********', "selecting into new table")
+        curs.execute("""
+        DROP TABLE IF EXISTS {ntn} CASCADE;
+
+        SELECT *
+        INTO {ntn}
+        FROM {tn}
+        ORDER BY maxZ, chrom, start;
+
+        DROP TABLE {tn};
+        """.format(tn = self.tableName_cre,
+                   ntn = self.tableName_cre_all))
+
+    def addCol(self):
+        printt("adding col...")
+        curs.execute("""
+    ALTER TABLE {tn}
+    ADD COLUMN creGroup integer;
+
+    UPDATE {tn}
+    SET ...
+    """.format(tn = self.tableName_cre_all))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -102,15 +118,6 @@ def parse_args():
     parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
-
-def makeInfo(assembly, sample):
-    return {"chrs" : chroms[assembly],
-            "assembly" : assembly,
-            "d" : paths.fnpCreTsvs(assembly),
-            "base" : paths.path(assembly),
-            "tableName" : assembly + "_cre",
-            "tableName_all" : assembly + "_cre_all",
-            "subsample": sample}
 
 def main():
     args = parse_args()
@@ -123,27 +130,14 @@ def main():
 
     for assembly in assemblies:
         print('***********', assembly)
-        m = makeInfo(assembly, args.sample)
-
+        ic = ImportCREs(DBCONN, assembly, args.sample)
         if 1:
-            with getcursor(DBCONN, "dropTables") as curs:
-                print('***********', "drop tables")
-                makeTable(curs, m)
-                
-                print('***********', "create tables")
-                doImport(curs, m)
+            ic.run()
 
-                print('***********', "selecting into", ntn)
-                selectInto(curs, m)
-                
         else:
             # example to show how to add and populate column to
             #  master and, by inheritance, children tables...
-            with getcursor(DBCONN, "01_regelms") as curs:
-                addCol(curs, assembly)
-
-        print('***********', "vacumn")
-        vacumnAnalyze(DBCONN.getconn(), m["tableName"], m["chrs"])
+            ic.addCol()
 
     return 0
 
