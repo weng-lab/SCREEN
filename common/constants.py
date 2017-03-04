@@ -100,7 +100,7 @@ class paths(object):
 
     @staticmethod
     def fnpCreTsvs(assembly, *args):
-        return os.path.join(V4d, CreVerStr, assembly, "newway2", *args)
+        return os.path.join(V4d, CreVerStr, assembly, "output", *args)
 
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
