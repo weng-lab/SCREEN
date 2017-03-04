@@ -27,7 +27,8 @@ class ExtractRawPeaks:
         self.assembly = assembly
         self.j = j
 
-        self.d = paths.path(assembly)
+        self.raw = paths.path(assembly, "raw")
+        self.extras = paths.path(assembly, "extras")
 
         self.bwtool = "/data/cherrypy/bin/bwtool"
         if not os.path.exists(self.bwtool):
@@ -40,15 +41,15 @@ class ExtractRawPeaks:
         if not os.path.exists(self.bwtoolFilter):
             raise Exception("missing C++ bwtool filter; please compile?")
 
-        self.masterPeakFnp = paths.path(assembly, "raw", "masterPeaks.bed.gz")
+        self.masterPeakFnp = os.path.join(self.raw, "cREs.bed")
         self.numPeaks = numLines(self.masterPeakFnp)
         print(self.masterPeakFnp, "has", self.numPeaks)
 
-        self.miniPeaksBedFnp = paths.path(assembly, "raw", "miniPeakSites.bed.gz")
+        self.miniPeaksBedFnp = os.path.join(self.extras, "miniPeakSites.bed.gz")
 
     def run(self):
         self.writeBed()
-        self.extractAndDownsamplePeaks()
+        #self.extractAndDownsamplePeaks()
 
     def _runBwtool(self, outD, fnp):
         outFnp = os.path.join(outD, os.path.basename(fnp) + ".txt")
@@ -66,23 +67,23 @@ class ExtractRawPeaks:
         Utils.runCmds(cmds)
 
     def extractAndDownsamplePeaks(self):
-        fns = ["DNase-List.txt", "H3K27ac-List.txt",
-               "H3K4me3-List.txt"]
+        fns = ["dnase-list.txt", "h3k27ac-list.txt",
+               "h3k4me3-list.txt"]
 
         for fn in fns:
             print("***********************", self.assembly, fn)
-            fnp = os.path.join(self.d, "raw", fn)
+            fnp = os.path.join(self.raw, fn)
             with open(fnp) as f:
                 rows = [x.rstrip().split() for x in f.readlines()]
 
             bfnps = []
             for r in rows:
-                fnp = os.path.join(d, r[0], r[1] + ".bigWig")
+                fnp = os.path.join(Dirs.encode_data, r[0], r[1] + ".bigWig")
                 if os.path.exists(fnp):
                     bfnps.append(fnp)
                 else:
                     print("WARNING: missing bigwig", fnp)
-            outD = os.path.join(self.d, "minipeaks", "files")
+            outD = os.path.join(self.extras, "minipeaks", "files")
             Utils.mkdir_p(outD)
 
             Parallel(n_jobs = self.j)(delayed(self._runBwtool)
@@ -101,7 +102,7 @@ class ExtractRawPeaks:
                     start = int(toks[1])
                     stop = int(toks[2])
                     accession = toks[4]
-                    padding = (1000 - (stop - start)) / 2.0
+                    padding = 1000
                     outF.write('\t'.join([str(x) for x in
                                           [chrom,
                                            int(max(0, start - padding)),
@@ -183,9 +184,8 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-
     for assembly in assemblies:
-        if 0:
+        if 1:
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
         else:
