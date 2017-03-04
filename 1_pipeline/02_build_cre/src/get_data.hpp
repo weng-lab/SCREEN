@@ -30,25 +30,25 @@ public:
         auto lines = bib::files::readStrings(paths_.peaks());
         std::cout << "loading peaks " << paths_.peaks() << std::endl;
 
-	std::unordered_map<std::string, uint32_t> groupLookup {
-	  {"CTCF-only", 1},
-	    {"Enhancer-like", 2},
-	      {"Promoter-like", 3}};
-	
+        std::unordered_map<std::string, uint32_t> groupLookup {
+            {"CTCF-only", 1},
+            {"Enhancer-like", 2},
+            {"Promoter-like", 3}};
+
         Peaks ret;
         ret.reserve(lines.size());
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-	    ret.emplace(std::make_pair(toks[4],
-				       Peak(toks[0],
-					    std::stoi(toks[1]),
-					    std::stoi(toks[2]),
-					    toks[3],
-					    toks[4],
-					    groupLookup.at(toks[5]),
-					    "proximal" == toks[6]
-					    )));
-	}
+            ret.emplace(std::make_pair(toks[4],
+                                       Peak(toks[0],
+                                            std::stoi(toks[1]),
+                                            std::stoi(toks[2]),
+                                            toks[3],
+                                            toks[4],
+                                            groupLookup.at(toks[5]),
+                                            "proximal" == toks[6]
+                                           )));
+        }
         std::cout << "loaded " << ret.size() << " peaks\n";
         return ret;
     }
@@ -62,13 +62,13 @@ public:
             return ret;
         }
         auto lines = bib::files::readStrings(fnp);
-        std::cout << "loading " << " tads " << fnp << std::endl;
+        std::cout << "loading TADs " << fnp << std::endl;
 
         uint32_t count{0};
         ret.reserve(lines.size());
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            auto genes = bib::str::split(toks[1], ',');
+            auto genes = bib::str::split(toks[3], ',');
             for(const auto& gene : genes){
                 std::string ensembl = gene;
                 bib::string::rtrim(ensembl);
@@ -80,7 +80,6 @@ public:
         return ret;
 
     }
-
 
     auto allGenes(){
         return loadGenes(paths_.allGenes(), "all");

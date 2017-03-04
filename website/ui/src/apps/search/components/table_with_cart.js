@@ -191,11 +191,9 @@ class TableWithCart extends React.Component {
     }
 
     colorCreGroup(row, data, index){
-        let lookup = {0 : "creCtcfLike",
-                      1 : "creEnhancerLike",
-                      2 : "creOther",
-                      3 : "crePromoterLike",
-                      4 : "creRdhs"};
+        let lookup = {1 : "creCtcfLike",
+                      2 : "creEnhancerLike",
+                      3 : "crePromoterLike"};
         //console.log(row, data, index);
         let klass = lookup[data.cre_group];
         $('td', row).eq(0).addClass(klass);
