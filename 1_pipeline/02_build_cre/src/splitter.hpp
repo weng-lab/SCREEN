@@ -41,8 +41,11 @@ public:
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
             try{
-                std::string chrom = mpToChr_.at(toks[0]);
-                chromToLines[chrom].push_back(p);
+                const auto& rDHS = toks[0];
+                if(bib::in(rDHS, mpToChr_)){
+                    std::string chrom = mpToChr_.at(toks[0]);
+                    chromToLines[chrom].push_back(p);
+                }
             } catch(...){
                 std::cerr << "ERROR: missing '" << toks[0] << "' from " << inFnp << std::endl;
                 throw std::runtime_error("missing rDHS");
