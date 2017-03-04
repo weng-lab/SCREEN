@@ -181,9 +181,9 @@ def processGwasBed(origBedFnp, bedFnp):
     for r in split:
         authorPubmedTrait = r[-1]
         r[-1] = authorPubmedTrait.replace('-', '_')
-        
+
     print("***********", split[0][-1])
-        
+
     printt("writing", bedFnp)
     with open(bedFnp, 'w') as f:
         for r in split:
@@ -208,12 +208,17 @@ def _overlap(curs, bedFnp):
     tableName = "hg19_gwas_overlap"
     setupOverlap(curs, tableName)
 
+    cresFnp = paths.path("hg19", "extras", "cREs.sorted.bed")
+    if not os.path.exists(cresFnp):
+        Utils.sortFile(paths.path("hg19", "raw", "cREs.bed"),
+                       cresFnp)
+
     printt("running bedtools intersect...")
     cmds = [cat(bedFnp),
             '|', "cut -f -4,11-",
             '|', "bedtools intersect",
             "-a", "-",
-            "-b", paths.path("hg19", "raw", "masterPeaks.sorted.bed"),
+            "-b", cresFnp,
             "-wo",
             "-sorted"]
     snpsIntersecting = Utils.runCmds(cmds)
