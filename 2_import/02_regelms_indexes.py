@@ -29,9 +29,10 @@ class CreateIndices:
         with db_connect_single(os.path.realpath(__file__)) as conn:
             with conn.cursor() as curs:
                 makeIndex(curs, tn, ["accession", "chrom"])
-                makeIndexInt4Range(curs, tn, ["start", "stop"])
-                makeIndexRev(curs, tn, ["maxz", "enhancerMaxz",
-                                         "promoterMaxz"])
+                #makeIndexInt4Range(curs, tn, ["start", "stop"])
+                makeIndexRev(curs, tn, ["maxz", "dnase_max",
+                                        "h3k4me3_max", "h3k27ac_max",
+                                        "ctcf_max"])
                 conn.commit()
                 if 0:
                     for col in self.zscore_cols:
