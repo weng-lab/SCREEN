@@ -31,51 +31,10 @@
 #include "cpp/tictoc.hpp"
 
 #include <zi/zargs/zargs.hpp>
-ZiARG_string(chr, "", "chrom to load");
-ZiARG_string(assembly, "", "assembly");
-ZiARG_bool(bwtool, false, "process bwtool output");
-ZiARG_int32(j, 5, "num threads");
-ZiARG_int32(version, 2, "version");
-ZiARG_int32(nbins, 30, "number of downsampled bins");
 
 namespace bib {
 
   namespace a = arma;
-
-  class Builder {
-    const bfs::path base_;
-    const std::string assembly_;
-    bfs::path d_;
-
-  private:
-    void setGroupWrite(bfs::path fnp){
-      bfs::permissions(fnp, bfs::add_perms | bfs::owner_write | bfs::group_write);
-    }
-
-  public:
-    Builder(const bfs::path base, std::string assembly)
-      : base_(base)
-      , assembly_(assembly)
-    {
-      d_ = base / assembly / "raw";
-    }
-
-    void run(){
-      //HumanMousePaths hmp(assembly_, base)
-
-    }
-  };
-
-  void run(bfs::path base, std::string assembly){
-    std::cout << assembly << std::endl;
-    base /= assembly;
-
-    bib::Builder b(base, assembly);
-    {
-      bib::TicToc tt("build time");
-      b.run();
-    }
-  }
 
   int bwtool(){
     std::string line;
@@ -83,35 +42,35 @@ namespace bib {
     std::stringstream s;
     while(std::getline(std::cin, line)){
       const auto toks = bib::str::split(line, '\t');
-      const std::string& accession = toks[3];
+      //const std::string& accession = toks[3];
       const auto vals = bib::str::split(toks[5], ',');
 
       static const size_t n_bars = 20;
 
       a::fvec regions(vals.size());
       for(size_t i = 0; i < vals.size(); ++i){
-	if(likely(vals[i] != "NA")){
-	  regions[i] = std::stof(vals[i]);
-	} else{
-	  regions[i] = 0;
-	}
+          if(likely(vals[i] != "NA")){
+              regions[i] = std::stof(vals[i]);
+          } else{
+              regions[i] = 0;
+          }
       }
 
       size_t chunkSize = regions.size() / n_bars;
       std::vector<float> ret;
       for(size_t i = 0; i < n_bars; ++i){
-	float sum = 0;
-	for(size_t j = chunkSize * i;
-	    j < chunkSize * (i + 1) && j < regions.size(); ++j){
-	  sum += regions[j];
-	}
-	sum /= chunkSize;
-	ret.push_back(sum);
+          float sum = 0;
+          for(size_t j = chunkSize * i;
+              j < chunkSize * (i + 1) && j < regions.size(); ++j){
+              sum += regions[j];
+          }
+          sum /= chunkSize;
+          ret.push_back(sum);
       }
 
       s << "[" << std::setprecision(4);
       for(const auto& v : ret){
-	s << v << ',';
+          s << v << ',';
       }
       s.seekp(-1, s.cur);
       s << "],\n";
@@ -128,21 +87,7 @@ int main(int argc, char* argv[]){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   const auto args = std::vector<std::string>(argv + 1, argv + argc);
 
-  bfs::path base= "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4";
-  base /= "ver9";
-
-  if(ZiARG_bwtool){
-    return bib::bwtool();
-  }
-
-  std::vector<std::string> assemblies = {"hg19", "mm10"};
-  if(ZiARG_assembly > ""){
-    assemblies = {ZiARG_assembly};
-  }
-
-  for(const auto& assembly : assemblies){
-    bib::run(base, assembly);
-  }
+  return bib::bwtool();
 
   return 0;
 }
