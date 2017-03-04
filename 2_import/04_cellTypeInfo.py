@@ -117,8 +117,8 @@ idx integer);""".format(tableName = tableName))
         outF = StringIO.StringIO()
 
         for fnBase, ctIdx in fnBases:
-            fn = fnBase + "-List.txt"
-            fnp = paths.path(self.assembly, "raw", fn)
+            fn = fnBase + "-list.txt"
+            fnp = paths.path(self.assembly, "raw", fn.lower())
             if not os.path.exists(fnp):
                 raise Exception("missing " + fnp)
             with open(fnp) as f:
