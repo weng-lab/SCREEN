@@ -3,11 +3,11 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from get_tss import Genes
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
@@ -35,7 +35,7 @@ stop integer
         fns = {"mm10" : "snps142common.mm10.bed.gz",
                "hg19" : "snps144common.hg19.bed.gz"}
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
-        
+
         printt("importing", fnp)
         with gzip.open(fnp) as f:
             cols = ["chrom", "start", "stop", "snp"]
