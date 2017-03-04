@@ -7,15 +7,15 @@
 namespace bib {
 
   namespace bfs = boost::filesystem;
-  
+
   struct FileNames {
     static const std::string AllGenes;
     static const std::string PcGenes;
     static const std::string Tads;
     static const std::string cREs;
-    static const std::string EnsembleToID;    
+    static const std::string EnsembleToID;
   };
-  
+
   class HumanMousePaths {
   public:
     const std::string genome_;
@@ -25,14 +25,14 @@ namespace bib {
     const bfs::path extras_;
     bfs::path path_;
 
-    HumanMousePaths(std::string assembly, const std::string chr, const bfs::path raw,
-		    const bfs::path extras)
+    HumanMousePaths(std::string assembly, const std::string chr,
+                    const bfs::path raw, const bfs::path extras)
       : genome_(assembly)
       , chr_(chr)
       , raw_(raw)
       , extras_(extras)
     {
-      path_ = raw_ / chr_;
+      path_ = extras_ / chr_;
     }
 
     bfs::path allGenes(){ return path_ / FileNames::AllGenes; }
