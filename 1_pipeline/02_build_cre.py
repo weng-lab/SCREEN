@@ -57,6 +57,7 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
+        print("**********", assembly)
         run(assembly)
 
     return 0
