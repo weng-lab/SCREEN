@@ -31,16 +31,16 @@ WHERE approved_symbol = %s
     def _snps(self):
         printt("loading snps...")
         names = []
-        for chrom in chroms[self.assembly]:
-            self.curs.execute("""
-            SELECT name, start, stop, id FROM {assembly}_snps_{chrom}
-""".format(chrom=chrom, assembly=self.assembly))
-            r = self.curs.fetchall()
-            for row in r:
-                names.append('\t'.join([row[0],
-                                        chrom, str(row[1]), str(row[2]),
-                                        chrom, str(row[1]), str(row[2]),
-                                        row[0], "2", str(row[3])]))
+        self.curs.execute("""
+        SELECT snp, chrom, start, stop, id
+        FROM {assembly}_snps
+        """.format(assembly=self.assembly))
+        r = self.curs.fetchall()
+        for row in r:
+            names.append('\t'.join([row[0],
+                                    row[1], str(row[2]), str(row[3]),
+                                    row[1], str(row[2]), str(row[3]),
+                                    row[0], "2", str(row[4])]))
         return names
 
     def _genes(self):
@@ -135,13 +135,20 @@ USING gin (name gin_trgm_ops)
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--save', action="store_true", default=False)
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
+
     DBCONN = db_connect(os.path.realpath(__file__))
-    for assembly in ["mm10", "hg19"]:
+
+    assemblies = ["hg19", "mm10"]
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         with getcursor(DBCONN, "main") as curs:
             print('***********', assembly)
             ss = SetupAutocomplete(curs, assembly, args.save)
