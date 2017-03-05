@@ -7,6 +7,7 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -17,9 +18,8 @@ from db_utils import getcursor
 
 class PGcommonWrapper:
     def __init__(self, pg):
-        self.pgs = {
-            "hg19" : PGcommon(pg, "hg19"),
-            "mm10" : PGcommon(pg, "mm10")}
+        self.assemblies = Config.assemblies
+        self.pgs = {a : PGcommon(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
@@ -32,7 +32,8 @@ class PGcommon:
     def rankMethodToIDxToCellType(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
-SELECT idx, celltype, rankmethod FROM {tn}
+SELECT idx, celltype, rankmethod 
+FROM {tn}
 """.format(tn = self.assembly + "_rankcelltypeindexex"))
             ret = {}
             for r in curs.fetchall():

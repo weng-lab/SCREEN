@@ -10,6 +10,7 @@ import gzip
 from coord import Coord
 from pg_common import PGcommon
 from gene_parse import GeneParse
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -20,9 +21,8 @@ from db_utils import getcursor
 
 class PGparseWrapper:
     def __init__(self, pg):
-        self.pgs = {
-            "hg19" : PGgwas(pg, "hg19"),
-            "mm10" : PGgwas(pg, "mm10")}
+        self.assemblies = Config.assemblies
+        self.pgs = {a : PGparse(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
