@@ -11,6 +11,7 @@ import psycopg2.extras
 
 from coord import Coord
 from pg_common import PGcommon
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -22,10 +23,9 @@ from utils import eprint
 
 class PGsearchWrapper:
     def __init__(self, pg):
-        self.pgs = {
-            "hg19" : PGsearch(pg, "hg19"),
-            "mm10" : PGsearch(pg, "mm10")}
-
+        self.assemblies = Config.assemblies
+        self.pgs = {a : PGsearch(pg, a) for a in self.assemblies}
+        
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 

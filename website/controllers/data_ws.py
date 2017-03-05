@@ -36,12 +36,13 @@ class DataWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
         def makeDWS(assembly):
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
-        self.dwss = {a : makeDWS(a) for a in Config.assemblies}
-
+        self.assemblies = Config.assemblies
+        self.dwss = {a : makeDWS(a) for a in self.assemblies}
+        
     def process(self, j, args, kwargs):
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
-        if j["GlobalAssembly"] not in ["mm10", "hg19"]:
+        if j["GlobalAssembly"] not in self.assemblies:
             raise Exception("invalid GlobalAssembly")
         return self.dwss[j["GlobalAssembly"]].process(j, args, kwargs)
 
