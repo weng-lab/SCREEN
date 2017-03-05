@@ -14,6 +14,7 @@ from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
@@ -21,9 +22,8 @@ from db_utils import getcursor
 
 class CachedObjectsWrapper:
     def __init__(self, ps):
-        self.cos = {"hg19" : CachedObjects(ps, "hg19"),
-                    "mm10" : CachedObjects(ps, "mm10")}
-
+        self.cos = {a : CachedObjects(ps, a) for a in Config.assemblies}
+        
     def __getitem__(self, assembly):
         return self.cos[assembly]
 

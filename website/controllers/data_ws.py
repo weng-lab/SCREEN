@@ -26,6 +26,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
 from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
@@ -35,8 +36,7 @@ class DataWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
         def makeDWS(assembly):
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
-        self.dwss = { "hg19" : makeDWS("hg19"),
-                      "mm10" : makeDWS("mm10") }
+        self.dwss = {a : makeDWS(a) for a in Config.assemblies}
 
     def process(self, j, args, kwargs):
         if "GlobalAssembly" not in j:
