@@ -20,7 +20,7 @@ class ImportPeakIntersections:
     def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.tableName = assembly + "_" + "peakIntersections"
+        self.tableName = assembly + "_peakIntersections"
 
     def setupTable(self):
         printt("dropping and creating table", self.tableName)
@@ -36,10 +36,11 @@ class ImportPeakIntersections:
     """.format(tableName = self.tableName))
 
     def run(self):
-        fnp = paths.fnpCreTsvs(self.assembly, "peakIntersections.tsv.gz")
         self.setupTable()
 
         cols = "accession tf histone dnase".split(' ')
+
+        fnp = paths.path(self.assembly, "extras", "peakIntersections.json.gz")
         printt("copying in data", fnp)
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
@@ -52,7 +53,7 @@ class ImportPeakIntersectionMetadata:
     def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.tableName = assembly + "_" + "peakIntersectionsMetadata"
+        self.tableName = assembly + "_peakIntersectionsMetadata"
 
     def setupTable(self):
         printt("dropping and creating table", self.tableName)
@@ -92,6 +93,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--index', action="store_true", default=False)
     parser.add_argument('--metadata', action="store_true", default=False)
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -100,7 +102,10 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = ["hg19", "mm10"]
+    if args.assembly:
+        assemblies = [args.assembly]
+    for assembly in assemblies:
         with getcursor(DBCONN, "main") as curs:
             if args.metadata:
                 ipi = ImportPeakIntersectionMetadata(curs, assembly)
