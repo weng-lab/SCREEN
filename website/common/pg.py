@@ -440,14 +440,10 @@ WHERE accession = %s
         h3k4me3_zscores
         insulator_zscores
         promoter_zscores""".split('\n')
+        cols = [c.strip() for c in cols]
         r = self._getColsForAccession(accession, chrom, cols)
-        return {"zscores" : { "dnase" : r[0],
-                              "ctcf-only" : r[1],
-                              "dnase+ctcf" : r[2],
-                              "h3k27ac-only" : r[3],
-                              "dnase+h3k27ac" : r[4],
-                              "h3k4me3-only" : r[5],
-                              "dnase+h3k4me3": r[6] }}
+        cols = [c.split('_')[0] for c in cols]
+        return dict(zip(cols, r))
 
     def creMostsimilar(self, acc, assay, threshold=20000):
         if self.assembly == "hg19":
