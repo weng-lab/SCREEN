@@ -61,8 +61,8 @@ class CRE:
         return self.pgSearch.creRanksPromoter(self.accession, coord.chrom)
 
     def allRanks(self):
-        coord = self.coord()
         if not self.ranks:
+            coord = self.coord()
             self.ranks = self.pgSearch.creRanks(self.accession, coord.chrom)
         return self.ranks
 
@@ -76,43 +76,44 @@ class CRE:
         # ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         rmToCts = self.cache.rankMethodToCellTypes
 
-        # ['h3k4me3-only', 'dnase+ctcf', 'dnase+h3k27ac', 'dnase+h3k4me3', 'dnase', 'h3k27ac-only', 'ctcf-only']
-        ranks = self.allRanks()["zscores"]
+        # ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
+        ranks = self.allRanks()
 
         def get_rank(ct, d):
             return -11.0 if ct not in d else d[ct]
         def arrToCtDict(arr, cts):
             if len(arr) != len(cts):
+                print("\n****************************")
                 print("error in top tissues", len(arr), len(cts))
+                print("\n", "arr", arr)
+                print("\n", "cts", cts)
+                print("****************************\n")
                 assert(len(arr) == len(cts))
             ret = {}
             for idx, v in enumerate(arr):
                 ret[cts[idx]] = v
             return ret
-        def makeArrRanks(rm1, ctrm1):
+        def makeArrRanks(rm1):
             ret = []
-            oneAssay = arrToCtDict(ranks[rm1], rmToCts[ctrm1])
+            oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
             for ct, v in oneAssay.iteritems():
                 r = {"tissue" : self._ctToTissue(ct), "ct" : ct, "one" : v}
                 ret.append(r)
             return ret
-        def makeArrMulti(rm1, ctrm1, rm2, ctrm2):
+        def makeArrMulti(rm1, rm2):
             ret = []
-            oneAssay = arrToCtDict(ranks[rm1], rmToCts[ctrm1])
-            multiAssay = arrToCtDict(ranks[rm2], rmToCts[ctrm2])
+            oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
+            multiAssay = arrToCtDict(ranks[rm2.lower()], rmToCts[rm2])
             for ct, v in oneAssay.iteritems():
                 r = {"tissue" : self._ctToTissue(ct), "ct" : ct,
                      "one" : v, "two": get_rank(ct, multiAssay)}
                 ret.append(r)
             return ret
 
-        return {"dnase": makeArrRanks("dnase", "DNase"),
-                "promoter": makeArrMulti("h3k4me3-only", "H3K4me3",
-                                         "dnase+h3k4me3", "Promoter"),
-                "enhancer": makeArrMulti("h3k27ac-only", "H3K27ac",
-                                         "dnase+h3k27ac", "Enhancer"),
-                "ctcf": makeArrMulti("ctcf-only", "CTCF",
-                                     "dnase+ctcf", "Insulator")}
+        return {"dnase": makeArrRanks("DNase"),
+                "promoter": makeArrMulti("H3K4me3", "Promoter"),
+                "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
+                "ctcf": makeArrMulti("CTCF", "Insulator")}
 
     def peakIntersectCount(self):
         coord = self.coord()
