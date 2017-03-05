@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys, os
 import ConfigParser
+import json
 
 class Config:
     fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
@@ -16,3 +17,5 @@ class Config:
 
     version = c.get("RE", "version")
     database = c.get("RE", "database")
+    assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
+    print(assemblies)
