@@ -16,16 +16,12 @@ from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
-    def __init__(self, host, assembly, nbins, ver):
-        self.host = host
+    def __init__(self, assembly, nbins, ver):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
 
-        if self.host:
-            self.cluster = Cluster([self.host])
-        else:
-            self.cluster = Cluster()
+        self.cluster = Cluster(["cassandra"])
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
@@ -78,23 +74,26 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
+    ver = 3
+
     if not GetYesNoToQuestion.immediate("remove old tables?"):
         return 0
 
-    queryFnp = paths.path(assembly, "insert_minipeaks.cql")
-    with open(queryFnp, 'w') as outF:
-        outF.write("use minipeaks;\n")
-        for assembly in assemblies:
-            im = ImportMinipeaks(args.host, assembly, 20, 3)
-            im.importAll(outF)
+    for assembly in assemblies:
+        queryFnp = paths.path(assembly, "insert_minipeaks.cql")
+        with open(queryFnp, 'w') as outF:
+            outF.write("use minipeaks;\n")
+            for assembly in assemblies:
+                im = ImportMinipeaks(assembly, 20, ver)
+                im.importAll(outF)
 
-    printWroteNumLines(queryFnp)
-    cmds = ['CQLSH_HOST="cassandra"',
-            os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
-            "--cqlversion=3.4.2",
-            "-f", queryFnp]
-    if GetYesNoToQuestion.immediate("import data?"):
-        print(Utils.runCmds(cmds))
+        printWroteNumLines(queryFnp)
+        cmds = ['CQLSH_HOST="cassandra"',
+                os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+                "--cqlversion=3.4.2",
+                "-f", queryFnp]
+        if GetYesNoToQuestion.immediate("import data?"):
+            print(Utils.runCmds(cmds))
 
 
 if __name__ == '__main__':
