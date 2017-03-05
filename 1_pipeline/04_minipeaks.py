@@ -145,7 +145,7 @@ class MergeFiles:
             fnps = []
             presentFileIDs = []
             for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks", "files",
+                fnp = paths.path(self.assembly, "minipeaks", "files2",
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
@@ -198,7 +198,7 @@ def main():
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
         else:
-            mf = MergeFiles(assembly, 20, 2, args.assay)
+            mf = MergeFiles(assembly, 20, 3, args.assay)
             mf.run()
 
     return 0

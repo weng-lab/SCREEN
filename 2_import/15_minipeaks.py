@@ -85,7 +85,7 @@ def main():
     with open(queryFnp, 'w') as outF:
         outF.write("use minipeaks;\n")
         for assembly in assemblies:
-            im = ImportMinipeaks(args.host, assembly, 20, 2)
+            im = ImportMinipeaks(args.host, assembly, 20, 3)
             im.importAll(outF)
 
     printWroteNumLines(queryFnp)
