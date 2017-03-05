@@ -136,7 +136,7 @@ class MergeFiles:
         return assay, fileIDs
 
     def run(self):
-        fns = ["DNase-List.txt", "H3K27ac-List.txt", "H3K4me3-List.txt"]
+        fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
 
         for fn in fns:
             assay, fileIDs = self._getFileIDs(fn)
@@ -145,7 +145,7 @@ class MergeFiles:
             fnps = []
             presentFileIDs = []
             for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks", "files2",
+                fnp = paths.path(self.assembly, "minipeaks", "files",
                                  fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
@@ -157,7 +157,7 @@ class MergeFiles:
             self.processRankMethod(presentFileIDs, fnps, assay)
 
     def _makeAccesionFile(self, fnp):
-        cmds = [cat(paths.path(self.assembly, "raw", "masterPeaks.bed.gz")),
+        cmds = [cat(paths.path(self.assembly, "raw", "cREs.bed")),
                 '|', "awk -v OFS='\t' '{ print($5,$1) }'",
                 '>', fnp]
         Utils.runCmds(cmds)
@@ -194,7 +194,7 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        if 1:
+        if 0:
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
         else:

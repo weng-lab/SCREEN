@@ -99,14 +99,13 @@ def runIntersectJob(jobargs, bedfnp):
     return (fileJson, ret)
 
 def computeIntersections(args, assembly):
-    d = os.path.join("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/",
-                     "ver9", assembly)
-    bedFnp = os.path.join(d, "raw", "masterPeaks.bed")
+    bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
 
-    jobs = makeJobs(args, assembly)
+    jobs = makeJobs(assembly)
 
-    results = Parallel(n_jobs = args.j)(delayed(runIntersectJob)(job, bedFnp)
-                                        for job in jobs)
+    results = Parallel(n_jobs = args.j)(
+        delayed(runIntersectJob)(job, bedFnp)
+        for job in jobs)
 
     print("\n")
     printt("merging intersections into hash...")
@@ -127,7 +126,7 @@ def computeIntersections(args, assembly):
 
     printt("completed hash merge")
 
-    outFnp = os.path.join(d, "newway", "peakIntersections")
+    outFnp = paths.path(assembly, "extras", "peakIntersections.json")
     with open(outFnp, 'w') as f:
         for k,v in tfImap.iteritems():
             f.write('\t'.join([k, json.dumps(v["tf"]),
