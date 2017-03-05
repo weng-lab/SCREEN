@@ -36,6 +36,19 @@ namespace bib {
 
   namespace a = arma;
 
+  template <typename S, typename C>
+  S& join(S& s, const C& vec, const std::string delim){
+    // http://stackoverflow.com/a/2519016
+    for(auto it = vec.begin(); it != vec.end(); ++it ){
+      if( it != vec.begin() ){
+	s << delim;
+      }
+      s << *it;
+    }
+    return s;
+  }
+
+
   int bwtool(){
     std::string line;
 
@@ -68,12 +81,8 @@ namespace bib {
           ret.push_back(sum);
       }
 
-      s << "[" << std::setprecision(4);
-      for(const auto& v : ret){
-          s << v << ',';
-      }
-      s.seekp(-1, s.cur);
-      s << "],\n";
+      s << std::setprecision(4);
+      s << "\"[ "; join(s, ret, ",") << "]\"\n";
     }
 
     std::cout << s.str();
