@@ -164,16 +164,19 @@ class MergeFiles:
         printWroteNumLines(fnp)
 
     def processRankMethod(self, fileIDs, fnps, assay):
-        accessionFnp = paths.path(self.assembly, "minipeaks", "accessions.txt")
+        accessionFnp = paths.path(self.assembly, "minipeaks", "merged", "accessions.txt")
+        Utils.ensureDir(mergedFnp)
         if not os.path.exists(accessionFnp):
             self._makeAccesionFile(accessionFnp)
 
-        colsFnp = paths.path(self.assembly, "minipeaks", assay + "_cols.txt")
+        colsFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_cols.txt")
+        Utils.ensureDir(mergedFnp)
         with open(colsFnp, 'w') as f:
             f.write('\t'.join(fileIDs) + '\n')
         printWroteNumLines(colsFnp)
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
+        Utils.ensureDir(mergedFnp)
         printt("paste into", mergedFnp)
         chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
