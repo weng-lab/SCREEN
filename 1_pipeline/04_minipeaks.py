@@ -44,7 +44,7 @@ class ExtractRawPeaks:
 
         self.masterPeakFnp = os.path.join(self.raw, "cREs.bed")
         self.numPeaks = numLines(self.masterPeakFnp)
-        print(self.masterPeakFnp, "has", self.numPeaks)
+        printt(self.masterPeakFnp, "has", self.numPeaks)
 
         self.miniPeaksBedFnp = os.path.join(self.minipeaks, "miniPeakSites.bed.gz")
 
@@ -60,7 +60,7 @@ class ExtractRawPeaks:
             if os.path.getsize(outFnp) > 0:
                 num = numLines(outFnp)
                 if num == self.numPeaks:
-                    print("skipping", outFnp, num)
+                    printt("skipping", outFnp, num)
                     return
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
@@ -69,7 +69,7 @@ class ExtractRawPeaks:
                 '>', outFnp]
         Utils.runCmds(cmds)
         if self.debug:
-            print("wrote", outFnp)
+            printt("wrote", outFnp)
 
     def extractAndDownsamplePeaks(self):
         fns = ["dnase-list.txt", "h3k27ac-list.txt",
@@ -77,7 +77,7 @@ class ExtractRawPeaks:
 
         bfnps = []
         for fn in fns:
-            print("***********************", self.assembly, fn)
+            printt("***********************", self.assembly, fn)
             fnp = os.path.join(self.raw, fn)
             with open(fnp) as f:
                 rows = [x.rstrip('\n').split() for x in f.readlines()]
@@ -87,10 +87,10 @@ class ExtractRawPeaks:
                 if os.path.exists(fnp):
                     bfnps.append(fnp)
                 else:
-                    print("WARNING: missing bigwig", fnp)
+                    printt("WARNING: missing bigwig", fnp)
         outD = os.path.join(self.minipeaks, "files")
         Utils.mkdir_p(outD)
-        print("found", len(bfnps), "files to run")
+        printt("found", len(bfnps), "files to run")
 
         if self.debug:
             bfnps = [bfnps[0]]
@@ -117,7 +117,7 @@ class ExtractRawPeaks:
                                            int(max(0, midPoint - padding)),
                                            int(midPoint + padding),
                                            accession]]) + '\n')
-        print("wrote", outFnp)
+        printt("wrote", outFnp)
 
 class MergeFiles:
     def __init__(self, assembly, nbins, ver, assay):
@@ -128,7 +128,7 @@ class MergeFiles:
 
     def _getFileIDs(self, fn):
         assay = fn.split('-')[0]
-        print("***********************", self.assembly, assay)
+        printt("***********************", self.assembly, assay)
         fnp = paths.path(self.assembly, "raw", fn)
         with open(fnp) as f:
             rows = [x.rstrip('\n').split('\t') for x in f.readlines()]
@@ -151,9 +151,9 @@ class MergeFiles:
                     fnps.append(fnp)
                     presentFileIDs.append(fileID)
                 else:
-                    print("WARNING: missing", fnp)
+                    printt("WARNING: missing", fnp)
 
-            print("filesIDs:", len(presentFileIDs), "for", len(fnps), "files")
+            printt("filesIDs:", len(presentFileIDs), "for", len(fnps), "files")
             self.processRankMethod(presentFileIDs, fnps, assay)
 
     def _makeAccesionFile(self, fnp):
