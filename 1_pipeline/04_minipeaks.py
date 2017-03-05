@@ -56,12 +56,6 @@ class ExtractRawPeaks:
 
     def _runBwtool(self, outD, fnp):
         outFnp = os.path.join(outD, os.path.basename(fnp) + ".txt")
-        if os.path.exists(outFnp):
-            if os.path.getsize(outFnp) > 0:
-                num = numLines(outFnp)
-                if num == self.numPeaks:
-                    printt("skipping", outFnp, num)
-                    return
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
                 fnp, "/dev/stdout",
@@ -165,12 +159,12 @@ class MergeFiles:
 
     def processRankMethod(self, fileIDs, fnps, assay):
         accessionFnp = paths.path(self.assembly, "minipeaks", "merged", "accessions.txt")
-        Utils.ensureDir(mergedFnp)
+        Utils.ensureDir(accessionFnp)
         if not os.path.exists(accessionFnp):
             self._makeAccesionFile(accessionFnp)
 
         colsFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_cols.txt")
-        Utils.ensureDir(mergedFnp)
+        Utils.ensureDir(colsFnp)
         with open(colsFnp, 'w') as f:
             f.write('\t'.join(fileIDs) + '\n')
         printWroteNumLines(colsFnp)
