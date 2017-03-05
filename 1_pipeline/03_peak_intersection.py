@@ -126,8 +126,8 @@ def computeIntersections(args, assembly):
 
     printt("completed hash merge")
 
-    outFnp = paths.path(assembly, "extras", "peakIntersections.json")
-    with open(outFnp, 'w') as f:
+    outFnp = paths.path(assembly, "extras", "peakIntersections.json.gz")
+    with gzip.open(outFnp, 'w') as f:
         for k,v in tfImap.iteritems():
             f.write('\t'.join([k, json.dumps(v["tf"]),
                                json.dumps(v["histone"]),
