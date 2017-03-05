@@ -20,6 +20,35 @@ class SetupAutocomplete:
         self.save = save
         self.tableName = self.assembly + "_autocomplete"
 
+    def run(self):
+        self._setupDb()
+        self._snps()
+
+        names = self._genes()
+        printt("found", len(names), "items")
+
+        self._save(names)
+        self._db(names)
+        self._index()
+
+    def _setupDb(self):
+        printt("drop and create", self.tableName)
+        self.curs.execute("""
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}
+(id serial PRIMARY KEY,
+name TEXT,
+chrom TEXT,
+start integer,
+stop integer,
+altchrom TEXT,
+altstart integer,
+altstop integer,
+oname TEXT,
+handler integer,
+pointer integer)
+""".format(tn = self.tableName))
+
     def test(self, q):
         self.curs.execute("""
 SELECT approved_symbol
@@ -29,19 +58,21 @@ WHERE approved_symbol = %s
         print(self.curs.fetchall())
 
     def _snps(self):
-        printt("loading snps...")
+        printt("inserting snps...")
         names = []
         self.curs.execute("""
-        SELECT snp, chrom, start, stop, id
+        INSERT INTO {tn}
+        (name,
+        chrom, start, stop,
+        altchrom, altstart, altstop,
+        oname, handler, pointer)
+        SELECT snp,
+        chrom, start, stop,
+        chrom, start, stop,
+        snp, 2, id
         FROM {assembly}_snps
-        """.format(assembly=self.assembly))
-        r = self.curs.fetchall()
-        for row in r:
-            names.append('\t'.join([row[0],
-                                    row[1], str(row[2]), str(row[3]),
-                                    row[1], str(row[2]), str(row[3]),
-                                    row[0], "2", str(row[4])]))
-        return names
+        """.format(tn = self.tableName, assembly = self.assembly))
+        printt("loaded", self.curs.rowcount)
 
     def _genes(self):
         printt("loading gene info...")
@@ -89,21 +120,6 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         outF.seek(0)
 
         printt("inserting into", self.tableName)
-        self.curs.execute("""
-DROP TABLE IF EXISTS {tn};
-CREATE TABLE {tn}
-(id serial PRIMARY KEY,
-name TEXT,
-chrom TEXT,
-start INT,
-stop INT,
-altchrom TEXT,
-altstart INT,
-altstop INT,
-        oname TEXT,
-        handler INT,
-        pointer INT)
-""".format(tn = self.tableName))
 
         cols = ["name", "chrom", "start", "stop",
                 "altchrom", "altstart", "altstop", "oname", "handler", "pointer"]
@@ -123,14 +139,6 @@ USING btree (name text_pattern_ops)
 CREATE INDEX {tn}_fulltext_index ON {tn}
 USING gin (name gin_trgm_ops)
 """.format(tn = self.tableName))
-
-    def run(self):
-        names = self._genes() + self._snps()
-        printt("found", len(names), "items")
-
-        self._save(names)
-        self._db(names)
-        self._index()
 
 def parse_args():
     parser = argparse.ArgumentParser()
