@@ -16,7 +16,6 @@ class ImportLiftover:
     def __init__(self, curs):
         self.curs = curs
         self.tableName = "mm10_liftover"
-        self.d = "/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/ver9"
 
     def setupLiftover(self):
         printt("dropping and creating", self.tableName)
@@ -34,7 +33,7 @@ class ImportLiftover:
     """.format(tableName = self.tableName))
 
     def getMpToAccLookup(self, assembly):
-        fnp = os.path.join(self.d, assembly, "raw", "masterPeaks.bed.gz")
+        fnp = paths.path(assembly, "raw", "masterPeaks.bed.gz")
         printt("making lookup", assembly, "from", fnp)
         ret = {}
         with gzip.open(fnp) as f:
