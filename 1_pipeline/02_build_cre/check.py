@@ -44,8 +44,8 @@ class CheckCellTypes:
                    ("Promoter", 4)]
         self.rankMethodToCtAndFileID = []
         for fnBase, ctIdx in fnBases:
-            fn = fnBase + "-List.txt"
-            fnp = paths.path(self.assembly, "raw", fn)
+            fn = fnBase + "-list.txt"
+            fnp = paths.path(self.assembly, "raw", fn.lower())
             if not os.path.exists(fnp):
                 raise Exception("missing " + fnp)
             with open(fnp) as f:
@@ -69,22 +69,15 @@ class CheckCellTypes:
                 self.rankMethodToCtAndFileID.append(d)
 
     def run(self):
-        fnp = paths.path(self.assembly, "raw", "masterPeaks.bed.gz")
-        cmds = ["zcat", fnp,
-                '|', "grep chr13", '|',
-                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .0001) print $0}'"""]
+        fnp = paths.path(self.assembly, "raw", "cREs.bed")
+        cmds = ["cat", fnp,
+                '|', 
+                """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .00001) print $0}'"""]
         cres = [x.rstrip('\n').split('\t') for x in Utils.runCmds(cmds) if x]
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
         print("selected", len(cres), "cres")
-        cres = [CREnt(*x) for x in cres]
-
-        lookups = {"DNase" : "dnase",
-                   "H3K4me3" : "h3k4me3-only",
-                   "Promoter" : "dnase+h3k4me3",
-                   "H3K27ac" : "h3k27ac-only",
-                   "Enhancer" : "dnase+h3k27ac",
-                   "CTCF" : "ctcf-only",
-                   "Insulator" : "dnase+ctcf"}
+        # chr1    10244   10357   EH37D0000001    EH37E1055273    Promoter-like   proximal
+        cres = [CREnt(*x[:5]) for x in cres]
 
         for cre in cres:
             allRanks = CRE(self.pgSearch, cre.accession, self.cache).allRanks()
@@ -92,7 +85,7 @@ class CheckCellTypes:
                 cmds = ['grep', cre.mpName, fnp]
                 zscore = float(Utils.runCmds(cmds)[0].split('\t')[1])
                 ctIdx = self.rankMethodToIDxToCellType[rm][ct] - 1
-                zscoreDb = allRanks["zscores"][lookups[rm]][ctIdx]
+                zscoreDb = allRanks[rm.lower()][ctIdx]
                 if not isclose(zscore, zscoreDb, 0.001):
                     eprint("PROBLEM")
                     eprint(cre)
