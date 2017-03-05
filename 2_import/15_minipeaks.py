@@ -81,7 +81,7 @@ def main():
     if not GetYesNoToQuestion.immediate("remove old tables?"):
         return 0
 
-    queryFnp = os.path.join(paths.v4d, "insert_minipeaks.cql")
+    queryFnp = paths.path(assembly, "insert_minipeaks.cql")
     with open(queryFnp, 'w') as outF:
         outF.write("use minipeaks;\n")
         for assembly in assemblies:
