@@ -5,12 +5,16 @@ from common.page_info_geneexp import PageInfoGeneExp
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from compute_gene_expression import ComputeGeneExpression, Compartments
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+from config import Config
+
 class GeneExpController:
     def __init__(self, templates, ps, cache):
         self.t = templates
         self.ps = ps
         self.cache = cache
         self.params = (ps, cache)
+        self.assemblies = Config.assemblies
 
     def geneexp(self, args, kwargs, uuid):
         pageInfo = PageInfoGeneExp(*self.params)
@@ -19,7 +23,7 @@ class GeneExpController:
     def geneexpjson(self, j):
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
-        if j["GlobalAssembly"] not in ["mm10", "hg19"]:
+        if j["GlobalAssembly"] not in self.assemblies:
             raise Exception("invalid GlobalAssembly")
 
         assembly = j["GlobalAssembly"]

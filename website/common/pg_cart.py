@@ -12,12 +12,12 @@ from db_utils import getcursor
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
+from config import Config
 
 class PGcartWrapper:
     def __init__(self, pg):
-        self.pgs = {
-            "hg19" : PGcart(pg, "hg19"),
-            "mm10" : PGcart(pg, "mm10")}
+        self.assemblies = Config.assemblies
+        self.pgs = {a : PGcart(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
