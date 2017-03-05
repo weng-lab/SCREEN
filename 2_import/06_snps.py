@@ -6,6 +6,7 @@ import os, sys, json, psycopg2, re, argparse, gzip
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from get_tss import Genes
@@ -54,7 +55,8 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = Config.assemblies
+
     for assembly in assemblies:
         with getcursor(DBCONN, "04_cellTypeInfo") as curs:
             g = GWASsnps(curs, assembly)

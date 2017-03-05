@@ -11,6 +11,7 @@ from utils import AddPath, printt
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
+from config import Config
 
 def setupDB(DBCONN):
     tableName = "sessions"

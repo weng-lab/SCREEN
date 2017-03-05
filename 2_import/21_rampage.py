@@ -14,6 +14,7 @@ from exp import Exp
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
+from config import Config
 
 def doImport(curs, assembly):
     if "hg19" == assembly:
@@ -119,7 +120,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["hg19"]
+    assemblies = ["hg19"] #Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

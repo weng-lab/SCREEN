@@ -6,6 +6,7 @@ import os, sys, json, psycopg2, re, argparse, gzip
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
@@ -48,7 +49,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

@@ -25,7 +25,7 @@ class PGsearchWrapper:
     def __init__(self, pg):
         self.assemblies = Config.assemblies
         self.pgs = {a : PGsearch(pg, a) for a in self.assemblies}
-        
+
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
