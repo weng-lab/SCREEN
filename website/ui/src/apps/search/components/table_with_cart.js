@@ -196,7 +196,7 @@ class TableWithCart extends React.Component {
                       3 : "crePromoterLike"};
         //console.log(row, data, index);
         let klass = lookup[data.cre_group];
-        $('td', row).eq(0).addClass(klass);
+        $('td', row).eq(1).addClass(klass);
     }
 
     table(data, actions){

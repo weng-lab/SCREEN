@@ -423,18 +423,15 @@ table tr td.minipeak {
 
 .creCtcfLike {
     color: #00B0F0;
+    background-color: #00B0F0;
 }
 .creEnhancerLike {
     color: #FFCD00;
-}
-.creOther {
-    color: #DF7EFD;
+    background-color: #FFCD00;
 }
 .crePromoterLike {
     color: #FF0000;
-}
-.creRdhs {
-    color: #A8A8A8;
+    background-color: #FF0000;
 }
 
 .nav-tabs > li > a span {
