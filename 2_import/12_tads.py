@@ -7,6 +7,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
@@ -53,15 +54,20 @@ tadName text
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
+    assemblies = ["hg19"] #Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["hg19"]:
+    for assembly in assemblies:
         with getcursor(DBCONN, "main") as curs:
             iti = ImportTADinfo(curs, assembly)
             iti.run()

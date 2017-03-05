@@ -13,6 +13,7 @@ from utils import Utils, eprint, AddPath
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
+from config import Config
 
 class DetermineTissue:
     # translate tissue name to tissue name
@@ -234,7 +235,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
