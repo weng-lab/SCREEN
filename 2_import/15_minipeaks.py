@@ -16,30 +16,26 @@ from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
-    def __init__(self, host, assembly, nbins, ver):
-        self.host = host
+    def __init__(self, assembly, nbins, ver):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
 
-        if self.host:
-            self.cluster = Cluster([self.host])
-        else:
-            self.cluster = Cluster()
+        self.cluster = Cluster(["cassandra.docker"])
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
     def importAll(self, outF):
-        for assay in ["DNase", "H3K27ac", "H3K4me3"]:
+        for assay in ["dnase", "h3k27ac", "h3k4me3"]:
             self._doImport(assay, outF)
 
     def _doImport(self, assay, outF):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
-        colsFnp = paths.path(self.assembly, "minipeaks", assay + "_cols.txt")
+        colsFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_cols.txt")
         with open(colsFnp) as f:
             fileIDs = f.readline().rstrip('\n').split('\t')
 
@@ -56,7 +52,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = tableName,
            fields = ",".join([r + " text" for r in fileIDs])))
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
         #printt("import", mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
@@ -78,23 +74,26 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
+    ver = 3
+
     if not GetYesNoToQuestion.immediate("remove old tables?"):
         return 0
 
-    queryFnp = os.path.join(paths.v4d, "insert_minipeaks.cql")
-    with open(queryFnp, 'w') as outF:
-        outF.write("use minipeaks;\n")
-        for assembly in assemblies:
-            im = ImportMinipeaks(args.host, assembly, 20, 3)
-            im.importAll(outF)
+    for assembly in assemblies:
+        queryFnp = paths.path(self.assembly, "minipeaks", "merged", "insert_minipeaks.cql")
+        with open(queryFnp, 'w') as outF:
+            outF.write("use minipeaks;\n")
+            for assembly in assemblies:
+                im = ImportMinipeaks(assembly, 20, ver)
+                im.importAll(outF)
 
-    printWroteNumLines(queryFnp)
-    cmds = ['CQLSH_HOST="cassandra"',
-            os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
-            "--cqlversion=3.4.2",
-            "-f", queryFnp]
-    if GetYesNoToQuestion.immediate("import data?"):
-        print(Utils.runCmds(cmds))
+        printWroteNumLines(queryFnp)
+        cmds = ['CQLSH_HOST="cassandra.docker"',
+                os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
+                "--cqlversion=3.4.2",
+                "-f", queryFnp]
+        if GetYesNoToQuestion.immediate("import data?"):
+            print(Utils.runCmds(cmds))
 
 
 if __name__ == '__main__':
