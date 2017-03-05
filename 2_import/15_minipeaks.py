@@ -21,21 +21,21 @@ class ImportMinipeaks:
         self.nbins = nbins
         self.ver = ver
 
-        self.cluster = Cluster(["cassandra"])
+        self.cluster = Cluster(["cassandra.docker"])
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
     def importAll(self, outF):
-        for assay in ["DNase", "H3K27ac", "H3K4me3"]:
+        for assay in ["dnase", "h3k27ac", "h3k4me3"]:
             self._doImport(assay, outF)
 
     def _doImport(self, assay, outF):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
-        colsFnp = paths.path(self.assembly, "minipeaks", assay + "_cols.txt")
+        colsFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_cols.txt")
         with open(colsFnp) as f:
             fileIDs = f.readline().rstrip('\n').split('\t')
 
@@ -52,7 +52,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = tableName,
            fields = ",".join([r + " text" for r in fileIDs])))
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", assay + "_merged.txt")
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
         #printt("import", mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
@@ -80,7 +80,7 @@ def main():
         return 0
 
     for assembly in assemblies:
-        queryFnp = paths.path(assembly, "insert_minipeaks.cql")
+        queryFnp = paths.path(self.assembly, "minipeaks", "merged", "insert_minipeaks.cql")
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
@@ -88,7 +88,7 @@ def main():
                 im.importAll(outF)
 
         printWroteNumLines(queryFnp)
-        cmds = ['CQLSH_HOST="cassandra"',
+        cmds = ['CQLSH_HOST="cassandra.docker"',
                 os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
                 "--cqlversion=3.4.2",
                 "-f", queryFnp]
