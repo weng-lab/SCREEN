@@ -5,7 +5,7 @@ import os, sys, json, psycopg2, argparse, gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/'))
-peakIntersections = __import__('03_beds_es')
+peakIntersections = __import__('03_peak_intersection')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect

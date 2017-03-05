@@ -50,7 +50,7 @@ class PGsearch:
                  "end" : e[3]} for e in r]
 
     def chromCounts(self):
-        tableName = self.assembly + "_cre_nums"
+        tableName = self.assembly + "_cre_all_nums"
         q = """SELECT chrom, count from {tn}""".format(
             tn = tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
