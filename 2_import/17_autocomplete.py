@@ -7,6 +7,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
@@ -152,7 +153,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

@@ -11,6 +11,7 @@ from utils import AddPath, printt
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
+from config import Config
 
 def setupCart(cur, assembly):
     tableName = assembly + "_cart"
@@ -35,9 +36,11 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-    with getcursor(DBCONN, "07_setup_cart") as curs:
-        setupCart(curs, "hg19")
-        setupCart(curs, "mm10")
+
+    assemblies = Config.assemblies
+    for assembly in assemblies:
+        with getcursor(DBCONN, "07_setup_cart") as curs:
+            setupCart(curs, assembly)
 
 if __name__ == '__main__':
     main()

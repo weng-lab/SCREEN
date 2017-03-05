@@ -13,6 +13,7 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
+from config import Config
 
 class ImportCREs:
     def __init__(self, DBCONN, assembly, sample):
@@ -124,7 +125,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

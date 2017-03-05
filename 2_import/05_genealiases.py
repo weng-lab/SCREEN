@@ -7,6 +7,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from get_tss import Genes
@@ -247,7 +248,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

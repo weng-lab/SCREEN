@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, re, argparse, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -70,7 +71,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

@@ -8,6 +8,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from get_tss import Genes, Transcripts
@@ -78,6 +79,7 @@ stop integer
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -86,7 +88,11 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             at = AddTSS(curs, assembly)
             at.run()

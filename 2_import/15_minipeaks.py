@@ -9,6 +9,7 @@ from cassandra import ConsistencyLevel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from constants import paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt, printWroteNumLines
@@ -70,7 +71,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
