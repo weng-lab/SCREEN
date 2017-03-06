@@ -108,7 +108,17 @@ class ImportGwas:
         outF = StringIO.StringIO()
         for r in rows:
             for idx in xrange(3, len(r)):
-                r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
+                if not r[idx]:
+                    r[idx] = str(0)
+                else:
+                    try:
+                        r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
+                    except:
+                        print("error parsing")
+                        print(r)
+                        print("idx:", idx)
+                        print("value:", r[idx])
+                        raise
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields
@@ -268,15 +278,14 @@ class ImportGwas:
 
     def run(self):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
-        dataF = os.path.join(paths.v4d, "GWAS", "old")
         
-        origBedFnp = os.path.join(dataF, "GWAS.v2.bed")
-        bedFnp = os.path.join(dataF, "GWAS.v2.sorted.bed")
+        origBedFnp = os.path.join(dataF, "GWAS.v3.bed")
+        bedFnp = os.path.join(dataF, "GWAS.v3.sorted.bed")
         self.processGwasBed(origBedFnp, bedFnp)
         
         self._gwas(bedFnp)
         
-        enrichFnp = os.path.join(dataF, "GWAS.Enrichment.v2.Matrix.txt")
+        enrichFnp = os.path.join(dataF, "GWAS.Enrichment.v3.Matrix.txt")
         self._enrichment(enrichFnp)
         self._studies(enrichFnp)
         self._overlap(bedFnp)
