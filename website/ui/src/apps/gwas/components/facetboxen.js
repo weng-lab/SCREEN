@@ -40,7 +40,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
                     className: "dt-right"},
                    {title: "-log(fdr)", data: "neglogfdr",
                     className: "dt-right"},
-                   {title: "-log(p)", data: "pval",
+                   {title: "p", data: "pval",
                     className: "dt-right"},
                    {title: "", data: "expID", render: Render.dccLink,
                     className: "dt-right dcc"},
