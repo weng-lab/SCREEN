@@ -48,7 +48,7 @@ class DetermineTissue:
             return lookup[ct]
         if ct.endswith("erythroid progenitor cells"):
             return "blood"
-        eprint(assembly, "missing", ct)
+        eprint(assembly, "missing tissiue assignemnt for", '"' + ct + '"')
         return ""
 
 class CellTypeInfoRow:
