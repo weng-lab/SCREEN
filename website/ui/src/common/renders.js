@@ -169,14 +169,20 @@ export const searchLink = (assembly) => (d) => {
 }
 
 export const assayIcon = (ctn) => {
-   let e = (
+    // DNase green 06DA93
+    // H3K27ac yellow FFCD00
+    // H3K4me3 red
+    // CTCF blue 00B0F0
+
+    let s = 12;
+    let e = (
         <span className={"text-nowrap"}>
-            <svg width={"24"} height={"24"}>
+            <svg width={2 * s} height={2 * s}>
 	        <g>
-                    <rect x={"0"} y={"0"} width={"12"} height={"12"}   style={{ fill : "rgb(255,0,0)" }} />
-                    <rect x={"0"} y={"12"} width={"12"} height={"12"}  style={{ fill : "rgb(0,255,0)" }} />
-                    <rect x={"12"} y={"0"} width={"12"} height={"12"}  style={{ fill : "rgb(0,0,255)" }} />
-                    <rect x={"12"} y={"12"} width={"12"} height={"12"} style={{ fill : "rgb(0,122,0)" }} />
+                    <rect x={0} y={0} width={s} height={s} style={{fill : "#06DA93"}} />
+                    <rect x={0} y={s} width={s} height={s} style={{fill : "#FFCD00"}} />
+                    <rect x={s} y={0} width={s} height={s} style={{fill : "#FF0000"}} />
+                    <rect x={s} y={s} width={s} height={s} style={{fill : "#00B0F0"}} />
   		</g>
 	    </svg>
 	</span>);
