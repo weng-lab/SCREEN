@@ -31,7 +31,6 @@ public:
 
   std::vector<Gene> gene_nearest_all;
   std::vector<Gene> gene_nearest_pc;
-  std::vector<Gene> tads;
 
   std::vector<float> conservation_signals;
   float conservation_min;
@@ -110,18 +109,6 @@ public:
         s << d << "{ "; join(s, geneIDs, ",") << '}';
     }
 
-    template <typename S>
-    void toTsvTads(S& s, const std::vector<Gene>& genes) const {
-        static const char d = '\t';
-
-        std::vector<uint32_t> geneIDs(genes.size());
-        for(uint32_t i = 0; i < genes.size(); ++i){
-            geneIDs[i] = genes[i].geneID;
-        }
-
-        s << d << "{ "; join(s, geneIDs, ",") << '}';
-    }
-
     std::string toTsv() const {
         static const char d = '\t';
         std::stringstream s;
@@ -151,7 +138,6 @@ public:
         s << d << maxz;
         toTsvGene(s, gene_nearest_all);
         toTsvGene(s, gene_nearest_pc);
-        toTsvTads(s, tads);
 
         s << '\n';
         return s.str();
@@ -189,7 +175,6 @@ public:
         s << d << p.maxz << "\n";
         p.toTsvGene(s, p.gene_nearest_all); s << "\n";
         p.toTsvGene(s, p.gene_nearest_pc); s << "\n";
-        p.toTsvTads(s, p.tads); s << "\n";
         return s;
     }
 };

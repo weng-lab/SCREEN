@@ -40,10 +40,6 @@ public:
         const std::string& rDHS = p.rDHS;
         const std::string& accession = p.accession;
 
-        if("hg19" == ZiARG_assembly){
-            d.setTads(accession, p);
-        }
-
         d.setAllGenes(accession, p);
         d.setPcGenes(accession, p);
 
@@ -122,8 +118,7 @@ public:
                         "promoter_zscores", "promoter_max",
                         "maxz",
                         "gene_all_distance", "gene_all_name",
-                        "gene_pc_distance", "gene_pc_name",
-                        "tads"};
+                        "gene_pc_distance", "gene_pc_name"};
                 out << bib::string::join(header, "\t") << "\n";
             }
             std::cout << "\twrote " << fnp << std::endl;

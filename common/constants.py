@@ -53,8 +53,7 @@ maxz
 gene_all_distance
 gene_all_id
 gene_pc_distance
-gene_pc_id
-tads""".split('\n'))
+gene_pc_id""".split('\n'))
 
 # exclude chrM
 chrom_lengths = {"hg19": {"chr1": 249250621, "chr2": 243199373,
