@@ -5,13 +5,13 @@ import os, sys, json, psycopg2, argparse, gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from constants import paths
 from dbconnect import db_connect
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
-from files_and_paths import Dirs
+from db_utils import getcursor, makeIndex
 
 class ImportLiftover:
     def __init__(self, curs):
@@ -33,47 +33,20 @@ class ImportLiftover:
     );
     """.format(tableName = self.tableName))
 
-    def getMpToAccLookup(self, assembly):
-        fnp = paths.path(assembly, "raw", "masterPeaks.bed.gz")
-        printt("making lookup", assembly, "from", fnp)
-        ret = {}
-        with gzip.open(fnp) as f:
-            for line in f:
-                toks = line.rstrip().split('\t')
-                ret[toks[3]] = toks[4]
-        return ret
-
     def run(self):
-        fnp = os.path.join(self.d, "liftover", "mm10-to-hg19-50.bed.gz")
+        fnp = paths.path("mm10", "mm10-orthologs.txt")
 
         self.setupLiftover()
 
         printt("reading", fnp)
-        with gzip.open(fnp) as f:
-            mmToHg = [r.rstrip().split('\t') for r in f.readlines()]
-
-        mmLookup = self.getMpToAccLookup("mm10")
-        hgLookup = self.getMpToAccLookup("hg19")
-
-        ret = []
-        for idx, r in enumerate(mmToHg):
-            try:
-                mmToHg[idx][3] = mmLookup[r[3]]
-            except:
-                print("bad liftOver?", idx, r)
-                continue
-            try:
-                mmToHg[idx][4] = hgLookup[r[4]]
-            except:
-                print("bad liftOver?", idx, r)
-                continue
-            ret.append(mmToHg[idx])
+        with open(fnp) as f:
+            mmToHg = [r.rstrip('\n').split('\t') for r in f.readlines()]
 
         cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
         printt("writing stringio...")
         outF = StringIO.StringIO()
-        for r in ret:
-            outF.write("\t".join(r) + '\n')
+        for r in mmToHg:
+            outF.write("\t".join([r[0], r[1], r[2], r[4], r[6], r[7]]) + '\n')
         outF.seek(0)
 
         printt("copy into db...")
