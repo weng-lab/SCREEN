@@ -52,8 +52,8 @@ class ImportCREs:
      isProximal boolean,
 
      conservation_signals real[],
-conservation_min real,
-conservation_max real,
+     conservation_min real,
+     conservation_max real,
      ctcf_zscores real[],
      ctcf_min real,
      ctcf_max real,
@@ -80,7 +80,7 @@ conservation_max real,
      gene_all_distance integer[],
      gene_all_id integer[],
      gene_pc_distance integer[],
-     gene_pc_id integer[],
+     gene_pc_id integer[]
     ); """.format(tn = self.tableName_cre))
 
     def doImport(self, curs):
