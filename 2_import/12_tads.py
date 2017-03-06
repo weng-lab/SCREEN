@@ -13,6 +13,52 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/')
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 
+class ImportTADs:
+    def __init__(self, curs, assembly):
+        self.curs = curs
+        self.assembly = assembly
+        self.tableName = assembly + "_tads"
+
+    def setupTable(self):
+        printt("dropping and creating table", self.tableName)
+        self.curs.execute("""
+ DROP TABLE IF EXISTS {tableName};
+ CREATE TABLE {tableName}(
+ id serial PRIMARY KEY,
+ accession VARCHAR(20),
+ tadName text,
+ geneIDs integer[]
+);
+    """.format(tableName = self.tableName))
+
+    def run(self):
+        fnp = paths.path(self.assembly, "raw", "tads.txt")
+        printt("reading", fnp)
+        with open(fnp) as f:
+            tadRows = [line.rstrip('\n').split('\t') for line in f]
+
+        fnp = paths.path(self.assembly, "extras", "ensebleToID.txt")
+        printt("reading", fnp)
+        with open(fnp) as f:
+            ensemblidVerToGeneID = [line.rstrip('\n').split(',') for line in f]
+        lookup = {r[0] : r[2] for r in ensemblidVerToGeneID}
+
+        f = StringIO.StringIO()
+        for tr in tadRows:
+            r = [tr[1], tr[2]]
+            geneIDs = [lookup[g] for g in tr[3].split(',')]
+            r.append('{' + ','.join(geneIDs) + '}')
+            f.write('\t'.join(r) + '\n')
+        f.seek(0)
+
+        self.setupTable()
+        self.curs.copy_from(f, self.tableName, '\t',
+                          columns=("accession", "tadName", "geneIDs"))
+        printt("copied in TADs", self.curs.rowcount)
+
+    def index(self):
+        makeIndex(self.curs, self.tableName, ["accession", "tadName"])
+
 class ImportTADinfo:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -69,6 +115,10 @@ def main():
 
     for assembly in assemblies:
         with getcursor(DBCONN, "main") as curs:
+            ipi = ImportTADs(curs, assembly)
+            ipi.run()
+            ipi.index()
+
             iti = ImportTADinfo(curs, assembly)
             iti.run()
             iti.index()

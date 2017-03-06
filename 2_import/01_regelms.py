@@ -81,9 +81,6 @@ conservation_max real,
      gene_all_id integer[],
      gene_pc_distance integer[],
      gene_pc_id integer[],
-
-     tads integer[]
-
     ); """.format(tn = self.tableName_cre))
 
     def doImport(self, curs):
