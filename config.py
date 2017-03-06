@@ -19,3 +19,4 @@ class Config:
     database = c.get("RE", "database")
     assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
     minipeaks_ver = c.get("RE", "minipeaks_ver")
+    minipeaks_nbins = c.get("RE", "minipeaks_nbins")
