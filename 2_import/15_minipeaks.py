@@ -84,7 +84,8 @@ def main():
             printt("skipping", assembly)
             continue
 
-        queryFnp = paths.path(assembly, "minipeaks", "merged", "insert_minipeaks.cql")
+        queryFnp = paths.path(assembly, "minipeaks", "merged",
+                              "insert_minipeaks." + assembly + ".cql")
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
