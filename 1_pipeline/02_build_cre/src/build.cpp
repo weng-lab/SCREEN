@@ -48,26 +48,35 @@ public:
         d.setPcGenes(accession, p);
 
         d.set(rDHS, p.conservation_signals, d.conservation_files_);
+        p.setMin(p.conservation_signals, p.conservation_min);
+        p.setMax(p.conservation_signals, p.conservation_max);
 
         d.set(rDHS, p.ctcf_zscores, d.ctcf_files_);
+        p.setMin(p.ctcf_zscores, p.ctcf_min);
         p.setMax(p.ctcf_zscores, p.ctcf_max);
 
         d.set(rDHS, p.dnase_zscores, d.dnase_files_);
+        p.setMin(p.dnase_zscores, p.dnase_min);
         p.setMax(p.dnase_zscores, p.dnase_max);
 
         d.set(rDHS, p.enhancer_zscores, d.enhancer_files_);
+        p.setMin(p.enhancer_zscores, p.enhancer_min);
         p.setMax(p.enhancer_zscores, p.enhancer_max);
 
         d.set(rDHS, p.h3k27ac_zscores, d.h3k27ac_files_);
+        p.setMin(p.h3k27ac_zscores, p.h3k27ac_min);
         p.setMax(p.h3k27ac_zscores, p.h3k27ac_max);
 
         d.set(rDHS, p.h3k4me3_zscores, d.h3k4me3_files_);
+        p.setMin(p.h3k4me3_zscores, p.h3k4me3_min);
         p.setMax(p.h3k4me3_zscores, p.h3k4me3_max);
 
         d.set(rDHS, p.insulator_zscores, d.insulator_files_);
+        p.setMin(p.insulator_zscores, p.insulator_min);
         p.setMax(p.insulator_zscores, p.insulator_max);
 
         d.set(rDHS, p.promoter_zscores, d.promoter_files_);
+        p.setMin(p.promoter_zscores, p.promoter_min);
         p.setMax(p.promoter_zscores, p.promoter_max);
 
         p.setMaxZ();
