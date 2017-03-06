@@ -20,7 +20,8 @@ class ImportGwas:
         self.curs = curs
         self.assembly = assembly
         self.tableNameGwas = assembly + "_gwas"
-        self.tableNameEnrichment = assembly + "_gwas_enrichment"
+        self.tableNameEnrichmentPval = assembly + "_gwas_enrichment_pval"
+        self.tableNameEnrichmentFdr = assembly + "_gwas_enrichment_fdr"
         self.tableNameDatasets = assembly + "_datasets"
         self.tableNameStudies = assembly + "_gwas_studies"
         self.tableNameOverlap = assembly + "_gwas_overlap"
@@ -79,8 +80,8 @@ class ImportGwas:
                   ["chrom", "authorPubmedTrait", "ldblock"])
         makeIndexIntRange(self.curs, self.tableNameGwas, ["start", "stop"])
 
-    def _setupEnrichment(self, fields):
-        printt("drop/create", self.tableNameEnrichment)
+    def _setupEnrichment(self, fields, tableName):
+        printt("drop/create", tableName)
         self.curs.execute("""
         DROP TABLE IF EXISTS {tn};
 
@@ -91,41 +92,53 @@ class ImportGwas:
         biosample_summary text,
         {fields}
         );
-        """.format(tn = self.tableNameEnrichment,
+        """.format(tn = tableName,
                    fields = ','.join([r + " real" for r in fields])))
 
-    def _enrichment(self, fnp):
-        printt("******************* GWAS enrichment")
+    def _enrichment(self):
+        files = (("GWAS.v3.Matrix.pvalue.txt", self.tableNameEnrichmentPval),
+                 ("GWAS.v3.Matrix.FDR.txt", self.tableNameEnrichmentFdr))
+        headers = []
+        for fn, tableName in files:
+            printt("******************* GWAS enrichment", fn)
+            header = self._do_enrichment(fn, tableName)
+            headers.append(header)
+        headers = list(set(headers))
+        if len(headers) > 1:
+            print('\n'.join(headers))
+            raise Exception("different headers?")
+        return headers[0]
+    
+    def _do_enrichment(self, fn, tableName):
+        dataF = paths.path(self.assembly, "gwas", "h3k27ac")
+        fnp = os.path.join(dataF, fn)
         printt("reading", fnp)
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
             rows = [r.rstrip('\n').split('\t') for r in f if r]
 
         fields = [f.replace('-', '_') for f in header[2:]]
-        self._setupEnrichment(fields)
+        self._setupEnrichment(fields, tableName)
 
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
             for idx in xrange(3, len(r)):
-                if not r[idx]:
-                    r[idx] = str(0)
-                else:
-                    try:
-                        r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
-                    except:
-                        print("error parsing")
-                        print(r)
-                        print("idx:", idx)
-                        print("value:", r[idx])
-                        raise
+                try:
+                    r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
+                except:
+                    print("error parsing")
+                    print(r)
+                    print("idx:", idx)
+                    print("value:", r[idx])
+                    raise
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields
         print(cols)
 
         printt("import to db")
-        self.curs.copy_from(outF, self.tableNameEnrichment, '\t', columns=cols)
+        self.curs.copy_from(outF, tableName, '\t', columns=cols)
         printt("\tcopied in", self.curs.rowcount)
 
         self.curs.execute("""
@@ -134,8 +147,9 @@ class ImportGwas:
     biosample_summary = d.biosample_summary
     from {tnd} as d
     where ge.expID = d.expID
-        """.format(tne = self.tableNameEnrichment, tnd = self.tableNameDatasets))
+        """.format(tne = tableName, tnd = self.tableNameDatasets))
         printt("updated", self.curs.rowcount)
+        return header
         
     def _setupStudies(self):
         printt("drop/create", self.tableNameStudies)
@@ -284,10 +298,8 @@ class ImportGwas:
         self.processGwasBed(origBedFnp, bedFnp)
         
         self._gwas(bedFnp)
-        
-        enrichFnp = os.path.join(dataF, "GWAS.Enrichment.v3.Matrix.txt")
-        self._enrichment(enrichFnp)
-        self._studies(enrichFnp)
+        header = self._enrichment()
+        self._studies(header)
         self._overlap(bedFnp)
 
 def parse_args():
