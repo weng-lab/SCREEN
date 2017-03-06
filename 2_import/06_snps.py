@@ -47,6 +47,7 @@ stop integer
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -56,6 +57,8 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
 
     for assembly in assemblies:
         with getcursor(DBCONN, "04_cellTypeInfo") as curs:
