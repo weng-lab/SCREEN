@@ -191,11 +191,12 @@ class TableWithCart extends React.Component {
     }
 
     colorCreGroup(row, data, index){
+        // https://datatables.net/examples/advanced_init/row_callback.html
         let lookup = {1 : "creCtcfLike",
                       2 : "creEnhancerLike",
                       3 : "crePromoterLike"};
-        console.log(row, data, index);
-        let klass = lookup[data.cre_group];
+        //console.log(row, data, index);
+        let klass = lookup[data.cregroup];
         $('td', row).eq(1).addClass(klass);
     }
 
