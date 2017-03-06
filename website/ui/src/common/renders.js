@@ -183,22 +183,31 @@ export const assayIcon = (ctn) => {
     // CTCF blue 00B0F0
 
     let assays = Globals.byCellType[ctn].map((a) => (a.assay));
-    let s = 12;
+    let w = 12;
+    let fw = 2 * w + 4;
     let rect = (x, y, color) => (
-        <rect x={x+1} y={y+1} width={s} height={s} style={{fill : color}} />
+        <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
+    )
+    let line = (x1, y1, x2, y2) => (
+        <line x1={x1} y1={y1} x2={x2} y2={y2}
+              style={{strokeWidth: 1, stroke: "black"}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fw}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
 
     let e = (
         <span className={"text-nowrap"}>
-            <svg width={2 * s + 2} height={2 * s + 2}>
+            <svg width={fw} height={fw}>
 	        <g>
-                    <rect x={0} y={0} width={2*s+2} height={2*s+2}
-                          style={{fill: "white",
-                                  strokeWidth: 1, stroke: "rgb(0,0,0)"}} />
-                    {assays.indexOf("DNase") > -1 && rect(0, 0, "#06DA93")}
-                    {assays.indexOf("H3K27ac") > -1  && rect(0, s, "#FFCD00")}
-                    {assays.indexOf("H3K4me3") > -1  && rect(s, 0, "#FF0000")}
-                    {assays.indexOf("CTCF") > -1  && rect(s, s, "#00B0F0")}
+                    {border()}
+                    {line(w+2, 0, w+2, fw)}
+                    {line(0, w+2, fw, w+2)}
+                    {assays.indexOf("DNase") > -1 && rect(1, 1, "#06DA93")}
+                    {assays.indexOf("H3K27ac") > -1  && rect(1, w+3, "#FFCD00")}
+                    {assays.indexOf("H3K4me3") > -1  && rect(w+3, 1, "#FF0000")}
+                    {assays.indexOf("CTCF") > -1  && rect(w+3, w+3, "#00B0F0")}
   		</g>
 	    </svg>
 	</span>);
