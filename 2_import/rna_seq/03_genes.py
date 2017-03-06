@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
@@ -25,13 +26,18 @@ SELECT DISTINCT r.ensembl_id, r.gene_name FROM {etn} AS r
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "03_genes") as curs:
             print('***********', assembly)
