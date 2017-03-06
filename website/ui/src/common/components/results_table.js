@@ -24,7 +24,7 @@ class ResultsTable extends React.Component {
 
     componentDidUpdate() {
 	this._datatable.clear().rows.add(this.props.data).draw();
-	if (this.props.cvisible) {
+        if (this.props.cvisible) {
 	    Object.keys(this.props.cvisible).map((k) => {
 		this._datatable.column(k + ":name").visible(this.props.cvisible[k]);
 	    });
@@ -53,7 +53,7 @@ class ResultsTable extends React.Component {
 
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
-	var onMouseEnter = this.props.onMouseEnter;
+	var onMouseOver = this.props.onMouseOver;
 
 	$(this.refs.root)
 	    .on("click", "td", function() {
@@ -68,14 +68,11 @@ class ResultsTable extends React.Component {
 				  _datatable.row($(this).parents('tr')).data());
 		}
 	    })
-	    .on("mouseenter", "td", function() {
-		if(!onMouseEnter || $(this).hasClass("cart") || $(this).hasClass("browser")){
+	    .on("mouseover", "td", function() {
+		if(!onMouseOver){
 		    return false;
 		}
-		$(this).attr("title", "click for more details")
-	    })
-	    .on("mouseenter", "th", function() {
-		$(this).attr("title", "click to sort");
+                onMouseOver($(this));
 	    })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');

@@ -6,7 +6,7 @@ const TableColumns = () => {
     return [
 	{
 	    title: "accession", data: "accession", className: klassCenter,
-            render: Render.creLink
+            render: Render.creLinkPop
 	}, {
             title: "", data: "cregroup", className: klassCenter
 	}, {
