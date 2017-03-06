@@ -62,7 +62,7 @@ public:
                 continue;
             }
             bfs::path f = extras_ / chrom / "signal-output";
-            bfs::create_directories(f)
+            bfs::create_directories(f);
 
             bfs::path outFnp = f / inFnp.filename();
             //std::cout << "about to write " << outFnp << std::endl;

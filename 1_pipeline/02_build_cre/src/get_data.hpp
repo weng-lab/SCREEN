@@ -116,7 +116,9 @@ public:
                                    const uint32_t numCols){
         std::vector<bfs::path> fnps;
         const auto lines = bib::files::readStrings(listFnp);
-        for(const auto& g : lines){
+        for(const auto& rg : lines){
+            std::string g = rg;
+            bib::string::trim(g);
             auto toks = bib::str::split(g, '\t');
             if(toks.size() != numCols){
                 std::cerr << listFnp << std::endl;
