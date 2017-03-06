@@ -61,9 +61,11 @@ public:
             if(!bib::in(chrom, chroms_)){
                 continue;
             }
-            bfs::path outFnp = extras_ / chrom / "signal-output" / inFnp.filename();
+            bfs::path f = extras_ / chrom / "signal-output";
+            bfs::create_directories(f)
+
+            bfs::path outFnp = f / inFnp.filename();
             //std::cout << "about to write " << outFnp << std::endl;
-            bfs::create_directories(outFnp.parent_path());
             bib::files::writeStrings(outFnp, kv.second);
         }
         std::cout << "finished " << inFnp << std::endl;
@@ -84,9 +86,11 @@ public:
             if(!bib::in(chrom, chroms_)){
                 continue;
             }
-            bfs::path outFnp = extras_ / chrom / inFnp.filename();
+            bfs::path f = extras_ / chrom;
+            bfs::create_directories(f);
+
+            bfs::path outFnp = f / inFnp.filename();
             std::cout << "about to write " << outFnp << std::endl;
-            bfs::create_directories(outFnp.parent_path());
             bib::files::writeStrings(outFnp, kv.second);
         }
     }
@@ -106,9 +110,11 @@ public:
             if(!bib::in(chrom, chroms_)){
                 continue;
             }
-            bfs::path outFnp = extras_ / chrom / inFnp.filename();
-            std::cout << "about to write " << outFnp << std::endl;
-            bfs::create_directories(outFnp.parent_path());
+            bfs::path f = extras_ / chrom;
+            bfs::create_directories(f);
+
+            bfs::path outFnp = f / inFnp.filename();
+            //std::cout << "about to write " << outFnp << std::endl;
             bib::files::writeStrings(outFnp, kv.second);
         }
     }
@@ -134,9 +140,11 @@ public:
             if(!bib::in(chrom, chroms_)){
                 continue;
             }
-            bfs::path outFnp = extras_ / chrom / inFnp.filename();
+            bfs::path f = extras_ / chrom;
+            bfs::create_directories(f);
+
+            bfs::path outFnp = f / inFnp.filename();
             std::cout << "about to write " << outFnp << std::endl;
-            bfs::create_directories(outFnp.parent_path());
             bib::files::writeStrings(outFnp, kv.second);
         }
     }
