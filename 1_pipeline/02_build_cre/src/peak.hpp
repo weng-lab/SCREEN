@@ -34,20 +34,29 @@ public:
   std::vector<Gene> tads;
 
   std::vector<float> conservation_signals;
+  float conservation_min;
+  float conservation_max;
   std::vector<float> ctcf_zscores;
   float ctcf_max;
+  float ctcf_min;
   std::vector<float> dnase_zscores;
   float dnase_max;
+  float dnase_min;
   std::vector<float> enhancer_zscores;
   float enhancer_max;
+  float enhancer_min;
   std::vector<float> h3k27ac_zscores;
   float h3k27ac_max;
+  float h3k27ac_min;
   std::vector<float> h3k4me3_zscores;
   float h3k4me3_max;
+  float h3k4me3_min;
   std::vector<float> insulator_zscores;
   float insulator_max;
+  float insulator_min;
   std::vector<float> promoter_zscores;
   float promoter_max;
+  float promoter_min;
   float maxz;
 
     Peak() {}
@@ -67,6 +76,11 @@ public:
     template <typename V>
     void setMax(const V& v, float& val){
         val = *std::max_element(v.begin(), v.end());
+    }
+
+    template <typename V>
+    void setMin(const V& v, float& val){
+        val = *std::min_element(v.begin(), v.end());
     }
 
     void setMaxZ(){
@@ -122,14 +136,18 @@ public:
 
         s << std::setprecision(4);
 
-        toTsvVec(s, conservation_signals);
-        toTsvVec(s, ctcf_zscores); s << d << ctcf_max;
-        toTsvVec(s, dnase_zscores); s << d << dnase_max;
-        toTsvVec(s, enhancer_zscores); s << d << enhancer_max;
-        toTsvVec(s, h3k27ac_zscores); s << d << h3k27ac_max;
-        toTsvVec(s, h3k4me3_zscores); s << d << h3k4me3_max;
-        toTsvVec(s, insulator_zscores); s << d << insulator_max;
-        toTsvVec(s, promoter_zscores); s << d << promoter_max;
+        toTsvVec(s, conservation_signals); s << d << conservation_min
+                                             << d << conservation_max;
+        toTsvVec(s, ctcf_zscores); s << d << ctcf_min << d << ctcf_max;
+        toTsvVec(s, dnase_zscores); s << d << dnase_min << d << dnase_max;
+        toTsvVec(s, enhancer_zscores); s << d << enhancer_min
+                                         << d << enhancer_max;
+        toTsvVec(s, h3k27ac_zscores); s << d << h3k27ac_min << d << h3k27ac_max;
+        toTsvVec(s, h3k4me3_zscores); s << d << h3k4me3_min << d << h3k4me3_max;
+        toTsvVec(s, insulator_zscores); s << d << insulator_min
+                                          << d << insulator_max;
+        toTsvVec(s, promoter_zscores); s << d << promoter_min
+                                         << d << promoter_max;
         s << d << maxz;
         toTsvGene(s, gene_nearest_all);
         toTsvGene(s, gene_nearest_pc);
@@ -152,14 +170,22 @@ public:
 
         s << std::setprecision(4);
 
-        p.toTsvVec(s, p.conservation_signals); s << "\n";
-        p.toTsvVec(s, p.ctcf_zscores); s << d << p.ctcf_max << "\n";
-        p.toTsvVec(s, p.dnase_zscores); s << d << p.dnase_max << "\n";
-        p.toTsvVec(s, p.enhancer_zscores); s << d << p.enhancer_max << "\n";
-        p.toTsvVec(s, p.h3k27ac_zscores); s << d << p.h3k27ac_max << "\n";
-        p.toTsvVec(s, p.h3k4me3_zscores); s << d << p.h3k4me3_max << "\n";
-        p.toTsvVec(s, p.insulator_zscores); s << d << p.insulator_max << "\n";
-        p.toTsvVec(s, p.promoter_zscores); s << d << p.promoter_max << "\n";
+        p.toTsvVec(s, p.conservation_signals);
+        s << d << p.conservation_min << d << p.conservation_max << "\n";
+        p.toTsvVec(s, p.ctcf_zscores);
+        s << d << p.ctcf_min << d << p.ctcf_max << "\n";
+        p.toTsvVec(s, p.dnase_zscores);
+        s << d << p.dnase_min << d << p.dnase_max << "\n";
+        p.toTsvVec(s, p.enhancer_zscores);
+        s << d << p.enhancer_min << d << p.enhancer_max << "\n";
+        p.toTsvVec(s, p.h3k27ac_zscores);
+        s << d << p.h3k27ac_min << d << p.h3k27ac_max << "\n";
+        p.toTsvVec(s, p.h3k4me3_zscores);
+        s << d << p.h3k4me3_min << d << p.h3k4me3_max << "\n";
+        p.toTsvVec(s, p.insulator_zscores);
+        s << d << p.insulator_min << d << p.insulator_max << "\n";
+        p.toTsvVec(s, p.promoter_zscores);
+        s << d << p.promoter_min << d << p.promoter_max << "\n";
         s << d << p.maxz << "\n";
         p.toTsvGene(s, p.gene_nearest_all); s << "\n";
         p.toTsvGene(s, p.gene_nearest_pc); s << "\n";

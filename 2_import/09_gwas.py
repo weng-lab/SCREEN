@@ -256,7 +256,7 @@ def _overlap(curs, bedFnp):
     makeIndex(curs, tableName, ["authorPubmedTrait"])
 
 def setupAll(curs):
-     dataF = os.path.join(paths.v4d, "GWAS")
+     dataF = os.path.join(paths.v4d, "GWAS", "old")
 
      origBedFnp = os.path.join(dataF, "GWAS.v2.bed")
      bedFnp = os.path.join(dataF, "GWAS.v2.sorted.bed")
