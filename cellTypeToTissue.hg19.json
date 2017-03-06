@@ -788,5 +788,10 @@
 "vagina" : "vagina",
 "vagina_tissue" : "vagina",
 "vein endothelial cell primary cell" : "blood vessel",
-"vein_endothelial_cell_primary_cell" : "blood vessel"
+"vein_endothelial_cell_primary_cell" : "blood vessel",
+"SUDHL6" :"blood",
+"esophagus muscularis mucosa" : "esophagus",
+"mid-neurogenesis radial glial cells" : "brain",
+"cerebellar cortex" : "brain",
+"iPS-18a" : "iPSC"
 }
