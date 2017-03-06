@@ -100,6 +100,9 @@ def runIntersectJob(jobargs, bedfnp):
 
 def computeIntersections(args, assembly):
     bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
+    if not os.path.exists(bedFnp):
+        Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
+                       bedFnp)
 
     jobs = makeJobs(assembly)
 
