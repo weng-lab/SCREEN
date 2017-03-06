@@ -75,13 +75,16 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-    ver = 3
-
-    if not GetYesNoToQuestion.immediate("remove old tables?"):
-        return 0
+    ver = Config.minipeaks_ver
 
     for assembly in assemblies:
-        queryFnp = paths.path(self.assembly, "minipeaks", "merged", "insert_minipeaks.cql")
+        print("***************", assembly)
+        
+        if not GetYesNoToQuestion.immediate("OK remove old tables for version " + ver + "?"):
+            printt("skipping", assembly)
+            continue
+
+        queryFnp = paths.path(assembly, "minipeaks", "merged", "insert_minipeaks.cql")
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
