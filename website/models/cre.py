@@ -44,7 +44,13 @@ class CRE:
         if "mm10" == self.assembly:
             return []
         coord = self.coord()
-        return self.pgSearch.genesInTad(self.accession, coord.chrom)
+        rows = self.pgSearch.genesInTad(self.accession, coord.chrom)
+        lookup = self.cache.geneIDsToApprovedSymbol
+        ret = []
+        for r in rows:
+            for g in r[0]:
+                ret.append({"name" : lookup[g]})
+        return ret
 
     def cresInTad(self):
         if "mm10" == self.assembly:
