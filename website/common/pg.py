@@ -279,18 +279,18 @@ WHERE accession = %s
             return None
         return Coord(r[0], r[1], r[2])
 
-    def _getGenes(self, accession, chrom, curs, group):
+    def _getGenes(self, accession, chrom, curs, allOrPc):
         curs.execute("""
 SELECT gi.approved_symbol, g.distance
 FROM
-(SELECT UNNEST(gene_{group}_id) geneid,
-UNNEST(gene_{group}_distance) distance
+(SELECT UNNEST(gene_{allOrPc}_id) geneid,
+UNNEST(gene_{allOrPc}_distance) distance
 FROM {tn} WHERE accession = %s) AS g
 INNER JOIN {gtn} AS gi
 ON g.geneid = gi.geneid
 """.format(tn = self.assembly + "_cre_all",
            gtn = self.assembly + "_gene_info",
-           group = group), (accession, ))
+           allOrPc = allOrPc), (accession, ))
         return curs.fetchall()
 
     def creGenes(self, accession, chrom):
@@ -379,18 +379,14 @@ ORDER BY 2
         return [{"accession" : r[0], "distance" : r[1]} for r in rows]
 
     def genesInTad(self, accession, chrom):
-        with getcursor(self.pg.DBCONN, "creTad") as curs:
+        with getcursor(self.pg.DBCONN, "genesInTad") as curs:
             curs.execute("""
-SELECT gi.approved_symbol AS name
-FROM
-(SELECT UNNEST(tads) geneid
-FROM {tn} WHERE accession = %s) AS g
-INNER JOIN {gtn} AS gi
-ON g.geneid = gi.geneid
-""".format(tn = self.assembly + "_cre_all",
-           gtn = self.assembly + "_gene_info"), (accession, ))
+SELECT geneIDs
+FROM {tn}
+WHERE accession = %s
+""".format(tn = self.assembly + "_tads"), (accession, ))
             rows = curs.fetchall()
-        return [{"name" : r[0]} for r in rows]
+        return rows
 
     def rankMethodToIDxToCellType(self):
         pg = PGcommon(self.pg, self.assembly)
