@@ -48,13 +48,19 @@ ORDER BY trait
     def gwasEnrichment(self, gwas_study):
         with getcursor(self.pg.DBCONN, "gwasEnrichment") as curs:
             q = """
-SELECT expID, cellTypeName, biosample_summary, {col}
-FROM {tn}
-ORDER BY {col} DESC
-""".format(tn = self.assembly + "_gwas_enrichment_fdr", col = gwas_study)
+SELECT fdr.expID, fdr.cellTypeName, fdr.biosample_summary,
+fdr.{col} as fdr,
+pval.{col} as pval
+FROM {tnfdr} fdr
+INNER JOIN {tnpval} pval
+ON fdr.expid = pval.expid
+ORDER BY fdr DESC, pval
+""".format(tnfdr = self.assembly + "_gwas_enrichment_fdr",
+           tnpval = self.assembly + "_gwas_enrichment_pval",
+           col = gwas_study)
             curs.execute(q)
             rows = curs.fetchall()
-        cols = ["expID", "cellTypeName", "biosample_summary", "neglogfdr"]
+        cols = ["expID", "cellTypeName", "biosample_summary", "neglogfdr", "pval"]
         return [dict(zip(cols, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
