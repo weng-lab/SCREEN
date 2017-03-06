@@ -5,6 +5,7 @@ import os, sys, json, psycopg2, argparse, gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
@@ -40,6 +41,7 @@ def doIndex(curs, assembly):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
@@ -52,7 +54,11 @@ def main():
     fnps["hg19"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
     fnps["mm10"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         inFnp = fnps[assembly]
         outFnp = inFnp + ".csv.gz"
 

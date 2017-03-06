@@ -6,6 +6,7 @@ import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
@@ -115,6 +116,7 @@ def doIndex(curs, assembly):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
@@ -124,7 +126,11 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    for assembly in ["mm10", "hg19"]:
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
         with getcursor(DBCONN, "02_init") as curs:
             print('***********', assembly)
             if args.index:
