@@ -38,7 +38,7 @@ class DataWebServiceWrapper:
             return DataWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies
         self.dwss = {a : makeDWS(a) for a in self.assemblies}
-        
+
     def process(self, j, args, kwargs):
         if "GlobalAssembly" not in j:
             raise Exception("GlobalAssembly not defined")
@@ -183,8 +183,8 @@ class DataWebService:
                             "tsss" : tsss}}
 
     def _re_detail_similarREs(self, j, accession):
-        nbins = 20
-        ver = 2
+        nbins = Config.minipeaks_nbins
+        ver = Config.minipeaks_ver
         mp = MiniPeaks(self.assembly, self.pgSearch, self.cache, nbins, ver)
         rows, accessions = mp.getMinipeaksForAssays(["dnase", "h3k27ac", "h3k4me3"],
                                                     [accession])
