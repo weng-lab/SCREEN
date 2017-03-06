@@ -70,8 +70,8 @@ const cellTypesBox = ({cellType, actions}) => {
 		            { title: "tissue", data: "tissue",
 		              className: "dt-right" },
 		            { title: "", data: "cellTypeName",
-                              render: Render.dccLinkCtGroup,
-		              className: "dt-right dcc" }
+                              render: Render.assayIcon,
+		              className: "dt-right" }
 			]}
 			order={[]}
 			selection={cellType}
