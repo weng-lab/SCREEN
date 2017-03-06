@@ -300,13 +300,14 @@ ON g.geneid = gi.geneid
 
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
-        tableName = self.assembly + "_snps_" + c.chrom
+        tableName = self.assembly + "_snps"
         with getcursor(self.pg.DBCONN, "intersectingSnps") as curs:
             curs.execute("""
-SELECT start, stop, name
+SELECT start, stop, snp
 FROM {tn}
-WHERE int4range(start, stop) && int4range(%s, %s)
-""".format(tn = tableName), (c.start, c.end))
+WHERE chrom = %s
+AND int4range(start, stop) && int4range(%s, %s)
+""".format(tn = tableName), (c.chrom, c.start, c.end))
             snps = curs.fetchall()
         ret = []
         for snp in snps:
