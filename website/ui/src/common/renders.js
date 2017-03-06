@@ -107,6 +107,14 @@ export const dccLinkCtGroup = (ctn) => {
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
+export const dccLinkCtGroupCus = (ctn, content) => {
+    let accs = Globals.byCellType[ctn].map((info) => {
+        return info.expID; });
+    let q = accs.join("&accession=");
+    var url = 'https://www.encodeproject.org/search/?accession=' + q;
+    return '<a target="_blank" href="' + url + '">' + content + '</a>';
+}
+
 export const dccLinkAndIcon = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
@@ -171,20 +179,28 @@ export const searchLink = (assembly) => (d) => {
 export const assayIcon = (ctn) => {
     // DNase green 06DA93
     // H3K27ac yellow FFCD00
-    // H3K4me3 red
+    // H3K4me3 red FF0000
     // CTCF blue 00B0F0
 
+    let assays = Globals.byCellType[ctn].map((a) => (a.assay));
     let s = 12;
+    let rect = (x, y, color) => (
+        <rect x={x+1} y={y+1} width={s} height={s} style={{fill : color}} />
+    )
+
     let e = (
         <span className={"text-nowrap"}>
-            <svg width={2 * s} height={2 * s}>
+            <svg width={2 * s + 2} height={2 * s + 2}>
 	        <g>
-                    <rect x={0} y={0} width={s} height={s} style={{fill : "#06DA93"}} />
-                    <rect x={0} y={s} width={s} height={s} style={{fill : "#FFCD00"}} />
-                    <rect x={s} y={0} width={s} height={s} style={{fill : "#FF0000"}} />
-                    <rect x={s} y={s} width={s} height={s} style={{fill : "#00B0F0"}} />
+                    <rect x={0} y={0} width={2*s+2} height={2*s+2}
+                          style={{fill: "white",
+                                  strokeWidth: 1, stroke: "rgb(0,0,0)"}} />
+                    {assays.indexOf("DNase") > -1 && rect(0, 0, "#06DA93")}
+                    {assays.indexOf("H3K27ac") > -1  && rect(0, s, "#FFCD00")}
+                    {assays.indexOf("H3K4me3") > -1  && rect(s, 0, "#FF0000")}
+                    {assays.indexOf("CTCF") > -1  && rect(s, s, "#00B0F0")}
   		</g>
 	    </svg>
 	</span>);
-    return ReactDOMServer.renderToStaticMarkup(e);
+    return dccLinkCtGroupCus(ctn, ReactDOMServer.renderToStaticMarkup(e));
 }
