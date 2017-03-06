@@ -51,7 +51,7 @@ ORDER BY trait
 SELECT expID, cellTypeName, biosample_summary, {col}
 FROM {tn}
 ORDER BY {col} DESC
-""".format(tn = self.assembly + "_gwas_enrichment", col = gwas_study)
+""".format(tn = self.assembly + "_gwas_enrichment_fdr", col = gwas_study)
             curs.execute(q)
             rows = curs.fetchall()
         cols = ["expID", "cellTypeName", "biosample_summary", "neglogfdr"]
@@ -100,15 +100,15 @@ where authorPubmedTrait = %s
 
         fieldsOut = ["accession", "snps", "geneid"]
         for assay in [("dnase", "dnase"),
-                      ("promoter", "h3k4me3_only"),
-                      ("enhancer", "h3k27ac_only")]:
+                      ("promoter", "h3k4me3"),
+                      ("enhancer", "h3k27ac")]:
             if ct not in self.ctmap[assay[0]]:
                 continue
             cti = self.ctmap[assay[0]][ct]
             fieldsOut.append(assay[0] + " zscore")
-            fields.append("cre.%s_zscore[%d] AS %s_zscore" %
+            fields.append("cre.%s_zscores[%d] AS %s_zscore" %
                           (assay[1], cti, assay[0]))
-            groupBy.append("cre.%s_zscore[%d]" %
+            groupBy.append("cre.%s_zscores[%d]" %
                           (assay[1], cti))
 
         with getcursor(self.pg.DBCONN, "gwas") as curs:
