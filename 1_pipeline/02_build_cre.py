@@ -13,6 +13,7 @@ from joblib import Parallel, delayed
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 from constants import paths, chroms
 from common import printr, printt
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
@@ -52,7 +53,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
