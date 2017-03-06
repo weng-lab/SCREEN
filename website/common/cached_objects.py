@@ -23,7 +23,7 @@ from db_utils import getcursor
 class CachedObjectsWrapper:
     def __init__(self, ps):
         self.cos = {a : CachedObjects(ps, a) for a in Config.assemblies}
-        
+
     def __getitem__(self, assembly):
         return self.cos[assembly]
 
