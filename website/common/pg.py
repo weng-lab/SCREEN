@@ -39,7 +39,10 @@ class PGsearch:
 
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
-        q = """SELECT accession, chrom, start, stop from {tn}""".format(
+        q = """
+SELECT accession, chrom, start, stop 
+FROM {tn}
+""".format(
             tn = tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
             curs.execute(q)
