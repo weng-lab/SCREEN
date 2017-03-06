@@ -1,3 +1,5 @@
+import ReactDOMServer from 'react-dom/server'
+
 export const relink = (a) => (v) => (
     "<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>"
     + v + "</a>");
@@ -164,4 +166,19 @@ export const searchLink = (assembly) => (d) => {
     let params = jQuery.param({q: d, assembly});
     let url = "/search/?" + params;
     return "<a href='" + url + "'>" + d + "</a>";
+}
+
+export const assayIcon = (ctn) => {
+   let e = (
+        <span className={"text-nowrap"}>
+            <svg width={"24"} height={"24"}>
+	        <g>
+                    <rect x={"0"} y={"0"} width={"12"} height={"12"}   style={{ fill : "rgb(255,0,0)" }} />
+                    <rect x={"0"} y={"12"} width={"12"} height={"12"}  style={{ fill : "rgb(0,255,0)" }} />
+                    <rect x={"12"} y={"0"} width={"12"} height={"12"}  style={{ fill : "rgb(0,0,255)" }} />
+                    <rect x={"12"} y={"12"} width={"12"} height={"12"} style={{ fill : "rgb(0,122,0)" }} />
+  		</g>
+	    </svg>
+	</span>);
+    return ReactDOMServer.renderToStaticMarkup(e);
 }
