@@ -25,12 +25,12 @@ class ImportGwas:
         self.tableNameDatasets = assembly + "_datasets"
         self.tableNameStudies = assembly + "_gwas_studies"
         self.tableNameOverlap = assembly + "_gwas_overlap"
-                
+
     def setupGWAS(self):
         # chr1    62963737        62963737        rs1002687       rs11207995      0.85    25961943-2      Cholesterol     25961943        Surakka"""
         #                                         snpItself       taggedSNP       r2      unqiueLDblock(pubmed-num)       trait   pubmed  firstAuthor""
         printt("drop/create", self.tableNameGwas)
-        
+
         self.curs.execute("""
         DROP TABLE IF EXISTS {tn};
         CREATE TABLE {tn}(
@@ -68,6 +68,7 @@ class ImportGwas:
             if '*' in '\t'.join(r):
                 print(r)
                 raise Exception("invalid line")
+            r[-1] = r[-1].replace('-', '_')
             outF.write('\t'.join(r) + '\n')
         print("example", '\t'.join(r))
         outF.seek(0)
@@ -108,7 +109,7 @@ class ImportGwas:
             print(headers[1])
             raise Exception("different headers?")
         return headers[0]
-    
+
     def _do_enrichment(self, fn, tableName):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
         fnp = os.path.join(dataF, fn)
@@ -150,7 +151,7 @@ class ImportGwas:
         """.format(tne = tableName, tnd = self.tableNameDatasets))
         printt("updated", self.curs.rowcount)
         return header
-        
+
     def _setupStudies(self):
         printt("drop/create", self.tableNameStudies)
         self.curs.execute("""
@@ -288,11 +289,11 @@ class ImportGwas:
 
     def run(self):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
-        
+
         origBedFnp = os.path.join(dataF, "GWAS.v3.bed")
         bedFnp = os.path.join(dataF, "GWAS.v3.sorted.bed")
         self.processGwasBed(origBedFnp, bedFnp)
-        
+
         self._gwas(bedFnp)
         header = self._enrichment()
         self._studies(header)
@@ -317,6 +318,6 @@ def main():
         with getcursor(DBCONN, "main") as curs:
             ig = ImportGwas(curs, assembly)
             ig.run()
-            
+
 if __name__ == '__main__':
     main()
