@@ -82,7 +82,7 @@ ORDER BY sm DESC
                 rows = curs.fetchall()
                 if rows:
                     return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
-        return None
+        return []
 
     def has_overlap(self, coord):
         if not coord:
