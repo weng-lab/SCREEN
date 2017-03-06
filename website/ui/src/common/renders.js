@@ -1,5 +1,7 @@
 import ReactDOMServer from 'react-dom/server'
 
+// datatbles render has params function (data, type, full, meta)
+
 export const relink = (a) => (v) => (
     "<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>"
     + v + "</a>");
@@ -60,6 +62,14 @@ export const cart_img = (rmv, src_only) => {
 
 export const creLink = (accession) => (
     '<a href="#">' + accession + '</a>'
+)
+
+export const popup = (p, c) => (
+    '<span data-toggle="tooltip" title="' + p + '">' + c + '</span>'
+)
+
+export const creLinkPop = (data, type, full, meta) => (
+    popup("Click for cRE details", creLink(data))
 )
 
 export const openGeLink = (gene) => {
