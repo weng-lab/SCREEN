@@ -103,9 +103,9 @@ class ImportGwas:
             printt("******************* GWAS enrichment", fn)
             header = self._do_enrichment(fn, tableName)
             headers.append(header)
-        headers = list(set(headers))
-        if len(headers) > 1:
-            print('\n'.join(headers))
+        if headers[0] != headers[1]:
+            print(headers[0])
+            print(headers[1])
             raise Exception("different headers?")
         return headers[0]
     
@@ -166,12 +166,8 @@ class ImportGwas:
         );
         """.format(tn = self.tableNameStudies))
 
-    def _studies(self, fnp):
+    def _studies(self, header):
         printt("******************* GWAS studies")
-        printt("reading", fnp)
-        with open(fnp) as f:
-            header = f.readline().rstrip('\n').split('\t')
-        
         self._setupStudies()
 
         printt("import to db")
