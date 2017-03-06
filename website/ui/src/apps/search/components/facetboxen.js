@@ -71,7 +71,7 @@ const cellTypesBox = ({cellType, actions}) => {
 		              className: "dt-right" },
 		            { title: "", data: "cellTypeName",
                               render: Render.assayIcon,
-		              className: "dt-right" }
+		              className: "dt-right dcc" }
 			]}
 			order={[]}
 			selection={cellType}

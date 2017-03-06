@@ -214,24 +214,25 @@ class TableWithCart extends React.Component {
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
-	return (<div ref={"searchTable"}
-                     style={{display: (this.props.isFetching ? "none" : "block")}}>
-		    <em>{topmessage}{tmsg2}</em>
-                    <br />
-		    Candidate Regulatory Elements (cREs)
-		    that meet your search criteria:
+	return (
+            <div ref={"searchTable"}
+                 style={{display: (this.props.isFetching ? "none" : "block")}}>
+		<em>{topmessage}{tmsg2}</em>
+                <br />
+		Candidate Regulatory Elements (cREs)
+		that meet your search criteria:
 
-		    <ResultsTable data={data}
-                                  createdRow={this.colorCreGroup}
-                                  order={table_order}
-                                  cols={TableColumns()}
-                                  onTdClick={(td, rowdata) =>
-                                      table_click_handler(td, rowdata, actions)}
-                                  cvisible={this._opposite(cols)}
-                                  onButtonClick={(td, rowdata) =>
-                                      button_click_handler(td, rowdata, actions)}
-                                  bFilter={true} bLengthChange={true}
-                                  onMouseEnter={true} onMouseExit={true}/>
+		<ResultsTable data={data}
+                              createdRow={this.colorCreGroup}
+                              order={table_order}
+                              cols={TableColumns()}
+                              onTdClick={(td, rowdata) =>
+                                  table_click_handler(td, rowdata, actions)}
+                              cvisible={this._opposite(cols)}
+                              onButtonClick={(td, rowdata) =>
+                                  button_click_handler(td, rowdata, actions)}
+                              bFilter={true} bLengthChange={true}
+                />
 	</div>);
     }
 
