@@ -12,7 +12,7 @@ class MiniPeaksCache:
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
-        
+
         self.hosts = ["cassandra"]
         self.cluster = Cluster(self.hosts)
         self.session = self.cluster.connect()
@@ -22,7 +22,7 @@ class MiniPeaksCache:
     def get(self, assay, accessions):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
-        
+
         select_stmt = self.session.prepare("""
 SELECT * FROM {tn} WHERE accession IN ?
 """.format(tn = tableName ))
@@ -35,7 +35,7 @@ SELECT * FROM {tn} WHERE accession IN ?
             for k, v in row.iteritems():
                 if "accession" == k or "chrom" == k:
                     continue
-                data[k.upper()] = [float(x) for x in v[1:-2].split(',')]
+                data[k.upper()] = [float(x) for x in v[1:-1].split(',')]
             ret[row["accession"]] = data
         return ret
 
