@@ -123,7 +123,8 @@ class MiniPeaks extends React.Component {
 			   render: renderMax(assay)});
 	    }
 	}
-	cols = cols.concat([{title: "", data: "expID", render: Render.dccLink },
+	cols = cols.concat([{title: "", data: "expIDs",
+			     render: Render.dccLinkCtGroupExpIDs},
 			    {title: "Tissue of origin", data: "tissue"},
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);

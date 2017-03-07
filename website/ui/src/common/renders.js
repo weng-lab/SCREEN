@@ -104,7 +104,14 @@ export const geneDeLinks = (genesallpc) => {
 
 export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
+    var img = '<img src="/static/encode/encode_new_window.png" alt="ENCODE logo">';
+    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+}
+
+export const dccLinkCtGroupExpIDs = (accs) => {
+    let q = accs.join("&accession=");
+    var url = 'https://www.encodeproject.org/search/?accession=' + q;
+    var img = '<img src="/static/encode/encode_new_window.png" alt="ENCODE logo">';
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
@@ -113,7 +120,7 @@ export const dccLinkCtGroup = (ctn) => {
         return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
+    var img = '<img src="/static/encode/encode_new_window.png" alt="ENCODE logo">';
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
