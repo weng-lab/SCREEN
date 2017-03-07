@@ -26,8 +26,10 @@ class TabQuery extends React.Component {
                     {title: "gene", data: "approved_symbol",
                      render: Render.searchLink(data.assembly)},
 		    {title: "chrom", data: "chrom"},
-		    {title: "start", data: "start"},
-		    {title: "stop", data: "stop"}];
+		    {title: "start", data: "start",
+                    render: Render.integer},
+		    {title: "stop", data: "stop",
+                    render: Render.integer}];
 
         let order = [[0, "desc"]];
 
