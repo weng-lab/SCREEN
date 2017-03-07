@@ -4,7 +4,7 @@ var $ = require('jquery');
 require('jquery-ui');
 var _dt = require('datatables.net')
 require( 'datatables.net-bs' )
-require( 'datatables.net-jqui' )
+//require( 'datatables.net-jqui' )
 require( 'datatables.net-buttons' )
 require( 'datatables.net-buttons-bs' )
 require( 'datatables.net-buttons/js/buttons.colVis.js' )
