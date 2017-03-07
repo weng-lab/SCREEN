@@ -180,8 +180,10 @@ export const tabTitle = (c) => {
 
 export const upperCase = (d) => (d.toUpperCase())
 
-export const searchLink = (assembly) => (d) => {
-    let params = jQuery.param({q: d, assembly});
+export const searchLink = (data) => (d) => {
+    let params = jQuery.param({q: data.coord_chrom + ':' + data.coord_start
+                                + '-' + data.coord_stop,
+                               assembly: data.assembly});
     let url = "/search/?" + params;
     return "<a href='" + url + "'>" + d + "</a>";
 }
