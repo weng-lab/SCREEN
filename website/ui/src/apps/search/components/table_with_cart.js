@@ -195,9 +195,15 @@ class TableWithCart extends React.Component {
         let lookup = {1 : "creCtcfLike",
                       2 : "creEnhancerLike",
                       3 : "crePromoterLike"};
+        let lookupTitle = {1 : "CTCF-like",
+                           2 : "Enhancer-like",
+                           3 : "Promoter-like"};
         //console.log(row, data, index);
         let klass = lookup[data.cregroup];
-        $('td', row).eq(1).addClass(klass);
+        $('td', row).eq(1)
+                    .addClass(klass)
+                    .attr("data-toggle", "tooltip")
+                    .attr("title", lookupTitle[data.cregroup]);
     }
 
     table(data, actions){

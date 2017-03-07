@@ -8,8 +8,7 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "", data: "cregroup", className: klassCenter,
-            render: Render.creGroup
+            title: "", data: "cregroup", className: klassCenter
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
