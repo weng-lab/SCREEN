@@ -242,7 +242,7 @@ export const NearbyGenomicTable = () => {
 	           order: [[0, "asc"]]
                },
                re_tads: {
-	           title: "Other cREs within TAD (<100 Kb)",
+	           title: "Other cREs within TAD and <100 kb",
 		   helpkey: "creswithintad",
 	           paging: true,
 	           info: false,
