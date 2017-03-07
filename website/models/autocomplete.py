@@ -17,6 +17,8 @@ class AutocompleterWrapper:
 
     def get_suggestions(self, q):
         p = q.split(" ")
+
+        results = []
         for i in xrange(len(p)):
             prefix = " ".join(p[:i])
             suffix = " ".join(p[i:])
@@ -24,7 +26,7 @@ class AutocompleterWrapper:
             if len(results) > 0:
                 results = sorted([prefix + " " + x for x in results])
                 break
-        return results
+        return [q] + results
 
 class Autocompleter:
     def __init__(self, ps, assembly):
@@ -42,7 +44,7 @@ class Autocompleter:
 SELECT DISTINCT(oname)
 FROM {tn}
 WHERE name LIKE %s || '%%'
-LIMIT 10
+LIMIT 5
             """.format(tn = self.assembly + "_autocomplete"), (uq,))
             r = curs.fetchall()
         if not r:
