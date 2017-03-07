@@ -76,6 +76,8 @@ public:
         p.setMax(p.promoter_zscores, p.promoter_max);
 
         p.setMaxZ();
+
+        d.set(rDHS, p.rampage_zscores, d.rampage_files_);
     }
 
     void dumpToTsv(bfs::path d){

@@ -58,6 +58,8 @@ public:
   float promoter_min;
   float maxz;
 
+  std::vector<float> rampage_zscores;
+
     Peak() {}
 
     Peak(const std::string& chrom, const int32_t start, const int32_t end,
@@ -136,6 +138,7 @@ public:
         toTsvVec(s, promoter_zscores); s << d << promoter_min
                                          << d << promoter_max;
         s << d << maxz;
+        toTsvVec(s, rampage_zscores);
         toTsvGene(s, gene_nearest_all);
         toTsvGene(s, gene_nearest_pc);
 
@@ -173,6 +176,7 @@ public:
         p.toTsvVec(s, p.promoter_zscores);
         s << d << p.promoter_min << d << p.promoter_max << "\n";
         s << d << p.maxz << "\n";
+        p.toTsvVec(s, p.rampage_zscores); s << "\n";
         p.toTsvGene(s, p.gene_nearest_all); s << "\n";
         p.toTsvGene(s, p.gene_nearest_pc); s << "\n";
         return s;
