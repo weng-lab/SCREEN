@@ -26,12 +26,19 @@ class ResultsTableContainer extends React.Component {
 	return r;
     }
 
+    componentDidMount(){
+	if(this.props.maintabs_visible){
+	    this.loadCREs(this.props);
+	}
+    }
+    
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
         this.loadCREs(nextProps);
     }
 
     loadCREs(props){
+	//console.log("loadCREs in results_app");
         var q = getCommonState(props);
         var jq = JSON.stringify(q);
 	var setrfacets = this.props.actions.setrfacets;
@@ -53,7 +60,8 @@ class ResultsTableContainer extends React.Component {
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cres: r["cres"], total: r["total"], nodnase: this._get_missing(r["rfacets"]),
+                this.setState({cres: r["cres"], total: r["total"],
+			       nodnase: this._get_missing(r["rfacets"]),
                                jq, isFetching: false, isError: false});
 		setrfacets(r["rfacets"]);
             }.bind(this)
@@ -62,14 +70,14 @@ class ResultsTableContainer extends React.Component {
 
     render() {
 	return (<TableWithCart
-                actions={this.props.actions}
-                data={this.state.cres}
-                total={this.state.total}
-                cart_accessions={this.props.cart_accessions}
-                isFetching={this.state.isFetching}
-		jq={this.state.jq}
-		nodnase={this.state.nodnase}
-		hasct={this.props.cellType}
+                    actions={this.props.actions}
+                    data={this.state.cres}
+                    total={this.state.total}
+                    cart_accessions={this.props.cart_accessions}
+                    isFetching={this.state.isFetching}
+		    jq={this.state.jq}
+		    nodnase={this.state.nodnase}
+		    hasct={this.props.cellType}
                 />);
     }
 }

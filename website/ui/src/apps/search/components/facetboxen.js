@@ -17,7 +17,7 @@ import * as Render from '../../../common/renders'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
-import {panelize} from '../../../common/utility'
+import {panelize, isCart} from '../../../common/utility'
 
 const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
     return (<RangeFacet
@@ -232,19 +232,19 @@ class FacetBoxen extends React.Component {
         return !unchanged;
     }
 
-    doRender(p){
-        return (
-            <div>
-		{accessionsBox(p)}
-		{cellTypesBox(p)}
-		{chromBox(p)}
-		{startEndBox(p)}
-		{rankBox(p)}
-            </div>);
-    }
-
     render() {
-        return this.doRender(this.props)
+	if(isCart()){
+	    return <div />;
+	}
+
+        return (
+	    <div>
+		{accessionsBox(this.props)}
+		{cellTypesBox(this.props)}
+		{chromBox(this.props)}
+		{startEndBox(this.props)}
+		{rankBox(this.props)}
+            </div>);
     }
 }
 
