@@ -10,6 +10,7 @@ import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
+import {isCart} from '../../common/utility'
 
 import initialState from './config/initial_state'
 
@@ -26,6 +27,27 @@ class SearchPage extends React.Component {
 
 	//console.log(store.getState());
 
+	let drawMain = () => {
+	    if(isCart()){
+		return (
+		    <div className="row" style={{width: "100%"}}>
+			<div className="col-md-12" id="tabs-container">
+                            <MainTabs />
+			</div>
+		    </div>);
+	    } else {
+		return (
+                    <div className="row" style={{width: "100%"}}>
+			<div className="col-md-3 nopadding-right" id="facets-container">
+                            <FacetBoxen />
+			</div>
+			<div className="col-md-9 nopadding-left" id="tabs-container">
+                            <MainTabs />
+			</div>
+		    </div>);
+	    }
+	}
+	
         return (
             <Provider store={store}>
 	        <div>
@@ -38,16 +60,7 @@ class SearchPage extends React.Component {
 		    </nav>
 
 		    <div className="container" style={{width: "100%"}}>
-                        <div className="row" style={{width: "100%"}}>
-                            <div className="col-md-3 nopadding-right"
-                                 id="facets-container">
-                                <FacetBoxen />
-                            </div>
-                            <div className="col-md-9 nopadding-left"
-                                 id="tabs-container">
-                                <MainTabs />
-                            </div>
-                        </div>
+			{drawMain()}
 
                     </div>
 		</div>

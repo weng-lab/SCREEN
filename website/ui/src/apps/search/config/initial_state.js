@@ -1,4 +1,5 @@
 import MainTabInfo from './maintabs.js'
+import {isCart} from '../../../common/utility'
 
 const initialState = () => ({
     rfacets: ["dnase", "promoter", "enhancer", "ctcf"],
@@ -14,7 +15,7 @@ const initialState = () => ({
     tfs_mode: null,
     maintabs: MainTabInfo(),
     maintabs_active: "results",
-    maintabs_visible: false,
+    maintabs_visible: isCart(),
     cre_accession_detail: null,
     re_details_tab_active: "topTissues",
     tree_rank_method: "H3K27ac",

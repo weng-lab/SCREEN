@@ -69,3 +69,8 @@ export const arrowNote = (msg) => {
             </h3>
         </div>);
 }
+
+export const isCart = () => {
+    let href = window.location.href;
+    return href.includes("&cart");
+}
