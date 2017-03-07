@@ -15,20 +15,21 @@ from db_utils import getcursor
 from files_and_paths import Dirs
 
 class SetupAutocomplete:
-    def __init__(self, curs, assembly, save):
+    def __init__(self, curs, assembly, tableName, doAddSnps):
         self.curs = curs
         self.assembly = assembly
-        self.save = save
-        self.tableName = self.assembly + "_autocomplete"
+        self.tableName = tableName
+        self.doAddSnps = doAddSnps
 
     def run(self):
         self._setupDb()
-        self._snps()
+
+        if self.doAddSnps:
+            self._snps()
 
         names = self._genes()
         printt("found", len(names), "items")
 
-        self._save(names)
         self._db(names)
         self._index()
 
@@ -105,15 +106,7 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
                                 names.append('\t'.join([e.lower(), c, e, "1", str(row[9])]))
                     else:
                         names.append('\t'.join([v.lower(), c, v, "1", str(row[9])]))
-        return names
-
-    def _save(self, names):
-        if self.save:
-            fnp = paths.path(self.assembly, "extras",
-                             "autocomplete_dictionary.txt")
-            with open(fnp, "wb") as o:
-                o.write("\n".join(names))
-            printt("wrote", fnp)
+        return list(set(names))
 
     def _db(self, names):
         outF = StringIO.StringIO()
@@ -143,7 +136,6 @@ USING gin (name gin_trgm_ops)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--save', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -160,7 +152,10 @@ def main():
     for assembly in assemblies:
         with getcursor(DBCONN, "main") as curs:
             print('***********', assembly)
-            ss = SetupAutocomplete(curs, assembly, args.save)
+            ss = SetupAutocomplete(curs, assembly, assembly + "_autocomplete", True)
+            ss.run()
+
+            ss = SetupAutocomplete(curs, assembly, assembly + "_gene_search", False)
             ss.run()
 
 if __name__ == '__main__':
