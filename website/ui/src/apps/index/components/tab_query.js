@@ -24,7 +24,8 @@ class TabQuery extends React.Component {
 
 	let cols = [{title: "", data: "sm", visible: false},
                     {title: "gene", data: "approved_symbol",
-                     render: Render.searchLink(data.assembly)},
+                     render: Render.searchLink(data)},
+                    {title: "", data: "interpretation"},
 		    {title: "chrom", data: "chrom"},
 		    {title: "start", data: "start",
                     render: Render.integer},
