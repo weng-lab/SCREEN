@@ -53,7 +53,6 @@ class ResultsTable extends React.Component {
 
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
-	var onMouseOver = this.props.onMouseOver;
 
 	$(this.refs.root)
 	    .on("click", "td", function() {
@@ -68,12 +67,11 @@ class ResultsTable extends React.Component {
 				  _datatable.row($(this).parents('tr')).data());
 		}
 	    })
-	    .on("mouseover", "td", function() {
-		if(!onMouseOver){
-		    return false;
-		}
-                onMouseOver($(this));
-	    })
+            .on('draw.dt', function () {
+                $('[data-toggle="tooltip"]').tooltip(
+                    {'delay': { show: 100, hide: 3000 }}
+                );
+            })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
 
