@@ -74,7 +74,6 @@ LIMIT 50
                 """.format(assembly = self.assembly), (slo, s))
             rows = curs.fetchall()
         if rows:
-            print("isclose", r)
             r = rows[0]
             if isclose(1, r[7]): # similarity
                 return [GeneParse(self.assembly, r, s, usetss, tssdist)]
