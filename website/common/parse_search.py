@@ -85,7 +85,7 @@ class ParseSearch:
 
 
     def parse(self, kwargs = None):
-        s = self._sanitize().lower()
+        s = self._sanitize().strip()
         self.sanitizedStr = s
 
         s, coord = self._find_coord(s)
@@ -166,7 +166,7 @@ class ParseSearch:
             ret["coord_start"] = coord.start
             ret["coord_end"] = coord.end
         ret["accessions"] = accessions
-        ret["multipleGenes"] = len(genes) > 0
+        ret["multipleGenes"] = len(genes) > 1
         ret["genes"] = [g.toJson() for g in genes]
         return ret
 
@@ -179,6 +179,7 @@ def main():
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
     queries = ["BAP1"]
     queries = ["Actin alpha 1", "HBB"]
+    queries = ["HBB"]
 
     for q in queries:
         print("***************", q)
