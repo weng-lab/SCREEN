@@ -9,6 +9,7 @@ import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
 
 import * as Render from '../../../common/renders'
+import {isCart} from '../../../common/utility'
 
 const table_click_handler = (td, re, actions) => {
     if (td.className.indexOf("browser") != -1) return;
@@ -218,6 +219,11 @@ class TableWithCart extends React.Component {
 	    tmsg2 = (<div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div>);
 	}
 
+	let note = "";
+	if(!isCart()){
+	    note = "Candidate Regulatory Elements (cREs) that meet your search criteria:";
+	}
+	
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
@@ -226,8 +232,7 @@ class TableWithCart extends React.Component {
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
 		<em>{topmessage}{tmsg2}</em>
                 <br />
-		Candidate Regulatory Elements (cREs)
-		that meet your search criteria:
+		{note}
 
 		<ResultsTable data={data}
                               order={table_order}
