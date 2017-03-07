@@ -7,6 +7,8 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
@@ -32,7 +34,7 @@ class PGcommon:
     def rankMethodToIDxToCellType(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
-SELECT idx, celltype, rankmethod 
+SELECT idx, celltype, rankmethod
 FROM {tn}
 """.format(tn = self.assembly + "_rankcelltypeindexex"))
             ret = {}
@@ -45,7 +47,7 @@ FROM {tn}
         return ret
 
     def makeCtMap(self):
-        amap = {"DNase": "dnase", 
+        amap = {"DNase": "dnase",
                 "H3K4me3": "promoter", # FIXME: this could be misleading
                 "H3K27ac": "enhancer", # FIXME: this too
                 "CTCF": "ctcf"}
