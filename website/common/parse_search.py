@@ -176,6 +176,7 @@ def main():
 
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
     queries = ["Actin alpha 1", "HBB"]
+    queries = ["Actin alpha 1"]
 
     for q in queries:
         print("***************", q)
