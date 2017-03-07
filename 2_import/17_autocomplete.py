@@ -11,7 +11,7 @@ from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
-from db_utils import getcursor
+from db_utils import getcursor, makeIndex, makeIndexGinTrgmOps, makeIndexTextPatternOps
 from files_and_paths import Dirs
 
 class SetupAutocomplete:
@@ -28,10 +28,10 @@ class SetupAutocomplete:
             self._snps()
 
         names = self._genes()
-        printt("found", len(names), "items")
+        printt("found", "{:,}".format(len(names)), "items")
 
         self._db(names)
-        self._index()
+        self.index()
 
     def _setupDb(self):
         printt("drop and create", self.tableName)
@@ -74,7 +74,7 @@ WHERE approved_symbol = %s
         snp, 2, id
         FROM {assembly}_snps
         """.format(tn = self.tableName, assembly = self.assembly))
-        printt("loaded", self.curs.rowcount)
+        printt("\tok", "{:,}".format(self.curs.rowcount))
 
     def _genes(self):
         printt("loading gene info...")
@@ -119,24 +119,17 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
                 "altchrom", "altstart", "altstop", "oname", "handler", "pointer"]
         self.curs.copy_from(outF, self.tableName, "\t",
                             columns=cols)
+        printt("\tok", "{:,}".format(self.curs.rowcount))
 
-    def _index(self):
-        printt("indexing table...")
-        self.curs.execute("""
-CREATE INDEX {tn}_index ON {tn}
-USING btree (name text_pattern_ops)
-""".format(tn = self.tableName))
-
-        # will need to run as psql postgres user:
-        # \c regElmViz; CREATE EXTENSION pg_trgm;
-        self.curs.execute("""
-CREATE INDEX {tn}_fulltext_index ON {tn}
-USING gin (name gin_trgm_ops)
-""".format(tn = self.tableName))
+    def index(self):
+        makeIndexTextPatternOps(self.curs, self.tableName, ["name"])
+        makeIndexGinTrgmOps(self.curs, self.tableName, ["name"])
+        makeIndex(self.curs, self.tableName, ["oname"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--index', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -153,10 +146,16 @@ def main():
         with getcursor(DBCONN, "main") as curs:
             print('***********', assembly)
             ss = SetupAutocomplete(curs, assembly, assembly + "_autocomplete", True)
-            ss.run()
+            if args.index:
+                ss.index()
+            else:
+                ss.run()
 
             ss = SetupAutocomplete(curs, assembly, assembly + "_gene_search", False)
-            ss.run()
+            if args.index:
+                ss.index()
+            else:
+                ss.run()
 
 if __name__ == '__main__':
     main()

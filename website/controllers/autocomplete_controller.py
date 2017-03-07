@@ -5,8 +5,10 @@ import time
 import numpy as np
 import cherrypy
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../models"))
 from autocomplete import AutocompleterWrapper
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from parse_search import ParseSearch
 
 class AutocompleteWebService:
