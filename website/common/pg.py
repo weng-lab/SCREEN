@@ -204,19 +204,16 @@ LIMIT 1000) r
 
         # qoute escape from
         # http://stackoverflow.com/a/12320729
-        q = '''
-SELECT count_estimate ('
-SELECT accession
+        q = """
+SELECT count(0)
 FROM {tn} AS cre
 {wc}
-')
-'''.format(tn = tableName, wc = whereclause.replace("'", "''"))
+""".format(tn = tableName, wc = whereclause)
         if 0:
             timedQuery(curs, q)
         else:
             curs.execute(q)
-        # http://stackoverflow.com/a/3348866
-        return round(curs.fetchone()[0], -3)
+        return curs.fetchone()[0]
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
