@@ -68,13 +68,6 @@ export const popup = (p, c) => {
     return '<span data-toggle="tooltip" data-placement="top" title="' + p + '">' + c + '</span>';
 }
 
-export const creGroup = (cg) => {
-    let lookup = {1 : "CTCF-like",
-                  2 : "Enhancer-like",
-                  3 : "Promoter-like"};
-    return popup(lookup[cg], cg);
-}
-
 export const creLinkPop = (data, type, full, meta) => (
     popup("Click for cRE details", creLink(data))
 )
