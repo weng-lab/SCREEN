@@ -65,7 +65,7 @@ export const creLink = (accession) => (
 )
 
 export const popup = (p, c) => {
-    return '<span data-toggle="tooltip" title="' + p + '">' + c + '</span>';
+    return '<span data-toggle="tooltip" data-placement="top" title="' + p + '">' + c + '</span>';
 }
 
 export const creGroup = (cg) => {
@@ -228,5 +228,7 @@ export const assayIcon = (ctn) => {
   		</g>
 	    </svg>
 	</span>);
-    return dccLinkCtGroupCus(ctn, ReactDOMServer.renderToStaticMarkup(e));
+    let title = assays.join(", ");
+    let c = dccLinkCtGroupCus(ctn, ReactDOMServer.renderToStaticMarkup(e));
+    return popup(title, c);
 }
