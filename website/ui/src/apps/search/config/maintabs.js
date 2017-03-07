@@ -43,7 +43,7 @@ const MainTabInfo = () => {
     return {results : {title: "cRE Search Results", visible: true, f: ResultsTab},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
 	    aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
-	    ct_tree: {title: "Cell Type Clustering", visible: GlobalAssembly == "mm10", f: TreeTab},
+	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
 	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
 	    details: {title: "cRE Details", visible: false, f: DetailsTab},
 	    gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}};
