@@ -461,3 +461,12 @@ table.dataTable tbody td.dt-body-center {
 div.dataTables_wrapper div.dataTables_paginate {
     text-align: left;
 }
+
+.interpretation {
+    width: 100%;
+    background-color: #ffa588;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}

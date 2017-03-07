@@ -69,7 +69,16 @@ class ResultsTableContainer extends React.Component {
     }
 
     render() {
-	return (<TableWithCart
+	let interpretationStr = GlobalParsedQuery["interpretation"];
+	let interpretation = interpretationStr && (
+	    <div className="interpretation">
+		{interpretationStr}
+	    </div>);
+	
+	return (
+	    <div>
+		{interpretation}
+		<TableWithCart
                     actions={this.props.actions}
                     data={this.state.cres}
                     total={this.state.total}
@@ -78,7 +87,8 @@ class ResultsTableContainer extends React.Component {
 		    jq={this.state.jq}
 		    nodnase={this.state.nodnase}
 		    hasct={this.props.cellType}
-                />);
+                />
+	    </div>);
     }
 }
 
