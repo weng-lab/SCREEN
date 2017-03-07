@@ -54,7 +54,6 @@ class PageInfoSearch:
         cache = self.cacheW[assembly]
 
         ret.update({"globalParsedQuery" : json.dumps(parsed),
-                    "showinterpretation": parsed["interpretation"],
                     "globalSessionUid" : uuid,
                     "searchPage": True
                     })
