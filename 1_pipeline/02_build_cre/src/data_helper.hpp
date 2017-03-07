@@ -52,6 +52,7 @@ namespace bib {
     std::vector<SignalFile> h3k4me3_files_;
     std::vector<SignalFile> insulator_files_;
     std::vector<SignalFile> promoter_files_;
+    std::vector<SignalFile> rampage_files_;
 
     template <typename T>
     DataHelper(T& paths, Peaks& peaks)
@@ -59,9 +60,13 @@ namespace bib {
     {
       TicToc tt("data load time");
       GetData<T> gd(paths);
+
       if("hg19" == ZiARG_assembly){
           tads_ = gd.tads();
+          gd.loadSignals(paths.raw_ / "rampage-list.txt",
+                         rampage_files_, 4);
       }
+
       allGenes_ = gd.allGenes();
       pcGenes_ = gd.pcGenes();
 
