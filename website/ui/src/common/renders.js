@@ -187,12 +187,11 @@ export const tabTitle = (c) => {
 
 export const upperCase = (d) => (d.toUpperCase())
 
-export const searchLink = (data) => (d) => {
-    let params = jQuery.param({q: data.coord_chrom + ':' + data.coord_start
-                                + '-' + data.coord_end,
+export const searchLink = (data) => (approved_symbol) => {
+    let params = jQuery.param({q: approved_symbol,
                                assembly: data.assembly});
     let url = "/search/?" + params;
-    return "<a href='" + url + "'>" + d + "</a>";
+    return "<a href='" + url + "'>" + approved_symbol + "</a>";
 }
 
 export const assayIcon = (ctn) => {
