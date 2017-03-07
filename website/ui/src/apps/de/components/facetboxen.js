@@ -20,28 +20,28 @@ const cols = [{ title: "cell type", data: "name",
 const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
-                    title={""}
-                    data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
-                    cols={cols}
-                    order={[]}
-                    selection={ct1}
-                    friendlySelectionLookup={(value) => {
-                        return Globals.byCellType[value][0]["name"]; }}
-                    onTdClick={(value) => { actions.setCt1(value) }}
+			title={""}
+			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			cols={cols}
+			order={[]}
+			selection={ct1}
+			friendlySelectionLookup={(value) => {
+				return Globals.byCellType[value][0]["name"]; }}
+			onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
 
 const cellTypesBox2 = ({ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
-                    title={""}
-                    data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
-                    cols={cols}
-                    order={[]}
-                    selection={ct2}
-                    friendlySelectionLookup={(value) => {
-                        return Globals.byCellType[value][0]["name"]; }}
-                    onTdClick={(value) => { actions.setCt2(value) }}
+			title={""}
+			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			cols={cols}
+			order={[]}
+			selection={ct2}
+			friendlySelectionLookup={(value) => {
+				return Globals.byCellType[value][0]["name"]; }}
+			onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }
 
