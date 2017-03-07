@@ -158,7 +158,7 @@ class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
 	super(props, "nearbyGenomic");
         this.doRender = (data) => {
-            return tabEles(data, NearbyGenomicTable(), 4);
+            return tabEles(data, NearbyGenomicTable(), 3);
         }
     }
 }
