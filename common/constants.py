@@ -50,6 +50,7 @@ promoter_zscores
 promoter_min
 promoter_max
 maxz
+rampage_zscores
 gene_all_distance
 gene_all_id
 gene_pc_distance

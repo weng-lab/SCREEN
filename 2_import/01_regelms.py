@@ -76,6 +76,7 @@ class ImportCREs:
      promoter_min real,
      promoter_max real,
      maxz real,
+     rampage_zscores real[],
 
      gene_all_distance integer[],
      gene_all_id integer[],
