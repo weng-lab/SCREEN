@@ -8,7 +8,7 @@ from coord import Coord
 from pg_parse import PGparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession
+from cre_utils import isaccession, isclose
 from constants import chrom_lengths, chroms
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
@@ -130,7 +130,9 @@ class ParseSearch:
                     s = s.replace(t, "")
                     if coord and not self.pgParse.has_overlap(coord):
                         interpretation = "NOTICE: %s does not overlap any cREs; displaying any cREs within 2kb" % t
-                        coord = Coord(coord.chrom, coord.start - 2000, coord.end + 2000)
+                        coord = Coord(coord.chrom,
+                                      max(0, coord.start - 2000),
+                                      coord.end + 2000)
                 elif t.startswith("tssdist"):
                     tssDist = t.split("_")[1]
                     useTss = True
@@ -139,7 +141,7 @@ class ParseSearch:
 
         genes = []
         if coord is None:
-            genes = self.pgParse._try_find_gene(s, useTss, tssDist)
+            genes = self.pgParse.try_find_gene(s, useTss, tssDist)
             if genes:
                 g = genes[0]
                 interpretation = g.get_genetext()

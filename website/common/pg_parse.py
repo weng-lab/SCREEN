@@ -56,10 +56,31 @@ WHERE gi.id = %s
             return None
         return rows[0]
 
-    def _try_find_gene(self, s, usetss, tssdist):
-        if type(tssdist) is not int:
-            tssdist = int(tssdist.replace("kb", "")) * 1000
+    def _exactGeneMatch(self, s, usetss, tssdist):
+        with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
+            slo = s.lower().strip()
+            curs.execute("""
+SELECT ac.oname,
+ac.chrom, ac.start, ac.stop,
+ac.altchrom, ac.altstart, ac.altstop,
+similarity(ac.name, %s) AS sm, ac.pointer,
+gi.approved_symbol
+FROM {assembly}_gene_search ac
+INNER JOIN {assembly}_gene_info gi
+ON gi.id = ac.pointer
+WHERE gi.approved_symbol = %s
+ORDER BY sm DESC
+LIMIT 50
+                """.format(assembly = self.assembly), (slo, s))
+            rows = curs.fetchall()
+        if rows:
+            print("isclose", r)
+            r = rows[0]
+            if isclose(1, r[7]): # similarity
+                return [GeneParse(self.assembly, r, s, usetss, tssdist)]
+        return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
 
+    def _fuzzyGeneMatch(self, s, usetss, tssdist):
         with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
             slo = s.lower()
             curs.execute("""
@@ -71,17 +92,23 @@ gi.approved_symbol
 FROM {assembly}_gene_search ac
 INNER JOIN {assembly}_gene_info gi
 ON gi.id = ac.pointer
-WHERE gi.approved_symbol = %s
-OR ac.name %% %s
+WHERE ac.name %% %s
 ORDER BY sm DESC
 LIMIT 50
                 """.format(assembly = self.assembly),
-                         (slo, s, slo))
+                         (slo, slo))
             rows = curs.fetchall()
-            if rows:
-                return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
-        return []
+        return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
+    
+    def try_find_gene(self, s, usetss, tssdist):
+        if type(tssdist) is not int:
+            tssdist = int(tssdist.replace("kb", "")) * 1000
 
+        genes = self._exactGeneMatch(s, usetss, tssdist)
+        if not genes:
+            genes = self._fuzzyGeneMatch(s, usetss, tssdist)
+        return genes
+    
     def has_overlap(self, coord):
         if not coord:
             return False
