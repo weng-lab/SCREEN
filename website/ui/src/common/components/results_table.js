@@ -69,7 +69,7 @@ class ResultsTable extends React.Component {
 	    })
             .on('draw.dt', function () {
                 $('[data-toggle="tooltip"]').tooltip(
-                    {'delay': { show: 100, hide: 3000 }}
+                    {delay: { show: 100, hide: 3000 }
                 );
             })
 	    .removeClass('display')
