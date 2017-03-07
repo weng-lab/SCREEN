@@ -445,6 +445,7 @@ table tr td.minipeak {
 
 table.dataTable thead th.dt-head-center {
     text-align: center;
+    vertical-align: top;
 }
 table.dataTable tbody td.dt-body-center {
     text-align: center;
