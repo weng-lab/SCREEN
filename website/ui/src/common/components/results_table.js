@@ -1,8 +1,10 @@
 import React from 'react'
 
 var $ = require('jquery');
+require('jquery-ui');
 var _dt = require('datatables.net')
 require( 'datatables.net-bs' )
+require( 'datatables.net-jqui' )
 require( 'datatables.net-buttons' )
 require( 'datatables.net-buttons-bs' )
 require( 'datatables.net-buttons/js/buttons.colVis.js' )
@@ -70,6 +72,7 @@ class ResultsTable extends React.Component {
             .on('draw.dt', function () {
                 $('[data-toggle="tooltip"]').tooltip(
                     {delay: { show: 100, hide: 3000 },
+                     placement: 'top'
                     }
                 );
                 $('[data-toggle="tooltip"]').on('click', function(e){
