@@ -191,6 +191,7 @@ class TableWithCart extends React.Component {
     }
 
     colorCreGroup(row, data, index){
+	// add via createdRow={this.colorCreGroup}
         // https://datatables.net/examples/advanced_init/row_callback.html
         let lookup = {1 : "creCtcfLike",
                       2 : "creEnhancerLike",
@@ -229,7 +230,6 @@ class TableWithCart extends React.Component {
 		that meet your search criteria:
 
 		<ResultsTable data={data}
-                              createdRow={this.colorCreGroup}
                               order={table_order}
                               cols={TableColumns()}
                               onTdClick={(td, rowdata) =>
