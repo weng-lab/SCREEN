@@ -202,6 +202,7 @@ export const assayIcon = (ctn) => {
     // CTCF blue 00B0F0
 
     let assays = Globals.byCellType[ctn].map((a) => (a.assay));
+    assays.sort();
     let w = 12;
     let fw = 2 * w + 4;
     let rect = (x, y, color) => (
@@ -232,5 +233,52 @@ export const assayIcon = (ctn) => {
 	</span>);
     let title = assays.join(", ");
     let c = dccLinkCtGroupCus(ctn, ReactDOMServer.renderToStaticMarkup(e));
+    return popup(title, c);
+}
+
+export const creGroupIcon = (creGroup) => {
+    // DNase green 06DA93
+    // H3K27ac yellow FFCD00
+    // H3K4me3 red FF0000
+    // CTCF blue 00B0F0
+
+    let lookupAssay = {1 : "CTCF",
+                       2 : "H3K27ac",
+                       3 : "H3K4me3"};
+    let lookupTitle = {1 : "CTCF-bound",
+                       2 : "Enhancer-like",
+                       3 : "Promoter-like"};
+    
+    let assays = [lookupAssay[creGroup]];
+    let w = 12;
+    let fw = 2 * w + 4;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
+    )
+    let line = (x1, y1, x2, y2) => (
+        <line x1={x1} y1={y1} x2={x2} y2={y2}
+              style={{strokeWidth: 1, stroke: "black"}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fw}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={fw}>
+	        <g>
+                    {border()}
+                    {line(w+2, 0, w+2, fw)}
+                    {line(0, w+2, fw, w+2)}
+                    {assays.indexOf("DNase") > -1 && rect(1, 1, "#06DA93")}
+                    {assays.indexOf("H3K27ac") > -1  && rect(1, w+3, "#FFCD00")}
+                    {assays.indexOf("H3K4me3") > -1  && rect(w+3, 1, "#FF0000")}
+                    {assays.indexOf("CTCF") > -1  && rect(w+3, w+3, "#00B0F0")}
+  		</g>
+	    </svg>
+	</span>);
+    let title = lookupTitle[creGroup];
+    let c = ReactDOMServer.renderToStaticMarkup(e);
     return popup(title, c);
 }

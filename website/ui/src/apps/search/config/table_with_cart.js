@@ -8,7 +8,8 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "", data: "cregroup", className: klassCenter
+            title: "", data: "cregroup", className: klassCenter,
+	    render: Render.creGroupIcon
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -40,7 +41,8 @@ const TableColumns = () => {
 	}, {
 	    title: "genome browsers", data: null,
 	    className: klassCenter + "browser",
-	    targets: -1, orderable: false,
+	    targets: -1,
+	    orderable: false,
 	    defaultContent: Render.browser_buttons(["UCSC", "WashU"])
 	    //, "Ensembl"
 	}
