@@ -195,7 +195,7 @@ class TableWithCart extends React.Component {
         let lookup = {1 : "creCtcfLike",
                       2 : "creEnhancerLike",
                       3 : "crePromoterLike"};
-        let lookupTitle = {1 : "CTCF-like",
+        let lookupTitle = {1 : "CTCF-bound",
                            2 : "Enhancer-like",
                            3 : "Promoter-like"};
         //console.log(row, data, index);
