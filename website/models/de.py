@@ -47,8 +47,8 @@ class DE:
         ct2PromoterIdx = rmLookup[self.ct2]
 
         cols = ["accession", "start", "stop",
-                "h3k4me3_only_zscore[%s]" % ct1PromoterIdx,
-                "h3k4me3_only_zscore[%s]" % ct2PromoterIdx]
+                "h3k4me3_zscores[%s]" % ct1PromoterIdx,
+                "h3k4me3_zscores[%s]" % ct2PromoterIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, True)
         ret = []
@@ -65,8 +65,8 @@ class DE:
         ct2EnhancerIdx = rmLookup[self.ct2]
 
         cols = ["accession", "start", "stop",
-                "h3k27ac_only_zscore[%s]" % ct1EnhancerIdx,
-                "h3k27ac_only_zscore[%s]" % ct2EnhancerIdx]
+                "h3k27ac_zscores[%s]" % ct1EnhancerIdx,
+                "h3k27ac_zscores[%s]" % ct2EnhancerIdx]
         cres = self.pgSearch.nearbyCREs(self.coord(), 2 * self.halfWindow,
                                         cols, False)
         ret = []
@@ -96,8 +96,8 @@ class DE:
 
     def nearbyDEs(self):
         # limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        ct1 = self.ct1.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
-        ct2 = self.ct2.replace("C57BL-6_", "").replace("embryo_", "").replace("_days", "")
+        ct1 = self.ct1.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "")
+        ct2 = self.ct2.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "")
 
         cd = self.coord()
 
