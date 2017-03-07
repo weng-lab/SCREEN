@@ -59,29 +59,27 @@ WHERE gi.id = %s
     def _try_find_gene(self, s, usetss, tssdist):
         if type(tssdist) is not int:
             tssdist = int(tssdist.replace("kb", "")) * 1000
-        p = s.lower().split()
 
         with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
-            for i in xrange(len(p)):
-                s = " ".join(p[:len(p) - i])
-                curs.execute("""
-SELECT ac.oname, ac.chrom, ac.start, ac.stop,
+            slo = s.lower()
+            curs.execute("""
+SELECT ac.oname,
+ac.chrom, ac.start, ac.stop,
 ac.altchrom, ac.altstart, ac.altstop,
 similarity(ac.name, %s) AS sm, ac.pointer,
 gi.approved_symbol
-FROM {assembly}_autocomplete ac
+FROM {assembly}_gene_search ac
 INNER JOIN {assembly}_gene_info gi
 ON gi.id = ac.pointer
-WHERE ac.name %% %s
-GROUP BY ac.oname, ac.chrom, ac.start, ac.stop,
-ac.altchrom, ac.altstart, ac.altstop, ac.name, ac.pointer,
-gi.approved_symbol
-HAVING count(*) = 1
+WHERE gi.approved_symbol = %s
+OR ac.name %% %s
 ORDER BY sm DESC
-                """.format(assembly = self.assembly), (s, s))
-                rows = curs.fetchall()
-                if rows:
-                    return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
+LIMIT 50
+                """.format(assembly = self.assembly),
+                         (slo, s, slo))
+            rows = curs.fetchall()
+            if rows:
+                return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
         return []
 
     def has_overlap(self, coord):
