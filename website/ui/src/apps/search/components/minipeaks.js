@@ -138,7 +138,6 @@ class MiniPeaks extends React.Component {
 	             cols,
 		     columnDefs,
 		     bFilter: true,
-		     dom: '<b"top"f>t<B"bottom"><"clear">',
 		     order: [[1, "desc"], // DNase signal
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
