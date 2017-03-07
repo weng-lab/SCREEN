@@ -13,6 +13,9 @@ from constants import chrom_lengths, chroms
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
+from config import Config
+
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
 from db_utils import getcursor
