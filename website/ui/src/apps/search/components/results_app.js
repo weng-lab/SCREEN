@@ -68,20 +68,24 @@ class ResultsTableContainer extends React.Component {
         });
     }
 
-    doInterpGene({geneOrig, noTss, useTss, tssDist, assembly}){
-        let gene = (<em>{geneOrig}</em>);
+    doInterpGene({gene, noTss, useTss, tssDist, assembly}){
+        let geneTitle = (<em>{gene}</em>);
 	
         if(noTss){
-            return "This search is showing cREs overlapping the gene body of " + gene;
+            return (
+		<span>
+		    "This search is showing cREs overlapping the gene body of "
+		    {geneTitle}"."
+		</span>);
 	}
 	
         if(useTss){
             if(!tssDist){
                 return (
 		    <div>
-			{"This search is showing candidate promoters located between the first and last TSS's of "}{gene}{"."}
+			{"This search is showing candidate promoters located between the first and last TSS's of "}{geneTitle}{"."}
 			<br />
-			{"To see cREs overlapping the gene body of "}{gene}{", "}
+			{"To see cREs overlapping the gene body of "}{geneTitle}{", "}
 			<a href={"/search?q=" + gene + "&assembly=" + assembly}>
 			    click here
 			</a>.
@@ -89,9 +93,13 @@ class ResultsTableContainer extends React.Component {
 	    } 
 	    return (
 		<div>
-		    {"This search is showing candidate promoters located between the first and last TSS's of " + gene + " and up to " + tssDist + " upstream."}
+		    {"This search is showing candidate promoters located between the first and last TSS's of "}
+		    {geneTitle}
+		    {" and up to " + tssDist + " upstream."}
 		    <br />
-		    {"To see cREs overlapping the gene body of " + gene + ", "}
+		    {"To see cREs overlapping the gene body of "}
+		    {geneTitle}
+		    {", "}
 		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
 			click here
 		    </a>.
@@ -108,9 +116,9 @@ class ResultsTableContainer extends React.Component {
         return (
 	    <div>
 		{"This search is showing cREs overlapping the gene body of "}
-		{gene}{"."}
+		{geneTitle}{"."}
 		<br />
-		{"To see candidate promoters located between the first and last TSS's of "}{gene}{", "}
+		{"To see candidate promoters located between the first and last TSS's of "}{geneTitle}{", "}
 		<a href={"/search?q=" + gene + "+tss+promoter&assembly=" + assembly}>
 		    click here
 		</a>{","}
