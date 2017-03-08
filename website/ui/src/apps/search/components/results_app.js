@@ -100,7 +100,8 @@ class ResultsTableContainer extends React.Component {
 
 	return (
 	    <div>
-		{"Click to see candidate Regulatory Elements:"}
+		<span className={"glyphicon glyphicon-info-sign"} aria-hidden="true"></span>
+		{" Click to see candidate Regulatory Elements:"}
 		<ul>
 		    {geneBody}
 		    {firstLastTss}
@@ -140,6 +141,8 @@ class ResultsTableContainer extends React.Component {
         let geneTitle = (<em>{gene}</em>);    
 	return (
 	    <div>
+		<span className={"glyphicon glyphicon-info-sign"} aria-hidden="true"></span>
+		{" "}
 		{this.firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle)}
 		<br />
 		{this.searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle)}
