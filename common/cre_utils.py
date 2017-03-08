@@ -20,3 +20,7 @@ def checkChrom(assembly, j):
 def checkAssembly(assembly):
     if assembly not in ["hg19", "mm10"]:
         raise Exception("invalid assembly")
+
+def creAssemblyStart(c):
+    self._assembly_starts = {"mm10": "EM10E",
+                             "hg19": "EH37E" }

@@ -56,7 +56,7 @@ WHERE gi.id = %s
             return None
         return rows[0]
 
-    def _exactGeneMatch(self, s, usetss, tssdist):
+    def _exactGeneMatch(self, s, usetss, tssDist):
         with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
             slo = s.lower().strip()
             curs.execute("""
@@ -76,10 +76,10 @@ LIMIT 50
         if rows:
             r = rows[0]
             if isclose(1, r[7]): # similarity
-                return [GeneParse(self.assembly, r, s, usetss, tssdist)]
-        return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
+                return [GeneParse(self.assembly, r, s, usetss, tssDist)]
+        return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
-    def _fuzzyGeneMatch(self, s, usetss, tssdist):
+    def _fuzzyGeneMatch(self, s, usetss, tssDist):
         with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
             slo = s.lower()
             curs.execute("""
@@ -97,15 +97,12 @@ LIMIT 50
                 """.format(assembly = self.assembly),
                          (slo, slo))
             rows = curs.fetchall()
-        return [GeneParse(self.assembly, r, s, usetss, tssdist) for r in rows]
+        return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
     
-    def try_find_gene(self, s, usetss, tssdist):
-        if type(tssdist) is not int:
-            tssdist = int(tssdist.replace("kb", "")) * 1000
-
-        genes = self._exactGeneMatch(s, usetss, tssdist)
+    def try_find_gene(self, s, usetss, tssDist):
+        genes = self._exactGeneMatch(s, usetss, tssDist)
         if not genes:
-            genes = self._fuzzyGeneMatch(s, usetss, tssdist)
+            genes = self._fuzzyGeneMatch(s, usetss, tssDist)
         return genes
     
     def has_overlap(self, coord):

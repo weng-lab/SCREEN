@@ -108,7 +108,7 @@ class ResultsTableContainer extends React.Component {
 
 	let dists = ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"];
 	let distsRefs = orjoin(dists.map((d) => (
-	    <a href={"/search?q=" + gene + "+tssdist_" + d + "+promoter&assembly=" + assembly}>
+	    <a href={"/search?q=" + gene + "&tssdist_" + d + "&promoter&assembly=" + assembly}>
 		{d}
 	    </a>))
 	);
@@ -119,7 +119,7 @@ class ResultsTableContainer extends React.Component {
 		{geneTitle}{"."}
 		<br />
 		{"To see candidate promoters located between the first and last TSS's of "}{geneTitle}{", "}
-		<a href={"/search?q=" + gene + "+tss+promoter&assembly=" + assembly}>
+		<a href={"/search?q=" + gene + "&tss&promoter&assembly=" + assembly}>
 		    click here
 		</a>{","}
 		<br />
@@ -134,13 +134,15 @@ class ResultsTableContainer extends React.Component {
 	let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
 	let interpGene = interp.hasOwnProperty("gene") ?
 			 this.doInterpGene(interp["gene"]) : "";
-
+	let interpBox = (
+	    <div className="interpretation">
+		{interpMsb}
+		{interpGene}
+	    </div>);
+	
 	return (
 	    <div>
-		<div className="interpretation">
-		    {interpMsb}
-		    {interpGene}
-		</div>
+		{Object.keys(interp).length > 0 && interpBox}
 		<TableWithCart
                     actions={this.props.actions}
                     data={this.state.cres}
@@ -150,7 +152,7 @@ class ResultsTableContainer extends React.Component {
 		    jq={this.state.jq}
 		    nodnase={this.state.nodnase}
 		    hasct={this.props.cellType}
-                />
+		/>
 	    </div>);
     }
 }
