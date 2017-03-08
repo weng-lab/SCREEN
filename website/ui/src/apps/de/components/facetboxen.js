@@ -24,6 +24,7 @@ const cellTypesBox1 = ({ct1, actions}) => {
 			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
+			buttonsOff={true}
 			selection={ct1}
 			friendlySelectionLookup={(value) => {
 				return Globals.byCellType[value][0]["name"]; }}
@@ -38,6 +39,7 @@ const cellTypesBox2 = ({ct2, actions}) => {
 			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
+			buttonsOff={true}
 			selection={ct2}
 			friendlySelectionLookup={(value) => {
 				return Globals.byCellType[value][0]["name"]; }}
@@ -100,21 +102,21 @@ class FacetBoxen extends React.Component {
 	const geneBlue = "#1E90FF";
 
         let legend = (<div>
-                      <p style={{color: geneRed}}>
-                      {"Watson (+) strand"}
-                      </p>
-                      <p style={{color: geneBlue}}>
-                      {"Crick (-) strand"}
-                      </p>
-                      </div>);
+			<p style={{color: geneRed}}>
+			    {"Watson (+) strand"}
+			</p>
+			<p style={{color: geneBlue}}>
+			    {"Crick (-) strand"}
+			</p>
+        </div>);
 
         return (<div>
-                {cellTypesBox1(p)}
-                {cellTypesBox2(p)}
-                {creBox(p)}
-                {geneBox(p)}
-		{legend}
-                </div>);
+            {cellTypesBox1(p)}
+            {cellTypesBox2(p)}
+            {creBox(p)}
+            {geneBox(p)}
+	    {legend}
+        </div>);
     }
 
     render() {
