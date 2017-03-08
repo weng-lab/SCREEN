@@ -467,4 +467,14 @@ div.dataTables_wrapper div.dataTables_paginate {
     padding-left: 10px;
     padding-top: 4px;
     padding-bottom: 4px;
+    margin-bottom: 0px;
+}
+
+.searchTableNotes {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.searchTableNotes.div {
+    padding-bottom: 6px;
 }

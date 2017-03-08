@@ -209,19 +209,28 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
-	var topmessage = "";
+	var tooMany = "";
 	if(data.length < this.props.total){
-	    topmessage = (<div><br />For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</div>);
+	    tooMany = (
+		<li className={"list-group-item"}>
+		    <em>For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
+		</li>);
 	}
 
-	var tmsg2 = "";
+	var failMsg = "";
 	if(this.props.nodnase && this.props.nodnase.length){
-	    tmsg2 = (<div><br />The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</div>);
+	    failMsg = (
+		<li className={"list-group-item"}>
+		    <em>The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</em>
+		</li>);
 	}
 
-	let note = "";
+	let meetMsg = "";
 	if(!isCart()){
-	    note = "Candidate Regulatory Elements (cREs) that meet your search criteria:";
+	    meetMsg = (
+		<li className={"list-group-item"}>
+		Candidate Regulatory Elements (cREs) that meet your search criteria:
+		</li>);
 	}
 	
 	let cols = (this.props.hasct ? this.props.nodnase :
@@ -230,9 +239,13 @@ class TableWithCart extends React.Component {
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
-		<em>{topmessage}{tmsg2}</em>
-                <br />
-		{note}
+		<div className={"searchTableNotes"}>
+		    <ul class="list-group">
+			{tooMany}
+			{failMsg}
+			{meetMsg}
+		    </ul>
+		</div>
 
 		<ResultsTable data={data}
                               order={table_order}
@@ -244,7 +257,7 @@ class TableWithCart extends React.Component {
                                   button_click_handler(td, rowdata, actions)}
                               bFilter={true} bLengthChange={true}
                 />
-	</div>);
+	    </div>);
     }
 
     render() {
