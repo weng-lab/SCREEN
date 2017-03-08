@@ -69,6 +69,8 @@ class ResultsTableContainer extends React.Component {
     }
 
     doInterpGene({gene, noTss, useTss, tssDist, assembly}){
+	console.log("gene, noTss, useTss, tssDist, assembly",
+		    gene, noTss, useTss, tssDist, assembly);
         let geneTitle = (<em>{gene}</em>);
 	
         if(noTss){
@@ -95,7 +97,7 @@ class ResultsTableContainer extends React.Component {
 		<div>
 		    {"This search is showing candidate promoters located between the first and last TSS's of "}
 		    {geneTitle}
-		    {" and up to " + tssDist + " upstream."}
+		    {" and up to " + tssDist / 1000  + "kb upstream."}
 		    <br />
 		    {"To see cREs overlapping the gene body of "}
 		    {geneTitle}
@@ -106,10 +108,10 @@ class ResultsTableContainer extends React.Component {
 		</div>);
 	}
 
-	let dists = ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"];
+	let dists = [1000, 2000, 5000, 10000, 25000, 50000];
 	let distsRefs = orjoin(dists.map((d) => (
-	    <a href={"/search?q=" + gene + "&tssdist_" + d + "&promoter&assembly=" + assembly}>
-		{d}
+	    <a href={"/search?q=" + gene + "&tssDist=" + d + "&promoter&assembly=" + assembly}>
+		{d / 1000}{"kb"}
 	    </a>))
 	);
 	
@@ -135,7 +137,7 @@ class ResultsTableContainer extends React.Component {
 	let interpGene = interp.hasOwnProperty("gene") ?
 			 this.doInterpGene(interp["gene"]) : "";
 	let interpBox = (
-	    <div className="interpretation">
+	    <div className="interpretation panel">
 		{interpMsb}
 		{interpGene}
 	    </div>);
