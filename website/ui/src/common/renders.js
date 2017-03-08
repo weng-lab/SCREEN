@@ -254,16 +254,15 @@ export const creGroupIcon = (creGroup) => {
     let lookupTitle = {1 : "CTCF-bound",
                        2 : "Enhancer-like",
                        3 : "Promoter-like"};
-    
+    let lookupColor = {1 : "#00B0F0",
+		       2 : "#FFCD00",
+		       3 : "#FF0000"}
+        
     let assays = [lookupAssay[creGroup]];
-    let w = 12;
-    let fw = 2 * w + 4;
+    let w = 18;
+    let fw = w + 2;
     let rect = (x, y, color) => (
         <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
-    )
-    let line = (x1, y1, x2, y2) => (
-        <line x1={x1} y1={y1} x2={x2} y2={y2}
-              style={{strokeWidth: 1, stroke: "black"}} />
     )
     let border = () => (
         <rect x={0} y={0} width={fw} height={fw}
@@ -275,12 +274,7 @@ export const creGroupIcon = (creGroup) => {
             <svg width={fw} height={fw}>
 	        <g>
                     {border()}
-                    {line(w+2, 0, w+2, fw)}
-                    {line(0, w+2, fw, w+2)}
-                    {assays.indexOf("DNase") > -1 && rect(1, 1, "#06DA93")}
-                    {assays.indexOf("H3K27ac") > -1  && rect(1, w+3, "#FFCD00")}
-                    {assays.indexOf("H3K4me3") > -1  && rect(w+3, 1, "#FF0000")}
-                    {assays.indexOf("CTCF") > -1  && rect(w+3, w+3, "#00B0F0")}
+                    {rect(1, 1, lookupColor[creGroup])}
   		</g>
 	    </svg>
 	</span>);
