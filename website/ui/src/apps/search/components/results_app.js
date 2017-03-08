@@ -68,67 +68,70 @@ class ResultsTableContainer extends React.Component {
         });
     }
 
-    doInterp({geneOrig, noTss, useTss, tssDist, assembly}){
+    doInterpGene({geneOrig, noTss, useTss, tssDist, assembly}){
         let gene = (<em>{geneOrig}</em>);
-
+	
         if(noTss){
-            return ({"This search is showing cREs overlapping the gene body of "}{gene});
+            return "This search is showing cREs overlapping the gene body of " + gene;
 	}
-
+	
         if(useTss){
             if(!tssDist){
                 return (
 		    <div>
-		    {"This search is showing candidate promoters located between the first and last TSS's of "}{gene}{"."}
-		    <br>
-		    {"To see cREs overlapping the gene body of "}{gene}{", "}
-		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
-		    click here
-		    </a>.);
+			{"This search is showing candidate promoters located between the first and last TSS's of "}{gene}{"."}
+			<br />
+			{"To see cREs overlapping the gene body of "}{gene}{", "}
+			<a href={"/search?q=" + gene + "&assembly=" + assembly}>
+			    click here
+			</a>.
+		    </div>);
 	    } 
 	    return (
 		<div>
-		{"This search is showing candidate promoters located between the first and last TSS's of " + gene + " and up to " + tssDist + " upstream."}
-		<br>
-		{"To see cREs overlapping the gene body of " + gene + ", "}
-		<a href={"/search?q=" + gene + "&assembly=" + assembly}>
-		click here
-		</a>.);
+		    {"This search is showing candidate promoters located between the first and last TSS's of " + gene + " and up to " + tssDist + " upstream."}
+		    <br />
+		    {"To see cREs overlapping the gene body of " + gene + ", "}
+		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
+			click here
+		    </a>.
+		</div>);
 	}
-		
-        let dists = orjoin(["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"].map((d) => {
-	    return (<a
-		href={"/search?q=" + gene + "+tssdist_" + d + "+promoter&assembly=" + assembly}>
+
+	let dists = ["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"];
+	let distsRefs = orjoin(dists.map((d) => (
+	    <a href={"/search?q=" + gene + "+tssdist_" + d + "+promoter&assembly=" + assembly}>
 		{d}
-		</a>);
-	}));
-	    
+	    </a>))
+	);
+	
         return (
 	    <div>
-		This search is showing cREs overlapping the gene body of {gene}.
-		<br>
-		{"To see candidate promoters located between the first and last TSS's of "}
-		{gene},
+		{"This search is showing cREs overlapping the gene body of " + gene + "."}
+		<br />
+		{"To see candidate promoters located between the first and last TSS's of " + gene + ", "}
 		<a href={"/search?q=" + gene + "+tss+promoter&assembly=" + assembly}>
 		    click here
 		</a>{","}
-	    <br />
-	    {"or click one of the following links to see candidate promoters within "}
-	    {dists}
-	    {" upstream of the TSSs."});
-	}
-		
+		<br />
+		{"or click one of the following links to see candidate promoters within "}
+		{distsRefs}
+		{" upstream of the TSSs."}
+	    </div>);
+    }
+    
     render() {
 	let interp = GlobalParsedQuery["interpretation"];
-	let interpretation = {interp && (
-	    <div className="interpretation">
-	    {interp.hasOwnProperty("msg") && interp.msg}
-	    {interp.hasOwnProperty("gene") && {this.doInterpGene(interp["gene"])}}
-	    	    </div>)};
-	
+	let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
+	let interpGene = interp.hasOwnProperty("gene") ?
+			 this.doInterpGene(interp["gene"]) : "";
+
 	return (
 	    <div>
-		{interpretation}
+		<div className="interpretation">
+		    {interpMsb}
+		    {interpGene}
+		</div>
 		<TableWithCart
                     actions={this.props.actions}
                     data={this.state.cres}
