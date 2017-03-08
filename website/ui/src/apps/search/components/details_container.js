@@ -9,22 +9,25 @@ class DetailsContainer extends React.Component {
         const makeTabTitle = (key, tab) => {
             if(!tab.enabled){ return (<div />) }
             let active = key == this.props.re_details_tab_active;
-            return (<li className={active ? "active" : ""}
-                    key={"tab_" + key}
-                    onClick={ () => { this.props.actions.setReDetailTab(key) } }>
+	    let cn = (active ? "active" : "") + " detailsTabTitle";
+            return (
+		<li className={cn}
+		    key={"tab_" + key}
+		    onClick={ () => { this.props.actions.setReDetailTab(key) } }>
 		    <a data-toggle="tab">{tab.title}</a>
-		    </li>);
+		</li>);
         }
 
         const makeTab = (key, tab) => {
             if(!tab.enabled){ return (<div />) }
             let active = key == this.props.re_details_tab_active;
-            return (<div
+            return (
+		<div
                     className={active ? "tab-pane active" : "tab-pane"}
                     id={"tab_" + key}
                     key={"tpane_" + key}>
 		    {React.createElement(tab.f, this.props)}
-		    </div>);
+		</div>);
         }
 
         var accession = this.props.cre_accession_detail;
