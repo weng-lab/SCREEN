@@ -478,3 +478,12 @@ div.dataTables_wrapper div.dataTables_paginate {
 .searchTableNotes.div {
     padding-bottom: 6px;
 }
+
+.detailsTabTitle {
+    padding: 0px;
+    font-size: 10pt;    
+}
+
+.detailsTabTitle a {
+    padding: 6px !important;
+}
