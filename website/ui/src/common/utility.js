@@ -76,5 +76,6 @@ export const isCart = () => {
 }
 
 export const orjoin = (a) => {
-    return a.slice(0, -1).join(", ") + " or " + a.slice(-1);
+    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
+	    " or ", a.slice(-1)];
 }
