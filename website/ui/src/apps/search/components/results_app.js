@@ -151,18 +151,21 @@ class ResultsTableContainer extends React.Component {
     
     render() {
 	let interp = GlobalParsedQuery["interpretation"];
-	let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
-	let interpGene = interp.hasOwnProperty("gene") ?
-			 this.doInterpGene(interp["gene"]) : "";
-	let interpBox = (
-	    <div className="interpretation panel">
-		{interpMsb}
-		{interpGene}
-	    </div>);
+	let interpBox = "";
+	if(interp){
+	    let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
+	    let interpGene = interp.hasOwnProperty("gene") ?
+			     this.doInterpGene(interp["gene"]) : "";
+	    interpBox = (
+		<div className="interpretation panel">
+		    {interpMsb}
+		    {interpGene}
+		</div>);
+	}
 	
 	return (
 	    <div>
-		{Object.keys(interp).length > 0 && interpBox}
+		{interpBox}
 		<TableWithCart
                     actions={this.props.actions}
                     data={this.state.cres}
