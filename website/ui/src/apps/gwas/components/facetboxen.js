@@ -36,11 +36,12 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     let cts = (<ResultsTable
                data={gwas_cell_types}
                cols={[
-                   {title: "Cell Type", data: "biosample_summary", className: "dt-right"},
+                   {title: "Cell Type", data: "biosample_summary", className: "dt-right",
+		   width: "50%"},
                    {title: "p", data: "pval", className: "dt-right",
-		    render: Render.toSciNot, width: "15%"},
+		    render: Render.toSciNot, width: "20%"},
                    {title: "FDR", data: "fdr", className: "dt-right",
-		    render: Render.toSciNot, width: "15%"},
+		    render: Render.toSciNot, width: "20%"},
                    {title: "", data: "expID", render: Render.dccLink,
                     className: "dt-right dcc"},
 	       ]}

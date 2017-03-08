@@ -124,7 +124,7 @@ class ImportGwas:
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            for idx in xrange(3, len(r)):
+            for idx in xrange(2, len(r)):
                 r[idx] = str(float(r[idx]))
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
@@ -136,13 +136,14 @@ class ImportGwas:
         printt("\tcopied in", self.curs.rowcount)
 
         self.curs.execute("""
-    UPDATE {tne} as ge
-    set cellTypeName = d.cellTypeName,
-    biosample_summary = d.biosample_summary
-    from {tnd} as d
-    where ge.expID = d.expID
+        UPDATE {tne} as ge
+        set cellTypeName = d.cellTypeName,
+        biosample_summary = d.biosample_summary
+        from {tnd} as d
+        where ge.expID = d.expID
         """.format(tne = tableName, tnd = self.tableNameDatasets))
         printt("updated", self.curs.rowcount)
+        
         return header
 
     def _setupStudies(self):
