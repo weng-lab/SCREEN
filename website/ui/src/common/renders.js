@@ -25,6 +25,10 @@ export const integerLink = (href) => (d) => {
     return "<a href='#" + href + "'>" + d + "</a>";
 }
 
+export const toSciNot = (d) => (
+    d.toExponential(2)
+)
+
 export const real = $.fn.dataTable.render.number( ',', '.', 1, '' );
 export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
 export const cell_type = (d) => (d.replace(/_/g, " "));
