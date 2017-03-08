@@ -45,7 +45,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
                    {title: "", data: "expID", render: Render.dccLink,
                     className: "dt-right dcc"},
 	       ]}
-               order={[[2, "asc"], [0, "asc"]]}
+               order={[[2, "desc"], [0, "asc"]]}
                bFilter={true}
                onTdClick={(td, data) => {
                    if(td){
