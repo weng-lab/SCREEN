@@ -43,13 +43,14 @@ const accessionsBox = ({accessions, actions}) => {
                     <LongChecklistFacet
 			title={""}
 			cols={[{
-			    title: "Assay", data: "key",
-			    className: "dt-right",
-			    render: Render.upperCase
-			}]}
+				title: "Assay", data: "key",
+				className: "dt-right",
+				render: Render.upperCase
+			    }]}
 			data={accessions.map((d) => {
-			    return {key: d, selected: true}})}
+				return {key: d, selected: true}})}
 			order={[]}
+			buttonsOff={true}
 			match_mode_enable={true}
 			onTdClick={(accs) => { actions.setAccessions(accs) }}
 			onModeChange={(accs) => { actions.setAccessions(accs) }}
@@ -64,16 +65,17 @@ const cellTypesBox = ({cellType, actions}) => {
 			data={Globals.cellTypeInfoArr}
 			cols={[
 			    { title: "", data: "name",
-                              render: () => ("<input type='checkbox' />")},
-		            { title: "cell type", data: "name",
-		              className: "dt-right"},
-		            { title: "tissue", data: "tissue",
-		              className: "dt-right" },
-		            { title: "", data: "cellTypeName",
-                              render: Render.assayIcon,
-		              className: "dt-right dcc" }
+			      render: () => ("<input type='radio' />")},
+			    { title: "cell type", data: "name",
+			      className: "dt-right"},
+			    { title: "tissue", data: "tissue",
+			      className: "dt-right" },
+			    { title: "", data: "cellTypeName",
+			      render: Render.assayIcon,
+			      className: "dt-right dcc" }
 			]}
 			order={[]}
+			buttonsOff={true}
 			selection={cellType}
 			friendlySelectionLookup={make_ct_friendly}
 			onTdClick={(value, td, cellObj) => {
@@ -122,12 +124,13 @@ const tfBox = ({actions}) => {
                     <LongChecklistFacet
 			title={""}
 			data={Globals.tfs.map((tf) => {return {key: tf,
-                                                               selected: false}})}
+							       selected: false}})}
 			cols={[{
 				title: "Assay", data: "key",
 				className: "dt-right"
 			    }]}
 			order={[]}
+			buttonsOff={true}
 			match_mode_enable={true}
 			onTdClick={(tf) => { actions.toggleTf(tf) } }
 			onModeChange={(mode) => { actions.setTfsMode(mode) }}
@@ -137,18 +140,18 @@ const tfBox = ({actions}) => {
 
 const geneDistanceBox = ({gene_all_start, gene_all_end,
                           gene_pc_start, gene_pc_end, actions}) => {
-    let range = [0, 500000];
-    return panelize("Distance to Genes",
-		    (
-			<div>
-			    {rangeBox("Protein-coding genes", range,
-				      gene_pc_start, gene_pc_end,
-				      actions.setGenePcDistance)}
-			    {rangeBox("All genes", range,
-				      gene_all_start, gene_all_end,
-				      actions.setGeneAllDistance)}
-			</div>))
-}
+			      let range = [0, 500000];
+			      return panelize("Distance to Genes",
+					      (
+						  <div>
+						      {rangeBox("Protein-coding genes", range,
+								gene_pc_start, gene_pc_end,
+								actions.setGenePcDistance)}
+						      {rangeBox("All genes", range,
+								gene_all_start, gene_all_end,
+								actions.setGeneAllDistance)}
+						  </div>))
+			  }
 
 const zscore_decimal = (v) => (v / 100.0);
 const zrdecimal = (s) => (+s * 100.0);
