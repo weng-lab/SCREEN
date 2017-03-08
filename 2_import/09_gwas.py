@@ -124,16 +124,6 @@ class ImportGwas:
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            for idx in xrange(3, len(r)):
-                try:
-                    if takeLog:
-                        r[idx] = str(-1.0 * math.log10(float(r[idx])))
-                except:
-                    print("error parsing")
-                    print(r)
-                    print("idx:", idx)
-                    print("value:", r[idx])
-                    raise
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields

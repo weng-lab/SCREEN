@@ -36,16 +36,13 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     let cts = (<ResultsTable
                data={gwas_cell_types}
                cols={[
-                   {title: "Cell Type", data: "biosample_summary",
-                    className: "dt-right"},
-                   {title: "-log(fdr)", data: "neglogfdr",
-                    className: "dt-right"},
-                   {title: "p", data: "pval",
-                    className: "dt-right"},
+                   {title: "Cell Type", data: "biosample_summary", className: "dt-right"},
+                   {title: "p", data: "pval", className: "dt-right", render: Render.toSciNot},
+                   {title: "FDR", data: "fdr", className: "dt-right", render: Render.toSciNot},
                    {title: "", data: "expID", render: Render.dccLink,
                     className: "dt-right dcc"},
 	       ]}
-               order={[[2, "desc"], [0, "asc"]]}
+               order={[[1, "asc"], [0, "asc"]]}
                bFilter={true}
                onTdClick={(td, data) => {
                    if(td){
