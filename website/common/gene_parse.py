@@ -40,7 +40,7 @@ class GeneParse:
         ret = {"gene" : gene,
                "noTss" : self.noTss,
                "useTss" : self.useTss,
-               "tssDist" : self.tssDist
+               "tssDist" : self.tssDist,
                "assembly" : self.assembly}
         return ret
 
