@@ -37,6 +37,19 @@ class GeneParse:
         else:
             gene = self.interpretation
 
+        ret = {"gene" : gene,
+               "noTss" : self.noTss,
+               "useTss" : self.useTss,
+               "tssDist" : self.tssDist
+               "assembly" : self.assembly}
+        return ret
+
+    def get_genetext_str(self):
+        if self.approved_symbol:
+            gene = self.approved_symbol
+        else:
+            gene = self.interpretation
+
         def orjoin(a):
             return ", ".join(a[:-1]) + " or " + a[-1]
         gene = "<em>%s</em>" % gene

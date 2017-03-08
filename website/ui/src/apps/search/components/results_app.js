@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import TableWithCart from './table_with_cart';
-import {getCommonState} from '../../../common/utility';
+import {getCommonState, orjoin} from '../../../common/utility';
 
 class ResultsTableContainer extends React.Component {
     constructor(props) {
@@ -68,12 +68,63 @@ class ResultsTableContainer extends React.Component {
         });
     }
 
+    doInterp({geneOrig, noTss, useTss, tssDist, assembly}){
+        let gene = (<em>{geneOrig}</em>);
+
+        if(noTss){
+            return ({"This search is showing cREs overlapping the gene body of "}{gene});
+	}
+
+        if(useTss){
+            if(!tssDist){
+                return (
+		    <div>
+		    {"This search is showing candidate promoters located between the first and last TSS's of "}{gene}{"."}
+		    <br>
+		    {"To see cREs overlapping the gene body of "}{gene}{", "}
+		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
+		    click here
+		    </a>.);
+	    } 
+	    return (
+		<div>
+		{"This search is showing candidate promoters located between the first and last TSS's of " + gene + " and up to " + tssDist + " upstream."}
+		<br>
+		{"To see cREs overlapping the gene body of " + gene + ", "}
+		<a href={"/search?q=" + gene + "&assembly=" + assembly}>
+		click here
+		</a>.);
+	}
+		
+        let dists = orjoin(["1kb", "2kb", "5kb", "10kb", "25kb", "50kb"].map((d) => {
+	    return (<a
+		href={"/search?q=" + gene + "+tssdist_" + d + "+promoter&assembly=" + assembly}>
+		{d}
+		</a>);
+	}));
+	    
+        return (
+	    <div>
+		This search is showing cREs overlapping the gene body of {gene}.
+		<br>
+		{"To see candidate promoters located between the first and last TSS's of "}
+		{gene},
+		<a href={"/search?q=" + gene + "+tss+promoter&assembly=" + assembly}>
+		    click here
+		</a>{","}
+	    <br />
+	    {"or click one of the following links to see candidate promoters within "}
+	    {dists}
+	    {" upstream of the TSSs."});
+	}
+		
     render() {
-	let interpretationStr = GlobalParsedQuery["interpretation"];
-	let interpretation = interpretationStr && (
+	let interp = GlobalParsedQuery["interpretation"];
+	let interpretation = {interp && (
 	    <div className="interpretation">
-		{interpretationStr}
-	    </div>);
+	    {interp.hasOwnProperty("msg") && interp.msg}
+	    {interp.hasOwnProperty("gene") && {this.doInterpGene(interp["gene"])}}
+	    	    </div>)};
 	
 	return (
 	    <div>
