@@ -60,7 +60,7 @@ ORDER BY fdr DESC, pval
            col = gwas_study)
             curs.execute(q)
             rows = curs.fetchall()
-        cols = ["expID", "cellTypeName", "biosample_summary", "neglogfdr", "pval"]
+        cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval"]
         return [dict(zip(cols, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):
