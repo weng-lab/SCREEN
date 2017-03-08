@@ -74,3 +74,8 @@ export const isCart = () => {
     let href = window.location.href;
     return href.includes("&cart");
 }
+
+export const orjoin = (a) => {
+    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
+	    " or ", a.slice(-1)];
+}
