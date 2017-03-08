@@ -25,9 +25,12 @@ export const integerLink = (href) => (d) => {
     return "<a href='#" + href + "'>" + d + "</a>";
 }
 
-export const toSciNot = (d) => (
-    d.toExponential(2)
-)
+export const toSciNot = (d) => {
+    if(d < 0.01){
+	return d.toExponential(1);
+    }
+    return Math.round(d * 100) / 100;
+}
 
 export const real = $.fn.dataTable.render.number( ',', '.', 1, '' );
 export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
@@ -108,7 +111,7 @@ export const geneDeLinks = (genesallpc) => {
 
 export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/encode_new_window.png" alt="ENCODE logo">';
+    var img = '<img src="/static/encode/encode_new_window.png" alt="ENCODE logo" width="20">';
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 

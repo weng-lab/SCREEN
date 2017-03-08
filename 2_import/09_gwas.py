@@ -124,6 +124,8 @@ class ImportGwas:
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
+            for idx in xrange(3, len(r)):
+                r[idx] = str(float(r[idx]))
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields
