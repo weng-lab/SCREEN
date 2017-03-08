@@ -463,9 +463,7 @@ div.dataTables_wrapper div.dataTables_paginate {
 }
 
 .interpretation {
-    width: 100%;
     background-color: #ffa588;
-    font-weight: bold;
     padding-left: 10px;
     padding-top: 4px;
     padding-bottom: 4px;

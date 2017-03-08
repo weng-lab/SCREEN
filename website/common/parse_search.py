@@ -78,8 +78,7 @@ class ParseSearch:
         useTss = "tss" in self.kwargs
         tssDist = 0
         if "tssDist" in self.kwargs:
-            tssDist = self.kwargs["tssDist"].split("_")[1]
-            tssDist = int(tssdist.replace("kb", "")) * 1000
+            tssDist = int(self.kwargs["tssDist"])
             useTss = True
         interpretation = {}
         
