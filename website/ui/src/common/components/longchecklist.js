@@ -1,8 +1,8 @@
-import ResultsTable from './results_table'
-import {ListItem} from './list'
-
 var React = require('react');
 var ReactDOM = require('react-dom');
+
+import ResultsTable from './results_table'
+import {ListItem} from './list'
 
 import * as toggleswitch from './toggleswitch'
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from './checklist'
@@ -39,15 +39,18 @@ class LongChecklistFacet extends React.Component {
 
     render() {
 	var mode = (this.props.mode ? this.props.mode : CHECKLIST_MATCH_ALL);
+
 	var checks = "";
 	if(this.props.match_mode_enabled){
-	    checks = (<div>
-		      <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ALL ? true : false}
-		      onClick={this.modeToggle} />match all&nbsp;
-		      <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ANY ? true : false}
-		      onClick={this.modeToggle} />match any
-		      </div>);
+	    checks = (
+		<div>
+		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ALL ? true : false}
+			   onClick={this.modeToggle} />match all&nbsp;
+		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ANY ? true : false}
+			   onClick={this.modeToggle} />match any
+		</div>);
 	}
+
 	var cols = [
 	    {
 		title: "",
@@ -55,19 +58,22 @@ class LongChecklistFacet extends React.Component {
 		render: this._render_checkbox
 	    }, ...this.props.cols
 	];
+
 	var paging = this.props.data.length < 10 ? false : true;
-	return (<div>
+
+	return (
+	    <div>
 		{checks}
 		<ResultsTable cols={cols}
-                data={this.props.data}
-                order={this.props.order}
-	        onTdClick={this._td_handler}
-                bFilter={true}
-                bLengthChange={false}
-		paging={paging}
+			      data={this.props.data}
+			      order={this.props.order}
+			      buttonsOff={this.props.buttonsOff}
+			      onTdClick={this._td_handler}
+			      bFilter={true}
+			      bLengthChange={false}
+			      paging={paging}
 		/>
-		</div>
-	       );
+	    </div>);
     }
 
 }
