@@ -11,6 +11,8 @@ const TableColumns = () => {
             title: "", data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
+            title: "", data: "cregroup", visible: false
+	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
 	}, {
@@ -57,3 +59,5 @@ export const table_order = [
     [4, "asc"],
     [5, "asc"]
 ];
+
+export const columnDefs = [{ "orderData": 2, "targets": 1 }]
