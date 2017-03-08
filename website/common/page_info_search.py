@@ -12,8 +12,6 @@ class PageInfoSearch:
     def __init__(self, ps, cacheW):
         self.ps = ps
         self.cacheW = cacheW
-        self._assembly_starts = {"mm10": "EM10E",
-                                 "hg19": "EH37E" }
 
     def wholePage(self, assembly, indexPage = False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
@@ -38,9 +36,8 @@ class PageInfoSearch:
 
         parsed = ""
         if "q" in kwargs:
-            p = ParseSearch(kwargs["q"], self.ps.DBCONN, assembly)
-            parsed = p.parse(kwargs)
-            parsedStr = p.parseStr()
+            p = ParseSearch(self.ps.DBCONN, assembly, kwargs)
+            parsed = p.parse()
             if kwargs["q"] and not self.haveresults(parsed):
                 ret["failed"] = kwargs["q"]
 

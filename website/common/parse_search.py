@@ -28,8 +28,8 @@ re_coord2 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+")
 re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
 
 class ParseSearch:
-    def __init__(self, rawInput, DBCONN, assembly):
-        self.rawInput = rawInput
+    def __init__(self, DBCONN, assembly, kwargs):
+        self.kwargs = kwargs
 
         self.pg = PostgresWrapper(DBCONN)
         self.pgParse = PGparse(self.pg, assembly)
@@ -42,21 +42,7 @@ class ParseSearch:
 
     def _sanitize(self):
         # TODO: add more here!
-        return self.rawInput[:2048]
-
-    def parseStr(self):
-        return self.sanitizedStr
-
-    def find_celltypes_in_query(self, q):
-        return [] #self.cell_type_query(q)
-
-    def find_gene_in_q(self, q):
-        p = q.split(" ")
-        for i in xrange(len(p)):
-            r = self.pgParse._gene_alias_to_coordinates(p[i])
-            if r:
-                return r
-        return None
+        return self.kwargs["q"][:2048]
 
     def _find_coord(self, s):
         _p = s.split()
@@ -83,18 +69,20 @@ class ParseSearch:
                         Coord(c, 0, chrom_lengths[self.assembly][c]))
         return (s, None)
 
-
-    def parse(self, kwargs = None):
+    def parse(self):
         s = self._sanitize().strip()
-        self.sanitizedStr = s
 
         s, coord = self._find_coord(s)
         toks = s.split()
         toks = [t.lower() for t in toks]
-        useTss = "tss" in toks or (kwargs and "tss" in kwargs)
+        useTss = "tss" in self.kwargs
         tssDist = 0
+        if "tssDist" in self.kwargs:
+            tssDist = self.kwargs["tssDist"].split("_")[1]
+            tssDist = int(tssdist.replace("kb", "")) * 1000
+            useTss = True
         interpretation = {}
-
+        
         ret = {"cellType": None,
                "coord_chrom" : None,
                "coord_start" : None,
@@ -102,7 +90,7 @@ class ParseSearch:
                "element_type": None,
                "approved_symbol": None,
                "interpretation": {}}
-        if "promoter" in toks or useTss:
+        if "promoter" in self.kwargs or useTss:
             ret["element_type"] = "promoter-like"
             ret["rank_promoter_start"] = 164
             ret["rank_dnase_start"] = 164
@@ -133,9 +121,6 @@ class ParseSearch:
                         coord = Coord(coord.chrom,
                                       max(0, coord.start - 2000),
                                       coord.end + 2000)
-                elif t.startswith("tssdist"):
-                    tssDist = t.split("_")[1]
-                    useTss = True
         except:
             print("could not parse " + s)
 
