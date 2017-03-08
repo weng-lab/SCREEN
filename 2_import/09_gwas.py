@@ -127,9 +127,7 @@ class ImportGwas:
             for idx in xrange(3, len(r)):
                 try:
                     if takeLog:
-                        r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
-                    else:
-                        r[idx] = str(round(float(r[idx]), 2))
+                        r[idx] = str(-1.0 * math.log10(float(r[idx])))
                 except:
                     print("error parsing")
                     print(r)
