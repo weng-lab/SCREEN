@@ -46,12 +46,14 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
 			width: "50%"},
                        {title: "p", data: "pval", className: "dt-right",
 			render: Render.toSciNot, width: "20%"},
+                       {title: "", data: "pval", visible: false},
                        {title: "FDR", data: "fdr", className: "dt-right",
 			render: Render.toSciNot, width: "20%"},
                        {title: "", data: "expID", render: Render.dccLink,
 			className: "dt-right dcc"},
 		   ]}
-		   order={[[1, "asc"], [0, "asc"]]}
+		   order={[[2, "asc"], [0, "asc"]]}
+		   columnDefs ={[{ "orderData": 2, "targets": 1 }]}
 		   bFilter={true}
 		   onTdClick={(td, data) => {
 			   if(td){
