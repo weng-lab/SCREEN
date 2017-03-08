@@ -40,7 +40,7 @@ class AutocompleteWebService:
             raise Exception("userQuery not in j")
         userQuery = j["userQuery"]
 
-        p = ParseSearch(userQuery, self.ps.DBCONN, assembly)
+        p = ParseSearch(self.ps.DBCONN, assembly, {"q" : userQuery})
         ret = p.parse()
         ret["failed"] = False
 
