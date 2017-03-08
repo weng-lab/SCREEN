@@ -107,9 +107,10 @@ class ResultsTableContainer extends React.Component {
 	
         return (
 	    <div>
-		{"This search is showing cREs overlapping the gene body of " + gene + "."}
+		{"This search is showing cREs overlapping the gene body of "}
+		{gene}{"."}
 		<br />
-		{"To see candidate promoters located between the first and last TSS's of " + gene + ", "}
+		{"To see candidate promoters located between the first and last TSS's of "}{gene}{", "}
 		<a href={"/search?q=" + gene + "+tss+promoter&assembly=" + assembly}>
 		    click here
 		</a>{","}
