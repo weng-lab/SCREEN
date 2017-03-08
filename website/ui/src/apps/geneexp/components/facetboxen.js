@@ -12,17 +12,18 @@ import {panelize} from '../../../common/utility'
 const cell_compartments = ({compartments, actions, compartments_selected}) => {
     return panelize("Cellular Compartments",
                     <LongChecklistFacet
-                    title={""}
-                    data={compartments.map((e) => {return {key: e,
-                                                           selected: compartments_selected.has(e)}})}
-                    cols={[{
-		        title: "Assay", data: "key",
-		        className: "dt-right"
-	            }]}
-                    order={[]}
-        	    mode={CHECKLIST_MATCH_ANY}
-                    onTdClick={(c) => { actions.toggleCompartment(c) } }
-                    />);
+			title={""}
+			data={compartments.map((e) => {
+				return {key: e, selected: compartments_selected.has(e)}})}
+			cols={[{
+				title: "Assay", data: "key",
+				className: "dt-right"
+			    }]}
+			order={[]}
+			buttonsOff={true}
+			mode={CHECKLIST_MATCH_ANY}
+			onTdClick={(c) => { actions.toggleCompartment(c) } }
+		    />);
 }
 
 const bts = ({biosample_types, biosample_types_selected, actions}) => {
@@ -38,6 +39,7 @@ const bts = ({biosample_types, biosample_types_selected, actions}) => {
 		                className: "dt-right"
 	                    }]}
                         order={[]}
+			buttonsOff={true}
         	        mode={CHECKLIST_MATCH_ANY}
                         onTdClick={(c) => { actions.toggleBiosampleType(c) } }
                     />);

@@ -34,26 +34,30 @@ class LongListFacet extends React.Component {
             title = this.props.friendlySelectionLookup(title)
         }
 
-	return (<div>
-
-                <div style={{display: table_display}}>
-		<ResultsTable
-                cols={this.props.cols}
-                data={this.props.data}
-                order={this.props.order}
-	        onTdClick={this._td_handler}
-                bFilter={true}
-                bLengthChange={false}
-	        pageLength={this.props.pageLength}
-                />
+	return (
+	    <div>
+		<div style={{display: table_display}}>
+		    <ResultsTable
+			cols={this.props.cols}
+			data={this.props.data}
+			order={this.props.order}
+			buttonsOff={this.props.buttonsOff}
+			onTdClick={this._td_handler}
+			bFilter={true}
+			bLengthChange={false}
+			pageLength={this.props.pageLength}
+                    />
 		</div>
-
+		
                 <div style={{display: sdisplay}}>
-		<ListItem value={title} selected="true" n="0"
-		onclick={this._clear} />
+		    <ListItem value={title}
+			      selected="true"
+			      n="0"
+			      onclick={this._clear}
+		    />
 		</div>
-
-                </div>);
+		
+            </div>);
     }
 
 }

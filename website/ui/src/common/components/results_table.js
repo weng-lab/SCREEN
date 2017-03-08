@@ -35,11 +35,16 @@ class ResultsTable extends React.Component {
 
     componentDidMount() {
 	let dom = this.props.dom || '<"top"f>t<B"bottom"p><"clear">';
+
+	let buttons = ['csvHtml5'];
+	if(this.props.buttonsOff){
+	    buttons = [];
+	}
+	    
 	var _datatable = $(this.refs.root).DataTable({
-	    buttons: ['csv'],
 	    data: this.props.data,
             columns: this.props.cols,
-	    buttons: ['csvHtml5'],
+	    buttons,
             order: this.props.order,
 	    paging: this.props.paging,
 	    bInfo: this.props.info,
