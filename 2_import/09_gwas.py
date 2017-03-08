@@ -97,12 +97,12 @@ class ImportGwas:
                    fields = ','.join([r + " real" for r in fields])))
 
     def _enrichment(self):
-        files = (("GWAS.v3.Matrix.pvalue.txt", self.tableNameEnrichmentPval),
-                 ("GWAS.v3.Matrix.FDR.txt", self.tableNameEnrichmentFdr))
+        files = (("GWAS.v3.Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
+                 ("GWAS.v3.Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
         headers = []
-        for fn, tableName in files:
+        for fn, tableName, takeLog in files:
             printt("******************* GWAS enrichment", fn)
-            header = self._do_enrichment(fn, tableName)
+            header = self._do_enrichment(fn, tableName, takeLog)
             headers.append(header)
         if headers[0] != headers[1]:
             print(headers[0])
@@ -110,7 +110,7 @@ class ImportGwas:
             raise Exception("different headers?")
         return headers[0]
 
-    def _do_enrichment(self, fn, tableName):
+    def _do_enrichment(self, fn, tableName, takeLog):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
         fnp = os.path.join(dataF, fn)
         printt("reading", fnp)
@@ -126,7 +126,10 @@ class ImportGwas:
         for r in rows:
             for idx in xrange(3, len(r)):
                 try:
-                    r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
+                    if takeLog:
+                        r[idx] = str(round(-1.0 * math.log10(float(r[idx])), 2))
+                    else:
+                        r[idx] = str(round(float(r[idx]), 2))
                 except:
                     print("error parsing")
                     print(r)
