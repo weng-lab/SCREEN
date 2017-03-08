@@ -68,66 +68,81 @@ class ResultsTableContainer extends React.Component {
         });
     }
 
-    doInterpGene({gene, noTss, useTss, tssDist, assembly}){
-	console.log("gene, noTss, useTss, tssDist, assembly",
-		    gene, noTss, useTss, tssDist, assembly);
-        let geneTitle = (<em>{gene}</em>);
-	
-        if(noTss){
-            return (
-		<span>
-		    "This search is showing cREs overlapping the gene body of "
-		    {geneTitle}"."
-		</span>);
-	}
-	
-        if(useTss){
-            if(!tssDist){
-                return (
-		    <div>
-			{"This search is showing candidate promoters located between the first and last TSS's of "}{geneTitle}{"."}
-			<br />
-			{"To see cREs overlapping the gene body of "}{geneTitle}{", "}
-			<a href={"/search?q=" + gene + "&assembly=" + assembly}>
-			    click here
-			</a>.
-		    </div>);
-	    } 
-	    return (
-		<div>
-		    {"This search is showing candidate promoters located between the first and last TSS's of "}
-		    {geneTitle}
-		    {" and up to " + tssDist / 1000  + "kb upstream."}
-		    <br />
-		    {"To see cREs overlapping the gene body of "}
-		    {geneTitle}
-		    {", "}
-		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
-			click here
-		    </a>.
-		</div>);
-	}
-
+    searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle){
 	let dists = [1000, 2000, 5000, 10000, 25000, 50000];
 	let distsRefs = orjoin(dists.map((d) => (
 	    <a href={"/search?q=" + gene + "&tssDist=" + d + "&promoter&assembly=" + assembly}>
 		{d / 1000}{"kb"}
 	    </a>))
 	);
-	
-        return (
+
+	let geneBody = "";
+	if(useTss){
+	    geneBody = (
+		<li>{"overlapping the "}
+		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
+			gene body
+		    </a>{" of "}{geneTitle}
+		</li>);
+	}
+
+	let firstLastTss = (
+	    <li>{"located between the "}
+		<a href={"/search?q=" + gene + "&tss&promoter&assembly=" + assembly}>
+		    first and last TSSs
+		</a>{" of "}{geneTitle}
+	    </li>);
+	if(useTss && !tssDist){
+	    firstLastTss = "";
+	}
+
+	let tssUpstream = (<li>{"within "}{distsRefs}{" upstream of the TSSs"}</li>);
+
+	return (
 	    <div>
+		{"Click to see candidate Regulatory Elements:"}
+		<ul>
+		    {geneBody}
+		    {firstLastTss}
+		    {tssUpstream}
+		</ul>
+	    </div>);
+    }
+
+    firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle){
+	if(useTss){
+	    if(tssDist){
+		return (
+		    <span>
+			{"This search is showing candidate Regulatory Elements located between the first and last TSSs of "}
+			{geneTitle}{" and up to " + tssDist / 1000  + "kb upstream."}
+		    </span>);
+	    } else {
+		return (
+		    <span>
+			{"This search is showing candidate promoters located between the first and last TSSs of "}
+			{geneTitle}{"."}
+		    </span>);
+	    }
+	}
+	return (
+	    <span>
 		{"This search is showing cREs overlapping the gene body of "}
 		{geneTitle}{"."}
+	    </span>);
+    }
+
+    doInterpGene({gene, noTss, useTss, tssDist, assembly}){
+	if(0){
+	    console.log("gene, noTss, useTss, tssDist, assembly",
+			gene, noTss, useTss, tssDist, assembly);
+	}
+        let geneTitle = (<em>{gene}</em>);    
+	return (
+	    <div>
+		{this.firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle)}
 		<br />
-		{"To see candidate promoters located between the first and last TSS's of "}{geneTitle}{", "}
-		<a href={"/search?q=" + gene + "&tss&promoter&assembly=" + assembly}>
-		    click here
-		</a>{","}
-		<br />
-		{"or click one of the following links to see candidate promoters within "}
-		{distsRefs}
-		{" upstream of the TSSs."}
+		{this.searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle)}
 	    </div>);
     }
     
