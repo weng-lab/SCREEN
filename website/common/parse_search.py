@@ -158,16 +158,18 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     assembly = "hg19"
+    assembly = "mm10"
     ps = PostgresWrapper(DBCONN)
 
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
     queries = ["BAP1"]
     queries = ["Actin alpha 1", "HBB"]
     queries = ["HBB"]
-
+    queries = ["Actin alpha 1"]
+    
     for q in queries:
         print("***************", q)
-        ps = ParseSearch(q, DBCONN, assembly)
+        ps = ParseSearch(DBCONN, assembly, {"q" : q})
 
         output = ps.parse()
         keys = sorted(output.keys())
@@ -178,7 +180,6 @@ def main():
                     print(g)
             else:
                 print(k + ':', v)
-        print(ps.parseStr())
 
 if __name__ == '__main__':
     main()
