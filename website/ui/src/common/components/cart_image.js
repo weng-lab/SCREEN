@@ -53,7 +53,7 @@ const click_handler = (dispatch) => (state) => {
 	return;
     }
     // go to cart page
-    window.location.href = href + "&cart";
+    window.open(href + "&cart", '_blank');
 };
 
 const props_map = (state) => {
