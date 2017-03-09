@@ -156,11 +156,13 @@ class ResultsTableContainer extends React.Component {
 	    let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
 	    let interpGene = interp.hasOwnProperty("gene") ?
 			     this.doInterpGene(interp["gene"]) : "";
-	    interpBox = (
-		<div className="interpretation panel">
+	    if(interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene")){
+		interpBox = (
+		    <div className="interpretation panel">
 		    {interpMsb}
 		    {interpGene}
-		</div>);
+	    </div>);
+	    }
 	}
 	
 	return (
