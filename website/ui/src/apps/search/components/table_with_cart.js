@@ -240,7 +240,7 @@ class TableWithCart extends React.Component {
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
 		<div className={"searchTableNotes"}>
-		    <ul class="list-group">
+		    <ul className={"list-group searchTableNotesUl"}>
 			{tooMany}
 			{failMsg}
 			{meetMsg}
