@@ -61,12 +61,12 @@ export const getCommonState =
 export const arrowNote = (msg) => {
     return (
         <div>
-            <h3>
+            <h4>
                 <span className="glyphicon glyphicon-arrow-left"
                       aria-hidden="true" style={{color: "red"}}>
                 </span>
         &nbsp;&nbsp;{msg}
-            </h3>
+            </h4>
         </div>);
 }
 
