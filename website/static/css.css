@@ -451,6 +451,10 @@ table.dataTable tbody td.dt-body-center {
     text-align: center;
 }
 
+table.dataTable thead th {
+    vertical-align: top;
+}
+
 #geTissueOfOrigin {
     padding-top: 20px;
     display: block;
