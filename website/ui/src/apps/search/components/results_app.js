@@ -89,7 +89,7 @@ class ResultsTableContainer extends React.Component {
 	let firstLastTss = (
 	    <li>{"located between the "}
 		<a href={"/search?q=" + gene + "&tss&promoter&assembly=" + assembly}>
-		    first and last TSSs
+		    first and last Transcription Start Sites (TSSs)
 		</a>{" of "}{geneTitle}
 	    </li>);
 	if(useTss && !tssDist){
@@ -114,13 +114,13 @@ class ResultsTableContainer extends React.Component {
 	    if(tssDist){
 		return (
 		    <span>
-			{"This search is showing candidate Regulatory Elements located between the first and last TSSs of "}
+			{"This search is showing candidate Regulatory Elements located between the first and last Transcription Start Sites (TSSs) of "}
 			{geneTitle}{" and up to " + tssDist / 1000  + "kb upstream."}{click}
 		    </span>);
 	    } else {
 		return (
 		    <span>
-			{"This search is showing candidate promoters located between the first and last TSSs of "}
+			{"This search is showing candidate promoters located between the first and last Transcription Start Sites (TSSs) of "}
 			{geneTitle}{"."}{click}
 		    </span>);
 	    }
