@@ -73,6 +73,43 @@ FROM {tn}
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
+    def _creTableCart(self, j, chrom, start, stop):
+        accs = j.get("accessions", [])
+
+        if not accs or 0 == len(accs):
+            return None, None
+
+        fields = []
+        whereclauses = []
+
+        if accs and len(accs) > 0:
+            if type(accs[0]) is dict:
+                accs = [x["value"] for x in accs if x["checked"]]
+            accs = filter(lambda x: isaccession(x), accs)
+            if accs:
+                accs = ["'%s'" % x.upper() for x in accs]
+                accsQuery = "accession IN (%s)" % ','.join(accs)
+                whereclauses.append("(%s)" % accsQuery)
+
+        allmap = {"dnase": "dnase_max",
+                  "promoter": "h3k4me3_max",
+                  "enhancer": "h3k27ac_max",
+                  "ctcf": "ctcf_max" }
+        for x in ["dnase", "promoter", "enhancer", "ctcf"]:
+            if "rank_%s_start" % x in j and "rank_%s_end" in j:
+                _range = [j["rank_%s_start" % x] / 100.0,
+                          j["rank_%s_end" % x] / 100.0]
+                whereclauses.append("(%s)" % " and ".join(
+                    ["cre.%s >= %f" % (allmap[x], _range[0]),
+                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
+            fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
+
+        whereclause = ""
+        if len(whereclauses) > 0:
+            whereclause = "WHERE " + " and ".join(whereclauses)
+        #print(whereclause)
+        return (fields, whereclause)
+    
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
@@ -137,16 +174,6 @@ FROM {tn}
                          "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
                 fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
 
-        accs = j.get("accessions", [])
-        if accs and len(accs) > 0:
-            if type(accs[0]) is dict:
-                accs = [x["value"] for x in accs if x["checked"]]
-            accs = filter(lambda x: isaccession(x), accs)
-            if accs:
-                accs = ["'%s'" % x.upper() for x in accs]
-                accsQuery = "accession IN (%s)" % ','.join(accs)
-                whereclauses.append("(%s)" % accsQuery)
-
         whereclause = ""
         if len(whereclauses) > 0:
             whereclause = "WHERE " + " and ".join(whereclauses)
@@ -165,7 +192,10 @@ FROM {tn}
     def creTable(self, j, chrom, start, stop):
         tableName = self.assembly + "_cre_all"
 
-        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields, whereclause = self._creTableCart(j, chrom, start, stop)
+        if not fields:
+            fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+            
         fields = ', '.join(fields + [
             "accession", "maxZ",
             "cre.chrom", "cre.start",
@@ -185,6 +215,7 @@ LIMIT 1000) r
 """.format(fields = fields, tn = tableName,
            whereclause = whereclause)
 
+            print("\n", q, "\n")
             if 0:
                 timedQuery(curs, q)
             else:
