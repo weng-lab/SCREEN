@@ -64,7 +64,7 @@ SELECT ac.oname,
 ac.chrom, ac.start, ac.stop,
 ac.altchrom, ac.altstart, ac.altstop,
 similarity(ac.name, %s) AS sm, ac.pointer,
-gi.approved_symbol
+gi.approved_symbol, gi.strand
 FROM {assembly}_gene_search ac
 INNER JOIN {assembly}_gene_info gi
 ON gi.id = ac.pointer
@@ -87,7 +87,7 @@ SELECT ac.oname,
 ac.chrom, ac.start, ac.stop,
 ac.altchrom, ac.altstart, ac.altstop,
 similarity(ac.name, %s) AS sm, ac.pointer,
-gi.approved_symbol
+gi.approved_symbol, gi.strand
 FROM {assembly}_gene_search ac
 INNER JOIN {assembly}_gene_info gi
 ON gi.id = ac.pointer
