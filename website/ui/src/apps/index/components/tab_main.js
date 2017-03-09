@@ -76,7 +76,7 @@ class TabMain extends React.Component {
                     <div className="col-md-12">
 		        SCREEN is a web interface for searching and visualizing the Registry of
 			candidate Regulatory Elements (cREs) derived from <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
-		        The Registry contains 2.67M human cREs in hg19 and 1.67M mouse cREs in mm10,
+		        The Registry contains 1.31M human cREs in hg19 and 0.52M mouse cREs in mm10,
 			with orthologous cREs cross-referenced.  SCREEN presents the data that support
 			biochemical activities of the cREs and the expression of nearby genes in
 			specific cell and tissue types.
