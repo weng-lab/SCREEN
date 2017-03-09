@@ -15,6 +15,7 @@ class TabMain extends React.Component {
 	this.loadSearch = this.loadSearch.bind(this);
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
+	this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -109,13 +110,20 @@ class TabMain extends React.Component {
                     alt={"ENCODE logo"} />);
     }
 
+    handleKeyPress = (event) => {
+	if(event.key == 'Enter'){
+	    this.searchHg19();
+	}
+    }
+    
     searchBox(){
 	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	return (<div>
 	    <div className={"form-group text-center"}>
 		<input ref="searchBox" id={"mainSearchbox"}
-		       type={"text"} defaultValue={dv} />
+		       type={"text"} defaultValue={dv}
+		       onKeyPress={this.handleKeyPress} />
 	    </div>
 
 	    <div id={"mainButtonGroup"}>
