@@ -55,7 +55,8 @@ class LongChecklistFacet extends React.Component {
 	    {
 		title: "",
 		data: "selected",
-		render: this._render_checkbox
+		render: this._render_checkbox,
+		orderable: false
 	    }, ...this.props.cols
 	];
 

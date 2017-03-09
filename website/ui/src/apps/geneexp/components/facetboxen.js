@@ -9,23 +9,6 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
 
-const cell_compartments = ({compartments, actions, compartments_selected}) => {
-    return panelize("Cellular Compartments",
-                    <LongChecklistFacet
-			title={""}
-			data={compartments.map((e) => {
-				return {key: e, selected: compartments_selected.has(e)}})}
-			cols={[{
-				title: "Assay", data: "key",
-				className: "dt-right"
-			    }]}
-			order={[]}
-			buttonsOff={true}
-			mode={CHECKLIST_MATCH_ANY}
-			onTdClick={(c) => { actions.toggleCompartment(c) } }
-		    />);
-}
-
 const bts = ({biosample_types, biosample_types_selected, actions}) => {
     return panelize("Biosample Types",
                     <LongChecklistFacet
@@ -43,6 +26,23 @@ const bts = ({biosample_types, biosample_types_selected, actions}) => {
         	        mode={CHECKLIST_MATCH_ANY}
                         onTdClick={(c) => { actions.toggleBiosampleType(c) } }
                     />);
+}
+
+const cell_compartments = ({compartments, actions, compartments_selected}) => {
+    return panelize("Cellular Compartments",
+                    <LongChecklistFacet
+			title={""}
+			data={compartments.map((e) => {
+				return {key: e, selected: compartments_selected.has(e)}})}
+			cols={[{
+				title: "Assay", data: "key",
+				className: "dt-right"
+			    }]}
+			order={[]}
+			buttonsOff={true}
+			mode={CHECKLIST_MATCH_ANY}
+			onTdClick={(c) => { actions.toggleCompartment(c) } }
+		    />);
 }
 
 class FacetBoxen extends React.Component {
