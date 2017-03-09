@@ -65,14 +65,16 @@ const cellTypesBox = ({cellType, actions}) => {
 			data={Globals.cellTypeInfoArr}
 			cols={[
 			    { title: "", data: "name",
+			      orderable: false,
 			      render: () => ("<input type='radio' />")},
 			    { title: "cell type", data: "name",
 			      className: "dt-right"},
 			    { title: "tissue", data: "tissue",
 			      className: "dt-right" },
 			    { title: "", data: "cellTypeName",
+			      className: "dt-right dcc",
 			      render: Render.assayIcon,
-			      className: "dt-right dcc" }
+			      orderable: false }
 			]}
 			order={[]}
 			buttonsOff={true}
