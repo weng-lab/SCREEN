@@ -407,7 +407,12 @@ ORDER BY 2
            tads = self.assembly + "_tads")
             curs.execute(q, (start, chrom, accession, start))
             rows = curs.fetchall()
-        return [{"accession" : r[0], "distance" : r[1]} for r in rows]
+        frows = rows
+        for r in rows:
+            if accession == r[0]:
+                continue
+            frows.append(r)
+        return [{"accession" : r[0], "distance" : r[1]} for r in frows]
 
     def genesInTad(self, accession, chrom):
         with getcursor(self.pg.DBCONN, "genesInTad") as curs:

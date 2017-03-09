@@ -25,12 +25,14 @@ class TabQuery extends React.Component {
 	let cols = [{title: "", data: "sm", visible: false},
                     {title: "gene", data: "approved_symbol",
                      render: Render.searchLink(data)},
-                    {title: "", data: "interpretation"},
+                    {title: "", data: "oname"},
 		    {title: "chrom", data: "chrom"},
 		    {title: "start", data: "start",
                     render: Render.integer},
 		    {title: "stop", data: "stop",
-                    render: Render.integer}];
+                     render: Render.integer},
+		    {title: "strand", data: "strand"}
+	];
 
         let order = [[0, "desc"]];
 
