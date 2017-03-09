@@ -249,7 +249,7 @@ export const creGroupIcon = (creGroup) => {
     let lookupAssay = {1 : "CTCF",
                        2 : "H3K27ac",
                        3 : "H3K4me3"};
-    let lookupTitle = {1 : "CTCF-bound",
+    let lookupTitle = {1 : "CTCF-only",
                        2 : "Enhancer-like",
                        3 : "Promoter-like"};
     let lookupColor = {1 : "#00B0F0",
