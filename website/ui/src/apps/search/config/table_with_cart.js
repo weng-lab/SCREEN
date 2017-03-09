@@ -8,7 +8,12 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "", data: "cregroup", className: klassCenter,
+            title: "CTA", data: "cregroup", className: klassCenter,
+	    render: Render.creGroupIcon
+	}, {
+            title: "", data: "cregroup", visible: false
+	}, {
+            title: "CTS", data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
             title: "", data: "cregroup", visible: false
