@@ -43,7 +43,8 @@ class PageInfoSearch:
 
         cart = PGcart(self.ps, assembly)
         accessions = cart.get(uuid)
-
+        print("accessions", accessions)
+        
         parsed["cart_accessions"] = accessions
         if "cart" in kwargs:
             parsed["accessions"] = accessions
