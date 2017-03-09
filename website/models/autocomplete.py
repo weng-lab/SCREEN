@@ -41,7 +41,7 @@ class Autocompleter:
         with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
             # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
             curs.execute("""
-SELECT DISTINCT(oname)
+SELECT oname
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 5
