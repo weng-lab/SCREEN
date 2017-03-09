@@ -80,7 +80,7 @@ class GwasTab extends React.Component{
                          paging={false}
                          />);
         return (<div>
-		<h2>{data.gwas_study.trait}</h2>
+		<h3>{data.gwas_study.trait}</h3>
 
                 <div className="container-fluid">
                 <div className="row">
