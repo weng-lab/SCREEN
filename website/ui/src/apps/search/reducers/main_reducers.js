@@ -77,7 +77,7 @@ const main_reducers = (state, action) => {
 			return;
 		    }
 		    // go to cart page
-		    window.location.href = href + "&cart";
+		    window.open(href + "&cart", '_blank');
 		}
 	    });
 
