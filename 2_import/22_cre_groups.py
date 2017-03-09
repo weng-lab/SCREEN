@@ -24,9 +24,11 @@ class ImportCreGroups:
         self.tableNameCts = self.tableName + "_cts"
 
     def run(self):
+        self._setupTable()
         self._doImport()
         self._doIndex()
-        self._vac()
+        self._doUpdate()
+        
         
     def _setupTable(self):
         printt("drop and create", self.tableName)
@@ -35,20 +37,8 @@ class ImportCreGroups:
         CREATE TABLE {tn}
         (id serial PRIMARY KEY,
         rDHS text,
-        accession text,
-        {fields}
-        );""".format(tn = self.tableName,
-                     fields = ','.join([f + " VARCHAR(1)" for f in self.ctsPg])))
-
-    def _setupTableCts(self):
-        printt("drop and create", self.tableNameCts)
-        self.curs.execute("""
-        DROP TABLE IF EXISTS {tn};
-        CREATE TABLE {tn}
-        (id serial PRIMARY KEY,
-        cellTypeAndName text,
-        pgCellTypeAndName text
-        );""".format(tn = self.tableNameCts))
+        creGroupsSpecific VARCHAR[]
+        );""".format(tn = self.tableName))
 
     def _doImport(self):
         if "hg19" == self.assembly:
@@ -56,51 +46,36 @@ class ImportCreGroups:
         printt("reading", fnp)
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
+            rows = [line.rstrip('\n').split('\t') for line in f]
         printt("header:", header)
+        printt("rows", len(rows))
 
-        self.ctsOrig = header[1:]
-        self.ctsPg = [h.replace('-', '_') for h in self.ctsOrig]
-        
-        self._setupTable()
+        self.cts = header[1:]
 
-        cols = ["rDHS"] + self.ctsPg
-        with open(fnp) as f:
-            f.readline() # header
-            self.curs.copy_from(f, self.tableName, '\t', columns = cols)
-        printt("inserted", "{:,}".format(self.curs.rowcount))
-
-        self.curs.execute("""
-        UPDATE {tn} as cg
-        set accession = cres.accession
-        from {tncres} as cres
-        where cg.rDHS = cres.rDHS
-        """.format(tn = self.tableName, tncres = self.assembly + "_cre_all"))
-        printt("updated", "{:,}".format(self.curs.rowcount))
-
-        printt("drop column rDHS")
-        self.curs.execute("""
-        ALTER TABLE {tn} 
-        DROP COLUMN rDHS;
-        """.format(tn = self.tableName))
-
-        printt("import cell types", self.tableNameCts)
-        rows = zip(self.ctsOrig, self.ctsPg)
+        printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            outF.write('\t'.join(r) + '\n')
+            outF.write('\t'.join([r[0], "{'" + "','".join(r[1:]) + "'}"]) + '\n')
         outF.seek(0)
-
-        self._setupTableCts()
-        cols = ["cellTypeAndName", "pgCellTypeAndName"]
-        self.curs.copy_from(outF, self.tableNameCts, '\t', columns = cols)
+        cols = ["rDHS", "creGroupsSpecific"]
+        self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
-        
-    def _doIndex(self):
-        makeIndex(self.curs, self.tableName, ["accession"])
 
-    def _vac(self):
-        with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, self.tableName, [])
+    def _doUpdate(self):
+        printt("adding col...")
+        self.curs.execute("""
+        ALTER TABLE {tncres}
+        ADD COLUMN creGroupsSpecific VARCHAR[];
+        
+        UPDATE {tncres} as cres
+        SET creGroupsSpecific = cg.creGroupsSpecific
+        FROM {tn} as cg
+        where cg.rDHS = cres.rDHS
+    """.format(tn = self.tableName, tncres = self.assembly + "_cre_all"))
+        printt("updated", "{:,}".format(self.curs.rowcount))
+
+    def _doIndex(self):
+        makeIndex(self.curs, self.tableName, ["rDHS"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -122,6 +97,9 @@ def main():
         with getcursor(DBCONN, "dropTables") as curs:
             icg = ImportCreGroups(curs, assembly)
             icg.run()
+
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            vacumnAnalyze(conn, assembly + "_cre_all", [])
 
     return 0
 
