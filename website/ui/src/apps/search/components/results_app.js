@@ -100,8 +100,6 @@ class ResultsTableContainer extends React.Component {
 
 	return (
 	    <div>
-		<span className={"glyphicon glyphicon-info-sign"} aria-hidden="true"></span>
-		{" Click to see candidate Regulatory Elements:"}
 		<ul>
 		    {geneBody}
 		    {firstLastTss}
@@ -111,25 +109,26 @@ class ResultsTableContainer extends React.Component {
     }
 
     firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle){
+	let click = " Click to see candidate Regulatory Elements:";
 	if(useTss){
 	    if(tssDist){
 		return (
 		    <span>
 			{"This search is showing candidate Regulatory Elements located between the first and last TSSs of "}
-			{geneTitle}{" and up to " + tssDist / 1000  + "kb upstream."}
+			{geneTitle}{" and up to " + tssDist / 1000  + "kb upstream."}{click}
 		    </span>);
 	    } else {
 		return (
 		    <span>
 			{"This search is showing candidate promoters located between the first and last TSSs of "}
-			{geneTitle}{"."}
+			{geneTitle}{"."}{click}
 		    </span>);
 	    }
 	}
 	return (
 	    <span>
 		{"This search is showing cREs overlapping the gene body of "}
-		{geneTitle}{"."}
+		{geneTitle}{"."}{click}
 	    </span>);
     }
 
@@ -141,8 +140,6 @@ class ResultsTableContainer extends React.Component {
         let geneTitle = (<em>{gene}</em>);    
 	return (
 	    <div>
-		<span className={"glyphicon glyphicon-info-sign"} aria-hidden="true"></span>
-		{" "}
 		{this.firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle)}
 		<br />
 		{this.searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle)}

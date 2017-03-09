@@ -466,19 +466,28 @@ div.dataTables_wrapper div.dataTables_paginate {
     background-color: #ffa588;
     padding-left: 10px;
     padding-top: 4px;
-    padding-bottom: 4px;
+    padding-bottom: 0px;
     margin-bottom: 0px;
 }
 
 .searchTableNotes {
     padding-top: 6px;
-    padding-bottom: 6px;
 }
 
 .searchTableNotes.div {
     padding-bottom: 6px;
 }
 
+.searchTableNotesUl {
+    padding-left: 0px;
+}
+
+.searchTableNotesUl li {
+    border: none;
+    padding-left: 0px;
+    padding-bottom: 0px;
+}
+ 
 .detailsTabTitle {
     padding: 0px;
     font-size: 10pt;    
