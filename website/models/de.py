@@ -109,12 +109,13 @@ class DE:
 
         # center on middle of DEs
         cxdomain = [max(0, min([d[0] for d in nearbyDEs])),
-                   max([d[1] for d in nearbyDEs])]
+                    max([d[1] for d in nearbyDEs])]
         center = float(cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0]
-
+        halfWindow = max(self.halfWindow, (cxdomain[1] - cxdomain[0]) / 2.0)
+        
         # widen each side
-        xdomain = [max(0, center - self.halfWindow),
-                   center + self.halfWindow]
+        xdomain = [max(0, center - halfWindow),
+                   center + halfWindow]
 
         genes = self._genesInRegion(min(xdomain[0], cxdomain[0]),
                                     max(xdomain[1], cxdomain[1]))
