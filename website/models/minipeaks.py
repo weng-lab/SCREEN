@@ -41,11 +41,14 @@ class MiniPeaks:
                         byCts[ctn] = {"tissue" : lu["tissue"],
                                       "biosample_summary" : lu["biosample_summary"],
                                       "biosample_type" : lu["biosample_type"],
-                                      "cellTypeName" : lu["cellTypeName"]}
+                                      "cellTypeName" : lu["cellTypeName"],
+                                      "expIDs" : []}
                     if accession not in byCts[ctn]:
                         byCts[ctn][accession] = {a : None for a in assays}
                     byCts[ctn][accession][assay] = {"fileID" : fileID,
                                                     "data" : data}
+                    expID = self.cache.datasets.byFileID[fileID]["expID"]
+                    byCts[ctn]["expIDs"].append(expID)
         return byCts.values(), accessions
         
     def getBigWigRegionsWithSimilar(self, assay, accession, other = None):
