@@ -21,6 +21,7 @@ def checkAssembly(assembly):
     if assembly not in ["hg19", "mm10"]:
         raise Exception("invalid assembly")
 
-def creAssemblyStart(c):
-    self._assembly_starts = {"mm10": "EM10E",
-                             "hg19": "EH37E" }
+def checkCreAssembly(assembly, accession):
+    starts = {"mm10": "EM10E",
+              "hg19": "EH37E" }
+    return accession.startswith(starts[assembly])
