@@ -7,6 +7,7 @@ import * as Render from '../../../common/renders'
 
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'
+import HelpIcon from '../../../common/components/help_icon'
 
 class CelltypeView extends React.Component {
     constructor(props) {
@@ -86,9 +87,13 @@ class CelltypeView extends React.Component {
 		            cvisible={vcols}
                             order={[[1, "desc"], [0, "asc"]]}
                         />);
+
 	return (
             <div>
-                <h3>{this.props.cellType.biosample_summary}</h3>
+                <h3>
+                    {this.props.cellType.biosample_summary}
+                    <HelpIcon helpkey={"gwasresults"} />
+                </h3>
                 {creTable}
 	    </div>);
     }

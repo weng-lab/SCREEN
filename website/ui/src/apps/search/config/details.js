@@ -1,4 +1,4 @@
-const React = require('react');
+import React from 'react'
 
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
