@@ -29,9 +29,6 @@ class ImportCreGroups:
         self._doIndex()
         self._doUpdate()
 
-        with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, assembly + "_cre_all", [])
-
     def _setupTable(self):
         printt("drop and create", self.tableName)
         self.curs.execute("""
@@ -126,6 +123,8 @@ def main():
             icg = ImportCreGroups(curs, assembly)
             icg.run()
             icg.runCts()
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            vacumnAnalyze(conn, self.assembly + "_cre_all", [])
 
     return 0
 
