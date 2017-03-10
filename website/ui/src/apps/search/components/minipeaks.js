@@ -112,7 +112,8 @@ class MiniPeaks extends React.Component {
 	}
 
 	let cols = [];
-	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac", h3k4me3 : "H3K4me3"}
+	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac",
+			    h3k4me3 : "H3K4me3"}
 	for(let acc of this.state[accession].accessions){
 	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
 		cols.push({title: assayToTitle[assay], data: acc,

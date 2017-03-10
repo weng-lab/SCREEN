@@ -57,6 +57,8 @@ class CachedObjects:
 
         self.geneIDsToApprovedSymbol = self.pgSearch.geneIDsToApprovedSymbol()
 
+        self.help_keys = self.pgSearch.getHelpKeys()
+        
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
@@ -83,7 +85,8 @@ class CachedObjects:
             "chromLens" : chrom_lengths[self.assembly],
             "creHistBins" : self.creHist,
             "byCellType" : datasets.byCellType,
-            "geBiosampleTypes" : self.geBiosampleTypes
+            "geBiosampleTypes" : self.geBiosampleTypes,
+            "helpKeys" : self.help_keys
         }
 
     def assayAndCellTypeToExpAndBigWigAccessions(self, assay, ct):
