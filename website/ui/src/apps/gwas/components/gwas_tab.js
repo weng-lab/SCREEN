@@ -66,33 +66,37 @@ class GwasTab extends React.Component{
 	var data = this.state[gwas_study];
         var ctView = (cellType ? <CelltypeView /> :
                       arrowNote("Please choose a cell type.")
-                     );
+        );
         let mainTable = (<ResultsTable
-                         data={data.mainTable}
-                         cols={[
-                             {title: "Total LD blocks",
-                              data: "totalLDblocks"},
-                             {title: "# of LD blocks overlapping cREs",
-                              data: "numLdBlocksOverlap"},
-                             {title: "# of overlapping cREs",
-                              data: "numCresOverlap"}
-	                 ]}
-                         paging={false}
+                             data={data.mainTable}
+                             cols={[
+                                 {title: "Total LD blocks",
+                                  data: "totalLDblocks",
+                                  orderable: false},
+                                 {title: "# of LD blocks overlapping cREs",
+                                  data: "numLdBlocksOverlap",
+                                  orderable: false},
+                                 {title: "# of overlapping cREs",
+                                  data: "numCresOverlap",
+                                  orderable: false}
+	                     ]}
+                             paging={false}
                          />);
-        return (<div>
+        return (
+            <div>
 		<h3>{data.gwas_study.trait}</h3>
 
                 <div className="container-fluid">
-                <div className="row">
-                <div className="col-md-6">
-		{mainTable}
-                </div>
-                </div>
+                    <div className="row">
+                        <div className="col-md-6">
+		            {mainTable}
+                        </div>
+                    </div>
                 </div>
 
                 {ctView}
-                </div>
-               );
+
+            </div>);
     }
 
     render(){

@@ -80,16 +80,17 @@ class CelltypeView extends React.Component {
         ];
 
         let creTable = (<ResultsTable
-                        data={cres}
-                        cols={cols}
-                        bFilter={true}
-		        cvisible={vcols}
-                        order={[[1, "desc"], [0, "asc"]]}
+                            data={cres}
+                            cols={cols}
+                            bFilter={true}
+		            cvisible={vcols}
+                            order={[[1, "desc"], [0, "asc"]]}
                         />);
-	return (<div>
+	return (
+            <div>
                 <h3>{this.props.cellType.biosample_summary}</h3>
                 {creTable}
-		</div>);
+	    </div>);
     }
 }
 
