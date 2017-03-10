@@ -63,8 +63,8 @@ class DataWebService:
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
                         "trees" : self.trees,
-                        "tfenrichment": self.tfenrichment,
-                        "helpkey": self.helpkey }
+                        "tfenrichment": self.tfenrichment
+        }
 
         self.reDetailActions = {
             "topTissues" : self._re_detail_topTissues,
@@ -85,14 +85,6 @@ class DataWebService:
             return self.actions[action](j, args[1:])
         except:
             raise
-
-    def helpkey(self, j, args):
-        if "key" not in j: return {}
-        data = self.ps.get_helpkey(j["key"])
-        if data is None: return {}
-        return { "title": data[0],
-                 "summary": data[1],
-                 "link": data[2] }
 
     def _ortholog(self, j, accession):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
