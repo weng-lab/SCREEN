@@ -99,7 +99,7 @@ class DePlot extends React.Component {
             .orient("right");
         var svg = d3.select(chart).append("svg")
             .attr("width", width + margin.left + margin.right + 50)
-            .attr("height", height + margin.top + margin.bottom + deData.length * 20)
+            .attr("height", height + margin.top + margin.bottom + deData.length * 20 + genes.length * 20)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top+ ")");
         svg.append("g")
