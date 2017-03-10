@@ -500,3 +500,14 @@ div.dataTables_wrapper div.dataTables_paginate {
 .detailsTabTitle a {
     padding: 6px !important;
 }
+
+/* tool tips */
+.popover-title {
+    color: "#000000";
+}
+.popover-content {
+    color: "#000000";
+}
+.tooltipIcon {
+    margin-left: 5px;
+}

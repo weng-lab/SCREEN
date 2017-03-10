@@ -75,19 +75,26 @@ class ResultsTable extends React.Component {
 		}
 	    })
             .on('draw.dt', function () {
-                $('[data-toggle="tooltip"]').tooltip(
-                    {delay: { show: 100, hide: 3000 },
-                     placement: 'top'
-                    }
-                );
-                $('[data-toggle="tooltip"]').on('click', function(e){
-                    // nuke tooltip if content clicked
-                    $(this).tooltip('destroy');
-                });
+		$('.tooltipIcon').each(function () {
+		    let tt = $('#' + $(this).data('tip')).html();
+		    $(this)
+			.tooltip(
+			    {delay: { show: 100, hide: 3000 },
+			     placement: 'top',
+			     html: true,
+			     title: tt
+			    })
+			.on('click', function(e){
+			    // nuke tooltip if content clicked
+			    $(this).tooltip('destroy');
+			})
+		});
             })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
 
+
+		
 	this._datatable = _datatable;
     }
 }

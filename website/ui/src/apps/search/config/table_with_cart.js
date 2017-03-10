@@ -1,24 +1,28 @@
 import ReactDOMServer from 'react-dom/server'
+import {HelpIconActual} from '../../../common/components/help_icon'
 
 import * as Render from '../../../common/renders'
 
 const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let ctaHelp ="";
+    let ctaHelp = HelpIconActual("CellTypeAgnosticClassification");
     ctaHelp = ReactDOMServer.renderToStaticMarkup(ctaHelp);
+
+    let ctsHelp ="";
+    //ctsHelp = ReactDOMServer.renderToStaticMarkup(ctsHelp);
 
     return [
 	{
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "ctaHelp", data: "cregroup", className: klassCenter,
+            title: ctaHelp, data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
             title: "", data: "cregroup", visible: false
 	}, {
-            title: "ctsHelp", data: "cregroup", className: klassCenter,
+            title: ctsHelp, data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
             title: "", data: "cregroup", visible: false
