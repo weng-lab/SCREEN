@@ -1,19 +1,24 @@
+import ReactDOMServer from 'react-dom/server'
+
 import * as Render from '../../../common/renders'
 
 const TableColumns = () => {
-    let klassLeft = "dt-right dt-head-center ";
     let klassCenter = "dt-body-center dt-head-center ";
+
+    let ctaHelp ="";
+    ctaHelp = ReactDOMServer.renderToStaticMarkup(ctaHelp);
+
     return [
 	{
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "CTA", data: "cregroup", className: klassCenter,
+            title: "ctaHelp", data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
             title: "", data: "cregroup", visible: false
 	}, {
-            title: "CTS", data: "cregroup", className: klassCenter,
+            title: "ctsHelp", data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
             title: "", data: "cregroup", visible: false

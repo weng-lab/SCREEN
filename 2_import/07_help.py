@@ -70,7 +70,9 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "GWAS Study Table": "gwasstudytable",
           "GWAS Results Table": "gwasresults",
           "DE cRE Table": "decres",
-          "DE Gene Table": "degenetable" }
+          "DE Gene Table": "degenetable",
+          "CellTypeAgnosticClassification" : "CellTypeAgnosticClassification",
+          "CellTypeSpecificClassification" : "CellTypeSpecificClassification"}
 
 def main():
     args = parseargs()

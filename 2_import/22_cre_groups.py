@@ -124,7 +124,7 @@ def main():
             icg.run()
             icg.runCts()
         with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, self.assembly + "_cre_all", [])
+            vacumnAnalyze(conn, assembly + "_cre_all", [])
 
     return 0
 
