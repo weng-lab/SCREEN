@@ -69,7 +69,7 @@ const creBox = ({des, ct1, ct2, actions}) => {
 	           bFilter={true}
                    order={[[3, "desc"], [1, "asc"]]}
                />);
-    return panelize("Candidate Regulatory Elements", cts);
+    return panelize("Candidate Regulatory Elements", cts, "decres");
 }
 
 const geneBox = ({des, ct1, ct2, actions}) => {
@@ -93,7 +93,7 @@ const geneBox = ({des, ct1, ct2, actions}) => {
 	           bFilter={true}
                    order={[[3, "desc"]]}
                />);
-    return panelize("Differentially Expressed Genes", cts);
+    return panelize("Differentially Expressed Genes", cts, "degenetable");
 }
 
 class FacetBoxen extends React.Component {
