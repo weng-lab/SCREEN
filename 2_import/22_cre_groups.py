@@ -28,8 +28,10 @@ class ImportCreGroups:
         self._doImport()
         self._doIndex()
         self._doUpdate()
-        
-        
+
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            vacumnAnalyze(conn, assembly + "_cre_all", [])
+
     def _setupTable(self):
         printt("drop and create", self.tableName)
         self.curs.execute("""
@@ -39,6 +41,32 @@ class ImportCreGroups:
         rDHS text,
         creGroupsSpecific VARCHAR[]
         );""".format(tn = self.tableName))
+
+    def runCts(self):
+        printt("drop and create", self.tableNameCts)
+        self.curs.execute("""
+        DROP TABLE IF EXISTS {tn};
+        CREATE TABLE {tn}
+        (id serial PRIMARY KEY,
+cellTypeName text,
+pgidx integer
+        );""".format(tn = self.tableNameCts))
+
+        if "hg19" == self.assembly:
+            fnp = paths.path("hg19", "hg19.cts.21only.txt")
+        printt("reading", fnp)
+        with open(fnp) as f:
+            header = f.readline().rstrip('\n').split('\t')
+        printt("rewrite rows")
+        outF = StringIO.StringIO()
+        counter = 1
+        for h in header[1:]:
+            outF.write('\t'.join([h, str(counter)]) + '\n')
+            counter += 1
+        outF.seek(0)
+        cols = ["cellTypeName", "pgidx"]
+        self.curs.copy_from(outF, self.tableNameCts, '\t', columns = cols)
+        printt("inserted", "{:,}".format(self.curs.rowcount), self.tableNameCts)
 
     def _doImport(self):
         if "hg19" == self.assembly:
@@ -66,7 +94,7 @@ class ImportCreGroups:
         self.curs.execute("""
         ALTER TABLE {tncres}
         ADD COLUMN creGroupsSpecific VARCHAR[];
-        
+
         UPDATE {tncres} as cres
         SET creGroupsSpecific = cg.creGroupsSpecific
         FROM {tn} as cg
@@ -97,9 +125,7 @@ def main():
         with getcursor(DBCONN, "dropTables") as curs:
             icg = ImportCreGroups(curs, assembly)
             icg.run()
-
-        with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, assembly + "_cre_all", [])
+            icg.runCts()
 
     return 0
 
