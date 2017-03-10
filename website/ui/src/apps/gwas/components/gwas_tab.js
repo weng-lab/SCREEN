@@ -86,24 +86,24 @@ class GwasTab extends React.Component{
 
         // <HelpIcon helpkey={"gwasstudytable"} />
         return (
-            <div>
-		<h3>
-                    {data.gwas_study.trait}
-                </h3>
-
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-md-6">
-		            {mainTable}
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            {ctView}
-                        </div>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-md-12">
+		        <h3>
+                            {data.gwas_study.trait}
+                        </h3>
                     </div>
                 </div>
-
+                <div className="row">
+                    <div className="col-md-6">
+		        {mainTable}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12">
+                        {ctView}
+                    </div>
+                </div>
             </div>);
     }
 
