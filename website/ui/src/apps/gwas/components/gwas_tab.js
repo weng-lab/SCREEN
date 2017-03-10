@@ -9,6 +9,7 @@ import CelltypeView from '../components/celltype_view'
 import loading from '../../../common/components/loading'
 import {arrowNote} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
+import HelpIcon from '../../../common/components/help_icon'
 
 class GwasTab extends React.Component{
     constructor(props) {
@@ -82,9 +83,13 @@ class GwasTab extends React.Component{
 	                     ]}
                              paging={false}
                          />);
+
+        // <HelpIcon helpkey={"gwasstudytable"} />
         return (
             <div>
-		<h3>{data.gwas_study.trait}</h3>
+		<h3>
+                    {data.gwas_study.trait}
+                </h3>
 
                 <div className="container-fluid">
                     <div className="row">
@@ -92,9 +97,12 @@ class GwasTab extends React.Component{
 		            {mainTable}
                         </div>
                     </div>
+                    <div className="row">
+                        <div className="col-md-12">
+                            {ctView}
+                        </div>
+                    </div>
                 </div>
-
-                {ctView}
 
             </div>);
     }
@@ -106,9 +114,10 @@ class GwasTab extends React.Component{
         if(!(this.props.gwas_study in this.state)){
             return loading(this.state);
         }
-        return (<div style={{"width": "100%"}} >
+        return (
+            <div style={{"width": "100%"}} >
                 {this.doRenderWrapper(this.props)}
-                </div>);
+            </div>);
     }
 }
 

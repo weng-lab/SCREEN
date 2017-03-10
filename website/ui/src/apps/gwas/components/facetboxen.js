@@ -22,19 +22,21 @@ const gwas_studies = ({gwas_study, actions}) => {
 			title={""}
 			data={GwasGlobals.gwas.studies}
 			cols={[
-			    {title: "Study", data: "trait", className: "dt-right"},
-			    {title: "Author", data: "author", className: "dt-right"},
-			    {title: "Pubmed", data: "pubmed", className: "dt-right"}
+			    {title: "Study", data: "trait",
+                             className: "dt-right"},
+			    {title: "Author", data: "author",
+                             className: "dt-right"},
+			    {title: "Pubmed", data: "pubmed",
+                             className: "dt-right"}
 			]}
-			friendlySelectionLookup={make_gwas_friendly}
-			order={[[0, "asc"], [1, "asc"]]}
+                        friendlySelectionLookup={make_gwas_friendly}
+                        order={[[0, "asc"], [1, "asc"]]}
 			selection={gwas_study}
 			mode={CHECKLIST_MATCH_ANY}
 			pageLength={5}
 			onTdClick={(c) => { actions.setStudy(c) } }
-                    />);
+                    />, "gwasstudies");
 }
-
 const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     if(!gwas_study || !gwas_cell_types){
         return (<div />);
@@ -65,15 +67,16 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
 			   };
 		       }}
                />);
-    return panelize("Cell types", cts);
+    return panelize("Cell types", cts, "gwascelltypes");
 }
 
 class FacetBoxen extends React.Component {
     doRender(p){
-        return (<div>
-			{gwas_studies(p)}
-			{cellTypesBox(p)}
-        </div>);
+        return (
+            <div>
+		{gwas_studies(p)}
+		{cellTypesBox(p)}
+            </div>);
     }
 
     render() {
