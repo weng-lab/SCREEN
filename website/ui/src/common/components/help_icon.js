@@ -17,7 +17,7 @@ export const HelpIconActual = (helpkey, color = "#0000EE") => {
 		<div className="popover-content">{content}</div>
 	    </div>
 	    <span
-		className="glyphicon glyphicon-info-sign tooltipIcon"
+		className="glyphicon glyphicon-info-sign rtTooltipIcon"
 		style={{color}}
 		aria-hidden={"true"}
 		data-toggle={"tooltip"}
