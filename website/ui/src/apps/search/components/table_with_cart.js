@@ -216,7 +216,6 @@ class TableWithCart extends React.Component {
 		    <em>For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
 		</li>);
 	}
-
 	var failMsg = "";
 	if(this.props.nodnase && this.props.nodnase.length){
 	    failMsg = (
@@ -232,7 +231,7 @@ class TableWithCart extends React.Component {
 		Candidate Regulatory Elements (cREs) that meet your search criteria:
 		</li>);
 	}
-	
+
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
