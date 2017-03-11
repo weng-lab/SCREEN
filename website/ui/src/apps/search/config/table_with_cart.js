@@ -23,7 +23,7 @@ const TableColumns = () => {
             title: "", data: "cregroup", visible: false
 	}, {
             title: ctsHelp, data: "cts", className: klassCenter,
-	    render: Render.creGroupIcon
+	    render: Render.ctsGroupIcon
 	}, {
             title: "", data: "cts", visible: false
 	}, {

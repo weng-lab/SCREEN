@@ -83,6 +83,8 @@ FROM {tn}
             for assay in ["dnase", "promoter", "enhancer", "ctcf"]:
                 if ct in self.ctmap[assay]:
                     present.append(assay)
+        if ct in self.ctsTable:
+            present.append("cts")
         return present
 
     def creTable(self, j, chrom, start, stop):
