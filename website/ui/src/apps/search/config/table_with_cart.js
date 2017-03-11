@@ -22,10 +22,10 @@ const TableColumns = () => {
 	}, {
             title: "", data: "cregroup", visible: false
 	}, {
-            title: ctsHelp, data: "cregroup", className: klassCenter,
+            title: ctsHelp, data: "cts", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "", data: "cregroup", visible: false
+            title: "", data: "cts", visible: false
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
