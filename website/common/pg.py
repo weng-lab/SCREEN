@@ -12,6 +12,7 @@ import psycopg2.extras
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
+from pg_cre_table import PGcreTable
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -40,7 +41,7 @@ class PGsearch:
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
         q = """
-SELECT accession, chrom, start, stop 
+SELECT accession, chrom, start, stop
 FROM {tn}
 """.format(
             tn = tableName)
@@ -109,7 +110,7 @@ FROM {tn}
             whereclause = "WHERE " + " and ".join(whereclauses)
         #print(whereclause)
         return (fields, whereclause)
-    
+
     def _creTableWhereClause(self, j, chrom, start, stop):
         whereclauses = []
 
@@ -190,70 +191,19 @@ FROM {tn}
         return present
 
     def creTable(self, j, chrom, start, stop):
-        tableName = self.assembly + "_cre_all"
-
-        fields, whereclause = self._creTableCart(j, chrom, start, stop)
-        if not fields:
-            fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
-            
-        fields = ', '.join(fields + [
-            "accession", "maxZ",
-            "cre.chrom", "cre.start",
-            "cre.stop - cre.start AS len",
-            "cre.gene_all_id", "cre.gene_pc_id",
-            "0::int as in_cart",
-            "cre.creGroup"])
-
-        with getcursor(self.pg.DBCONN, "_cre_table") as curs:
-            q = """
-SELECT JSON_AGG(r) from(
-SELECT {fields}
-FROM {tn} AS cre
-{whereclause}
-ORDER BY maxz DESC
-LIMIT 1000) r
-""".format(fields = fields, tn = tableName,
-           whereclause = whereclause)
-
-            #print("\n", q, "\n")
-            if 0:
-                timedQuery(curs, q)
-            else:
-                curs.execute(q)
-            rows = curs.fetchall()[0][0]
-            if not rows:
-                rows = []
-
-            total = len(rows)
-            if total >= 1000: # reached query limit
-                total = self._creTableEstimate(curs, tableName, whereclause)
-        return {"cres": rows, "total" : total}
-
-    def _creTableEstimate(self, curs, tableName, whereclause):
-        # estimate count
-        # from https://wiki.postgresql.org/wiki/Count_estimate
-
-        # qoute escape from
-        # http://stackoverflow.com/a/12320729
-        q = """
-SELECT count(0)
-FROM {tn} AS cre
-{wc}
-""".format(tn = tableName, wc = whereclause)
-        if 0:
-            timedQuery(curs, q)
-        else:
-            curs.execute(q)
-        return curs.fetchone()[0]
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap)
+        return pct.creTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap)
+
         chrom = checkChrom(self.assembly, j)
         start = j.get("coord_start", 0)
         stop = j.get("coord_end", 0)
 
         tableName = self.assembly + "_cre_all"
 
-        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields, whereclause = pct._creTableWhereClause(j, chrom, start, stop)
         fields = ', '.join(["cre.chrom", "cre.start",
                             "cre.stop",
                             "accession", "maxZ"])
@@ -273,13 +223,15 @@ with DELIMITER E'\t'
                 curs.copy_expert(q, f)
 
     def creTableDownloadJson(self, j, fnp):
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap)
+
         chrom = checkChrom(self.assembly, j)
         start = j.get("coord_start", None)
         stop = j.get("coord_end", None)
 
         tableName = self.assembly + "_cre_all"
 
-        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields, whereclause = pct._creTableWhereClause(j, chrom, start, stop)
 
         q = """
 copy (
@@ -825,7 +777,7 @@ ORDER BY 1
     def getHelpKeys(self):
         with getcursor(self.pg.DBCONN, "getHelpKeys") as curs:
             curs.execute("""
-            SELECT key, title, summary, link 
+            SELECT key, title, summary, link
             FROM helpkeys
             """)
             rows = curs.fetchall()
