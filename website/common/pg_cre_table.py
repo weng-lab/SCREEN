@@ -22,10 +22,11 @@ from db_utils import getcursor, timedQuery
 from utils import eprint
 
 class PGcreTable:
-    def __init__(self, pg, assembly, ctmap):
+    def __init__(self, pg, assembly, ctmap, ctsTable):
         self.pg = pg
         self.assembly = assembly
         self.ctmap = ctmap
+        self.ctsTable = ctsTable
 
     def _creTableCart(self, j, chrom, start, stop):
         accs = j.get("accessions", [])
@@ -87,6 +88,10 @@ class PGcreTable:
                              "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
 
         if ct:
+            if ct in self.ctsTable:
+                fields.append("cre.creGroupsSpecific[%s] AS cts" %
+                              self.ctsTable[ct])
+
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3"),
                           ("enhancer", "h3k27ac"),
@@ -133,15 +138,6 @@ class PGcreTable:
             whereclause = "WHERE " + " and ".join(whereclauses)
         #print(whereclause)
         return (fields, whereclause)
-
-    def _rfacets_active(self, j):
-        present = []
-        ct = j.get("cellType", None)
-        if ct:
-            for assay in ["dnase", "promoter", "enhancer", "ctcf"]:
-                if ct in self.ctmap[assay]:
-                    present.append(assay)
-        return present
 
     def creTable(self, j, chrom, start, stop):
         tableName = self.assembly + "_cre_all"
