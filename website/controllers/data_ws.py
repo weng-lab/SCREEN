@@ -100,9 +100,10 @@ class DataWebService:
             r["genesallpc"] = [[lookup[gid] for gid in r["gene_all_id"][:3]],
                                [lookup[gid] for gid in r["gene_pc_id"][:3]]]
         if "cellType" in j and j["cellType"]:
-            results["rfacets"] = self.pgSearch._rfacets_active(j)
+            results["rfacets"] = self.pgSearch.rfacets_active(j)
         else:
             results["rfacets"] = ["dnase", "promoter", "enhancer", "ctcf"]
+        results["cts"] = self.pgSearch.haveCTS(j)
         return results
 
     def re_detail(self, j, args):
