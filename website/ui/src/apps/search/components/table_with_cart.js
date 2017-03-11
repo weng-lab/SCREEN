@@ -177,7 +177,7 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    _opposite(a) {
+    _oppositeAssays(a){
 	let r = {"dnase" : true, "promoter": true,
                  "enhancer": true, "ctcf": true};
 	let map = {"DNase-seq": "dnase", "H3K4me3 ChIP-seq": "promoter",
@@ -189,6 +189,18 @@ class TableWithCart extends React.Component {
 	    r[map[a[i]]] = false
 	}
 	return r;
+    }
+
+    _opposite(a, cts) {
+        let r = this._oppositeAssays(a);
+        r["cts"] = false;
+        r["ctsv"] = false;
+        if(cts){
+            for (let e of cts) {
+	        r[e] = true;
+            }
+        }
+        return r;
     }
 
     colorCreGroup(row, data, index){
@@ -252,7 +264,7 @@ class TableWithCart extends React.Component {
                               cols={TableColumns()}
                               onTdClick={(td, rowdata) =>
                                   table_click_handler(td, rowdata, actions)}
-                              cvisible={this._opposite(cols)}
+                              cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   button_click_handler(td, rowdata, actions)}
                               bFilter={true} bLengthChange={true}

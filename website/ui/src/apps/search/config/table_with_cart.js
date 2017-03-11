@@ -7,10 +7,10 @@ const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
     let ctaHelp = HelpIconActual("CellTypeAgnosticClassification");
-    ctaHelp = "CTA " + ReactDOMServer.renderToStaticMarkup(ctaHelp);
+    ctaHelp = "CTA<br />" + ReactDOMServer.renderToStaticMarkup(ctaHelp);
 
     let ctsHelp = HelpIconActual("CellTypeSpecificClassification");
-    ctsHelp = "CTS " + ReactDOMServer.renderToStaticMarkup(ctsHelp);
+    ctsHelp = "CTS<br />" + ReactDOMServer.renderToStaticMarkup(ctsHelp);
 
     return [
 	{
@@ -20,12 +20,12 @@ const TableColumns = () => {
             title: ctaHelp, data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "", data: "cregroup", visible: false
+            title: "CTA", data: "cregroup", visible: false
 	}, {
             title: ctsHelp, data: "cts", className: klassCenter,
-	    render: Render.ctsGroupIcon
+	    render: Render.ctsGroupIcon, name: "ctsv"
 	}, {
-            title: "", data: "cts", visible: false
+            title: "CTS", data: "cts", visible: false, name: "cts"
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"

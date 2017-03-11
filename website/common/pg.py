@@ -75,17 +75,22 @@ FROM {tn}
                         "numBins" : e[2],
                         "binMax" : e[3]} for e in r}
 
-    def _rfacets_active(self, j):
-        #TODO: remove underscore
+    def rfacets_active(self, j):
         present = []
         ct = j.get("cellType", None)
         if ct:
             for assay in ["dnase", "promoter", "enhancer", "ctcf"]:
                 if ct in self.ctmap[assay]:
                     present.append(assay)
-        if ct in self.ctsTable:
-            present.append("cts")
         return present
+
+    def haveCTS(self, j):
+        ct = j.get("cellType", None)
+        ret = []
+        if ct:
+            if ct in self.ctsTable:
+                ret = ["ctsv"]
+        return ret
 
     def creTable(self, j, chrom, start, stop):
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
