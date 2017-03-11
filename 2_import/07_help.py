@@ -71,6 +71,7 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "GWAS Results Table": "gwasresults",
           "DE cRE Table": "decres",
           "DE Gene Table": "degenetable",
+          "DifferentialGeneMouse" : "DifferentialGeneMouse",
           "CellTypeAgnosticClassification" : "CellTypeAgnosticClassification",
           "CellTypeSpecificClassification" : "CellTypeSpecificClassification"}
 
