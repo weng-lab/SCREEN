@@ -40,7 +40,7 @@ class ResultsTable extends React.Component {
 	if(this.props.buttonsOff){
 	    buttons = [];
 	}
-	    
+
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
@@ -75,26 +75,24 @@ class ResultsTable extends React.Component {
 		}
 	    })
             .on('draw.dt', function () {
-		$('.tooltipIcon').each(function () {
-		    let tt = $('#' + $(this).data('tip')).html();
-		    $(this)
-			.tooltip(
-			    {delay: { show: 100, hide: 3000 },
-			     placement: 'top',
-			     html: true,
-			     title: tt
-			    })
-			.on('click', function(e){
-			    // nuke tooltip if content clicked
-			    $(this).tooltip('destroy');
-			})
-		});
             })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
 
+	$('.rtTooltipIcon').each(function (idx, e) {
+	    let tt = $('#' + $(this).data('tip')).html();
+	    $(e).tooltip(
+		{delay: { show: 100, hide: 3000 },
+		 placement: 'top',
+		 html: true,
+		 title: () => {console.log("h!", tt); return tt}
+		});
+            $(e).on('click', function(e){
+		// nuke tooltip if content clicked
+		$(this).tooltip('destroy');
+	    });
+	});
 
-		
 	this._datatable = _datatable;
     }
 }
