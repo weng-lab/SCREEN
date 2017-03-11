@@ -7,10 +7,10 @@ const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
     let ctaHelp = HelpIconActual("CellTypeAgnosticClassification");
-    ctaHelp = ReactDOMServer.renderToStaticMarkup(ctaHelp);
+    ctaHelp = "CTA " + ReactDOMServer.renderToStaticMarkup(ctaHelp);
 
-    let ctsHelp ="";
-    //ctsHelp = ReactDOMServer.renderToStaticMarkup(ctsHelp);
+    let ctsHelp = HelpIconActual("CellTypeSpecificClassification");
+    ctsHelp = "CTS " + ReactDOMServer.renderToStaticMarkup(ctsHelp);
 
     return [
 	{
@@ -74,4 +74,5 @@ export const table_order = [
     [5, "asc"]
 ];
 
-export const columnDefs = [{ "orderData": 2, "targets": 1 }]
+export const columnDefs = [{ "orderData": 2, "targets": 1 },
+                           { "orderData": 4, "targets": 3 }]
