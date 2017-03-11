@@ -295,8 +295,8 @@ export const ctsGroupIcon = (creGroup) => {
 		       'E' : "#FFCD00",
 		       'P' : "#FF0000",
                        'D' : "#06DA93",
-                       'I' : "#DCDCDC",
-                       'U' : "#DCDCDC"}
+                       'I' : "#e1e1e1",
+                       'U' : "#8c8c8c"}
     let w = 18;
     let fw = w + 2;
     let rect = (x, y, color) => (
