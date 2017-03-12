@@ -56,7 +56,7 @@ def processRow(row, outF, lookup):
         organ = lookup[biosample["biosample_term_name"]]
 
     if not organ or "na" == organ:
-        print("missing organ", biosample["biosample_term_name"])
+        print("missing organ", "'" + biosample["biosample_term_name"] + "'")
         organ = "" #biosample["biosample_term_name"]
 
     try:
