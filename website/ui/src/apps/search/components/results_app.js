@@ -10,7 +10,8 @@ import {getCommonState, orjoin} from '../../../common/utility';
 class ResultsTableContainer extends React.Component {
     constructor(props) {
 	super(props);
-        this.state = { cres: [], total: 0, isFetching: true, isError: false,
+        this.state = { cres: [], total: 0, cts: null,
+                       isFetching: true, isError: false,
                        jq : null}
 	this._all = {"dnase": "DNase-seq",
 		     "promoter": "H3K4me3 ChIP-seq",
@@ -31,7 +32,7 @@ class ResultsTableContainer extends React.Component {
 	    this.loadCREs(this.props);
 	}
     }
-    
+
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
         this.loadCREs(nextProps);
@@ -61,6 +62,7 @@ class ResultsTableContainer extends React.Component {
             }.bind(this),
             success: function(r) {
                 this.setState({cres: r["cres"], total: r["total"],
+                               cts: r["cts"],
 			       nodnase: this._get_missing(r["rfacets"]),
                                jq, isFetching: false, isError: false});
 		setrfacets(r["rfacets"]);
@@ -137,7 +139,7 @@ class ResultsTableContainer extends React.Component {
 	    console.log("gene, noTss, useTss, tssDist, assembly",
 			gene, noTss, useTss, tssDist, assembly);
 	}
-        let geneTitle = (<em>{gene}</em>);    
+        let geneTitle = (<em>{gene}</em>);
 	return (
 	    <div>
 		{this.firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle)}
@@ -145,7 +147,7 @@ class ResultsTableContainer extends React.Component {
 		{this.searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle)}
 	    </div>);
     }
-    
+
     render() {
 	let interp = GlobalParsedQuery["interpretation"];
 	let interpBox = "";
@@ -161,7 +163,7 @@ class ResultsTableContainer extends React.Component {
 	    </div>);
 	    }
 	}
-	
+
 	return (
 	    <div>
 		{interpBox}
@@ -173,6 +175,7 @@ class ResultsTableContainer extends React.Component {
                     isFetching={this.state.isFetching}
 		    jq={this.state.jq}
 		    nodnase={this.state.nodnase}
+                    cts={this.state.cts}
 		    hasct={this.props.cellType}
 		/>
 	    </div>);

@@ -1,18 +1,21 @@
 import React from 'react'
-var $ = require('jquery');
+import ReactDOMServer from 'react-dom/server'
 
-const help_query = (query, f_success, f_error) => {
-    let jq = JSON.stringify({key: query, GlobalAssembly });
-    $.ajax({
-        type: "POST",
-        url: "/dataws/helpkey",
-        data: jq,
-        dataType: "json",
-        contentType : "application/json",
-        success: f_success,
-	error: f_error
-    });
-};
+export const HelpIconActual = (helpkey, color = "#0000EE") => {
+    let data = Globals.helpKeys[helpkey];
+    let title = data.title;
+    let content = data.summary;
+
+    return (
+	<span
+            className="glyphicon glyphicon-info-sign rtTooltipIcon"
+            style={{color}}
+            aria-hidden={"true"}
+            data-toggle={"tooltip"}
+            data-html={"true"}
+            title={content}
+        />);
+}
 
 class HelpIcon extends React.Component {
     constructor(props) {
@@ -22,6 +25,13 @@ class HelpIcon extends React.Component {
 
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
+        let data = Globals.helpKeys[this.props.helpkey];
+        let title = data.title;
+        let content = data.summary
+		          .replace(/\n\n/g, "<br>")
+		          .replace(/\n/g, "<br>")
+		          .replace(/  /g, "");
+
 	return (
             <span ref="pspan" style={{fontSize: "14pt"}}>
                 <a ref="aicon">
@@ -35,10 +45,14 @@ class HelpIcon extends React.Component {
 	 	     role="tooltip" ref="tt"
                      style={{top: "0px", left: "0px", position: "absolute",
                              display: "none", maxWidth: "500px" }}>
-	            <h3 ref="tt_title" className="popover-title"
-                        style={{color: "#000000"}}></h3>
-	            <div ref="tt_content" className="popover-content"
-                         style={{color: "#000000"}}></div>
+
+                    <h3 ref="tt_title" className="popover-title">
+                        {title}
+                    </h3>
+
+                    <div ref="tt_content" className="popover-content">
+                        {content}
+                    </div>
 		</div>
 	    </span>);
     }
@@ -56,19 +70,11 @@ class HelpIcon extends React.Component {
 
     componentDidMount() {
 	var icon = this.refs.aicon;
-	var error = (a, b, c) => {
-	    console.log(a);
-	};
-	var success = (response, b, c) => {
-	    this.refs.tt_content.innerHTML = response.summary.replace(/\n/g, "<br>").replace(/  /g, "");
-	    this.refs.tt_title.innerText = response.title;
-	    this._set_tt_pos();
+	this._set_tt_pos();
+    	$(icon).on("mouseover", () => {
 	    $(this.refs.tt).css({
-		display: "block"
+	        display: "block"
 	    });
-	};
-	$(icon).on("mouseover", () => {
-	    help_query(this.props.helpkey, success, error);
  	    $(icon).off()
 		   .on("mouseover", () => {this.refs.tt.style.display = "block";})
 		   .on("mouseout", () => {this.refs.tt.style.display = "none";});
