@@ -41,10 +41,8 @@ class HelpIcon extends React.Component {
                           aria-hidden="true"
                     />
                 </a>
-		<div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in"
-	 	     role="tooltip" ref="tt"
-                     style={{top: "0px", left: "0px", position: "absolute",
-                             display: "none", maxWidth: "500px" }}>
+		<div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in popover-div"
+	 	     role="tooltip" ref="tt">
 
                     <h3 ref="tt_title" className="popover-title">
                         {title}
