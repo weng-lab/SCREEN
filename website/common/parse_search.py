@@ -8,7 +8,7 @@ from coord import Coord
 from pg_parse import PGparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession, isclose
+from cre_utils import isaccession, isclose, checkCreAssembly
 from constants import chrom_lengths, chroms
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
@@ -109,6 +109,7 @@ class ParseSearch:
             for t in toks:
                 if isaccession(t):
                     if not checkCreAssembly(self.assembly, t):
+                        print("assembly mismatch", self.assembly, t)
                         raise Exception("mismatch assembly for accession " + t)
                     accessions.append(t)
                     s = s.replace(t, "")
@@ -159,7 +160,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     assembly = "hg19"
-    assembly = "mm10"
+    #assembly = "mm10"
     ps = PostgresWrapper(DBCONN)
 
     queries = ["BAP1", "HBB", "Actin alpha 1", "chr1:10-100"]
@@ -167,6 +168,7 @@ def main():
     queries = ["Actin alpha 1", "HBB"]
     queries = ["HBB"]
     queries = ["Actin alpha 1"]
+    queries = ["EH37E1177528"]
 
     for q in queries:
         print("***************", q)

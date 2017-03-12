@@ -22,6 +22,6 @@ def checkAssembly(assembly):
         raise Exception("invalid assembly")
 
 def checkCreAssembly(assembly, accession):
-    starts = {"mm10": "EM10E",
-              "hg19": "EH37E" }
+    starts = {"mm10": "em10e",
+              "hg19": "eh37e" }
     return accession.startswith(starts[assembly])
