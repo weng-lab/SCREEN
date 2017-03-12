@@ -273,7 +273,9 @@ export const TfIntersectionTable = () => ({
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf },
 	    {title: "# experiments", data: "n",
-	     render: Render.integerLink("tf") }],
+	     render: Render.integerLink("tf") },
+	    {title: "# experiments in total", data: "total",
+	     render: Render.integer }],
 	bFilter: true,
 	order: [[1, "desc"]]
     },
@@ -285,19 +287,10 @@ export const TfIntersectionTable = () => ({
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
 	    {title: "# experiments", data: "n",
-	     render: Render.integerLink("histone") }],
-	bFilter: true,
-	order: [[1, "desc"]]
-    },
-
-    /*
-    "dnase": {
-	title: "Intersecting DNases",
-	cols: [
-	    {title: "mark", data: "name"},
-	    {title: "# experiments", data: "n",
+	     render: Render.integerLink("histone") },
+	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
 	bFilter: true,
 	order: [[1, "desc"]]
-    } */
+    }
 });

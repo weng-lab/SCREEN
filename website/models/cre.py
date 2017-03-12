@@ -124,5 +124,5 @@ class CRE:
     def peakIntersectCount(self):
         coord = self.coord()
         if not self.intersectCounts:
-            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom)
+            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom, self.cache.tfHistCounts)
         return self.intersectCounts
