@@ -64,7 +64,7 @@ namespace bib {
       if("hg19" == ZiARG_assembly){
           tads_ = gd.tads();
           gd.loadSignals(paths.raw_ / "rampage-list.txt",
-                         rampage_files_, 4);
+                         rampage_files_, 4, 2);
       }
 
       allGenes_ = gd.allGenes();

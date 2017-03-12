@@ -163,7 +163,7 @@ public:
 
     template <typename V>
     void loadSignals(const bfs::path& listFnp, std::vector<V>& ret,
-                     const uint32_t numCols){
+                     const uint32_t numCols, const uint32_t dataColNum = 1){
         std::vector<bfs::path> fnps = getFnps(listFnp, numCols);
         ret.resize(fnps.size());
 
@@ -183,7 +183,7 @@ public:
                     std::cerr << "too many toks for " << fnp << std::endl;
                     throw std::runtime_error("too many toks");
                 }
-                sf.setSignalLine(toks);
+                sf.setSignalLine(toks, dataColNum);
             }
             ret[i] = std::move(sf);
         }
