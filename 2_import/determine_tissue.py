@@ -1,5 +1,12 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
 import os
+import sys
 import json
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+from utils import Utils, eprint, AddPath
 
 class DetermineTissue:
     # translate tissue name to tissue name
