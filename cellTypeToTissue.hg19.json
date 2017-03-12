@@ -793,5 +793,20 @@
 "esophagus muscularis mucosa" : "esophagus",
 "mid-neurogenesis radial glial cells" : "brain",
 "cerebellar cortex" : "brain",
-"iPS-18a" : "iPSC"
+"iPS-18a" : "iPSC",
+"bronchus fibroblast of lung" : "lung",
+"camera-type eye" : "eye",
+"cardiac atrium fibroblast" : "heart",
+"cardiac ventricle fibroblast" : "heart",
+"cerebellum" : "brain",
+"diencephalon" : "brain",
+"endometrial microvascular endothelial cells" : "uterus",
+"epithelial cell of alveolus of lung" : "lung",
+"frontal cortex" : "brain",
+"hair follicular keratinocyte" : "hair",
+"lower leg skin" : "skin",
+"mammary microvascular endothelial cell" : "breast",
+"metanephros" : "kidney",
+"right atrium auricular region" : "heart",
+"upper lobe of left lung" : "lung"
 }
