@@ -380,19 +380,20 @@ ORDER BY similarity DESC LIMIT 10
         return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
                 for r in rr]
 
-    def peakIntersectCount(self, accession, chrom):
+    def peakIntersectCount(self, accession, chrom, totals):
         tableName = self.assembly + "_" + "peakIntersections"
         with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
             curs.execute("""
-SELECT tf, histone, dnase
+SELECT tf, histone
 FROM {tn}
 WHERE accession = %s
 """.format(tn = tableName), (accession,))
             r = curs.fetchone()
-        tfs = [{"name" : k, "n" : len(set(v))} for k,v in r[0].iteritems()]
-        histones = [{"name" : k, "n" : len(set(v))} for k,v in r[1].iteritems()]
-        dnases = [{"name" : k, "n" : len(set(v))} for k,v in r[2].iteritems()]
-        return {"tf" : tfs, "histone" : histones, "dnase" : dnases}
+        tfs = [{"name" : k, "n" : len(set(v)), "total" : totals[k]}
+               for k,v in r[0].iteritems()]
+        histones = [{"name" : k, "n" : len(set(v)), "total" : totals[k]}
+                    for k,v in r[1].iteritems()]
+        return {"tf" : tfs, "histone" : histones}
 
     def tfHistoneDnaseList(self):
         tableName = self.assembly + "_peakIntersectionsMetadata"
@@ -684,3 +685,12 @@ ORDER BY 1
                         "link": r[3]}
                 for r in rows}
 
+    def tfHistCounts(self):
+        with getcursor(self.pg.DBCONN, "tfHistCounts") as curs:
+            curs.execute("""
+SELECT COUNT(label), label
+FROM {assembly}_peakintersectionsmetadata
+GROUP BY label
+            """.format(assembly = self.assembly))
+            rows = curs.fetchall()
+        return {r[1] : r[0] for r in rows}
