@@ -28,14 +28,22 @@ class PGcreTable:
         self.ctmap = ctmap
         self.ctsTable = ctsTable
 
-    def _creTableCart(self, j, chrom, start, stop):
+    def _getAccessions(self, j, chrom, start, stop):
         accs = j.get("accessions", [])
 
         if not accs or 0 == len(accs):
             return None, None
 
+        ct = j.get("cellType", None)
+
         fields = []
         whereclauses = []
+
+        if ct in self.ctsTable:
+            fields.append("cre.creGroupsSpecific[%s] AS cts" %
+                          self.ctsTable[ct])
+        else:
+            fields.append("0::int AS cts")
 
         if accs and len(accs) > 0:
             if type(accs[0]) is dict:
@@ -146,7 +154,7 @@ class PGcreTable:
     def creTable(self, j, chrom, start, stop):
         tableName = self.assembly + "_cre_all"
 
-        fields, whereclause = self._creTableCart(j, chrom, start, stop)
+        fields, whereclause = self._getAccessions(j, chrom, start, stop)
         if not fields:
             fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
 
