@@ -166,7 +166,7 @@ WHERE accession = %s
 
     def _getGenes(self, accession, chrom, curs, allOrPc):
         curs.execute("""
-SELECT gi.approved_symbol, g.distance
+SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver
 FROM
 (SELECT UNNEST(gene_{allOrPc}_id) geneid,
 UNNEST(gene_{allOrPc}_distance) distance
@@ -621,6 +621,33 @@ ORDER BY tss
         with getcursor(self.pg.DBCONN, "pg::genesInRegion",
                        cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute(q, (coord.chrom, coord.start, coord.end))
+            rows = curs.fetchall()
+        ret = []
+        for r in rows:
+            dr = r._asdict()
+            nr = {"data" : {}}
+            for k, v in dr.iteritems():
+                if k.startswith("encs"):
+                    if 0 != v:
+                        nr["data"][k] = v
+                    continue
+                nr[k] = v
+            if not nr["data"]:
+                continue
+            ret.append(nr)
+        return ret
+
+    def rampageByGene(self, ensemblid_ver):
+        q = """
+SELECT *
+FROM {tn}
+WHERE ensemblid_ver = %s
+ORDER BY tss
+""".format(tn = self.assembly + "_rampage")
+
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute(q, (ensemblid_ver, ))
             rows = curs.fetchall()
         ret = []
         for r in rows:

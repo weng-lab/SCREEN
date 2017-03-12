@@ -149,11 +149,7 @@ class DataWebService:
     def _re_detail_ge(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyGenes()
-        nearest = {"distance": 1e12}
-        for gene in nearbyGenes[0:]:
-            # FIXME: why remove ENSG?
-            if gene["distance"] < nearest["distance"] and not gene["name"].startswith("ENSG"):
-                nearest = gene
+        nearest = min(nearbyGenes, key = lambda x: x["distance"])
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
         cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
@@ -164,15 +160,20 @@ class DataWebService:
 
     def _re_detail_rampage(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
+        nearbyGenes = cre.nearbyGenes()
+        nearest = min(nearbyGenes, key = lambda x: x["distance"])
+        cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
         rampage = Rampage(self.assembly, self.pgSearch)
-        tsss = rampage.get(cre.coord())
+        tsss = rampage.getByGene(nearest)
         if not tsss:
             return {accession: {"sortedKeys" : [],
-                                "tsss" : []}}
+                                "tsss" : [],
+                                "gene" : ""}}
         sortedKeys = sorted(tsss.keys())
         return {accession: {"sortedKeys" : sortedKeys,
-                            "tsss" : tsss}}
+                            "tsss" : tsss,
+                            "gene" : nearest}}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = Config.minipeaks_nbins
