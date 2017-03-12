@@ -246,17 +246,57 @@ export const creGroupIcon = (creGroup) => {
     // H3K4me3 red FF0000
     // CTCF blue 00B0F0
 
-    let lookupAssay = {1 : "CTCF",
-                       2 : "H3K27ac",
-                       3 : "H3K4me3"};
     let lookupTitle = {1 : "CTCF-only",
                        2 : "Enhancer-like",
                        3 : "Promoter-like"};
     let lookupColor = {1 : "#00B0F0",
 		       2 : "#FFCD00",
 		       3 : "#FF0000"}
-        
-    let assays = [lookupAssay[creGroup]];
+
+    let w = 18;
+    let fw = w + 2;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fw}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={fw}>
+	        <g>
+                    {border()}
+                    {rect(1, 1, lookupColor[creGroup])}
+  		</g>
+	    </svg>
+	</span>);
+    let title = lookupTitle[creGroup];
+    let c = ReactDOMServer.renderToStaticMarkup(e);
+    return popup(title, c);
+}
+
+export const ctsGroupIcon = (creGroup) => {
+    // DNase green 06DA93
+    // H3K27ac yellow FFCD00
+    // H3K4me3 red FF0000
+    // CTCF blue 00B0F0
+
+    // E (enhancer), P (promoter), C (ctcf), D (dnase),
+
+    let lookupTitle = {'C' : "CTCF-only",
+                       'E' : "Enhancer-like",
+                       'P' : "Promoter-like",
+                       'D' : "DNase",
+                       'I' : "Inactive",
+                       'U' : "Unclassified" };
+    let lookupColor = {'C' : "#00B0F0",
+		       'E' : "#FFCD00",
+		       'P' : "#FF0000",
+                       'D' : "#06DA93",
+                       'I' : "#e1e1e1",
+                       'U' : "#8c8c8c"}
     let w = 18;
     let fw = w + 2;
     let rect = (x, y, color) => (

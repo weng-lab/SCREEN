@@ -28,7 +28,8 @@ class ResultsTable extends React.Component {
 	this._datatable.clear().rows.add(this.props.data).draw();
         if (this.props.cvisible) {
 	    Object.keys(this.props.cvisible).map((k) => {
-		this._datatable.column(k + ":name").visible(this.props.cvisible[k]);
+                let isVis = this.props.cvisible[k];
+		this._datatable.column(k + ":name").visible(isVis);
 	    });
 	}
     }
@@ -40,7 +41,7 @@ class ResultsTable extends React.Component {
 	if(this.props.buttonsOff){
 	    buttons = [];
 	}
-	    
+
 	var _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
@@ -75,18 +76,23 @@ class ResultsTable extends React.Component {
 		}
 	    })
             .on('draw.dt', function () {
-                $('[data-toggle="tooltip"]').tooltip(
-                    {delay: { show: 100, hide: 3000 },
-                     placement: 'top'
-                    }
-                );
-                $('[data-toggle="tooltip"]').on('click', function(e){
-                    // nuke tooltip if content clicked
-                    $(this).tooltip('destroy');
-                });
             })
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
+
+	$('.rtTooltipIcon').each(function (idx, e) {
+	    let tt = $('#' + $(this).data('tip')).html();
+	    $(e).tooltip(
+		{delay: { show: 100, hide: 3000 },
+		 placement: 'top',
+		 html: true,
+		 title: () => {console.log("h!", tt); return tt}
+		});
+            $(e).on('click', function(e){
+		// nuke tooltip if content clicked
+		$(this).tooltip('destroy');
+	    });
+	});
 
 	this._datatable = _datatable;
     }
