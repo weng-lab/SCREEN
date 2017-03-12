@@ -47,7 +47,6 @@ class ParseSearch:
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
-            # TODO: precompile re
             r = re_coord1.search(x)
             if r:
                 p = r.group(0).replace("-", " ").replace(":", " ").replace(",", "").replace(".", "").split()
@@ -109,6 +108,8 @@ class ParseSearch:
         try:
             for t in toks:
                 if isaccession(t):
+                    if not checkCreAssembly(self.assembly, t):
+                        raise Exception("mismatch assembly for accession " + t)
                     accessions.append(t)
                     s = s.replace(t, "")
                     continue
