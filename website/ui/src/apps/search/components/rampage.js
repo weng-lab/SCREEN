@@ -63,8 +63,6 @@ class Rampage extends React.Component {
 		    </div>
 		</div>
 
-
-
 		<div ref="container" style={{width: this.props.width + "px"}}>
                 </div>
 	    </div>);
@@ -159,9 +157,7 @@ class Rampage extends React.Component {
 		return "<strong>" + d["cellType"] + "</strong>"+
 		    "<div>" + d["tissue"] + "</div>" +
 		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>" +
-		    "<div>" + "replicate: " +d["rep"] + "</div>" +
-		    "<div>" + "TPM: " + d["rawTPM"] + "</div>" +
-		    "<div>" + "FPKM: " + d["rawFPKM"] + "</div>";
+		    "<div>" + "replicate: " +d["rep"] + "</div>";
 	    })
 
 	for (var i in sorted_keys) {
