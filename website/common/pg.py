@@ -261,11 +261,7 @@ ORDER BY 2
            tads = self.assembly + "_tads")
             curs.execute(q, (start, chrom, accession, start))
             rows = curs.fetchall()
-        frows = []
-        for r in rows:
-            if accession == r[0]:
-                continue
-            frows.append(r)
+        frows = filter(lambda x: x[0] != accession, rows)
         return [{"accession" : r[0], "distance" : r[1]} for r in frows]
 
     def genesInTad(self, accession, chrom):
