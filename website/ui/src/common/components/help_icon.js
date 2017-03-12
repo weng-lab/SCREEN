@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 
+import {brJoin} from '../utility'
+
 export const HelpIconActual = (helpkey, color = "#0000EE") => {
     let data = Globals.helpKeys[helpkey];
     let title = data.title;
@@ -27,10 +29,7 @@ class HelpIcon extends React.Component {
 	let color = (this.props.color ? this.props.color : "#0000EE");
         let data = Globals.helpKeys[this.props.helpkey];
         let title = data.title;
-        let content = data.summary
-		          .replace(/\n\n/g, "<br>")
-		          .replace(/\n/g, "<br>")
-		          .replace(/  /g, "");
+        let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
 
 	return (
             <span ref="pspan" style={{fontSize: "14pt"}}>
