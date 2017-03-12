@@ -67,10 +67,10 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "cREs Within TAD": "creswithintad",
           "GWAS Studies Facet": "gwasstudies",
           "GWAS Cell Types Facet": "gwascelltypes",
-          "GWAS Study Table": "gwasstudytable",
           "GWAS Results Table": "gwasresults",
           "DE cRE Table": "decres",
           "DE Gene Table": "degenetable",
+          "DifferentialGeneMouse" : "DifferentialGeneMouse",
           "CellTypeAgnosticClassification" : "CellTypeAgnosticClassification",
           "CellTypeSpecificClassification" : "CellTypeSpecificClassification"}
 
