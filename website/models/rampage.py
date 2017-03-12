@@ -21,8 +21,8 @@ class Rampage:
             expID = expID.upper()
             ee[expID] = {
                 "color" : "#880000",
-                "displayName" : ri[expID]["btn"],
-                "items" : [{"tissue": ri[expID]["bs"],
+                "displayName" : ri[expID]["tissue"],
+                "items" : [{"tissue": ri[expID]["tissue"],
                             "cellType": ri[expID]["btn"],
                             "rep": 1,
                             "counts" : v,
