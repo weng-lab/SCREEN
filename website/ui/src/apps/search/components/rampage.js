@@ -37,7 +37,7 @@ class Rampage extends React.Component {
                 <div className="container">
 		    <div className="row">
 
-		        <div className="col-md-3">
+		        <div className="col-md-4">
 		            TSS:&nbsp;
 		            <select ref="tss" defaultValue={tsses[0]}
 		                    onChange={() => {this.componentDidUpdate()}}>
@@ -53,7 +53,7 @@ class Rampage extends React.Component {
 		            </select>
 		        </div>
 
-		        <div className="col-md-3">
+		        <div className="col-md-3 hidden" >
 		            Data:&nbsp;
 		            <select ref="datascale" defaultValue={"counts"}
 		                    onChange={() => {this.componentDidUpdate()}}>
