@@ -25,14 +25,37 @@ class TabAbout extends React.Component {
                     <div className="col-md-6">
                         <br />
                         {Para.intro()}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
 		        <h3>The Registry of candidate Regulatory Elements</h3>
 		        {Para.registry1()}
-		        {Para.registry2()}
+                    </div>
+                    <div className="col-md-6">
+                        {Para.figure(2, "genome browser")}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
+                        {Para.registry2()}
 		        {Para.registry3()}
 		        {Para.registry4()}
 		        {Para.registry5()}
+                    </div>
+                    <div className="col-md-6">
+                        {Para.figure(3, "flowchart")}
+                        {Para.figure(4, "pie chart")}
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
 		        <h3>Annotating candidate Regulatory Elements</h3>
 		        <h4>Genomic Context</h4>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
 		        {Para.genomicContext()}
 		        <h4>Other Histone Modifications and Transcription Factor Occupancy</h4>
 		        {Para.occupancy1()}
@@ -47,9 +70,6 @@ class TabAbout extends React.Component {
                         {Para.citation()}
                     </div>
                     <div className="col-md-6">
-                        {Para.figure(2, "genome browser")}
-                        {Para.figure(3, "flowchart")}
-                        {Para.figure(4, "pie chart")}
                         {Para.figure(6, "pie chart 2")}
                     </div>
 	        </div>

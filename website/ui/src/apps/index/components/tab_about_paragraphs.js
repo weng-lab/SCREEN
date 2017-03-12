@@ -5,7 +5,7 @@ export const intro = () => (
 
 export const registry1 = () => (
     <p>
-        The cREs in the Registry are the subset of representative DNase hypersensitivity sites (rDHSs) that are supported by histone modification (H3K4me3 and H3K27ac) and CTCF-binding data. We started with the DHSs called from 449 DNase-seq experiments in humans and 62 experiments in mouse using the <a href="https://www.encodeproject.org/search/?type=Experiment&internal_tags=ENCYCLOPEDIAv4&assay_slims=DNA+accessibility&assembly=hg19&files.file_type=bed+broadPeak">Hotspot2</a> algorithm (the algorithm was created by the Stam lab and run by the ENCODE data coordination center) and created the list of rDHSs using <a href="https://www.ncbi.nlm.nih.gov/pubmed/22576172">Bedops</a> and a custom script by Robert Thurman in John Stam&#39;s lab (<a href="https://github.com/Jill-Moore/ENCODE3/blob/master/Registry-of-cREs/Create-cREs.sh">gitHub</a>). We started from the initial ~73M DHSs in human and ~13.8M DHSs in mouse at FDR 5% (<b>Figure 2</b>), and only kept the DHSs that passed the false discovery rate (FDR) threshold of 0.1%. We iteratively clustered DHSs across all experiments and selected the DHS with the highest signal (i.e., highest Z-score). This process continued until it finally resulted in a list of non-overlapping rDHSs representing all DHSs (<b>Figure 1</b>). This pipeline resulted in 2,115,300 rDHSs in human and 1,036,226 rDHSs in mouse.
+        The cREs in the Registry are the subset of representative DNase hypersensitivity sites (rDHSs) that are supported by histone modification (H3K4me3 and H3K27ac) and CTCF-binding data. We started with the DHSs called from 449 DNase-seq experiments in humans and 62 experiments in mouse using the <a href="https://www.encodeproject.org/search/?type=Experiment&internal_tags=ENCYCLOPEDIAv4&assay_slims=DNA+accessibility&assembly=hg19&files.file_type=bed+broadPeak" target="_blank">Hotspot2</a> algorithm (the algorithm was created by the Stam lab and run by the ENCODE data coordination center) and created the list of rDHSs using <a href="https://www.ncbi.nlm.nih.gov/pubmed/22576172" target="_blank">Bedops</a> and a custom script by Robert Thurman in John Stam&#39;s lab (<a href="https://github.com/Jill-Moore/ENCODE3/blob/master/Registry-of-cREs/Create-cREs.sh" target="_blank">gitHub</a>). We started from the initial ~73M DHSs in human and ~13.8M DHSs in mouse at FDR 5% (<b>Figure 2</b>), and only kept the DHSs that passed the false discovery rate (FDR) threshold of 0.1%. We iteratively clustered DHSs across all experiments and selected the DHS with the highest signal (i.e., highest Z-score). This process continued until it finally resulted in a list of non-overlapping rDHSs representing all DHSs (<b>Figure 1</b>). This pipeline resulted in 2,115,300 rDHSs in human and 1,036,226 rDHSs in mouse.
     </p>);
 
 export const registry2 = () => (
@@ -30,7 +30,7 @@ export const registry5 = () => (
 
 export const genomicContext = () => (
     <p>
-        Judged by GENCODE V19 annotations, 18.5% of cREs are proximal (&plusmn;2Kb) to annotated GENCODE transcription start sites (TSSs) while the majority of cREs are distal from TSSs and lie in introns or intergenic regions. We annotated each cRE with genomic information including nearby genes and their expression levels, single nucleotide polymorphisms (SNPs), and element within the same topologically associated domains (TADs). These annotations can be found for each cRE on the <i>Nearby Genomic Features</i> tab.
+        Judged by GENCODE V19 annotations, 18.5% of cREs (<b>Figure 6</b>) are proximal (&plusmn;2Kb) to annotated GENCODE transcription start sites (TSSs) while the majority of cREs are distal from TSSs and lie in introns or intergenic regions. We annotated each cRE with genomic information including nearby genes and their expression levels, single nucleotide polymorphisms (SNPs), and element within the same topologically associated domains (TADs). These annotations can be found for each cRE on the <i>Nearby Genomic Features</i> tab.
     </p>)
 
 export const occupancy1 = () => (
@@ -40,7 +40,7 @@ export const occupancy1 = () => (
 
 export const gwas1 = () => (
     <div>
-        <p>Using the <a href="https://www.ebi.ac.uk/gwas/">NHGRI-EBI GWAS Catalog</a>, we selected studies with the following requirements:
+        <p>Using the <a href="https://www.ebi.ac.uk/gwas/" target="_blank">NHGRI-EBI GWAS Catalog</a>, we selected studies with the following requirements:
         </p>
         <ul>
             <li>Study must be performed on single population, because mixed populations complicate linkage disequilibrium (LD) structures.
@@ -56,7 +56,7 @@ export const gwas1 = () => (
 export const gwas2 = () => (
     <div>
         <p>
-For each study, we created a control set of SNPs accounting for minor allele frequencies (in CEU population) and distance from transcription start sites (TSS) using SNPs from SNP-Chip arrays. This method was adapted and modified from the <a href="https://github.com/robertkleinlab/uesEnrichment">Uncovering Enrichment through Simulation (UES)</a> method developed by the Klein Lab (Hayes <i>et al.</i> 2015). For each GWAS tagged SNP we generated 100 matched controls. For both GWAS SNPs and control SNPs we also included all SNPs in LD with them (default r<sup>2</sup> ;&gt; 0.7).
+For each study, we created a control set of SNPs accounting for minor allele frequencies (in CEU population) and distance from transcription start sites (TSS) using SNPs from SNP-Chip arrays. This method was adapted and modified from the <a href="https://github.com/robertkleinlab/uesEnrichment" target="_blank">Uncovering Enrichment through Simulation (UES)</a> method developed by the Klein Lab (Hayes <i>et al.</i> 2015). For each GWAS tagged SNP we generated 100 matched controls. For both GWAS SNPs and control SNPs we also included all SNPs in LD with them (default r<sup>2</sup> ;&gt; 0.7).
         </p>
 
         <p>
@@ -72,16 +72,18 @@ export const citation = () => (
 
 export const figure = (num, alt, style = {}) => {
     return (
-        <div>
-            <figure className={"figure"}>
-	        <img src={"/static/about/images/figure" + num + ".png"}
-                     className={"figure-img img-fluid rounded img-responsive"}
-                     alt={alt}
-	             style={style}
-                />
-                <figcaption className={"figure-caption"}>
-                    Figure {num}
-                </figcaption>
-            </figure>
-    </div>);
+        <div className={"panel panel-default"}>
+            <div class="panel-body">
+                <figure className={"figure"}>
+	            <img src={"/static/about/images/figure" + num + ".png"}
+                         className={"figure-img img-fluid rounded img-responsive"}
+                         alt={alt}
+	                 style={style}
+                    />
+                    <figcaption className={"figure-caption"}>
+                        <b>Figure {num}</b>
+                    </figcaption>
+                </figure>
+            </div>
+        </div>);
 }
