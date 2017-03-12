@@ -58,7 +58,9 @@ class CachedObjects:
         self.geneIDsToApprovedSymbol = self.pgSearch.geneIDsToApprovedSymbol()
 
         self.help_keys = self.pgSearch.getHelpKeys()
-        
+
+        self.tfHistCounts = self.pgSearch.tfHistCounts()
+
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
