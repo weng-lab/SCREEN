@@ -91,6 +91,8 @@ class PGcreTable:
             if ct in self.ctsTable:
                 fields.append("cre.creGroupsSpecific[%s] AS cts" %
                               self.ctsTable[ct])
+            else:
+                fields.append("0::int AS cts")
 
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3"),
@@ -120,6 +122,8 @@ class PGcreTable:
                                 ["cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]),
                                  "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1])] ))
         else:
+            fields.append("0::int AS cts")
+
             allmap = {"dnase": "dnase_max",
                       "promoter": "h3k4me3_max",
                       "enhancer": "h3k27ac_max",
