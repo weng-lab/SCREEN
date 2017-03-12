@@ -12,18 +12,18 @@ namespace bib {
     SignalFile(const bfs::path fnp)
       : fnp_(fnp)
     {}
-    
+
     std::unordered_map<std::string, float> lines_;
 
     void reserve(size_t s){
       lines_.reserve(s);
     }
 
-    inline void setSignalLine(const auto& toks){
+    inline void setSignalLine(const auto& toks, const uint32_t dataColNum){
       if(2 > toks.size()){
-	throw std::runtime_error("wrong num toks");
+          throw std::runtime_error("wrong num toks");
       }
-      lines_[toks[0]] = std::stof(toks[1]);
+      lines_[toks[0]] = std::stof(toks[dataColNum]);
     }
   };
 
