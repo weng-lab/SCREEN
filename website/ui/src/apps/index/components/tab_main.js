@@ -106,7 +106,7 @@ class TabMain extends React.Component {
     logo(){
 	return (<img
                     className={"img-responsive mainLogo"}
-                    src={"/static/encode/classic-image2.jpg"}
+                    src={"/static/encode/classic-image3.jpg"}
                     alt={"ENCODE logo"} />);
     }
 
@@ -115,7 +115,7 @@ class TabMain extends React.Component {
 	    this.searchHg19();
 	}
     }
-    
+
     searchBox(){
 	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
