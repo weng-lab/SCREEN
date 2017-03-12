@@ -30,18 +30,16 @@ class PGcreTable:
 
     def _getAccessions(self, j, chrom, start, stop):
         accs = j.get("accessions", [])
-
         if not accs or 0 == len(accs):
             return None, None
-
-        ct = j.get("cellType", None)
 
         fields = []
         whereclauses = []
 
+        ct = j.get("cellType", None)
         if ct in self.ctsTable:
             fields.append("cre.creGroupsSpecific[%s] AS cts" %
-                          self.ctsTable[ct])
+                              self.ctsTable[ct])
         else:
             fields.append("0::int AS cts")
 
@@ -74,6 +72,7 @@ class PGcreTable:
         return (fields, whereclause)
 
     def _creTableWhereClause(self, j, chrom, start, stop):
+        fields = []
         whereclauses = []
 
         if 0:
@@ -88,20 +87,17 @@ class PGcreTable:
         """
 
         ct = j.get("cellType", None)
-        fields = []
-        whereclauses = []
+        if ct in self.ctsTable:
+            fields.append("cre.creGroupsSpecific[%s] AS cts" %
+                              self.ctsTable[ct])
+        else:
+            fields.append("0::int AS cts")
 
         if chrom and start and stop:
             whereclauses += ["cre.chrom = '%s'" % chrom,
                              "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
 
         if ct:
-            if ct in self.ctsTable:
-                fields.append("cre.creGroupsSpecific[%s] AS cts" %
-                              self.ctsTable[ct])
-            else:
-                fields.append("0::int AS cts")
-
             for assay in [("dnase", "dnase"),
                           ("promoter", "h3k4me3"),
                           ("enhancer", "h3k27ac"),
@@ -130,8 +126,6 @@ class PGcreTable:
                                 ["cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]),
                                  "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1])] ))
         else:
-            fields.append("0::int AS cts")
-
             allmap = {"dnase": "dnase_max",
                       "promoter": "h3k4me3_max",
                       "enhancer": "h3k27ac_max",
