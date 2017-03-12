@@ -10,7 +10,6 @@ from models.cre import CRE
 from models.cre_download import CREdownload
 from models.rampage import Rampage
 from models.minipeaks import MiniPeaks
-from models.expression_matrix import ExpressionMatrix
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.cytoband import Cytoband
