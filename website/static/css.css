@@ -491,10 +491,10 @@ div.dataTables_wrapper div.dataTables_paginate {
     padding-left: 0px;
     padding-bottom: 0px;
 }
- 
+
 .detailsTabTitle {
     padding: 0px;
-    font-size: 10pt;    
+    font-size: 10pt;
 }
 
 .detailsTabTitle a {
@@ -502,6 +502,14 @@ div.dataTables_wrapper div.dataTables_paginate {
 }
 
 /* tool tips */
+.popover-div {
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    display: none;
+    max-width: 500px;
+}
+
 .popover-title {
     color: "#000000";
 }
