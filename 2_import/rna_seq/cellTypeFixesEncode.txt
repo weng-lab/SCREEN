@@ -53,3 +53,13 @@ uterine smooth muscle cell,uterus
 uterus,uterus
 vagina,vagina
 cardiac muscle cell,heart
+CH12.LX,blood
+CMP,blood
+G1E,ESC
+G1E-ER4,ESC
+MEP,HSC
+embryonic facial prominence,embryonic facial prominence
+hematopoietic stem cell,HSC
+intestine,intestine
+limb,limb
+neural tube,brain
