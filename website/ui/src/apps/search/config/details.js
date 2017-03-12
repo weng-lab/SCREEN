@@ -5,7 +5,7 @@ import BarGraphTable from '../components/bar_graph_table'
 
 import GeneExp from '../../geneexp/components/gene_exp'
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
-import HorizontalBars from '../components/horizontal_bars'
+import Rampage from '../components/rampage'
 import MiniPeaks from '../components/minipeaks'
 
 import HelpIcon from '../../../common/components/help_icon'
@@ -242,54 +242,13 @@ class RampageTab extends ReTabBase{
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
 
-            let pills = (
-                <ul className={"nav nav-pills nav-stacked col-md-3"}>
-                    {sortedKeys.map((tss) => {
-                         let d = data[tss];
-                         return (
-                             <li className={d["tab_active"]}>
-                                 <a href={"#" + d["tss_sane"]}
-                                    data-toggle={"pill"}>{tss}
-                                 </a>
-                             </li>);
-                     })}
-                </ul>);
-
-            let content = (
-                <div className={"tab-content col-md-9"}>
-                    {sortedKeys.map((tss) => {
-                         let d = data[tss];
-                         let title = (
-                             <div className={"container-fluid"}
-                                  style={{"width": "100%"}} >
-                                 <div className={"row"}>
-                                     <div className={"col-md-3"}>
-                                         <span>{d.tss}</span>
-                                     </div>
-                                     <div className={"col-md-3"}>
-                                         <span><em>{d.gene}</em></span>
-                                     </div>
-                                     <div className={"col-md-3"}>
-                                         <span>{d.chrom}:{d.start}-{d.stop}</span>
-                                     </div>
-                                 </div>
-                             </div>);
-                         return (
-                             <div className={"tab-pane " + d["tab_active"]}
-                                  id={d["tss_sane"]}>
-		            {title}
-		                 {React.createElement(HorizontalBars,
-                                                      {...d, width: 800,
-                                                       barheight: "15"})}
-                             </div>);
-                     })}
-                </div>);
-
             return (
                 <div className={"container"} style={{paddingTop: "10px"}}>
-                {pills}
-                {content}
-        </div>);
+		    {React.createElement(Rampage,
+                                         {keysAndData,
+                                          width: 800,
+                                          barheight: "15"})}
+                </div>);
         }
     }
 }
