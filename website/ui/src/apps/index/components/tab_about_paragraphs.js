@@ -56,7 +56,7 @@ export const gwas1 = () => (
 export const gwas2 = () => (
     <div>
         <p>
-For each study, we created a control set of SNPs accounting for minor allele frequencies (in CEU population) and distance from transcription start sites (TSS) using SNPs from SNP-Chip arrays. This method was adapted and modified from the <a href="https://github.com/robertkleinlab/uesEnrichment" target="_blank">Uncovering Enrichment through Simulation (UES)</a> method developed by the Klein Lab (Hayes <i>et al.</i> 2015). For each GWAS tagged SNP we generated 100 matched controls. For both GWAS SNPs and control SNPs we also included all SNPs in LD with them (default r<sup>2</sup> ;&gt; 0.7).
+For each study, we created a control set of SNPs accounting for minor allele frequencies (in CEU population) and distance from transcription start sites (TSS) using SNPs from SNP-Chip arrays. This method was adapted and modified from the <a href="https://github.com/robertkleinlab/uesEnrichment" target="_blank">Uncovering Enrichment through Simulation (UES)</a> method developed by the Klein Lab (Hayes <i>et al.</i> 2015). For each GWAS tagged SNP we generated 100 matched controls. For both GWAS SNPs and control SNPs we also included all SNPs in LD with them (default r<sup>2</sup> &gt; 0.7).
         </p>
 
         <p>
