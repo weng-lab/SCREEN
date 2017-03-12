@@ -90,7 +90,8 @@ CREATE TABLE {tn}
 expID text,
 biosample_term_name text,
 biosample_type text,
-biosample_summary text
+biosample_summary text,
+tissue text
     ) """.format(tn = tableName))
 
     outF = StringIO.StringIO()
