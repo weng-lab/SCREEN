@@ -611,7 +611,8 @@ ORDER BY biosample_term_name
 
     def rampage(self, coord):
         q = """
-select * from {tn}
+SELECT *
+FROM {tn}
 WHERE chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
 ORDER BY tss
@@ -638,7 +639,7 @@ ORDER BY tss
 
     def rampage_info(self):
         q = """
-SELECT expid, biosample_summary, biosample_term_name
+SELECT expid, biosample_summary, biosample_term_name, tissue
 FROM {tn}
 """.format(tn = self.assembly + "_rampage_info")
 
@@ -648,7 +649,8 @@ FROM {tn}
         ret = {}
         for r in rows:
             ret[r[0]] = {"bs" : r[1],
-                         "btn" : r[2]}
+                         "btn" : r[2],
+                         "tissue" : r[3]}
         return ret
 
     def geBiosampleTypes(self):
