@@ -112,7 +112,7 @@ class DE:
                     max([d[1] for d in nearbyDEs])]
         center = float(cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0]
         halfWindow = max(self.halfWindow, (cxdomain[1] - cxdomain[0]) / 2.0)
-        
+
         # widen each side
         xdomain = [max(0, center - halfWindow),
                    center + halfWindow]
