@@ -12,6 +12,12 @@ const TableColumns = () => {
     let ctsHelp = HelpIconActual("CellTypeSpecificClassification");
     ctsHelp = "CTS<br />" + ReactDOMServer.renderToStaticMarkup(ctsHelp);
 
+    let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
+    if("mm10" == GlobalAssembly){
+        geneHelp += ReactDOMServer.renderToStaticMarkup(
+            HelpIconActual("DifferentialGeneMouse"));
+    }
+
     return [
 	{
 	    title: "accession", data: "accession", className: klassCenter,
@@ -47,7 +53,7 @@ const TableColumns = () => {
 	    title: "length", data: "len", className: klassCenter,
             render: Render.integer
 	}, {
-            title: "nearest genes:<br />protein-coding / all", data: "genesallpc",
+            title: geneHelp, data: "genesallpc",
 	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
             orderable: false,
 	}, {
