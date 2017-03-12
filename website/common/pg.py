@@ -261,7 +261,7 @@ ORDER BY 2
            tads = self.assembly + "_tads")
             curs.execute(q, (start, chrom, accession, start))
             rows = curs.fetchall()
-        frows = rows
+        frows = []
         for r in rows:
             if accession == r[0]:
                 continue
