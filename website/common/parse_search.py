@@ -81,7 +81,7 @@ class ParseSearch:
             tssDist = int(self.kwargs["tssDist"])
             useTss = True
         interpretation = {}
-        
+
         ret = {"cellType": None,
                "coord_chrom" : None,
                "coord_start" : None,
@@ -166,7 +166,7 @@ def main():
     queries = ["Actin alpha 1", "HBB"]
     queries = ["HBB"]
     queries = ["Actin alpha 1"]
-    
+
     for q in queries:
         print("***************", q)
         ps = ParseSearch(DBCONN, assembly, {"q" : q})
