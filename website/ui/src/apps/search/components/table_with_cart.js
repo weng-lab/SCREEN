@@ -177,7 +177,7 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    _opposite(a) {
+    _oppositeAssays(a){
 	let r = {"dnase" : true, "promoter": true,
                  "enhancer": true, "ctcf": true};
 	let map = {"DNase-seq": "dnase", "H3K4me3 ChIP-seq": "promoter",
@@ -189,6 +189,18 @@ class TableWithCart extends React.Component {
 	    r[map[a[i]]] = false
 	}
 	return r;
+    }
+
+    _opposite(a, cts) {
+        let r = this._oppositeAssays(a);
+        r["cts"] = false;
+        r["ctsv"] = false;
+        if(cts){
+            for (let e of cts) {
+	        r[e] = true;
+            }
+        }
+        return r;
     }
 
     colorCreGroup(row, data, index){
@@ -216,7 +228,6 @@ class TableWithCart extends React.Component {
 		    <em>For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
 		</li>);
 	}
-
 	var failMsg = "";
 	if(this.props.nodnase && this.props.nodnase.length){
 	    failMsg = (
@@ -232,7 +243,7 @@ class TableWithCart extends React.Component {
 		Candidate Regulatory Elements (cREs) that meet your search criteria:
 		</li>);
 	}
-	
+
 	let cols = (this.props.hasct ? this.props.nodnase :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
@@ -253,7 +264,7 @@ class TableWithCart extends React.Component {
                               cols={TableColumns()}
                               onTdClick={(td, rowdata) =>
                                   table_click_handler(td, rowdata, actions)}
-                              cvisible={this._opposite(cols)}
+                              cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   button_click_handler(td, rowdata, actions)}
                               bFilter={true} bLengthChange={true}

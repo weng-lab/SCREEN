@@ -80,7 +80,7 @@ pgidx integer
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            outF.write('\t'.join([r[0], "{'" + "','".join(r[1:]) + "'}"]) + '\n')
+            outF.write('\t'.join([r[0], "{'" + ",".join(r[1:]) + "'}"]) + '\n')
         outF.seek(0)
         cols = ["rDHS", "creGroupsSpecific"]
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
@@ -89,6 +89,9 @@ pgidx integer
     def _doUpdate(self):
         printt("adding col...")
         self.curs.execute("""
+        ALTER TABLE {tncres}
+        DROP COLUMN IF EXISTS creGroupsSpecific;
+
         ALTER TABLE {tncres}
         ADD COLUMN creGroupsSpecific VARCHAR[];
 

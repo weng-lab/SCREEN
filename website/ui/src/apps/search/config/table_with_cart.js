@@ -1,27 +1,31 @@
 import ReactDOMServer from 'react-dom/server'
+import {HelpIconActual} from '../../../common/components/help_icon'
 
 import * as Render from '../../../common/renders'
 
 const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let ctaHelp ="";
-    ctaHelp = ReactDOMServer.renderToStaticMarkup(ctaHelp);
+    let ctaHelp = HelpIconActual("CellTypeAgnosticClassification");
+    ctaHelp = "CTA<br />" + ReactDOMServer.renderToStaticMarkup(ctaHelp);
+
+    let ctsHelp = HelpIconActual("CellTypeSpecificClassification");
+    ctsHelp = "CTS<br />" + ReactDOMServer.renderToStaticMarkup(ctsHelp);
 
     return [
 	{
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: "ctaHelp", data: "cregroup", className: klassCenter,
+            title: ctaHelp, data: "cregroup", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "", data: "cregroup", visible: false
+            title: "CTA", data: "cregroup", visible: false
 	}, {
-            title: "ctsHelp", data: "cregroup", className: klassCenter,
-	    render: Render.creGroupIcon
+            title: ctsHelp, data: "cts", className: klassCenter,
+	    render: Render.ctsGroupIcon, name: "ctsv"
 	}, {
-            title: "", data: "cregroup", visible: false
+            title: "CTS", data: "cts", visible: false, name: "cts"
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -70,4 +74,5 @@ export const table_order = [
     [5, "asc"]
 ];
 
-export const columnDefs = [{ "orderData": 2, "targets": 1 }]
+export const columnDefs = [{ "orderData": 2, "targets": 1 },
+                           { "orderData": 4, "targets": 3 }]

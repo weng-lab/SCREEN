@@ -17,14 +17,3 @@ from constants import chroms
 class PostgresWrapper:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
-
-    def get_helpkey(self, key):
-        with getcursor(self.DBCONN, "get_helpkey") as curs:
-            curs.execute("""
-SELECT title, summary, link 
-FROM helpkeys
-WHERE key = %(key)s
-""", {"key": key})
-            r = curs.fetchall()
-        return r[0] if r else None
-
