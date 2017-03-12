@@ -4,6 +4,8 @@ from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip
 import StringIO
 
+from determine_tissue import DetermineTissue
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from utils import AddPath, Utils, Timer, printt
@@ -98,15 +100,17 @@ tissue text
 
     for expID in expIDs:
         exp = Exp.fromJsonFile(expID)
+        tissue = DetermineTissue.TranslateTissue(assembly, exp)
         outF.write('\t'.join([expID,
                               exp.biosample_term_name,
                               exp.biosample_type,
-                              exp.getExpJson()["biosample_summary"]
+                              exp.getExpJson()["biosample_summary"],
+                              tissue
                               ]) + '\n')
     outF.seek(0)
 
     cols = ["expID", "biosample_term_name", "biosample_type",
-            "biosample_summary"]
+            "biosample_summary", "tissue"]
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("\tok", curs.rowcount)
 
@@ -128,10 +132,9 @@ def main():
     for assembly in assemblies:
         print('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
+            metadata(curs, assembly)
             doImport(curs, assembly)
             doIndex(curs, assembly)
-            metadata(curs, assembly)
-
     return 0
 
 if __name__ == '__main__':
