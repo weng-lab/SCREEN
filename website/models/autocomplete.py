@@ -1,4 +1,12 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
 import sys, os
+
+sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
+from pg_autocomplete import PGautocomplete
+
 sys.path.append(os.path.join(os.path.realpath(__file__), "../../metadata/utils"))
 from db_utils import getcursor
 
@@ -19,36 +27,23 @@ class AutocompleterWrapper:
         p = q.split(" ")
 
         results = []
-        for i in xrange(len(p)):
-            prefix = " ".join(p[:i])
-            suffix = " ".join(p[i:])
-            results = self.acs["hg19"].get_suggestions(suffix) + self.acs["mm10"].get_suggestions(suffix)
-            if len(results) > 0:
-                results = sorted([prefix + " " + x for x in results])
-                break
-        return [q] + results
+        with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
+            for i in xrange(len(p)):
+                prefix = " ".join(p[:i])
+                suffix = " ".join(p[i:])
+                results = self.acs["hg19"].get_suggestions(curs, suffix) + self.acs["mm10"].get_suggestions(curs, suffix)
+                if len(results) > 0:
+                    results = sorted([prefix + " " + x for x in results])
+                    break
+            return [q] + results
 
 class Autocompleter:
     def __init__(self, ps, assembly):
         self.assembly = assembly
-        self.ps = ps
+        self.pgAutocomplete = PGautocomplete(ps, assembly)
 
-    def get_suggestions(self, q):
+    def get_suggestions(self, curs, q):
         uq = q.lower()
         if not uq:
             return []
-
-        with getcursor(self.ps.DBCONN, "Autocomplete::get_suggestions") as curs:
-            # http://grokbase.com/t/postgresql/psycopg/125w8zab05/how-do-i-use-parameterized-queries-with-like
-            curs.execute("""
-SELECT oname
-FROM {tn}
-WHERE name LIKE %s || '%%'
-LIMIT 5
-            """.format(tn = self.assembly + "_autocomplete"), (uq,))
-            r = curs.fetchall()
-        if not r:
-            print("no results for %s in %s" % (uq, self.assembly))
-            return []
-        return [x[0] for x in r]
-
+        return self.pgAutocomplete(curs, q)
