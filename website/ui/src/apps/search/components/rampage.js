@@ -5,6 +5,7 @@ class Rampage extends React.Component {
 
         let sortedKeys = this.props.keysAndData.sortedKeys;
         let data = this.props.keysAndData.tsss;
+        let gene = this.props.keysAndData.gene;
 
         let tsses = sortedKeys.map((tss) => {
             return data[tss]; });
@@ -18,10 +19,16 @@ class Rampage extends React.Component {
                  style={{"width": "100%"}} >
                 <div className={"row"}>
                     <div className={"col-md-3"}>
-                        <span ref={"titleTss"}>{d.tss}</span>
+                        <span style={{fontSize: "14px",
+                                      fontStyle: "italic"}}>
+                            {gene.name}
+                        </span>
                     </div>
                     <div className={"col-md-3"}>
-                        <span ref={"titleGene"}><em>{d.gene}</em></span>
+                        <span><small>{gene.ensemblid_ver}</small></span>
+                    </div>
+                    <div className={"col-md-3"}>
+                        <span ref={"titleTss"}><small>{d.tss}</small></span>
                     </div>
                     <div className={"col-md-3"}>
                         <span ref={"titleCoord"}>
@@ -33,7 +40,7 @@ class Rampage extends React.Component {
 
 	return (
             <div>
-
+                {title}
                 <div className="container">
 		    <div className="row">
 
@@ -84,6 +91,12 @@ class Rampage extends React.Component {
         let sortedKeys = this.props.keysAndData.sortedKeys;
         let allData = this.props.keysAndData.tsss;
         let tssData = allData[this.refs.tss.value];
+
+        console.log("tssData", tssData);
+
+        this.refs.titleTss.value = tssData["tss"];
+        this.refs.titleCoord.value = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
+
 	var items = tssData.items[this.refs.sortorder.value];
 
 	var sorted_keys = Object.keys(items).sort(function (a, b) {
