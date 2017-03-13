@@ -93,9 +93,6 @@ class CachedObjects:
             "helpKeys" : self.help_keys
         }
 
-    def assayAndCellTypeToExpAndBigWigAccessions(self, assay, ct):
-        return self.assaymap[assay][ct]
-
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
