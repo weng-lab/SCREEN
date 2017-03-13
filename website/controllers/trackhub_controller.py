@@ -9,7 +9,7 @@ import heapq
 import re
 
 from models.cre import CRE
-from models.trackdb import TrackhubDb, UCSC, WASHU, ENSEMBL
+from models.trackhubdb import TrackhubDb, UCSC, WASHU, ENSEMBL
 from common.pg import PGsearch
 from common.db_trackhub import DbTrackhub
 from common.coord import Coord
@@ -58,6 +58,9 @@ class TrackhubController:
 	url += "&position=" + str(coord)
 	url += "&hubClear=" + trackhubUrl;
 
+        if "hg19" == assembly:
+            url += "&g=wgEncodeGencodeV19"
+        
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ucsc_trackhub_url_snp(self, j, uuid):
@@ -80,6 +83,9 @@ class TrackhubController:
 	url += "&position=" + str(c)
 	url += "&hubClear=" + trackhubUrl;
         url += "&highlight=" + assembly + "." + c.chrom + "%3A" + str(snp["snp_start"]) + '-' + str(snp["snp_end"])
+
+        if "hg19" == assembly:
+            url += "&g=wgEncodeGencodeV19"
 
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
