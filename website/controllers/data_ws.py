@@ -18,7 +18,7 @@ from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
 
 from common.pg import PGsearch
-from common.compute_gene_expression import ComputeGeneExpression, Compartments
+from models.gene_expression import GeneExpression
 from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
@@ -152,7 +152,7 @@ class DataWebService:
         nearest = min(nearbyGenes, key = lambda x: x["distance"])
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
-        cge = ComputeGeneExpression(self.ps, self.cache, self.assembly)
+        cge = GeneExpression(self.ps, self.cache, self.assembly)
         name, strand = self.cache.lookupEnsembleGene(nearest["name"])
         r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
         r["genename"] = name
