@@ -148,7 +148,7 @@ class DataWebService:
 
     def _re_detail_ge(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        nearbyGenes = cre.nearbyGenes()
+        nearbyGenes = cre.nearbyPcGenes()
         nearest = min(nearbyGenes, key = lambda x: x["distance"])
         if nearest["distance"] > 5000:
             return { accession : {"no_nearby_tss": True} }
@@ -160,7 +160,7 @@ class DataWebService:
 
     def _re_detail_rampage(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        nearbyGenes = cre.nearbyGenes()
+        nearbyGenes = cre.nearbyPcGenes()
         nearest = min(nearbyGenes, key = lambda x: x["distance"])
         cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
