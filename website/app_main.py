@@ -40,7 +40,7 @@ class MainApp():
         self.sessions = Sessions(ps.DBCONN)
 
     @cherrypy.expose
-    def index(self):
+    def index(self, *args, **kwargs):
         return self.mc.Index()
 
     @cherrypy.expose
