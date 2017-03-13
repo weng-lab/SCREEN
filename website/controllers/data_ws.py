@@ -4,7 +4,6 @@ import os, sys, json
 import time
 import numpy as np
 import cherrypy
-from natsort import natsorted
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -166,15 +165,8 @@ class DataWebService:
         cre = CRE(self.pgSearch, accession, self.cache)
         print("*************", cre.coord())
         rampage = Rampage(self.assembly, self.pgSearch)
-        tsss = rampage.getByGene(nearest)
-        if not tsss:
-            return {accession: {"sortedKeys" : [],
-                                "tsss" : [],
-                                "gene" : ""}}
-        sortedKeys = natsorted(tsss.keys())
-        return {accession: {"sortedKeys" : sortedKeys,
-                            "tsss" : tsss,
-                            "gene" : nearest}}
+        ret = rampage.getByGene(nearest)
+        return {accession: ret}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = Config.minipeaks_nbins
