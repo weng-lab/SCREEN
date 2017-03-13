@@ -235,17 +235,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         #print('\n'.join([str(x) for x in ret]))
         return ret
 
-    def addSignals(self, cre):
-        topTissues = cre.topTissues()
-        for ti in self._getTrackList(topTissues):
-            self.lines += [self.trackhubExp(ti)]
-
     def getLines(self, accessions):
         self.priority = 1
 
         self.lines  = []
         self.lines += [self.mp()]
-        self.lines += [self.phastcons()]
 
         pgSearch = PGsearch(self.ps, self.assembly)
 
@@ -254,7 +248,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
             self.re_pos.append(cre.coord())
 
-        self.addSignals(cre)
+        topTissues = cre.topTissues()
+        for ti in self._getTrackList(topTissues):
+            self.lines += [self.trackhubExp(ti)]
+
+        self.lines += [self.phastcons()]
 
         return filter(lambda x: x, self.lines)
 
