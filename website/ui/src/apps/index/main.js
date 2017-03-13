@@ -35,16 +35,21 @@ class IndexPage extends React.Component {
     render() {
 	// const loggerMiddleware = createLogger();
 
+	let tab = null;
+	if("tab" in this.props.params){
+	    tab = this.props.params.tab;
+	}
+
 	const store = createStore(reducers,
-				  initialState(),
+				  initialState(tab),
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
-
+	
         return (
 	    <Provider store={store}>
-	        <div>
-	            {this.title()}
+	    <div>
+	    {this.title()}
 	            <MainTabs
                         mainDivId={"mainTabs"}
                         tabUlClass={"nav-pills"}/>

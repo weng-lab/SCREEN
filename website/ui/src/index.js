@@ -9,23 +9,16 @@ import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
 
-//import Tf from './apps/tf/main';
-//<Route path="/comparison/:assembly" component={Comparison} />
-//<Route path="/tfApp/:assembly/" component={Tf} />
-//import Comparison from './apps/comparison/main';
-// import CartPage from './apps/cart/main';
-//     <Route path="/cart" component={CartPage} />
-
 function myCreateElement(Component, props) {
     return (<Component {...props} />);
 }
 
-ReactDOM.render(
-    (<Router history={browserHistory} createElement={myCreateElement} >
-     <Route path="/" component={IndexPage} />
-     <Route path="/search(.*)" component={Search} />
-     <Route path="/geApp/:assembly/" component={GeneExp} />
-     <Route path="/deApp/:assembly/" component={De} />
-     <Route path="/gwasApp/:assembly" component={Gwas} />
-     </Router>),
-    document.getElementById('root'));
+ReactDOM.render((
+    <Router history={browserHistory} createElement={myCreateElement} >
+	<Route path="/" component={IndexPage} />
+	<Route path="/index/:tab" component={IndexPage} />
+	<Route path="/search(.*)" component={Search} />
+	<Route path="/geApp/:assembly/" component={GeneExp} />
+	<Route path="/deApp/:assembly/" component={De} />
+	<Route path="/gwasApp/:assembly" component={Gwas} />
+    </Router>), document.getElementById('root'));
