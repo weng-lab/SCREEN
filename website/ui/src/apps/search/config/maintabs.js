@@ -14,7 +14,15 @@ import {isCart} from '../../../common/utility'
 import * as Render from '../../../common/renders'
 
 class ResultsTab extends React.Component{
-    render() { return (<ResultsTableContainer />); }
+    shouldComponentUpdate(nextProps, nextState) {
+       return "results" === nextProps.maintabs_active;
+    }
+    render() {
+       if("results" !== this.props.maintabs_active){
+            return false;
+        }
+        return (<ResultsTableContainer />);
+    }
 }
 
 class TreeTab extends React.Component{
@@ -22,7 +30,15 @@ class TreeTab extends React.Component{
 }
 
 class DetailsTab extends React.Component{
-    render() { return (<DetailsContainer tabs={DetailsTabInfo()} />); }
+    shouldComponentUpdate(nextProps, nextState) {
+       return "details" === nextProps.maintabs_active;
+    }
+    render() {
+       if("details" !== this.props.maintabs_active){
+            return false;
+        }
+        return (<DetailsContainer tabs={DetailsTabInfo()} />);
+    }
 }
 
 class GcompareTab extends React.Component{
