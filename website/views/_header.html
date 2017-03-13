@@ -92,3 +92,9 @@
   </head>
   <body>
 
+{% if Ribbon > "" -%}
+    <div class="mt-element-ribbon" align="center">
+      <div class="ribbon ribbon-right ribbon-shadow ribbon-color-danger uppercase">{{ Ribbon }}
+      </div>
+    </div>
+{% endif -%}
