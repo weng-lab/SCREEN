@@ -205,7 +205,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
                         fileIDs.append(fileID)
-                        ti = TrackInfo(ct, tissue, assay, expID, fileID)
+                        ti = TrackInfo(ct[:50], tissue[:50], assay, expID, fileID)
                         tracks.append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
             fnp = paths.path(self.assembly, "public_html", "cts", fn)
@@ -220,7 +220,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        self.lines += [self.mp()]
+        if "hg19" == self.assembly:
+            self.lines += [self.mp()]
 
         pgSearch = PGsearch(self.ps, self.assembly)
 
@@ -229,7 +230,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         ct = j["cellType"]
         if not ct:
             topN = 5
-            topTissues = cre.topTissues()["dnase"]
+            topCellTypes = cre.topTissues()["dnase"]
             tcts = sorted(topCellTypes, key = lambda x: x["one"],
                           reverse=True)[:topN]
         else:
