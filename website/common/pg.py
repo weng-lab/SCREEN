@@ -97,59 +97,12 @@ FROM {tn}
         return pct.creTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap)
-
-        chrom = checkChrom(self.assembly, j)
-        start = j.get("coord_start", 0)
-        stop = j.get("coord_end", 0)
-
-        tableName = self.assembly + "_cre_all"
-
-        fields, whereclause = pct._creTableWhereClause(j, chrom, start, stop)
-        fields = ', '.join(["cre.chrom", "cre.start",
-                            "cre.stop",
-                            "accession", "maxZ"])
-
-        q = """
-COPY (
-SELECT {fields}
-FROM {tn} AS cre
-{whereclause}
-) to STDOUT
-with DELIMITER E'\t'
-""".format(fields = fields, tn = tableName,
-           whereclause = whereclause)
-
-        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
-            with gzip.open(fnp, 'w') as f:
-                curs.copy_expert(q, f)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        return pct.creTableDownloadBed(j, fnp)
 
     def creTableDownloadJson(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap)
-
-        chrom = checkChrom(self.assembly, j)
-        start = j.get("coord_start", None)
-        stop = j.get("coord_end", None)
-
-        tableName = self.assembly + "_cre_all"
-
-        fields, whereclause = pct._creTableWhereClause(j, chrom, start, stop)
-
-        q = """
-copy (
-SELECT JSON_AGG(r) from (
-SELECT *
-FROM {tn} AS cre
-{whereclause}
-) r
-) to STDOUT
-with DELIMITER E'\t'
-""".format(tn = tableName,
-           whereclause = whereclause)
-
-        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
-            with gzip.open(fnp, 'w') as f:
-                curs.copy_expert(q, f)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        return pct.creTableDownloadJson(j, fnp)
 
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
