@@ -44,7 +44,7 @@ class DetailsContainer extends React.Component {
                 <div className="row">
                     <div className="col-md-4">
                         <h3 className="creDetailsTitle">{accession}</h3>
-                        {" "}
+                        {"  "}
                         {coord}
                     </div>
                 </div>
