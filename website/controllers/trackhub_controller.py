@@ -60,6 +60,7 @@ class TrackhubController:
 
         if "hg19" == assembly:
             url += "&g=wgEncodeGencodeV19"
+            url += "&g=phastCons100way"
         
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
@@ -86,7 +87,8 @@ class TrackhubController:
 
         if "hg19" == assembly:
             url += "&g=wgEncodeGencodeV19"
-
+            url += "&g=phastCons100way"
+            
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ensembl_trackhub_url(self, j, uuid):

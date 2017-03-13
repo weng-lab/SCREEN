@@ -162,22 +162,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return t
 
-    def phastcons(self):
-        if "mm10" == self.assembly:
-            url =  "http://hgdownload.cse.ucsc.edu/goldenPath/mm10/phastCons60way/mm10.60way.phastCons.bw"
-        elif "hg19" == self.assembly:
-            url = "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/phastCons100way/hg19.100way.phastCons.bw"
-
-        desc = "phastCons"
-
-        color = OtherTrackhubColors.Conservation.rgb
-        if self.browser in [UCSC, ENSEMBL]:
-            track = BigWigTrack(desc, self.priority, url, color).track()
-        else:
-            track = BigWigTrack(desc, self.priority, url, color).track_washu()
-        self.priority += 1
-        return track
-
     def trackhubExp(self, trackInfo):
         fnp = os.path.join(Dirs.encode_data, trackInfo.expID,
                            trackInfo.fileID + ".bigWig")
@@ -235,8 +219,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         topTissues = cre.topTissues()["dnase"]
         for ti in self._getTrackList(topTissues):
             self.lines += [self.trackhubExp(ti)]
-
-        self.lines += [self.phastcons()]
 
         return filter(lambda x: x, self.lines)
 
