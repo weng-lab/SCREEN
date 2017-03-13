@@ -49,7 +49,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect_db(os.path.realpath(__file__), "regelmvizbeta")
+    DBCONN = db_connect_db(os.path.realpath(__file__), "screenv11")
     ps = PostgresWrapper(DBCONN)
 
     wsconfig = WebServerConfig("snp")
