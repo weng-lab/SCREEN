@@ -1,7 +1,5 @@
 import sys, os, json
 
-from compute_gene_expression import ComputeGeneExpression, Compartments
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
 
