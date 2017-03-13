@@ -95,6 +95,7 @@ class Rampage extends React.Component {
         let allData = this.props.keysAndData.tsss;
         let tssData = allData[this.refs.tss.value];
 
+        // TODO: move into this.state!
         this.refs.titleTss.innerText = tssData["tss"];
         this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
 

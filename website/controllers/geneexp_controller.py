@@ -1,9 +1,8 @@
+from __future__ import print_function
 import sys, os
 
 from common.page_info_geneexp import PageInfoGeneExp
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from compute_gene_expression import ComputeGeneExpression, Compartments
+from models.gene_expression import GeneExpression, Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from config import Config
@@ -35,5 +34,5 @@ class GeneExpController:
         if not biosample_types_selected or not compartments:
             return {"hasData" : False, "items" : {}}
 
-        cge = ComputeGeneExpression(self.ps, self.cache, assembly)
+        cge = GeneExpression(self.ps, self.cache, assembly)
         return cge.computeHorBars(gene, compartments, biosample_types_selected)

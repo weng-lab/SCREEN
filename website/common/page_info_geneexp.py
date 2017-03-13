@@ -1,6 +1,5 @@
+from __future__ import print_function
 import sys, os, json, cherrypy
-
-from compute_gene_expression import ComputeGeneExpression, Compartments
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
