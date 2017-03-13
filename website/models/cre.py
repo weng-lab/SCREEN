@@ -40,6 +40,16 @@ class CRE:
             ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
         return ret
 
+    def nearbyPcGenes(self):
+        coord = self.coord()
+        if not self.genesAll or not self.genesPC:
+            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
+                                                                 coord.chrom)
+        ret = []
+        for g in list(set(self.genesPC)):
+            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
+        return ret
+
     def genesInTad(self):
         if "mm10" == self.assembly:
             return []
