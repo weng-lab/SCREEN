@@ -3,12 +3,12 @@ import React from 'react'
 class Rampage extends React.Component {
     render() {
 
-        let sortedKeys = this.props.keysAndData.sortedKeys;
+        let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
         let data = this.props.keysAndData.tsss;
         let gene = this.props.keysAndData.gene;
 
-        let tsses = sortedKeys.map((tss) => { return data[tss]; });
-        let selectTsses = sortedKeys.map((tss) => {
+        let tsses = sortedTranscripts.map((tss) => { return data[tss]; });
+        let selectTsses = sortedTranscripts.map((tss) => {
             return (<option value={tss}>{tss}</option>); });
 
         let d = tsses[0];
@@ -93,7 +93,6 @@ class Rampage extends React.Component {
 
 	$(this.refs.container).empty();
 
-        let sortedKeys = this.props.keysAndData.sortedKeys;
         let allData = this.props.keysAndData.tsss;
         let tssData = allData[this.refs.tss.value];
 
