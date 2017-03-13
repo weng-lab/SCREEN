@@ -61,9 +61,10 @@ class ResultsTableContainer extends React.Component {
                                jq, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-                this.setState({cres: r["cres"], total: r["total"],
+                this.setState({cres: r["cres"],
+                               total: r["total"],
                                cts: r["cts"],
-			       nodnase: this._get_missing(r["rfacets"]),
+			       missingAssays: this._get_missing(r["rfacets"]),
                                jq, isFetching: false, isError: false});
 		setrfacets(r["rfacets"]);
             }.bind(this)
@@ -174,7 +175,7 @@ class ResultsTableContainer extends React.Component {
                     cart_accessions={this.props.cart_accessions}
                     isFetching={this.state.isFetching}
 		    jq={this.state.jq}
-		    nodnase={this.state.nodnase}
+		    missingAssays={this.state.missingAssays}
                     cts={this.state.cts}
 		    hasct={this.props.cellType}
 		/>
