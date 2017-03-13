@@ -1,3 +1,5 @@
+from natsort import natsorted
+
 from tissue_colors import TissueColors
 
 class Rampage:
@@ -87,13 +89,17 @@ class Rampage:
         ensemblid_ver = gene["ensemblid_ver"]
         rows = self.pgSearch.rampageByGene(ensemblid_ver)
         if not rows:
-            return None
+            return {"sortedTranscripts" : [],
+                    "tsss" : [],
+                    "gene" : ""}
 
         ri = self.pgSearch.rampage_info()
-        ret = {}
+        byTranscript = {}
         for row in rows:
             info = self._procees(row, ri)
-            ret[info["tss"]] = info
-        return ret
+            byTranscript[info["tss"]] = info
 
-
+        transcripts = natsorted(byTranscript.keys())
+        return {"sortedTranscripts" : transcripts,
+                "tsss" : byTranscript,
+                "gene" : gene}
