@@ -118,7 +118,7 @@ class TrackhubController:
 
     def washu_trackhub_url(self, j, uuid):
         assembly, accession, coord = self._trackhub_url_info(j)
-        hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
+        hubNum = self.db.insertOrUpdate(assembly, accession, uuid, j)
 
         trackhubUrl = '/'.join([j["host"],
                                 "washu_trackhub",
