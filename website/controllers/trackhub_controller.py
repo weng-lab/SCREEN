@@ -48,6 +48,8 @@ class TrackhubController:
         assembly, accession, coord = self._trackhub_url_info(j)
         hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
 
+        c = Coord(j["coord_chrom"], j["coord_start"], j["coord_end"])
+
         trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
@@ -57,6 +59,7 @@ class TrackhubController:
 	url += "db=" + assembly
 	url += "&position=" + str(coord)
 	url += "&hubClear=" + trackhubUrl;
+        url += "&highlight=" + assembly + "." + c.chrom + "%3A" + str(c.start) + '-' + str(c.end)
 
         if "hg19" == assembly:
             url += "&g=wgEncodeGencodeV19"
@@ -70,7 +73,6 @@ class TrackhubController:
 
         snp = j["snp"]
         c = Coord(snp["chrom"], snp["cre_start"], snp["cre_end"])
-        c.resize(2500)
 
         hubNum = self.db.insertOrUpdate(assembly, snp["accession"], uuid)
 

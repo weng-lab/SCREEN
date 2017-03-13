@@ -50,7 +50,10 @@ const button_click_handler = (name, re, dispatch) => {
     var arr = window.location.href.split("/");
     var host = arr[0] + "//" + arr[2];
     var data = JSON.stringify({"accession" : re.accession,
-                               "halfWindow" : half_window,
+			       "coord_chrom" : re.chrom,
+			       "coord_start" : re.start,
+			       "coord_end" : re.start + re.len,
+			       "halfWindow" : half_window,
                                "host" : host,
 			       GlobalAssembly});
 
