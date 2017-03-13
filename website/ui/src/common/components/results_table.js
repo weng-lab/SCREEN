@@ -80,20 +80,6 @@ class ResultsTable extends React.Component {
 	    .removeClass('display')
 	    .addClass('table table-condensed table-hover');
 
-	$('.rtTooltipIcon').each(function (idx, e) {
-	    let tt = $('#' + $(this).data('tip')).html();
-	    $(e).tooltip(
-		{delay: { show: 100, hide: 3000 },
-		 placement: 'top',
-		 html: true,
-		 title: () => {console.log("h!", tt); return tt}
-		});
-            $(e).on('click', function(e){
-		// nuke tooltip if content clicked
-		$(this).tooltip('destroy');
-	    });
-	});
-
 	this._datatable = _datatable;
     }
 }
