@@ -45,27 +45,32 @@ const openGenomeBrowser = (data, url) => {
     });
 };
 
-const button_click_handler = (name, re, dispatch, {cellType}) => {
-    var half_window = 7500;
-    var arr = window.location.href.split("/");
-    var host = arr[0] + "//" + arr[2];
-    var data = JSON.stringify({"accession" : re.accession,
-			       "coord_chrom" : re.chrom,
-			       "coord_start" : re.start,
-			       "coord_end" : re.start + re.len,
-			       "halfWindow" : half_window,
-			       cellType,
-                               host,
-			       GlobalAssembly});
-
-    switch (name) {
-    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
-    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
-    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
-    }
-};
-
 class TableWithCart extends React.Component {
+    constructor(props) {
+	super(props);
+	this.button_click_handler = this.button_click_handler.bind(this);
+    }
+    
+    button_click_handler(name, re, dispatch){
+	var half_window = 7500;
+	var arr = window.location.href.split("/");
+	var host = arr[0] + "//" + arr[2];
+	var data = JSON.stringify({"accession" : re.accession,
+				   "coord_chrom" : re.chrom,
+				   "coord_start" : re.start,
+				   "coord_end" : re.start + re.len,
+				   "halfWindow" : half_window,
+				   "cellType" : this.props.cellType,
+				   host,
+				   GlobalAssembly});
+	
+	switch (name) {
+	    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
+	    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
+	    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
+	}
+    };
+    
     addAllToCart() {
 	let accessions = this.props.data.map((d) => ( d.accession ));
 	this.props.actions.addCart(accessions);
@@ -270,7 +275,7 @@ class TableWithCart extends React.Component {
                                   table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
-                                  button_click_handler(td, rowdata, actions, this.props)}
+                                  this.button_click_handler(td, rowdata, actions)}
                               bFilter={true}
                               bLengthChange={true}
                 />

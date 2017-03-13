@@ -174,6 +174,7 @@ class ResultsTableContainer extends React.Component {
 		{interpBox}
 		<TableWithCart
                     actions={this.props.actions}
+		    cellType={this.props.cellType}
                     data={this.state.cres}
                     total={this.state.total}
                     cart_accessions={this.props.cart_accessions}
