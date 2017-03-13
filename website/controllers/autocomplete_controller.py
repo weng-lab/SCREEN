@@ -41,6 +41,7 @@ class AutocompleteWebService:
         userQuery = j["userQuery"]
 
         p = ParseSearch(self.ps.DBCONN, assembly, {"q" : userQuery})
+        ret = {}
         try:
             ret = p.parse()
             ret["failed"] = False
