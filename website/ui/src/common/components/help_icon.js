@@ -32,7 +32,7 @@ class HelpIcon extends React.Component {
         let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
 
 	return (
-            <span ref="pspan" style={{fontSize: "14pt"}}>
+            <span style={{fontSize: "14pt"}}>
                 <a ref="aicon">
                     <span ref="icon"
                           className="glyphicon glyphicon-info-sign"
@@ -43,13 +43,8 @@ class HelpIcon extends React.Component {
 		<div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in popover-div"
 	 	     role="tooltip" ref="tt">
 
-                    <h3 ref="tt_title" className="popover-title">
-                        {title}
-                    </h3>
-
-                    <div ref="tt_content" className="popover-content">
-                        {content}
-                    </div>
+                    <h3 className="popover-title">{title}</h3>
+                    <div className="popover-content">{content}</div>
 		</div>
 	    </span>);
     }
