@@ -455,7 +455,7 @@ table.dataTable thead th {
     vertical-align: top;
 }
 
-#geTissueOfOrigin {
+.geTissueOfOrigin {
     padding-top: 20px;
     display: block;
     text-indent: 90px;
@@ -518,4 +518,13 @@ div.dataTables_wrapper div.dataTables_paginate {
 }
 .tooltipIcon {
     margin-left: 5px;
+}
+
+.rampageGeneName {
+}
+.rampageEnsemblidVer {
+}
+.rampageTss {
+}
+.rampageCoord {
 }

@@ -51,7 +51,7 @@ class LargeHorizontalBars extends React.Component {
 
         return (
             <div style={{display: (isFetching ? "none" : "block")}}>
-                <span id="geTissueOfOrigin">Tissue of origin</span>
+                <span className="geTissueOfOrigin">Tissue of origin</span>
 		<div ref="container" style={{width: width + "px"}} />
             </div>);
     }
@@ -76,7 +76,7 @@ class LargeHorizontalBars extends React.Component {
 	$(this.refs.container).empty();
 
 	//console.log(this.props);
-	
+
         if(!this.props.hasData){
             return;
         }
