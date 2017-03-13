@@ -7,33 +7,34 @@ class Rampage extends React.Component {
         let data = this.props.keysAndData.tsss;
         let gene = this.props.keysAndData.gene;
 
-        let tsses = sortedKeys.map((tss) => {
-            return data[tss]; });
+        let tsses = sortedKeys.map((tss) => { return data[tss]; });
         let selectTsses = sortedKeys.map((tss) => {
             return (<option value={tss}>{tss}</option>); });
 
         let d = tsses[0];
 
         let title = (
-            <div className={"container-fluid"}
-                 style={{"width": "100%"}} >
-                <div className={"row"}>
-                    <div className={"col-md-3"}>
-                        <span style={{fontSize: "14px",
-                                      fontStyle: "italic"}}>
-                            {gene.name}
+            <div className="container-fluid" style={{"width": "100%"}} >
+                <div className="row">
+                    <div className="col-md-3">
+                        <span className={"rampageGeneName"}>
+                            <h2><em>{gene.name}</em></h2>
+                        </span>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-3">
+                        <span className={"rampageEnsemblidVer"}>
+                            {gene.ensemblid_ver}
                         </span>
                     </div>
                     <div className={"col-md-3"}>
-                        <span><small>{gene.ensemblid_ver}</small></span>
-                    </div>
-                    <div className={"col-md-3"}>
-                        <span ref={"titleTss"}><small>{d.tss}</small></span>
-                    </div>
-                    <div className={"col-md-3"}>
-                        <span ref={"titleCoord"}>
+                        <div ref="titleTss" className="rampageTss">
+                            {d.tss}
+                        </div>
+                        <div ref="titleCoord" className="rampageCoord">
                             {d.chrom}:{d.start}-{d.stop}
-                        </span>
+                        </div>
                     </div>
                 </div>
             </div>);
@@ -41,6 +42,7 @@ class Rampage extends React.Component {
 	return (
             <div>
                 {title}
+                <br />
                 <div className="container">
 		    <div className="row">
 
@@ -70,6 +72,7 @@ class Rampage extends React.Component {
 		    </div>
 		</div>
 
+                <span className="geTissueOfOrigin">Tissue of origin</span>
 		<div ref="container" style={{width: this.props.width + "px"}}>
                 </div>
 	    </div>);
@@ -92,10 +95,8 @@ class Rampage extends React.Component {
         let allData = this.props.keysAndData.tsss;
         let tssData = allData[this.refs.tss.value];
 
-        console.log("tssData", tssData);
-
-        this.refs.titleTss.value = tssData["tss"];
-        this.refs.titleCoord.value = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
+        this.refs.titleTss.innerText = tssData["tss"];
+        this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
 
 	var items = tssData.items[this.refs.sortorder.value];
 
