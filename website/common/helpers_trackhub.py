@@ -92,7 +92,7 @@ class Track(object):
                  "type " + self.type,
                  "shortLabel " + shortLabel,
                  "longLabel " + self.desc,
-                 "itemRgb on",
+                 "itemRgb On",
                  "visibility " + self.visibility,
                  "priority " + str(self.priority),
                  "bigDataUrl " + self.url]
@@ -154,7 +154,8 @@ class BigGenePredTrack(Track):
 class BigBedTrack(Track):
     def __init__(self, desc, priority, url, color):
         super(BigBedTrack, self).__init__(desc, priority, url)
-        self.color = color
+        if color:
+            self.color = color
         self.type = "bigBed"
         self.visibility = "pack"
         
