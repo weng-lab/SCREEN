@@ -229,10 +229,10 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	var failMsg = "";
-	if(this.props.nodnase && this.props.nodnase.length){
+	if(this.props.missingAssays && this.props.missingAssays.length){
 	    failMsg = (
 		<li className={"list-group-item"}>
-		    <em>The cell type you have selected does not have {this._format_message(this.props.nodnase)} data available.</em>
+		    <em>The cell type you have selected does not have {this._format_message(this.props.missingAssays)} data available.</em>
 		</li>);
 	}
 
@@ -244,7 +244,7 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 
-	let cols = (this.props.hasct ? this.props.nodnase :
+	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
 	return (
@@ -267,7 +267,8 @@ class TableWithCart extends React.Component {
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   button_click_handler(td, rowdata, actions)}
-                              bFilter={true} bLengthChange={true}
+                              bFilter={true}
+                              bLengthChange={true}
                 />
 	    </div>);
     }
