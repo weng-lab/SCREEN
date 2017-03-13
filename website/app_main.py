@@ -10,11 +10,11 @@ from controllers.de_controller import DeController
 from controllers.gwas_controller import GwasController
 from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
-from controllers.trackhub import TrackhubController
-from controllers.cart import CartController
+from controllers.trackhub_controller import TrackhubController
+from controllers.cart_controller import CartController
 from controllers.data_ws import DataWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
-from controllers.comparison import ComparisonController
+#from controllers.comparison_controller import ComparisonController
 
 from common.session import Sessions
 
@@ -32,7 +32,7 @@ class MainApp():
         self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
-        self.cp = ComparisonController(self.templates, ps, cache)
+        #self.cp = ComparisonController(self.templates, ps, cache)
         self.cartc = CartController(self.templates, ps, cache)
         self.trackhub = TrackhubController(self.templates, ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
@@ -46,7 +46,7 @@ class MainApp():
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
-    
+
     @cherrypy.expose
     def ensembl_trackhub(self, *args, **kwargs):
         return self.trackhub.ensembl_trackhub(*args, **kwargs)

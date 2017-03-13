@@ -28,11 +28,11 @@ class TrackhubController:
     def ensembl_trackhub(self, *args, **kwargs):
         tdb = TrackhubDb(self.templates, self.ps, self.cacheW, self.db, ENSEMBL)
         return tdb.ensembl_trackhu(*args, **kwargs)
-    
+
     def washu_trackhub(self, *args, **kwargs):
         tdb = TrackhubDb(self.templates, self.ps, self.cacheW, self.db, WASHU)
         return tdb.washu_trackhub(*args, **kwargs)
-    
+
     def _trackhub_url_info(self, j):
         assembly = self.assembly = j["GlobalAssembly"]
         pgSearch = PGsearch(self.ps, assembly)
