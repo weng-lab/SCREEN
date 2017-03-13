@@ -202,3 +202,53 @@ FROM {tn} AS cre
             curs.execute(q)
         return curs.fetchone()[0]
 
+    def creTableDownloadBed(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", 0)
+        stop = j.get("coord_end", 0)
+
+        tableName = self.assembly + "_cre_all"
+
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+        fields = ', '.join(["cre.chrom", "cre.start",
+                            "cre.stop",
+                            "accession", "maxZ"])
+
+        q = """
+COPY (
+SELECT {fields}
+FROM {tn} AS cre
+{whereclause}
+) to STDOUT
+with DELIMITER E'\t'
+""".format(fields = fields, tn = tableName,
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
+
+    def creTableDownloadJson(self, j, fnp):
+        chrom = checkChrom(self.assembly, j)
+        start = j.get("coord_start", None)
+        stop = j.get("coord_end", None)
+
+        tableName = self.assembly + "_cre_all"
+
+        fields, whereclause = self._creTableWhereClause(j, chrom, start, stop)
+
+        q = """
+copy (
+SELECT JSON_AGG(r) from (
+SELECT *
+FROM {tn} AS cre
+{whereclause}
+) r
+) to STDOUT
+with DELIMITER E'\t'
+""".format(tn = tableName,
+           whereclause = whereclause)
+
+        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
+            with gzip.open(fnp, 'w') as f:
+                curs.copy_expert(q, f)
