@@ -19,6 +19,9 @@ from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, Bi
 
 from common.colors_trackhub import PredictionTrackhubColors, OtherTrackhubColors
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from constants import paths
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
 
@@ -144,20 +147,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return f.getvalue()
 
     def mp(self):
-        base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
+        base = os.path.join("http://bib7.umassmed.edu/~purcarom",
+                            "encyclopedia/Version-4",
                             "ver10", self.assembly)
         if "hg19" == self.assembly:
             ucsc_url = os.path.join(base, "hg19-cREs-V10.bigBed")
         washu_url = os.path.join(base, "hg19-cREs-V10.bed.gz")
         if self.browser in [UCSC, ENSEMBL]:
-            t = BigBedTrack("Candidate Regulatory Elements",
-                            self.priority, ucsc_url,
-                            PredictionTrackhubColors.distal_regions.rgb).track()
+            t = PredictionTrack("Candidate Regulatory Elements",
+                                self.priority, ucsc_url).track()
         else:
             t = Track("Candidate Regulatory Elements",
-                      self.priority,
-                      washu_url,
-                      color = PredictionTrackhubColors.distal_regions.rgb,
+                      self.priority, washu_url, 
                       type = "hammock").track_washu()
         self.priority += 1
         return t
@@ -186,23 +187,34 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         tracks = []
         cache = self.cacheW[self.assembly]
 
-        assays = ["dnase", "h3k27ac", "h3k4me3", "ctcf"]
+        assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
         assaymap = cache.assaymap
 
+        ctsTracks = []
+        
         for tct in cts:
             ct = tct["ct"]
             # else JSON will be invalid for WashU
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
+            fileIDs = []
             for assay in assays:
                 if assay in assaymap:
                     if ct in assaymap[assay]:
                         expBigWigID = assaymap[assay][ct]
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
+                        fileIDs.append(fileID)
                         ti = TrackInfo(ct, tissue, assay, expID, fileID)
                         tracks.append(ti)
-        return tracks
+            fn = '_'.join(fileIDs) + ".cREs.bigBed"
+            fnp = paths.path(self.assembly, "public_html", "cts", fn)
+            if os.path.exists(fnp):
+                url = os.path.join("http://bib7.umassmed.edu/~purcarom",
+                                   "encyclopedia", "Version-4",
+                                   "ver10", self.assembly, "cts", fn)
+                ctsTracks.append(url)
+        return ctsTracks, tracks
 
     def getLines(self, accession, j):
         self.priority = 1
@@ -222,8 +234,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                           reverse=True)[:topN]
         else:
             tcts = [{"ct" : ct, "tissue" : ct}]
+            
+        ctsTracks, tracks = self._getTrackList(tcts)
+        for url in ctsTracks:
+            if self.browser in [UCSC, ENSEMBL]:
+                t = PredictionTrack("Candidate Regulatory Elements in " + ct,
+                                    self.priority, url).track()
+                self.priority += 1
+                self.lines += [t]
 
-        for ti in self._getTrackList(tcts):
+        for ti in tracks:
             self.lines += [self.trackhubExp(ti)]
 
         return filter(lambda x: x, self.lines)
