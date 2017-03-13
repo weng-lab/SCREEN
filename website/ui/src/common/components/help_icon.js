@@ -3,20 +3,19 @@ import ReactDOMServer from 'react-dom/server'
 
 import {brJoin} from '../utility'
 
-export const HelpIconActual = (helpkey, color = "#0000EE") => {
+export const HelpTooltip = (helpkey, color = "#0000EE") => {
     let data = Globals.helpKeys[helpkey];
-    let title = data.title;
-    let content = data.summary;
+    let content = data.title + '\n' + data.summary.replace(/\n\n/g, '\n');
 
-    return (
+    return ReactDOMServer.renderToStaticMarkup((
 	<span
-            className="glyphicon glyphicon-info-sign rtTooltipIcon"
+            className="glyphicon glyphicon-info-sign has-tooltip"
             style={{color}}
             aria-hidden={"true"}
             data-toggle={"tooltip"}
             data-html={"true"}
             title={content}
-        />);
+        />));
 }
 
 class HelpIcon extends React.Component {
@@ -28,8 +27,11 @@ class HelpIcon extends React.Component {
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
         let data = Globals.helpKeys[this.props.helpkey];
-        let title = data.title;
-        let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
+        let title = (<h3 className="popover-title">{data.title}</h3>);
+        let content = (
+            <div className="popover-content">
+                {brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'))}
+            </div>);
 
 	return (
             <span style={{fontSize: "14pt"}}>
@@ -43,8 +45,8 @@ class HelpIcon extends React.Component {
 		<div className="popover bs-tether-element bs-tether-element-attached-middle bs-tether-element-attached-left bs-tether-target-attached-middle bs-tether-target-attached-right fade bs-tether-enabled in popover-div"
 	 	     role="tooltip" ref="tt">
 
-                    <h3 className="popover-title">{title}</h3>
-                    <div className="popover-content">{content}</div>
+                    {title}
+                    {content}
 		</div>
 	    </span>);
     }

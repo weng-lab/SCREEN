@@ -1,21 +1,15 @@
-import ReactDOMServer from 'react-dom/server'
-import {HelpIconActual} from '../../../common/components/help_icon'
-
+import {HelpTooltip} from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
 
 const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let ctaHelp = HelpIconActual("CellTypeAgnosticClassification");
-    ctaHelp = "CTA<br />" + ReactDOMServer.renderToStaticMarkup(ctaHelp);
-
-    let ctsHelp = HelpIconActual("CellTypeSpecificClassification");
-    ctsHelp = "CTS<br />" + ReactDOMServer.renderToStaticMarkup(ctsHelp);
+    let ctaHelp = "CTA<br />" + HelpTooltip("CellTypeAgnosticClassification");
+    let ctsHelp = "CTS<br />" + HelpTooltip("CellTypeSpecificClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
     if("mm10" == GlobalAssembly){
-        geneHelp += ReactDOMServer.renderToStaticMarkup(
-            HelpIconActual("DifferentialGeneMouse"));
+        geneHelp += HelpTooltip("DifferentialGeneMouse");
     }
 
     return [
