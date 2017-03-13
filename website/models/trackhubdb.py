@@ -100,7 +100,7 @@ class TrackhubDb:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb([info["reAccession"]])
+            return self.makeTrackDb(info["reAccession"], info["j"])
 
         return "invalid path"
 
@@ -124,7 +124,7 @@ class TrackhubDb:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".json"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDbWashU([info["reAccession"]])
+            return self.makeTrackDbWashU(info["reAccession"], info["j"])
 
         return {"error" : "invalid path", "args" : args }
 
@@ -150,15 +150,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         base = os.path.join("http://bib7.umassmed.edu/~purcarom",
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
-        if "hg19" == self.assembly:
-            ucsc_url = os.path.join(base, "hg19-cREs-V10.bigBed")
-        washu_url = os.path.join(base, "hg19-cREs-V10.bed.gz")
         if self.browser in [UCSC, ENSEMBL]:
+            url = os.path.join(base, "hg19-cREs-V10.bigBed")
             t = PredictionTrack("Candidate Regulatory Elements",
-                                self.priority, ucsc_url).track()
+                                self.priority, url).track()
         else:
+            url = os.path.join(base, "hg19-cREs-V10.bed.gz")
             t = Track("Candidate Regulatory Elements",
-                      self.priority, washu_url, 
+                      self.priority, url, 
                       type = "hammock").track_washu()
         self.priority += 1
         return t
@@ -221,8 +220,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         self.lines  = []
         if "hg19" == self.assembly:
-            self.lines += [self.mp()]
+            if self.browser in [UCSC, ENSEMBL]:
+                self.lines += [self.mp()]
 
+        self._addSignalFiles(accession, j)
+            
+        return filter(lambda x: x, self.lines)
+
+    def _addSignalFiles(self, accession, j):
         pgSearch = PGsearch(self.ps, self.assembly)
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
@@ -247,8 +252,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         for ti in tracks:
             self.lines += [self.trackhubExp(ti)]
 
-        return filter(lambda x: x, self.lines)
-
+    
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 
@@ -263,8 +267,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         end = str(p.end + halfWindow)
         return p.chrom + ':' + start + '-' + end
 
-    def makeTrackDbWashU(self, accessions):
-        lines = self.getLines(accessions)
+    def makeTrackDbWashU(self, accession, j):
+        lines = self.getLines(accession, j)
 
         if 0:
             pos = [self.makePos(x) for x in self.re_pos]
