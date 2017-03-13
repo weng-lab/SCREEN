@@ -13,10 +13,6 @@ from models.tissue_colors import TissueColors
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 
-Compartments = ["cell", "nucleoplasm", "cytosol",
-                "nucleus", "membrane", "chromatin",
-                "nucleolus"]
-
 class GeneExpression:
     def __init__(self, ps, cache, assembly):
         self.ps = ps
