@@ -3,8 +3,6 @@
 from __future__ import print_function
 import os, sys, json
 
-from compute_gene_expression import Compartments
-
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
 
@@ -19,6 +17,10 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Timer
 from db_utils import getcursor
+
+Compartments = ["cell", "nucleoplasm", "cytosol",
+                "nucleus", "membrane", "chromatin",
+                "nucleolus"]
 
 class CachedObjectsWrapper:
     def __init__(self, ps):
