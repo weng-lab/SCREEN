@@ -24,14 +24,9 @@ class GeneParse:
         else:
             self.coord = Coord(r[1], r[2], r[3])
 
-        if 0:
-            print(self.s, self.useTss, self.tssDist, self.strand)
-            print(self.coord)
-
-        self.noTss = r[1] == r[4] and r[2] == r[5] and r[3] == r[6]
         self.approved_symbol = r[9]
         self.sm = r[7]
-        
+
     def toJson(self):
         return {"oname" : self.oname,
                 "approved_symbol" : self.approved_symbol,
@@ -49,7 +44,6 @@ class GeneParse:
             gene = self.oname
 
         ret = {"gene" : gene,
-               "noTss" : self.noTss,
                "useTss" : self.useTss,
                "tssDist" : self.tssDist,
                "assembly" : self.assembly}
