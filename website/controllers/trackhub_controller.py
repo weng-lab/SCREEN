@@ -46,7 +46,8 @@ class TrackhubController:
 
     def ucsc_trackhub_url(self, j, uuid):
         assembly, accession, coord = self._trackhub_url_info(j)
-        hubNum = self.db.insertOrUpdate(assembly, accession, uuid)
+        hubNum = self.db.insertOrUpdate(assembly, accession, uuid, j)
+                                        
 
         c = Coord(j["coord_chrom"], j["coord_start"], j["coord_end"])
 
@@ -74,8 +75,8 @@ class TrackhubController:
         snp = j["snp"]
         c = Coord(snp["chrom"], snp["cre_start"], snp["cre_end"])
 
-        hubNum = self.db.insertOrUpdate(assembly, snp["accession"], uuid)
-
+        hubNum = self.db.insertOrUpdate(assembly, snp["accession"], uuid, j)
+        
         trackhubUrl = '/'.join([j["host"],
                                 "ucsc_trackhub",
 		                uuid,
