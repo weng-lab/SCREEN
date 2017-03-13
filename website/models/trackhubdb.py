@@ -140,22 +140,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def genes(self):
-        byAssembly = {"mm10" : "Comprehensive M8",
-                      "hg19" : "Comprehensive 24"}
-        desc = "GENCODE Genes " + byAssembly[self.assembly]
-
-        byAssemblyURl = {"mm10" : os.path.join(BIB5, "genes", "gencode.vM8.annotation.bb"),
-                         "hg19" : os.path.join(BIB5, "genes", "gencode.v24.annotation.bb")}
-        url = byAssemblyURl[self.assembly]
-
-        if self.browser in [UCSC, ENSEMBL]:
-            track = BigGenePredTrack(desc, self.priority, url).track()
-        else:
-            track = BigGenePredTrack(desc, self.priority, url).track_washu()
-        self.priority += 1
-        return track
-
     def mp(self):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
                             "ver9", self.assembly, "public_html")
@@ -260,8 +244,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        if self.browser in []:
-            self.lines += [self.genes()]
         self.lines += [self.mp()]
         self.lines += [self.phastcons()]
 
