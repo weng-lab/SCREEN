@@ -4,6 +4,7 @@ import os, sys, json
 import time
 import numpy as np
 import cherrypy
+from natsort import natsorted
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -170,7 +171,7 @@ class DataWebService:
             return {accession: {"sortedKeys" : [],
                                 "tsss" : [],
                                 "gene" : ""}}
-        sortedKeys = sorted(tsss.keys())
+        sortedKeys = natsorted(tsss.keys())
         return {accession: {"sortedKeys" : sortedKeys,
                             "tsss" : tsss,
                             "gene" : nearest}}
