@@ -45,7 +45,6 @@ WHERE uid = %(uid)s
                 "j" : row[3]}
 
     def insertOrUpdate(self, assembly, reAccession, uid, j):
-        print("\n\n\n\n", j)
         with getcursor(self.DBCONN, "insertOrUpdate") as curs:
             curs.execute("""
 SELECT id FROM search
