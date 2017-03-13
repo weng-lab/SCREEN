@@ -27,6 +27,10 @@ class ResultsTableContainer extends React.Component {
 	return r;
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+	return "results" === nextProps.maintabs_active;
+    }
+
     componentDidMount(){
 	if(this.props.maintabs_visible){
 	    this.loadCREs(this.props);
@@ -146,6 +150,10 @@ class ResultsTableContainer extends React.Component {
     }
 
     render() {
+	if("results" !== this.props.maintabs_active){
+            return false;
+        }
+
 	let interp = GlobalParsedQuery["interpretation"];
 	let interpBox = "";
 	if(interp){
