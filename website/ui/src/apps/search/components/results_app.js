@@ -71,7 +71,7 @@ class ResultsTableContainer extends React.Component {
         });
     }
 
-    searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle){
+    searchLinks(gene, useTss, tssDist, assembly, geneTitle){
 	let dists = [1000, 2000, 5000, 10000, 25000, 50000];
 	let distsRefs = orjoin(dists.map((d) => (
 	    <a href={"/search?q=" + gene + "&tssDist=" + d + "&promoter&assembly=" + assembly}>
@@ -111,7 +111,7 @@ class ResultsTableContainer extends React.Component {
 	    </div>);
     }
 
-    firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle){
+    firstLine(useTss, tssDist, geneTitle){
 	let click = " Click to see candidate Regulatory Elements:";
 	if(useTss){
 	    if(tssDist){
@@ -135,17 +135,13 @@ class ResultsTableContainer extends React.Component {
 	    </span>);
     }
 
-    doInterpGene({gene, noTss, useTss, tssDist, assembly}){
-	if(0){
-	    console.log("gene, noTss, useTss, tssDist, assembly",
-			gene, noTss, useTss, tssDist, assembly);
-	}
+    doInterpGene({gene, useTss, tssDist, assembly}){
         let geneTitle = (<em>{gene}</em>);
 	return (
 	    <div>
-		{this.firstLine(gene, noTss, useTss, tssDist, assembly, geneTitle)}
+		{this.firstLine(useTss, tssDist, geneTitle)}
 		<br />
-		{this.searchLinks(gene, noTss, useTss, tssDist, assembly, geneTitle)}
+		{this.searchLinks(gene, useTss, tssDist, assembly, geneTitle)}
 	    </div>);
     }
 
@@ -159,9 +155,9 @@ class ResultsTableContainer extends React.Component {
 	    if(interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene")){
 		interpBox = (
 		    <div className="interpretation panel">
-		    {interpMsb}
-		    {interpGene}
-	    </div>);
+		        {interpMsb}
+		        {interpGene}
+	            </div>);
 	    }
 	}
 
