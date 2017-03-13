@@ -4,8 +4,12 @@ class Rampage:
     def __init__(self, assembly, pgSearch):
         self.assembly = assembly
         self.pgSearch = pgSearch
+        self.tissueColors = TissueColors()
 
-    def groupByTissue(self, rows):
+    def getTissueColor(self, t):
+        return self.tissueColors.getTissueColor(t)
+
+    def _groupByTissue(self, rows):
         sorter = lambda x: x["tissue"]
         rows.sort(key = sorter)
 
@@ -21,62 +25,75 @@ class Rampage:
             ret[t]["items"].append(row)
         return ret
 
-    def _makeRows(self, rows):
-        pass
+    def _groupByTissueMax(self, rows, key):
+        sorter = lambda x: x["tissue"]
+        rows.sort(key = sorter)
 
-    def _procees(self, ri, r, idx):
         ret = {}
-        ret["gene"] = r["ensemblid_ver"]
-        ret["tss"] = r["tss"]
-        ret["tss_sane"] = r["tss"].replace(".", "").replace("_", "")
-        ret["tab_active"] = ""
-        if 0 == idx:
-            ret["tab_active"] = "active"
+        for row in rows:
+            t = row["tissue"]
+	    if t not in ret:
+                c = self.getTissueColor(t)
+	        ret[t] = {"name" : t,
+                          "displayName" : t,
+                          "color": c,
+                          "items": [row]}
+            else:
+                if ret[t]["items"][0][key] < row[key]:
+                    ret[t]["items"][0] = row
 
-        ret["chrom"] = r["chrom"]
-        ret["start"] = r["start"]
-        ret["stop"] = r["stop"]
+        rows = ret.values()
+        sorter = lambda x: x["items"][0][key]
+        rows.sort(key = sorter, reverse = True)
+        return rows
 
-        ee = {}
-        for expID, v in r["data"].iteritems():
+    def _sortByExpression(self, rows, key):
+        sorter = lambda x: float(x[key])
+        rows.sort(key = sorter, reverse = True)
+
+        ret = {}
+        for idx, row in enumerate(rows):
+            t = row["tissue"]
+            c = self.getTissueColor(t)
+            k = str(idx).zfill(3) + '_' + t
+	    ret[k] = {"name" : k,
+                      "displayName" : t,
+                      "color": c,
+                      "items": [row]}
+        return ret
+
+    def _procees(self, rows, ri):
+        ret = {}
+        ret["tss"] = rows["tss"]
+        ret["chrom"] = rows["chrom"]
+        ret["start"] = rows["start"]
+        ret["stop"] = rows["stop"]
+
+        items = []
+        for expID, val in rows["data"].iteritems():
             expID = expID.upper()
-            ee[expID] = {
-                "color" : "#880000",
-                "displayName" : ri[expID]["tissue"],
-                "items" : [{"tissue": ri[expID]["tissue"],
-                            "cellType": ri[expID]["btn"],
-                            "rep": 1,
-                            "counts" : v,
-                            "expID": expID}],
-                "name" : expID }
+            items.append({"tissue": ri[expID]["tissue"],
+                          "cellType": ri[expID]["btn"],
+                          "rep": 1,
+                          "counts" : val,
+                          "expID": expID})
 
-        ret["items"] = {}
-        ret["items"]["all"] = ee
-        return r["tss"], ret
-
-    def get(self, coord):
-        rampage = self.pgSearch.rampage(coord)
-        if not rampage:
-            return None
-
-        ri = self.pgSearch.rampage_info()
-        ret = {}
-        for idx, r in enumerate(rampage):
-            tss, info = self._procees(ri, r, idx)
-            ret[tss] = info
+        ret["items"] = {"byTissue" : self._groupByTissue(items),
+                        "byTissueMax" : self._groupByTissueMax(items, "counts"),
+                        "byValue" : self._sortByExpression(items, "counts")}
         return ret
 
     def getByGene(self, gene):
         ensemblid_ver = gene["ensemblid_ver"]
-        rampage = self.pgSearch.rampageByGene(ensemblid_ver)
-        if not rampage:
+        rows = self.pgSearch.rampageByGene(ensemblid_ver)
+        if not rows:
             return None
 
         ri = self.pgSearch.rampage_info()
         ret = {}
-        for idx, r in enumerate(rampage):
-            tss, info = self._procees(ri, r, idx)
-            ret[tss] = info
+        for row in rows:
+            info = self._procees(row, ri)
+            ret[info["tss"]] = info
         return ret
 
 
