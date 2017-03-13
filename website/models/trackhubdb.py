@@ -260,7 +260,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        if self.browser in [UCSC, ENSEMBL]:
+        if self.browser in []:
             self.lines += [self.genes()]
         self.lines += [self.mp()]
         self.lines += [self.phastcons()]
