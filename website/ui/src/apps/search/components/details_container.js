@@ -30,21 +30,35 @@ class DetailsContainer extends React.Component {
 		</div>);
         }
 
-        var accession = this.props.cre_accession_detail;
-	var tabs = this.props.tabs;
+        // TODO: avoid multiple re-renders?
+        // console.log(this.props);
+        let cre = this.props.active_cre;
+        let accession = this.props.cre_accession_detail;
+	let tabs = this.props.tabs;
 
-	return (<div className="container" style={{width: "100%"}}>
-		<h3>{accession}</h3>
+        let coord = cre ? cre.chrom + ':' + cre.start + '-' + (cre.start + cre.len)
+                  : "";
+
+	return (
+            <div className="container" style={{width: "100%"}}>
+                <div className="row">
+                    <div className="col-md-4">
+                        <h3 className="creDetailsTitle">{accession}</h3>
+                        {" "}
+                        {coord}
+                    </div>
+                </div>
 
                 <ul className="nav nav-tabs">
-  		{Object.keys(tabs).map((key) => ( makeTabTitle(key, tabs[key] )))}
+  		    {Object.keys(tabs).map((key) => (
+                         makeTabTitle(key, tabs[key] )))}
                 </ul>
 
 		<div className="tab-content clearfix">
-		{Object.keys(tabs).map((key) => ( makeTab(key, tabs[key]) ))}
+		    {Object.keys(tabs).map((key) => (
+                         makeTab(key, tabs[key]) ))}
 		</div>
-
-                </div>);
+            </div>);
     }
 }
 

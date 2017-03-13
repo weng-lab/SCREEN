@@ -19,7 +19,7 @@ const table_click_handler = (td, re, actions) => {
 	return;
     }
     actions.setMainTab("details");
-    actions.showReDetail(re.accession)
+    actions.showReDetail(re)
 };
 
 const openGenomeBrowser = (data, url) => {

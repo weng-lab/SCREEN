@@ -42,7 +42,10 @@ const main_reducers = (state, action) => {
             return ret;
 
 	case Actions.SHOW_RE_DETAIL:
-            return {...state, cre_accession_detail: action.accession};
+            return {...state,
+                    active_cre: action.cre,
+                    cre_accession_detail: action.cre.accession,
+            };
 	case Actions.SET_RE_DETAIL_TAB:
             return {...state, re_details_tab_active: action.name};
 

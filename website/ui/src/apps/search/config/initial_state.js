@@ -17,6 +17,7 @@ const initialState = () => ({
     maintabs_active: "results",
     maintabs_visible: isCart(),
     cre_accession_detail: null,
+    active_cre: null,
     re_details_tab_active: "topTissues",
     tree_rank_method: "H3K27ac",
     tree_nodes_compare : null
