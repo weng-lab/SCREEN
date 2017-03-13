@@ -56,9 +56,11 @@ class Rampage extends React.Component {
 
 		        <div className="col-md-3">
 		            Choose sort order:&nbsp;
-		            <select ref="sortorder" defaultValue={"all"}
+		            <select ref="sortorder" defaultValue={"byValue"}
 		                    onChange={() => {this.componentDidUpdate()}}>
-		                <option value="all">all</option>
+		                <option value="byValue">by value</option>
+		                <option value="byTissue">by tissue</option>
+		                <option value="byTissueMax">by tissue max</option>
 		            </select>
 		        </div>
 
