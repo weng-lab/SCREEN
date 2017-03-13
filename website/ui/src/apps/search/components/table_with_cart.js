@@ -45,7 +45,7 @@ const openGenomeBrowser = (data, url) => {
     });
 };
 
-const button_click_handler = (name, re, dispatch) => {
+const button_click_handler = (name, re, dispatch, {cellType}) => {
     var half_window = 7500;
     var arr = window.location.href.split("/");
     var host = arr[0] + "//" + arr[2];
@@ -54,7 +54,8 @@ const button_click_handler = (name, re, dispatch) => {
 			       "coord_start" : re.start,
 			       "coord_end" : re.start + re.len,
 			       "halfWindow" : half_window,
-                               "host" : host,
+			       cellType,
+                               host,
 			       GlobalAssembly});
 
     switch (name) {
@@ -269,7 +270,7 @@ class TableWithCart extends React.Component {
                                   table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
-                                  button_click_handler(td, rowdata, actions)}
+                                  button_click_handler(td, rowdata, actions, this.props)}
                               bFilter={true}
                               bLengthChange={true}
                 />

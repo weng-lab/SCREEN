@@ -62,10 +62,10 @@ class TrackhubDb:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb(info["reAccession"])
+            return self.makeTrackDb(info["reAccession"], info["j"])
         if loc.startswith("trackDb_") and loc.endswith(".html"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb(info["reAccession"]).replace("\n", "<br/>")
+            return self.makeTrackDb(info["reAccession"], info["j"]).replace("\n", "<br/>")
 
         return "invalid path"
 
@@ -206,7 +206,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         tracks.append(ti)
         return tracks
 
-    def getLines(self, accession):
+    def getLines(self, accession, j):
         self.priority = 1
 
         self.lines  = []
@@ -216,14 +216,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
+        print("j", j)
         topTissues = cre.topTissues()["dnase"]
         for ti in self._getTrackList(topTissues):
             self.lines += [self.trackhubExp(ti)]
 
         return filter(lambda x: x, self.lines)
 
-    def makeTrackDb(self, accession):
-        lines = self.getLines(accession)
+    def makeTrackDb(self, accession, j):
+        lines = self.getLines(accession, j)
 
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
