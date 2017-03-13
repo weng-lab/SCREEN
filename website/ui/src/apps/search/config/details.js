@@ -139,9 +139,15 @@ class ReTabBase extends React.Component{
     }
 
     render(){
-        return (<div style={{"width": "100%"}} >
-        {this.doRenderWrapper()}
-        </div>);
+	if("details" === this.props.maintabs_active){
+            if(this.key !== this.props.re_details_tab_active){
+                return false;
+            }
+        }
+        return (
+            <div style={{"width": "100%"}} >
+                {this.doRenderWrapper()}
+            </div>);
     }
 };
 
@@ -177,8 +183,12 @@ class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
 	this.doRender = (data) => {
-	    return tabEles(data, OrthologTable(), 1);
-	};
+            let d = data.ortholog;
+	    if(d.length > 0) {
+	        return tabEles(data, OrthologTable(), 1);
+	    }
+            return <div><br />{"No orthologous cRE identified."}</div>;
+	}
     }
 }
 
