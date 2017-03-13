@@ -182,16 +182,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def _getTrackList(self, topCellTypes):
+    def _getTrackList(self, cts):
         tracks = []
         cache = self.cacheW[self.assembly]
-        topN = 5
 
         assays = ["dnase", "h3k27ac", "h3k4me3", "ctcf"]
         assaymap = cache.assaymap
 
-        tcts = sorted(topCellTypes, key = lambda x: x["one"], reverse=True)[:topN]
-        for tct in tcts:
+        for tct in cts:
             ct = tct["ct"]
             # else JSON will be invalid for WashU
             ctwu = ct.replace("'", "_").replace('"', '_')
@@ -216,9 +214,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
-        print("j", j)
-        topTissues = cre.topTissues()["dnase"]
-        for ti in self._getTrackList(topTissues):
+        ct = j["cellType"]
+        if not ct:
+            topN = 5
+            topTissues = cre.topTissues()["dnase"]
+            tcts = sorted(topCellTypes, key = lambda x: x["one"],
+                          reverse=True)[:topN]
+        else:
+            tcts = [{"ct" : ct, "tissue" : ct}]
+
+        for ti in self._getTrackList(tcts):
             self.lines += [self.trackhubExp(ti)]
 
         return filter(lambda x: x, self.lines)
