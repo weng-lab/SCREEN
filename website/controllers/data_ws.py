@@ -127,11 +127,18 @@ class DataWebService:
     def _re_detail_nearbyGenomic(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         coord = cre.coord()
+
+        #with Timer("snps") as t:
         snps = cre.intersectingSnps(10000) # 10 KB
+        #with Timer("nearbyCREs") as t:
         nearbyCREs = cre.distToNearbyCREs(1000000) # 1 MB
+        #with Timer("nearbyGenes") as t:
         nearbyGenes = cre.nearbyGenes()
+        #with Timer("genesInTad") as t:
         genesInTad = cre.genesInTad()
+        #with Timer("re_cres") as t:
         re_tads = cre.cresInTad()
+
         return { accession : {"nearby_genes": nearbyGenes,
                               "tads": genesInTad,
                               "re_tads": re_tads,

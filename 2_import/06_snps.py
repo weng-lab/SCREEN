@@ -43,7 +43,7 @@ stop integer
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
 
-        makeIndex(self.curs, tableName, ["snp"])
+        makeIndex(self.curs, tableName, ["snp", "chrom"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
