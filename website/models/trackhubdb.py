@@ -62,7 +62,10 @@ class TrackhubDb:
         loc = args[2]
         if loc.startswith("trackDb_") and loc.endswith(".txt"):
             self.hubNum = loc.split('_')[1].split('.')[0]
-            return self.makeTrackDb([info["reAccession"]])
+            return self.makeTrackDb(info["reAccession"])
+        if loc.startswith("trackDb_") and loc.endswith(".html"):
+            self.hubNum = loc.split('_')[1].split('.')[0]
+            return self.makeTrackDb(info["reAccession"]).replace("\n", "<br/>")
 
         return "invalid path"
 
@@ -142,11 +145,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
     def mp(self):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom/encyclopedia/Version-4",
-                            "ver9", self.assembly, "public_html")
-        ucsc_url = os.path.join(base, "masterPeaks.final.bigBed")
+                            "ver10", self.assembly)
         if "hg19" == self.assembly:
-            ucsc_url = os.path.join(base, "hg19-cREs.bigBed")
-        washu_url = os.path.join(base, "washu-masterPeaks.final.bed.gz")
+            ucsc_url = os.path.join(base, "hg19-cREs-V10.bigBed")
+        washu_url = os.path.join(base, "hg19-cREs-V10.bed.gz")
         if self.browser in [UCSC, ENSEMBL]:
             t = BigBedTrack("Candidate Regulatory Elements",
                             self.priority, ucsc_url,
@@ -196,46 +198,31 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def _getTrackList(self, topCellLinesByRankMethod):
+    def _getTrackList(self, topCellTypes):
         tracks = []
         cache = self.cacheW[self.assembly]
         topN = 5
 
-        lookup = {"dnase": "dnase",
-                  "promoter": "h3k4me3",
-                  "enhancer": "h3k27ac",
-                  "ctcf": "ctcf"}
+        assays = ["dnase", "h3k27ac", "h3k4me3", "ctcf"]
+        assaymap = cache.assaymap
 
-        for rm, cellTypes in topCellLinesByRankMethod.iteritems():
-            # get the topN of histone-only, dnase-only, or ctcf-only
-            cts = sorted(cellTypes, key = lambda x: x["one"],
-                         reverse=True)[:topN]
-            rmo = lookup[rm]
-            for r in cts:
-                ct = r["ct"].replace("'", "_").replace('"', '_') # else JSON will be invalid for WashU
-                t = r["tissue"]
-                expBigWigID = cache.assayAndCellTypeToExpAndBigWigAccessions(rmo, r["ct"])
-                expID = expBigWigID[0]
-                fileID = expBigWigID[1]
-                ti = TrackInfo(rm, t, ct, rmo, expID, fileID)
-                #print(ti, r["one"])
-                tracks.append(ti)
+        tcts = sorted(topCellTypes, key = lambda x: x["one"], reverse=True)[:topN]
+        for tct in tcts:
+            ct = tct["ct"]
+            # else JSON will be invalid for WashU
+            ctwu = ct.replace("'", "_").replace('"', '_')
+            tissue = tct["tissue"]
+            for assay in assays:
+                if assay in assaymap:
+                    if ct in assaymap[assay]:
+                        expBigWigID = assaymap[assay][ct]
+                        expID = expBigWigID[0]
+                        fileID = expBigWigID[1]
+                        ti = TrackInfo(ct, tissue, assay, expID, fileID)
+                        tracks.append(ti)
+        return tracks
 
-        tracks.sort(key = lambda x: [x.t, x.ct, x.assay])
-
-        pairs = set()
-        ret = []
-        for t in tracks:
-            k = (t.ct, t.assay)
-            if k in pairs:
-                continue
-            pairs.add(k)
-            ret.append(t)
-
-        #print('\n'.join([str(x) for x in ret]))
-        return ret
-
-    def getLines(self, accessions):
+    def getLines(self, accession):
         self.priority = 1
 
         self.lines  = []
@@ -243,12 +230,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         pgSearch = PGsearch(self.ps, self.assembly)
 
-        self.re_pos = []
-        for accession in accessions:
-            cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
-            self.re_pos.append(cre.coord())
+        cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
-        topTissues = cre.topTissues()
+        topTissues = cre.topTissues()["dnase"]
         for ti in self._getTrackList(topTissues):
             self.lines += [self.trackhubExp(ti)]
 
@@ -256,8 +240,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         return filter(lambda x: x, self.lines)
 
-    def makeTrackDb(self, accessions):
-        lines = self.getLines(accessions)
+    def makeTrackDb(self, accession):
+        lines = self.getLines(accession)
 
         f = StringIO.StringIO()
         map(lambda line: f.write(line + "\n"), lines)
