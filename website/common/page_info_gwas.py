@@ -6,6 +6,7 @@ from common.pg_gwas import PGgwas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
+from config import Config
 
 class PageInfoGwas:
     def __init__(self, ps, cacheW):
@@ -18,6 +19,7 @@ class PageInfoGwas:
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
         return {"page": {"title" : PageTitle(assembly)},
+                "Ribbon": Config.ribbon,
                 "indexPage": indexPage,
                 "Assembly" : assembly,
                 "bundlets" : os.path.getmtime(bundleFnp),

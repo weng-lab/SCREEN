@@ -2,6 +2,7 @@ import sys, os, json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths, PageTitle
+from config import Config
 
 class PageInfoDe:
     def __init__(self, ps, cacheW):
@@ -14,6 +15,7 @@ class PageInfoDe:
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
         return {"page": {"title" : PageTitle(assembly)},
+                "Ribbon": Config.ribbon,
                 "indexPage": indexPage,
                 "Assembly" : assembly,
                 "bundlets" : os.path.getmtime(bundleFnp),

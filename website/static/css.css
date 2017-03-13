@@ -532,3 +532,33 @@ div.dataTables_wrapper div.dataTables_paginate {
 .creDetailsTitle {
     display: inline-block;
 }
+
+/* ribbon from http://stackoverflow.com/a/36640360 */
+.mt-element-ribbon .ribbon.ribbon-shadow.ribbon-right, .mt-element-ribbon .ribbon.ribbon-shadow.ribbon-vertical-right {
+    box-shadow: -2px 2px 7px rgba(0,0,0,.4);
+}
+.mt-element-ribbon .ribbon.ribbon-color-danger {
+    background-color: #ed6b75;
+    color: #fff;
+}
+.mt-element-ribbon .ribbon.ribbon-shadow {
+    box-shadow: 2px 2px 7px rgba(0,0,0,.4);
+}
+.mt-element-ribbon .ribbon.ribbon-right {
+    left: auto;
+    right: -2px;
+}
+.mt-element-ribbon .ribbon {
+    position: absolute;
+    top: 20px;
+	left:7px;
+    padding: .5em 1em;
+    z-index: 5;
+}
+.mt-element-ribbon .ribbon, .mt-element-ribbon .ribbon.ribbon-color-default, .mt-element-ribbon .ribbon.ribbon-color-default>.ribbon-sub, .mt-element-ribbon .ribbon>.ribbon-sub {
+    background-color: #bac3d0;
+    color: #384353;
+}
+.uppercase {
+    text-transform: uppercase!important;
+}
