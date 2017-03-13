@@ -194,8 +194,7 @@ export const NearbyGenomicTable = () => {
 	        {title: "distance", data: "distance",
 	         render: Render.integer } ],
             pageLength: 5,
-	    order: [[1, "asc"]],
-	    onTdClick: (actions) => (i, d) => { actions.showReDetail(d.name)}
+	    order: [[1, "asc"]]
         },
         overlapping_snps: {
 	    title: "Nearby SNPs",
@@ -255,9 +254,7 @@ export const NearbyGenomicTable = () => {
 	               {title: "distance", data: "distance",
                         render: Render.integer} ],
                    pageLength: 5,
-	           order: [[1, "asc"]],
-	           onTdClick: (actions) => (i, d) => {
-                       actions.showReDetail(d.name)}
+	           order: [[1, "asc"]]
                }
         };
     }

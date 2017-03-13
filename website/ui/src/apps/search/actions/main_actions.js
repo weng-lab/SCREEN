@@ -50,7 +50,7 @@ export const SET_MINIPEAKS_ASSAY = 'SET_MINIPEAKS_ASSAY';
 export const setMiniPeaksAssay = (assay) => ({type: SET_MINIPEAKS_ASSAY, assay});
 
 export const SHOW_RE_DETAIL = 'SHOW_RE_DETAIL'
-export const showReDetail = (accession) => ({ type: SHOW_RE_DETAIL, accession})
+export const showReDetail = (cre) => ({ type: SHOW_RE_DETAIL, cre})
 export const SET_RE_DETAIL_TAB = 'SET_RE_DETAIL_TAB'
 export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });
 
