@@ -21,3 +21,4 @@ class Config:
     minipeaks_ver = c.get("RE", "minipeaks_ver")
     minipeaks_nbins = c.get("RE", "minipeaks_nbins")
     ribbon = c.get("RE", "ribbon")
+    GoogleAnalytics = int(c.get("RE", "googleAnalytics"))
