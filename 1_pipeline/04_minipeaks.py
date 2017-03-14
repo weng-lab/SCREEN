@@ -174,6 +174,22 @@ class MergeFiles:
         printt("paste into", mergedFnp)
         chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
+def sample(assembly):
+    accessionsFnp = paths.fnpCreTsvs(assembly, "sample", "sampled_accessions.txt")
+    fnps = paths.fnpCreTsvs(assembly, "sample", "chr*.tsv.gz")
+    cmds = ["zcat", fnps,
+            '|', "awk '{ print $1 }'",
+            '>', accessionsFnp]
+    Utils.runCmds(cmds)
+
+    fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
+    for fn in fns:
+        assay = fn.split('-')[0]
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
+        sampleMiniPeaksFnp = paths.path(self.assembly, "minipeaks", "merged",
+                                        "sample", assay + "_merged.txt")
+    
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
@@ -191,13 +207,15 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        if 1:
+        if 0:
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
-        else:
+        if 0:
             mf = MergeFiles(assembly, 20, 3, args.assay)
             mf.run()
-
+        if 1:
+            sample(assembly)
+            
     return 0
 
 if __name__ == '__main__':
