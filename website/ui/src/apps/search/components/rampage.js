@@ -22,21 +22,6 @@ class Rampage extends React.Component {
                         </span>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-3">
-                        <span className={"rampageEnsemblidVer"}>
-                            {gene.ensemblid_ver}
-                        </span>
-                    </div>
-                    <div className={"col-md-3"}>
-                        <div ref="titleTss" className="rampageTss">
-                            {d.tss}
-                        </div>
-                        <div ref="titleCoord" className="rampageCoord">
-                            {d.chrom}:{d.start}-{d.stop}
-                        </div>
-                    </div>
-                </div>
             </div>);
 
 	return (
@@ -47,11 +32,14 @@ class Rampage extends React.Component {
 		    <div className="row">
 
 		        <div className="col-md-4">
-		            TSS:&nbsp;
+		            Transcript:&nbsp;
 		            <select ref="tss" defaultValue={tsses[0]}
 		                    onChange={() => {this.componentDidUpdate()}}>
 		                {selectTsses}
 		            </select>
+                            <div ref="titleCoord" className="rampageCoord">
+                                {d.chrom}:{d.start}-{d.stop}
+                            </div>
 		        </div>
 
 		        <div className="col-md-3">
@@ -97,7 +85,6 @@ class Rampage extends React.Component {
         let tssData = allData[this.refs.tss.value];
 
         // TODO: move into this.state!
-        this.refs.titleTss.innerText = tssData["tss"];
         this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
 
 	var items = tssData.items[this.refs.sortorder.value];
@@ -112,7 +99,7 @@ class Rampage extends React.Component {
 	    var val = d[key];
 	    return val >= 0 ? val : 0;
 	};
-	var subName_f = (d) => (d["cellType"]);
+	var subName_f = (d) => (d["biosample_term_name"]);
 
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
@@ -170,10 +157,10 @@ class Rampage extends React.Component {
 	    .attr('class', 'd3-tip')
 	    .offset([0, 0])
 	    .html(function(d) {
-		return "<strong>" + d["cellType"] + "</strong>"+
+		return "<strong>" + d["biosample_term_name"] + "</strong>"+
 		    "<div>" + d["tissue"] + "</div>" +
-		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>" +
-		    "<div>" + "replicate: " +d["rep"] + "</div>";
+		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>"
+		;
 	    })
 
 	for (var i in sorted_keys) {
