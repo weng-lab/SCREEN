@@ -16,7 +16,7 @@ import initialState from './config/initial_state'
 
 class SearchPage extends React.Component {
     render() {
-	// const loggerMiddleware = createLogger();
+	//const loggerMiddleware = createLogger();
 
 	let maintab = null;
         let subtab = null;
