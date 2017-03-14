@@ -16,13 +16,16 @@ class MemCacheWrapper:
         self.mc = None
         try:
             import pylibmc
-            self.mc = pylibmc.Client(["127.0.0.1"], binary=True,
-                                behaviors={"tcp_nodelay": True,
-                                           "ketama": True})
-            print("using memcache...", self.namespace)
+            try:
+                self.mc = pylibmc.Client(["127.0.0.1"], binary=True,
+                                    behaviors={"tcp_nodelay": True,
+                                               "ketama": True})
+                print("using memcache...", self.namespace)
+            except Exception as e:
+                print(str(e))
         except:
             print("pylibmc not found....")
-            pass
+
 
     def _key(self, kRaw):
         if isinstance(kRaw, basestring):
@@ -61,4 +64,4 @@ class MemCacheWrapper:
             data = f(*args, **kwargs)
             self.set(kRaw, data)
             return data
-        return f()
+        return f(*args, **kwargs)
