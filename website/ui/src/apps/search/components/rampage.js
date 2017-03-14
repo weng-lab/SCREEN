@@ -86,8 +86,10 @@ class Rampage extends React.Component {
         let tssData = allData[this.refs.tss.value];
 
         // TODO: move into this.state!
-        this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"] +
-                                         "  " + tssData["strand"] + " " + tssData["geneinfo"];
+        this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"]
+                                       + "-" + tssData["stop"]
+                                       + "  " + tssData["strand"]
+                                       + " " + tssData["geneinfo"];
 ;
 	var items = tssData.items[this.refs.sortorder.value];
 

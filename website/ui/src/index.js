@@ -18,6 +18,8 @@ ReactDOM.render((
 	<Route path="/" component={IndexPage} />
 	<Route path="/index/:tab" component={IndexPage} />
 	<Route path="/search(.*)" component={Search} />
+	<Route path="/search/:maintab(.*)" component={Search} />
+	<Route path="/search/:maintab/:subtab(.*)" component={Search} />
 	<Route path="/geApp/:assembly/" component={GeneExp} />
 	<Route path="/deApp/:assembly/" component={De} />
 	<Route path="/gwasApp/:assembly" component={Gwas} />

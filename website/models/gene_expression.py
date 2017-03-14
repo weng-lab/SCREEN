@@ -39,7 +39,7 @@ class GeneExpression:
             ret[t]["items"].append(row)
         return ret
 
-    def groupByTissueMax(self, rows, key):
+    def groupByTissueMax(self, rows, skey):
         sorter = lambda x: x["tissue"]
         rows.sort(key = sorter)
 
@@ -53,11 +53,11 @@ class GeneExpression:
                           "color": c,
                           "items": [row]}
             else:
-                if ret[t]["items"][0][key] < row[key]:
+                if ret[t]["items"][0][skey] < row[skey]:
                     ret[t]["items"][0] = row
 
         rows = ret.values()
-        sorter = lambda x: x["items"][0][key]
+        sorter = lambda x: float(x["items"][0][skey])
         rows.sort(key = sorter, reverse = True)
 
         ret = {}
