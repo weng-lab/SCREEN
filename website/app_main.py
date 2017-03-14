@@ -11,7 +11,7 @@ from controllers.gwas_controller import GwasController
 from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
 from controllers.trackhub_controller import TrackhubController
-from controllers.cart_controller import CartController
+from controllers.cart_ws import CartWebServiceWrapper
 from controllers.data_ws import DataWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
 #from controllers.comparison_controller import ComparisonController
@@ -33,7 +33,7 @@ class MainApp():
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
         #self.cp = ComparisonController(self.templates, ps, cache)
-        self.cartc = CartController(self.templates, ps, cache)
+        self.cartWS = CartWebServiceWrapper(ps, cache)
         self.trackhub = TrackhubController(self.templates, ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.autoWS = AutocompleteWebService(ps)
@@ -96,8 +96,8 @@ class MainApp():
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.cartc.process(j, self.sessions.userUid(),
-                                  args, kwargs)
+        return self.cartWS.process(j, self.sessions.userUid(),
+                                   args, kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
