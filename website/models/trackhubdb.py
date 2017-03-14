@@ -151,11 +151,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
         if self.browser in [UCSC, ENSEMBL]:
-            url = os.path.join(base, "hg19-cREs-V10.bigBed")
+            url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
             t = PredictionTrack("Candidate Regulatory Elements",
                                 self.priority, url).track()
         else:
-            url = os.path.join(base, "hg19-cREs-V10.bed.gz")
+            url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("Candidate Regulatory Elements",
                       self.priority, url, 
                       type = "hammock").track_washu()
@@ -219,9 +219,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        if "hg19" == self.assembly:
-            if self.browser in [UCSC, ENSEMBL]:
-                self.lines += [self.mp()]
+        if self.browser in [UCSC, ENSEMBL]:
+            self.lines += [self.mp()]
 
         self._addSignalFiles(accession, j)
             
