@@ -583,8 +583,7 @@ ORDER BY tss
             nr = {"data" : {}}
             for k, v in dr.iteritems():
                 if k.startswith("encs"):
-                    if 0 != v:
-                        nr["data"][k] = v
+                    nr["data"][k] = v
                     continue
                 nr[k] = v
             if not nr["data"]:
@@ -610,8 +609,7 @@ ORDER BY tss
             nr = {"data" : {}}
             for k, v in dr.iteritems():
                 if k.startswith("encs"):
-                    if 0 != v:
-                        nr["data"][k] = v
+                    nr["data"][k] = v
                     continue
                 nr[k] = v
             if not nr["data"]:
