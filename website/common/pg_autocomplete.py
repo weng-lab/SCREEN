@@ -32,7 +32,7 @@ SELECT oname
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 5
-            """.format(tn = self.assembly + "_autocomplete"), (uq,))
+            """.format(tn = self.assembly + "_autocomplete"), (q,))
         r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (uq, self.assembly))
