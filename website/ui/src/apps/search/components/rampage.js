@@ -91,7 +91,8 @@ class Rampage extends React.Component {
                                        + "  " + tssData["strand"]
                                        + " " + tssData["geneinfo"];
 ;
-	var items = tssData.items[this.refs.sortorder.value];
+        var itemsByID = tssData.itemsByID;
+	var items = tssData.itemsGrouped[this.refs.sortorder.value];
 
 	var sorted_keys = Object.keys(items).sort(function (a, b) {
 	    // from http://stackoverflow.com/a/9645447
@@ -100,10 +101,10 @@ class Rampage extends React.Component {
 
 	var rank_f = (d) => {
 	    var key = this.refs.datascale.value;
-	    var val = d[key];
+	    var val = itemsByID[d][key];
 	    return val >= 0 ? val : 0;
 	};
-	var subName_f = (d) => (d["biosample_term_name"]);
+	var subName_f = (d) => (itemsByID[d]["biosample_term_name"]);
 
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
@@ -124,7 +125,9 @@ class Rampage extends React.Component {
 		items[key].items.length / 2.0) + 0.25);
 	    total_items += items[key].items.length;
 	    d = d3.max(items[key].items, rank_f);
-	    if (d > cmax) cmax = d;
+	    if (d > cmax) {
+                cmax = d;
+            }
 	}
 
 	var barheight = +this.props.barheight;
@@ -160,7 +163,8 @@ class Rampage extends React.Component {
 	var toolTip = d3.tip()
 	    .attr('class', 'd3-tip')
 	    .offset([0, 0])
-	    .html(function(d) {
+	    .html(function(rid) {
+                let d = itemsByID[rid];
 		return "<strong>" + d["biosample_term_name"] + "</strong>"+
 		    "<div>" + d["tissue"] + "</div>" +
 		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expid"] + '" target+"_blank">' + d["expid"] + "</a>" + "</div>"
@@ -183,7 +187,8 @@ class Rampage extends React.Component {
 		.attr("stroke", "white")
 		.attr('width', (d) => {return xscale(rank_f(d))})
 	    	.on("click", function(d) {
-		    window.open("http://encodeproject.org/" + d["expID"])
+		    window.open("http://encodeproject.org/" +
+                                itemsByID[d]["expID"])
 		});
 	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
@@ -195,7 +200,8 @@ class Rampage extends React.Component {
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
 		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
 		.on("click", function(d) {
-		    window.open("http://encodeproject.org/" + d["expID"])
+		    window.open("http://encodeproject.org/" +
+                                itemsByID[d]["expID"])
 		});
 	}
 	var ylabels = canvas.append('g')
