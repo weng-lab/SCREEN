@@ -161,9 +161,9 @@ def main():
     for assembly in assemblies:
         print('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
-            #doImport(curs, assembly)
+            doImport(curs, assembly)
             metadata(curs, assembly)
-            #doIndex(curs, assembly)
+            doIndex(curs, assembly)
     return 0
 
 if __name__ == '__main__':
