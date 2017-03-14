@@ -9,7 +9,7 @@ import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
 
 import * as Render from '../../../common/renders'
-import {isCart} from '../../../common/utility'
+import {doToggle, isCart} from '../../../common/utility'
 
 class TableWithCart extends React.Component {
     constructor(props) {
@@ -23,7 +23,19 @@ class TableWithCart extends React.Component {
         if (td.className.indexOf("browser") != -1) return;
         if (td.className.indexOf("geneexp") != -1) return;
         if (td.className.indexOf("cart") != -1) {
-	    actions.toggleCart(re.accession);
+            let accession = re.accession;
+            let accessions = doToggle(this.props.cart_accessions, accession);
+	    let j = {GlobalAssembly, accessions};
+	    $.ajax({
+		type: "POST",
+		url: "/cart/set",
+		data: JSON.stringify(j),
+		dataType: "json",
+		contentType: "application/json",
+		success: (response) => {
+                }
+	    });
+	    actions.setCart(accessions);
 	    return;
         }
         actions.setMainTab("details");
@@ -78,11 +90,46 @@ class TableWithCart extends React.Component {
 
     addAllToCart() {
 	let accessions = this.props.data.map((d) => ( d.accession ));
-	this.props.actions.addCart(accessions);
+        accessions = new Set([...this.props.cart_accessions,
+                              ...accessions]);
+	let j = {GlobalAssembly, accessions};
+	$.ajax({
+	    type: "POST",
+	    url: "/cart/set",
+	    data: JSON.stringify(j),
+	    dataType: "json",
+	    contentType: "application/json",
+	    success: (response) => {
+		let href = window.location.href;
+		if(href.includes("&cart")){
+		    return;
+		}
+		// go to cart page
+		window.open(href + "&cart", '_blank');
+	    }
+	});
+	this.props.actions.setCart(accessions);
     }
 
     clearCart() {
-	this.props.actions.clearCart();
+	let accessions = new Set([]);
+	let j = {GlobalAssembly, accessions}
+	$.ajax({
+	    type: "POST",
+	    url: "/cart/set",
+	    data: JSON.stringify(j),
+	    dataType: "json",
+	    contentType: "application/json",
+	    success: (response) => {
+		let href = window.location.href;
+		if(href.includes("&cart")){
+		    // go back to search page
+		    href = href.replace("&cart", "");
+		    window.location.href = href;
+		}
+	    }
+	});
+        this.props.actions.setCart(accessions);
     }
 
     downloadBed() {
