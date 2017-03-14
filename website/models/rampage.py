@@ -71,6 +71,7 @@ class Rampage:
         ret["start"] = trans["start"]
         ret["stop"] = trans["stop"]
         ret["strand"] = trans["strand"]
+        ret["geneinfo"] = trans["geneinfo"].replace("_", " ")
 
         items = []
         for fileID, val in trans["data"].iteritems():
