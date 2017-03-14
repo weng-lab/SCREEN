@@ -172,9 +172,10 @@ class Rampage extends React.Component {
 	    return val;
 	};
 
-	var subName_f = (rid) => (
-            itemsByID[rid]["biosample_term_name"] +
-            ' (' + transcript.strand + ')' );
+	var subName_f = (rid) => {
+	    let t = itemsByID[rid];
+	    return t["biosample_term_name"] + ' (' + t.strand + ')';
+	}
 
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
