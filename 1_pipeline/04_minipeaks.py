@@ -181,15 +181,20 @@ def sample(assembly):
             '|', "awk '{ print $1 }'",
             '>', accessionsFnp]
     Utils.runCmds(cmds)
-
+    printWroteNumLines(accessionsFnp)
+    
     fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
     for fn in fns:
         assay = fn.split('-')[0]
-        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
-        sampleMiniPeaksFnp = paths.path(self.assembly, "minipeaks", "merged",
+        mergedFnp = paths.path(assembly, "minipeaks", "merged", assay + "_merged.txt")
+        sampleMiniPeaksFnp = paths.path(assembly, "minipeaks", "merged",
                                         "sample", assay + "_merged.txt")
-    
-        
+        Utils.ensureDir(sampleMiniPeaksFnp)
+        cmds = ["grep -f", accessionsFnp, mergedFnp,
+                '>',  sampleMiniPeaksFnp]
+        Utils.runCmds(cmds)
+        printWroteNumLines(sampleMiniPeaksFnp)
+                
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
