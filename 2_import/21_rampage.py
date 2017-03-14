@@ -104,7 +104,8 @@ fileID text,
 biosample_term_name text,
 biosample_type text,
 biosample_summary text,
-tissue text
+tissue text,
+strand VARCHAR(1)
 ) """.format(tn = tableName))
 
     outF = StringIO.StringIO()
@@ -115,18 +116,30 @@ tissue text
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileID)
         expID = exp.encodeID
-        tissue = DetermineTissue.TranslateTissue(assembly, exp).strip()
-        outF.write('\t'.join([expID,
+        tissue = DetermineTissue.TranslateTissue(assembly, exp)
+        for f in exp.files:
+            if f.fileID == fileID:
+                print(f)
+                print(f.output_type)
+                strand = f.output_type.split()[0]
+                if "plus" == strand:
+                    strand = '+'
+                elif "minus" == strand:
+                    strand = '-'
+                else:
+                    raise Exception("unknown strand " + f.output_type)
+                outF.write('\t'.join([expID,
                               fileID,
                               exp.biosample_term_name,
                               exp.biosample_type,
                               exp.getExpJson()["biosample_summary"],
-                              tissue
+                              tissue,
+                              strand
                               ]) + '\n')
     outF.seek(0)
 
     cols = ["expID", "fileID", "biosample_term_name", "biosample_type",
-            "biosample_summary", "tissue"]
+            "biosample_summary", "tissue", "strand"]
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("\tok", curs.rowcount)
 
@@ -148,9 +161,9 @@ def main():
     for assembly in assemblies:
         print('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
-            doImport(curs, assembly)
+            #doImport(curs, assembly)
             metadata(curs, assembly)
-            doIndex(curs, assembly)
+            #doIndex(curs, assembly)
     return 0
 
 if __name__ == '__main__':
