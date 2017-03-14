@@ -27,7 +27,7 @@ class MemCacheHelper:
     mc_pool_size = 20
 
     print("starting memcached client")
-    mc = pylibmc.Client(["127.0.0.1"], binary=True,
+    mc = pylibmc.Client(["memcached"], binary=True,
                         behaviors={"tcp_nodelay": True,
                                    "ketama": True})
 
