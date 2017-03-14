@@ -7,24 +7,24 @@ class Rampage:
         self.assembly = assembly
         self.pgSearch = pgSearch
 
-    def _procees(self, trans, ri):
+    def _procees(self, transcript, ri):
         ret = {}
-        ret["transcript"] = trans["transcript"]
-        ret["chrom"] = trans["chrom"]
-        ret["start"] = trans["start"]
-        ret["stop"] = trans["stop"]
-        ret["strand"] = trans["strand"]
-        ret["geneinfo"] = trans["geneinfo"]
+        ret["transcript"] = transcript["transcript"]
+        ret["chrom"] = transcript["chrom"]
+        ret["start"] = transcript["start"]
+        ret["stop"] = transcript["stop"]
+        ret["strand"] = transcript["strand"]
+        ret["geneinfo"] = transcript["geneinfo"]
 
         # fold actual data val into each "row"
         items = []
-        for fileID, val in trans["data"].iteritems():
+        for fileID, val in transcript["data"].iteritems():
             fileID = fileID.upper()
-            info = ri[fileID]
+            info = ri[fileID].copy()
             info["counts"] = round(val, 4)
             items.append(info)
 
-        hg = HelperGrouper(items)
+        hg = HelperGrouper(transcript, items)
         ret["itemsByID"] = hg.byID
         ret["itemsGrouped"] = hg.getGroupedItems("counts")
         return ret
@@ -41,7 +41,7 @@ class Rampage:
         byTranscript = {}
         for transcript in transcripts:
             info = self._procees(transcript, ri)
-            byTranscript[info["transcript"]] = info
+            byTranscript[transcript["transcript"]] = info
 
         transcripts = natsorted(byTranscript.keys())
         return {"sortedTranscripts" : transcripts,
