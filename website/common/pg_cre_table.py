@@ -12,6 +12,7 @@ import psycopg2.extras
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -21,8 +22,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from db_utils import getcursor, timedQuery
 from utils import eprint
 
-class PGcreTable:
+class PGcreTable(GetOrSetMemCache):
     def __init__(self, pg, assembly, ctmap, ctsTable):
+        GetOrSetMemCache.__init__(self, assembly)
+
         self.pg = pg
         self.assembly = assembly
         self.ctmap = ctmap

@@ -14,6 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 class PGcartWrapper:
     def __init__(self, pg):
@@ -23,8 +24,9 @@ class PGcartWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGcart:
+class PGcart(GetOrSetMemCache):
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly)
         self.pg = pg
         self.assembly = assembly
         self.tableName = assembly + "_cart"
