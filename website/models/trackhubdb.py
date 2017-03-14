@@ -151,11 +151,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
         if self.browser in [UCSC, ENSEMBL]:
-            url = os.path.join(base, "hg19-cREs-V10.bigBed")
+            url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
             t = PredictionTrack("Candidate Regulatory Elements",
                                 self.priority, url).track()
         else:
-            url = os.path.join(base, "hg19-cREs-V10.bed.gz")
+            url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("Candidate Regulatory Elements",
                       self.priority, url, 
                       type = "hammock").track_washu()
@@ -219,9 +219,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority = 1
 
         self.lines  = []
-        if "hg19" == self.assembly:
-            if self.browser in [UCSC, ENSEMBL]:
-                self.lines += [self.mp()]
+        if self.browser in [UCSC, ENSEMBL]:
+            self.lines += [self.mp()]
 
         self._addSignalFiles(accession, j)
             
@@ -232,7 +231,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
-        ct = j["cellType"]
+        ct = j.get("cellType", None)
         if not ct:
             topN = 5
             topCellTypes = cre.topTissues()["dnase"]
@@ -244,8 +243,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         ctsTracks, tracks = self._getTrackList(tcts)
         for url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
-                t = PredictionTrack("Candidate Regulatory Elements in " + ct,
-                                    self.priority, url).track()
+                title = "Candidate Regulatory Elements"
+                if ct:
+                    title +=  "in " + ct
+                t = PredictionTrack(title, self.priority, url).track()
                 self.priority += 1
                 self.lines += [t]
 
