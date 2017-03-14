@@ -28,7 +28,7 @@ class PGdeWrapper:
 
 class PGde(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGde")
         self.pg = pg
         self.assembly = assembly
 

@@ -24,7 +24,7 @@ from utils import eprint
 
 class PGcreTable(GetOrSetMemCache):
     def __init__(self, pg, assembly, ctmap, ctsTable):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
 
         self.pg = pg
         self.assembly = assembly

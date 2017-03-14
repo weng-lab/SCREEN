@@ -10,8 +10,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from memcachew import MemCacheWrapper
 
 class GetOrSetMemCache(object):
-    def __init__(self, assembly):
-        self.mc = MemCacheWrapper(assembly)
+    def __init__(self, assembly, subNamespace):
+        self.mc = MemCacheWrapper(assembly, subNamespace)
 
     def __getattribute__(self, name):
         attr = object.__getattribute__(self, name)

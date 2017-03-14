@@ -33,7 +33,7 @@ class PGsearchWrapper:
 
 class PGsearch(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGsearch")
         self.pg = pg
         self.assembly = assembly
 
