@@ -10,6 +10,8 @@ from utils import AddPath
 AddPath(__file__, "..")
 from config import Config
 
+# TODO: http://sendapatch.se/projects/pylibmc/pooling.html
+
 class MemCacheWrapper:
     def __init__(self, subnamespace):
         self.namespace = "screen" + Config.version + ':' + subnamespace + ':'
@@ -25,7 +27,6 @@ class MemCacheWrapper:
                 print(str(e))
         except:
             print("pylibmc not found....")
-
 
     def _key(self, kRaw):
         if isinstance(kRaw, basestring):
@@ -51,6 +52,7 @@ class MemCacheWrapper:
         if self.mc:
             k = self._key(kRaw)
             if k in self.mc:
+                print("mc: got", kRaw)
                 return self.mc[k]
         return None
 
