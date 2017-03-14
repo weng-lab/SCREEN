@@ -171,7 +171,6 @@ class DataWebService:
         nearbyGenes = cre.nearbyPcGenes()
         nearest = min(nearbyGenes, key = lambda x: x["distance"])
         cre = CRE(self.pgSearch, accession, self.cache)
-        print("*************", cre.coord())
         rampage = Rampage(self.assembly, self.pgSearch)
         ret = rampage.getByGene(nearest)
         return {accession: ret}

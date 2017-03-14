@@ -1,18 +1,23 @@
+from collections import OrderedDict
+
 from tissue_colors import TissueColors
 
 class HelperGrouper:
-    def __init__(self, rows):
-        self.tissueColors = TissueColors()
+    def __init__(self, transcript, rows):
+        self.transcript = transcript
         self.rows = rows
+
+        self.tissueColors = TissueColors()
         self.byID = {r["id"] : r for r in self.rows}
 
         for rid, r in self.byID.iteritems():
             r["color"] = self.tissueColors.getTissueColor(r["tissue"])
+            r["counts"] = float(r["counts"])
 
     def getGroupedItems(self, skey):
         return { "byTissue" : self.groupByTissue(skey),
                  "byTissueMax" : self.groupByTissueMax(skey),
-                 "byValue" : self.sortByExpression(skey)}
+                 "byValue" : self.sortByValue(skey)}
 
     def groupByTissue(self, skey):
         sorter = lambda x: x["tissue"]
@@ -58,11 +63,11 @@ class HelperGrouper:
 	    ret[k] = row
         return ret
 
-    def sortByExpression(self, skey):
+    def sortByValue(self, skey):
         sorter = lambda x: x[skey]
         self.rows.sort(key = sorter, reverse = True)
 
-        ret = {}
+        ret = OrderedDict()
         for idx, row in enumerate(self.rows):
             t = row["tissue"]
             k = str(idx).zfill(3) + '_' + t

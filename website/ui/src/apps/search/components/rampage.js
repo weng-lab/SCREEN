@@ -102,7 +102,7 @@ class Rampage extends React.Component {
 	var rank_f = (rid) => {
 	    var key = this.refs.datascale.value;
 	    var val = itemsByID[rid][key];
-	    return val >= 0 ? val : 0;
+	    return val;
 	};
 	var subName_f = (rid) => (itemsByID[rid]["biosample_term_name"]);
 
@@ -197,7 +197,7 @@ class Rampage extends React.Component {
 		.append('text')
 		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
 		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
-		.text((d) => (rank_f(d) + " " + subName_f(d) ))
+		.text((rid) => (rank_f(rid) + " " + subName_f(rid) ))
 		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
 		.on("click", function(rid) {
 		    window.open("http://encodeproject.org/" +
