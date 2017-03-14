@@ -45,7 +45,7 @@ class Rampage:
                     ret[t]["items"][0] = row
 
         rows = ret.values()
-        sorter = lambda x: x["items"][0][key]
+        sorter = lambda x: float(x["items"][0][key])
         rows.sort(key = sorter, reverse = True)
         return rows
 
@@ -76,7 +76,7 @@ class Rampage:
         for fileID, val in trans["data"].iteritems():
             fileID = fileID.upper()
             info = ri[fileID]
-            info["counts"] = val
+            info["counts"] = round(val, 4)
             items.append(info)
 
         ret["items"] = {"byTissue" : self._groupByTissue(items),
