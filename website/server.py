@@ -74,7 +74,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
-
+    
     wsconfig = WebServerConfig("main", args.production)
     main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
