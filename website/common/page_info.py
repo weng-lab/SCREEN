@@ -15,7 +15,7 @@ class PageInfoMain:
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
         return {"page": {"title" : PageTitle("")},
-                "Ribbon": Config.ribbon,
+                "Config": Config,
                 "Assembly" : None,
                 "userQueryErr" : userQueryErr,
                 "bundlets" : os.path.getmtime(bundleFnp),

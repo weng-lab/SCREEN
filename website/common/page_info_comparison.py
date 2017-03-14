@@ -17,7 +17,7 @@ class PageInfoComparison:
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
         return {"page": {"title" : PageTitle(assembly)},
-                "Ribbon": Config.ribbon,
+                "Config": Config,
                 "indexPage": indexPage,
                 "Assembly" : assembly,
                 "bundlets" : os.path.getmtime(bundleFnp),
