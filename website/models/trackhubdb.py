@@ -244,8 +244,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         ctsTracks, tracks = self._getTrackList(tcts)
         for url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
-                t = PredictionTrack("Candidate Regulatory Elements in " + ct,
-                                    self.priority, url).track()
+                title = "Candidate Regulatory Elements"
+                if ct:
+                    title +=  "in " + ct
+                t = PredictionTrack(title, self.priority, url).track()
                 self.priority += 1
                 self.lines += [t]
 
