@@ -64,21 +64,20 @@ class Rampage:
                       "items": [row]}
         return ret
 
-    def _procees(self, rows, ri):
+    def _procees(self, trans, ri):
         ret = {}
-        ret["tss"] = rows["tss"]
-        ret["chrom"] = rows["chrom"]
-        ret["start"] = rows["start"]
-        ret["stop"] = rows["stop"]
+        ret["transcript"] = trans["transcript"]
+        ret["chrom"] = trans["chrom"]
+        ret["start"] = trans["start"]
+        ret["stop"] = trans["stop"]
+        ret["strand"] = trans["strand"]
 
         items = []
-        for expID, val in rows["data"].iteritems():
-            expID = expID.upper()
-            items.append({"tissue": ri[expID]["tissue"],
-                          "cellType": ri[expID]["btn"],
-                          "rep": 1,
-                          "counts" : val,
-                          "expID": expID})
+        for fileID, val in trans["data"].iteritems():
+            fileID = fileID.upper()
+            info = ri[fileID]
+            info["counts"] = val
+            items.append(info)
 
         ret["items"] = {"byTissue" : self._groupByTissue(items),
                         "byTissueMax" : self._groupByTissueMax(items, "counts"),
@@ -87,17 +86,17 @@ class Rampage:
 
     def getByGene(self, gene):
         ensemblid_ver = gene["ensemblid_ver"]
-        rows = self.pgSearch.rampageByGene(ensemblid_ver)
-        if not rows:
+        transcripts = self.pgSearch.rampageByGene(ensemblid_ver)
+        if not transcripts:
             return {"sortedTranscripts" : [],
                     "tsss" : [],
                     "gene" : ""}
 
         ri = self.pgSearch.rampage_info()
         byTranscript = {}
-        for row in rows:
-            info = self._procees(row, ri)
-            byTranscript[info["tss"]] = info
+        for transcript in transcripts:
+            info = self._procees(transcript, ri)
+            byTranscript[info["transcript"]] = info
 
         transcripts = natsorted(byTranscript.keys())
         return {"sortedTranscripts" : transcripts,
