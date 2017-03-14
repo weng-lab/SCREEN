@@ -13,6 +13,7 @@ from coord import Coord
 from pg_common import PGcommon
 from config import Config
 from pg_cre_table import PGcreTable
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -21,7 +22,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor, timedQuery
 from utils import eprint
-from memcachew import MemCacheWrapper
 
 class PGsearchWrapper:
     def __init__(self, pg):
@@ -30,19 +30,6 @@ class PGsearchWrapper:
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
-
-class GetOrSetMemCache(object):
-    def __init__(self, assembly):
-        self.mc = MemCacheWrapper(assembly)
-
-    def __getattribute__(self, name):
-        attr = object.__getattribute__(self, name)
-        if hasattr(attr, '__call__'):
-            def newfunc(*args, **kwargs):
-                return self.mc.getOrSet(name, attr, *args, **kwargs)
-            return newfunc
-        else:
-            return attr
 
 class PGsearch(GetOrSetMemCache):
     def __init__(self, pg, assembly):

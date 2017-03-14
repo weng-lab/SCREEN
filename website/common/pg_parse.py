@@ -11,6 +11,7 @@ from coord import Coord
 from pg_common import PGcommon
 from gene_parse import GeneParse
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -29,6 +30,7 @@ class PGparseWrapper:
 
 class PGparse:
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly)
         self.pg = pg
         self.assembly = assembly
 
@@ -98,13 +100,13 @@ LIMIT 50
                          (slo, slo))
             rows = curs.fetchall()
         return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
-    
+
     def try_find_gene(self, s, usetss, tssDist):
         genes = self._exactGeneMatch(s, usetss, tssDist)
         if not genes:
             genes = self._fuzzyGeneMatch(s, usetss, tssDist)
         return genes
-    
+
     def has_overlap(self, coord):
         if not coord:
             return False
