@@ -74,7 +74,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
     cow = CachedObjectsWrapper(ps)
-    
+
     wsconfig = WebServerConfig("main", args.production)
     main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
@@ -83,7 +83,7 @@ def main():
         cherrypy.config.update({'server.environment': "development", })
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
                             'server.socket_port': int(args.port)})
-    
+
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,
                                 'server.thread_pool': 30,
