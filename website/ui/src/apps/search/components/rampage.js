@@ -19,6 +19,7 @@ class Rampage extends React.Component {
                     <div className="col-md-3">
                         <span className={"rampageGeneName"}>
                             <h2><em>{gene.name}</em></h2>
+                            {gene.ensemblid_ver}
                         </span>
                     </div>
                 </div>
@@ -38,7 +39,7 @@ class Rampage extends React.Component {
 		                {selectTsses}
 		            </select>
                             <div ref="titleCoord" className="rampageCoord">
-                                {d.chrom}:{d.start}-{d.stop}
+                                {d.chrom}:{d.start}-{d.stop}{"  "}{d.strand}{" "}{d.geneinfo}
                             </div>
 		        </div>
 
@@ -85,8 +86,9 @@ class Rampage extends React.Component {
         let tssData = allData[this.refs.tss.value];
 
         // TODO: move into this.state!
-        this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"];
-
+        this.refs.titleCoord.innerText = tssData["chrom"] + ":" + tssData["start"] + "-" + tssData["stop"] +
+                                         "  " + tssData["strand"] + " " + tssData["geneinfo"];
+;
 	var items = tssData.items[this.refs.sortorder.value];
 
 	var sorted_keys = Object.keys(items).sort(function (a, b) {
