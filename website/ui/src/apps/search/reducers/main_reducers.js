@@ -49,64 +49,8 @@ const main_reducers = (state, action) => {
 	case Actions.SET_RE_DETAIL_TAB:
             return {...state, re_details_tab_active: action.name};
 
-	case Actions.TOGGLE_CART: {
-	    let accessions = doToggle(state.cart_accessions, action.accession);
-	    let j = {GlobalAssembly, accessions};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/set",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {}
-	    });
-
-            return { ...state, cart_accessions: accessions}
-	}
-
-	case Actions.ADD_CART: {
-	    let accessions = new Set([...state.cart_accessions,
-				      ...action.accessions]);
-	    let j = {GlobalAssembly, accessions};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/set",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {
-		    let href = window.location.href;
-		    if(href.includes("&cart")){
-			return;
-		    }
-		    // go to cart page
-		    window.open(href + "&cart", '_blank');
-		}
-	    });
-
-            return { ...state, cart_accessions: accessions}
-	}
-
-	case Actions.CLEAR_CART: {
-	    let accessions = new Set();
-	    let j = {GlobalAssembly, accessions : []};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/clear",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {
-		    let href = window.location.href;
-		    if(href.includes("&cart")){
-			// go back to search page
-			href = href.replace("&cart", "");
-			window.location.href = href;
-		    }
-		}
-	    });
-
-            return { ...state, cart_accessions: accessions }
+	case Actions.SET_CART: {
+            return { ...state, cart_accessions: action.accessions}
 	}
 
 	case Actions.SET_TREE_RANK_METHOD: {
