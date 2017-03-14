@@ -29,7 +29,7 @@ class PGcommonWrapper:
 
 class PGcommon(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGcommon")
         self.pg = pg
         self.assembly = assembly
 

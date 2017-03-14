@@ -28,7 +28,7 @@ class PGgwasWrapper:
 
 class PGgwas(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGgwas")
         self.pg = pg
         self.assembly = assembly
 

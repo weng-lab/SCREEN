@@ -230,6 +230,7 @@ class GeTab extends ReTabBase{
 	    return (
 		<div>
 		    <h2><em>{data.genename}</em></h2>
+                    {data.ensemblid_ver}
 		    {Render.openGeLink(gene)}
 		    <br />
 		    {React.createElement(LargeHorizontalBars,
