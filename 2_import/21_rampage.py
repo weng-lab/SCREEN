@@ -58,11 +58,17 @@ chrom text,
 start integer,
 stop integer,
 strand VARCHAR(1),
+maxVal real,
 {fields}
 );""".format(tn = tableName, fields = ','.join([f + " real" for f in exps])))
 
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("inserted", curs.rowcount)
+
+    curs.execute("""
+UPDATE {tn}
+SET maxVal = GREATEST( {fields} )
+""".format(tn = tableName, fields = ','.join(exps)))
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rampage"
