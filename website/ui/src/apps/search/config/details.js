@@ -84,12 +84,18 @@ class ReTabBase extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){
-		//console.log("updating", this.key);
 		return true;
 	    }
 	}
-	//console.log("not updating", this.key);
 	return false;
+    }
+
+    componentDidMount(){
+	if("details" === this.props.maintabs_active){
+            if(this.key === this.props.re_details_tab_active){
+		this.loadCRE(this.props);
+	    }
+	}
     }
 
     componentWillReceiveProps(nextProps){

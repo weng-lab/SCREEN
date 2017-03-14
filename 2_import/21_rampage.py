@@ -43,7 +43,7 @@ def doImport(curs, assembly):
         r.append(t[1]) # start
         r.append(t[2]) # stop
         r.append(t[5]) # strand
-        r.append(t[7]) # gene info
+        r.append(t[7].replace("_", " ")) # gene info
         r += row[1:]
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
@@ -115,7 +115,7 @@ tissue text
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileID)
         expID = exp.encodeID
-        tissue = DetermineTissue.TranslateTissue(assembly, exp)
+        tissue = DetermineTissue.TranslateTissue(assembly, exp).strip()
         outF.write('\t'.join([expID,
                               fileID,
                               exp.biosample_term_name,
