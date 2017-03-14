@@ -159,7 +159,7 @@ class Rampage extends React.Component {
 	    .html(function(d) {
 		return "<strong>" + d["biosample_term_name"] + "</strong>"+
 		    "<div>" + d["tissue"] + "</div>" +
-		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expID"] + '" target+"_blank">' + d["expID"] + "</a>" + "</div>"
+		    "<div>" + '<a href="https://encodeproject.org/experiments/' + d["expid"] + '" target+"_blank">' + d["expid"] + "</a>" + "</div>"
 		;
 	    })
 
