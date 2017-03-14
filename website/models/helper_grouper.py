@@ -22,10 +22,8 @@ class HelperGrouper:
         for row in self.rows:
             t = row["tissue"]
 	    if t not in ret:
-                c = row["color"]
-	        ret[t] = {"name" : t,
-                          "displayName" : t,
-                          "color": c,
+	        ret[t] = {"tissue" : t,
+                          "color": row["color"],
                           "items": []}
             ret[t]["items"].append(row["id"])
 
@@ -42,10 +40,8 @@ class HelperGrouper:
         for row in self.rows:
             t = row["tissue"]
 	    if t not in ret:
-                c = row["color"]
-	        ret[t] = {"name" : t,
-                          "displayName" : t,
-                          "color": c,
+	        ret[t] = {"tissue" : t,
+                          "color": row["color"],
                           "items": [row["id"]]}
             else:
                 if self.byID[ret[t]["items"][0]][skey] < row[skey]:
@@ -57,7 +53,7 @@ class HelperGrouper:
 
         ret = {}
         for idx, row in enumerate(rows):
-            t = row["name"]
+            t = row["tissue"]
             k = str(idx).zfill(3) + '_' + t
 	    ret[k] = row
         return ret
@@ -69,11 +65,9 @@ class HelperGrouper:
         ret = {}
         for idx, row in enumerate(self.rows):
             t = row["tissue"]
-            c = row["color"]
             k = str(idx).zfill(3) + '_' + t
-	    ret[k] = {"name" : k,
-                      "displayName" : t,
-                      "color": c,
+	    ret[k] = {"tissue" : t,
+                      "color": row["color"],
                       "items": [row["id"]]}
         return ret
 
