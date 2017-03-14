@@ -23,7 +23,7 @@ class ClientPool(list):
         finally:
             self.append(mc)
 
-class MemCacheWrapperHelper:
+class MemCacheHelper:
     mc_pool_size = 20
 
     print("starting memcached client")
@@ -32,52 +32,36 @@ class MemCacheWrapperHelper:
                                    "ketama": True})
 
 class MemCacheWrapper:
+    # Borg pattern: http://code.activestate.com/recipes/66531/
     __shared_state = {
-        "mc_pool" : ClientPool(MemCacheWrapperHelper.mc.clone() for i in xrange(MemCacheWrapperHelper.mc_pool_size)),
-        "hash" : hashlib.md5()
+        "mc_pool" : ClientPool(MemCacheHelper.mc.clone()
+                               for i in xrange(MemCacheHelper.mc_pool_size))
         }
 
-    def __init__(self, subnamespace):
+    def __init__(self, assembly, subNamespace):
         self.__dict__ = self.__shared_state
-        self.namespace = "screen" + Config.version + ':' + subnamespace + ':'
+        self.namespace = ':'.join(["screen", str(Config.version), assembly,
+                                   subNamespace])
 
-    def _key(self, kRaw):
+    def _key(self, name, *args, **kwargs):
         # http://www.zieglergasse.at/blog/2011/python/memcached-decorator-for-python/
-        if isinstance(kRaw, basestring):
-            return self.namespace + ':' + str(hash(kRaw))
-        return self.namespace + ':' + str(hash(':'.join([str(x) for x in kRaw])))
-
-    def __contains__(self, kRaw):
-        with self.mc_pool.reserve() as mc:
-            k = self._key(kRaw)
-            return k in mc
-
-    def set(self, kRaw, v):
-        # memcache has 1MB limit?
-        with self.mc_pool.reserve() as mc:
-            k = self._key(kRaw)
-            try:
-                mc[k] = v
-            except:
-                print("could not save", k)
-
-    def get(self, kRaw):
-        with self.mc_pool.reserve() as mc:
-            k = self._key(kRaw)
-            if k in mc:
-                print("mc: got", kRaw)
-                return mc[k]
+        h = hashlib.md5()
+        margs = [x.__repr__() for x in args]
+        mkwargs = [x.__repr__() for x in kwargs.values()]
+        map(h.update, margs + mkwargs)
+        h.update(name)
+        h.update(self.namespace)
+        return h.hexdigest()
 
     def getOrSet(self, name, f, *args, **kwargs):
-        kRaw = [name] + list(args) + list(kwargs.values())
+        k = self._key(name, args, kwargs)
         # example use
         with self.mc_pool.reserve() as mc:
-            k = self._key(kRaw)
             if k in mc:
                 return mc[k]
             data = f(*args, **kwargs)
             try:
-                mc[k] = v
+                mc[k] = data
             except:
                 print("could not save", k)
             return data

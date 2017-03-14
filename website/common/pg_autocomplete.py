@@ -21,7 +21,7 @@ from db_utils import getcursor
 
 class PGautocomplete(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGautocomplete")
         self.pg = pg
         self.assembly = assembly
 

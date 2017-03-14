@@ -28,9 +28,9 @@ class PGparseWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGparse:
+class PGparse(GetOrSetMemCache):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly)
+        GetOrSetMemCache.__init__(self, assembly, "PGparse")
         self.pg = pg
         self.assembly = assembly
 
