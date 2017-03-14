@@ -9,6 +9,11 @@ class HelperGrouper:
         for rid, r in self.byID.iteritems():
             r["color"] = self.tissueColors.getTissueColor(r["tissue"])
 
+    def getGroupedItems(self, skey):
+        return { "byTissue" : self.groupByTissue(skey),
+                 "byTissueMax" : self.groupByTissueMax(skey),
+                 "byValue" : self.sortByExpression(skey)}
+
     def groupByTissue(self, skey):
         sorter = lambda x: x["tissue"]
         self.rows.sort(key = sorter)
@@ -69,6 +74,6 @@ class HelperGrouper:
 	    ret[k] = {"name" : k,
                       "displayName" : t,
                       "color": c,
-                      "items": [row]}
+                      "items": [row["id"]]}
         return ret
 

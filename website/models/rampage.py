@@ -25,10 +25,8 @@ class Rampage:
             items.append(info)
 
         hg = HelperGrouper(items)
-
-        ret["items"] = { "byTissue" : hg.groupByTissue("counts"),
-                         "byTissueMax" : hg.groupByTissueMax("counts"),
-                         "byValue" : hg.sortByExpression("counts")}
+        ret["itemsByID"] = hg.byID
+        ret["itemsGrouped"] = hg.getGroupedItems("counts")
         return ret
 
     def getByGene(self, gene):
