@@ -23,7 +23,7 @@ class PGcartWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGcart(GetOrSetMemCache):
+class PGcart:
     def __init__(self, pg, assembly):
         self.pg = pg
         self.assembly = assembly
