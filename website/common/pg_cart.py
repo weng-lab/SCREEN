@@ -4,7 +4,8 @@ from __future__ import print_function
 import sys
 import os
 import json
-    
+from psycopg2.extras import Json
+
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
@@ -27,7 +28,7 @@ class PGcart:
         self.pg = pg
         self.assembly = assembly
         self.tableName = assembly + "_cart"
-        
+
     def get(self, uuid):
         with getcursor(self.pg.DBCONN, "getCart") as curs:
             curs.execute("""
@@ -37,30 +38,30 @@ class PGcart:
             """.format(tn = self.tableName), (uuid,))
             r = curs.fetchall()
         if r:
-            return r[0][0]
+            return list(r[0][0])
         return None
 
-    def set(self, uuid, reAccessions):
-        accessions = json.dumps(reAccessions)
+    def set(self, uuid, accessions):
+        accessions = list(accessions)
         with getcursor(self.pg.DBCONN, "setCart") as curs:
             curs.execute("""
             SELECT accessions
             FROM {tn}
             WHERE uuid = %s
             """.format(tn = self.tableName), (uuid,))
-            
+
             if (curs.rowcount > 0):
                 curs.execute("""
                 UPDATE {tn}
                 SET accessions = %s
                 WHERE uuid = %s
-                """.format(tn = self.tableName), (accessions, uuid))
+                """.format(tn = self.tableName), (Json(accessions), uuid))
             else:
                 curs.execute("""
                 INSERT into {tn} (uuid, accessions)
                 VALUES (%s, %s)
-                """.format(tn = self.tableName), (uuid, accessions))
-            return {"status" : "ok"}
+                """.format(tn = self.tableName), (uuid, Json(accessions)))
+        return {"status" : "ok"}
 
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
@@ -72,11 +73,11 @@ def main():
 
         uuid = "test"
         j = {"a" : [1,2,3]}
-        cart.set(uuid, json.dumps(j))
+        cart.set(uuid, j)
         print(cart.get(uuid))
 
         j = {"b" : [5,6,7]}
-        cart.set(uuid, json.dumps(j))
+        cart.set(uuid, j)
         print(cart.get(uuid))
 
         print(cart.get("nocart"))
@@ -84,6 +85,6 @@ def main():
         j = {"b" : []}
         cart.set(uuid, json.dumps(j))
         print(cart.get(uuid))
-    
+
 if __name__ == '__main__':
     sys.exit(main())
