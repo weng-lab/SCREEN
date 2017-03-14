@@ -11,46 +11,48 @@ import loading from '../../../common/components/loading'
 import * as Render from '../../../common/renders'
 import {isCart} from '../../../common/utility'
 
-const table_click_handler = (td, re, actions) => {
-    if (td.className.indexOf("browser") != -1) return;
-    if (td.className.indexOf("geneexp") != -1) return;
-    if (td.className.indexOf("cart") != -1) {
-	actions.toggleCart(re.accession);
-	return;
-    }
-    actions.setMainTab("details");
-    actions.showReDetail(re)
-};
-
-const openGenomeBrowser = (data, url) => {
-    $.ajax({
-	type: "POST",
-	url: url,
-	data: data,
-	dataType: "json",
-	contentType : "application/json",
-	async: false, // http://stackoverflow.com/a/20235765
-	success: (r) => {
-	    if ("err" in r) {
-		$("#errMsg").text(r.err);
-		$("#errBox").show()
-		return true;
-	    }
-	    console.log(r.url, r.trackhubUrl);
-	    window.open(r.url, '_blank');
-	},
-	error: (a, b, c) => {
-	    console.log(a);
-	}
-    });
-};
-
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
 	this.button_click_handler = this.button_click_handler.bind(this);
+        this.table_click_handler = this.table_click_handler.bind(this);
+        this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
     }
-    
+
+    table_click_handler(td, re, actions){
+        if (td.className.indexOf("browser") != -1) return;
+        if (td.className.indexOf("geneexp") != -1) return;
+        if (td.className.indexOf("cart") != -1) {
+	    actions.toggleCart(re.accession);
+	    return;
+        }
+        actions.setMainTab("details");
+        actions.showReDetail(re)
+    }
+
+    openGenomeBrowser(data, url){
+        $.ajax({
+	    type: "POST",
+	    url: url,
+	    data: data,
+	    dataType: "json",
+	    contentType : "application/json",
+	    async: false, // http://stackoverflow.com/a/20235765
+	    success: (r) => {
+	        if ("err" in r) {
+		    $("#errMsg").text(r.err);
+		    $("#errBox").show()
+		    return true;
+	        }
+	        console.log(r.url, r.trackhubUrl);
+	        window.open(r.url, '_blank');
+	    },
+	    error: (a, b, c) => {
+	        console.log(a);
+	    }
+        });
+    }
+
     button_click_handler(name, re, dispatch){
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
@@ -63,14 +65,17 @@ class TableWithCart extends React.Component {
 				   "cellType" : this.props.cellType,
 				   host,
 				   GlobalAssembly});
-	
+
 	switch (name) {
-	    case "UCSC": openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
-	    case "WashU": openGenomeBrowser(data, "/washu_trackhub_url"); break;
-	    case "Ensembl": openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
+	    case "UCSC":
+                this.openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
+	    case "WashU":
+                this.openGenomeBrowser(data, "/washu_trackhub_url"); break;
+	    case "Ensembl":
+                this.openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
 	}
-    };
-    
+    }
+
     addAllToCart() {
 	let accessions = this.props.data.map((d) => ( d.accession ));
 	this.props.actions.addCart(accessions);
@@ -272,7 +277,7 @@ class TableWithCart extends React.Component {
 			      columnDefs={columnDefs}
                               cols={TableColumns()}
                               onTdClick={(td, rowdata) =>
-                                  table_click_handler(td, rowdata, actions)}
+                                  this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
