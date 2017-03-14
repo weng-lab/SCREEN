@@ -99,12 +99,12 @@ class Rampage extends React.Component {
 	    return a.toLowerCase().localeCompare(b.toLowerCase());
 	});
 
-	var rank_f = (d) => {
+	var rank_f = (rid) => {
 	    var key = this.refs.datascale.value;
-	    var val = itemsByID[d][key];
+	    var val = itemsByID[rid][key];
 	    return val >= 0 ? val : 0;
 	};
-	var subName_f = (d) => (itemsByID[d]["biosample_term_name"]);
+	var subName_f = (rid) => (itemsByID[rid]["biosample_term_name"]);
 
 	var grid = d3.range(items.length).map((i) => {
 	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
@@ -186,9 +186,9 @@ class Rampage extends React.Component {
 		.attr("stroke-width", 1)
 		.attr("stroke", "white")
 		.attr('width', (d) => {return xscale(rank_f(d))})
-	    	.on("click", function(d) {
+	    	.on("click", function(rid) {
 		    window.open("http://encodeproject.org/" +
-                                itemsByID[d]["expID"])
+                                itemsByID[rid]["expID"])
 		});
 	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
 	    var transitext = chart.selectAll('text')
@@ -199,9 +199,9 @@ class Rampage extends React.Component {
 		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
 		.text((d) => (rank_f(d) + " " + subName_f(d) ))
 		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
-		.on("click", function(d) {
+		.on("click", function(rid) {
 		    window.open("http://encodeproject.org/" +
-                                itemsByID[d]["expID"])
+                                itemsByID[rid]["expID"])
 		});
 	}
 	var ylabels = canvas.append('g')
@@ -212,7 +212,7 @@ class Rampage extends React.Component {
 	    .append('text')
 	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
 	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (items[d].displayName))
+	    .text((d) => (items[d].tissue))
 	    .style({'fill': '#000',
 		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
 		    "text-anchor": "end"});
