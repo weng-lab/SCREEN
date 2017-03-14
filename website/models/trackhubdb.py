@@ -232,7 +232,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
-        ct = j["cellType"]
+        ct = j.get("cellType", None)
         if not ct:
             topN = 5
             topCellTypes = cre.topTissues()["dnase"]
