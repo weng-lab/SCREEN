@@ -13,18 +13,8 @@ from utils import AddPath
 AddPath(__file__, "..")
 from config import Config
 
-class ClientPool(list):
-    # http://sendapatch.se/projects/pylibmc/pooling.html
-    @contextmanager
-    def reserve(self):
-        mc = self.pop()
-        try:
-            yield mc
-        finally:
-            self.append(mc)
-
 class MemCacheHelper:
-    mc_pool_size = 20
+    mc_pool_size = 32
 
     print("starting memcached client")
     mc = pylibmc.Client(["memcached"], binary=True,
@@ -33,10 +23,10 @@ class MemCacheHelper:
 
 class MemCacheWrapper:
     # Borg pattern: http://code.activestate.com/recipes/66531/
+    # http://sendapatch.se/projects/pylibmc/pooling.html#pylibmc.ClientPool
     __shared_state = {
-        "mc_pool" : ClientPool(MemCacheHelper.mc.clone()
-                               for i in xrange(MemCacheHelper.mc_pool_size))
-        }
+        "mc_pool" : pylibmc.ClientPool(MemCacheHelper.mc,
+                                       MemCacheHelper.mc_pool_size)}
 
     def __init__(self, assembly, subNamespace):
         self.__dict__ = self.__shared_state
@@ -47,15 +37,15 @@ class MemCacheWrapper:
         # http://www.zieglergasse.at/blog/2011/python/memcached-decorator-for-python/
         h = hashlib.md5()
         margs = [x.__repr__() for x in args]
+        map(h.update, margs)
         mkwargs = [x.__repr__() for x in kwargs.values()]
-        map(h.update, margs + mkwargs)
+        map(h.update, mkwargs)
         h.update(name)
         h.update(self.namespace)
         return h.hexdigest()
 
     def getOrSet(self, name, f, *args, **kwargs):
         k = self._key(name, args, kwargs)
-        # example use
         with self.mc_pool.reserve() as mc:
             if k in mc:
                 return mc[k]
