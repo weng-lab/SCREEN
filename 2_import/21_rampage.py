@@ -12,6 +12,8 @@ from utils import AddPath, Utils, Timer, printt
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
+from querydcc import QueryDCC
+from cache_memcache import MemCacheWrapper
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
@@ -19,32 +21,34 @@ from constants import chroms, paths, DB_COLS
 from config import Config
 
 def doImport(curs, assembly):
-    if "hg19" == assembly:
-        fnp = os.path.join(Dirs.metadata_base, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/H.sapiens/hg19/2016_11/gene.V19.hg19.RAMPAGE.2016_11_23.tsv.gz")
+    fnp = paths.path(assembly, "hg19-tss-rampage-matrix.txt.gz")
     printt("reading", fnp)
     with gzip.open(fnp) as f:
         header = f.readline().rstrip('\n').split('\t')
         rows = [line.rstrip('\n').split('\t') for line in f]
     printt("read header and", len(rows), "rows")
 
+    fnp = paths.path(assembly, "hg19-tss-filtered.bed")
+    with open(fnp) as f:
+        tsses = [line.rstrip('\n').split('\t') for line in f]
+    lookup = {r[3] : r for r in tsses}
+
     printt("rewriting")
     outF = StringIO.StringIO()
-    for r in rows:
-        row = r[:2]
-        row += r[2].split('_') # chrom, start, stop, strand
-        for t in r[3:]:
-            if ':' in t:
-                row.append(t.split(':')[0])
-            else:
-                row.append(t)
-        outF.write('\t'.join(row) + '\n')
+    for row in rows:
+        r = [row[0]]
+        t = lookup[row[0]]
+        r.append(t[6]) # gene
+        r.append(t[0]) # chrom
+        r.append(t[1]) # start
+        r.append(t[2]) # stop
+        r.append(t[5]) # strand
+        r.append(t[7]) # gene info
+        r += row[1:]
+        outF.write('\t'.join(r) + '\n')
     outF.seek(0)
 
-    cols = ["tss", "ensemblid_ver", "chrom", "start", "stop", "strand"]
-    for h in header[3:]:
-        h = h.split('_')[0]
-        cols.append(h)
-    exps = cols[6:]
+    fileIDs = header[1:]
 
     tableName = assembly + "_rampage"
     printt("copy into", tableName)
@@ -52,23 +56,24 @@ def doImport(curs, assembly):
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
 (id serial PRIMARY KEY,
-tss text,
+transcript text,
 ensemblid_ver text,
 chrom text,
 start integer,
 stop integer,
 strand VARCHAR(1),
+geneInfo text,
 maxVal real,
 {fields}
-);""".format(tn = tableName, fields = ','.join([f + " real" for f in exps])))
+);""".format(tn = tableName, fields = ','.join([f + " real" for f in fileIDs])))
 
-    curs.copy_from(outF, tableName, '\t', columns = cols)
+    curs.copy_from(outF, tableName, '\t', columns = header)
     printt("inserted", curs.rowcount)
 
     curs.execute("""
 UPDATE {tn}
 SET maxVal = GREATEST( {fields} )
-""".format(tn = tableName, fields = ','.join(exps)))
+""".format(tn = tableName, fields = ','.join(fileIDs)))
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rampage"
@@ -76,17 +81,13 @@ def doIndex(curs, assembly):
     makeIndexIntRange(curs, tableName, ["start", "stop"])
 
 def metadata(curs, assembly):
-    if "hg19" == assembly:
-        fnp = os.path.join(Dirs.metadata_base, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/H.sapiens/hg19/2016_11/gene.V19.hg19.RAMPAGE.2016_11_23.tsv.gz")
+    fnp = paths.path(assembly, "hg19-tss-rampage-matrix.txt.gz")
+
     printt("reading", fnp)
     with gzip.open(fnp) as f:
         header = f.readline().rstrip('\n').split('\t')
 
-    expIDs = []
-    for h in header[3:]:
-        h = h.split('_')[0]
-        expIDs.append(h)
-    expIDs = list(set(expIDs))
+    fileIDs = header[1:]
 
     tableName = assembly + "_rampage_info"
     printt("dropping and creating", tableName)
@@ -96,18 +97,24 @@ DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}
 (id serial PRIMARY KEY,
 expID text,
+fileID text,
 biosample_term_name text,
 biosample_type text,
 biosample_summary text,
 tissue text
-    ) """.format(tn = tableName))
+) """.format(tn = tableName))
 
     outF = StringIO.StringIO()
 
-    for expID in expIDs:
-        exp = Exp.fromJsonFile(expID)
+    mc = MemCacheWrapper()
+    qd = QueryDCC(cache = mc)
+
+    for fileID in fileIDs:
+        exp = qd.getExpFromFileID(fileID)
+        expID = exp.encodeID
         tissue = DetermineTissue.TranslateTissue(assembly, exp)
         outF.write('\t'.join([expID,
+                              fileID,
                               exp.biosample_term_name,
                               exp.biosample_type,
                               exp.getExpJson()["biosample_summary"],
@@ -115,7 +122,7 @@ tissue text
                               ]) + '\n')
     outF.seek(0)
 
-    cols = ["expID", "biosample_term_name", "biosample_type",
+    cols = ["expID", "fileID", "biosample_term_name", "biosample_type",
             "biosample_summary", "tissue"]
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("\tok", curs.rowcount)
