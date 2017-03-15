@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
+import * as Render from '../../../common/renders'
 
 class DetailsContainer extends React.Component {
     render() {
@@ -36,7 +37,9 @@ class DetailsContainer extends React.Component {
         let accession = this.props.cre_accession_detail;
 	let tabs = this.props.tabs;
 
-        let coord = cre ? cre.chrom + ':' + cre.start + '-' + (cre.start + cre.len)
+        let coord = cre ? cre.chrom + ':'
+			+ Render.numWithCommas(cre.start)
+			+ '-' + Render.numWithCommas(cre.start + cre.len)
                   : "";
 
 	return (
@@ -44,7 +47,7 @@ class DetailsContainer extends React.Component {
                 <div className="row">
                     <div className="col-md-8">
                         <h3 className="creDetailsTitle">{accession}</h3>
-                        {"  "}
+                        {"         "}
                         {coord}
                     </div>
                 </div>
