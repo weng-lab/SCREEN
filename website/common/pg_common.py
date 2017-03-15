@@ -10,6 +10,7 @@ from coord import Coord
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -26,8 +27,9 @@ class PGcommonWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGcommon:
+class PGcommon(GetOrSetMemCache):
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly, "PGcommon")
         self.pg = pg
         self.assembly = assembly
 

@@ -13,6 +13,7 @@ from coord import Coord
 from pg_common import PGcommon
 from config import Config
 from pg_cre_table import PGcreTable
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -30,8 +31,9 @@ class PGsearchWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGsearch:
+class PGsearch(GetOrSetMemCache):
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly, "PGsearch")
         self.pg = pg
         self.assembly = assembly
 
@@ -646,3 +648,4 @@ GROUP BY label
             """.format(assembly = self.assembly))
             rows = curs.fetchall()
         return {r[1] : r[0] for r in rows}
+        self.impl = PGsearchImpl(pg, assembly)

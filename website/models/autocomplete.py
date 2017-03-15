@@ -16,6 +16,7 @@ def _second_onward(arr):
 
 class AutocompleterWrapper:
     def __init__(self, ps):
+        self.ps = ps
         self.acs = {
             "hg19" : Autocompleter(ps, "hg19"),
             "mm10" : Autocompleter(ps, "mm10")}
@@ -46,4 +47,4 @@ class Autocompleter:
         uq = q.lower()
         if not uq:
             return []
-        return self.pgAutocomplete(curs, q)
+        return self.pgAutocomplete.get_suggestions(curs, uq)
