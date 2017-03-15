@@ -648,4 +648,4 @@ GROUP BY label
             """.format(assembly = self.assembly))
             rows = curs.fetchall()
         return {r[1] : r[0] for r in rows}
-        self.impl = PGsearchImpl(pg, assembly)
+
