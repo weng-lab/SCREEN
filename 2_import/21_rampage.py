@@ -70,7 +70,7 @@ maxVal real,
 {fields}
 );""".format(tn = tableName, fields = ','.join([f + " real" for f in fileIDs])))
 
-    curs.copy_from(outF, tableName, '\t', columns = header)
+    curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("inserted", curs.rowcount)
 
     curs.execute("""
