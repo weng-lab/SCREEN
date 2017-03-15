@@ -320,3 +320,10 @@ export const ctsGroupIcon = (creGroup) => {
     let c = ReactDOMServer.renderToStaticMarkup(e);
     return popup(title, c);
 }
+
+export const numWithCommas = (x) => {
+    // http://stackoverflow.com/a/2901298
+     var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
