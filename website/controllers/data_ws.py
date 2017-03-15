@@ -18,6 +18,7 @@ from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
 
 from common.pg import PGsearch
+from common.get_set_mc import GetOrSetMemCache
 from models.gene_expression import GeneExpression
 from common.session import Sessions
 
@@ -45,8 +46,10 @@ class DataWebServiceWrapper:
             raise Exception("invalid GlobalAssembly")
         return self.dwss[j["GlobalAssembly"]].process(j, args, kwargs)
 
-class DataWebService:
+class DataWebService(GetOrSetMemCache):
     def __init__(self, args, ps, cache, staticDir, assembly):
+        GetOrSetMemCache.__init__(self, assembly, "DataWebService")
+
         self.args = args
         self.ps = ps
         self.cache = cache
