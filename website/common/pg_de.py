@@ -9,6 +9,7 @@ import gzip
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -25,14 +26,15 @@ class PGdeWrapper:
     def __getitem__(self, assembly):
         return self.pgs[assembly]
 
-class PGde:
+class PGde(GetOrSetMemCache):
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly, "PGde")
         self.pg = pg
         self.assembly = assembly
 
     def nearbyDEs(self, coord, halfWindow, ct1, ct2, pval):
         c = coord.expanded(halfWindow)
-        
+
         with getcursor(self.pg.DBCONN, "nearbyDEs") as curs:
             ctTableName = self.assembly + "_de_cts"
 
@@ -43,7 +45,7 @@ class PGde:
 
             ct1id = ctsToId[ct1]
             ct2id = ctsToId[ct2]
-            
+
             q = """
             SELECT start, stop, log2FoldChange, ensembl
             from {deTn} as de
