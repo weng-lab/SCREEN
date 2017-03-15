@@ -160,8 +160,6 @@ class DataWebService(GetOrSetMemCache):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyPcGenes()
         nearest = min(nearbyGenes, key = lambda x: x["distance"])
-        if nearest["distance"] > 5000:
-            return { accession : {"no_nearby_tss": True} }
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         name, strand = self.cache.lookupEnsembleGene(nearest["name"])
         r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
