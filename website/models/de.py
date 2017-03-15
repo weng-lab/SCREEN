@@ -20,7 +20,7 @@ class DE:
 
         self.halfWindow = 250 * 1000 * 2
         self.thres = 1.64
-        self.radiusScale = 1
+        self.radiusScale = 10
 
     def coord(self):
         if not self.pos:
