@@ -82,7 +82,7 @@ class Rampage extends React.Component {
             </div>);
 
         let transcriptControls = (
-	    <div className="col-md-4">
+	    <div className="col-md-6">
                 {"Transcript: "}
                 <span>
 		    <select value={this.state.transcript}

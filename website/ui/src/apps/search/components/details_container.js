@@ -42,7 +42,7 @@ class DetailsContainer extends React.Component {
 	return (
             <div className="container" style={{width: "100%"}}>
                 <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-8">
                         <h3 className="creDetailsTitle">{accession}</h3>
                         {"  "}
                         {coord}
