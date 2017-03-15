@@ -152,11 +152,11 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                             "ver10", self.assembly)
         if self.browser in [UCSC, ENSEMBL]:
             url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
-            t = PredictionTrack("Candidate Regulatory Elements",
+            t = PredictionTrack("cREs",
                                 self.priority, url).track()
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
-            t = Track("Candidate Regulatory Elements",
+            t = Track("cREs",
                       self.priority, url, 
                       type = "hammock").track_washu()
         self.priority += 1
@@ -243,7 +243,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         ctsTracks, tracks = self._getTrackList(tcts)
         for url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
-                title = "Candidate Regulatory Elements"
+                title = "cREs"
                 if ct:
                     title +=  "in " + ct
                 t = PredictionTrack(title, self.priority, url).track()
