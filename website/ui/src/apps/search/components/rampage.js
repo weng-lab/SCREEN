@@ -1,5 +1,7 @@
 import React from 'react'
 
+import * as Render from '../../../common/renders'
+
 class Rampage extends React.Component {
     constructor(props) {
 	super(props);
@@ -72,10 +74,12 @@ class Rampage extends React.Component {
         let title = (
             <div className="container-fluid" style={{"width": "100%"}} >
                 <div className="row">
-                    <div className="col-md-3">
+                    <div className="col-md-8">
                         <span className={"rampageGeneName"}>
                             <h2><em>{gene.name}</em></h2>
                             {gene.ensemblid_ver}
+			    {"   ("}{Render.numWithCommas(gene.distance)}
+			    {" bases from cRE)"}
                         </span>
                     </div>
                 </div>
