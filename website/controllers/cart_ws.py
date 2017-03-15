@@ -29,8 +29,7 @@ class CartWebService:
         self.assembly = assembly
 
         self.cart = PGcart(ps, assembly)
-        self.actions = {"set" : self.set,
-                        "clear" : self.clear}
+        self.actions = {"set" : self.set}
 
     def process(self, j, uuid, args, kwargs):
         action = args[0]
@@ -42,6 +41,3 @@ class CartWebService:
     def set(self, j, uuid, args):
         accessions = j["accessions"]
         return self.cart.set(uuid, accessions)
-
-    def clear(self, j, uuid, args):
-        return self.cart.set(uuid, [])

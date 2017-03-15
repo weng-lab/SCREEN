@@ -10,6 +10,7 @@ import gzip
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
+from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -18,8 +19,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
-class PGautocomplete:
+class PGautocomplete(GetOrSetMemCache):
     def __init__(self, pg, assembly):
+        GetOrSetMemCache.__init__(self, assembly, "PGautocomplete")
         self.pg = pg
         self.assembly = assembly
 
@@ -30,7 +32,7 @@ SELECT oname
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 5
-            """.format(tn = self.assembly + "_autocomplete"), (uq,))
+            """.format(tn = self.assembly + "_autocomplete"), (q,))
         r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (uq, self.assembly))
