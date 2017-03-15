@@ -1,20 +1,19 @@
 class MainTabs extends React.Component {
     render(){
         const makeTabTitle = (key, tab) => {
-            if(!tab.visible){ return (<div />) }
             let active = key == this.props.maintabs_active;
+            if(!tab.visible && !active){ return (<div />) }
 	    return (
                 <li className={active ? "active" : ""}
                     key={"tab_" + key}
-	            style={{display: (tab.visible ? "list-item" : "none") }}
 	            onClick={ () => { this.props.actions.setMainTab(key) } }>
                     <a data-toggle="tab">{tab.title}</a>
                 </li>);
         }
 
         const makeTab = (key, tab) => {
-            if(!tab.visible){ return (<div />) }
             let active = key == this.props.maintabs_active;
+            if(!tab.visible && !active){ return (<div />) }
             return (
                 <div
                     className={active ? "tab-pane active" : "tab-pane"}

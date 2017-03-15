@@ -45,7 +45,7 @@ class IndexPage extends React.Component {
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
-	
+
         return (
 	    <Provider store={store}>
 	    <div>

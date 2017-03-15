@@ -16,10 +16,19 @@ import initialState from './config/initial_state'
 
 class SearchPage extends React.Component {
     render() {
-	// const loggerMiddleware = createLogger();
+	//const loggerMiddleware = createLogger();
+
+	let maintab = null;
+        let subtab = null;
+	if("maintab" in this.props.params){
+	    maintab = this.props.params.maintab;
+            if("subtab" in this.props.params){
+                subtab = this.props.params.subtab;
+            }
+	}
 
 	const store = createStore(main_reducers,
-				  initialState(),
+				  initialState(maintab, subtab),
 				  applyMiddleware(
 				      thunkMiddleware,
 				      //loggerMiddleware
@@ -47,7 +56,7 @@ class SearchPage extends React.Component {
 		    </div>);
 	    }
 	}
-	
+
         return (
             <Provider store={store}>
 	        <div>

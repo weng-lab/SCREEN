@@ -43,12 +43,15 @@ def doImport(curs, assembly):
         r.append(t[1]) # start
         r.append(t[2]) # stop
         r.append(t[5]) # strand
-        r.append(t[7]) # gene info
+        r.append(t[7].replace("_", " ")) # gene info
         r += row[1:]
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
 
     fileIDs = header[1:]
+
+    cols = ["transcript", "ensemblid_ver", "chrom", "start", "stop",
+            "strand", "geneInfo"] + fileIDs
 
     tableName = assembly + "_rampage"
     printt("copy into", tableName)
@@ -101,7 +104,8 @@ fileID text,
 biosample_term_name text,
 biosample_type text,
 biosample_summary text,
-tissue text
+tissue text,
+strand VARCHAR(1)
 ) """.format(tn = tableName))
 
     outF = StringIO.StringIO()
@@ -113,17 +117,29 @@ tissue text
         exp = qd.getExpFromFileID(fileID)
         expID = exp.encodeID
         tissue = DetermineTissue.TranslateTissue(assembly, exp)
-        outF.write('\t'.join([expID,
+        for f in exp.files:
+            if f.fileID == fileID:
+                print(f)
+                print(f.output_type)
+                strand = f.output_type.split()[0]
+                if "plus" == strand:
+                    strand = '+'
+                elif "minus" == strand:
+                    strand = '-'
+                else:
+                    raise Exception("unknown strand " + f.output_type)
+                outF.write('\t'.join([expID,
                               fileID,
                               exp.biosample_term_name,
                               exp.biosample_type,
                               exp.getExpJson()["biosample_summary"],
-                              tissue
+                              tissue,
+                              strand
                               ]) + '\n')
     outF.seek(0)
 
     cols = ["expID", "fileID", "biosample_term_name", "biosample_type",
-            "biosample_summary", "tissue"]
+            "biosample_summary", "tissue", "strand"]
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("\tok", curs.rowcount)
 
@@ -145,8 +161,8 @@ def main():
     for assembly in assemblies:
         print('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
-            metadata(curs, assembly)
             doImport(curs, assembly)
+            metadata(curs, assembly)
             doIndex(curs, assembly)
     return 0
 

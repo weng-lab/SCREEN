@@ -564,39 +564,11 @@ ORDER BY biosample_term_name
         return [{"expID" : r[0] + ' / ' + r[1],
                  "biosample_term_name" : r[2] } for r in rows]
 
-    def rampage(self, coord):
-        q = """
-SELECT *
-FROM {tn}
-WHERE chrom = %s
-AND int4range(start, stop) && int4range(%s, %s)
-ORDER BY tss
-""".format(tn = self.assembly + "_rampage")
-
-        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
-                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
-            curs.execute(q, (coord.chrom, coord.start, coord.end))
-            rows = curs.fetchall()
-        ret = []
-        for r in rows:
-            dr = r._asdict()
-            nr = {"data" : {}}
-            for k, v in dr.iteritems():
-                if k.startswith("encs"):
-                    nr["data"][k] = v
-                    continue
-                nr[k] = v
-            if not nr["data"]:
-                continue
-            ret.append(nr)
-        return ret
-
     def rampageByGene(self, ensemblid_ver):
         q = """
 SELECT *
 FROM {tn}
 WHERE ensemblid_ver = %s
-ORDER BY tss
 """.format(tn = self.assembly + "_rampage")
 
         with getcursor(self.pg.DBCONN, "pg::genesInRegion",
@@ -608,7 +580,7 @@ ORDER BY tss
             dr = r._asdict()
             nr = {"data" : {}}
             for k, v in dr.iteritems():
-                if k.startswith("encs"):
+                if k.startswith("encff"):
                     nr["data"][k] = v
                     continue
                 nr[k] = v
@@ -619,18 +591,18 @@ ORDER BY tss
 
     def rampage_info(self):
         q = """
-SELECT expid, biosample_summary, biosample_term_name, tissue
+SELECT *
 FROM {tn}
 """.format(tn = self.assembly + "_rampage_info")
 
-        with getcursor(self.pg.DBCONN, "rampge_info") as curs:
+        with getcursor(self.pg.DBCONN, "pg::genesInRegion",
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute(q)
             rows = curs.fetchall()
         ret = {}
         for r in rows:
-            ret[r[0]] = {"bs" : r[1],
-                         "btn" : r[2],
-                         "tissue" : r[3]}
+            d = r._asdict()
+            ret[d["fileid"]] = d
         return ret
 
     def geBiosampleTypes(self):

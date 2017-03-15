@@ -58,7 +58,7 @@ const MainTabInfo = () => {
     let geTitle = gene ? gene + " Expression" : "";
 
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
-    
+
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
 	    aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
