@@ -22,3 +22,4 @@ class Config:
     minipeaks_nbins = c.get("RE", "minipeaks_nbins")
     ribbon = c.get("RE", "ribbon")
     GoogleAnalytics = int(c.get("RE", "googleAnalytics"))
+    memcache = int(c.get("RE", "memache"))
