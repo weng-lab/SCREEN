@@ -196,7 +196,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             ct = tct["ct"]
             # else JSON will be invalid for WashU
             ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["biosample_summary"][:50]
+            displayCT = ctInfos[0]["biosample_summary"][:100]
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
             fileIDs = []
@@ -207,7 +207,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
                         fileIDs.append(fileID)
-                        ti = TrackInfo(displayCT, tissue[:50],
+                        ti = TrackInfo(displayCT, tissue[:100],
                                        assay, expID, fileID)
                         tracks.append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
@@ -216,7 +216,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 url = os.path.join("http://bib7.umassmed.edu/~purcarom",
                                    "encyclopedia", "Version-4",
                                    "ver10", self.assembly, "cts", fn)
-                ctsTracks.append((displayCT, url))
+                ctsTracks.append((fileID, displayCT, url))
         return ctsTracks, tracks
 
     def getLines(self, accession, j):
@@ -245,9 +245,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             tcts = [{"ct" : ct, "tissue" : ct}]
             
         ctsTracks, tracks = self._getTrackList(tcts)
-        for tct, url in ctsTracks:
+        for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
-                title = "cREs in " + tct
+                title = fileID + " cREs in " + tct
                 t = PredictionTrack(title, self.priority, url).track()
                 self.priority += 1
                 self.lines += [t]
