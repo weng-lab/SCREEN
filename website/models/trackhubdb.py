@@ -173,7 +173,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
-        desc = Track.MakeDesc(trackInfo.name(), "", trackInfo.cellType())
+        desc = Track.MakeDesc(trackInfo.name(), "", "")
 
         if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track()
@@ -196,7 +196,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             ct = tct["ct"]
             # else JSON will be invalid for WashU
             ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["biosample_summary"][:75]
+            displayCT = ctInfos[0]["biosample_summary"][:50]
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
             fileIDs = []
@@ -207,7 +207,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
                         fileIDs.append(fileID)
-                        ti = TrackInfo(displayCT, tissue[:75],
+                        ti = TrackInfo(displayCT, tissue[:50],
                                        assay, expID, fileID)
                         tracks.append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
