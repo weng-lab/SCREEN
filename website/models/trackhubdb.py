@@ -196,7 +196,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             ct = tct["ct"]
             # else JSON will be invalid for WashU
             ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["biosample_summary"][:100]
+            displayCT = ctInfos[0]["biosample_summary"][:75]
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
             fileIDs = []
@@ -207,7 +207,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
                         fileIDs.append(fileID)
-                        ti = TrackInfo(displayCT, tissue[:100],
+                        ti = TrackInfo(displayCT, tissue[:75],
                                        assay, expID, fileID)
                         tracks.append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
