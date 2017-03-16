@@ -10,12 +10,19 @@ class TrackInfo:
         self.expID = expID
         self.fileID = fileID
 
+        assays  = {"dnase" : "DNase",
+                   "h3k27ac" : "H3k27ac",
+                   "h3k4me3" : "H3K4me3",
+                   "ctcf" : "CTCF"}
+        if self.assay in assays:
+            self.assay = assays[self.assay]
+        
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
     def name(self):
-        ret = "_".join([self.ct] + [self.assay])
-        ret = re.sub(r'\W+', '', ret)
+        ret = " ".join([self.fileID, self.ct, self.assay])
+        #ret = re.sub(r'\W+', '', ret)
         return ret
 
     def color(self):
