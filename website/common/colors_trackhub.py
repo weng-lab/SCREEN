@@ -10,6 +10,7 @@ class PredictionTrackhubColors:
     proximal_light_boundary = TrackhubColor("255,200,200", "#FFC8C8")
 
 class EncodeTrackhubColors:
+    CTCF_Signal = TrackhubColor("0,176,240", "#00B0F0")
     H3K27ac_Signal = TrackhubColor("18,98,235", "#1262EB")
     DNase_Signal = TrackhubColor("6,218,147", "#06DA93")
     H3K4me3_Signal = TrackhubColor("255,0,0", "#FF0000")
@@ -34,7 +35,8 @@ def GetTrackColorSignal(exp):
     return None
 
 def GetTrackColorByAssay(assay):
-    m = {"dnase" : EncodeTrackhubColors.DNase_Signal,
+    m = {"ctcf" : EncodeTrackhubColors.CTCF_Signal,
+         "dnase" : EncodeTrackhubColors.DNase_Signal,
          "h3k27ac" : EncodeTrackhubColors.H3K27ac_Signal,
          "h3k4me3" : EncodeTrackhubColors.H3K4me3_Signal}
     if assay in m:
