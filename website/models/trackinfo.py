@@ -10,18 +10,19 @@ class TrackInfo:
         self.expID = expID
         self.fileID = fileID
 
-        assays  = {"dnase" : "DNase",
-                   "h3k27ac" : "H3k27ac",
-                   "h3k4me3" : "H3K4me3",
-                   "ctcf" : "CTCF"}
-        if self.assay in assays:
-            self.assay = assays[self.assay]
+        self.assays  = {"dnase" : "DNase",
+                        "h3k27ac" : "H3k27ac",
+                        "h3k4me3" : "H3K4me3",
+                        "ctcf" : "CTCF"}
         
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
     def name(self):
-        ret = " ".join([self.fileID, self.ct, self.assay])
+        a = self.assay
+        if a in self.assays:
+            a = self.assays[a]
+        ret = " ".join([self.fileID, self.ct, a])
         #ret = re.sub(r'\W+', '', ret)
         return ret
 
