@@ -34,6 +34,7 @@ class PGgwas(GetOrSetMemCache):
 
         pg = PGcommon(self.pg, self.assembly)
         self.ctmap = pg.makeCtMap()
+        self.ctsTable = pg.makeCTStable()
 
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
@@ -104,9 +105,18 @@ where authorPubmedTrait = %s
         fields = ["cre.accession", "array_agg(snp)",
                   "infoAll.approved_symbol AS geneid"]
         groupBy = ["cre.accession",
-                  "infoAll.approved_symbol"]
+                   "infoAll.approved_symbol"]
 
-        fieldsOut = ["accession", "snps", "geneid"]
+
+        if ct in self.ctsTable:
+            fields.append("cre.creGroupsSpecific[%s] AS cts" %
+                          self.ctsTable[ct])
+            groupBy.append("cre.creGroupsSpecific[%s]" %
+                           self.ctsTable[ct])
+        else:
+            fields.append("0::int AS cts")
+        
+        fieldsOut = ["accession", "snps", "geneid", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
                       ("enhancer", "h3k27ac")]:

@@ -7,7 +7,7 @@ import * as Render from '../../../common/renders'
 
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'
-import HelpIcon from '../../../common/components/help_icon'
+import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon'
 
 class CelltypeView extends React.Component {
     constructor(props) {
@@ -67,25 +67,35 @@ class CelltypeView extends React.Component {
         let cres = data.accessions;
         let vcols = data.vcols;
 
+	let klassCenter = "dt-body-center dt-head-center ";
+	let ctsHelp = "CTS<br />" +
+		      HelpTooltip("CellTypeSpecificClassification");
         let cols = [
-            {title: "accession", data: "accession",
+            {title: "accession", data: "accession", className: klassCenter,
              render: Render.relink(GlobalAssembly) },
-            {title: "Promoter Z", data: "promoter zscore",
-             visible: vcols["promoter zscore"]},
+	    {title: ctsHelp, data: "cts", className: klassCenter,
+	     render: Render.ctsGroupIcon, name: "ctsv"},
+	    {title: "CTS", data: "cts", visible: false, name: "cts"},
+	    {title: "Promoter Z", data: "promoter zscore",
+	     className: klassCenter, visible: vcols["promoter zscore"]},
             {title: "Enhancer Z", data: "enhancer zscore",
-             visible: vcols["enhancer zscore"]},
+             className: klassCenter, visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
-             visible: vcols["dnase zscore"]},
-            {title: "SNPs", data: "snps", render: Render.snpLinks},
-            {title: "gene", data: "geneid"}
+             className: klassCenter, visible: vcols["dnase zscore"]},
+            {title: "SNPs", data: "snps", className: klassCenter,
+	     render: Render.snpLinks},
+            {title: "gene", data: "geneid", className: klassCenter}
         ];
+
+	let columnDefs = [{ "orderData": 2, "targets": 1 }];
 
         let creTable = (<ResultsTable
                             data={cres}
+			    columnDefs={columnDefs}
                             cols={cols}
                             bFilter={true}
 		            cvisible={vcols}
-                            order={[[1, "desc"], [0, "asc"]]}
+                            order={[[2, "desc"], [0, "asc"]]}
                         />);
 
 	return (
