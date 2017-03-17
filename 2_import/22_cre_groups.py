@@ -22,6 +22,7 @@ class ImportCreGroups:
         self.assembly = assembly
         self.tableName = assembly + "_cre_groups"
         self.tableNameCts = self.tableName + "_cts"
+        self.fnp = paths.path(assembly, assembly + ".cts.matrix.txt.gz")
 
     def run(self):
         self._setupTable()
@@ -49,10 +50,8 @@ cellTypeName text,
 pgidx integer
         );""".format(tn = self.tableNameCts))
 
-        if "hg19" == self.assembly:
-            fnp = paths.path("hg19", "hg19.cts.21only.txt")
-        printt("reading", fnp)
-        with open(fnp) as f:
+        printt("reading", self.fnp)
+        with gzip.open(self.fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
         printt("rewrite rows")
         outF = StringIO.StringIO()
@@ -66,10 +65,8 @@ pgidx integer
         printt("inserted", "{:,}".format(self.curs.rowcount), self.tableNameCts)
 
     def _doImport(self):
-        if "hg19" == self.assembly:
-            fnp = paths.path("hg19", "hg19.cts.21only.txt")
-        printt("reading", fnp)
-        with open(fnp) as f:
+        printt("reading", self.fnp)
+        with gzip.open(self.fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
             rows = [line.rstrip('\n').split('\t') for line in f]
         printt("header:", header)
@@ -116,7 +113,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 

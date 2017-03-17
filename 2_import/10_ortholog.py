@@ -34,12 +34,12 @@ class ImportLiftover:
     """.format(tableName = self.tableName))
 
     def run(self):
-        fnp = paths.path("mm10", "mm10-orthologs.txt")
+        fnp = paths.path("mm10", "mm10-orthologs.txt.gz")
 
         self.setupLiftover()
 
         printt("reading", fnp)
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             mmToHg = [r.rstrip('\n').split('\t') for r in f.readlines()]
 
         cols = "chrom start stop mouseAccession humanAccession overlap".split(' ')
