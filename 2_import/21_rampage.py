@@ -28,8 +28,8 @@ def doImport(curs, assembly):
         rows = [line.rstrip('\n').split('\t') for line in f]
     printt("read header and", len(rows), "rows")
 
-    fnp = paths.path(assembly, "hg19-tss-filtered.bed")
-    with open(fnp) as f:
+    fnp = paths.path(assembly, "hg19-tss-filtered.bed.gz")
+    with gzip.open(fnp) as f:
         tsses = [line.rstrip('\n').split('\t') for line in f]
     lookup = {r[3] : r for r in tsses}
 
