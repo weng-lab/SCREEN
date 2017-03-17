@@ -57,8 +57,6 @@ FROM {tn}
         return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
 
     def makeCTStable(self):
-        if "hg19" != self.assembly:
-            return {}
         tableName = self.assembly + "_cre_groups_cts"
         with getcursor(self.pg.DBCONN, "pg$makeCTStable") as curs:
             curs.execute("""

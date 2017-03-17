@@ -36,7 +36,7 @@ class ImportCreGroups:
         DROP TABLE IF EXISTS {tn};
         CREATE TABLE {tn}
         (id serial PRIMARY KEY,
-        rDHS text,
+        accession text,
         creGroupsSpecific VARCHAR[]
         );""".format(tn = self.tableName))
 
@@ -70,7 +70,7 @@ pgidx integer
             header = f.readline().rstrip('\n').split('\t')
             rows = [line.rstrip('\n').split('\t') for line in f]
         printt("header:", header)
-        printt("rows", len(rows))
+        printt("rows", "{:,}".format(len(rows)))
 
         self.cts = header[1:]
 
@@ -79,7 +79,7 @@ pgidx integer
         for r in rows:
             outF.write('\t'.join([r[0], "{" + ",".join(r[1:]) + "}"]) + '\n')
         outF.seek(0)
-        cols = ["rDHS", "creGroupsSpecific"]
+        cols = ["accession", "creGroupsSpecific"]
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
 
@@ -95,12 +95,14 @@ pgidx integer
         UPDATE {tncres} as cres
         SET creGroupsSpecific = cg.creGroupsSpecific
         FROM {tn} as cg
-        where cg.rDHS = cres.rDHS
+        where cg.accession = cres.accession
     """.format(tn = self.tableName, tncres = self.assembly + "_cre_all"))
+        if 0 == self.curs.rowcount:
+            raise Exception("error: no cRE rows updated")
         printt("updated", "{:,}".format(self.curs.rowcount))
 
     def _doIndex(self):
-        makeIndex(self.curs, self.tableName, ["rDHS"])
+        makeIndex(self.curs, self.tableName, ["accession"])
 
 def parse_args():
     parser = argparse.ArgumentParser()
