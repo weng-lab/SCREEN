@@ -34,7 +34,7 @@ class DE:
         return {"center" : radius + c[1],
                 "value" : round(float(c[4] - c[3]), 3),
                 "typ" : typ,
-                "width" : self.radiusScale * radius,
+                "width" : 3,
                 "accession": c[0],
                 "start": c[1],
                 "len" : c[2] - c[1]}
