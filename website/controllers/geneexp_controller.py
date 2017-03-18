@@ -8,11 +8,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from config import Config
 
 class GeneExpController:
-    def __init__(self, templates, ps, cache):
+    def __init__(self, templates, ps, cacheW):
         self.t = templates
         self.ps = ps
-        self.cache = cache
-        self.params = (ps, cache)
+        self.cacheW = cacheW
+        self.params = (ps, cacheW)
         self.assemblies = Config.assemblies
 
     def geneexp(self, args, kwargs, uuid):
@@ -34,5 +34,6 @@ class GeneExpController:
         if not biosample_types_selected or not compartments:
             return {"hasData" : False, "items" : {}}
 
-        cge = GeneExpression(self.ps, self.cache, assembly)
+        cache = self.cacheW[assembly]
+        cge = GeneExpression(self.ps, cache, assembly)
         return cge.computeHorBars(gene, compartments, biosample_types_selected)

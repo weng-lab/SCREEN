@@ -3,9 +3,10 @@ from natsort import natsorted
 from helper_grouper import HelperGrouper
 
 class Rampage:
-    def __init__(self, assembly, pgSearch):
+    def __init__(self, assembly, pgSearch, cache):
         self.assembly = assembly
         self.pgSearch = pgSearch
+        self.cache = cache
 
     def _procees(self, transcript, ri):
         ret = {}
@@ -24,7 +25,7 @@ class Rampage:
             info["counts"] = round(val, 4)
             items.append(info)
 
-        hg = HelperGrouper(transcript, items)
+        hg = HelperGrouper(self.cache, transcript, items)
         ret["itemsByID"] = hg.byID
         ret["itemsGrouped"] = hg.getGroupedItems("counts")
         return ret
