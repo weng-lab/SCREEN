@@ -68,7 +68,15 @@
     "bone element" : "#E3DAC9",
     "HSC" : "#77FF44",
     "embryonic facial prominence" : "#E7A1B0",
-    "thymus" : "#E7A1B0"
+    "thymus" : "#E7A1B0",
+    "adipose": "#FFFAF0",
+    "adrenal": "#FFA500",
+    "bladder": "#C0C0C0",
+    "fibroblast": "#FA8072",
+    "hair": "#A9A9A9",
+    "ovary": "#D3D3D3",
+    "testis": "#BC8F8F",
+    "thyroid": "#CD5C5C",
+    "umbilical cord": "#800080"
 }
 }
-

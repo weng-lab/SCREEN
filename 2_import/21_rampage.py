@@ -116,7 +116,7 @@ strand VARCHAR(1)
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileID)
         expID = exp.encodeID
-        tissue = DetermineTissue.TranslateTissue(assembly, exp)
+        tissue = DetermineTissue.TranslateTissue(assembly, exp).strip()
         for f in exp.files:
             if f.fileID == fileID:
                 print(f)
