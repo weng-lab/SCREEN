@@ -14,11 +14,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from db_utils import getcursor
 
 class GeneExpression:
-    def __init__(self, ps, cache, assembly):
+    def __init__(self, ps, cacheW, assembly):
         self.ps = ps
-        self.cache = cache
+        self.cacheW = cacheW
         self.assembly = assembly
-        self.tissueColors = TissueColors()
+        self.tissueColors = TissueColors(cacheW[assembly])
 
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)

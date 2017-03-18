@@ -649,3 +649,10 @@ GROUP BY label
             rows = curs.fetchall()
         return {r[1] : r[0] for r in rows}
 
+    def geneExpressionTissues(self):
+        with getcursor(self.pg.DBCONN, "geneExpressionTissues") as curs:
+            curs.execute("""
+SELECT DISTINCT(organ)
+FROM r_rnas_{assembly}
+""".format(assembly = self.assembly))
+            return [r[0] for r in curs.fetchall()]
