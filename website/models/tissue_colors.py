@@ -50,6 +50,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
 
+    # GE
     for assembly in ["hg19", "mm10"]:
         pgSearch = PGsearch(ps, assembly)
         cache = CachedObjects(ps, assembly)
@@ -58,6 +59,19 @@ def main():
         for t in pgSearch.geneExpressionTissues():
             if t not in tissueToColor:
                 print("missing", t)
+
+    # RAMPAGE
+    for assembly in ["hg19"]:
+        pgSearch = PGsearch(ps, assembly)
+        cache = CachedObjects(ps, assembly)
+        ri = pgSearch.rampage_info()
+        tissueToColor = cache.colors["tissues"]
+
+        for fileID, info in ri.iteritems():
+            t = info["tissue"]
+            if t not in tissueToColor:
+                print("missing", t)
+
 
 if __name__ == "__main__":
     main()
