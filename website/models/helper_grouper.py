@@ -3,11 +3,11 @@ from collections import OrderedDict
 from tissue_colors import TissueColors
 
 class HelperGrouper:
-    def __init__(self, transcript, rows):
+    def __init__(self, cache, transcript, rows):
         self.transcript = transcript
         self.rows = rows
 
-        self.tissueColors = TissueColors()
+        self.tissueColors = TissueColors(cache)
         self.byID = {r["id"] : r for r in self.rows}
 
         for rid, r in self.byID.iteritems():
