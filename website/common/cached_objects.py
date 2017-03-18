@@ -34,11 +34,15 @@ class CachedObjects:
         self.ps = ps
         self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly
-        
+
         with Timer("loaded CachedObjects " + assembly) as t:
             self._load()
 
     def _load(self):
+        fnp = os.path.join(os.path.dirname(__file__), "colors.json")
+        with open(fnp) as f:
+            self.colors = json.load(f)
+
         self.chromCounts = self.pgSearch.chromCounts()
         self.creHist = self.pgSearch.creHist()
 
