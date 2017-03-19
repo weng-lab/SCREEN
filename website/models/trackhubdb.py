@@ -36,7 +36,7 @@ class TrackhubDb:
         self.cacheW = cacheW
         self.db = db
         self.browser = browser
-        
+
     def ucsc_trackhub(self, *args, **kwargs):
         #print("ucsc **************** args:", args)
         uuid = args[0]
@@ -75,7 +75,7 @@ class TrackhubDb:
     def ensembl_trackhub(self, *args, **kwargs):
         #print("ensembl args **************** :", args)
         uuid = args[0]
-        
+
         try:
             info = self.db.get(uuid)
         except:
@@ -157,7 +157,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("cREs",
-                      self.priority, url, 
+                      self.priority, url,
                       type = "hammock").track_washu()
         self.priority += 1
         return t
@@ -191,7 +191,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         ctsTracks = []
         cache = self.cacheW[self.assembly]
-        
+
         for tct in cts:
             ct = tct["ct"]
             # else JSON will be invalid for WashU
@@ -207,7 +207,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         expID = expBigWigID[0]
                         fileID = expBigWigID[1]
                         fileIDs.append(fileID)
-                        ti = TrackInfo(displayCT, tissue[:50],
+                        ti = TrackInfo(cache, displayCT, tissue[:50],
                                        assay, expID, fileID)
                         tracks.append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
@@ -227,7 +227,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             self.lines += [self.mp()]
 
         self._addSignalFiles(accession, j)
-            
+
         return filter(lambda x: x, self.lines)
 
     def _addSignalFiles(self, accession, j):
@@ -243,7 +243,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                           reverse=True)[:topN]
         else:
             tcts = [{"ct" : ct, "tissue" : ct}]
-            
+
         ctsTracks, tracks = self._getTrackList(tcts)
         for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
@@ -254,7 +254,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         for ti in tracks:
             self.lines += [self.trackhubExp(ti)]
-    
+
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 
