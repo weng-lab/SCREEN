@@ -15,11 +15,6 @@ class TempWrap:
     def isBigWig(self):
         return self.url.endswith(".bigWig")
 
-def rgb_to_hex(rgbStr):
-    # from http://stackoverflow.com/a/214657
-    rgb = tuple([int(x) for x in rgbStr.split(',')])
-    return '#%02x%02x%02x' % rgb
-
 def bedFilters(assembly, files):
     files = filter(lambda x: x.assembly == assembly, files)
     bfs = [lambda x: x.isBedNarrowPeak() and '1' in x.bio_rep and '2' in x.bio_rep,
@@ -118,7 +113,7 @@ class Track(object):
                  #"priority " + str(self.priority),
                  "url" : url}
         if self.color:
-            track["colorpositive"] = rgb_to_hex(self.color)
+            track["colorpositive"] = self.color
         if self.height:
             track["height"] = int(self.height.split(':')[1])
         return track
@@ -158,7 +153,7 @@ class BigBedTrack(Track):
             self.color = color
         self.type = "bigBed"
         self.visibility = "pack"
-        
+
 def officialVistaTrack(assembly):
     byAssembly = {"mm10" : """
 track VISTAenhancers
