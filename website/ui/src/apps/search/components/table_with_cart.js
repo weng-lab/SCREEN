@@ -301,8 +301,20 @@ class TableWithCart extends React.Component {
 	if(!isCart()){
 	    meetMsg = (
 		<li className={"list-group-item"}>
-		Candidate Regulatory Elements (cREs) that meet your search criteria:
+		    Candidate Regulatory Elements (cREs) that meet your search criteria are listed in the table below.
 		</li>);
+	}
+	let click = "Click a cRE accession to view details about the cRE, including top tissues, nearby genomic features, etc.";
+		    
+	let geneView = "Click a gene ID to view the expression profile of the gene.";
+	let diffExp = "";
+	if("mm10" === GlobalAssembly){
+	    diffExp = (
+		<span>
+		    {"Click the "}
+		    <span>&Delta;</span>
+		    {" following a gene ID to explore the differential expression of the gene between two cell types."}
+		</span>);
 	}
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
@@ -316,6 +328,11 @@ class TableWithCart extends React.Component {
 			{tooMany}
 			{failMsg}
 			{meetMsg}
+			<ul className="creMsgs">
+			    <li>{click}</li>
+			    <li>{geneView}</li>
+			    <li>{diffExp}</li>
+			</ul>
 		    </ul>
 		</div>
 
@@ -334,6 +351,40 @@ class TableWithCart extends React.Component {
 	    </div>);
     }
 
+    legend(){
+	return (
+	    <div className="panel panel-default">
+		<div className="panel-body legendPanel">
+		    <div className="row">
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('P')}
+			</div>
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('E')}
+			</div>
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('C')}
+			</div>
+		    </div>
+		    <div className="row">
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('D')}
+			</div>
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('I')}
+			</div>
+			<div className="col-md-4">
+			    {Render.ctsGroupIconLegend('U')}
+			</div>
+		    </div>
+		</div>
+		<div className="panel-footer legendPanelFooter">
+		    Icon Legend
+		</div>
+	    </div>
+	);
+    }
+    
     render() {
 	var data = [...this.props.data];
         var actions = this.props.actions;
@@ -343,11 +394,23 @@ class TableWithCart extends React.Component {
 	    data[i].in_cart = cas.has(data[i].accession);
 	}
 
-	return (<div style={{"width": "100%"}} className={"mainSearchTable"} >
+	return (
+	    <div style={{"width": "100%"}} className={"mainSearchTable"} >
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-     		</div>);
+		
+		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
+		    <div className="row">
+			<div className="col-md-6">
+			</div>
+			<div className="col-md-6">
+			    {this.legend()}
+			</div>
+		    </div>
+		</div>
+		
+     	    </div>);
     }
 }
 
