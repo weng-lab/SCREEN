@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import sys
 import argparse
 from oauth2client import tools
+import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
@@ -18,13 +20,75 @@ from constants import helptext
 AddPath(__file__, "../googleapi")
 from helptext import GoogleDocs
 
-class DB:
-    def __init__(self, DBCONN):
-        self.DBCONN = DBCONN
+class HelpTextImport:
+    def __init__(self, args, curs):
+        self.args = args
+        self.curs = curs
 
-    def recreate_tables(self):
-        with getcursor(self.DBCONN, "DB::recreate_tables") as curs:
-            curs.execute("""
+    def run(self):
+        # download GoogleDoc
+        self.data = GoogleDocs(self.args).getcontents(helptext.docid).split("\n")
+
+        # only reset DB if valid helptext was downloaded
+        if len(self.data) == 0:
+            print("no help text could be downloaded; please check GoogleDoc contents at https://docs.google.com/document/d/%s" % helptext.docid)
+            return 1
+        
+        self._recreate_tables()
+        self._parse()
+        self._save()
+
+    def _parse(self):
+        """
+          " load from the cached Google Doc and parse
+          " file format is:
+          "
+          " @key
+          " # comment
+          " %title
+          " help_text
+        """
+        key = None
+        help_text = ""
+        title = ""
+
+        rows = []
+        for line in self.data:
+            if line.startswith('@'):
+                if key and help_text:
+                    if not title:
+                        print("error: missing title for", key)
+                    rows.append((key, title, help_text.strip()))
+                key = line.strip()[1:]
+                help_text = ""
+                title = ""
+            elif line.startswith("%"):
+                title = line.replace("%", "").strip()
+            elif not line.startswith("#"):
+                help_text += line.strip() + "\n"
+        if key and help_text:
+            if not title:
+                print("error: missing title for", key)
+            rows.append((key, title, help_text.strip()))
+
+        self.rows = filter(lambda x: not x[0].startswith("key: a specific key"),
+                           rows)
+
+    def _save(self):
+        keys = [r[0] for r in self.rows]
+        print('\n'.join(keys))
+
+        records_list_template = ','.join(['%s'] * len(self.rows))
+        q = """
+INSERT INTO helpkeys (key, title, summary)
+VALUES  {}
+""".format(records_list_template)
+
+        self.curs.execute(q, self.rows)
+        print("inserted", "{:,}".format(self.curs.rowcount), "help text items")
+        
+    def _recreate_tables(self):
+        self.curs.execute("""
 DROP TABLE IF EXISTS helpkeys;
 CREATE TABLE helpkeys
 ( id serial PRIMARY KEY,
@@ -32,13 +96,6 @@ key text,
 title text,
 summary text
 )""")
-
-    def insert_value(self, key, summary, title):
-        with getcursor(self.DBCONN, "DB::insert_totals") as curs:
-            curs.execute("""
-INSERT INTO helpkeys (key, title, summary)
-VALUES (%s, %s, %s)
-""", (key, summary, title))
 
 def parseargs():
     parser = argparse.ArgumentParser(parents = [tools.argparser])
@@ -50,57 +107,10 @@ def main():
 
     # connect to DB
     DBCONN = db_connect(os.path.realpath(__file__))
-    db = DB(DBCONN)
-
-    # download GoogleDoc
-    _help_text = GoogleDocs(args).getcontents(helptext.docid).split("\n")
-
-    # only reset DB if valid helptext was downloaded
-    if len(_help_text) == 0:
-        print("no help text could be downloaded; please check GoogleDoc contents at https://docs.google.com/document/d/%s" % helptext.docid)
-        return 1
-    db.recreate_tables()
-
-    """
-      " load from the cached Google Doc and parse
-      " file format is:
-      "
-      " @key
-      " # comment
-      " %title
-      " help_text
-    """
-    key = None
-    help_text = ""
-    title = ""
-
-    keys = []
-
-    for line in _help_text:
-        if line.startswith('@'):
-            if key and help_text:
-                db.insert_value(key,
-                                key if not title else title,
-                                help_text.strip())
-                inserted += 1
-                keys.append(key)
-            key = line.strip()[1:]
-            help_text = ""
-            title = ""
-        elif line.startswith("%"):
-            title = line.replace("%", "").strip()
-        elif not line.startswith("#"):
-            help_text += line.strip() + "\n"
-    if key and help_text:
-        db.insert_value(key,
-                        key if not title else title,
-                        help_text.strip())
-        inserted += 1
-        keys.append(key)
-
-    print("inserted", inserted, "help text items")
-    print('\n'.join(keys))
-    return 0
-
+    with getcursor(DBCONN, "DB::recreate_tables") as curs:
+        hti = HelpTextImport(args, curs)
+        ret = hti.run()
+    return ret
+    
 if __name__ == "__main__":
     sys.exit(main())
