@@ -55,18 +55,47 @@ class PGcreTable(GetOrSetMemCache):
                 accsQuery = "accession IN (%s)" % ','.join(accs)
                 whereclauses.append("(%s)" % accsQuery)
 
-        allmap = {"dnase": "dnase_max",
-                  "promoter": "h3k4me3_max",
-                  "enhancer": "h3k27ac_max",
-                  "ctcf": "ctcf_max" }
-        for x in ["dnase", "promoter", "enhancer", "ctcf"]:
-            if "rank_%s_start" % x in j and "rank_%s_end" in j:
-                _range = [j["rank_%s_start" % x] / 100.0,
-                          j["rank_%s_end" % x] / 100.0]
-                whereclauses.append("(%s)" % " and ".join(
-                    ["cre.%s >= %f" % (allmap[x], _range[0]),
-                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
-            fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
+        if ct:
+            for assay in [("dnase", "dnase"),
+                          ("promoter", "h3k4me3"),
+                          ("enhancer", "h3k27ac"),
+                          ("ctcf", "ctcf")]:
+                if ct not in self.ctmap[assay[0]]:
+                    fields.append("'' AS %s_zscore" % (assay[0]))
+                    continue
+                cti = self.ctmap[assay[0]][ct]
+                fields.append("cre.%s_zscores[%d] AS %s_zscore" % (assay[1], cti, assay[0]))
+
+                if "rank_%s_start" % assay[0] in j and "rank_%s_end" % assay[0] in j:
+                    _range = [j["rank_%s_start" % assay[0]] / 100.0,
+                              j["rank_%s_end" % assay[0]] / 100.0]
+                    minDefault = -10.0  # must match slider default
+                    maxDefault = 10.0   # must match slider default
+                    if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
+                        continue # not actually filtering on zscore, yet...
+                    if not isclose(_range[0], minDefault):
+                        whereclauses.append("(%s)" %
+                                            "cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]))
+                    elif not isclose(_range[1], maxDefault):
+                        whereclauses.append("(%s)" %
+                                            "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1]))
+                    else:
+                        whereclauses.append("(%s)" % " and ".join(
+                                ["cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]),
+                                 "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1])] ))
+        else:
+            allmap = {"dnase": "dnase_max",
+                      "promoter": "h3k4me3_max",
+                      "enhancer": "h3k27ac_max",
+                      "ctcf": "ctcf_max" }
+            for x in ["dnase", "promoter", "enhancer", "ctcf"]:
+                if "rank_%s_start" % x in j and "rank_%s_end" in j:
+                    _range = [j["rank_%s_start" % x] / 100.0,
+                              j["rank_%s_end" % x] / 100.0]
+                    whereclauses.append("(%s)" % " and ".join(
+                        ["cre.%s >= %f" % (allmap[x], _range[0]),
+                         "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
+                fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
 
         whereclause = ""
         if len(whereclauses) > 0:
