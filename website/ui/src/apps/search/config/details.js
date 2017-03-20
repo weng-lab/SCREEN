@@ -222,20 +222,24 @@ class GeTab extends ReTabBase{
 	super(props, "ge");
 
         this.doRender = (data) => {
-            //console.log("geTab", data);
 	    if(data.no_nearby_tss) {
-		return <div><br />{"No gene expression data found for this cRE"}</div>;
+		return (
+		    <div>
+			<br />
+			{"No gene expression data found for this cRE"}
+		    </div>);
 	    }
 	    let gene = data.genename;
 
-	    // FIXME: check if this is true
-	    if (gene.startsWith("ENSG")) {
-		return <div><br />{"No gene expression data found for this cRE"}</div>;
-	    }
-
 	    return (
 		<div>
-		    <h2><em>{data.genename}</em></h2>
+		    <h4>
+			Gene Expression Profiles by RNA-seq
+			<HelpIcon helpkey={"GeneExpression"} />
+		    </h4>
+		    <h2>
+			<em>{data.genename}</em>
+		    </h2>
                     {data.ensemblid_ver}
 		    {Render.openGeLink(gene)}
 		    <br />
