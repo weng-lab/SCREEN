@@ -78,6 +78,7 @@ class HelpTextImport:
         keys = [r[0] for r in self.rows]
         print('\n'.join(keys))
 
+        # from http://stackoverflow.com/a/30985541
         records_list_template = ','.join(['%s'] * len(self.rows))
         q = """
 INSERT INTO helpkeys (key, title, summary)
