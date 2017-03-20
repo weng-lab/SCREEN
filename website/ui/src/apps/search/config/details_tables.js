@@ -269,7 +269,7 @@ export const TfIntersectionTable = () => ({
 	cols: [
 	    {title: "factor", data: "name",
 	     render: Render.factorbook_link_tf },
-	    {title: "# experiments", data: "n",
+	    {title: "# of experiments that support TF binding", data: "n",
 	     render: Render.integerLink("tf") },
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
@@ -283,7 +283,7 @@ export const TfIntersectionTable = () => ({
 	cols: [
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
-	    {title: "# experiments", data: "n",
+	    {title: "# of experiments that support histone modification", data: "n",
 	     render: Render.integerLink("histone") },
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
