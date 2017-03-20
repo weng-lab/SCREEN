@@ -47,8 +47,7 @@ def makeJobs(assembly):
         m = MetadataWS(Datasets.all_human)
 
     allExps = [(m.chipseq_tfs_useful(assembly), "tf"),
-               (m.chipseq_histones_useful(assembly), "histone"),
-               (m.dnases_useful(assembly), "dnase")]
+               (m.chipseq_histones_useful(assembly), "histone")]
     allExpsIndiv = []
     for exps, etype in allExps:
         print("found", len(exps), etype)
@@ -121,7 +120,7 @@ def computeIntersections(args, assembly):
         for etype, label, fileID, accs in accessions:
             for acc in accs:
                 if acc not in tfImap:
-                    tfImap[acc] = {"tf": {}, "histone": {}, "dnase": {}}
+                    tfImap[acc] = {"tf": {}, "histone": {}}
                 if label not in tfImap[acc][etype]:
                     tfImap[acc][etype][label] = []
                 tfImap[acc][etype][label].append(fileID)
@@ -132,9 +131,10 @@ def computeIntersections(args, assembly):
     outFnp = paths.path(assembly, "extras", "peakIntersections.json.gz")
     with gzip.open(outFnp, 'w') as f:
         for k,v in tfImap.iteritems():
-            f.write('\t'.join([k, json.dumps(v["tf"]),
-                               json.dumps(v["histone"]),
-                               json.dumps(v["dnase"])]) + '\n')
+            f.write('\t'.join([k,
+                               json.dumps(v["tf"]),
+                               json.dumps(v["histone"])                               
+            ]) + '\n')
     printt("wrote", outFnp)
 
 def parse_args():
@@ -155,7 +155,7 @@ def main():
             print(j["bed"].fileID)
         return 0
 
-    printt("intersecting TFs, Histones, and DNases")
+    printt("intersecting TFs and Histones")
     computeIntersections(args, args.assembly)
 
     return 0
