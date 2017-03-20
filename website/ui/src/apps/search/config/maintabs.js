@@ -54,14 +54,18 @@ class ActivityProfileTab extends React.Component {
 }
 
 const MainTabInfo = () => {
-    let gene = GlobalParsedQuery.approved_symbol;
+    let gene = null;
+    if(GlobalParsedQuery.genes.length > 0){
+	gene = GlobalParsedQuery.genes[0].approved_symbol;
+    }
     let geTitle = gene ? gene + " Expression" : "";
 
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
-	    aprofile: {title: "Activity Profile", visible: false, f: ActivityProfileTab},
+	    aprofile: {title: "Activity Profile", visible: false,
+		       f: ActivityProfileTab},
 	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
 	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
 	    details: {title: "cRE Details", visible: false, f: DetailsTab},
