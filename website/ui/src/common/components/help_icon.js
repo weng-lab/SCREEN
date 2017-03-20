@@ -4,7 +4,13 @@ import ReactDOMServer from 'react-dom/server'
 import {brJoin} from '../utility'
 
 export const HelpTooltip = (helpkey, color = "#0000EE") => {
-    let data = Globals.helpKeys[helpkey];
+    let data = null;
+    if(helpkey in Globals.helpKeys){
+	data = Globals.helpKeys[helpkey];
+    } else {
+	console.log("help missing", helpkey);
+	return "";
+    }
     let content = data.title + '\n' + data.summary.replace(/\n\n/g, '\n');
 
     return ReactDOMServer.renderToStaticMarkup((
@@ -26,7 +32,14 @@ class HelpIcon extends React.Component {
 
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
-        let data = Globals.helpKeys[this.props.helpkey];
+	let data = null
+	if(this.props.helpkey in Globals.helpKeys){
+	    data = Globals.helpKeys[this.props.helpkey];
+	} else {
+	    console.log("help missing", this.props.helpkey);
+	    return false;
+	}
+	
         let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
 
 	return (
