@@ -13,10 +13,11 @@ import ResultsTable from '../../../common/components/results_table'
 import {panelize} from '../../../common/utility'
 
 const gwas_studies = ({gwas_study}) => {
-    return panelize("GWAS Studies", <GWASstudies
-					gwas_study={gwas_study}
-				    />,
-		    "gwasstudies");
+    let box = (
+	<GWASstudies
+	    gwas_study={gwas_study}
+	/>);
+    return panelize("GWAS Studies", box, "GWAS_Studies_Facet");
 }
 const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     if(!gwas_study || !gwas_cell_types){

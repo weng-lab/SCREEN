@@ -84,7 +84,6 @@ class GwasTab extends React.Component{
                              paging={false}
                          />);
 
-        // <HelpIcon helpkey={"gwasstudytable"} />
         return (
             <div className="container-fluid">
                 <div className="row">
