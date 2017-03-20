@@ -200,11 +200,8 @@ export const searchLink = (data) => (approved_symbol) => {
 }
 
 export const assayIcon = (ctn) => {
-    // DNase green 06DA93
-    // H3K27ac yellow FFCD00
-    // H3K4me3 red FF0000
-    // CTCF blue 00B0F0
-
+    let colors = Globals.colors.cREs;
+    
     let assays = Globals.byCellType[ctn].map((a) => (a.assay));
     assays.sort();
     let w = 12;
@@ -228,10 +225,14 @@ export const assayIcon = (ctn) => {
                     {border()}
                     {line(w+2, 0, w+2, fw)}
                     {line(0, w+2, fw, w+2)}
-                    {assays.indexOf("DNase") > -1 && rect(1, 1, "#06DA93")}
-                    {assays.indexOf("H3K27ac") > -1  && rect(1, w+3, "#FFCD00")}
-                    {assays.indexOf("H3K4me3") > -1  && rect(w+3, 1, "#FF0000")}
-                    {assays.indexOf("CTCF") > -1  && rect(w+3, w+3, "#00B0F0")}
+                    {assays.indexOf("DNase") > -1 &&
+		     rect(1, 1, colors.DNase)}
+                    {assays.indexOf("H3K27ac") > -1  &&
+		     rect(1, w+3, colors.H3K9ac)}
+                    {assays.indexOf("H3K4me3") > -1  &&
+		     rect(w+3, 1, colors.H3K4me3)}
+                    {assays.indexOf("CTCF") > -1  &&
+		     rect(w+3, w+3, colors.CTCF)}
   		</g>
 	    </svg>
 	</span>);
@@ -241,17 +242,13 @@ export const assayIcon = (ctn) => {
 }
 
 export const creGroupIcon = (creGroup) => {
-    // DNase green 06DA93
-    // H3K27ac yellow FFCD00
-    // H3K4me3 red FF0000
-    // CTCF blue 00B0F0
-
+    let colors = Globals.colors.cREs;
     let lookupTitle = {1 : "CTCF-only",
                        2 : "Enhancer-like",
                        3 : "Promoter-like"};
-    let lookupColor = {1 : "#00B0F0",
-		       2 : "#FFCD00",
-		       3 : "#FF0000"}
+    let lookupColor = {1 : colors.CTCF,
+		       2 : colors.H3K27ac,
+		       3 : colors.H3K4me3}
 
     let w = 18;
     let fw = w + 2;
@@ -278,25 +275,19 @@ export const creGroupIcon = (creGroup) => {
 }
 
 export const ctsGroupIcon = (creGroup) => {
-    // DNase green 06DA93
-    // H3K27ac yellow FFCD00
-    // H3K4me3 red FF0000
-    // CTCF blue 00B0F0
-
-    // E (enhancer), P (promoter), C (ctcf), D (dnase),
-
+    let colors = Globals.colors.cREs;
     let lookupTitle = {'C' : "CTCF-only",
                        'E' : "Enhancer-like",
                        'P' : "Promoter-like",
                        'D' : "DNase",
                        'I' : "Inactive",
                        'U' : "Unclassified" };
-    let lookupColor = {'C' : "#00B0F0",
-		       'E' : "#FFCD00",
-		       'P' : "#FF0000",
-                       'D' : "#06DA93",
-                       'I' : "#e1e1e1",
-                       'U' : "#8c8c8c"}
+    let lookupColor = {'C' : colors.CTCF,
+		       'E' : colors.H3K27ac,
+		       'P' : colors.H3K4me3,
+                       'D' : colors.DNase,
+                       'I' : colors.Inactive,
+                       'U' : colors.Unclassified}
     let w = 18;
     let fw = w + 2;
     let rect = (x, y, color) => (
