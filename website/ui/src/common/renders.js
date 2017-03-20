@@ -68,7 +68,7 @@ export const cart_img = (rmv, src_only) => {
 }
 
 export const creLink = (accession) => (
-    '<a href="#">.' + accession + '</a>'
+    '<a href="#">' + accession + '</a>'
 )
 
 export const popup = (p, c) => {
@@ -201,7 +201,7 @@ export const searchLink = (data) => (approved_symbol) => {
 
 export const assayIcon = (ctn) => {
     let colors = Globals.colors.cREs;
-    
+
     let assays = Globals.byCellType[ctn].map((a) => (a.assay));
     assays.sort();
     let w = 12;
