@@ -35,7 +35,7 @@ LIMIT 5
             """.format(tn = self.assembly + "_autocomplete"), (q,))
         r = curs.fetchall()
         if not r:
-            print("no results for %s in %s" % (uq, self.assembly))
+            print("no results for %s in %s" % (q, self.assembly))
             return []
         return [x[0] for x in r]
 
