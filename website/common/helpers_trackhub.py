@@ -1,8 +1,5 @@
 import sys, os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
-from common.colors_trackhub import PredictionTrackhubColors, EncodeTrackhubColors, OtherTrackhubColors
-
 BIB5 = "http://bib5.umassmed.edu/~purcarom/annotations_demo/"
 
 class TempWrap:
