@@ -1,5 +1,3 @@
-import re
-
 class TrackInfo:
     def __init__(self, cache, ct, tissue, assay, expID, fileID):
         self.cache = cache
@@ -22,13 +20,20 @@ class TrackInfo:
         if a in self.assays:
             a = self.assays[a]
         ret = " ".join([self.fileID, self.ct, a])
-        #ret = re.sub(r'\W+', '', ret)
         return ret
 
+    def hex_to_rgb(self, value):
+        # http://stackoverflow.com/a/214657
+        """Return (red, green, blue) for the color given as #rrggbb."""
+        value = value.lstrip('#')
+        lv = len(value)
+        rgb = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+        return ','.join([str(x) for x in rgb])
+    
     def color(self):
         tcs = self.cache.colors["trackhub"]
         if self.assay in tcs:
-            return tcs[self.assay]
+            return self.hex_to_rgb(tcs[self.assay])
         return None
 
     def cellType(self):
