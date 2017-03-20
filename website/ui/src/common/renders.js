@@ -228,7 +228,7 @@ export const assayIcon = (ctn) => {
                     {assays.indexOf("DNase") > -1 &&
 		     rect(1, 1, colors.DNase)}
                     {assays.indexOf("H3K27ac") > -1  &&
-		     rect(1, w+3, colors.H3K9ac)}
+		     rect(1, w+3, colors.H3K27ac)}
                     {assays.indexOf("H3K4me3") > -1  &&
 		     rect(w+3, 1, colors.H3K4me3)}
                     {assays.indexOf("CTCF") > -1  &&
