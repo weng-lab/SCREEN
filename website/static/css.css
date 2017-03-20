@@ -562,3 +562,12 @@ div.dataTables_wrapper div.dataTables_paginate {
 .uppercase {
     text-transform: uppercase!important;
 }
+
+.legendPanel {
+    padding: 10px;
+}
+.legendPanelFooter {
+    padding: 6px;
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
