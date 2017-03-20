@@ -331,7 +331,7 @@ class TableWithCart extends React.Component {
 			<ul className="creMsgs">
 			    <li>{click}</li>
 			    <li>{geneView}</li>
-			    <li>{diffExp}</li>
+			    {diffExp && <li>{diffExp}</li>}
 			</ul>
 		    </ul>
 		</div>
