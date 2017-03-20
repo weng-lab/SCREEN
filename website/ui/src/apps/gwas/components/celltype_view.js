@@ -102,7 +102,7 @@ class CelltypeView extends React.Component {
             <div>
                 <h3>
                     {this.props.cellType.biosample_summary}
-                    <HelpIcon helpkey={"gwasresults"} />
+                    <HelpIcon helpkey={"GWAS_Results_Table"} />
                 </h3>
                 {creTable}
 	    </div>);

@@ -22,7 +22,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
     if(!gwas_study || !gwas_cell_types){
         return (<div />);
     }
-    let cts = (
+    let box = (
 	<ResultsTable
 	    data={gwas_cell_types}
 	    cols={[
@@ -50,7 +50,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
 		    };
 		}}
         />);
-    return panelize("Cell types", cts, "gwascelltypes");
+    return panelize("Cell types", box, "GWAS_Cell_Types_Facet");
 }
 
 class FacetBoxen extends React.Component {

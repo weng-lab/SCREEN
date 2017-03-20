@@ -30,49 +30,19 @@ CREATE TABLE helpkeys
 ( id serial PRIMARY KEY,
 key text,
 title text,
-summary text,
-link text
+summary text
 )""")
 
-    def insert_value(self, key, summary, title, link = ""):
+    def insert_value(self, key, summary, title):
         with getcursor(self.DBCONN, "DB::insert_totals") as curs:
             curs.execute("""
-INSERT INTO helpkeys (key, title, summary, link)
-VALUES (%s, %s, %s, %s)
-""", (key, summary, title, link))
+INSERT INTO helpkeys (key, title, summary)
+VALUES (%s, %s, %s)
+""", (key, summary, title))
 
 def parseargs():
     parser = argparse.ArgumentParser(parents = [tools.argparser])
     return parser.parse_args()
-
-keymap = {"Activity Heatmap": "main_rank_heatmap",
-          "TSS Start": "tss_dist",
-          "Comparison Venn": "comparison_venn",
-          "Comparison Heatmap": "comparison_heatmap",
-          "Gene Expression": "gene_expression_barplot",
-          "Cell Type Tree": "celltype_tree",
-          "Cell Type Facet": "celltype_facet",
-          "Z-score Facet": "zscore_facet",
-          "Coordinate Facet": "coordinate_facet",
-          "H3K4me3 Z-scores": "h3k4me3z",
-          "H3K27ac Z-scores": "h3k27acz",
-          "CTCF Z-scores": "ctcfz",
-          "DNase Z-scores": "dnasez",
-          "Intersecting transcription factors": "itfs",
-          "Intersecting histone marks": "ihms",
-          "Nearby genes": "nearbygenes",
-          "Nearby cREs": "nearbycres",
-          "Nearby SNPs": "nearbysnps",
-          "Genes Within TAD": "geneswithintad",
-          "cREs Within TAD": "creswithintad",
-          "GWAS Studies Facet": "gwasstudies",
-          "GWAS Cell Types Facet": "gwascelltypes",
-          "GWAS Results Table": "gwasresults",
-          "DE cRE Table": "decres",
-          "DE Gene Table": "degenetable",
-          "DifferentialGeneMouse" : "DifferentialGeneMouse",
-          "CellTypeAgnosticClassification" : "CellTypeAgnosticClassification",
-          "CellTypeSpecifiedClassification" : "CellTypeSpecifiedClassification"}
 
 def main():
     args = parseargs()
@@ -103,11 +73,17 @@ def main():
     key = None
     help_text = ""
     title = ""
+
+    keys = []
+
     for line in _help_text:
         if line.startswith('@'):
-            if key and help_text and key in keymap:
-                db.insert_value(keymap[key], key if not title else title, help_text.strip())
+            if key and help_text:
+                db.insert_value(key,
+                                key if not title else title,
+                                help_text.strip())
                 inserted += 1
+                keys.append(key)
             key = line.strip()[1:]
             help_text = ""
             title = ""
@@ -115,11 +91,15 @@ def main():
             title = line.replace("%", "").strip()
         elif not line.startswith("#"):
             help_text += line.strip() + "\n"
-    if key and help_text and key in keymap:
-        db.insert_value(keymap[key], key if not title else title, help_text.strip())
+    if key and help_text:
+        db.insert_value(key,
+                        key if not title else title,
+                        help_text.strip())
         inserted += 1
+        keys.append(key)
 
-    print("inserted %d item%s" % (inserted, "s" if inserted != 1 else ""))
+    print("inserted", inserted, "help text items")
+    print('\n'.join(keys))
     return 0
 
 if __name__ == "__main__":
