@@ -51,6 +51,8 @@ def makeJobs(assembly):
     allExpsIndiv = []
     for exps, etype in allExps:
         print("found", len(exps), etype)
+        exps = filter(lambda e: "ERROR" not in e.jsondata["audit"], exps)
+        print("found", len(exps), etype, "after removing ERROR audit exps")
         for exp in exps:
             allExpsIndiv.append((exp, etype))
     random.shuffle(allExpsIndiv)
