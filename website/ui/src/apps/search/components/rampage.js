@@ -1,5 +1,6 @@
 import React from 'react'
 
+import HelpIcon from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
 
 class Rampage extends React.Component {
@@ -76,7 +77,13 @@ class Rampage extends React.Component {
                 <div className="row">
                     <div className="col-md-8">
                         <span className={"rampageGeneName"}>
-                            <h2><em>{gene.name}</em></h2>
+			    <h4>
+				TSS Activity Profiles by RAMPAGE
+				<HelpIcon helpkey={"RAMPAGEOverview"} />
+			    </h4>
+                            <h2>
+				<em>{gene.name}</em>
+			    </h2>
                             {gene.ensemblid_ver}
 			    {"   ("}{Render.numWithCommas(gene.distance)}
 			    {" bases from cRE)"}
