@@ -69,7 +69,7 @@ class CelltypeView extends React.Component {
 
 	let klassCenter = "dt-body-center dt-head-center ";
 	let ctsHelp = "CTS<br />" +
-		      HelpTooltip("CellTypeSpecificClassification");
+		      HelpTooltip("CellTypeSpecifiedClassification");
         let cols = [
             {title: "accession", data: "accession", className: klassCenter,
              render: Render.relink(GlobalAssembly) },
