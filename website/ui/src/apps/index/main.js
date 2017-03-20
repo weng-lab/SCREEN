@@ -48,8 +48,8 @@ class IndexPage extends React.Component {
 
         return (
 	    <Provider store={store}>
-	    <div>
-	    {this.title()}
+		<div>
+		    {this.title()}
 	            <MainTabs
                         mainDivId={"mainTabs"}
                         tabUlClass={"nav-pills"}/>
