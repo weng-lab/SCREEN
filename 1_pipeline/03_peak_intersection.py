@@ -10,14 +10,17 @@ import random
 
 from joblib import Parallel, delayed
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
-from constants import paths, chroms
-from common import printr, printt
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printWroteNumLines
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
+from utils import AddPath, Utils, Timer, printt, printWroteNumLines
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
+from exp import Exp
+
+AddPath(__file__, '../common/')
+from constants import paths, chroms
+from common import printr, printt
+from config import Config
 
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
@@ -51,6 +54,7 @@ def makeJobs(assembly):
     allExpsIndiv = []
     for exps, etype in allExps:
         print("found", len(exps), etype)
+        exps = [Exp.fromJsonFile(e.encodeID) for e in exps]
         exps = filter(lambda e: "ERROR" not in e.jsondata["audit"], exps)
         print("found", len(exps), etype, "after removing ERROR audit exps")
         for exp in exps:
@@ -135,30 +139,36 @@ def computeIntersections(args, assembly):
         for k,v in tfImap.iteritems():
             f.write('\t'.join([k,
                                json.dumps(v["tf"]),
-                               json.dumps(v["histone"])                               
-            ]) + '\n')
+                               json.dumps(v["histone"])
+                               ]) + '\n')
     printt("wrote", outFnp)
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
     parser.add_argument('--list', action="store_true", default=False)
-    parser.add_argument('--assembly', type=str, default="mm10")
+    parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
 
-    if args.list:
-        jobs = makeJobs(args, args.assembly)
-        for j in jobs:
-            #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
-            print(j["bed"].fileID)
-        return 0
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
 
-    printt("intersecting TFs and Histones")
-    computeIntersections(args, args.assembly)
+    for assembly in assemblies:
+        print("***********************", assembly)
+        if args.list:
+            jobs = makeJobs(assembly)
+            for j in jobs:
+                #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+                print(j["bed"].fileID)
+            return 0
+
+        printt("intersecting TFs and Histones")
+        computeIntersections(args, assembly)
 
     return 0
 
