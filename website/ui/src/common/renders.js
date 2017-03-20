@@ -68,7 +68,7 @@ export const cart_img = (rmv, src_only) => {
 }
 
 export const creLink = (accession) => (
-    '<a href="#">' + accession + '</a>'
+    '<a href="#">.' + accession + '</a>'
 )
 
 export const popup = (p, c) => {
@@ -310,6 +310,47 @@ export const ctsGroupIcon = (creGroup) => {
     let title = lookupTitle[creGroup];
     let c = ReactDOMServer.renderToStaticMarkup(e);
     return popup(title, c);
+}
+
+export const ctsGroupIconLegend = (creGroup) => {
+    let colors = Globals.colors.cREs;
+    let lookupTitle = {'C' : "CTCF-only",
+                       'E' : "Enhancer-like",
+                       'P' : "Promoter-like",
+                       'D' : "DNase",
+                       'I' : "Inactive",
+                       'U' : "Unclassified" };
+    let lookupColor = {'C' : colors.CTCF,
+		       'E' : colors.H3K27ac,
+		       'P' : colors.H3K4me3,
+                       'D' : colors.DNase,
+                       'I' : colors.Inactive,
+                       'U' : colors.Unclassified}
+    let w = 18;
+    let fw = w + 2;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fw}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={fw}>
+	        <g>
+                    {border()}
+                    {rect(1, 1, lookupColor[creGroup])}
+  		</g>
+	    </svg>
+	</span>);
+    let title = lookupTitle[creGroup];
+    return (
+	<span>
+	{e}{" "}
+	<small>{title}</small>
+    </span>);
 }
 
 export const numWithCommas = (x) => {
