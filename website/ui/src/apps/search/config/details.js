@@ -222,13 +222,6 @@ class GeTab extends ReTabBase{
 	super(props, "ge");
 
         this.doRender = (data) => {
-	    if(data.no_nearby_tss) {
-		return (
-		    <div>
-			<br />
-			{"No gene expression data found for this cRE"}
-		    </div>);
-	    }
 	    let gene = data.genename;
 
 	    return (
