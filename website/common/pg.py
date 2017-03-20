@@ -630,13 +630,12 @@ ORDER BY 1
     def getHelpKeys(self):
         with getcursor(self.pg.DBCONN, "getHelpKeys") as curs:
             curs.execute("""
-            SELECT key, title, summary, link
+            SELECT key, title, summary
             FROM helpkeys
             """)
             rows = curs.fetchall()
         return {r[0] : {"title": r[1],
-                        "summary": r[2],
-                        "link": r[3]}
+                        "summary": r[2]}
                 for r in rows}
 
     def tfHistCounts(self):
