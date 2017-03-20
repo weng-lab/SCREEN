@@ -17,8 +17,6 @@ from common.db_trackhub import DbTrackhub
 
 from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
-from common.colors_trackhub import PredictionTrackhubColors, OtherTrackhubColors
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from constants import paths
 
