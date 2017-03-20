@@ -72,7 +72,7 @@ keymap = {"Activity Heatmap": "main_rank_heatmap",
           "DE Gene Table": "degenetable",
           "DifferentialGeneMouse" : "DifferentialGeneMouse",
           "CellTypeAgnosticClassification" : "CellTypeAgnosticClassification",
-          "CellTypeSpecificClassification" : "CellTypeSpecificClassification"}
+          "CellTypeSpecifiedClassification" : "CellTypeSpecifiedClassification"}
 
 def main():
     args = parseargs()
