@@ -31,14 +31,16 @@ class MainTabs extends React.Component {
         return (
             <div id={mainDivId} className={mainDivClass}>
 
-	    <ul className={"nav " + tabUlClass}>
-	    {Object.keys(tabs).map((key) => ( makeTabTitle(key, tabs[key]) ))}
-            </ul>
-
-	    <div className="tab-content clearfix">
-	    {Object.keys(tabs).map((key) => ( makeTab(key, tabs[key]) ))}
-	    </div>
-
+		<ul className={"nav " + tabUlClass}>
+		    {Object.keys(tabs).map((key) => (
+			 makeTabTitle(key, tabs[key]) ))}
+		</ul>
+		
+		<div className="tab-content clearfix">
+		    {Object.keys(tabs).map((key) => (
+			 makeTab(key, tabs[key]) ))}
+		</div>
+		
             </div>);
     }
 }

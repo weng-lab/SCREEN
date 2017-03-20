@@ -7,3 +7,5 @@ export const setCellType = (ct) => ({ type: SET_CELLTYPE, ct });
 export const SET_GWAS_CELL_TYPES = 'SET_GWAS_CELL_TYPES'
 export const setGwasCellTypes = (cts) => ({ type: SET_GWAS_CELL_TYPES, cts});
 
+export const SET_GWAS_STUDY_TAB = 'SET_GWAS_STUDY_TAB'
+export const setGwasStudyTab = (tab) => ({ type: SET_GWAS_STUDY_TAB, tab});
