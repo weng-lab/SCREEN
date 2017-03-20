@@ -94,7 +94,8 @@ class CachedObjects:
             "creHistBins" : self.creHist,
             "byCellType" : datasets.byCellType,
             "geBiosampleTypes" : self.geBiosampleTypes,
-            "helpKeys" : self.help_keys
+            "helpKeys" : self.help_keys,
+            "colors" : self.colors
         }
 
 def main():
