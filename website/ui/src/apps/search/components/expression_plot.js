@@ -21,10 +21,8 @@ class ExpressionPlot extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
 	if("expression" === nextProps.maintabs_active){
-	    //console.log("updating", "expression");
 	    return true;
 	}
-	//console.log("not updating", this.key);
 	return false;
     }
     
@@ -35,14 +33,18 @@ class ExpressionPlot extends React.Component {
     }
 
     loadCRE(){
-	let gene = GlobalParsedQuery.approved_symbol;
+	let gene = null;
+	if(GlobalParsedQuery.genes.length > 0){
+	    gene = GlobalParsedQuery.genes[0].approved_symbol;
+	}
 	if (!gene) {
 	    return;
 	}
 	if(gene in this.state.ges){
 	    return;
 	}
-	var q = {GlobalAssembly, gene, compartments_selected: new Set(["cell"]),
+	var q = {GlobalAssembly, gene,
+		 compartments_selected: new Set(["cell"]),
 		 biosample_types_selected: new Set(Globals.geBiosampleTypes)};
         var jq = JSON.stringify(q);
 	if(this.state.jq == jq){
@@ -70,7 +72,10 @@ class ExpressionPlot extends React.Component {
     }
 
     doRenderWrapper(){
-	let gene = GlobalParsedQuery.approved_symbol;
+	let gene = null;
+	if(GlobalParsedQuery.genes.length > 0){
+	    gene = GlobalParsedQuery.genes[0].approved_symbol;
+	}
         if (!gene) {
 	    return <div />;
 	}
@@ -87,6 +92,7 @@ class ExpressionPlot extends React.Component {
 					  isFetching: false})}
 		</div>);
 	}
+	return loading({...this.state});
     }
 
     render(){
