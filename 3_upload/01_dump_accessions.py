@@ -53,7 +53,9 @@ from {tn}
             self._print(self.assembly + "_rampage_info")
 
         self._ge()
-            
+
+        print("ENCFF471EYL") # Hi-C
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
