@@ -67,7 +67,7 @@ class GWASstudies extends React.Component {
 				enabled: true, f: SingleStudy}};
 	
 	return (
-	    <div className="container" style={{width: "100%"}}>
+	    <div className="container gwasStudyContainer">
                 <ul className="nav nav-tabs">
   		    {Object.keys(tabs).map((key) => (
                          makeTabTitle(key, tabs[key] )))}
