@@ -28,11 +28,11 @@ class ImportMinipeaks:
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
 
-    def importAll(self, outF):
+    def importAll(self, outF, sample):
         for assay in ["dnase", "h3k27ac", "h3k4me3"]:
-            self._doImport(assay, outF)
+            self._doImport(assay, outF, sample)
 
-    def _doImport(self, assay, outF):
+    def _doImport(self, assay, outF, sample):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
@@ -53,8 +53,11 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 """.format(tn = tableName,
            fields = ",".join([r + " text" for r in fileIDs])))
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
-        #printt("import", mergedFnp)
+        mergedFnp = paths.path(self.assembly, "minipeaks", "merged",
+                               assay + "_merged.txt")
+        if sample:
+            mergedFnp = paths.path(self.assembly, "minipeaks", "merged",
+                                   "sample", assay + "_merged.txt")
 
         cols = ["accession", "chrom"] + fileIDs
         q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
@@ -65,6 +68,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--sample', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -90,7 +94,7 @@ def main():
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
                 im = ImportMinipeaks(assembly, 20, ver)
-                im.importAll(outF)
+                im.importAll(outF, args.sample)
 
         printWroteNumLines(queryFnp)
         cmds = ['CQLSH_HOST="cassandra.docker"',
