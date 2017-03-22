@@ -57,10 +57,16 @@ from {tn}
         printt("found", len(self.fileIDs))
         return self.fileIDs
 
+    def justForCRes(self):
+        self._print(self.assembly + "_datasets")
+        printt("found", len(self.fileIDs))
+        return self.fileIDs
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--sample', action="store_true", default=False)
+    parser.add_argument('--just', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -73,9 +79,21 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
+    d = "/home/mjp/Dropbox/0_accessionsV4/"
     fileIDs = set()
 
-    d = "/home/mjp/Dropbox/0_accessionsV4/"
+    if args.just:
+        for assembly in assemblies:
+            print('***********', assembly)
+            with getcursor(DBCONN, "DumpAccessions") as curs:
+                da = DumpAccessions(curs, assembly)
+                fileIDs = fileIDs.union(da.justForCRes())
+        outFnp = os.path.join(d, "v10_file_accessions_just_cREs.txt")
+        with open(outFnp, 'w') as f:
+            f.write('\n'.join(sorted(fileIDs)))
+        printWroteNumLines(outFnp)
+        return
+    
     for fnp in ["/home/mjp/Dropbox/0_accessionsV4/arjan.tsv",
                 "/home/mjp/Dropbox/0_accessionsV4/peaks.txt"]:
         with open(fnp) as f:
@@ -100,6 +118,7 @@ def main():
     with open(outFnp, 'w') as f:
         f.write('\n'.join(sorted(fileIDs)))
     printWroteNumLines(outFnp)
+
     return 0
 
 if __name__ == '__main__':
