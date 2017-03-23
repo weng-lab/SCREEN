@@ -165,7 +165,7 @@ def main():
             for j in jobs:
                 #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
                 print(j["bed"].fileID)
-            return 0
+            continue
 
         printt("intersecting TFs and Histones")
         computeIntersections(args, assembly)

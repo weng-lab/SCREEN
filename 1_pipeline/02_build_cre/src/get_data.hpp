@@ -127,24 +127,25 @@ public:
                           << numCols << std::endl;
                 throw std::runtime_error("wrong num cols");
             }
+            const std::string suffix = ".txt.gz";
             std::string fn;
             switch (numCols){
             case 1:
-                fn = toks[0] +".txt";
+                fn = toks[0] + suffix;
                 break;
             case 3:
-                fn = toks[0] + '-' + toks[1] + ".txt";
+                fn = toks[0] + '-' + toks[1] + suffix;
                 break;
             case 4:
-                fn = toks[0] + '-' + toks[1] + ".txt";
+                fn = toks[0] + '-' + toks[1] + suffix;
                 break;
             case 5:
                 fn = toks[0] + '-' + toks[1] + '.'
-                    + toks[2] + '-' + toks[3] + ".txt";
+                    + toks[2] + '-' + toks[3] + suffix;
                 break;
             case 6:
                 fn = toks[0] + '-' + toks[1] + '.'
-                    + toks[2] + '-' + toks[3] + ".txt";
+                    + toks[2] + '-' + toks[3] + suffix;
                 break;
             default:
                 throw std::runtime_error("invalid num toks");
