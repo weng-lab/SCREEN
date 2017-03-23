@@ -57,11 +57,25 @@ from {tn}
         printt("found", len(self.fileIDs))
         return self.fileIDs
 
+    def _printExpID(self, tableName):
+        self.curs.execute("""
+SELECT expID
+from {tn}
+        """.format(tn = tableName))
+        return set([r[0] for r in self.curs.fetchall()])
+
     def justForCRes(self):
-        self._print(self.assembly + "_datasets")
-        printt("found", len(self.fileIDs))
-        return self.fileIDs
-        
+        expIDs = self._printExpID(self.assembly + "_datasets")
+        for expID in expIDs:
+            try:
+                exp = Exp.fromJsonFile(expID)
+            except:
+                print("ERROR with " + expID)
+                raise
+            
+        printt("found", len(expIDs))
+        return expIDs
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
