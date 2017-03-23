@@ -202,7 +202,7 @@ FROM {tn} AS cre
 {whereClause}
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(fields = fields, tn = tableName,
+""".format(fields = fields, tn = self.tableName,
            whereClause = whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
