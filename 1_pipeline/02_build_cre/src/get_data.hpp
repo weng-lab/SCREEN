@@ -30,10 +30,10 @@ public:
         auto lines = bib::files::readStrings(paths_.peaks());
         std::cout << "loading peaks " << paths_.peaks() << std::endl;
 
-        std::unordered_map<std::string, uint32_t> groupLookup {
-            {"CTCF-only", 1},
-            {"Enhancer-like", 2},
-            {"Promoter-like", 3}};
+        std::unordered_map<std::string, char> groupLookup {
+            {"CTCF-only", 'C'},
+            {"Enhancer-like", 'E'},
+            {"Promoter-like", 'P'}};
 
         Peaks ret;
         ret.reserve(lines.size());
