@@ -26,7 +26,7 @@ public:
   int32_t end;
   std::string rDHS;
   std::string accession;
-  uint32_t creGroup;
+  char creGroup;
   bool isProximal;
 
   std::vector<Gene> gene_nearest_all;
@@ -64,7 +64,7 @@ public:
 
     Peak(const std::string& chrom, const int32_t start, const int32_t end,
          const std::string& rDHS, const std::string& accession,
-         const uint32_t creGroup, const bool isProximal)
+         const char creGroup, const bool isProximal)
         : chrom(chrom)
         , start(start)
         , end(end)

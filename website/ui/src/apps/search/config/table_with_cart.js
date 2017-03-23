@@ -17,10 +17,10 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: ctaHelp, data: "cregroup", className: klassCenter,
+            title: ctaHelp, data: "cta", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "CTA", data: "cregroup", visible: false
+            title: "CTA", data: "cta", visible: false
 	}, {
             title: ctsHelp, data: "cts", className: klassCenter,
 	    render: Render.ctsGroupIcon, name: "ctsv"

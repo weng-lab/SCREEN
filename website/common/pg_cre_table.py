@@ -38,12 +38,12 @@ class PGcreTable(GetOrSetMemCache):
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
-            "cre.creGroup"]
+            "cre.cra"]
         self.whereClauses = []
 
     def _cts(self, ct):
         if ct in self.ctsTable:
-            self.fields.append("cre.creGroupsSpecific[%s] AS cts" %
+            self.fields.append("cre.cts[%s] AS cts" %
                               self.ctsTable[ct])
         else:
             self.fields.append("0::int AS cts")
