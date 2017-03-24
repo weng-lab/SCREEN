@@ -120,6 +120,21 @@ class ImportCREs:
     SET ...
     """.format(tn = self.tableName_cre_all))
 
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        ic = ImportCREs(DBCONN, assembly, args.sample)
+        if 1:
+            ic.run()
+        else:
+            # example to show how to add and populate column to
+            #  master and, by inheritance, children tables...
+            ic.addCol()
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -132,22 +147,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        print('***********', assembly)
-        ic = ImportCREs(DBCONN, assembly, args.sample)
-        if 1:
-            ic.run()
-
-        else:
-            # example to show how to add and populate column to
-            #  master and, by inheritance, children tables...
-            ic.addCol()
-
-    return 0
-
+    return run(args, DBCONN)
+        
 if __name__ == '__main__':
     main()

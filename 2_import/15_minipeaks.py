@@ -65,16 +65,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
             fn = mergedFnp)
         outF.write(q + '\n\n')
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="")
-    parser.add_argument('--sample', action="store_true", default=False)
-    args = parser.parse_args()
-    return args
-
-def main():
-    args = parse_args()
-
+def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
@@ -82,11 +73,11 @@ def main():
     ver = Config.minipeaks_ver
 
     for assembly in assemblies:
-        print("***************", assembly)
-        
+        print('***********', assembly)
+
         if not GetYesNoToQuestion.immediate("OK remove old tables for version " + ver + "?"):
             printt("skipping", assembly)
-            continue
+            return
 
         queryFnp = paths.path(assembly, "minipeaks", "merged",
                               "insert_minipeaks." + assembly + ".cql")
@@ -104,6 +95,17 @@ def main():
         if GetYesNoToQuestion.immediate("import data?"):
             print(Utils.runCmds(cmds))
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--sample', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    run(args, DBCONN)
 
 if __name__ == '__main__':
     main()

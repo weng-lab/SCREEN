@@ -98,22 +98,13 @@ tadName text
         makeIndex(self.curs, self.tableName, ["tadName"])
         makeIndexIntRange(self.curs, self.tableName, ["start", "stop"])
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="")
-    args = parser.parse_args()
-    return args
-
-def main():
-    args = parse_args()
-
+def run(args, DBCONN):
     assemblies = ["hg19"] #Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
-    DBCONN = db_connect(os.path.realpath(__file__))
-
     for assembly in assemblies:
+        print('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             ipi = ImportTADs(curs, assembly)
             ipi.run()
@@ -123,5 +114,18 @@ def main():
             iti.run()
             iti.index()
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    DBCONN = db_connect(os.path.realpath(__file__))
+
+    run(args, DBCONN)
+        
 if __name__ == '__main__':
     main()

@@ -237,6 +237,13 @@ FROM {assembly}_gene_info as q
 
     makeIndex(curs, mv, ["geneid", "value"])
 
+def run(args, DBCONN, assembly):
+    print('***********', assembly)
+    with getcursor(DBCONN, "3_cellTypeInfo") as curs:
+        aga = ImportGenes(curs, assembly)
+        aga.run()
+        makeMV(curs, assembly)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -253,11 +260,8 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        with getcursor(DBCONN, "3_cellTypeInfo") as curs:
-            aga = ImportGenes(curs, assembly)
-            aga.run()
-            makeMV(curs, assembly)
-
+        run(args, DBCONN, assembly)
+        
     return 0
 
 if __name__ == '__main__':

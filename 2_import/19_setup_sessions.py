@@ -25,6 +25,10 @@ uid text,
 session_id text
 ) """.format(tn = tableName))
 
+def run(args, DBCONN, assembly):
+    print('***********', assembly)
+    setup(DBCONN)
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -34,7 +38,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-    setupDB(DBCONN)
+    run(args, DBCONN, "")
 
 if __name__ == '__main__':
     main()

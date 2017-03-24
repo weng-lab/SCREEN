@@ -293,6 +293,12 @@ class ImportGwas:
         self._studies(header)
         self._overlap(bedFnp)
 
+def run(args, DBCONN, assembly):
+    print('***********', assembly)
+    with getcursor(DBCONN, "main") as curs:
+        ig = ImportGwas(curs, assembly)
+        ig.run()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -309,9 +315,7 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        with getcursor(DBCONN, "main") as curs:
-            ig = ImportGwas(curs, assembly)
-            ig.run()
-
+        run(args, DBCONN, assembly)
+        
 if __name__ == '__main__':
     main()

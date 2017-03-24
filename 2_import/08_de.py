@@ -122,6 +122,15 @@ class ImportDE:
     def index(self):
         makeIndex(self.curs, self.tableName, ["leftCtId", "rightCtId", "ensembl"])
 
+def run(args, DBCONN):
+    print('***********', "mm10")
+    with getcursor(DBCONN, "import DEs") as curs:
+        ide = ImportDE(curs)
+        if args.index:
+            return ide.index()
+        ide.setupAll(args.sample)
+        ide.index()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--index', action="store_true", default=False)
@@ -133,13 +142,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    with getcursor(DBCONN, "import DEs") as curs:
-        ide = ImportDE(curs)
-        if args.index:
-            return ide.index()
-        ide.setupAll(args.sample)
-        ide.index()
+    return run(args, DBCONN)
 
 if __name__ == '__main__':
     main()

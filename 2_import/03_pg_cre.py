@@ -111,6 +111,17 @@ $func$ LANGUAGE plpgsql;
         self.setupCREhistograms()
         self.setupCREcounts()
 
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        with getcursor(DBCONN, "08_setup_log") as curs:
+            pd = PolishData(curs, assembly)
+            pd.run()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -122,16 +133,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        with getcursor(DBCONN, "08_setup_log") as curs:
-            pd = PolishData(curs, assembly)
-            pd.run()
-
-    return 0
-
+    return run(args, DBCONN)
+        
 if __name__ == '__main__':
     main()

@@ -5,6 +5,7 @@ import argparse
 import sys
 import os
 import psycopg2
+from collections import OrderedDict
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
@@ -14,18 +15,28 @@ from utils import AddPath
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
-regelms = __import__('01_regelms')
-pg_cre =  __import__('02_pg_cre')
-cellTypeInfo = __import__('03_cellTypeInfo')
-genealiases = __import__('04_genealiases')
-snps =  __import__('05_snps')
-correlate =  __import__('06_correlate')
-de =  __import__('07_de')
-gwas =  __import__('08_gwas')
-liftover =  __import__('09_liftover')
-peakIntersections =  __import__('10_peakIntersections')
-tads =  __import__('11_tads')
+def runAll(args, DBCONN):
+    from importlib import import_module
 
+    steps = OrderedDict()
+    for fn in sorted(os.listdir(os.path.dirname(os.path.realpath(__file__)))):
+        if not fn.endswith(".py"):
+            continue
+        if fn.startswith("00_all") or fn.startswith("9") or not '_' == fn[2]:
+            continue
+        # http://stackoverflow.com/a/8790232
+        name = fn.rsplit('.', 1)[0]
+        print(name)
+        try:
+            mod = import_module(name)
+            steps[name] = getattr(mod, "run")
+        except:
+            print("problem importing", fn)
+            raise
+    for name, f in steps.iteritems():
+        print(name)
+        f(args, DBCONN)
+        
 def vacumnAnalyze(conn, tableName):
     # http://stackoverflow.com/a/1017655
     print("about to vacuum analyze", tableName)
@@ -48,6 +59,7 @@ def vacAll(DBCONN):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--vac', action="store_true", default=False)
+    parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -60,6 +72,15 @@ def main():
     if args.vac:
         vacAll(DBCONN)
 
+    # http://stackoverflow.com/a/14903641
+    class PassedArgs(object):
+         def __init__(self, **kw):
+             self.__dict__.update(kw)
+    passedArgs = PassedArgs(assembly = args.assembly,
+                            sample = args.sample)
+
+    runAll(passedArgs, DBCONN)
+        
     return 0
 
 if __name__ == '__main__':

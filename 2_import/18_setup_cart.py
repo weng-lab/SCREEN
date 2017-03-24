@@ -27,6 +27,14 @@ def setupCart(cur, assembly):
     unique (uuid)
     ) """.format(tn = tableName))
 
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    
+    for assembly in assemblies:
+        print('***********', assembly)
+        with getcursor(DBCONN, "07_setup_cart") as curs:
+            setupCart(curs, assembly)
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -36,11 +44,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = Config.assemblies
-    for assembly in assemblies:
-        with getcursor(DBCONN, "07_setup_cart") as curs:
-            setupCart(curs, assembly)
-
+    run(args, DBCONN)
+        
 if __name__ == '__main__':
     main()

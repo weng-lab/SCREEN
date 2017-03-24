@@ -55,6 +55,13 @@ class ImportLiftover:
 
         makeIndex(self.curs, self.tableName, ["mouseAccession", "humanAccession"])
 
+def run(args, DBCONN):
+    print('***********')
+    with getcursor(DBCONN, "main") as curs:
+        il = ImportLiftover(curs)
+        il.run()
+    return 0
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -65,9 +72,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    with getcursor(DBCONN, "main") as curs:
-        il = ImportLiftover(curs)
-        il.run()
+    return run(args, DBCONN)
 
 if __name__ == '__main__':
     main()
