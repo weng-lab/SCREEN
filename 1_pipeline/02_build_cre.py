@@ -24,6 +24,11 @@ def run(assembly):
     if not os.path.exists(runFnp):
         raise Exception("missing executable " + runFnp)
 
+    if GetYesNoToQuestion.immediate("split signal files into separate chromosomes?", "no"):
+        cmds = [runFnp, "--split", "--assembly=" + assembly]
+        printt("about to run", " ".join(cmds))
+        Utils.runCmds(cmds)
+
     if GetYesNoToQuestion.immediate("rebuild cRE files?", "no"):
         cmds = [runFnp, "--assembly=" + assembly]
         printt("about to run", " ".join(cmds))
