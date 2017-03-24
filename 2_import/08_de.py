@@ -104,8 +104,9 @@ class ImportDE:
         for fnp, ct1, ct2 in fnps:
             counter += 1
             if sample:
-                if "limb_15" not in ct1 or "limb_11" not in ct2:
-                    continue
+                if "_0" not in ct1 and "_0" not in ct2:
+                    if "limb_15" not in ct1 or "limb_11" not in ct2:
+                        continue
             printt(counter, len(fnps), fnp)
             data, skipped = self.readFile(fnp)
 

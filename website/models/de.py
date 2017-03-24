@@ -96,8 +96,8 @@ class DE:
 
     def nearbyDEs(self):
         # limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        ct1 = self.ct1.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "")
-        ct2 = self.ct2.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "")
+        ct1 = self.ct1.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "").replace("postnatal_", "")
+        ct2 = self.ct2.replace("C57BL/6_", "").replace("embryo_", "").replace("_days", "").replace("postnatal_", "")
 
         cd = self.coord()
 
