@@ -19,17 +19,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/')
 from utils import Utils
 from get_yes_no import GetYesNoToQuestion
 
-def run(assembly):
+def run(yes, assembly):
     runFnp = os.path.join(os.path.dirname(__file__), '02_build_cre/bin/read_json')
     if not os.path.exists(runFnp):
         raise Exception("missing executable " + runFnp)
 
-    if GetYesNoToQuestion.immediate("split signal files into separate chromosomes?", "no"):
+    if yes or GetYesNoToQuestion.immediate("split signal files into separate chromosomes?", "no"):
         cmds = [runFnp, "--split", "--assembly=" + assembly]
         printt("about to run", " ".join(cmds))
         Utils.runCmds(cmds)
 
-    if GetYesNoToQuestion.immediate("rebuild cRE files?", "no"):
+    if yes or GetYesNoToQuestion.immediate("rebuild cRE files?", "no"):
         cmds = [runFnp, "--assembly=" + assembly]
         printt("about to run", " ".join(cmds))
         Utils.runCmds(cmds)
@@ -51,6 +51,7 @@ def run(assembly):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--yes', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
@@ -64,7 +65,7 @@ def main():
 
     for assembly in assemblies:
         print("**********", assembly)
-        run(assembly)
+        run(args.yes, assembly)
 
     return 0
 
