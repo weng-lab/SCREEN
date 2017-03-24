@@ -4,8 +4,8 @@ import * as Render from '../../../common/renders'
 const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let ctaHelp = "CTA<br />" + HelpTooltip("CellTypeAgnosticClassification");
-    let ctsHelp = "CTS<br />" + HelpTooltip("CellTypeSpecifiedClassification");
+    let ctaHelp = "PCT<br />" + HelpTooltip("CellTypeAgnosticClassification");
+    let ctsHelp = "SCT<br />" + HelpTooltip("CellTypeSpecifiedClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
     if("mm10" == GlobalAssembly){
@@ -20,12 +20,12 @@ const TableColumns = () => {
             title: ctaHelp, data: "cta", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "CTA", data: "cta", visible: false
+            title: "PCT", data: "cta", visible: false
 	}, {
             title: ctsHelp, data: "cts", className: klassCenter,
 	    render: Render.ctsGroupIcon, name: "ctsv"
 	}, {
-            title: "CTS", data: "cts", visible: false, name: "cts"
+            title: "SCT", data: "cts", visible: false, name: "cts"
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
