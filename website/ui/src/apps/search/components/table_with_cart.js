@@ -357,24 +357,24 @@ class TableWithCart extends React.Component {
 		<div className="panel-body legendPanel">
 		    <div className="row">
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('P')}
+			    {Render.sctGroupIconLegend('P')}
 			</div>
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('E')}
+			    {Render.sctGroupIconLegend('E')}
 			</div>
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('C')}
+			    {Render.sctGroupIconLegend('C')}
 			</div>
 		    </div>
 		    <div className="row">
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('D')}
+			    {Render.sctGroupIconLegend('D')}
 			</div>
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('I')}
+			    {Render.sctGroupIconLegend('I')}
 			</div>
 			<div className="col-md-4">
-			    {Render.ctsGroupIconLegend('U')}
+			    {Render.sctGroupIconLegend('U')}
 			</div>
 		    </div>
 		</div>

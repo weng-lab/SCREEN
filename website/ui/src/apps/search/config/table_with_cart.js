@@ -4,8 +4,8 @@ import * as Render from '../../../common/renders'
 const TableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let ctaHelp = "PCT<br />" + HelpTooltip("CellTypeAgnosticClassification");
-    let ctsHelp = "SCT<br />" + HelpTooltip("CellTypeSpecifiedClassification");
+    let pctHelp = "PCT<br />" + HelpTooltip("CellTypeAgnosticClassification");
+    let sctHelp = "SCT<br />" + HelpTooltip("CellTypeSpecifiedClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
     if("mm10" == GlobalAssembly){
@@ -17,15 +17,15 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
-            title: ctaHelp, data: "cta", className: klassCenter,
+            title: pctHelp, data: "pct", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {
-            title: "PCT", data: "cta", visible: false
+            title: "PCT", data: "pct", visible: false
 	}, {
-            title: ctsHelp, data: "cts", className: klassCenter,
-	    render: Render.ctsGroupIcon, name: "ctsv"
+            title: sctHelp, data: "sct", className: klassCenter,
+	    render: Render.sctGroupIcon, name: "sctv"
 	}, {
-            title: "SCT", data: "cts", visible: false, name: "cts"
+            title: "SCT", data: "sct", visible: false, name: "sct"
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
