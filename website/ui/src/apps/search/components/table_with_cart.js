@@ -255,7 +255,7 @@ class TableWithCart extends React.Component {
     _opposite(a, cts) {
         let r = this._oppositeAssays(a);
         r["cts"] = false;
-        r["ctsv"] = false;
+        r["sctv"] = false;
         if(cts){
             for (let e of cts) {
 	        r[e] = true;
