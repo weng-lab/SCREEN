@@ -94,20 +94,21 @@ def main():
         assemblies = [args.assembly]
 
     d = "/home/mjp/Dropbox/0_accessionsV4/"
-    fileIDs = set()
 
     if args.just:
+        expIDs = set()
         for assembly in assemblies:
             print('***********', assembly)
             with getcursor(DBCONN, "DumpAccessions") as curs:
                 da = DumpAccessions(curs, assembly)
-                fileIDs = fileIDs.union(da.justForCRes())
-        outFnp = os.path.join(d, "v10_file_accessions_just_cREs.txt")
+                expIDs = expIDs.union(da.justForCRes())
+        outFnp = os.path.join(d, "v10_exp_accessions_just_cREs.txt")
         with open(outFnp, 'w') as f:
-            f.write('\n'.join(sorted(fileIDs)))
+            f.write('\n'.join(sorted(expIDs)))
         printWroteNumLines(outFnp)
         return
     
+    fileIDs = set()
     for fnp in ["/home/mjp/Dropbox/0_accessionsV4/arjan.tsv",
                 "/home/mjp/Dropbox/0_accessionsV4/peaks.txt"]:
         with open(fnp) as f:
