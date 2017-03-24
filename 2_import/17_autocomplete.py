@@ -126,6 +126,22 @@ ON t.ensemblid_ver = g.ensemblid_ver""".format(assembly=self.assembly))
         makeIndexGinTrgmOps(self.curs, self.tableName, ["name"])
         makeIndex(self.curs, self.tableName, ["oname"])
 
+def run(args, DBCONN, assembly):
+    print('***********', assembly)
+    with getcursor(DBCONN, "main") as curs:
+        print('***********', assembly)
+        ss = SetupAutocomplete(curs, assembly, assembly + "_autocomplete", True)
+        if args.index:
+            ss.index()
+        else:
+            ss.run()
+
+        ss = SetupAutocomplete(curs, assembly, assembly + "_gene_search", False)
+        if args.index:
+            ss.index()
+        else:
+            ss.run()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -143,19 +159,7 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        with getcursor(DBCONN, "main") as curs:
-            print('***********', assembly)
-            ss = SetupAutocomplete(curs, assembly, assembly + "_autocomplete", True)
-            if args.index:
-                ss.index()
-            else:
-                ss.run()
-
-            ss = SetupAutocomplete(curs, assembly, assembly + "_gene_search", False)
-            if args.index:
-                ss.index()
-            else:
-                ss.run()
-
+        run(args, DBCONN, assembly)
+        
 if __name__ == '__main__':
     main()

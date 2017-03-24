@@ -98,20 +98,21 @@ title text,
 summary text
 )""")
 
-def parseargs():
+def run(args, DBCONN):
+    print('***********')
+    with getcursor(DBCONN, "DB::recreate_tables") as curs:
+        hti = HelpTextImport(args, curs)
+        return hti.run()
+
+def parse_args():
     parser = argparse.ArgumentParser(parents = [tools.argparser])
     return parser.parse_args()
 
 def main():
-    args = parseargs()
-    inserted = 0
+    args = parse_args()
 
-    # connect to DB
     DBCONN = db_connect(os.path.realpath(__file__))
-    with getcursor(DBCONN, "DB::recreate_tables") as curs:
-        hti = HelpTextImport(args, curs)
-        ret = hti.run()
-    return ret
-    
+    return run(args, DBCONN)
+            
 if __name__ == "__main__":
     sys.exit(main())

@@ -143,17 +143,7 @@ strand VARCHAR(1)
     curs.copy_from(outF, tableName, '\t', columns = cols)
     printt("\tok", curs.rowcount)
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="")
-    args = parser.parse_args()
-    return args
-
-def main():
-    args = parse_args()
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
+def run(args, DBCONN):
     assemblies = ["hg19"] #Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
@@ -164,6 +154,19 @@ def main():
             doImport(curs, assembly)
             metadata(curs, assembly)
             doIndex(curs, assembly)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    DBCONN = db_connect(os.path.realpath(__file__))
+    run(args, DBCONN)
+    
     return 0
 
 if __name__ == '__main__':

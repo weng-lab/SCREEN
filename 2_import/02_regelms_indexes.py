@@ -39,9 +39,19 @@ class CreateIndices:
                     for col in self.zscore_cols:
                         makeIndexArr(curs, tn, col, conn)
 
+def run(args):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        ci = CreateIndices(assembly)
+        ci.run()
+        ci.vac()
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-j', type=int, default=1)
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
@@ -49,16 +59,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        ci = CreateIndices(assembly)
-        ci.run()
-        ci.vac()
-
-    return 0
+    return run(args)
 
 if __name__ == '__main__':
     main()

@@ -190,6 +190,17 @@ cellTypeName text);""".format(tableName = tableName))
         self.importDatasets()
         self.importRankIndexes()
 
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
+            pd = ImportCellTypeInfo(curs, assembly)
+            pd.run()
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -200,16 +211,8 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-            pd = ImportCellTypeInfo(curs, assembly)
-            pd.run()
-
+    run(args, DBCONN)
+        
     return 0
 
 if __name__ == '__main__':
