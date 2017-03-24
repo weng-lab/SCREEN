@@ -38,20 +38,20 @@ class PGcreTable(GetOrSetMemCache):
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
-            "cre.creGroup AS cta"] # TODO rename to cta
+            "cre.creGroup AS pct"] # TODO rename to pct
         self.whereClauses = []
 
-    def _cts(self, ct):
+    def _sct(self, ct):
         if ct in self.ctsTable:
-            self.fields.append("cre.creGroupsSpecific[%s] AS cts" % # TODO rename to cts
+            self.fields.append("cre.creGroupsSpecific[%s] AS sct" % # TODO rename to sct
                               self.ctsTable[ct])
         else:
-            self.fields.append("0::int AS cts")
+            self.fields.append("0::int AS sct")
 
     def _buildWhereStatement(self, j, chrom, start, stop):
         ct = j.get("cellType", None)
 
-        self._cts(ct)
+        self._sct(ct)
         if ct:
             self._ctSpecific(ct, j)
         else:

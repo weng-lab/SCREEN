@@ -274,7 +274,7 @@ export const creGroupIcon = (creGroup) => {
     return popup(title, c);
 }
 
-export const ctsGroupIcon = (creGroup) => {
+export const sctGroupIcon = (creGroup) => {
     let colors = Globals.colors.cREs;
     let lookupTitle = {'C' : "CTCF-only",
                        'E' : "Enhancer-like",
@@ -312,7 +312,7 @@ export const ctsGroupIcon = (creGroup) => {
     return popup(title, c);
 }
 
-export const ctsGroupIconLegend = (creGroup) => {
+export const sctGroupIconLegend = (creGroup) => {
     let colors = Globals.colors.cREs;
     let lookupTitle = {'C' : "CTCF-only",
                        'E' : "Enhancer-like",
