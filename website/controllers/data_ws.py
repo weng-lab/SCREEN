@@ -105,7 +105,7 @@ class DataWebService(GetOrSetMemCache):
             results["rfacets"] = self.pgSearch.rfacets_active(j)
         else:
             results["rfacets"] = ["dnase", "promoter", "enhancer", "ctcf"]
-        results["cts"] = self.pgSearch.haveCTS(j)
+        results["cts"] = self.pgSearch.haveSCT(j)
         return results
 
     def re_detail(self, j, args):

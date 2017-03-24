@@ -86,12 +86,12 @@ FROM {tn}
                     present.append(assay)
         return present
 
-    def haveCTS(self, j):
+    def haveSCT(self, j):
         ct = j.get("cellType", None)
         ret = []
         if ct:
             if ct in self.ctsTable:
-                ret = ["ctsv"]
+                ret = ["sctv"]
         return ret
 
     def creTable(self, j, chrom, start, stop):
