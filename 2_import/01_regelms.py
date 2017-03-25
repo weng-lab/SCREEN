@@ -48,7 +48,7 @@ class ImportCREs:
      chrom VARCHAR(5),
      start integer,
      stop integer,
-     cta VARCHAR[],
+     pct VARCHAR(1),
      isProximal boolean,
 
      conservation_signals real[],

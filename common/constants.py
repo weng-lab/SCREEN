@@ -23,7 +23,7 @@ rDHS
 chrom
 start
 stop
-creGroup
+pct
 isProximal
 conservation_signals
 conservation_min
