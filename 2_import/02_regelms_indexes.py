@@ -39,7 +39,7 @@ class CreateIndices:
                     for col in self.zscore_cols:
                         makeIndexArr(curs, tn, col, conn)
 
-def run(args):
+def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
@@ -59,7 +59,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    return run(args)
+    return run(args, None)
 
 if __name__ == '__main__':
     main()
