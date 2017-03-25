@@ -15,7 +15,7 @@ from utils import AddPath
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
-def runAll(args, DBCONN):
+def runAll(args, DBCONN, startIdx = 0):
     from importlib import import_module
 
     steps = OrderedDict()
@@ -33,7 +33,10 @@ def runAll(args, DBCONN):
         except:
             print("problem importing", fn)
             raise
-    for name, f in steps.iteritems():
+
+    names = steps.keys()[startIdx:]
+    for name in names:
+        f = steps[name]
         print(name)
         f(args, DBCONN)
         
@@ -61,6 +64,7 @@ def parse_args():
     parser.add_argument('--vac', action="store_true", default=False)
     parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument("--start", type=int, default=0)
     args = parser.parse_args()
     return args
 
@@ -79,7 +83,7 @@ def main():
     passedArgs = PassedArgs(assembly = args.assembly,
                             sample = args.sample)
 
-    runAll(passedArgs, DBCONN)
+    runAll(passedArgs, DBCONN, args.start)
         
     return 0
 
