@@ -74,7 +74,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     if args.vac:
-        vacAll(DBCONN)
+        return vacAll(DBCONN)
 
     # http://stackoverflow.com/a/14903641
     class PassedArgs(object):
@@ -84,7 +84,8 @@ def main():
                             sample = args.sample)
 
     runAll(passedArgs, DBCONN, args.start)
-        
+    vacAll(DBCONN)
+    
     return 0
 
 if __name__ == '__main__':
