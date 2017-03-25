@@ -167,8 +167,6 @@ class ImportGenes:
         self.curs = curs
 
     def run(self):
-        print('***********', self.assembly)
-
         gidsToDbID, requiredGids = loadGidsToDbIds(self.assembly)
 
         genes = GeneInfo(self.assembly).genes
@@ -237,12 +235,17 @@ FROM {assembly}_gene_info as q
 
     makeIndex(curs, mv, ["geneid", "value"])
 
-def run(args, DBCONN, assembly):
-    print('***********', assembly)
-    with getcursor(DBCONN, "3_cellTypeInfo") as curs:
-        aga = ImportGenes(curs, assembly)
-        aga.run()
-        makeMV(curs, assembly)
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        with getcursor(DBCONN, "3_cellTypeInfo") as curs:
+            aga = ImportGenes(curs, assembly)
+            aga.run()
+            makeMV(curs, assembly)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -254,13 +257,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        run(args, DBCONN, assembly)
+    run(args, DBCONN)
         
     return 0
 
