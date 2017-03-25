@@ -10,7 +10,7 @@ from collections import OrderedDict
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from db_utils import getcursor
-from utils import AddPath
+from utils import AddPath, printt
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
@@ -37,7 +37,7 @@ def runAll(args, DBCONN, startIdx = 0):
     names = steps.keys()[startIdx:]
     for name in names:
         f = steps[name]
-        print(name)
+        printt("**********************************************", name)
         f(args, DBCONN)
         
 def vacumnAnalyze(conn, tableName):
