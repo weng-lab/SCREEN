@@ -76,11 +76,16 @@ stop integer
 
         makeIndex(self.curs, tableName, ["ensemblid_ver"])
 
-def run(args, DBCONN, assembly):
-    print('***********', assembly)
-    with getcursor(DBCONN, "3_cellTypeInfo") as curs:
-        at = AddTSS(curs, assembly)
-        at.run()
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        printt('***********', assembly)
+        with getcursor(DBCONN, "3_cellTypeInfo") as curs:
+            at = AddTSS(curs, assembly)
+            at.run()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -92,13 +97,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        run(args, DBCONN, assembly)
+    run(args, DBCONN)
         
     return 0
 

@@ -99,7 +99,7 @@ summary text
 )""")
 
 def run(args, DBCONN):
-    print('***********')
+    printt('***********')
     with getcursor(DBCONN, "DB::recreate_tables") as curs:
         hti = HelpTextImport(args, curs)
         return hti.run()

@@ -104,14 +104,19 @@ pgidx integer
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["accession"])
 
-def run(args, DBCONN, assembly):
-    print('***********', assembly)
-    with getcursor(DBCONN, "dropTables") as curs:
-        icg = ImportCreGroups(curs, assembly)
-        icg.run()
-        icg.runCts()
-    with db_connect_single(os.path.realpath(__file__)) as conn:
-        vacumnAnalyze(conn, assembly + "_cre_all", [])
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
+
+    for assembly in assemblies:
+        print('***********', assembly)
+        with getcursor(DBCONN, "dropTables") as curs:
+            icg = ImportCreGroups(curs, assembly)
+            icg.run()
+            icg.runCts()
+        with db_connect_single(os.path.realpath(__file__)) as conn:
+            vacumnAnalyze(conn, assembly + "_cre_all", [])
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -124,14 +129,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        run(args, DBCONN, assembly)
+    return run(args, DBCONN)
         
-    return 0
-
 if __name__ == '__main__':
     main()

@@ -241,7 +241,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "3_cellTypeInfo") as curs:
             aga = ImportGenes(curs, assembly)
             aga.run()

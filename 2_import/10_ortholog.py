@@ -56,7 +56,7 @@ class ImportLiftover:
         makeIndex(self.curs, self.tableName, ["mouseAccession", "humanAccession"])
 
 def run(args, DBCONN):
-    print('***********')
+    printt('***********')
     with getcursor(DBCONN, "main") as curs:
         il = ImportLiftover(curs)
         il.run()

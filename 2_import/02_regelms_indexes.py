@@ -45,7 +45,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         ci = CreateIndices(assembly)
         ci.run()
         ci.vac()

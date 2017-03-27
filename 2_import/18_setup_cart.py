@@ -31,7 +31,7 @@ def run(args, DBCONN):
     assemblies = Config.assemblies
     
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "07_setup_cart") as curs:
             setupCart(curs, assembly)
 

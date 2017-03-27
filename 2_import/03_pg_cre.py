@@ -117,7 +117,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "08_setup_log") as curs:
             pd = PolishData(curs, assembly)
             pd.run()

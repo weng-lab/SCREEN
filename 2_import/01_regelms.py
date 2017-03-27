@@ -126,7 +126,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         ic = ImportCREs(DBCONN, assembly, args.sample)
         if 1:
             ic.run()
