@@ -90,22 +90,27 @@ biosample_term_name text
 
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
 
-def run(args, DBCONN, assembly):
-    printt('***********', assembly)
-    with getcursor(DBCONN, "main") as curs:
-        if args.metadata:
-            ipi = ImportPeakIntersectionMetadata(curs, assembly)
-            ipi.run()
-        elif args.index:
-            ipi = ImportPeakIntersections(curs, assembly)
-            ipi.index()
-        else:
-            ipm = ImportPeakIntersectionMetadata(curs, assembly)
-            ipm.run()
+def run(args, DBCONN):
+    assemblies = Config.assemblies
+    if args.assembly:
+        assemblies = [args.assembly]
 
-            ipi = ImportPeakIntersections(curs, assembly)
-            ipi.run()
-            ipi.index()
+    for assembly in assemblies:
+        printt('***********', assembly)
+        with getcursor(DBCONN, "main") as curs:
+            if args.metadata:
+                ipi = ImportPeakIntersectionMetadata(curs, assembly)
+                ipi.run()
+            elif args.index:
+                ipi = ImportPeakIntersections(curs, assembly)
+                ipi.index()
+            else:
+                ipm = ImportPeakIntersectionMetadata(curs, assembly)
+                ipm.run()
+
+                ipi = ImportPeakIntersections(curs, assembly)
+                ipi.run()
+                ipi.index()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -119,13 +124,7 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = Config.assemblies
-    if args.assembly:
-        assemblies = [args.assembly]
-
-    for assembly in assemblies:
-        run(args, DBCONN, assembly)
+    run(args, DBCONN)
         
 if __name__ == '__main__':
     main()
