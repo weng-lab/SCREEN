@@ -39,8 +39,7 @@ def runAll(args, DBCONN, startIdx = 0):
 
     for name, f in steps.iteritems():
         f = steps[name]
-        num = name.split('_')[0]
-        printt("**********************************************", num, name)
+        printt("**********************************************", name)
         f(args, DBCONN)
         
 def vacumnAnalyze(conn, tableName):
@@ -85,7 +84,8 @@ def main():
              self.__dict__.update(kw)
     passedArgs = PassedArgs(assembly = args.assembly,
                             sample = args.sample,
-                            index = False)
+                            index = False,
+                            metadata = False)
 
     runAll(passedArgs, DBCONN, args.start)
     vacAll(DBCONN)

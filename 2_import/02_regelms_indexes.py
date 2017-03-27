@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils'))
 from db_utils import getcursor, makeIndex, makeIndexArr, makeIndexIntRange, makeIndexInt4Range, vacumnAnalyze, makeIndexRev
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, Timer
+from utils import Utils, Timer, printt
 
 class CreateIndices:
     def __init__(self, assembly):
