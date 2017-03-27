@@ -31,15 +31,14 @@ class ImportPeakIntersections:
     id serial PRIMARY KEY,
     accession text,
     tf jsonb,
-    histone jsonb,
-    dnase jsonb
+    histone jsonb
     );
     """.format(tableName = self.tableName))
 
     def run(self):
         self.setupTable()
 
-        cols = "accession tf histone dnase".split(' ')
+        cols = ["accession", "tf", "histone"]
 
         fnp = paths.path(self.assembly, "extras", "peakIntersections.json.gz")
         printt("copying in data", fnp)
