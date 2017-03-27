@@ -196,7 +196,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "04_cellTypeInfo") as curs:
             pd = ImportCellTypeInfo(curs, assembly)
             pd.run()

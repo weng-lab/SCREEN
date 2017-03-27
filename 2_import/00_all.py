@@ -24,6 +24,9 @@ def runAll(args, DBCONN, startIdx = 0):
             continue
         if fn.startswith("00_all") or fn.startswith("9") or not '_' == fn[2]:
             continue
+        num = fn.split('_')[0]
+        if int(num) < int(startIdx):
+            continue
         # http://stackoverflow.com/a/8790232
         name = fn.rsplit('.', 1)[0]
         print(name)
@@ -34,10 +37,10 @@ def runAll(args, DBCONN, startIdx = 0):
             print("problem importing", fn)
             raise
 
-    names = steps.keys()[startIdx:]
-    for name in names:
+    for name, f in steps.iteritems():
         f = steps[name]
-        printt("**********************************************", name)
+        num = name.split('_')[0]
+        printt("**********************************************", num, name)
         f(args, DBCONN)
         
 def vacumnAnalyze(conn, tableName):
@@ -81,7 +84,8 @@ def main():
          def __init__(self, **kw):
              self.__dict__.update(kw)
     passedArgs = PassedArgs(assembly = args.assembly,
-                            sample = args.sample)
+                            sample = args.sample,
+                            index = False)
 
     runAll(passedArgs, DBCONN, args.start)
     vacAll(DBCONN)

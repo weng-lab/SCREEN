@@ -73,7 +73,7 @@ def run(args, DBCONN):
     ver = Config.minipeaks_ver
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
 
         if not GetYesNoToQuestion.immediate("OK remove old tables for version " + ver + "?"):
             printt("skipping", assembly)

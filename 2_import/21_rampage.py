@@ -149,7 +149,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
             doImport(curs, assembly)
             metadata(curs, assembly)

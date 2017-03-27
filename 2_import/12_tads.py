@@ -104,7 +104,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        print('***********', assembly)
+        printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             ipi = ImportTADs(curs, assembly)
             ipi.run()

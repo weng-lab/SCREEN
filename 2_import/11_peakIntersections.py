@@ -91,7 +91,7 @@ biosample_term_name text
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
 
 def run(args, DBCONN, assembly):
-    print('***********', assembly)
+    printt('***********', assembly)
     with getcursor(DBCONN, "main") as curs:
         if args.metadata:
             ipi = ImportPeakIntersectionMetadata(curs, assembly)
