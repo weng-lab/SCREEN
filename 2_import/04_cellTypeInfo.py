@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from exp import Exp
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, eprint, AddPath
+from utils import Utils, eprint, AddPath, printt
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
