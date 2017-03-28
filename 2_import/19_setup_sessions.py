@@ -26,7 +26,7 @@ session_id text
 ) """.format(tn = tableName))
 
 def run(args, DBCONN):
-    setup(DBCONN)
+    setupDB(DBCONN)
         
 def parse_args():
     parser = argparse.ArgumentParser()
