@@ -15,7 +15,7 @@ from utils import AddPath, printt
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
-def runAll(args, DBCONN, startIdx = 0):
+def runAll(args, DBCONN, startIdx, skipIdx):
     from importlib import import_module
 
     steps = OrderedDict()
@@ -26,6 +26,8 @@ def runAll(args, DBCONN, startIdx = 0):
             continue
         num = fn.split('_')[0]
         if int(num) < int(startIdx):
+            continue
+        if int(num) == int(skipIdx):
             continue
         # http://stackoverflow.com/a/8790232
         name = fn.rsplit('.', 1)[0]
@@ -67,6 +69,7 @@ def parse_args():
     parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument("--start", type=int, default=0)
+    parser.add_argument("--skip", type=int, default=-1)
     args = parser.parse_args()
     return args
 
@@ -88,7 +91,7 @@ def main():
                             metadata = False,
                             yes = True)
 
-    runAll(passedArgs, DBCONN, args.start)
+    runAll(passedArgs, DBCONN, args.start, args.skip)
     vacAll(DBCONN)
     
     return 0
