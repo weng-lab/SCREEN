@@ -75,9 +75,10 @@ def run(args, DBCONN):
     for assembly in assemblies:
         printt('***********', assembly)
 
-        if not GetYesNoToQuestion.immediate("OK remove old tables for version " + ver + "?"):
-            printt("skipping", assembly)
-            return
+        if not args.yes:
+            if not GetYesNoToQuestion.immediate("OK remove old tables for version " + ver + "?"):
+                printt("skipping", assembly)
+                return
 
         queryFnp = paths.path(assembly, "minipeaks", "merged",
                               "insert_minipeaks." + assembly + ".cql")
@@ -92,13 +93,14 @@ def run(args, DBCONN):
                 os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
                 "--cqlversion=3.4.2",
                 "-f", queryFnp]
-        if GetYesNoToQuestion.immediate("import data?"):
+        if args.yes or GetYesNoToQuestion.immediate("import data?"):
             print(Utils.runCmds(cmds))
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--sample', action="store_true", default=False)
+    parser.add_argument('--yes', action="store_true", default=False)
     args = parser.parse_args()
     return args
 

@@ -85,7 +85,8 @@ def main():
     passedArgs = PassedArgs(assembly = args.assembly,
                             sample = args.sample,
                             index = False,
-                            metadata = False)
+                            metadata = False,
+                            yes = True)
 
     runAll(passedArgs, DBCONN, args.start)
     vacAll(DBCONN)
