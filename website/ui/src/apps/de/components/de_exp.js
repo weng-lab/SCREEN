@@ -63,22 +63,24 @@ class DeExp extends React.Component{
             return arrowNote("Please choose 2 cell types.");
         }
         if(this.state.isError){
-            return (<div>
+            return (
+		<div>
                     <h2>{"Error during load; please refresh the page"}
                     </h2>
-                    </div>);
+                </div>);
         }
 
         let gene = this.props.gene;
         if(gene in this.state){
 	    let data = this.state[gene];
 	    if(!data.nearbyDEs.data){
-		return (<div>
+		return (
+		    <div>
                         <span style={{fontStyle: "italic"}}>{gene}</span>
 			{ " is not differentially expressed between "
 			  + this.props.ct1 + " and " + this.props.ct2 +
 			  " at FDR threshold of 0.05" }
-			</div>);
+		    </div>);
             }
 	    return <DePlot data={data} />;
         }
@@ -86,9 +88,10 @@ class DeExp extends React.Component{
     }
 
     render(){
-        return (<div style={{"width": "100%"}} >
+        return (
+	    <div style={{"width": "100%"}} >
                 {this.doRenderWrapper()}
-                </div>);
+            </div>);
     }
 }
 
