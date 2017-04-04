@@ -4,9 +4,10 @@ import DeExp from '../components/de_exp'
 
 class DePage extends React.Component{
     render() {
-        return (<div>
-                <DeExp />
-                </div>);
+        return (
+	    <div>
+		<DeExp />
+            </div>);
     }
 }
 

@@ -103,22 +103,24 @@ class FacetBoxen extends React.Component {
 	const geneRed = "#FF0000";
 	const geneBlue = "#1E90FF";
 
-        let legend = (<div>
-			<p style={{color: geneRed}}>
-			    {"Watson (+) strand"}
-			</p>
-			<p style={{color: geneBlue}}>
-			    {"Crick (-) strand"}
-			</p>
-        </div>);
+        let legend = (
+	    <div>
+		<p style={{color: geneRed}}>
+		    {"Watson (+) strand"}
+		</p>
+		<p style={{color: geneBlue}}>
+		    {"Crick (-) strand"}
+		</p>
+            </div>);
 
-        return (<div>
-            {cellTypesBox1(p)}
-            {cellTypesBox2(p)}
-            {creBox(p)}
-            {geneBox(p)}
-	    {legend}
-        </div>);
+        return (
+	    <div>
+		{cellTypesBox1(p)}
+		{cellTypesBox2(p)}
+		{creBox(p)}
+		{geneBox(p)}
+		{legend}
+            </div>);
     }
 
     render() {
