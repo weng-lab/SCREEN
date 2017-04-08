@@ -23,7 +23,7 @@ class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
-        self.exps = self._parse()
+        self.allExps = self._parse()
 
     def _parse(self):
         fnp = os.path.join(self.d, "list.txt")
@@ -39,14 +39,18 @@ class Just21:
         if 0:
             for ct, exps in allExps.iteritems():
                 print(ct, exps["DNase"], exps["H3K4me3"], exps["H3K27ac"], exps["CTCF"])
-        return allExps    
-        
+        return allExps
+
     def run(self):
-        for ct, exps in allExps.iteritems():
-            for assay in ["DNase", "H3K4me3", "H3K27ac", "CTCF"]:
+        for ct, exps in self.allExps.iteritems():
+            for assay in ["DNase"]:
                 exp = exps[assay]
                 f = exp.getDccUniformProcessedBigWig("hg19")
-                f.download()
+                if not f:
+                    raise Exception("could not find", ct, assay)
+                f[0].download()
+                print(f[0].fnp())
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
