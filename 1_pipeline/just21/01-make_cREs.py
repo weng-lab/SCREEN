@@ -25,7 +25,7 @@ class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
-        self.testbedi = os.path.join(self.d, "rDHSs/masterPeaks.bed")
+        self.testbedi = os.path.join(self.d, "rDHSs/masterPeaks.bed.final")
         self.testbed = os.path.join(self.d, "rDHSs/masterPeakso.bed")
         with open(self.testbedi, "r") as f:
             with open(self.testbed, "wb") as o:
@@ -79,7 +79,7 @@ class Just21:
             i += 1
         bed.close()
         return retval
-    
+
     def zscores(self, bedfnp):
         peaks = Peaks.fromFnp(self.assembly, bedfnp)
         epeaks = peaks.transformExtendPeaks(500)
@@ -96,7 +96,7 @@ class Just21:
                     Utils.runCmds(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
                 retval[ct][assay] = Just21._process(os.path.join(self.dz, onp))
         return retval
-    
+
     def run(self):
         self.allFiles = {}
         for ct, exps in self.allExps.iteritems():
