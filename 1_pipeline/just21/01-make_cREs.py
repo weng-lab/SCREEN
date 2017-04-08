@@ -50,8 +50,8 @@ class Just21:
         masterPeak = []
         calculate = []
         retval = {}
-        bigWig = open(sys.argv[1])
-        for line in bigWig:
+        bed = open(outputbed)
+        for line in bed:
             line = line.rstrip().split("\t")
             if float(line[4]) == 0:
 	        sig[1].append("Zero")
@@ -71,7 +71,7 @@ class Just21:
             else:
                 retval[masterPeak[i]] = (-10, 0, -10)
             i += 1
-        bigWig.close()
+        bed.close()
         return retval
     
     def zscores(self, bedfnp):
@@ -89,7 +89,7 @@ class Just21:
                     Utils.runCmds(["bigWigAverageOverBed", efnp, ebfnp, os.path.join(self.dz, onp)])
                 else:
                     Utils.runCmds(["bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
-                retval[ct][assay] = _process(onp)
+                retval[ct][assay] = Just21._process(onp)
     
     def run(self):
         self.allFiles = {}
