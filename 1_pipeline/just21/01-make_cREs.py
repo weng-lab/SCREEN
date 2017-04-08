@@ -7,6 +7,7 @@ import argparse
 import fileinput, StringIO
 import gzip
 import random
+import numpy, math
 
 from joblib import Parallel, delayed
 
@@ -17,12 +18,14 @@ from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils
+from peaks import Peaks
 from exp import Exp
 
 class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
+        self.dz = os.path.join(self.d, "zscores")
         self.allExps = self._parse()
 
     def _parse(self):
@@ -41,8 +44,57 @@ class Just21:
                 print(ct, exps["DNase"], exps["H3K4me3"], exps["H3K27ac"], exps["CTCF"])
         return allExps
 
+    @staticmethod
+    def _process(outputbed):
+        sig = [[],[]]
+        masterPeak = []
+        calculate = []
+        retval = {}
+        bigWig = open(sys.argv[1])
+        for line in bigWig:
+            line = line.rstrip().split("\t")
+            if float(line[4]) == 0:
+	        sig[1].append("Zero")
+	        sig[0].append((float(line[4])))
+	        masterPeak.append(line[0])
+            else:
+                sig[1].append(math.log(float(line[4])+0.01,10))
+	        sig[0].append((float(line[4])))
+	        calculate.append(math.log(float(line[4]),10))
+	        masterPeak.append(line[0])
+        lmean = numpy.mean(calculate)
+        lstd = numpy.std(calculate)
+        i = 0
+        for entry in sig[1]:
+            if entry != "Zero":
+	        retval[masterPeak[i]] = ((entry-lmean)/lstd, sig[0][i], sig[1][i])
+            else:
+                retval[masterPeak[i]] = (-10, 0, -10)
+            i += 1
+        bigWig.close()
+        return retval
+    
+    def zscores(self, bedfnp):
+        peaks = Peaks.fromFnp(self.assembly, bedfnp)
+        epeaks = peaks.transformExtendPeaks(500)
+        ebfnp = os.path.join(os.path.dirname(self.dz, os.path.basename(bedfnp)))
+        epeaks.write(ebfnp)
+        retval = {}
+        for ct, value in self.allExps.iteritems():
+            retval[ct] = {}
+            for assay, exp in self.value.iteritems():
+                efnp = exp.fnp()
+                onp = os.path.basename(efnp) + ".bed"
+                if assay.startsWith("H3K"):
+                    Utils.runCmds(["bigWigAverageOverBed", efnp, ebfnp, os.path.join(self.dz, onp)])
+                else:
+                    Utils.runCmds(["bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
+                retval[ct][assay] = _process(onp)
+    
     def run(self):
+        self.allFiles = {}
         for ct, exps in self.allExps.iteritems():
+            self.allFiles[ct] = {}
             for assay in ["DNase", "H3K27ac", "H3K4me3", "CTCF"]:
                 exp = exps[assay]
                 f = exp.getDccUniformProcessedBigWig("hg19")
@@ -53,6 +105,7 @@ class Just21:
                         continue
                     # raise Exception("could not find", ct, assay, exp.encodeID)
                 f[0].download()
+                self.allFiles[ct][assay] = f[0].fnp()
                 #print(ct, assay, f[0].fnp())
 
 
