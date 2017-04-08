@@ -35,7 +35,7 @@ class Just21:
             ct = ctToExpIDs[0]
             allExps[ct] = {}
             for idx, expID in enumerate(ctToExpIDs[1:]):
-                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID)
+                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID) #, True)
         if 0:
             for ct, exps in allExps.iteritems():
                 print(ct, exps["DNase"], exps["H3K4me3"], exps["H3K27ac"], exps["CTCF"])
@@ -43,13 +43,17 @@ class Just21:
 
     def run(self):
         for ct, exps in self.allExps.iteritems():
-            for assay in ["DNase"]:
+            for assay in ["DNase", "H3K27ac", "H3K4me3", "CTCF"]:
                 exp = exps[assay]
                 f = exp.getDccUniformProcessedBigWig("hg19")
                 if not f:
-                    raise Exception("could not find", ct, assay)
+                    f = exp.bigWigFilters("hg19")
+                    if len(f) != 1:
+                        print("missing", ct, assay, exp.encodeID)
+                        continue
+                    # raise Exception("could not find", ct, assay, exp.encodeID)
                 f[0].download()
-                print(f[0].fnp())
+                #print(ct, assay, f[0].fnp())
 
 
 def parse_args():
