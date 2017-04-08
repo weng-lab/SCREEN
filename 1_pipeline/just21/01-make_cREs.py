@@ -25,6 +25,7 @@ class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
+        self.testbed = os.path.join(self.d, "test.bed")
         self.dz = os.path.join(self.d, "zscores")
         self.allExps = self._parse()
 
@@ -77,19 +78,19 @@ class Just21:
     def zscores(self, bedfnp):
         peaks = Peaks.fromFnp(self.assembly, bedfnp)
         epeaks = peaks.transformExtendPeaks(500)
-        ebfnp = os.path.join(os.path.dirname(self.dz, os.path.basename(bedfnp)))
+        ebfnp = os.path.join(self.dz, os.path.basename(bedfnp).replace(".bed", ".expanded.bed"))
         epeaks.write(ebfnp)
         retval = {}
-        for ct, value in self.allExps.iteritems():
+        for ct, value in self.allFiles.iteritems():
             retval[ct] = {}
-            for assay, exp in self.value.iteritems():
-                efnp = exp.fnp()
+            for assay, efnp in value.iteritems():
                 onp = os.path.basename(efnp) + ".bed"
-                if assay.startsWith("H3K"):
-                    Utils.runCmds(["bigWigAverageOverBed", efnp, ebfnp, os.path.join(self.dz, onp)])
+                if assay.startswith("H3K"):
+                    Utils.runCmds(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigAverageOverBed", efnp, ebfnp, os.path.join(self.dz, onp)])
                 else:
-                    Utils.runCmds(["bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
-                retval[ct][assay] = Just21._process(onp)
+                    Utils.runCmds(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
+                retval[ct][assay] = Just21._process(os.path.join(self.dz, onp))
+        return retval
     
     def run(self):
         self.allFiles = {}
@@ -126,6 +127,7 @@ def main():
         print("**********", assembly)
         j = Just21(assembly)
         j.run()
+        print(j.zscores(j.testbed))
 
     return 0
 
