@@ -86,6 +86,14 @@ class MakeRepDHSs:
 
         self.addExtraMasterPeaks()
 
+        with open(self.masterPeaksFnp) as f:
+            rows = [line.rstrip('\n').split('\t') for line in f if line]
+        fnp = self.masterPeaksFnp + ".final"
+        with open(fnp, 'w') as f:
+            for idx, r in enumerate(rows):
+                f.write('\t'.join([r[0], r[1], r[2], str(idx)]) + '\n')
+        printWroteNumLines(fnp)
+
         print("done")
 
     def loadBedData(self):
