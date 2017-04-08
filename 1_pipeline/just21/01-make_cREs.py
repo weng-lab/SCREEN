@@ -25,7 +25,12 @@ class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
-        self.testbed = os.path.join(self.d, "test.bed")
+        self.testbedi = os.path.join(self.d, "rDHSs/masterPeaks.bed")
+        self.testbed = os.path.join(self.d, "rDHSs/masterPeakso.bed")
+        with open(self.testbedi, "r") as f:
+            with open(self.testbed, "wb") as o:
+                for line in f:
+                    o.write("\t".join(line.split("\t")[:-2]) + "\n")
         self.dz = os.path.join(self.d, "zscores")
         self.allExps = self._parse()
 
@@ -128,10 +133,8 @@ def main():
         j = Just21(assembly)
         j.run()
         scores = j.zscores(j.testbed)
-        for ct, value in scores.iteritems():
-            print(ct)
-            print(value)
-            break
+        with open("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/just21/test_zscores.json", "wb") as o:
+            o.write(jsuon.dumps(scores))
 
     return 0
 
