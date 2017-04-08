@@ -17,20 +17,16 @@ from common import printr, printt
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
-from utils import Utils
+from utils import Utils, printWroteNumLines, printt
 from peaks import Peaks
 from exp import Exp
+from files_and_paths import Tools
 
 class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
         self.d = os.path.join(paths.v4d, "just21")
-        self.testbedi = os.path.join(self.d, "rDHSs/masterPeaks.bed.final")
-        self.testbed = os.path.join(self.d, "rDHSs/masterPeakso.bed")
-        with open(self.testbedi, "r") as f:
-            with open(self.testbed, "wb") as o:
-                for line in f:
-                    o.write("\t".join(line.split("\t")[:-2]) + "\n")
+        self.testbed = os.path.join(self.d, "rDHSs/masterPeaks.bed.final")
         self.dz = os.path.join(self.d, "zscores")
         self.allExps = self._parse()
 
@@ -81,19 +77,26 @@ class Just21:
         return retval
 
     def zscores(self, bedfnp):
+        printt("expanding peaks..")
         peaks = Peaks.fromFnp(self.assembly, bedfnp)
         epeaks = peaks.transformExtendPeaks(500)
         ebfnp = os.path.join(self.dz, os.path.basename(bedfnp).replace(".bed", ".expanded.bed"))
         epeaks.write(ebfnp)
+        printWroteNumLines(ebfnp)
+
         retval = {}
         for ct, value in self.allFiles.iteritems():
             retval[ct] = {}
             for assay, efnp in value.iteritems():
                 onp = os.path.basename(efnp) + ".bed"
+                printt(efnp, onp)
                 if assay.startswith("H3K"):
-                    Utils.runCmds(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigAverageOverBed", efnp, ebfnp, os.path.join(self.dz, onp)])
+                    cmds = [Tools.bigWigAverageOverBed,
+                            efnp, ebfnp, os.path.join(self.dz, onp)]
                 else:
-                    Utils.runCmds(["/project/umw_zhiping_weng/0_metadata/tools/ucsc.v287/bigWigAverageOverBed", efnp, bedfnp, os.path.join(self.dz, onp)])
+                    cmds = [Tools.bigWigAverageOverBed,
+                            efnp, bedfnp, os.path.join(self.dz, onp)]
+                Utils.runCmds(cmds)
                 retval[ct][assay] = Just21._process(os.path.join(self.dz, onp))
         return retval
 
@@ -133,8 +136,10 @@ def main():
         j = Just21(assembly)
         j.run()
         scores = j.zscores(j.testbed)
-        with open("/project/umw_zhiping_weng/0_metadata/encyclopedia/Version-4/just21/test_zscores.json", "wb") as o:
-            o.write(jsuon.dumps(scores))
+
+        fnp = os.path.join(paths.v4d, "just21", "test_zscores.json")
+        with open(fnp, "wb") as f:
+            f.write(json.dumps(scores))
 
     return 0
 
