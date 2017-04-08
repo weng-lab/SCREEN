@@ -127,7 +127,11 @@ def main():
         print("**********", assembly)
         j = Just21(assembly)
         j.run()
-        print(j.zscores(j.testbed))
+        scores = j.zscores(j.testbed)
+        for ct, value in scores.iteritems():
+            print(ct)
+            print(value)
+            break
 
     return 0
 
