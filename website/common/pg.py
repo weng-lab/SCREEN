@@ -477,17 +477,7 @@ SELECT {cols} FROM {tn}
             return [makeDataset(r) for r in curs.fetchall()]
 
     def datasets(self, assay):
-        with getcursor(self.pg.DBCONN, "datasets") as curs:
-            q = """
-SELECT cellTypeName, expID, fileID
-FROM {tn}
-where assay = %s
-""".format(tn = self.assembly + "_datasets")
-            curs.execute(q, (assay, ))
-            rows = curs.fetchall()
-            if 0 == curs.rowcount:
-                raise Exception("no rows found--bad assay? " + assay)
-        return {r[0] : (r[1], r[2]) for r in rows}
+        return self.pgc.datasets(assay)
 
     def genemap(self):
         with getcursor(self.pg.DBCONN, "pg::genemap") as curs:

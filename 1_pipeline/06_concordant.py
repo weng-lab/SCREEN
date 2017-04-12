@@ -18,7 +18,6 @@ from config import Config
 
 AddPath(__file__, '../website/common/')
 from pg_common import PGcommon
-from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
 
 class Concordant:
@@ -32,7 +31,6 @@ class Concordant:
 
         self.pgc = PGcommon(self.pg, self.assembly)
         self.ctmap = self.pgc.makeCtMap()
-        self.pgSearch = PGsearch(self.pg, self.assembly)
 
     def run(self):
         with gzip.open(self.outFnp, 'w') as outF:
@@ -41,10 +39,10 @@ class Concordant:
 
     def _makeFile(self, outF):
         printt("getting biosamples")
-        self.assaymap = {"dnase": self.pgSearch.datasets("DNase"),
-                         "h3k27ac": self.pgSearch.datasets("H3K27ac"),
-                         "h3k4me3": self.pgSearch.datasets("H3K4me3"),
-                         "ctcf" : self.pgSearch.datasets("CTCF")}
+        self.assaymap = {"dnase": self.pgc.datasets("DNase"),
+                         "h3k27ac": self.pgc.datasets("H3K27ac"),
+                         "h3k4me3": self.pgc.datasets("H3K4me3"),
+                         "ctcf" : self.pgc.datasets("CTCF")}
         dnase = set(self.assaymap["dnase"].keys())
         h27ac = dnase.intersection(set(self.assaymap["h3k27ac"].keys()))
         h4me3 = dnase.intersection(set(self.assaymap["h3k4me3"].keys()))
