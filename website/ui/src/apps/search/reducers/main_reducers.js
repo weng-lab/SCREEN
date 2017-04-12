@@ -49,6 +49,10 @@ const main_reducers = (state, action) => {
 	    return {...state, ...mainTabSetter(state, "configgb"),
 		    configuregb_cre: action.cre,
 		    configuregb_browser: action.name};
+
+	case Actions.TOGGLE_GENOME_BRWOSER_CELLTYPE:
+	    return {..state,
+		    configuregb_cts: doToggle(state.configuregb_cts, action.ct)};
 	    
 	case Actions.SHOW_RE_DETAIL:
             return {...state, ...mainTabSetter(state, "details"),
