@@ -243,12 +243,12 @@ export const assayIcon = (ctn) => {
 
 export const creGroupIcon = (creGroup) => {
     let colors = Globals.colors.cREs;
-    let lookupTitle = {1 : "CTCF-only",
-                       2 : "Enhancer-like",
-                       3 : "Promoter-like"};
-    let lookupColor = {1 : colors.CTCF,
-		       2 : colors.H3K27ac,
-		       3 : colors.H3K4me3}
+    let lookupTitle = {'C' : "CTCF-only",
+                       'E' : "Enhancer-like",
+                       'P' : "Promoter-like"};
+    let lookupColor = {'C' : colors.CTCF,
+		       'E' : colors.H3K27ac,
+		       'P' : colors.H3K4me3}
 
     let w = 18;
     let fw = w + 2;
