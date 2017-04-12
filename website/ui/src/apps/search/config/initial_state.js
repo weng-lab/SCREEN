@@ -30,6 +30,8 @@ const initialState = (pmaintab, psubtab) => {
         maintabs_active: maintab,
         maintabs_visible: maintab_visible,
         cre_accession_detail: accession,
+	configuregb_cre: accession,
+	configuregb_browser: null,
         active_cre: null,
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",

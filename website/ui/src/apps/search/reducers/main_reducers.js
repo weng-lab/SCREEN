@@ -2,6 +2,13 @@ import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 import {doToggle} from '../../../common/utility'
 
+const mainTabSetter = (state, tabName) => {
+    let ret = {maintabs_active: tabName};
+    ret.maintabs = {...state.maintabs};
+    ret.maintabs[tabName].visible = true;
+    return ret;
+}
+
 const main_reducers = (state, action) => {
     switch (action.type) {
 
@@ -36,13 +43,15 @@ const main_reducers = (state, action) => {
 	    return {...state, rfacets: action.rfacets};
 
 	case Actions.SET_MAIN_TAB:
-            var ret = {...state, maintabs_active: action.name}
-            ret.maintabs = {...state.maintabs};
-            ret.maintabs[action.name].visible = true;
-            return ret;
+            return {...state, ...mainTabSetter(state, action.name)};
 
+	case Actions.SHOW_GENOME_BROWSER:
+	    return {...state, ...mainTabSetter(state, "configgb"),
+		    configuregb_cre: action.cre,
+		    configuregb_browser: action.name};
+	    
 	case Actions.SHOW_RE_DETAIL:
-            return {...state,
+            return {...state, ...mainTabSetter(state, "details"),
                     active_cre: action.cre,
                     cre_accession_detail: action.cre.accession,
             };
