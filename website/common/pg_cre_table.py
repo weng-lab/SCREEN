@@ -23,13 +23,14 @@ from db_utils import getcursor, timedQuery
 from utils import eprint
 
 class PGcreTable(GetOrSetMemCache):
-    def __init__(self, pg, assembly, ctmap, ctsTable):
+    def __init__(self, pg, assembly, ctmap, ctsTable, concordantTable):
         GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
 
         self.pg = pg
         self.assembly = assembly
         self.ctmap = ctmap
         self.ctsTable = ctsTable
+        self.concordantTable = concordantTable
 
         self.tableName = self.assembly + "_cre_all"
         self.fields = [
@@ -38,7 +39,7 @@ class PGcreTable(GetOrSetMemCache):
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
-            "cre.creGroup AS pct"] # TODO rename to pct
+            "cre.pct"] # TODO rename to pct
         self.whereClauses = []
 
     def _sct(self, ct):
@@ -48,10 +49,18 @@ class PGcreTable(GetOrSetMemCache):
         else:
             self.fields.append("0::int AS sct")
 
+    def _concordant(self, ct):
+        if ct in self.concordantTable:
+            self.fields.append("cre.concordant[%s] AS concordant" % 
+                              self.concordantTable[ct])
+        else:
+            self.fields.append("false::boolean AS concordant")
+            
     def _buildWhereStatement(self, j, chrom, start, stop):
         ct = j.get("cellType", None)
 
         self._sct(ct)
+        self._concordant(ct)
         if ct:
             self._ctSpecific(ct, j)
         else:

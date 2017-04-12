@@ -37,10 +37,11 @@ class PGsearch(GetOrSetMemCache):
         self.pg = pg
         self.assembly = assembly
 
-        pg = PGcommon(self.pg, self.assembly)
-        self.ctmap = pg.makeCtMap()
-        self.ctsTable = pg.makeCTStable()
-
+        self.pgc = PGcommon(self.pg, self.assembly)
+        self.ctmap = self.pgc.makeCtMap()
+        self.ctsTable = self.pgc.makeCTStable()
+        self.concordantTable = self.pgc.makeConcordantTable()
+        
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
         q = """
@@ -95,15 +96,18 @@ FROM {tn}
         return ret
 
     def creTable(self, j, chrom, start, stop):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
+                         self.ctsTable, self.concordantTable)
         return pct.creTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
+                         self.ctsTable, self.concordantTable)
         return pct.creTableDownloadBed(j, fnp)
 
     def creTableDownloadJson(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
+                         self.ctsTable, self.concordantTable)
         return pct.creTableDownloadJson(j, fnp)
 
     def crePos(self, accession):

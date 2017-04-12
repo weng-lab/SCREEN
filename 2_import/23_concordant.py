@@ -121,7 +121,7 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "dropTables") as curs:
             icg = Concordant(curs, assembly, pg)
             icg.run()
-
+            icg.runCts()
         with db_connect_single(os.path.realpath(__file__)) as conn:
             if 0:
                 vacumnAnalyze(conn, assembly + "_cre_all", [])
