@@ -76,3 +76,16 @@ FROM {tn}
             rows = curs.fetchall()
         return {r[0] : r[1] for r in rows}
 
+    def datasets(self, assay):
+        with getcursor(self.pg.DBCONN, "datasets") as curs:
+            q = """
+SELECT cellTypeName, expID, fileID
+FROM {tn}
+where assay = %s
+""".format(tn = self.assembly + "_datasets")
+            curs.execute(q, (assay, ))
+            rows = curs.fetchall()
+            if 0 == curs.rowcount:
+                raise Exception("no rows found--bad assay? " + assay)
+        return {r[0] : (r[1], r[2]) for r in rows}
+
