@@ -32,6 +32,7 @@ const initialState = (pmaintab, psubtab) => {
         cre_accession_detail: accession,
 	configuregb_cre: accession,
 	configuregb_browser: null,
+	configuregb_cts: new Set(),
         active_cre: null,
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",
