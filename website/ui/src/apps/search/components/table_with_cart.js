@@ -16,14 +16,14 @@ class TableWithCart extends React.Component {
 	super(props);
 	this.button_click_handler = this.button_click_handler.bind(this);
         this.table_click_handler = this.table_click_handler.bind(this);
-        this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
+	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
-    table_click_handler(td, re, actions){
+    table_click_handler(td, rowdata, actions){
         if (td.className.indexOf("browser") != -1) return;
         if (td.className.indexOf("geneexp") != -1) return;
         if (td.className.indexOf("cart") != -1) {
-            let accession = re.accession;
+            let accession = rowdata.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
 	    let j = {GlobalAssembly, accessions};
 	    $.ajax({
@@ -38,54 +38,11 @@ class TableWithCart extends React.Component {
 	    actions.setCart(accessions);
 	    return;
         }
-        actions.setMainTab("details");
-        actions.showReDetail(re)
+        actions.showReDetail(rowdata)
     }
 
-    openGenomeBrowser(data, url){
-        $.ajax({
-	    type: "POST",
-	    url: url,
-	    data: data,
-	    dataType: "json",
-	    contentType : "application/json",
-	    async: false, // http://stackoverflow.com/a/20235765
-	    success: (r) => {
-	        if ("err" in r) {
-		    $("#errMsg").text(r.err);
-		    $("#errBox").show()
-		    return true;
-	        }
-	        console.log(r.url, r.trackhubUrl);
-	        window.open(r.url, '_blank');
-	    },
-	    error: (a, b, c) => {
-	        console.log(a);
-	    }
-        });
-    }
-
-    button_click_handler(name, re, dispatch){
-	var half_window = 7500;
-	var arr = window.location.href.split("/");
-	var host = arr[0] + "//" + arr[2];
-	var data = JSON.stringify({"accession" : re.accession,
-				   "coord_chrom" : re.chrom,
-				   "coord_start" : re.start,
-				   "coord_end" : re.start + re.len,
-				   "halfWindow" : half_window,
-				   "cellType" : this.props.cellType,
-				   host,
-				   GlobalAssembly});
-
-	switch (name) {
-	    case "UCSC":
-                this.openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
-	    case "WashU":
-                this.openGenomeBrowser(data, "/washu_trackhub_url"); break;
-	    case "Ensembl":
-                this.openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
-	}
+    button_click_handler(name, rowdata, actions){
+	actions.showGenomeBrowser(rowdata, name);
     }
 
     addAllToCart() {

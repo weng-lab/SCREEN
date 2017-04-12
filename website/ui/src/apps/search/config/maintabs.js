@@ -6,6 +6,7 @@ import DetailsContainer from '../components/details_container'
 import TFDisplay from '../components/tf_display'
 import ActivityProfile from '../components/activity_profile'
 import ExpressionPlot from '../components/expression_plot'
+import ConfigureGenomeBrowser from '../components/configure_genome_browser'
 
 import loading from '../../../common/components/loading'
 import DetailsTabInfo from './details'
@@ -63,6 +64,8 @@ const MainTabInfo = () => {
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
+	    configgb: {title: "Configure Genome Browser", visible: false,
+		       f: ConfigureGenomeBrowser},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
 	    aprofile: {title: "Activity Profile", visible: false,
 		       f: ActivityProfileTab},
