@@ -17,6 +17,9 @@ const TableColumns = () => {
 	    title: "accession", data: "accession", className: klassCenter,
             render: Render.creLinkPop
 	}, {
+            title: "", data: "concordant", className: klassCenter,
+	    render: Render.concordantStar
+	}, {
             title: pctHelp, data: "pct", className: klassCenter,
 	    render: Render.creGroupIcon
 	}, {

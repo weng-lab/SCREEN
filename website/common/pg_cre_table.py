@@ -39,7 +39,7 @@ class PGcreTable(GetOrSetMemCache):
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
             "0::int as in_cart",
-            "cre.pct"] # TODO rename to pct
+            "cre.pct"]
         self.whereClauses = []
 
     def _sct(self, ct):

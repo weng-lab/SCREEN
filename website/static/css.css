@@ -576,3 +576,7 @@ div.dataTables_wrapper div.dataTables_paginate {
     width: 100%;
     padding: 0px;
 }
+
+.concordantStar {
+    color: blue;
+}
