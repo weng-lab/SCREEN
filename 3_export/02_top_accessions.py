@@ -49,8 +49,11 @@ class TopAccessions:
 
             rows = self.curs.fetchall()
             ctSan = "".join(x for x in ct if x.isalnum() or x == '_')
+            dnase_expID = self.assaymap["enhancer"][ct]["dnase_expid"]
+            other_expID = self.assaymap["enhancer"][ct]["other_expid"]
             outFnp = paths.path(self.assembly, "extras", "enhancer-like-5k",
-                                ctSan + ".tsv")
+                                '_'.join([ctSan, dnase_expID, other_expID])
+                                + ".tsv")
             Utils.ensureDir(outFnp)
             with open(outFnp, 'w') as outF:
                 for r in rows:
