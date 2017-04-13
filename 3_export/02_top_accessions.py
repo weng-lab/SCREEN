@@ -44,6 +44,7 @@ class TopAccessions:
             FROM {tn}
             WHERE enhancer_zscores[{cti}] > 1.64
             ORDER BY 2 DESC
+            LIMIT 20000
             """.format(cti = cti, tn = self.assembly + "_cre_all"))
 
             rows = self.curs.fetchall()
