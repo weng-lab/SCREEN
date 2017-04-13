@@ -44,12 +44,12 @@ class TopAccessions:
             FROM {tn}
             WHERE enhancer_zscores[{cti}] > 1.64
             ORDER BY 2 DESC
-            LIMIT 5000
             """.format(cti = cti, tn = self.assembly + "_cre_all"))
 
             rows = self.curs.fetchall()
+            ctSan = "".join(x for x in ct if x.isalnum())
             outFnp = paths.path(self.assembly, "extras", "enhancer-like-5k",
-                                ct + ".tsv")
+                                ctSan + ".tsv")
             Utils.ensureDir(outFnp)
             with open(outFnp, 'w') as outF:
                 for r in rows:
