@@ -16,8 +16,8 @@ class LongChecklistFacet extends React.Component {
 	this.modeToggle = this.modeToggle.bind(this);
     }
 
-    _render_checkbox(d) {
-	return (d
+    _render_checkbox(selected) {
+	return (selected
 		? '<input type="checkbox" checked />'
 		: '<input type="checkbox" />'
 	       );
@@ -76,6 +76,6 @@ class LongChecklistFacet extends React.Component {
 		/>
 	    </div>);
     }
-
 }
+
 export default LongChecklistFacet;

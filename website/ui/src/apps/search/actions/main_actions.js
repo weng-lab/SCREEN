@@ -57,7 +57,7 @@ export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });
 export const SHOW_GENOME_BROWSER = 'SHOW_GENOME_BROWSER';
 export const showGenomeBrowser = (cre, name) => ({ type: SHOW_GENOME_BROWSER,
 						   cre, name});
-export const TOGGLE_GENOME_BRWOSER_CELLTYPE = 'TOGGLE_GENOME_BRWOSER_CELLTYPE'
+export const TOGGLE_GENOME_BRWOSER_CELLTYPE = 'TOGGLE_GENOME_BRWOSER_CELLTYPE';
 export const togglGenomeBrowserCelltype = (ct) => ({
     type: TOGGLE_GENOME_BRWOSER_CELLTYPE, ct});
 
