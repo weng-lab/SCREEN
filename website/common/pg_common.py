@@ -5,6 +5,7 @@ import os
 from natsort import natsorted
 from collections import namedtuple
 import gzip
+import psycopg2.extras
 
 from coord import Coord
 
@@ -52,7 +53,9 @@ FROM {tn}
         amap = {"DNase": "dnase",
                 "H3K4me3": "promoter", # FIXME: this could be misleading
                 "H3K27ac": "enhancer", # FIXME: this too
-                "CTCF": "ctcf"}
+                "CTCF": "ctcf",
+                "Enhancer" : "Enhancer"
+        }
         rmInfo = self.rankMethodToIDxToCellType()
         return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
 
@@ -88,4 +91,22 @@ where assay = %s
             if 0 == curs.rowcount:
                 raise Exception("no rows found--bad assay? " + assay)
         return {r[0] : (r[1], r[2]) for r in rows}
+
+    def datasets_multi(self, assay):
+        with getcursor(self.pg.DBCONN, "datasets",
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+            q = """
+SELECT *
+FROM {tn}
+where assays = %s
+""".format(tn = self.assembly + "_datasets_multi")
+            curs.execute(q, (assay, ))
+            rows = curs.fetchall()
+            if 0 == curs.rowcount:
+                raise Exception("no rows found--bad assay? " + assay)
+        ret = {}
+        for r in rows:
+            r = r._asdict()
+            ret[r["celltypename"]] = r
+        return ret
 

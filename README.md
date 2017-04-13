@@ -28,3 +28,6 @@ pip install hiredis
 sudo apt-get install redis-server
 
 pip install --user  --upgrade google-api-python-client
+
+ psql -U regElmViz_usr -d screenv11 -w -h postgresql
+ 
