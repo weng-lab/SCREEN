@@ -6,12 +6,14 @@ import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading';
 import {getCommonState} from '../../../common/utility';
+import * as Render from '../../../common/renders'
 
 class ConfigureGenomeBrowser extends React.Component {
     constructor(props) {
 	super(props);
 	this.key = "configgb";
         this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
+	this.buttonClickHandler = this.buttonClickHandler.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
@@ -19,7 +21,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	}
     }
     
-    button_click_handler(name, re, dispatch){
+    buttonClickHandler(name, re, dispatch){
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2];
@@ -66,12 +68,21 @@ class ConfigureGenomeBrowser extends React.Component {
     }
 
     render() {
-	if (self.key !== this.props.maintabs_active) {
-	    return false;
-	}
+        let cre = this.props.configuregb_cre;
+        let coord = cre ? cre.chrom + ':'
+			+ Render.numWithCommas(cre.start)
+			+ '-' + Render.numWithCommas(cre.start + cre.len)
+                  : "";
+
 	return (
-	    <div>
-		hi
+	    <div className="container" style={{width: "100%"}}>
+		<div className="row">
+                    <div className="col-md-8">
+			<h3 className="creDetailsTitle">{cre.accession}</h3>
+			{"         "}
+			{coord}
+                    </div>
+		</div>
 	    </div>);
     }
 }

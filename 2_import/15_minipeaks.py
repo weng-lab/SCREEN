@@ -8,6 +8,7 @@ from cassandra.query import BatchStatement
 from cassandra import ConsistencyLevel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+from dbconnect import db_connect
 from constants import paths
 from config import Config
 
@@ -107,6 +108,7 @@ def parse_args():
 def main():
     args = parse_args()
 
+    DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
 
 if __name__ == '__main__':

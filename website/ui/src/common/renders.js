@@ -110,7 +110,7 @@ export const geneDeLinks = (genesallpc) => {
 };
 
 export const dccImg = () => (
-    '<img src="/static/encode/encode_new_window.png" alt="DCC logo" width="20">'
+    '<img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20">'
 )
 
 export const dccLink = (expID) => {
@@ -146,7 +146,7 @@ export const dccLinkCtGroupCus = (ctn, content) => {
 export const dccLinkAndIconSplit = (expAndFileID) => {
     let expID = expAndFileID.split(' / ')[0];
     var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/encode_logo_42.png" alt="ENCODE logo">';
+    var img = '<img src="/static/encode/pennant-encode.png" alt="ENCODE logo">';
     return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
 }
 
