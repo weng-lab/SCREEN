@@ -51,7 +51,7 @@ class TopAccessions:
             ctSan = "".join(x for x in ct if x.isalnum() or x == '_')
             dnase_expID = self.assaymap["enhancer"][ct]["dnase_expid"]
             other_expID = self.assaymap["enhancer"][ct]["other_expid"]
-            outFnp = paths.path(self.assembly, "extras", "enhancer-like-5k",
+            outFnp = paths.path(self.assembly, "export", "enhancer-like-20k",
                                 '_'.join([ctSan, dnase_expID, other_expID])
                                 + ".tsv")
             Utils.ensureDir(outFnp)
