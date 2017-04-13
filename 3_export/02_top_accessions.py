@@ -47,7 +47,7 @@ class TopAccessions:
             """.format(cti = cti, tn = self.assembly + "_cre_all"))
 
             rows = self.curs.fetchall()
-            ctSan = "".join(x for x in ct if x.isalnum())
+            ctSan = "".join(x for x in ct if x.isalnum() or x == '_')
             outFnp = paths.path(self.assembly, "extras", "enhancer-like-5k",
                                 ctSan + ".tsv")
             Utils.ensureDir(outFnp)
