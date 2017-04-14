@@ -46,9 +46,13 @@ const main_reducers = (state, action) => {
             return {...state, ...mainTabSetter(state, action.name)};
 
 	case Actions.SHOW_GENOME_BROWSER:
-	    return {...state, ...mainTabSetter(state, "configgb"),
-		    configuregb_cre: action.cre,
-		    configuregb_browser: action.name};
+	    let ret = {...state, ...mainTabSetter(state, "configgb"),
+		       configuregb_cre: action.cre,
+		       configuregb_browser: action.name};
+	    if(0 == ret.configuregb_cts.size && ret.cellType){
+		ret.configuregb_cts.add(ret.cellType);
+	    }
+	    return ret;
 
 	case Actions.TOGGLE_GENOME_BRWOSER_CELLTYPE:
 	    return {...state,
