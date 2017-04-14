@@ -112,6 +112,12 @@ class ConfigureGenomeBrowser extends React.Component {
 		}}
 		/>);
 	}
+
+	let options = (
+	    <div className="btn-group" data-toggle="buttons">
+		<label className="btn btn-info active"><input type="radio" name="cc" checked=""/>Thresholded cREs</label>
+		<label className="btn btn-info"><input type="radio" name="cc" />Classified cREs</label>
+	    </div>);	
 	
 	return (
 	    <div className="container" style={{width: "100%"}}>
@@ -123,6 +129,14 @@ class ConfigureGenomeBrowser extends React.Component {
                     </div>
                     <div className="col-md-4">
 			
+                    </div>
+		</div>
+
+		<div className="row">
+                    <div className="col-md-6">
+                    </div>
+                    <div className="col-md-6">
+			{options}
                     </div>
 		</div>
 		
