@@ -233,15 +233,21 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
 
-        ct = j.get("cellType", None)
-        if not ct:
-            topN = 5
-            topCellTypes = cre.topTissues()["dnase"]
-            tcts = sorted(topCellTypes, key = lambda x: x["one"],
-                          reverse=True)[:topN]
+        if "version" not in j:
+            ct = j.get("cellType", None)
+            if not ct:
+                topN = 5
+                topCellTypes = cre.topTissues()["dnase"]
+                tcts = sorted(topCellTypes, key = lambda x: x["one"],
+                              reverse=True)[:topN]
+            else:
+                tcts = [{"ct" : ct, "tissue" : ct}]
         else:
-            tcts = [{"ct" : ct, "tissue" : ct}]
-
+            if 2 == j["version"]:
+                tcts = []
+                for ct in j["cellTypes"]:
+                    tcts.append({"ct" : ct, "tissue" : ct})
+                
         ctsTracks, tracks = self._getTrackList(tcts)
         for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:

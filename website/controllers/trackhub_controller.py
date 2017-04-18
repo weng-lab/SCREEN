@@ -64,7 +64,11 @@ class TrackhubController:
         if "hg19" == assembly:
             url += "&g=wgEncodeGencodeV19"
             url += "&g=phastCons100way"
-        
+
+        if "mm10" == assembly:
+            # FIXME
+            pass
+            
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ucsc_trackhub_url_snp(self, j, uuid):
