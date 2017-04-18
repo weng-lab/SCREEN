@@ -54,7 +54,9 @@ FROM {tn}
                 "H3K4me3": "promoter", # FIXME: this could be misleading
                 "H3K27ac": "enhancer", # FIXME: this too
                 "CTCF": "ctcf",
-                "Enhancer" : "Enhancer"
+                "Enhancer" : "Enhancer",
+                "Promoter" : "Promoter",
+                "Insulator" : "Insulator"
         }
         rmInfo = self.rankMethodToIDxToCellType()
         return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
