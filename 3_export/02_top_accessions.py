@@ -30,11 +30,12 @@ class TopAccessions:
         self.ctmap = self.pgc.makeCtMap()
 
     def run(self):
-        self._makeFile("enhancer", "Enhancer")
         self._makeFile("promoter", "Promoter")
         self._makeFile("insulator", "Insulator")
+        self._makeFile("enhancer", "Enhancer")
         
     def _makeFile(self, assay, title):
+        print("********************", title)
         self.assaymap = {assay: self.pgc.datasets_multi(assay)}
         cts = sorted(list(set(self.assaymap[assay].keys())))
 
