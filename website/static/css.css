@@ -580,3 +580,9 @@ div.dataTables_wrapper div.dataTables_paginate {
 .concordantStar {
     color: blue;
 }
+
+.genomeCreDetailsTitle {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 24px;
+}
