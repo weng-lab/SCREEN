@@ -17,29 +17,35 @@ class ConfigureGenomeBrowser extends React.Component {
 	super(props);
 	this.key = "configgb";
         this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
-	this.buttonClickHandler = this.buttonClickHandler.bind(this);
+	this.gbclick = this.gbclick.bind(this);
+	this.state = {"options" : "Thresholded cREs"};
+	this.optionsChanged = this.optionsChanged.bind(this);
     }
 
-    buttonClickHandler(name, re, dispatch){
+    gbclick(cre, cts, gbrowser){
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2];
-	var data = JSON.stringify({"accession" : re.accession,
-				   "coord_chrom" : re.chrom,
-				   "coord_start" : re.start,
-				   "coord_end" : re.start + re.len,
-				   "halfWindow" : half_window,
-				   "cellType" : this.props.cellType,
-				   host,
-				   GlobalAssembly});
-
-	switch (name) {
+	var data = {"accession" : cre.accession,
+		    "coord_chrom" : cre.chrom,
+		    "coord_start" : cre.start,
+		    "coord_end" : cre.start + cre.len,
+		    "halfWindow" : half_window,
+		    "cellType" : this.props.cellType,
+		    "version" : 2,
+		    "cellTypes" : cts,
+		    "options" : this.state.options,
+		    host,
+		    GlobalAssembly};
+	console.log(data);
+	let jdata = JSON.stringify(data);
+	switch (gbrowser) {
 	    case "UCSC":
-                this.openGenomeBrowser(data, "/ucsc_trackhub_url"); break;
+                this.openGenomeBrowser(jdata, "/ucsc_trackhub_url"); break;
 	    case "WashU":
-                this.openGenomeBrowser(data, "/washu_trackhub_url"); break;
+                this.openGenomeBrowser(jdata, "/washu_trackhub_url"); break;
 	    case "Ensembl":
-                this.openGenomeBrowser(data, "/ensembl_trackhub_url"); break;
+                this.openGenomeBrowser(jdata, "/ensembl_trackhub_url"); break;
 	}
     }
 
@@ -64,6 +70,10 @@ class ConfigureGenomeBrowser extends React.Component {
 	        console.log(a);
 	    }
         });
+    }
+
+    optionsChanged(s){
+	this.setState({options: s});
     }
     
     render() {
@@ -135,9 +145,23 @@ class ConfigureGenomeBrowser extends React.Component {
 	    </div>);	    
 	
 	let options = (
-	    <div className="btn-group" data-toggle="buttons">
-		<label className="btn btn-info active"><input type="radio" name="cc" checked=""/>Thresholded cREs</label>
-		<label className="btn btn-info"><input type="radio" name="cc" />Classified cREs</label>
+	    <div ref="options" className="btn-group" data-toggle="buttons">
+		<label className="btn btn-info active"
+		       onClick={() => {
+			       this.optionsChanged("Thresholded cREs");
+			   }}>
+		    <input type="radio" name="cc"
+			   checked={"Thresholded cREs" === this.state.options} />
+		    Thresholded cREs
+		</label>
+		<label className="btn btn-info"
+		       onClick={() => {
+			       this.optionsChanged("Classified cREs");
+			   }}>
+		    <input type="radio" name="cc"
+		    	   checked={"Classified cREs" === this.state.options} />
+		    Classified cREs
+		</label>
 	    </div>);	
 	
 	return (
@@ -149,7 +173,7 @@ class ConfigureGenomeBrowser extends React.Component {
 			    <button type="button"
 				    className="btn btn-primary"
 				    onClick={() => {
-					    console.log("hi!");
+					    this.gbclick(cre, cts, "UCSC");
 					} }>
 				{"Open UCSC"}
 			    </button>
