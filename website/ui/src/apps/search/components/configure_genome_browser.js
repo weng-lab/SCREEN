@@ -31,13 +31,11 @@ class ConfigureGenomeBrowser extends React.Component {
 		    "coord_start" : cre.start,
 		    "coord_end" : cre.start + cre.len,
 		    "halfWindow" : half_window,
-		    "cellType" : this.props.cellType,
 		    "version" : 2,
 		    "cellTypes" : cts,
 		    "options" : this.state.options,
 		    host,
 		    GlobalAssembly};
-	console.log(data);
 	let jdata = JSON.stringify(data);
 	switch (gbrowser) {
 	    case "UCSC":
@@ -145,22 +143,20 @@ class ConfigureGenomeBrowser extends React.Component {
 	    </div>);	    
 	
 	let options = (
+	    let tc = "Thresholded cREs";
+	    let cc = "Classified cREs";
 	    <div ref="options" className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"
-		       onClick={() => {
-			       this.optionsChanged("Thresholded cREs");
-			   }}>
+		       onClick={() => { this.optionsChanged(tc); }}>
 		    <input type="radio" name="cc"
-			   checked={"Thresholded cREs" === this.state.options} />
-		    Thresholded cREs
+			   checked={tc === this.state.options} />
+		    {tc}
 		</label>
 		<label className="btn btn-info"
-		       onClick={() => {
-			       this.optionsChanged("Classified cREs");
-			   }}>
+		       onClick={() => { this.optionsChanged(cc); }}>
 		    <input type="radio" name="cc"
-		    	   checked={"Classified cREs" === this.state.options} />
-		    Classified cREs
+		    	   checked={cc === this.state.options} />
+		    {cc}
 		</label>
 	    </div>);	
 	
