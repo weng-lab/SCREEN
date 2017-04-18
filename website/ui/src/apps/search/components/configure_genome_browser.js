@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
 
-import LongListFacet from '../../../common/components/longlist'
+import ResultsTable from '../../../common/components/results_table'
 import {ListItem} from '../../../common/components/list'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
@@ -72,47 +72,69 @@ class ConfigureGenomeBrowser extends React.Component {
 			+ Render.numWithCommas(cre.start)
 			+ '-' + Render.numWithCommas(cre.start + cre.len)
                   : "";
-
+	let cols = [
+	    { title: "", data: "name",
+	      render: Render.checkCt(this.props.configuregb_cts)},
+	    { title: "cell type", data: "name",
+	      className: "dt-right"},
+	    { title: "tissue", data: "tissue",
+	      className: "dt-right" },
+	    { title: "", data: "cellTypeName",
+	      className: "dt-right dcc",
+	      render: Render.assayIcon,
+	      orderable: false }
+	]
+	
 	const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 	let ctBox = (
-	    <LongListFacet
-		title={""}
+	    <ResultsTable
+		cols={cols}
 		data={Globals.cellTypeInfoArr}
-		cols={[
-		    { title: "", data: "name",
-		      orderable: false,
-		      render: () => ("<input type='checkbox' />")},
-		    { title: "cell type", data: "name",
-		      className: "dt-right"},
-		    { title: "tissue", data: "tissue",
-		      className: "dt-right" },
-		    { title: "", data: "cellTypeName",
-		      className: "dt-right dcc",
-		      render: Render.assayIcon,
-		      orderable: false }
-		]}
+		rerender={{0 : Render.checkCt}}
+		configuregb_cts={this.props.configuregb_cts}
 		order={[]}
-		mode={CHECKLIST_MATCH_ANY}
 		buttonsOff={true}
-		selection={null}
-		friendlySelectionLookup={make_ct_friendly}
-		onTdClick={(value, td, cellObj) => {
-			this.props.actions.togglGenomeBrowserCelltype(value);
-		    }}
-            />);
+		onTdClick={(td, cellObj) => {
+		    this.props.actions.togglGenomeBrowserCelltype(cellObj.value);
+		}}
+		bFilter={true}
+		bLengthChange={false}
+		pageLength={10}
+            />)
 
 	let rows = [];
-	for(let ct of this.props.configuregb_cts){
+	let cts = Array.from(this.props.configuregb_cts);
+	cts.sort();
+	for(let ct of cts){
 	    rows.push(
 		<ListItem value={ct}
-		selected="true"
-		n="0"
-		onclick={() => {
-		    this.props.actions.togglGenomeBrowserCelltype(ct)
-		}}
+			  selected="true"
+			  n="0"
+			  onclick={() => {
+				  this.props.actions.togglGenomeBrowserCelltype(ct)
+			      }}
 		/>);
 	}
+	let selectedBiosamples = (
+	    <div className="panel panel-default">
+		<div className="panel-heading">
+		    <h3 className="panel-title">Selected biosamples</h3>
+		</div>
+		<div className="panel-body">
+		    {rows}
+		</div>
+	    </div>);
 
+	let availBiosamples = (
+	    <div className="panel panel-default">
+		<div className="panel-heading">
+		    <h3 className="panel-title">Available biosamples</h3>
+		</div>
+		<div className="panel-body">
+		    {ctBox}
+		</div>
+	    </div>);	    
+	
 	let options = (
 	    <div className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"><input type="radio" name="cc" checked=""/>Thresholded cREs</label>
@@ -128,7 +150,10 @@ class ConfigureGenomeBrowser extends React.Component {
 			{coord}
                     </div>
                     <div className="col-md-4">
-			
+			<a className={"btn btn-primary ucscButton"}
+                           href={""} role={"button"}>
+		            {"Open UCSC"}
+		        </a>
                     </div>
 		</div>
 
@@ -142,9 +167,11 @@ class ConfigureGenomeBrowser extends React.Component {
 		
 		<div className="row">
                     <div className="col-md-6">
-			{rows}
-			<hr />
-			{ctBox}
+			{selectedBiosamples}
+			{availBiosamples}
+		    </div>
+
+                    <div className="col-md-6">
                     </div>
 		</div>
 

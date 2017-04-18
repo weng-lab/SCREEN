@@ -30,28 +30,29 @@ class TopAccessions:
         self.ctmap = self.pgc.makeCtMap()
 
     def run(self):
-        self._makeFile()
+        self._makeFile("enhancer", "Enhancer")
+        self._makeFile("promoter", "Promoter")
+        self._makeFile("insulator", "Insulator")
         
-    def _makeFile(self):
-        self.assaymap = {"enhancer": self.pgc.datasets_multi("enhancer")}
-        cts = sorted(list(set(self.assaymap["enhancer"].keys())))
+    def _makeFile(self, assay, title):
+        self.assaymap = {assay: self.pgc.datasets_multi(assay)}
+        cts = sorted(list(set(self.assaymap[assay].keys())))
 
         for ct in cts:
             print(ct)
-            cti = self.ctmap["Enhancer"][ct]
+            cti = self.ctmap[title][ct]
             self.curs.execute("""
-            SELECT accession, enhancer_zscores[{cti}], chrom, start, stop
+            SELECT accession, {assay}_zscores[{cti}], chrom, start, stop
             FROM {tn}
-            WHERE enhancer_zscores[{cti}] > 1.64
+            WHERE {assay}_zscores[{cti}] > 1.64
             ORDER BY 2 DESC
-            LIMIT 20000
-            """.format(cti = cti, tn = self.assembly + "_cre_all"))
+            """.format(assay = assay, cti = cti, tn = self.assembly + "_cre_all"))
 
             rows = self.curs.fetchall()
             ctSan = "".join(x for x in ct if x.isalnum() or x == '_')
-            dnase_expID = self.assaymap["enhancer"][ct]["dnase_expid"]
-            other_expID = self.assaymap["enhancer"][ct]["other_expid"]
-            outFnp = paths.path(self.assembly, "export", "enhancer-like-20k",
+            dnase_expID = self.assaymap[assay][ct]["dnase_expid"]
+            other_expID = self.assaymap[assay][ct]["other_expid"]
+            outFnp = paths.path(self.assembly, "export", assay + "-like",
                                 '_'.join([ctSan, dnase_expID, other_expID])
                                 + ".tsv")
             Utils.ensureDir(outFnp)
