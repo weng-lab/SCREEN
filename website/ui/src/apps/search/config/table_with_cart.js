@@ -62,7 +62,7 @@ const TableColumns = () => {
 	    className: klassCenter + "browser",
 	    targets: -1,
 	    orderable: false,
-	    defaultContent: Render.browser_buttons(["UCSC", "WashU"])
+	    defaultContent: Render.browser_buttons(["UCSC"])
 	    //, "Ensembl"
 	}
     ];

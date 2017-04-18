@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 var $ = require('jquery');
 require('jquery-ui');
@@ -25,13 +25,6 @@ class ResultsTable extends React.Component {
     }
 
     componentDidUpdate() {
-	if (this.props.rerender) {
-	    for(let idx in this.props.rerender){
-		let f = this.props.rerender[idx];
-		console.log(idx, f);
-		this._datatable.column(idx).data(f(this.props.configuregb_cts));
-	    }
-	}
 	this._datatable.clear().rows.add(this.props.data).draw();
         if (this.props.cvisible) {
 	    Object.keys(this.props.cvisible).map((k) => {

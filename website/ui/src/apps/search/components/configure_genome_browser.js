@@ -90,7 +90,6 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <ResultsTable
 		cols={cols}
 		data={Globals.cellTypeInfoArr}
-		rerender={{0 : Render.checkCt}}
 		configuregb_cts={this.props.configuregb_cts}
 		order={[]}
 		buttonsOff={true}
@@ -143,17 +142,26 @@ class ConfigureGenomeBrowser extends React.Component {
 	
 	return (
 	    <div className="container" style={{width: "100%"}}>
+		<br />
 		<div className="row">
-                    <div className="col-md-8">
-			<h3 className="creDetailsTitle">{cre.accession}</h3>
-			{"         "}
-			{coord}
+                    <div className="col-md-2">
+			<div className="btn-group" role="group">
+			    <button type="button"
+				    className="btn btn-primary"
+				    onClick={() => {
+					    console.log("hi!");
+					} }>
+				{"Open UCSC"}
+			    </button>
+			</div>
                     </div>
                     <div className="col-md-4">
-			<a className={"btn btn-primary ucscButton"}
-                           href={""} role={"button"}>
-		            {"Open UCSC"}
-		        </a>
+			{options}
+		    </div>
+		    <div className="col-md-4">
+			<p className="genomeCreDetailsTitle">{cre.accession}</p>
+			{"         "}
+			{coord}
                     </div>
 		</div>
 
@@ -161,7 +169,6 @@ class ConfigureGenomeBrowser extends React.Component {
                     <div className="col-md-6">
                     </div>
                     <div className="col-md-6">
-			{options}
                     </div>
 		</div>
 		
