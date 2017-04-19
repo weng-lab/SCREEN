@@ -586,3 +586,19 @@ div.dataTables_wrapper div.dataTables_paginate {
     vertical-align: middle;
     font-size: 24px;
 }
+
+.rangeTitle {
+    font-weight: bold;
+}
+
+.rangeInnerBox {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.rangeInputTextBox {
+    text-align: center;
+    width: 40%;
+    position: relative;
+    font-weight: bold;
+}
