@@ -180,7 +180,44 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def _getTrackList(self, cts):
+    def _getCreTracksClassified(self, cts):
+        tracks = []
+        cache = self.cacheW[self.assembly]
+
+        assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
+        assaymap = cache.assaymap
+
+        ctsTracks = []
+        cache = self.cacheW[self.assembly]
+
+        for tct in cts:
+            ct = tct["ct"]
+            # else JSON will be invalid for WashU
+            ctInfos = cache.datasets.byCellType[ct] # one per assay
+            displayCT = ctInfos[0]["biosample_summary"][:50]
+            ctwu = ct.replace("'", "_").replace('"', '_')
+            tissue = tct["tissue"]
+            fileIDs = []
+            for assay in assays:
+                if assay in assaymap:
+                    if ct in assaymap[assay]:
+                        expBigWigID = assaymap[assay][ct]
+                        expID = expBigWigID[0]
+                        fileID = expBigWigID[1]
+                        fileIDs.append(fileID)
+                        ti = TrackInfo(cache, displayCT, tissue[:50],
+                                       assay, expID, fileID)
+                        tracks.append(ti)
+            fn = '_'.join(fileIDs) + ".cREs.bigBed"
+            fnp = paths.path(self.assembly, "public_html", "cts", fn)
+            if os.path.exists(fnp):
+                url = os.path.join("http://bib7.umassmed.edu/~purcarom",
+                                   "encyclopedia", "Version-4",
+                                   "ver10", self.assembly, "cts", fn)
+                ctsTracks.append((fileID, displayCT, url))
+        return ctsTracks, tracks
+    
+    def _getCreTracksThesholded(self, cts):
         tracks = []
         cache = self.cacheW[self.assembly]
 
@@ -247,8 +284,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 tcts = []
                 for ct in j["cellTypes"]:
                     tcts.append({"ct" : ct, "tissue" : ct})
-                
-        ctsTracks, tracks = self._getTrackList(tcts)
+
+        if 2 == j["version"]:
+            if "Thresholded cREs" == j["options"]:
+                ctsTracks, tracks = self._getCreTracksThesholded(tcts)
+	    elif "Classified cREs" == j["options"]:
+                ctsTracks, tracks = self._getCreTracksClassified(tcts)
+            else:
+                raise Exception("unknown option")
+        else:
+            ctsTracks, tracks = self._getCreTracks(tcts)
         for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
                 title = fileID + " cREs in " + tct
