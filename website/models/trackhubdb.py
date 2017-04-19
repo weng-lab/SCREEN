@@ -208,12 +208,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         ti = TrackInfo(cache, displayCT, tissue[:50],
                                        assay, expID, fileID)
                         tracks.append(ti)
-            fn = '_'.join(fileIDs) + ".cREs.bigBed"
-            fnp = paths.path(self.assembly, "public_html", "cts", fn)
-            if os.path.exists(fnp):
-                url = os.path.join("http://bib7.umassmed.edu/~purcarom",
-                                   "encyclopedia", "Version-4",
-                                   "ver10", self.assembly, "cts", fn)
+
+                    fn = '_'.join(fileIDs) + ".cREs.bigBed"
+                    fnp = paths.path(self.assembly, "public_html", "cts", assay, fn)
+                    if os.path.exists(fnp):
+                        url = os.path.join("http://bib7.umassmed.edu/~purcarom",
+                                           "encyclopedia", "Version-4",
+                                           "ver10", self.assembly, "cts", assay, fn)
                 ctsTracks.append((fileID, displayCT, url))
         return ctsTracks, tracks
     
