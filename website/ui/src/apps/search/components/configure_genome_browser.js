@@ -141,10 +141,10 @@ class ConfigureGenomeBrowser extends React.Component {
 		    {ctBox}
 		</div>
 	    </div>);	    
-	
+
+	let tc = "Thresholded cREs";
+	let cc = "Classified cREs";
 	let options = (
-	    let tc = "Thresholded cREs";
-	    let cc = "Classified cREs";
 	    <div ref="options" className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"
 		       onClick={() => { this.optionsChanged(tc); }}>
@@ -171,7 +171,7 @@ class ConfigureGenomeBrowser extends React.Component {
 				    onClick={() => {
 					    this.gbclick(cre, cts, "UCSC");
 					} }>
-				{"Open UCSC"}
+				{"Open in UCSC"}
 			    </button>
 			</div>
                     </div>
