@@ -373,3 +373,33 @@ export const checkCt = (cts) => (name) => {
     }
     return "<input type='checkbox' />";
 }
+
+export const creTableAccesion = (data, type, full, meta) => {
+    let w = 25;
+    let h = 18;
+    let fw = 3 * w + 3 * 2;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={h} style={{fill : color}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={h}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+    let colors = Globals.colors.cREs;
+
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={h}>
+	        <g>
+                    {border()}
+		    {rect(1, 1, colors.H3K27ac)}
+		    {rect(w+3, 1, colors.H3K4me3)}
+		    {rect(2*w+2*3, 1, colors.CTCF)}
+        	</g>
+	    </svg>
+	</span>);
+    let boxen = ReactDOMServer.renderToStaticMarkup(e);
+    return '<div>' + 
+	   popup("Click for cRE details", creLink(data)) +
+	   '<br />P ' + boxen + '</div>';
+}
