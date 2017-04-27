@@ -2,6 +2,7 @@ import {HelpTooltip} from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
 
 const TableColumns = () => {
+    let klassLeft = "dt-body-left dt-head-left ";
     let klassCenter = "dt-body-center dt-head-center ";
 
     let pctHelp = "PCT<br />" + HelpTooltip("CellTypeAgnosticClassification");
@@ -14,16 +15,11 @@ const TableColumns = () => {
 
     return [
 	{
-	    title: "accession", data: "accession", className: klassCenter,
-            render: Render.creLinkPop
+	    title: "accession", data: "accession", className: klassLeft,
+            render: Render.creTableAccesion
 	}, {
             title: "", data: "concordant", className: klassCenter,
 	    render: Render.concordantStar
-	}, {
-            title: pctHelp, data: "pct", className: klassCenter,
-	    render: Render.creGroupIcon
-	}, {
-            title: "PCT", data: "pct", visible: false
 	}, {
             title: sctHelp, data: "sct", className: klassCenter,
 	    render: Render.sctGroupIcon, name: "sctv"
