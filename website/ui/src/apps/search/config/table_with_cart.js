@@ -18,9 +18,6 @@ const TableColumns = () => {
 	    title: "accession", data: "info", className: klassCenter,
             render: Render.creTableAccesion
 	}, {
-            title: "", data: "concordant", className: klassCenter,
-	    render: Render.concordantStar
-	}, {
             title: sctHelp, data: "sct", className: klassCenter,
 	    render: Render.sctGroupIcon, name: "sctv"
 	}, {
