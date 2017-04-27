@@ -388,14 +388,17 @@ export const creTableAccesion = (data, type, full, meta) => {
     )
     let colors = Globals.colors.cREs;
 
+    let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
+
+    
     let e = (
         <span className={"text-nowrap"}>
             <svg width={fw} height={fh}>
 	        <g>
                     {border()}
-		    {rect(1, 1, colors.H3K4me3)}
-		    {rect(w+1, 1, colors.H3K27ac)}
-		    {rect(2*w+2, 1, colors.Inactive)}
+		    {rect(1, 1, col(data.k4me3max, colors.H3K4me3))}
+		    {rect(w+1, 1, col(data.k27acmax, colors.H3K27ac))}
+		    {rect(2*w+2, 1, col(data.ctcfmax, colors.CTCF))}
         	</g>
 	    </svg>
 	</span>);
@@ -403,5 +406,6 @@ export const creTableAccesion = (data, type, full, meta) => {
     let prox = data.isproximal ? "P" : "D";
     return '<div>' + 
 	   popup("Click for cRE details", creLink(data.accession)) +
-	   '<br />' + prox + ' ' + boxen + '</div>';
+	   '<br />' + concordantStar(data.concordant) +
+	   prox + ' ' + boxen + '</div>';
 }
