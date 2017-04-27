@@ -161,7 +161,13 @@ const geneDistanceBox = (p) => {
     return panelize("Distance to Genes", box);
 }
 
-const zscore_decimal = (v) => (v / 100.0);
+const zscore_decimal = (v) => {
+    if (isNaN(parseFloat(v)) || !isFinite(v)) return 0.0;
+    let r = v / 100.0;
+    if (Number.isInteger(r)) return r + ".";
+    return r;
+}
+    
 const zrdecimal = (s) => (+s * 100.0);
 
 const _rankBox = ({element_type, actions, cellType}) => {
