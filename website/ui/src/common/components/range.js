@@ -19,6 +19,7 @@ class RangeSlider extends React.Component {
 	this._rvalue = this._rvalue.bind(this);
 	this._ontxchange = this._ontxchange.bind(this);
 	this._value = this._value.bind(this);
+	this._keypress = this._keypress.bind(this);
 	let _v = this._value;
 	this.state = {
 	    selection_range: props.selection_range.map(_v)
@@ -46,6 +47,12 @@ class RangeSlider extends React.Component {
 	    selection_range: [this.refs.txmin.value, this.refs.txmax.value]
 	});
     }
+
+    _keypress(e) {
+	if (e.which == 13) {
+	    this.onMinChange();
+	}
+    }
     
     render() {
 	let histogram = (this.props.nohistogram ? "" : <div ref="histogram" style={{width: "100%", height: "20px"}} />);
@@ -55,9 +62,9 @@ class RangeSlider extends React.Component {
   		   <div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
 		<input ref="txmin" type="text" value={this.state.selection_range[0]} onChange={this._ontxchange} onBlur={this.onMinChange}
-	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> -&nbsp;
+	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} onKeyDown={this._keypress} /> -&nbsp;
 		<input ref="txmax" type="text" value={this.state.selection_range[1]} onChange={this._ontxchange} onBlur={this.onMaxChange}
-		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} />
+		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} onKeyDown={this._keypress} />
 		</div>
 		</div>
 	       );
@@ -123,6 +130,10 @@ class RangeSlider extends React.Component {
 
     onMinChange() {
 	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
+	if (isNaN(srange[0])) srange[0] = 0.0;
+	if (isNaN(srange[1])) srange[1] = srange[0];
+	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
+	console.log(srange);
 //	if (srange[0] > srange[1]) srange[0] = srange[1];
 //	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
 	this.set_selection(srange);
@@ -130,6 +141,10 @@ class RangeSlider extends React.Component {
 
     onMaxChange() {
 	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
+	if (isNaN(srange[0])) srange[0] = 0.0;
+	if (isNaN(srange[1])) srange[1] = srange[0];
+	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
+	console.log(srange);
 //	if (srange[1] < srange[0]) srange[1] = srange[0];
 //	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
 	this.set_selection(srange);
@@ -163,6 +178,7 @@ class RangeSlider extends React.Component {
     }
 
     set_selection(r) {
+	if (r[1] <= r[0]) r[1] = r[0] + 1;
 	if (this.props.onchange) {
             this.props.onchange(r);
         }
