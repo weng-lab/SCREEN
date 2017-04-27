@@ -75,8 +75,8 @@ export const popup = (p, c) => {
     return '<span data-toggle="tooltip" data-placement="top" title="' + p + '">' + c + '</span>';
 }
 
-export const creLinkPop = (data, type, full, meta) => (
-    popup("Click for cRE details", creLink(data))
+export const creLinkPop = (accession, type, full, meta) => (
+    popup("Click for cRE details", creLink(accession))
 )
 
 export const openGeLink = (gene) => {
@@ -400,7 +400,8 @@ export const creTableAccesion = (data, type, full, meta) => {
 	    </svg>
 	</span>);
     let boxen = ReactDOMServer.renderToStaticMarkup(e);
+    let prox = data.isproximal ? "P" : "D";
     return '<div>' + 
-	   popup("Click for cRE details", creLink(data)) +
-	   '<br />P ' + boxen + '</div>';
+	   popup("Click for cRE details", creLink(data.accession)) +
+	   '<br />' + prox + ' ' + boxen + '</div>';
 }
