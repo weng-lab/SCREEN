@@ -17,7 +17,20 @@ class RangeSlider extends React.Component {
 	this._update_width = this._update_width.bind(this);
 	this.componentDidUpdate = this.componentDidUpdate.bind(this);
 	this._rvalue = this._rvalue.bind(this);
+	this._ontxchange = this._ontxchange.bind(this);
+	this._value = this._value.bind(this);
+	let _v = this._value;
+	this.state = {
+	    selection_range: props.selection_range.map(_v)
+	};
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
+    }
+
+    componentWillReceiveProps(props) {
+	let _v = this._value;
+	this.setState({
+	    selection_range: props.selection_range.map(_v)
+	});
     }
 
     _value(v) {
@@ -27,6 +40,12 @@ class RangeSlider extends React.Component {
     _rvalue(s) {
 	return (this.props.reversevalue ? this.props.reversevalue(s) : s);
     }
+
+    _ontxchange() {
+	this.setState({
+	    selection_range: [this.refs.txmin.value, this.refs.txmax.value]
+	});
+    }
     
     render() {
 	let histogram = (this.props.nohistogram ? "" : <div ref="histogram" style={{width: "100%", height: "20px"}} />);
@@ -35,9 +54,9 @@ class RangeSlider extends React.Component {
 	           {histogram}
   		   <div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
-		<input ref="txmin" type="text" value={this._value(this.props.selection_range[0])} onChange={this.onMinChange}
+		<input ref="txmin" type="text" value={this.state.selection_range[0]} onChange={this._ontxchange} onBlur={this.onMinChange}
 	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} /> -&nbsp;
-		<input ref="txmax" type="text" value={this._value(this.props.selection_range[1])} onChange={this.onMaxChange}
+		<input ref="txmax" type="text" value={this.state.selection_range[1]} onChange={this._ontxchange} onBlur={this.onMaxChange}
 		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} />
 		</div>
 		</div>
@@ -122,7 +141,7 @@ class RangeSlider extends React.Component {
 	    range: true,
 	    min: this.props.range[0],
 	    max: this.props.range[1],
-	    values: [ this.props.selection_range[0], this.props.selection_range[1] ],
+	    values: [ +this.props.selection_range[0], +this.props.selection_range[1] ],
 	    stop: this._set_selection,
 	    slide: this.update_selection
 	});
