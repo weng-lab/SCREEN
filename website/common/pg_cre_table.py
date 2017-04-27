@@ -33,8 +33,13 @@ class PGcreTable(GetOrSetMemCache):
         self.concordantTable = concordantTable
 
         self.tableName = self.assembly + "_cre_all"
+        self.infoFields = {"accession" : "cre.accession",
+                           "isproximal" : "cre.isproximal",
+                           "k4me3max" : "cre.h3k4me3_max",
+                           "k27acmax" : "cre.h3k27ac_max",
+                           "ctcfmax" : "cre.ctcf_max"}
         self.fields = [
-            "accession", "maxZ",
+            "maxZ",
             "cre.chrom", "cre.start",
             "cre.stop - cre.start AS len",
             "cre.gene_all_id", "cre.gene_pc_id",
@@ -42,6 +47,12 @@ class PGcreTable(GetOrSetMemCache):
             "cre.pct"]
         self.whereClauses = []
 
+    def _getInfo(self):
+        pairs = []
+        for k, v in self.infoFields.iteritems():
+            pairs.append("'%s', %s" % (k, v))
+        return "json_build_object(" + ','.join(pairs) + ") as info"
+        
     def _sct(self, ct):
         if ct in self.ctsTable:
             self.fields.append("cre.creGroupsSpecific[%s] AS sct" % # TODO rename to sct
@@ -51,16 +62,15 @@ class PGcreTable(GetOrSetMemCache):
 
     def _concordant(self, ct):
         if ct in self.concordantTable:
-            self.fields.append("cre.concordant[%s] AS concordant" % 
-                              self.concordantTable[ct])
+            self.infoFields['concordant'] = "cre.concordant[%s]" % self.concordantTable[ct]
         else:
-            self.fields.append("false::boolean AS concordant")
+            self.infoFields['concordant'] = "false::boolean"
             
     def _buildWhereStatement(self, j, chrom, start, stop):
         ct = j.get("cellType", None)
 
-        self._sct(ct)
         self._concordant(ct)
+        self._sct(ct)
         if ct:
             self._ctSpecific(ct, j)
         else:
@@ -69,7 +79,7 @@ class PGcreTable(GetOrSetMemCache):
         self._accessions(j)
         self._where(chrom, start, stop)
 
-        fields = ', '.join(self.fields)
+        fields = ', '.join([self._getInfo()] + self.fields)
         ret = ""
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
@@ -100,7 +110,7 @@ LIMIT 1000) r
 """.format(fields = fields, tn = self.tableName,
            whereClause = whereClause)
 
-            #print("\n", q, "\n")
+            print("\n", q, "\n")
             if 0:
                 timedQuery(curs, q)
             else:

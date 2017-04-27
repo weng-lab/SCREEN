@@ -15,7 +15,7 @@ const TableColumns = () => {
 
     return [
 	{
-	    title: "accession", data: "accession", className: klassCenter,
+	    title: "accession", data: "info", className: klassCenter,
             render: Render.creTableAccesion
 	}, {
             title: "", data: "concordant", className: klassCenter,
