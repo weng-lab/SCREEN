@@ -110,7 +110,7 @@ LIMIT 1000) r
 """.format(fields = fields, tn = self.tableName,
            whereClause = whereClause)
 
-            print("\n", q, "\n")
+            #print("\n", q, "\n")
             if 0:
                 timedQuery(curs, q)
             else:
