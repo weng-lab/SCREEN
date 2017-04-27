@@ -403,9 +403,11 @@ export const creTableAccesion = (data, type, full, meta) => {
 	    </svg>
 	</span>);
     let boxen = ReactDOMServer.renderToStaticMarkup(e);
-    let prox = data.isproximal ? "P" : "D";
+    let prox = data.isproximal ? popup("Proximal", "P") :
+	       popup("Distal", "D");
     return '<div>' + 
 	   popup("Click for cRE details", creLink(data.accession)) +
-	   '<br />' + concordantStar(data.concordant) +
+	   '<br />' +
+	   popup("Concordant", concordantStar(data.concordant)) +
 	   prox + ' ' + boxen + '</div>';
 }
