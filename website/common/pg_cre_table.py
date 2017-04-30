@@ -38,6 +38,7 @@ class PGcreTable(GetOrSetMemCache):
                            "k4me3max" : "cre.h3k4me3_max",
                            "k27acmax" : "cre.h3k27ac_max",
                            "ctcfmax" : "cre.ctcf_max"}
+        self.ctSpecifc = {}
         self.fields = [
             "maxZ",
             "cre.chrom", "cre.start",
@@ -52,7 +53,13 @@ class PGcreTable(GetOrSetMemCache):
         for k, v in self.infoFields.iteritems():
             pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as info"
-        
+
+    def _getCtSpecific(self):
+        pairs = []
+        for k, v in self.ctSpecifc.iteritems():
+            pairs.append("'%s', %s" % (k, v))
+        return "json_build_object(" + ','.join(pairs) + ") as ctSpecifc"
+    
     def _sct(self, ct):
         if ct in self.ctsTable:
             self.fields.append("cre.creGroupsSpecific[%s] AS sct" % # TODO rename to sct
@@ -79,7 +86,7 @@ class PGcreTable(GetOrSetMemCache):
         self._accessions(j)
         self._where(chrom, start, stop)
 
-        fields = ', '.join([self._getInfo()] + self.fields)
+        fields = ', '.join([self._getInfo(), self._getCtSpecific()] + self.fields)
         ret = ""
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
@@ -176,33 +183,35 @@ FROM {tn} AS cre
             self.fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
                 
     def _ctSpecific(self, ct, j):
-        for assay in [("dnase", "dnase"),
-                      ("promoter", "h3k4me3"),
-                      ("enhancer", "h3k27ac"),
-                      ("ctcf", "ctcf")]:
-            if ct not in self.ctmap[assay[0]]:
-                self.fields.append("'' AS %s_zscore" % (assay[0]))
+        for name, exp in [("dnase", "dnase"),
+                          ("promoter", "h3k4me3"),
+                          ("enhancer", "h3k27ac"),
+                          ("ctcf", "ctcf")]:
+            if ct not in self.ctmap[name]:
+                self.fields.append("'' AS %s_zscore" % (name))
+                self.ctSpecifc[name + "_zscore"] = 0
                 continue
-            cti = self.ctmap[assay[0]][ct]
-            self.fields.append("cre.%s_zscores[%d] AS %s_zscore" % (assay[1], cti, assay[0]))
-
-            if "rank_%s_start" % assay[0] in j and "rank_%s_end" % assay[0] in j:
-                _range = [j["rank_%s_start" % assay[0]] / 100.0,
-                          j["rank_%s_end" % assay[0]] / 100.0]
+            cti = self.ctmap[name][ct]
+            self.fields.append("cre.%s_zscores[%d] AS %s_zscore" % (exp, cti, name))
+            self.ctSpecifc[name + "_zscore"] = "cre.%s_zscores[%d]" % (exp, cti)
+            
+            if "rank_%s_start" % name in j and "rank_%s_end" % name in j:
+                _range = [j["rank_%s_start" % name] / 100.0,
+                          j["rank_%s_end" % name] / 100.0]
                 minDefault = -10.0  # must match slider default
                 maxDefault = 10.0   # must match slider default
                 if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
                     continue # not actually filtering on zscore, yet...
-                if not isclose(_range[0], minDefault):
+                if not isclose(_range[0], minDefault) and not isclose(_range[1], maxDefault):
+                    self.whereClauses.append("(%s)" % " and ".join(
+                            ["cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]),
+                             "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1])] ))
+                elif not isclose(_range[0], minDefault):
                     self.whereClauses.append("(%s)" %
-                                        "cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]))
+                                        "cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]))
                 elif not isclose(_range[1], maxDefault):
                     self.whereClauses.append("(%s)" %
-                                        "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1]))
-                else:
-                    self.whereClauses.append("(%s)" % " and ".join(
-                            ["cre.%s_zscores[%d] >= %f" % (assay[1], cti, _range[0]),
-                             "cre.%s_zscores[%d] <= %f" % (assay[1], cti, _range[1])] ))
+                                        "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1]))
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
