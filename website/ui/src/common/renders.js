@@ -382,6 +382,10 @@ export const creTableAccesion = (data, type, full, meta) => {
     let rect = (x, y, color) => (
         <rect x={x} y={y} width={w} height={h} style={{fill : color}} />
     )
+    let line = (x1, y1, x2, y2) => (
+        <line x1={x1} y1={y1} x2={x2} y2={y2}
+              style={{strokeWidth: 1, stroke: "black"}} />
+    )
     let border = () => (
         <rect x={0} y={0} width={fw} height={fh}
               style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
@@ -389,7 +393,6 @@ export const creTableAccesion = (data, type, full, meta) => {
     let colors = Globals.colors.cREs;
 
     let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
-
     
     let e = (
         <span className={"text-nowrap"}>
@@ -397,7 +400,9 @@ export const creTableAccesion = (data, type, full, meta) => {
 	        <g>
                     {border()}
 		    {rect(1, 1, col(data.k4me3max, colors.H3K4me3))}
+                    {line(1*(w+1)-1, 0, 1*(w+1)-1, fh)}
 		    {rect(w+1, 1, col(data.k27acmax, colors.H3K27ac))}
+                    {line(2*(w+1)-1, 0, 2*(w+1)-1, fh)}
 		    {rect(2*w+2, 1, col(data.ctcfmax, colors.CTCF))}
         	</g>
 	    </svg>
@@ -410,4 +415,43 @@ export const creTableAccesion = (data, type, full, meta) => {
 	   '<br />' +
 	   popup("Concordant", concordantStar(data.concordant)) +
 	   prox + ' ' + boxen + '</div>';
+}
+
+export const creTableCellTypeSpecific = (data) => {
+    let w = 12;
+    let h = 9;
+    let fw = 4 * w + 4;
+    let fh = h + 2;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={h} style={{fill : color}} />
+    )
+    let line = (x1, y1, x2, y2) => (
+        <line x1={x1} y1={y1} x2={x2} y2={y2}
+              style={{strokeWidth: 1, stroke: "black"}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fh}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+    let colors = Globals.colors.cREs;
+
+    let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
+    
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={fh}>
+	        <g>
+                    {border()}
+		    {rect(1, 1, col(data.dnase_zscore, colors.DNase))}
+                    {line(1*(w+1)-1, 0, 1*(w+1)-1, fh)}
+		    {rect(1*(w+1), 1, col(data.promoter_zscore, colors.H3K4me3))}
+                    {line(2*(w+1)-1, 0, 2*(w+1)-1, fh)}
+		    {rect(2*(w+1), 1, col(data.enhancer_zscore, colors.H3K27ac))}
+                    {line(3*(w+1)-1, 0, 3*(w+1)-1, fh)}
+		    {rect(3*(w+1), 1, col(data.ctcf_zscore, colors.CTCF))}
+        	</g>
+	    </svg>
+	</span>);
+    let boxen = ReactDOMServer.renderToStaticMarkup(e);
+    return '<div>' + boxen + '</div>';
 }

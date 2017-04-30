@@ -133,7 +133,7 @@ class RangeSlider extends React.Component {
 	if (isNaN(srange[0])) srange[0] = 0.0;
 	if (isNaN(srange[1])) srange[1] = srange[0];
 	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
-	console.log(srange);
+	//console.log(srange);
 //	if (srange[0] > srange[1]) srange[0] = srange[1];
 //	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
 	this.set_selection(srange);
@@ -144,7 +144,7 @@ class RangeSlider extends React.Component {
 	if (isNaN(srange[0])) srange[0] = 0.0;
 	if (isNaN(srange[1])) srange[1] = srange[0];
 	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
-	console.log(srange);
+	//console.log(srange);
 //	if (srange[1] < srange[0]) srange[1] = srange[0];
 //	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
 	this.set_selection(srange);
@@ -252,6 +252,9 @@ export default RangeFacet;
     var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
     var h_interval = 10;
 
-    ReactDOM.render(<RangeFacet range={range} h_margin={h_margin} selection_range={srange} h_interval="10" h_data={data} />, document.getElementById("range_facet"));
-
+    ReactDOM.render(
+	<RangeFacet range={range} h_margin={h_margin}
+		    selection_range={srange} h_interval="10"
+		    h_data={data} />,
+	document.getElementById("range_facet"));
 })();
