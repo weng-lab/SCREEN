@@ -18,8 +18,8 @@ const TableColumns = () => {
 	    title: "accession", data: "info", className: klassCenter,
             render: Render.creTableAccesion
 	}, {
-            title: sctHelp, data: "sct", className: klassCenter,
-	    render: Render.sctGroupIcon, name: "sctv"
+            title: sctHelp, data: "ctspecifc", className: klassCenter,
+	    render: Render.creTableCellTypeSpecific, name: "sctv"
 	}, {
             title: "SCT", data: "sct", visible: false, name: "sct"
 	}, {
@@ -63,12 +63,12 @@ const TableColumns = () => {
 
 export default TableColumns;
 
-export const table_order = [
-    [2, "desc"],
-    [3, "asc"],
-    [4, "asc"],
-    [5, "asc"]
-];
+export const table_order = [];
+//    [2, "desc"],
+//    [3, "asc"],
+//    [4, "asc"],
+//    [5, "asc"]
 
-export const columnDefs = [{ "orderData": 2, "targets": 1 },
-                           { "orderData": 4, "targets": 3 }]
+export const columnDefs = []
+//{ "orderData": 2, "targets": 1 },
+//                           { "orderData": 4, "targets": 3 }]
