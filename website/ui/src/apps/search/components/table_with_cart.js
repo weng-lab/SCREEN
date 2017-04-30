@@ -23,7 +23,7 @@ class TableWithCart extends React.Component {
         if (td.className.indexOf("browser") != -1) return;
         if (td.className.indexOf("geneexp") != -1) return;
         if (td.className.indexOf("cart") != -1) {
-            let accession = rowdata.accession;
+            let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
 	    let j = {GlobalAssembly, accessions};
 	    $.ajax({
@@ -38,7 +38,8 @@ class TableWithCart extends React.Component {
 	    actions.setCart(accessions);
 	    return;
         }
-        actions.showReDetail(rowdata)
+	let cre = {...rowdata, ...rowdata.info};
+        actions.showReDetail(cre);
     }
 
     button_click_handler(name, rowdata, actions){
