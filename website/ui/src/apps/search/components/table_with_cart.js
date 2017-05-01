@@ -43,7 +43,8 @@ class TableWithCart extends React.Component {
     }
 
     button_click_handler(name, rowdata, actions){
-	actions.showGenomeBrowser(rowdata, name);
+	let cre = {...rowdata, ...rowdata.info};
+	actions.showGenomeBrowser(cre, name);
     }
 
     addAllToCart() {

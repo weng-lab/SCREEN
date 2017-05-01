@@ -151,7 +151,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         if self.browser in [UCSC, ENSEMBL]:
             url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
             t = PredictionTrack("cREs",
-                                self.priority, url).track()
+                                self.priority, url, False).track()
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("cREs",
@@ -180,45 +180,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return track
 
-    def _getCreTracksClassified(self, cts):
-        tracks = []
-        cache = self.cacheW[self.assembly]
-
-        assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
-        assaymap = cache.assaymap
-
-        ctsTracks = []
-        cache = self.cacheW[self.assembly]
-
-        for tct in cts:
-            ct = tct["ct"]
-            # else JSON will be invalid for WashU
-            ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["biosample_summary"][:50]
-            ctwu = ct.replace("'", "_").replace('"', '_')
-            tissue = tct["tissue"]
-            fileIDs = []
-            for assay in assays:
-                if assay in assaymap:
-                    if ct in assaymap[assay]:
-                        expBigWigID = assaymap[assay][ct]
-                        expID = expBigWigID[0]
-                        fileID = expBigWigID[1]
-                        fileIDs.append(fileID)
-                        ti = TrackInfo(cache, displayCT, tissue[:50],
-                                       assay, expID, fileID)
-                        tracks.append(ti)
-
-                    fn = '_'.join(fileIDs) + ".cREs.bigBed"
-                    fnp = paths.path(self.assembly, "public_html", "cts", assay, fn)
-                    if os.path.exists(fnp):
-                        url = os.path.join("http://bib7.umassmed.edu/~purcarom",
-                                           "encyclopedia", "Version-4",
-                                           "ver10", self.assembly, "cts", assay, fn)
-                ctsTracks.append((fileID, displayCT, url))
-        return ctsTracks, tracks
-    
-    def _getCreTracksThesholded(self, cts):
+    def _getCreTracks(self, cts):
         tracks = []
         cache = self.cacheW[self.assembly]
 
@@ -286,25 +248,56 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 for ct in j["cellTypes"]:
                     tcts.append({"ct" : ct, "tissue" : ct})
 
-        if 2 == j["version"]:
-            if "Thresholded cREs" == j["options"]:
-                ctsTracks, tracks = self._getCreTracksThesholded(tcts)
-	    elif "Classified cREs" == j["options"]:
-                ctsTracks, tracks = self._getCreTracksClassified(tcts)
-            else:
-                raise Exception("unknown option")
-        else:
-            ctsTracks, tracks = self._getCreTracks(tcts)
+        ctsTracks, tracks = self._getCreTracks(tcts)
         for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
-                title = fileID + " cREs in " + tct
-                t = PredictionTrack(title, self.priority, url).track()
-                self.priority += 1
-                self.lines += [t]
+                self.lines += self.makeSuperTracks(fileID, tct, url)
 
         for ti in tracks:
             self.lines += [self.trackhubExp(ti)]
 
+    def makeSuperTracks(self, fileID, tct, url):
+        stname = tct.replace(" ", "_") + "_super"
+        
+        ret = ["""
+track {stname}
+superTrack on show
+group regulation
+shortLabel {tct}
+longLabel {tct}
+        """.format(stname = stname, tct=tct)]
+
+        title = fileID + " cREs in " + tct
+        t = PredictionTrack(title, self.priority, url, False).track()
+        self.priority += 1
+        ret.append("""
+  track myFirstTrack
+  parent {stname}
+        """.format(stname = stname) + t)
+        title = fileID + " cREs in " + tct + " 2"
+        t = PredictionTrack(title, self.priority, url + "2.bigBed", True).track()
+        self.priority += 1
+        ret.append("""
+  track mySecondTrack
+  parent {stname}
+        """.format(stname = stname) + t)
+        title = fileID + " cREs in " + tct + " 3"
+        t = PredictionTrack(title, self.priority, url + "3.bigBed", True).track()
+        self.priority += 1
+        ret.append("""
+  track myThirdTrack
+  parent {stname}
+        """.format(stname = stname) + t)
+        title = fileID + " cREs in " + tct + " 4"
+        t = PredictionTrack(title, self.priority, url + "4.bigBed", True).track()
+        self.priority += 1
+        ret.append("""
+  track myFourthTrack
+  parent {stname}
+        """.format(stname = stname) + t)
+
+        return ret
+            
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 
