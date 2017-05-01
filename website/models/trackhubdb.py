@@ -267,28 +267,28 @@ shortLabel {tct}
 longLabel {tct}
         """.format(stname = stname, tct=tct)]
 
-        title = fileID + " cREs in " + tct
+        title = "cREs in " + tct
         t = PredictionTrack(title, self.priority, url, False).track()
         self.priority += 1
         ret.append("""
   track myFirstTrack
   parent {stname}
         """.format(stname = stname) + t)
-        title = fileID + " cREs in " + tct + " 2"
+        title = "cREs in " + tct + " 2"
         t = PredictionTrack(title, self.priority, url + "2.bigBed", True).track()
         self.priority += 1
         ret.append("""
   track mySecondTrack
   parent {stname}
         """.format(stname = stname) + t)
-        title = fileID + " cREs in " + tct + " 3"
+        title = "cREs in " + tct + " 3"
         t = PredictionTrack(title, self.priority, url + "3.bigBed", True).track()
         self.priority += 1
         ret.append("""
   track myThirdTrack
   parent {stname}
         """.format(stname = stname) + t)
-        title = fileID + " cREs in " + tct + " 4"
+        title = "cREs in " + tct + " 4"
         t = PredictionTrack(title, self.priority, url + "4.bigBed", True).track()
         self.priority += 1
         ret.append("""
