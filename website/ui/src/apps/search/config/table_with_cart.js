@@ -5,8 +5,7 @@ const TableColumns = () => {
     let klassLeft = "dt-body-left dt-head-left ";
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let pctHelp = "PCT<br />" + HelpTooltip("CellTypeAgnosticClassification");
-    let sctHelp = "SCT<br />" + HelpTooltip("CellTypeSpecifiedClassification");
+    let sctHelp = "selected<br />cell type" + HelpTooltip("CellTypeSpecifiedClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
     if("mm10" == GlobalAssembly){
