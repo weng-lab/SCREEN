@@ -18,7 +18,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	this.key = "configgb";
         this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
 	this.gbclick = this.gbclick.bind(this);
-	this.state = {"options" : "Thresholded cREs"};
+	this.state = {}
 	this.optionsChanged = this.optionsChanged.bind(this);
     }
 
@@ -33,7 +33,6 @@ class ConfigureGenomeBrowser extends React.Component {
 		    "halfWindow" : half_window,
 		    "version" : 2,
 		    "cellTypes" : cts,
-		    "options" : this.state.options,
 		    host,
 		    GlobalAssembly};
 	let jdata = JSON.stringify(data);
@@ -76,6 +75,7 @@ class ConfigureGenomeBrowser extends React.Component {
     
     render() {
         let cre = this.props.configuregb_cre;
+	console.log(cre);
         let coord = cre ? cre.chrom + ':'
 			+ Render.numWithCommas(cre.start)
 			+ '-' + Render.numWithCommas(cre.start + cre.len)
@@ -141,24 +141,6 @@ class ConfigureGenomeBrowser extends React.Component {
 		    {ctBox}
 		</div>
 	    </div>);	    
-
-	let tc = "Thresholded cREs";
-	let cc = "Classified cREs";
-	let options = (
-	    <div ref="options" className="btn-group" data-toggle="buttons">
-		<label className="btn btn-info active"
-		       onClick={() => { this.optionsChanged(tc); }}>
-		    <input type="radio" name="cc"
-			   checked={tc === this.state.options} />
-		    {tc}
-		</label>
-		<label className="btn btn-info"
-		       onClick={() => { this.optionsChanged(cc); }}>
-		    <input type="radio" name="cc"
-		    	   checked={cc === this.state.options} />
-		    {cc}
-		</label>
-	    </div>);	
 	
 	return (
 	    <div className="container" style={{width: "100%"}}>
@@ -176,7 +158,6 @@ class ConfigureGenomeBrowser extends React.Component {
 			</div>
                     </div>
                     <div className="col-md-4">
-			{options}
 		    </div>
 		    <div className="col-md-4">
 			<p className="genomeCreDetailsTitle">{cre.accession}</p>

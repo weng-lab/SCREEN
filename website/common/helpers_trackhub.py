@@ -116,10 +116,12 @@ class Track(object):
         return track
 
 class PredictionTrack(Track):
-    def __init__(self, desc, priority, url):
+    def __init__(self, desc, priority, url, hide):
         super(PredictionTrack, self).__init__(desc, priority, url)
         self.color = None
         self.type = "bigBed 9"
+        if hide:
+            self.visibility = "hide"
 
 class VistaTrack(Track):
     def __init__(self, desc, priority, url):
