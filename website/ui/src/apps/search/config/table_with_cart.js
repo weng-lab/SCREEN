@@ -5,6 +5,7 @@ const TableColumns = () => {
     let klassLeft = "dt-body-left dt-head-left ";
     let klassCenter = "dt-body-center dt-head-center ";
 
+    let accHelp = "accession<br />" + HelpTooltip("CellTypeTableAccessionCol");
     let sctHelp = "selected<br />cell type" + HelpTooltip("CellTypeSpecifiedClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
@@ -14,7 +15,7 @@ const TableColumns = () => {
 
     return [
 	{
-	    title: "accession", data: "info", className: klassCenter,
+	    title: accHelp, data: "info", className: klassCenter,
             render: Render.creTableAccesion
 	}, {
             title: sctHelp, data: "ctspecifc", className: klassCenter,
