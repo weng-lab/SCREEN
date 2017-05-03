@@ -20,6 +20,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
             aria-hidden={"true"}
             data-toggle={"tooltip"}
             data-html={"true"}
+	    data-delay={'{"show": 10, "hide": 3000}'}
             title={content}
         />));
 }
