@@ -337,8 +337,8 @@ class TableWithCart extends React.Component {
 		    <div className="row">
 		    </div>
 		    <div className="row">
-			<div className="col-md-3">
-			    <small><bold>{"P/D"}</bold>
+			<div className="col-md-4">
+			    <small><b>{"P/D"}</b>
 				{" TSS Proximal/Distal"}
 			    </small>
 			</div>
