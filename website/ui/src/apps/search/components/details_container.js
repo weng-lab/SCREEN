@@ -34,6 +34,7 @@ class DetailsContainer extends React.Component {
         // TODO: avoid multiple re-renders?
         // console.log(this.props);
         let cre = this.props.active_cre;
+	console.log("cre", cre);
         let accession = this.props.cre_accession_detail;
 	let tabs = this.props.tabs;
 
@@ -45,10 +46,16 @@ class DetailsContainer extends React.Component {
 	return (
             <div className="container" style={{width: "100%"}}>
                 <div className="row">
-                    <div className="col-md-8">
+                    <div className="col-md-10">
                         <h3 className="creDetailsTitle">{accession}</h3>
-                        {"         "}
-                        {coord}
+	    {"\u00A0"}{"\u00A0"}{"\u00A0"}
+            {coord}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {Render.concordantStarReact(cre.concordant)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {Render.creTableAccesionProxReact(cre)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {Render.creTableAccesionBoxen(cre)}
                     </div>
                 </div>
 
