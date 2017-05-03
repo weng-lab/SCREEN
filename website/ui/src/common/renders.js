@@ -467,7 +467,12 @@ export const creTableCellTypeSpecific = (data) => {
     )
     let colors = Globals.colors.cREs;
 
-    let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
+    let col = (val, c) => {
+	if(null == val){
+	    return colors.NoData;
+	}
+	return val > 1.64 ? c : colors.Inactive;
+    }
     
     let e = (
         <span className={"text-nowrap"}>

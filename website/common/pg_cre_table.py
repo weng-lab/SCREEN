@@ -189,7 +189,7 @@ FROM {tn} AS cre
                           ("ctcf", "ctcf")]:
             if ct not in self.ctmap[name]:
                 self.fields.append("'' AS %s_zscore" % (name))
-                self.ctSpecifc[name + "_zscore"] = 0
+                self.ctSpecifc[name + "_zscore"] = "null"
                 continue
             cti = self.ctmap[name][ct]
             self.fields.append("cre.%s_zscores[%d] AS %s_zscore" % (exp, cti, name))
