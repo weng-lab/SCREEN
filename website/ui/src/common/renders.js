@@ -75,6 +75,13 @@ export const popup = (p, c) => {
     return '<span data-toggle="tooltip" data-placement="top" title="' + p + '">' + c + '</span>';
 }
 
+export const popupReact = (p, c) => {
+    return (
+	<span data-toggle="tooltip" data-placement="top" title={p}>
+	    {c}
+	</span>);
+}
+
 export const creLinkPop = (accession, type, full, meta) => (
     popup("Click for cRE details", creLink(accession))
 )
@@ -369,6 +376,16 @@ export const concordantStar = (concordant) => {
     return "";
 }
 
+export const concordantStarReact = (concordant) => {
+    if(concordant){
+	return (
+	    <span className="glyphicon glyphicon-star concordantStar"
+		  aria-hidden="true">
+	    </span>);
+    }
+    return "";
+}
+
 export const checkCt = (cts) => (name) => {
     if(cts.has(name)){
 	return "<input type='checkbox' checked />";
@@ -376,7 +393,7 @@ export const checkCt = (cts) => (name) => {
     return "<input type='checkbox' />";
 }
 
-export const creTableAccesion = (data, type, full, meta) => {
+export const creTableAccesionBoxen = (cre) => {
     let w = 12;
     let h = 9;
     let fw = 3 * w + 3;
@@ -401,22 +418,35 @@ export const creTableAccesion = (data, type, full, meta) => {
             <svg width={fw} height={fh}>
 	        <g>
                     {border()}
-		    {rect(1, 1, col(data.k4me3max, colors.H3K4me3))}
+		    {rect(1, 1, col(cre.k4me3max, colors.H3K4me3))}
                     {line(1*(w+1)-1, 0, 1*(w+1)-1, fh)}
-		    {rect(w+1, 1, col(data.k27acmax, colors.H3K27ac))}
+		    {rect(w+1, 1, col(cre.k27acmax, colors.H3K27ac))}
                     {line(2*(w+1)-1, 0, 2*(w+1)-1, fh)}
-		    {rect(2*w+2, 1, col(data.ctcfmax, colors.CTCF))}
+		    {rect(2*w+2, 1, col(cre.ctcfmax, colors.CTCF))}
         	</g>
 	    </svg>
 	</span>);
-    let boxen = ReactDOMServer.renderToStaticMarkup(e);
-    let prox = data.isproximal ? popup("Proximal", "P") :
+    return e;
+}
+
+export const creTableAccesionProx = (cre) => {
+    return cre.isproximal ? popup("Proximal", "P") :
 	       popup("Distal", "D");
+}
+
+export const creTableAccesionProxReact = (cre) => {
+    return cre.isproximal ? popupReact("Proximal", "P") :
+	       popupReact("Distal", "D");
+}
+
+export const creTableAccesion = (cre, type, full, meta) => {
     return '<div>' + 
-	   popup("Click for cRE details", creLink(data.accession)) +
+	   popup("Click for cRE details", creLink(cre.accession)) +
 	   '<br />' +
-	   popup("Concordant", concordantStar(data.concordant)) +
-	   prox + ' ' + boxen + '</div>';
+	   popup("Concordant", concordantStar(cre.concordant)) +
+	   creTableAccesionProx(cre) + ' ' +
+	   ReactDOMServer.renderToStaticMarkup(creTableAccesionBoxen(cre)) +
+	   '</div>';
 }
 
 export const creTableCellTypeSpecific = (data) => {
