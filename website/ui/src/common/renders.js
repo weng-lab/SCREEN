@@ -314,12 +314,12 @@ export const sctGroupIcon = (creGroup) => {
 
 export const sctGroupIconLegend = (creGroup) => {
     let colors = Globals.colors.cREs;
-    let lookupTitle = {'C' : "CTCF-only",
-                       'E' : "Enhancer-like",
-                       'P' : "Promoter-like",
-                       'D' : "DNase",
-                       'I' : "Inactive",
-                       'U' : "Unclassified" };
+    let lookupTitle = {'C' : "High CTCF",
+                       'E' : "High H3K27ac",
+                       'P' : "High H3K4me3",
+                       'D' : "High DNase",
+                       'I' : "Z-score < 1.64",
+                       'U' : "No data" };
     let lookupColor = {'C' : colors.CTCF,
 		       'E' : colors.H3K27ac,
 		       'P' : colors.H3K4me3,
