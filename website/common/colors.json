@@ -5,7 +5,8 @@
 	"H3K4me3" : "#FF0000",
 	"CTCF" : "#00B0F0",
 	"Inactive" : "#e1e1e1",
-        "Unclassified" : "#8c8c8c"
+        "Unclassified" : "#8c8c8c",
+	"NoData" : "#ffffff"
     },
     
     "trackhub" : {

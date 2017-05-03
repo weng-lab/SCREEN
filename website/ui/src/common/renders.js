@@ -325,7 +325,7 @@ export const sctGroupIconLegend = (creGroup) => {
 		       'P' : colors.H3K4me3,
                        'D' : colors.DNase,
                        'I' : colors.Inactive,
-                       'U' : colors.Unclassified}
+                       'U' : colors.NoData}
     let w = 12;
     let h = 9;
     let fw = w + 2;

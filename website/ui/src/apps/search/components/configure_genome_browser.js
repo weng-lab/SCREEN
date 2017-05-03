@@ -71,7 +71,7 @@ class ConfigureGenomeBrowser extends React.Component {
     }
 
     optionsChanged(s){
-	this.setState({options: s});
+	this.setState({showCombo: s});
     }
     
     render() {
@@ -147,15 +147,15 @@ class ConfigureGenomeBrowser extends React.Component {
 	let options = (
 	    <div ref="options" className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"
-		       onClick={() => { this.optionsChanged(tc); }}>
+		       onClick={() => { this.optionsChanged(true); }}>
 		    <input type="radio" name="cc"
-			   checked={tc === this.state.options} />
+			   checked={this.state.showCombo} />
 		    {tc}
 		</label>
 		<label className="btn btn-info"
-		       onClick={() => { this.optionsChanged(cc); }}>
+		       onClick={() => { this.optionsChanged(false); }}>
 		    <input type="radio" name="cc"
-		    	   checked={cc === this.state.options} />
+		    	   checked={!this.state.showCombo} />
 		    {cc}
 		</label>
 	    </div>);	

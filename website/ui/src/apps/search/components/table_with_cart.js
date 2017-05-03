@@ -334,6 +334,21 @@ class TableWithCart extends React.Component {
 			    {Render.sctGroupIconLegend('U')}
 			</div>
 		    </div>
+		    <div className="row">
+		    </div>
+		    <div className="row">
+			<div className="col-md-3">
+			    <small><bold>{"P/D"}</bold>
+				{" TSS Proximal/Distal"}
+			    </small>
+			</div>
+			<div className="col-md-8">
+			    <span className="glyphicon glyphicon-star concordantStar" aria-hidden="true"></span>{" "}
+			    <small>
+				High DNase and High H3K4me3, H3K27ac, or CTCF in the same cell type
+			    </small>
+			</div>
+		    </div>
 		</div>
 	    </div>
 	);
