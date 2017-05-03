@@ -546,7 +546,7 @@ div.dataTables_wrapper div.dataTables_paginate {
 }
 .mt-element-ribbon .ribbon.ribbon-right {
     left: auto;
-    right: -2px;
+    right: 0px;
 }
 .mt-element-ribbon .ribbon {
     position: absolute;
