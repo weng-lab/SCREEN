@@ -248,7 +248,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 for ct in j["cellTypes"]:
                     tcts.append({"ct" : ct, "tissue" : ct})
 
-        ctsTracks, tracks = self._getCreTracks(tcts)
+        if 2 == j["version"]:
+            print("j", j)
+            if j["showCombo"]:
+                ctsTracks, tracks = self._getCreTracks(tcts)
+            else:
+                ctsTracks, tracks = self._getCreTracks(tcts)
+        else:
+            ctsTracks, tracks = self._getCreTracks(tcts)
+            
         for fileID, tct, url in ctsTracks:
             if self.browser in [UCSC, ENSEMBL]:
                 self.lines += self.makeSuperTracks(fileID, tct, url)
