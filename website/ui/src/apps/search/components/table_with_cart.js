@@ -315,30 +315,25 @@ class TableWithCart extends React.Component {
 	    <div className="panel panel-default">
 		<div className="panel-body legendPanel">
 		    <div className="row">
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('P')}
 			</div>
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('E')}
 			</div>
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('C')}
 			</div>
-		    </div>
-		    <div className="row">
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('D')}
 			</div>
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('I')}
 			</div>
-			<div className="col-md-4">
+			<div className="col-md-2">
 			    {Render.sctGroupIconLegend('U')}
 			</div>
 		    </div>
-		</div>
-		<div className="panel-footer legendPanelFooter">
-		    Icon Legend
 		</div>
 	    </div>
 	);
@@ -361,9 +356,9 @@ class TableWithCart extends React.Component {
 		
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
-			<div className="col-md-6">
+			<div className="col-md-4">
 			</div>
-			<div className="col-md-6">
+			<div className="col-md-8">
 			    {this.legend()}
 			</div>
 		    </div>

@@ -248,23 +248,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 for ct in j["cellTypes"]:
                     tcts.append({"ct" : ct, "tissue" : ct})
 
-        if 2 == j["version"]:
-            print("j", j)
-            if j["showCombo"]:
-                ctsTracks, tracks = self._getCreTracks(tcts)
-            else:
-                ctsTracks, tracks = self._getCreTracks(tcts)
-        else:
-            ctsTracks, tracks = self._getCreTracks(tcts)
+        ctsTracks, tracks = self._getCreTracks(tcts)
             
-        for fileID, tct, url in ctsTracks:
-            if self.browser in [UCSC, ENSEMBL]:
-                self.lines += self.makeSuperTracks(fileID, tct, url)
+        if 2 == j["version"]:
+            for fileID, tct, url in ctsTracks:
+                if self.browser in [UCSC, ENSEMBL]:
+                    self.lines += self.makeSuperTracks(fileID, tct, url,
+                                                       j["showCombo"])
 
         for ti in tracks:
             self.lines += [self.trackhubExp(ti)]
 
-    def makeSuperTracks(self, fileID, tct, url):
+    def makeSuperTracks(self, fileID, tct, url, showCombo):
         stname = tct.replace(" ", "_") + "_super"
         
         ret = ["""
@@ -276,28 +271,31 @@ longLabel {tct}
         """.format(stname = stname, tct=tct)]
 
         title = "cREs in " + tct
-        t = PredictionTrack(title, self.priority, url, False).track()
+        t = PredictionTrack(title, self.priority, url, showCombo).track()
         self.priority += 1
         ret.append("""
   track myFirstTrack
   parent {stname}
         """.format(stname = stname) + t)
         title = "cREs in " + tct + " 2"
-        t = PredictionTrack(title, self.priority, url + "2.bigBed", True).track()
+        t = PredictionTrack(title, self.priority, url + "2.bigBed",
+                            not showCombo).track()
         self.priority += 1
         ret.append("""
   track mySecondTrack
   parent {stname}
         """.format(stname = stname) + t)
         title = "cREs in " + tct + " 3"
-        t = PredictionTrack(title, self.priority, url + "3.bigBed", True).track()
+        t = PredictionTrack(title, self.priority, url + "3.bigBed",
+                            not showCombo).track()
         self.priority += 1
         ret.append("""
   track myThirdTrack
   parent {stname}
         """.format(stname = stname) + t)
         title = "cREs in " + tct + " 4"
-        t = PredictionTrack(title, self.priority, url + "4.bigBed", True).track()
+        t = PredictionTrack(title, self.priority, url + "4.bigBed",
+                            not showCombo).track()
         self.priority += 1
         ret.append("""
   track myFourthTrack
