@@ -326,19 +326,21 @@ export const sctGroupIconLegend = (creGroup) => {
                        'D' : colors.DNase,
                        'I' : colors.Inactive,
                        'U' : colors.Unclassified}
-    let w = 18;
+    let w = 12;
+    let h = 9;
     let fw = w + 2;
+    let fh = h + 2;
     let rect = (x, y, color) => (
-        <rect x={x} y={y} width={w} height={w} style={{fill : color}} />
+        <rect x={x} y={y} width={w} height={h} style={{fill : color}} />
     )
     let border = () => (
-        <rect x={0} y={0} width={fw} height={fw}
+        <rect x={0} y={0} width={fw} height={fh}
               style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
 
     let e = (
         <span className={"text-nowrap"}>
-            <svg width={fw} height={fw}>
+            <svg width={fw} height={fh}>
 	        <g>
                     {border()}
                     {rect(1, 1, lookupColor[creGroup])}
