@@ -3,14 +3,22 @@ var React = require('react');
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import AutocompleteBox from '../../apps/index/components/autocompletebox'
+
 import * as Actions from '../actions/searchbox_actions';
 
 class SearchBox extends React.Component {
-        constructor(props, key) {
+    constructor(props, key) {
 	super(props);
         this.state = { jq: null };
     }
 
+    _autocomplete_success(r, assembly, userQuery, actions, _autocomplete) {
+	let params = jQuery.param({q: userQuery, assembly});
+	let url = "/search/?" + params;
+	window.location.href = url;
+    }
+    
     makeVal(p) {
         let r = "";
         if(p.coord_chrom && p.coord_start && p.coord_end){
@@ -30,7 +38,7 @@ class SearchBox extends React.Component {
 	var val = this.makeVal(nextProps);
 	var jq = JSON.stringify(val);
 	if(this.state.jq != jq){
-	    this.refs.input.value = val;
+	    //this.refs.input.value = val;
 	    this.setState({jq});
 	}
     }
@@ -38,14 +46,16 @@ class SearchBox extends React.Component {
     render() {
         const doSubmit = (e) => {
             e.preventDefault();
-            this.props.actions.makeSearchQuery(this.refs.input.value);
+            // this.props.actions.makeSearchQuery(this.refs.input.value);
         }
 
 	return (<form action="search" method="get" onSubmit={doSubmit}
                 className="navbar-collapse navbar-searchform">
 
-	        <input className="searchbox" type="text" size="100" name="q"
-                ref="input" defaultValue={this.makeVal(this.props)}/>&nbsp;
+	        <AutocompleteBox defaultvalue={this.makeVal(this.props)} id="acnav"
+		    name="q" hideerr="true" actions={this.props.actions} size={100}
+		    className="searchbox" searchsuccess={this._autocomplete_success}
+		    assemblies={[GlobalAssembly]} />&nbsp;
 
                 <a className="btn btn-primary btn-lg searchButton"
                 onClick={doSubmit} role="button">Search</a>
@@ -53,6 +63,10 @@ class SearchBox extends React.Component {
 		</form>);
     }
 }
+/*
+<input className="searchbox" type="text" size="100" name="q"
+                ref="input" defaultValue={this.makeVal(this.props)}/>
+*/
 
 const mapStateToProps = (state) => ({
         ...state

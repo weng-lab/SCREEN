@@ -24,7 +24,7 @@ class AutocompleterWrapper:
     def __getitem__(self, assembly):
         return self.acs[assembly]
 
-    def get_suggestions(self, q):
+    def get_suggestions(self, q, assemblies = ["hg19", "mm10"]):
         p = q.split(" ")
 
         results = []
@@ -32,7 +32,9 @@ class AutocompleterWrapper:
             for i in xrange(len(p)):
                 prefix = " ".join(p[:i])
                 suffix = " ".join(p[i:])
-                results = self.acs["hg19"].get_suggestions(curs, suffix) + self.acs["mm10"].get_suggestions(curs, suffix)
+                results = []
+                for assembly in assemblies:
+                    results += self.acs[assembly].get_suggestions(curs, suffix)
                 if len(results) > 0:
                     results = sorted([prefix + " " + x for x in results])
                     break
