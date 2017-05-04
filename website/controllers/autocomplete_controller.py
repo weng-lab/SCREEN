@@ -27,7 +27,9 @@ class AutocompleteWebService:
             raise
 
     def suggestions(self, j, args):
-        return self.ac.get_suggestions(j["userQuery"])
+        if "assemblies" not in j:
+            return self.ac.get_suggestions(j["userQuery"])
+        return self.ac.get_suggestions(j["userQuery"], j["assemblies"])
 
     def _haveresults(self, parsed):
         return parsed["coord_chrom"] or (parsed["accessions"] and len(parsed["accessions"])) or parsed["cellType"]

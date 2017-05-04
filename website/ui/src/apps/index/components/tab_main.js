@@ -3,72 +3,39 @@ import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import AutocompleteBox from './autocompletebox'
+
 import * as Actions from '../actions';
 import {tabPanelize} from '../../../common/utility'
 
 class TabMain extends React.Component {
     constructor(props) {
 	super(props);
-        this.key = "main"
-	this.userQueries = {}; // cache autocomplete
-        this.state = { userQueryErr : null };
-	this.loadSearch = this.loadSearch.bind(this);
-	this.searchHg19 = this.searchHg19.bind(this);
-	this.searchMm10 = this.searchMm10.bind(this);
-	this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.key = "main";
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.key === nextProps.maintabs_active;
+    _autocomplete_success(r, assembly, userQuery, actions, _autocomplete) {
+	if(r.failed){
+	    let userQueryErr = (
+                <span>
+		    Error: no results for your query.
+		    <br />
+		    Please check your spelling and search assembly, and try again.
+		</span>);
+	    _autocomplete.setState({userQueryErr});
+            return;
+	}
+
+        if(r.multipleGenes){
+            actions.setGenes(r);
+            actions.setMainTab("query");
+        } else {
+	    let params = jQuery.param({q: userQuery, assembly});
+	    let url = "/search/?" + params;
+	    window.location.href = url;
+	}
     }
-
-    loadSearch(assembly, userQuery, actions){
-	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
-				          style={{fontSize : "24px"}}></i>)});
-	let jq = JSON.stringify({assembly, userQuery});
-	$.ajax({
-	    url: "/autows/search",
-	    type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType : "application/json",
-	    error: function(jqxhr, status, error) {
-		this.setState({userQueryErr : "err during load"});
-	    }.bind(this),
-	    success: function(r){
-		if(r.failed){
-		    let userQueryErr = (
-			<span>
-			    Error: no results for your query.
-			    <br />
-			    Please check your spelling and search assembly, and try again.
-			</span>);
-		    this.setState({userQueryErr})
-                    return;
-		}
-
-                if(r.multipleGenes){
-                    actions.setGenes(r);
-                    actions.setMainTab("query");
-                } else {
-		    let params = jQuery.param({q: userQuery, assembly});
-		    let url = "/search/?" + params;
-		    window.location.href = url;
-		}
-	    }.bind(this)
-	});
-    }
-
-    searchHg19() {
-	let userQuery = this.refs.searchBox.value;
-	this.loadSearch("hg19", userQuery, this.props.actions);
-    }
-
-    searchMm10() {
-	let userQuery = this.refs.searchBox.value;
-	this.loadSearch("mm10", userQuery, this.props.actions);
-    }
-
+    
     textBox() {
 	return (
             <div className="container">
@@ -102,6 +69,10 @@ class TabMain extends React.Component {
 
         </div>);
     }
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
+    }
 
     logo(){
 	return (<img
@@ -110,20 +81,13 @@ class TabMain extends React.Component {
                     alt={"ENCODE logo"} />);
     }
 
-    handleKeyPress = (event) => {
-	if(event.key == 'Enter'){
-	    this.searchHg19();
-	}
-    }
-
-    searchBox(){
+    searchBox() {
 	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	return (<div>
 	    <div className={"form-group text-center"}>
-		<input ref="searchBox" id={"mainSearchbox"}
-		       type={"text"} defaultValue={dv}
-		       onKeyPress={this.handleKeyPress} />
+		<AutocompleteBox defaultvalue={dv} actions={this.props.actions}
+		    searchsuccess={this._autocomplete_success} id="mainSearchbox" />
 	    </div>
 
 	    <div id={"mainButtonGroup"}>
@@ -138,46 +102,7 @@ class TabMain extends React.Component {
 	    </div>
 	</div>);
     }
-
-    componentDidMount(){
-	const loadAuto = (userQuery, callback_f) => {
-	    let jq = JSON.stringify({userQuery});
-	    if(jq in this.userQueries){
-		callback_f(this.userQueries[jq]);
-		return;
-	    }
-	    $.ajax({
-		url: "/autows/suggestions",
-		type: "POST",
-		data: jq,
-		dataType: "json",
-		contentType : "application/json",
-		error: function(jqxhr, status, error) {
-                    console.log("err during load");
-		}.bind(this),
-		success: function(r){
-		    this.userQueries[jq] = r;
-		    callback_f(r);
-		}.bind(this)
-	    });
-	}
-
-	let sb = $("#mainSearchbox");
-	sb.autocomplete({
-	    source: function (userQuery, callback_f) {
-                // http://stackoverflow.com/a/15977052
-                //let endIdx = sb[0].selectionStart;
-		loadAuto(userQuery.term, callback_f)
-	    },
-	    select: function(event, ui) {
-		sb.val(ui.item.value);
-		return false;
-	    },
-	    change: function() {
-	    }
-	});
-    }
-
+    
     render() {
 	return (tabPanelize(
             <div>
@@ -195,10 +120,6 @@ class TabMain extends React.Component {
 
 	        <div className={"row"}>
 		    <div className={"col-md-12 text-center"}>
-		        <span className={"mainPageErr"}>
-		            {this.state.userQueryErr}
-		        </span>
-		        <br />
 		        {this.searchBox()}
 		    </div>
 	        </div>
