@@ -142,8 +142,8 @@ class ConfigureGenomeBrowser extends React.Component {
 		</div>
 	    </div>);	    
 	
-	let tc = "Thresholded cREs";
-	let cc = "Classified cREs";
+	let tc = "9 state";
+	let cc = "5 group";
 	let options = (
 	    <div ref="options" className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"
