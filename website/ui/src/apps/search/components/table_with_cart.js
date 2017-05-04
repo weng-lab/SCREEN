@@ -371,9 +371,7 @@ class TableWithCart extends React.Component {
 		
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
-			<div className="col-md-3">
-			</div>
-			<div className="col-md-9">
+			<div className="col-md-12">
 			    {this.legend()}
 			</div>
 		    </div>
