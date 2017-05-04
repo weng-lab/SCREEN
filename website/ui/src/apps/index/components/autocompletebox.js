@@ -1,12 +1,14 @@
 import React from 'react'
 import * as Actions from '../actions'
 
+import AutocompleteTextbox from '../../../common/components/autocompletetextbox';
+
 class AutocompleteBox extends React.Component {
     
     constructor(props) {
 	super(props);
 	this.userQueries = {}; // cache
-	this.state = { userQueryErr : null };
+	this.state = { userQueryErr : null, searchtext: this.props.defaultvalue };
 	this.loadSearch = this.loadSearch.bind(this);
 	this.searchHg19 = this.searchHg19.bind(this);
 	this.searchMm10 = this.searchMm10.bind(this);
@@ -26,17 +28,37 @@ class AutocompleteBox extends React.Component {
 	    error: function(jqxhr, status, error) {
 		this.setState({userQueryErr : "err during load"});
 	    }.bind(this),
-	    success: (r) => (this.props.searchsuccess(r, assembly, userQuery, actions, this))
+	    success: (r) => {
+		if(r.failed){
+		    let userQueryErr = (
+			    <span>
+			    Error: no results for your query.
+			    <br />
+			    Please check your spelling and search assembly, and try again.
+			    </span>);
+		    this.setState({userQueryErr});
+		    return;
+		}
+
+		if(r.multipleGenes){
+		    actions.setGenes(r);
+		    actions.setMainTab("query");
+		} else {
+		    let params = jQuery.param({q: userQuery, assembly});
+		    let url = "/search/?" + params;
+		    window.location.href = url;
+		}
+	    }
 	});
     }
 
     searchHg19() {
-	let userQuery = this.refs.searchBox.value;
+	let userQuery = this.state.searchtext;
 	this.loadSearch("hg19", userQuery, this.props.actions);
     }
 
     searchMm10() {
-	let userQuery = this.refs.searchBox.value;
+	let userQuery = this.state.searchtext;
 	this.loadSearch("mm10", userQuery, this.props.actions);
     }
 
@@ -46,53 +68,13 @@ class AutocompleteBox extends React.Component {
 	}
     }
 
-    componentDidMount(){
-	const loadAuto = (userQuery, callback_f) => {
-	    let qobj = {userQuery};
-	    if (this.props.assemblies) qobj.assemblies = this.props.assemblies;
-	    let jq = JSON.stringify(qobj);
-	    if(jq in this.userQueries){
-		callback_f(this.userQueries[jq]);
-		return;
-	    }
-	    $.ajax({
-		url: "/autows/suggestions",
-		type: "POST",
-		data: jq,
-		dataType: "json",
-		contentType : "application/json",
-		error: function(jqxhr, status, error) {
-                    console.log("err during load");
-		}.bind(this),
-		success: function(r){
-		    this.userQueries[jq] = r;
-		    callback_f(r);
-		}.bind(this)
-	    });
-	}
-
-	let sb = $("#" + this.props.id);
-	sb.autocomplete({
-	    source: function (userQuery, callback_f) {
-                // http://stackoverflow.com/a/15977052
-                //let endIdx = sb[0].selectionStart;
-		loadAuto(userQuery.term, callback_f)
-	    },
-	    select: function(event, ui) {
-		sb.val(ui.item.value);
-		return false;
-	    },
-	    change: function() {
-	    }
-	});
-    }
-
     render() {
-	let input = <input ref="searchBox" id={this.props.id}
-	                type={"text"} defaultValue={this.props.defaultvalue}
-	                onKeyPress={this.handleKeyPress} name={this.props.name}
-   	                className={this.props.className} size={this.props.size} />;
-	if (this.props.hideerr) return input;
+	let input = <AutocompleteTextbox id={this.props.id}
+	                defaultvalue={this.props.defaultvalue}
+	                name={this.props.name} size={this.props.size}
+   	                className={this.props.className}
+  	                onChange={(x) => {this.setState({searchtext: x})}}
+	                onEnter={this.searchHg19} />;
 	let err = "";
 	if (this.state.userQueryErr && !this.props.hideerr) {
 	    err = (<span>
@@ -102,10 +84,25 @@ class AutocompleteBox extends React.Component {
 		       <br />
 		   </span>);
 	}
-	return (<span>
-		    {err}
-		    {input}
-		</span>);
+	return (<div>
+		   <div className={"form-group text-center"}>
+		      <span>
+		         {err}
+		         {input}
+		      </span>
+	           </div>
+
+		   <div id={"mainButtonGroup"}>
+		      <a className={"btn btn-primary btn-lg mainButtonHg19"}
+                         onClick={this.searchHg19} role={"button"}>Search Human<br /><small>(hg19)</small></a>
+		      {" "}
+		      <a className={"btn btn-success btn-lg mainButtonMm10"}
+                         onClick={this.searchMm10} role={"button"}>Search Mouse<br /><small>(mm10)</small></a>
+		      <br />
+		      <br />
+		      <i>{this.props.examples}</i>
+		   </div>
+	       </div>);
     }
     
 }

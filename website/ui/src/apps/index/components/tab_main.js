@@ -13,28 +13,6 @@ class TabMain extends React.Component {
 	super(props);
         this.key = "main";
     }
-
-    _autocomplete_success(r, assembly, userQuery, actions, _autocomplete) {
-	if(r.failed){
-	    let userQueryErr = (
-                <span>
-		    Error: no results for your query.
-		    <br />
-		    Please check your spelling and search assembly, and try again.
-		</span>);
-	    _autocomplete.setState({userQueryErr});
-            return;
-	}
-
-        if(r.multipleGenes){
-            actions.setGenes(r);
-            actions.setMainTab("query");
-        } else {
-	    let params = jQuery.param({q: userQuery, assembly});
-	    let url = "/search/?" + params;
-	    window.location.href = url;
-	}
-    }
     
     textBox() {
 	return (
@@ -82,25 +60,12 @@ class TabMain extends React.Component {
     }
 
     searchBox() {
-	let dv = "K562 chr11:5226493-5403124";
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
+	let dv = "K562 chr11:5226493-5403124";
 	return (<div>
-	    <div className={"form-group text-center"}>
-		<AutocompleteBox defaultvalue={dv} actions={this.props.actions}
-		    searchsuccess={this._autocomplete_success} id="mainSearchbox" />
-	    </div>
-
-	    <div id={"mainButtonGroup"}>
-		<a className={"btn btn-primary btn-lg mainButtonHg19"}
-                   onClick={this.searchHg19} role={"button"}>Search Human<br /><small>(hg19)</small></a>
-		{" "}
-		<a className={"btn btn-success btn-lg mainButtonMm10"}
-                   onClick={this.searchMm10} role={"button"}>Search Mouse<br /><small>(mm10)</small></a>
-		<br />
-		<br />
-		<i>{examples}</i>
-	    </div>
-	</div>);
+		    <AutocompleteBox defaultvalue={dv} actions={this.props.actions}
+		        id="mainSearchbox" examples={examples} />
+	        </div>);
     }
     
     render() {
