@@ -27,8 +27,7 @@ class Concordant:
         self.assembly = assembly
         self.pg = pg
         self.tableName = assembly + "_concordant"
-        self.tableNameCts = assembly + "_concordant_cts"
-        self.outFnp = paths.path(self.assembly, "extras", "concordant.tsv.gz")
+        self.inFnp = paths.path(self.assembly, "concordant-cREs.txt")
 
     def run(self):
         self._setupTable()
@@ -43,47 +42,19 @@ class Concordant:
         CREATE TABLE {tn}
         (id serial PRIMARY KEY,
         accession text,
-        concordant boolean[]
+        concordant BOOLEAN NOT NULL DEFAULT FALSE
         );""".format(tn = self.tableName))
 
-    def runCts(self):
-        printt("drop and create", self.tableNameCts)
-        self.curs.execute("""
-        DROP TABLE IF EXISTS {tn};
-        CREATE TABLE {tn}
-        (id serial PRIMARY KEY,
-cellTypeName text,
-pgidx integer
-        );""".format(tn = self.tableNameCts))
-
-        printt("reading", self.outFnp)
-        with gzip.open(self.outFnp) as f:
-            header = f.readline().rstrip('\n').split('\t')
-        printt("rewrite rows")
-        outF = StringIO.StringIO()
-        counter = 1
-        for h in header[1:]:
-            outF.write('\t'.join([h, str(counter)]) + '\n')
-            counter += 1
-        outF.seek(0)
-        cols = ["cellTypeName", "pgidx"]
-        self.curs.copy_from(outF, self.tableNameCts, '\t', columns = cols)
-        printt("inserted", "{:,}".format(self.curs.rowcount), self.tableNameCts)
-
     def _doImport(self):
-        printt("reading", self.outFnp)
-        with gzip.open(self.outFnp) as f:
-            header = f.readline().rstrip('\n').split('\t')
-            rows = [line.rstrip('\n').split('\t') for line in f]
-        printt("header:", header)
+        printt("reading", self.inFnp)
+        with open(self.inFnp) as f:
+            rows = [line.rstrip('\n') for line in f]
         printt("rows", "{:,}".format(len(rows)))
-
-        self.cts = header[1:]
 
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            outF.write('\t'.join([r[0], "{" + ",".join(r[1:]) + "}"]) + '\n')
+            outF.write('\t'.join([r, "1"]) + '\n')
         outF.seek(0)
         cols = ["accession", "concordant"]
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
@@ -96,7 +67,7 @@ pgidx integer
         DROP COLUMN IF EXISTS concordant;
 
         ALTER TABLE {tncres}
-        ADD COLUMN concordant boolean[];
+        ADD COLUMN concordant BOOLEAN NOT NULL DEFAULT FALSE;
 
         UPDATE {tncres} as cres
         SET concordant = cg.concordant
@@ -121,10 +92,10 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "dropTables") as curs:
             icg = Concordant(curs, assembly, pg)
             icg.run()
-            icg.runCts()
+
+    for assembly in assemblies:
         with db_connect_single(os.path.realpath(__file__)) as conn:
-            if 0:
-                vacumnAnalyze(conn, assembly + "_cre_all", [])
+            vacumnAnalyze(conn, assembly + "_cre_all", [])
 
 def parse_args():
     parser = argparse.ArgumentParser()
