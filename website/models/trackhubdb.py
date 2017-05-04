@@ -160,7 +160,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         self.priority += 1
         return t
 
-    def trackhubExp(self, trackInfo):
+    def trackhubExp(self, trackInfo, stname):
         fnp = os.path.join(Dirs.encode_data, trackInfo.expID,
                            trackInfo.fileID + ".bigWig")
         if not os.path.exists(fnp):
@@ -172,32 +172,32 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
         desc = Track.MakeDesc(trackInfo.name(), "", "")
-
+        shortLabel = trackInfo.shortLabel()
+        
         if self.browser in [UCSC, ENSEMBL]:
-            track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track()
+            track = BigWigTrack(desc, self.priority, url,
+                                trackInfo.color(), stname).track(shortLabel)
         else:
             track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track_washu()
         self.priority += 1
         return track
 
     def _getCreTracks(self, cts):
-        tracks = []
-        cache = self.cacheW[self.assembly]
-
         assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
+        cache = self.cacheW[self.assembly]
         assaymap = cache.assaymap
 
-        ctsTracks = []
-        cache = self.cacheW[self.assembly]
-
+        ret = {}
         for tct in cts:
             ct = tct["ct"]
+            ret[ct] = {}
             # else JSON will be invalid for WashU
             ctInfos = cache.datasets.byCellType[ct] # one per assay
             displayCT = ctInfos[0]["biosample_summary"][:50]
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
             fileIDs = []
+            ret[ct]["signal"] = []
             for assay in assays:
                 if assay in assaymap:
                     if ct in assaymap[assay]:
@@ -207,15 +207,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         fileIDs.append(fileID)
                         ti = TrackInfo(cache, displayCT, tissue[:50],
                                        assay, expID, fileID)
-                        tracks.append(ti)
+                        ret[ct]["signal"].append(ti)
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
             fnp = paths.path(self.assembly, "public_html", "cts", fn)
+            ret[ct]["cts"] = []
             if os.path.exists(fnp):
                 url = os.path.join("http://bib7.umassmed.edu/~purcarom",
                                    "encyclopedia", "Version-4",
                                    "ver10", self.assembly, "cts", fn)
-                ctsTracks.append((fileID, displayCT, url))
-        return ctsTracks, tracks
+                ret[ct]["cts"].append((fileID, displayCT, url))
+        return ret
 
     def getLines(self, accession, j):
         self.priority = 1
@@ -248,18 +249,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 for ct in j["cellTypes"]:
                     tcts.append({"ct" : ct, "tissue" : ct})
 
-        ctsTracks, tracks = self._getCreTracks(tcts)
-            
-        if 2 == j["version"]:
-            for fileID, tct, url in ctsTracks:
+        tracksByCt = self._getCreTracks(tcts)
+
+        for ct, tracksByType in tracksByCt.iteritems():
+            for fileID, tct, url in tracksByType["cts"]:
                 if self.browser in [UCSC, ENSEMBL]:
                     self.lines += self.makeSuperTracks(fileID, tct, url,
-                                                       j["showCombo"])
+                                                       j["showCombo"],
+                                                       tracksByType["signal"])
 
-        for ti in tracks:
-            self.lines += [self.trackhubExp(ti)]
-
-    def makeSuperTracks(self, fileID, tct, url, showCombo):
+    def makeSuperTracks(self, fileID, tct, url, showCombo, signals):
         stname = tct.replace(" ", "_") + "_super"
         
         ret = ["""
@@ -302,6 +301,9 @@ longLabel {tct}
   parent {stname}
         """.format(stname = stname) + t)
 
+        for ti in signals:
+            ret.append(self.trackhubExp(ti, stname))
+        
         return ret
             
     def makeTrackDb(self, accession, j):

@@ -15,11 +15,18 @@ class TrackInfo:
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
+    def shortLabel(self):
+        a = self.assay
+        if a in self.assays:
+            a = self.assays[a]
+        ret = " ".join([self.ct, a])
+        return ret
+            
     def name(self):
         a = self.assay
         if a in self.assays:
             a = self.assays[a]
-        ret = " ".join([self.fileID, self.ct, a])
+        ret = " ".join([self.ct, a, self.fileID])
         return ret
 
     def hex_to_rgb(self, value):
