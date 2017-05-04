@@ -88,6 +88,7 @@ class Track(object):
                  "itemRgb On",
                  "visibility " + self.visibility,
                  "priority " + str(self.priority),
+                 "darkerLabels on",
                  "bigDataUrl " + self.url]
         if self.color:
             track += ["color " + self.color]
