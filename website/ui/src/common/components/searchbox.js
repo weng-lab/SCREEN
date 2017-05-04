@@ -3,18 +3,19 @@ var React = require('react');
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import AutocompleteBox from '../../apps/index/components/autocompletebox'
+import AutocompleteTextbox from './autocompletetextbox'
 
 import * as Actions from '../actions/searchbox_actions';
 
 class SearchBox extends React.Component {
     constructor(props, key) {
 	super(props);
-        this.state = { jq: null };
+        this.state = { jq: null, searchtext: this.makeVal(this.props) };
+	this._search = this._search.bind(this);
     }
-
-    _autocomplete_success(r, assembly, userQuery, actions, _autocomplete) {
-	let params = jQuery.param({q: userQuery, assembly});
+    
+    _search() {
+	let params = jQuery.param({q: this.state.searchtext, assembly: GlobalAssembly});
 	let url = "/search/?" + params;
 	window.location.href = url;
     }
@@ -44,21 +45,17 @@ class SearchBox extends React.Component {
     }
 
     render() {
-        const doSubmit = (e) => {
-            e.preventDefault();
-            // this.props.actions.makeSearchQuery(this.refs.input.value);
-        }
 
-	return (<form action="search" method="get" onSubmit={doSubmit}
+	return (<form action="search" method="get" onSubmit={this._search}
                 className="navbar-collapse navbar-searchform">
 
-	        <AutocompleteBox defaultvalue={this.makeVal(this.props)} id="acnav"
+	        <AutocompleteTextbox defaultvalue={this.state.searchtext} id="acnav"
 		    name="q" hideerr="true" actions={this.props.actions} size={100}
-		    className="searchbox" searchsuccess={this._autocomplete_success}
-		    assemblies={[GlobalAssembly]} />&nbsp;
+		    className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
+		    onEnter={this._search} assemblies={[GlobalAssembly]} />&nbsp;
 
                 <a className="btn btn-primary btn-lg searchButton"
-                onClick={doSubmit} role="button">Search</a>
+                    onClick={this._search} role="button">Search</a>
 
 		</form>);
     }
