@@ -4,11 +4,13 @@ from __future__ import print_function
 
 import sys, os
 
-sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
-from pg_autocomplete import PGautocomplete
-
-sys.path.append(os.path.join(os.path.realpath(__file__), "../../metadata/utils"))
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils/'))
+from utils import AddPath
 from db_utils import getcursor
+
+AddPath(__file__, "../common")
+from pg_autocomplete import PGautocomplete
 
 def _second_onward(arr):
     if len(arr) == 1: return []
@@ -20,7 +22,7 @@ class AutocompleterWrapper:
         self.acs = {
             "hg19" : Autocompleter(ps, "hg19"),
             "mm10" : Autocompleter(ps, "mm10")}
-
+        
     def __getitem__(self, assembly):
         return self.acs[assembly]
 

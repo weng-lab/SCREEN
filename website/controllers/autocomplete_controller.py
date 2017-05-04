@@ -5,17 +5,21 @@ import time
 import numpy as np
 import cherrypy
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../models"))
-from autocomplete import AutocompleterWrapper
+sys.path.append(os.path.join(os.path.dirname(__file__),
+                             '../../../metadata/utils/'))
+from utils import AddPath
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
+AddPath(__file__, "../models")
+from autocompleter import AutocompleterWrapper
+
+AddPath(__file__, "../common")
 from parse_search import ParseSearch
 
 class AutocompleteWebService:
     def __init__(self, ps):
         self.ps = ps
         self.ac = AutocompleterWrapper(ps)
-
+        
         self.actions = {"suggestions" : self.suggestions,
                         "search" : self.search}
 
