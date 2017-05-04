@@ -19,15 +19,19 @@ class TrackInfo:
         a = self.assay
         if a in self.assays:
             a = self.assays[a]
-        ret = " ".join([self.ct, a])
-        return ret
+        ret = " ".join([a, self.ct])
+        # https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbHub.html
+        # limited to 17 characters
+        return ret[:16]
             
     def name(self):
         a = self.assay
         if a in self.assays:
             a = self.assays[a]
-        ret = " ".join([self.ct, a, self.fileID])
-        return ret
+        ret = " ".join([a, self.ct, '(' + self.fileID + ')'])
+        # https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbHub.html
+        # limited to 76 characters
+        return ret[:75] 
 
     def hex_to_rgb(self, value):
         # http://stackoverflow.com/a/214657
