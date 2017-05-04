@@ -65,7 +65,8 @@ class Track(object):
         self.color = color
         self.height = None
         self.autoScale = None
-
+        self.superTrackName = None
+        
     @staticmethod
     def MakeDesc(name, age, biosample_term_name):
         desc = [biosample_term_name]
@@ -94,6 +95,8 @@ class Track(object):
             track += [self.height]
         if self.autoScale:
             track += ["autoScale " + self.autoScale]
+        if self.superTrackName:
+            track += ["parent " + self.superTrackName]
         track += ["\n"]
         return "\n".join(track)
 
@@ -130,13 +133,15 @@ class VistaTrack(Track):
         self.type = "bigBed 5"
 
 class BigWigTrack(Track):
-    def __init__(self, desc, priority, url, color):
+    def __init__(self, desc, priority, url, color, superTrackName = ""):
         super(BigWigTrack, self).__init__(desc, priority, url)
         self.color = color
         self.type = "bigWig"
         self.height = "maxHeightPixels 128:32:8"
         self.visibility = "full"
         self.autoScale = "on"
+        if superTrackName:
+            self.superTrackName = superTrackName
 
 class BigGenePredTrack(Track):
     def __init__(self, desc, priority, url):
