@@ -37,7 +37,9 @@ class PGcreTable(GetOrSetMemCache):
                            "isproximal" : "cre.isproximal",
                            "k4me3max" : "cre.h3k4me3_max",
                            "k27acmax" : "cre.h3k27ac_max",
-                           "ctcfmax" : "cre.ctcf_max"}
+                           "ctcfmax" : "cre.ctcf_max",
+                           "concordant" : "cre.concordant"}
+        
         self.ctSpecifc = {}
         self.fields = [
             "maxZ",
@@ -67,16 +69,9 @@ class PGcreTable(GetOrSetMemCache):
         else:
             self.fields.append("0::int AS sct")
 
-    def _concordant(self, ct):
-        if ct in self.concordantTable:
-            self.infoFields['concordant'] = "cre.concordant[%s]" % self.concordantTable[ct]
-        else:
-            self.infoFields['concordant'] = "false::boolean"
-            
     def _buildWhereStatement(self, j, chrom, start, stop):
         ct = j.get("cellType", None)
 
-        self._concordant(ct)
         self._sct(ct)
         if ct:
             self._ctSpecific(ct, j)
