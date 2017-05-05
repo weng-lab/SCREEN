@@ -147,20 +147,36 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def mp(self):
+    def mp(self, showCombo):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom",
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
         if self.browser in [UCSC, ENSEMBL]:
-            url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
-            t = PredictionTrack("cREs",
-                                self.priority, url, True).track("cREs v10")
+            if showCombo:
+                url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
+                t = PredictionTrack("general cREs (5 group)",
+                                    self.priority, url, True).track("general cREs (5 group)")
+                self.priority += 1
+            else:
+                t = ""
+                for assay in ["CTCF", "Enhancer", "Promoter"]:
+                    url = os.path.join(WWW, self.assembly +
+                                       "-cRE." + assay + ".cREs.bigBed")
+                    a = assay
+                    if a == "Enhancer":
+                        a = "H3K27ac"
+                    if a == "Promoter":
+                        a = "H3K4me3" 
+                    t += PredictionTrack("general cREs (9 state) " + a,
+                                         self.priority, url,
+                                         True).track("general cREs (9 state) " + a)
+                    self.priority += 1
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("cREs",
                       self.priority, url,
                       type = "hammock").track_washu()
-        self.priority += 1
+            self.priority += 1
         return t
 
     def trackhubExp(self, trackInfo, stname):
@@ -224,7 +240,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         self.lines  = []
         if self.browser in [UCSC, ENSEMBL]:
-            self.lines += [self.mp()]
+            self.lines += [self.mp(j["showCombo"])]
 
         self._addSignalFiles(accession, j)
 
