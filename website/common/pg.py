@@ -463,7 +463,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "biosample_type" : r[5],
                     "cellTypeName" : r[6],
                     "cellTypeDesc" : r[7],
-                    "name" : r[4],
+                    "name" : r[7],
                     "value" : r[6], # for datatables
                     "isde" : r[6] in dects
             }
