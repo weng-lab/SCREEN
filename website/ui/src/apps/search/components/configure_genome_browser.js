@@ -76,10 +76,6 @@ class ConfigureGenomeBrowser extends React.Component {
     
     render() {
         let cre = this.props.configuregb_cre;
-        let coord = cre ? cre.chrom + ':'
-			+ Render.numWithCommas(cre.start)
-			+ '-' + Render.numWithCommas(cre.start + cre.len)
-                  : "";
 	let cols = [
 	    { title: "", data: "name",
 	      render: Render.checkCt(this.props.configuregb_cts)},
@@ -126,6 +122,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="panel panel-default">
 		<div className="panel-heading">
 		    <h3 className="panel-title">Selected biosamples</h3>
+		    <small>Note: For best UCSC performance, choose &lt;10 cell types.</small>
 		</div>
 		<div className="panel-body">
 		    {rows}
@@ -162,9 +159,16 @@ class ConfigureGenomeBrowser extends React.Component {
 
 	return (
 	    <div className="container" style={{width: "100%"}}>
-		<br />
 		<div className="row">
-                    <div className="col-md-2">
+		    <div className="col-md-12">
+			{Render.creTitle(cre)}
+                    </div>
+		</div>
+
+		<br />
+
+		<div className="row">
+		    <div className="col-md-2">
 			<div className="btn-group" role="group">
 			    <button type="button"
 				    className="btn btn-primary"
@@ -178,13 +182,10 @@ class ConfigureGenomeBrowser extends React.Component {
                     <div className="col-md-4">
 			{options}
 		    </div>
-		    <div className="col-md-4">
-			<p className="genomeCreDetailsTitle">{cre.accession}</p>
-			{"         "}
-			{coord}
-                    </div>
 		</div>
 
+		<br />
+		
 		<div className="row">
                     <div className="col-md-6">
                     </div>
