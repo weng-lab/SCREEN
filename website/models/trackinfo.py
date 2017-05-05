@@ -18,6 +18,17 @@ class TrackInfo:
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
+    def isDNase(self):
+        a = self.assay
+        if a in self.assays:
+            a = self.assays[a]
+        return "DNase" == a
+
+    def signalMax(self):
+        if self.isDNase():
+            return "0:150"
+        return "0:50"
+    
     def shortLabel(self):
         a = self.assay
         if a in self.assays:

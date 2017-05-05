@@ -173,12 +173,16 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
+
+        
         
         if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url,
-                                trackInfo.color(), stname).track(shortLabel)
+                                trackInfo.color(), stname,
+                                trackInfo.signalMax()).track(shortLabel)
         else:
-            track = BigWigTrack(desc, self.priority, url, trackInfo.color()).track_washu()
+            track = BigWigTrack(desc, self.priority, url,
+                                trackInfo.color()).track_washu()
         self.priority += 1
         return track
 
@@ -281,9 +285,9 @@ longLabel {tct}
         t = PredictionTrack(title, self.priority, url, showCombo).track()
         self.priority += 1
         ret.append("""
-  track {tn}
-  parent {stname}
-        """.format(tn = "fivegroup_" + tn,  stname = stname) + t)
+track {tn}
+parent {stname}
+""".format(tn = "fivegroup_" + tn,  stname = stname) + t)
 
         assays  = {"dnase" : "DNase",
                    "h3k27ac" : "H3k27ac",
@@ -300,9 +304,9 @@ longLabel {tct}
                                 not showCombo).track(shortLabel)
             self.priority += 1
             ret.append("""
-            track {tn}
-            parent {stname}
-            """.format(tn = "ninegroup_" + tn, stname = stname) + t)
+track {tn}
+parent {stname}
+""".format(tn = "ninegroup_" + tn, stname = stname) + t)
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname))
