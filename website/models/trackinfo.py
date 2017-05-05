@@ -11,7 +11,10 @@ class TrackInfo:
                         "h3k27ac" : "H3k27ac",
                         "h3k4me3" : "H3K4me3",
                         "ctcf" : "CTCF"}
-
+        self.aassay = assay
+        if assay in self.assays:
+            self.aassay = self.assays[assay]
+        
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
@@ -50,3 +53,5 @@ class TrackInfo:
     def cellType(self):
         return self.ct
 
+    def desc(self):
+        return ' '.join([self.fileID, "Signal", self.aassay, self.ct])

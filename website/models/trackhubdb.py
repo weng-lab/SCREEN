@@ -171,7 +171,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
                                trackInfo.expID, trackInfo.fileID + ".bigWig")
 
-        desc = Track.MakeDesc(trackInfo.name(), "", "")
+        desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
         
         if self.browser in [UCSC, ENSEMBL]:
@@ -198,6 +198,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             tissue = tct["tissue"]
             fileIDs = []
             ret[ct]["signal"] = []
+            ret[ct]["9state"] = []
             for assay in assays:
                 if assay in assaymap:
                     if ct in assaymap[assay]:
@@ -208,6 +209,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         ti = TrackInfo(cache, displayCT, tissue[:50],
                                        assay, expID, fileID)
                         ret[ct]["signal"].append(ti)
+                        fn = fileID + ".bigBed"
+                        url = os.path.join("http://users.wenglab.org/moorej3/cREs/9-State/",
+                                           fn)
+                        ret[ct]["9state"].append((assay, displayCT, url))
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
             fnp = paths.path(self.assembly, "public_html", "cts", fn)
             ret[ct]["cts"] = []
@@ -256,10 +261,12 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                 if self.browser in [UCSC, ENSEMBL]:
                     self.lines += self.makeSuperTracks(fileID, tct, url,
                                                        j["showCombo"],
-                                                       tracksByType["signal"])
+                                                       tracksByType["signal"],
+                                                       tracksByType["9state"])
 
-    def makeSuperTracks(self, fileID, tct, url, showCombo, signals):
-        stname = tct.replace(" ", "_") + "_super"
+    def makeSuperTracks(self, fileID, tct, url, showCombo, signals, nineState):
+        tn = tct.replace(" ", "_")
+        stname = tn + "_super"
         
         ret = ["""
 track {stname}
@@ -269,37 +276,33 @@ shortLabel {tct}
 longLabel {tct}
         """.format(stname = stname, tct=tct)]
 
-        title = "cREs in " + tct
+        shortLabel = "cREs in " + tct
+        title = ' '.join(["cREs in", tct, '(5 group)'])
         t = PredictionTrack(title, self.priority, url, showCombo).track()
         self.priority += 1
         ret.append("""
-  track myFirstTrack
+  track {tn}
   parent {stname}
-        """.format(stname = stname) + t)
-        title = "cREs in " + tct + " 2"
-        t = PredictionTrack(title, self.priority, url + "2.bigBed",
-                            not showCombo).track()
-        self.priority += 1
-        ret.append("""
-  track mySecondTrack
-  parent {stname}
-        """.format(stname = stname) + t)
-        title = "cREs in " + tct + " 3"
-        t = PredictionTrack(title, self.priority, url + "3.bigBed",
-                            not showCombo).track()
-        self.priority += 1
-        ret.append("""
-  track myThirdTrack
-  parent {stname}
-        """.format(stname = stname) + t)
-        title = "cREs in " + tct + " 4"
-        t = PredictionTrack(title, self.priority, url + "4.bigBed",
-                            not showCombo).track()
-        self.priority += 1
-        ret.append("""
-  track myFourthTrack
-  parent {stname}
-        """.format(stname = stname) + t)
+        """.format(tn = "fivegroup_" + tn,  stname = stname) + t)
+
+        assays  = {"dnase" : "DNase",
+                   "h3k27ac" : "H3k27ac",
+                   "h3k4me3" : "H3K4me3",
+                   "ctcf" : "CTCF"}
+
+        for assay, displayCT, turl in nineState:
+            a = assay
+            if a in assays:
+                a = assays[a]
+            shortLabel = ' '.join([tct, "cREs", a])
+            title = ' '.join(["cREs in", tct, "by high", a, '(9 state)'])
+            t = PredictionTrack(title, self.priority, turl,
+                                not showCombo).track(shortLabel)
+            self.priority += 1
+            ret.append("""
+            track {tn}
+            parent {stname}
+            """.format(tn = "ninegroup_" + tn, stname = stname) + t)
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname))
