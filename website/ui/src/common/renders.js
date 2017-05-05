@@ -492,3 +492,18 @@ export const creTableCellTypeSpecific = (data) => {
     let boxen = ReactDOMServer.renderToStaticMarkup(e);
     return '<div>' + boxen + '</div>';
 }
+
+export const creTitle = (cre) => (
+    <div>
+	<h3 className="creDetailsTitle">{cre.accession}</h3>
+	{"\u00A0"}{"\u00A0"}{"\u00A0"}
+	{cre.chrom}:{numWithCommas(cre.start)}-
+	{numWithCommas(cre.start + cre.len)}
+	{'\u00A0'}{"\u00A0"}{"\u00A0"}
+	{concordantStarReact(cre.concordant)}
+	{'\u00A0'}{"\u00A0"}{"\u00A0"}
+	{creTableAccesionProxReact(cre)}
+	{'\u00A0'}{"\u00A0"}{"\u00A0"}
+	{creTableAccesionBoxen(cre)}
+    </div>
+)
