@@ -71,16 +71,6 @@ FROM {tn}
             rows = curs.fetchall()
         return {r[0] : r[1] for r in rows}
 
-    def makeConcordantTable(self):
-        tableName = self.assembly + "_concordant_cts"
-        with getcursor(self.pg.DBCONN, "pg$makeConcordantTable") as curs:
-            curs.execute("""
-SELECT cellTypeName, pgidx
-FROM {tn}
-""".format(tn = tableName))
-            rows = curs.fetchall()
-        return {r[0] : r[1] for r in rows}
-
     def datasets(self, assay):
         with getcursor(self.pg.DBCONN, "datasets") as curs:
             q = """

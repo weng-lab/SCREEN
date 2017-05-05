@@ -163,11 +163,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         return t
 
     def trackhubExp(self, trackInfo, stname):
-        fnp = os.path.join(Dirs.encode_data, trackInfo.expID,
-                           trackInfo.fileID + ".bigWig")
-        if not os.path.exists(fnp):
-            return None
-
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if self.browser in [WASHU, ENSEMBL]:
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
@@ -175,8 +170,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
-
-        
         
         if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url,
@@ -220,11 +213,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         url = os.path.join(WWW, "9-State", fn)
                         ret[ct]["9state"].append((assay, displayCT, url))
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
-            fnp = paths.path(self.assembly, "public_html", "cts", fn)
             ret[ct]["cts"] = []
-            if os.path.exists(fnp):
-                url = os.path.join(WWW, fn)
-                ret[ct]["cts"].append((fileID, displayCT, url))
+            url = os.path.join(WWW, fn)
+            ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
 
     def getLines(self, accession, j):
