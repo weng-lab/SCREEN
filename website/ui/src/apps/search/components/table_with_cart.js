@@ -339,7 +339,7 @@ class TableWithCart extends React.Component {
 		    <div className="row">
 			<div className="col-md-4">
 			    <small><b>{"P/D"}</b>
-				{" TSS Proximal/Distal"}
+				{" Proximal/Distal to a Transcription Start Site"}
 			    </small>
 			</div>
 			<div className="col-md-8">

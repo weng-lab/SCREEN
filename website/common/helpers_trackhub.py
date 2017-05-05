@@ -65,6 +65,7 @@ class Track(object):
         self.color = color
         self.height = None
         self.autoScale = None
+        self.viewLimits = None
         self.superTrackName = None
         
     @staticmethod
@@ -98,6 +99,8 @@ class Track(object):
             track += ["autoScale " + self.autoScale]
         if self.superTrackName:
             track += ["parent " + self.superTrackName]
+        if self.viewLimits:
+            track += ["viewLimits " + self.viewLimits]
         track += ["\n"]
         return "\n".join(track)
 
@@ -134,13 +137,18 @@ class VistaTrack(Track):
         self.type = "bigBed 5"
 
 class BigWigTrack(Track):
-    def __init__(self, desc, priority, url, color, superTrackName = ""):
+    def __init__(self, desc, priority, url, color, superTrackName = "",
+                 viewLimits = None):
         super(BigWigTrack, self).__init__(desc, priority, url)
         self.color = color
         self.type = "bigWig"
         self.height = "maxHeightPixels 128:32:8"
         self.visibility = "full"
-        self.autoScale = "on"
+        if viewLimits:
+            self.autoScale = "off"
+            self.viewLimits = viewLimits
+        else:
+            self.autoScale = "on"
         if superTrackName:
             self.superTrackName = superTrackName
 
