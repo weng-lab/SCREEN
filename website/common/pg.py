@@ -462,6 +462,7 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "biosample_summary" : r[4],
                     "biosample_type" : r[5],
                     "cellTypeName" : r[6],
+                    "cellTypeDesc" : r[7],
                     "name" : r[4],
                     "value" : r[6], # for datatables
                     "isde" : r[6] in dects
@@ -469,7 +470,8 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
 
         tableName = self.assembly + "_datasets"
         cols = ["assay", "expID", "fileID", "tissue",
-                "biosample_summary", "biosample_type", "cellTypeName"]
+                "biosample_summary", "biosample_type", "cellTypeName",
+                "cellTypeDesc"]
         with getcursor(self.pg.DBCONN, "datasets") as curs:
             curs.execute("""
 SELECT {cols} FROM {tn}
