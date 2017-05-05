@@ -27,6 +27,8 @@ UCSC = 1
 WASHU = 2
 ENSEMBL = 3
 
+WWW = "http://users.wenglab.org/moorej3/cREs"
+
 class TrackhubDb:
     def __init__(self, templates, ps, cacheW, db, browser):
         self.templates = templates
@@ -151,7 +153,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         if self.browser in [UCSC, ENSEMBL]:
             url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
             t = PredictionTrack("cREs",
-                                self.priority, url, False).track()
+                                self.priority, url, True).track("cREs v10")
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("cREs",
@@ -214,16 +216,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                        assay, expID, fileID)
                         ret[ct]["signal"].append(ti)
                         fn = fileID + ".bigBed"
-                        url = os.path.join("http://users.wenglab.org/moorej3/cREs/9-State/",
-                                           fn)
+                        url = os.path.join(WWW, "9-State", fn)
                         ret[ct]["9state"].append((assay, displayCT, url))
             fn = '_'.join(fileIDs) + ".cREs.bigBed"
             fnp = paths.path(self.assembly, "public_html", "cts", fn)
             ret[ct]["cts"] = []
             if os.path.exists(fnp):
-                url = os.path.join("http://bib7.umassmed.edu/~purcarom",
-                                   "encyclopedia", "Version-4",
-                                   "ver10", self.assembly, "cts", fn)
+                url = os.path.join(WWW, fn)
                 ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
 
