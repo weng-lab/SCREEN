@@ -7,7 +7,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from utils import AddPath, Utils, Timer, printt, printWroteNumLines
-from db_utils import getcursor, vacumnAnalyze
+from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 
@@ -33,6 +33,7 @@ class NineState:
     def run(self):
         self._setupTable()
         self._doImport()
+        self._doIndex()
         self._doUpdate()
         
     def _setupTable(self):
@@ -82,6 +83,9 @@ class NineState:
         if 0 == self.curs.rowcount:
             raise Exception("error: no cRE rows updated")
         printt("updated", "{:,}".format(self.curs.rowcount))
+
+    def _doIndex(self):
+        makeIndex(self.curs, self.tableName, ["cellTypeName", "cellTypeDesc"])
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
