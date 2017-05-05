@@ -23,14 +23,13 @@ from db_utils import getcursor, timedQuery
 from utils import eprint
 
 class PGcreTable(GetOrSetMemCache):
-    def __init__(self, pg, assembly, ctmap, ctsTable, concordantTable):
+    def __init__(self, pg, assembly, ctmap, ctsTable):
         GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
 
         self.pg = pg
         self.assembly = assembly
         self.ctmap = ctmap
         self.ctsTable = ctsTable
-        self.concordantTable = concordantTable
 
         self.tableName = self.assembly + "_cre_all"
         self.infoFields = {"accession" : "cre.accession",

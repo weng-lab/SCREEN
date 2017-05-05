@@ -40,7 +40,6 @@ class PGsearch(GetOrSetMemCache):
         self.pgc = PGcommon(self.pg, self.assembly)
         self.ctmap = self.pgc.makeCtMap()
         self.ctsTable = self.pgc.makeCTStable()
-        self.concordantTable = self.pgc.makeConcordantTable()
         
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
@@ -96,18 +95,15 @@ FROM {tn}
         return ret
 
     def creTable(self, j, chrom, start, stop):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
-                         self.ctsTable, self.concordantTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
-                         self.ctsTable, self.concordantTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadBed(j, fnp)
 
     def creTableDownloadJson(self, j, fnp):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap,
-                         self.ctsTable, self.concordantTable)
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadJson(j, fnp)
 
     def crePos(self, accession):
@@ -651,3 +647,19 @@ SELECT DISTINCT(organ)
 FROM r_rnas_{assembly}
 """.format(assembly = self.assembly))
             return [r[0] for r in curs.fetchall()]
+
+    def loadNineStateGenomeBrowser(self):
+        tableName = self.assembly + "_nine_state"
+        with getcursor(self.pg.DBCONN, "pg$loadNineStateGenomeBrowser",
+        cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute("""
+SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctct
+FROM {tn}
+""".format(tn = tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for r in rows:
+            r = r._asdict()
+            ret[r["celltypename"]] = r
+        return ret
+
