@@ -27,7 +27,8 @@ UCSC = 1
 WASHU = 2
 ENSEMBL = 3
 
-WWW = "http://users.wenglab.org/moorej3/cREs"
+#WWW = "http://users.wenglab.org/moorej3/cREs"
+WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
 class TrackhubDb:
     def __init__(self, templates, ps, cacheW, db, browser):
