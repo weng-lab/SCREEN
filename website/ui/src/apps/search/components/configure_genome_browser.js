@@ -139,21 +139,21 @@ class ConfigureGenomeBrowser extends React.Component {
 		</div>
 	    </div>);	    
 	
-	let tc = "5 group";
-	let cc = "9 state";
+	let combo = "5 group";
+	let notCombo = "9 state";
 	let options = (
 	    <div ref="options" className="btn-group" data-toggle="buttons">
 		<label className="btn btn-info active"
-		       onClick={() => { this.optionsChanged(true); }}>
-		    <input type="radio" name="cc"
-			   checked={this.state.showCombo} />
-		    {tc}
+		       onClick={() => { this.optionsChanged(false); }}>
+		    <input type="radio" name="notCombo"
+			   checked={!this.state.showCombo} />
+		    {notCombo}
 		</label>
 		<label className="btn btn-info"
-		       onClick={() => { this.optionsChanged(false); }}>
-		    <input type="radio" name="cc"
-		    	   checked={!this.state.showCombo} />
-		    {cc}
+		       onClick={() => { this.optionsChanged(true); }}>
+		    <input type="radio" name="combo"
+		    	   checked={this.state.showCombo} />
+		    {combo}
 		</label>
 	    </div>);	
 
