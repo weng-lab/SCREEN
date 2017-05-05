@@ -34,7 +34,7 @@ export const toSciNot = (d) => {
 
 export const real = $.fn.dataTable.render.number( ',', '.', 2, '' );
 export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
-export const cell_type = (d) => (d.replace(/_/g, " "));
+export const cell_type = (ct) => (Globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
     ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ? support.chiapet.length : 0)
