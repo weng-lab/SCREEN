@@ -197,9 +197,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         for tct in cts:
             ct = tct["ct"]
             ret[ct] = {}
-            # else JSON will be invalid for WashU
             ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["biosample_summary"][:50]
+            displayCT = ctInfos[0]["cellTypeDesc"][:50]
+
+            # else JSON will be invalid for WashU
             ctwu = ct.replace("'", "_").replace('"', '_')
             tissue = tct["tissue"]
             fileIDs = []
