@@ -18,7 +18,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	this.key = "configgb";
         this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
 	this.gbclick = this.gbclick.bind(this);
-	this.state = {"showCombo" : true};
+	this.state = {"showCombo" : false};
 	this.optionsChanged = this.optionsChanged.bind(this);
     }
 
