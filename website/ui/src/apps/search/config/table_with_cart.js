@@ -21,7 +21,8 @@ const TableColumns = () => {
             title: sctHelp, data: "ctspecifc", className: klassCenter,
 	    render: Render.creTableCellTypeSpecific, name: "sctv"
 	}, {
-            title: "SCT", data: "sct", visible: false, name: "sct"
+            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
+	    render: Render.sctSorter
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -69,6 +70,5 @@ export const table_order = [];
 //    [4, "asc"],
 //    [5, "asc"]
 
-export const columnDefs = []
-//{ "orderData": 2, "targets": 1 },
+export const columnDefs = [{ "orderData": 2, "targets": 1 }]
 //                           { "orderData": 4, "targets": 3 }]
