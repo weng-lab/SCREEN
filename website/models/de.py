@@ -54,7 +54,7 @@ class DE:
         ret = []
         for c in cres:
             if c[3] > self.thres or c[4] > self.thres:
-                ret.append(self._parseCE("promoter-like", c))
+                ret.append(self._parseCE("promoter-like signature", c))
         return ret
 
     def _nearbyEnhancers(self):
@@ -72,7 +72,7 @@ class DE:
         ret = []
         for c in cres:
             if c[3] > self.thres or c[4] > self.thres:
-                ret.append(self._parseCE("enhancer-like", c))
+                ret.append(self._parseCE("enhancer-like signature", c))
         return ret
 
     def diffCREs(self):

@@ -80,7 +80,7 @@ class DePlot extends React.Component {
         var height = 1200 - margin.top - margin.bottom;
 
 	var color = d3.scale.ordinal()
-            .domain(["enhancer-like", "promoter-like"])
+            .domain(["enhancer-like signature", "promoter-like signature"])
             .range(["#ffcd00", "#ff0000"]);
         var x = d3.scale.linear()
             .domain(xdomain).nice()
