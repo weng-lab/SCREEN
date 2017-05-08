@@ -80,7 +80,7 @@ class DE:
         xstart = xdomain[0]
         xstop = xdomain[1]
         ret = self._nearbyPromoters() + self._nearbyEnhancers()
-        #ret = filter(lambda x: x["start"] >= xstart and x["stop"] <= xstop, ret)
+        ret = filter(lambda x: x["start"] >= xstart and x["stop"] <= xstop, ret)
         return {"data" : ret}
 
     def _genesInRegion(self, start, stop):
