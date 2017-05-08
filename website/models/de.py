@@ -88,10 +88,11 @@ class DE:
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[3])
             ret.append({"fc" : round(float(d[2]), 3),
+                        "gene" : genename,
                         "start" : d[0],
                         "stop" : d[1],
-                        "gene" : genename,
-                        "strand" : strand})
+                        "strand" : strand,
+                        "sstart" : "{:,} ({})".format(d[0], strand)})
         return ret
 
     def nearbyDEs(self):

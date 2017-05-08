@@ -61,9 +61,9 @@ const creBox = ({des, ct1, ct2, actions}) => {
                  className: "dt-right"},
                 {title: "start", data: "start", render: Render.integer,
                  className: "dt-right"},
-                {title: "length", data: "len", render: Render.integer,
+                {title: "len", data: "len", render: Render.integer,
                  className: "dt-right"},
-                {title: "Z change", data: "value",
+                {title: "Z &Delta;", data: "value",
                  className: "dt-right"}
             ]}
             pageLength={5}
@@ -84,16 +84,14 @@ const geneBox = ({des, ct1, ct2, actions}) => {
             cols={[
                 {title: "gene", data: "gene",
                  className: "dt-right"},
-                {title: "start", data: "start", render: Render.integer,
+                {title: "start", data: "sstart", 
                  className: "dt-right"},
-                {title: "strand", data: "strand",
-                 className: "dt-right"},
-                {title: "fold change", data: "fc", render: Render.real,
+                {title: "fold &Delta;", data: "fc", render: Render.real,
                  className: "dt-right"}
             ]}
             pageLength={5}
 	    bFilter={true}
-            order={[[3, "desc"]]}
+            order={[[2, "desc"]]}
         />);
     return panelize("Differentially Expressed Genes", box, "DE_Gene_Table");
 }
