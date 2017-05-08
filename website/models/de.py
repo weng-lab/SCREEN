@@ -37,6 +37,7 @@ class DE:
                 "width" : 4,
                 "accession": c[0],
                 "start": c[1],
+                "stop" : c[2],
                 "len" : c[2] - c[1]}
 
     def _nearbyPromoters(self):
@@ -75,8 +76,11 @@ class DE:
                 ret.append(self._parseCE("enhancer-like signature", c))
         return ret
 
-    def diffCREs(self):
+    def diffCREs(self, xdomain):
+        xstart = xdomain[0]
+        xstop = xdomain[1]
         ret = self._nearbyPromoters() + self._nearbyEnhancers()
+        #ret = filter(lambda x: x["start"] >= xstart and x["stop"] <= xstop, ret)
         return {"data" : ret}
 
     def _genesInRegion(self, start, stop):
