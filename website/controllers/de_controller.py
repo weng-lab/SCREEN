@@ -40,7 +40,7 @@ class DeController:
 
         diffCREs = { "data" : None }
         if nearbyDEs["data"]:
-            diffCREs = de.diffCREs()
+            diffCREs = de.diffCREs(nearbyDEs["xdomain"])
 
         return {gene : {"xdomain" : nearbyDEs["xdomain"],
                         "coord" : de.coord().toDict(),
