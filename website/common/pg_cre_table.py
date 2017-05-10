@@ -177,6 +177,7 @@ FROM {tn} AS cre
             self.fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
                 
     def _ctSpecific(self, ct, j):
+        self.ctSpecifc["ct"] = "'" + ct + "'"
         for name, exp in [("dnase", "dnase"),
                           ("promoter", "h3k4me3"),
                           ("enhancer", "h3k27ac"),
