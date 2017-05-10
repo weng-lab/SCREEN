@@ -449,7 +449,7 @@ export const creTableAccesion = (cre, type, full, meta) => {
 	   '</div>';
 }
 
-export const creTableCellTypeSpecific = (data) => {
+export const creTableCellTypeSpecificReact = (data) => {
     let w = 12;
     let h = 9;
     let fw = 4 * w + 4;
@@ -489,24 +489,42 @@ export const creTableCellTypeSpecific = (data) => {
         	</g>
 	    </svg>
 	</span>);
+    return e;
+}
+
+export const creTableCellTypeSpecific = (data) => {
+    let e = creTableCellTypeSpecificReact(data);
     let boxen = ReactDOMServer.renderToStaticMarkup(e);
     return '<div>' + boxen + '</div>';
 }
 
-export const creTitle = (cre) => (
-    <div>
-	<h3 className="creDetailsTitle">{cre.accession}</h3>
-	{"\u00A0"}{"\u00A0"}{"\u00A0"}
-	{cre.chrom}:{numWithCommas(cre.start)}-
-	{numWithCommas(cre.start + cre.len)}
-	{'\u00A0'}{"\u00A0"}{"\u00A0"}
-	{concordantStarReact(cre.concordant)}
-	{'\u00A0'}{"\u00A0"}{"\u00A0"}
-	{creTableAccesionProxReact(cre)}
-	{'\u00A0'}{"\u00A0"}{"\u00A0"}
-	{creTableAccesionBoxen(cre)}
-    </div>
-)
+export const creTitle = (cre) => {
+    let cts = "";
+    let ct = cre.ctspecifc.ct;
+    if(ct){
+	cts = (
+	    <span>
+		{Globals.byCellType[ct][0]["name"]}:{'\u00A0'}
+		{creTableCellTypeSpecificReact(cre.ctspecifc)}
+	    </span>);
+    }
+    
+    return (
+	<div>
+	    <h3 className="creDetailsTitle">{cre.accession}</h3>
+	    {"\u00A0"}{"\u00A0"}{"\u00A0"}
+	    {cre.chrom}:{numWithCommas(cre.start)}-
+	    {numWithCommas(cre.start + cre.len)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {concordantStarReact(cre.concordant)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {creTableAccesionProxReact(cre)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {creTableAccesionBoxen(cre)}
+	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
+	    {cts}
+	</div>);
+}
 
 export const sctSorter = (data) => {
     let col = (val) => {
