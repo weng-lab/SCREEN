@@ -11,7 +11,9 @@ class HorizontalBars extends React.Component {
   		    <div ref="loading" className="loading" style={{display: (this.props.loading ? "block" : "none")}}>
 		        Loading...
 		    </div>
-		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}} />
+		    <div ref="container" style={{display: (this.props.loading ? "none" : "block"), width: this.props.width + "px"}}>
+ 		        {_render()}
+		    </div>
 		</div>);
 
     }
@@ -20,19 +22,13 @@ class HorizontalBars extends React.Component {
 	this.componentDidUpdate();
     }
 
-    componentDidUpdate() {
+    _render() {
 	if(this.refs.container.style.display != "block") {
 	    return;
 	}
 	if(this.props.width < 200){
 	    return; // hack to avoid rerender if items not in "view"
 	}
-
-	$(this.refs.container).empty();
-
-	var grid = d3.range(this.props.items.length).map((i) => {
-	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': this.props.items.length};
-	});
 
 	var total_items = 0;
 	var labeloffsets = [];
@@ -51,32 +47,33 @@ class HorizontalBars extends React.Component {
 	var barheight = this.props.barheight;
 	var height = barheight * total_items + 10;
 
-	var xscale = d3.scale.linear()
-	    .domain([-cmax, 0])
-	    .range([0, this.props.width - 150]);
-
-	var yscale = d3.scale.linear()
-	    .domain([0, total_items])
-	    .range([0, total_items * barheight]);
-
+	let xscale = (x) => ((x + cmax) * (this.props.width - 150) / cmax);
+	let yaxis = <path className="domain" d={"M-2,0H0V" + height + "H-2"}></path>;
+	let g = (n, i, width, text) => (<g transform={"translate(200," + (yoffets[n] * barheight) + ")"}>
+					    <rect height={barheight} x="0" y={barheight * i}  strokeWidth="1" stroke="white"
+					        width={width} style={{fill: itemsets[n].color}}></rect>
+					    <text x={width + 5} y={barheight * (i + 0.75)}
+					        style={{fill: "rgb(0,0,0)", fontSize: (barheight * 0.75) + "px"}}>{text}</text>
+					</g>);
+	let lg = (i, text) => (<text x="0" y={labeloffsets[i] * barheight} transform="translate(140,0)"
+			           style={{fontSize: barheight + "px", fill: "#000", textAnchor: "end"}}>{text}</text>);
+	
+	return (<svg width={+this.props.width} height={height}>
+		    <g width={+this.props.width} height={height - 10}>
+		        {yaxis}
+		        {itemsets.map((o, n) => (o.items.map((m, i) => (g(n, i, xscale(-rank_f(m)), rank_f(m))))))}
+		        <g transform="translate(0,0)">
+		            {itemsets.map((o, i) => (lg(i, o.name)))}
+			</g>
+		    </g>
+		</svg>);
+	
 	var canvas = d3.select(this.refs.container)
 	    .append('svg')
 	    .attr({'width': +this.props.width, 'height': height})
 	    .append('g')
 	    .attr({'width': +this.props.width, 'height': height - 10})
 	    .attr('transform', 'translate(0,10)');
-
-	var yAxis = d3.svg.axis()
-	    .orient('left')
-	    .scale(yscale)
-	    .tickSize(2)
-	    .tickFormat("")
-	    .tickValues(d3.range(total_items + 2));
-
-	var y_xis = canvas.append('g')
-	    .attr("transform", "translate(150,0)")
-	    .attr('id','yaxis')
-	    .call(yAxis);
 
 	for (var n in itemsets) {
 	    var chart = canvas.append('g')
