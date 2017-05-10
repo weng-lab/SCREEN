@@ -132,7 +132,7 @@ class RangeSlider extends React.Component {
 	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
 	if (isNaN(srange[0])) srange[0] = 0.0;
 	if (isNaN(srange[1])) srange[1] = srange[0];
-	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
+	if (Math.round(srange[1]) <= Math.round(srange[0])) srange[1] = srange[0] + 1;
 	//console.log(srange);
 //	if (srange[0] > srange[1]) srange[0] = srange[1];
 //	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
@@ -143,7 +143,7 @@ class RangeSlider extends React.Component {
 	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
 	if (isNaN(srange[0])) srange[0] = 0.0;
 	if (isNaN(srange[1])) srange[1] = srange[0];
-	if (srange[1] <= srange[0]) srange[1] = srange[0] + 1;
+	if (Math.round(srange[1]) <= Math.round(srange[0])) srange[1] = srange[0] + 1;
 	//console.log(srange);
 //	if (srange[1] < srange[0]) srange[1] = srange[0];
 //	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
