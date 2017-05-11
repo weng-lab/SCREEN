@@ -653,7 +653,7 @@ FROM r_rnas_{assembly}
         with getcursor(self.pg.DBCONN, "pg$loadNineStateGenomeBrowser",
         cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
-SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctct
+SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf
 FROM {tn}
 """.format(tn = tableName))
             rows = curs.fetchall()
