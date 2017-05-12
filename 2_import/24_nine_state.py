@@ -47,7 +47,7 @@ class NineState:
         dnase text,
         h3k4me3 text,
         h3k27ac text,
-        ctct text
+        ctcf text
         );""".format(tn = self.tableName))
 
     def _doImport(self):
@@ -62,7 +62,7 @@ class NineState:
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["cellTypeName", "cellTypeDesc", "dnase", "h3k4me3",
-                "h3k27ac", "ctct"]
+                "h3k27ac", "ctcf"]
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
 

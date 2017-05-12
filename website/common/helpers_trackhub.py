@@ -138,12 +138,14 @@ class VistaTrack(Track):
 
 class BigWigTrack(Track):
     def __init__(self, desc, priority, url, color, superTrackName = "",
-                 viewLimits = None):
+                 viewLimits = None, hide = False):
         super(BigWigTrack, self).__init__(desc, priority, url)
         self.color = color
         self.type = "bigWig"
         self.height = "maxHeightPixels 128:32:8"
         self.visibility = "full"
+        if hide:
+            self.visibility = "hide"
         if viewLimits:
             self.autoScale = "off"
             self.viewLimits = viewLimits
