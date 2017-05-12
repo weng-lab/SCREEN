@@ -77,10 +77,14 @@ class MoreTracks:
                 q = {"expID" : e.encodeID,
                      "assay_term_name" : e.assay_term_name,
                      "target" : e.target,
-                     "bigWig" : [f.fileID for f in e.bigWigFilters(self.assembly)],
+                     "tf" : e.tf,
+                     "bigWigs" : [f.fileID for f in e.bigWigFilters(self.assembly)],
                      "beds" : [f.fileID for f in e.bedFilters(self.assembly)]}
                 ret[ctn].append(q)
 
+            ret[ctn] = sorted(ret[ctn], key = lambda q: (q["assay_term_name"],
+                                                         q["target"],
+                                                         q["tf"]))
             self.curs.execute("""
             INSERT INTO {tableName} (cellTypeName, tracks)
 VALUES (%s, %s)""".format(tableName = self.tableName),
