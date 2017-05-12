@@ -63,6 +63,7 @@ class MoreTracks:
         ret = {}
         ns = self.pgSearch.loadNineStateGenomeBrowser()
         for ctn, v in ns.iteritems():
+            print(ctn)
             btns = set()
             for fileID in [v["dnase"], v["h3k4me3"], v["h3k27ac"], v["ctcf"]]:
                 if 'NA' == fileID:
@@ -70,10 +71,20 @@ class MoreTracks:
                 exp = qd.getExpFromFileID(fileID)
                 btns.add(exp.biosample_term_name)
 
-            exps = filter(lambda e: e.biosample_term_name in btns,
-                          tfs + hists)
-            ret[ctn] = [e.encodeID for e in exps]
-            print(ctn, ret[ctn])
+            exps = filter(lambda e: e.biosample_term_name in btns, allExps)
+            ret[ctn] = []
+            for e in exps:
+                q = {"expID" : e.encodeID,
+                     "assay_term_name" : e.assay_term_name,
+                     "target" : e.target,
+                     "bigWig" : [f.fileID for f in e.bigWigFilters(self.assembly)],
+                     "beds" : [f.fileID for f in e.bedFilters(self.assembly)]}
+                ret[ctn].append(q)
+
+            self.curs.execute("""
+            INSERT INTO {tableName} (cellTypeName, tracks)
+VALUES (%s, %s)""".format(tableName = self.tableName),
+                              (ctn, json.dumps(ret[ctn])))
                 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["cellTypeName", "cellTypeDesc"])
