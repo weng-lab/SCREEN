@@ -249,7 +249,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def _addSignalFiles(self, accession, j):
         pgSearch = PGsearch(self.ps, self.assembly)
 
-        cre = CRE(pgSearch, accession, self.cacheW[self.assembly])
+        cache = self.cacheW[self.assembly]
+        cre = CRE(pgSearch, accession, cache)
 
         if "version" not in j:
             ct = j.get("cellType", None)
@@ -271,12 +272,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         for ct, tracksByType in tracksByCt.iteritems():
             for fileID, tct, url in tracksByType["cts"]:
                 if self.browser in [UCSC, ENSEMBL]:
-                    self.lines += self.makeSuperTracks(fileID, tct, url,
+                    self.lines += self.makeSuperTracks(cache, fileID, tct, url,
                                                        j["showCombo"],
                                                        tracksByType["signal"],
                                                        tracksByType["9state"])
 
-    def makeSuperTracks(self, fileID, tct, url, showCombo, signals, nineState):
+    def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
+                        signals, nineState):
         tn = tct.replace(" ", "_")
         stname = tn + "_super"
         
@@ -318,9 +320,29 @@ parent {stname}
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname))
-        
-        return ret
+
+        mts = []
+        if tct in cache.moreTracks:
+            mts = cache.moreTracks[tct]
+            for mt in mts:
+                for bw in mt["bigWigs"]:
+                    ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
             
+        return ret
+
+    def mtTrackBigWig(self, tct, mt, bw, stname):
+        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
+
+        desc = ' '.join([bw, "Signal", mt["assay_term_name"], mt["target"],
+                         mt["tf"], tct])
+        shortLabel = desc[:17]
+        
+        track = BigWigTrack(desc, self.priority, url,
+                            None, stname,
+                            "0:50", True).track(shortLabel)
+        self.priority += 1
+        return track
+    
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 

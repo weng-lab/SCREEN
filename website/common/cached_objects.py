@@ -58,7 +58,9 @@ class CachedObjects:
                          "h3k4me3": self.pgSearch.datasets("H3K4me3"),
                          "ctcf" : self.pgSearch.datasets("CTCF")}
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
+
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
+        self.moreTracks = self.pgSearch.loadMoreTracks()
         
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
 

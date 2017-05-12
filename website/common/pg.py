@@ -663,3 +663,16 @@ FROM {tn}
             ret[r["celltypename"]] = r
         return ret
 
+    def loadMoreTracks(self):
+        tableName = self.assembly + "_more_tracks"
+        with getcursor(self.pg.DBCONN, "pg$loadMoretracks") as curs:
+            curs.execute("""
+SELECT cellTypeName, tracks
+FROM {tn}
+""".format(tn = tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for r in rows:
+            ret[r[0]] = r[1]
+        return ret
+
