@@ -10,7 +10,7 @@ import gzip
 import psycopg2.extras
 
 from coord import Coord
-from pg_common import PGcommon
+from pg_common import PGcommon, assembly_is_allowed
 from config import Config
 from pg_cre_table import PGcreTable
 from get_set_mc import GetOrSetMemCache
@@ -35,6 +35,8 @@ class PGsearch(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGsearch")
         self.pg = pg
+        if not assembly_is_allowed(assembly):
+            raise Exception("assembly %s is not valid." % assembly)
         self.assembly = assembly
 
         self.pgc = PGcommon(self.pg, self.assembly)

@@ -8,7 +8,7 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
-from pg_common import PGcommon
+from pg_common import PGcommon, assembly_is_allowed
 from gene_parse import GeneParse
 from config import Config
 from get_set_mc import GetOrSetMemCache
@@ -32,6 +32,8 @@ class PGparse(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGparse")
         self.pg = pg
+        if not assembly_is_allowed(assembly):
+            raise Exception("assembly %s is not valid" % assembly)
         self.assembly = assembly
 
     def _get_snpcoord(self, s):
