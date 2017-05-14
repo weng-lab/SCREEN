@@ -7,7 +7,7 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
-from pg_common import PGcommon
+from pg_common import PGcommon, assembly_is_allowed
 from config import Config
 from get_set_mc import GetOrSetMemCache
 
@@ -30,6 +30,8 @@ class PGgwas(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGgwas")
         self.pg = pg
+        if not assembly_is_allowed(assembly):
+            raise Exception("assembly %s is invalid" % assembly)
         self.assembly = assembly
 
         pg = PGcommon(self.pg, self.assembly)

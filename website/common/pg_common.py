@@ -20,6 +20,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
+_ALLOWED_ASSEMBLIES = ["hg19", "mm10"]
+def assembly_is_allowed(assembly):
+    return assembly in _ALLOWED_ASSEMBLIES
+
 class PGcommonWrapper:
     def __init__(self, pg):
         self.assemblies = Config.assemblies
