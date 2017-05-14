@@ -1,5 +1,5 @@
 Installing:
-sudo npm install -g webpack webpack-dev-server
-sudo apt-get install nodejs-legacy
 
+sudo apt-get install nodejs-legacy
+npm install webpack webpack-dev-server
 
