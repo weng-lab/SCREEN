@@ -7,7 +7,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from autocomplete import Autocompleter
 from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
