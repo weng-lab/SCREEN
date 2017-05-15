@@ -26,7 +26,10 @@ pip install --user cherrys hiredis
 pip install --user  --upgrade google-api-python-client
 pip install --user  jinja2
 pip install --user  natsort
+pip install --user  requests
 pip install --upgrade --user scipy
+pip install --user python-dateutil
+pip install --user joblib
 
 -- To see Globals for UI
 http://127.0.0.1:9006/globalData/mm10/0
