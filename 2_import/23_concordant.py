@@ -27,7 +27,7 @@ class Concordant:
         self.assembly = assembly
         self.pg = pg
         self.tableName = assembly + "_concordant"
-        self.inFnp = paths.path(self.assembly, "concordant-cREs.txt")
+        self.inFnp = paths.path(self.assembly, self.assembly + "-concordant-cREs.txt")
 
     def run(self):
         self._setupTable()
