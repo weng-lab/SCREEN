@@ -147,7 +147,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def mp(self, showCombo):
+    def generalCREs(self, showCombo):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom",
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
@@ -240,7 +240,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         self.lines  = []
         if self.browser in [UCSC, ENSEMBL]:
-            self.lines += [self.mp(j["showCombo"])]
+            self.lines += [self.generalCREs(j["showCombo"])]
 
         self._addSignalFiles(accession, j)
 
