@@ -295,10 +295,13 @@ class ImportGwas:
 
 def run(args, DBCONN):
     assemblies = ["hg19"] #Config.assemblies
+
     if args.assembly:
         assemblies = [args.assembly]
 
     for assembly in assemblies:
+        if "hg19" != assembly:
+            continue
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             ig = ImportGwas(curs, assembly)
