@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-webpack --watch --progress --color
+./node_modules/webpack/bin/webpack.js --watch --progress --color
