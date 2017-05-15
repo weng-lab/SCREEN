@@ -30,6 +30,8 @@ pip install --user  requests
 pip install --upgrade --user scipy
 pip install --user python-dateutil
 pip install --user joblib
+pip install --user ucscgenome
+pip install --user ujson
 
 -- To see Globals for UI
 http://127.0.0.1:9006/globalData/mm10/0
