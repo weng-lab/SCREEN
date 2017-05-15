@@ -25,7 +25,7 @@ def run(yes, assembly):
         raise Exception("missing executable " + runFnp)
 
     if yes or GetYesNoToQuestion.immediate("split signal files into separate chromosomes?", "no"):
-        cmds = [runFnp, "--split", "--assembly=" + assembly]
+        cmds = [runFnp, "-j 16 --split", "--assembly=" + assembly]
         printt("about to run", " ".join(cmds))
         Utils.runCmds(cmds)
 
