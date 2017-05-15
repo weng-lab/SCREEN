@@ -104,6 +104,9 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
+        if "hg19" != assembly:
+            print("skipping...")
+            continue
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             ipi = ImportTADs(curs, assembly)

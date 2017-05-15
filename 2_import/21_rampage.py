@@ -149,6 +149,9 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
+        if "hg19" != assembly:
+            print("skipping...")
+            continue
         printt('***********', assembly)
         with getcursor(DBCONN, "dropTables") as curs:
             doImport(curs, assembly)

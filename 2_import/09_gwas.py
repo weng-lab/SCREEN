@@ -301,6 +301,7 @@ def run(args, DBCONN):
 
     for assembly in assemblies:
         if "hg19" != assembly:
+            print("skipping...")
             continue
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:

@@ -4,6 +4,8 @@ Overview:
 Database setup:
 PostgresQL 9.6 running on host "postgresql" on port 5432
 
+CREATE EXTENSION pg_trgm;
+
 recommended setup for development:
 ~/.pgpass
 postgresql:5432:regElmViz:regElmViz_usr:<password>
@@ -32,6 +34,10 @@ pip install --user python-dateutil
 pip install --user joblib
 pip install --user ucscgenome
 pip install --user ujson
+
+-- for memcached caching
+sudo apt install memcached libmemcached-dev
+pip install --user pylibmc
 
 -- To see Globals for UI
 http://127.0.0.1:9006/globalData/mm10/0
