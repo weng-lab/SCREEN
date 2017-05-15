@@ -64,7 +64,7 @@ public:
             bfs::path f = extras_ / chrom / "signal-output";
             bfs::create_directories(f);
 
-            bfs::path outFnp = f / inFnp.filename();
+            bfs::path outFnp = f / (inFnp.filename().string() + ".gz");
             //std::cout << "about to write " << outFnp << std::endl;
             bib::files::writeStrings(outFnp, kv.second);
         }
