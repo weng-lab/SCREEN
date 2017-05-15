@@ -52,7 +52,7 @@ pgidx integer
 
         printt("reading", self.fnp)
         with gzip.open(self.fnp) as f:
-            header = f.readline().rstrip('\n').split('\t')
+            header = f.readline().rstrip('\n').replace('\t\t', '\t').split()
         printt("rewrite rows")
         outF = StringIO.StringIO()
         counter = 1
@@ -67,8 +67,8 @@ pgidx integer
     def _doImport(self):
         printt("reading", self.fnp)
         with gzip.open(self.fnp) as f:
-            header = f.readline().rstrip('\n').split('\t')
-            rows = [line.rstrip('\n').split('\t') for line in f]
+            header = f.readline().rstrip('\n').replace('\t\t', '\t').split()
+            rows = [line.rstrip('\n').replace('\t\t', '\t').split() for line in f]
         printt("header:", header)
         printt("rows", "{:,}".format(len(rows)))
 
