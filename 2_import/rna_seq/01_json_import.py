@@ -7,11 +7,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "../../metadata/utils"))
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import Utils, printt
+from utils import AddPath, Utils, printt
+
+AddPath(__file__, '../../common/')
+from dbconnect import db_connect
+from constants import chroms, paths, DB_COLS
+from config import Config
 
 def setupAndCopy(cur, assembly, fnp):
     tableName = "r_expression_" + assembly
@@ -49,7 +54,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    d = "/project/umw_zhiping_weng/0_metadata/roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/"
+    d = os.path.join(Dirs.encyclopedia, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/")
     fnps = {}
     fnps["hg19"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
     fnps["mm10"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
