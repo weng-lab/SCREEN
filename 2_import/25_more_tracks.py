@@ -55,11 +55,10 @@ class MoreTracks:
             m = MetadataWS(Datasets.all_human)
         elif "mm10" == self.assembly:
             m = MetadataWS(Datasets.all_mouse)
-
-        tfs = m.chipseq_tfs_useful(self.assembly)
-        hists = m.chipseq_histones_useful(self.assembly)
-        allExps = tfs + hists
-
+        
+        allExps = m.all_beds_bigWigs(self.assembly)
+        print("found", len(allExps))
+        
         ret = {}
         ns = self.pgSearch.loadNineStateGenomeBrowser()
         for ctn, v in ns.iteritems():
@@ -78,8 +77,8 @@ class MoreTracks:
                      "assay_term_name" : e.assay_term_name,
                      "target" : e.target,
                      "tf" : e.tf,
-                     "bigWigs" : [f.fileID for f in e.bigWigFilters(self.assembly)],
-                     "beds" : [f.fileID for f in e.bedFilters(self.assembly)]}
+                     "bigWigs" : [f.fileID for f in e.files if f.isBigWig()],
+                     "beds" : [f.fileID for f in e.files if f.isBed()]}
                 ret[ctn].append(q)
 
             ret[ctn] = sorted(ret[ctn], key = lambda q: (q["assay_term_name"],
