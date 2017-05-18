@@ -52,7 +52,7 @@ class CRE:
             self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
                                                                  coord.chrom)
         ret = []
-        for g in list(set(self.genesPC)):
+        for g in self.genesPC:
             ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
         return ret
 
