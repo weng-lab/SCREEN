@@ -158,8 +158,7 @@ class DataWebService(GetOrSetMemCache):
 
     def _re_detail_ge(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        nearbyGenes = cre.nearbyPcGenes()
-        nearest = min(nearbyGenes, key = lambda x: x["distance"])
+        nearest = cre.nearbyPcGenes()[0]
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         name, strand = self.cache.lookupEnsembleGene(nearest["name"])
         r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
