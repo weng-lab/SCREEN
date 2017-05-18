@@ -51,11 +51,7 @@ class MoreTracks:
         mc = MemCacheWrapper()
         qd = QueryDCC(cache = mc)
 
-        if "hg19" == self.assembly:
-            m = MetadataWS(Datasets.all_human)
-        elif "mm10" == self.assembly:
-            m = MetadataWS(Datasets.all_mouse)
-        
+        m = MetadataWS.byAssembly(self.assembly)
         allExps = m.all_beds_bigWigs(self.assembly)
         print("found", len(allExps))
         

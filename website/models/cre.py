@@ -35,9 +35,15 @@ class CRE:
         if not self.genesAll or not self.genesPC:
             self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
                                                                  coord.chrom)
+        pcGenes = set([g[0] for g in self.genesPC])
         ret = []
-        for g in list(set(self.genesAll + self.genesPC)):
+        for g in self.genesPC:
             ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
+        for g in self.genesAll:
+            if g[0] not in pcGenes:
+                ret.append({"name" : g[0], "distance" : g[1],
+                            "ensemblid_ver" : g[2]})
+        ret.sort(key=lambda g: g["distance"])
         return ret
 
     def nearbyPcGenes(self):
