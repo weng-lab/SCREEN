@@ -327,7 +327,8 @@ parent {stname}
             for mt in mts:
                 for bw in mt["bigWigs"]:
                     ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
-            
+                for bed in mt["beds"]:
+                    ret.append(self.mtTrackBed(tct, mt, bed, stname))
         return ret
 
     def mtTrackBigWig(self, tct, mt, bw, stname):
@@ -342,7 +343,19 @@ parent {stname}
                             "0:50", True).track(shortLabel)
         self.priority += 1
         return track
-    
+
+    def mtTrackBed(self, tct, mt, bw, stname):
+        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigBed?proxy=true".format(e=bw)
+
+        desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
+                         mt["tf"], tct])
+        shortLabel = desc[:17]
+        
+        track = BigBedTrack(desc, self.priority, url,
+                            None, stname, True).track(shortLabel)
+        self.priority += 1
+        return track
+
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 

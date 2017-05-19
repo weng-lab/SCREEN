@@ -162,12 +162,17 @@ class BigGenePredTrack(Track):
         self.visibility = "pack"
 
 class BigBedTrack(Track):
-    def __init__(self, desc, priority, url, color):
+    def __init__(self, desc, priority, url, color, superTrackName = "",
+                 hide = False):
         super(BigBedTrack, self).__init__(desc, priority, url)
         if color:
             self.color = color
         self.type = "bigBed"
         self.visibility = "pack"
+        if hide:
+            self.visibility = "hide"
+        if superTrackName:
+            self.superTrackName = superTrackName
 
 def officialVistaTrack(assembly):
     byAssembly = {"mm10" : """
