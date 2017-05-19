@@ -52,7 +52,7 @@ class MoreTracks:
         qd = QueryDCC(cache = mc)
 
         m = MetadataWS.byAssembly(self.assembly)
-        allExps = m.all_beds_bigWigs(self.assembly)
+        allExps = m.all_bigBeds_bigWigs(self.assembly)
         print("found", len(allExps))
         
         ret = {}
@@ -74,7 +74,7 @@ class MoreTracks:
                      "target" : e.target,
                      "tf" : e.tf,
                      "bigWigs" : [f.fileID for f in e.files if f.isBigWig()],
-                     "beds" : [f.fileID for f in e.files if f.isBed()]}
+                     "beds" : [f.fileID for f in e.files if f.isBigBed()]}
                 ret[ctn].append(q)
 
             ret[ctn] = sorted(ret[ctn], key = lambda q: (q["assay_term_name"],
