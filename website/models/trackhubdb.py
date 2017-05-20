@@ -374,7 +374,13 @@ parent {stname}
         color = None
         if mt["tf"] in AssayColors:
             color = AssayColors[mt["tf"]][0]
-
+        if not color:
+            if "ChIP-seq" == assay and "transcription" in mt["target"]:
+                if "CTCF" == mt["tf"]:
+                    color = AssayColors["CTCF"]
+                else:
+                    color = AssayColors["TF ChIP-seq"]
+            
         track = BigBedTrack(desc, self.priority, url,
                             color, stname, True).track(shortLabel)
         self.priority += 1
