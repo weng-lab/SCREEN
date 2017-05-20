@@ -23,12 +23,12 @@ def _reduce_method(meth):
 copy_reg.pickle(types.MethodType, _reduce_method)
 
 class ExtractRawPeaks:
-    def __init__(self, assembly, j):
+    def __init__(self, assembly, ver, nbins, j):
         self.assembly = assembly
         self.j = j
 
         self.raw = paths.path(assembly, "raw")
-        self.minipeaks = paths.path(assembly, "minipeaks")
+        self.minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
         Utils.mkdir_p(self.minipeaks)
 
         self.bwtool = "/data/cherrypy/bin/bwtool"
@@ -113,11 +113,13 @@ class ExtractRawPeaks:
         printt("wrote", outFnp)
 
 class MergeFiles:
-    def __init__(self, assembly, nbins, ver, assay):
+    def __init__(self, assembly, ver, nbins, assay):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
         self.assay = assay
+
+        self.minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
     def _getFileIDs(self, fn):
         assay = fn.split('-')[0]
@@ -138,8 +140,8 @@ class MergeFiles:
             fnps = []
             presentFileIDs = []
             for fileID in fileIDs:
-                fnp = paths.path(self.assembly, "minipeaks", "files",
-                                 fileID + ".bigWig.txt")
+                fnp = os.path.join(self.minipeaks, "files",
+                                   fileID + ".bigWig.txt")
                 if os.path.exists(fnp):
                     fnps.append(fnp)
                     presentFileIDs.append(fileID)
@@ -157,23 +159,25 @@ class MergeFiles:
         printWroteNumLines(fnp)
 
     def processRankMethod(self, fileIDs, fnps, assay):
-        accessionFnp = paths.path(self.assembly, "minipeaks", "merged", "accessions.txt")
+        accessionFnp = os.path.join(self.minipeaks, "merged", "accessions.txt")
         Utils.ensureDir(accessionFnp)
         if not os.path.exists(accessionFnp):
             self._makeAccesionFile(accessionFnp)
 
-        colsFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_cols.txt")
+        colsFnp = os.path.join(self.minipeaks, "merged", assay + "_cols.txt")
         Utils.ensureDir(colsFnp)
         with open(colsFnp, 'w') as f:
             f.write('\t'.join(fileIDs) + '\n')
         printWroteNumLines(colsFnp)
 
-        mergedFnp = paths.path(self.assembly, "minipeaks", "merged", assay + "_merged.txt")
+        mergedFnp = os.path.join(self.minipeaks, "merged", assay + "_merged.txt")
         Utils.ensureDir(mergedFnp)
         printt("paste into", mergedFnp)
         chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
-def sample(assembly):
+def sample(assembly, ver, nbins):
+    minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
+
     accessionsFnp = paths.fnpCreTsvs(assembly, "sample", "sampled_accessions.txt")
     fnps = paths.fnpCreTsvs(assembly, "sample", "chr*.tsv.gz")
     cmds = ["zcat", fnps,
@@ -185,9 +189,9 @@ def sample(assembly):
     fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
     for fn in fns:
         assay = fn.split('-')[0]
-        mergedFnp = paths.path(assembly, "minipeaks", "merged", assay + "_merged.txt")
-        sampleMiniPeaksFnp = paths.path(assembly, "minipeaks", "merged",
-                                        "sample", assay + "_merged.txt")
+        mergedFnp = os.path.join(minipeaks, "merged", assay + "_merged.txt")
+        sampleMiniPeaksFnp = os.path.join(minipeaks, "merged",
+                                          "sample", assay + "_merged.txt")
         Utils.ensureDir(sampleMiniPeaksFnp)
         cmds = ["grep -f", accessionsFnp, mergedFnp,
                 '>',  sampleMiniPeaksFnp]
@@ -210,15 +214,17 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
+    nbins = 30
+    ver = 4
     for assembly in assemblies:
         if 1:
-            ep = ExtractRawPeaks(assembly, args.j)
+            ep = ExtractRawPeaks(assembly, ver, nbins, args.j)
             ep.run()
-        if 1:
-            mf = MergeFiles(assembly, 30, 4, args.assay)
+        if 0:
+            mf = MergeFiles(assembly, ver, nbins, args.assay)
             mf.run()
-        if 1:
-            sample(assembly)
+        if 0:
+            sample(assembly, ver, nbins)
             
     return 0
 
