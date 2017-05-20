@@ -30,6 +30,21 @@ ENSEMBL = 3
 #WWW = "http://users.wenglab.org/moorej3/cREs"
 WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
+AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
+               "RNA-seq" : ["0,170,0", "", "#00aa00"],
+               "RAMPAGE" : ["214,66,202", "#D642CA"],
+               "H3K4me1" : ["255,223,0", "#FFDF00"],
+               "H3K4me2" : ["255,255,128", "#FFFF80"],
+               "H3K4me3" : ["255,0,0", "", "#FF0000"],
+               "H3K9ac" : ["255,121,3", "#FF7903"],
+               "H3K27ac" : ["255,205,0", "#FFCD00"],
+               "H3K27me3" : ["174,175,174", "#AEAFAE"],
+               "H3K36me3" : ["0,128,0", "", "#008000"],
+               "H3K9me3" : ["180,221,228", "#B4DDE4"],
+               "Conservation" : ["153,153,153", "#999999"],
+               "TF ChIP-seq" : ["18,98,235", "#1262EB"],
+               "CTCF" : ["0,176,240", "#00B0F0"]}
+
 class TrackhubDb:
     def __init__(self, templates, ps, cacheW, db, browser):
         self.templates = templates
@@ -334,12 +349,16 @@ parent {stname}
     def mtTrackBigWig(self, tct, mt, bw, stname):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
 
-        desc = ' '.join([bw, "Signal", mt["assay_term_name"], mt["target"],
+        assay = mt["assay_term_name"]
+        desc = ' '.join([bw, "Signal", assay, mt["target"],
                          mt["tf"], tct])
         shortLabel = desc[:17]
+
+        color = None
+        if mt["tf"] in AssayColors:
+            color = AssayColors[mt["tf"]][0]
         
-        track = BigWigTrack(desc, self.priority, url,
-                            None, stname,
+        track = BigWigTrack(desc, self.priority, url, color, stname,
                             "0:50", True).track(shortLabel)
         self.priority += 1
         return track
@@ -347,12 +366,17 @@ parent {stname}
     def mtTrackBed(self, tct, mt, bw, stname):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigBed?proxy=true".format(e=bw)
 
+        assay = mt["assay_term_name"]
         desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
                          mt["tf"], tct])
         shortLabel = desc[:17]
         
+        color = None
+        if mt["tf"] in AssayColors:
+            color = AssayColors[mt["tf"]][0]
+
         track = BigBedTrack(desc, self.priority, url,
-                            None, stname, True).track(shortLabel)
+                            color, stname, True).track(shortLabel)
         self.priority += 1
         return track
 
