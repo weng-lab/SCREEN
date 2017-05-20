@@ -35,11 +35,11 @@ AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
                "RAMPAGE" : ["214,66,202", "#D642CA"],
                "H3K4me1" : ["255,223,0", "#FFDF00"],
                "H3K4me2" : ["255,255,128", "#FFFF80"],
-               "H3K4me3" : ["255,0,0", "", "#FF0000"],
+               "H3K4me3" : ["255,0,0", "#FF0000"],
                "H3K9ac" : ["255,121,3", "#FF7903"],
                "H3K27ac" : ["255,205,0", "#FFCD00"],
                "H3K27me3" : ["174,175,174", "#AEAFAE"],
-               "H3K36me3" : ["0,128,0", "", "#008000"],
+               "H3K36me3" : ["0,128,0", "#008000"],
                "H3K9me3" : ["180,221,228", "#B4DDE4"],
                "Conservation" : ["153,153,153", "#999999"],
                "TF ChIP-seq" : ["18,98,235", "#1262EB"],
@@ -346,20 +346,27 @@ parent {stname}
                     ret.append(self.mtTrackBed(tct, mt, bed, stname))
         return ret
 
+    def mtColor(self, assay, mt):
+        c = None
+        if mt["tf"] in AssayColors:
+            c = AssayColors[mt["tf"]][0]
+        if not c:
+            if "ChIP-seq" == assay and "transcription" in mt["target"]:
+                if "CTCF" == mt["tf"]:
+                    c = AssayColors["CTCF"][0]
+                else:
+                    c = AssayColors["TF ChIP-seq"][0]
+        return c
+    
     def mtTrackBigWig(self, tct, mt, bw, stname):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
 
         assay = mt["assay_term_name"]
-        desc = ' '.join([bw, "Signal", assay, mt["target"],
-                         mt["tf"], tct])
+        desc = ' '.join([bw, "Signal", assay, mt["target"], mt["tf"], tct])
         shortLabel = desc[:17]
 
-        color = None
-        if mt["tf"] in AssayColors:
-            color = AssayColors[mt["tf"]][0]
-        
-        track = BigWigTrack(desc, self.priority, url, color, stname,
-                            "0:50", True).track(shortLabel)
+        track = BigWigTrack(desc, self.priority, url, self.mtColor(assay, mt),
+                            stname, "0:50", True).track(shortLabel)
         self.priority += 1
         return track
 
@@ -370,19 +377,9 @@ parent {stname}
         desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
                          mt["tf"], tct])
         shortLabel = desc[:17]
-        
-        color = None
-        if mt["tf"] in AssayColors:
-            color = AssayColors[mt["tf"]][0]
-        if not color:
-            if "ChIP-seq" == assay and "transcription" in mt["target"]:
-                if "CTCF" == mt["tf"]:
-                    color = AssayColors["CTCF"]
-                else:
-                    color = AssayColors["TF ChIP-seq"]
-            
-        track = BigBedTrack(desc, self.priority, url,
-                            color, stname, True).track(shortLabel)
+                    
+        track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
+                            stname, True).track(shortLabel)
         self.priority += 1
         return track
 
