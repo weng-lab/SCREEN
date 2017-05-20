@@ -104,12 +104,11 @@ class ExtractRawPeaks:
                     start = int(toks[1])
                     stop = int(toks[2])
                     accession = toks[4]
-                    padding = 1000
-                    midPoint = float(stop - start) / 2.0 + start
+                    padding = 2000
                     outF.write('\t'.join([str(x) for x in
                                           [chrom,
-                                           int(max(0, midPoint - padding)),
-                                           int(midPoint + padding),
+                                           int(max(0, start - padding)),
+                                           int(stop + padding),
                                            accession]]) + '\n')
         printt("wrote", outFnp)
 
@@ -212,11 +211,11 @@ def main():
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        if 0:
+        if 1:
             ep = ExtractRawPeaks(assembly, args.j)
             ep.run()
-        if 0:
-            mf = MergeFiles(assembly, 20, 3, args.assay)
+        if 1:
+            mf = MergeFiles(assembly, 30, 4, args.assay)
             mf.run()
         if 1:
             sample(assembly)

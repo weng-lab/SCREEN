@@ -48,7 +48,6 @@ namespace bib {
     return s;
   }
 
-
   int bwtool(){
     std::string line;
 
@@ -58,7 +57,7 @@ namespace bib {
       //const std::string& accession = toks[3];
       const auto vals = bib::str::split(toks[5], ',');
 
-      static const size_t n_bars = 20;
+      static const size_t n_bars = 30;
 
       a::fvec regions(vals.size());
       for(size_t i = 0; i < vals.size(); ++i){
