@@ -59,6 +59,8 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         if sample:
             mergedFnp = paths.path(self.assembly, "minipeaks", "merged",
                                    "sample", assay + "_merged.txt")
+        if not os.path.exists(mergedFnp):
+            raise Exception("missing file: " + mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
         q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
