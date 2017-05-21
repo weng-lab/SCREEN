@@ -31,6 +31,7 @@
 #include "cpp/tictoc.hpp"
 
 #include <zi/zargs/zargs.hpp>
+ZiARG_int32(nbars, 0, "num bars");
 
 namespace bib {
 
@@ -41,7 +42,7 @@ namespace bib {
     // http://stackoverflow.com/a/2519016
     for(auto it = vec.begin(); it != vec.end(); ++it ){
       if( it != vec.begin() ){
-	s << delim;
+          s << delim;
       }
       s << *it;
     }
@@ -57,7 +58,12 @@ namespace bib {
       //const std::string& accession = toks[3];
       const auto vals = bib::str::split(toks[5], ',');
 
-      static const size_t n_bars = 30;
+      size_t n_bars = 30;
+      if(ZiARG_nbars > 0){
+          n_bars = ZiARG_nbars;
+      } else {
+          n_bars = static_cast<size_t>(std::ceil(vals.size() / 100.));
+      }
 
       a::fvec regions(vals.size());
       for(size_t i = 0; i < vals.size(); ++i){
