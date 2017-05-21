@@ -212,7 +212,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["mm10", "hg19"]
+    assemblies = ["hg19", "mm10"]
     if args.assembly:
         assemblies = [args.assembly]
 
