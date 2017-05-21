@@ -25,6 +25,8 @@ copy_reg.pickle(types.MethodType, _reduce_method)
 class ExtractRawPeaks:
     def __init__(self, assembly, ver, nbins, j):
         self.assembly = assembly
+        self.var = ver
+        self.nbins = nbins
         self.j = j
 
         self.raw = paths.path(assembly, "raw")
@@ -59,7 +61,7 @@ class ExtractRawPeaks:
         cmds = [self.bwtool, "extract", "bed",
                 self.miniPeaksBedFnp,
                 fnp, "/dev/stdout",
-                '|', self.bwtoolFilter, "--bwtool",
+                '|', self.bwtoolFilter, "--nbars " + str(self.nbins),
                 '>', outFnp]
         Utils.runCmds(cmds)
         if self.debug:
@@ -185,7 +187,7 @@ def sample(assembly, ver, nbins):
             '>', accessionsFnp]
     Utils.runCmds(cmds)
     printWroteNumLines(accessionsFnp)
-    
+
     fns = ["dnase-list.txt", "h3k27ac-list.txt", "h3k4me3-list.txt"]
     for fn in fns:
         assay = fn.split('-')[0]
@@ -197,7 +199,7 @@ def sample(assembly, ver, nbins):
                 '>',  sampleMiniPeaksFnp]
         Utils.runCmds(cmds)
         printWroteNumLines(sampleMiniPeaksFnp)
-                
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
@@ -214,7 +216,7 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-    nbins = 30
+    nbins = 0
     ver = 4
     for assembly in assemblies:
         if 1:
@@ -225,7 +227,7 @@ def main():
             mf.run()
         if 0:
             sample(assembly, ver, nbins)
-            
+
     return 0
 
 if __name__ == '__main__':
