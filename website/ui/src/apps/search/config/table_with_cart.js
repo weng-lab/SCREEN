@@ -16,7 +16,7 @@ const TableColumns = () => {
     return [
 	{
 	    title: accHelp, data: "info", className: klassCenter,
-            render: Render.creTableAccesion
+            render: Render.creTableAccession
 	}, {
             title: sctHelp, data: "ctspecifc", className: klassCenter,
 	    render: Render.creTableCellTypeSpecific, name: "sctv"

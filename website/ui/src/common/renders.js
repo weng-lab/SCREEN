@@ -4,7 +4,8 @@ import ReactDOMServer from 'react-dom/server'
 
 export const relink = (a) => (v) => (
     "<a href='/search?assembly=" + a + "&q=" + v + "' target='_blank'>"
-    + v + "</a>");
+	+ v + "</a>"
+);
 
 export const snp_link = (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
@@ -393,7 +394,7 @@ export const checkCt = (cts) => (name) => {
     return "<input type='checkbox' />";
 }
 
-export const creTableAccesionBoxen = (cre) => {
+export const creTableAccessionBoxen = (cre) => {
     let w = 12;
     let h = 9;
     let fw = 3 * w + 3;
@@ -429,23 +430,24 @@ export const creTableAccesionBoxen = (cre) => {
     return e;
 }
 
-export const creTableAccesionProx = (cre) => {
+export const creTableAccessionProx = (cre) => {
     return cre.isproximal ? popup("Proximal", "P") :
 	       popup("Distal", "D");
 }
 
-export const creTableAccesionProxReact = (cre) => {
+export const creTableAccessionProxReact = (cre) => {
     return cre.isproximal ? popupReact("Proximal", "P") :
 	       popupReact("Distal", "D");
 }
 
-export const creTableAccesion = (cre, type, full, meta) => {
+export const creTableAccession = (cre, type, full, meta) => {
+    console.log(cre);
     return '<div>' + 
 	   popup("Click for cRE details", creLink(cre.accession)) +
 	   '<br />' +
 	   popup("Concordant", concordantStar(cre.concordant)) +
-	   creTableAccesionProx(cre) + ' ' +
-	   ReactDOMServer.renderToStaticMarkup(creTableAccesionBoxen(cre)) +
+	   creTableAccessionProx(cre) + ' ' +
+	   ReactDOMServer.renderToStaticMarkup(creTableAccessionBoxen(cre)) +
 	   '</div>';
 }
 
@@ -518,9 +520,9 @@ export const creTitle = (cre) => {
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {concordantStarReact(cre.concordant)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {creTableAccesionProxReact(cre)}
+	    {creTableAccessionProxReact(cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {creTableAccesionBoxen(cre)}
+	    {creTableAccessionBoxen(cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {cts}
 	</div>);
