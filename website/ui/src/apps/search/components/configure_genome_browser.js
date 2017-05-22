@@ -26,7 +26,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2];
-	var data = {"accession" : cre.accession,
+	var data = {"accession" : cre.accession ? cre.accession : cre.title,
 		    "coord_chrom" : cre.chrom,
 		    "coord_start" : cre.start,
 		    "coord_end" : cre.start + cre.len,
@@ -107,13 +107,14 @@ class ConfigureGenomeBrowser extends React.Component {
 	let rows = [];
 	let cts = this.props.configuregb_cts;
 	for(let ct of cts){
-	    if (!ct.checked) continue;
+	    if (!ct.name) console.log(ct);
+	    if (!ct.checked || !ct.name) continue;
 	    rows.push(
 		<ListItem value={ct.name}
 			  selected="true"
 			  n="0"
 			  onclick={() => {
-				  this.props.actions.toggleGenomeBrowserCelltype(ct.name)
+				  this.props.actions.toggleGenomeBrowserCelltype(ct.cellTypeName)
 			      }}
 		/>);
 	}
@@ -160,7 +161,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="container" style={{width: "100%"}}>
 		<div className="row">
 		    <div className="col-md-12">
-			{Render.creTitle(cre)}
+		        {this.props.configuregb_type == "cre" ? Render.creTitle(cre) : Render.titlegeneric(cre)}
                     </div>
 		</div>
 
@@ -172,7 +173,7 @@ class ConfigureGenomeBrowser extends React.Component {
 			    <button type="button"
 				    className="btn btn-primary"
 				    onClick={() => {
-					this.gbclick(cre, cts.map(x => x.name), "UCSC");
+					this.gbclick(cre, cts.map(x => x.cellTypeName), "UCSC");
 					} }>
 				{"Open in UCSC"}
 			    </button>

@@ -48,10 +48,11 @@ const main_reducers = (state, action) => {
 	case Actions.SHOW_GENOME_BROWSER:
 	    let ret = {...state, ...mainTabSetter(state, "configgb"),
 		       configuregb_cre: action.cre,
+		       configuregb_type: action.etype ? action.etype : "cre",
 		       configuregb_browser: action.name,
 		       configuregb_cts: state.configuregb_cts.map(x => ({
 			   ...x,
-			   checked: x.checked || x.name == state.cellType
+			   checked: x.checked || (x.cellTypeName && x.cellTypeName == state.cellType)
 		       }))
 		      };
 	    return ret;
@@ -59,7 +60,7 @@ const main_reducers = (state, action) => {
 	case Actions.TOGGLE_GENOME_BRWOSER_CELLTYPE:
 	    return {...state,
 		    configuregb_cts: state.configuregb_cts.map(x => ({
-			    ...x, checked: (x.name == action.ct) != x.checked
+			    ...x, checked: (x.cellTypeName == action.ct) != x.checked
 		    }))
 		   };
 	    
