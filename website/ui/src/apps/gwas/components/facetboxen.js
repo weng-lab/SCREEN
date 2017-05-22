@@ -35,7 +35,9 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
                 {title: "", data: "pval", visible: false},
                 {title: "FDR", data: "fdr", className: "dt-right",
 		 render: Render.toSciNot, width: "20%"},
-                {title: "", data: "expID", render: Render.dccLink,
+		{title: "", data: "cellTypeName", className: "dt-right dcc",
+		 render: Render.assayIcon, orderable: false},
+                {title: "", data: "expID", render: Render.dccLink, visible: false,
 		 className: "dt-right dcc"},
 	    ]}
 	    order={[[2, "asc"], [0, "asc"]]}
