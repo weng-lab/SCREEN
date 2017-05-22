@@ -147,8 +147,6 @@ GROUP BY {groupBy}
 """.format(assembly = self.assembly,
            fields = ', '.join(fields),
            groupBy = ', '.join(groupBy))
-            print(q)
-            print(q, file=sys.stderr)
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
         ret = [dict(zip(fieldsOut, r)) for r in rows]

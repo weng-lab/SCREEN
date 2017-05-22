@@ -113,8 +113,6 @@ ORDER BY maxz DESC
 LIMIT 1000) r
 """.format(fields = fields, tn = self.tableName,
            whereClause = whereClause)
-            print(q)
-            print(q, file=sys.stderr)
 
             #print("\n", q, "\n")
             if 0:
