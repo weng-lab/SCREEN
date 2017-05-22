@@ -438,7 +438,6 @@ export const creTableAccessionProxReact = (cre) => {
 }
 
 export const creTableAccession = (cre, type, full, meta) => {
-    console.log(cre);
     return '<div>' + 
 	   popup("Click for cRE details", creLink(cre.accession)) +
 	   '<br />' +
