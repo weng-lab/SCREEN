@@ -23,6 +23,7 @@ class ConfigureGenomeBrowser extends React.Component {
     }
 
     gbclick(cre, cts, gbrowser){
+	console.log(cts);
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2];
@@ -173,7 +174,7 @@ class ConfigureGenomeBrowser extends React.Component {
 			    <button type="button"
 				    className="btn btn-primary"
 				    onClick={() => {
-					this.gbclick(cre, cts.map(x => x.cellTypeName), "UCSC");
+					this.gbclick(cre, cts.filter(x => x.checked).map(x => x.cellTypeName), "UCSC");
 					} }>
 				{"Open in UCSC"}
 			    </button>
