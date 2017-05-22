@@ -32,6 +32,11 @@ class ExpressionPlot extends React.Component {
 	}
     }
 
+    _bb() {
+	let gclick = this.gclick.bind(this);
+	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC");}}>UCSC</button>;
+    }
+    
     loadCRE(){
 	let gene = null;
 	if(GlobalParsedQuery.genes.length > 0){
@@ -71,6 +76,17 @@ class ExpressionPlot extends React.Component {
         });
     }
 
+    gclick(name) {
+	if (GlobalParsedQuery.genes.length > 0) {
+	    this.props.actions.showGenomeBrowser({
+		title: GlobalParsedQuery.genes[0].oname,
+		start: GlobalParsedQuery.genes[0].start,
+		len: GlobalParsedQuery.genes[0].stop - GlobalParsedQuery.genes[0].start,
+		chrom: GlobalParsedQuery.genes[0].chrom
+	    }, name, "gene");
+	}
+    }
+    
     doRenderWrapper(){
 	let gene = null;
 	if(GlobalParsedQuery.genes.length > 0){
@@ -84,7 +100,7 @@ class ExpressionPlot extends React.Component {
 	    let data = this.state.ges[gene];
 	    return (
 		<div>
-		    <h2><em>{gene}</em></h2>
+		    <h2><em>{gene}</em> {this._bb()}</h2>
 		    {Render.openGeLink(gene)}
 		    <br />
 		    {React.createElement(LargeHorizontalBars,

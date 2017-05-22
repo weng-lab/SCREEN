@@ -37,12 +37,14 @@ class TrackhubController:
         assembly = self.assembly = j["GlobalAssembly"]
         pgSearch = PGsearch(self.ps, assembly)
 
-        accession = j["accession"]
-        cre = CRE(pgSearch, accession, self.cacheW[assembly])
-        coord = cre.coord()
+        if "coord_start" not in j:
+            cre = CRE(pgSearch, j["accession"], self.cacheW[assembly])
+            coord = cre.coord()
+        else:
+            coord = Coord(j["coord_chrom"], j["coord_start"], j["coord_end"])
         coord.resize(j["halfWindow"])
 
-        return assembly, accession, coord
+        return assembly, j["accession"], coord
 
     def ucsc_trackhub_url(self, j, uuid):
         assembly, accession, coord = self._trackhub_url_info(j)

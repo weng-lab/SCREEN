@@ -497,6 +497,16 @@ export const creTableCellTypeSpecific = (data) => {
     return '<div>' + boxen + '</div>';
 }
 
+export const titlegeneric = (e) => {
+    return (
+	<div>
+	    <h3 className="creDetailsTitle">{e.title}</h3>
+	    {"\u00A0"}{"\u00A0"}{"\u00A0"}
+	    {e.chrom}:{numWithCommas(e.start)}-
+	    {numWithCommas(e.start + e.len)}
+	</div>);
+};
+
 export const creTitle = (cre) => {
     let cts = "";
     let ct = cre.ctspecifc.ct;
