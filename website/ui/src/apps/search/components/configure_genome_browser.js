@@ -77,8 +77,8 @@ class ConfigureGenomeBrowser extends React.Component {
     render() {
         let cre = this.props.configuregb_cre;
 	let cols = [
-	    { title: "", data: "name",
-	      render: Render.checkCt(this.props.configuregb_cts)},
+	    { title: "", data: "checked",
+	      render: Render.checkCt},
 	    { title: "cell type", data: "name",
 	      className: "dt-right"},
 	    { title: "tissue", data: "tissue",
@@ -93,12 +93,11 @@ class ConfigureGenomeBrowser extends React.Component {
 	let ctBox = (
 	    <ResultsTable
 		cols={cols}
-		data={Globals.cellTypeInfoArr}
-		configuregb_cts={this.props.configuregb_cts}
+		data={this.props.configuregb_cts}
 		order={[]}
 		buttonsOff={true}
 		onTdClick={(td, cellObj) => {
-		    this.props.actions.togglGenomeBrowserCelltype(cellObj.value);
+		    this.props.actions.toggleGenomeBrowserCelltype(cellObj.value);
 		}}
 		bFilter={true}
 		bLengthChange={false}
@@ -106,15 +105,15 @@ class ConfigureGenomeBrowser extends React.Component {
             />)
 
 	let rows = [];
-	let cts = Array.from(this.props.configuregb_cts);
-	cts.sort();
+	let cts = this.props.configuregb_cts;
 	for(let ct of cts){
+	    if (!ct.checked) continue;
 	    rows.push(
-		<ListItem value={ct}
+		<ListItem value={ct.name}
 			  selected="true"
 			  n="0"
 			  onclick={() => {
-				  this.props.actions.togglGenomeBrowserCelltype(ct)
+				  this.props.actions.toggleGenomeBrowserCelltype(ct.name)
 			      }}
 		/>);
 	}
@@ -173,7 +172,7 @@ class ConfigureGenomeBrowser extends React.Component {
 			    <button type="button"
 				    className="btn btn-primary"
 				    onClick={() => {
-					    this.gbclick(cre, cts, "UCSC");
+					this.gbclick(cre, cts.map(x => x.name), "UCSC");
 					} }>
 				{"Open in UCSC"}
 			    </button>

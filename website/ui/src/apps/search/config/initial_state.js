@@ -32,7 +32,10 @@ const initialState = (pmaintab, psubtab) => {
         cre_accession_detail: accession,
 	configuregb_cre: accession,
 	configuregb_browser: null,
-	configuregb_cts: new Set(),
+	configuregb_cts: Globals.cellTypeInfoArr.map(x => ({
+	    ...x,
+	    checked: false
+	})),
         active_cre: null,
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",

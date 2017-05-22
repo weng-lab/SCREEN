@@ -58,7 +58,7 @@ export const SHOW_GENOME_BROWSER = 'SHOW_GENOME_BROWSER';
 export const showGenomeBrowser = (cre, name) => ({ type: SHOW_GENOME_BROWSER,
 						   cre, name});
 export const TOGGLE_GENOME_BRWOSER_CELLTYPE = 'TOGGLE_GENOME_BRWOSER_CELLTYPE';
-export const togglGenomeBrowserCelltype = (ct) => ({
+export const toggleGenomeBrowserCelltype = (ct) => ({
     type: TOGGLE_GENOME_BRWOSER_CELLTYPE, ct});
 
 export const SET_CART = 'SET_CART';

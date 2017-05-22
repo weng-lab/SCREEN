@@ -387,11 +387,8 @@ export const concordantStarReact = (concordant) => {
     return "";
 }
 
-export const checkCt = (cts) => (name) => {
-    if(cts.has(name)){
-	return "<input type='checkbox' checked />";
-    }
-    return "<input type='checkbox' />";
+export const checkCt = (checked) => {
+    return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
 }
 
 export const creTableAccessionBoxen = (cre) => {
