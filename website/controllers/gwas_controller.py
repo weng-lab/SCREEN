@@ -18,9 +18,12 @@ class GwasController:
         return self.t('main/gwas', **pageInfo.gwasPage(args, kwargs, uuid))
 
     def _mainTableInfo(self, g, gwas_study):
-        return {"totalLDblocks" : g.totalLDblocks(gwas_study),
-                "numLdBlocksOverlap" : g.numLdBlocksOverlap(gwas_study),
-                "numCresOverlap" : g.numCresOverlap(gwas_study) }
+        overlap = g.numLdBlocksOverlap(gwas_study)
+        total = g.totalLDblocks(gwas_study)
+        return {"totalLDblocks": total,
+                "numLdBlocksOverlap": overlap,
+                "numLdBlocksOverlapFormat": "%d (%d%%)" % (overlap, int(float(overlap) / float(total) * 100.0)),
+                "numCresOverlap": g.numCresOverlap(gwas_study) }
 
     def _main(self, j):
         assembly = j["GlobalAssembly"]
