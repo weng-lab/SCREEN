@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import sys
 import os
 from natsort import natsorted
@@ -8,6 +10,7 @@ import gzip
 
 from coord import Coord
 from pg_common import PGcommon, assembly_is_allowed
+from pg_cre_table import PGcreTable
 from config import Config
 from get_set_mc import GetOrSetMemCache
 
@@ -104,10 +107,10 @@ where authorPubmedTrait = %s
             return [r[0] for r in curs.fetchall()]
 
     def gwasPercentActive(self, gwas_study, ct):
-        fields = ["cre.accession", "array_agg(snp)",
+        fields = ["cre.accession", "array_agg(snp)", PGcreTable._getInfo(),
                   "infoAll.approved_symbol AS geneid"]
         groupBy = ["cre.accession",
-                   "infoAll.approved_symbol"]
+                   "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.iteritems()]
 
 
         if ct in self.ctsTable:
@@ -118,7 +121,7 @@ where authorPubmedTrait = %s
         else:
             fields.append("0::int AS cts")
         
-        fieldsOut = ["accession", "snps", "geneid", "cts"]
+        fieldsOut = ["accession", "snps", "info", "geneid", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
                       ("enhancer", "h3k27ac")]:
@@ -144,6 +147,8 @@ GROUP BY {groupBy}
 """.format(assembly = self.assembly,
            fields = ', '.join(fields),
            groupBy = ', '.join(groupBy))
+            print(q)
+            print(q, file=sys.stderr)
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
         ret = [dict(zip(fieldsOut, r)) for r in rows]

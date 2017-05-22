@@ -23,6 +23,21 @@ from db_utils import getcursor, timedQuery
 from utils import eprint
 
 class PGcreTable(GetOrSetMemCache):
+
+    infoFields = {"accession": "cre.accession",
+                  "isproximal": "cre.isproximal",
+                  "k4me3max": "cre.h3k4me3_max",
+                  "k27acmax": "cre.h3k27ac_max",
+                  "ctcfmax": "cre.ctcf_max",
+                  "concordant": "cre.concordant"}
+
+    @staticmethod
+    def _getInfo():
+        pairs = []
+        for k, v in PGcreTable.infoFields.iteritems():
+            pairs.append("'%s', %s" % (k, v))
+        return "json_build_object(" + ','.join(pairs) + ") as info"
+    
     def __init__(self, pg, assembly, ctmap, ctsTable):
         GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
 
@@ -32,12 +47,6 @@ class PGcreTable(GetOrSetMemCache):
         self.ctsTable = ctsTable
 
         self.tableName = self.assembly + "_cre_all"
-        self.infoFields = {"accession" : "cre.accession",
-                           "isproximal" : "cre.isproximal",
-                           "k4me3max" : "cre.h3k4me3_max",
-                           "k27acmax" : "cre.h3k27ac_max",
-                           "ctcfmax" : "cre.ctcf_max",
-                           "concordant" : "cre.concordant"}
         
         self.ctSpecifc = {}
         self.fields = [
@@ -48,12 +57,6 @@ class PGcreTable(GetOrSetMemCache):
             "0::int as in_cart",
             "cre.pct"]
         self.whereClauses = []
-
-    def _getInfo(self):
-        pairs = []
-        for k, v in self.infoFields.iteritems():
-            pairs.append("'%s', %s" % (k, v))
-        return "json_build_object(" + ','.join(pairs) + ") as info"
 
     def _getCtSpecific(self):
         pairs = []
@@ -80,7 +83,7 @@ class PGcreTable(GetOrSetMemCache):
         self._accessions(j)
         self._where(chrom, start, stop)
 
-        fields = ', '.join([self._getInfo(), self._getCtSpecific()] + self.fields)
+        fields = ', '.join([PGcreTable._getInfo(), self._getCtSpecific()] + self.fields)
         ret = ""
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
@@ -110,6 +113,8 @@ ORDER BY maxz DESC
 LIMIT 1000) r
 """.format(fields = fields, tn = self.tableName,
            whereClause = whereClause)
+            print(q)
+            print(q, file=sys.stderr)
 
             #print("\n", q, "\n")
             if 0:
@@ -123,7 +128,7 @@ LIMIT 1000) r
             total = len(rows)
             if total >= 1000: # reached query limit
                 total = self._creTableEstimate(curs, whereClause)
-        return {"cres": rows, "total" : total}
+        return {"cres": rows, "total": total}
 
     def _accessions(self, j):
         accs = j.get("accessions", [])

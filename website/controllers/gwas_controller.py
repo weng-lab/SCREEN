@@ -44,7 +44,7 @@ class GwasController:
         ct = j["cellType"]
 
         cres = g.cres(gwas_study, ct)
-        return {ct : cres}
+        return {ct: cres}
 
     def gwasJson(self, j, args, kwargs):
         if not args:
