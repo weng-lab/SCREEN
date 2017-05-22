@@ -23,7 +23,6 @@ class ConfigureGenomeBrowser extends React.Component {
     }
 
     gbclick(cre, cts, gbrowser){
-	console.log(cts);
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2];
@@ -108,7 +107,6 @@ class ConfigureGenomeBrowser extends React.Component {
 	let rows = [];
 	let cts = this.props.configuregb_cts;
 	for(let ct of cts){
-	    if (!ct.name) console.log(ct);
 	    if (!ct.checked || !ct.name) continue;
 	    rows.push(
 		<ListItem value={ct.name}
