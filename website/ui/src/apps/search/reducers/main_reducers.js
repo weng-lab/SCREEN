@@ -57,7 +57,7 @@ const main_reducers = (state, action) => {
 		      };
 	    return ret;
 
-	case Actions.TOGGLE_GENOME_BRWOSER_CELLTYPE:
+	case Actions.TOGGLE_GENOME_BROWSER_CELLTYPE:
 	    return {...state,
 		    configuregb_cts: state.configuregb_cts.map(x => ({
 			    ...x, checked: (x.cellTypeName == action.ct) != x.checked
