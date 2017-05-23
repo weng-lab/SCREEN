@@ -98,11 +98,11 @@ class CelltypeView extends React.Component {
 	let pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
 	return (
             <div>
-                <h3>
+                <h3 style={{display: "inline"}}>
                     {this.props.cellType.biosample_summary}
                     <HelpIcon helpkey={"GWAS_Results_Table"} />
-                </h3>
-		<em>{cres.length} / {this.props.rdata.numCresOverlap} cREs ({pct}%) active in this cell type</em><br />
+                </h3>{" "}
+		<em>{cres.length} / {this.props.rdata.numCresOverlap} cREs ({pct}%) active in this cell type</em><br /><br />
                 {creTable}
 	    </div>);
     }
