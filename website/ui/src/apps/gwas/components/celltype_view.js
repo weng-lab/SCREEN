@@ -69,11 +69,11 @@ class CelltypeView extends React.Component {
 
 	let klassCenter = "dt-body-center dt-head-center ";
 	let ctsHelp = "SCT<br />" +
-		      HelpTooltip("CellTypeSpecifiedClassification");
+	    HelpTooltip("CellTypeSpecifiedClassification");
         let cols = [
             {title: "accession", data: "info", className: klassCenter,
              render: Render.creTableAccession },
-	    {title: "CTS", data: "cts", visible: false, name: "cts"},
+	    {title: "CTS", data: "ctspecifc", visible: true, name: "cts", render: Render.creTableCellTypeSpecific},
 	    {title: "H3K4me3 Z", data: "promoter zscore", render: Render.real,
 	     className: klassCenter, visible: vcols["promoter zscore"]},
             {title: "H3K27ac Z", data: "enhancer zscore", render: Render.real,
