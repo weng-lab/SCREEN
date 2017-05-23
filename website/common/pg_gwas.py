@@ -124,7 +124,8 @@ where authorPubmedTrait = %s
         fieldsOut = ["accession", "snps", "info", "geneid", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
-                      ("enhancer", "h3k27ac")]:
+                      ("enhancer", "h3k27ac"),
+                      ("ctcf", "ctcf")]:
             if ct not in self.ctmap[assay[0]]:
                 continue
             cti = self.ctmap[assay[0]][ct]
@@ -150,5 +151,12 @@ GROUP BY {groupBy}
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
         ret = [dict(zip(fieldsOut, r)) for r in rows]
+        for r in range(len(ret)):
+            ret[r].update({
+                "ctspecifc": {
+                    "%s_zscore" % x: ret[r]["%s zscore" % x] if "%s zscore" % x in ret[r] else None
+                    for x in ["dnase", "promoter", "enhancer", "ctcf"]
+                }
+            })
         return ret, fieldsOut
 
