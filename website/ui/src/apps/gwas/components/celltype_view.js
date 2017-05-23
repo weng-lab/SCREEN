@@ -82,7 +82,7 @@ class CelltypeView extends React.Component {
              className: klassCenter, visible: vcols["dnase zscore"]},
             {title: "SNPs", data: "snps", className: klassCenter,
 	     render: Render.snpLinks},
-            {title: "gene", data: "geneid", className: klassCenter}
+            {title: "gene", data: "geneid", className: klassCenter, render: Render.gene_link}
         ];
 
 	let columnDefs = [{ "orderData": 2, "targets": 1 }];
