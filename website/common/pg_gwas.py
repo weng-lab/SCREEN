@@ -108,8 +108,8 @@ where authorPubmedTrait = %s
 
     def gwasPercentActive(self, gwas_study, ct):
         fields = ["cre.accession", "array_agg(snp)", PGcreTable._getInfo(),
-                  "infoAll.approved_symbol AS geneid"]
-        groupBy = ["cre.accession",
+                  "infoAll.approved_symbol AS geneid", "cre.start", "cre.stop", "cre.chrom"]
+        groupBy = ["cre.accession", "cre.start", "cre.stop", "cre.chrom",
                    "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.iteritems()]
 
 
@@ -121,7 +121,7 @@ where authorPubmedTrait = %s
         else:
             fields.append("0::int AS cts")
         
-        fieldsOut = ["accession", "snps", "info", "geneid", "cts"]
+        fieldsOut = ["accession", "snps", "info", "geneid", "start", "stop", "chrom", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
                       ("enhancer", "h3k27ac"),

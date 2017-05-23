@@ -14,8 +14,14 @@ class CelltypeView extends React.Component {
         super(props);
         this.state = { jq: null, isFetching: true, isError: false};
         this.loadCres = this.loadCres.bind(this);
+	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
+    button_click_handler(name, rowdata, actions){
+	let cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
+	actions.showGenomeBrowser(cre, name);
+    }
+    
     componentDidMount(){
         this.loadCres(this.props);
     }
@@ -82,12 +88,23 @@ class CelltypeView extends React.Component {
              className: klassCenter, visible: vcols["dnase zscore"]},
             {title: "SNPs", data: "snps", className: klassCenter,
 	     render: Render.snpLinks},
-            {title: "gene", data: "geneid", className: klassCenter, render: Render.gene_link}
+            {title: "gene", data: "geneid", className: klassCenter, render: Render.gene_link},
+	    {
+		title: "genome browsers", data: null,
+		className: klassCenter + "browser",
+		targets: -1,
+		orderable: false,
+		defaultContent: Render.browser_buttons(["UCSC"])
+		//, "Ensembl"
+	     }
         ];
 
 	let columnDefs = [{ "orderData": 2, "targets": 1 }];
-
+	let actions = this.props.actions;
+	
         let creTable = (<ResultsTable
+			    onButtonClick={(td, rowdata) =>
+					   this.button_click_handler(td, rowdata, actions)}
                             data={cres}
 			    columnDefs={columnDefs}
                             cols={cols}

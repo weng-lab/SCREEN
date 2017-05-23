@@ -57,9 +57,9 @@ export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });
 export const SHOW_GENOME_BROWSER = 'SHOW_GENOME_BROWSER';
 export const showGenomeBrowser = (cre, name, etype = null) => ({ type: SHOW_GENOME_BROWSER,
 								 cre, name, etype});
-export const TOGGLE_GENOME_BRWOSER_CELLTYPE = 'TOGGLE_GENOME_BRWOSER_CELLTYPE';
+export const TOGGLE_GENOME_BROWSER_CELLTYPE = 'TOGGLE_GENOME_BROWSER_CELLTYPE';
 export const toggleGenomeBrowserCelltype = (ct) => ({
-    type: TOGGLE_GENOME_BRWOSER_CELLTYPE, ct});
+    type: TOGGLE_GENOME_BROWSER_CELLTYPE, ct});
 
 export const SET_CART = 'SET_CART';
 export const setCart = (accessions) => ({ type: SET_CART, accessions });

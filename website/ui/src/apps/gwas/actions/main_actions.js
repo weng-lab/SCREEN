@@ -1,3 +1,11 @@
+export const TOGGLE_GENOME_BROWSER_CELLTYPE = 'TOGGLE_GENOME_BROWSER_CELLTYPE';
+export const toggleGenomeBrowserCelltype = (ct) => ({
+    type: TOGGLE_GENOME_BROWSER_CELLTYPE, ct});
+
+export const SHOW_GENOME_BROWSER = 'SHOW_GENOME_BROWSER';
+export const showGenomeBrowser = (cre, name, etype = null) => ({ type: SHOW_GENOME_BROWSER,
+								 cre, name, etype});
+
 export const SET_STUDY = 'SET_STUDY'
 export const setStudy = (s) => ({ type: SET_STUDY, s });
 
@@ -9,3 +17,6 @@ export const setGwasCellTypes = (cts) => ({ type: SET_GWAS_CELL_TYPES, cts});
 
 export const SET_GWAS_STUDY_TAB = 'SET_GWAS_STUDY_TAB'
 export const setGwasStudyTab = (tab) => ({ type: SET_GWAS_STUDY_TAB, tab});
+
+export const SET_MAIN_TAB = 'SET_MAIN_TAB';
+export const setMainTab = (name) => ({ type: SET_MAIN_TAB, name });
