@@ -1,7 +1,12 @@
 import React from 'react'
 
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+
 import HelpIcon from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
+
+import * as Actions from '../actions/main_actions';
 
 class Rampage extends React.Component {
     constructor(props) {
@@ -24,6 +29,20 @@ class Rampage extends React.Component {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
 
+    _bb(transcript) {
+	let gclick = this.gclick.bind(this);
+	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC", transcript);}}>UCSC</button>;
+    }
+
+    gclick(name, transcript) {
+	this.props.actions.showGenomeBrowser({
+	    title: transcript.transcript,
+	    start: transcript.start,
+	    len: transcript.stop - transcript.start,
+	    chrom: transcript.chrom
+	}, name, "rampagetranscript");
+    }
+    
     transcriptUp() {
         let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
         let curT = this.state.transcript;
@@ -57,8 +76,7 @@ class Rampage extends React.Component {
             this.transcriptUp();
 	} else if(event.key == 'm'){
             this.transcriptDown();
-	} else {
-        }
+	}
     }
 
     render() {
@@ -110,10 +128,11 @@ class Rampage extends React.Component {
                           aria-hidden="true"
                           onClick={this.transcriptDown}>
                     </span>
+		    {this._bb(transcript)}
                 </span>
                 <div className="rampageCoord">
-                    {transcript["chrom"]}{':'}
-                    {transcript["start"]}{'-'}
+                    {transcript["chrom"]}:
+                    {transcript["start"]}-
                     {transcript["stop"]}
                     {"  ("}{transcript["strand"]}
                     {") "}{transcript["geneinfo"]}
@@ -307,4 +326,8 @@ class Rampage extends React.Component {
     }
 }
 
-export default Rampage;
+const mapStateToProps = (state) => ({ ...state });
+const mapDispatchToProps = (dispatch) => ({
+    actions: bindActionCreators(Actions, dispatch)
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Rampage);

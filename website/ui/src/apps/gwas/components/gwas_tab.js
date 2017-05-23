@@ -65,7 +65,7 @@ class GwasTab extends React.Component{
 
     doRenderWrapper({gwas_study, cellType, actions}){
 	var data = this.state[gwas_study];
-        var ctView = (cellType ? <CelltypeView /> :
+        var ctView = (cellType ? <CelltypeView rdata={data.mainTable[0]} /> :
                       arrowNote("Please choose a cell type.")
         );
         let mainTable = (<ResultsTable

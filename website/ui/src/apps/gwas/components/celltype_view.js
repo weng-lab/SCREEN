@@ -95,13 +95,14 @@ class CelltypeView extends React.Component {
 		            cvisible={vcols}
                             order={[[2, "desc"], [0, "asc"]]}
                         />);
-
+	let pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
 	return (
             <div>
                 <h3>
                     {this.props.cellType.biosample_summary}
                     <HelpIcon helpkey={"GWAS_Results_Table"} />
                 </h3>
+		<em>{cres.length} / {this.props.rdata.numCresOverlap} cREs ({pct}%) active in this cell type</em><br />
                 {creTable}
 	    </div>);
     }
