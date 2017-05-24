@@ -183,7 +183,8 @@ class ResultsTableContainer extends React.Component {
 		    jq={this.state.jq}
 		    missingAssays={this.state.missingAssays}
                     cts={this.state.cts}
-		    hasct={this.props.cellType}
+	            hasct={this.props.cellType}
+	            make_ct_friendly={ct => Globals.byCellType[ct][0]["name"]}
 		/>
 	    </div>);
     }
