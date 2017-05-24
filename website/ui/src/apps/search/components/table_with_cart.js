@@ -278,7 +278,7 @@ class TableWithCart extends React.Component {
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
-
+	
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -298,14 +298,14 @@ class TableWithCart extends React.Component {
 		<ResultsTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
-                              cols={TableColumns()}
+            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
                               onTdClick={(td, rowdata) =>
                                   this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
                               bFilter={true}
-                              bLengthChange={true}
+                              bLengthChange={true} key={this.props.cellType}
                 />
 	    </div>);
     }

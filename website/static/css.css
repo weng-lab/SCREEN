@@ -8,6 +8,14 @@ html, body {
     stroke-width: 2px;
 }
 
+table.dataTable.table-condensed .sorting:after,table.dataTable.table-condensed .sorting_asc:after,table.dataTable.table-condensed .sorting_desc:after {
+    top: inherit;
+}
+
+.dt-bottom {
+    vertical-align: bottom;
+}
+
 .node--internal path {
     fill: steelblue;
     stroke: steelblue;
@@ -445,7 +453,7 @@ table tr td.minipeak {
 
 table.dataTable thead th.dt-head-center {
     text-align: center;
-    vertical-align: top;
+    vertical-align: bottom;
 }
 table.dataTable tbody td.dt-body-center {
     text-align: center;

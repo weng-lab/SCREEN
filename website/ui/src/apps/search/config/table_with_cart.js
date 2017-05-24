@@ -1,12 +1,13 @@
 import {HelpTooltip} from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
 
-const TableColumns = () => {
+const TableColumns = (cts) => {
+
     let klassLeft = "dt-body-left dt-head-left ";
     let klassCenter = "dt-body-center dt-head-center ";
 
     let accHelp = "accession<br />" + HelpTooltip("CellTypeTableAccessionCol");
-    let sctHelp = "selected<br />cell type" + HelpTooltip("CellTypeSpecifiedClassification");
+    let sctHelp = cts + " " + HelpTooltip("CellTypeSpecifiedClassification");
 
     let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
     if("mm10" == GlobalAssembly){
@@ -19,7 +20,7 @@ const TableColumns = () => {
             render: Render.creTableAccession
 	}, {
             title: sctHelp, data: "ctspecifc", className: klassCenter,
-	    render: Render.creTableCellTypeSpecific, name: "sctv"
+	    render: Render.creTableCellTypeSpecific, name: "sctv", width: "12%"
 	}, {
             title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
 	    render: Render.sctSorter
