@@ -123,7 +123,7 @@ WHERE accession = %s
 
     def _getGenes(self, accession, chrom, curs, allOrPc):
         curs.execute("""
-SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver
+SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
 FROM
 (SELECT UNNEST(gene_{allOrPc}_id) geneid,
 UNNEST(gene_{allOrPc}_distance) distance

@@ -164,6 +164,9 @@ class DataWebService(GetOrSetMemCache):
         r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
         r["genename"] = name
         r["ensemblid_ver"] = nearest["ensemblid_ver"]
+        r["chrom"] = nearest["chrom"]
+        r["start"] = nearest["start"]
+        r["stop"] = nearest["stop"]
         return {accession: r}
 
     def _re_detail_rampage(self, j, accession):

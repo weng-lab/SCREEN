@@ -218,21 +218,30 @@ class RelatedGeneTab extends ReTabBase{
 }
 
 class GeTab extends ReTabBase{
+    gclick(name, data) {
+	this.props.actions.showGenomeBrowser({
+	    title: data.genename,
+	    start: data.start,
+	    len: data.stop - data.start,
+	    chrom: data.chrom
+	}, name, "gene");
+    }
     constructor(props) {
 	super(props, "ge");
-
+	
         this.doRender = (data) => {
 	    let gene = data.genename;
-
+	    let gclick = this.gclick.bind(this);
 	    return (
 		<div>
 		    <h4>
 			Gene Expression Profiles by RNA-seq
 			<HelpIcon helpkey={"GeneExpression"} />
 		    </h4>
-		    <h2>
+		    <h2 style={{display: "inline"}}>
 			<em>{data.genename}</em>
-		    </h2>
+		    </h2>{" "}
+		    <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC", data)}}>UCSC</button><br />
                     {data.ensemblid_ver}
 		    {Render.openGeLink(gene)}
 		    <br />
