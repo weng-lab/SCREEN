@@ -38,11 +38,11 @@ class CRE:
         pcGenes = set([g[0] for g in self.genesPC])
         ret = []
         for g in self.genesPC:
-            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
+            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         for g in self.genesAll:
             if g[0] not in pcGenes:
                 ret.append({"name" : g[0], "distance" : g[1],
-                            "ensemblid_ver" : g[2]})
+                            "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         ret.sort(key=lambda g: g["distance"])
         return ret
 
@@ -53,7 +53,7 @@ class CRE:
                                                                  coord.chrom)
         ret = []
         for g in self.genesPC:
-            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2]})
+            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         return ret
 
     def genesInTad(self):
