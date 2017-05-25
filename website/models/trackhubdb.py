@@ -20,6 +20,7 @@ from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, Bi
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from constants import paths
+from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
@@ -153,7 +154,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def makeHub(self):
         f = StringIO.StringIO()
         t = "ENCODE Candidate Regulatory Elements " + self.assembly
-
+        if Config.ribbon:
+            t += " (%s)" % Config.ribbon
+        
         for r in [["hub", t],
                   ["shortLabel", t],
                   ["longLabel", t],
