@@ -7,6 +7,7 @@ import json
 import os
 import heapq
 import re
+from collections import OrderedDict
 
 from trackinfo import TrackInfo
 
@@ -218,8 +219,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         cache = self.cacheW[self.assembly]
         assaymap = cache.assaymap
 
-        ret = {}
-        for tct in cts:
+        ret = OrderedDict()
+        for tct in sorted(cts, key = lambda x: x["ct"]):
             ct = tct["ct"]
             ret[ct] = {}
             ctInfos = cache.datasets.byCellType[ct] # one per assay
