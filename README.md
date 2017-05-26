@@ -34,6 +34,7 @@ pip install --user python-dateutil
 pip install --user joblib
 pip install --user ucscgenome
 pip install --user ujson
+pip install --user configparser
 
 -- for memcached caching
 sudo apt install memcached libmemcached-dev
