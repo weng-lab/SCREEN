@@ -2,12 +2,7 @@
 
 from __future__ import print_function
 import sys, os
-
-try:
-    import ConfigParser
-except:
-    import configparser as ConfigParser
-
+from configparser import ConfigParser
 import json
 
 class Config:
@@ -17,7 +12,7 @@ class Config:
         print("\tfile should be symlink'd to a desired config.<blah>.ini file")
         sys.exit(1)
 
-    c = ConfigParser.ConfigParser()
+    c = ConfigParser()
     c.read(fnp)
 
     version = c.get("RE", "version")
