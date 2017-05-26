@@ -2,7 +2,12 @@
 
 from __future__ import print_function
 import sys, os
-import ConfigParser
+
+try:
+    import ConfigParser
+except:
+    import configparser as ConfigParser
+
 import json
 
 class Config:
