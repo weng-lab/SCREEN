@@ -110,8 +110,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	for(let ct of cts){
 	    if (!ct.checked || !ct.name) continue;
 	    rows.push({
-		name: ct.name,
-		key: ct.cellTypeName,
+		...ct,
 		onClick: () => {
 		    this.props.actions.toggleGenomeBrowserCelltype(ct.cellTypeName)
 		}
@@ -125,7 +124,9 @@ class ConfigureGenomeBrowser extends React.Component {
 		</div>
 		<div className="panel-body" ref="lcontainer">
 		    <DraggableCtList items={rows} container={this.refs.lcontainer}
-	                onMoveEnd={(newlist, moveditem, oldindex, newindex) => {}} />
+	                onMoveEnd={(newlist, moveditem, oldindex, newindex) => {this.props.actions.setGenomeBrowserCelltypes(
+		            newlist
+	                )}} />
 		</div>
 	    </div>);
 

@@ -223,7 +223,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         assaymap = cache.assaymap
 
         ret = OrderedDict()
-        for tct in sorted(cts, key = lambda x: x["ct"]):
+        for tct in cts:
             ct = tct["ct"]
             ret[ct] = {}
             ctInfos = cache.datasets.byCellType[ct] # one per assay
