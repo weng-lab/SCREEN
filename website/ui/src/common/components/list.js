@@ -24,12 +24,19 @@ export class ListItem extends React.Component {
 	    rtxt = this.props.n;
 	}
 
-	return (<a onClick={this.onclick}>
+	let draggable = this.props.draggable ? this.props.draggable(
+		<span><span className="glyphicon glyphicon-align-justify" />{" "}</span>
+	) : null;
+
+	return (<div>
 		   <div className={classname} key={this.props.value}>
-		      <span>{this.props.value}</span>
-		      <span className="pull-right">{rtxt}</span>
-		   </div>
-		</a>
+		      {draggable}
+		      <a onClick={this.onclick}>
+		          <span>{this.props.value}</span>
+		          <span className="pull-right">{rtxt}</span>
+		      </a>
+		    </div>
+		</div>
 	       );
     }
 }
