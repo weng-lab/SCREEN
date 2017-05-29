@@ -120,6 +120,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="panel panel-default">
 		<div className="panel-heading">
 		    <h3 className="panel-title">Selected biosamples</h3>
+		    <small>Use the handles at left to drag items and change the order in which they will display in the browser.</small><br />
 		    <small>Note: For best UCSC performance, choose &lt;10 cell types.</small>
 		</div>
 		<div className="panel-body" ref="lcontainer">
