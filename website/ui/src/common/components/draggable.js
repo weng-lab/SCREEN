@@ -16,7 +16,7 @@ class DraggableCtList extends React.Component {
     constructor(props) {super(props);}
     render() {
 	return <DraggableList list={this.props.items}
-	           itemKey="key" template={DraggableListItem}
+	           itemKey="cellTypeName" template={DraggableListItem}
 	           onMoveEnd={this.props.onMoveEnd}
 	           container={() => this.props.container}
 	           padding={0} />

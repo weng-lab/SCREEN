@@ -27,7 +27,14 @@ const main_reducers = (state, action) => {
 	case Actions.SET_RANK_DNASE: return {...state, rank_dnase_start: action.start, rank_dnase_end: action.end};
 	case Actions.SET_RANK_PROMOTER: return {...state, rank_promoter_start: action.start, rank_promoter_end: action.end};
 	case Actions.SET_RANK_ENHANCER: return {...state, rank_enhancer_start: action.start, rank_enhancer_end: action.end};
-	case Actions.SET_RANK_CTCF: return {...state, rank_ctcf_start: action.start, rank_ctcf_end: action.end};
+    case Actions.SET_RANK_CTCF: return {...state, rank_ctcf_start: action.start, rank_ctcf_end: action.end};
+    case Actions.SET_GENOME_BROWSER_CTS: return {
+	...state,
+	configuregb_cts: [
+	    ...action.list,
+	    ...state.configuregb_cts.filter(x => !x.checked)
+	]
+    };
 
 	case Actions.SET_CRE_TYPE: return {...state, element_type: action.element_type};
 
