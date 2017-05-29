@@ -5,12 +5,13 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import ResultsTable from '../../../common/components/results_table'
-import {ListItem} from '../../../common/components/list'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
 import loading from '../../../common/components/loading';
 import {getCommonState} from '../../../common/utility';
 import * as Render from '../../../common/renders'
+
+import DraggableCtList from '../../../common/components/draggable';
 
 class ConfigureGenomeBrowser extends React.Component {
     constructor(props) {
@@ -108,14 +109,13 @@ class ConfigureGenomeBrowser extends React.Component {
 	let cts = this.props.configuregb_cts;
 	for(let ct of cts){
 	    if (!ct.checked || !ct.name) continue;
-	    rows.push(
-		<ListItem value={ct.name}
-			  selected="true"
-			  n="0"
-			  onclick={() => {
-				  this.props.actions.toggleGenomeBrowserCelltype(ct.cellTypeName)
-			      }}
-		/>);
+	    rows.push({
+		name: ct.name,
+		key: ct.cellTypeName,
+		onClick: () => {
+		    this.props.actions.toggleGenomeBrowserCelltype(ct.cellTypeName)
+		}
+	    });
 	}
 	let selectedBiosamples = (
 	    <div className="panel panel-default">
@@ -123,8 +123,9 @@ class ConfigureGenomeBrowser extends React.Component {
 		    <h3 className="panel-title">Selected biosamples</h3>
 		    <small>Note: For best UCSC performance, choose &lt;10 cell types.</small>
 		</div>
-		<div className="panel-body">
-		    {rows}
+		<div className="panel-body" ref="lcontainer">
+		    <DraggableCtList items={rows} container={this.refs.lcontainer}
+	                onMoveEnd={(newlist, moveditem, oldindex, newindex) => {}} />
 		</div>
 	    </div>);
 
