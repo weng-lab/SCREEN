@@ -127,14 +127,20 @@ WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 """.format(assembly = self.assembly)
+        a = """
+SELECT chrom, start, stop FROM {assembly}_gene_info
+WHERE approved_symbol = %(gene)s
+""".format(assembly = self.assembly)
         #print(q, gene)
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute(q, { "gene" : gene,
                               "compartments" : tuple(compartments),
                               "bts" : tuple(biosample_types_selected)})
             rows = curs.fetchall()
+            curs.execute(a, {"gene": gene})
+            grows = curs.fetchall()
 
-        if not rows:
+        if not rows or not grows:
             return {"hasData" : False, "items" : {}}
 
         def makeEntry(row):
@@ -154,6 +160,9 @@ AND r_rnas_{assembly}.biosample_type IN %(bts)s
 
         rows = [makeEntry(x) for x in rows]
         ret = {"hasData" : True,
-               "items" : self.process(rows)}
+               "items" : self.process(rows),
+               "coords": {"chrom": grows[0][0],
+                          "start": grows[0][1],
+                          "len": grows[0][2] } }
         return ret
 

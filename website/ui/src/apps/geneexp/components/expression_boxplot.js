@@ -20,11 +20,25 @@ class ExpressionBoxplot extends React.Component {
 	       this.refs.bargraph);
     }
 
+    _bb() {
+	let gclick = this.gclick.bind(this);
+	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC");}}>UCSC</button>;
+    }
+
+    gclick(name) {
+	this.props.actions.showGenomeBrowser({
+	    title: this.props.gene,
+	    start: this.props.data.coords.start,
+	    len: this.props.data.coords.len,
+	    chrom: this.props.data.coords.chrom
+	}, name, "gene");
+    }
+    
     render() {
 	return (
             <div>
  	        <span style={{fontSize: "18pt"}}>
-                    <em>{this.props.gene}</em> <span ref="help_icon" />
+                <em>{this.props.gene}</em> {this._bb()} <span ref="help_icon" />
                 </span>
 		<div style={{"width": "100%"}} ref="bargraph" />
 	    </div>);
