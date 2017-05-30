@@ -163,6 +163,6 @@ WHERE approved_symbol = %(gene)s
                "items" : self.process(rows),
                "coords": {"chrom": grows[0][0],
                           "start": grows[0][1],
-                          "len": grows[0][2] } }
+                          "len": grows[0][2] - grows[0][1] } }
         return ret
 
