@@ -31,6 +31,14 @@ const main_reducers = (state, action) => {
     case SearchAction.MAKE_SEARCH_QUERY:
         console.log("new query", action.q);
         return state;
+
+    case Actions.SET_GENOME_BROWSER_CTS: return {
+	...state,
+	configuregb_cts: [
+	    ...action.list,
+	    ...state.configuregb_cts.filter(x => !x.checked)
+	]
+    };
 	
     case Actions.SHOW_GENOME_BROWSER:
 	let ret = {...state, ...mainTabSetter(state, "configgb"),
