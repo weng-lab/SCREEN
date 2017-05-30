@@ -79,7 +79,8 @@ class CelltypeView extends React.Component {
         let cols = [
             {title: "accession", data: "info", className: klassCenter,
              render: Render.creTableAccession },
-	    {title: "CTS", data: "ctspecifc", visible: true, name: "cts", render: Render.creTableCellTypeSpecific},
+	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", visible: true, name: "cts", render: Render.creTableCellTypeSpecific,
+	     className: klassCenter, width: "15%"},
 	    {title: "H3K4me3 Z", data: "promoter zscore", render: Render.real,
 	     className: klassCenter, visible: vcols["promoter zscore"]},
             {title: "H3K27ac Z", data: "enhancer zscore", render: Render.real,
@@ -102,7 +103,7 @@ class CelltypeView extends React.Component {
 	let columnDefs = [{ "orderData": 2, "targets": 1 }];
 	let actions = this.props.actions;
 	
-        let creTable = (<ResultsTable
+        let creTable = (<ResultsTable key={this.props.cellType.cellTypeName}
 			    onButtonClick={(td, rowdata) =>
 					   this.button_click_handler(td, rowdata, actions)}
                             data={cres}
