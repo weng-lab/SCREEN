@@ -1,3 +1,6 @@
+export const SET_GENOME_BROWSER_CTS = 'SET_GENOME_BROWSER_CTS';
+export const setGenomeBrowserCelltypes = (list) => ({type: SET_GENOME_BROWSER_CTS, list});
+
 export const TOGGLE_GENOME_BROWSER_CELLTYPE = 'TOGGLE_GENOME_BROWSER_CELLTYPE';
 export const toggleGenomeBrowserCelltype = (ct) => ({
     type: TOGGLE_GENOME_BROWSER_CELLTYPE, ct});
