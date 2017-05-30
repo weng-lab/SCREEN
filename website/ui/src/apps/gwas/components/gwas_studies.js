@@ -13,6 +13,10 @@ const make_gwas_friendly = (gwas_study) => {
     return [g.author, g.trait].join(" / ");
 }
 
+const render_pubmed_link = (id) => (
+    "<a target='_blank' href='https://www.ncbi.nlm.nih.gov/pubmed/" + id + "'>" + id + "</a>"
+);
+
 class SingleStudy  extends React.Component {
     render() {
 	return (
@@ -25,14 +29,14 @@ class SingleStudy  extends React.Component {
 		    {title: "Author", data: "author",
                      className: "dt-right"},
 		    {title: "Pubmed", data: "pubmed",
-                     className: "dt-right"}
+                     className: "dt-right pubmed", render: render_pubmed_link}
 		]}
 		friendlySelectionLookup={make_gwas_friendly}
 		order={[[0, "asc"], [1, "asc"]]}
 		selection={this.props.gwas_study}
 		mode={CHECKLIST_MATCH_ANY}
 		pageLength={5}
-		onTdClick={(c) => { this.props.actions.setStudy(c) } }
+	    onTdClick={(c, td) => {if (!td || td.className.indexOf("pubmed") === -1) this.props.actions.setStudy(c) } }
             />);
     }
 }
