@@ -15,9 +15,9 @@ class SearchBox extends React.Component {
     }
     
     _search() {
-	let params = jQuery.param({q: this.state.searchtext, assembly: GlobalAssembly});
-	let url = "/search/?" + params;
-	window.location.href = url;
+	console.log("/search/?q=" + this.state.searchtext + "&assembly=" + GlobalAssembly);
+	window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + GlobalAssembly;
+	return false;
     }
     
     makeVal(p) {
@@ -46,9 +46,7 @@ class SearchBox extends React.Component {
 
     render() {
 
-	return (<form action="search" method="get" onSubmit={this._search}
-                className="navbar-collapse navbar-searchform">
-
+	return (<span className="navbar-collapse navbar-searchform">
 	        <AutocompleteTextbox defaultvalue={this.state.searchtext} id="acnav"
 		    name="q" hideerr="true" actions={this.props.actions} size={100}
 		    className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
@@ -57,7 +55,7 @@ class SearchBox extends React.Component {
                 <a className="btn btn-primary btn-lg searchButton"
                     onClick={this._search} role="button">Search</a>
 
-		</form>);
+		</span>);
     }
 }
 /*
