@@ -25,7 +25,7 @@ public:
     void loadMasterPeaks(){
         bfs::path inFnp = raw_ / FileNames::cREs;
 
-        std::cout << "loading " << inFnp << std::endl;
+        std::cout << "splitter: loading " << inFnp << std::endl;
         auto lines = bib::files::readStrings(inFnp);
 
         rDhsToChr_.reserve(lines.size());
@@ -51,7 +51,8 @@ public:
                     chromToLines[chrom].push_back(p);
                 }
             } catch(...){
-                std::cerr << "ERROR: missing '" << toks[0] << "' from " << inFnp << std::endl;
+                std::cerr << "ERROR: missing '" << toks[0] << "' from "
+                          << inFnp << std::endl;
                 throw std::runtime_error("missing rDHS");
             }
         }
@@ -101,8 +102,14 @@ public:
         auto lines = bib::files::readStrings(inFnp);
         for(const auto& p : lines){
             auto toks = bib::str::split(p, '\t');
-            std::string chrom = accessionToChr_.at(toks[0]);
-            chromToLines[chrom].push_back(p);
+            try{
+                std::string chrom = accessionToChr_.at(toks[0]);
+                chromToLines[chrom].push_back(p);
+            } catch(...){
+                std::cerr << "ERROR: missing '" << toks[0] << "' from "
+                          << inFnp << std::endl;
+                throw;
+            }
         }
 
         for(const auto& kv : chromToLines){
