@@ -222,10 +222,10 @@ def main():
         if 1:
             ep = ExtractRawPeaks(assembly, ver, nbins, args.j)
             ep.run()
-        if 0:
+        if 1:
             mf = MergeFiles(assembly, ver, nbins, args.assay)
             mf.run()
-        if 0:
+        if 1:
             sample(assembly, ver, nbins)
 
     return 0
