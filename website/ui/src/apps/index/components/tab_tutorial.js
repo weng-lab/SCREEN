@@ -18,19 +18,19 @@ class TabTutorial extends React.Component {
                 <h2>Tutorials</h2>
                 <h3>Main Search</h3>
                 <iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/_bQtmsPeMKA"
+	                src="https://www.youtube.com/embed/gOS7Eyi0xvM"
 	                frameborder="0" allowfullscreen>
 		</iframe>
 
                 <h3>Gene Expression</h3>
 		<iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/2cJUiu8Cg_Y"
+	                src="https://www.youtube.com/embed/D6dxzSX2XTE"
 	                frameborder="0" allowfullscreen>
 		</iframe>
 
 	        <h3>Differential Gene Expression</h3>
 		<iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/1bI9tiJimag"
+	                src="https://www.youtube.com/embed/KzsuZ8oGxZk"
 	                frameborder="0" allowfullscreen>
 		</iframe>
 	    </div>));
