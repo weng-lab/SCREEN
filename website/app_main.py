@@ -44,6 +44,10 @@ class MainApp():
         return self.mc.Index()
 
     @cherrypy.expose
+    def intersections(self, *args, **kwargs):
+        return self.ic.Index()
+
+    @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
 
