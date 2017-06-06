@@ -1,3 +1,12 @@
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
+from utils import AddPath
+
+AddPath(__file__, "..")
+from config import Config
+
 from constants import chroms
 
 def isaccession(s):
@@ -18,8 +27,8 @@ def checkChrom(assembly, j):
     return chrom
 
 def checkAssembly(assembly):
-    if assembly not in ["hg19", "mm10"]:
-        raise Exception("invalid assembly")
+    if assembly not in Config.assemblies:
+        raise Exception("assembly %s is not valid." % assembly)
 
 def checkCreAssembly(assembly, accession):
     starts = {"mm10": "em10e",
