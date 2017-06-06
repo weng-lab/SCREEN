@@ -5,7 +5,7 @@ import os, sys, json
 from common.pg_cart import PGcart
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import checkAssembly
+from cre_utils import checkAssembly, isaccession
 from config import Config
 
 class CartWebServiceWrapper:
@@ -39,5 +39,6 @@ class CartWebService:
             raise
 
     def set(self, j, uuid, args):
-        accessions = j["accessions"]
+        accessions = filter(lambda a: isaccession(a), j["accessions"])
         return self.cart.set(uuid, accessions)
+

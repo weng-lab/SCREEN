@@ -23,6 +23,7 @@ class TableWithCart extends React.Component {
         if (td.className.indexOf("browser") != -1) return;
         if (td.className.indexOf("geneexp") != -1) return;
         if (td.className.indexOf("cart") != -1) {
+	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
 	    let j = {GlobalAssembly, accessions};
@@ -48,7 +49,10 @@ class TableWithCart extends React.Component {
     }
 
     addAllToCart() {
-	let accessions = this.props.data.map((d) => ( d.accession ));
+	let accessions = this.props.data.map((d) => {
+	    //console.log("addAllToCart:", d);
+	    return d.info.accession;
+	})
         accessions = new Set([...this.props.cart_accessions,
                               ...accessions]);
 	let j = {GlobalAssembly, accessions};
@@ -360,7 +364,7 @@ class TableWithCart extends React.Component {
 
 	let cas = this.props.cart_accessions;
 	for (var i in data) {
-	    data[i].in_cart = cas.has(data[i].accession);
+	    data[i].in_cart = cas.has(data[i].info.accession);
 	}
 
 	return (
