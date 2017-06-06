@@ -14,6 +14,7 @@ from controllers.trackhub_controller import TrackhubController
 from controllers.cart_ws import CartWebServiceWrapper
 from controllers.data_ws import DataWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
+from controllers.intersection_controller import IntersectionController
 #from controllers.comparison_controller import ComparisonController
 
 from common.session import Sessions
@@ -32,6 +33,7 @@ class MainApp():
         self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
+        self.ic = IntersectionController(self.templates, ps, cache)
         #self.cp = ComparisonController(self.templates, ps, cache)
         self.cartWS = CartWebServiceWrapper(ps, cache)
         self.trackhub = TrackhubController(self.templates, ps, cache)
