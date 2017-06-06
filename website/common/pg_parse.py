@@ -8,17 +8,17 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
-from pg_common import PGcommon, assembly_is_allowed
+from pg_common import PGcommon
 from gene_parse import GeneParse
 from config import Config
 from get_set_mc import GetOrSetMemCache
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession, isclose, checkChrom
-
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '../../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
+from utils import AddPath
 from db_utils import getcursor
+
+AddPath(__file__, "../../common")
+from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
 class PGparseWrapper:
     def __init__(self, pg):
@@ -32,12 +32,11 @@ class PGparse(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGparse")
         self.pg = pg
-        if not assembly_is_allowed(assembly):
-            raise Exception("assembly %s is not valid" % assembly)
+        checkAssembly(assembly)
         self.assembly = assembly
 
     def _get_snpcoord(self, s):
-        with getcursor(self.pg.DBCONN, "parse_search$_get_snpcoord") as curs:
+        with getcursor(self.pg.DBCONN, "PGparse$_get_snpcoord") as curs:
             curs.execute("""
 SELECT chrom, start, stop
 FROM {tn}
@@ -49,7 +48,7 @@ WHERE snp = %s
         return None
 
     def _gene_id_to_symbol(self, _id):
-        with getcursor(self.pg.DBCONN, "parse_search$gene_id_to_symbol") as curs:
+        with getcursor(self.pg.DBCONN, "PGparse$gene_id_to_symbol") as curs:
             curs.execute("""
 SELECT gi.approved_symbol
 FROM {assembly}_gene_info gi
@@ -61,7 +60,7 @@ WHERE gi.id = %s
         return rows[0]
 
     def _exactGeneMatch(self, s, usetss, tssDist):
-        with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
+        with getcursor(self.pg.DBCONN, "PGparse$parse") as curs:
             slo = s.lower().strip()
             curs.execute("""
 SELECT ac.oname,
@@ -84,7 +83,7 @@ LIMIT 50
         return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def _fuzzyGeneMatch(self, s, usetss, tssDist):
-        with getcursor(self.pg.DBCONN, "parse_search$parse") as curs:
+        with getcursor(self.pg.DBCONN, "PGparse$parse") as curs:
             slo = s.lower()
             curs.execute("""
 SELECT ac.oname,
