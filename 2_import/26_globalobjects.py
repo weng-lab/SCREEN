@@ -29,7 +29,7 @@ class GlobalPG:
                              (key, f.read()))
 
     def select(self, name, curs):
-        curs.execute("""SELECT obj FROM {tn} WHERE name = '%s'"""
+        curs.execute("""SELECT obj FROM {tn} WHERE name = %s"""
                      .format(tn = self._tablename), (name,))
         return curs.fetchone()[0]
 
@@ -41,7 +41,7 @@ def main():
         g.drop_and_recreate(curs)
         g.doimport([("fantomcat", FCPaths.global_statistics)],
                    curs)
-        print(g.select("fantomcat"), curs)
+        print(g.select("fantomcat", curs))
     return 0
 
 if __name__ == "__main__":
