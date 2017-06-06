@@ -9,15 +9,15 @@ class PageInfoIntersection:
         self.ps = ps
         self.cacheW = cacheW
 
-    def wholePage(self, userQueryErr):
+    def wholePage(self, assembly, indexPage=False):
         bundleFnp = os.path.join(os.path.dirname(__file__),
                                  "../ui/dist/bundle.js")
         cssFnp = os.path.join(os.path.dirname(__file__),
                               "../static/css.css")
-        return {"page": {"title" : PageTitle("")},
+        return {"page": {"title" : PageTitle(assembly)},
                 "Config": Config,
-                "Assembly" : None,
-                "userQueryErr" : userQueryErr,
+                "indexPage": indexPage,
+                "Assembly" : assembly,
                 "bundlets" : os.path.getmtime(bundleFnp),
                 "cssts" : os.path.getmtime(cssFnp)
         }

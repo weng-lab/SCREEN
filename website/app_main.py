@@ -47,7 +47,7 @@ class MainApp():
 
     @cherrypy.expose
     def intersections(self, *args, **kwargs):
-        return self.ic.Index()
+        return self.gwas.gwas(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):

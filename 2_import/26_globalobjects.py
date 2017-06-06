@@ -7,37 +7,16 @@ from common import FCPaths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
+from pgglobal import GlobalPG
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
-
-class GlobalPG:
-    
-    def __init__(self, assembly, tablename):
-        self._tablename = "_".join((assembly, tablename))
-
-    def drop_and_recreate(self, curs):
-        curs.execute("""DROP TABLE IF EXISTS {tn};
-                        CREATE TABLE {tn} (id serial PRIMARY KEY, name TEXT, obj jsonb);"""
-                     .format(tn = self._tablename))
-
-    def doimport(self, keys, curs):
-        for key, fnp in keys:
-            with open(fnp, "rb") as f:
-                curs.execute("""INSERT INTO {tn} (name, obj)
-                                VALUES (%s, %s::jsonb)""".format(tn = self._tablename),
-                             (key, f.read()))
-
-    def select(self, name, curs):
-        curs.execute("""SELECT obj FROM {tn} WHERE name = %s"""
-                     .format(tn = self._tablename), (name,))
-        return curs.fetchone()[0]
 
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     with getcursor(DBCONN, "26_globalobjects$main") as curs:
-        g = GlobalPG("hg19", "global_objects")
+        g = GlobalPG("hg19")
         g.drop_and_recreate(curs)
         g.doimport([("fantomcat", FCPaths.global_statistics)],
                    curs)

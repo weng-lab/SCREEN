@@ -27,6 +27,7 @@ from constants import paths, chroms
 from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
 from config import Config
+from pgglobal import GlobalPG
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
@@ -56,6 +57,7 @@ class DataWebService(GetOrSetMemCache):
         self.staticDir = staticDir
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
+        self.pgGlobal = GlobalPG(assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
 
         self.actions = {"cre_table" : self.cre_table,
@@ -65,7 +67,8 @@ class DataWebService(GetOrSetMemCache):
                         "bed_download" : self.bed_download,
                         "json_download" : self.json_download,
                         "trees" : self.trees,
-                        "tfenrichment": self.tfenrichment
+                        "tfenrichment": self.tfenrichment,
+                        "global_object": self.global_object
         }
 
         self.reDetailActions = {
@@ -92,6 +95,10 @@ class DataWebService(GetOrSetMemCache):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
         return {accession: {"ortholog": orth.as_dict()}}
 
+    def global_object(self, j, args):
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
+            return self.pgGlobal.select(j["name"], curs)
+    
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)
         results = self.pgSearch.creTable(j, chrom,
