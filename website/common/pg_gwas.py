@@ -9,13 +9,13 @@ from collections import namedtuple
 import gzip
 
 from coord import Coord
-from pg_common import PGcommon, assembly_is_allowed
+from pg_common import PGcommon
 from pg_cre_table import PGcreTable
 from config import Config
 from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession, isclose, checkChrom
+from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
@@ -33,8 +33,7 @@ class PGgwas(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGgwas")
         self.pg = pg
-        if not assembly_is_allowed(assembly):
-            raise Exception("assembly %s is invalid" % assembly)
+        checkAssembly(assembly)
         self.assembly = assembly
 
         pg = PGcommon(self.pg, self.assembly)
