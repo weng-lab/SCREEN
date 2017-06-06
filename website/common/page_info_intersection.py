@@ -4,7 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import PageTitle
 from config import Config
 
-class PageInfoMain:
+class PageInfoIntersection:
     def __init__(self, ps, cacheW):
         self.ps = ps
         self.cacheW = cacheW
