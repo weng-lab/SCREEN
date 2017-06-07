@@ -91,7 +91,7 @@ def run(args, DBCONN):
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
-                im = ImportMinipeaks(assembly, 20, ver)
+                im = ImportMinipeaks(assembly, nbins, ver)
                 im.importAll(outF, args.sample)
 
         printWroteNumLines(queryFnp)
