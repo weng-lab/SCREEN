@@ -9,6 +9,6 @@ class IntersectionController:
         self.ps = ps
         self.params = (ps, cache)
 
-    def Index(self):
+    def Index(self, args, kwargs, uuid):
         pageInfo = PageInfoIntersection(*self.params)
         return self.t('main/intersection', **pageInfo.wholePage(""))
