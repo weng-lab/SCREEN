@@ -13,7 +13,7 @@ class FantomCat extends React.Component{
 }
 
 const MainTabInfo = () => ({
-    gwas: {title: "FantomCAT", visible: true, f: FantomCat},
+    fantomcat: {title: "FantomCAT", visible: true, f: FantomCat},
     configgb: {title: "Configure Genome Browser", visible: false,
 	       f: ConfigureGenomeBrowser}
 });
