@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys, os
 import json
 
-from common import FCPaths
+from fc_common import FCPaths
 
 class CoordMatcher:
 

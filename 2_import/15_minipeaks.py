@@ -74,8 +74,8 @@ def run(args, DBCONN):
     if args.assembly:
         assemblies = [args.assembly]
 
-    nbins = 20
-    ver = 3 #Config.minipeaks_ver
+    nbins = Config.minipeaks_nbins
+    ver = Config.minipeaks_ver
 
     for assembly in assemblies:
         printt('***********', assembly)
