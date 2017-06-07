@@ -206,6 +206,8 @@ def parse_args():
     parser.add_argument('--list', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
     parser.add_argument('--assay', type=str, default="")
+    parser.add_argument('--ver', type=int, default=4)
+    parser.add_argument('--nbins', type=int, default=0)
     args = parser.parse_args()
     return args
 
@@ -216,10 +218,10 @@ def main():
     if args.assembly:
         assemblies = [args.assembly]
 
-    nbins = 0
-    ver = 4
+    nbins = args.nbins
+    ver = args.ver
     for assembly in assemblies:
-        if 1:
+        if 0:
             ep = ExtractRawPeaks(assembly, ver, nbins, args.j)
             ep.run()
         if 1:

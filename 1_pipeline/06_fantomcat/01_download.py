@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys, os
 
-from common import FCPaths
+from fc_common import FCPaths
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../metadata/utils"))
 from utils import Utils
