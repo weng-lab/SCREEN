@@ -4,7 +4,7 @@ import sys, os
 import json
 import numpy
 
-from common import FCPaths
+from fc_common import FCPaths
 
 class Statistics:
     

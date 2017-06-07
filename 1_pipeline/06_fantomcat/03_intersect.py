@@ -3,10 +3,9 @@ from __future__ import print_function
 import sys, os
 import subprocess
 
-from common import FCPaths
+from fc_common import FCPaths
 
 class Intersector:
-
     @staticmethod
     def run():
         with open(FCPaths.intersected, "wb") as o:
