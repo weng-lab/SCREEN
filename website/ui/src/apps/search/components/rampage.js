@@ -3,6 +3,8 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
+
 import HelpIcon from '../../../common/components/help_icon'
 import * as Render from '../../../common/renders'
 
@@ -164,26 +166,22 @@ class Rampage extends React.Component {
 
                 <span className="geTissueOfOrigin">Tissue of origin</span>
 		<div ref="container" style={{width: this.props.width + "px"}}>
+		    {this.d3Render()}
                 </div>
 	    </div>);
     }
 
     componentDidMount() {
-        this.d3Render();
+        //this.d3Render();
     }
 
     componentDidUpdate() {
-        this.d3Render();
+        //this.d3Render();
     }
 
     d3Render(){
-	if("details" === this.props.maintabs_active){
-            if("rampage" != this.props.re_details_tab_active){
-		return;
-	    }
-	}
-
-	$(this.refs.container).empty();
+	if ("details" === this.props.maintabs_active
+	    && "rampage" != this.props.re_details_tab_active ) return;
 
         let allData = this.props.keysAndData.tsss;
         let transcript = allData[this.state.transcript];
@@ -191,16 +189,12 @@ class Rampage extends React.Component {
         var itemsByID = transcript.itemsByID;
 	var items = transcript.itemsGrouped[this.state.sortOrder];
 
-	var sorted_keys = Object.keys(items).sort(function (a, b) {
+	var sorted_keys = Object.keys(items).sort( (a, b) => (
 	    // from http://stackoverflow.com/a/9645447
-	    return a.toLowerCase().localeCompare(b.toLowerCase());
-	});
+	    a.toLowerCase().localeCompare(b.toLowerCase())
+	));
 
-	var rank_f = (rid) => {
-	    var key = this.state.datascale;
-	    var val = itemsByID[rid][key];
-	    return val;
-	};
+	var rank_f = rid => itemsByID[rid][this.state.datascale];
 
 	var subName_f = (rid) => {
 	    let t = itemsByID[rid];
@@ -218,6 +212,15 @@ class Rampage extends React.Component {
 	var yoffsets = {};
 	var cmax = 0;
 	var d;
+
+	let format = {
+	    value: rank_f,
+	    label: d => itemsByID[d].biosample_term_name + " (" + itemsByID[d].strand + ") strand",
+	    grouplabel: d => d.tissue
+	};
+	
+	return <ScaledHorizontalBar itemsets={items} width={this.props.width}
+	         barheight={this.props.barheight} format={format} />;
 
 	for (var i in sorted_keys) {
 	    var key = sorted_keys[i];
