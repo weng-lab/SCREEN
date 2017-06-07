@@ -31,7 +31,9 @@ class HorizontalBar extends ScaledPlot {
     componentWillReceiveProps(props) {
 	super.componentWillReceiveProps(props, props.axis_offsets);
 	let t0 = x => x > 0 ? x : 0;
-	this._format = props.format ? props.format : x => x;
+	this._format = props.format.value ? props.format.value : x => x;
+	this._label = props.format.label ? props.format.label : x => "";
+	this._grouplabel = props.format.grouplabel ? props.format.grouplabel : x => "";
 	this._value = d => t0(this._format(d));
 
 	// compute bar and label offsets
@@ -65,7 +67,7 @@ class HorizontalBar extends ScaledPlot {
 		      width={this._value(item) * this._xscale} style={{fill: this.props.itemsets[key].color}} />
 	            <text x={this._value(item) * this._xscale + 5} y={this._y(i) + fontsize}
 		      style={{fill: "#000", fontSize: fontsize + "px"}}>
-		        {this._value(item) + " " + item.cellType}
+		        {this._value(item) + " " + this._label(item)}
 		    </text>
 		</g>
 	    ))
@@ -73,7 +75,7 @@ class HorizontalBar extends ScaledPlot {
 	let leftlabels = (this._sorted_keys.map((key, k) => (
 	    <text x={this.props.axis_offsets[0] * 0.45} y={this._y(this._item_distribution.labeloffsets[k])}
 	      style={{fill: "000", fontSize: this._barheight + "px", textAnchor: "end"}}>
-		{this.props.itemsets[key].displayName}
+		{this._grouplabel(this.props.itemsets[key])}
 	    </text>
 	)));
 	return super.render(

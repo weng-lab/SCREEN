@@ -59,11 +59,17 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
+	let format = {
+	    value: d => d[this.state.datascale],
+	    label: d => d.cellType,
+	    grouplabel: d => d.displayName
+	};
+	
         return (
             <div style={{display: (isFetching ? "none" : "block")}}>
                 <span className="geTissueOfOrigin">Tissue of origin</span>
 		<ScaledHorizontalBar itemsets={this.props.items[this.state.sortorder]} width={width}
-	          barheight={this.props.barheight} format={d => d[this.state.datascale]} />
+	          barheight={this.props.barheight} format={format} />
 	    </div>
         );
     }
