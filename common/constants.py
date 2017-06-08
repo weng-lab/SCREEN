@@ -92,7 +92,7 @@ class helptext:
 V4d = os.path.join(Dirs.encyclopedia, "Version-4")
 CreVer = Config.version
 CreVerStr = "ver" + str(CreVer)
-fantomcat = os.path.join(Dirs.encyclopedia, "fantomcat")
+fantomcat = os.path.join(Dirs.encyclopedia, "..", "fantomcat")
 
 class paths(object):
     creVer = CreVer
