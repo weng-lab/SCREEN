@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import sys, os
+import math
 
 class PGFantomCat:
 
@@ -14,6 +15,7 @@ class PGFantomCat:
         ("exonconservation", "FLOAT"), ("traitdfr", "FLOAT"),
         ("eqtlcoexpr", "FLOAT"), ("dynamicexpr", "FLOAT")
     ]
+    GENEFIELDS = [x for x, _ in GENECOLUMNS]
 
     def __init__(self, assembly, tableprefix = "fantomcat"):
         self._tables = {
@@ -33,14 +35,14 @@ CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
 
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
-            curs.copy_from(f, self._tables["genes"], columns = [x for x, _ in PGFantomCat.GENECOLUMNS[1:]])
+            curs.copy_from(f, self._tables["genes"], columns = [x for x in PGFantomCat.GENEFIELDS[1:]])
 
     def import_intersections_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables["intersections"], columns = ["geneid", "cre"])
     
     def select_gene(self, field, value, curs):
-        if field not in [x for x, _ in PGFantomCat.GENECOLUMNS]:
+        if field not in [x for x in PGFantomCat.GENEFIELDS]:
             print("WARNING: attempted to select '%s' from nonexistent column '%s' in FantomCat table"
                   % (value, field))
             return None
@@ -53,8 +55,9 @@ CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
 SELECT {fields} FROM {genes} AS g, {intersections} as i
 WHERE i.geneid = g.geneid AND i.cre = %(acc)s
 """.format(intersections = self._tables["intersections"], genes = self._tables["genes"],
-           fields = ",".join([("g." + x) for x, _ in PGFantomCat.GENECOLUMNS[1:]])), {"acc": acc})
-        return curs.fetchall()
+           fields = ",".join([("g." + x) for x in PGFantomCat.GENEFIELDS[1:]])), {"acc": acc})
+        return [{PGFantomCat.GENEFIELDS[i + 1]: v[i] if i < 9 or not math.isnan(v[i]) else "--"
+                 for i in xrange(len(v)) } for v in curs.fetchall()]
 
     def select_rna_intersections(self, gid, curs):
         curs.execute("SELECT cre FROM {intersections} WHERE geneid = %s".format(intersections = self._tables["intersections"]),
