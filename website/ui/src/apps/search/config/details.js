@@ -180,7 +180,7 @@ class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
 	this.doRender = (data) => {
-	    return tabEles({fantom_cat: data}, FantomCatTable(), 1);
+	    return tabEles({fantom_cat: data}, FantomCatTable(this.props.actions), 1);
 	}
     }
 }
