@@ -18,6 +18,7 @@ class Boxplot extends ScaledPlot {
 	this._qsetorder = (props.qsetorder ? props.qsetorder : Object.keys(props.qsets));
 	this._range = [Math.min(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].values[0])),
 		       Math.max(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].values[4])) * 1.1];
+	if (this.props.range) this._range = this.props.range;
 	this._xscale = this._viewsize[0] / this._qsetorder.length;
 	this._yscale = this._viewsize[1] / (this._range[1] - this._range[0]);
 	this._boxwidth = this._viewsize[0] / this._qsetorder.length;
@@ -45,7 +46,7 @@ class Boxplot extends ScaledPlot {
 		this.props.useiqr ? Math.min(1.5 * (q[3] - q[1]), q[1] - q[0]) : q[1] - q[0],
 		this.props.useiqr ? Math.min(1.5 * (q[3] - q[1]), q[4] - q[3]) : q[4] - q[3]
 	    ];
-	    let outliers = (!_q.outliers ? null : _q.outliers.map(o => (
+	    let outliers = (!_q.outliers || this.props.hideoutliers ? null : _q.outliers.map(o => (
 		<circle fill="#fff" stroke="#000" r={2} strokeWidth={1} cx={this._boxwidth * 0.35} cy={this._y(o)} />
 	    )))
 	    return (

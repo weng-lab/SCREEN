@@ -13,7 +13,7 @@ import Histogram from '../../../plots/components/histogram';
 import PieChart from '../../../plots/components/piechart';
 import Boxplot from '../../../plots/components/boxplot';
 
-let o = ["non-coding", "coding", "", "pseudogenes", "protein coding mRNAs", "sense overlap RNAs", "uncertain coding", "small RNAs", "lncRNA, intergenic", "lncRNA, antisense", "lncRNA, divergent"];
+let o = ["non-coding", "coding", "", "pseudogenes", "protein coding mRNAs", "sense overlap RNAs", "uncertain coding", "lncRNA, intergenic", "lncRNA, antisense", "lncRNA, divergent"];
 
 class FantomCatTab extends React.Component{
 
