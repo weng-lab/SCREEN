@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 import ScaledPlot from './scaledplot';
 
 const ccoords = r => pct => [

@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 import WrappedText from './wrappedtext'
 import ScaledPlot from './scaledplot';
 

@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 import HorizontalBar, {compute_offsets} from './horizontalbar';
 
 class ScaledHorizontalBar extends React.Component {
