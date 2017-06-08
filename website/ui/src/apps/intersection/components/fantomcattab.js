@@ -7,6 +7,8 @@ import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
 import HelpIcon from '../../../common/components/help_icon'
 
+import FantomCatTabs from './fantomcat/fantomcattabs';
+
 import Histogram from '../../../plots/components/histogram';
 import PieChart from '../../../plots/components/piechart';
 import Boxplot from '../../../plots/components/boxplot';
@@ -56,71 +58,24 @@ class FantomCatTab extends React.Component{
             }.bind(this)
         });
     }
-
-    _render_histograms(q) {
-	return (<div><div className="row">
-		<div className="col-md-6"><h3>cREs per kb, non-coding RNA</h3></div>
-		<div className="col-md-6"><h3>cREs per kb, coding RNA</h3></div>
-		</div>
-		<div className="row">
-	  	<div style={{height: "300px"}} className="col-md-6">
-		    <Histogram x={Array.from(Array(100).keys()).map(x => x / 20.0)} y={q.classes["non-coding"].bins}
-		       viewBox={{width: 400, height: 150}}
-		       margin={{left: 5, bottom: 5, top: 0, right: 5}} />
-		</div>
-		<div style={{height: "300px"}} className="col-md-6">
-		    <Histogram x={Array.from(Array(100).keys()).map(x => x / 20.0)} y={q.classes.coding.bins}
-		       viewBox={{width: 400, height: 150}}
-		       margin={{left: 5, bottom: 5, top: 0, right: 5}} />
-		</div>
-		</div></div>);
-    }
-
-    _render_boxplot(o) {
-	if (!this._qsets) return <div />;
-	return (<div><div className="row">
-		<div className="col-md-6"><h3>cREs per kb</h3></div>
-		<div className="col-md-6" />
-		</div>
-		<div className="row">
-		<div style={{height: "600px"}} className="row-md-6">
-		    <Boxplot viewBox={{width: 600, height: 450}} useiqr={true}
-		        margin={{left: 5, bottom: 5, top: 0, right: 5}}
-		        qsets={this._qsets} qsetorder={o} />
-		</div>
-		<div className="col-md-6" />
-		</div>
-		</div>);
-    }
-
-    _render_piecharts(q) {
-	return (<div><div className="row">
-		<div className="col-md-6"><h3>intersecting cREs, non-coding RNA</h3></div>
-		<div className="col-md-6"><h3>intersecting cREs, coding RNA</h3></div>
-		</div>
-		<div className="row">
-	  	<div style={{height: "300px"}} className="col-md-6">
-		    <PieChart viewBox={{width: 400, height: 400}} radius={200} stroke="#000"
-		        slices={[ {pct: q.classes["non-coding"].intersecting / q.classes["non-coding"].total, fill: "#fff"},
-				  {pct: 1.0 - q.classes["non-coding"].intersecting / q.classes["non-coding"].total, fill: "#444"} ]} />
-		</div>
-		<div style={{height: "300px"}} className="col-md-6">
-		    <PieChart viewBox={{width: 400, height: 400}} radius={200} stroke="#000"
-		        slices={[ {pct: q.classes.coding.intersecting / q.classes.coding.total, fill: "#fff"},
-				  {pct: 1.0 - q.classes.coding.intersecting / q.classes.coding.total, fill: "#444"} ]} />
-		</div>
-		</div></div>);
-    }
     
     doRenderWrapper({data, actions}){
 	if (!data) return <div />;
+	let tabdata = {
+	    piecharts: {
+		data
+	    },
+	    perkb: {
+		data,
+		qsets: this._qsets,
+		qset_order: o
+	    }
+	};
         return (
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-12">
-		        {this._render_piecharts(data)}
-	                {this._render_histograms(data)}
-	                {this._render_boxplot(o)}
+		        <FantomCatTabs data={tabdata} />
                     </div>
                 </div>
             </div>);
