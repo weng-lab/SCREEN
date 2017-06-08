@@ -125,7 +125,8 @@ class ReTabBase extends React.Component{
 	    dataType: "json",
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
+                console.log("err loading cre details");
+		console.log(error);
                 this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
@@ -179,7 +180,7 @@ class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
 	this.doRender = (data) => {
-	    return tabEles(data, FantomCatTable(), 1);
+	    return tabEles({fantom_cat: data}, FantomCatTable(), 1);
 	}
     }
 }
