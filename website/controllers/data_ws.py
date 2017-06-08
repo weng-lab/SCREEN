@@ -141,7 +141,7 @@ class DataWebService(GetOrSetMemCache):
             result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
             if result["aliases"] != "":
                 if result["other_names"] != "": result["other_names"] += ", "
-                result["other_names"] += result["aliases"].replace(",", ", ")
+                result["other_names"] += ", ".join(result["aliases"].split("|"))
         return {accession: results}
 
     def _re_detail_targetGene(self, j, accession):

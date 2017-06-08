@@ -3,6 +3,10 @@ import * as Render from '../../../common/renders'
 import IntersectingAssayTf from '../components/intersecting_assay_tf'
 import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
+const gene_link_list = (d) => (
+    d.split(", ").map(Render.gene_link).join(", ")
+);
+
 export const TopTissuesTables = () => ({
     promoter: {
 	title: "H3K4me3 Z-scores",
@@ -107,7 +111,7 @@ export const FantomCatTable = (actions) => ({
 	title: "Intersecting FantomCat RNAs",
 	cols: [
 	    {title: "RNA ID", data: "geneid", className: "dt-right"},
-	    {title: "aliases", data: "other_names", className: "dt-right"},
+	    {title: "aliases", data: "other_names", className: "dt-right", render: gene_link_list},
 	    {title: "RNA class", data: "geneclass", className: "dt-right"},
 	    {title: "chr", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -117,7 +121,7 @@ export const FantomCatTable = (actions) => ({
 	     targets: -1, orderable: false,
 	     defaultContent: Render.browser_buttons(["UCSC"]) }
 	],
-	onTdClick: (td, rowdata) => {
+	onButtonClick: (td, rowdata) => {
 	    actions.showGenomeBrowser({
 		title: rowdata.geneid,
 		start: rowdata.start,
