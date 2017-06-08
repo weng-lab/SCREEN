@@ -137,6 +137,11 @@ class DataWebService(GetOrSetMemCache):
     def fantom_cat(self, j, accession):
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
             results = self.pgFantomCat.select_cre_intersections(accession, curs)
+        for result in results:
+            result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
+            if result["aliases"] != "":
+                if result["other_names"] != "": result["other_names"] += ", "
+                result["other_names"] += result["aliases"].replace(",", ", ")
         return {accession: results}
 
     def _re_detail_targetGene(self, j, accession):

@@ -104,15 +104,16 @@ export const OrthologTable = () => ({
 
 export const FantomCatTable = () => ({
     fantom_cat: {
-	title: "FantomCat Intesrection",
+	title: "FantomCat Intersection",
 	cols: [
 	    {title: "RNA ID", data: "geneid", className: "dt-right"},
+	    {title: "aliases", data: "other_names", className: "dt-right"},
 	    {title: "RNA class", data: "geneclass", className: "dt-right"},
 	    {title: "chr", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer}
 	],
-	order: [[2, "asc"], [3, "asc"], [4, "asc"]],
+	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
 	pagLength: 5,
 	paging: true,
 	bar_graph: false,
