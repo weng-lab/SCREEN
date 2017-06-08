@@ -13,13 +13,14 @@ class PrepImport:
                 with open(FCPaths.forimport["genes"], "wb") as o:
                     while True:
                         a = f.readline().strip()
-                        b = t.readline().strip()
-                        if a == "" or b == "": break
-                        o.write("\t".join((a, b)) + "\n")
+                        _b = t.readline().strip().split("\t")
+                        b = [_b[i] if _b[i] != "" or i <= 5 else "NaN" for i in xrange(len(_b))] + ["NaN" for i in xrange(11 - len(_b))]
+                        if a == "" or b == []: break
+                        o.write("\t".join(a.split("\t")[:3] + b) + "\n")
         with open(FCPaths.intersected, "r") as f:
             with open(FCPaths.forimport["intersections"], "wb") as o:
                 for line in f:
-                    p = line.strip()
+                    p = line.strip().split("\t")
                     o.write("\t".join((p[3], p[8])) + "\n")
 
 def main():
