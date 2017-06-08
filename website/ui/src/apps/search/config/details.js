@@ -11,7 +11,7 @@ import MiniPeaks from '../components/minipeaks'
 import HelpIcon from '../../../common/components/help_icon'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
-        TfIntersectionTable, OrthologTable} from './details_tables'
+        TfIntersectionTable, OrthologTable, FantomCatTable} from './details_tables'
 
 import loading from '../../../common/components/loading'
 
@@ -125,7 +125,8 @@ class ReTabBase extends React.Component{
 	    dataType: "json",
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
+                console.log("err loading cre details");
+		console.log(error);
                 this.setState({jq: null, isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
@@ -172,6 +173,15 @@ class NearbyGenomicTab extends ReTabBase{
         this.doRender = (data) => {
             return tabEles(data, NearbyGenomicTable(), 3);
         }
+    }
+}
+
+class FantomCatTab extends ReTabBase {
+    constructor(props) {
+	super(props, "fantom_cat");
+	this.doRender = (data) => {
+	    return tabEles({fantom_cat: data}, FantomCatTable(this.props.actions), 1);
+	}
     }
 }
 
@@ -292,6 +302,8 @@ const DetailsTabInfo = () => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
+	fantom_cat: {title: Render.tabTitle(["FantomCAT", "Intersection"]),
+		    enabled: true, f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
