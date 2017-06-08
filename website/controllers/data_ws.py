@@ -28,6 +28,7 @@ from postgres_wrapper import PostgresWrapper
 from cre_utils import checkChrom
 from config import Config
 from pgglobal import GlobalPG
+from pgfantomcat import PGFantomCat
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
@@ -59,6 +60,7 @@ class DataWebService(GetOrSetMemCache):
         self.pgSearch = PGsearch(ps, assembly)
         self.pgGlobal = GlobalPG(assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
+        self.pgFantomCat = PGFantomCat(assembly)
 
         self.actions = {"cre_table" : self.cre_table,
                         "cre_tf_dcc" : self.cre_tf_dcc,
@@ -80,6 +82,7 @@ class DataWebService(GetOrSetMemCache):
             "rampage" : self._re_detail_rampage,
             "ge" : self._re_detail_ge,
             "similarREs" : self._re_detail_similarREs,
+            "fantom_cat": self.fantom_cat,
             "ortholog": self._ortholog }
 
         self.session = Sessions(ps.DBCONN)
@@ -130,6 +133,16 @@ class DataWebService(GetOrSetMemCache):
         cre = CRE(self.pgSearch, accession, self.cache)
         ranks = cre.topTissues()
         return { accession : ranks }
+
+    def fantom_cat(self, j, accession):
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
+            results = self.pgFantomCat.select_cre_intersections(accession, curs)
+        for result in results:
+            result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
+            if result["aliases"] != "":
+                if result["other_names"] != "": result["other_names"] += ", "
+                result["other_names"] += ", ".join(result["aliases"].split("|"))
+        return {accession: results}
 
     def _re_detail_targetGene(self, j, accession):
         return { accession : {} }
