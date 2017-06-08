@@ -19,23 +19,13 @@ class CoordMatcher:
 
     @staticmethod
     def run():
-        with open(FCPaths.genetsv, "r") as f:
+        with open(FCPaths.zenbu_track, "r") as f:
             with open(FCPaths.genebed, "wb") as o:
-                n = 0
                 for line in f:
-                    n += 1
-                    if n % 1000 == 1 and n >= 1000: print("02_coordmatch$CoordMatcher::run: working with line %d" % n,
-                                                          file = sys.stderr)
                     line = line.strip().split("\t")
                     gpath = FCPaths.genepath(line[0])
-                    if not os.path.exists(gpath):
-                        print("02_coordmatch$CoordMatcher::run: WARNING: JSON missing for %s; skipping" % line[0],
-                              file = sys.stderr)
-                        continue
-                    with open(gpath, "rb") as i:
-                        j = json.loads(i.read())
-                    c = CoordMatcher.parsecoord(j["ZENBU_loc"])
-                    o.write("%s\t%s\t%s\t%s\n" % (c["chr"], c["start"], c["stop"], line[0]))
+                    names = line[3].split("|")
+                    o.write("%s\t%s\t%s\t%s\n" % (line[0], line[1], line[2], names[-1]))
 
 def main():
     CoordMatcher.run()
