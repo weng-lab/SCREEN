@@ -102,6 +102,25 @@ export const OrthologTable = () => ({
     }
 });
 
+export const FantomCatTable = () => ({
+    fantom_cat: {
+	title: "FantomCat Intesrection",
+	cols: [
+	    {title: "RNA ID", data: "geneid", className: "dt-right"},
+	    {title: "RNA class", data: "geneclass", className: "dt-right"},
+	    {title: "chr", data: "chrom", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer}
+	],
+	order: [[2, "asc"], [3, "asc"], [4, "asc"]],
+	pagLength: 5,
+	paging: true,
+	bar_graph: false,
+	bLengthChange: true,
+	bFilter: true
+    }
+});
+
 export const TargetGeneTable = () => ({
     candidate_links: {
 	title: "",
