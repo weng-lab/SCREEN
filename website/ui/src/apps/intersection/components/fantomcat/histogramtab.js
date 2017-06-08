@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 import Boxplot from '../../../../plots/components/boxplot';
 import Histogram from '../../../../plots/components/histogram';

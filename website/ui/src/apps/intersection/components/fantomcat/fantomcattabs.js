@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 import TabContainer from '../tabcontainer';
 import FantomCatTabs from '../../config/fantomcat';
 

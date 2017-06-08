@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 import {connect} from 'react-redux'
 var d3 = require('d3');
 

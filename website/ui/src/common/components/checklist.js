@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 var ReactDOM = require('react-dom');
 var $ = require('jquery');
 var __jui = require('jquery-ui-bundle');
