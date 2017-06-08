@@ -15,6 +15,7 @@ class FCPaths:
         "genes": os.path.join(base, "gene.import.tsv"),
         "intersections": os.path.join(base, "intersections.tsv")
     }
+    zenbu_track = os.path.join(base, "web_zenbu_downloads", "5BFANTOMCAT5DRobustgene.bed")
 
     @staticmethod
     def genepath(acc):
