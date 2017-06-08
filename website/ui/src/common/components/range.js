@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 var ReactDOM = require('react-dom');
 var d3 = require('d3');
 var $ = require('jquery');

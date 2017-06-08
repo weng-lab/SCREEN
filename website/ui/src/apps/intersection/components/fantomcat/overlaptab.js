@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 import PieChart from '../../../../plots/components/piechart';
 import PlotWithHeader from '../../../../plots/components/plotwithheader';

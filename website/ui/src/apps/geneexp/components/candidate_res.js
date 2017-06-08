@@ -1,4 +1,4 @@
-var React = require('react')
+import React from 'react';
 import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table'
