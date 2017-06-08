@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 const viewbox_text = v => ["0", "0", v.width, v.height].join(" ");
 

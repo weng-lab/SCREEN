@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 const header = (text, size) => {
     if (size == 1) return <h1>{text}</h1>;

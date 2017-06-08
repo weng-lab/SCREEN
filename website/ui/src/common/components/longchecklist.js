@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 var ReactDOM = require('react-dom');
 
 import ResultsTable from './results_table'
