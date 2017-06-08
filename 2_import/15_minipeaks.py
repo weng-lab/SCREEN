@@ -77,13 +77,19 @@ def run(args, DBCONN):
     nbins = Config.minipeaks_nbins
     ver = Config.minipeaks_ver
 
+    if args.nbins > -1:
+        nbins = args.nbins
+    if args.ver > -1:
+        ver = args.ver
+
     for assembly in assemblies:
-        printt('***********', assembly)
+        printt('***********', assembly, ver, nbins)
 
         if not args.yes:
-            if not GetYesNoToQuestion.immediate("OK remove old tables for version " + str(ver) + "?"):
+            s = "OK remove old tables for version %s, %s nbins?" % (ver, nbins)
+            if not GetYesNoToQuestion.immediate(s):
                 printt("skipping", assembly)
-                return
+                continue
 
         minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
         queryFnp = os.path.join(minipeaks, "merged",
@@ -107,6 +113,8 @@ def parse_args():
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument('--yes', action="store_true", default=False)
+    parser.add_argument('--ver', type=int, default=-1)
+    parser.add_argument('--nbins', type=int, default=-1)
     args = parser.parse_args()
     return args
 

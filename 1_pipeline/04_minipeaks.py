@@ -221,7 +221,7 @@ def main():
     nbins = args.nbins
     ver = args.ver
     for assembly in assemblies:
-        if 0:
+        if 1:
             ep = ExtractRawPeaks(assembly, ver, nbins, args.j)
             ep.run()
         if 1:
