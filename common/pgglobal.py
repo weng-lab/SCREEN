@@ -1,3 +1,6 @@
+from __future__ import print_function
+import sys
+
 class GlobalPG:
     def __init__(self, assembly):
         self._tablename = "_".join((assembly, "global_objects"))

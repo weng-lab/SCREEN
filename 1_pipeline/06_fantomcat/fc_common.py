@@ -11,6 +11,10 @@ class FCPaths:
     intersected = os.path.join(base, "gene.info.intersected.bed")
     global_statistics = os.path.join(base, "global_statistics.json")
     cres = paths.path("hg19", "raw/cREs.sorted.bed.gz")
+    forimport = {
+        "genes": os.path.join(base, "gene.import.tsv"),
+        "intersections": os.path.join(base, "intersections.tsv")
+    }
 
     @staticmethod
     def genepath(acc):
