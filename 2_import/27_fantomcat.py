@@ -8,8 +8,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from config import Config
+from pgfantomcat import PGFantomCat
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../1_import/06_fantomcat/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/06_fantomcat/'))
 from fc_common import FCPaths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
@@ -23,9 +24,8 @@ class FantomCatImport:
         self._db = PGFantomCat(assembly)
     def run(self, curs):
         self._db.drop_and_recreate(curs)
-        self._db.import_genes_fromfile(FCPaths.forimport["genes"])
-        self._db.import_intersections_fromfile(FCPaths.formimport["intersections"])
-        print(self._db.select_cre_intersections("EH37E1093385"))
+        self._db.import_genes_fromfile(FCPaths.forimport["genes"], curs)
+        self._db.import_intersections_fromfile(FCPaths.forimport["intersections"], curs)
 
 def run(args, DBCONN):
     assemblies = ["hg19"]
