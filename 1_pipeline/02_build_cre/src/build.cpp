@@ -187,7 +187,7 @@ int main(int argc, char* argv[]){
         chroms = {ZiARG_chr};
     }
 
-    bfs::path base= "/data/projects/screen/Version-4";
+    bfs::path base= "/home/pratth/data1/projects/screen/Version-4";
     base /= ZiARG_ver;
     base /= ZiARG_assembly;
     const bfs::path raw =  base / "raw";

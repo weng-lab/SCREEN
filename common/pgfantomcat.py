@@ -6,11 +6,11 @@ class PGFantomCat:
 
     GENECOLUMNS = [
         ("id", "serial PRIMARY KEY"),
-        ("chrom", "TEXT"), ("start", "INT"), ("end", "INT"),
+        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"),
         ("geneid", "TEXT"), ("genename", "TEXT"), ("aliases", "TEXT"),
         ("geneclass", "TEXT"),
         ("dhssupport", "TEXT"), ("genecategory", "TEXT"),
-        ("TIRconservation", "FLOAT"),
+        ("TIRconservation", "DECIMAL"),
         ("exonconservation", "FLOAT"), ("traitdfr", "FLOAT"),
         ("eqtlcoexpr", "FLOAT"), ("dynamicexpr", "FLOAT")
     ]
@@ -26,21 +26,21 @@ class PGFantomCat:
 DROP TABLE IF EXISTS {genes};
 CREATE TABLE {genes} ({fields})"""
                      .format(genes = self._tables["genes"], fields = ",".join(" ".join(x) for x in PGFantomCat.GENECOLUMNS)))
-        cures.execute("""
+        curs.execute("""
 DROP TABLE IF EXISTS {intersections};
 CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
                       .format(intersections = self._tables["intersections"]))
 
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
-            curs.copy_from(f, self._tables["genes"], columns = [x[0] for x in PGFantomCat.GENECOLUMNS[1:]])
+            curs.copy_from(f, self._tables["genes"], columns = [x for x, _ in PGFantomCat.GENECOLUMNS[1:]])
 
     def import_intersections_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables["intersections"], columns = ["geneid", "cre"])
     
     def select_gene(self, field, value, curs):
-        if field not in [x[0] for x in PGFantomCat.GENECOLUMNS]:
+        if field not in [x for x, _ in PGFantomCat.GENECOLUMNS]:
             print("WARNING: attempted to select '%s' from nonexistent column '%s' in FantomCat table"
                   % (value, field))
             return None
@@ -50,10 +50,10 @@ CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
 
     def select_cre_intersections(self, acc, curs):
         curs.execute("""
-SELECT {fields} FROM {genes} AS g LEFT JOIN {intersections}
-ON {intersections}.geneid = g.geneid AND {intersections}.cre = %s
+SELECT {fields} FROM {genes} AS g, {intersections} as i
+WHERE i.geneid = g.geneid AND i.cre = %(acc)s
 """.format(intersections = self._tables["intersections"], genes = self._tables["genes"],
-           fields = ",".join(["g.%s" % x[0] for x in PGFantomCat.GENECOLUMNS]), acc)
+           fields = ",".join([("g." + x) for x, _ in PGFantomCat.GENECOLUMNS[1:]])), {"acc": acc})
         return curs.fetchall()
 
     def select_rna_intersections(self, gid, curs):
