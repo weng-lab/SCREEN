@@ -11,7 +11,7 @@ import MiniPeaks from '../components/minipeaks'
 import HelpIcon from '../../../common/components/help_icon'
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
-        TfIntersectionTable, OrthologTable} from './details_tables'
+        TfIntersectionTable, OrthologTable, FantomCatTable} from './details_tables'
 
 import loading from '../../../common/components/loading'
 
@@ -175,6 +175,15 @@ class NearbyGenomicTab extends ReTabBase{
     }
 }
 
+class FantomCatTab extends ReTabBase {
+    constructor(props) {
+	super(props, "fantom_cat");
+	this.doRender = (data) => {
+	    return tabEles(data, FantomCatTable(), 1);
+	}
+    }
+}
+
 class TargetGeneTab extends ReTabBase{
     constructor(props) {
 	super(props, "targetGene");
@@ -292,6 +301,8 @@ const DetailsTabInfo = () => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
+	fantom_cat: {title: Render.tabTitle(["FantomCAT", "Intersection"]),
+		    enabled: true, f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),

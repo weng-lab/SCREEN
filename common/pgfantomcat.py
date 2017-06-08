@@ -54,7 +54,7 @@ SELECT {fields} FROM {genes} AS g, {intersections} as i
 WHERE i.geneid = g.geneid AND i.cre = %(acc)s
 """.format(intersections = self._tables["intersections"], genes = self._tables["genes"],
            fields = ",".join([("g." + x) for x, _ in PGFantomCat.GENECOLUMNS[1:]])), {"acc": acc})
-        return curs.fetchall()
+        return [{PGFantomCat.GENECOLUMNS[i][0]: v[i] for i in xrange(len(PGFantomCat.GENECOLUMNS))} for v in curs.fetchall()]
 
     def select_rna_intersections(self, gid, curs):
         curs.execute("SELECT cre FROM {intersections} WHERE geneid = %s".format(intersections = self._tables["intersections"]),
