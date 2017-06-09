@@ -33,6 +33,13 @@ class TabTutorial extends React.Component {
 	                src="https://www.youtube.com/embed/KzsuZ8oGxZk"
 	                frameborder="0" allowfullscreen>
 		</iframe>
+
+	        <h3>GWAS</h3>
+		<iframe width="560" height="315"
+	            src="https://www.youtube.com/embed/eunBo1-yF9M"
+	            frameborder="0" allowfullscreen>
+		</iframe>
+		
 	    </div>));
     }
 }
