@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 import ResultsApp from '../../search/components/results_app'
 import {main_venn_connector, main_results_connector, main_histogram_connector} from '../reducers/comparison_reducer'

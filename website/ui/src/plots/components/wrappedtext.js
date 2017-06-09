@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 
 const WrappedText = ({ text, width, height, style }) => (
     <foreignObject width={width} height={height}>

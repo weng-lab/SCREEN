@@ -1,4 +1,4 @@
-var React = require('react');
+import React from 'react';
 var $ = require('jquery');
 
 import {create_venn_diagram} from '../helpers/venn'
