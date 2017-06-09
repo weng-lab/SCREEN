@@ -27,7 +27,8 @@ class CoordMatcher:
                         gpath = FCPaths.genepath(line[0])
                         names = line[3].split("|")
                         o.write("%s\t%s\t%s\t%s\n" % (line[0], line[1], line[2], names[-1]))
-                        u.write("%s\t%d\t%d\t%s\n" % (line[0], int(line[1]) - 2000, int(line[1]) + 2000, names[-1]))
+                        s = int(line[1]) - 2000
+                        u.write("%s\t%d\t%d\t%s\n" % (line[0], s if s > 0 else 0, int(line[1]) + 2000, names[-1]))
 
 def main():
     CoordMatcher.run()
