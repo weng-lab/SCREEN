@@ -22,6 +22,11 @@ class PrepImport:
                 for line in f:
                     p = line.strip().split("\t")
                     o.write("\t".join((p[3], p[8])) + "\n")
+        with open(FCPaths.twokb_intersected, "r") as f:
+            with open(FCPaths.forimport["twokb_intersections"], "wb") as o:
+                for line in f:
+                    p = line.strip().split("\t")
+                    o.write("\t".join((p[3], p[8])) + "\n")
 
 def main():
     PrepImport()

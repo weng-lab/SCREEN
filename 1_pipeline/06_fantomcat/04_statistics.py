@@ -8,7 +8,7 @@ from fc_common import FCPaths
 
 class Statistics:
     
-    def __init__(self):
+    def __init__(self, intersection_fnp):
         self.ixgenes = {}
         self.ixcres = {}
         with open(FCPaths.genetsv, "r") as f:
@@ -21,7 +21,7 @@ class Statistics:
                     "cREs": [],
                     "len": 1
                 }
-        with open(FCPaths.intersected, "r") as f:
+        with open(intersection_fnp, "r") as f:
             for line in f:
                 p = line.strip().split("\t")
                 self.ixgenes[p[3]]["len"] = int(p[2]) - int(p[1])
@@ -53,8 +53,8 @@ class Statistics:
             }
         }
 
-def main():
-    s = Statistics()
+def _process(intersection_fnp, out_fnp):
+    s = Statistics(intersection_fnp)
     hbins = numpy.arange(0, 5, 0.05)
     cpkb = [x for _, x in s.cres_per_kb(lambda x: len(x["cREs"]) > 0).iteritems()]
     j = {
@@ -78,9 +78,12 @@ def main():
     j["classes"]["non-coding"] = s.cres_per_kb_distr(hbins, lambda x: "lncRNA" in x["class"])
     j["classes"]["coding"] = s.cres_per_kb_distr(hbins, lambda x: "coding" in x["class"] or "pseudogene" in x["class"])
     
-    with open(FCPaths.global_statistics, "wb") as o:
+    with open(out_fnp, "wb") as o:
         o.write(json.dumps(j) + "\n")
 
+def main():
+    _process(FCPaths.intersected, FCPaths.global_statistics)
+    _process(FCPaths.twokb_intersected, FCPaths.twokb_statistics)
     return 0
 
 if __name__ == "__main__":

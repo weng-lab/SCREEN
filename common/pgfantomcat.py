@@ -20,7 +20,8 @@ class PGFantomCat:
     def __init__(self, assembly, tableprefix = "fantomcat"):
         self._tables = {
             "genes": "_".join((assembly, tableprefix, "genes")),
-            "intersections": "_".join((assembly, tableprefix, "intersection"))
+            "intersections": "_".join((assembly, tableprefix, "intersection")),
+            "twokb_intersections": "_".join((assembly, tableprefix, "twokbintersection"))
         }
 
     def drop_and_recreate(self, curs):
@@ -32,14 +33,18 @@ CREATE TABLE {genes} ({fields})"""
 DROP TABLE IF EXISTS {intersections};
 CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
                       .format(intersections = self._tables["intersections"]))
+        curs.execute("""
+DROP TABLE IF EXISTS {intersections};
+CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
+                      .format(intersections = self._tables["twokb_intersections"]))
 
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables["genes"], columns = [x for x in PGFantomCat.GENEFIELDS[1:]])
 
-    def import_intersections_fromfile(self, fnp, curs):
+    def import_intersections_fromfile(self, fnp, curs, key = "intersections"):
         with open(fnp, "r") as f:
-            curs.copy_from(f, self._tables["intersections"], columns = ["geneid", "cre"])
+            curs.copy_from(f, self._tables[key], columns = ["geneid", "cre"])
     
     def select_gene(self, field, value, curs):
         if field not in [x for x in PGFantomCat.GENEFIELDS]:

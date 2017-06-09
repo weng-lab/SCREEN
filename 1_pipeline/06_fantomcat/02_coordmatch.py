@@ -21,11 +21,13 @@ class CoordMatcher:
     def run():
         with open(FCPaths.zenbu_track, "r") as f:
             with open(FCPaths.genebed, "wb") as o:
-                for line in f:
-                    line = line.strip().split("\t")
-                    gpath = FCPaths.genepath(line[0])
-                    names = line[3].split("|")
-                    o.write("%s\t%s\t%s\t%s\n" % (line[0], line[1], line[2], names[-1]))
+                with open(FCPaths.twokb, "wb") as u:
+                    for line in f:
+                        line = line.strip().split("\t")
+                        gpath = FCPaths.genepath(line[0])
+                        names = line[3].split("|")
+                        o.write("%s\t%s\t%s\t%s\n" % (line[0], line[1], line[2], names[-1]))
+                        u.write("%s\t%d\t%d\t%s\n" % (line[0], int(line[1]) - 2000, int(line[1]) + 2000, names[-1]))
 
 def main():
     CoordMatcher.run()
