@@ -180,7 +180,7 @@ class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
 	this.doRender = (data) => {
-	    return tabEles({fantom_cat: data}, FantomCatTable(this.props.actions), 1);
+	    return tabEles(data, FantomCatTable(this.props.actions), 1);
 	}
     }
 }
@@ -302,7 +302,7 @@ const DetailsTabInfo = () => {
                         enabled: true, f: NearbyGenomicTab},
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
-	fantom_cat: {title: Render.tabTitle(["FantomCAT", "Intersection"]),
+	fantom_cat: {title: Render.tabTitle(["FANTOM CAT", "Intersection"]),
 		    enabled: true, f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},

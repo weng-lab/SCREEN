@@ -55,16 +55,18 @@ CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
                      value)
         return curs.fetchall()
 
-    def select_cre_intersections(self, acc, curs):
+    def select_cre_intersections(self, acc, curs, key = "intersections"):
+        if key not in self._tables: raise Exception("pgfantomcat$PGFantomCat::select_cre_intersections: invalid tablename '%s'" % key)
         curs.execute("""
 SELECT {fields} FROM {genes} AS g, {intersections} as i
 WHERE i.geneid = g.geneid AND i.cre = %(acc)s
-""".format(intersections = self._tables["intersections"], genes = self._tables["genes"],
+""".format(intersections = self._tables[key], genes = self._tables["genes"],
            fields = ",".join([("g." + x) for x in PGFantomCat.GENEFIELDS[1:]])), {"acc": acc})
         return [{PGFantomCat.GENEFIELDS[i + 1]: v[i] if i < 9 or not math.isnan(v[i]) else "--"
                  for i in xrange(len(v)) } for v in curs.fetchall()]
 
-    def select_rna_intersections(self, gid, curs):
-        curs.execute("SELECT cre FROM {intersections} WHERE geneid = %s".format(intersections = self._tables["intersections"]),
+    def select_rna_intersections(self, gid, curs, key = "intersections"):
+        if key not in self._tables: raise Exception("pgfantomcat$PGFantomCat::select_rna_intersections: invalid tablename '%s'" % key)
+        curs.execute("SELECT cre FROM {intersections} WHERE geneid = %s".format(intersections = self._tables[key]),
                      gid)
         return [x[0] for x in curs.fetchall()]

@@ -3,6 +3,10 @@ import * as Render from '../../../common/renders'
 import IntersectingAssayTf from '../components/intersecting_assay_tf'
 import IntersectingAssayHistone from '../components/intersecting_assay_histone'
 
+const fantomcat_link = (d) => (
+    "<a href='http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d + "'>" + d + "</a>"
+);
+
 const gene_link_list = (d) => (
     d.split(", ").map(Render.gene_link).join(", ")
 );
@@ -107,10 +111,39 @@ export const OrthologTable = () => ({
 });
 
 export const FantomCatTable = (actions) => ({
-    fantom_cat: {
-	title: "Intersecting FantomCat RNAs",
+    fantom_cat_twokb: {
+	title: "Intersecting FANTOM CAT RNAs (cRE within 2kb of RNA TSS)",
 	cols: [
-	    {title: "RNA ID", data: "geneid", className: "dt-right"},
+	    {title: "FANTOM CAT RNA accession", data: "geneid", className: "dt-right", render: fantomcat_link},
+	    {title: "aliases", data: "other_names", className: "dt-right", render: gene_link_list},
+	    {title: "RNA class", data: "geneclass", className: "dt-right"},
+	    {title: "chr", data: "chrom", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer},
+	    {title: "", data: null,
+	     className: "browser",
+	     targets: -1, orderable: false,
+	     defaultContent: Render.browser_buttons(["UCSC"]) }
+	],
+	onButtonClick: (td, rowdata) => {
+	    actions.showGenomeBrowser({
+		title: rowdata.geneid + " (TSS +/- 2kb)",
+		start: rowdata.start - 2000,
+		len: 4000,
+		chrom: rowdata.chrom
+	    }, "UCSC", "FantomCAT")
+	},
+	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
+	pagLength: 5,
+	paging: true,
+	bar_graph: false,
+	bLengthChange: true,
+	bFilter: true
+    },
+    fantom_cat: {
+	title: "Intersecting FANTOM CAT RNAs (cRE within entire RNA body)",
+	cols: [
+	    {title: "FANTOM CAT RNA accession", data: "geneid", className: "dt-right", render: fantomcat_link},
 	    {title: "aliases", data: "other_names", className: "dt-right", render: gene_link_list},
 	    {title: "RNA class", data: "geneclass", className: "dt-right"},
 	    {title: "chr", data: "chrom", className: "dt-right"},
