@@ -135,14 +135,19 @@ class DataWebService(GetOrSetMemCache):
         return { accession : ranks }
 
     def fantom_cat(self, j, accession):
-        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
-            results = self.pgFantomCat.select_cre_intersections(accession, curs)
-        for result in results:
-            result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
-            if result["aliases"] != "":
-                if result["other_names"] != "": result["other_names"] += ", "
-                result["other_names"] += ", ".join(result["aliases"].split("|"))
-        return {accession: results}
+        def process(key):
+            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
+                results = self.pgFantomCat.select_cre_intersections(accession, curs, key)
+            for result in results:
+                result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
+                if result["aliases"] != "":
+                    if result["other_names"] != "": result["other_names"] += ", "
+                    result["other_names"] += ", ".join(result["aliases"].split("|"))
+            return results
+        return {accession: {
+            "fantom_cat": process("intersections"),
+            "fantom_cat_twokb": process("twokb_intersections")
+        }}
 
     def _re_detail_targetGene(self, j, accession):
         return { accession : {} }
