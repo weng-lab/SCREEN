@@ -70,7 +70,8 @@ class DataWebService(GetOrSetMemCache):
                         "json_download" : self.json_download,
                         "trees" : self.trees,
                         "tfenrichment": self.tfenrichment,
-                        "global_object": self.global_object
+                        "global_object": self.global_object,
+                        "global_fantomcat": self.global_fantomcat
         }
 
         self.reDetailActions = {
@@ -98,6 +99,12 @@ class DataWebService(GetOrSetMemCache):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
         return {accession: {"ortholog": orth.as_dict()}}
 
+    def global_fantomcat(self, j, args):
+        return {
+            "main": self.global_object({"name": "fantomcat"}, args),
+            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args)
+        }
+    
     def global_object(self, j, args):
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)
