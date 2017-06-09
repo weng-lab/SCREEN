@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import json
 
 from cassandra.cluster import Cluster
