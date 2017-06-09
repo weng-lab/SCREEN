@@ -8,7 +8,6 @@ from cassandra.query import BatchStatement
 from cassandra import ConsistencyLevel
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
-from dbconnect import db_connect
 from constants import paths
 from config import Config
 
@@ -18,10 +17,11 @@ from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
 
 class ImportMinipeaks:
-    def __init__(self, assembly, nbins, ver):
+    def __init__(self, assembly, nbins, ver, cores):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
+        self.cores = cores
 
         self.cluster = Cluster(["cassandra.docker"])
         self.session = self.cluster.connect()
@@ -64,8 +64,10 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
             raise Exception("missing file: " + mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
-        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = 8 AND MAXBATCHSIZE = 1;""".format(
-            tn = tableName, fields = ",".join(cols),
+        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = {cores} AND MAXBATCHSIZE = 1;""".format(
+            tn = tableName,
+            cores = cores,
+            fields = ",".join(cols),
             fn = mergedFnp)
         outF.write(q + '\n\n')
 
@@ -75,13 +77,15 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     nbins = Config.minipeaks_nbins
-    ver = Config.minipeaks_ver
-
     if args.nbins > -1:
         nbins = args.nbins
+    ver = Config.minipeaks_ver
     if args.ver > -1:
         ver = args.ver
-
+    cores = args.j
+    if args.sample:
+        cores = 1
+                
     for assembly in assemblies:
         printt('***********', assembly, ver, nbins)
 
@@ -97,7 +101,7 @@ def run(args, DBCONN):
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
             for assembly in assemblies:
-                im = ImportMinipeaks(assembly, nbins, ver)
+                im = ImportMinipeaks(assembly, nbins, ver, cores)
                 im.importAll(outF, args.sample)
 
         printWroteNumLines(queryFnp)
@@ -113,6 +117,7 @@ def parse_args():
     parser.add_argument("--assembly", type=str, default="")
     parser.add_argument('--sample', action="store_true", default=False)
     parser.add_argument('--yes', action="store_true", default=False)
+    parser.add_argument('-j', type=int, default=8)
     parser.add_argument('--ver', type=int, default=-1)
     parser.add_argument('--nbins', type=int, default=-1)
     args = parser.parse_args()
@@ -121,8 +126,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect(os.path.realpath(__file__))
-    run(args, DBCONN)
+    run(args, None)
 
 if __name__ == '__main__':
     main()

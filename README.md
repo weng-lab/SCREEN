@@ -23,7 +23,7 @@ sudo apt install libatlas-base-dev  libcurl4-gnutls-dev
 sudo apt-get install python-psycopg2
 sudo apt-get install redis-server
 
-pip install --user cherrypy cherrys hiredis jinja2 natsort requests joblib ucscgenome ujson configparser python-dateutil
+pip install --user cherrypy cherrys hiredis jinja2 natsort requests joblib ucscgenome ujson configparser python-dateutil colorama
 pip install --upgrade --user scipy google-api-python-client
 
 -- for memcached caching
