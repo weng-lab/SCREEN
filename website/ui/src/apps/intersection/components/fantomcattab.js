@@ -33,7 +33,7 @@ class FantomCatTab extends React.Component{
     }
 
     loadData({actions}){
-        var q = {GlobalAssembly, name: "fantomcat"};
+        var q = {GlobalAssembly};
         var jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -41,7 +41,7 @@ class FantomCatTab extends React.Component{
         }
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/dataws/global_object",
+            url: "/dataws/global_fantomcat",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -50,10 +50,14 @@ class FantomCatTab extends React.Component{
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-		this._qsets = {};
-		Object.keys(r.classes).map((k => {
-		    return this._qsets[k] = r.classes[k].quartiles;
+		console.log(r);
+		this._qsets = {main: {}, twokb: {}};
+		Object.keys(r.main.classes).map((k => {
+		    return this._qsets.main[k] = r.main.classes[k].quartiles;
 		}).bind(this));
+		Object.keys(r.fantomcat_2kb.classes).map((k => {
+		    return this._qsets.twokb[k] = r.fantomcat_2kb.classes[k].quartiles;
+		}).bind(this));		
 		this.setState({data: r, isFetching: false, isError: false});
             }.bind(this)
         });
@@ -63,11 +67,19 @@ class FantomCatTab extends React.Component{
 	if (!data) return <div />;
 	let tabdata = {
 	    piecharts: {
-		data
+		data: data.main
 	    },
 	    perkb: {
-		data,
-		qsets: this._qsets,
+		data: data.main,
+		qsets: this._qsets.main,
+		qset_order: o
+	    },
+	    piecharts_twokb: {
+		data: data.fantomcat_2kb
+	    },
+	    perkb_twokb: {
+		data: data.fantomcat_2kb,
+		qsets: this._qsets.twokb,
 		qset_order: o
 	    }
 	};
