@@ -7,14 +7,16 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
 from cassandra import ConsistencyLevel
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+from config import Config
+
 class MiniPeaksCache:
     def __init__(self, assembly, nbins, ver):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
 
-        self.hosts = ["cassandra"]
-        self.cluster = Cluster(self.hosts)
+        self.cluster = Cluster(Config.cassandra)
         self.session = self.cluster.connect()
         self.session.row_factory = dict_factory
         self.session.set_keyspace("minipeaks")
