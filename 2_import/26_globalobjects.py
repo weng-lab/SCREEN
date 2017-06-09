@@ -26,7 +26,8 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "26_globalobjects$main") as curs:
             g = GlobalPG(assembly)
             g.drop_and_recreate(curs)
-            g.doimport([("fantomcat", FCPaths.global_statistics)],
+            g.doimport([("fantomcat", FCPaths.global_statistics),
+                        ("fantomcat_2kb", FCPaths.twokb_statistics)],
                        curs)
             print(g.select("fantomcat", curs))
 

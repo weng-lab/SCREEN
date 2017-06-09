@@ -11,9 +11,13 @@ class FCPaths:
     intersected = os.path.join(base, "gene.info.intersected.bed")
     global_statistics = os.path.join(base, "global_statistics.json")
     cres = paths.path("hg19", "raw/cREs.sorted.bed.gz")
+    twokb = os.path.join(base, "gene.2kbtss.bed")
+    twokb_intersected = os.path.join(base, "gene.2kbtss.intersected.bed")
+    twokb_statistics = os.path.join(base, "twokb_statistics.json")
     forimport = {
         "genes": os.path.join(base, "gene.import.tsv"),
-        "intersections": os.path.join(base, "intersections.tsv")
+        "intersections": os.path.join(base, "intersections.tsv"),
+        "twokb_intersections": os.path.join(base, "twokb.intersections.tsv")
     }
     zenbu_track = os.path.join(base, "web_zenbu_downloads", "5BFANTOMCAT5DRobustgene.bed")
 
