@@ -13,7 +13,7 @@ class Intersector:
                               "-a", FCPaths.genebed, "-b", FCPaths.cres], stdout = o)
         with open(FCPaths.twokb_intersected, "wb") as o:
             subprocess.Popen(["bedtools", "intersect", "-wa", "-wb",
-                              "-a", FCPaths.genebed, "-b", FCPaths.cres], stdout = o)
+                              "-a", FCPaths.twokb, "-b", FCPaths.cres], stdout = o)
 
 def main():
     Intersector.run()
