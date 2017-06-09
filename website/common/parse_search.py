@@ -126,7 +126,7 @@ class ParseSearch:
             print("could not parse " + s)
 
         genes = []
-        if coord is None:
+        if coord is None and not accessions:
             genes = self.pgParse.try_find_gene(s, useTss, tssDist)
             if genes:
                 g = genes[0]
