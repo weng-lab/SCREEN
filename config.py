@@ -23,3 +23,4 @@ class Config:
     ribbon = c.get("RE", "ribbon")
     GoogleAnalytics = int(c.get("RE", "googleAnalytics"))
     memcache = int(c.get("RE", "memache"))
+    cassandra = [a.strip() for a in c.get("RE", "cassandra").split(',')]

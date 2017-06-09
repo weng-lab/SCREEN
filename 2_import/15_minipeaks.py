@@ -23,7 +23,7 @@ class ImportMinipeaks:
         self.ver = ver
         self.cores = cores
 
-        self.cluster = Cluster(["cassandra.docker"])
+        self.cluster = Cluster(Config.cassandra)
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
 WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
@@ -66,7 +66,7 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
         cols = ["accession", "chrom"] + fileIDs
         q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = {cores} AND MAXBATCHSIZE = 1;""".format(
             tn = tableName,
-            cores = cores,
+            cores = self.cores,
             fields = ",".join(cols),
             fn = mergedFnp)
         outF.write(q + '\n\n')
