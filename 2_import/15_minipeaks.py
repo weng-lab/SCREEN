@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import os, sys, argparse
+import tempfile
 
 from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement
@@ -22,7 +23,7 @@ class ImportMinipeaks:
         self.nbins = nbins
         self.ver = ver
         self.cores = cores
-
+        
         self.cluster = Cluster(Config.cassandra)
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
@@ -96,22 +97,23 @@ def run(args, DBCONN):
                 continue
 
         minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
-        queryFnp = os.path.join(minipeaks, "merged",
-                                "insert_minipeaks." + assembly + ".cql")
+        tf = tempfile.NamedTemporaryFile(delete=False)
+        queryFnp = tf.name
         with open(queryFnp, 'w') as outF:
             outF.write("use minipeaks;\n")
-            for assembly in assemblies:
-                im = ImportMinipeaks(assembly, nbins, ver, cores)
-                im.importAll(outF, args.sample)
+            im = ImportMinipeaks(assembly, nbins, ver, cores)
+            im.importAll(outF, args.sample)
 
         printWroteNumLines(queryFnp)
-        cmds = ['CQLSH_HOST="cassandra.docker"',
+        cmds = ['CQLSH_HOST="{hosts}"'.format(hosts = Config.cassandra[0]),
                 os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
                 "--cqlversion=3.4.2",
                 "-f", queryFnp]
         if args.yes or GetYesNoToQuestion.immediate("import data?"):
             print(Utils.runCmds(cmds))
 
+        os.remove(queryFnp)
+            
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
