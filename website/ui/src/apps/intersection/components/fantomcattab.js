@@ -50,14 +50,19 @@ class FantomCatTab extends React.Component{
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-		console.log(r);
-		this._qsets = {main: {}, twokb: {}};
+		this._qsets = {main: {}, twokb: {}, bymaxz: {}};
 		Object.keys(r.main.classes).map((k => {
 		    return this._qsets.main[k] = r.main.classes[k].quartiles;
 		}).bind(this));
 		Object.keys(r.fantomcat_2kb.classes).map((k => {
 		    return this._qsets.twokb[k] = r.fantomcat_2kb.classes[k].quartiles;
-		}).bind(this));		
+		}).bind(this));
+		Object.keys(r.fantomcat_bymaxz).map((a => {
+		    this._qsets.bymaxz[a] = {};
+		    return Object.keys(r.fantomcat_bymaxz[a].classes).map((k => {
+			return this._qsets.bymaxz[a][k] = r.fantomcat_bymaxz[a].classes[k].quartiles;
+		    }).bind(this))
+		}).bind(this));
 		this.setState({data: r, isFetching: false, isError: false});
             }.bind(this)
         });
@@ -80,6 +85,11 @@ class FantomCatTab extends React.Component{
 	    perkb_twokb: {
 		data: data.fantomcat_2kb,
 		qsets: this._qsets.twokb,
+		qset_order: o
+	    },
+	    perkbz: {
+		data: data.fantomcat_bymaxz,
+		qsets: this._qsets.bymaxz,
 		qset_order: o
 	    }
 	};
