@@ -1,14 +1,6 @@
 import HistogramTab from '../components/fantomcat/histogramtab';
+import HistogramZTab from '../components/fantomcat/histogramztab';
 import OverlapTab from '../components/fantomcat/overlaptab';
-
-const CHistogramTab = (key) => ({data}) => (
-    <HistogramTab data={data[key]} />
-);
-
-const COverlapTab = (key) => ({data}) => {
-    console.log(data);
-    return <OverlapTab data={data[key]} />
-};
 
 const FantomCatTabs = {
     piecharts: {
@@ -30,6 +22,11 @@ const FantomCatTabs = {
 	title: "cREs per kb, TSS +/- 2kb",
 	enabled: true,
 	f: HistogramTab
+    },
+    perkbz: {
+	title: "cREs per kb by cRE type",
+	enabled: true,
+	f: HistogramZTab
     }
 };
 export default FantomCatTabs;
