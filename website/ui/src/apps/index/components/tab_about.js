@@ -90,9 +90,59 @@ class TabAbout extends React.Component {
 			{Para.figure(5, "venn")}
                     </div>
 		</div>
-		    
-            </div>);
 
+		<div className="row">
+                    <div className="col-md-6">
+			<h3>Genomic Context</h3>
+		    </div>
+		</div>
+                <div className="row">
+                    <div className="col-md-6">
+		        {Para.genomicContext()}
+		    </div>
+                    <div className="col-md-6">
+			{Para.figure(6, "venn")}
+                    </div>
+		</div>
+
+		<div className="row">
+                    <div className="col-md-6">
+			<h3>Other Histone Modifications and Transcription Factor Occupancy</h3>
+		    </div>
+		</div>
+                <div className="row">
+                    <div className="col-md-6">
+		        {Para.occupancy1()}
+		    </div>
+		</div>
+		
+		<div className="row">
+                    <div className="col-md-6">
+	                <h3>Using cREs to Interpret GWAS Variants</h3>
+		    </div>
+		</div>
+                <div className="row">
+                    <div className="col-md-6">
+                        <h4>Curating GWAS Results</h4>
+                        {Para.gwas1()}
+                        <h4>Determining Cell Types with cREs Enriched in GWAS SNPs</h4>
+                        {Para.gwas2()}
+		    </div>
+		</div>
+		
+                <div className="row">
+                    <div className="col-md-6">
+			<h3>How to Cite the ENCODE Encyclopedia, the Registry of cREs, and SCREEN</h3>
+		    </div>
+		</div>
+                <div className="row">
+		    <div className="col-md-6">
+			{Para.citation()}
+                    </div>
+        	</div>
+		
+            </div>);
+	
         return (tabPanelize(
             <div>
                 {content}
