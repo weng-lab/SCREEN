@@ -59,6 +59,8 @@ class CachedObjects:
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
+        self.nineStateJsonValues = json.dumps(self.nineState.values())
+
         self.moreTracks = self.pgSearch.loadMoreTracks()
         
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
