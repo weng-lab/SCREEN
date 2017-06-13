@@ -7,12 +7,11 @@ class GlobalDataController:
 
     def static(self, assembly, ver):
         if "index" == assembly:
-            g = self.cacheW["hg19"].nineState
-            g = g.values()
+            g = self.cacheW["hg19"].nineStateJsonValues
             if "0" == ver:
                 cherrypy.response.headers['Content-Type'] = 'application/json'
-                return json.dumps(g)
-            return "var NineState = " + json.dumps(g)
+                return g
+            return "var NineState = " + g
        
         cache = self.cacheW[assembly]
         g = cache.global_data(ver)
