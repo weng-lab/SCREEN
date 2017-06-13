@@ -30,6 +30,10 @@ class TabAbout extends React.Component {
                 <div className="row">
                     <div className="col-md-6">
 		        <h3>The Registry of candidate Regulatory Elements</h3>
+		    </div>
+		</div>	    
+                <div className="row">
+                    <div className="col-md-6">
 		        {Para.registry1()}
                     </div>
                     <div className="col-md-6">
@@ -40,39 +44,53 @@ class TabAbout extends React.Component {
                     <div className="col-md-6">
                         {Para.registry2()}
 		        {Para.registry3()}
-		        {Para.registry4()}
-		        {Para.registry5()}
                     </div>
                     <div className="col-md-6">
                         {Para.figure(3, "flowchart")}
-                        {Para.figure(4, "pie chart")}
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-6">
-		        <h3>Annotating candidate Regulatory Elements</h3>
-		        <h4>Genomic Context</h4>
+		        <h3>Classification of cREs</h3>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-6">
-		        {Para.genomicContext()}
-		        <h4>Other Histone Modifications and Transcription Factor Occupancy</h4>
-		        {Para.occupancy1()}
-	                <h3>Using cREs to Interpret Variants Identified by Genome-wide Association Studies (GWAS)</h3>
-                        <h4>Curating GWAS Results</h4>
-                        {Para.gwas1()}
-                        <h4>Determining Cell Types with cREs Enriched in GWAS SNPs
-</h4>
-                        {Para.gwas2()}
-
-                        <h3>How to Cite the ENCODE Encyclopedia, the Registry of cREs, and SCREEN</h3>
-                        {Para.citation()}
-                    </div>
+		        {Para.classif1()}
+			{Para.classif2()}
+			{Para.classif3()}
+		    </div>
+		</div>
+		<div className="row">
                     <div className="col-md-6">
-                        {Para.figure(6, "pie chart 2")}
+		        <h3>Genomic Footprint of the cREs</h3>
                     </div>
-	        </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
+		        {Para.genomicFootprint()}
+		    </div>
+		    <div className="col-md-6">
+			{Para.figure(4, "mappable")}
+                    </div>
+		</div>
+		<div className="row">
+                    <div className="col-md-6">
+			<h3>Comprehensiveness of the Current Registry of cREs</h3>
+		    </div>
+		</div>
+                <div className="row">
+                    <div className="col-md-6">
+			{Para.comprehensiveness1()}
+			{Para.comprehensiveness2()}
+			{Para.comprehensiveness3()}
+			{Para.comprehensiveness4()}
+		    </div>
+		    <div className="col-md-6">
+			{Para.figure(5, "venn")}
+                    </div>
+		</div>
+		    
             </div>);
 
         return (tabPanelize(
