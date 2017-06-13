@@ -57,6 +57,16 @@ export const comprehensiveness4 = () => (
 	Third, we computed the Registry&#39;s coverages of H3K27ac, H3K4me3, and CTCF peaks&nbsp;(FDR&lt;0.01) of cell types with the corresponding ChIP-seq data but without DNase-seq data (<b>Figure 5</b>). The Registry covers 87&plusmn;5% of H3K27ac, 90&plusmn;8% of H3K4me3 and 99&plusmn;0.8% of CTCF peaks. The coverage was equally high for mouse, despite a smaller number of DNase-seq experiments for building the mouse Registry: 88&plusmn;5% of H3K27ac peaks (69 tissue&ndash;time-points) and 96&plusmn;8% of H3K4me3 peaks (74 tissue&ndash;time-points) were accounted for. (There are no cell types with CTCF ChIP-seq data but no DNase-seq data.)
     </p>);
 
+export const genomicContext = () => (
+    <p>
+	Using GENCODE V19 annotations, we find that 18.5% of human cREs (<b>Figure 6</b>) are proximal (&plusmn;2 kb) to annotated GENCODE transcription start sites (TSSs) while the majority of cREs are distal from TSSs and lie in introns (45.0%) or intergenic regions (32.7%). A similar distribution is observed in mouse, with 20.1% of cREs proximal to annotated TSSs, 39.7% lie within introns and 35.7% fall in intergenic regions. We annotated each cRE with nearby genomic elements, including genes and their expression levels, single nucleotide polymorphisms (SNPs), and elements within the same topologically associated domains (TADs). These annotations can be found for each cRE on the <i>Nearby Genomic Features</i> tab of the <i>cRE Details</i> page.
+    </p>);
+
+export const occupancy1 = () => (
+    <p>
+	In addition to the four core epigenomic marks used to generate the Registry, we also annotate each cRE using all available ChIP-seq data for other histone modifications and transcription factors. Specifically, we intersected each cRE with all available histone mark and TF ChIP-seq peaks, identified using ENCODE uniform processing pipelines. We display these results in the <i>TF and His-mod Intersection</i> tab of the <i>Details</i> page.
+    </p>);
+
 export const gwas1 = () => (
     <div>
         <p>Using the <a href="https://www.ebi.ac.uk/gwas/" target="_blank">NHGRI-EBI GWAS Catalog</a>, we selected studies with the following requirements:
