@@ -15,8 +15,8 @@ class IntersectionApp extends React.Component {
     
     render() {
 
-	console.log("@apps/intersection/main.js$IntersectionApp::render");
-	console.log(initialState());
+	//console.log("@apps/intersection/main.js$IntersectionApp::render");
+	//console.log(initialState());
 	
 	const loggerMiddleware = createLogger();
 	const store = createStore(
