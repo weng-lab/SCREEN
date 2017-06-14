@@ -87,6 +87,8 @@
   var GlobalSessionUid = "{{ globalSessionUid }}";
   console.log("assembly is", GlobalAssembly);
 </script>
+{% else %}
+{{ hh.js("/globalData/index/index") }}
 {% endif -%}
 
   </head>
