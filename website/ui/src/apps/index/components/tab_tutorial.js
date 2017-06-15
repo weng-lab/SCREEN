@@ -25,7 +25,13 @@ class TabTutorial extends React.Component {
 	                frameborder="0" allowfullscreen>
 		</iframe>
 
-		<h3>cRE details</h3>
+	        <h3>Search Results Table</h3>
+		<iframe width="560" height="315"
+	            src="https://www.youtube.com/embed/tOUJJ1L1E20"
+	            frameborder="0" allowfullscreen>
+		</iframe>
+	    
+		<h3>cRE Details</h3>
                 <iframe width="560" height="315"
 	                src="https://www.youtube.com/embed/58U6k86vz2U"
 	                frameborder="0" allowfullscreen>
