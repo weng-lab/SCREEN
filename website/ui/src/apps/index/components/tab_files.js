@@ -11,7 +11,7 @@ const TableColumns = () => {
 	if("NA" === expID){
 	    return "-";
 	}
-	let fn = expID + ".bigBed.bed";
+	let fn = expID + ".bigBed.bed.gz";
 	let url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" +
 		  fn;
 	return fileDownload(url, fn);
