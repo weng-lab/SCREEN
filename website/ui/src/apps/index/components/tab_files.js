@@ -34,16 +34,16 @@ const TableColumns = () => {
             title: "5 group", data: "fiveGroup", className: klassCenter,
 	    render: fiveGroupDownload
 	}, {
-            title: "9 state DNase", data: "dnase", className: klassCenter,
+            title: "9 state high DNase", data: "dnase", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state H3K27ac", data: "h3k27ac", className: klassCenter,
+	    title: "9 state high H3K27ac", data: "h3k27ac", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state H3K4me3", data: "h3k4me3", className: klassCenter,
+	    title: "9 state high H3K4me3", data: "h3k4me3", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "9 state CTCF", data: "ctcf", className: klassCenter,
+            title: "9 state high CTCF", data: "ctcf", className: klassCenter,
 	    render: dccLink
 	}
     ];
