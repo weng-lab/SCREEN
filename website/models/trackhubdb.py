@@ -328,7 +328,7 @@ parent {stname}
             if a in assays:
                 a = assays[a]
             shortLabel = ' '.join([tct, "cREs", a])
-            title = ' '.join(["cREs in", tct, "by high", a, '(9 state)'])
+            title = ' '.join(["cREs in", tct, "with high", a, '(9 state)'])
             t = PredictionTrack(title, self.priority, turl,
                                 not showCombo).track(shortLabel)
             self.priority += 1

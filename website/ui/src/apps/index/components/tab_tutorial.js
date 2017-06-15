@@ -13,6 +13,9 @@ class TabTutorial extends React.Component {
     }
 
     render() {
+        if(this.key !== this.props.maintabs_active){
+	    return false;
+	}
         return (tabPanelize(
             <div>
                 <h2>Tutorials</h2>
