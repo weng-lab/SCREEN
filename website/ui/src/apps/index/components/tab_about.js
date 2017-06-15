@@ -14,6 +14,9 @@ class TabAbout extends React.Component {
     }
 
     render() {
+        if(this.key !== this.props.maintabs_active){
+	    return false;
+	}
         let content = (
             <div>
                 <div className="row">

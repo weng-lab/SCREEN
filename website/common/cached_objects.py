@@ -59,7 +59,7 @@ class CachedObjects:
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
-        self.nineStateJsonValues = json.dumps(self.nineState.values())
+        self.filesJson = self.indexFilesTab(self.nineState.values())
 
         self.moreTracks = self.pgSearch.loadMoreTracks()
         
@@ -87,6 +87,18 @@ class CachedObjects:
             return name, ''
         return s, ''
 
+    def indexFilesTab(self, rows):
+        ret = []
+        WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
+        for r in rows:
+            d = r
+            accs = [r["dnase"], r["h3k27ac"], r["h3k4me3"], r["ctcf"]]
+            accs = filter(lambda a: a != "NA", accs)
+            fn = '_'.join(accs) + ".cREs.bed"
+            d["fiveGroup"] = [os.path.join(WWW, fn), fn]
+            ret.append(d)
+        return json.dumps(ret)
+            
     def global_data(self, ver):
         datasets = self.datasets
         return {
