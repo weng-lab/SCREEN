@@ -94,7 +94,7 @@ class CachedObjects:
             d = r
             accs = [r["dnase"], r["h3k27ac"], r["h3k4me3"], r["ctcf"]]
             accs = filter(lambda a: a != "NA", accs)
-            fn = '_'.join(accs) + ".cREs.bigBed.bed"
+            fn = '_'.join(accs) + ".cREs.bigBed.bed.gz"
             d["fiveGroup"] = [os.path.join(WWW, fn), fn]
             ret.append(d)
         return json.dumps(ret)
