@@ -22,7 +22,7 @@ class TabAbout extends React.Component {
                 <div className="row">
                     <div className="col-md-12">
                         <h3>The ENCODE Encyclopedia</h3>
-                        {Para.figure(1, "ENCODE data levels",
+                        {Para.figure(7, "ENCODE data levels",
                                      {maxHeight: "500px"})}
                     </div>
                     <div className="col-md-6">
