@@ -171,7 +171,7 @@ FROM {tn} AS cre
                   "enhancer": "h3k27ac_max",
                   "ctcf": "ctcf_max" }
         for x in ["dnase", "promoter", "enhancer", "ctcf"]:
-            if "rank_%s_start" % x in j and "rank_%s_end" in j:
+            if "rank_%s_start" % x in j and "rank_%s_end" % x in j:
                 _range = [j["rank_%s_start" % x] / 100.0,
                           j["rank_%s_end" % x] / 100.0]
                 self.whereClauses.append("(%s)" % " and ".join(

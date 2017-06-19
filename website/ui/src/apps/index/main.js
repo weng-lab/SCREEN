@@ -33,8 +33,6 @@ class IndexPage extends React.Component {
     }
 
     render() {
-	// const loggerMiddleware = createLogger();
-
 	let tab = null;
 	if("tab" in this.props.params){
 	    tab = this.props.params.tab;
