@@ -16,6 +16,7 @@ class Config:
     c.read(fnp)
 
     version = c.get("RE", "version")
+    db_host = c.get("RE", "db_host")
     database = c.get("RE", "database")
     assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
     minipeaks_ver = c.get("RE", "minipeaks_ver")
