@@ -12,7 +12,7 @@ from config import Config
 
 def db_connect(script):
     # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": "postgresql",
+    dbs = {"host": Config.db_host,
            "user": "regElmViz_usr",
            "dbname": Config.database,
            "application_name" : script}
@@ -20,7 +20,7 @@ def db_connect(script):
 
 def db_connect_db(script, db):
     # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": "postgresql",
+    dbs = {"host": Config.db_host,
            "user": "regElmViz_usr",
            "dbname": db,
            "application_name" : script}
@@ -28,7 +28,7 @@ def db_connect_db(script, db):
 
 def db_connect_single(script):
     # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": "postgresql",
+    dbs = {"host": Config.db_host,
            "user": "regElmViz_usr",
            "dbname": Config.database,
            "application_name" : script}
