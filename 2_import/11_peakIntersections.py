@@ -4,7 +4,7 @@ from __future__ import print_function
 import os, sys, json, psycopg2, argparse, gzip
 import StringIO
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../1_screen_pipeline/'))
 peakIntersections = __import__('03_peak_intersection')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
