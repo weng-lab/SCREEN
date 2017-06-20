@@ -125,9 +125,9 @@ def run(args, DBCONN):
             else:
                 ImportPeakIntersectionMetadata(curs, assembly).run()
                 ImportPeakIntersectionsMetadata(curs, assembly,
-                                                "cistromeIntersections", cistrome_peak_metadata).run()
+                                                "cistromeIntersectionsMetadata", cistrome_peak_metadata).run()
                 run_and_index(ImportPeakIntersections(curs, assembly))
-                run_and_index(ImportPeakIntersections(curs, assembly, "cistromeIntersections"))
+                run_and_index(ImportPeakIntersections(curs, assembly, "cistromeIntersectionsMetadata"))
 
 def parse_args():
     parser = argparse.ArgumentParser()
