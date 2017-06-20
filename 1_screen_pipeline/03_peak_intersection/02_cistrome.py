@@ -56,6 +56,8 @@ def makeJobs(assembly, rootpath):
         if os.path.exists(fnp):
             jobs.append({"bed": {"fnp": fnp, "fileID": exp["accession"]},
                          "i": i,
+                         "celltype": exp["celltype"],
+                         "tissue": exp["tissue"],
                          "label": exp["mark"] if etype == "histone" else exp["factor"],
                          "total": total,
                          "assembly": assembly,
