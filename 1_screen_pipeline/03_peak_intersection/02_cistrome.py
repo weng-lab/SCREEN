@@ -75,7 +75,7 @@ def computeIntersections(args, assembly):
         Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
                        bedFnp)
 
-    jobs = makeJobs(assembly, "/data/zusers/pratth/pratth.bib3/cistrome/data/raw")
+    jobs = makeJobs(assembly, "/data/projects/cistrome/data/raw")
 
     results = Parallel(n_jobs = args.j)(
         delayed(cistromeIntersectJob)(job, bedFnp)
