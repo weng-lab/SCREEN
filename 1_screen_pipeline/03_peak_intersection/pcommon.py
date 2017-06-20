@@ -29,7 +29,7 @@ def runIntersectJob(jobargs, bedfnp):
     ret = []
     printr("pcommon$runIntersectJob: (exp %d of %d)" % (jobargs["i"], jobargs["total"]),
            "intersecting", jobargs["etype"], jobargs["label"])
-    accessions = doIntersection(jobargs["bed"]["fnp"], bedfnp)
+    accessions = doIntersection(bedfnp, jobargs["bed"]["fnp"])
     if accessions is None:
         print("pcommon$runIntersectJob: warning: unable to intersect REs with bed %s" % jobargs["bed"]["fnp"],
               file = sys.stderr)
