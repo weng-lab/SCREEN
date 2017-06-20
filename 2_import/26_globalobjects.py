@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
 from utils import AddPath
 from db_utils import getcursor
 
-AddPath(__file__, "../1_pipeline/06_fantomcat")
+AddPath(__file__, "../1_screen_pipeline/06_fantomcat")
 from fc_common import FCPaths
 
 AddPath(__file__, '../common/')
