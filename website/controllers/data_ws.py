@@ -247,7 +247,7 @@ class DataWebService(GetOrSetMemCache):
         target = j.get("target", None)
         if not target:
             raise Exception("invalid target")
-        return {target : self.pgSearch.tfTargetExps(accession, target)}
+        return {target : self.pgSearch.tfTargetExps(accession, target, eset = j.get("eset", None))}
 
     def cre_histone_dcc(self, j, args):
         accession = j.get("accession", None)
@@ -256,4 +256,4 @@ class DataWebService(GetOrSetMemCache):
         target = j.get("target", None)
         if not target:
             raise Exception("invalid target")
-        return {target : self.pgSearch.histoneTargetExps(accession, target)}
+        return {target : self.pgSearch.histoneTargetExps(accession, target, eset = j.get("eset", None))}

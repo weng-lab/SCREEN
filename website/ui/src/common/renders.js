@@ -158,6 +158,10 @@ export const dccLinkAndIconSplit = (expAndFileID) => {
     return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
 }
 
+export const cistromeLink = (acc) => (
+    "<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc + "' target='_blank'>" + acc + "</a>"
+);
+
 export const factorbook_link_tf = (d) => (
     '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
