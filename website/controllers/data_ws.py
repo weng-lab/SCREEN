@@ -79,6 +79,7 @@ class DataWebService(GetOrSetMemCache):
             "targetGene" : self._re_detail_targetGene,
             "nearbyGenomic" : self._re_detail_nearbyGenomic,
             "tfIntersection" : self._re_detail_tfIntersection,
+            "cistromeIntersection": self._re_detail_cistromeIntersection,
             "relatedGene" : self._re_detail_relatedGene,
             "rampage" : self._re_detail_rampage,
             "ge" : self._re_detail_ge,
@@ -184,6 +185,11 @@ class DataWebService(GetOrSetMemCache):
     def _re_detail_tfIntersection(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         peakIntersectCount = cre.peakIntersectCount()
+        return { accession : peakIntersectCount }
+
+    def _re_detail_cistromeIntersection(self, j, accession):
+        cre = CRE(self.pgSearch, accession, self.cache)
+        peakIntersectCount = cre.peakIntersectCount(eset = "cistrome")
         return { accession : peakIntersectCount }
 
     def _re_detail_relatedGene(self, j, accession):
