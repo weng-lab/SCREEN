@@ -3,6 +3,11 @@ import React from 'react'
 import * as Render from '../renders'
 import ResultsTable from './results_table'
 
+const _renders = {
+    peak: Render.dccLinkAndIconSplit,
+    cistrome: Render.cistromeLink
+};
+
 class IntersectingAssay extends React.Component {
     constructor(props, url, table) {
 	super(props);
@@ -18,21 +23,15 @@ class IntersectingAssay extends React.Component {
         this.loadTarget(nextProps, this.state.target);
     }
 
-    loadTarget({cre_accession_detail}, target){
-	if(!target){
-	    return;
-	}
+    loadTarget({cre_accession_detail, table}, target) {
+	if(!target) { return; }
         if(target in this.state){
             this.setState({target});
             return;
         }
-        let q = {GlobalAssembly, accession: cre_accession_detail, target};
+        let q = {GlobalAssembly, accession: cre_accession_detail, target, eset: table.eset};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
-            // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
-            return;
-        }
-        //console.log("loadTarget....", this.state.jq, jq);
+        if (this.state.jq == jq) { return; } // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
         this.setState({jq, isFetching: true});
         $.ajax({
             url: this.url,
@@ -66,7 +65,7 @@ class IntersectingAssay extends React.Component {
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
                              {title: "experiment / file", data: "expID",
-	                      render: Render.dccLinkAndIconSplit }
+	                      render: _renders[this.props.table.eset ? this.props.table.eset : "peak"] }
                              ],
 	                 order: [[0, "asc"]]
                         }

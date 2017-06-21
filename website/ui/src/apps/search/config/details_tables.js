@@ -355,6 +355,7 @@ export const TfIntersectionTable = () => ({
 export const CistromeIntersectionTable = () => ({
     "tf": {
 	title: "intersecting cistrome TF exps",
+	eset: "cistrome",
         typ: IntersectingAssayTf,
 	cols: [
 	    {title: "factor", data: "name",
@@ -369,6 +370,7 @@ export const CistromeIntersectionTable = () => ({
     "histone": {
 	title: "intersecting cistrome histone mark exps",
         typ: IntersectingAssayHistone,
+	eset: "cistrome",
 	cols: [
 	    {title: "mark", data: "name" },
 	    //render: Render.factorbook_link_histone },
