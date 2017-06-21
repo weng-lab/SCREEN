@@ -351,3 +351,32 @@ export const TfIntersectionTable = () => ({
 	order: [[1, "desc"]]
     }
 });
+
+export const CistromeIntersectionTable = () => ({
+    "tf": {
+	title: "intersecting cistrome TF exps",
+        typ: IntersectingAssayTf,
+	cols: [
+	    {title: "factor", data: "name",
+	     render: Render.factorbook_link_tf },
+	    {title: "# of experiments that support TF binding", data: "n",
+	     render: Render.integerLink("tf") },
+	    {title: "# experiments in total", data: "total",
+	     render: Render.integer }],
+	bFilter: true,
+	order: [[1, "desc"]]
+    },
+    "histone": {
+	title: "intersecting cistrome histone mark exps",
+        typ: IntersectingAssayHistone,
+	cols: [
+	    {title: "mark", data: "name" },
+	    //render: Render.factorbook_link_histone },
+	    {title: "# of experiments that support histone modification", data: "n",
+	     render: Render.integerLink("histone") },
+	    {title: "# experiments in total", data: "total",
+	     render: Render.integer }],
+	bFilter: true,
+	order: [[1, "desc"]]
+    }
+});
