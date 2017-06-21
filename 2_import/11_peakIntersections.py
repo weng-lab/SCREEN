@@ -51,8 +51,19 @@ class ImportPeakIntersections:
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
 
-def peak_metadata():
-    jobs = peakIntersections.makeJobs(self.assembly)
+def peak_metadata(assembly, t, curs):
+    printt("dropping and creating table", t)
+    curs.execute("""
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}(
+id serial PRIMARY KEY,
+expID text,
+fileID text,
+assay text,
+label text,
+biosample_term_name text
+)""".format(tn = t))
+    jobs = peakIntersections.makeJobs(assembly)
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write('\t'.join([r["bed"].expID,
@@ -65,8 +76,19 @@ def peak_metadata():
     cols = "expID fileID assay label biosample_term_name".split(' ')
     return (outF, cols)
 
-def cistrome_peak_metadata():
-    jobs = cistromeIntersection.makeJobs(self.assembly)
+def cistrome_peak_metadata(assembly, t, curs):
+    printt("dropping and creating table", t)
+    curs.execute("""
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}(
+id serial PRIMARY KEY,
+fileID text,
+assay text,
+label text,
+biosample_term_name text,
+tissue text
+)""".format(tn = t))
+    jobs = cistromeIntersections.makeJobs(assembly,  "/project/umw_zhiping_weng/data/projects/cistrome/data/raw")
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
@@ -82,23 +104,10 @@ class ImportPeakIntersectionMetadata:
         self.assembly = assembly
         self.tableName = assembly + "_%sMetadata" % tsuffix
         self._tsuffix = tsuffix
-
-    def setupTable(self):
-        printt("dropping and creating table", self.tableName)
-        self.curs.execute("""
-DROP TABLE IF EXISTS {tn};
-CREATE TABLE {tn}(
-id serial PRIMARY KEY,
-expID text,
-fileID text,
-assay text,
-label text,
-biosample_term_name text
-)""".format(tn = self.tableName))
+        self._jobgen = jobgen
 
     def run(self):
-        self.setupTable()
-        outF, cols = self._jobgen()
+        outF, cols = self._jobgen(self.assembly, self.tableName, self.curs)
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
         printt("\tcopied in", self.curs.rowcount)
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
@@ -117,17 +126,17 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "main") as curs:
             if args.metadata:
                 ImportPeakIntersectionMetadata(curs, assembly).run()
-                ImportPeakIntersectionsMetadata(curs, assembly,
-                                                "cistromeIntersections", cistrome_peak_metadata).run()
+                ImportPeakIntersectionMetadata(curs, assembly,
+                                               "cistromeIntersections", cistrome_peak_metadata).run()
             elif args.index:
                 ImportPeakIntersections(curs, assembly).index()
                 ImportPeakIntersections(curs, assembly, "cistromeIntersections").index()
             else:
                 ImportPeakIntersectionMetadata(curs, assembly).run()
-                ImportPeakIntersectionsMetadata(curs, assembly,
-                                                "cistromeIntersectionsMetadata", cistrome_peak_metadata).run()
+                ImportPeakIntersectionMetadata(curs, assembly,
+                                               "cistromeIntersections", cistrome_peak_metadata).run()
                 run_and_index(ImportPeakIntersections(curs, assembly))
-                run_and_index(ImportPeakIntersections(curs, assembly, "cistromeIntersectionsMetadata"))
+                run_and_index(ImportPeakIntersections(curs, assembly, "cistromeIntersections"))
 
 def parse_args():
     parser = argparse.ArgumentParser()
