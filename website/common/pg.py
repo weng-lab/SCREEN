@@ -526,7 +526,7 @@ ORDER BY start
         peakMetadataTn = self.assembly + "_" + self._intersections_tablename(metadata = True, eset = eset)
 
         q = """
-SELECT {eid}fileID, biosample_term_name
+SELECT {eid}fileID, biosample_term_name{tissue}
 FROM {peakMetadataTn}
 WHERE fileID IN (
 SELECT distinct(jsonb_array_elements_text(histone->%s))
@@ -534,13 +534,14 @@ FROM {peakTn}
 WHERE accession = %s
 )
 ORDER BY biosample_term_name
-""".format(eid = ("" if eset == "cistrome" else "expID, "), peakTn = peakTn, peakMetadataTn = peakMetadataTn)
+""".format(eid = ("" if eset == "cistrome" else "expID, "), tissue = (", tissue" if eset == "cistrome" else ""),
+           peakTn = peakTn, peakMetadataTn = peakMetadataTn)
 
         with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))
             rows = curs.fetchall()
         return [{"expID" : r[0] if eset == "cistrome" else (r[0] + ' / ' + r[1]),
-                 "biosample_term_name" : r[1 if eset == "cistrome" else 2] } for r in rows]
+                 "biosample_term_name" : r[1 if (eset == "cistrome" and r[1] != "None") else 2] } for r in rows]
 
     def tfTargetExps(self, accession, target, eset = None):
         peakTn = self.assembly + "_" + self._intersections_tablename(metadata = False, eset = eset)
