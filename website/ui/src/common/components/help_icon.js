@@ -66,6 +66,7 @@ class HelpIcon extends React.Component {
     }
 
     _set_tt_pos() {
+	return;
 	var pos = $(this.refs.icon).offset();
 	pos.left += $(this.refs.icon).width() + 10;
 	$(this.refs.tt).appendTo(document.body);

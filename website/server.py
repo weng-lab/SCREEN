@@ -5,7 +5,7 @@ import socket
 import psycopg2, psycopg2.pool
 
 import cherrys
-cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
+#cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
 from app_main import MainApp
 from common.cached_objects import CachedObjectsWrapper
@@ -41,15 +41,15 @@ class WebServerConfig:
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
-        redisHost = "127.0.0.1"
-        if self.production:
-            redisHost = "redis"
+#        redisHost = "127.0.0.1"
+#        if self.production:
+#            redisHost = "redis"
 
         return {
             '/': {
                 'tools.sessions.on' : True,
-                'tools.sessions.storage_type' : 'redis',
-                'tools.sessions.host' : redisHost,
+#                'tools.sessions.storage_type' : 'redis',
+#                'tools.sessions.host' : redisHost,
                 'tools.sessions.locking' : 'explicit'
             },
             '/static' : {
