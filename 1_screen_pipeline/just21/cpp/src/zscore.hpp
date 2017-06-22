@@ -9,6 +9,8 @@ namespace SCREEN {
     ZScore(const std::string &);
     ZScore(const std::string &, const std::string &);
 
+    void write(const std::string &, const std::string &);
+
     std::vector<double> ComputeZScores(std::vector<double> &);
 
     std::vector<std::string> lines;

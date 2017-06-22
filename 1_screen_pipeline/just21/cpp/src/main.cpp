@@ -86,6 +86,7 @@ int main(int argc, char **argv)
 
   std::vector<std::string> ENCODE_DNase_bw(0);
   std::vector<std::string> ENCODE_DNase_bed(0);
+  std::vector<std::string> ENCODE_DNase_np(0);
   std::string line;
   std::ifstream in("/data/projects/cREs/hg19-Hotspot-List.txt");
   while (getline(in, line)) {
@@ -93,8 +94,18 @@ int main(int argc, char **argv)
     ENCODE_DNase_bw.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[3] + ".bigWig");
     ENCODE_DNase_bed.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[1] + ".bed.gz");
   }
-  std::cout << "loaded " << ENCODE_DNase_bw.size() << " exps\n";
-  SCREEN::rDHS rr(ENCODE_DNase_bed, ENCODE_DNase_bw, "/tmp/test_rdhs.bed");
+  std::cout << "computing Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
+
+#pragma omp parallel for num_threads(16)
+  for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
+    std::string f = "/data/projects/screen/DNase/" + SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])) + ".zscores.bed";
+    SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i]);
+    z.write(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])), f);
+    ENCODE_DNase_np.push_back(f);
+  }
+
+  std::cout << "computing rDHSs\n";
+  SCREEN::rDHS rr(ENCODE_DNase_np, "/tmp/test_rdhs.bed");
   std::cout << "/tmp/test_rdhs.bed\n";
 
   return 0;
