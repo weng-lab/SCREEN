@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "utils.hpp"
 #include "lookup_matrix.hpp"
 #include "zscore.hpp"
 #include "rDHS.hpp"
@@ -76,8 +77,25 @@ void test_rdhs() {
  */
 int main(int argc, char **argv)
 {
+
+  /*
   test_lookupmatrix();
   test_zscore();
   test_rdhs();
+  */
+
+  std::vector<std::string> ENCODE_DNase_bw(0);
+  std::vector<std::string> ENCODE_DNase_bed(0);
+  std::string line;
+  std::ifstream in("/data/projects/cREs/hg19-Hotspot-List.txt");
+  while (getline(in, line)) {
+    std::vector<std::string> cols(SCREEN::split(line, '\t'));
+    ENCODE_DNase_bw.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[3] + ".bigWig");
+    ENCODE_DNase_bed.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[1] + ".bed.gz");
+  }
+  std::cout << "loaded " << ENCODE_DNase_bw.size() << " exps\n";
+  SCREEN::rDHS rr(ENCODE_DNase_bed, ENCODE_DNase_bw, "/tmp/test_rdhs.bed");
+  std::cout << "/tmp/test_rdhs.bed\n";
+
   return 0;
 }
