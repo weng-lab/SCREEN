@@ -1,6 +1,8 @@
 UNAME_S := $(shell uname -s)
+COMMON_PATH=$(realpath ./common)
 CPP = g++
 LOCAL_PATH = $(EXT_PATH)/local
+
 CXXFLAGS = -std=c++14 -DZI_USE_OPENMP -fopenmp -Wall -fPIC
 ifeq ($(UNAME_S),Darwin)
     CXXOPT = -O2 -funroll-loops -DNDEBUG --fast-math
@@ -24,7 +26,7 @@ LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/boost/lib -L$(LOCAL_PATH)/boost/lib  \
 	-lboost_filesystem -lboost_iostreams -lboost_regex -lboost_serialization
 
 #zentLib
-LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/zentLib/lib -L$(LOCAL_PATH)/zentLib/lib -lzentlib
+LD_FLAGS += -Wl,-rpath,$(COMMON_PATH)/zentLib/lib -L$(COMMON_PATH)/zentLib/lib -lzentlib
 
 #armadillo
 LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/armadillo/lib -L$(LOCAL_PATH)/armadillo/lib -larmadillo
