@@ -18,6 +18,20 @@ namespace SCREEN {
   }
 
   /*
+   *  appends the peaks from the given ZScore set to the list of lines in rawlines
+   *  nameprefix is appended to the name column to distinguish DHSs from different files
+   */
+  void ZScore::write(const std::string &nameprefix, const std::string &path) {
+    std::ofstream o(path);
+    for (auto i = 0; i < lines.size(); ++i) {
+      std::vector<std::string> cols(split(lines[i], '\t'));
+      o << cols[0] << "\t" << cols[1] << "\t" << cols[2] << "\t" << nameprefix << "_" << cols[3] << "\t"
+	<< (cols.size() >= 5 ? cols[4] : "0") << "\t" << (cols.size() >= 6 ? cols[5] : ".") << "\t"
+	<< std::to_string(zscores[i]) << "\t-1\t" << (cols.size() >= 9 ? cols[8] : "-1") << "\n";
+    }
+  }
+
+  /*
    *  computes a list of Z-scores for a given vector
    */
   std::vector<double> ZScore::ComputeZScores(std::vector<double> &in) {

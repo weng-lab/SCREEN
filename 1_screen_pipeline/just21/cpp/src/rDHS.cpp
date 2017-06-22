@@ -13,20 +13,6 @@
 namespace SCREEN {
 
   /*
-   *  appends the peaks from the given ZScore set to the list of lines in rawlines
-   *  nameprefix is appended to the name column to distinguish DHSs from different files
-   */
-  void genlines(const SCREEN::ZScore &z, const std::string &nameprefix,
-		std::vector<std::string> &rawlines) {
-    for (auto i = 0; i < z.lines.size(); ++i) {
-      std::vector<std::string> cols(split(z.lines[i], '\t'));
-      rawlines.push_back(cols[0] + "\t" + cols[1] + "\t" + cols[2] + "\t" + nameprefix + "_" + cols[3] + "\t" +
-			 (cols.size() >= 5 ? cols[4] : "0") + "\t" + (cols.size() >= 6 ? cols[5] : ".") + "\t" +
-			 std::to_string(z.zscores[i]) + "\t-1\t" + (cols.size() >= 9 ? cols[8] : "-1"));
-    }
-  }
-
-  /*
    *  clusters the raw DHSs stored in rawlines into rDHSs
    *  output is written to the given path, then read into the passed vector
    */
@@ -54,7 +40,7 @@ namespace SCREEN {
 	     const std::string &output_path) {
     std::vector<std::string> rawlines(0);
     for (auto path : narrowPeakList) {
-      genlines(SCREEN::ZScore(path), trim_ext(basename(path)), rawlines);
+      read(rawlines, path);
     }
     rDHSs = std::vector<std::string>(0);
     cluster_and_read(rawlines, output_path, rDHSs);
@@ -66,8 +52,10 @@ namespace SCREEN {
     if (bedList.size() != bigWigList.size())
       throw std::invalid_argument("SCREEN::rDHS::rDHS: passed bedList and bigWigList have different lengths");
     for (auto i = 0; i < bedList.size(); ++i) {
-      genlines(SCREEN::ZScore(bedList[i], bigWigList[i]), trim_ext(basename(bedList[i])), rawlines);
+      std::cout << "reading file " << (i + 1) << " / " << bedList.size() << "\r" << std::flush;
+      //genlines(SCREEN::ZScore(bedList[i], bigWigList[i]), trim_ext(basename(bedList[i])), rawlines);
     }
+    std::cout << std::endl;
     rDHSs = std::vector<std::string>(0);
     cluster_and_read(rawlines, output_path, rDHSs);
   }
