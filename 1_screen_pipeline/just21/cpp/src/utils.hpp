@@ -1,3 +1,5 @@
+#pragma once
+
 namespace SCREEN {
 
   template<typename Out> void split(const std::string &, char, Out);
