@@ -6,7 +6,7 @@ import sys, os
 import json
 import md5
 
-sys.path.append("../../../metadata/utils")
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, eprint
 from files_and_paths import Dirs, Tools, Genome, Datasets, Urls, Webservice
 
