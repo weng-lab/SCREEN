@@ -9,8 +9,6 @@ namespace SCREEN {
     
   public:
     rDHS(const std::vector<std::string>&, const std::string&);
-    rDHS(const std::vector<std::string>&, const std::vector<std::string>&,
-	 const std::string&);
     const std::string& operator [](size_t);
     
   };
