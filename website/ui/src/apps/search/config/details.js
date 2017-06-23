@@ -314,7 +314,7 @@ const DetailsTabInfo = () => {
 	cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
                          enabled: GlobalAssembly == "mm10" || GlobalAssembly == "hg38", f: CistromeIntersectionTab},
 	fantom_cat: {title: Render.tabTitle(["FANTOM CAT", "Intersection"]),
-		    enabled: true, f: FantomCatTab},
+		    enabled: GlobalAssembly == "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
