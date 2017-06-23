@@ -84,10 +84,11 @@ int main(int argc, char **argv)
   test_rdhs();
   */
 
-  std::vector<std::string> ENCODE_DNase_bw(0);
-  std::vector<std::string> ENCODE_DNase_bed(0);
-  std::vector<std::string> ENCODE_DNase_np(0);
+  std::vector<std::string> ENCODE_DNase_bw;
+  std::vector<std::string> ENCODE_DNase_bed;
+  std::vector<std::string> ENCODE_DNase_np;
   std::string line;
+
   std::ifstream in("/data/projects/cREs/hg19-Hotspot-List.txt");
   while (getline(in, line)) {
     std::vector<std::string> cols(SCREEN::split(line, '\t'));
@@ -96,7 +97,7 @@ int main(int argc, char **argv)
   }
   std::cout << "computing Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
 
-#pragma omp parallel for num_threads(32)
+#pragma omp parallel for
   for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
     std::string f = "/data/projects/cREs/DNase/" + SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])) + ".zscores.bed";
     SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i]);

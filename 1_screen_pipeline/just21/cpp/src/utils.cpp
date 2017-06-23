@@ -31,18 +31,22 @@ namespace SCREEN {
   }
 
   void write(const std::vector<std::string> &lines, const std::string &path) {
-    std::ofstream o(path);
-    for (std::string line : lines) o << line << "\n";
+    std::ofstream f(path);
+    for (std::string line : lines) {
+      f << line << "\n";
+    }
   }
 
   void read(std::vector<std::string> &lines, const std::string &path) {
     std::ifstream i(path);
     std::string line;
-    while (std::getline(i, line)) lines.push_back(line);
+    while (std::getline(i, line)) {
+      lines.push_back(line);
+    }
   }
   
   bool path_is_gzip(const std::string &path) {
-    return path.length() >= 3 && path.compare(path.length() - 3, 3, ".gz") == 0;
+    return path.size() >= 3 && 0 == path.compare(path.size() - 3, 3, ".gz");
   };
 
   std::string basename(const std::string &path) {
