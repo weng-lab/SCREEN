@@ -77,7 +77,7 @@ def computeIntersections(args, assembly):
         Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
                        bedFnp)
 
-    jobs = makeJobs(assembly, "/project/umw_zhiping_weng/data/projects/cistrome/data/raw")
+    jobs = makeJobs(assembly, paths.cistrome("data", "raw"))
 
     results = Parallel(n_jobs = args.j)(
         delayed(cistromeIntersectJob)(job, bedFnp)
@@ -86,7 +86,8 @@ def computeIntersections(args, assembly):
     print("\n")
     printt("merging intersections into hash...")
 
-    processResults(results, paths.path(assembly, "extras", "cistromeIntersections.json.gz"))
+    processResults(results, paths.path(assembly, "extras",
+                                       "cistromeIntersections.json.gz"))
 
 def parse_args():
     parser = argparse.ArgumentParser()

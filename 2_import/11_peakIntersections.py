@@ -88,7 +88,7 @@ label text,
 biosample_term_name text,
 tissue text
 )""".format(tn = t))
-    jobs = cistromeIntersections.makeJobs(assembly,  "/project/umw_zhiping_weng/data/projects/cistrome/data/raw")
+    jobs = cistromeIntersections.makeJobs(assembly, paths.cistrome("data", "raw"))
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
