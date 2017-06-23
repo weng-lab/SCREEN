@@ -24,7 +24,7 @@ namespace SCREEN {
     std::string get_final = "bedops -u ";
     std::vector<std::string> chromlist = chrom_list(path);
 
-#pragma omp parallel for num_threads(32)
+#pragma omp parallel for
     for (auto i = 0; i < chromlist.size(); ++i) {
       std::string chr = chromlist[i];
       std::string cpath = path + chr + "_";
@@ -48,17 +48,18 @@ namespace SCREEN {
 
   rDHS::rDHS(const std::vector<std::string> &narrowPeakList,
 	     const std::string &output_path) {
-    std::vector<std::string> rawlines(0);
+    std::vector<std::string> rawlines;
     for (auto path : narrowPeakList) {
       read(rawlines, path);
     }
-    rDHSs = std::vector<std::string>(0);
+    rDHSs.clear();
     cluster_and_read(rawlines, output_path, rDHSs);
   }
 
-  rDHS::rDHS(const std::vector<std::string> &bedList, const std::vector<std::string> &bigWigList,
+  rDHS::rDHS(const std::vector<std::string> &bedList,
+	     const std::vector<std::string> &bigWigList,
 	     const std::string &output_path) {
-    std::vector<std::string> rawlines(0);
+    std::vector<std::string> rawlines;
     if (bedList.size() != bigWigList.size())
       throw std::invalid_argument("SCREEN::rDHS::rDHS: passed bedList and bigWigList have different lengths");
     for (auto i = 0; i < bedList.size(); ++i) {
@@ -66,11 +67,11 @@ namespace SCREEN {
       //genlines(SCREEN::ZScore(bedList[i], bigWigList[i]), trim_ext(basename(bedList[i])), rawlines);
     }
     std::cout << std::endl;
-    rDHSs = std::vector<std::string>(0);
+    rDHSs.clear();
     cluster_and_read(rawlines, output_path, rDHSs);
   }
 
-  const std::string &rDHS::operator [](long index) {
+  const std::string &rDHS::operator [](size_t index) {
     return rDHSs[index];
   }
   
