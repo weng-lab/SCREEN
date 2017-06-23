@@ -182,42 +182,6 @@ class ImportGwas:
      """.format(tn = self.tableNameStudies))
         return [r[0] for r in self.curs.fetchall()]
 
-    def processGwasBed(self, origBedFnp, bedFnp):
-        printt("reading", origBedFnp)
-        with open(origBedFnp) as f:
-            rows = [r.rstrip().split('\t') for r in f if r]
-        printt("split rows")
-        split = []
-        for r in rows:
-            if ',' not in r[4]:
-                split.append(r)
-                continue
-            taggedSNPs = r[4].split(',')
-            r2s = r[5].split(',')
-            a = list(r)
-            b = list(r)
-            a[4] = taggedSNPs[0]
-            b[4] = taggedSNPs[1]
-            a[5] = r2s[0]
-            b[5] = r2s[1]
-            split.append(a)
-            split.append(b)
-        printt("split rows", len(rows), "to", len(split))
-
-        printt("adding authorPubmedTrait")
-        for r in split:
-            authorPubmedTrait = r[-1]
-            r[-1] = authorPubmedTrait.replace('-', '_')
-
-        print("***********", split[0][-1])
-
-        printt("writing", bedFnp)
-        with open(bedFnp, 'w') as f:
-            for r in split:
-                f.write('\t'.join(r) + '\n')
-        Utils.sortFile(bedFnp)
-        printWroteNumLines(bedFnp)
-
     def _setupOverlap(self):
         self.curs.execute("""
         DROP TABLE IF EXISTS {tn};
@@ -286,7 +250,6 @@ class ImportGwas:
 
         origBedFnp = os.path.join(dataF, "GWAS.v3.bed")
         bedFnp = os.path.join(dataF, "GWAS.v3.sorted.bed")
-        self.processGwasBed(origBedFnp, bedFnp)
 
         self._gwas(bedFnp)
         header = self._enrichment()
