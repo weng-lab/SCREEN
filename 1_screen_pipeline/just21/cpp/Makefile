@@ -3,7 +3,7 @@ COMMON_PATH=$(realpath ./common)
 
 include ./makefile-common.mk
 
-FLAGS = -g -std=c++11 -fPIC
+FLAGS = -g -std=c++14 -fPIC -fopenmp
 CFLAGS = -g -std=c99 -fPIC
 
 OBJ_DIR := build

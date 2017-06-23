@@ -5,10 +5,30 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <array>
 
 #include "utils.hpp"
 
 namespace SCREEN {
+
+  std::vector<std::string> chrom_list(const std::string &path) {
+    return split(run("bedextract --list-chr " + path), '\n');
+  }
+
+  std::string run(const std::string &cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    while (!feof(pipe.get())) {
+      if (fgets(buffer.data(), 128, pipe.get()) != NULL)
+	result += buffer.data();
+    }
+    return result;
+  }
 
   void write(const std::vector<std::string> &lines, const std::string &path) {
     std::ofstream o(path);

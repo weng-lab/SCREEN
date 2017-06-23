@@ -46,8 +46,8 @@ void test_zscore() {
 
   // print a peak and associated Z-score from both
   // the peak is the original line from the bed with the Z-score in the signal column
-  std::cout << r.lines[0] << "\t" << r.zscores[0] << "\n";
-  std::cout << t.lines[0] << "\t" << t.zscores[0] << "\n";
+  std::cout << r.lines[0][0] << "\t" << r.lines[0][1] << "\t" << r.lines[0][2] << "\t" << r.zscores[0] << "\n";
+  std::cout << t.lines[0][0] << "\t" << t.lines[0][1] << "\t" << t.lines[0][2] << "\t" << t.zscores[0] << "\n";
   std::cout << "--- /test Z-score computation ---\n\n";
   
 }
@@ -64,7 +64,7 @@ void test_rdhs() {
     "/data/projects/cistrome/data/raw/dnase_human/1798_sort_peaks.narrowPeak.bed",
     "/data/projects/cistrome/data/raw/dnase_human/1799_sort_peaks.narrowPeak.bed"
   };
-  SCREEN::rDHS rr(nplist, "/tmp/test_rdhs.bed");
+  SCREEN::rDHS rr(nplist, "/tmp/test_rDHS.bed");
 
   // output the first rDHS
   std::cout << rr[0] << "\n";
@@ -96,10 +96,11 @@ int main(int argc, char **argv)
   }
   std::cout << "computing Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
 
-#pragma omp parallel for num_threads(16)
+#pragma omp parallel for num_threads(32)
   for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
-    std::string f = "/data/projects/screen/DNase/" + SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])) + ".zscores.bed";
+    std::string f = "/data/projects/cREs/DNase/" + SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])) + ".zscores.bed";
     SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i]);
+    z.qfilter(0.01);
     z.write(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])), f);
     ENCODE_DNase_np.push_back(f);
   }

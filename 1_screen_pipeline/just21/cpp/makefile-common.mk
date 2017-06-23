@@ -1,6 +1,6 @@
 UNAME_S := $(shell uname -s)
 COMMON_PATH=$(realpath ./common)
-CPP = g++
+CPP = g++-5
 LOCAL_PATH = $(EXT_PATH)/local
 
 CXXFLAGS = -std=c++14 -DZI_USE_OPENMP -fopenmp -Wall -fPIC
