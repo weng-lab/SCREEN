@@ -18,22 +18,32 @@ namespace SCREEN {
    */
   void cluster_and_read(const std::vector<std::string> &rawlines, const std::string &path,
 			std::vector<std::string> &rDHSs) {
+
     write(rawlines, path + "us");
     exec("sort-bed " + path + "us > " + path);
-    std::string tmpm = path + "m";
     std::string get_final = "bedops -u ";
-    int i = 0;
-    while (lines(path) > 0) {
-      std::string ipath = path + std::to_string(i);
-      get_final += ipath + " ";
-      std::cout << "rDHS::_cluster: iteration " << ++i << "\n";
-      exec("bedops -m --range 0:-1 " + path + " | bedops -u --range 0:1 - > " + tmpm);
-      exec("bedmap --max-element " + tmpm + " " + path + " | sort-bed - > " + ipath);
-      exec("bedops -n 1 " + path + " " + ipath + " > " + path + "_");
-      std::rename((path + "_").c_str(), path.c_str());
+    std::vector<std::string> chromlist = chrom_list(path);
+
+#pragma omp parallel for num_threads(32)
+    for (auto i = 0; i < chromlist.size(); ++i) {
+      std::string chr = chromlist[i];
+      std::string cpath = path + chr + "_";
+      std::string tmpm = cpath + "m_";
+      exec("bedextract " + chr + " " + path + " > " + cpath);
+      while (lines(cpath) > 0) {
+	std::string ipath = cpath + std::to_string(i);
+	get_final += ipath + " ";
+	exec("bedops -m --range 0:-1 " + cpath + " | bedops -u --range 0:1 - > " + tmpm);
+	exec("bedmap --max-element " + tmpm + " " + cpath + " | sort-bed - > " + ipath);
+	exec("bedops -n 1 " + cpath + " " + ipath + " > " + cpath + "_");
+	std::rename((cpath + "_").c_str(), cpath.c_str());
+      }
+      std::cout << "rDHS::_cluster: " + chr + " complete\n";
     }
+
     exec(get_final + "> " + path);
     read(rDHSs, path);
+
   }
 
   rDHS::rDHS(const std::vector<std::string> &narrowPeakList,

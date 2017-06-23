@@ -24,7 +24,7 @@ namespace SCREEN {
   void ZScore::write(const std::string &nameprefix, const std::string &path) {
     std::ofstream o(path);
     for (auto i = 0; i < lines.size(); ++i) {
-      std::vector<std::string> cols(split(lines[i], '\t'));
+      std::vector<std::string> &cols = lines[i];
       o << cols[0] << "\t" << cols[1] << "\t" << cols[2] << "\t" << nameprefix << "_" << cols[3] << "\t"
 	<< (cols.size() >= 5 ? cols[4] : "0") << "\t" << (cols.size() >= 6 ? cols[5] : ".") << "\t"
 	<< std::to_string(zscores[i]) << "\t-1\t" << (cols.size() >= 9 ? cols[8] : "-1") << "\n";
@@ -36,6 +36,7 @@ namespace SCREEN {
    */
   std::vector<double> ZScore::ComputeZScores(std::vector<double> &in) {
     std::vector<double> retval(in.size());
+    if (in.size() <= 1) return retval;
     double average = mean(in);
     double sq_sum = std::inner_product(in.begin(), in.end(), in.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / in.size() - average * average);
@@ -47,12 +48,33 @@ namespace SCREEN {
    *  reads a bed file into this object's "lines" member; may be gzipped or not
    */
   void ZScore::_read(const std::string &in) {
-    lines = std::vector<std::string>();
+    lines = std::vector<std::vector<std::string>>();
     if (SCREEN::path_is_gzip(in)) {
       gz::igzstream _in(in.c_str());
-      for (std::string row; std::getline(_in, row, '\n');) lines.push_back(row);
+      for (std::string row; std::getline(_in, row, '\n');) {
+	std::vector<std::string> v(split(row, '\t'));
+	lines.push_back(v);
+      }
     } else {
-      read(lines, in);
+      std::ifstream _in(in);
+      for (std::string row; std::getline(_in, row, '\n');) {
+	std::vector<std::string> v(split(row, '\t'));
+	lines.push_back(v);
+      }
+    }
+  }
+
+  /*
+   *  filter items by the Q-score in column 9
+   */
+  void ZScore::qfilter(double qthreshold) {
+    for (auto i = 0; i < lines.size(); ++i) {
+      std::vector<std::string> &cols = lines[i];
+      if (cols.size() < 9) continue;
+      if (std::exp(-std::stof(cols[8])) > qthreshold) {
+	lines.erase(lines.begin() + i);
+	zscores.erase(zscores.begin() + i--);
+      }
     }
   }
 
@@ -63,9 +85,8 @@ namespace SCREEN {
   ZScore::ZScore(const std::string &narrowPeakPath) {
     _read(narrowPeakPath);
     std::vector<double> zl(0);
-    for (std::string &line : lines) {
-      std::vector<std::string> cols(split(line, '\t'));
-      zl.push_back(std::stof(cols[6]));
+    for (std::vector<std::string> &line : lines) {
+      zl.push_back(std::log(std::stof(line[6]) + 0.01));
     }
     zscores = ComputeZScores(zl);
   }
@@ -78,10 +99,9 @@ namespace SCREEN {
     _read(bedPath);
     zentlib::BigWig b(bigWigPath);
     std::vector<double> zl(0);
-    for (std::string &line : lines) {
-      std::vector<std::string> v(split(line, '\t'));
-      std::vector<double> values = b.GetRangeAsVector(v[0], std::stoi(v[1]), std::stoi(v[2]));
-      zl.push_back(mean(values));
+    for (std::vector<std::string> &line : lines) {
+      std::vector<double> values = b.GetRangeAsVector(line[0], std::stoi(line[1]), std::stoi(line[2]));
+      zl.push_back(std::log(mean(values) + 0.01));
     }
     zscores = ComputeZScores(zl);
   }
