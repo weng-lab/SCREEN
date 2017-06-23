@@ -36,11 +36,15 @@ namespace SCREEN {
    */
   std::vector<double> ZScore::ComputeZScores(std::vector<double> &in) {
     std::vector<double> retval(in.size());
-    if (in.size() <= 1) return retval;
+    if (in.size() <= 1) {
+      return retval;
+    }
     double average = mean(in);
     double sq_sum = std::inner_product(in.begin(), in.end(), in.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / in.size() - average * average);
-    for (auto i = 0; i < in.size(); ++i) retval[i] = (in[i] - average) / stdev;
+    for (auto i = 0; i < in.size(); ++i) {
+      retval[i] = (in[i] - average) / stdev;
+    }
     return retval;
   }
 
@@ -73,7 +77,9 @@ namespace SCREEN {
     std::vector<double> nz(0);
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
-      if (cols.size() < 9) continue;
+      if (cols.size() < 9) {
+	continue;
+      }
       if (std::stof(cols[8]) >= nlog) {
 	nl.push_back(lines[i]);
 	nz.push_back(zscores[i]);
@@ -105,7 +111,9 @@ namespace SCREEN {
     zentlib::BigWig b(bigWigPath);
     std::vector<double> zl(0);
     for (std::vector<std::string> &line : lines) {
-      std::vector<double> values = b.GetRangeAsVector(line[0], std::stoi(line[1]), std::stoi(line[2]));
+      std::vector<double> values = b.GetRangeAsVector(line[0],
+						      std::stoi(line[1]),
+						      std::stoi(line[2]));
       zl.push_back(std::log(mean(values) + 0.01));
     }
     zscores = ComputeZScores(zl);
