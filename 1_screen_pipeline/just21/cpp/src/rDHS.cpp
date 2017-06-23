@@ -22,26 +22,23 @@ namespace SCREEN {
     write(rawlines, path + "us");
     exec("sort-bed " + path + "us > " + path);
     std::string get_final = "bedops -u ";
-    std::vector<std::string> chromlist = chrom_list(path);
-
-#pragma omp parallel for
-    for (auto i = 0; i < chromlist.size(); ++i) {
-      std::string chr = chromlist[i];
-      std::string cpath = path + chr + "_";
-      std::string tmpm = cpath + "m_";
-      exec("bedextract " + chr + " " + path + " > " + cpath);
-      while (lines(cpath) > 0) {
-	std::string ipath = cpath + std::to_string(i);
-	get_final += ipath + " ";
-	exec("bedops -m --range 0:-1 " + cpath + " | bedops -u --range 0:1 - > " + tmpm);
-	exec("bedmap --max-element " + tmpm + " " + cpath + " | sort-bed - > " + ipath);
-	exec("bedops -n 1 " + cpath + " " + ipath + " > " + cpath + "_");
-	std::rename((cpath + "_").c_str(), cpath.c_str());
-      }
-      std::cout << "rDHS::_cluster: " + chr + " complete\n";
+    std::string tmpm = path + "m_";
+    int n = 0;
+    while (lines(path) > 0) {
+      std::string ipath = path + std::to_string(n);
+      std::cout << "rDHS::cluster_and_read: iteration " << n++ << "\n";
+      get_final += ipath + " ";
+      exec("bedops -m --range 0:-1 " + path + " | bedops -u --range 0:1 - > " + tmpm);
+      exec("bedmap --max-element " + tmpm + " " + path + " | sort-bed - > " + ipath);
+      exec("bedops -n 1 " + path + " " + ipath + " > " + path + "_");
+      std::rename((path + "_").c_str(), path.c_str());
     }
 
     exec(get_final + "> " + path);
+    for (auto i = 0; i < n; ++i) {
+      std::remove((path + std::to_string(i)).c_str());
+      std::remove(tmpm.c_str());
+    }
     read(rDHSs, path);
 
   }
@@ -50,23 +47,9 @@ namespace SCREEN {
 	     const std::string &output_path) {
     std::vector<std::string> rawlines;
     for (auto path : narrowPeakList) {
+      std::cout << path << "\t" << rawlines.size() << "\n";
       read(rawlines, path);
     }
-    rDHSs.clear();
-    cluster_and_read(rawlines, output_path, rDHSs);
-  }
-
-  rDHS::rDHS(const std::vector<std::string> &bedList,
-	     const std::vector<std::string> &bigWigList,
-	     const std::string &output_path) {
-    std::vector<std::string> rawlines;
-    if (bedList.size() != bigWigList.size())
-      throw std::invalid_argument("SCREEN::rDHS::rDHS: passed bedList and bigWigList have different lengths");
-    for (auto i = 0; i < bedList.size(); ++i) {
-      std::cout << "reading file " << (i + 1) << " / " << bedList.size() << "\r" << std::flush;
-      //genlines(SCREEN::ZScore(bedList[i], bigWigList[i]), trim_ext(basename(bedList[i])), rawlines);
-    }
-    std::cout << std::endl;
     rDHSs.clear();
     cluster_and_read(rawlines, output_path, rDHSs);
   }
