@@ -6,8 +6,8 @@
 #include <numeric>
 
 #include "../../common/zentLib/src/BigWigWrapper.hpp"
+#include "cpp/files.hpp"
 
-#include "gzstream/gzstream.hpp"
 #include "utils.hpp"
 #include "zscore.hpp"
 
@@ -50,7 +50,7 @@ namespace SCREEN {
   void ZScore::_read(const std::string &in) {
     lines = std::vector<std::vector<std::string>>();
     if (SCREEN::path_is_gzip(in)) {
-      gz::igzstream _in(in.c_str());
+      GZSTREAM::igzstream _in(in.c_str());
       for (std::string row; std::getline(_in, row, '\n');) {
 	std::vector<std::string> v(split(row, '\t'));
 	lines.push_back(v);

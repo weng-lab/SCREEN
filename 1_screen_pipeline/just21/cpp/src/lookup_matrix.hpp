@@ -1,3 +1,5 @@
+#pragma once
+
 namespace SCREEN {
 
   typedef std::unordered_map<std::string, std::string> matrix_entry;

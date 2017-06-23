@@ -1,5 +1,4 @@
 EXT_PATH=$(realpath ./external)
-COMMON_PATH=$(realpath ./common)
 
 include ./makefile-common.mk
 
@@ -9,9 +8,14 @@ CFLAGS = -g -std=c99 -fPIC
 OBJ_DIR := build
 OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.cpp, %.o, $(call rwildcard, src/, *.cpp)))
 HEADERS = $(call rwildcard, src/, *.h) \
-	$(call rwildcard, src/, *.hpp)
+	$(call rwildcard, src/, *.hpp) \
+	$(call rwildcard, ../common/, *.h) \
+	$(call rwildcard, ../common/, *.hpp) \
+	$(call rwildcard, $(COMMON_PATH)/cpp/, *.h) \
+	$(call rwildcard, $(COMMON_PATH)/cpp/, *.hpp)
 BIN := bin/test
 LIB := lib/libscreen.so
+SRC = -I../ -I$(COMMON_PATH)/
 
 .PHONY: all
 all: directories $(OBJ_DIR) $(BIN) $(LIB)
