@@ -72,7 +72,7 @@ namespace SCREEN {
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
       if (cols.size() < 9) continue;
-      if (std::stof(cols[8]) < qthreshold) {
+      if (std::stof(cols[8]) < nlog) {
 	lines.erase(lines.begin() + i);
 	zscores.erase(zscores.begin() + i--);
       }
