@@ -49,7 +49,7 @@ class MoreTracks:
 
     def _doImport(self):
         mc = MemCacheWrapper(Config.memcache)
-        qd = QueryDCC(cache = mc)
+        qd = QueryDCC(auth = False, cache = mc)
 
         m = MetadataWS.byAssembly(self.assembly)
         allExps = m.all_bigBeds_bigWigs(self.assembly)
