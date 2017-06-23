@@ -48,8 +48,8 @@ class MoreTracks:
         );""".format(tn = self.tableName))
 
     def _doImport(self):
-        mc = MemCacheWrapper()
-        qd = QueryDCC(cache = mc)
+        mc = MemCacheWrapper(Config.memcache)
+        qd = QueryDCC(auth = False, cache = mc)
 
         m = MetadataWS.byAssembly(self.assembly)
         allExps = m.all_bigBeds_bigWigs(self.assembly)
