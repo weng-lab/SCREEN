@@ -68,10 +68,11 @@ namespace SCREEN {
    *  filter items by the Q-score in column 9
    */
   void ZScore::qfilter(double qthreshold) {
+    double nlog = -std::log10(qthreshold);
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
       if (cols.size() < 9) continue;
-      if (std::exp(-std::stof(cols[8])) > qthreshold) {
+      if (std::stof(cols[8]) < qthreshold) {
 	lines.erase(lines.begin() + i);
 	zscores.erase(zscores.begin() + i--);
       }
