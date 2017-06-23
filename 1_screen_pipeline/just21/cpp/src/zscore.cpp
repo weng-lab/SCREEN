@@ -69,14 +69,18 @@ namespace SCREEN {
    */
   void ZScore::qfilter(double qthreshold) {
     double nlog = -std::log10(qthreshold);
+    std::vector<std::vector<std::string>> nl(0);
+    std::vector<double> nz(0);
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
       if (cols.size() < 9) continue;
-      if (std::stof(cols[8]) < nlog) {
-	lines.erase(lines.begin() + i);
-	zscores.erase(zscores.begin() + i--);
+      if (std::stof(cols[8]) >= nlog) {
+	nl.push_back(lines[i]);
+	nz.push_back(zscores[i]);
       }
     }
+    lines = nl;
+    zscores = nz;
   }
 
   /*
