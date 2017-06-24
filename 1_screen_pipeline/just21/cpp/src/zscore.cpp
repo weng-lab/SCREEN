@@ -14,7 +14,7 @@
 namespace SCREEN {
 
   double mean(std::vector<double> &in) {
-    return std::accumulate(in.begin(), in.end(), 0.0) / in.size();
+    return  std::accumulate(in.begin(), in.end(), 0.0) / in.size();
   }
 
   /*
@@ -26,7 +26,7 @@ namespace SCREEN {
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
       o << cols[0] << "\t" << cols[1] << "\t" << cols[2] << "\t" << nameprefix << "_" << cols[3] << "\t"
-	<< (cols.size() >= 5 ? cols[4] : "0") << "\t" << (cols.size() >= 6 ? cols[5] : ".") << "\t"
+	<< std::to_string(zscores[i]) << "\t" << (cols.size() >= 6 ? cols[5] : ".") << "\t"
 	<< std::to_string(zscores[i]) << "\t-1\t" << (cols.size() >= 9 ? cols[8] : "-1") << "\n";
     }
   }
@@ -97,7 +97,7 @@ namespace SCREEN {
     _read(narrowPeakPath);
     std::vector<double> zl(0);
     for (std::vector<std::string> &line : lines) {
-      zl.push_back(std::log(std::stof(line[6]) + 0.01));
+      zl.push_back(std::stof(line[6]));
     }
     zscores = ComputeZScores(zl);
   }
@@ -114,7 +114,7 @@ namespace SCREEN {
       std::vector<double> values = b.GetRangeAsVector(line[0],
 						      std::stoi(line[1]),
 						      std::stoi(line[2]));
-      zl.push_back(std::log(mean(values) + 0.01));
+      zl.push_back(mean(values));
     }
     zscores = ComputeZScores(zl);
   }
