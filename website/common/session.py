@@ -19,7 +19,6 @@ class Sessions:
         return str(uuid.uuid4())
 
     def insert(self, session_id, uid):
-        return
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""
 INSERT INTO {table}
@@ -32,7 +31,6 @@ VALUES (
 })
 
     def insertOrUpdate(self, session_id, uid):
-        return
         with getcursor(self.DBCONN, "insertOrUpdate") as curs:
             curs.execute("""
 SELECT id FROM {table}
@@ -75,7 +73,6 @@ VALUES (
         return uid
 
     def get(self, session_id):
-        return None
         print(self.table)
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""

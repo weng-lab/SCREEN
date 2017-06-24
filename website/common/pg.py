@@ -475,7 +475,6 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
         cols = ["assay", "expID", "fileID", "tissue",
                 "biosample_summary", "biosample_type", "cellTypeName",
                 "cellTypeDesc"]
-        return []
         with getcursor(self.pg.DBCONN, "datasets") as curs:
             curs.execute("""
 SELECT {cols} FROM {tn}
@@ -607,7 +606,6 @@ FROM {tn}
         return ret
 
     def geBiosampleTypes(self):
-        return []
         q = """
 SELECT DISTINCT(biosample_type)
 FROM {tn}
@@ -630,7 +628,6 @@ ORDER BY 1
         return {r[0] : r[1] for r in rows}
 
     def getHelpKeys(self):
-        return {}
         with getcursor(self.pg.DBCONN, "getHelpKeys") as curs:
             curs.execute("""
             SELECT key, title, summary
@@ -676,7 +673,6 @@ FROM {tn}
         return ret
 
     def loadMoreTracks(self):
-        return {}
         tableName = self.assembly + "_more_tracks"
         with getcursor(self.pg.DBCONN, "pg$loadMoretracks") as curs:
             curs.execute("""
