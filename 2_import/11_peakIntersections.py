@@ -19,7 +19,7 @@ from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndex
 from files_and_paths import Dirs
 
 class ImportPeakIntersections:
-    def __init__(self, curs, assembly, tsuffix = "peakIntersections"):
+    def __init__(self, curs, assembly, tsuffix):
         self.curs = curs
         self.assembly = assembly
         self.tableName = "_".join((assembly, tsuffix))
@@ -51,7 +51,7 @@ class ImportPeakIntersections:
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
 
-def peak_metadata(assembly, t, curs):
+def encode_peak_metadata(assembly, t, curs):
     printt("dropping and creating table", t)
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
@@ -88,7 +88,7 @@ label text,
 biosample_term_name text,
 tissue text
 )""".format(tn = t))
-    jobs = cistromeIntersections.makeJobs(assembly,  "/project/umw_zhiping_weng/data/projects/cistrome/data/raw")
+    jobs = cistromeIntersections.makeJobs(assembly, paths.cistrome("data", "raw"))
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
@@ -99,7 +99,7 @@ tissue text
     return (outF, cols)
 
 class ImportPeakIntersectionMetadata:
-    def __init__(self, curs, assembly, tsuffix = "peakIntersections", jobgen = peak_metadata):
+    def __init__(self, curs, assembly, tsuffix, jobgen):
         self.curs = curs
         self.assembly = assembly
         self.tableName = assembly + "_%sMetadata" % tsuffix
@@ -117,26 +117,26 @@ def run(args, DBCONN):
     if args.assembly:
         assemblies = [args.assembly]
 
-    def run_and_index(i):
-        i.run()
-        i.index()
-
+    Encode = ["peakIntersections", encode_peak_metadata]
+    Cistrome = ["cistromeIntersections", cistrome_peak_metadata]
+                    
+    def doRun(args, assembly, curs, tsuffix, jobgen):
+        if args.metadata:
+            ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
+        elif args.index:
+            ImportPeakIntersections(curs, assembly, tsuffix).index()
+        else:
+            ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
+            ipi = ImportPeakIntersections(curs, assembly, tsuffix)
+            ipi.run()
+            ipi.index()
+        
     for assembly in assemblies:
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
-            if args.metadata:
-                ImportPeakIntersectionMetadata(curs, assembly).run()
-                ImportPeakIntersectionMetadata(curs, assembly,
-                                               "cistromeIntersections", cistrome_peak_metadata).run()
-            elif args.index:
-                ImportPeakIntersections(curs, assembly).index()
-                ImportPeakIntersections(curs, assembly, "cistromeIntersections").index()
-            else:
-                ImportPeakIntersectionMetadata(curs, assembly).run()
-                ImportPeakIntersectionMetadata(curs, assembly,
-                                               "cistromeIntersections", cistrome_peak_metadata).run()
-                run_and_index(ImportPeakIntersections(curs, assembly))
-                run_and_index(ImportPeakIntersections(curs, assembly, "cistromeIntersections"))
+            doRun(args, assembly, curs, Encode[0], Encode[1])
+            if assembly in ["hg38", "mm10"]:
+                doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
 
 def parse_args():
     parser = argparse.ArgumentParser()
