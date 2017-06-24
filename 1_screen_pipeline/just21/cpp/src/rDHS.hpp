@@ -8,6 +8,7 @@ namespace SCREEN {
     std::vector<std::string> rDHSs;
     
   public:
+    rDHS(const std::vector<std::string>&, const boost::filesystem::path&);
     rDHS(const std::vector<std::string>&, const std::string&);
     const std::string& operator [](size_t);
     

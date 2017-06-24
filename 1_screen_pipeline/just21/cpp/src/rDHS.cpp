@@ -5,6 +5,8 @@
 #include <cstdio>
 
 #include <boost/functional/hash.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include "utils.hpp"
 #include "zscore.hpp"
@@ -43,6 +45,9 @@ namespace SCREEN {
     read(rDHSs, path);
 
   }
+
+  rDHS::rDHS(const std::vector<std::string> &narrowPeakList,
+	     const boost::filesystem::path &output_path) : rDHS(narrowPeakList, output_path.string()) {}
 
   rDHS::rDHS(const std::vector<std::string> &narrowPeakList,
 	     const std::string &output_path) {
