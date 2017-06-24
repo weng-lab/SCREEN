@@ -5,6 +5,9 @@
 #include <cmath>
 #include <numeric>
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "../../common/zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
 
@@ -15,6 +18,10 @@ namespace SCREEN {
 
   double mean(std::vector<double> &in) {
     return  std::accumulate(in.begin(), in.end(), 0.0) / in.size();
+  }
+
+  void ZScore::write(const std::string &nameprefix, const boost::filesystem::path &path) {
+    write(nameprefix, path.string());
   }
 
   /*

@@ -11,6 +11,7 @@ namespace SCREEN {
     ZScore(const std::string &);
     ZScore(const std::string &, const std::string &);
 
+    void write(const std::string&, const boost::filesystem::path&);
     void write(const std::string &, const std::string &);
     void qfilter(double);
     std::vector<double> ComputeZScores(std::vector<double> &);
