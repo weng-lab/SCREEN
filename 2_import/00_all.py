@@ -6,6 +6,7 @@ import sys
 import os
 import psycopg2
 from collections import OrderedDict
+from importlib import import_module
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
@@ -16,7 +17,6 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
 def runAll(args, DBCONN, startIdx, skipIdx):
-    from importlib import import_module
 
     steps = OrderedDict()
     for fn in sorted(os.listdir(os.path.dirname(os.path.realpath(__file__)))):
