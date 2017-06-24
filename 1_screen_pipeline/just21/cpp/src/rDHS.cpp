@@ -38,6 +38,7 @@ namespace SCREEN {
     for (auto i = 0; i < n; ++i) {
       std::remove((path + std::to_string(i)).c_str());
       std::remove(tmpm.c_str());
+      std::remove((path + "us").c_str());
     }
     read(rDHSs, path);
 

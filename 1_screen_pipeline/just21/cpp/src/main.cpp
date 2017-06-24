@@ -4,9 +4,13 @@
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
+#include <cmath>
+#include <numeric>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+
+#include "../../common/zentLib/src/BigWigWrapper.hpp"
 
 #include "utils.hpp"
 #include "lookup_matrix.hpp"
