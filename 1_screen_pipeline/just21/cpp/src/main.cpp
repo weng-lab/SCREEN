@@ -27,6 +27,8 @@ std::vector<std::string> getZScores(const SCREEN::Paths &path, bool force_recomp
   std::vector<std::string> ENCODE_DNase_np;
   std::string line; int i = 0;
 
+  size_t total_DHSs = 0, filtered_DHSs = 0;
+
   std::ifstream in(path.hotspot_list().string());
   while (getline(in, line) && ++i) {
     std::vector<std::string> cols(SCREEN::split(line, '\t'));
@@ -41,14 +43,26 @@ std::vector<std::string> getZScores(const SCREEN::Paths &path, bool force_recomp
 
 #pragma omp parallel for
   for (auto i = 0; i < ENCODE_DNase_idx.size(); ++i) {
-    SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i]);
+    SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i], false);
+    total_DHSs += z.zscores.size();
     z.qfilter(0.001);
+    filtered_DHSs += z.zscores.size();
     std::string fn = SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bw[i]));
     z.write(fn, path.DHS_ZScore(fn));
   }
 
+  std::cout << "total DHSs: " << total_DHSs << "\n";
+  std::cout << "filtered DHSs: " << filtered_DHSs << "\n";
+
   return ENCODE_DNase_np;
 
+}
+
+void run(const std::string &assembly) {
+  SCREEN::Paths path("/data/projects/cREs/" + assembly);
+  std::vector<std::string> ENCODE_DNase_np = getZScores(path, true);
+  std::cout << "computing rDHSs for " << ENCODE_DNase_np.size() << " exps\n";
+  SCREEN::rDHS rr(ENCODE_DNase_np, path.rDHS_list());
 }
 
 /*
@@ -63,11 +77,10 @@ int main(int argc, char **argv)
   test_rdhs();
   */
 
-  SCREEN::Paths path("/data/projects/cREs/hg19");
-
-  std::vector<std::string> ENCODE_DNase_np = getZScores(path);
-  std::cout << "computing rDHSs for " << ENCODE_DNase_np.size() << " exps\n";
-  SCREEN::rDHS rr(ENCODE_DNase_np, path.rDHS_list());
+  std::cout << "*** hg19 ***\n";
+  run("hg19");
+  std::cout << "\n*** mm10 *** \n";
+  run("mm10");
 
   return 0;
 }
