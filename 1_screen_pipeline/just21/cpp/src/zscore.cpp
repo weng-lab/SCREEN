@@ -16,6 +16,11 @@
 
 namespace SCREEN {
 
+  double log10(double x) {
+    if (x == 0.0) return -10.0;
+    return std::log10(x);
+  }
+
   double mean(std::vector<double> &in) {
     return  std::accumulate(in.begin(), in.end(), 0.0) / in.size();
   }
@@ -87,7 +92,7 @@ namespace SCREEN {
       if (cols.size() < 9) {
 	continue;
       }
-      if (std::stof(cols[8]) >= nlog) {
+      if (std::stof(cols[8]) > nlog) {
 	nl.push_back(lines[i]);
 	nz.push_back(zscores[i]);
       }
@@ -100,11 +105,11 @@ namespace SCREEN {
    *  reads a narrowPeak file and computes Z-scores for the peaks it contains
    *  Z-scores are computed from the values in column 7
    */
-  ZScore::ZScore(const std::string &narrowPeakPath) {
+  ZScore::ZScore(const std::string &narrowPeakPath, bool uselog) {
     _read(narrowPeakPath);
     std::vector<double> zl(0);
     for (std::vector<std::string> &line : lines) {
-      zl.push_back(std::stof(line[6]));
+      zl.push_back(uselog ? log10(std::stof(line[6])) : std::stof(line[6]));
     }
     zscores = ComputeZScores(zl);
   }
@@ -113,7 +118,7 @@ namespace SCREEN {
    *  reads a BED file and computes Z-scores for the peaks it contains
    *  Z-scores are computed from the average signal across each region as contained in the given bigWig
    */
-  ZScore::ZScore(const std::string &bedPath, const std::string &bigWigPath) {
+  ZScore::ZScore(const std::string &bedPath, const std::string &bigWigPath, bool uselog) {
     _read(bedPath);
     zentlib::BigWig b(bigWigPath);
     std::vector<double> zl(0);
@@ -121,7 +126,7 @@ namespace SCREEN {
       std::vector<double> values = b.GetRangeAsVector(line[0],
 						      std::stoi(line[1]),
 						      std::stoi(line[2]));
-      zl.push_back(mean(values));
+      zl.push_back(uselog ? log10(mean(values)) : mean(values));
     }
     zscores = ComputeZScores(zl);
   }
