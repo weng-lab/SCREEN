@@ -10,26 +10,15 @@ from utils import AddPath
 AddPath(__file__, "../")
 from config import Config
 
-def db_connect(script):
-    # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": Config.db_host,
-           "user": "regElmViz_usr",
-           "dbname": Config.database,
-           "application_name" : script}
-    return psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+# assumes .pgpass file, like http://stackoverflow.com/a/28801642
+def getDbs(script):
+    return {"host": Config.db_host,
+            "user": Config.db_usr,
+            "dbname": Config.db,
+            "application_name" : script}
 
-def db_connect_db(script, db):
-    # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": Config.db_host,
-           "user": "regElmViz_usr",
-           "dbname": db,
-           "application_name" : script}
-    return psycopg2.pool.ThreadedConnectionPool(1, 32, **dbs)
+def db_connect(script):
+    return psycopg2.pool.ThreadedConnectionPool(1, 32, **getDbs(script))
 
 def db_connect_single(script):
-    # assumes .pgpass file, like http://stackoverflow.com/a/28801642
-    dbs = {"host": Config.db_host,
-           "user": "regElmViz_usr",
-           "dbname": Config.database,
-           "application_name" : script}
-    return psycopg2.connect(**dbs)
+    return psycopg2.connect(**getDbs(script))
