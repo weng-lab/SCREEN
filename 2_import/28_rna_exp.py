@@ -27,6 +27,8 @@ def run(args, DBCONN):
     for assembly in assemblies:
         printt('***********', assembly)
         rna1.run(args, DBCONN)
+        rna2.run(args, DBCONN)
+        rna3.run(args, DBCONN)
 
 def parse_args():
     parser = argparse.ArgumentParser()
