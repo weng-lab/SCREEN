@@ -2,8 +2,12 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table';
+import ZTable from '../../../common/components/ztable';
+import ZFixedTable from '../../../common/components/zfixedtable';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
+
+
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
@@ -245,6 +249,15 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
+
+var data1 = [];
+       for(var idx in data){
+data1.push(data[idx]);
+       }
+
+
+
+
 	var tooMany = "";
 	if(data.length < this.props.total){
 	    tooMany = (
@@ -282,10 +295,10 @@ class TableWithCart extends React.Component {
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
-	
+
 	return (
             <div ref={"searchTable"}
-                 style={{display: (this.props.isFetching ? "none" : "block")}}>
+            style={{display: (this.props.isFetching ? "none" : "block")}}>
 		<div className={"searchTableNotes"}>
 		    <ul className={"list-group searchTableNotesUl"}>
 			{tooMany}
@@ -299,6 +312,8 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
+
+
 		<ResultsTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
@@ -310,8 +325,15 @@ class TableWithCart extends React.Component {
                                   this.button_click_handler(td, rowdata, actions)}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
-                />
-	    </div>);
+/>
+
+	  	<ZTable data={data1} cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}/> 
+
+ <ZFixedTable data={data1} cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}/> 
+
+	    </div>
+
+	);
     }
 
     legend(){
@@ -372,7 +394,7 @@ class TableWithCart extends React.Component {
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-		
+	
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
 			<div className="col-md-12">
