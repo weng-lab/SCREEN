@@ -20,11 +20,11 @@ class ZFixedTable extends React.Component {
     render() { 
 
 
-
+console.log('testing data: ', this.props.data);
 	return (
 
 		<div> 
-	 <ZFixedTableRow/>
+	 <ZFixedTableRow data={this.props.data} cols={this.props.cols}/>
 
 		<br></br><br></br><br></br>
 	    </div> );

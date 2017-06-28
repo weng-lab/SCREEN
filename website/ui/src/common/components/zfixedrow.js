@@ -71,13 +71,15 @@ class ZFixedTableRow extends React.Component {
   }
 
   render() {
+
+
     return (
 <div>
     <DataTable
       className="container"
       //keys={[ 'id']}
       columns={this.state.cols}
-      initialData={this.state.data}
+      initialData={this.props.data}
       initialPageLength={5}
   
      pageLengthOptions={[ 5, 20, 50 ]}
