@@ -69,7 +69,7 @@ console.log(this.props.cols);
 	return (
 
 		<div > 
-	 <ZTableRow data={this.props.data} cols={this.props.cols}/>
+	 <ZTableRow data={this.props.data} cols={this.state.cols}/>
 
 		<br></br><br></br><br></br>
 	    </div> );
