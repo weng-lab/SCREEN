@@ -3,7 +3,7 @@
 namespace SCREEN {
 
   namespace bfs = boost::filesystem;
-
+  
   struct Region {
     uint32_t start;
     uint32_t end;
@@ -11,15 +11,15 @@ namespace SCREEN {
   };
   std::ostream& operator<<(std::ostream& s, const Region&);
 
-  class RegionSet {
+  using ChrToRegions = std::unordered_map<std::string, std::vector<Region>>;
 
-  private:
-    std::unordered_map<std::string, std::vector<Region>> regions_;
+  class RegionSet {
+    ChrToRegions regions_;
     void _append(const std::string&, int, float);
 
   public:
     RegionSet() {}
-    RegionSet(std::unordered_map<std::string, std::vector<Region>> regions)
+    RegionSet(const ChrToRegions& regions)
       : regions_(regions)
     {}
 
@@ -29,8 +29,8 @@ namespace SCREEN {
     void appendZ(const bfs::path&);
     void appendZ(const std::string&);
 
-    const std::vector<Region> &operator [](std::string &);
-    const std::unordered_map<std::string, std::vector<Region>> &regions() const;
+    const std::vector<Region>& operator [](std::string&);
+    const ChrToRegions& regions() const;
     
     size_t total();
     void sort();
