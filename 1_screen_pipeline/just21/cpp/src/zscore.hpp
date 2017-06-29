@@ -15,14 +15,14 @@ namespace SCREEN {
     void computeZScores(const a::vec&);
     
   public:
-    ZScore();
-    ZScore(const std::string &, bool);
-    ZScore(const std::string &, const std::string &, bool);
+    ZScore() {}
+    ZScore(const std::string &, const bool);
+    ZScore(const std::string &, const std::string &, const bool);
 
     void write(const std::string&, const bfs::path&);
     void write(const std::string &, const std::string &);
     void read(const bfs::path&);
-    void qfilter(double);
+    void qfilter(const double);
 
     std::vector<std::vector<std::string>> lines_;
     a::vec zscores_;
