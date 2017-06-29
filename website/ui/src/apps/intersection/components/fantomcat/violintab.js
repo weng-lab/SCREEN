@@ -3,8 +3,6 @@ import React from 'react';
 import ViolinPlot from '../../../../plots/components/violinplot';
 import PlotWithHeader from '../../../../plots/components/plotwithheader';
 
-import { q560, q570 } from './violintest';
-
 class ViolinTab extends React.Component {
 
     constructor(props) {
