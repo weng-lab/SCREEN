@@ -41,7 +41,7 @@ namespace SCREEN {
     }
   }
 
-  void Saturation::write(const boost::filesystem::path &outpath) const {
+  void Saturation::write(const bfs::path &outpath) const {
     std::ofstream o(outpath.string());
     for (auto i = 0; i < n_rDHSs.size(); ++i) {
       o << (i * 10) << "\t" << n_rDHSs[i][0];

@@ -26,7 +26,7 @@ namespace SCREEN {
     return std::accumulate(in.begin(), in.end(), 0.0) / in.size();
   }
 
-  void ZScore::read(const boost::filesystem::path &path) {
+  void ZScore::read(const bfs::path &path) {
     _read(path.string());
     zscores = std::vector<double>(lines.size());
     for (std::vector<std::string> &line : lines) {
@@ -34,7 +34,7 @@ namespace SCREEN {
     }
   }
 
-  void ZScore::write(const std::string &nameprefix, const boost::filesystem::path &path) {
+  void ZScore::write(const std::string &nameprefix, const bfs::path &path) {
     write(nameprefix, path.string());
   }
 

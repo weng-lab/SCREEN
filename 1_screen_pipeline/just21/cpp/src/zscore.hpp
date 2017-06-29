@@ -2,6 +2,8 @@
 
 namespace SCREEN {
 
+  namespace bfs = boost::filesystem;
+  
   class ZScore {
 
   private:
@@ -12,9 +14,9 @@ namespace SCREEN {
     ZScore(const std::string &, bool);
     ZScore(const std::string &, const std::string &, bool);
 
-    void write(const std::string&, const boost::filesystem::path&);
+    void write(const std::string&, const bfs::path&);
     void write(const std::string &, const std::string &);
-    void read(const boost::filesystem::path&);
+    void read(const bfs::path&);
     void qfilter(double);
     std::vector<double> ComputeZScores(std::vector<double> &);
 

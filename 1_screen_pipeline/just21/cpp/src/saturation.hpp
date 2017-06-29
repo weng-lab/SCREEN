@@ -1,5 +1,7 @@
 namespace SCREEN {
 
+  namespace bfs = boost::filesystem;
+  
   class Saturation {
 
   private:
@@ -7,7 +9,7 @@ namespace SCREEN {
 
   public:
     Saturation(const std::vector<RegionSet>&, int = 100);
-    void write(const boost::filesystem::path &b) const;
+    void write(const bfs::path &b) const;
 
   };
 
