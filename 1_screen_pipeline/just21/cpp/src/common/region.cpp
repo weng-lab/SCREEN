@@ -23,7 +23,7 @@ namespace SCREEN {
     return regions_[chr];
   }
 
-  const std::unordered_map<std::string, std::vector<Region>>& RegionSet::regions() const {
+  const ChrToRegions& RegionSet::regions() const {
     return regions_;
   }
   
@@ -191,7 +191,7 @@ namespace SCREEN {
   RegionSet RegionSet::rDHS_Cluster() {
     sort();
     
-    std::unordered_map<std::string, std::vector<Region>> ret;
+    ChrToRegions ret;
     int32_t total = 0;
     int32_t ktotal = 0;
     for (const auto& k : regions_) {
