@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iterator>
 
+#include <boost/filesystem.hpp>
+
 #include "utils.hpp"
 #include "lookup_matrix.hpp"
 
