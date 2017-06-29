@@ -13,9 +13,9 @@ class Saturation:
         for k, v in self._sets.iteritems():
             s = scipy.stats.gaussian_kde(v, 'silverman')
             results[k] = {
-                "values": list(s.evaluate(range(min(v), max(v), 10))),
+                "values": list(s.evaluate(range(min(v), max(v), 100))),
                 "domain": [min(v), max(v)],
-                "step": 10
+                "step": 100
             }
         with open(path, "wb") as o:
             o.write(json.dumps(results))
