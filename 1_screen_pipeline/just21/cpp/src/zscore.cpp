@@ -4,6 +4,7 @@
 #include <string>
 #include <cmath>
 #include <numeric>
+#include <armadillo>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
@@ -22,12 +23,22 @@ namespace SCREEN {
   }
 
   double mean(std::vector<double> &in) {
-    return  std::accumulate(in.begin(), in.end(), 0.0) / in.size();
+    return std::accumulate(in.begin(), in.end(), 0.0) / in.size();
+  }
+
+  void ZScore::read(const boost::filesystem::path &path) {
+    _read(path.string());
+    zscores = std::vector<double>(lines.size());
+    for (std::vector<std::string> &line : lines) {
+      zscores.push_back(std::stof(line[4]));
+    }
   }
 
   void ZScore::write(const std::string &nameprefix, const boost::filesystem::path &path) {
     write(nameprefix, path.string());
   }
+
+  ZScore::ZScore() {};
 
   /*
    *  appends the peaks from the given ZScore set to the list of lines in rawlines
@@ -51,13 +62,11 @@ namespace SCREEN {
     if (in.size() <= 1) {
       return retval;
     }
-    double average = mean(in);
-    double sq_sum = std::inner_product(in.begin(), in.end(), in.begin(), 0.0);
-    double stdev = std::sqrt(sq_sum / in.size() - average * average);
-    for (auto i = 0; i < in.size(); ++i) {
-      retval[i] = (in[i] - average) / stdev;
-    }
-    return retval;
+    arma::vec v(in);
+    double average = arma::mean(v);
+    double stdev = arma::stddev(v);
+    v.for_each( [average, stdev](double &val) { val = (val - average) / stdev; } );
+    return arma::conv_to<std::vector<double>>::from(v);
   }
 
   /*
@@ -69,13 +78,13 @@ namespace SCREEN {
       GZSTREAM::igzstream _in(in.c_str());
       for (std::string row; std::getline(_in, row, '\n');) {
 	std::vector<std::string> v(split(row, '\t'));
-	lines.push_back(v);
+	if (v.size() >= 9) { lines.push_back(v); }
       }
     } else {
       std::ifstream _in(in);
       for (std::string row; std::getline(_in, row, '\n');) {
 	std::vector<std::string> v(split(row, '\t'));
-	lines.push_back(v);
+	if (v.size() >= 9) { lines.push_back(v); }
       }
     }
   }
@@ -89,10 +98,7 @@ namespace SCREEN {
     std::vector<double> nz(0);
     for (auto i = 0; i < lines.size(); ++i) {
       std::vector<std::string> &cols = lines[i];
-      if (cols.size() < 9) {
-	continue;
-      }
-      if (std::stof(cols[8]) > nlog) {
+      if (cols.size() >= 9 && std::stof(cols[8]) > nlog) {
 	nl.push_back(lines[i]);
 	nz.push_back(zscores[i]);
       }
@@ -124,8 +130,8 @@ namespace SCREEN {
     std::vector<double> zl(0);
     for (std::vector<std::string> &line : lines) {
       std::vector<double> values = b.GetRangeAsVector(line[0],
-						      std::stoi(line[1]),
-						      std::stoi(line[2]));
+						     std::stoi(line[1]),
+						     std::stoi(line[2]));
       zl.push_back(uselog ? log10(mean(values)) : mean(values));
     }
     zscores = ComputeZScores(zl);

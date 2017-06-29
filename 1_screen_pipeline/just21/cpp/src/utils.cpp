@@ -10,9 +10,21 @@
 #include <memory>
 #include <array>
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "utils.hpp"
 
 namespace SCREEN {
+
+  std::vector<boost::filesystem::path> list_files(const boost::filesystem::path &dir) {
+    boost::filesystem::directory_iterator end_itr;
+    std::vector<boost::filesystem::path> retval;
+    for (boost::filesystem::directory_iterator itr(dir); itr != end_itr; ++itr) {
+      if (!is_directory(itr->status())) { retval.push_back(itr->path()); }
+    }
+    return retval;
+  }
 
   std::vector<std::string> chrom_list(const std::string &path) {
     return split(run("bedextract --list-chr " + path), '\n');

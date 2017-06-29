@@ -2,6 +2,7 @@
 
 namespace SCREEN {
 
+  std::vector<boost::filesystem::path> list_files(const boost::filesystem::path&);
   template<typename Out> void split(const std::string &, char, Out);
   std::vector<std::string> split(const std::string &, char);
   void write(const std::vector<std::string> &, const std::string &);
