@@ -15,12 +15,12 @@
 
 namespace SCREEN {
   
-  void rDHS::_process(RegionSet &r) {
+  void rDHS::_process(RegionSet& r) {
     regions = r.rDHS_Cluster();
     regions.sort();
   }
 
-  void rDHS::write(const std::string &path) {
+  void rDHS::write(const std::string& path) {
     size_t acc = 0;
     std::ofstream o(path);
     for (const auto& k : regions.regions()) {
@@ -31,7 +31,7 @@ namespace SCREEN {
     }
   }
   
-  void rDHS::write(const boost::filesystem::path &path) {
+  void rDHS::write(const boost::filesystem::path& path) {
     write(path.string());
   }
 
@@ -51,7 +51,7 @@ namespace SCREEN {
     return ret;
   }
   
-  rDHS::rDHS(const std::vector<std::string> &zfile_list) {
+  rDHS::rDHS(const std::vector<std::string>& zfile_list) {
     std::cout << "loading regions from " << zfile_list.size() << " files...\n";
     RegionSet r;
     for (const std::string& fnp : zfile_list) {
