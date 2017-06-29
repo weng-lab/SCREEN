@@ -16,7 +16,8 @@ class ViolinTab extends React.Component {
 	            <PlotWithHeader colspan={12} text="saturation test" height={850} headersize={3}>
 		        <ViolinPlot viewBox={{width: 1000, height: 850}}
 		          margin={{left: 5, bottom: 5, top: 0, right: 5}}
-		          qsets={q} qsetorder={o} />
+		          qsets={q} qsetorder={o} range={[0]}
+		          yticks={[0, 500000, 1000000, 1500000, 2000000]} />
 		    </PlotWithHeader>
 		</div>
 		</div>);

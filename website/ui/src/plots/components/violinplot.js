@@ -4,7 +4,9 @@ import ScaledPlot from './scaledplot';
 
 const XAXIS = 150;
 const YAXIS = 60;
-const text_format = x => Math.round(x * 100) / 100.0;
+
+// https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+const text_format = x => Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 class ViolinPlot extends ScaledPlot {
 
@@ -16,11 +18,11 @@ class ViolinPlot extends ScaledPlot {
     componentWillReceiveProps(props) {
 	super.componentWillReceiveProps(props, [XAXIS, YAXIS]);
 	this._qsetorder = (props.qsetorder ? props.qsetorder : Object.keys(props.qsets));
-	if (!this.props.range) {
-	    this._range = [Math.min(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[0])),
-			   Math.max(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[1])) * 1.1];
-	} else {
-	    this._range = this.props.range;
+	this._range = [Math.min(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[0])),
+		       Math.max(...this._qsetorder.filter(k => k !== "").map(k => props.qsets[k].domain[1])) * 1.1];
+	if (this.props.range) {
+	    if (this.props.range.length >= 1) { this._range[0] = this.props.range[0]; }
+	    if (this.props.range.length >= 2) { this._range[1] = this.props.range[1]; }
 	}
 	this._xscale = this._viewsize[0] / this._qsetorder.length;
 	this._yscale = this._viewsize[1] / (this._range[1] - this._range[0]);
@@ -28,6 +30,7 @@ class ViolinPlot extends ScaledPlot {
 	this._vscale = this._boxwidth / 2 / Math.max(...this._qsetorder.filter(k => k !== "").map(k => Math.max(...props.qsets[k].values)));
 	this._x = x => x * this._xscale + this._boxwidth * 0.15 + XAXIS;
 	this._y = y => (-y + this._range[1]) * this._yscale;
+	this._yticks = (this.props.yticks ? this.props.yticks : [this._range[0], this._range[1] / 3, this._range[1] * 2 / 3, this._range[1] / 1.1]);
     }
     
     _path(q, o) {
@@ -41,14 +44,10 @@ class ViolinPlot extends ScaledPlot {
     render() {
 	let xaxis = (
 	    <g>
-                <text x={XAXIS * .75} width={XAXIS * .75} style={{textAnchor: "end"}} fontSize={2 * this.props.viewBox.width / 100}
-                    y={this._y(text_format(this._range[0]))}>{text_format(this._range[0])}</text>
-		<text x={XAXIS * .75} width={XAXIS * .75} style={{textAnchor: "end"}} fontSize={2 * this.props.viewBox.width / 100}
-                    y={this._y(text_format(this._range[1] / 3))}>{text_format(this._range[1] / 3)}</text>
-		<text x={XAXIS * .75} width={XAXIS * .75} style={{textAnchor: "end"}} fontSize={2 * this.props.viewBox.width / 100}
-                    y={this._y(text_format(this._range[1] * 2 / 3))}>{text_format(this._range[1] * 2 / 3)}</text>
-		<text x={XAXIS * .75} width={XAXIS * .75} style={{textAnchor: "end"}} fontSize={2 * this.props.viewBox.width / 100}
-                    y={this._y(text_format(this._range[1] / 1.1))}>{text_format(this._range[1] / 1.1)}</text>		
+		{this._yticks.map( (t) => (	
+                    <text x={XAXIS * .75} width={XAXIS * .75} style={{textAnchor: "end"}} fontSize={2 * this.props.viewBox.width / 100}
+                      y={this._y(t)}>{text_format(t)}</text>
+		) )}
 	    </g>
 	);
 	let _box = (k, _q, i) => {
