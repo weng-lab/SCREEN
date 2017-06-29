@@ -30,7 +30,10 @@ def run(args, DBCONN):
             g.doimport([("fantomcat", FCPaths.global_statistics),
                         ("fantomcat_2kb", FCPaths.twokb_statistics)],
                        curs)
-            print(g.select("fantomcat", curs))
+            if os.path.exists("/data/projects/cREs/%s/saturation.json" % assembly):
+                g.doimport([("saturation", "/data/projects/cREs/%s/saturation.json" % assembly)],
+                           curs)
+                print("saturation")
 
 def parse_args():
     parser = argparse.ArgumentParser()

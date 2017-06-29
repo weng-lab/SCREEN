@@ -104,7 +104,8 @@ class DataWebService(GetOrSetMemCache):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
             "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args),
-            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
+            "saturation": self.global_object({"name": "saturation"}, args) #,
+#            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
         }
     
     def global_object(self, j, args):

@@ -70,9 +70,9 @@ class CachedObjects:
         self.help_keys = self.pgSearch.getHelpKeys()
 
         self.tfHistCounts = {
-            "peak": self.pgSearch.tfHistCounts(),
-            "cistrome": self.pgSearch.tfHistCounts(eset = "cistrome")
+            "peak": self.pgSearch.tfHistCounts()
         }
+        if "mm10" == self.assembly: self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset = "cistrome")
 
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
