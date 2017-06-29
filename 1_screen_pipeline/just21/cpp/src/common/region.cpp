@@ -13,20 +13,17 @@
 #include "region.hpp"
 
 namespace SCREEN {
-  
-  std::string regionToString(const std::string& chr, region r) {
-    return chr + "\t" + std::to_string(r.start) + "\t" + std::to_string(r.end);
-  };
 
-  RegionSet::RegionSet(std::unordered_map<std::string, std::vector<region>> regions) {
-    regions_ = regions;
+  std::ostream& operator<<(std::ostream& s, const Region& r){
+    s << r.start << '\t' << r.end;
+    return  s;
   }
 
-  const std::vector<region>& RegionSet::operator [](std::string& chr) {
+  const std::vector<Region>& RegionSet::operator [](std::string& chr) {
     return regions_[chr];
   }
 
-  const std::unordered_map<std::string, std::vector<region>>& RegionSet::regions() const {
+  const std::unordered_map<std::string, std::vector<Region>>& RegionSet::regions() const {
     return regions_;
   }
   
@@ -51,7 +48,7 @@ namespace SCREEN {
     size_t s = regions_[chr].size();
     FILE *f = fopen(binary_path.string().c_str(), "w");
     if (fwrite(&s, sizeof(size_t), 1, f) != 1
-	|| fwrite(&regions_[chr][0], sizeof(region), s, f) != s) {
+	|| fwrite(&regions_[chr][0], sizeof(Region), s, f) != s) {
       // TODO: exception
     }
     fclose(f);
@@ -63,8 +60,8 @@ namespace SCREEN {
     if (fread(&s, sizeof(size_t), 1, f) != 1) {
       // TODO: exception
     }
-    regions_[chr] = std::vector<region>(s);
-    if (fread(&regions_[chr][0], sizeof(region), s, f) != s) {
+    regions_[chr] = std::vector<Region>(s);
+    if (fread(&regions_[chr][0], sizeof(Region), s, f) != s) {
       // TODO: exception
     }
     fclose(f);
@@ -139,7 +136,7 @@ namespace SCREEN {
   void RegionSet::sort() {
     for (auto& k : regions_) {
       std::sort(k.second.begin(), k.second.end(),
-		[](const region& a, const region& b){
+		[](const Region& a, const Region& b){
 		  return std::tie(a.start, a.end) < std::tie(b.start, b.end);
 		});
     }
@@ -150,17 +147,17 @@ namespace SCREEN {
       @param input: input vector of regions
       @param ret: vector to receive master peaks
    */
-  void rDHS_cluster(const std::vector<region>& input, std::vector<region>& ret) {
+  void rDHS_cluster(const std::vector<Region>& input, std::vector<Region>& ret) {
     if (1 == input.size()) {
       ret.push_back(input[0]);
     }
     if(input.size() <= 1) {
       return;
     }
-    region pmp = input[0]; // potential master peak
-    std::vector<region> current, next;
+    Region pmp = input[0]; // potential master peak
+    std::vector<Region> current, next;
     for (auto i = 0; i < input.size(); ++i) {
-      const region& r = input[i];
+      const Region& r = input[i];
       if (r.start < pmp.end) {
 	if (r.score > pmp.score) {
 	  pmp = r;
@@ -169,7 +166,7 @@ namespace SCREEN {
       }
       if (r.start >= pmp.end || i == input.size() - 1) {
 	ret.push_back(pmp);
-	for (const region& c : current) {
+	for (const Region& c : current) {
 	  if (c.end <= pmp.start) {
 	    next.push_back(c);
 	  }
@@ -194,7 +191,7 @@ namespace SCREEN {
   RegionSet RegionSet::rDHS_Cluster() {
     sort();
     
-    std::unordered_map<std::string, std::vector<region>> ret;
+    std::unordered_map<std::string, std::vector<Region>> ret;
     int32_t total = 0;
     int32_t ktotal = 0;
     for (const auto& k : regions_) {
