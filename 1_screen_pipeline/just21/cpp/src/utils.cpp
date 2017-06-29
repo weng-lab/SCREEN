@@ -17,11 +17,13 @@
 
 namespace SCREEN {
 
-  std::vector<boost::filesystem::path> list_files(const boost::filesystem::path &dir) {
-    boost::filesystem::directory_iterator end_itr;
-    std::vector<boost::filesystem::path> retval;
-    for (boost::filesystem::directory_iterator itr(dir); itr != end_itr; ++itr) {
-      if (!is_directory(itr->status())) { retval.push_back(itr->path()); }
+  std::vector<bfs::path> list_files(const bfs::path &dir) {
+    bfs::directory_iterator end_itr;
+    std::vector<bfs::path> retval;
+    for(bfs::directory_iterator itr(dir); itr != end_itr; ++itr) {
+      if (!is_directory(itr->status())) {
+	retval.push_back(itr->path());
+      }
     }
     return retval;
   }

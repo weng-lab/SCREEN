@@ -26,7 +26,7 @@ namespace SCREEN {
     // std::cout << "wrote " << c.regions().size() << " rDHSs to /data/projects/cREs/hg19/rDHS.bed\n";
   }
 
-  rDHS::rDHS(const boost::filesystem::path &binary_path) {
+  rDHS::rDHS(const bfs::path &binary_path) {
     //RegionSet r(binary_path);
     //_process(r);
   }

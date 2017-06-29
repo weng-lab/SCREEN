@@ -40,7 +40,7 @@ std::vector<std::string> getZScores(const SCREEN::Paths &path, bool force_recomp
     ENCODE_DNase_bw.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[3] + ".bigWig");
     ENCODE_DNase_bed.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[1] + ".bed.gz");
     ENCODE_DNase_np.push_back(path.DHS_ZScore(cols[3]).string());
-    if (force_recompute || !boost::filesystem::exists(ENCODE_DNase_np[i])) {
+    if (force_recompute || !bfs::exists(ENCODE_DNase_np[i])) {
       ENCODE_DNase_idx.push_back(i++);
     } else {
       ENCODE_DNase_read.push_back(i++);
@@ -105,7 +105,7 @@ void run_rDHS(const std::string &assembly) {
 
   // compute rDHSs
   std::cout << "computing rDHSs for " << z.size() << " exps\n";
-  SCREEN::rDHS rr(z); //boost::filesystem::path("/home/pratth/test.dat"));
+  SCREEN::rDHS rr(z); //bfs::path("/home/pratth/test.dat"));
 
 }
 
@@ -121,7 +121,7 @@ void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false
   while (std::getline(f, line)) {
     cistrome_list.push_back(line);
     cistrome_comp.push_back(path.DHS_ZScore(SCREEN::trim_ext(SCREEN::basename(cistrome_list[i])), "cistrome").string());
-    if (force_recompute || !boost::filesystem::exists(cistrome_comp[i])) {
+    if (force_recompute || !bfs::exists(cistrome_comp[i])) {
       comp_idx.push_back(i++);
     } else {
       read_idx.push_back(i++);
