@@ -3,61 +3,43 @@
 #include <fstream>
 #include <iostream>
 #include <cstdio>
+#include <unordered_map>
 
 #include <boost/functional/hash.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "utils.hpp"
+#include "common/region.hpp"
 #include "zscore.hpp"
 #include "rDHS.hpp"
 
 namespace SCREEN {
 
-  /*
-   *  clusters the raw DHSs stored in rawlines into rDHSs
-   *  output is written to the given path, then read into the passed vector
-   */
-  void cluster_and_read(const std::vector<std::string> &rawlines, const std::string &path,
-			std::vector<std::string> &rDHSs) {
-
-    write(rawlines, path + "us");
-    exec("sort-bed " + path + "us > " + path);
-    std::string get_final = "bedops -u ";
-    std::string tmpm = path + "m_";
-    int n = 0;
-    while (lines(path) > 0) {
-      std::string ipath = path + std::to_string(n);
-      std::cout << "rDHS::cluster_and_read: iteration " << n++ << "\n";
-      get_final += ipath + " ";
-      exec("bedops -m --range 0:-1 " + path + " | bedops -u --range 0:1 - > " + tmpm);
-      exec("bedmap --max-element " + tmpm + " " + path + " | sort-bed - > " + ipath);
-      exec("bedops -n 1 " + path + " " + ipath + " > " + path + "_");
-      std::rename((path + "_").c_str(), path.c_str());
-    }
-
-    exec(get_final + "> " + path);
-    for (auto i = 0; i < n; ++i) {
-      std::remove((path + std::to_string(i)).c_str());
-      std::remove(tmpm.c_str());
-      std::remove((path + "us").c_str());
-    }
-    read(rDHSs, path);
-
+  void rDHS::_process(RegionSet &r) {
+    //    std::cout << "found " << r.regions().size() << " DHSs\n";
+    RegionSet c = r.rDHS_Cluster();
+    c.sort();
+    c.write("/data/projects/cREs/hg19/rDHS.bed");
+    std::cout << "/data/projects/cREs/hg19/rDHS.bed" << "\n";
+    
+    // std::cout << "wrote " << c.regions().size() << " rDHSs to /data/projects/cREs/hg19/rDHS.bed\n";
   }
 
-  rDHS::rDHS(const std::vector<std::string> &narrowPeakList,
-	     const boost::filesystem::path &output_path) : rDHS(narrowPeakList, output_path.string()) {}
+  rDHS::rDHS(const bfs::path &binary_path) {
+    //RegionSet r(binary_path);
+    //_process(r);
+  }
 
-  rDHS::rDHS(const std::vector<std::string> &narrowPeakList,
-	     const std::string &output_path) {
-    std::vector<std::string> rawlines;
-    for (auto path : narrowPeakList) {
-      std::cout << path << "\t" << rawlines.size() << "\n";
-      read(rawlines, path);
+  rDHS::rDHS(const std::vector<std::string> &zfile_list) {
+
+    std::cout << "loading regions from " << zfile_list.size() << " files...\n";
+    RegionSet r;
+    for (std::string file : zfile_list) {
+      r.appendZ(file);
     }
-    rDHSs.clear();
-    cluster_and_read(rawlines, output_path, rDHSs);
+    _process(r);
+    //    r.write("/home/pratth/test.dat");
+    
   }
 
   const std::string &rDHS::operator [](size_t index) {

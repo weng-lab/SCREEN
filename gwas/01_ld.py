@@ -3,42 +3,36 @@
 from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from get_tss import Genes
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
 
-class GWASsnps:
-    def __init__(self, curs, assembly):
+class GWASld:
+    def __init__(self, curs):
         self.curs = curs
-        self.assembly = assembly
+        self.fnp = os.path.join(paths.v4d, "GWAS/LD_EUR.tsv.gz")
 
     def run(self):
-        tableName = self.assembly + "_snps"
+        tableName = "ld_eur"
         printt("dropping and creating", tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-snp varchar(15),
-chrom text,
-start integer,
-stop integer
+snp VARCHAR(15),
+info text
 );
 """.format(tableName = tableName))
 
-        fns = {"mm10" : "snps142common.mm10.bed.gz",
-               "hg19" : "snps144common.hg19.bed.gz"}
-        fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
-        
-        printt("importing", fnp)
-        with gzip.open(fnp) as f:
-            cols = ["chrom", "start", "stop", "snp"]
+        printt("importing", self.fnp)
+        with gzip.open(self.fnp) as f:
+            cols = ["snp", "info"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
 
@@ -53,12 +47,9 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
-
-    assemblies = ["hg19", "mm10"]
-    for assembly in assemblies:
-        with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-            g = GWASsnps(curs, assembly)
-            g.run()
+    with getcursor(DBCONN, "04_cellTypeInfo") as curs:
+        g = GWASld(curs)
+        g.run()
 
     return 0
 
