@@ -2,15 +2,18 @@
 
 namespace SCREEN {
 
+  class RegionSet;
+
   class rDHS {
 
   private:
-    std::vector<std::string> rDHSs;
-    
+    void _process(RegionSet&);
+
   public:
-    rDHS(const std::vector<std::string>&, const boost::filesystem::path&);
-    rDHS(const std::vector<std::string>&, const std::string&);
+    rDHS(const boost::filesystem::path&);
+    rDHS(const std::vector<std::string>&);
     const std::string& operator [](size_t);
+    std::vector<std::string> rDHSs;
     
   };
   

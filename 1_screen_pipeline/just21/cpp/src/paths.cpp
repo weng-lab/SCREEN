@@ -20,12 +20,29 @@ namespace SCREEN {
     return root_ / "Hotspot-List.txt";
   }
 
-  const boost::filesystem::path Paths::DHS_ZScore_root() const {
-    return root_ / "DNase";
+  const boost::filesystem::path Paths::DHS_ZScore_root(const std::string &dataset) const {
+    return root_ / "DHS" / dataset;
   }
 
-  const boost::filesystem::path Paths::DHS_ZScore(const std::string &accession) const {
-    return DHS_ZScore_root() / (accession + ".zscore.bed");
+  const boost::filesystem::path Paths::DHS_ZScore(const std::string &accession,
+						  const std::string &dataset) const {
+    return DHS_ZScore_root(dataset) / (accession + ".zscore.bed");
+  }
+
+  const boost::filesystem::path Paths::CTS_root() const {
+    return root_ / "CTS";
+  }
+
+  const boost::filesystem::path Paths::CTS(const std::string &accession) const {
+    return CTS_root() / (accession + ".zscore.bed");
+  }
+
+  const boost::filesystem::path Paths::CTA() const {
+    return root_ / "CTA.bed";
+  }
+
+  const boost::filesystem::path Paths::saturation() const {
+    return root_ / "saturation.tsv";
   }
 
 } // SCREEN

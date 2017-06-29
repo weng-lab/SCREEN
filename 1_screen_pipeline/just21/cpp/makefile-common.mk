@@ -31,6 +31,9 @@ LD_FLAGS += -Wl,-rpath,$(COMMON_PATH)/zentLib/lib -L$(COMMON_PATH)/zentLib/lib -
 #armadillo
 LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/armadillo/lib -L$(LOCAL_PATH)/armadillo/lib -larmadillo
 
+#OpenBLAS
+LD_FLAGS += -lopenblas -llapack
+
 #curl
 #LD_FLAGS += -lcurl
 
