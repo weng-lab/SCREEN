@@ -17,8 +17,6 @@ namespace SCREEN {
     const bfs::path CTS(const std::string&) const;
     const bfs::path CTA() const;
     const bfs::path saturation() const;
-    
-
   };
 
 } // SCREEN

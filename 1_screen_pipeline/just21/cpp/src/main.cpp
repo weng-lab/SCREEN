@@ -53,7 +53,7 @@ std::vector<std::string> getZScores(const SCREEN::Paths &path, bool force_recomp
     SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i], false);
     z.qfilter(0.001);
     z.write(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bw[i])), ENCODE_DNase_np[i]);
-    std::cout << ENCODE_DNase_np[i] << "\t" << z.zscores.size() << "\n";
+    std::cout << ENCODE_DNase_np[i] << "\t" << z.zscores_.size() << "\n";
   }
 
   return ENCODE_DNase_np;
@@ -134,7 +134,7 @@ void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false
     z.qfilter(0.001);
     z.write(SCREEN::trim_ext(SCREEN::basename(cistrome_list[i])),
 	    cistrome_comp[i]);
-    std::cout << cistrome_list[i] << "\t" << z.zscores.size() << "\n";
+    std::cout << cistrome_list[i] << "\t" << z.zscores_.size() << "\n";
   }
 
   // compute rDHSs
