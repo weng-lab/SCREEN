@@ -4,12 +4,14 @@
 #include <string>
 #include <cmath>
 #include <numeric>
+#include <unordered_map>
 
 #include <boost/filesystem.hpp>
 
 #include "zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
 
+#include "common/region.hpp"
 #include "utils.hpp"
 #include "zscore.hpp"
 
@@ -104,7 +106,7 @@ namespace SCREEN {
     lines_ = nl;
     zscores_ = a::vec(nz);
   }
-
+  
   /*
    *  reads a narrowPeak file and computes Z-scores for the peaks it contains
    *  Z-scores are computed from the values in column 7
@@ -120,18 +122,31 @@ namespace SCREEN {
   }
 
   /*
+   *  computes Z-scores for a set of regions against a given signal file
+   */
+  ZScore::ZScore(const std::vector<std::vector<std::string>> &regions, const std::string &bigWigPath,
+		 const bool uselog) {
+    lines_ = regions;
+    _processbw(bigWigPath, uselog);
+  }
+  
+  /*
    *  reads a BED file and computes Z-scores for the peaks it contains
    *  Z-scores are computed from the average signal across each region as contained in the given bigWig
    */
   ZScore::ZScore(const std::string& bedPath, const std::string& bigWigPath,
 		 const bool uselog) {
     _read(bedPath);
+    _processbw(bigWigPath, uselog);
+  }
+
+  void ZScore::_processbw(const std::string &bigWigPath, const bool uselog) {
     zentlib::BigWig b(bigWigPath);
     std::vector<double> zl;
     for (const std::vector<std::string>& line : lines_) {
       std::vector<double> values = b.GetRangeAsVector(line[0],
-						     std::stoi(line[1]),
-						     std::stoi(line[2]));
+						      std::stoi(line[1]),
+						      std::stoi(line[2]));
       const a::vec v(values.data(), values.size(), false, true);
       zl.push_back(uselog ? log10orNeg10(a::mean(v)) : a::mean(v));
     }

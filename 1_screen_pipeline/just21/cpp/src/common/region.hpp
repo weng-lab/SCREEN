@@ -26,6 +26,9 @@ namespace SCREEN {
     void appendZ(const boost::filesystem::path&);
     void appendZ(const std::string&);
 
+    const std::vector<struct region> &operator [](std::string &);
+    const std::unordered_map<std::string, std::vector<struct region>> &regions() const;
+    
     size_t total();
     void sort();
     RegionSet rDHS_Cluster();

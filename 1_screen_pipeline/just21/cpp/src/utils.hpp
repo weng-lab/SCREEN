@@ -3,7 +3,8 @@
 namespace SCREEN {
 
   namespace bfs = boost::filesystem;
-  
+
+  std::string accession(size_t, char, int = 7);
   std::vector<bfs::path> list_files(const bfs::path&);
   template<typename Out> void split(const std::string &, char, Out);
   std::vector<std::string> split(const std::string &, char);

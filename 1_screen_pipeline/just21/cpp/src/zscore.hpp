@@ -13,11 +13,13 @@ namespace SCREEN {
   private:
     void _read(const std::string &);
     void computeZScores(const a::vec&);
+    void _processbw(const std::string&, const bool);
     
   public:
     ZScore() {}
-    ZScore(const std::string &, const bool);
-    ZScore(const std::string &, const std::string &, const bool);
+    ZScore(const std::string&, const bool);
+    ZScore(const std::string&, const std::string&, const bool);
+    ZScore(const std::vector<std::vector<std::string>>&, const std::string&, const bool);
 
     void write(const std::string&, const bfs::path&);
     void write(const std::string &, const std::string &);
