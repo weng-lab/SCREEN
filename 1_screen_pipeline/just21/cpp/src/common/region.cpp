@@ -14,27 +14,27 @@
 
 namespace SCREEN {
   
-  std::string regionToString(const std::string &chr, struct region r) {
+  std::string regionToString(const std::string &chr, region r) {
     return chr + "\t" + std::to_string(r.start) + "\t" + std::to_string(r.end);
   };
 
   RegionSet::RegionSet() {}
 
-  RegionSet::RegionSet(std::unordered_map<std::string, std::vector<struct region>> regions) {
+  RegionSet::RegionSet(std::unordered_map<std::string, std::vector<region>> regions) {
     regions_ = regions;
   }
 
-  const std::vector<struct region> &RegionSet::operator [](std::string &chr) {
+  const std::vector<region> &RegionSet::operator [](std::string &chr) {
     return regions_[chr];
   }
 
-  const std::unordered_map<std::string, std::vector<struct region>> &RegionSet::regions() const {
+  const std::unordered_map<std::string, std::vector<region>> &RegionSet::regions() const {
     return regions_;
   }
   
   void RegionSet::appendRegionSet(const RegionSet &r) {
     for (auto k : r.regions_) {
-      if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<struct region>(); }
+      if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<region>(); }
       regions_[k.first].insert(regions_[k.first].end(), k.second.begin(), k.second.end());
     }
   }
@@ -52,7 +52,7 @@ namespace SCREEN {
     size_t s = regions_[chr].size();
     FILE *f = fopen(binary_path.string().c_str(), "w");
     if (fwrite(&s, sizeof(size_t), 1, f) != 1
-	|| fwrite(&regions_[chr][0], sizeof(struct region), s, f) != s) {
+	|| fwrite(&regions_[chr][0], sizeof(region), s, f) != s) {
       // TODO: exception
     }
     fclose(f);
@@ -64,8 +64,8 @@ namespace SCREEN {
     if (fread(&s, sizeof(size_t), 1, f) != 1) {
       // TODO: exception
     }
-    regions_[chr] = std::vector<struct region>(s);
-    if (fread(&regions_[chr][0], sizeof(struct region), s, f) != s) {
+    regions_[chr] = std::vector<region>(s);
+    if (fread(&regions_[chr][0], sizeof(region), s, f) != s) {
       // TODO: exception
     }
     fclose(f);
@@ -118,7 +118,7 @@ namespace SCREEN {
       if ((qfilter < 1.0 && (v.size() < 9 || std::stof(v[8]) <= nlog)) // no Q-score or does not meet threshold
 	  || v[0].length() > 5 || (v[0].length() == 5 && v[0][3] > 50 || v[0][3] < 49) // invalid chromosome
 	 ) { continue; }
-      if (regions_.find(v[0]) == regions_.end()) { regions_[v[0]] = std::vector<struct region>(); }
+      if (regions_.find(v[0]) == regions_.end()) { regions_[v[0]] = std::vector<region>(); }
       regions_[v[0]].push_back({
 	  std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scoreidx])
       });
@@ -131,7 +131,7 @@ namespace SCREEN {
   void RegionSet::sort() {
     for (auto &k : regions_) {
       std::sort(k.second.begin(), k.second.end(),
-		[](const struct region &a, const struct region &b) -> bool { 
+		[](const region &a, const region &b) -> bool { 
 		  if (a.start != b.start) return a.start < b.start;
 		  return a.end < b.end;
 		});
@@ -143,20 +143,20 @@ namespace SCREEN {
       @param input: input vector of regions
       @param retval: vector to receive master peaks
    */
-  void rDHS_cluster(const std::vector<struct region> &input, std::vector<struct region> &retval) {
+  void rDHS_cluster(const std::vector<region> &input, std::vector<region> &retval) {
     if (input.size() == 1) { retval.push_back(input[0]); }
     if (input.size() <= 1) { return; }
-    struct region cregion = input[0];
-    std::vector<struct region> clist, nlist;
+    region cregion = input[0];
+    std::vector<region> clist, nlist;
     for (auto i = 0; i < input.size(); ++i) {
-      struct region r = input[i];
+      region r = input[i];
       if (r.start < cregion.end) {
 	if (r.score > cregion.score) { cregion = r; }
 	clist.push_back(r);
       }
       if (r.start >= cregion.end || i == input.size() - 1) {
 	retval.push_back(cregion);
-	for (struct region c : clist) {
+	for (region c : clist) {
 	  if (c.end <= cregion.start) { nlist.push_back(c); }
 	}
 	rDHS_cluster(nlist, retval);
@@ -178,12 +178,12 @@ namespace SCREEN {
   */
   RegionSet RegionSet::rDHS_Cluster() {
     sort();
-    std::unordered_map<std::string, std::vector<struct region>> retval;
+    std::unordered_map<std::string, std::vector<region>> retval;
 
     int total = 0, ktotal = 0;
     
     for (auto k : regions_) {
-      retval[k.first] = std::vector<struct region>();
+      retval[k.first] = std::vector<region>();
       rDHS_cluster(k.second, retval[k.first]);
       total += retval[k.first].size();
       ktotal += k.second.size();
