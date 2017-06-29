@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <array>
+#include <iomanip>
 
 #include <boost/filesystem.hpp>
 
@@ -16,6 +17,14 @@
 
 namespace SCREEN {
 
+  // http://www.cplusplus.com/forum/general/15952/
+  std::string accession(size_t acc, char sig, int len) {
+    std::ostringstream ss, os;
+    ss << std::setw(len) << std::setfill('0') << acc;
+    os << "HP37" << sig << ss.str();
+    return os.str();
+  }
+  
   std::vector<bfs::path> list_files(const bfs::path &dir) {
     bfs::directory_iterator end_itr;
     std::vector<bfs::path> retval;

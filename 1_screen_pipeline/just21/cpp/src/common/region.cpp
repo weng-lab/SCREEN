@@ -24,6 +24,14 @@ namespace SCREEN {
     regions_ = regions;
   }
 
+  const std::vector<struct region> &RegionSet::operator [](std::string &chr) {
+    return regions_[chr];
+  }
+
+  const std::unordered_map<std::string, std::vector<struct region>> &RegionSet::regions() const {
+    return regions_;
+  }
+  
   void RegionSet::appendRegionSet(const RegionSet &r) {
     for (auto k : r.regions_) {
       if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<struct region>(); }

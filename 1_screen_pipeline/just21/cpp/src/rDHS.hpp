@@ -10,12 +10,14 @@ namespace SCREEN {
 
   private:
     void _process(RegionSet&);
+    RegionSet regions;
 
   public:
-    rDHS(const bfs::path&);
     rDHS(const std::vector<std::string>&);
-    const std::string& operator [](size_t);
-    std::vector<std::string> rDHSs;
+    size_t total();
+    void write(const boost::filesystem::path&);
+    void write(const std::string&);
+    std::vector<std::vector<std::string>> regionlist();
     
   };
   

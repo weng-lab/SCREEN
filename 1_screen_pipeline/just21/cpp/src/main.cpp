@@ -25,9 +25,9 @@
  *  compute Z-scores for the given DHSs from the associated signal files
  *  returns the paths to the Z-scores; updates ENCODE_DNase_bw and ENCODE_DNase_bed to reflect the paths used for computation
  */
-std::vector<std::string> getZScores(const SCREEN::Paths &path, bool force_recompute = false) {
+std::vector<std::string> getZScores(const SCREEN::Paths &path, std::vector<std::string> &ENCODE_DNase_bw, bool force_recompute = false) {
 
-  std::vector<std::string> ENCODE_DNase_bw, ENCODE_DNase_bed;
+  std::vector<std::string> ENCODE_DNase_bed;
   std::vector<std::string> ENCODE_DNase_np;
   std::vector<int> ENCODE_DNase_idx;
   std::vector<int> ENCODE_DNase_read;
@@ -67,7 +67,7 @@ void run_saturation(const std::string &assembly) {
 
   // compute DHS Z-scores per experiment
   SCREEN::Paths path("/data/projects/cREs/" + assembly);
-  std::vector<std::string> z = getZScores(path);
+  std::vector<std::string> z = getZScores(path, ENCODE_DNase_bw);
   
   // load Z-scores into RegionSets
   std::vector<SCREEN::RegionSet> r(z.size());
@@ -100,11 +100,49 @@ void run_rDHS(const std::string &assembly) {
 
   // compute DHS Z-scores per experiment
   SCREEN::Paths path("/data/projects/cREs/" + assembly);
-  std::vector<std::string> z = getZScores(path, false);
+  std::vector<std::string> z = getZScores(path, ENCODE_DNase_bw, false);
 
   // compute rDHSs
   std::cout << "computing rDHSs for " << z.size() << " exps\n";
-  SCREEN::rDHS rr(z); //bfs::path("/home/pratth/test.dat"));
+  SCREEN::rDHS rr(z);
+  rr.write(path.rDHS_list());
+
+  // compute Z-scores
+  std::vector<float> maxZ(rr.total(), -10.0);
+  std::vector<std::vector<std::string>> regionlist = rr.regionlist();
+  std::vector<int> cREs;
+  std::vector<SCREEN::ZScore> rz(ENCODE_DNase_bw.size());
+  std::cout << "computing Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
+#pragma omp parallel for
+  for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
+    rz[i] = SCREEN::ZScore(regionlist, ENCODE_DNase_bw[i], true);
+    for (auto n = 0; n < maxZ.size(); ++n) {
+      if (maxZ[n] < rz[i].zscores_[n]) { maxZ[n] = rz[i].zscores_[n]; }
+    }
+  }
+
+  // write CTA
+  std::cout << "writing CTA cREs\n";
+  std::ofstream o(path.CTA().string());
+  for (auto i = 0; i < maxZ.size(); ++i) {
+    if (maxZ[i] >= 1.64) {
+      o << regionlist[i][0] << "\t" << regionlist[i][1] << "\t" << regionlist[i][2] << "\t"
+	<< SCREEN::accession(i, 'E') << "\t" << maxZ[i] << "\n";
+      cREs.push_back(i);
+    }
+  }
+
+  // write CTS
+  std::cout << "found " << cREs.size() << " cREs\n";
+  std::cout << "writing CTS cREs for " << ENCODE_DNase_bw.size() << " exps\n";
+#pragma omp parallel for  
+  for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
+    std::ofstream o(path.CTS(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bw[i]))).string());
+    for (auto n = 0; n < cREs.size(); ++n) {
+      o << regionlist[cREs[n]][0] << "\t" << regionlist[cREs[n]][1] << "\t" << regionlist[cREs[n]][2] << "\t"
+	<< SCREEN::accession(cREs[n], 'E') << "\t" << rz[i].zscores_[cREs[n]] << "\n";
+    }
+  }
 
 }
 
@@ -153,8 +191,8 @@ int main(int argc, char **argv)
 {
 
   std::cout << "*** hg19 ***\n";
-  //run_rDHS("hg19");
-  run_saturation("hg19");
+  run_rDHS("hg19");
+  //run_saturation("hg19");
 
   std::cout << "\n*** mm10 ***\n";
   //run_rDHS("mm10");
