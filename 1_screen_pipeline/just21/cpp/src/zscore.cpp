@@ -9,7 +9,6 @@
 #include <armadillo>
 
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
