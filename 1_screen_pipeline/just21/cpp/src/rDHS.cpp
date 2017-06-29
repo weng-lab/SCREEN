@@ -7,7 +7,6 @@
 
 #include <boost/functional/hash.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "utils.hpp"
 #include "common/region.hpp"

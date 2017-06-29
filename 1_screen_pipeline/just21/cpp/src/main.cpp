@@ -10,9 +10,8 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
 
-#include "../../common/zentLib/src/BigWigWrapper.hpp"
+#include "zentLib/src/BigWigWrapper.hpp"
 
 #include "common/region.hpp"
 #include "utils.hpp"

@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "common/region.hpp"
 #include "zscore.hpp"

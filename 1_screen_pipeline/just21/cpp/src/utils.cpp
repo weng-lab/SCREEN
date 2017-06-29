@@ -11,7 +11,6 @@
 #include <array>
 
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "utils.hpp"
 
