@@ -1,6 +1,7 @@
 UNAME_S := $(shell uname -s)
 COMMON_PATH=$(realpath ./common)
 CPP = g++-5
+EXT_PATH=$(realpath ./external)
 LOCAL_PATH = $(EXT_PATH)/local
 
 CXXFLAGS = -std=c++14 -DZI_USE_OPENMP -fopenmp -Wall -fPIC
@@ -22,7 +23,7 @@ LD_FLAGS = -fopenmp -lz
 
 #boost
 LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/boost/lib -L$(LOCAL_PATH)/boost/lib  \
-	-lpthread -lboost_system -lboost_log  -lboost_thread \
+	-lpthread -lboost_system -lboost_log -lboost_system -lboost_thread \
 	-lboost_filesystem -lboost_iostreams -lboost_regex -lboost_serialization
 
 #zentLib
