@@ -7,48 +7,46 @@
 #include <unordered_map>
 
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "../utils.hpp"
 #include "region.hpp"
 
 namespace SCREEN {
   
-  std::string regionToString(const std::string &chr, region r) {
+  std::string regionToString(const std::string& chr, region r) {
     return chr + "\t" + std::to_string(r.start) + "\t" + std::to_string(r.end);
   };
-
-  RegionSet::RegionSet() {}
 
   RegionSet::RegionSet(std::unordered_map<std::string, std::vector<region>> regions) {
     regions_ = regions;
   }
 
-  const std::vector<region> &RegionSet::operator [](std::string &chr) {
+  const std::vector<region>& RegionSet::operator [](std::string& chr) {
     return regions_[chr];
   }
 
-  const std::unordered_map<std::string, std::vector<region>> &RegionSet::regions() const {
+  const std::unordered_map<std::string, std::vector<region>>& RegionSet::regions() const {
     return regions_;
   }
   
-  void RegionSet::appendRegionSet(const RegionSet &r) {
-    for (auto k : r.regions_) {
-      if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<region>(); }
-      regions_[k.first].insert(regions_[k.first].end(), k.second.begin(), k.second.end());
+  void RegionSet::appendRegionSet(const RegionSet& r) {
+    for (const auto& k : r.regions_) {
+      regions_[k.first].insert(regions_[k.first].end(),
+			       k.second.begin(),
+			       k.second.end());
     }
   }
 
-  void RegionSet::write(const boost::filesystem::path &path) {
-    std::ofstream o(path.string());
-    for (auto k : regions_) {
-      for (auto n : k.second) {
-	o << k.first << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
+  void RegionSet::write(const bfs::path& path) {
+    std::ofstream f(path.string());
+    for (const auto& k : regions_) {
+      for (const auto& n : k.second) {
+	f << k.first << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
       }
     }
   }
 
-  void RegionSet::write_binary(const std::string &chr, const boost::filesystem::path &binary_path) {
+  void RegionSet::write_binary(const std::string& chr, const bfs::path& binary_path) {
     size_t s = regions_[chr].size();
     FILE *f = fopen(binary_path.string().c_str(), "w");
     if (fwrite(&s, sizeof(size_t), 1, f) != 1
@@ -58,7 +56,7 @@ namespace SCREEN {
     fclose(f);
   }
 
-  void RegionSet::read_binary(const std::string &chr, const boost::filesystem::path &binary_path) {
+  void RegionSet::read_binary(const std::string& chr, const bfs::path& binary_path) {
     size_t s;
     FILE *f = fopen(binary_path.string().c_str(), "r");
     if (fread(&s, sizeof(size_t), 1, f) != 1) {
@@ -72,9 +70,11 @@ namespace SCREEN {
   }
 
   size_t RegionSet::total() {
-    size_t retval = 0;
-    for (auto k : regions_) { retval += k.second.size(); }
-    return retval;
+    size_t ret = 0;
+    for (const auto& k : regions_) {
+      ret += k.second.size();
+    }
+    return ret;
   }
 
   /**
@@ -82,11 +82,11 @@ namespace SCREEN {
       @param path: path to the file
       @param qfilter: Q-value (-logQ must be in column 9) at which to filter rows; default 0.05
    */
-  void RegionSet::appendNarrowPeak(const boost::filesystem::path &path, float qfilter) {
+  void RegionSet::appendNarrowPeak(const bfs::path& path, float qfilter) {
     appendNarrowPeak(path.string(), qfilter);
   }
 
-  void RegionSet::appendNarrowPeak(const std::string &path, float qfilter) {
+  void RegionSet::appendNarrowPeak(const std::string& path, float qfilter) {
     _append(path, 6, qfilter);
   }
 
@@ -94,11 +94,11 @@ namespace SCREEN {
       appends a list of Z-scores from a file
       @param path: path to the file; Z-scores must be in column 5
    */
-  void RegionSet::appendZ(const boost::filesystem::path &path) {
+  void RegionSet::appendZ(const bfs::path& path) {
     appendZ(path.string());
   }
 
-  void RegionSet::appendZ(const std::string &path) {
+  void RegionSet::appendZ(const std::string& path) {
     _append(path, 4, 1.0);
   }
 
@@ -109,17 +109,22 @@ namespace SCREEN {
       @param scoreidx: index of each region's score within the tab-separated lines
       @param qfilter: if passed, Q-score threshold; Q-scores must be in column 9 of each line
    */
-  void RegionSet::_append(const std::string &path, int scoreidx, float qfilter) {
+  void RegionSet::_append(const std::string& path, int scoreidx, float qfilter) {
+    const float nlog = -std::log(qfilter);
     std::ifstream f(path);
     std::string line;
-    float nlog = -std::log(qfilter);
     while (std::getline(f, line)) {
       std::vector<std::string> v = split(line, '\t');
-      if ((qfilter < 1.0 && (v.size() < 9 || std::stof(v[8]) <= nlog)) // no Q-score or does not meet threshold
-	  || v[0].length() > 5 || (v[0].length() == 5 && v[0][3] > 50 || v[0][3] < 49) // invalid chromosome
-	 ) { continue; }
-      if (regions_.find(v[0]) == regions_.end()) { regions_[v[0]] = std::vector<region>(); }
-      regions_[v[0]].push_back({
+      if(qfilter < 1.0 && (v.size() < 9 || std::stof(v[8]) <= nlog)){
+	// no Q-score or does not meet threshold
+	continue;
+      }
+      const auto& chr = v[0];
+      if(chr.size() > 5 || (chr.size() == 5 && chr[3] > 50 || chr[3] < 49)){
+	// invalid chromosome
+	continue;
+      }
+      regions_[chr].push_back({
 	  std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scoreidx])
       });
     }
@@ -129,11 +134,10 @@ namespace SCREEN {
       sorts the regions contained in the object (modifies existing vector)
    */
   void RegionSet::sort() {
-    for (auto &k : regions_) {
+    for (auto& k : regions_) {
       std::sort(k.second.begin(), k.second.end(),
-		[](const region &a, const region &b) -> bool { 
-		  if (a.start != b.start) return a.start < b.start;
-		  return a.end < b.end;
+		[](const region& a, const region& b){
+		  return std::tie(a.start, a.end) < std::tie(b.start, b.end);
 		});
     }
   }
@@ -141,32 +145,40 @@ namespace SCREEN {
   /**
       clusters DHSs to make rDHS "master peaks"
       @param input: input vector of regions
-      @param retval: vector to receive master peaks
+      @param ret: vector to receive master peaks
    */
-  void rDHS_cluster(const std::vector<region> &input, std::vector<region> &retval) {
-    if (input.size() == 1) { retval.push_back(input[0]); }
-    if (input.size() <= 1) { return; }
-    region cregion = input[0];
-    std::vector<region> clist, nlist;
+  void rDHS_cluster(const std::vector<region>& input, std::vector<region>& ret) {
+    if (1 == input.size()) {
+      ret.push_back(input[0]);
+    }
+    if(input.size() <= 1) {
+      return;
+    }
+    region pmp = input[0]; // potential master peak
+    std::vector<region> current, next;
     for (auto i = 0; i < input.size(); ++i) {
-      region r = input[i];
-      if (r.start < cregion.end) {
-	if (r.score > cregion.score) { cregion = r; }
-	clist.push_back(r);
-      }
-      if (r.start >= cregion.end || i == input.size() - 1) {
-	retval.push_back(cregion);
-	for (region c : clist) {
-	  if (c.end <= cregion.start) { nlist.push_back(c); }
+      const region& r = input[i];
+      if (r.start < pmp.end) {
+	if (r.score > pmp.score) {
+	  pmp = r;
 	}
-	rDHS_cluster(nlist, retval);
-	nlist.clear();
-	clist.clear();
-	if (r.start >= cregion.end && i == input.size() - 1) {
-	  retval.push_back(r);
+	current.push_back(r);
+      }
+      if (r.start >= pmp.end || i == input.size() - 1) {
+	ret.push_back(pmp);
+	for (const region& c : current) {
+	  if (c.end <= pmp.start) {
+	    next.push_back(c);
+	  }
+	}
+	rDHS_cluster(next, ret);
+	next.clear();
+	current.clear();
+	if (r.start >= pmp.end && i == input.size() - 1) {
+	  ret.push_back(r);
 	} else {
-	  clist.push_back(r);
-	  cregion = r;
+	  current.push_back(r);
+	  pmp = r;
 	}
       }
     }
@@ -178,19 +190,18 @@ namespace SCREEN {
   */
   RegionSet RegionSet::rDHS_Cluster() {
     sort();
-    std::unordered_map<std::string, std::vector<region>> retval;
-
-    int total = 0, ktotal = 0;
     
-    for (auto k : regions_) {
-      retval[k.first] = std::vector<region>();
-      rDHS_cluster(k.second, retval[k.first]);
-      total += retval[k.first].size();
+    std::unordered_map<std::string, std::vector<region>> ret;
+    int32_t total = 0;
+    int32_t ktotal = 0;
+    for (const auto& k : regions_) {
+      rDHS_cluster(k.second, ret[k.first]);
+      total += ret[k.first].size();
       ktotal += k.second.size();
     }
     std::cout << "total: " << ktotal << " in, " << total << " out\n";
     
-    return RegionSet(retval);
+    return RegionSet(ret);
   }
 
 } // SCREEN
