@@ -4,12 +4,14 @@
 #include <string>
 #include <cmath>
 #include <numeric>
+
+#define ARMA_64BIT_WORD
 #include <armadillo>
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include "../../common/zentLib/src/BigWigWrapper.hpp"
+#include "zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
 
 #include "utils.hpp"
