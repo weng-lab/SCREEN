@@ -23,9 +23,10 @@ namespace SCREEN {
   void rDHS::write(const std::string &path) {
     size_t acc = 0;
     std::ofstream o(path);
-    for (auto k : regions.regions()) {
-      for (region : k.second) {
-	o << k.first << "\t" << region.start << "\t" << region.end << "\t" << accession(acc++, 'D') << "\n";
+    for (const auto& k : regions.regions()) {
+      for (const region& r : k.second) {
+	o << k.first << "\t" << r.start << "\t" << r.end << "\t"
+	  << accession(acc++, 'D') << "\n";
       }
     }
   }
@@ -39,20 +40,22 @@ namespace SCREEN {
   }
 
   std::vector<std::vector<std::string>> rDHS::regionlist() {
-    std::vector<std::vector<std::string>> retval;
-    for (auto k : regions.regions()) {
-      for (struct region r : k.second) {
-	retval.push_back({ k.first, std::to_string(r.start), std::to_string(r.end) });
+    std::vector<std::vector<std::string>> ret;
+    for (const auto& k : regions.regions()) {
+      for (const region& r : k.second) {
+	ret.push_back({ k.first,
+	      std::to_string(r.start),
+	      std::to_string(r.end) });
       }
     }
-    return retval;
+    return ret;
   }
   
   rDHS::rDHS(const std::vector<std::string> &zfile_list) {
     std::cout << "loading regions from " << zfile_list.size() << " files...\n";
     RegionSet r;
-    for (std::string file : zfile_list) {
-      r.appendZ(file);
+    for (const std::string& fnp : zfile_list) {
+      r.appendZ(fnp);
     }
     _process(r);
   }
