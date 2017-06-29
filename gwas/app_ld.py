@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import cherrypy, jinja2, os, sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from db_utils import getcursor
 

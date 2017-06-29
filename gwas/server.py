@@ -7,13 +7,13 @@ import psycopg2, psycopg2.pool
 from app_ld import SnpApp
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                             "../../../metadata/utils"))
+                             "../../metadata/utils"))
 from templates import Templates
 from utils import Utils, AddPath
 
-AddPath(__file__, "../../common")
+AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
-from dbconnect import db_connect_db
+from dbconnect import db_connect
 
 class WebServerConfig:
     def __init__(self, siteName):
@@ -49,7 +49,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    DBCONN = db_connect_db(os.path.realpath(__file__), "screenv11")
+    DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
 
     wsconfig = WebServerConfig("snp")

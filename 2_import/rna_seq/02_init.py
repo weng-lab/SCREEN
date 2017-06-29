@@ -114,18 +114,7 @@ def doIndex(curs, assembly):
     tableName = "r_rnas_" + assembly
     makeIndexMultiCol(curs, tableName, ["cellCompartment", "biosample_type"])
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="")
-    parser.add_argument('--index', action="store_true", default=False)
-    args = parser.parse_args()
-    return args
-
-def main():
-    args = parse_args()
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
+def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
@@ -140,5 +129,18 @@ def main():
                 insertRNAs(curs, assembly)
                 doIndex(curs, assembly)
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--index', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+    DBCONN = db_connect(os.path.realpath(__file__))
+    run(args, DBCONN)
+    return 0
+
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
