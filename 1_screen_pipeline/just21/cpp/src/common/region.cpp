@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "../utils.hpp"
 #include "region.hpp"
@@ -125,8 +126,10 @@ namespace SCREEN {
 	continue;
       }
       regions_[chr].push_back({
-	  std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scoreidx])
-      });
+	  boost::lexical_cast<uint32_t>(v[1]),
+	    boost::lexical_cast<uint32_t>(v[2]),
+	    boost::lexical_cast<float>(v[scoreidx])
+	    });
     }
   }
 

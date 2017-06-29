@@ -5,8 +5,8 @@ namespace SCREEN {
   namespace bfs = boost::filesystem;
 
   struct region {
-    uint  start;
-    uint  end;
+    uint32_t  start;
+    uint32_t  end;
     float score;
   };
 
