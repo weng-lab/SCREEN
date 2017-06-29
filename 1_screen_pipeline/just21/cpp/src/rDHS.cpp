@@ -19,6 +19,7 @@ namespace SCREEN {
   void rDHS::_process(RegionSet &r) {
     //    std::cout << "found " << r.regions().size() << " DHSs\n";
     RegionSet c = r.rDHS_Cluster();
+    c.sort();
     c.write("/data/projects/cREs/hg19/rDHS.bed");
     std::cout << "/data/projects/cREs/hg19/rDHS.bed" << "\n";
     

@@ -14,6 +14,7 @@
 
 #include "../../common/zentLib/src/BigWigWrapper.hpp"
 
+#include "common/region.hpp"
 #include "utils.hpp"
 #include "lookup_matrix.hpp"
 #include "zscore.hpp"
@@ -68,6 +69,21 @@ void run_saturation(const std::string &assembly) {
   // compute DHS Z-scores per experiment
   SCREEN::Paths path("/data/projects/cREs/" + assembly);
   std::vector<std::string> z = getZScores(path);
+  
+  // load Z-scores into RegionSets
+  std::vector<SCREEN::RegionSet> r(z.size());
+  std::cout << "loading Z-scores for " << z.size() << " exps\n";
+
+#pragma omp parallel for
+  for (auto i = 0; i < z.size(); ++i) {
+    r[i].appendZ(z[i]);
+  }
+  
+  // run saturation
+  std::cout << "running saturation...\n";
+  SCREEN::Saturation s(r);
+  s.write(path.saturation());
+  std::cout << path.saturation() << "\n";
 
   // run saturation
   //  SCREEN::Saturation s(z);
@@ -90,27 +106,6 @@ void run_rDHS(const std::string &assembly) {
   // compute rDHSs
   std::cout << "computing rDHSs for " << z.size() << " exps\n";
   SCREEN::rDHS rr(z); //boost::filesystem::path("/home/pratth/test.dat"));
-
-  // compute Z-scores for rDHSs per exp
-  /*
-  std::cout << "computing rDHS Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
-  std::vector<double> maxZ(rr.rDHSs.size(), -10.0);
-#pragma omp parallel for
-  for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
-    SCREEN::ZScore z(rr.rDHSs, ENCODE_DNase_bw[i], true);
-    for (auto n = 0; n < z.zscores.size(); ++n) {
-      if (maxZ[n] < z.zscores[n]) { maxZ[n] = z.zscores[n]; }
-    }
-    z.write("", path.CTS(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bw[i]))));
-  }
-  
-  // write CTA max-Z
-  std::ofstream o(path.CTA().string());
-  for (auto i = 0; i < rr.rDHSs.size(); ++i) {
-    std::vector<std::string> v = SCREEN::split(rr.rDHSs[i], '\t');
-    o << v[0] << "\t" << v[1] << "\t" << v[2] << "\t" << v[3] << "\t" << maxZ[i] << "\n";
-  }
-  */
 
 }
 
@@ -159,7 +154,8 @@ int main(int argc, char **argv)
 {
 
   std::cout << "*** hg19 ***\n";
-  run_rDHS("hg19");
+  //run_rDHS("hg19");
+  run_saturation("hg19");
 
   std::cout << "\n*** mm10 ***\n";
   //run_rDHS("mm10");

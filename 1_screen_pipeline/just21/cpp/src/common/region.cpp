@@ -24,6 +24,13 @@ namespace SCREEN {
     regions_ = regions;
   }
 
+  void RegionSet::appendRegionSet(const RegionSet &r) {
+    for (auto k : r.regions_) {
+      if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<struct region>(); }
+      regions_[k.first].insert(regions_[k.first].end(), k.second.begin(), k.second.end());
+    }
+  }
+
   void RegionSet::write(const boost::filesystem::path &path) {
     std::ofstream o(path.string());
     for (auto k : regions_) {
@@ -54,6 +61,12 @@ namespace SCREEN {
       // TODO: exception
     }
     fclose(f);
+  }
+
+  size_t RegionSet::total() {
+    size_t retval = 0;
+    for (auto k : regions_) { retval += k.second.size(); }
+    return retval;
   }
 
   /**
@@ -120,7 +133,7 @@ namespace SCREEN {
   /**
       clusters DHSs to make rDHS "master peaks"
       @param input: input vector of regions
-      @returns: vector containing master peaks
+      @param retval: vector to receive master peaks
    */
   void rDHS_cluster(const std::vector<struct region> &input, std::vector<struct region> &retval) {
     if (input.size() == 1) { retval.push_back(input[0]); }
@@ -166,13 +179,10 @@ namespace SCREEN {
       rDHS_cluster(k.second, retval[k.first]);
       total += retval[k.first].size();
       ktotal += k.second.size();
-      std::cout << k.first << ": " << k.second.size() << " in, " << retval[k.first].size() << " out\n";
     }
     std::cout << "total: " << ktotal << " in, " << total << " out\n";
     
-    RegionSet r(retval);
-    r.sort();
-    return r;
+    return RegionSet(retval);
   }
 
 } // SCREEN
