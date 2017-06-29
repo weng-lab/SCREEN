@@ -24,7 +24,7 @@ namespace SCREEN {
     size_t acc = 0;
     std::ofstream o(path);
     for (const auto& k : regions.regions()) {
-      for (const region& r : k.second) {
+      for (const Region& r : k.second) {
 	o << k.first << "\t" << r.start << "\t" << r.end << "\t"
 	  << accession(acc++, 'D') << "\n";
       }
@@ -42,7 +42,7 @@ namespace SCREEN {
   std::vector<std::vector<std::string>> rDHS::regionlist() {
     std::vector<std::vector<std::string>> ret;
     for (const auto& k : regions.regions()) {
-      for (const region& r : k.second) {
+      for (const Region& r : k.second) {
 	ret.push_back({ k.first,
 	      std::to_string(r.start),
 	      std::to_string(r.end) });
