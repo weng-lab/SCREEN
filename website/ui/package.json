@@ -23,7 +23,7 @@
     "redux-thunk": "^2.1.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.16.5"
   },
   "babel": {
     "presets": [
@@ -40,8 +40,8 @@
       }
     }
   },
-    "dependencies": {
-	"react-draggable-list": "3.3.0",
+  "dependencies": {
+    "react-draggable-list": "3.3.0",
     "axios": "^0.13.1",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.14.0",
