@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 
 #include "utils.hpp"
-#include "common/region.hpp"
+#include "region.hpp"
 #include "zscore.hpp"
 #include "rDHS.hpp"
 

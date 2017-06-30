@@ -16,6 +16,8 @@ namespace SCREEN {
   class RegionSet {
     ChrToRegions regions_;
     void _append(const std::string&, int, float);
+    std::vector<std::string> sorted_keys_;
+    void _update_keys();
 
   public:
     RegionSet() {}
@@ -31,12 +33,11 @@ namespace SCREEN {
 
     const std::vector<Region>& operator [](std::string&);
     const ChrToRegions& regions() const;
+    const std::vector<std::string> &sorted_keys() const;
     
     size_t total();
     void sort();
     RegionSet rDHS_Cluster();
-    void write_binary(const std::string&, const bfs::path&);
-    void read_binary(const std::string&, const bfs::path&);
     void write(const bfs::path&);
 
   };

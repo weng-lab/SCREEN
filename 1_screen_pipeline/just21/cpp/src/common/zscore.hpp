@@ -11,8 +11,9 @@ namespace SCREEN {
   class ZScore {
 
   private:
-    void _read(const bfs::path &);
-    void _computeZScores(const a::vec&);
+    void _read(const bfs::path&);
+    void computeZScores(const a::vec&);
+    void computeZScores(const a::vec&, const a::vec&);
     void _processbw(const bfs::path&, const bool);
     
   public:
@@ -23,7 +24,7 @@ namespace SCREEN {
 	   const bfs::path&, const bool);
 
     void write(const std::string&, const bfs::path&);
-    void write(const std::string &, const std::string &);
+    void write(const std::string&, const std::string&);
     void read(const bfs::path&);
     void qfilter(const double);
 

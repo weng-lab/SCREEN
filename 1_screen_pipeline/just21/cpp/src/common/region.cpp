@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "../utils.hpp"
+#include "utils.hpp"
 #include "region.hpp"
 #include "cpp/string_utils.hpp"
 
@@ -28,44 +28,32 @@ namespace SCREEN {
     return regions_;
   }
   
+  const std::vector<std::string> &RegionSet::sorted_keys() const {
+    return sorted_keys_;
+  }
+
+  void RegionSet::_update_keys() {
+    sorted_keys_.clear();
+    for (auto &k : regions_) { sorted_keys_.push_back(k.first); }
+    std::sort(sorted_keys_.begin(), sorted_keys_.end());
+  }
+
   void RegionSet::appendRegionSet(const RegionSet& r) {
     for (const auto& k : r.regions_) {
       regions_[k.first].insert(regions_[k.first].end(),
 			       k.second.begin(),
 			       k.second.end());
     }
+    _update_keys();
   }
 
-  void RegionSet::write(const bfs::path& path) {
-    std::ofstream f(path.string());
-    for (const auto& k : regions_) {
-      for (const auto& n : k.second) {
-	f << k.first << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
+  void RegionSet::write(const boost::filesystem::path &path) {
+    std::ofstream o(path.string());
+    for (const auto &k : sorted_keys_) {
+      for (const auto &n : regions_[k]) {
+	o << k << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
       }
     }
-  }
-
-  void RegionSet::write_binary(const std::string& chr, const bfs::path& binary_path) {
-    size_t s = regions_[chr].size();
-    FILE *f = fopen(binary_path.string().c_str(), "w");
-    if (fwrite(&s, sizeof(size_t), 1, f) != 1
-	|| fwrite(&regions_[chr][0], sizeof(Region), s, f) != s) {
-      // TODO: exception
-    }
-    fclose(f);
-  }
-
-  void RegionSet::read_binary(const std::string& chr, const bfs::path& binary_path) {
-    size_t s;
-    FILE *f = fopen(binary_path.string().c_str(), "r");
-    if (fread(&s, sizeof(size_t), 1, f) != 1) {
-      // TODO: exception
-    }
-    regions_[chr] = std::vector<Region>(s);
-    if (fread(&regions_[chr][0], sizeof(Region), s, f) != s) {
-      // TODO: exception
-    }
-    fclose(f);
   }
 
   size_t RegionSet::total() {
@@ -125,10 +113,11 @@ namespace SCREEN {
       }
       regions_[chr].push_back({
 	  bib::string::stouint32(v[1]),
-	    bib::string::stouint32(v[2]),
-	    std::stof(v[scoreidx])
-	    });
+	  bib::string::stouint32(v[2]),
+	  std::stof(v[scoreidx])
+      });
     }
+    _update_keys();
   }
 
   /**

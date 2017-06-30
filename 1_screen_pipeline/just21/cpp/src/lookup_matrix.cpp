@@ -7,7 +7,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "utils.hpp"
+#include "common/utils.hpp"
 #include "lookup_matrix.hpp"
 
 namespace SCREEN {
