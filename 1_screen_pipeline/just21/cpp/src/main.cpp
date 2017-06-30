@@ -1,8 +1,3 @@
-#include <zi/zargs/zargs.hpp>
-//ZiARG_bool(boolExample, false, "bool example");
-ZiARG_int32(j, 1, "cores");
-ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
-
 #include <vector>
 #include <iostream>
 #include <string>
@@ -12,6 +7,11 @@ ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
 #include <cmath>
 #include <numeric>
 #include <memory>
+
+#include <zi/zargs/zargs.hpp>
+//ZiARG_bool(boolExample, false, "bool example");
+ZiARG_int32(j, 1, "cores");
+ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -35,7 +35,7 @@ namespace SCREEN {
     std::vector<bfs::path> ENCODE_DNase_bw;
     std::vector<bfs::path> ENCODE_DNase_np;
   };
-  
+
 /*
  *  compute Z-scores for the given DHSs from the associated signal files
  *  returns the paths to the Z-scores; updates ENCODE_DNase_bw and ENCODE_DNase_bed to reflect the paths used for computation
@@ -51,7 +51,7 @@ DataPaths getZScores(const Paths &paths, bool force_recompute = false) {
   const auto lines = bib::files::readStrings(paths.hotspot_list());
   for(const auto& line : lines){
     const auto cols = bib::string::split(line, '\t');
-    
+
     ENCODE_DNase_bw.push_back(paths.EncodeData(cols[0], cols[3], ".bigWig"));
     ENCODE_DNase_bed.push_back(paths.EncodeData(cols[0], cols[1], ".bed.gz"));
     ENCODE_DNase_np.push_back(paths.DHS_ZScore(cols[3]));
@@ -81,7 +81,7 @@ void run_saturation(const std::string& assembly) {
   Paths path(ZiARG_rootPath, assembly);
   const DataPaths d = getZScores(path);
   const auto& z = d.ENCODE_DNase_np;
-  
+
   // load Z-scores into RegionSets
   std::vector<RegionSet> r(z.size());
   std::cout << "loading Z-scores for " << z.size() << " exps\n";
@@ -90,7 +90,7 @@ void run_saturation(const std::string& assembly) {
   for (auto i = 0; i < z.size(); ++i) {
     r[i].appendZ(z[i]);
   }
-  
+
   // run saturation
   std::cout << "running saturation...\n";
   Saturation s(r);
@@ -123,7 +123,7 @@ void run_rDHS(const std::string& assembly) {
   std::vector<std::vector<std::string>> regionlist = rr.regionlist();
   std::vector<int> cREs;
   std::vector<ZScore> rz(N);
-  
+
   std::cout << "computing Z-scores for " << N << " exps\n";
 #pragma omp parallel for
   for (auto i = 0; i < N; ++i) {
@@ -149,7 +149,7 @@ void run_rDHS(const std::string& assembly) {
   // write CTS
   std::cout << "found " << cREs.size() << " cREs\n";
   std::cout << "writing CTS cREs for " << N << " exps\n";
-#pragma omp parallel for  
+#pragma omp parallel for
   for (auto i = 0; i < N; ++i) {
     std::ofstream o(path.CTS(trim_ext(basename(d.ENCODE_DNase_bw[i]))).string());
     for (auto n = 0; n < cREs.size(); ++n) {
@@ -165,7 +165,7 @@ void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false
   // load list of files
   std::vector<bfs::path> cistrome_list;
   std::vector<bfs::path> cistrome_comp;
-  
+
   const auto lines = bib::files::readStrings(path.cistromeList());
   std::vector<int> comp_idx;
   std::vector<int> read_idx;
