@@ -11,6 +11,7 @@
 
 #include "../utils.hpp"
 #include "region.hpp"
+#include "cpp/string_utils.hpp"
 
 namespace SCREEN {
 
@@ -123,9 +124,9 @@ namespace SCREEN {
 	continue;
       }
       regions_[chr].push_back({
-	  boost::lexical_cast<uint32_t>(v[1]),
-	    boost::lexical_cast<uint32_t>(v[2]),
-	    boost::lexical_cast<float>(v[scoreidx])
+	  bib::string::stouint32(v[1]),
+	    bib::string::stouint32(v[2]),
+	    std::stof(v[scoreidx])
 	    });
     }
   }
