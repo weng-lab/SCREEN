@@ -162,6 +162,7 @@ namespace SCREEN {
 		   const std::vector<std::vector<std::string>>& regionlist,
 		   const std::vector<ZScore>& zscores, const std::vector<int> cREs,
 		   const Paths& paths) {
+#pragma omp parallel for num_threads(4)
     for (size_t i = 0; i < outFiles.size(); ++i) {
       const auto& outFile = outFiles[i];
       std::ofstream f(paths.CTS(outFile.stem().string()).string());
