@@ -31,7 +31,8 @@ namespace SCREEN {
     void appendZ(const bfs::path&);
     void appendZ(const std::string&);
 
-    const std::vector<Region>& operator [](std::string&);
+    const std::vector<Region>& operator [](const std::string&);
+    const std::vector<Region>& operator [](const std::string&) const;
     const ChrToRegions& regions() const;
     const std::vector<std::string> &sorted_keys() const;
     
