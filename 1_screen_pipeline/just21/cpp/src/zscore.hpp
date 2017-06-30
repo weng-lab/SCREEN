@@ -11,15 +11,16 @@ namespace SCREEN {
   class ZScore {
 
   private:
-    void _read(const std::string &);
-    void computeZScores(const a::vec&);
-    void _processbw(const std::string&, const bool);
+    void _read(const bfs::path &);
+    void _computeZScores(const a::vec&);
+    void _processbw(const bfs::path&, const bool);
     
   public:
     ZScore() {}
-    ZScore(const std::string&, const bool);
-    ZScore(const std::string&, const std::string&, const bool);
-    ZScore(const std::vector<std::vector<std::string>>&, const std::string&, const bool);
+    ZScore(const bfs::path&, const bool);
+    ZScore(const bfs::path&, const bfs::path&, const bool);
+    ZScore(const std::vector<std::vector<std::string>>&,
+	   const bfs::path&, const bool);
 
     void write(const std::string&, const bfs::path&);
     void write(const std::string &, const std::string &);
