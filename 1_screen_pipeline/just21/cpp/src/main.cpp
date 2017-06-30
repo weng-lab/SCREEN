@@ -40,7 +40,7 @@ namespace SCREEN {
    *  compute Z-scores for the given DHSs from the associated signal files
    *  returns the paths to the Z-scores; updates ENCODE_DNase_bw and ENCODE_DNase_bed to reflect the paths used for computation
    */
-  DataPaths getZScores(const Paths &paths, bool force_recompute = false) {
+  DataPaths getZScores(const Paths& paths, bool force_recompute = false) {
     std::vector<bfs::path> ENCODE_DNase_bw;
     std::vector<bfs::path> ENCODE_DNase_bed;
     std::vector<bfs::path> ENCODE_DNase_np;
@@ -106,7 +106,7 @@ namespace SCREEN {
   /*
    *  compute rDHSs for an assembly; return the number of rDHSs
    */
-  rDHS run_rDHS(const std::string &assembly) {
+  rDHS run_rDHS(const std::string& assembly) {
 
     std::vector<std::string> ENCODE_DNase_bw;
     std::vector<std::string> ENCODE_DNase_bed;
@@ -125,20 +125,20 @@ namespace SCREEN {
 
   }
 
-  const std::vector<std::string> _readlist(const std::string &path) {
+  const std::vector<bfs::path> _readlist(const Paths& paths, const std::string& path) {
     std::ifstream f(path);
     std::string line;
-    std::vector<std::string> retval;
+    std::vector<bfs::path> ret;
     while (getline(f, line)) {
       std::vector<std::string> v = split(line, '\t');
-      retval.push_back("/data/projects/encode/data/" + v[0] + "/" + v[1] + ".bigWig");
+      ret.push_back(paths.EncodeData(v[0], v[1], ".bigWig"));
     }
-    return retval;
+    return ret;
   }
 
-  std::vector<float> _computeZ(const std::vector<std::string> &paths, const std::vector<std::vector<std::string>> &regionlist,
-			       std::vector<ZScore> &output_list) {
-
+  std::vector<float> _computeZ(const std::vector<bfs::path>& paths,
+			       const std::vector<std::vector<std::string>>& regionlist,
+			       std::vector<ZScore>& output_list) {
     // empty max-Z vector
     std::vector<float> maxZ(regionlist.size(), -10.0);
     std::cout << "computing Z-scores for " << paths.size() << " exps\n";
@@ -148,43 +148,47 @@ namespace SCREEN {
     for (auto i = 0; i < paths.size(); ++i) {
       output_list[i] = ZScore(regionlist, paths[i], true);
       for (auto n = 0; n < regionlist.size(); ++n) {
-	if (maxZ[n] < output_list[i].zscores_[n]) { maxZ[n] = output_list[i].zscores_[n]; }
+	if (maxZ[n] < output_list[i].zscores_[n]) {
+	  maxZ[n] = output_list[i].zscores_[n];
+	}
       }
     }
 
     // return maxZ list
     return maxZ;
-  
   }
 
-  void _write_cREs(const std::vector<std::string> &paths, const std::vector<std::vector<std::string>> &regionlist,
-		   const std::vector<ZScore> &zscores, const std::vector<int> cREs, const Paths &path) {
-
-#pragma omp parallel for  
-    for (auto i = 0; i < paths.size(); ++i) {
-      std::ofstream o(path.CTS(trim_ext(basename(paths[i]))).string());
+  void _write_cREs(const std::vector<bfs::path>& outFiles,
+		   const std::vector<std::vector<std::string>>& regionlist,
+		   const std::vector<ZScore>& zscores, const std::vector<int> cREs,
+		   const Paths& paths) {
+    for (size_t i = 0; i < outFiles.size(); ++i) {
+      const auto& outFile = outFiles[i];
+      std::ofstream f(paths.CTS(outFile.stem().string()).string());
       for (auto n = 0; n < cREs.size(); ++n) {
-	o << regionlist[cREs[n]][0] << "\t" << regionlist[cREs[n]][1] << "\t" << regionlist[cREs[n]][2] << "\t"
-	  << accession(cREs[n], 'E') << "\t" << zscores[i].zscores_[cREs[n]] << "\n";
+	f << regionlist[cREs[n]][0] << "\t" << regionlist[cREs[n]][1]
+	  << "\t" << regionlist[cREs[n]][2] << "\t"
+	  << accession(cREs[n], 'E') << "\t"
+	  << zscores[i].zscores_[cREs[n]] << "\n";
       }
     }
-  
   }
 
-  void create_cREs(rDHS rr, const std::string &dnase_list,
-		   const std::string &h3k4me3_list, const std::string &h3k27ac_list,
-		   const std::string &ctcf_list, const std::string &assembly) {
-
+  void create_cREs(rDHS rr, const std::string& dnase_list,
+		   const std::string& h3k4me3_list, const std::string& h3k27ac_list,
+		   const std::string& ctcf_list, const std::string& assembly) {
     // get paths for all the signal files
-    Paths path(ZiARG_rootPath, assembly);
-    std::vector<std::string> dnase_paths = _readlist(dnase_list);
-    std::vector<std::string> h3k4me3_paths = _readlist(h3k4me3_list);
-    std::vector<std::string> h3k27ac_paths = _readlist(h3k27ac_list);
-    std::vector<std::string> ctcf_paths = _readlist(ctcf_list);
+    Paths paths(ZiARG_rootPath, assembly);
+    std::vector<bfs::path> dnase_paths = _readlist(paths, dnase_list);
+    std::vector<bfs::path> h3k4me3_paths = _readlist(paths, h3k4me3_list);
+    std::vector<bfs::path> h3k27ac_paths = _readlist(paths, h3k27ac_list);
+    std::vector<bfs::path> ctcf_paths = _readlist(paths, ctcf_list);
 
     // empty vectors for holding Z-scores, cREs
-    std::vector<ZScore> DNaseZ(dnase_paths.size()), H3K4me3Z(h3k4me3_paths.size()),
-      H3K27acZ(h3k27ac_paths.size()), CTCFZ(ctcf_paths.size());
+    std::vector<ZScore> DNaseZ(dnase_paths.size());
+    std::vector<ZScore> H3K4me3Z(h3k4me3_paths.size());
+    std::vector<ZScore> H3K27acZ(h3k27ac_paths.size());
+    std::vector<ZScore> CTCFZ(ctcf_paths.size());
     std::vector<int> cREs;
 
     // condense regions into vector, compute maxZ
@@ -196,10 +200,12 @@ namespace SCREEN {
 
     // write CTA
     std::cout << "writing CTA cREs\n";
-    std::ofstream o(path.CTA().string());
+    std::ofstream f(paths.CTA().string());
     for (auto i = 0; i < max_DNaseZ.size(); ++i) {
-      if (max_DNaseZ[i] >= 1.64 && (max_H3K4me3Z[i] >= 1.64 || max_H3K27acZ[i] >= 1.64 || max_CTCFZ[i] >= 1.64)) {
-	o << regionlist[i][0] << "\t" << regionlist[i][1] << "\t" << regionlist[i][2] << "\t"
+      if (max_DNaseZ[i] >= 1.64 && (max_H3K4me3Z[i] >= 1.64 ||
+				    max_H3K27acZ[i] >= 1.64 ||
+				    max_CTCFZ[i] >= 1.64)) {
+	f << regionlist[i][0] << "\t" << regionlist[i][1] << "\t" << regionlist[i][2] << "\t"
 	  << accession(i, 'E') << "\t" << max_DNaseZ[i] << "\t" << max_H3K4me3Z[i] << "\t"
 	  << max_H3K27acZ[i] << "\t" << max_CTCFZ[i] << "\n";
 	cREs.push_back(i);
@@ -208,14 +214,14 @@ namespace SCREEN {
 
     // write CTS
     std::cout << "found " << cREs.size() << " cREs\n";
-    _write_cREs(dnase_paths, regionlist, DNaseZ, cREs, path);
-    _write_cREs(h3k4me3_paths, regionlist, H3K4me3Z, cREs, path);
-    _write_cREs(h3k27ac_paths, regionlist, H3K27acZ, cREs, path);
-    _write_cREs(ctcf_paths, regionlist, CTCFZ, cREs, path);
+    _write_cREs(dnase_paths, regionlist, DNaseZ, cREs, paths);
+    _write_cREs(h3k4me3_paths, regionlist, H3K4me3Z, cREs, paths);
+    _write_cREs(h3k27ac_paths, regionlist, H3K27acZ, cREs, paths);
+    _write_cREs(ctcf_paths, regionlist, CTCFZ, cREs, paths);
 
   }
 
-  void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false) {
+  void run_cistrome_rDHS(const std::string& assembly, bool force_recompute = false) {
     Paths path(ZiARG_rootPath, assembly);
 
     // load list of files
