@@ -187,7 +187,7 @@ void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false
     ZScore z(cistrome_list[i], false);
     z.qfilter(0.001);
     z.write(trim_ext(basename(cistrome_list[i])),
-	    cistrome_comp[i]);
+            cistrome_comp[i]);
     std::cout << cistrome_list[i] << "\t" << z.zscores_.size() << "\n";
   }
 
@@ -204,8 +204,11 @@ void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false
 /*
  *  test entry point
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
+  zi::parse_arguments(argc, argv, true);  // modifies argc and argv
+
+  // remaining arguments
+  std::vector<std::string> args(argv, argv + argc);
 
   std::cout << "*** hg19 ***\n";
   SCREEN::run_rDHS("hg19");
