@@ -1,22 +1,37 @@
+#pragma once
+
+#include <boost/filesystem.hpp>
+
 namespace SCREEN {
 
   namespace bfs = boost::filesystem;
 
   class Paths {
   private:
-    bfs::path root_;
+    const bfs::path root_;
 
   public:
-    Paths(const bfs::path&);
-    const bfs::path root() const;
-    const bfs::path rDHS_list() const;
-    const bfs::path DHS_ZScore_root(const std::string& = "ENCODE") const;
-    const bfs::path DHS_ZScore(const std::string&, const std::string& = "ENCODE") const;
-    const bfs::path hotspot_list() const;
-    const bfs::path CTS_root() const;
-    const bfs::path CTS(const std::string&) const;
-    const bfs::path CTA() const;
-    const bfs::path saturation() const;
+    Paths(const bfs::path& root, const std::string& assembly)
+      : root_(root / assembly)
+    {}
+
+    Paths(const std::string &root, const std::string &assembly)
+      : root_(bfs::path(root) / assembly)
+    {}
+    
+    bfs::path root() const;
+    bfs::path rDHS_list() const;
+    bfs::path DHS_ZScore_root(const std::string& = "ENCODE") const;
+    bfs::path DHS_ZScore(const std::string&, const std::string& = "ENCODE") const;
+    bfs::path hotspot_list() const;
+    bfs::path CTS_root() const;
+    bfs::path CTS(const std::string&) const;
+    bfs::path CTA() const;
+    bfs::path saturation() const;
+
+    bfs::path cistromeList() const;
+    bfs::path EncodeData(const std::string& expID,
+			 const std::string& fileID, const std::string& ext) const; 
   };
 
 } // SCREEN
