@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include "../utils.hpp"
+#include "utils.hpp"
 #include "region.hpp"
 
 namespace SCREEN {
@@ -32,43 +32,31 @@ namespace SCREEN {
     return regions_;
   }
   
+  const std::vector<std::string> &RegionSet::sorted_keys() const {
+    return sorted_keys_;
+  }
+
+  void RegionSet::_update_keys() {
+    sorted_keys_.clear();
+    for (auto &k : regions_) { sorted_keys_.push_back(k.first); }
+    std::sort(sorted_keys_.begin(), sorted_keys_.end());
+  }
+
   void RegionSet::appendRegionSet(const RegionSet &r) {
     for (auto k : r.regions_) {
       if (regions_.find(k.first) == regions_.end()) { regions_[k.first] = std::vector<struct region>(); }
       regions_[k.first].insert(regions_[k.first].end(), k.second.begin(), k.second.end());
     }
+    _update_keys();
   }
 
   void RegionSet::write(const boost::filesystem::path &path) {
     std::ofstream o(path.string());
-    for (auto k : regions_) {
-      for (auto n : k.second) {
-	o << k.first << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
+    for (auto &k : sorted_keys_) {
+      for (auto n : regions_[k]) {
+	o << k << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
       }
     }
-  }
-
-  void RegionSet::write_binary(const std::string &chr, const boost::filesystem::path &binary_path) {
-    size_t s = regions_[chr].size();
-    FILE *f = fopen(binary_path.string().c_str(), "w");
-    if (fwrite(&s, sizeof(size_t), 1, f) != 1
-	|| fwrite(&regions_[chr][0], sizeof(struct region), s, f) != s) {
-      // TODO: exception
-    }
-    fclose(f);
-  }
-
-  void RegionSet::read_binary(const std::string &chr, const boost::filesystem::path &binary_path) {
-    size_t s;
-    FILE *f = fopen(binary_path.string().c_str(), "r");
-    if (fread(&s, sizeof(size_t), 1, f) != 1) {
-      // TODO: exception
-    }
-    regions_[chr] = std::vector<struct region>(s);
-    if (fread(&regions_[chr][0], sizeof(struct region), s, f) != s) {
-      // TODO: exception
-    }
-    fclose(f);
   }
 
   size_t RegionSet::total() {
@@ -123,6 +111,7 @@ namespace SCREEN {
 	  std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scoreidx])
       });
     }
+    _update_keys();
   }
 
   /**

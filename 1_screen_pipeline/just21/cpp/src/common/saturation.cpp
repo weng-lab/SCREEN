@@ -6,7 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "common/region.hpp"
+#include "region.hpp"
 #include "zscore.hpp"
 #include "saturation.hpp"
 #include "rDHS.hpp"
