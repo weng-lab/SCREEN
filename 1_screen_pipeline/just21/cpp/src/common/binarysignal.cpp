@@ -26,7 +26,8 @@ namespace SCREEN {
       for (auto i = 0; i < regions[chr].size(); ++i) {
 	std::vector<double> values = b.GetRangeAsVector(chr, regions[chr][i].start, regions[chr][i].end);
 	const a::vec v(values.data(), values.size(), false, true);
-	values_[chr][i] = {regions[chr][i].start, regions[chr][i].end, a::mean(v)};
+	values_[chr][i] = {regions[chr][i].start, regions[chr][i].end,
+			   static_cast<float>(a::mean(v))};
       }
     }
     sorted_keys_ = std::vector<std::string>(regions.sorted_keys());
