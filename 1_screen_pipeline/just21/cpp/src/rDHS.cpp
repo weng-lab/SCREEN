@@ -14,7 +14,16 @@
 #include "rDHS.hpp"
 
 namespace SCREEN {
-  
+
+  rDHS::rDHS(const std::vector<bfs::path>& zfile_list) {
+    std::cout << "loading regions from " << zfile_list.size() << " files...\n";
+    RegionSet r;
+    for (const auto& fnp : zfile_list) {
+      r.appendZ(fnp);
+    }
+    _process(r);
+  }
+
   void rDHS::_process(RegionSet& r) {
     regions = r.rDHS_Cluster();
     regions.sort();
@@ -51,13 +60,4 @@ namespace SCREEN {
     return ret;
   }
   
-  rDHS::rDHS(const std::vector<std::string>& zfile_list) {
-    std::cout << "loading regions from " << zfile_list.size() << " files...\n";
-    RegionSet r;
-    for (const std::string& fnp : zfile_list) {
-      r.appendZ(fnp);
-    }
-    _process(r);
-  }
-  
-}
+} // namespace SCREEN
