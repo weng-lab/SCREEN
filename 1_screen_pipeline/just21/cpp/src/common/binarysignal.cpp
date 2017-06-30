@@ -10,27 +10,29 @@
 #include "region.hpp"
 #include "binarysignal.hpp"
 
-namespace a = arma;
-
 namespace SCREEN {
+
+  namespace a = arma;
 
   /**
       load signal from a signal file for the region list and store in a local unordered_map by chromosome
       @param regions: RegionSet containing the reigons for which to obtain signal
       @param signal: path to the signal file
    */
-  BinarySignal::BinarySignal(RegionSet &regions, const boost::filesystem::path &signal) {
-    zentlib::BigWig b(signal);
-    for (auto chr : regions.sorted_keys()) {
-      values_[chr] = std::vector<Region>(regions[chr].size());
-      for (auto i = 0; i < regions[chr].size(); ++i) {
-	std::vector<double> values = b.GetRangeAsVector(chr, regions[chr][i].start, regions[chr][i].end);
+  BinarySignal::BinarySignal(const RegionSet& regions, const bfs::path& signalFnp) {
+    zentlib::BigWig b(signalFnp);
+    for (const auto& kv : regions.regions()){
+      const auto& chr = kv.first;
+      const auto& region = kv.second;
+      values_[chr] = std::vector<Region>(region.size());
+      
+      for (auto i = 0; i < region.size(); ++i) {
+	std::vector<double> values = b.GetRangeAsVector(chr, region[i].start, region[i].end);
 	const a::vec v(values.data(), values.size(), false, true);
-	values_[chr][i] = {regions[chr][i].start, regions[chr][i].end,
+	values_[chr][i] = {region[i].start, region[i].end,
 			   static_cast<float>(a::mean(v))};
       }
     }
-    sorted_keys_ = std::vector<std::string>(regions.sorted_keys());
   }
 
   /**
@@ -38,15 +40,12 @@ namespace SCREEN {
       @param signaldir: path to a directory previously passed as a parameter to BinarySignal::write
       @notes: directory should contain files named chr*.region.bin
    */
-  BinarySignal::BinarySignal(const boost::filesystem::path &signaldir) {
-    std::vector<boost::filesystem::path> signalfiles(list_files(signaldir));
-    sorted_keys_.clear();
-    for (const auto &file : signalfiles) {
-      const std::vector<std::string> p = split(file.filename().string(), '.');
-      sorted_keys_.push_back(p[0]);
-      values_[p[0]] = bib::files::readPODvector<Region>(file);
+  BinarySignal::BinarySignal(const bfs::path &signaldir) {
+    std::vector<bfs::path> signalfiles(list_files(signaldir));
+    for (const auto& fnp : signalfiles) {
+      const std::vector<std::string> p = split(fnp.filename().string(), '.');
+      values_[p[0]] = bib::files::readPODvector<Region>(fnp);
     }
-    std::sort(sorted_keys_.begin(), sorted_keys_.end());
   }
 
   /**
@@ -54,9 +53,11 @@ namespace SCREEN {
       @param outpath: path to the directory to which to write
       @notes: output will be a list of files named chr*.region.bin
    */
-  void BinarySignal::write(const boost::filesystem::path &outpath) {
-    for (auto chr : sorted_keys_) {
-      bib::files::writePODvector<Region>(outpath / (chr + ".region.bin"), values_[chr]);
+  void BinarySignal::write(const bfs::path &outFnp) {
+    for (const auto& kv : values_){
+      const auto& chr = kv.first;
+      const auto& values = kv.second;
+      bib::files::writePODvector<Region>(outFnp / (chr + ".region.bin"), values);
     }
   }
 

@@ -20,8 +20,12 @@ namespace SCREEN {
     return  s;
   }
 
-  const std::vector<Region>& RegionSet::operator [](std::string& chr) {
+  const std::vector<Region>& RegionSet::operator [](const std::string& chr) {
     return regions_[chr];
+  }
+
+  const std::vector<Region>& RegionSet::operator [](const std::string& chr) const {
+    return regions_.at(chr);
   }
 
   const ChrToRegions& RegionSet::regions() const {
