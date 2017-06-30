@@ -13,6 +13,7 @@ namespace SCREEN {
   private:
     void _read(const std::string &);
     void computeZScores(const a::vec&);
+    void computeZScores(const a::vec&, const a::vec&);
     void _processbw(const std::string&, const bool);
     
   public:

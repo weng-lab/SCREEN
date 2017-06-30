@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 
 #include "utils.hpp"
-#include "common/region.hpp"
+#include "region.hpp"
 #include "zscore.hpp"
 #include "rDHS.hpp"
 
@@ -24,8 +24,8 @@ namespace SCREEN {
     size_t acc = 0;
     std::ofstream o(path);
     for (auto k : regions.regions()) {
-      for (region : k.second) {
-	o << k.first << "\t" << region.start << "\t" << region.end << "\t" << accession(acc++, 'D') << "\n";
+      for (struct region r : k.second) {
+	o << k.first << "\t" << r.start << "\t" << r.end << "\t" << accession(acc++, 'D') << "\n";
       }
     }
   }

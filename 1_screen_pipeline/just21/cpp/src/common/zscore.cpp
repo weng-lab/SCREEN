@@ -11,7 +11,7 @@
 #include "zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
 
-#include "common/region.hpp"
+#include "region.hpp"
 #include "utils.hpp"
 #include "zscore.hpp"
 
@@ -23,7 +23,7 @@ namespace SCREEN {
     if (x == 0.0) { 
       return -10.0;
     }
-    return std::log10(x);
+    return std::log10(x + 0.01);
   }
 
   void ZScore::read(const bfs::path& path) {
@@ -61,6 +61,17 @@ namespace SCREEN {
     }
     const double average = a::mean(in);
     const double stdev = a::stddev(in);
+    zscores_ = (in - average) / stdev;
+  }
+
+  /*
+   *  apparently we do not take signals of 0 into account for the average/stdev...
+   *  intended to be called when uselog is true
+   */
+  void ZScore::computeZScores(const a::vec &in, const a::vec &toavg) {
+    if (!in.size() || !toavg.size()) { return; }
+    const double average = a::mean(toavg);
+    const double stdev = a::stddev(toavg);
     zscores_ = (in - average) / stdev;
   }
 
@@ -142,15 +153,25 @@ namespace SCREEN {
 
   void ZScore::_processbw(const std::string &bigWigPath, const bool uselog) {
     zentlib::BigWig b(bigWigPath);
-    std::vector<double> zl;
+    std::vector<double> zl, zm;
     for (const std::vector<std::string>& line : lines_) {
       std::vector<double> values = b.GetRangeAsVector(line[0],
 						      std::stoi(line[1]),
 						      std::stoi(line[2]));
       const a::vec v(values.data(), values.size(), false, true);
-      zl.push_back(uselog ? log10orNeg10(a::mean(v)) : a::mean(v));
+      double m = a::mean(v);
+      if (!uselog) {
+	zl.push_back(m);
+      } else {
+	zl.push_back(std::log10(m + 0.01));
+	if (m > 0.0) { zm.push_back(std::log10(m)); }
+      }
     }
-    computeZScores(zl);
+    if (!uselog) {
+      computeZScores(zl);
+    } else {
+      computeZScores(zl, zm);
+    }
   }
   
 } // SCREEN

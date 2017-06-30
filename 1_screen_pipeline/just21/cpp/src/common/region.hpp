@@ -15,6 +15,8 @@ namespace SCREEN {
   private:
     std::unordered_map<std::string, std::vector<struct region>> regions_;
     void _append(const std::string&, int, float);
+    std::vector<std::string> sorted_keys_;
+    void _update_keys();
 
   public:
     RegionSet();
@@ -28,12 +30,11 @@ namespace SCREEN {
 
     const std::vector<struct region> &operator [](std::string &);
     const std::unordered_map<std::string, std::vector<struct region>> &regions() const;
-    
+    const std::vector<std::string> &sorted_keys() const;
+
     size_t total();
     void sort();
     RegionSet rDHS_Cluster();
-    void write_binary(const std::string&, const boost::filesystem::path&);
-    void read_binary(const std::string&, const boost::filesystem::path&);
     void write(const boost::filesystem::path&);
 
   };
