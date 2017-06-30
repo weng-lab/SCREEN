@@ -1,3 +1,7 @@
+#pragma once
+
+#include <boost/filesystem.hpp>
+
 namespace SCREEN {
 
   namespace bfs = boost::filesystem;
@@ -7,8 +11,8 @@ namespace SCREEN {
     const bfs::path root_;
 
   public:
-    Paths(const bfs::path& root)
-      : root_(root)
+    Paths(const bfs::path& root, const std::string& assembly)
+      : root_(root / assembly)
     {}
     
     bfs::path root() const;

@@ -1,3 +1,8 @@
+#include <zi/zargs/zargs.hpp>
+//ZiARG_bool(boolExample, false, "bool example");
+ZiARG_int32(j, 1, "cores");
+ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
+
 #include <vector>
 #include <iostream>
 #include <string>
@@ -71,9 +76,9 @@ DataPaths getZScores(const Paths &paths, bool force_recompute = false) {
   return {ENCODE_DNase_bw, ENCODE_DNase_np};
 }
 
-void run_saturation(const std::string &assembly) {
+void run_saturation(const std::string& assembly) {
   // compute DHS Z-scores per experiment
-  Paths path("/data/projects/cREs/" + assembly);
+  Paths path(ZiARG_rootPath, assembly);
   const DataPaths d = getZScores(path);
   const auto& z = d.ENCODE_DNase_np;
   
@@ -101,9 +106,9 @@ void run_saturation(const std::string &assembly) {
 /*
  *  compute rDHSs for an assembly; return the number of rDHSs
  */
-void run_rDHS(const std::string &assembly) {
+void run_rDHS(const std::string& assembly) {
   // compute DHS Z-scores per experiment
-  Paths path("/data/projects/cREs/" + assembly);
+  Paths path(ZiARG_rootPath, assembly);
   const DataPaths d = getZScores(path, false);
   const auto& z = d.ENCODE_DNase_np;
   const auto N = d.ENCODE_DNase_bw.size();
@@ -155,8 +160,8 @@ void run_rDHS(const std::string &assembly) {
 }
 
 void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false) {
-  Paths path("/data/projects/cREs/" + assembly);
-  
+  Paths path(ZiARG_rootPath, assembly);
+
   // load list of files
   std::vector<bfs::path> cistrome_list;
   std::vector<bfs::path> cistrome_comp;
