@@ -13,6 +13,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "cpp/files.hpp"
 #include "utils.hpp"
 
 namespace SCREEN {
@@ -25,15 +26,14 @@ namespace SCREEN {
     return os.str();
   }
   
-  std::vector<bfs::path> list_files(const bfs::path &dir) {
-    bfs::directory_iterator end_itr;
-    std::vector<bfs::path> retval;
-    for(bfs::directory_iterator itr(dir); itr != end_itr; ++itr) {
-      if (!is_directory(itr->status())) {
-	retval.push_back(itr->path());
+  std::vector<bfs::path> list_files(const bfs::path& path) {
+    std::vector<bfs::path> ret;
+    for (const auto& de : bib::files::dir(path)){
+      if (!is_directory(de.status())) {
+	ret.push_back(de.path());
       }
     }
-    return retval;
+    return ret;
   }
 
   std::vector<std::string> chrom_list(const std::string &path) {
@@ -44,10 +44,13 @@ namespace SCREEN {
     std::array<char, 128> buffer;
     std::string result;
     std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
+    if (!pipe) {
+      throw std::runtime_error("popen() failed!");
+    }
     while (!feof(pipe.get())) {
-      if (fgets(buffer.data(), 128, pipe.get()) != NULL)
+      if (fgets(buffer.data(), 128, pipe.get()) != NULL){
 	result += buffer.data();
+      }
     }
     return result;
   }
@@ -59,14 +62,6 @@ namespace SCREEN {
     }
   }
 
-  void read(std::vector<std::string> &lines, const std::string &path) {
-    std::ifstream i(path);
-    std::string line;
-    while (std::getline(i, line)) {
-      lines.push_back(line);
-    }
-  }
-  
   bool path_is_gzip(const std::string &path) {
     return path.size() >= 3 && 0 == path.compare(path.size() - 3, 3, ".gz");
   };
