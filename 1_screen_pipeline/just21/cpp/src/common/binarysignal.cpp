@@ -22,7 +22,7 @@ namespace SCREEN {
   BinarySignal::BinarySignal(RegionSet &regions, const boost::filesystem::path &signal) {
     zentlib::BigWig b(signal);
     for (auto chr : regions.sorted_keys()) {
-      values_[chr] = std::vector<struct region>(regions[chr].size());
+      values_[chr] = std::vector<Region>(regions[chr].size());
       for (auto i = 0; i < regions[chr].size(); ++i) {
 	std::vector<double> values = b.GetRangeAsVector(chr, regions[chr][i].start, regions[chr][i].end);
 	const a::vec v(values.data(), values.size(), false, true);
@@ -43,7 +43,7 @@ namespace SCREEN {
     for (const auto &file : signalfiles) {
       const std::vector<std::string> p = split(file.filename().string(), '.');
       sorted_keys_.push_back(p[0]);
-      values_[p[0]] = bib::files::readPODvector<struct region>(file);
+      values_[p[0]] = bib::files::readPODvector<Region>(file);
     }
     std::sort(sorted_keys_.begin(), sorted_keys_.end());
   }
@@ -55,7 +55,7 @@ namespace SCREEN {
    */
   void BinarySignal::write(const boost::filesystem::path &outpath) {
     for (auto chr : sorted_keys_) {
-      bib::files::writePODvector<struct region>(outpath / (chr + ".region.bin"), values_[chr]);
+      bib::files::writePODvector<Region>(outpath / (chr + ".region.bin"), values_[chr]);
     }
   }
 

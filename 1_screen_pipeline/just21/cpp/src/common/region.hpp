@@ -2,40 +2,43 @@
 
 namespace SCREEN {
 
-  struct region {
-    uint  start;
-    uint  end;
+  namespace bfs = boost::filesystem;
+  
+  struct Region {
+    uint32_t start;
+    uint32_t end;
     float score;
   };
+  std::ostream& operator<<(std::ostream& s, const Region&);
 
-  std::string regionToString(struct region);
+  using ChrToRegions = std::unordered_map<std::string, std::vector<Region>>;
 
   class RegionSet {
-
-  private:
-    std::unordered_map<std::string, std::vector<struct region>> regions_;
+    ChrToRegions regions_;
     void _append(const std::string&, int, float);
     std::vector<std::string> sorted_keys_;
     void _update_keys();
 
   public:
-    RegionSet();
-    RegionSet(std::unordered_map<std::string, std::vector<struct region>>);
+    RegionSet() {}
+    RegionSet(const ChrToRegions& regions)
+      : regions_(regions)
+    {}
 
     void appendRegionSet(const RegionSet&);
-    void appendNarrowPeak(const boost::filesystem::path&, float = 0.05);
+    void appendNarrowPeak(const bfs::path&, float = 0.05);
     void appendNarrowPeak(const std::string&, float = 0.05);
-    void appendZ(const boost::filesystem::path&);
+    void appendZ(const bfs::path&);
     void appendZ(const std::string&);
 
-    const std::vector<struct region> &operator [](std::string &);
-    const std::unordered_map<std::string, std::vector<struct region>> &regions() const;
+    const std::vector<Region>& operator [](std::string&);
+    const ChrToRegions& regions() const;
     const std::vector<std::string> &sorted_keys() const;
-
+    
     size_t total();
     void sort();
     RegionSet rDHS_Cluster();
-    void write(const boost::filesystem::path&);
+    void write(const bfs::path&);
 
   };
 

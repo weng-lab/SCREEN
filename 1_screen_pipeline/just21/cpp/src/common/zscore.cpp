@@ -10,24 +10,58 @@
 
 #include "zentLib/src/BigWigWrapper.hpp"
 #include "cpp/files.hpp"
+#include "cpp/string_utils.hpp"
 
 #include "region.hpp"
 #include "utils.hpp"
 #include "zscore.hpp"
 
 namespace SCREEN {
-
   double log10orNeg10(double x) {
     // TODO: floating point tolerance?
     // http://realtimecollisiondetection.net/blog/?p=89
-    if (x == 0.0) { 
+    if (0.0 == x){
       return -10.0;
     }
     return std::log10(x + 0.01);
   }
 
+  /*
+   *  reads a narrowPeak file and computes Z-scores for the peaks it contains
+   *  Z-scores are computed from the values in column 7
+   */
+  ZScore::ZScore(const bfs::path& narrowPeakPath, const bool uselog) {
+    _read(narrowPeakPath);
+    a::vec zl(lines_.size());
+    for(size_t i = 0; i < lines_.size(); ++i){
+      const auto& toks = lines_[i];
+      zl[i] = uselog ? log10orNeg10(std::stof(toks[6])) : std::stof(toks[6]);
+    }
+    computeZScores(zl);
+  }
+
+  /*
+   *  computes Z-scores for a set of regions against a given signal file
+   */
+  ZScore::ZScore(const std::vector<std::vector<std::string>> &regions,
+		 const bfs::path& bigWigFnp,
+		 const bool uselog) {
+    lines_ = regions;
+    _processbw(bigWigFnp, uselog);
+  }
+  
+  /*
+   *  reads a BED file and computes Z-scores for the peaks it contains
+   *  Z-scores are computed from the average signal across each region as contained in the given bigWig
+   */
+  ZScore::ZScore(const bfs::path& bedPath, const bfs::path& bigWigPath,
+		 const bool uselog) {
+    _read(bedPath);
+    _processbw(bigWigPath, uselog);
+  }
+
   void ZScore::read(const bfs::path& path) {
-    _read(path.string());
+    _read(path);
     zscores_ = a::vec(lines_.size());
     for (size_t i = 0; i < lines_.size(); ++i){
       zscores_[i] = std::stof(lines_[i][4]);
@@ -78,24 +112,14 @@ namespace SCREEN {
   /*
    *  reads a bed file into this object's "lines" member; may be gzipped or not
    */
-  void ZScore::_read(const std::string& in) {
+  void ZScore::_read(const bfs::path& bedFnp) {
     lines_.clear();
-    
-    if (SCREEN::path_is_gzip(in)) {
-      GZSTREAM::igzstream _in(in.c_str());
-      for (std::string row; std::getline(_in, row, '\n');) {
-	std::vector<std::string> v(split(row, '\t'));
-	if (v.size() >= 9) {
-	  lines_.push_back(v);
-	}
-      }
-    } else {
-      std::ifstream _in(in);
-      for (std::string row; std::getline(_in, row, '\n');) {
-	std::vector<std::string> v(split(row, '\t'));
-	if (v.size() >= 9) {
-	  lines_.push_back(v);
-	}
+
+    const auto bed = bib::files::readStrings(bedFnp);
+    for(const auto& row : bed){
+      const auto toks = bib::string::split(row, '\t');
+      if (toks.size() >= 9) {
+	lines_.push_back(toks);
       }
     }
   }
@@ -117,42 +141,9 @@ namespace SCREEN {
     lines_ = nl;
     zscores_ = a::vec(nz);
   }
-  
-  /*
-   *  reads a narrowPeak file and computes Z-scores for the peaks it contains
-   *  Z-scores are computed from the values in column 7
-   */
-  ZScore::ZScore(const std::string& narrowPeakPath, const bool uselog) {
-    _read(narrowPeakPath);
-    a::vec zl(lines_.size());
-    for(size_t i = 0; i < lines_.size(); ++i){
-      const auto& toks = lines_[i];
-      zl[i] = uselog ? log10orNeg10(std::stof(toks[6])) : std::stof(toks[6]);
-    }
-    computeZScores(zl);
-  }
 
-  /*
-   *  computes Z-scores for a set of regions against a given signal file
-   */
-  ZScore::ZScore(const std::vector<std::vector<std::string>> &regions, const std::string &bigWigPath,
-		 const bool uselog) {
-    lines_ = regions;
-    _processbw(bigWigPath, uselog);
-  }
-  
-  /*
-   *  reads a BED file and computes Z-scores for the peaks it contains
-   *  Z-scores are computed from the average signal across each region as contained in the given bigWig
-   */
-  ZScore::ZScore(const std::string& bedPath, const std::string& bigWigPath,
-		 const bool uselog) {
-    _read(bedPath);
-    _processbw(bigWigPath, uselog);
-  }
-
-  void ZScore::_processbw(const std::string &bigWigPath, const bool uselog) {
-    zentlib::BigWig b(bigWigPath);
+  void ZScore::_processbw(const bfs::path& bigWigFnp, const bool uselog) {
+    zentlib::BigWig b(bigWigFnp);
     std::vector<double> zl, zm;
     for (const std::vector<std::string>& line : lines_) {
       std::vector<double> values = b.GetRangeAsVector(line[0],

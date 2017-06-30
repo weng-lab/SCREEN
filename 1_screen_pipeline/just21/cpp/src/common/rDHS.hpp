@@ -13,7 +13,7 @@ namespace SCREEN {
     RegionSet regions;
 
   public:
-    rDHS(const std::vector<std::string>&);
+    rDHS(const std::vector<bfs::path>&);
     size_t total();
     void write(const boost::filesystem::path&);
     void write(const std::string&);

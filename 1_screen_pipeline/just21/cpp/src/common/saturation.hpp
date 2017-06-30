@@ -1,3 +1,5 @@
+#pragma once
+
 namespace SCREEN {
 
   namespace bfs = boost::filesystem;
