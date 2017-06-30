@@ -4,12 +4,16 @@ from __future__ import print_function
 import os, sys, json, psycopg2, re, argparse, gzip
 import StringIO
 
+from determine_tissue import DetermineTissue
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from utils import AddPath, Utils, Timer, printt, printWroteNumLines
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
+from querydcc import QueryDCC
+from cache_memcache import MemCacheWrapper
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect, db_connect_single
@@ -42,8 +46,10 @@ class NineState:
         DROP TABLE IF EXISTS {tn};
         CREATE TABLE {tn}
         (id serial PRIMARY KEY,
+        assembly text,
         cellTypeName text,
         cellTypeDesc text,
+        tissue text,
         dnase text,
         h3k4me3 text,
         h3k27ac text,
@@ -55,14 +61,24 @@ class NineState:
         with open(self.inFnp) as f:
             rows = [line.rstrip('\n').split('\t') for line in f]
         printt("rows", "{:,}".format(len(rows)))
-
+        
+        mc = MemCacheWrapper(Config.memcache)
+        qd = QueryDCC(auth = False, cache = mc)
+        
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
-            outF.write('\t'.join(r) + '\n')
+            fileIDs = filter(lambda x: x.startswith("EN"),
+                            [r[2], r[3], r[4], r[5]])
+            for fileID in fileIDs:
+                exp = qd.getExpFromFileID(fileIDs[0])
+                tissue = DetermineTissue.TranslateTissue(self.assembly, exp)
+                if tissue:
+                    break
+            outF.write('\t'.join(r + [self.assembly, tissue]) + '\n')
         outF.seek(0)
         cols = ["cellTypeName", "cellTypeDesc", "dnase", "h3k4me3",
-                "h3k27ac", "ctcf"]
+                "h3k27ac", "ctcf", "assembly", "tissue"]
         self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
 

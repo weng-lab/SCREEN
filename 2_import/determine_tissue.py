@@ -27,7 +27,7 @@ class DetermineTissue:
 
     @staticmethod
     def TranslateTissue(assembly, exp):
-        t = exp.jsondata["organ_slims"]
+        t = exp.jsondata.get("organ_slims", "")
         if t:
             t = t[0]
         else:
@@ -39,7 +39,14 @@ class DetermineTissue:
         lookup = DetermineTissue.lookupBTN[assembly]
         if ct in lookup:
             return lookup[ct]
-        if ct.endswith("erythroid progenitor cells"):
+        ct = exp.jsondata.get("biosample_summary", "")
+        if ct in lookup:
+            return lookup[ct]
+        if ct and ct.endswith("erythroid progenitor cells"):
             return "blood"
-        eprint(assembly, "missing tissiue assignemnt for", '"' + ct + '"')
+        if "ENCSR626RVD" == exp.encodeID:
+            return "brain"
+        if "ENCSR820WLP" == exp.encodeID:
+            return "stem cells"
+        eprint(assembly, "missing tissiue assignemnt for", '"' + exp.encodeID + '"')
         return ""

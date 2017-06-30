@@ -29,6 +29,10 @@ const TableColumns = () => {
     
     return [
 	{
+	    title: "Assembly", data: "assembly", className: klassCenter,
+	}, {
+	    title: "Tissue", data: "tissue", className: klassCenter,
+	}, {
 	    title: "Biosample", data: "celltypedesc", className: klassCenter,
 	}, {
             title: "5 group", data: "fiveGroup", className: klassCenter,
