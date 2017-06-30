@@ -14,6 +14,10 @@ namespace SCREEN {
     Paths(const bfs::path& root, const std::string& assembly)
       : root_(root / assembly)
     {}
+
+    Paths(const std::string &root, const std::string &assembly)
+      : root_(bfs::path(root) / assembly)
+    {}
     
     bfs::path root() const;
     bfs::path rDHS_list() const;
