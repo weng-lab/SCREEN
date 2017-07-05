@@ -6,6 +6,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "utils.hpp"
+#include "lambda.hpp"
 #include "region.hpp"
 #include "zscore.hpp"
 #include "saturation.hpp"
@@ -32,7 +34,7 @@ namespace SCREEN {
 	for (auto j = 0; j < i; ++j) {
 	  r.appendRegionSet(regionsets[idx[j]]);
 	}
-	results[n] = r.rDHS_Cluster().total();
+	// results[n] = r.rDHS_Cluster().total();
       }
 
       n_rDHSs.push_back(results);

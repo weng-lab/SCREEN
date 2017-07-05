@@ -5,19 +5,35 @@
 #include <iostream>
 #include <cstdio>
 #include <unordered_map>
+#include <functional>
 
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "utils.hpp"
-#include "region.hpp"
+#include "cpp/files.hpp"
 #include "cpp/string_utils.hpp"
+
+#include "utils.hpp"
+#include "lambda.hpp"
+#include "region.hpp"
 
 namespace SCREEN {
 
   std::ostream& operator<<(std::ostream& s, const Region& r){
     s << r.start << '\t' << r.end;
     return  s;
+  }
+
+  bool operator <(const Region &a, const Region &b) {
+    return std::tie(a.start, a.end) < std::tie(b.start, b.end);
+  }
+
+  bool operator >(const Region &a, const Region &b) {
+    return std::tie(a.start, a.end) > std::tie(b.start, b.end);
+  }
+
+  bool operator ==(const Region &a, const Region &b) {
+    return a.start == b.start && a.end == b.end;
   }
 
   const std::vector<Region>& RegionSet::operator [](const std::string& chr) {
@@ -34,6 +50,46 @@ namespace SCREEN {
   
   const std::vector<std::string> &RegionSet::sorted_keys() const {
     return sorted_keys_;
+  }
+
+  void RegionSet::unique() {
+    sort();
+    for (auto &k : regions_) {
+      auto it = std::unique(k.second.begin(), k.second.end());
+      k.second.resize(std::distance(k.second.begin(), it));
+    }
+  }
+  
+  void RegionSet::expandPeaks(size_t halfwidth) {
+    for (auto &k : regions_) {
+      for (auto i = 0; i < k.second.size(); ++i) {
+	uint32_t start = k.second[i].start - halfwidth;
+	uint32_t end = k.second[i].end + halfwidth;
+	k.second[i] = { start, end };
+      }
+    }
+  }
+  
+  void RegionSet::expandPeaks(size_t halfwidth, ChrLengths &chromInfo) {
+    for (auto &k : regions_) {
+      for (auto i = 0; i < k.second.size(); ++i) {
+	uint32_t start = k.second[i].start - halfwidth;
+	uint32_t end = k.second[i].end + halfwidth;
+	if (start < 0) { start = 0; }
+	if (chromInfo.find(k.first) != chromInfo.end()
+	    && end > chromInfo[k.first]) {
+	  end = chromInfo[k.first];
+	}
+	k.second[i] = { start, end };
+      }
+    }
+  }
+
+  size_t RegionSet::find(const std::string &chr, const Region &r) {
+    auto end = regions_[chr].end(), begin = regions_[chr].begin();
+    auto i = std::lower_bound(begin, end, r);
+    if (i != end && !(r < *i)) { return i - begin; }
+    return regions_.size();
   }
 
   void RegionSet::_update_keys() {
@@ -55,7 +111,7 @@ namespace SCREEN {
     std::ofstream o(path.string());
     for (const auto &k : sorted_keys_) {
       for (const auto &n : regions_[k]) {
-	o << k << "\t" << n.start << "\t" << n.end << "\t" << n.score << "\n";
+	o << k << "\t" << n.start << "\t" << n.end << "\n";
       }
     }
   }
@@ -69,57 +125,31 @@ namespace SCREEN {
   }
 
   /**
-      appends a list of regions from a narrowPeak file, filtered by Q-value
+      appends a list of regions from a file; calls filter() to filter lines
       @param path: path to the file
-      @param qfilter: Q-value (-logQ must be in column 9) at which to filter rows; default 0.05
+      @param filter: lambda operating on each line, split on '\t'; true return value retains the line
    */
-  void RegionSet::appendNarrowPeak(const bfs::path& path, float qfilter) {
-    appendNarrowPeak(path.string(), qfilter);
-  }
-
-  void RegionSet::appendNarrowPeak(const std::string& path, float qfilter) {
-    _append(path, 6, qfilter);
+  void RegionSet::appendFile(const bfs::path& path, RegionFilter &filter) {
+    const auto lines = bib::files::readStrings(path);
+    for (const auto& line : lines) {
+      std::vector<std::string> v = bib::string::split(line, '\t');
+      if (filter(v)) {
+	regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
+      }
+    }
+    _update_keys();
   }
 
   /**
-      appends a list of Z-scores from a file
-      @param path: path to the file; Z-scores must be in column 5
+     appends a list of regions from a file; applies no filter
+     @param path: path to the file
    */
-  void RegionSet::appendZ(const bfs::path& path) {
-    appendZ(path.string());
-  }
-
-  void RegionSet::appendZ(const std::string& path) {
-    _append(path, 4, 1.0);
-  }
-
-  /**
-      append a list of regions from a bed file
-
-      @param path: the path of the file to append
-      @param scoreidx: index of each region's score within the tab-separated lines
-      @param qfilter: if passed, Q-score threshold; Q-scores must be in column 9 of each line
-   */
-  void RegionSet::_append(const std::string& path, int scoreidx, float qfilter) {
-    const float nlog = -std::log(qfilter);
-    std::ifstream f(path);
+  void RegionSet::appendFile(const bfs::path &path) {
+    std::ifstream f(path.string());
     std::string line;
     while (std::getline(f, line)) {
-      std::vector<std::string> v = split(line, '\t');
-      if(qfilter < 1.0 && (v.size() < 9 || std::stof(v[8]) <= nlog)){
-	// no Q-score or does not meet threshold
-	continue;
-      }
-      const auto& chr = v[0];
-      if(chr.size() > 5 || (chr.size() == 5 && chr[3] > 50 || chr[3] < 49)){
-	// invalid chromosome
-	continue;
-      }
-      regions_[chr].push_back({
-	  bib::string::stouint32(v[1]),
-	  bib::string::stouint32(v[2]),
-	  std::stof(v[scoreidx])
-      });
+      std::vector<std::string> v = bib::string::split(line, '\t');
+      regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
     }
     _update_keys();
   }
@@ -129,73 +159,9 @@ namespace SCREEN {
    */
   void RegionSet::sort() {
     for (auto& k : regions_) {
-      std::sort(k.second.begin(), k.second.end(),
-		[](const Region& a, const Region& b){
-		  return std::tie(a.start, a.end) < std::tie(b.start, b.end);
-		});
+      std::sort(k.second.begin(), k.second.end());
     }
-  }
-
-  /**
-      clusters DHSs to make rDHS "master peaks"
-      @param input: input vector of regions
-      @param ret: vector to receive master peaks
-   */
-  void rDHS_cluster(const std::vector<Region>& input, std::vector<Region>& ret) {
-    if (1 == input.size()) {
-      ret.push_back(input[0]);
-    }
-    if(input.size() <= 1) {
-      return;
-    }
-    Region pmp = input[0]; // potential master peak
-    std::vector<Region> current, next;
-    for (auto i = 0; i < input.size(); ++i) {
-      const Region& r = input[i];
-      if (r.start < pmp.end) {
-	if (r.score > pmp.score) {
-	  pmp = r;
-	}
-	current.push_back(r);
-      }
-      if (r.start >= pmp.end || i == input.size() - 1) {
-	ret.push_back(pmp);
-	for (const Region& c : current) {
-	  if (c.end <= pmp.start) {
-	    next.push_back(c);
-	  }
-	}
-	rDHS_cluster(next, ret);
-	next.clear();
-	current.clear();
-	if (r.start >= pmp.end && i == input.size() - 1) {
-	  ret.push_back(r);
-	} else {
-	  current.push_back(r);
-	  pmp = r;
-	}
-      }
-    }
-  }
-
-  /**
-     clusters the regions contained in the object to produce "master peaks"
-     @returns: new RegionSet instance containing the master peaks, sorted
-  */
-  RegionSet RegionSet::rDHS_Cluster() {
-    sort();
-    
-    ChrToRegions ret;
-    int32_t total = 0;
-    int32_t ktotal = 0;
-    for (const auto& k : regions_) {
-      rDHS_cluster(k.second, ret[k.first]);
-      total += ret[k.first].size();
-      ktotal += k.second.size();
-    }
-    std::cout << "total: " << ktotal << " in, " << total << " out\n";
-    
-    return RegionSet(ret);
+    for (int i = 0; i < 10; ++i) std::cout << regions_["chr1"][i].start << "\t" << regions_["chr1"][i].end << "\n";
   }
 
 } // SCREEN
