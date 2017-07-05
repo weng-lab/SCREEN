@@ -42,7 +42,7 @@ namespace SCREEN {
 			     const bfs::path& outputdir) : outputdir_(outputdir), regions_(regions) {
     bfs::create_directory(outputdir_);
     bfs::create_directory(outputdir_ / "regions");
-    for (const auto &kv : regions_.regions()) {
+    for (const auto &kv : regions_.regions_.regions_) {
       bib::files::writePODvector(outputdir_ / "regions" / (kv.first + ".bin"), kv.second);
     }
   }
@@ -50,7 +50,7 @@ namespace SCREEN {
   void BinarySignal::convertSignal(const bfs::path &signalfile) {
     zentlib::BigWig b(signalfile);
     bfs::create_directory(outputdir_ / bfs::basename(signalfile));
-    for (const auto& kv : regions_.regions()){
+    for (const auto& kv : regions_.regions_.regions_){
       const auto& chr = kv.first;
       const auto& region = kv.second;
       std::vector<float> values(region.size());

@@ -9,6 +9,9 @@
 #include <boost/functional/hash.hpp>
 #include <boost/filesystem.hpp>
 
+#include "cpp/files.hpp"
+#include "cpp/string_utils.hpp"
+
 #include "lambda.hpp"
 #include "utils.hpp"
 #include "region.hpp"
@@ -17,6 +20,71 @@
 
 namespace SCREEN {
 
+  std::ostream& operator<<(std::ostream &s, const RegionWithScore &r){
+    s << r.start << '\t' << r.end << '\t' << r.score;
+    return  s;
+  }
+
+  bool operator <(const RegionWithScore &a, const RegionWithScore &b) {
+    return std::tie(a.start, a.end) < std::tie(b.start, b.end);
+  }
+
+  bool operator >(const RegionWithScore &a, const RegionWithScore &b) {
+    return std::tie(a.start, a.end) > std::tie(b.start, b.end);
+  }
+
+  bool operator ==(const RegionWithScore &a, const RegionWithScore &b) {
+    return a.start == b.start && a.end == b.end;
+  }
+
+  /**
+     appends a list of regions from a file; calls filter() to filter lines
+     @param path: path to the file
+     @param filter: lambda operating on each line, split on '\t'; true return value retains the line
+     @param scorefield: field containing the score for the region
+  */
+  void ScoredRegionSet::_append(const bfs::path& path, RegionFilter &filter, int scorefield) {
+    const auto lines = bib::files::readStrings(path);
+    for (const auto& line : lines) {
+      std::vector<std::string> v = bib::string::split(line, '\t');
+      if (filter(v)) {
+	regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scorefield]) });
+      }
+    }
+    regions_.update_keys();
+  }
+
+  /**
+     appends a list of regions from a file; applies no filter
+     @param path: path to the file
+     @param scorefield: field containing the score for the region
+  */
+  void ScoredRegionSet::_append(const bfs::path &path, int scorefield) {
+    std::ifstream f(path.string());
+    std::string line;
+    while (std::getline(f, line)) {
+      std::vector<std::string> v = bib::string::split(line, '\t');
+      regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scorefield]) });
+    }
+    regions_.update_keys();
+  }
+
+  void ScoredRegionSet::appendZ(const bfs::path &path) {
+    _append(path, 4);
+  }
+
+  void ScoredRegionSet::appendZ(const bfs::path &path, RegionFilter &filter) {
+    _append(path, filter, 4);
+  }
+
+  void ScoredRegionSet::appendNarrowPeak(const bfs::path &path) {
+    _append(path, 6);
+  }
+
+  void ScoredRegionSet::appendNarrowPeak(const bfs::path &path, RegionFilter &filter) {
+    _append(path, filter, 6);
+  }
+
   rDHS::rDHS() {}
 
   /**
@@ -24,83 +92,84 @@ namespace SCREEN {
       @param input: input vector of regions
       @param ret: vector to receive master peaks
    */
-  /* void rDHS_cluster(const std::vector<Region>& input, std::vector<Region>& ret) {
-    if (1 == input.size()) {
-      ret.push_back(input[0]);
-    }
-    if(input.size() <= 1) {
-      return;
-    }
-    Region pmp = input[0]; // potential master peak
-    std::vector<Region> current, next;
+  void rDHS_cluster(std::vector<RegionWithScore> &input, std::vector<RegionWithScore> &ret) {
+
+    //base cases: append singleton if present; no need to cluster one or zero regions
+    if (1 == input.size()) { ret.push_back(input[0]); }
+    if (input.size() <= 1) { return; }
+
+    // set current candidate to first element
+    RegionWithScore candidate = input[0];
+    std::vector<RegionWithScore> current, next;
+
+    // iterate through all regions
     for (auto i = 0; i < input.size(); ++i) {
-      const Region& r = input[i];
-      if (r.start < pmp.end) {
-	if (r.score > pmp.score) {
-	  pmp = r;
-	}
-	current.push_back(r);
+      const RegionWithScore& r = input[i];
+
+      // if this element overlaps the current candidate
+      if (r.start < candidate.end) {
+	if (r.score > candidate.score) { candidate = r; } // replace candidate if this element is better
+	current.push_back(r); // append current element to working list regardless of score
       }
-      if (r.start >= pmp.end || i == input.size() - 1) {
-	ret.push_back(pmp);
-	for (const Region& c : current) {
-	  if (c.end <= pmp.start) {
-	    next.push_back(c);
-	  }
+
+      // if the current element is beyond the candidate or is the last in the list...
+      if (r.start >= candidate.end || i == input.size() - 1) {
+
+	// append the current candidate to the return list of rDHSs
+	ret.push_back(candidate);
+
+	// find any elements from the working list  which do not overlap the newly-appended rDHS 
+	for (const RegionWithScore& c : current) {
+	  if (c.end <= candidate.start) { next.push_back(c); }
 	}
+
+	// recurse over any elements from the previous set which did not overlap the new rDHS
 	rDHS_cluster(next, ret);
+
+	// reset lists and candidate
 	next.clear();
 	current.clear();
-	if (r.start >= pmp.end && i == input.size() - 1) {
-	  ret.push_back(r);
+	if (r.start >= candidate.end && i == input.size() - 1) {
+	  ret.push_back(r); // if this is the last element, append it before returning
 	} else {
 	  current.push_back(r);
-	  pmp = r;
+	  candidate = r;
 	}
       }
     }
+
   }
 
-  /**
-     clusters the regions contained in the object to produce "master peaks"
-     @returns: new RegionSet instance containing the master peaks, sorted
-  */
-  /*
-  RegionSet RegionSet::rDHS_Cluster() {
-    sort();
-    
-    ChrToRegions ret;
-    int32_t total = 0;
-    int32_t ktotal = 0;
-    for (const auto& k : regions_) {
-      rDHS_cluster(k.second, ret[k.first]);
-      total += ret[k.first].size();
-      ktotal += k.second.size();
-    }
-    std::cout << "total: " << ktotal << " in, " << total << " out\n";
-    
-    return RegionSet(ret);
-  } */
-
   rDHS::rDHS(const std::vector<bfs::path>& zfile_list) {
+
+    // load all Z-scores
     std::cout << "loading regions from " << zfile_list.size() << " files...\n";
-    RegionSet r;
+    ScoredRegionSet r;
     for (const auto& fnp : zfile_list) {
-      // r.appendZ(fnp);
+      r.appendZ(fnp);
     }
+
+    // create rDHSs
+    _process(r);
+
+  }
+
+  rDHS::rDHS(ScoredRegionSet &r) {
     _process(r);
   }
 
-  void rDHS::_process(RegionSet& r) {
-    // regions = r.rDHS_Cluster();
-    regions.sort();
+  void rDHS::_process(ScoredRegionSet &r) {
+    r.regions_.sort();
+    for (auto &k : r.regions_.regions_) {
+      rDHS_cluster(k.second, regions_.regions_[k.first]);
+    }
   }
 
   void rDHS::write(const std::string& path) {
     size_t acc = 0;
     std::ofstream o(path);
-    for (const auto& k : regions.regions()) {
-      for (const Region& r : k.second) {
+    for (const auto& k : regions_.regions_.regions_) {
+      for (const auto &r : k.second) {
 	o << k.first << "\t" << r.start << "\t" << r.end << "\t"
 	  << accession(acc++, 'D') << "\n";
       }
@@ -112,27 +181,15 @@ namespace SCREEN {
   }
 
   size_t rDHS::total() {
-    return regions.total();
+    return regions_.regions_.total();
   }
 
   void rDHS::expandPeaks(size_t halfwidth, ChrLengths &chromInfo) {
-    regions.expandPeaks(halfwidth, chromInfo);
+    regions_.regions_.expandPeaks(halfwidth, chromInfo);
   }
 
   void rDHS::expandPeaks(size_t halfwidth) {
-    regions.expandPeaks(halfwidth);
-  }
-
-  std::vector<std::vector<std::string>> rDHS::regionlist() {
-    std::vector<std::vector<std::string>> ret;
-    for (const auto& k : regions.regions()) {
-      for (const Region& r : k.second) {
-	ret.push_back({ k.first,
-	      std::to_string(r.start),
-	      std::to_string(r.end) });
-      }
-    }
-    return ret;
+    regions_.regions_.expandPeaks(halfwidth);
   }
   
 } // namespace SCREEN

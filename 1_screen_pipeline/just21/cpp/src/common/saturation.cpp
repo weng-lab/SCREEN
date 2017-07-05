@@ -10,8 +10,8 @@
 #include "lambda.hpp"
 #include "region.hpp"
 #include "zscore.hpp"
-#include "saturation.hpp"
 #include "rDHS.hpp"
+#include "saturation.hpp"
 
 namespace SCREEN {
 
@@ -21,7 +21,7 @@ namespace SCREEN {
     return retval;
   }
 
-  Saturation::Saturation(const std::vector<RegionSet> &regionsets, int n_repeat) {
+  Saturation::Saturation(const std::vector<ScoredRegionSet> &regionsets, int n_repeat) {
     for (auto i = 10; i < regionsets.size(); i += 10) {
       std::cout << "Saturation::Saturation: taking first " << i << " exps\n";
       std::vector<size_t> results(n_repeat);
@@ -30,13 +30,12 @@ namespace SCREEN {
       for (auto n = 0; n < n_repeat; ++n) {
 	std::vector<int> idx = xrange(regionsets.size());
 	std::random_shuffle(idx.begin(), idx.end());
-	RegionSet r;
+	ScoredRegionSet r;
 	for (auto j = 0; j < i; ++j) {
-	  r.appendRegionSet(regionsets[idx[j]]);
+	  r.regions_.appendGenericRegionSet(regionsets[idx[j]].regions_);
 	}
-	// results[n] = r.rDHS_Cluster().total();
+	results[n] = rDHS(r).regions_.regions_.total();
       }
-
       n_rDHSs.push_back(results);
 
     }

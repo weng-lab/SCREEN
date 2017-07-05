@@ -16,6 +16,7 @@
 #include "utils.hpp"
 #include "lambda.hpp"
 #include "region.hpp"
+#include "rDHS.hpp"
 
 namespace SCREEN {
 
@@ -36,31 +37,33 @@ namespace SCREEN {
     return a.start == b.start && a.end == b.end;
   }
 
-  const std::vector<Region>& RegionSet::operator [](const std::string& chr) {
+  template <typename T>
+  std::vector<T>& GenericRegionSet<T>::operator [](const std::string& chr) {
     return regions_[chr];
   }
-
-  const std::vector<Region>& RegionSet::operator [](const std::string& chr) const {
-    return regions_.at(chr);
-  }
-
-  const ChrToRegions& RegionSet::regions() const {
-    return regions_;
-  }
+  template std::vector<Region> &GenericRegionSet<Region>::operator [](const std::string &chr);
+  template std::vector<RegionWithScore> &GenericRegionSet<RegionWithScore>::operator [](const std::string &chr);
   
-  const std::vector<std::string> &RegionSet::sorted_keys() const {
+  template <typename T>
+  const std::vector<std::string> &GenericRegionSet<T>::sorted_keys() const {
     return sorted_keys_;
   }
+  template const std::vector<std::string> &GenericRegionSet<Region>::sorted_keys() const;
+  template const std::vector<std::string> &GenericRegionSet<RegionWithScore>::sorted_keys() const;
 
-  void RegionSet::unique() {
+  template <typename T>
+  void GenericRegionSet<T>::unique() {
     sort();
     for (auto &k : regions_) {
       auto it = std::unique(k.second.begin(), k.second.end());
       k.second.resize(std::distance(k.second.begin(), it));
     }
   }
+  template void GenericRegionSet<Region>::unique();
+  template void GenericRegionSet<RegionWithScore>::unique();
   
-  void RegionSet::expandPeaks(size_t halfwidth) {
+  template <typename T>
+  void GenericRegionSet<T>::expandPeaks(size_t halfwidth) {
     for (auto &k : regions_) {
       for (auto i = 0; i < k.second.size(); ++i) {
 	uint32_t start = k.second[i].start - halfwidth;
@@ -69,8 +72,11 @@ namespace SCREEN {
       }
     }
   }
+  template void GenericRegionSet<Region>::expandPeaks(size_t halfwidth);
+  template void GenericRegionSet<RegionWithScore>::expandPeaks(size_t halfwidth);
   
-  void RegionSet::expandPeaks(size_t halfwidth, ChrLengths &chromInfo) {
+  template <typename T>
+  void GenericRegionSet<T>::expandPeaks(size_t halfwidth, ChrLengths &chromInfo) {
     for (auto &k : regions_) {
       for (auto i = 0; i < k.second.size(); ++i) {
 	uint32_t start = k.second[i].start - halfwidth;
@@ -84,30 +90,42 @@ namespace SCREEN {
       }
     }
   }
+  template void GenericRegionSet<Region>::expandPeaks(size_t halfwidth, ChrLengths &chromInfo);
+  template void GenericRegionSet<RegionWithScore>::expandPeaks(size_t halfwidth, ChrLengths &chromInfo);
 
-  size_t RegionSet::find(const std::string &chr, const Region &r) {
+  template <typename T>
+  size_t GenericRegionSet<T>::find(const std::string &chr, const T &r) {
     auto end = regions_[chr].end(), begin = regions_[chr].begin();
     auto i = std::lower_bound(begin, end, r);
     if (i != end && !(r < *i)) { return i - begin; }
     return regions_.size();
   }
+  template size_t GenericRegionSet<Region>::find(const std::string &chr, const Region &r);
+  template size_t GenericRegionSet<RegionWithScore>::find(const std::string &chr, const RegionWithScore &r);
 
-  void RegionSet::_update_keys() {
+  template <typename T>
+  void GenericRegionSet<T>::update_keys() {
     sorted_keys_.clear();
     for (auto &k : regions_) { sorted_keys_.push_back(k.first); }
     std::sort(sorted_keys_.begin(), sorted_keys_.end());
   }
+  template void GenericRegionSet<Region>::update_keys();
+  template void GenericRegionSet<RegionWithScore>::update_keys();
 
-  void RegionSet::appendRegionSet(const RegionSet& r) {
+  template <typename T>
+  void GenericRegionSet<T>::appendGenericRegionSet(const GenericRegionSet<T>& r) {
     for (const auto& k : r.regions_) {
       regions_[k.first].insert(regions_[k.first].end(),
 			       k.second.begin(),
 			       k.second.end());
     }
-    _update_keys();
+    update_keys();
   }
+  template void GenericRegionSet<Region>::appendGenericRegionSet(const GenericRegionSet<Region> &r);
+  template void GenericRegionSet<RegionWithScore>::appendGenericRegionSet(const GenericRegionSet<RegionWithScore> &r);
 
-  void RegionSet::write(const boost::filesystem::path &path) {
+  template <typename T>
+  void GenericRegionSet<T>::write(const boost::filesystem::path &path) {
     std::ofstream o(path.string());
     for (const auto &k : sorted_keys_) {
       for (const auto &n : regions_[k]) {
@@ -115,14 +133,32 @@ namespace SCREEN {
       }
     }
   }
+  template void GenericRegionSet<Region>::write(const boost::filesystem::path &path);
+  template void GenericRegionSet<RegionWithScore>::write(const boost::filesystem::path &path);
 
-  size_t RegionSet::total() {
+  template <typename T>
+  size_t GenericRegionSet<T>::total() {
     size_t ret = 0;
     for (const auto& k : regions_) {
       ret += k.second.size();
     }
     return ret;
   }
+  template size_t GenericRegionSet<Region>::total();
+  template size_t GenericRegionSet<RegionWithScore>::total();
+
+  /**
+      sorts the regions contained in the object (modifies existing vector)
+   */
+  template <typename T>
+  void GenericRegionSet<T>::sort() {
+    for (auto& k : regions_) {
+      std::sort(k.second.begin(), k.second.end());
+    }
+    for (int i = 0; i < 10; ++i) std::cout << regions_["chr1"][i].start << "\t" << regions_["chr1"][i].end << "\n";
+  }
+  template void GenericRegionSet<Region>::sort();
+  template void GenericRegionSet<RegionWithScore>::sort();
 
   /**
       appends a list of regions from a file; calls filter() to filter lines
@@ -134,10 +170,10 @@ namespace SCREEN {
     for (const auto& line : lines) {
       std::vector<std::string> v = bib::string::split(line, '\t');
       if (filter(v)) {
-	regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
+	regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
       }
     }
-    _update_keys();
+    regions_.update_keys();
   }
 
   /**
@@ -149,19 +185,9 @@ namespace SCREEN {
     std::string line;
     while (std::getline(f, line)) {
       std::vector<std::string> v = bib::string::split(line, '\t');
-      regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
+      regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]) });
     }
-    _update_keys();
-  }
-
-  /**
-      sorts the regions contained in the object (modifies existing vector)
-   */
-  void RegionSet::sort() {
-    for (auto& k : regions_) {
-      std::sort(k.second.begin(), k.second.end());
-    }
-    for (int i = 0; i < 10; ++i) std::cout << regions_["chr1"][i].start << "\t" << regions_["chr1"][i].end << "\n";
+    regions_.update_keys();
   }
 
 } // SCREEN
