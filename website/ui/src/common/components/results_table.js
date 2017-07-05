@@ -17,7 +17,7 @@ require( 'datatables.net-buttons/js/buttons.print.js' )
 class ResultsTable extends React.Component {
     constructor(props) {
 	super(props);
-
+console.log(this.refs.root);
     }
  
     render() {
@@ -27,8 +27,6 @@ class ResultsTable extends React.Component {
 
 	       );
 
-
-	
     }
 
     componentDidUpdate() {

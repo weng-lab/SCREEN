@@ -2,11 +2,12 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table';
-import ZTable from '../../../common/components/ztable';
-import ZFixedTable from '../../../common/components/zfixedtable';
+import ReactiveData from '../../../common/components/reactivedata';
+import ReactiveDataIndex from '../../../common/components/reactivetable/reactivedataindex';
+
+
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
-
 
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
@@ -250,11 +251,6 @@ class TableWithCart extends React.Component {
 
     table(data, actions){
 
-var data1 = [];
-       for(var idx in data){
-data1.push(data[idx]);
-       }
-
 
 
 
@@ -327,9 +323,26 @@ data1.push(data[idx]);
                               bLengthChange={true} key={this.props.cellType}
 />
 
-	  	<ZTable data={data1} cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}/> 
 
- <ZFixedTable data={data1} cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}/> 
+<ReactiveData data={data}
+            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+
+                          /> 
+
+
+
+
+
+<ReactiveDataIndex data={data}
+            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+
+                          /> 
+
+
+
+
+
+
 
 	    </div>
 
