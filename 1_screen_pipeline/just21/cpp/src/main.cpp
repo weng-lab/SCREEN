@@ -88,14 +88,19 @@ int main(int argc, char **argv){
   std::cout << "*** ENCODE hg19 ***\n";
   SCREEN::ENCODE e(ZiARG_rootPath, "hg19");
 
+  /*
   std::cout << "making binary signal files\n";
   e.binarizeDHS();
+  */
 
   /*
   std::cout << "computing Z-scores...\n";
   e.computeZScores();
+  */
   std::cout << "creating rDHSs...\n";
   e.make_rDHS();
+
+  /*
   std::cout << "creating cREs...\n";
   e.create_cREs();
   */

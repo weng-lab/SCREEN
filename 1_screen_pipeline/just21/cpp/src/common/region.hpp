@@ -13,37 +13,58 @@ namespace SCREEN {
   bool operator >(const Region &a, const Region &b);
   bool operator ==(const Region &a, const Region &b);
 
-  using ChrToRegions = std::unordered_map<std::string, std::vector<Region>>;
+  template <typename T>
+  using ChrToRegions = std::unordered_map<std::string, std::vector<T>>;
 
-  class RegionSet {
-    ChrToRegions regions_;
-    std::vector<std::string> sorted_keys_;
-    void _update_keys();
+  template <typename T>
+  class GenericRegionSet {
 
   public:
-    RegionSet() {}
-    RegionSet(const ChrToRegions& regions)
+    GenericRegionSet() {}
+    GenericRegionSet(const ChrToRegions<T>& regions)
       : regions_(regions)
     {}
 
-    void appendRegionSet(const RegionSet&);
-    void appendFile(const bfs::path&);
-    void appendFile(const bfs::path&, RegionFilter&);
+    ChrToRegions<T> regions_;
+    std::vector<std::string> sorted_keys_;
 
-    const std::vector<Region>& operator [](const std::string&);
-    const std::vector<Region>& operator [](const std::string&) const;
+    void appendGenericRegionSet(const GenericRegionSet&);
+
+    std::vector<T>& operator [](const std::string&);
+    std::vector<T>& operator [](const std::string&) const;
     void expandPeaks(size_t halfwidth);
     void expandPeaks(size_t halfwidth, ChrLengths&);
 
-    const ChrToRegions& regions() const;
     const std::vector<std::string> &sorted_keys() const;
     
+    void update_keys();
     size_t total();
-    size_t find(const std::string&, const Region&);
+    size_t find(const std::string&, const T&);
     void sort();
     void unique();
     void write(const bfs::path&);
 
   };
+
+  class RegionSet {
+  public:
+    RegionSet() {}
+    RegionSet(GenericRegionSet<Region> &regions) : regions_(regions) {}
+    GenericRegionSet<Region> regions_;
+    void appendFile(const bfs::path&);
+    void appendFile(const bfs::path&, RegionFilter&);
+  };
+  
+  extern template std::vector<Region> &GenericRegionSet<Region>::operator [](const std::string &chr);
+  extern template const std::vector<std::string> &GenericRegionSet<Region>::sorted_keys() const;
+  extern template void GenericRegionSet<Region>::unique();
+  extern template void GenericRegionSet<Region>::expandPeaks(size_t halfwidth);
+  extern template void GenericRegionSet<Region>::expandPeaks(size_t halfwidth, ChrLengths &chromInfo);
+  extern template size_t GenericRegionSet<Region>::find(const std::string &chr, const Region &r);
+  extern template void GenericRegionSet<Region>::update_keys();
+  extern template void GenericRegionSet<Region>::appendGenericRegionSet(const GenericRegionSet<Region> &r);
+  extern template void GenericRegionSet<Region>::write(const boost::filesystem::path &path);
+  extern template size_t GenericRegionSet<Region>::total();
+  extern template void GenericRegionSet<Region>::sort();
 
 } // SCREEN

@@ -71,8 +71,8 @@ namespace SCREEN {
     for (auto &peakfile : DHS_peaks_) {
       r.appendFile(path_.EncodeData(peakfile.exp, peakfile.acc, ".bed.gz"), qfilter);
     }
-    r.unique();
-    std::cout << "found " << r.total() << " unique DHSs\n";
+    r.regions_.unique();
+    std::cout << "found " << r.regions_.total() << " unique DHSs\n";
 
     BinarySignal b(r, path_.root() / "DHS" / "signal");
     std::cout << "completed writing regions\n";
@@ -121,6 +121,7 @@ namespace SCREEN {
     // compute rDHSs and write
     rDHS_ = rDHS(zpaths);
     rDHS_.write(path_.rDHS_list());
+    std::cout << "wrote " << rDHS_.regions_.regions_.total() << " rDHSs to " << path_.rDHS_list() << "\n";
 
   }
 
@@ -165,6 +166,7 @@ namespace SCREEN {
      create cREs; requires output from ENCODE::make_rDHS
      output is saved to the CTA and CTS paths defined in the Paths class
    */
+  /*
   void ENCODE::create_cREs() {
     
     // empty vectors for holding Z-scores, cREs
@@ -203,6 +205,7 @@ namespace SCREEN {
     _write_cREs(ctcf_list_, regionlist, CTCFZ, cREs);
 
   }
+  */
 
   /**
      creates saturation curve; requires output from ENCODE::computeZScores
@@ -211,10 +214,10 @@ namespace SCREEN {
   void ENCODE::make_saturation() {
 
     // load Z-scores into RegionSets
-    std::vector<RegionSet> r(dnase_list_.size());
+    std::vector<ScoredRegionSet> r(dnase_list_.size());
 #pragma omp parallel for
     for (auto i = 0; i < dnase_list_.size(); ++i) {
-      // r[i].appendZ(path_.EncodeData(dnase_list_[i].exp, dnase_list_[i].acc, ".bigWig"));
+      r[i].appendZ(path_.EncodeData(dnase_list_[i].exp, dnase_list_[i].acc, ".bigWig"));
     }
 
     // run saturation
