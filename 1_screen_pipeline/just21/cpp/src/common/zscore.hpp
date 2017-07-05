@@ -7,7 +7,7 @@ namespace SCREEN {
 
   namespace bfs = boost::filesystem;
   namespace a = arma;
-  
+
   class ZScore {
 
   private:
@@ -31,5 +31,8 @@ namespace SCREEN {
     std::vector<std::vector<std::string>> lines_;
     a::vec zscores_;
   };
+
+  std::vector<float> _computeMaxZ(const std::vector<std::string>&, const std::vector<std::vector<std::string>>&,
+				  std::vector<ZScore>&);
   
 } // SCREEN

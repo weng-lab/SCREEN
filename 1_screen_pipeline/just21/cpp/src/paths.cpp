@@ -47,5 +47,13 @@ namespace SCREEN {
 			      const std::string& ext) const{
     return bfs::path("/data/projects/encode/data/") / expID / (fileID + ext);
   }
+
+  bfs::path Paths::chromInfo() const {
+    return bfs::path("/data/common/genome/") / (assembly_ + ".chromInfo");
+  }
+
+  bfs::path Paths::screen_raw() const {
+    return bfs::path("/data/projects/screen/Version-4/ver10/") / assembly_ / "raw";
+  }
   
 } // SCREEN

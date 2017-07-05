@@ -10,6 +10,7 @@
 #include <memory>
 #include <array>
 #include <iomanip>
+#include <unordered_map>
 
 #include <boost/filesystem.hpp>
 
@@ -18,6 +19,21 @@
 
 namespace SCREEN {
 
+  /**
+     parse chromosome lengths from a chrom_info file
+     lines should be TSV, chromosome name then length
+  */
+  std::unordered_map<std::string, uint32_t> parseChromLengths(const boost::filesystem::path &chromInfo) {
+    std::ifstream f(chromInfo.string());
+    std::string line;
+    std::unordered_map<std::string, uint32_t> retval;
+    while (std::getline(f, line)) {
+      std::vector<std::string> p = split(line, '\t');
+      retval[p[0]] = std::stoi(p[1]);
+    }
+    return retval;
+  }
+  
   // http://www.cplusplus.com/forum/general/15952/
   std::string accession(size_t acc, char sig, int len) {
     std::ostringstream ss, os;

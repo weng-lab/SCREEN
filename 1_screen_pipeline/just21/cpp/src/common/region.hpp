@@ -7,15 +7,16 @@ namespace SCREEN {
   struct Region {
     uint32_t start;
     uint32_t end;
-    float score;
   };
   std::ostream& operator<<(std::ostream& s, const Region&);
+  bool operator <(const Region &a, const Region &b);
+  bool operator >(const Region &a, const Region &b);
+  bool operator ==(const Region &a, const Region &b);
 
   using ChrToRegions = std::unordered_map<std::string, std::vector<Region>>;
 
   class RegionSet {
     ChrToRegions regions_;
-    void _append(const std::string&, int, float);
     std::vector<std::string> sorted_keys_;
     void _update_keys();
 
@@ -26,19 +27,21 @@ namespace SCREEN {
     {}
 
     void appendRegionSet(const RegionSet&);
-    void appendNarrowPeak(const bfs::path&, float = 0.05);
-    void appendNarrowPeak(const std::string&, float = 0.05);
-    void appendZ(const bfs::path&);
-    void appendZ(const std::string&);
+    void appendFile(const bfs::path&);
+    void appendFile(const bfs::path&, RegionFilter&);
 
     const std::vector<Region>& operator [](const std::string&);
     const std::vector<Region>& operator [](const std::string&) const;
+    void expandPeaks(size_t halfwidth);
+    void expandPeaks(size_t halfwidth, ChrLengths&);
+
     const ChrToRegions& regions() const;
     const std::vector<std::string> &sorted_keys() const;
     
     size_t total();
+    size_t find(const std::string&, const Region&);
     void sort();
-    RegionSet rDHS_Cluster();
+    void unique();
     void write(const bfs::path&);
 
   };

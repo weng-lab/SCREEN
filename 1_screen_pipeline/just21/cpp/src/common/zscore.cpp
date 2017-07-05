@@ -12,11 +12,13 @@
 #include "cpp/files.hpp"
 #include "cpp/string_utils.hpp"
 
-#include "region.hpp"
 #include "utils.hpp"
+#include "lambda.hpp"
+#include "region.hpp"
 #include "zscore.hpp"
 
 namespace SCREEN {
+
   double log10orNeg10(double x) {
     // TODO: floating point tolerance?
     // http://realtimecollisiondetection.net/blog/?p=89
@@ -24,6 +26,26 @@ namespace SCREEN {
       return -10.0;
     }
     return std::log10(x + 0.01);
+  }
+
+  std::vector<float> _computeMaxZ(const std::vector<std::string> &paths, const std::vector<std::vector<std::string>> &regionlist,
+				  std::vector<ZScore> &output_list) {
+
+    // empty max-Z vector
+    std::vector<float> maxZ(regionlist.size(), -10.0);
+  
+    // compute Z-scores
+#pragma omp parallel for
+    for (auto i = 0; i < paths.size(); ++i) {
+      output_list[i] = ZScore(regionlist, paths[i], true);
+      for (auto n = 0; n < regionlist.size(); ++n) {
+	if (maxZ[n] < output_list[i].zscores_[n]) { maxZ[n] = output_list[i].zscores_[n]; }
+      }
+    }
+
+    // return maxZ list
+    return maxZ;
+  
   }
 
   /*
