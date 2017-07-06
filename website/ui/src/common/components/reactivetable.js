@@ -15,7 +15,6 @@ class ReactiveTable extends React.Component {
 this.state = {
 activePage: 1, 
 value: '', 
-dataLength: -1,
 
 
 };
@@ -23,10 +22,6 @@ dataLength: -1,
         this.handleSelect = this.handleSelect.bind(this);
 this.getValidationState = this.getValidationState.bind(this);
 this.handleChange = this.handleChange.bind(this);
-//this.setPageLength = this.setPageLength.bind(this);
-
-
-
 
 
     }
@@ -35,22 +30,18 @@ this.handleChange = this.handleChange.bind(this);
 
 render()
     {
-
+const per_page = 10;
 
         const current_page = this.state.activePage;
 var value=this.state.value;
-        var rowComponents = this.generateRows(current_page, 2, value);
+var fullData = this.generateRows(current_page, per_page, value);
+        var rowComponents = fullData.colsData;
+var dataLength = fullData.dataLength;
 
-if (this.state.dataLength != -1) {
-var pages = Math.ceil(this.state.dataLength / 2);
+console.log("value", this.state.value);
 
-console.log("data length", this.state.dataLength);
+var pages = Math.ceil(dataLength / per_page);
 
-
-} else { 
-      var pages = Math.ceil(this.props.data.length / 2);
-
-}
 
 console.log("pages", pages);
 
@@ -93,6 +84,9 @@ console.log("pages", pages);
                     maxButtons={3} first last next prev boundaryLinks
                     items={pages}  activePage={this.state.activePage}
         onSelect={this.handleSelect}/>
+
+
+
 <br></br><br></br><br></br><br></br>
 
 
@@ -130,13 +124,6 @@ console.log("pages", pages);
   }
 
 
-//setPageLength(page) 
-//{ 
- //   this.setState({
- //     dataLength: page
- //   });
-
-//}
 
 
 
@@ -159,16 +146,16 @@ console.log("pages", pages);
         const start_offset = (current_page - 1) * per_page;
         let start_count = 0;
 let count = 0;
+var final_count = -1;
 
+var search_condition = false;
 
-
-
-        return data.map(function(item, index) {
+        return {colsData: data.map(function(item, index) {
 
 var show_row = false;
 
-var condition = false;
 
+var condition = false;
 
             // handle the column data within each row
             var cells = cols.map(function(colData) {
@@ -214,7 +201,7 @@ show_row = true;
 
 if (value == String(item[colData[columnkey]]).substr(0, value.length)) {
 condition = true;
-
+search_condition = true;
 } else {
 
 condition = false;
@@ -236,15 +223,12 @@ count++;
 
 
 if (index == data.length-1) {
-this.setState({
-      dataLength: count
-    });
+
+final_count = count;
 
 
-//this.setState((state) => ({ dataLength: count}));
 
-console.log("data length", this.state.dataLength);
-console.log("most updated", count);
+console.log("most updated", final_count);
 
 
 
@@ -265,7 +249,7 @@ if (index >= start_offset && start_count < per_page) {
 }
 }
 
-        });
+        }), dataLength: final_count, condition: search_condition};
 
 
 
