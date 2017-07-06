@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table';
 import ReactiveData from '../../../common/components/reactivedata';
-import ReactiveDataIndex from '../../../common/components/reactivetable/reactivedataindex';
-
 
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
@@ -328,20 +326,6 @@ class TableWithCart extends React.Component {
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
 
                           /> 
-
-
-
-
-
-<ReactiveDataIndex data={data}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-
-                          /> 
-
-
-
-
-
 
 
 	    </div>

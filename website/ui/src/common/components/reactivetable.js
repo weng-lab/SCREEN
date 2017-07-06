@@ -2,16 +2,84 @@ import React from 'react';
 import GenerateColumns from './generatecolumns';
 import GenerateRows from './generaterows';
 import { Table,  Pagination} from 'react-bootstrap';
-
+import { FormGroup, Button, FormControl, Form, ControlLabel } from 'react-bootstrap';
 
 class ReactiveTable extends React.Component {
 
+    constructor(props)
+    {
+        super(props);
+
+
+        // bind <this> to the event methods
+this.state = {
+activePage: 1, 
+value: '', 
+dataLength: -1,
+
+
+};
+
+        this.handleSelect = this.handleSelect.bind(this);
+this.getValidationState = this.getValidationState.bind(this);
+this.handleChange = this.handleChange.bind(this);
+//this.setPageLength = this.setPageLength.bind(this);
+
+
+
+
+
+    }
+
+
+
 render()
     {
-        var rowComponents = this.generateRows();
+
+
+        const current_page = this.state.activePage;
+var value=this.state.value;
+        var rowComponents = this.generateRows(current_page, 2, value);
+
+if (this.state.dataLength != -1) {
+var pages = Math.ceil(this.state.dataLength / 2);
+
+console.log("data length", this.state.dataLength);
+
+
+} else { 
+      var pages = Math.ceil(this.props.data.length / 2);
+
+}
+
+console.log("pages", pages);
 
         return(
             <div>
+
+
+
+      <Form inline >
+        <FormGroup 
+          controlId="formBasicText"
+          //validationState={this.getValidationState()}
+       >
+          <FormControl pullRight
+            type="text"
+            value={this.state.value}
+            placeholder="Search"
+            onChange={this.handleChange}
+
+          />
+          <FormControl.Feedback />
+ 
+        </FormGroup>
+  
+      </Form>
+
+
+
+
                 <Table>
                     <thead>
 {<GenerateColumns data = {this.props.data} cols={this.props.cols} columnkey={this.props.columnkey} columnlabel={this.props.columnlabel}/>}
@@ -21,7 +89,10 @@ render()
  </tbody>
 
                 </Table>
-
+                <Pagination className="users-pagination pull-right" bsSize="medium"
+                    maxButtons={3} first last next prev boundaryLinks
+                    items={pages}  activePage={this.state.activePage}
+        onSelect={this.handleSelect}/>
 <br></br><br></br><br></br><br></br>
 
 
@@ -33,14 +104,72 @@ render()
   
 
 
-    generateRows() {
+  getValidationState() {
+    const length = this.state.value.length;
+
+
+
+
+
+    if (length > 10) return 'success';
+    else if (length > 5) return 'warning';
+    else if (length > 0) return 'error';
+
+
+
+
+
+
+
+  }
+
+
+
+  handleChange(e) {
+    this.setState({ value: e.target.value });
+  }
+
+
+//setPageLength(page) 
+//{ 
+ //   this.setState({
+ //     dataLength: page
+ //   });
+
+//}
+
+
+
+
+  handleSelect(eventKey) {
+    this.setState({
+      activePage: eventKey
+    });
+  }
+
+
+
+
+    generateRows(current_page, per_page, value) {
         var cols = this.props.cols,  // [{key, label}]
             data = this.props.data,
 	    columnkey = this.props.columnkey,
 	    modifiedColumn = this.props.modifiedColumn;
 
+        const start_offset = (current_page - 1) * per_page;
+        let start_count = 0;
+let count = 0;
 
-        return data.map(function(item) {
+
+
+
+        return data.map(function(item, index) {
+
+var show_row = false;
+
+var condition = false;
+
+
             // handle the column data within each row
             var cells = cols.map(function(colData) {
 
@@ -76,10 +205,73 @@ default:
 
         }
 
+
+if (value=='' || value == String(item[colData[columnkey]]).substr(0, value.length)){
+show_row = true;
+
+} 
+
+
+if (value == String(item[colData[columnkey]]).substr(0, value.length)) {
+condition = true;
+
+} else {
+
+condition = false;
+
+}
+
+
                 return <td>{item[colData[columnkey]]}</td>;
             });
+
+
+
+
+if (index == data.length-1 && condition) {
+count++;
+
+
+}
+
+
+if (index == data.length-1) {
+this.setState({
+      dataLength: count
+    });
+
+
+//this.setState((state) => ({ dataLength: count}));
+
+console.log("data length", this.state.dataLength);
+console.log("most updated", count);
+
+
+
+
+}
+
+
+
+
+
+if (show_row) {
+count++;
+
+
+if (index >= start_offset && start_count < per_page) {
+                            start_count++;
             return <tr key={item.id}> {cells} </tr>;
+}
+}
+
         });
+
+
+
+
+
+
     }
 
 
