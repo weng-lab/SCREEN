@@ -2,7 +2,7 @@ import React from 'react';
 import GenerateColumns from './generatecolumns';
 import GenerateRows from './generaterows';
 import { Table,  Pagination} from 'react-bootstrap';
-import { FormGroup, Button, FormControl, Form, ControlLabel } from 'react-bootstrap';
+import { FormGroup, Button, FormControl, Form, ControlLabel, HelpBlock } from 'react-bootstrap';
 
 class ReactiveTable extends React.Component {
 
@@ -63,7 +63,7 @@ console.log("pages", pages);
 
           />
           <FormControl.Feedback />
- 
+  <HelpBlock>Found {dataLength} result(s)</HelpBlock>
         </FormGroup>
   
       </Form>
