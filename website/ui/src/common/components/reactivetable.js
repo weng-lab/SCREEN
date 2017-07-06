@@ -14,8 +14,9 @@ class ReactiveTable extends React.Component {
         // bind <this> to the event methods
 this.state = {
 activePage: 1, 
+activeSearchPage: 1, 
 value: '', 
-
+searchCondition: false
 
 };
 
@@ -35,9 +36,23 @@ render()
     {
 const per_page = 10;
 
-        const current_page = this.state.activePage;
+
+if(this.state.searchCondition){
+
+        var current_page = this.state.activeSearchPage;
+} else {
+var current_page = this.state.activePage;
+
+}
+
+console.log("current paage",current_page);
 var value=this.state.value;
+
 var fullData = this.generateRows(current_page, per_page, value);
+fullData = this.generateRows(current_page, per_page, value);
+
+
+
         var rowComponents = fullData.colsData;
 var dataLength = fullData.dataLength;
 
@@ -86,7 +101,7 @@ var pages = Math.ceil(dataLength / per_page);
 
           <Pagination className="users-pagination pull-right" bsSize="medium"
                     maxButtons={3} first last next prev boundaryLinks
-                    items={pages}  activePage={this.state.activePage}
+                    items={pages}  activePage={current_page}
         onSelect={this.handleSelect}/>
 
 
@@ -126,6 +141,20 @@ var pages = Math.ceil(dataLength / per_page);
 
   handleChange(e) {
     this.setState({ value: e.target.value});
+
+if (e.target.value!=''){
+
+this.setState({ searchCondition: true});
+
+this.setState({ activeSearchPage: 1});
+
+} else {
+
+this.setState({ searchCondition: false});
+
+}
+
+
   }
 
 
@@ -134,9 +163,26 @@ var pages = Math.ceil(dataLength / per_page);
 
 
   handleSelect(eventKey) {
+
+
+if (this.state.searchCondition){
+
+    this.setState({
+      activeSearchPage: eventKey
+    });
+
+
+
+} else{
+
     this.setState({
       activePage: eventKey
     });
+
+}
+
+
+
   }
 
 
@@ -144,24 +190,15 @@ var pages = Math.ceil(dataLength / per_page);
 
     generateRows(current_page, per_page, value) {
         var cols = this.props.cols,  // [{key, label}]
-            data = this.props.data,
+           data = this.props.data,
 	    columnkey = this.props.columnkey;
 
-        const start_offset = (current_page - 1) * per_page;
+        var start_offset = (current_page - 1) * per_page;
         let start_count = 0;
 let count = 0;
 var final_count = -1;
 
 var search_condition = false;
-
-
-
-
-        const search_offset = 0;
-        let search_count = 0;
-
-
-
 
 
 
@@ -260,37 +297,26 @@ final_count = count;
 
 
 
-
-
 if (show_row) {
 count++;
 
 
-if (search_condition) {
-if (index >= search_offset && search_count < 100) {
-                            search_count++;
-return <tr key={item.id}> {cells} </tr>;
 
-
-}
-
-
-
-} 
-else {
 
 if (index >= start_offset && start_count < per_page) {
                             start_count++;
+console.log("final increment",start_count);
             return <tr key={item.id}> {cells} </tr>;
 }
 
+} else {
+
+
+start_offset++;
+
 }
 
-
-
-}
-
-        }), dataLength: final_count, condition: search_condition};
+        }), dataLength: final_count};
 
 
 
