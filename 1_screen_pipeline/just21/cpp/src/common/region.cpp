@@ -155,7 +155,6 @@ namespace SCREEN {
     for (auto& k : regions_) {
       std::sort(k.second.begin(), k.second.end());
     }
-    for (int i = 0; i < 10; ++i) std::cout << regions_["chr1"][i].start << "\t" << regions_["chr1"][i].end << "\n";
   }
   template void GenericRegionSet<Region>::sort();
   template void GenericRegionSet<RegionWithScore>::sort();
