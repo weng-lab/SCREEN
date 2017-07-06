@@ -163,14 +163,15 @@ namespace SCREEN {
     for (auto &k : r.regions_.regions_) {
       rDHS_cluster(k.second, regions_.regions_[k.first]);
     }
+    regions_.regions_.update_keys();
   }
 
   void rDHS::write(const std::string& path) {
     size_t acc = 0;
     std::ofstream o(path);
-    for (const auto& k : regions_.regions_.regions_) {
-      for (const auto &r : k.second) {
-	o << k.first << "\t" << r.start << "\t" << r.end << "\t"
+    for (const auto& chr : regions_.regions_.sorted_keys_) {
+      for (const auto &r : regions_.regions_[chr]) {
+	o << chr << "\t" << r.start << "\t" << r.end << "\t"
 	  << accession(acc++, 'D') << "\n";
       }
     }
