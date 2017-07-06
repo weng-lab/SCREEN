@@ -31,6 +31,7 @@ this.handleChange = this.handleChange.bind(this);
 
 
 
+
 render()
     {
 const per_page = 10;
@@ -42,8 +43,6 @@ var fullData = this.generateRows(current_page, per_page, value);
 var dataLength = fullData.dataLength;
 
 var pages = Math.ceil(dataLength / per_page);
-
-
 
 
 
@@ -62,6 +61,7 @@ var pages = Math.ceil(dataLength / per_page);
             value={this.state.value}
             placeholder="Search"
             onChange={this.handleChange}
+
           />
           <FormControl.Feedback />
   <HelpBlock>Found {dataLength} result(s)</HelpBlock>
@@ -145,7 +145,8 @@ var pages = Math.ceil(dataLength / per_page);
     generateRows(current_page, per_page, value) {
         var cols = this.props.cols,  // [{key, label}]
             data = this.props.data,
-	    columnkey = this.props.columnkey;
+	    columnkey = this.props.columnkey,
+	    modifiedColumn = this.props.modifiedColumn;
 
         const start_offset = (current_page - 1) * per_page;
         let start_count = 0;
@@ -157,8 +158,7 @@ var search_condition = false;
 
 
 
-        const search_offset = 0;
-        let search_count = 0;
+
 
 
 
@@ -226,8 +226,6 @@ condition = true;
 
 if (value=='') {
 search_condition = false;
-
-
 } else {
 search_condition = true;
 
@@ -267,14 +265,8 @@ count++;
 
 
 if (search_condition) {
-if (index >= search_offset && search_count < 100) {
-                            search_count++;
+
 return <tr key={item.id}> {cells} </tr>;
-
-
-}
-
-
 
 } 
 else {

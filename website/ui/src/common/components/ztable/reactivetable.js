@@ -28,9 +28,6 @@ this.handleChange = this.handleChange.bind(this);
 
 
 
-
-
-
 render()
     {
 const per_page = 10;
@@ -41,11 +38,12 @@ var fullData = this.generateRows(current_page, per_page, value);
         var rowComponents = fullData.colsData;
 var dataLength = fullData.dataLength;
 
+console.log("value", this.state.value);
+
 var pages = Math.ceil(dataLength / per_page);
 
 
-
-
+console.log("pages", pages);
 
         return(
             <div>
@@ -62,6 +60,7 @@ var pages = Math.ceil(dataLength / per_page);
             value={this.state.value}
             placeholder="Search"
             onChange={this.handleChange}
+
           />
           <FormControl.Feedback />
   <HelpBlock>Found {dataLength} result(s)</HelpBlock>
@@ -81,14 +80,10 @@ var pages = Math.ceil(dataLength / per_page);
  </tbody>
 
                 </Table>
-
-
-
-          <Pagination className="users-pagination pull-right" bsSize="medium"
+                <Pagination className="users-pagination pull-right" bsSize="medium"
                     maxButtons={3} first last next prev boundaryLinks
                     items={pages}  activePage={this.state.activePage}
         onSelect={this.handleSelect}/>
-
 
 
 
@@ -125,7 +120,7 @@ var pages = Math.ceil(dataLength / per_page);
 
 
   handleChange(e) {
-    this.setState({ value: e.target.value});
+    this.setState({ value: e.target.value });
   }
 
 
@@ -145,7 +140,8 @@ var pages = Math.ceil(dataLength / per_page);
     generateRows(current_page, per_page, value) {
         var cols = this.props.cols,  // [{key, label}]
             data = this.props.data,
-	    columnkey = this.props.columnkey;
+	    columnkey = this.props.columnkey,
+	    modifiedColumn = this.props.modifiedColumn;
 
         const start_offset = (current_page - 1) * per_page;
         let start_count = 0;
@@ -153,21 +149,6 @@ let count = 0;
 var final_count = -1;
 
 var search_condition = false;
-
-
-
-
-        const search_offset = 0;
-        let search_count = 0;
-
-
-
-
-
-
-
-
-
 
         return {colsData: data.map(function(item, index) {
 
@@ -215,23 +196,12 @@ default:
 if (value=='' || value == String(item[colData[columnkey]]).substr(0, value.length)){
 show_row = true;
 
-}
-
-
-
+} 
 
 
 if (value == String(item[colData[columnkey]]).substr(0, value.length)) {
 condition = true;
-
-if (value=='') {
-search_condition = false;
-
-
-} else {
 search_condition = true;
-
-}
 } else {
 
 condition = false;
@@ -256,6 +226,13 @@ if (index == data.length-1) {
 
 final_count = count;
 
+
+
+console.log("most updated", final_count);
+
+
+
+
 }
 
 
@@ -266,28 +243,10 @@ if (show_row) {
 count++;
 
 
-if (search_condition) {
-if (index >= search_offset && search_count < 100) {
-                            search_count++;
-return <tr key={item.id}> {cells} </tr>;
-
-
-}
-
-
-
-} 
-else {
-
 if (index >= start_offset && start_count < per_page) {
                             start_count++;
             return <tr key={item.id}> {cells} </tr>;
 }
-
-}
-
-
-
 }
 
         }), dataLength: final_count, condition: search_condition};
