@@ -21,7 +21,7 @@ switch (columnData) {
             case 'info':
                 return <td><span><a href="https://www.w3schools.com/html/">{item[colData[columnkey]].accession}</a> </span> </td>;
             case 'ctspecifc':
-                return <td>   
+                return <td>
 
 
 <svg width="50" height="50">
@@ -44,7 +44,7 @@ case 'in_cart':
 
 case 'genomebrowsers':
                 return <td><button type="button" >UCSC</button> </td>;
-default: 
+default:
 
         }
 
@@ -52,9 +52,9 @@ default:
             });
             return <tr key={item.id}> {cells} </tr>;
         });
-   
 
-     
+
+
     }
 
 

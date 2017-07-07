@@ -17,7 +17,7 @@ class ReactiveData extends React.Component {
 	}, {
 	    key: 'dnase_zscore', label: "DNase Z"
 	}, {
-	    key: 'promoter_zscore', label: "H3K4me3<br/> Z" 
+	    key: 'promoter_zscore', label: "H3K4me3<br/> Z"
 	}, {
 	    key: 'enhancer_zscore', label: "H3K27ac Z"
 	}, {
@@ -40,24 +40,24 @@ class ReactiveData extends React.Component {
 
       }
 
-      
+
   }
 
-    render() { 
+    render() {
 
 
 	return (
 		<div>
 
 	 <ReactiveTable data = {this.props.data} cols={this.state.cols} columnkey={"key"} columnlabel={"label"}/>
-  
+
 
 
 
 
 		<br></br><br></br><br></br>
 	    </div> );
-    
+
     }
 
 
@@ -67,10 +67,4 @@ class ReactiveData extends React.Component {
 
 }
 
-export default ReactiveData; 
-
-
-
-
-
-
+export default ReactiveData;

@@ -13,9 +13,9 @@ class ReactiveTable extends React.Component {
 
         // bind <this> to the event methods
 this.state = {
-activePage: 1, 
-activeSearchPage: 1, 
-value: '', 
+activePage: 1,
+activeSearchPage: 1,
+value: '',
 searchCondition: false
 
 };
@@ -45,7 +45,6 @@ var current_page = this.state.activePage;
 
 }
 
-console.log("current paage",current_page);
 var value=this.state.value;
 
 var fullData = this.generateRows(current_page, per_page, value);
@@ -68,7 +67,7 @@ var pages = Math.ceil(dataLength / per_page);
 
 
       <Form inline >
-        <FormGroup 
+        <FormGroup
           controlId="formBasicText"
           //validationState={this.getValidationState()}
        >
@@ -81,7 +80,7 @@ var pages = Math.ceil(dataLength / per_page);
           <FormControl.Feedback />
   <HelpBlock>Found {dataLength} result(s)</HelpBlock>
         </FormGroup>
-  
+
       </Form>
 
 
@@ -92,7 +91,7 @@ var pages = Math.ceil(dataLength / per_page);
 {<GenerateColumns data = {this.props.data} cols={this.props.cols} columnkey={this.props.columnkey} columnlabel={this.props.columnlabel}/>}
                     </thead>
                     <tbody>
-{rowComponents}               
+{rowComponents}
  </tbody>
 
                 </Table>
@@ -115,7 +114,7 @@ var pages = Math.ceil(dataLength / per_page);
             </div>
         );
     }
-  
+
 
 
   getValidationState() {
@@ -198,12 +197,6 @@ if (this.state.searchCondition){
 let count = 0;
 var final_count = -1;
 
-var search_condition = false;
-
-
-
-
-
 
 
         return {colsData: data.map(function(item, index) {
@@ -221,7 +214,7 @@ switch (columnData) {
             case 'info':
                 return <td><span><a href="https://www.w3schools.com/html/">{item[colData[columnkey]].accession}</a> </span> </td>;
             case 'ctspecifc':
-                return <td>   
+                return <td>
 
 
 <svg width="50" height="50">
@@ -244,36 +237,46 @@ case 'in_cart':
 
 case 'genomebrowsers':
                 return <td><button type="button" >UCSC</button> </td>;
-default: 
+default:
 
         }
 
 
-if (value=='' || value == String(item[colData[columnkey]]).substr(0, value.length)){
+
+
+for (let i= 0; i < String(item[colData[columnkey]]).length; i++)  {
+
+if (value.length + i <= String(item[colData[columnkey]]).length) {
+
+
+if (value=='' || value == String(item[colData[columnkey]]).substr(i, value.length)){
 show_row = true;
 
-}
 
-
-
-
-
-if (value == String(item[colData[columnkey]]).substr(0, value.length)) {
+if (value == String(item[colData[columnkey]]).substr(i, value.length)) {
 condition = true;
 
-if (value=='') {
-search_condition = false;
-
-
-} else {
-search_condition = true;
-
-}
 } else {
 
 condition = false;
 
 }
+
+
+break;
+
+}
+
+
+} else {
+
+break;
+
+}
+
+}
+
+
 
 
                 return <td>{item[colData[columnkey]]}</td>;
@@ -305,7 +308,6 @@ count++;
 
 if (index >= start_offset && start_count < per_page) {
                             start_count++;
-console.log("final increment",start_count);
             return <tr key={item.id}> {cells} </tr>;
 }
 
@@ -332,10 +334,4 @@ start_offset++;
 
 }
 
-export default ReactiveTable;   
-
-
-
-
-
-
+export default ReactiveTable;
