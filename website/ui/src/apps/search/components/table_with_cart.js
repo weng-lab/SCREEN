@@ -322,6 +322,7 @@ class TableWithCart extends React.Component {
 />
 
 
+
 <ReactiveData data={data}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
 

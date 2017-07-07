@@ -2,7 +2,7 @@ import React from 'react';
 import GenerateColumns from './generatecolumns';
 import GenerateRows from './generaterows';
 import { Table,  Pagination} from 'react-bootstrap';
-import { FormGroup, Button, FormControl, Form, ControlLabel, HelpBlock } from 'react-bootstrap';
+import { FormGroup, Button, FormControl, Form, ControlLabel, HelpBlock, Nav } from 'react-bootstrap';
 
 class ReactiveTable extends React.Component {
 
@@ -64,24 +64,24 @@ var pages = Math.ceil(dataLength / per_page);
         return(
             <div>
 
-
+      <Nav pullRight>
 
       <Form inline >
-        <FormGroup
+        <FormGroup 
           controlId="formBasicText"
           //validationState={this.getValidationState()}
        >
-          <FormControl pullRight
+          Search:  <FormControl bsSize="small"
+size="15"
             type="text"
             value={this.state.value}
-            placeholder="Search"
             onChange={this.handleChange}
           />
           <FormControl.Feedback />
-  <HelpBlock>Found {dataLength} result(s)</HelpBlock>
-        </FormGroup>
 
+        </FormGroup>
       </Form>
+      </Nav>
 
 
 
@@ -95,19 +95,14 @@ var pages = Math.ceil(dataLength / per_page);
  </tbody>
 
                 </Table>
-
-
-
+ 
           <Pagination className="users-pagination pull-right" bsSize="medium"
                     maxButtons={3} first last next prev boundaryLinks
                     items={pages}  activePage={current_page}
         onSelect={this.handleSelect}/>
 
 
-
-
-<br></br><br></br><br></br><br></br>
-
+ <HelpBlock >Found {dataLength} result(s)</HelpBlock>
 
 
 
@@ -279,7 +274,7 @@ break;
 
 
 
-                return <td>{item[colData[columnkey]]}</td>;
+                return <td >{item[colData[columnkey]]}</td>;
             });
 
 
@@ -295,6 +290,12 @@ count++;
 if (index == data.length-1) {
 
 final_count = count;
+
+
+if (count == 0) {
+return <tr >No matching records found.</tr>
+
+}
 
 }
 
