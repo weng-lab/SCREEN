@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table';
 import ReactiveData from '../../../common/components/reactivedata';
-
+import ZData from '../../../common/components/ztable/zdata';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 
@@ -306,28 +306,8 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-
-
-		<ResultsTable data={data}
-                              order={table_order}
-			      columnDefs={columnDefs}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-                              onTdClick={(td, rowdata) =>
-                                  this.table_click_handler(td, rowdata, actions)}
-                              cvisible={this._opposite(cols, this.props.cts)}
-                              onButtonClick={(td, rowdata) =>
-                                  this.button_click_handler(td, rowdata, actions)}
-                              bFilter={true}
-                              bLengthChange={true} key={this.props.cellType}
-/>
-
-
-
-<ReactiveData data={data}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-
-                          /> 
-
+      < ReactiveData data = { data } cols = { TableColumns(this.props.cellType ? 
+        this.props.make_ct_friendly(this.props.cellType) : null) } />
 
 	    </div>
 
