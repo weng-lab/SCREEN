@@ -44,31 +44,18 @@ class ReactiveData extends React.Component {
         key: 'genomebrowsers',
         label: "genome browsers"
       }],
-
-
     }
-
-
   }
 
     render() {
-
-
 	return (
 		<div>
-
-	 <ReactiveTable data = {this.props.data} cols={this.state.cols} columnkey={"key"} columnlabel={"label"}/>
-
-
+	 <ReactiveTable data = {this.props.data} 
+cols={this.state.cols} columnkey={"key"} 
+columnlabel={"label"}/>
 		<br></br><br></br><br></br>
 	    </div> );
-
     }
-
-
-
-
-
 
 }
 

@@ -41,6 +41,13 @@ class ReactiveTable extends React.Component {
       var rowComponents = fullData.colsData;
       var dataLength = fullData.dataLength;
 
+
+              if (dataLength == -1) {
+dataLength = 0;
+                rowComponents = <tr> No matching records found. </tr>;
+              }
+
+
       var pages = Math.ceil(dataLength / per_page);
 
       return ( <div>
@@ -62,22 +69,13 @@ class ReactiveTable extends React.Component {
         </FormGroup> </Form> </Nav>
 
         <Table>
-        <thead> { <GenerateColumns data = {
-            this.props.data
-          }
-          cols = {
-            this.props.cols
-          }
-          columnkey = {
-            this.props.columnkey
-          }
-          columnlabel = {
-            this.props.columnlabel
-          }
+        <thead> { <GenerateColumns data = { this.props.data }
+          cols = { this.props.cols }
+          columnkey = { this.props.columnkey }
+          columnlabel = { this.props.columnlabel }
           /> } 
           </thead> 
           <tbody> { rowComponents } </tbody>
-
           </Table>
 
           <Pagination className = "users-pagination pull-right"
@@ -86,7 +84,7 @@ class ReactiveTable extends React.Component {
           first last next prev boundaryLinks
           items = { pages }
           activePage = { current_page }
-          onSelect = { this.handleSelect } />
+          onSelect = { this.handleSelect }/>
 
           <HelpBlock> Found { dataLength } result(s) </HelpBlock>
 
@@ -126,23 +124,16 @@ class ReactiveTable extends React.Component {
       }
 
       handleSelect(eventKey) {
-
         if (this.state.searchCondition) {
-
           this.setState({
             activeSearchPage: eventKey
           });
-
         } else {
-
           this.setState({
             activePage: eventKey
           });
         }
       }
-
-
-
 
       generateRows(current_page, per_page, value) {
         var cols = this.props.cols, // [{key, label}]
@@ -153,8 +144,6 @@ class ReactiveTable extends React.Component {
         let start_count = 0;
         let count = 0;
         var final_count = -1;
-
-
 
         return {
           colsData: data.map(function(item, index) {
@@ -169,19 +158,20 @@ class ReactiveTable extends React.Component {
 
               switch (columnData) {
                 case 'info':
-
 ///////////////////////////////////testing only
-
-                var search_item = item[colData[columnkey]].accession;
+              var search_item = item[colData[columnkey]].accession;
 
               let search_index = 0;
               let value_index = 0;
 
               while (search_index < String(search_item).length) {
 
+
+		if(show_row){search_index = String(search_item).length;}
+
                 if (!isNaN(value) && value != 0 && !isNaN(search_item)) {
 
-                  if ((-1 < Number(search_item) && Number(search_item) < 1) ||
+                  if ((-1 < Number(search_item) && Number(search_item) < 1) &&
                     (-1 < value && value < 1)) {
 
                     if (Number(search_item) > 0 && value > 0) {
@@ -217,9 +207,6 @@ class ReactiveTable extends React.Component {
                 if (value.substr(value_index, value.length).length + 
 			search_index <= String(search_item).length) {
 
-
-
-
                   if (value.substr(value_index, value.length) == '' 
 			|| value.substr(value_index, value.length).toLowerCase() 
 			== String(search_item).toLowerCase().substr(search_index, 
@@ -252,16 +239,12 @@ class ReactiveTable extends React.Component {
                 search_index++;
 
               }
-
-
 ///////////////////////////////////testing only
-
-
-                  return <td > < span > < a href = "https://www.w3schools.com/html/" > {
+                  return <td> <span> <a href = "https://www.w3schools.com/html/"> {
                     item[colData[columnkey]].accession
-                  } < /a> </span > < /td>;
+                  } </a> </span> </td>;
                 case 'ctspecifc':
-                  return <td >
+                  return <td>
                     <
                     svg width = "50"
                   height = "50" >
@@ -309,9 +292,12 @@ class ReactiveTable extends React.Component {
               let search_index = 0;
               let value_index = 0;
 
-var search_item = item[colData[columnkey]];
+	      var search_item = item[colData[columnkey]];
 
               while (search_index < String(search_item).length) {
+
+		if(show_row){search_index = String(search_item).length;}
+
 
                 if (!isNaN(value) && value != 0 && !isNaN(search_item)) {
 
@@ -396,7 +382,8 @@ var search_item = item[colData[columnkey]];
             if (index == data.length - 1) {
               final_count = count;
 
-              if (count == 0) {
+              if (count == 0 || final_count == -1) {
+		final_count = 0;
                 return <tr> No matching records found. </tr>
               }
 
@@ -407,7 +394,7 @@ var search_item = item[colData[columnkey]];
 
               if (index >= start_offset && start_count < per_page) {
                 start_count++;
-                return <tr key = { item.id } > { cells } < /tr>;
+                return <tr key = { item.id }> { cells } </tr>;
               }
 
             } else {

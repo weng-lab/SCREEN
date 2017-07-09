@@ -11,12 +11,14 @@ class GenerateColumns extends React.Component
 	columnkey = this.props.columnkey,
         columnlabel=this.props.columnlabel;
 
-        var headerComponents = cols.map(function(colData) {
+        var headerComponents = cols.map(function(colData, index) {
             return <th key={colData[columnkey]}>{colData[columnlabel]}</th>;
         });
         return <tr>{headerComponents}</tr>;
 
     }
+
+
 
 
 
