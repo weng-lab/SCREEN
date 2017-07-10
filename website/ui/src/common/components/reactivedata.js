@@ -8,10 +8,10 @@ class ReactiveData extends React.Component {
 
     this.state = {
       cols: [{
-        key: 'info',
+        key: 'accession',
         label: "accession"
       }, {
-        key: 'ctspecifc',
+        key: 'k562',
         label: "k562"
       }, {
         key: 'dnase_zscore',
