@@ -16,7 +16,9 @@ class ReactiveTable extends React.Component {
         activePage: 1, // active page for pagination
         activeSearchPage: 1, // active page for pagination with search
         value: '', // value in entered in search box
-        searchCondition: false // condition for search
+        searchCondition: false, // condition for search
+        sortDirection: true,
+sortedData: [],
 
       };
 
@@ -25,7 +27,15 @@ class ReactiveTable extends React.Component {
       this.getValidationState = this.getValidationState.bind(this);
       this.handleChange = this.handleChange.bind(this);
 
+
+
     }
+
+
+
+
+
+
 
     render() {
 
@@ -41,10 +51,16 @@ class ReactiveTable extends React.Component {
        else
         var current_page = this.state.activePage;
 
+        // generates header components
+        var headerComponents = this.generateHeaders();
+
       // generates data by rows
       var fullData = this.generateRows(current_page, per_page, value);
       var rowComponents = fullData.colsData;
+
+
       var dataLength = fullData.dataLength;
+
 
       // error checks when all data are undefined
       if (dataLength == -1) {
@@ -59,7 +75,6 @@ class ReactiveTable extends React.Component {
       return (
         <div>
 
-        // generates search box
         <Nav pullRight>
         <Form inline>
         <FormGroup controlId = "formBasicText"
@@ -76,11 +91,7 @@ class ReactiveTable extends React.Component {
         </Nav>
 
         <Table>
-        <thead> { <GenerateColumns data = { this.props.data }
-          cols = { this.props.cols }
-          columnkey = { this.props.columnkey }
-          columnlabel = { this.props.columnlabel }/> }
-          </thead>
+        <thead> { headerComponents } </thead>
           <tbody> { rowComponents } </tbody>
           </Table>
 
@@ -93,6 +104,7 @@ class ReactiveTable extends React.Component {
           onSelect = { this.handleSelect }
           />
           <HelpBlock> Found { dataLength } result(s) < /HelpBlock>
+
           </div>
         );
       }
@@ -131,10 +143,25 @@ class ReactiveTable extends React.Component {
       }
 
 
+      generateHeaders() {
+        var cols = this.props.cols, // [{key, label}]
+          columnkey = this.props.columnkey,
+          columnlabel = this.props.columnlabel,
+          sortedData = this.state.sortedData;
+
+        // generate our header (th) cell components
+        return cols.map(function(colData, index) {
+          return <th key = { colData[columnkey]} onClick={
+            ()=>{ sortData(colData[columnkey], sortedData); }}>
+            { colData[columnlabel] } </th>;
+        });
+      }
+
       generateRows(current_page, per_page, value) {
         var cols = this.props.cols, // stores column data
           data = this.props.data, // stores data to be entered in table
-          columnkey = this.props.columnkey; // stores column key value
+          columnkey = this.props.columnkey,
+          sortedData = []; // stores column key value
 
         var start_offset = (current_page - 1) * per_page; // offset for pagination
         let start_count = 0; // start count for pagination, start_counts
@@ -152,6 +179,69 @@ class ReactiveTable extends React.Component {
 
             // searches for column data within each row
             var cells = cols.map(function(colData) {
+
+              var columnData = colData[columnkey];
+
+                switch (columnData) {
+                  case 'info':
+                    ///////////////////////////////////testing only
+                    var search_item = item[colData[columnkey]].accession;
+
+                    var testCondition = searchRows(show_row, foundSearchItem, search_item, value);
+
+                    show_row = testCondition.show_row;
+                    foundSearchItem = testCondition.foundSearchItem;
+
+                    ///////////////////////////////////testing only
+                    return <td > < span > < a href = "https://www.w3schools.com/html/" > {
+                      item[colData[columnkey]].accession
+                    } < /a> </span > < /td>;
+                  case 'ctspecifc':
+                    return <td >
+                      <
+                      svg width = "50"
+                    height = "50" >
+                      <
+                      rect x = "0"
+                    y = "10"
+                    width = "30"
+                    height = "30"
+                    stroke = "black"
+                    fill = "transparent"
+                    stroke-width = "5" / >
+                      <
+                      rect x = "30"
+                    y = "10"
+                    width = "30"
+                    height = "30"
+                    stroke = "black"
+                    fill = "yellow"
+                    stroke-width = "5" / >
+                      <
+                      /svg> < /
+                      td > ;
+                  case 'genesallpc':
+                    return <td > pc: {
+                      item[colData[columnkey]][1].map(function(colData) {
+                        return <span > < a href = "https://www.w3schools.com/html/" > {
+                          colData
+                        } < /a>, </span > ;
+                      })
+                    } < br / > all: {
+                      item[colData[columnkey]][0].map(function(colData) {
+                        return <span > < a href = "https://www.w3schools.com/html/" > {
+                          colData
+                        } < /a>, </span > ;
+                      })
+                    } < /td>;
+                  case 'in_cart':
+                    if (item[colData[columnkey]])
+                      return <td > < button type = "button" > - < /button></td > ;
+                    return <td > < button type = "button" > + < /button> </td > ;
+                  case 'genomebrowsers':
+                    return <td > < button type = "button" > UCSC < /button> </td > ;
+                  default:
+                }
 
               // data value for per column
               var search_item = item[colData[columnkey]];
@@ -199,13 +289,21 @@ class ReactiveTable extends React.Component {
 
             }
           }),
-          dataLength: finalRowCount // returns row data/ final
+          dataLength: finalRowCount, // returns row data/ final
                                    // count of rows returned
         };
       }
     }
 
     export default ReactiveTable;
+
+    function sortData(n, data) {
+      alert('column: ' + n);
+
+
+
+    }
+
 
     // searches row values in table for match in search box
     function searchRows(show_row, foundSearchItem, search_item, value) {
@@ -220,7 +318,12 @@ class ReactiveTable extends React.Component {
       while (search_index < searchLength) {
 
         if (show_row)
-          search_index = searchLength;
+          break;
+
+        if (compareValue == '') {
+          show_row = true;
+          break;
+        }
 
         // case when value is numberic enter the loop only once
         if (!isNaN(value) && value != 0 && !isNaN(search_item)) {
@@ -241,20 +344,15 @@ class ReactiveTable extends React.Component {
         // continues incremementing by 1 until at end of String
         if (compareValue.length + search_index <= searchLength) {
 
-          if (compareValue == '' ||
-            compareValue == compareSearchItem) {
-
+          if (compareValue == compareSearchItem) {
             // reveals column, found a match
             show_row = true;
-
             // found a match, error checks for when search is true
-            if (compareValue == compareSearchItem)
-              foundSearchItem = true;
-             else
-              foundSearchItem = false;
+            foundSearchItem = true;
             break;
           }
         } else {
+          foundSearchItem = false;
           break;
         }
 
@@ -266,11 +364,12 @@ class ReactiveTable extends React.Component {
         search_index++;
 
       }
-
       // return search conditions, show_rows shows rowa with matching
       // values, foundSearchItem error checks for a match in the end
-      return { show_row: show_row, foundSearchItem: foundSearchItem };
-
+      return {
+        show_row: show_row,
+        foundSearchItem: foundSearchItem
+      };
     }
 
     // check for rational numbers
@@ -281,11 +380,14 @@ class ReactiveTable extends React.Component {
         (-1 < value && value < 1)) {
 
         // case number is positive
+        if (Number(search_item) > 0 && value > 0) {
         if (String(search_item).charAt(0) == 0)
           search_index++;
 
         if (value.charAt(0) == 0)
           value_index++;
+
+        }
 
         // case number is negative
         if (Number(search_item) < 0 && value < 0) {

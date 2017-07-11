@@ -8,10 +8,10 @@ class ReactiveData extends React.Component {
 
     this.state = {
       cols: [{
-        key: 'accession',
+        key: 'info',
         label: "accession"
       }, {
-        key: 'k562',
+        key: 'ctspecifc',
         label: "k562"
       }, {
         key: 'dnase_zscore',
@@ -50,8 +50,8 @@ class ReactiveData extends React.Component {
     render() {
 	return (
 		<div>
-	 <ReactiveTable data = {this.props.data} 
-cols={this.state.cols} columnkey={"key"} 
+	 <ReactiveTable data = {this.props.data}
+cols={this.state.cols} columnkey={"key"}
 columnlabel={"label"}/>
 		<br></br><br></br><br></br>
 	    </div> );
