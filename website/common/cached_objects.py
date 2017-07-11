@@ -74,7 +74,7 @@ class CachedObjects:
             "cistrome": None
         }
         if self.assembly in ["hg38", "mm10"]:
-            self.tfHistCounts = self.pgSearch.tfHistCounts(eset = "cistrome")
+            self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset = "cistrome")
             
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')

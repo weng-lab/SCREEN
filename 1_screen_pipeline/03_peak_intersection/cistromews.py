@@ -2,19 +2,14 @@
 
 from __future__ import print_function
 
-import sys, os
-import json
-import md5
+import sys, os, requests
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, eprint
 from files_and_paths import Dirs, Tools, Genome, Datasets, Urls, Webservice
 
 def download_and_parse(url):
-    f = "/tmp/%s" % md5.md5(url).hexdigest()
-    Utils.download(url, f)
-    with open(f, "rb") as _f:
-        return json.loads(_f.read())
+    return requests.get(url).json()
 
 class CistromeWS:
     def __init__(self, species, url):
