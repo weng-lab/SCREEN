@@ -97,13 +97,17 @@ int main(int argc, char **argv){
   std::cout << "computing Z-scores...\n";
   e.computeZScores();
   */
-  std::cout << "creating rDHSs...\n";
+  std::cout << "loading rDHSs...\n";
   e.make_rDHS();
-
+  e.binarize_rDHS();
+  
   /*
+  std::cout << "correlating...\n";
+  e.runCorrelation();
+  */
+
   std::cout << "creating cREs...\n";
   e.create_cREs();
-  */
 
   //run_saturation("hg19");
 

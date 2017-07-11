@@ -4,6 +4,8 @@
 
 namespace SCREEN {
 
+  class BinarySignal;
+
   struct ENCODEFile {
     std::string exp;
     std::string acc;
@@ -24,19 +26,23 @@ namespace SCREEN {
 
     void _write_cREs(const std::vector<ENCODEFile>&, const std::vector<std::vector<std::string>>&,
 		     const std::vector<ZScore>&, const std::vector<int>&);
-
-    std::vector<float> _computeMaxZ(std::vector<ENCODEFile> &, std::vector<std::vector<std::string>> &,
-				    std::vector<ZScore> &);
+    void _computeMaxZ(std::vector<ENCODEFile>&, ScoredRegionSet&, const std::string&);
+    void _binarize_list(const std::vector<ENCODEFile>&, BinarySignal&);
 
     rDHS rDHS_;
+    ChrLengths chrom_info_;
 
   public:
     ENCODE(const bfs::path&, const std::string&);
     void computeZScores(bool = false);
-    void make_rDHS();
+    void make_rDHS(bool = false);
+    void load_rDHS();
     void create_cREs();
     void make_saturation();
     void binarizeDHS();
+    void binarize_rDHS();
+    void _binarize(RegionSet&, const std::string&);
+    void runCorrelation();
 
   };
 

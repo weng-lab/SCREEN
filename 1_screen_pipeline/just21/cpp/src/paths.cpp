@@ -55,5 +55,9 @@ namespace SCREEN {
   bfs::path Paths::screen_raw() const {
     return bfs::path("/data/projects/screen/Version-4/ver10/") / assembly_ / "raw";
   }
+
+  bfs::path Paths::correlation(const std::string &chr) const {
+    return root_ / "correlations" / (chr + ".json");
+  }
   
 } // SCREEN

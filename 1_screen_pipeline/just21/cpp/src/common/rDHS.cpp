@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <unordered_map>
 #include <functional>
+#include <cmath>
 
 #include <boost/functional/hash.hpp>
 #include <boost/filesystem.hpp>
@@ -35,6 +36,48 @@ namespace SCREEN {
 
   bool operator ==(const RegionWithScore &a, const RegionWithScore &b) {
     return a.start == b.start && a.end == b.end;
+  }
+
+  bool operator <(const RegionWithScore &a, const Region &b) {
+    return std::tie(a.start, a.end) < std::tie(b.start, b.end);
+  }
+
+  bool operator >(const RegionWithScore &a, const Region &b) {
+    return std::tie(a.start, a.end) > std::tie(b.start, b.end);
+  }
+
+  bool operator ==(const RegionWithScore &a, const Region &b) {
+    return a.start == b.start && a.end == b.end;
+  }
+
+  bool operator <(const Region &a, const RegionWithScore &b) {
+    return std::tie(a.start, a.end) < std::tie(b.start, b.end);
+  }
+
+  bool operator >(const Region &a, const RegionWithScore &b) {
+    return std::tie(a.start, a.end) > std::tie(b.start, b.end);
+  }
+
+  bool operator ==(const Region &a, const RegionWithScore &b) {
+    return a.start == b.start && a.end == b.end;
+  }
+
+  ScoredRegionSet::ScoredRegionSet(RegionSet &r, float score) {
+    for (auto &kv : r.regions_.regions_) {
+      regions_.regions_[kv.first] = std::vector<RegionWithScore>(r.regions_.regions_[kv.first].size());
+      for (auto i = 0; i < r.regions_[kv.first].size(); ++i) {
+	regions_.regions_[kv.first][i] = { r.regions_.regions_[kv.first][i].start, r.regions_.regions_[kv.first][i].end, score };
+      }
+    }
+  }
+
+  ScoredRegionSet::ScoredRegionSet(ScoredRegionSet &r, float score) {
+    for (auto &kv : r.regions_.regions_) {
+      regions_.regions_[kv.first] = std::vector<RegionWithScore>(r.regions_[kv.first].size());
+      for (auto i = 0; i < r.regions_.regions_[kv.first].size(); ++i) {
+	regions_.regions_[kv.first][i] = { r.regions_.regions_[kv.first][i].start, r.regions_.regions_[kv.first][i].end, score };
+      }
+    }
   }
 
   /**
@@ -68,6 +111,21 @@ namespace SCREEN {
     }
     regions_.update_keys();
   }
+  
+
+  /**
+     appends a list of regions from a file; sets all scores to zero
+     @param path: path to the file
+  */
+  void ScoredRegionSet::append(const bfs::path &path) {
+    std::ifstream f(path.string());
+    std::string line;
+    while (std::getline(f, line)) {
+      std::vector<std::string> v = bib::string::split(line, '\t');
+      regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]), 0.0 });
+    }
+    regions_.update_keys();
+  }
 
   void ScoredRegionSet::appendZ(const bfs::path &path) {
     _append(path, 4);
@@ -85,7 +143,54 @@ namespace SCREEN {
     _append(path, filter, 6);
   }
 
+  /**
+     converts the scores for each region to the corresponding Z-score
+     @param uselog: if true, log transform scores before computing the Z-score
+   */
+  void ScoredRegionSet::convertToZ(bool uselog) {
+
+    regions_.sort();
+    std::vector<double> values, forcalc;
+
+    // move scores to armadillo vector
+    for (auto &chr : regions_.sorted_keys_) {
+      for (auto &r : regions_[chr]) {
+	if (!uselog || r.score > 0.0) {
+	  forcalc.push_back(uselog ? std::log10(r.score) : r.score);
+	  values.push_back(uselog ? std::log10(r.score + 0.01) : r.score);
+	}
+      }
+    }
+    std::cout << "\n";
+
+    // compute Z's
+    std::cout << "found " << forcalc.size() << " values\n";
+    a::vec Zc(forcalc.data(), forcalc.size(), false, true);
+    a::vec Z(values.data(), values.size(), false, true);
+    double mean = a::mean(Zc);
+    double stdev = a::stddev(Zc);
+    std::cout << "mean is " << mean << "; stdev is " << stdev << "\n";
+    Zc = (Z - mean) / stdev;
+
+    // move scores back to object
+    uint64_t i = 0;
+    for (auto &chr : regions_.sorted_keys_) {
+      for (auto &r : regions_[chr]) {
+	if (!uselog || r.score > 0.0) {
+	  r = { r.start, r.end, Zc[i++] };
+	} else {
+	  r = { r.start, r.end, -10.0 };
+	}
+      }
+    }
+    
+  }
+
   rDHS::rDHS() {}
+
+  rDHS::rDHS(const bfs::path &rDHS_path) {
+    regions_.append(rDHS_path);
+  }
 
   /**
       clusters DHSs to make rDHS "master peaks"
@@ -164,6 +269,7 @@ namespace SCREEN {
       rDHS_cluster(k.second, regions_.regions_[k.first]);
     }
     regions_.regions_.update_keys();
+    regions_.regions_.sort();
   }
 
   void rDHS::write(const std::string& path) {
