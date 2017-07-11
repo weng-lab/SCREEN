@@ -13,6 +13,14 @@ namespace SCREEN {
   bool operator <(const RegionWithScore &a, const RegionWithScore &b);
   bool operator >(const RegionWithScore &a, const RegionWithScore &b);
   bool operator ==(const RegionWithScore &a, const RegionWithScore &b);
+
+  bool operator <(const Region &a, const RegionWithScore &b);
+  bool operator >(const Region &a, const RegionWithScore &b);
+  bool operator ==(const Region &a, const RegionWithScore &b);
+
+  bool operator <(const RegionWithScore &a, const Region &b);
+  bool operator >(const RegionWithScore &a, const Region &b);
+  bool operator ==(const RegionWithScore &a, const Region &b);
   
   class ScoredRegionSet {
   private:
@@ -21,11 +29,16 @@ namespace SCREEN {
   public:
     ScoredRegionSet() {}
     ScoredRegionSet(GenericRegionSet<RegionWithScore> &regions) : regions_(regions) {}
+    ScoredRegionSet(RegionSet&, float);
+    ScoredRegionSet(ScoredRegionSet&, float);
+
     GenericRegionSet<RegionWithScore> regions_;
+    void append(const bfs::path&);
     void appendNarrowPeak(const bfs::path&);
     void appendNarrowPeak(const bfs::path&, RegionFilter&);
     void appendZ(const bfs::path&);
     void appendZ(const bfs::path&, RegionFilter&);
+    void convertToZ(bool = false);
   };
 
   class rDHS {
@@ -35,6 +48,7 @@ namespace SCREEN {
 
   public:
     rDHS();
+    rDHS(const bfs::path&);
     rDHS(const std::vector<bfs::path>&);
     rDHS(ScoredRegionSet&);
     ScoredRegionSet regions_;

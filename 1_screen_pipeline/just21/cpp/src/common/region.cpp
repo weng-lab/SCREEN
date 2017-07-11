@@ -66,8 +66,9 @@ namespace SCREEN {
   void GenericRegionSet<T>::expandPeaks(size_t halfwidth) {
     for (auto &k : regions_) {
       for (auto i = 0; i < k.second.size(); ++i) {
-	uint32_t start = k.second[i].start - halfwidth;
-	uint32_t end = k.second[i].end + halfwidth;
+	int32_t start = k.second[i].start - halfwidth;
+	int32_t end = k.second[i].end + halfwidth;
+	if (start < 0) { start = 0; }
 	k.second[i] = { start, end };
       }
     }
@@ -79,8 +80,8 @@ namespace SCREEN {
   void GenericRegionSet<T>::expandPeaks(size_t halfwidth, ChrLengths &chromInfo) {
     for (auto &k : regions_) {
       for (auto i = 0; i < k.second.size(); ++i) {
-	uint32_t start = k.second[i].start - halfwidth;
-	uint32_t end = k.second[i].end + halfwidth;
+	int32_t start = k.second[i].start - halfwidth;
+	int32_t end = k.second[i].end + halfwidth;
 	if (start < 0) { start = 0; }
 	if (chromInfo.find(k.first) != chromInfo.end()
 	    && end > chromInfo[k.first]) {
@@ -98,7 +99,7 @@ namespace SCREEN {
     auto end = regions_[chr].end(), begin = regions_[chr].begin();
     auto i = std::lower_bound(begin, end, r);
     if (i != end && !(r < *i)) { return i - begin; }
-    return regions_.size();
+    return regions_[chr].size();
   }
   template size_t GenericRegionSet<Region>::find(const std::string &chr, const Region &r);
   template size_t GenericRegionSet<RegionWithScore>::find(const std::string &chr, const RegionWithScore &r);
@@ -129,7 +130,7 @@ namespace SCREEN {
     std::ofstream o(path.string());
     for (const auto &k : sorted_keys_) {
       for (const auto &n : regions_[k]) {
-	o << k << "\t" << n.start << "\t" << n.end << "\n";
+	o << k << '\t' << n << '\n';
       }
     }
   }

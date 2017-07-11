@@ -35,6 +35,7 @@ namespace SCREEN {
     bfs::path EncodeData(const std::string& expID,
 			 const std::string& fileID, const std::string& ext) const; 
     bfs::path chromInfo() const;
+    bfs::path correlation(const std::string&) const;
   };
 
 } // SCREEN

@@ -48,8 +48,8 @@ namespace SCREEN {
 
   class RegionSet {
   public:
-    RegionSet() {}
-    RegionSet(GenericRegionSet<Region> &regions) : regions_(regions) {}
+    RegionSet() {};
+    RegionSet(GenericRegionSet<Region> &regions) : regions_(regions) {};
     GenericRegionSet<Region> regions_;
     void appendFile(const bfs::path&);
     void appendFile(const bfs::path&, RegionFilter&);
