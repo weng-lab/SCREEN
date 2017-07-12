@@ -229,25 +229,39 @@ namespace SCREEN {
       std::cout << b.regions_.regions_["chr1"][i] << '\t' << output.regions_.regions_["chr1"][i] << '\t' << r["chr1"][i] << '\n';
     }
 
+    std::vector<ScoredRegionSet> ZScoreList(signallist.size());
+
+#pragma omp parallel for num_threads(16) // read signal; high I/O; restrict to 16
     for (auto i = 0; i < signallist.size(); ++i) {
       const auto &signalfile = signallist[i];
-      ScoredRegionSet ZScores = b.readSignal(path_.EncodeData(signalfile.exp, signalfile.acc, ".bigWig"), output, r);
-      ZScores.convertToZ(true);
+      ZScoreList[i] = b.readSignal(path_.EncodeData(signalfile.exp, signalfile.acc, ".bigWig"), output, r);
+    }
 
+#pragma omp parallel for // high compute; no thread restriction
+    for (auto i = 0; i < signallist.size(); ++i) {
+      ZScoreList[i].convertToZ(true);
+    }
+
+#pragma omp parallel for num_threads(16) // write signal; high I/O; restrict to 16
+    for (auto i = 0; i < signallist.size(); ++i) {
+      const auto &signalfile = signallist[i];
+      ZScoreList[i].regions_.write(path_.CTS(signalfile.acc));
+      std::cout << "wrote " << path_.CTS(signalfile.acc) << " (" << (i + 1) << '/' << signallist.size() << ")\n";
+    }
+
+    for (auto j = 0; j < signallist.size(); ++j) {
       for (auto &kv : output.regions_.regions_) {
+#pragma omp parallel for // high compute; no thread restriction
 	for (auto i = 0; i < kv.second.size(); ++i) {
-	  if (ZScores.regions_.regions_[kv.first][i].score > kv.second[i].score) {
+	  if (ZScoreList[j].regions_.regions_[kv.first][i].score > kv.second[i].score) {
 	    output.regions_.regions_[kv.first][i] = {
-	      ZScores.regions_.regions_[kv.first][i].start,
-	      ZScores.regions_.regions_[kv.first][i].end,
-	      ZScores.regions_.regions_[kv.first][i].score
+	      ZScoreList[j].regions_.regions_[kv.first][i].start,
+	      ZScoreList[j].regions_.regions_[kv.first][i].end,
+	      ZScoreList[j].regions_.regions_[kv.first][i].score
 	    };
 	  }
 	}
       }
-      ZScores.regions_.write(path_.CTS(signalfile.acc));
-      std::cout << "wrote " << path_.CTS(signalfile.acc) << " (" << (i + 1) << '/' << signallist.size() << ")\n";
-
     }
 
   }
@@ -282,8 +296,8 @@ namespace SCREEN {
 					   || CTCFZ.regions_.regions_[kv.first][i].score >= 1.64
 					   || H3K27acZ.regions_.regions_[kv.first][i].score >= 1.64)) {
 	  CTA << kv.first << '\t' << kv.second[i].start << '\t' << kv.second[i].end << '\t' << accession(n, 'E') << '\t'
-	      << kv.second[i] << '\t' << H3K4me3Z.regions_.regions_[kv.first][i] << '\t'
-	      << H3K27acZ.regions_.regions_[kv.first][i] << '\t' << CTCFZ.regions_.regions_[kv.first][i] << '\n';
+	      << kv.second[i].score << '\t' << H3K4me3Z.regions_.regions_[kv.first][i].score << '\t'
+	      << H3K27acZ.regions_.regions_[kv.first][i].score << '\t' << CTCFZ.regions_.regions_[kv.first][i].score << '\n';
 	}
 	++n;
       }
