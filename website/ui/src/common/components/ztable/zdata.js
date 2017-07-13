@@ -45,17 +45,25 @@ class ZData extends React.Component {
         label: "genome browsers"
       }],
     }
+
   }
 
     render() {
+
+
 	return (
 		<div>
 	 <ZTable data = {this.props.data}
-cols={this.state.cols} columnkey={"key"}
-columnlabel={"label"}/>
+cols={this.state.cols} columnkey={"key"} columnData={this.props.cols}
+columnlabel={"label"} />
 		<br></br><br></br><br></br>
 	    </div> );
     }
+
+
+
+
+
 
 }
 

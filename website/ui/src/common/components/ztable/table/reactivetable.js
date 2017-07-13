@@ -2,20 +2,18 @@ import React from 'react';
 import { Table, Pagination } from 'react-bootstrap';
 import { Button, HelpBlock } from 'react-bootstrap';
 
-
 class ReactiveTable extends React.Component {
 
-
     render() {
-var headerComponents = this.props.headerComponents, 
-rowComponents = this.props.rowComponents,  
-pages = this.props.pages, 
-current_page =  this.props.current_page ,
-pageChange = this.props.pageChange, 
-dataLength = this.props.dataLength;
+        var headerComponents = this.props.headerComponents,
+          rowComponents = this.props.rowComponents,
+          pages = this.props.pages,
+          current_page = this.props.current_page,
+          pageChange = this.props.pageChange,
+          dataLength = this.props.dataLength;
 
-      return (
-<div>
+        return (
+          <div>
           <Table id="searchResults" class="searchable sortable">
             <thead> { headerComponents } </thead>
             <tbody> { rowComponents } </tbody>
@@ -30,12 +28,8 @@ dataLength = this.props.dataLength;
             onSelect = { pageChange }/>
 
             <HelpBlock> Found { dataLength } result(s) < /HelpBlock>
-</div>);
-
-  }
-
-
+            </div>);
+          }
 }
 
-
-    export default ReactiveTable;
+export default ReactiveTable;

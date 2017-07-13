@@ -1,18 +1,22 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import ResultsTable from '../../../common/components/results_table';
 import ZData from '../../../common/components/ztable/zdata';
 
 
 
-import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
+import TableColumns, {table_order, columnDefs} from '../config/ztable_with_cart';
 
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
+
+
+
+
+
 import {doToggle, isCart} from '../../../common/utility'
 
 class TableWithCart extends React.Component {
@@ -308,8 +312,22 @@ class TableWithCart extends React.Component {
 		</div>
 
 
-      < ZData data = { data } cols = { TableColumns(this.props.cellType ? 
-        this.props.make_ct_friendly(this.props.cellType) : null) } />
+      < ZData data = { data } 
+
+                              order={table_order}
+			      columnDefs={columnDefs}
+            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+                              onTdClick={(td, rowdata) =>
+                                  this.table_click_handler(td, rowdata, actions)}
+                              cvisible={this._opposite(cols, this.props.cts)}
+                              onButtonClick={(td, rowdata) =>
+                                  this.button_click_handler(td, rowdata, actions)}
+                              bFilter={true}
+                              bLengthChange={true} key={this.props.cellType}
+
+
+
+/>
 	    </div>
 
 	);
