@@ -16,6 +16,7 @@
 #include "common/saturation.hpp"
 #include "common/correlation.hpp"
 #include "paths.hpp"
+#include "cREs/ctcf_tad.hpp"
 #include "encode.hpp"
 
 namespace SCREEN {
@@ -31,7 +32,7 @@ namespace SCREEN {
     RegionSet r;
     r.appendFile(path_.rDHS_list());
     
-    BinarySignal b(path_.root() / "DHS" / "signal");
+    BinarySignal b(path_.root() / "rDHS" / "signal");
     std::vector<bfs::path> dnase_paths;
     for (auto &file : dnase_list_) {
       dnase_paths.push_back(path_.EncodeData(file.exp, file.acc, ".bigWig"));
@@ -220,7 +221,7 @@ namespace SCREEN {
     }
   }
   
-  void ENCODE::_computeMaxZ(std::vector<ENCODEFile> &signallist, ScoredRegionSet &output, const std::string &subdir) {
+  std::vector<ScoredRegionSet> ENCODE::_computeMaxZ(std::vector<ENCODEFile> &signallist, ScoredRegionSet &output, const std::string &subdir) {
     
     BinarySignal b(path_.root() / "rDHS" / subdir);
 
@@ -264,6 +265,8 @@ namespace SCREEN {
       }
     }
 
+    return ZScoreList;
+
   }
 
   /**
@@ -306,6 +309,59 @@ namespace SCREEN {
 
   }
 
+  void ENCODE::similar_DNase_jaccard() {
+
+    // get max and CTS Z-scores
+    std::cout << "computing Z-scores...\n";
+    ScoredRegionSet maxZ(rDHS_.regions_, -10.0);
+    std::vector<ScoredRegionSet> dnase_Z = _computeMaxZ(dnase_list_, maxZ, "signal");
+    
+    // for each rDHS...
+    for (auto &kv : maxZ.regions_.regions_) {
+
+      for (auto i = 0; i < kv.second.size(); ++i) {
+
+	ChrToRegions<float> results;
+
+	// find active cell types
+	std::cout << "finding active cell types...\n";
+	std::vector<char> active(dnase_Z.size(), 0);
+	for (auto j = 0; j < dnase_Z.size(); ++j) {
+	  if (dnase_Z[j].regions_.regions_[kv.first][i].score > 1.64) { active[j] = 1; }
+	}
+
+	// get jaccard index for all other regions
+	std::cout << "finding jaccard...\n";
+	int l = 0;
+	for (auto &kv : maxZ.regions_.regions_) {
+	  for (auto k = 0; k < kv.second.size(); ++k) {
+	    if (l++ % 100000 == 0) { std::cout << l << '\n'; }
+	    float jaccard = 0.0;
+	    for (auto j = 0; j < dnase_Z.size(); ++j) {
+	      jaccard += (float)(!(active[j] ^ (dnase_Z[j].regions_.regions_[kv.first][k].score > 1.64)));
+	    }
+	    results[kv.first].push_back(jaccard / dnase_Z.size());
+	  }
+	}
+
+	// write results
+	std::cout << "writing " << path_.similarity("DNase", accession(i, 'D')).string() << '\n';
+	std::ofstream f(path_.similarity("DNase", accession(i, 'D')).string());
+	for (auto &kv : results) {
+	  for (auto i = 0; i < kv.second.size(); ++i) {
+	    f << kv.first << '\t' << maxZ.regions_.regions_[kv.first][i].start << '\t' << maxZ.regions_.regions_[kv.first][i].end << '\t'
+	      << kv.second[i] << '\n';
+	  }
+	}
+
+	break;
+
+      }
+
+    }
+
+  }
+
   /**
      creates saturation curve; requires output from ENCODE::computeZScores
      output is saved to the saturation path defined in the Paths class
@@ -323,6 +379,15 @@ namespace SCREEN {
     Saturation s(r);
     s.write(path_.saturation());
 
+  }
+
+  void ENCODE::compute_density(const std::string &assayname, const std::vector<ENCODEFile> &list,
+			       uint32_t binsize) {
+    std::vector<bfs::path> cRE_paths;
+    for (const auto &file : list) {
+      cRE_paths.push_back(path_.CTS(file.acc));
+    }
+    CTCF_TAD(cRE_paths).write(path_.density(assayname, binsize), binsize);
   }
 
 } // SCREEN
