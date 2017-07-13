@@ -1,7 +1,7 @@
 import React from 'react';
-import ReactiveTable from './reactivetable';
+import ZTable from './ztable';
 
-class ReactiveData extends React.Component {
+class ZData extends React.Component {
 
   constructor() {
     super();
@@ -50,7 +50,7 @@ class ReactiveData extends React.Component {
     render() {
 	return (
 		<div>
-	 <ReactiveTable data = {this.props.data}
+	 <ZTable data = {this.props.data}
 cols={this.state.cols} columnkey={"key"}
 columnlabel={"label"}/>
 		<br></br><br></br><br></br>
@@ -59,4 +59,4 @@ columnlabel={"label"}/>
 
 }
 
-export default ReactiveData;
+export default ZData;
