@@ -97,17 +97,27 @@ int main(int argc, char **argv){
   std::cout << "computing Z-scores...\n";
   e.computeZScores();
   */
-  std::cout << "loading rDHSs...\n";
-  e.make_rDHS();
-  e.binarize_rDHS();
-  
   /*
+  std::cout << "loading rDHSs...\n";
+  */
+  e.make_rDHS();
+  /* e.binarize_rDHS();
+  */
+
+  /*  
   std::cout << "correlating...\n";
   e.runCorrelation();
   */
 
+  std::cout << "computing density...\n";
+  //e.compute_density("CTCF", e.ctcf_list_, 10000);
+  //e.compute_density("H3K4me3", e.h3k4me3_list_, 10000);
+  e.similar_DNase_jaccard();
+
+  /*
   std::cout << "creating cREs...\n";
   e.create_cREs();
+  */
 
   //run_saturation("hg19");
 

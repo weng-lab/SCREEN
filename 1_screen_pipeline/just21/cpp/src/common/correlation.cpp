@@ -29,6 +29,7 @@ namespace SCREEN {
     
     // populate with region scores
     for (auto i = 0; i < regions.size(); ++i) {
+#pragma omp parallel for
       for (auto j = 0; j < regions[i].regions_.regions_[chr].size(); ++j) {
 	values.at(i, j) = regions[i].regions_.regions_[chr][j].score;
       }
@@ -49,6 +50,7 @@ namespace SCREEN {
     // populate with region scores
     for (auto i = 0; i < signalfiles.size(); ++i) {
       a::Col<float> v = b.readSignal<RegionSet>(signalfiles[i], chr, regions);
+#pragma omp parallel for
       for (auto j = 0; j < regions.regions_.regions_[chr].size(); ++j) {
 	values.at(i, j) = v.at(j);
       }

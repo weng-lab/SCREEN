@@ -6,6 +6,10 @@
 namespace SCREEN {
   bfs::path Paths::root() const { return root_; }
 
+  bfs::path Paths::similarity(const std::string &assay, const std::string &accession) {
+    return root_ / "similarity" / (accession + ".bed");
+  }
+
   bfs::path Paths::rDHS_list() const {
     return root_ / "rDHS.bed";
   }
@@ -58,6 +62,10 @@ namespace SCREEN {
 
   bfs::path Paths::correlation(const std::string &chr) const {
     return root_ / "correlations" / (chr + ".json");
+  }
+
+  bfs::path Paths::density(const std::string &assayname, uint32_t binsize) const {
+    return root_ / "density" / (assayname + "." + std::to_string(binsize) + ".bed");
   }
   
 } // SCREEN

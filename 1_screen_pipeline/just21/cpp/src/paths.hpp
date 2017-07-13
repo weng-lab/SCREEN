@@ -36,6 +36,8 @@ namespace SCREEN {
 			 const std::string& fileID, const std::string& ext) const; 
     bfs::path chromInfo() const;
     bfs::path correlation(const std::string&) const;
+    bfs::path density(const std::string&, uint32_t) const;
+    bfs::path similarity(const std::string&, const std::string&);
   };
 
 } // SCREEN
