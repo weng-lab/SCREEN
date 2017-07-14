@@ -23,49 +23,41 @@ export default function generateRows(current_page,
 
 
 
-        if (typeof(item[colData[columnkey]]) == 'object' ||
-          colData[columnkey] == 'genesallpc')
-          return <td > {} < /td>;
-
-
         // data value for per column
         var customSearchCondition = false;
         let search_item;
 
         search_item = customSearch.map(function(searchComponent, index) {
           if (searchComponent.column == colData[columnkey]) {
-
             customSearchCondition = true;
 
-
+            console.log(item[colData[columnkey]][searchComponent.value]);
             return item[colData[columnkey]][searchComponent.value];
           }
 
           if (!customSearchCondition && index == customSearch.length - 1) {
-
             return item[colData[columnkey]];
-
           }
-
         });
-
 
         search_item.push(item[colData[columnkey]]);
 
 
-
+var searchIndex = 0;
         var i = 0;
 
         do {
           // test condition of search is true
           var testCondition = searchRows(show_row,
-            foundSearchItem, search_item[i], value);
+            foundSearchItem, search_item[i], value, customSearch);
+
 
           show_row = testCondition.show_row;
           foundSearchItem = testCondition.foundSearchItem;
 
+
           if (show_row) {
-            var searchIndex = i + 1;
+            searchIndex = i + 1;
 
             break;
           }
@@ -83,6 +75,8 @@ export default function generateRows(current_page,
         if (typeof(item[colData[columnkey]]) == 'object' ||
           colData[columnkey] == 'genesallpc')
           return <td > {} < /td>;
+
+
         // return data per row and column
         return <td > {
           search_item[searchIndex]
@@ -109,6 +103,8 @@ export default function generateRows(current_page,
 
       // returns rows where pagination or search is true
       if (show_row) {
+
+
         countRowsReturned++;
 
         // sections off pages for pagination

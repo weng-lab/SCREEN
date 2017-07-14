@@ -22,7 +22,7 @@ class ZTable extends React.Component {
       // variables for search box
       value: '',
       searchCondition: false,
-      customSearch: [],
+      customSearch: [{column: 'genesallpc', value: 'accession'}],
 
       // variables for sorting
       columnSort: [],
@@ -179,7 +179,8 @@ class ZTable extends React.Component {
       }
       // case when columnSort is empty, push in new data
       if (!condition) {
-        if (typeof(data[0][columnKey]) == 'string' || typeof(data[0][columnKey]) == 'number') {
+        if (typeof(data[0][columnKey]) == 'string'
+        || typeof(data[0][columnKey]) == 'number') {
           columnSort.push({
             column: columnKey,
             direction: 'asc',
@@ -198,9 +199,7 @@ class ZTable extends React.Component {
           columnSort[columnSort.length - 1]);
       }
       if (columnSortType.customSort) {
-
         customSort(data, columnSortType);
-
       } else {
         sortData(data, columnSortType);
       }

@@ -1,7 +1,7 @@
 import ifRationalIncreaseIndex from './isrational';
 
 export default function searchRows(show_row,
-      foundSearchItem, search_item, value) {
+      foundSearchItem, search_item, value, customSearch) {
 
       var search_index = 0; // index of value in table
       var value_index = 0; // index of value in search box
@@ -11,6 +11,8 @@ export default function searchRows(show_row,
 
       // cotinues to search items in table per row for a match
       while (search_index < searchLength) {
+
+
 
         // breaks out of condition if match already found in the row
         if (show_row)
