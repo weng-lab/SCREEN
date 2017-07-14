@@ -34,4 +34,3 @@ export default function ifRationalIncreaseIndex(search_item,
         value_index: value_index };
 
     }
-

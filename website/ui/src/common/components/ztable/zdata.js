@@ -1,7 +1,7 @@
 import React from 'react';
 import ZTable from './ztable';
 
-class ZData extends React.Component {
+export default class ZData extends React.Component {
 
   constructor() {
     super();
@@ -60,11 +60,4 @@ columnlabel={"label"} />
 	    </div> );
     }
 
-
-
-
-
-
 }
-
-export default ZData;

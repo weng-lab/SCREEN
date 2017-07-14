@@ -1,8 +1,8 @@
 import searchRows from '../search/searchrows';
+import searchItem from '../search/searchitem';
 
 export default function generateRows(current_page,
   per_page, value, cols, data, columnkey, customSearch) {
-
 
   var start_offset = (current_page - 1) * per_page; // offset for pagination
   let start_count = 0; // start count for pagination, start_counts
@@ -21,65 +21,28 @@ export default function generateRows(current_page,
       // searches for column data within each row
       var cells = cols.map(function(colData) {
 
-
+        var columnName = colData[columnkey];
 
         // data value for per column
-        var customSearchCondition = false;
-        let search_item;
-
-        search_item = customSearch.map(function(searchComponent, index) {
-          if (searchComponent.column == colData[columnkey]) {
-            customSearchCondition = true;
-
-            console.log(item[colData[columnkey]][searchComponent.value]);
-            return item[colData[columnkey]][searchComponent.value];
-          }
-
-          if (!customSearchCondition && index == customSearch.length - 1) {
-            return item[colData[columnkey]];
-          }
-        });
-
-        search_item.push(item[colData[columnkey]]);
+        var searchItemComponents = searchItem(item, columnName, customSearch);
+        var search_item = searchItemComponents.search_item;
+        var columnIndex = searchItemComponents.columnIndex;
 
 
-var searchIndex = 0;
-        var i = 0;
+        // test condition if search is true
+        var testCondition = searchRows(show_row,
+          foundSearchItem, search_item, value, columnName, customSearch[columnIndex]);
 
-        do {
-          // test condition of search is true
-          var testCondition = searchRows(show_row,
-            foundSearchItem, search_item[i], value, customSearch);
+        show_row = testCondition.show_row;
+        foundSearchItem = testCondition.foundSearchItem;
 
-
-          show_row = testCondition.show_row;
-          foundSearchItem = testCondition.foundSearchItem;
-
-
-          if (show_row) {
-            searchIndex = i + 1;
-
-            break;
-          }
-          i++;
-        }
-        while (i < search_item.length);
-
-        if (search_item.length == 1) {
-          searchIndex = 0;
-
-        }
-
-
-
-        if (typeof(item[colData[columnkey]]) == 'object' ||
-          colData[columnkey] == 'genesallpc')
+        if (typeof(item[colData[columnkey]]) == 'object')
           return <td > {} < /td>;
 
 
         // return data per row and column
         return <td > {
-          search_item[searchIndex]
+          search_item
         } < /td>;
       });
 

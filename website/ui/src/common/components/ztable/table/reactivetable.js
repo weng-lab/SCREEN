@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Pagination } from 'react-bootstrap';
 import { Button, HelpBlock } from 'react-bootstrap';
 
-class ReactiveTable extends React.Component {
+export default class ReactiveTable extends React.Component {
 
     render() {
         var headerComponents = this.props.headerComponents,
@@ -31,5 +31,3 @@ class ReactiveTable extends React.Component {
             </div>);
           }
 }
-
-export default ReactiveTable;

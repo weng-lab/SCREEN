@@ -8,7 +8,7 @@ import SearchBar from './table/search/searchbar';
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
 
-class ZTable extends React.Component {
+export default class ZTable extends React.Component {
 
   constructor(props) {
     super(props);
@@ -22,7 +22,10 @@ class ZTable extends React.Component {
       // variables for search box
       value: '',
       searchCondition: false,
-      customSearch: [{column: 'genesallpc', value: 'accession'}],
+      customSearch: [{column: 'genesallpc', value: '',
+      filterSearch: 'disabled'}, {column: 'start',
+      value: undefined, filterSearch: 'disabled'}],
+      //customSearch: [{column: undefined, value: '', filterSearch: ''}],
 
       // variables for sorting
       columnSort: [],
@@ -37,13 +40,12 @@ class ZTable extends React.Component {
 
   }
 
-
   render() {
 
     // temp variables
     var data = this.props.data; // stores data to be entered in table
 
-    console.log("data", data);
+    //console.log("data", data);
     var cols = this.props.cols,
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
@@ -145,7 +147,6 @@ class ZTable extends React.Component {
       if (columnSort.length > 0) {
         for (let i = 0; i < columnSort.length; i++) {
 
-
           // inactivates filtering
           if (columnSort[i].sortOn != 'disabled') {
             Object.assign(columnSort[i], {
@@ -207,5 +208,3 @@ class ZTable extends React.Component {
   }
 
 }
-
-export default ZTable;
