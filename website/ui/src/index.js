@@ -9,6 +9,7 @@ import GeneExp from './apps/geneexp/main';
 import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
+import TadPage from './apps/tads/main';
 
 function myCreateElement(Component, props) {
     return (<Component {...props} />);
@@ -25,4 +26,5 @@ ReactDOM.render((
 	<Route path="/deApp/:assembly/" component={De} />
 	<Route path="/gwasApp/:assembly" component={Gwas} />
 	<Route path="/intersections/:assembly" component={Intersection} />
+	<Route path="/tads/:assembly" component={TadPage} />
     </Router>), document.getElementById('root'));

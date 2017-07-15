@@ -30,10 +30,15 @@ def run(args, DBCONN):
             g.doimport([("fantomcat", FCPaths.global_statistics),
                         ("fantomcat_2kb", FCPaths.twokb_statistics)],
                        curs)
+            print("imported fantomcat")
             if os.path.exists("/data/projects/cREs/%s/saturation.json" % assembly):
                 g.doimport([("saturation", "/data/projects/cREs/%s/saturation.json" % assembly)],
                            curs)
-                print("saturation")
+                print("imported saturation")
+            if os.path.exists("/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly):
+                g.doimport([("ctcf_density_10000", "/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly)],
+                           curs)
+                print("imported CTCF density")
 
 def parse_args():
     parser = argparse.ArgumentParser()
