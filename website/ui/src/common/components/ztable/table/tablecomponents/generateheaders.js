@@ -22,7 +22,7 @@ export default function generateHeaders(handleClick,
                         onClick={handleClick.bind(this, colData[columnkey])}>
                           <tr>
                             <th>{ colData[columnlabel] }</th>
-                            <th><font size="5" color={activeArrowColor}>&#8593;</font>
+                            <th><font size="5" color={activeArrowColor}>&#8595;</font>
                               <font color={inactiveArrowColor} size="2">&#8595;</font>
                             </th>
                           </tr>
@@ -33,7 +33,7 @@ export default function generateHeaders(handleClick,
                           <tr>
                             <th>{ colData[columnlabel] }</th>
                               <th><font color={inactiveArrowColor} size="2">&#8593;</font>
-                              <font size="5" color={activeArrowColor}>&#8595;</font>
+                              <font size="5" color={activeArrowColor}>&#8593;</font>
                             </th>
                           </tr>
                         </th>;

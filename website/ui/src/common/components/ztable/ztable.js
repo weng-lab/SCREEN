@@ -24,11 +24,18 @@ export default class ZTable extends React.Component {
       searchCondition: false,
       customSearch: [{column: 'genesallpc', value: '',
       filterSearch: 'disabled'}, {column: 'start',
-      value: undefined, filterSearch: 'disabled'}],
+      value: undefined, filterSearch: 'disabled'}, {column: 'info',
+      value: 'accession', filterSearch: 'disabled'}],
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
+      searchedData: [],
+
 
       // variables for sorting
-      columnSort: [],
+      columnSort: [{
+        column: "info",
+        direction: 'asc',
+        sortOn: 'inactive'
+      }],
       columnSortType: []
 
     };
@@ -43,7 +50,9 @@ export default class ZTable extends React.Component {
   render() {
 
     // temp variables
-    var data = this.props.data; // stores data to be entered in table
+    var data = this.props.data,
+    searchedData = this.state.searchedData,
+    searchCondition = this.state.searchCondition; // stores data to be entered in table
 
     //console.log("data", data);
     var cols = this.props.cols,
@@ -66,7 +75,7 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     var tableComponents = generateTableComponents(current_page,
-      per_page, value, cols, data, columnkey,
+      per_page, value, cols, data, searchedData, searchCondition, columnkey,
       columnlabel, columnSort, this.handleClick, customSearch);
 
     var headerComponents = tableComponents.headerComponents,
@@ -74,12 +83,13 @@ export default class ZTable extends React.Component {
       dataLength = tableComponents.dataLength,
       pages = tableComponents.pages;
 
+      this.state.searchedData = tableComponents.searchedData;
+
     // returns search box and result table
     return (
       <div>
-        <SearchBar value = { this.state.value }
-          searchEvent = { this.handleChange }/>
-
+          <SearchBar value = { this.state.value }
+            searchEvent = { this.handleChange }/>
         <ReactiveTable headerComponents = { headerComponents }
           rowComponents = { rowComponents }
           pages = { pages }
@@ -96,6 +106,7 @@ export default class ZTable extends React.Component {
     this.setState({
       value: e.target.value
     });
+
     // case when search is true
     if (e.target.value != '') {
       this.setState({
@@ -199,12 +210,12 @@ export default class ZTable extends React.Component {
         Object.assign(columnSortType,
           columnSort[columnSort.length - 1]);
       }
-      if (columnSortType.customSort) {
+      if (columnSortType.customSort !== undefined
+        && columnSortType.customSort !== null) {
         customSort(data, columnSortType);
       } else {
         sortData(data, columnSortType);
       }
     }
   }
-
 }

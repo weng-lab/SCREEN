@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import ZData from '../../../common/components/ztable/zdata';
-
+import ResultsTable from '../../../common/components/results_table';
 
 
 import TableColumns, {table_order, columnDefs} from '../config/ztable_with_cart';
@@ -311,9 +311,7 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-
-      < ZData data = { data } 
-
+		<ResultsTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
@@ -324,6 +322,17 @@ class TableWithCart extends React.Component {
                                   this.button_click_handler(td, rowdata, actions)}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
+/>
+
+<br></br><br></br><br></br>
+
+
+      < ZData data = { data } 
+
+                
+		
+            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+
 
 
 

@@ -3,6 +3,17 @@ import ifRationalIncreaseIndex from './isrational';
 export default function searchRows(show_row,
       foundSearchItem, search_item, value, columnName, customSearch) {
 
+        if (value == ''|| show_row || (columnName == customSearch.column
+          && customSearch.filterSearch === 'disabled')) {
+            if(value == '') {
+              show_row = true;
+            }
+            return {
+              show_row: show_row,
+              foundSearchItem: foundSearchItem
+            };
+        }
+
       var search_index = 0; // index of value in table
       var value_index = 0; // index of value in search box
 
@@ -12,19 +23,6 @@ export default function searchRows(show_row,
       // cotinues to search items in table per row for a match
       while (search_index < searchLength) {
 
-        if (columnName == customSearch.column
-          && customSearch.filterSearch === 'disabled') {
-          break;
-        }
-
-        // breaks out of condition if match already found in the row
-        if (show_row)
-          break;
-
-        if (compareValue == '') {
-          show_row = true;
-          break;
-        }
 
         // case when value is numberic, enter the loop only once
         if (!isNaN(value) && value != 0
@@ -73,7 +71,7 @@ export default function searchRows(show_row,
       // return search conditions, show_rows shows rowa with matching
       // values, foundSearchItem error checks for a match in the end
       return {
-        show_row: show_row,
-        foundSearchItem: foundSearchItem
+        show_row,
+        foundSearchItem
       };
     }

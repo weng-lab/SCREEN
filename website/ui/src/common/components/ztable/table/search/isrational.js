@@ -30,7 +30,7 @@ export default function ifRationalIncreaseIndex(search_item,
       }
 
       // returns index at start of decimal without leading zeros
-      return { search_index: search_index,
-        value_index: value_index };
+      return { search_index,
+        value_index};
 
     }

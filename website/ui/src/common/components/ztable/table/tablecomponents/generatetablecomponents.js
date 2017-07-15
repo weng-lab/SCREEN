@@ -2,18 +2,19 @@ import generateRows from './generaterows';
 import generateHeaders from './generateheaders';
 
 export default function generateTableComponents(current_page,
-  per_page, value, cols, data, columnkey,
+  per_page, value, cols, data, searchedData, searchCondition, columnkey,
   columnlabel, columnSort, handleClick, customSearch) {
   // generates data by rows
   var fullData = generateRows(current_page,
-    per_page, value, cols, data, columnkey, customSearch);
+    per_page, value, cols, data, searchedData, searchCondition, columnkey, customSearch);
 
   // generates header components
   var headerComponents = generateHeaders(handleClick,
     cols, columnkey, columnlabel, columnSort);
 
   // generates row components
-  var rowComponents = fullData.colsData;
+  var rowComponents = fullData.rowComponents;
+  searchedData = fullData.searchedData;
   var dataLength = fullData.dataLength;
 
 
@@ -27,10 +28,11 @@ export default function generateTableComponents(current_page,
   var pages = Math.ceil(dataLength / per_page);
 
   return {
-    rowComponents: rowComponents,
-    headerComponents: headerComponents,
-    dataLength: dataLength,
-    pages: pages
+    rowComponents,
+    searchedData,
+    headerComponents,
+    dataLength,
+    pages
   };
 
 }
