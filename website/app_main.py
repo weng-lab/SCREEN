@@ -15,6 +15,7 @@ from controllers.cart_ws import CartWebServiceWrapper
 from controllers.data_ws import DataWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
 from controllers.intersection_controller import IntersectionController
+from controllers.tads_controller import TadsController
 #from controllers.comparison_controller import ComparisonController
 
 from common.session import Sessions
@@ -30,6 +31,7 @@ class MainApp():
         self.mc = MainController(self.templates, ps, cache)
         self.ge = GeneExpController(self.templates, ps, cache)
         self.de = DeController(self.templates, ps, cache)
+        self.tc = TadsController(self.templates, ps, cache)
         self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
@@ -104,6 +106,10 @@ class MainApp():
         j = cherrypy.request.json
         return self.cartWS.process(j, self.sessions.userUid(),
                                    args, kwargs)
+
+    @cherrypy.expose
+    def tads(self, *args, **kwargs):
+        return self.tc.tads(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()

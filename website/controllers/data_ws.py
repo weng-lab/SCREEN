@@ -71,7 +71,8 @@ class DataWebService(GetOrSetMemCache):
                         "trees" : self.trees,
                         "tfenrichment": self.tfenrichment,
                         "global_object": self.global_object,
-                        "global_fantomcat": self.global_fantomcat
+                        "global_fantomcat": self.global_fantomcat,
+                        "ctcfdistr": self.ctcf_distr
         }
 
         self.reDetailActions = {
@@ -106,6 +107,14 @@ class DataWebService(GetOrSetMemCache):
             "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args),
             "saturation": self.global_object({"name": "saturation"}, args) #,
 #            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
+        }
+
+    def ctcf_distr(self, j, args):
+        result = self.global_object({"name": "ctcf_density_10000"}, args)
+        if j["chr"] not in result:
+            raise Exception("data_ws$DataWS::ctcf_distr: chr %s not valid" % j["chr"])
+        return {
+            "data": result[j["chr"]]
         }
     
     def global_object(self, j, args):
