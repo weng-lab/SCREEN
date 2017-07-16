@@ -22,10 +22,19 @@ export default class ZTable extends React.Component {
       // variables for search box
       value: '',
       searchCondition: false,
-      customSearch: [{column: 'genesallpc', value: '',
-      filterSearch: 'disabled'}, {column: 'start',
-      value: undefined, filterSearch: 'disabled'}, {column: 'info',
-      value: 'accession', filterSearch: 'disabled'}],
+      customSearch: [{
+        column: 'genesallpc',
+        value: '',
+        filterSearch: 'disabled'
+      }, {
+        column: 'start',
+        value: undefined,
+        filterSearch: 'disabled'
+      }, {
+        column: 'info',
+        value: 'accession',
+        filterSearch: 'disabled'
+      }],
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedData: [],
 
@@ -51,8 +60,8 @@ export default class ZTable extends React.Component {
 
     // temp variables
     var data = this.props.data,
-    searchedData = this.state.searchedData,
-    searchCondition = this.state.searchCondition; // stores data to be entered in table
+      searchedData = this.state.searchedData,
+      searchCondition = this.state.searchCondition;
 
     //console.log("data", data);
     var cols = this.props.cols,
@@ -60,7 +69,7 @@ export default class ZTable extends React.Component {
       columnlabel = this.props.columnlabel,
       columnSort = this.state.columnSort;
 
-      var customSearch = this.state.customSearch;
+    var customSearch = this.state.customSearch;
 
     // value from search box
     var value = this.state.value;
@@ -75,27 +84,28 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     var tableComponents = generateTableComponents(current_page,
-      per_page, value, cols, data, searchedData, searchCondition, columnkey,
-      columnlabel, columnSort, this.handleClick, customSearch);
+      per_page, value, cols, data, searchedData,
+      searchCondition, columnkey, columnlabel,
+      columnSort, this.handleClick, customSearch);
 
     var headerComponents = tableComponents.headerComponents,
       rowComponents = tableComponents.rowComponents,
       dataLength = tableComponents.dataLength,
       pages = tableComponents.pages;
 
-      this.state.searchedData = tableComponents.searchedData;
+    this.state.searchedData = tableComponents.searchedData;
 
     // returns search box and result table
     return (
       <div>
-          <SearchBar value = { this.state.value }
-            searchEvent = { this.handleChange }/>
-        <ReactiveTable headerComponents = { headerComponents }
-          rowComponents = { rowComponents }
-          pages = { pages }
-          current_page = { current_page }
-          pageChange = { this.handleSelect }
-          dataLength = { dataLength }/>
+      <SearchBar value = { this.state.value }
+        searchEvent = { this.handleChange }/>
+      <ReactiveTable headerComponents = { headerComponents }
+        rowComponents = { rowComponents }
+        pages = { pages }
+        current_page = { current_page }
+        pageChange = { this.handleSelect }
+        dataLength = { dataLength }/>
       </div>
     );
   }
@@ -103,23 +113,15 @@ export default class ZTable extends React.Component {
 
   handleChange(e) {
     // sets current state of text entered on search box
-    this.setState({
-      value: e.target.value
-    });
+    this.setState({ value: e.target.value });
 
     // case when search is true
     if (e.target.value != '') {
-      this.setState({
-        searchCondition: true
-      });
+      this.setState({ searchCondition: true });
       // set active page for pagination to 1
-      this.setState({
-        activeSearchPage: 1
-      });
+      this.setState({ activeSearchPage: 1 });
     } else {
-      this.setState({
-        searchCondition: false
-      });
+      this.setState({ searchCondition: false });
     }
   }
 
@@ -128,21 +130,21 @@ export default class ZTable extends React.Component {
     // for both cases when search is true
     // and when search is false
     if (this.state.searchCondition)
-      this.setState({
-        activeSearchPage: eventKey
-      });
+      this.setState({ activeSearchPage: eventKey });
     else
-      this.setState({
-        activePage: eventKey
-      });
+      this.setState({ activePage: eventKey });
   }
 
 
   handleClick(columnKey) {
     // rerender if sorting is true
-    this.setState({
-      columnSortType: []
-    });
+    this.setState({ columnSortType: [] });
+
+    if ((this.state.activePage > 1 ||
+        this.state.activeSearchPage > 1) &&
+      this.state.searchCondition) {
+      this.setState({ searchedData: [] });
+    }
 
     // checks whether columnSort is empty
     var condition = false;
@@ -191,8 +193,8 @@ export default class ZTable extends React.Component {
       }
       // case when columnSort is empty, push in new data
       if (!condition) {
-        if (typeof(data[0][columnKey]) == 'string'
-        || typeof(data[0][columnKey]) == 'number') {
+        if (typeof(data[0][columnKey]) == 'string' ||
+          typeof(data[0][columnKey]) == 'number') {
           columnSort.push({
             column: columnKey,
             direction: 'asc',
@@ -210,8 +212,8 @@ export default class ZTable extends React.Component {
         Object.assign(columnSortType,
           columnSort[columnSort.length - 1]);
       }
-      if (columnSortType.customSort !== undefined
-        && columnSortType.customSort !== null) {
+      if (columnSortType.customSort !== undefined &&
+        columnSortType.customSort !== null) {
         customSort(data, columnSortType);
       } else {
         sortData(data, columnSortType);

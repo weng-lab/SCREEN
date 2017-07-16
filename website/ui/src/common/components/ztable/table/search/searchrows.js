@@ -3,7 +3,8 @@ import ifRationalIncreaseIndex from './isrational';
 export default function searchRows(show_row,
       foundSearchItem, search_item, value, columnName, customSearch) {
 
-        if (value == ''|| show_row || (columnName == customSearch.column
+        if (value == ''|| show_row
+          || (columnName == customSearch.column
           && customSearch.filterSearch === 'disabled')) {
             if(value == '') {
               show_row = true;
