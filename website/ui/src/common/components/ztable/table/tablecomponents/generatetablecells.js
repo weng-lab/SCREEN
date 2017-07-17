@@ -4,35 +4,40 @@ import searchItem from '../search/searchitem';
 export default function generateTableCells(cols,
   columnkey, item, value, customSearch) {
 
-  let show_row = false,
-    foundSearchItem = false;
+  let show_row = false;
 
   return {
     cells: cols.map(function(colData) {
       let columnName = colData[columnkey];
 
       // data value for per column
-      let searchItemComponents = searchItem(item,
+      let sic = searchItem(item,
           columnName, customSearch),
-        search_item = searchItemComponents.search_item,
-        columnIndex = searchItemComponents.columnIndex;
+        search_item = sic.search_item,
+        columnIndex = sic.columnIndex;
 
       // test condition if search is true
-      let testCondition = searchRows(show_row,
-        foundSearchItem, search_item, value,
+      let tc = searchRows(show_row, search_item, value,
         columnName, customSearch[columnIndex]);
 
-      show_row = testCondition.show_row;
-      foundSearchItem = testCondition.foundSearchItem;
+      show_row = tc.show_row;
 
       // if data cannot be outputted, returns blank
       if (typeof(search_item) == 'object') {
         return <td > {} < /td>;
       }
       // return data per row and column
+      if (!isNaN(search_item) &&
+        !isNaN(search_item)) {
+
+
+search_item = (search_item).toLocaleString();
+
+
+        }
+
       return <td > { search_item } </td>;
     }),
     show_row,
-    foundSearchItem
   };
 }

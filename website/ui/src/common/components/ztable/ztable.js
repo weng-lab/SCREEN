@@ -78,18 +78,18 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     // generates header amd row components
-    let tableComponents = generateTableComponents(current_page,
+    let tc = generateTableComponents(current_page,
       per_page, value, cols, data, searchedData,
       searchCondition, columnkey, columnlabel,
       columnSort, this.handleClick, customSearch);
 
-    let headerComponents = tableComponents.headerComponents,
-      rowComponents = tableComponents.rowComponents,
-      dataLength = tableComponents.dataLength,
-      pages = tableComponents.pages;
+    let headerComponents = tc.headerComponents,
+      rowComponents = tc.rowComponents,
+      dataLength = tc.dataLength,
+      pages = tc.pages;
 
     // updates seached data, search data packages the searched results
-    this.state.searchedData = tableComponents.searchedData;
+    this.state.searchedData = tc.searchedData;
 
     // returns search box and result table
     return (

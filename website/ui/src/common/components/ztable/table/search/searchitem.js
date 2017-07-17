@@ -6,8 +6,8 @@ export default function searchItem(item,
   let columnIndex = 0;
 
   // case when custom sort is list of objects
-  // find value that matches column key and returns
-  // that one value
+  // find value that matches column key
+  // returns value that matches
   if (customSearch.length > 0 || (customSearch !== undefined &&
     customSearch !== null)) {
     for (let i = 0; i < customSearch.length; i++) {

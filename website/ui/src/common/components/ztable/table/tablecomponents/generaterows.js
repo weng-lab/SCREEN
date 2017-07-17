@@ -8,35 +8,37 @@ export default function generateRows(current_page,
   let dataLength;
   let rowComponents;
 
+  // offset for pagination
   let start_offset = (current_page - 1) * per_page;
 
+  // case when search condition not true
+  // skips data before active page
   let dataIndex = 0;
   if ((value != '' && current_page > 1 &&
       searchedData.length > 0) || value == '') {
     dataIndex = start_offset;
   }
 
-  // case when active page of pagination greater than one
-  // reveals required rows but does not search entire data set again
+  // active page greater than one
+  // reveals required rows but does not search data set again
   if (value != '' && current_page > 1 &&
     searchedData.length > 0) {
 
-    let searchResults = revealSearchResults(dataIndex,
+    let sr = revealSearchResults(dataIndex,
       searchedData, start_offset, per_page);
-    rowComponents = searchResults.rowComponents;
-    dataLength = searchResults.dataLength;
+    rowComponents = sr.rowComponents;
+    dataLength = sr.dataLength;
 
-    // case when data to be outputted needs to be
+    // data to be outputted is
     // searched again
   } else {
-
-    let searchResults = generateSearchResults(cols,
+    let sr = generateSearchResults(cols,
       columnkey, data, value, customSearch,
       dataIndex, start_offset, per_page);
 
-    dataLength = searchResults.dataLength;
-    rowComponents = searchResults.rowComponents;
-    searchedData = searchResults.searchedData;
+    dataLength = sr.dataLength;
+    rowComponents = sr.rowComponents;
+    searchedData = sr.searchedData;
   }
 
   return {
