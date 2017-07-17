@@ -2,7 +2,6 @@ import ifRationalIncreaseIndex from './isrational';
 
 export default function searchRows(show_row, search_item, value,
   columnName, customSearch) {
-
   // case search value '', a search matched in a cell
   // or search has been disabled, skips searching
   // returns results from search
@@ -54,15 +53,12 @@ export default function searchRows(show_row, search_item, value,
     } else {
       break;
     }
-
     // if numeric loop through only once
     if (!isNaN(value) && value != 0 &&
       !isNaN(search_item))
       break;
-
     //increment search index of string
     search_index++;
-    
   }
   // returns search condition
   return {

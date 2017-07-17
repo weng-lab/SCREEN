@@ -28,25 +28,17 @@ export default function generateSearchResults(cols,
       dataLength++;
       // stores entire searched data
       if (value != '') {
-        searchedData.push( < tr key = {
-            item.id
-          } > {
-            cells
-          } < /tr>);
+        searchedData.push( <tr key = { item.id }>
+          { cells } </tr>);
         }
 
         // sections off pages for pagination
-        if (dataIndex >= start_offset &&
-          start_count < per_page) {
+        if (dataIndex >= start_offset && start_count < per_page) {
           start_count++;
 
-          rowComponents.push( < tr key = {
-              item.id
-            } > {
-              cells
-            } < /tr>);
+          rowComponents.push( <tr key = { item.id }>
+            { cells } </tr>);
           }
-
         } else {
           start_offset++;
         }
@@ -58,13 +50,10 @@ export default function generateSearchResults(cols,
             break;
           }
         }
-
       }
-
       if (dataLength == 0) {
-        rowComponents.push( < tr > No matching records found. < /tr>);
+        rowComponents.push( <tr> No matching records found. </tr>);
         }
-
         return {
           dataLength,
           rowComponents,

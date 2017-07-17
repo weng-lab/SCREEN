@@ -4,7 +4,7 @@ import generateSearchResults from '../search/generatesearchresults';
 export default function generateRows(current_page,
   per_page, value, cols, data, searchedData,
   columnkey, customSearch) {
-
+    
   let dataLength;
   let rowComponents;
 
@@ -23,12 +23,10 @@ export default function generateRows(current_page,
   // reveals required rows but does not search data set again
   if (value != '' && current_page > 1 &&
     searchedData.length > 0) {
-
     let sr = revealSearchResults(dataIndex,
       searchedData, start_offset, per_page);
     rowComponents = sr.rowComponents;
     dataLength = sr.dataLength;
-
     // data to be outputted is
     // searched again
   } else {
@@ -40,7 +38,6 @@ export default function generateRows(current_page,
     rowComponents = sr.rowComponents;
     searchedData = sr.searchedData;
   }
-
   return {
     dataLength,
     rowComponents,

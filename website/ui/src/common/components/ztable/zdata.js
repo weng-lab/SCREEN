@@ -50,7 +50,6 @@ export default class ZData extends React.Component {
 
     render() {
 
-
 	return (
 		<div>
 	 <ZTable data = {this.props.data}

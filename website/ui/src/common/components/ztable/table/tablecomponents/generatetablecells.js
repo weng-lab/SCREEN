@@ -29,13 +29,8 @@ export default function generateTableCells(cols,
       // return data per row and column
       if (!isNaN(search_item) &&
         !isNaN(search_item)) {
-
-search_item = (search_item).toLocaleString();
-
-        }
-
-      return <td > { search_item } </td>;
-    }),
-    show_row,
-  };
+        search_item = (search_item).toLocaleString();
+      }
+      return <td> { search_item } </td>;
+    }), show_row, };
 }

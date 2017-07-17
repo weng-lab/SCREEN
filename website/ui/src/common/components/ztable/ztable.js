@@ -51,12 +51,13 @@ export default class ZTable extends React.Component {
 
   render() {
 
+
     // temp variables
     let data = this.props.data,
       searchedData = this.state.searchedData,
       searchCondition = this.state.searchCondition;
 
-    console.log("data", data);
+    // console.log("data", data);
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
