@@ -19,8 +19,8 @@ export default function sortData(data, columnSortType) {
       // case when it is a string
       if (columnSortType.direction == 'asc') {
         data.sort(function(a, b) {
-          var nameA = a[columnSortType.column].toLowerCase(); // ignore upper and lowercase
-          var nameB = b[columnSortType.column].toLowerCase(); // ignore upper and lowercase
+          let nameA = a[columnSortType.column].toLowerCase(); // ignore upper and lowercase
+          let nameB = b[columnSortType.column].toLowerCase(); // ignore upper and lowercase
           if (nameA < nameB) {
             return -1;
           }
@@ -32,8 +32,8 @@ export default function sortData(data, columnSortType) {
         });
       } else {
         data.sort(function(a, b) {
-          var nameA = a[columnSortType.column].toLowerCase(); // ignore upper and lowercase
-          var nameB = b[columnSortType.column].toLowerCase(); // ignore upper and lowercase
+          let nameA = a[columnSortType.column].toLowerCase(); // ignore upper and lowercase
+          let nameB = b[columnSortType.column].toLowerCase(); // ignore upper and lowercase
           if (nameA > nameB) {
             return -1;
           }

@@ -8,8 +8,8 @@ export default function generateHeaders(handleClick,
           for (let i = 0; i < columnSort.length; i++) {
 
             // arrow icons for sorting
-            let activeArrowColor;
-            var inactiveArrowColor = "#BEBEBE";
+            let activeArrowColor,
+             inactiveArrowColor = "#BEBEBE";
 
             // if inactive color gray
             if (columnSort[i].sortOn == 'inactive') {

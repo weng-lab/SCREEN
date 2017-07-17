@@ -19,21 +19,18 @@ export default function searchRows(show_row,
     };
   }
 
-  var search_index = 0; // index of value in table
-  var value_index = 0; // index of value in search box
-
-  // length of search item
-  var searchLength = String(search_item).length;
+  let search_index = 0,
+  value_index = 0,
+  searchLength = String(search_item).length;
 
   // cotinues to search items in table per row for a match
   while (search_index < searchLength) {
-
 
     // case when value is numberic, enter the loop only once
     if (!isNaN(value) && value != 0 &&
       !isNaN(search_item)) {
 
-      var testCondition = ifRationalIncreaseIndex(
+      let testCondition = ifRationalIncreaseIndex(
         search_item, value, search_index, value_index);
 
       // test condition of value is rational
@@ -42,9 +39,9 @@ export default function searchRows(show_row,
     }
 
     // obtain substrings of both search value and value in the table
-    var compareValue = value.substr(value_index,
+    let compareValue = value.substr(value_index,
       value.length).toLowerCase();
-    var compareSearchItem =
+    let compareSearchItem =
       String(search_item).substr(search_index,
         compareValue.length).toLowerCase();
 
@@ -52,7 +49,6 @@ export default function searchRows(show_row,
     // moves along the length of the string value in the table
     // continues incremementing by 1 until at end of String
     if (compareValue.length + search_index <= searchLength) {
-
       if (compareValue == compareSearchItem) {
         // reveals column, found a match
         show_row = true;

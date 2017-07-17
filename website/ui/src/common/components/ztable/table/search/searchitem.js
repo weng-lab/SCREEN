@@ -1,9 +1,9 @@
 export default function searchItem(item,
   columnName, customSearch) {
 
-  var customSearchCondition = false;
+  let customSearchCondition = false;
   let search_item;
-  var columnIndex = 0;
+  let columnIndex = 0;
 
   // case when custom sort is list of objects
   // find value that matches column key and returns

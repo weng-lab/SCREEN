@@ -53,20 +53,20 @@ export default class ZTable extends React.Component {
   render() {
 
     // temp variables
-    var data = this.props.data,
+    let data = this.props.data,
       searchedData = this.state.searchedData,
       searchCondition = this.state.searchCondition;
 
     //console.log("data", data);
-    var cols = this.props.cols,
+    let cols = this.props.cols,
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
       columnSort = this.state.columnSort;
 
-    var customSearch = this.state.customSearch;
+    let customSearch = this.state.customSearch;
 
     // value from search box
-    var value = this.state.value;
+    let value = this.state.value;
 
     // divides pages in per_page for pagination
     const per_page = 10;
@@ -78,12 +78,12 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     // generates header amd row components
-    var tableComponents = generateTableComponents(current_page,
+    let tableComponents = generateTableComponents(current_page,
       per_page, value, cols, data, searchedData,
       searchCondition, columnkey, columnlabel,
       columnSort, this.handleClick, customSearch);
 
-    var headerComponents = tableComponents.headerComponents,
+    let headerComponents = tableComponents.headerComponents,
       rowComponents = tableComponents.rowComponents,
       dataLength = tableComponents.dataLength,
       pages = tableComponents.pages;
@@ -144,10 +144,10 @@ export default class ZTable extends React.Component {
     }
 
     // checks whether columnSort is empty
-    var condition = false;
+    let condition = false;
 
     // variables for column sorting
-    var columnSort = this.state.columnSort,
+    let columnSort = this.state.columnSort,
       columnSortType = this.state.columnSortType,
       data = this.props.data;
 

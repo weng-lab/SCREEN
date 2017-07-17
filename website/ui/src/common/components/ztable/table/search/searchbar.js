@@ -4,7 +4,7 @@ import { Form, FormGroup, FormControl, Nav } from 'react-bootstrap';
 class SearchBar extends React.Component {
 
   render() {
-    var value = this.props.value, // value in entered in search box
+    let value = this.props.value, // value in entered in search box
       searchEvent = this.props.searchEvent;
 
     return (

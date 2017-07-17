@@ -5,7 +5,7 @@ import { Button, HelpBlock } from 'react-bootstrap';
 export default class ReactiveTable extends React.Component {
 
     render() {
-        var headerComponents = this.props.headerComponents,
+        let headerComponents = this.props.headerComponents,
           rowComponents = this.props.rowComponents,
           pages = this.props.pages,
           current_page = this.props.current_page,
