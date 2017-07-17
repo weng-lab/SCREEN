@@ -20,7 +20,6 @@ export default function generateTableComponents(current_page,
   let headerComponents = generateHeaders(handleClick,
     cols, columnkey, columnlabel, columnSort);
 
-
   // calculates total number of pages required for pagination
   let pages = Math.ceil(dataLength / per_page);
 

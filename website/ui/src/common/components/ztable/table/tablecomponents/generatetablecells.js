@@ -30,9 +30,7 @@ export default function generateTableCells(cols,
       if (!isNaN(search_item) &&
         !isNaN(search_item)) {
 
-
 search_item = (search_item).toLocaleString();
-
 
         }
 

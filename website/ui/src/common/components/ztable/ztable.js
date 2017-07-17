@@ -40,7 +40,6 @@ export default class ZTable extends React.Component {
         sortOn: 'inactive'
       }],
       columnSortType: []
-
     };
 
     // binds event handler
@@ -57,7 +56,7 @@ export default class ZTable extends React.Component {
       searchedData = this.state.searchedData,
       searchCondition = this.state.searchCondition;
 
-    //console.log("data", data);
+    console.log("data", data);
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
@@ -130,7 +129,6 @@ export default class ZTable extends React.Component {
     else
       this.setState({ activePage: eventKey });
   }
-
 
   handleClick(columnKey) {
     // rerender if sorting is true
