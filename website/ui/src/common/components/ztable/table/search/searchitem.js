@@ -5,7 +5,11 @@ export default function searchItem(item,
   let search_item;
   var columnIndex = 0;
 
-  if (customSearch.length > 0) {
+  // case when custom sort is list of objects
+  // find value that matches column key and returns
+  // that one value
+  if (customSearch.length > 0 || (customSearch !== undefined &&
+    customSearch !== null)) {
     for (let i = 0; i < customSearch.length; i++) {
       if (customSearch[i].column == columnName) {
         customSearchCondition = true;

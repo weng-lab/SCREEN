@@ -18,7 +18,7 @@ export default class ZData extends React.Component {
         label: "DNase Z"
       }, {
         key: 'promoter_zscore',
-        label: "H3K4me3<br/> Z"
+        label: "H3K4me3 Z"
       }, {
         key: 'enhancer_zscore',
         label: "H3K27ac Z"

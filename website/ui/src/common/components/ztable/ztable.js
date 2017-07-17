@@ -27,17 +27,11 @@ export default class ZTable extends React.Component {
         value: '',
         filterSearch: 'disabled'
       }, {
-        column: 'start',
-        value: undefined,
-        filterSearch: 'disabled'
-      }, {
         column: 'info',
         value: 'accession',
-        filterSearch: 'disabled'
       }],
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedData: [],
-
 
       // variables for sorting
       columnSort: [{
@@ -77,12 +71,13 @@ export default class ZTable extends React.Component {
     // divides pages in per_page for pagination
     const per_page = 10;
 
-    // obtain the current page that user clicked on
+    // obtain the current page that user had clicked
     if (this.state.searchCondition)
       var current_page = this.state.activeSearchPage;
     else
       var current_page = this.state.activePage;
 
+    // generates header amd row components
     var tableComponents = generateTableComponents(current_page,
       per_page, value, cols, data, searchedData,
       searchCondition, columnkey, columnlabel,
@@ -93,6 +88,7 @@ export default class ZTable extends React.Component {
       dataLength = tableComponents.dataLength,
       pages = tableComponents.pages;
 
+    // updates seached data, search data packages the searched results
     this.state.searchedData = tableComponents.searchedData;
 
     // returns search box and result table
@@ -110,7 +106,6 @@ export default class ZTable extends React.Component {
     );
   }
 
-
   handleChange(e) {
     // sets current state of text entered on search box
     this.setState({ value: e.target.value });
@@ -118,6 +113,7 @@ export default class ZTable extends React.Component {
     // case when search is true
     if (e.target.value != '') {
       this.setState({ searchCondition: true });
+
       // set active page for pagination to 1
       this.setState({ activeSearchPage: 1 });
     } else {
@@ -140,6 +136,7 @@ export default class ZTable extends React.Component {
     // rerender if sorting is true
     this.setState({ columnSortType: [] });
 
+    // resets search data when sorting, needs to refresh
     if ((this.state.activePage > 1 ||
         this.state.activeSearchPage > 1) &&
       this.state.searchCondition) {
@@ -191,6 +188,7 @@ export default class ZTable extends React.Component {
           }
         }
       }
+
       // case when columnSort is empty, push in new data
       if (!condition) {
         if (typeof(data[0][columnKey]) == 'string' ||
@@ -201,7 +199,6 @@ export default class ZTable extends React.Component {
             sortOn: 'active'
           });
         } else {
-
           columnSort.push({
             column: columnKey,
             direction: 'asc',
@@ -212,6 +209,7 @@ export default class ZTable extends React.Component {
         Object.assign(columnSortType,
           columnSort[columnSort.length - 1]);
       }
+      // sorts data either by default or custom function
       if (columnSortType.customSort !== undefined &&
         columnSortType.customSort !== null) {
         customSort(data, columnSortType);

@@ -12,10 +12,19 @@ export default function generateRows(current_page,
   var dataLength = -1; // counts total number of rows returned
   var rowComponents = [];
 
+  let dataIndex = 0;
+
+  if((searchCondition && current_page > 1
+    && searchedData.length > 0 ) || value == '') {
+      dataIndex = start_offset;
+    }
+
+  // case when active page of pagination greater than one
+  // reveals required rows but does not search entire data set again
   if (searchCondition && current_page > 1
     && searchedData.length > 0) {
 
-    for (let dataIndex = 0; dataIndex < searchedData.length; dataIndex++) {
+    for (dataIndex; dataIndex < searchedData.length; dataIndex++) {
       if (dataIndex >= start_offset && start_count < per_page) {
         start_count++;
         rowComponents.push(searchedData[dataIndex]);
@@ -24,10 +33,12 @@ export default function generateRows(current_page,
 
     dataLength = searchedData.length;
 
+  // case when data to be outputted needs to be
+  // searched again
   } else {
     searchedData = [];
-    for (let dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      // searches for data for value to be stored in table
+    for (dataIndex; dataIndex < data.length; dataIndex++) {
+      // data set to be outputted
       var item = data[dataIndex];
 
       // condition for searching
@@ -53,8 +64,8 @@ export default function generateRows(current_page,
         show_row = testCondition.show_row;
         foundSearchItem = testCondition.foundSearchItem;
 
+        // if data cannot be outputted, returns blank
         if (typeof(search_item) == 'object') {
-
           return <td> {} </td>;
         }
         // return data per row and column
@@ -76,36 +87,48 @@ export default function generateRows(current_page,
         if (countRowsReturned == 0 || dataLength == -1) {
           dataLength = 0;
           rowComponents.push( <tr> No matching records found. </tr>);
+          if (searchCondition) {
           searchedData.push( <tr> No matching records found. </tr>);
+        }
             }
+
+
+
           }
 
           // returns rows where pagination or search is true
           if (show_row) {
             countRowsReturned++;
 
+            // stores entire searched data
+            if (searchCondition) {
+
             searchedData.push(
               <tr key = { item.id }> { cells } </tr>);
 
+            }
               // sections off pages for pagination
               if (dataIndex >= start_offset
-                && start_count <per_page) {
+                && start_count < per_page) {
                 start_count++;
 
                 rowComponents.push(
                   <tr key = { item.id }> { cells } </tr>);
                 }
               } else {
-                start_offset++; // error checking, to fill in gaps in data
-                // during search, increments offset in
-                //case search is true
+                start_offset++; // increments off-set when
+                          // when searched data is not found
               }
+
+                if(value == '' && start_count == per_page) {
+                  dataLength = data.length;
+                  break;}
             }
           }
+
           return {
             dataLength,
             rowComponents,
-            searchedData // returns row data/ final
-            // count of rows returned
+            searchedData
           };
         }

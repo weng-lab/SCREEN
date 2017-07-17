@@ -10,13 +10,14 @@ class SearchBar extends React.Component {
     return (
       <Nav pullRight>
         <Form inline>
-          <FormGroup controlId = "formBasicText"> Search:
+          <FormGroup
+            controlId = "formBasicText"> Search:
             <FormControl bsSize = "small"
               size = "15"
               type = "text"
               value = { value }
               onChange = { searchEvent }/>
-            <FormControl.Feedback/>
+            <FormControl.Feedback/ >
           </FormGroup>
         </Form>
       </Nav>

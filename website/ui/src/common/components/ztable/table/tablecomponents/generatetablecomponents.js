@@ -19,7 +19,6 @@ export default function generateTableComponents(current_page,
   searchedData = fullData.searchedData;
   var dataLength = fullData.dataLength;
 
-
   // error checks when all data are undefined
   if (dataLength == -1) {
     dataLength = 0;
@@ -36,5 +35,4 @@ export default function generateTableComponents(current_page,
     dataLength,
     pages
   };
-
 }
