@@ -66,7 +66,8 @@ namespace SCREEN {
      @param corr: matrix containing the correlation coefficients
      @param output_path: output path to which to write the matrix
    */
-  void writeCorrelation(a::Mat<float> &corr, const bfs::path &output_path) {
+  template <typename T>
+  void writeCorrelation(const a::Mat<T> &corr, const bfs::path &output_path) {
     std::ofstream f(output_path.string());
     long i, j;
     f << '[';
@@ -81,5 +82,8 @@ namespace SCREEN {
     }
     f << corr.at(i, j) << ']';
   }
+
+  template void writeCorrelation<float>(const a::Mat<float> &corr, const bfs::path &output_path);
+  template void writeCorrelation<double>(const a::Mat<double> &corr, const bfs::path &output_path);
 
 } // SCREEN

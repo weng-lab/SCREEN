@@ -11,7 +11,7 @@ namespace SCREEN {
   public:
     RegionSet regions_;
     bfs::path outputdir_;
-    void convertSignal(const bfs::path&);
+    void convertSignal(const bfs::path&, bool = false);
     void convertSignal(const bfs::path&, const std::string&);
     std::vector<float> readSignal(const std::string&, const bfs::path&);
     BinarySignal(const bfs::path&);

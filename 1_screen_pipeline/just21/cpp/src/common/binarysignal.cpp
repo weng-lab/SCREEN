@@ -31,13 +31,14 @@ namespace SCREEN {
     }
   }
 
-  void BinarySignal::convertSignal(const bfs::path &signalfile) {
+  void BinarySignal::convertSignal(const bfs::path &signalfile, bool force_rewrite) {
     zentlib::BigWig b(signalfile);
     bfs::create_directory(outputdir_ / bfs::basename(signalfile));
     std::cout << signalfile << '\t' << regions_.regions_.regions_.size() << '\n';
     for (const auto& kv : regions_.regions_.regions_){
       const auto& chr = kv.first;
       const auto& region = kv.second;
+      if (!force_rewrite && bfs::exists(outputdir_ / bfs::basename(signalfile) / (chr + ".bin"))) { continue; }
       std::vector<float> values(region.size());
 
       for (auto i = 0; i < region.size(); ++i) {

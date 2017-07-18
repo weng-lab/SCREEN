@@ -7,6 +7,7 @@
 #include <cmath>
 #include <numeric>
 #include <memory>
+#include <armadillo>
 
 #include <zi/zargs/zargs.hpp>
 
@@ -17,6 +18,9 @@ ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 
+// #include "hypertorus/src/tensor.hpp"
+// #include "hypertorus/src/hosvd.hpp"
+
 #include "zentLib/src/BigWigWrapper.hpp"
 
 #include "cpp/files.hpp"
@@ -25,11 +29,13 @@ ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
 #include "common/utils.hpp"
 #include "common/lambda.hpp"
 #include "common/region.hpp"
+#include "paths.hpp"
 #include "lookup_matrix.hpp"
 #include "common/zscore.hpp"
 #include "common/rDHS.hpp"
-#include "paths.hpp"
 #include "common/saturation.hpp"
+
+// #include "epitensor/epitensor.hpp"
 
 #include "encode.hpp"
 
@@ -76,6 +82,22 @@ namespace SCREEN {
 
 } // namespace SCREEN
 
+void ENCODE_pipeline_run(SCREEN::ENCODE e) {
+  std::cout << "making saturation\n";
+  e.make_saturation();
+  return;
+  std::cout << "making binary signal files\n";
+  e.binarizeDHS();
+  std::cout << "computing Z-scores...\n";
+  e.computeZScores();
+  std::cout << "making rDHSs...\n";
+  e.make_rDHS();
+  std::cout << "making binary rDHS...\n";
+  e.binarize_rDHS();
+  std::cout << "creating cREs...\n";
+  e.create_cREs();
+}
+
 /*
  *  test entry point
  */
@@ -84,44 +106,31 @@ int main(int argc, char **argv){
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   std::vector<std::string> args(argv, argv + argc); // remaining arguments
 
-  // create ENCODE hg19 cREs
+  // hg38
+  std::cout << "*** ENCODE hg38 ***\n";
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "hg38"));
+
+  // hg19
   std::cout << "*** ENCODE hg19 ***\n";
-  SCREEN::ENCODE e(ZiARG_rootPath, "hg19");
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "hg19"));
 
-  /*
-  std::cout << "making binary signal files\n";
-  e.binarizeDHS();
-  */
-
-  /*
-  std::cout << "computing Z-scores...\n";
-  e.computeZScores();
-  */
-  /*
-  std::cout << "loading rDHSs...\n";
-  */
-  e.make_rDHS();
-  /* e.binarize_rDHS();
-  */
+  // mm10
+  std::cout << "*** ENCODE mm10 ***\n";
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "mm10"));
 
   /*  
   std::cout << "correlating...\n";
   e.runCorrelation();
   */
 
-  std::cout << "computing density...\n";
+  //std::cout << "computing density...\n";
   //e.compute_density("CTCF", e.ctcf_list_, 10000);
   //e.compute_density("H3K4me3", e.h3k4me3_list_, 10000);
-  e.similar_DNase_jaccard();
-
-  /*
-  std::cout << "creating cREs...\n";
-  e.create_cREs();
-  */
+  //e.similar_DNase_jaccard();
 
   //run_saturation("hg19");
 
-  std::cout << "\n*** ENCODE mm10 ***\n";
+  //std::cout << "\n*** ENCODE mm10 ***\n";
   //SCREEN::run_rDHS("mm10");
   //SCREEN::run_cistrome_rDHS("mm10");
 
