@@ -72,7 +72,8 @@ class DataWebService(GetOrSetMemCache):
                         "tfenrichment": self.tfenrichment,
                         "global_object": self.global_object,
                         "global_fantomcat": self.global_fantomcat,
-                        "ctcfdistr": self.ctcf_distr
+                        "ctcfdistr": self.ctcf_distr,
+                        "global_liftover": self.global_liftover
         }
 
         self.reDetailActions = {
@@ -101,6 +102,13 @@ class DataWebService(GetOrSetMemCache):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
         return {accession: {"ortholog": orth.as_dict()}}
 
+    def global_liftover(self, j, args):
+        retval = {}
+        for a in ["hg19", "hg38"]:
+            for b in ["hg19", "hg38"]:
+                retval["%s_%s" % (a, b)] = self.global_object({"name": "liftOver_%s_%s" % (a, b)}, args)
+        return retval
+    
     def global_fantomcat(self, j, args):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
