@@ -11,14 +11,30 @@ class CreateHg38:
     LISTFILES = ["dnase-list.txt", "h3k4me3-list.txt", "h3k27ac-list.txt", "ctcf-list.txt"]
 
     @staticmethod
-    def _process(exp):
+    def _process(exp, tassembly = "GRCh38"):
         allsignal = glob.glob("/data/projects/encode/data/%s/*.bigWig" % exp.encodeID)
         signal = {}
         for signalfile in allsignal:
             f = ExpFile.fromJsonFile(exp.encodeID, os.path.basename(signalfile).split(".")[0], True)
-            if f.assembly == "GRCh38": signal[f.biological_replicates[0]] = f
-        peaks = {x.biological_replicates[0]: x for x in filter(lambda x: x.assembly == "GRCh38" and x.file_type == "bed broadPeak", exp.files)}
+            if f.assembly == tassembly: signal[f.biological_replicates[0]] = f
+        peaks = {x.biological_replicates[0]: x for x in filter(lambda x: x.assembly == tassembly and x.file_type == "bed broadPeak", exp.files)}
         return (peaks, signal)
+
+    @staticmethod
+    def _writehotspots(filemap, path):
+        with open(path, "wb") as o:
+            for k, v in filemap.iteritems():
+                ct, acc = k
+                for peaks, signal in v:
+                    o.write("%s\t%s\t%s\t%s\t%s\n" % (acc, peaks, acc, signal, ct))
+
+    @staticmethod
+    def _writelist(filemap, path):
+        with open(path, "wb") as o:
+            for k, v in filemap.iteritems():
+                ct, acc = k
+                peaks, signal = v
+                o.write("%s\t%s\t%s\n" % (acc, signal, ct))
 
     def __init__(self, rootdir):
         self.filemap = {}
@@ -45,19 +61,11 @@ class CreateHg38:
             
             # if DNase, write all reps to Hotspot-List.txt
             if listfile == "dnase-list.txt":
-                with open("/data/projects/cREs/hg38/Hotspot-List.txt", "wb") as o:
-                    for k, v in self.filemap[listfile + "_all"].iteritems():
-                        ct, acc = k
-                        for peaks, signal in v:
-                            o.write("%s\t%s\t%s\t%s\t%s\n" % (acc, peaks, acc, signal, ct))
+                CreateHg38._writehotspots(self.filemap[listfile + "_all"], "/data/projects/cREs/hg38/Hotspot-List.txt")
                 print("wrote /data/projects/cREs/hg38/Hotspot-List.txt")
 
             # write first reps to list file
-            with open("/data/projects/cREs/hg38/%s" % listfile, "wb") as o:
-                for k, v in self.filemap[listfile].iteritems():
-                    ct, acc = k
-                    peaks, signal = v
-                    o.write("%s\t%s\t%s\n" % (acc, signal, ct))
+            CreateHg38._writelist(self.filemap[listfile], "/data/projects/cREs/hg38/%s" % listfile)
             print("wrote /data/projects/cREs/hg38/%s" % listfile)
 
 def main():
