@@ -39,6 +39,14 @@ def run(args, DBCONN):
                 g.doimport([("ctcf_density_10000", "/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly)],
                            curs)
                 print("imported CTCF density")
+                
+            if "hg19" == assembly:
+                for a in ["hg19", "hg38"]:
+                    for b in ["hg19", "hg38"]:
+                        if os.path.exists("/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b)):
+                            g.doimport([("liftOver_%s_%s" % (a, b), "/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b))],
+                                       curs)
+                print("imported liftOver intersect fractions")
 
 def parse_args():
     parser = argparse.ArgumentParser()
