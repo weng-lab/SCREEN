@@ -12,7 +12,7 @@ export default function revealSearchResults(dataIndex,
     }
 
     // loop through only per page limit
-    if (start_count == per_page - 1) {
+    if (start_count == per_page) {
       break;
     }
   }
