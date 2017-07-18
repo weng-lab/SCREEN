@@ -43,9 +43,11 @@ namespace SCREEN {
     void binarizeDHS();
     void binarize_rDHS();
     void _binarize(RegionSet&, const std::string&);
+    void _binarize(RegionSet&, const std::string&, ENCODEFile);
     void runCorrelation();
     void similar_DNase_jaccard();
     void compute_density(const std::string&, const std::vector<ENCODEFile>&, uint32_t = 100000);
+    void binarizeLookupMatrix(LookupMatrix&);
 
   };
 

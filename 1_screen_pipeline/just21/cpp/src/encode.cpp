@@ -17,6 +17,7 @@
 #include "common/correlation.hpp"
 #include "paths.hpp"
 #include "cREs/ctcf_tad.hpp"
+#include "lookup_matrix.hpp"
 #include "encode.hpp"
 
 namespace SCREEN {
@@ -41,7 +42,7 @@ namespace SCREEN {
     for (auto &kv : r.regions_.regions_) {
       std::cout << "running " << kv.first << "\n";
       a::Mat<float> c = SCREEN::runCorrelation(b, dnase_paths, kv.first, r);
-      writeCorrelation(c, path_.correlation(kv.first));
+      writeCorrelation<float>(c, path_.correlation(kv.first));
     }
   }
 
@@ -82,11 +83,9 @@ namespace SCREEN {
   }
 
   void ENCODE::_binarize_list(const std::vector<ENCODEFile> &list, BinarySignal &b) {
-#pragma omp parallel for num_threads(16)
+#pragma omp parallel for num_threads(64)
     for (auto i = 0; i < list.size(); ++i) {
-      if (!boost::filesystem::exists(b.outputdir_ / list[i].acc)) {
-	b.convertSignal(path_.EncodeData(list[i].exp, list[i].acc, ".bigWig"));
-      }
+      b.convertSignal(path_.EncodeData(list[i].exp, list[i].acc, ".bigWig"));
     }
   }
 
@@ -110,6 +109,12 @@ namespace SCREEN {
     _binarize(r, "rDHS");
   }
 
+  void ENCODE::binarizeLookupMatrix(LookupMatrix &l) {
+    RegionSet r;
+    r.appendFile(path_.rDHS_list());
+    l.binarize(path_, r);
+  }
+
   /**
       create binary signal files for all raw DHSs
   */
@@ -130,6 +135,10 @@ namespace SCREEN {
 
     std::cout << "completed writing binary signal\n";
     
+  }
+
+  void ENCODE::_binarize(RegionSet &r, const std::string &dir, ENCODEFile signalfile) {
+    BinarySignal(r, path_.root() / dir / "signal").convertSignal(path_.EncodeData(signalfile.exp, signalfile.acc, ".bigWig"));
   }
 
   /**
@@ -372,12 +381,13 @@ namespace SCREEN {
     std::vector<ScoredRegionSet> r(dnase_list_.size());
 #pragma omp parallel for
     for (auto i = 0; i < dnase_list_.size(); ++i) {
-      r[i].appendZ(path_.EncodeData(dnase_list_[i].exp, dnase_list_[i].acc, ".bigWig"));
+      r[i].appendZ(path_.DHS_ZScore(dnase_list_[i].acc)); // path_.EncodeData(dnase_list_[i].exp, dnase_list_[i].acc, ".bigWig"));
     }
 
     // run saturation
     Saturation s(r);
     s.write(path_.saturation());
+    std::cout << "wrote " << path_.saturation() << '\n';
 
   }
 

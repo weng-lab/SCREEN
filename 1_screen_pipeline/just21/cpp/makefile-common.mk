@@ -35,6 +35,9 @@ LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/armadillo/lib -L$(LOCAL_PATH)/armadillo/lib
 #OpenBLAS
 LD_FLAGS += -lopenblas -llapack
 
+#hypertorus
+# LD_FLAGS += -Wl,-rpath,$(LOCAL_PATH)/hypertorus/lib -L$(LOCAL_PATH)/hypertorus/lib -lhypertorus
+
 #curl
 #LD_FLAGS += -lcurl
 

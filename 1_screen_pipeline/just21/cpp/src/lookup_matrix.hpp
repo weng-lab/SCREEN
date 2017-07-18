@@ -19,6 +19,7 @@ namespace SCREEN {
     bool biosample_has(const std::string&, const std::string&);
     bool biosample_has_all(const std::string&);
     matrix_entry& operator [](const std::string&);
+    void binarize(Paths&, RegionSet&);
   };
   
 } // SCREEN
