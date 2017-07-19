@@ -28,11 +28,6 @@ const FantomCatTabs = {
 	title: "cREs per kb by cRE type",
 	enabled: true,
 	f: HistogramZTab
-    },
-    testviolin: {
-	title: "test violin",
-	enabled: true,
-	f: ViolinTab
     }
 };
 export default FantomCatTabs;
