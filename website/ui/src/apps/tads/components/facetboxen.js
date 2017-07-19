@@ -10,12 +10,23 @@ import {panelize} from '../../../common/utility'
 const chromBox = ({ chr, chrs, actions }) => {
     let box = (
         <ListFacet
-	  title={""}
+	  title=""
 	  items={chrs}
 	  selection={chr}
 	  onchange={actions.setchromosome} />
     );
     return panelize("Chromosome", box);
+};
+
+const biosampleBox = ({ biosample, biosamples, actions }) => {
+    let box = (
+	<ListFacet
+	  title=""
+	  items={biosamples}
+	  selection={biosample}
+	  onchange={actions.setbiosample} />
+    );
+    return panelize("Biosample for TAD boundaries", box);
 };
 
 class FacetBoxen extends React.Component {
@@ -24,6 +35,7 @@ class FacetBoxen extends React.Component {
 	return (
 	    <div>
 		{chromBox(this.props)}
+	        {biosampleBox(this.props)}
             </div>
 	);
     }

@@ -6,3 +6,6 @@ export const setloading = () => ({type: SET_LOADING});
 
 export const SET_CHROMOSOME = 'SET_CHROMOSOME';
 export const setchromosome = chr => ({ type: SET_CHROMOSOME, chr });
+
+export const SET_BIOSAMPLE = 'SET_BIOSAMPLE';
+export const setbiosample = biosample => ({ type: SET_BIOSAMPLE, biosample });

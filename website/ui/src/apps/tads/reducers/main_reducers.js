@@ -15,6 +15,9 @@ const main_reducers = (state, action) => {
     case Actions.SET_CHROMOSOME:
 	return {...state, chr: action.chr};
 
+    case Actions.SET_BIOSAMPLE:
+	return {...state, biosample: action.biosample};
+
     default:
       return state;
   }
