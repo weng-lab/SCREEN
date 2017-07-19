@@ -4,6 +4,11 @@ import ReactDOMServer from 'react-dom/server'
 import {brJoin} from '../utility'
 
 export const HelpTooltip = (helpkey, color = "#0000EE") => {
+    return ReactDOMServer.renderToStaticMarkup(
+	ZHelpTooltip(helpkey, color));
+}
+
+export const ZHelpTooltip = (helpkey, color = "#0000EE") => {
     let data = null;
     if(helpkey in Globals.helpKeys){
 	data = Globals.helpKeys[helpkey];
@@ -13,7 +18,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
     }
     let content = data.title + '\n' + data.summary.replace(/\n\n/g, '\n');
 
-    return ReactDOMServer.renderToStaticMarkup((
+    return (
 	<span
             className="glyphicon glyphicon-info-sign has-tooltip"
             style={{color}}
@@ -22,7 +27,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
             data-html={"true"}
 	    data-delay={'{"show": 10, "hide": 3000}'}
             title={content}
-        />));
+        />);
 }
 
 class HelpIcon extends React.Component {
