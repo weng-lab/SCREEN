@@ -22,6 +22,7 @@ class Saturation:
 
 def main():
     Saturation("/data/projects/cREs/hg19/saturation.tsv").write("/data/projects/cREs/hg19/saturation.json")
+    Saturation("/data/projects/cREs/hg38/saturation.tsv").write("/data/projects/cREs/hg38/saturation.json")
     return 0
 
 if __name__ == "__main__":
