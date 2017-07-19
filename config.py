@@ -20,6 +20,7 @@ class Config:
     db_usr = c.get("RE", "db_usr")
     db = c.get("RE", "db")
     assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
+    partial_assemblies = [a.strip() for a in c.get("RE", "partial_assemblies").split(',')]
     minipeaks_ver = c.get("RE", "minipeaks_ver")
     minipeaks_nbins = c.get("RE", "minipeaks_nbins")
     ribbon = c.get("RE", "ribbon")

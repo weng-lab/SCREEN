@@ -14,7 +14,7 @@ def isaccession(s):
         return False
     s = s.lower()
     # TODO: double check using regex
-    return (s.startswith("eh37e") or s.startswith("em10e"))
+    return (s.startswith("eh37e") or s.startswith("em10e") or s.startswith("eh38e"))
 
 def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
     # from http://stackoverflow.com/a/33024979
@@ -27,10 +27,11 @@ def checkChrom(assembly, j):
     return chrom
 
 def checkAssembly(assembly):
-    if assembly not in Config.assemblies:
+    if assembly not in Config.assemblies and assembly not in Config.partial_assemblies:
         raise Exception("assembly %s is not valid." % assembly)
 
 def checkCreAssembly(assembly, accession):
     starts = {"mm10": "em10e",
-              "hg19": "eh37e" }
+              "hg19": "eh37e",
+              "hg38": "eh38e" }
     return accession.startswith(starts[assembly])
