@@ -67,7 +67,7 @@ class Intersect:
         if fraction > 1.0: fraction = 1.0
         cmd = ["bedtools", "intersect"]
         if fraction > 0.0: cmd += ["-f", str(fraction)]
-        return subprocess.check_output(cmd + ["-a", self.a, "-b", self.b]).split('\n')
+        return list(set(subprocess.check_output(cmd + ["-a", self.a, "-b", self.b, "-wa"]).split('\n')))
 
     def _intersect(self, fraction):
         intersected = len(self._intersected_regions(fraction))
