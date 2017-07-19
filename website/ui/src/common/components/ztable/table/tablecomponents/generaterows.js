@@ -38,6 +38,7 @@ export default function generateRows(current_page,
     rowComponents = sr.rowComponents;
     searchedData = sr.searchedData;
     prevValue = value;
+
   }
   return {
     dataLength,

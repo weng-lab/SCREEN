@@ -85,8 +85,6 @@ export default class ZTable extends React.Component {
 //console.log("key", this.props.key);
 
 
-
-
     // temp variables
     let data = this.props.data,
       searchedData = this.state.searchedData,
@@ -98,9 +96,6 @@ export default class ZTable extends React.Component {
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
       columnSort = this.state.columnSort;
-
-
-
 
 
     let customSearch = this.state.customSearch;
@@ -177,11 +172,9 @@ this.state.prevValue = tc.prevValue;
     this.setState({ columnSortType: [] });
 
     // resets search data when sorting, needs to refresh
-    if ((this.state.activePage > 1 ||
-        this.state.activeSearchPage > 1) &&
-      this.state.searchCondition) {
+
       this.setState({ searchedData: [] });
-    }
+    
 
     // checks whether columnSort is empty
     let condition = false;
