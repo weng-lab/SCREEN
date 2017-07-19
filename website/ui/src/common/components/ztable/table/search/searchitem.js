@@ -1,5 +1,6 @@
+
 export default function searchItem(item,
-  columnName, customSearch) {
+  columnName, colData, customSearch) {
 
   let customSearchCondition = false;
   let search_item;
@@ -9,7 +10,7 @@ export default function searchItem(item,
   // find value that matches column key
   // returns value that matches
   if (customSearch.length > 0 || (customSearch !== undefined &&
-    customSearch !== null)) {
+      customSearch !== null)) {
     for (let i = 0; i < customSearch.length; i++) {
       if (customSearch[i].column == columnName) {
         customSearchCondition = true;
@@ -17,15 +18,17 @@ export default function searchItem(item,
           customSearch[i].value == null ||
           customSearch[i].value == '') {
           search_item = item[columnName];
+
         } else {
           search_item =
-          item[columnName][customSearch[i].value];
+            item[columnName][customSearch[i].value];
         }
+
         columnIndex = i;
         break;
       }
-      if (!customSearchCondition
-        && i == customSearch.length - 1) {
+      if (!customSearchCondition &&
+        i == customSearch.length - 1) {
         search_item = item[columnName];
       }
     }

@@ -16,6 +16,9 @@ export default function searchRows(show_row, search_item, value,
     };
   }
 
+
+
+
   let search_index = 0,
   value_index = 0,
   searchLength = String(search_item).length;

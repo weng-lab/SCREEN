@@ -9,7 +9,7 @@ export default class ZData extends React.Component {
     this.state = {
       cols: [{
         key: 'info',
-        label: "accession"
+        label: <p>Search icon: <span class="glyphicon glyphicon-search"></span></p>
       }, {
         key: 'ctspecifc',
         label: "k562"
@@ -53,8 +53,8 @@ export default class ZData extends React.Component {
 	return (
 		<div>
 	 <ZTable data = {this.props.data}
-cols={this.state.cols} columnkey={"key"} columnData={this.props.cols}
-columnlabel={"label"} />
+cols={this.props.cols} columnkey={"data"}
+columnlabel={"title"} />
 		<br></br><br></br><br></br>
 	    </div> );
     }

@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Render from '../../../common/renders'
 
 import ReactiveTable from './table/reactivetable';
 import generateTableComponents from './table/tablecomponents/generatetablecomponents';
@@ -25,11 +26,33 @@ export default class ZTable extends React.Component {
       customSearch: [{
         column: 'genesallpc',
         value: '',
-        filterSearch: 'disabled'
+        filterSearch: 'disabled',
+        renderOn: ''
       }, {
         column: 'info',
         value: 'accession',
+        filterSearch: 'disabled',
+        renderOn: ''
+      }, {
+        column: 'ctspecifc',
+        value: '',
+        filterSearch: 'disabled',
+        renderOn: ''
+
+      }, {
+        column: 'in_cart',
+        value: '',
+        filterSearch: 'disabled',
+        renderOn: ''
+
+      }, {
+        column: null,
+        value: '',
+        filterSearch: 'disabled',
+        renderOn: ''
+
       }],
+      prevValue: undefined,
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedData: [],
 
@@ -52,10 +75,23 @@ export default class ZTable extends React.Component {
   render() {
 
 
+//console.log("order", this.props.order);
+//console.log("columnDefs", this.props.columnDefs);
+//console.log("cols", this.props.cols[0]);
+//console.log("data", this.props.data);
+//console.log("cvisible", this.props.cvisible);
+//console.log("bFilter", this.props.bFilter);
+//console.log("bLengthChange", this.props.bLengthChange);
+//console.log("key", this.props.key);
+
+
+
+
     // temp variables
     let data = this.props.data,
       searchedData = this.state.searchedData,
-      searchCondition = this.state.searchCondition;
+      searchCondition = this.state.searchCondition,
+      prevValue = this.state.prevValue;
 
     // console.log("data", data);
     let cols = this.props.cols,
@@ -63,10 +99,15 @@ export default class ZTable extends React.Component {
       columnlabel = this.props.columnlabel,
       columnSort = this.state.columnSort;
 
+
+
+
+
     let customSearch = this.state.customSearch;
 
     // value from search box
     let value = this.state.value;
+
 
     // divides pages in per_page for pagination
     const per_page = 10;
@@ -79,7 +120,7 @@ export default class ZTable extends React.Component {
 
     // generates header amd row components
     let tc = generateTableComponents(current_page,
-      per_page, value, cols, data, searchedData,
+      per_page, value, prevValue, cols, data, searchedData,
       searchCondition, columnkey, columnlabel,
       columnSort, this.handleClick, customSearch);
 
@@ -90,7 +131,7 @@ export default class ZTable extends React.Component {
 
     // updates seached data, search data packages the searched results
     this.state.searchedData = tc.searchedData;
-
+this.state.prevValue = tc.prevValue;
     // returns search box and result table
     return (
       <div>

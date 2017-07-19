@@ -1,18 +1,26 @@
 import {HelpTooltip} from '../../../common/components/help_icon'
-import * as Render from '../../../common/zrenders'
+import * as Render from '../../../common/renders'
+
+import renderHTML from 'react-render-html'
+
 
 const TableColumns = (cts) => {
 
     let klassLeft = "dt-body-left dt-head-left ";
     let klassCenter = "dt-body-center dt-head-center ";
 
-    let accHelp = "accession<br />" + HelpTooltip("CellTypeTableAccessionCol");
-    let sctHelp = cts + " " + HelpTooltip("CellTypeSpecifiedClassification");
 
-    let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
+    let accHelp = <div> accession<br/> {renderHTML(HelpTooltip("CellTypeTableAccessionCol"))} </div>;
+
+    let sctHelp = <p>{cts} {renderHTML(HelpTooltip("CellTypeSpecifiedClassification"))}</p>;
+
+    let geneHelp = <p>nearest genes:<br/>protein-coding / all&nbsp;&nbsp; </p>
     if("mm10" == GlobalAssembly){
         geneHelp += HelpTooltip("DifferentialGeneMouse");
     }
+
+
+
 
     return [
 	{
@@ -21,9 +29,6 @@ const TableColumns = (cts) => {
 	}, {
             title: sctHelp, data: "ctspecifc", className: klassCenter,
 	    render: Render.creTableCellTypeSpecific, name: "sctv", width: "12%"
-	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
-	    render: Render.sctSorter
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"

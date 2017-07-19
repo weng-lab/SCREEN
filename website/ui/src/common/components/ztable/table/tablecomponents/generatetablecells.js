@@ -1,6 +1,6 @@
 import searchRows from '../search/searchrows';
 import searchItem from '../search/searchitem';
-
+import renderHTML from 'react-render-html'
 export default function generateTableCells(cols,
   columnkey, item, value, customSearch) {
 
@@ -12,7 +12,7 @@ export default function generateTableCells(cols,
 
       // data value for per column
       let sic = searchItem(item,
-          columnName, customSearch),
+          columnName, colData, customSearch),
         search_item = sic.search_item,
         columnIndex = sic.columnIndex;
 
@@ -22,15 +22,34 @@ export default function generateTableCells(cols,
 
       show_row = tc.show_row;
 
+      if (customSearch[columnIndex].renderOn !== 'disabled'
+      && customSearch[columnIndex].column == columnName) {
+        if (customSearch[columnIndex].column === null) {
+          search_item = colData.defaultContent;
+        } else {
+
+          search_item = colData.render(item[columnName]);
+
+        }
+      }
+
       // if data cannot be outputted, returns blank
-      if (typeof(search_item) == 'object') {
+      if (typeof(search_item) == 'object'
+      || customSearch[columnIndex].renderOn == 'disabled') {
         return <td > {} < /td>;
       }
+
       // return data per row and column
       if (!isNaN(search_item) &&
         !isNaN(search_item)) {
         search_item = (search_item).toLocaleString();
       }
-      return <td> { search_item } </td>;
-    }), show_row, };
+
+
+      return <td > {
+        renderHTML(search_item)
+      } < /td>;
+    }),
+    show_row,
+  };
 }

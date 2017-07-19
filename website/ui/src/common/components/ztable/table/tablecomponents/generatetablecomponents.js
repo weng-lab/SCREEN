@@ -2,19 +2,20 @@ import generateRows from './generaterows';
 import generateHeaders from './generateheaders';
 
 export default function generateTableComponents(current_page,
-  per_page, value, cols, data, searchedData,
+  per_page, value, prevValue, cols, data, searchedData,
   searchCondition, columnkey, columnlabel,
   columnSort, handleClick, customSearch) {
 
   // generates full data by rows
   let fd = generateRows(current_page,
-    per_page, value, cols, data,
+    per_page, value, prevValue, cols, data,
     searchedData, columnkey, customSearch);
 
   // generates row components
   let rowComponents = fd.rowComponents,
     dataLength = fd.dataLength;
   searchedData = fd.searchedData;
+  var prevValue = fd.prevValue;
 
   // generates header components
   let headerComponents = generateHeaders(handleClick,
@@ -28,6 +29,7 @@ export default function generateTableComponents(current_page,
     searchedData,
     headerComponents,
     dataLength,
-    pages
+    pages,
+    prevValue
   };
 }
