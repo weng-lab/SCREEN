@@ -27,10 +27,11 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "26_globalobjects$main") as curs:
             g = GlobalPG(assembly)
             g.drop_and_recreate(curs)
-            g.doimport([("fantomcat", FCPaths.global_statistics),
-                        ("fantomcat_2kb", FCPaths.twokb_statistics)],
-                       curs)
-            print("imported fantomcat")
+            if os.path.exists(FCPaths.global_statistics) and os.path.exists(FCPaths.twokb_statistics):
+                g.doimport([("fantomcat", FCPaths.global_statistics),
+                            ("fantomcat_2kb", FCPaths.twokb_statistics)],
+                           curs)
+                print("imported fantomcat")
             if os.path.exists("/data/projects/cREs/%s/saturation.json" % assembly):
                 g.doimport([("saturation", "/data/projects/cREs/%s/saturation.json" % assembly)],
                            curs)
@@ -39,7 +40,6 @@ def run(args, DBCONN):
                 g.doimport([("ctcf_density_10000", "/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly)],
                            curs)
                 print("imported CTCF density")
-                
             if "hg19" == assembly:
                 for a in ["hg19", "hg38"]:
                     for b in ["hg19", "hg38"]:

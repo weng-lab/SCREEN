@@ -16,6 +16,7 @@ from models.cytoband import Cytoband
 from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
+from models.tads import Tads
 
 from common.pg import PGsearch
 from common.get_set_mc import GetOrSetMemCache
@@ -61,6 +62,7 @@ class DataWebService(GetOrSetMemCache):
         self.pgGlobal = GlobalPG(assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
         self.pgFantomCat = PGFantomCat(assembly)
+        self.tads = Tads(assembly, ps)
 
         self.actions = {"cre_table" : self.cre_table,
                         "cre_tf_dcc" : self.cre_tf_dcc,
@@ -122,9 +124,12 @@ class DataWebService(GetOrSetMemCache):
         if j["chr"] not in result:
             raise Exception("data_ws$DataWS::ctcf_distr: chr %s not valid" % j["chr"])
         return {
-            "data": result[j["chr"]]
+            "data": {
+                "results": result[j["chr"]],
+                "tads": [[x[0] / 10000, x[1] / 10000] for x in self.tads.get_chrom_btn(j["biosample"], j["chr"])]
+            }
         }
-    
+
     def global_object(self, j, args):
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)

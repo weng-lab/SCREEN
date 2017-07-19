@@ -8,6 +8,8 @@ const initialState = {
     maintabs: MainTabInfo,
     maintabs_active: "ctcf_distr",
     maintabs_visible: true,
+    biosamples: [...Globals.tad_biosamples],
+    biosample: null,
     chrs, chr: null
 };
 
