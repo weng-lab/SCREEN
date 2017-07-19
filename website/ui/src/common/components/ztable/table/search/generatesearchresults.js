@@ -1,4 +1,6 @@
 import generateTableCells from '../tablecomponents/generatetablecells';
+import packageColumnCells from './packagecolumncells';
+
 
 export default function generateSearchResults(cols,
   columnkey, data, value, customSearch,
@@ -11,25 +13,41 @@ export default function generateSearchResults(cols,
   // stores search results
   let rowComponents = [],
     searchedData = [];
-
+let cells = [];
+let searchedResultsIndex = [];
   for (dataIndex; dataIndex < data.length; dataIndex++) {
     // data set to be outputted
     let item = data[dataIndex];
 
     // extracts cells in each row,
     // returns whether item found in list
-    let cc = generateTableCells(cols,
+    let show_row = generateTableCells(cols,
       columnkey, item, value, customSearch);
-    let cells = cc.cells,
-      show_row = cc.show_row;
+
 
     // returns rows where pagination or search is true
     if (show_row) {
+
       dataLength++;
+
+
+      cells = packageColumnCells(cols, columnkey, item, customSearch);
+
+
       // stores entire searched data
       if (value != '') {
         searchedData.push( <tr key = { item.id }>
           { cells } </tr>);
+
+          if (dataLength == 1) {
+          searchedResultsIndex.push(dataIndex);
+          //console.log("index storage", searchedResultsIndex);
+        } else if ((dataLength - 1) % 10 == 0) {
+          searchedResultsIndex.push(dataIndex);
+          //console.log("index storage increments", searchedResultsIndex);
+          }
+
+
         }
 
         // sections off pages for pagination
@@ -57,6 +75,7 @@ export default function generateSearchResults(cols,
         return {
           dataLength,
           rowComponents,
-          searchedData
+          searchedData,
+
         };
       }

@@ -55,6 +55,7 @@ export default class ZTable extends React.Component {
       prevValue: undefined,
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedData: [],
+      rowIndex: [],
 
       // variables for sorting
       columnSort: [{
@@ -116,7 +117,7 @@ export default class ZTable extends React.Component {
       searchCondition = this.state.searchCondition,
       prevValue = this.state.prevValue;
 
-    // console.log("data", data);
+    //console.log("data", data.length);
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel,
@@ -130,7 +131,7 @@ export default class ZTable extends React.Component {
 
 
     // divides pages in per_page for pagination
-    const per_page = 20;
+    const per_page = 10;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -151,6 +152,7 @@ export default class ZTable extends React.Component {
 
     // updates seached data, search data packages the searched results
     this.state.searchedData = tc.searchedData;
+    this.state.rowIndex = tc.rowIndex;
 this.state.prevValue = tc.prevValue;
     // returns search box and result table
     return (
@@ -197,6 +199,7 @@ this.state.prevValue = tc.prevValue;
     this.setState({ columnSortType: [] });
 
     // resets search data when sorting, needs to refresh
+
 
       this.setState({ searchedData: [] });
 

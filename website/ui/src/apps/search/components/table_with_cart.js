@@ -316,10 +316,16 @@ class TableWithCart extends React.Component {
 
 
       < ZData data={data}
-  
+                              order={table_order}
+			      columnDefs={columnDefs}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-     
-
+                              onTdClick={(td, rowdata) =>
+                                  this.table_click_handler(td, rowdata, actions)}
+                              cvisible={this._opposite(cols, this.props.cts)}
+                              onButtonClick={(td, rowdata) =>
+                                  this.button_click_handler(td, rowdata, actions)}
+                              bFilter={true}
+                              bLengthChange={true} key={this.props.cellType}
 
 />
 	    </div>
