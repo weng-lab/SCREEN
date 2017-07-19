@@ -105,7 +105,8 @@ class DataWebService(GetOrSetMemCache):
         return {accession: {"ortholog": orth.as_dict()}}
 
     def global_liftover(self, j, args):
-        retval = {}
+        retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),
+                                 "hg38": self.external_global_object({"name": "saturation"}, args, "hg38") }}
         for a in ["hg19", "hg38"]:
             for b in ["hg19", "hg38"]:
                 retval["%s_%s" % (a, b)] = self.global_object({"name": "liftOver_%s_%s" % (a, b)}, args)
@@ -114,8 +115,7 @@ class DataWebService(GetOrSetMemCache):
     def global_fantomcat(self, j, args):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
-            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args),
-            "saturation": self.global_object({"name": "saturation"}, args) #,
+            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args) #,
 #            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
         }
 
@@ -133,6 +133,10 @@ class DataWebService(GetOrSetMemCache):
     def global_object(self, j, args):
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)
+
+    def external_global_object(self, j, args, assembly):
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
+            return self.pgGlobal.select_external(j["name"], assembly, curs)
     
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)

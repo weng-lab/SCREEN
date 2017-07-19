@@ -2,38 +2,18 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import {LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line } from 'recharts';
-
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
 import HelpIcon from '../../../common/components/help_icon'
 
-import LinePlot from '../../../plots/components/lineplot/container';
-import PlottedLine from '../../../plots/components/lineplot/plottedline';
-import PlotWithHeader from '../../../plots/components/plotwithheader';
-
-const Hg19Hg38Plot = ({ width, height, data, keys }) => (
-    <LineChart width={width} height={height} data={data}
-      margin={{ top: 50, right: 50, left: 50, bottom: 50 }}>
-        <XAxis dataKey="name" label="overlap fraction" />
-        <YAxis label="% regions with overlap" domain={[0.0, 1.0]} />		
-        <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip />
-        <Legend />
-	{keys.map(k => (
-	    <Line type="monotone" dataKey={k.text} stroke={k.color}
-	      type={k.type ? k.type : "monotone"} />
-	) )}
-    </LineChart>
-);
+import Hg38TabsC from './hg38/hg38tabs';
 
 class Hg38Tab extends React.Component{
 
     constructor(props) {
         super(props);
         this.state = { jq: null, isFetching: false, isError: false, data: null};
-        this.doRenderWrapper = this.doRenderWrapper.bind(this);
 	this.loadData = this.loadData.bind(this);
     }
 
@@ -45,6 +25,44 @@ class Hg38Tab extends React.Component{
         this.loadData(nextProps);
     }
 
+    _process_hg19(r) {
+	let data = {hg19: [], hg38: []};
+	let interval = 1.0 / r.hg19_hg38.all.length;
+	r.hg19_hg38.all.map( (_, i) => {
+	    data.hg19.push({
+		name: Math.round(interval * i * 100) / 100,
+		"original hg19 cREs": r.hg19_hg19.all[i],
+		"lifted over hg38 cREs": r.hg19_hg38.all[i],
+		"hg19 high DNase": r.hg19_hg19.DNase[i],
+		"hg19 high H3K4me3": r.hg19_hg19.H3K4me3[i],
+		"hg19 high H3K27ac": r.hg19_hg19.H3K27ac[i],
+		"hg19 high CTCF": r.hg19_hg19.CTCF[i]
+	    });
+	    data.hg38.push({
+		name: Math.round(interval * i * 100) / 100,
+		"original hg38 cREs": r.hg38_hg38.all[i],
+		"lifted over hg19 cREs": r.hg38_hg19.all[i],
+		"hg38 high DNase": r.hg38_hg38.DNase[i],
+		"hg38 high H3K4me3": r.hg38_hg38.H3K4me3[i],
+		"hg38 high H3K27ac": r.hg38_hg38.H3K27ac[i],
+		"hg38 high CTCF": r.hg38_hg38.CTCF[i]
+	    });
+	} );
+	return data;
+    }
+
+    _process_saturation(r) {
+	let data = {
+	    data: r.saturation,
+	    qsets: r.saturation,
+	    qset_order: {}
+	};
+	Object.keys(r.saturation).map( k => {
+	    data.qset_order[k] = Object.keys(r.saturation[k]).sort( (a, b) => (+a - +b) );
+	} );
+	return data;
+    }
+    
     loadData({actions}){
         var q = {GlobalAssembly};
         var jq = JSON.stringify(q);
@@ -63,92 +81,26 @@ class Hg38Tab extends React.Component{
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {
-		let interval = 1.0 / r.hg19_hg38.all.length;
-		let data = {hg19: [], hg38: []}
-		r.hg19_hg38.all.map( (_, i) => {
-		    data.hg19.push({
-			name: Math.round(interval * i * 100) / 100,
-			"original hg19 cREs": r.hg19_hg19.all[i],
-			"lifted over hg38 cREs": r.hg19_hg38.all[i],
-			"hg19 high DNase": r.hg19_hg19.DNase[i],
-			"hg19 high H3K4me3": r.hg19_hg19.H3K4me3[i],
-			"hg19 high H3K27ac": r.hg19_hg19.H3K27ac[i],
-			"hg19 high CTCF": r.hg19_hg19.CTCF[i]
-		    });
-		    data.hg38.push({
-			name: Math.round(interval * i * 100) / 100,
-			"original hg38 cREs": r.hg38_hg38.all[i],
-			"lifted over hg19 cREs": r.hg38_hg19.all[i],
-			"hg38 high DNase": r.hg38_hg38.DNase[i],
-			"hg38 high H3K4me3": r.hg38_hg38.H3K4me3[i],
-			"hg38 high H3K27ac": r.hg38_hg38.H3K27ac[i],
-			"hg38 high CTCF": r.hg38_hg38.CTCF[i]
-		    });
-		} );
-		console.log(data.hg19);
+		let data = {
+		    hg19intersect: this._process_hg19(r),
+		    saturation: this._process_saturation(r)
+		};
 		this.setState({data, isFetching: false, isError: false});
             }.bind(this)
         });
     }
-    
-    doRenderWrapper({data, actions}){
-	if (!data) { return <div />; }
-	
-	let overview_row = (
-            <div className="row">
-                <div className="col-md-6">
-	            <h3>hg38 lifted over to hg19</h3>
-	            <Hg19Hg38Plot width={1000} height={600} data={data.hg19}
-	              keys={[ {text: "original hg19 cREs", color: "#8884d8"},
-		              {text: "lifted over hg38 cREs", color: "#d88488"} ]} />
-                </div>
-		<div className="col-md-6">
-		    <h3>hg19 lifted over to hg38</h3>
-		    <Hg19Hg38Plot width={1000} height={600} data={data.hg38}
-	              keys={[ {text: "original hg38 cREs", color: "#8884d8"},
-		              {text: "lifted over hg19 cREs", color: "#d88488"} ]} />
-                </div>
-            </div>
-	);
 
-	let ninestate_row = (
-            <div className="row">
-                <div className="col-md-6">
-	            <h3>hg38 lifted over to hg19</h3>
-	            <Hg19Hg38Plot width={1000} height={600} data={data.hg19}
-	              keys={[ {text: "hg19 high DNase", color: "#06da93"},
-			      {text: "hg19 high H3K4me3", color: "#ff0000"},
-			      {text: "hg19 high H3K27ac", color: "#ffcd00"},
-			      {text: "hg19 high CTCF", color: "#00b0f0"} ]} />
-                </div>
-		<div className="col-md-6">
-		    <h3>hg19 lifted over to hg38</h3>
-	            <Hg19Hg38Plot width={1000} height={600} data={data.hg38}
-	              keys={[ {text: "hg38 high DNase", color: "#06da93"},
-			      {text: "hg38 high H3K4me3", color: "#ff0000"},
-			      {text: "hg38 high H3K27ac", color: "#ffcd00"},
-			      {text: "hg38 high CTCF", color: "#00b0f0"} ]} />
-                </div>
-            </div>
-	);
-	
-        return (
-            <div className="container-fluid">
-		{overview_row}
-	        {ninestate_row}
-            </div>
-	);
-	
-    }
-
-    render(){
+    render() {
         if (!this.state.data) { return loading(this.state); }
-        return (
-            <div style={{"width": "100%"}} >
-                {this.doRenderWrapper({...this.props, data: this.state.data})}
-            </div>
-	);
+        return (<div className="container-fluid">
+                    <div className="row">
+                        <div className="col-md-12">
+		            <Hg38TabsC data={this.state.data} actions={this.props.actions} />
+                        </div>
+                    </div>
+                </div>);
     }
+    
 }
 
 const mapStateToProps = (state) => ({ ...state });

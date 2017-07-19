@@ -86,11 +86,6 @@ class FantomCatTab extends React.Component{
 		data: data.fantomcat_2kb,
 		qsets: this._qsets.twokb,
 		qset_order: o
-	    },
-	    testviolin: {
-		data: data.saturation,
-		qsets: data.saturation,
-		qset_order: Object.keys(data.saturation).sort( (a, b) => (+a - +b) )
 	    } //,
 	    /*perkbz: {
 		data: data.fantomcat_bymaxz,
