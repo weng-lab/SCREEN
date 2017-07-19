@@ -32,7 +32,7 @@ class Hg38Tab extends React.Component{
 	    data.hg19.push({
 		name: Math.round(interval * i * 100) / 100,
 		"original hg19 cREs": r.hg19_hg19.all[i],
-		"lifted over hg38 cREs": r.hg19_hg38.all[i],
+		"lifted over hg38 cREs": r.hg38_hg19.all[i],
 		"hg19 high DNase": r.hg19_hg19.DNase[i],
 		"hg19 high H3K4me3": r.hg19_hg19.H3K4me3[i],
 		"hg19 high H3K27ac": r.hg19_hg19.H3K27ac[i],
@@ -41,7 +41,7 @@ class Hg38Tab extends React.Component{
 	    data.hg38.push({
 		name: Math.round(interval * i * 100) / 100,
 		"original hg38 cREs": r.hg38_hg38.all[i],
-		"lifted over hg19 cREs": r.hg38_hg19.all[i],
+		"lifted over hg19 cREs": r.hg19_hg38.all[i],
 		"hg38 high DNase": r.hg38_hg38.DNase[i],
 		"hg38 high H3K4me3": r.hg38_hg38.H3K4me3[i],
 		"hg38 high H3K27ac": r.hg38_hg38.H3K27ac[i],
