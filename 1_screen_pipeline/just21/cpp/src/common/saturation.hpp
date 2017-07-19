@@ -11,6 +11,8 @@ namespace SCREEN {
 
   public:
     Saturation(const std::vector<ScoredRegionSet>&, int = 100);
+    Saturation(const std::vector<ScoredRegionSet>&,
+	       std::unordered_map<std::string, std::vector<int>>&, int = 100);
     void write(const bfs::path &b) const;
 
   };
