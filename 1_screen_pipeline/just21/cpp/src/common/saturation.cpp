@@ -41,6 +41,36 @@ namespace SCREEN {
     }
   }
 
+  Saturation::Saturation(const std::vector<ScoredRegionSet> &regionsets,
+			 std::unordered_map<std::string, std::vector<int>> &celltypemap,
+			 int n_repeat) {
+
+    std::vector<std::string> celltypes;
+    for (auto &kv : celltypemap) {
+      celltypes.push_back(kv.first);
+    }
+
+    for (auto i = 10; i < celltypes.size(); i += 10) {
+      std::cout << "Saturation::Saturation: taking first " << i << " cell types\n";
+      std::vector<size_t> results(n_repeat);
+
+#pragma omp parallel for
+      for (auto n = 0; n < n_repeat; ++n) {
+	std::vector<int> idx = xrange(celltypes.size());
+	std::random_shuffle(idx.begin(), idx.end());
+	ScoredRegionSet r;
+	for (auto j = 0; j < i; ++j) {
+	  for (auto m : celltypemap[celltypes[idx[j]]]) {
+	    r.regions_.appendGenericRegionSet(regionsets[m].regions_);
+	  }
+	}
+	results[n] = rDHS(r).regions_.regions_.total();
+      }
+      n_rDHSs.push_back(results);
+
+    }
+  }
+
   void Saturation::write(const bfs::path &outpath) const {
     std::ofstream o(outpath.string());
     for (auto i = 0; i < n_rDHSs.size(); ++i) {

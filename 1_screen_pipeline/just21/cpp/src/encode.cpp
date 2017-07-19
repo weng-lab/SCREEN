@@ -378,14 +378,28 @@ namespace SCREEN {
   void ENCODE::make_saturation() {
 
     // load Z-scores into RegionSets
-    std::vector<ScoredRegionSet> r(dnase_list_.size());
+
+
+    // get cell type list
+    int count = 0;
+    std::unordered_map<std::string, std::vector<int>> celltypemap;
+    std::vector<std::string> idx;
+    const auto lines = bib::files::readStrings(path_.hotspot_list());
+    for (const auto &line : lines) {
+      const auto cols = bib::string::split(line, '\t');
+      celltypemap[cols[4]].push_back(count++);
+      idx.push_back(cols[3]);
+    }
+      
+    // load regions
+    std::vector<ScoredRegionSet> r(idx.size());
 #pragma omp parallel for
-    for (auto i = 0; i < dnase_list_.size(); ++i) {
-      r[i].appendZ(path_.DHS_ZScore(dnase_list_[i].acc)); // path_.EncodeData(dnase_list_[i].exp, dnase_list_[i].acc, ".bigWig"));
+    for (auto i = 0; i < idx.size(); ++i) {
+      r[i].appendZ(path_.DHS_ZScore(idx[i]));
     }
 
     // run saturation
-    Saturation s(r);
+    Saturation s(r, celltypemap);
     s.write(path_.saturation());
     std::cout << "wrote " << path_.saturation() << '\n';
 
