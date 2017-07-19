@@ -38,6 +38,7 @@ ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
 // #include "epitensor/epitensor.hpp"
 
 #include "encode.hpp"
+#include "cistrome.hpp"
 
 namespace SCREEN {
 
@@ -105,6 +106,15 @@ int main(int argc, char **argv){
 
   zi::parse_arguments(argc, argv, true);  // modifies argc and argv
   std::vector<std::string> args(argv, argv + argc); // remaining arguments
+
+  // cistrome hg38
+  std::cout << "*** Cistrome hg38 ***\n";
+  SCREEN::Cistrome c("/data/projects/cistrome/data/raw", ZiARG_rootPath, "hg38");
+  std::cout << "computing Z-scores...\n";
+  c.computeZScores();
+  std::cout << "creating rDHSs...\n";
+  c.make_rDHS();
+  return 0;
 
   // hg38
   std::cout << "*** ENCODE hg38 ***\n";
