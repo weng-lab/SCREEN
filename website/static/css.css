@@ -237,7 +237,7 @@ select.ui-toggle-switch { display: none; }
 
 .tableInfo {
     float: right;
-    margin-top: -25px;
+    /*margin-top: -25px;*/
     padding-right: 50px;
 }
 
