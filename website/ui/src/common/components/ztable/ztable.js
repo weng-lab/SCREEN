@@ -26,12 +26,12 @@ export default class ZTable extends React.Component {
       customSearch: [{
         column: 'genesallpc',
         value: '',
-        filterSearch: 'disabled',
+        filterSearch: '',
         renderOn: ''
       }, {
         column: 'info',
         value: 'accession',
-        filterSearch: 'disabled',
+        filterSearch: '',
         renderOn: ''
       }, {
         column: 'ctspecifc',
@@ -60,7 +60,42 @@ export default class ZTable extends React.Component {
       columnSort: [{
         column: "info",
         direction: 'asc',
-        sortOn: 'inactive'
+        sortOn: 'inactive',
+        customSort: 'on',
+        custumFunction: function(data,  columnSortType){
+
+          // case when it is a string
+          if (columnSortType.direction == 'asc') {
+            data.sort(function(a, b) {
+              let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+              let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+              if (nameA < nameB) {
+                return -1;
+              }
+              if (nameA > nameB) {
+                return 1;
+              }
+              // names must be equal
+              return 0;
+            });
+          } else {
+            data.sort(function(a, b) {
+              let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+              let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+              if (nameA > nameB) {
+                return -1;
+              }
+              if (nameA < nameB) {
+                return 1;
+              }
+
+              // names must be equal
+              return 0;
+            });
+          }
+
+        }
+
       }],
       columnSortType: []
     };
@@ -73,16 +108,6 @@ export default class ZTable extends React.Component {
   }
 
   render() {
-
-
-//console.log("order", this.props.order);
-//console.log("columnDefs", this.props.columnDefs);
-//console.log("cols", this.props.cols[0]);
-//console.log("data", this.props.data);
-//console.log("cvisible", this.props.cvisible);
-//console.log("bFilter", this.props.bFilter);
-//console.log("bLengthChange", this.props.bLengthChange);
-//console.log("key", this.props.key);
 
 
     // temp variables
@@ -105,7 +130,7 @@ export default class ZTable extends React.Component {
 
 
     // divides pages in per_page for pagination
-    const per_page = 10;
+    const per_page = 20;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -174,7 +199,7 @@ this.state.prevValue = tc.prevValue;
     // resets search data when sorting, needs to refresh
 
       this.setState({ searchedData: [] });
-    
+
 
     // checks whether columnSort is empty
     let condition = false;
