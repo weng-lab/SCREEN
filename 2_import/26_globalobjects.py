@@ -46,6 +46,9 @@ def run(args, DBCONN):
                         if os.path.exists("/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b)):
                             g.doimport([("liftOver_%s_%s" % (a, b), "/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b))],
                                        curs)
+                    if os.path.exists("/data/projects/cREs/hg38/CTA.%s.cistromeintersected.json" % a):
+                        g.doimport([("encode_cistrome_%s" % a, "/data/projects/cREs/hg38/CTA.%s.cistromeintersected.json" % a)],
+                                   curs)
                 print("imported liftOver intersect fractions")
 
 def parse_args():
