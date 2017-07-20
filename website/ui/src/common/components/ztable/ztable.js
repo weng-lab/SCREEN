@@ -54,8 +54,8 @@ export default class ZTable extends React.Component {
       }],
       prevValue: undefined,
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
-      searchedData: [],
-      rowIndex: [],
+      searchedResultsIndex: [],
+      searchedDataLength: -1,
 
       // variables for sorting
       columnSort: [{
@@ -63,7 +63,7 @@ export default class ZTable extends React.Component {
         direction: 'asc',
         sortOn: 'inactive',
         customSort: 'on',
-        custumFunction: function(data,  columnSortType){
+        custumFunction: function(data, columnSortType) {
 
           // case when it is a string
           if (columnSortType.direction == 'asc') {
@@ -113,9 +113,11 @@ export default class ZTable extends React.Component {
 
     // temp variables
     let data = this.props.data,
-      searchedData = this.state.searchedData,
+      searchedResultsIndex = this.state.searchedResultsIndex,
+      searchedDataLength = this.state.searchedDataLength,
       searchCondition = this.state.searchCondition,
       prevValue = this.state.prevValue;
+
 
     //console.log("data", data.length);
     let cols = this.props.cols,
@@ -141,8 +143,7 @@ export default class ZTable extends React.Component {
 
     // generates header amd row components
     let tc = generateTableComponents(current_page,
-      per_page, value, prevValue, cols, data, searchedData,
-      searchCondition, columnkey, columnlabel,
+      per_page, value, prevValue, cols, data, searchedResultsIndex, searchedDataLength, columnkey, columnlabel,
       columnSort, this.handleClick, customSearch);
 
     let headerComponents = tc.headerComponents,
@@ -151,36 +152,69 @@ export default class ZTable extends React.Component {
       pages = tc.pages;
 
     // updates seached data, search data packages the searched results
-    this.state.searchedData = tc.searchedData;
-    this.state.rowIndex = tc.rowIndex;
-this.state.prevValue = tc.prevValue;
+    this.state.searchedResultsIndex = tc.searchedResultsIndex;
+    this.state.searchedDataLength = tc.searchedDataLength;
+    this.state.prevValue = tc.prevValue;
+
+
+
+
+
     // returns search box and result table
-    return (
-      <div>
-      <SearchBar value = { this.state.value }
-        searchEvent = { this.handleChange }/>
-      <ReactiveTable headerComponents = { headerComponents }
-        rowComponents = { rowComponents }
-        pages = { pages }
-        current_page = { current_page }
-        pageChange = { this.handleSelect }
-        dataLength = { dataLength }/>
-      </div>
+    return ( <
+      div >
+      <
+      SearchBar value = {
+        this.state.value
+      }
+      searchEvent = {
+        this.handleChange
+      }
+      /> <
+      ReactiveTable headerComponents = {
+        headerComponents
+      }
+      rowComponents = {
+        rowComponents
+      }
+      pages = {
+        pages
+      }
+      current_page = {
+        current_page
+      }
+      pageChange = {
+        this.handleSelect
+      }
+      dataLength = {
+        dataLength
+      }
+      /> <
+      /div>
     );
   }
 
   handleChange(e) {
     // sets current state of text entered on search box
-    this.setState({ value: e.target.value });
+    this.setState({
+      value: e.target.value
+    });
 
     // case when search is true
     if (e.target.value != '') {
-      this.setState({ searchCondition: true });
+      this.setState({
+        searchCondition: true
+      });
 
       // set active page for pagination to 1
-      this.setState({ activeSearchPage: 1 });
+      this.setState({
+        activeSearchPage: 1
+      });
     } else {
-      this.setState({ searchCondition: false });
+
+      this.setState({
+        searchCondition: false
+      });
     }
   }
 
@@ -189,20 +223,32 @@ this.state.prevValue = tc.prevValue;
     // for both cases when search is true
     // and when search is false
     if (this.state.searchCondition)
-      this.setState({ activeSearchPage: eventKey });
+      this.setState({
+        activeSearchPage: eventKey
+      });
     else
-      this.setState({ activePage: eventKey });
+      this.setState({
+        activePage: eventKey
+      });
   }
 
   handleClick(columnKey) {
     // rerender if sorting is true
-    this.setState({ columnSortType: [] });
-
+    this.setState({
+      columnSortType: []
+    });
+    this.setState({
+      columnSortType: []
+    });
     // resets search data when sorting, needs to refresh
 
 
-      this.setState({ searchedData: [] });
-
+    this.setState({
+      searchedResultsIndex: []
+    });
+    this.setState({
+      prevValue: undefined
+    });
 
     // checks whether columnSort is empty
     let condition = false;

@@ -2,48 +2,53 @@ import revealSearchResults from '../search/revealsearchresults';
 import generateSearchResults from '../search/generatesearchresults';
 
 export default function generateRows(current_page,
-  per_page, value, prevValue, cols, data, searchedData,
-  columnkey, customSearch) {
+  per_page, value, prevValue, cols, data,
+  searchedResultsIndex, searchedDataLength, columnkey, customSearch) {
 
   let dataLength;
   let rowComponents;
-
   // offset for pagination
   let start_offset = (current_page - 1) * per_page;
 
   // case when search condition not true
   // skips data before active page
   let dataIndex = 0;
-  if ((value != '' && prevValue == value &&
-      searchedData.length > 0) || value == '') {
+
+
+  if (value == '') {
+    searchedResultsIndex = [];
+    searchedDataLength = -1;
     dataIndex = start_offset;
   }
 
-  // active page greater than one
-  // reveals required rows but does not search data set again
   if (value != '' && prevValue == value &&
-    searchedData.length > 0) {
-    let sr = revealSearchResults(dataIndex,
-      searchedData, start_offset, per_page);
-    rowComponents = sr.rowComponents;
-    dataLength = sr.dataLength;
-    // data to be outputted is
-    // searched again
-  } else {
-    let sr = generateSearchResults(cols,
-      columnkey, data, value, customSearch,
-      dataIndex, start_offset, per_page);
-
-    dataLength = sr.dataLength;
-    rowComponents = sr.rowComponents;
-    searchedData = sr.searchedData;
-    prevValue = value;
+    searchedResultsIndex.length > 0) {
+    start_offset = searchedResultsIndex[current_page - 1];
+    dataIndex = start_offset;
 
   }
+
+
+  let sr = generateSearchResults(cols,
+    columnkey, data, value, prevValue, customSearch, searchedResultsIndex, searchedDataLength,
+    dataIndex, start_offset, per_page);
+  dataLength = sr.dataLength;
+
+  rowComponents = sr.rowComponents;
+
+  if (value != '' && prevValue != value) {
+    searchedResultsIndex = sr.searchedResultsIndex,
+      searchedDataLength = sr.searchedDataLength;
+  }
+  prevValue = value;
+
+
   return {
     dataLength,
+    searchedDataLength,
     rowComponents,
-    searchedData,
+
+    searchedResultsIndex,
     prevValue
   };
 }

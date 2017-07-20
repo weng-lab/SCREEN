@@ -26,7 +26,7 @@ export default function generateTableCells(cols,
     show_row = tc.show_row;
 
 
-      }
-      return show_row;
+  }
+  return show_row;
 
-    }
+}
