@@ -38,8 +38,9 @@ let cells = [];
         }
 
 
+
         cells.push( < td > {
-            renderHTML(search_item)
+            search_item
           } < /td>);
         }
 

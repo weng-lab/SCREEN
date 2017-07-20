@@ -280,7 +280,7 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	let click = "Click a cRE accession to view details about the cRE, including top tissues, nearby genomic features, etc.";
-		    
+
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
 	if("mm10" === GlobalAssembly){
@@ -310,8 +310,6 @@ class TableWithCart extends React.Component {
 			</ul>
 		    </ul>
 		</div>
-
-
 
 
 
@@ -376,7 +374,7 @@ class TableWithCart extends React.Component {
 	    </div>
 	);
     }
-    
+
     render() {
 	var data = [...this.props.data];
         var actions = this.props.actions;
@@ -391,7 +389,7 @@ class TableWithCart extends React.Component {
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-	
+
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
 			<div className="col-md-12">
@@ -399,7 +397,7 @@ class TableWithCart extends React.Component {
 			</div>
 		    </div>
 		</div>
-		
+
      	    </div>);
     }
 }

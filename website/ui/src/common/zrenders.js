@@ -1,5 +1,5 @@
 import ReactDOMServer from 'react-dom/server'
-
+import renderHTML from 'react-render-html'
 // datatbles render has params function (data, type, full, meta)
 
 export const relink = (a) => (v) => (
@@ -15,8 +15,8 @@ export const snp_link = (d) => {
     if("mm10" == GlobalAssembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
-         + d + '</a>';
+    return (<a href={url + '?vdb=variation;v=' + d} target="_blank">
+         {d}</a>);
 }
 
 export const snpLinks = (snps) => {
@@ -26,7 +26,7 @@ export const snpLinks = (snps) => {
 export const integer = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 
 export const integerLink = (href) => (d) => {
-    return "<a href='#" + href + "'>" + d + "</a>";
+    return (<a href={'#' + href}>{d}</a>);
 }
 
 export const toSciNot = (d) => {
@@ -55,11 +55,12 @@ export const supporting_cts = (list) => {
 };
 
 export const browser_buttons = (names) => {
-    var bg = '<div class="btn-group" role="group">';
+    var bg = [];
     for (var i = 0; i < names.length; i++) {
-	bg += '<button type="button" class="btn btn-default btn-xs">' + names[i] + '</button>';
+	bg.push(<button type="button" class="btn btn-default btn-xs">{names[i]}</button>);
     }
-    return bg + "</div>";
+
+    return (<div class="btn-group" role="group">{bg}</div>);
 }
 
 export const cart_img = (rmv, src_only) => {
@@ -68,15 +69,15 @@ export const cart_img = (rmv, src_only) => {
         return src;
     }
     var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
-    return '<img class="rowCart" src="' + src + '" title="' +  title + '">';
+    return (<img class="rowCart" src={src} title={title}>);
 }
 
 export const creLink = (accession) => (
-    '<a href="#">' + accession + '</a>'
+    <a href="#">{accession}</a>
 )
 
 export const popup = (p, c) => {
-    return '<span data-toggle="tooltip" data-placement="top" title="' + p + '">' + c + '</span>';
+    return (<span data-toggle="tooltip" data-placement="top" title={p}>{c}</span>);
 }
 
 export const popupReact = (p, c) => {
@@ -106,18 +107,18 @@ export const deLink = (gene) => {
 
 export const geDeButton = (d) => {
     let _d = d.replace(/\./g, "%2e");
-    var ge = '<a href="' + geLink(_d) + '" target="_blank">' + d + '</a>';
+    var ge = <a href={geLink(_d)} target="_blank">{d}</a>;
     if("mm10" != GlobalAssembly){
         return ge;
     }
-    var de = '<a href="' + deLink(_d) + '" target="_blank">&Delta;</a>';
-    return ge + '&nbsp;&nbsp;' + de;
+    var de = <a href={deLink(_d)} target="_blank">&Delta;</a>;
+    return (<div> {ge} &nbsp;&nbsp; {de} </div>);
 };
 
 export const geneDeLinks = (genesallpc) => {
-    let all = genesallpc[0].map(geDeButton).join(", ");
-    let pc = genesallpc[1].map(geDeButton).join(", ");
-    return "pc: " + pc + "<br />all: " + all;
+    let all = genesallpc[0].map(geDeButton);
+    let pc = genesallpc[1].map(geDeButton);
+    return (<p>pc:{pc}<br />all: {all}</p>);
 };
 
 export const dccImg = () => (
@@ -127,14 +128,14 @@ export const dccImg = () => (
 export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroup = (ctn) => {
@@ -143,7 +144,7 @@ export const dccLinkCtGroup = (ctn) => {
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroupCus = (ctn, content) => {
@@ -151,22 +152,22 @@ export const dccLinkCtGroupCus = (ctn, content) => {
         return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    return '<a target="_blank" href="' + url + '">' + content + '</a>';
+    return (<a target="_blank" href={url}>{content}</a>);
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {
     let expID = expAndFileID.split(' / ')[0];
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/pennant-encode.png" alt="ENCODE logo">';
-    return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
+    return (<a target="_blank" href={url}>{expAndFileID} &nbsp; {img}</a>);
 }
 
 export const cistromeLink = (acc) => (
-    "<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc + "' target='_blank'>" + acc + "</a>"
+    <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + acc} target='_blank'>{acc}</a>;
 );
 
 export const factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+    <a href={"http://beta.factorbook.org/human/chipseq/tf/" + d} target="_blank">{d}</a>;
 
 const factorbook_histones = [
     "H2AFZ",
@@ -211,7 +212,7 @@ export const searchLink = (data) => (approved_symbol) => {
     let params = jQuery.param({q: approved_symbol,
                                assembly: data.assembly});
     let url = "/search/?" + params;
-    return "<a href='" + url + "'>" + approved_symbol + "</a>";
+    return (<a href={url}>{approved_symbol}</a>);
 }
 
 export const assayIcon = (ctn) => {
@@ -252,7 +253,7 @@ export const assayIcon = (ctn) => {
 	    </svg>
 	</span>);
     let title = assays.join(", ");
-    let c = dccLinkCtGroupCus(ctn, ReactDOMServer.renderToStaticMarkup(e));
+    let c = dccLinkCtGroupCus(ctn, e);
     return popup(title, c);
 }
 
@@ -285,7 +286,7 @@ export const creGroupIcon = (creGroup) => {
 	    </svg>
 	</span>);
     let title = lookupTitle[creGroup];
-    let c = ReactDOMServer.renderToStaticMarkup(e);
+    let c = (e);
     return popup(title, c);
 }
 
@@ -323,7 +324,7 @@ export const sctGroupIcon = (creGroup) => {
 	    </svg>
 	</span>);
     let title = lookupTitle[creGroup];
-    let c = ReactDOMServer.renderToStaticMarkup(e);
+    let c = e;
     return popup(title, c);
 }
 
@@ -379,9 +380,9 @@ export const numWithCommas = (x) => {
 
 export const concordantStar = (concordant) => {
     if(concordant){
-	return '<span class="glyphicon glyphicon-star concordantStar" aria-hidden="true"></span>';
+	return (<span class="glyphicon glyphicon-star concordantStar" aria-hidden="true"></span>);
     }
-    return "";
+    return '';
 }
 
 export const concordantStarReact = (concordant) => {
@@ -391,11 +392,11 @@ export const concordantStarReact = (concordant) => {
 		  aria-hidden="true">
 	    </span>);
     }
-    return "";
+    return '';
 }
 
 export const checkCt = (checked) => {
-    return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
+    return (<input type={'checkbox' + (checked ? "checked " : "")}/>);
 }
 
 export const creTableAccessionBoxen = (cre) => {
@@ -417,7 +418,7 @@ export const creTableAccessionBoxen = (cre) => {
     let colors = Globals.colors.cREs;
 
     let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
-    
+
     let e = (
         <span className={"text-nowrap"}>
             <svg width={fw} height={fh}>
@@ -445,13 +446,13 @@ export const creTableAccessionProxReact = (cre) => {
 }
 
 export const creTableAccession = (cre, type, full, meta) => {
-    return '<div>' + 
-	   popup("Click for cRE details", creLink(cre.accession)) +
-	   '<br />' +
-	   popup("Concordant", concordantStar(cre.concordant)) +
-	   creTableAccessionProx(cre) + ' ' +
-	   ReactDOMServer.renderToStaticMarkup(creTableAccessionBoxen(cre)) +
-	   '</div>';
+    return (<div>
+	   {popup("Click for cRE details", creLink(cre.accession))}
+	   <br />
+	   {popup("Concordant", concordantStar(cre.concordant))}
+	   {creTableAccessionProx(cre)}
+	   {creTableAccessionBoxen(cre)}
+	   </div>);
 }
 
 export const creTableCellTypeSpecificReact = (data) => {
@@ -478,7 +479,7 @@ export const creTableCellTypeSpecificReact = (data) => {
 	}
 	return val > 1.64 ? c : colors.Inactive;
     }
-    
+
     let e = (
         <span className={"text-nowrap"}>
             <svg width={fw} height={fh}>
@@ -499,8 +500,8 @@ export const creTableCellTypeSpecificReact = (data) => {
 
 export const creTableCellTypeSpecific = (data) => {
     let e = creTableCellTypeSpecificReact(data);
-    let boxen = ReactDOMServer.renderToStaticMarkup(e);
-    return '<div>' + boxen + '</div>';
+    let boxen = (e);
+    return (<div>{boxen}</div>);
 }
 
 export const titlegeneric = (e) => {
@@ -523,7 +524,7 @@ export const creTitle = (cre) => {
 		{creTableCellTypeSpecificReact(cre.ctspecifc)}
 	    </span>);
     }
-    
+
     return (
 	<div>
 	    <h3 className="creDetailsTitle">{cre.accession}</h3>

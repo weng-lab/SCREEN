@@ -1,7 +1,7 @@
 import {HelpTooltip} from '../../../common/components/help_icon'
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
-import renderHTML from 'react-render-html'
+
 
 
 const TableColumns = (cts) => {
@@ -10,9 +10,9 @@ const TableColumns = (cts) => {
     let klassCenter = "dt-body-center dt-head-center ";
 
 
-    let accHelp = <div> accession<br/> {renderHTML(HelpTooltip("CellTypeTableAccessionCol"))} </div>;
+    let accHelp = <p> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </p>;
 
-    let sctHelp = <p>{cts} {renderHTML(HelpTooltip("CellTypeSpecifiedClassification"))}</p>;
+    let sctHelp = <p>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</p>;
 
     let geneHelp = <p>nearest genes:<br/>protein-coding / all&nbsp;&nbsp; </p>
     if("mm10" == GlobalAssembly){
