@@ -107,6 +107,10 @@ namespace SCREEN {
     std::string line;
     while (std::getline(f, line)) {
       std::vector<std::string> v = bib::string::split(line, '\t');
+      if (v.size() < scorefield + 1) {
+	std::cout << "WARNING: less than " << (scorefield + 1) << " fields in line " << line << '\n';
+	continue;
+      }
       regions_.regions_[v[0]].push_back({ std::stoi(v[1]), std::stoi(v[2]), std::stof(v[scorefield]) });
     }
     regions_.update_keys();
@@ -161,7 +165,6 @@ namespace SCREEN {
 	}
       }
     }
-    std::cout << "\n";
 
     // compute Z's
     std::cout << "found " << forcalc.size() << " values\n";
