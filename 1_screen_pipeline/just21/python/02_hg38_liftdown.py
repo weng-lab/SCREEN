@@ -61,6 +61,7 @@ class Intersect:
                 self.total += 1
                 line = line.strip().split('\t')
                 for i in range(4, 8):
+                    if i >= len(line): continue
                     if float(line[i]) > 1.64: self.filteredZTotal[i - 4] += 1
     
     def _intersected_regions(self, fraction):
@@ -103,7 +104,7 @@ class Intersect:
                 ZResults[j].append(float(ztotals[j]) / self.filteredZTotal[j])
 
         return (results, ZResults)
-            
+
 
 def _writeIntersection(a, b, path, n_intervals):
     results, zresults = Intersect(a, b).intersectRangeWithZ(n_intervals)
@@ -116,9 +117,15 @@ def _writeIntersection(a, b, path, n_intervals):
                     "CTCF": zresults[3]
                 }) + '\n')
 
+def _writeIntersectionNoZ(a, b, path, n_intervals):
+    results = Intersect(a, b).intersectRange(n_intervals)
+    with open(path, "wb") as o:
+        o.write(json.dumps(results))
+
 def main():
 
     # hg38 to hg19
+    """
     to19 = WLiftOver("hg38", "hg19")
     to19.liftOverBed("/data/projects/cREs/hg38/rDHS.bed",
                      "/data/projects/cREs/hg38/rDHS.hg19.liftOver.bed")
@@ -145,6 +152,13 @@ def main():
                        "/data/projects/cREs/hg38/CTA.hg19.intersected.json", 20) # fraction of lifted down cREs overlapping
     _writeIntersection("/data/projects/cREs/hg19/CTA.hg38.liftOver.bed", "/data/projects/cREs/hg38/CTA.bed",
                        "/data/projects/cREs/hg19/CTA.hg38.intersected.json", 20) # fraction of lifted up cREs overlapping
+    """
+
+    # do Cistrome intersection with hg19
+    _writeIntersectionNoZ("/data/projects/cREs/hg19/CTA.hg38.liftOver.bed", "/data/projects/cREs/hg38/rDHS.encode+cistrome.bed",
+                       "/data/projects/cREs/hg38/CTA.hg19.cistromeintersected.json", 20) # fraction of lifted over hg19 cREs overlapping
+    _writeIntersectionNoZ("/data/projects/cREs/hg38/rDHS.encode+cistrome.bed", "/data/projects/cREs/hg19/CTA.hg38.liftOver.bed",
+                       "/data/projects/cREs/hg38/CTA.hg38.cistromeintersected.json", 20) # fraction of Cistrome+ENCODE cREs overlapping
 
     return 0
 
