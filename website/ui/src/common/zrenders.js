@@ -461,7 +461,7 @@ export const creTableAccession = (cre, type, full, meta) => {
 	</div>);
 }
 
-export const creTableCellTypeSpecificReact = (data) => {
+export const creTableCellTypeSpecific = (data) => {
     let w = 12;
     let h = 9;
     let fw = 4 * w + 4;
@@ -502,13 +502,6 @@ export const creTableCellTypeSpecificReact = (data) => {
 	    </svg>
 	</span>);
     return e;
-}
-
-export const creTableCellTypeSpecific = (data) => {
-    return (
-	<div>
-	    {creTableCellTypeSpecificReact(data)}
-	</div>);
 }
 
 export const titlegeneric = (e) => {

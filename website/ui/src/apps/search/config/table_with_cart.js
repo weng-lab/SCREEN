@@ -35,22 +35,22 @@ const TableColumns = (cts) => {
             render: ZRender.creTableAccession
 	}, {
             title: sctHelp, data: "ctspecifc",
-	    render: ZRender.creTableCellTypeSpecificReact, name: "sctv", width: "12%"
+	    render: ZRender.creTableCellTypeSpecific, name: "sctv", width: "12%"
 	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
-	    render: ZRender.sctSorter
+            title: "SCTsorter", data: "ctspecifc", visible: false, 
+	    render: ZRender.sctSorter, name: "sct",
 	}, {
 	    title: tz("DNase"), data: "dnase_zscore",
-	    render: ZRender.real, width: "7%", name: "dnase"
+	    render: ZRender.real, name: "dnase", width: "7%"
 	}, {
 	    title: tz("H3K4me3"), data: "promoter_zscore",
-	    render: ZRender.real, width: "7%", name: "promoter"
+	    render: ZRender.real, name: "promoter", width: "7%"
 	}, {
 	    title: tz("H3K27ac"), data: "enhancer_zscore",
-	    render: ZRender.real, width: "7%", name: "enhancer"
+	    render: ZRender.real, name: "enhancer", width: "7%"
 	}, {
 	    title: tz("CTCF"), data: "ctcf_zscore", 
-	    render: ZRender.real, width: "7%", name: "ctcf"
+	    render: ZRender.real, name: "ctcf", width: "7%"
 	}, {
 	    title: "chr", data: "chrom", 
 	}, {

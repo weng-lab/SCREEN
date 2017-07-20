@@ -1,8 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import ResultsTable from '../../../common/components/results_table';
-import Ztable from '../../../common/components/ztable';
+import Ztable from '../../../common/components/ztable/ztable';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
