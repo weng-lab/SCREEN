@@ -9,17 +9,28 @@ const filterVisibleCols = (cols) => (
     })
 )
 
+const klassName = (colInfo) => {
+    let k = "";
+    if("className" in colInfo){
+	k = colInfo.className;
+    }
+    return k;
+}
+
 class Zheader extends React.Component {
     render(){
 	let visibleCols = filterVisibleCols(this.props.colInfos);
 	
 	let rowData = visibleCols.map((colInfo) => (
-	    colInfo.title
+	    [colInfo.title, klassName(colInfo)]
 	));
 	
 	return (
 	    <tr>
-		{rowData.map((r) => (<th>{r}</th>))}
+		{rowData.map((r) => {
+		    let k = "text-center " + r[1];
+		    return (<th className={k}>{r[0]}</th>);
+		})}
 	    </tr>);
     }
 }
@@ -30,18 +41,21 @@ class Zrow extends React.Component {
 	
 	let rowData = visibleCols.map((colInfo) => {
 	    if("defaultContent" in colInfo){
-		return colInfo["defaultContent"];
+		return [colInfo.defaultContent, klassName(colInfo)];
 	    }
 	    let rd =  this.props.row[colInfo.data];	    
 	    if("render" in colInfo){
-		return colInfo["render"](rd);
+		return [colInfo.render(rd), klassName(colInfo)];
 	    }
-	    return rd;
+	    return [rd, klassName(colInfo)];
 	});
 
 	return (
 	    <tr>
-		{rowData.map((r) => (<td>{r}</td>))}
+		{rowData.map((r) => {
+		let k = "text-center " + r[1];
+		return (<td className={k}>{r[0]}</td>);
+		})}
 	    </tr>);
     }
 }
