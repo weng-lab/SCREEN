@@ -61,7 +61,7 @@ export default function generateSearchResults(cols,
       // sections off pages for pagination
       if (dataIndex >= start_offset && start_count < per_page) {
         start_count++;
-  cells = packageColumnCells(cols, columnkey, item, customSearch);
+        cells = packageColumnCells(cols, columnkey, item, customSearch);
         rowComponents.push( < tr key = {
             item.id
           } > {
