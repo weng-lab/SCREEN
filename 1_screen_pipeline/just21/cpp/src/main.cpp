@@ -114,7 +114,6 @@ int main(int argc, char **argv){
   c.computeZScores();
   std::cout << "creating rDHSs...\n";
   c.make_rDHS();
-  return 0;
 
   // hg38
   std::cout << "*** ENCODE hg38 ***\n";

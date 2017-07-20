@@ -387,7 +387,7 @@ namespace SCREEN {
     const auto lines = bib::files::readStrings(path_.hotspot_list());
     for (const auto &line : lines) {
       const auto cols = bib::string::split(line, '\t');
-      celltypemap[cols[4]].push_back(count++);
+      celltypemap[cols[0]].push_back(count++);
       idx.push_back(cols[3]);
     }
       

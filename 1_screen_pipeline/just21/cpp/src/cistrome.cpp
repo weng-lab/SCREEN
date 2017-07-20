@@ -46,6 +46,7 @@ namespace SCREEN {
 	ScoredRegionSet ZScores;
 	RegionFilter qfilter = QFilter(DHS_FDR_THRESHOLD);
 	ZScores.appendNarrowPeak(dnase_files_[i], qfilter);
+	if (ZScores.regions_.total() <= 3) { continue; }
 	ZScores.convertToZ();
 
 	// write regions with unique IDs
@@ -78,9 +79,10 @@ namespace SCREEN {
     }
 
     // get paths to Z-score output
-    std::vector<bfs::path> zpaths(dnase_files_.size());
+    std::vector<bfs::path> zpaths;
     for (auto i = 0; i < dnase_files_.size(); ++i) {
-      zpaths[i] = root_ / "DHS" / "Cistrome" / basename(dnase_files_[i]);
+      bfs::path path = root_ / "DHS" / "Cistrome" / basename(dnase_files_[i]);
+      if (bfs::exists(path)) { zpaths.push_back(path); }
     }
 
     // compute rDHSs and write
