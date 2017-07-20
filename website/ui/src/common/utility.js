@@ -75,6 +75,11 @@ export const isCart = () => {
     return href.includes("&cart");
 }
 
+export const commajoin = (a) => {
+    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
+	    ", ", a.slice(-1)];
+}
+
 export const orjoin = (a) => {
     return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
 	    " or ", a.slice(-1)];
