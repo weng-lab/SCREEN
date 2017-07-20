@@ -35,7 +35,7 @@ export const toSciNot = (d) => {
     return Math.round(d * 100) / 100;
 }
 
-export const real = (d) => (d) //$.fn.dataTable.render.number( ',', '.', 2, '' );
+export const real = (d) => (d.toFixed(2))
 export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
 export const cell_type = (ct) => (Globals.byCellType[ct][0]["name"]);
 

@@ -3,8 +3,7 @@ import * as ZRender from '../../../common/zrenders'
 
 const TableColumns = (cts) => {
 
-    let klassLeft = "dt-body-left dt-head-left ";
-    let klassCenter = "dt-body-center dt-head-center ";
+    let klassCenter = "text-center";
 
     let accHelp = (
 	<span>
@@ -15,59 +14,62 @@ const TableColumns = (cts) => {
     
     let sctHelp = (
 	<span>
-	{cts}
-	{ZHelpTooltip("CellTypeSpecifiedClassification")}
+	    {cts}
+	    <br />
+	    {ZHelpTooltip("CellTypeSpecifiedClassification")}
 	</span>);
     
     let geneHelp = (
 	<span>
-	nearest genes:
-	<br />
-	protein-coding / all&nbsp;&nbsp;
-        {"mm10" == GlobalAssembly && ZHelpTooltip("DifferentialGeneMouse")}
+	    nearest genes:
+	    <br />
+	    protein-coding / all&nbsp;&nbsp;
+            {"mm10" == GlobalAssembly && ZHelpTooltip("DifferentialGeneMouse")}
 	</span>);
 
+    let tz = (name) => ( <span>{name}<br />Z</span>)
+    
     return [
 	{
-	    title: accHelp, data: "info", className: klassCenter,
+	    title: accHelp, data: "info", 
             render: ZRender.creTableAccession
 	}, {
-            title: sctHelp, data: "ctspecifc", className: klassCenter,
+            title: sctHelp, data: "ctspecifc",
 	    render: ZRender.creTableCellTypeSpecificReact, name: "sctv", width: "12%"
 	}, {
             title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
 	    render: ZRender.sctSorter
 	}, {
-	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
+	    title: tz("DNase"), data: "dnase_zscore",
 	    render: ZRender.real, width: "7%", name: "dnase"
 	}, {
-	    title: "H3K4me3 Z", data: "promoter_zscore", className: klassCenter,
+	    title: tz("H3K4me3"), data: "promoter_zscore",
 	    render: ZRender.real, width: "7%", name: "promoter"
 	}, {
-	    title: "H3K27ac Z", data: "enhancer_zscore", className: klassCenter,
+	    title: tz("H3K27ac"), data: "enhancer_zscore",
 	    render: ZRender.real, width: "7%", name: "enhancer"
 	}, {
-	    title: "CTCF Z", data: "ctcf_zscore", className: klassCenter,
+	    title: tz("CTCF"), data: "ctcf_zscore", 
 	    render: ZRender.real, width: "7%", name: "ctcf"
 	}, {
-	    title: "chr", data: "chrom", className: klassCenter
+	    title: "chr", data: "chrom", 
 	}, {
-	    title: "start", data: "start", className: klassCenter,
+	    title: "start", data: "start", 
             render: ZRender.numWithCommas
 	}, {
-	    title: "length", data: "len", className: klassCenter,
+	    title: "length", data: "len", 
             render: ZRender.numWithCommas
 	}, {
             title: geneHelp, data: "genesallpc",
-	    className: klassCenter + "geneexp", render: ZRender.geneDeLinks,
+	    className: "geneexp", render: ZRender.geneDeLinks,
             orderable: false,
 	}, {
-	    title: "cart", data: "in_cart", className: klassCenter + "cart",
+	    title: "cart", data: "in_cart", className: "cart",
             render: (d) => ZRender.cart_img(d, false),
             orderable: false,
 	}, {
-	    title: "genome browsers", data: null,
-	    className: klassCenter + "browser",
+	    title: (<span>genome<br />browsers</span>), data: null,
+	    className: "browser",
 	    targets: -1,
 	    orderable: false,
 	    defaultContent: ZRender.browser_buttons(["UCSC"])
