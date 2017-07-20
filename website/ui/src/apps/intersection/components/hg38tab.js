@@ -25,6 +25,19 @@ class Hg38Tab extends React.Component{
         this.loadData(nextProps);
     }
 
+    _process_cistrome(r) {
+	let interval = 1.0 / r.cistrome_encode_hg19.length;
+	let data = {cistrome: []};
+	r.cistrome_encode_hg19.map( (_, i) => {
+	    data.cistrome.push({
+		name: Math.round(interval * i * 100) / 100,
+		"lifted over ENCODE hg19 cREs": r.cistrome_encode_hg19[i],
+		"ENCODE and Cistrome hg38 cREs": r.cistrome_encode_hg38[i]
+	    });
+	} );
+	return data;
+    }
+    
     _process_hg19(r) {
 	let data = {hg19: [], hg38: []};
 	let interval = 1.0 / r.hg19_hg38.all.length;
@@ -83,7 +96,8 @@ class Hg38Tab extends React.Component{
             success: function(r) {
 		let data = {
 		    hg19intersect: this._process_hg19(r),
-		    saturation: this._process_saturation(r)
+		    saturation: this._process_saturation(r),
+		    cistromeintersect: this._process_cistrome(r)
 		};
 		this.setState({data, isFetching: false, isError: false});
             }.bind(this)
