@@ -15,8 +15,8 @@ export const snp_link = (d) => {
     if("mm10" == GlobalAssembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return (<a href={url + '?vdb=variation;v=' + d} target="_blank">
-         {d}</a>);
+    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
+         + d + '</a>';
 }
 
 export const snpLinks = (snps) => {
@@ -26,7 +26,7 @@ export const snpLinks = (snps) => {
 export const integer = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 
 export const integerLink = (href) => (d) => {
-    return (<a href={'#' + href}>{d}</a>);
+    return "<a href='#" + href + "'>" + d + "</a>";
 }
 
 export const toSciNot = (d) => {
@@ -69,7 +69,7 @@ export const cart_img = (rmv, src_only) => {
         return src;
     }
     var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
-    return (<img class="rowCart" src={src} title={title}>);
+    return '<img class="rowCart" src="' + src + '" title="' +  title + '">';
 }
 
 export const creLink = (accession) => (
@@ -128,7 +128,7 @@ export const dccImg = () => (
 export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = dccImg();
-    return (<a target="_blank" href={url}>{img}</a>);
+    return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
 export const dccLinkCtGroupExpIDs = (accs) => {
@@ -159,15 +159,15 @@ export const dccLinkAndIconSplit = (expAndFileID) => {
     let expID = expAndFileID.split(' / ')[0];
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = '<img src="/static/encode/pennant-encode.png" alt="ENCODE logo">';
-    return (<a target="_blank" href={url}>{expAndFileID} &nbsp; {img}</a>);
+    return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
 }
 
 export const cistromeLink = (acc) => (
-    <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + acc} target='_blank'>{acc}</a>;
+    "<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc + "' target='_blank'>" + acc + "</a>"
 );
 
 export const factorbook_link_tf = (d) => (
-    <a href={"http://beta.factorbook.org/human/chipseq/tf/" + d} target="_blank">{d}</a>;
+    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
 
 const factorbook_histones = [
     "H2AFZ",
@@ -212,7 +212,7 @@ export const searchLink = (data) => (approved_symbol) => {
     let params = jQuery.param({q: approved_symbol,
                                assembly: data.assembly});
     let url = "/search/?" + params;
-    return (<a href={url}>{approved_symbol}</a>);
+    return "<a href='" + url + "'>" + approved_symbol + "</a>";
 }
 
 export const assayIcon = (ctn) => {
@@ -396,7 +396,7 @@ export const concordantStarReact = (concordant) => {
 }
 
 export const checkCt = (checked) => {
-    return (<input type={'checkbox' + (checked ? "checked " : "")}/>);
+    return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
 }
 
 export const creTableAccessionBoxen = (cre) => {
