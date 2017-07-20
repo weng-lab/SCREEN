@@ -1,4 +1,4 @@
-import revealSearchResults from '../search/revealsearchresults';
+
 import generateSearchResults from '../search/generatesearchresults';
 
 export default function generateRows(current_page,
