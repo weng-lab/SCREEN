@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form, FormGroup, FormControl, Nav } from 'react-bootstrap';
+import {Form, FormGroup, FormControl, Nav, Pagination, HelpBlock } from 'react-bootstrap';
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
@@ -39,6 +39,20 @@ class SearchBox extends React.Component {
     }
 }
 
+class PageBox extends React.Component {
+    render(){
+	return (
+	    <Pagination className="users-pagination pull-right"
+			bsSize="medium"
+			maxButtons={ 3 }
+			first last next prev boundaryLinks
+			items={this.props.pages}
+			activePage={this.props.curPage}
+			onSelect={this.props.onSelect}
+	    />);
+    }
+}
+	    
 class Zheader extends React.Component {
     render(){
 	let visibleCols = filterVisibleCols(this.props.colInfos);
@@ -82,15 +96,11 @@ class Zrow extends React.Component {
     }
 }
 
-class Zrows {
-
-}
-
 class Ztable extends React.Component {
     constructor(props) {
         super(props);
 	this.state = {search: '',
-		      pageNum: 0,
+		      pageNum: 1, // page indexes are 1-based
 		      pageSize: 10};
     }
 
@@ -115,22 +125,37 @@ class Ztable extends React.Component {
         
     render(){
 	const searchBoxChange = (e) => {
-	    this.setState({search: e.target.value});
+	    this.setState({search: e.target.value,
+			   pageNum: 1});
+	};
+
+	const pageClick = (e) => {
+	    this.setState({pageNum: e});
 	};
 
 	let rowIDs = this.searchFilter();
-	let rowStart = this.state.pageNum * this.state.pageSize;
-	let rowEnd = (this.state.pageNum + 1) * this.state.pageSize;
+
+	let numPages = Math.ceil(rowIDs.length / this.state.pageSize);
+	// page indexes are 1-based
+	let rowStart = (this.state.pageNum - 1) * this.state.pageSize;
+	let rowEnd = this.state.pageNum * this.state.pageSize;
+	
+	let tableKlass = "table table-bordered table-condensed table-hover";
 	
 	return (
 	    <div style={{width: "100%"}}>
 		<SearchBox value={this.state.search} onChange={searchBoxChange} />
-		<table className={"table table-bordered table-condensed table-hover"}>
+		<table className={tableKlass}>
 		    <Zheader colInfos={this.props.cols} />
 		    {rowIDs.slice(rowStart, rowEnd).map((idx) => (
-			 <Zrow row={this.props.data[idx]} colInfos={this.props.cols} />
+			 <Zrow row={this.props.data[idx]}
+			       colInfos={this.props.cols} />
 		    ))}
 		</table>
+		<PageBox pages={numPages}
+			 curPage={this.state.pageNum}
+			 onSelect={pageClick} />
+		<HelpBlock>Found {rowIDs.length}</HelpBlock>
 	    </div>);
     }
 }
