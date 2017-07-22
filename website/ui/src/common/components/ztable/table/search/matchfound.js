@@ -1,12 +1,14 @@
 import searchRows from '../search/searchrows';
 import searchItem from '../search/searchitem';
 
-
-export default function generateTableCells(cols,
+export default function matchFound(cols,
   columnkey, item, value, customSearch) {
 
-  let show_row = false;
+  if (value == '') {
+    return true;
+  }
 
+  let show_row = false;
 
   for (let i = 0; i < cols.length; i++) {
     var colData = cols[i];
@@ -15,18 +17,16 @@ export default function generateTableCells(cols,
 
     // data value for per column
     let sic = searchItem(item,
-        columnName, colData, customSearch),
+        columnName, customSearch),
       search_item = sic.search_item,
       columnIndex = sic.columnIndex;
 
     // test condition if search is true
-    let tc = searchRows(show_row, search_item, value,
+    show_row = searchRows(show_row, search_item, value,
       columnName, customSearch[columnIndex]);
 
-    show_row = tc.show_row;
-
-
+    if (show_row)
+      return true;
   }
   return show_row;
-
 }

@@ -14,8 +14,6 @@ export default function sortData(data, columnSortType) {
         });
       }
     } else {
-
-
       // case when it is a string
       if (columnSortType.direction == 'asc') {
         data.sort(function(a, b) {
@@ -40,14 +38,10 @@ export default function sortData(data, columnSortType) {
           if (nameA < nameB) {
             return 1;
           }
-
           // names must be equal
           return 0;
         });
       }
     }
-
-
   }
-
 }

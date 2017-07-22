@@ -21,6 +21,11 @@ console.log(this.refs.root);
     }
  
     render() {
+
+
+
+console.log(this.props.onButtonClick);
+
 	return (<div ref={"container"} style={{"width": "100%"}}>
 		    <table ref="root" style={{width: "100%"}} />
 		</div>

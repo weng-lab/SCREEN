@@ -17,7 +17,7 @@ class SearchBar extends React.Component {
               type = "text"
               value = { value }
               onChange = { searchEvent }/>
-            <FormControl.Feedback/ >
+              <FormControl.Feedback/ >
           </FormGroup>
         </Form>
       </Nav>

@@ -1,19 +1,16 @@
-
 export default function searchItem(item,
-  columnName, colData, customSearch) {
+  columnName, customSearch) {
 
   let customSearchCondition = false;
   let search_item;
   let columnIndex = 0;
 
-  // case when custom sort is list of objects
-  // find value that matches column key
-  // returns value that matches
-  if (customSearch.length > 0 || (customSearch !== undefined &&
-      customSearch !== null)) {
+  if (typeof(customSearch) !== undefined &&
+    typeof(customSearch) !== null) {
     for (let i = 0; i < customSearch.length; i++) {
       if (customSearch[i].column == columnName) {
         customSearchCondition = true;
+
         if (customSearch[i].value == undefined ||
           customSearch[i].value == null ||
           customSearch[i].value == '') {
@@ -27,14 +24,15 @@ export default function searchItem(item,
         columnIndex = i;
         break;
       }
-      if (!customSearchCondition &&
-        i == customSearch.length - 1) {
+      if (!customSearchCondition && i == customSearch.length - 1) {
         search_item = item[columnName];
       }
     }
   } else {
     search_item = item[columnName];
   }
+
+
   return {
     search_item,
     columnIndex

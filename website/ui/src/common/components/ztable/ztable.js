@@ -1,10 +1,10 @@
 import React from 'react';
-import * as Render from '../../../common/renders'
 
 import ReactiveTable from './table/reactivetable';
-import generateTableComponents from './table/tablecomponents/generatetablecomponents';
+import generateRows from './table/tablecomponents/generaterows';
+import generateHeaders from './table/tablecomponents/generateheaders';
 
-import SearchBar from './table/search/searchbar';
+import SearchBar from './table/searchbar';
 
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
@@ -27,104 +27,131 @@ export default class ZTable extends React.Component {
         column: 'genesallpc',
         value: '',
         filterSearch: '',
-        renderOn: ''
       }, {
         column: 'info',
         value: 'accession',
         filterSearch: '',
-        renderOn: ''
-      }, {
-        column: 'ctspecifc',
-        value: '',
-        filterSearch: 'disabled',
-        renderOn: ''
-
-      }, {
-        column: 'in_cart',
-        value: '',
-        filterSearch: 'disabled',
-        renderOn: ''
-
-      }, {
-        column: null,
-        value: '',
-        filterSearch: 'disabled',
-        renderOn: ''
-
       }],
       prevValue: undefined,
       //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedResultsIndex: [],
-      searchedDataLength: -1,
 
       // variables for sorting
       columnSort: [{
-        column: "info",
-        direction: 'asc',
-        sortOn: 'inactive',
-        customSort: 'on',
-        custumFunction: function(data, columnSortType) {
+          column: "info",
+          direction: 'asc',
+          sortOn: 'inactive',
+          customSort: 'on',
+          custumFunction: function(data, columnSortType) {
 
-          // case when it is a string
-          if (columnSortType.direction == 'asc') {
-            data.sort(function(a, b) {
-              let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-              let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
-              }
-              // names must be equal
-              return 0;
-            });
-          } else {
-            data.sort(function(a, b) {
-              let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-              let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-              if (nameA > nameB) {
-                return -1;
-              }
-              if (nameA < nameB) {
-                return 1;
-              }
+            //case when it is a string
+            if (columnSortType.direction == 'asc') {
+              data.sort(function(a, b) {
+                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
+                // names must be equal
+                return 0;
+              });
+            } else {
+              data.sort(function(a, b) {
+                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
+                if (nameA > nameB) {
+                  return -1;
+                }
+                if (nameA < nameB) {
+                  return 1;
+                }
 
-              // names must be equal
-              return 0;
-            });
+                // names must be equal
+                return 0;
+              });
+            }
+
           }
 
-        }
+        }, {
+          column: "ctspecifc",
+          direction: 'asc',
+          sortOn: 'inactive',
+          customSort: 'on',
+          custumFunction: function(data, columnSortType) {
 
-      }],
-      columnSortType: []
+            if (!isNaN(data[0][columnSortType.column].ctcf_zscore)) {
+
+              if (columnSortType.direction == 'asc') {
+                data.sort(function(a, b) {
+                  return a[columnSortType.column].ctcf_zscore - b[columnSortType.column].ctcf_zscore;
+                });
+              } else {
+                data.sort(function(a, b) {
+                  return b[columnSortType.column].ctcf_zscore - a[columnSortType.column].ctcf_zscore;
+                });
+              }
+          }
+
+        } }, {
+          column: "dnase_zscore",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "promoter_zscore",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "enhancer_zscore",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "ctcf_zscore",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "chrom",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "start",
+          direction: 'asc',
+          sortOn: 'inactive',
+        }, {
+          column: "len",
+          direction: 'asc',
+          sortOn: 'inactive',
+        },
+
+      ]
     };
 
     // binds event handler
     this.handleSelect = this.handleSelect.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-
+    this.handleColumnClicks = this.handleColumnClicks.bind(this);
+    this.handleRowClicks = this.handleRowClicks.bind(this);
   }
 
   render() {
 
 
-    // temp variables
-    let data = this.props.data,
-      searchedResultsIndex = this.state.searchedResultsIndex,
-      searchedDataLength = this.state.searchedDataLength,
-      searchCondition = this.state.searchCondition,
-      prevValue = this.state.prevValue;
 
 
-    //console.log("data", data.length);
+
+    let data = this.props.data;
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
-      columnlabel = this.props.columnlabel,
-      columnSort = this.state.columnSort;
+      columnlabel = this.props.columnlabel;
 
+      let columnSort = this.state.columnSort;
+
+      let searchedResultsIndex = this.state.searchedResultsIndex,
+      searchCondition = this.state.searchCondition,
+      prevValue = this.state.prevValue;
 
     let customSearch = this.state.customSearch;
 
@@ -142,22 +169,24 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     // generates header amd row components
-    let tc = generateTableComponents(current_page,
-      per_page, value, prevValue, cols, data, searchedResultsIndex, searchedDataLength, columnkey, columnlabel,
-      columnSort, this.handleClick, customSearch);
 
-    let headerComponents = tc.headerComponents,
-      rowComponents = tc.rowComponents,
-      dataLength = tc.dataLength,
-      pages = tc.pages;
+
+      let headerComponents = generateHeaders(this.handleColumnClicks,
+        cols, columnkey, columnlabel, columnSort);
+
+        let rc = generateRows(this.handleRowClicks, cols,
+          columnkey, data, value, prevValue, customSearch,
+          searchedResultsIndex, current_page, per_page);
+
+        // generates row components
+        let rowComponents = rc.rowComponents,
+        dataLength = rc.dataLength;
+
+        let pages = Math.ceil(dataLength / per_page);
 
     // updates seached data, search data packages the searched results
-    this.state.searchedResultsIndex = tc.searchedResultsIndex;
-    this.state.searchedDataLength = tc.searchedDataLength;
-    this.state.prevValue = tc.prevValue;
-
-
-
+    this.state.searchedResultsIndex = rc.searchedResultsIndex;
+    this.state.prevValue = rc.prevValue;
 
 
     // returns search box and result table
@@ -189,8 +218,8 @@ export default class ZTable extends React.Component {
       dataLength = {
         dataLength
       }
-      /> <
-      /div>
+      /> < /
+      div >
     );
   }
 
@@ -203,15 +232,9 @@ export default class ZTable extends React.Component {
     // case when search is true
     if (e.target.value != '') {
       this.setState({
-        searchCondition: true
-      });
-
-      // set active page for pagination to 1
-      this.setState({
-        activeSearchPage: 1
+        searchCondition: true, activeSearchPage: 1
       });
     } else {
-
       this.setState({
         searchCondition: false
       });
@@ -219,9 +242,7 @@ export default class ZTable extends React.Component {
   }
 
   handleSelect(eventKey) {
-    // changes active page of pagination
-    // for both cases when search is true
-    // and when search is false
+
     if (this.state.searchCondition)
       this.setState({
         activeSearchPage: eventKey
@@ -232,31 +253,37 @@ export default class ZTable extends React.Component {
       });
   }
 
-  handleClick(columnKey) {
+  handleRowClicks(rowIndex, columnIndex, search) {
+
+
+
+    var onTdClick = this.props.onTdClick;
+  	var onButtonClick = this.props.onButtonClick;
+console.log(search.addEventListener('click'));
+
+if(columnIndex == 11) {
+onButtonClick(this, this.props.data[rowIndex]);
+}
+
+  }
+
+
+  handleColumnClicks(columnKey) {
     // rerender if sorting is true
     this.setState({
-      columnSortType: []
-    });
-    this.setState({
-      columnSortType: []
-    });
-    // resets search data when sorting, needs to refresh
-
-
-    this.setState({
-      searchedResultsIndex: []
-    });
-    this.setState({
+      searchedResultsIndex: [],
       prevValue: undefined
     });
 
-    // checks whether columnSort is empty
+
     let condition = false;
 
     // variables for column sorting
     let columnSort = this.state.columnSort,
-      columnSortType = this.state.columnSortType,
       data = this.props.data;
+
+
+      let columnSortType = [];
 
     // condition when columnSort is not empty,
     // rechecks array to modify value based on key
@@ -290,7 +317,7 @@ export default class ZTable extends React.Component {
                   direction: 'asc',
                 });
             }
-            Object.assign(columnSortType, columnSort[i]);
+            columnSortType = columnSort[i];
 
           }
         }
@@ -313,8 +340,7 @@ export default class ZTable extends React.Component {
           });
 
         }
-        Object.assign(columnSortType,
-          columnSort[columnSort.length - 1]);
+      columnSortType = columnSort[columnSort.length - 1];
       }
       // sorts data either by default or custom function
       if (columnSortType.customSort !== undefined &&

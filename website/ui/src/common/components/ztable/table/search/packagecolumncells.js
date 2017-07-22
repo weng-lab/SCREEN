@@ -1,48 +1,41 @@
-import searchItem from '../search/searchitem';
-import renderHTML from 'react-render-html'
+import searchItem from './searchitem';
 
-export default function packageColumnCells(cols, columnkey, item, customSearch) {
-let cells = [];
+export default function packageColumnCells(handleRowClicks, cols,
+  columnkey, item, customSearch) {
+  let cells = [];
 
-    for (let i = 0; i < cols.length; i++) {
-      var colData = cols[i];
+  for (let i = 0; i < cols.length; i++) {
+    var colData = cols[i];
+    var columnIndex = i;
+    let columnName = colData[columnkey];
 
-      let columnName = colData[columnkey];
+    let search_item;
 
-      let sic = searchItem(item,
-          columnName, colData, customSearch),
-        search_item = sic.search_item,
-        columnIndex = sic.columnIndex;
+    if ("defaultContent" in colData) {
+      search_item = colData.defaultContent;
+    }
+    if ("render" in colData) {
+      search_item = colData.render(item[columnName]);
+    }
 
-      if (customSearch[columnIndex].renderOn !== 'disabled' &&
-        customSearch[columnIndex].column == columnName) {
-        if (customSearch[columnIndex].column === null) {
-          search_item = colData.defaultContent;
-        } else {
-
-          search_item = colData.render(item[columnName]);
-
-        }
+    // if data cannot be outputted, returns blank
+    if (typeof(search_item) == 'object') {
+      cells.push( < td > {} < /td>);
       }
 
-      // if data cannot be outputted, returns blank
-      if (typeof(search_item) == 'object' ||
-        customSearch[columnIndex].renderOn == 'disabled') {
-        cells.push( < td > {} < /td>);
-        }
-
-        // return data per row and column
-        if (!isNaN(search_item) &&
-          !isNaN(search_item)) {
-          search_item = (search_item).toLocaleString();
-        }
-
-
-
-        cells.push( < td > {
-            search_item
+      // return data per row and column
+      if (!isNaN(search_item)) {
+        search_item = search_item.toLocaleString();
+      }
+      var search = [ < td > {
+          search_item
+        } < /td>]
+        cells.push( < td onClick = {
+            handleRowClicks.bind(this, columnIndex, search)
+          } > {
+            (search_item)
           } < /td>);
         }
 
-      return cells;
-}
+        return cells;
+      }

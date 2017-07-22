@@ -14,11 +14,10 @@ export default class ReactiveTable extends React.Component {
 
         return (
           <div>
-          <Table id="searchResults" class="searchable sortable">
-            <thead> { headerComponents } </thead>
-            <tbody> { rowComponents } </tbody>
+          <Table>
+            <thead>{headerComponents}</thead>
+            <tbody>{rowComponents}</tbody>
           </Table>
-
           <Pagination className = "users-pagination pull-right"
             bsSize = "medium"
             maxButtons = { 3 }

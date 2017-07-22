@@ -2,24 +2,15 @@ import ifRationalIncreaseIndex from './isrational';
 
 export default function searchRows(show_row, search_item, value,
   columnName, customSearch) {
-  // case search value '', a search matched in a cell
-  // or search has been disabled, skips searching
-  // returns results from search
-  if (value == '' || show_row ||
-    (columnName == customSearch.column &&
-      customSearch.filterSearch === 'disabled')) {
-    if (value == '') {
-      show_row = true;
-    }
-    return {
-      show_row,
-    };
+
+  if (columnName == customSearch.column &&
+    customSearch.filterSearch === 'disabled') {
+    return show_row;
   }
 
-
   let search_index = 0,
-  value_index = 0,
-  searchLength = String(search_item).length;
+    value_index = 0,
+    searchLength = String(search_item).length;
 
   // cotinues to search items in table per row for a match
   while (search_index < searchLength) {
@@ -62,7 +53,5 @@ export default function searchRows(show_row, search_item, value,
     search_index++;
   }
   // returns search condition
-  return {
-    show_row
-  };
+  return show_row;
 }

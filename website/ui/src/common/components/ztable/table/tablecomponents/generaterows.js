@@ -1,54 +1,115 @@
+import matchFound from '../search/matchfound';
+import packageColumnCells from '../search/packagecolumncells';
 
-import generateSearchResults from '../search/generatesearchresults';
+export default function generateRows(handleRowClicks, cols,
+  columnkey, data, value, prevValue, customSearch,
+  searchedResultsIndex, current_page, per_page) {
 
-export default function generateRows(current_page,
-  per_page, value, prevValue, cols, data,
-  searchedResultsIndex, searchedDataLength, columnkey, customSearch) {
+  let start_count = 0,
+    dataLength = 0;
 
-  let dataLength;
-  let rowComponents;
-  // offset for pagination
   let start_offset = (current_page - 1) * per_page;
 
-  // case when search condition not true
-  // skips data before active page
   let dataIndex = 0;
 
-
+  let fullDataLength = data.length;
   if (value == '') {
     searchedResultsIndex = [];
-    searchedDataLength = -1;
     dataIndex = start_offset;
+  } else {
+    if (prevValue == value &&
+      searchedResultsIndex.length > 0) {
+      dataIndex = start_offset;
+      fullDataLength = searchedResultsIndex.length;
+    }
+
+    if (prevValue != value) {
+      searchedResultsIndex = [];
+    }
+
   }
 
-  if (value != '' && prevValue == value &&
-    searchedResultsIndex.length > 0) {
-    start_offset = searchedResultsIndex[current_page - 1];
-    dataIndex = start_offset;
+  // stores search results
+  let cells = [],
+    rowComponents = [],
+    newSearchedResultsIndex = [];
 
-  }
+let rowIndex;
 
+  for (dataIndex; dataIndex < fullDataLength; dataIndex++) {
 
-  let sr = generateSearchResults(cols,
-    columnkey, data, value, prevValue, customSearch, searchedResultsIndex, searchedDataLength,
-    dataIndex, start_offset, per_page);
-  dataLength = sr.dataLength;
+    if (value != '' && prevValue == value &&
+      searchedResultsIndex.length > 0) {
+      var item = data[searchedResultsIndex[dataIndex]];
+      rowIndex = searchedResultsIndex[dataIndex];
+      var show_row = true;
 
-  rowComponents = sr.rowComponents;
+    } else {
+      // data set to be outputted
+      var item = data[dataIndex];
+rowIndex = dataIndex;
 
-  if (value != '' && prevValue != value) {
-    searchedResultsIndex = sr.searchedResultsIndex,
-      searchedDataLength = sr.searchedDataLength;
-  }
-  prevValue = value;
+      var show_row = matchFound(cols,
+        columnkey, item, value, customSearch);
 
+    }
+    // returns rows where pagination or search is true
+    if (show_row) {
+      dataLength++;
 
-  return {
-    dataLength,
-    searchedDataLength,
-    rowComponents,
+      // stores entire searched data
+      if (value != '' && (prevValue !== value ||
+          searchedResultsIndex.length == 0)) {
+        newSearchedResultsIndex.push(dataIndex);
+      }
 
-    searchedResultsIndex,
-    prevValue
-  };
-}
+      // sections off pages for pagination
+      if (dataIndex >= start_offset && start_count < per_page) {
+        start_count++;
+
+        cells = packageColumnCells(handleRowClicks.bind(this, rowIndex), cols,
+          columnkey, item, customSearch);
+
+        rowComponents.push( < tr key = {
+            dataIndex
+          } > {
+            cells
+          } < /tr>);
+        }
+
+      } else {
+        start_offset++;
+      }
+      // case search is false loop through data only
+      // per page limit
+      if (value == '') {
+        if (start_count == per_page || dataIndex == fullDataLength - 1) {
+          dataLength = data.length;
+          break;
+        }
+      } else if (prevValue == value) {
+        if (start_count == per_page || dataIndex == fullDataLength - 1) {
+          dataLength = fullDataLength;
+          break;
+        }
+      }
+    }
+
+    if (value != '' && prevValue !== value) {
+      searchedResultsIndex = newSearchedResultsIndex;
+
+    }
+
+    if (dataLength == 0) {
+      rowComponents.push( < tr > No matching records found. < /tr>);
+      }
+
+      prevValue = value;
+
+      return {
+        dataLength,
+        rowComponents,
+        searchedResultsIndex,
+        prevValue
+      };
+    }

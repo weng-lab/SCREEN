@@ -10,11 +10,11 @@ const TableColumns = (cts) => {
     let klassCenter = "dt-body-center dt-head-center ";
 
 
-    let accHelp = <p> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </p>;
+    let accHelp = <span> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </span>;
 
-    let sctHelp = <p>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</p>;
+    let sctHelp = <span>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</span>;
 
-    let geneHelp = <p>nearest genes:<br/>protein-coding / all&nbsp;&nbsp; </p>
+    let geneHelp = <span>nearest genes:<br/>protein-coding / all&nbsp;&nbsp; </span>
     if("mm10" == GlobalAssembly){
         geneHelp += HelpTooltip("DifferentialGeneMouse");
     }
