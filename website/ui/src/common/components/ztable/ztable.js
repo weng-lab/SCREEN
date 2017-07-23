@@ -19,114 +19,16 @@ export default class ZTable extends React.Component {
       // pagination variables
       activePage: 1,
       activeSearchPage: 1, // when search is true
-
+      pageLimit: 10,
       // variables for search box
       value: '',
       searchCondition: false,
-      customSearch: [{
-        column: 'genesallpc',
-        value: '',
-        filterSearch: '',
-      }, {
-        column: 'info',
-        value: 'accession',
-        filterSearch: '',
-      }],
       prevValue: undefined,
-      //customSearch: [{column: undefined, value: '', filterSearch: ''}],
       searchedResultsIndex: [],
+      rowClickedData: undefined,
 
       // variables for sorting
-      columnSort: [{
-          column: "info",
-          direction: 'asc',
-          sortOn: 'inactive',
-          customSort: 'on',
-          custumFunction: function(data, columnSortType) {
-
-            //case when it is a string
-            if (columnSortType.direction == 'asc') {
-              data.sort(function(a, b) {
-                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                if (nameA < nameB) {
-                  return -1;
-                }
-                if (nameA > nameB) {
-                  return 1;
-                }
-                // names must be equal
-                return 0;
-              });
-            } else {
-              data.sort(function(a, b) {
-                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                if (nameA > nameB) {
-                  return -1;
-                }
-                if (nameA < nameB) {
-                  return 1;
-                }
-
-                // names must be equal
-                return 0;
-              });
-            }
-
-          }
-
-        }, {
-          column: "ctspecifc",
-          direction: 'asc',
-          sortOn: 'inactive',
-          customSort: 'on',
-          custumFunction: function(data, columnSortType) {
-
-            if (!isNaN(data[0][columnSortType.column].ctcf_zscore)) {
-
-              if (columnSortType.direction == 'asc') {
-                data.sort(function(a, b) {
-                  return a[columnSortType.column].ctcf_zscore - b[columnSortType.column].ctcf_zscore;
-                });
-              } else {
-                data.sort(function(a, b) {
-                  return b[columnSortType.column].ctcf_zscore - a[columnSortType.column].ctcf_zscore;
-                });
-              }
-          }
-
-        } }, {
-          column: "dnase_zscore",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "promoter_zscore",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "enhancer_zscore",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "ctcf_zscore",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "chrom",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "start",
-          direction: 'asc',
-          sortOn: 'inactive',
-        }, {
-          column: "len",
-          direction: 'asc',
-          sortOn: 'inactive',
-        },
-
-      ]
+      columnSort: []
     };
 
     // binds event handler
@@ -138,8 +40,7 @@ export default class ZTable extends React.Component {
 
   render() {
 
-
-
+let rowClickedData = this.state.rowClickedData;
 
 
     let data = this.props.data;
@@ -147,20 +48,18 @@ export default class ZTable extends React.Component {
       columnkey = this.props.columnkey,
       columnlabel = this.props.columnlabel;
 
-      let columnSort = this.state.columnSort;
+    let columnSort = this.state.columnSort;
 
-      let searchedResultsIndex = this.state.searchedResultsIndex,
+    let searchedResultsIndex = this.state.searchedResultsIndex,
       searchCondition = this.state.searchCondition,
       prevValue = this.state.prevValue;
 
-    let customSearch = this.state.customSearch;
 
     // value from search box
     let value = this.state.value;
 
-
     // divides pages in per_page for pagination
-    const per_page = 10;
+    const per_page = this.state.pageLimit;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -169,24 +68,23 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     // generates header amd row components
+    let headerComponents = generateHeaders(this.handleColumnClicks,
+      cols, columnkey, columnlabel, columnSort);
 
+    let rc = generateRows(this.handleRowClicks, rowClickedData, cols,
+      columnkey, data, value, prevValue,
+      searchedResultsIndex, current_page, per_page);
 
-      let headerComponents = generateHeaders(this.handleColumnClicks,
-        cols, columnkey, columnlabel, columnSort);
+    // generates row components
+    let rowComponents = rc.rowComponents,
+      dataLength = rc.dataLength;
 
-        let rc = generateRows(this.handleRowClicks, cols,
-          columnkey, data, value, prevValue, customSearch,
-          searchedResultsIndex, current_page, per_page);
-
-        // generates row components
-        let rowComponents = rc.rowComponents,
-        dataLength = rc.dataLength;
-
-        let pages = Math.ceil(dataLength / per_page);
+    let pages = Math.ceil(dataLength / per_page);
 
     // updates seached data, search data packages the searched results
     this.state.searchedResultsIndex = rc.searchedResultsIndex;
     this.state.prevValue = rc.prevValue;
+
 
 
     // returns search box and result table
@@ -218,7 +116,11 @@ export default class ZTable extends React.Component {
       dataLength = {
         dataLength
       }
-      /> < /
+      />
+
+<p id="demo"></p>
+
+      < /
       div >
     );
   }
@@ -232,7 +134,8 @@ export default class ZTable extends React.Component {
     // case when search is true
     if (e.target.value != '') {
       this.setState({
-        searchCondition: true, activeSearchPage: 1
+        searchCondition: true,
+        activeSearchPage: 1
       });
     } else {
       this.setState({
@@ -253,22 +156,25 @@ export default class ZTable extends React.Component {
       });
   }
 
-  handleRowClicks(rowIndex, columnIndex, search) {
-
-
-
+  handleRowClicks(rowIndex, columnIndex) {
     var onTdClick = this.props.onTdClick;
-  	var onButtonClick = this.props.onButtonClick;
-console.log(search.addEventListener('click'));
 
-if(columnIndex == 11) {
-onButtonClick(this, this.props.data[rowIndex]);
+    this.setState({
+      rowClickedData: this.props.data[rowIndex]
+    });
+
+
+
+if ("defaultContent" in this.props.cols[columnIndex]) {
+
+
+
 }
 
   }
 
 
-  handleColumnClicks(columnKey) {
+  handleColumnClicks(columnClicksKey) {
     // rerender if sorting is true
     this.setState({
       searchedResultsIndex: [],
@@ -283,7 +189,7 @@ onButtonClick(this, this.props.data[rowIndex]);
       data = this.props.data;
 
 
-      let columnSortType = [];
+    let columnSortType = [];
 
     // condition when columnSort is not empty,
     // rechecks array to modify value based on key
@@ -298,49 +204,81 @@ onButtonClick(this, this.props.data[rowIndex]);
             });
           }
 
-          // if columnKey found change column sorting direction
-          if (columnSort[i].column == columnKey) {
-            condition = true;
+          if (typeof(columnClicksKey) == 'object') {
 
-            // activates sorting
-            if (columnSort[i].sortOn != 'disabled') {
-              Object.assign(columnSort[i], {
-                sortOn: 'active'
-              });
+            if ("columnSort" in columnClicksKey) {
 
-              if (columnSort[i].direction == 'asc')
-                Object.assign(columnSort[i], {
-                  direction: 'desc',
-                });
-              else
-                Object.assign(columnSort[i], {
-                  direction: 'asc',
-                });
+              var matchColumn = columnClicksKey["columnSort"];
+              if (columnSort[i].column == matchColumn.column) {
+                condition = true;
+                // activates sorting
+                if (columnSort[i].sortOn != 'disabled') {
+                  Object.assign(columnSort[i], {
+                    sortOn: 'active'
+                  });
+
+                  if (columnSort[i].direction == 'asc')
+                    Object.assign(columnSort[i], {
+                      direction: 'desc',
+                    });
+                  else
+                    Object.assign(columnSort[i], {
+                      direction: 'asc',
+                    });
+                }
+                columnSortType = columnSort[i];
+              }
             }
-            columnSortType = columnSort[i];
+          } else {
+            // if columnKey found change column sorting direction
+            if (columnSort[i].column == columnClicksKey) {
+              condition = true;
 
+              // activates sorting
+              if (columnSort[i].sortOn != 'disabled') {
+                Object.assign(columnSort[i], {
+                  sortOn: 'active'
+                });
+
+                if (columnSort[i].direction == 'asc')
+                  Object.assign(columnSort[i], {
+                    direction: 'desc',
+                  });
+                else
+                  Object.assign(columnSort[i], {
+                    direction: 'asc',
+                  });
+              }
+              columnSortType = columnSort[i];
+            }
           }
         }
       }
 
       // case when columnSort is empty, push in new data
       if (!condition) {
-        if (typeof(data[0][columnKey]) == 'string' ||
-          typeof(data[0][columnKey]) == 'number') {
-          columnSort.push({
-            column: columnKey,
-            direction: 'asc',
-            sortOn: 'active'
-          });
+        if (typeof(columnClicksKey) === 'object') {
+          if ("columnSort" in columnClicksKey) {
+            columnSort.push(columnClicksKey["columnSort"]);
+          }
         } else {
-          columnSort.push({
-            column: columnKey,
-            direction: 'asc',
-            sortOn: 'disabled'
-          });
-
+          if (typeof(data[0][columnClicksKey]) == 'string' ||
+            typeof(data[0][columnClicksKey]) == 'number') {
+            columnSort.push({
+              column: columnClicksKey,
+              direction: 'asc',
+              sortOn: 'active'
+            });
+          } else {
+            columnSort.push({
+              column: columnClicksKey,
+              direction: 'asc',
+              sortOn: 'disabled'
+            });
+          }
         }
-      columnSortType = columnSort[columnSort.length - 1];
+
+        columnSortType = columnSort[columnSort.length - 1];
       }
       // sorts data either by default or custom function
       if (columnSortType.customSort !== undefined &&

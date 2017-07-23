@@ -55,7 +55,7 @@ export const supporting_cts = (list) => {
 
 export const browser_buttons = (names) => {
     let content = names.map((name) => (
-	<button type="button" className="btn btn-default btn-xs">
+	<button type="button" className="btn btn-default btn-xs" >
 	    {name}
 	</button>));
     return (
@@ -63,6 +63,7 @@ export const browser_buttons = (names) => {
 	{content}
 	</div>);
 }
+
 
 export const cart_img = (rmv, src_only) => {
     var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";

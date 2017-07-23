@@ -5,11 +5,19 @@ for (let index = 0; index < cols.length; index++) {
 
   var colData = cols[index];
 
+
+if ("columnSort" in colData){
+  var columnClicksKey = colData;
+} else {
+  var columnClicksKey = colData[columnkey];
+
+}
+
           if (columnSort.length > 0) {
             for (let i = 0; i < columnSort.length; i++) {
 
               // arrow icons for sorting
-              let activeArrowColor,
+              var activeArrowColor,
                inactiveArrowColor = "#BEBEBE";
 
               // if inactive color gray
@@ -26,7 +34,7 @@ for (let index = 0; index < cols.length; index++) {
                 if (columnSort[i].direction == 'asc') {
                   columnHeader.push(<th key = { colData[columnkey] }
                           onClick={handleColumnClicks.bind(this,
-                            colData[columnkey])}>
+                            columnClicksKey)}>
                             <tr>
                               <th>{ colData[columnlabel] }</th>
                               <th><font size="5" color = {activeArrowColor}>&#8595;</font>
@@ -37,7 +45,7 @@ for (let index = 0; index < cols.length; index++) {
                 } else {
                   // case when sorting is desc
                   columnHeader.push( <th key = { colData[columnkey] }
-                            onClick={handleColumnClicks.bind(this, colData[columnkey])}>
+                            onClick={handleColumnClicks.bind(this, columnClicksKey)}>
                             <tr>
                               <th>{ colData[columnlabel] }</th>
                                 <th><font color={inactiveArrowColor} size="2">&#8595;</font>
@@ -51,7 +59,7 @@ for (let index = 0; index < cols.length; index++) {
           }
           columnHeader.push( <th key = { colData[columnkey] }
                     onClick={handleColumnClicks.bind(this,
-                      colData[columnkey])}>{ colData[columnlabel] }
+                      columnClicksKey)}>{ colData[columnlabel] }
                     </th>);
         }
 

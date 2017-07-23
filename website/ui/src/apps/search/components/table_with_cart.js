@@ -14,9 +14,6 @@ import loading from '../../../common/components/loading'
 import * as Render from '../../../common/zrenders'
 
 
-
-
-
 import {doToggle, isCart} from '../../../common/utility'
 
 class TableWithCart extends React.Component {

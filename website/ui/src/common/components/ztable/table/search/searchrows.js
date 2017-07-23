@@ -1,12 +1,10 @@
 import ifRationalIncreaseIndex from './isrational';
 
 export default function searchRows(show_row, search_item, value,
-  columnName, customSearch) {
+  columnName, filterSearch) {
 
-  if (columnName == customSearch.column &&
-    customSearch.filterSearch === 'disabled') {
+  if (filterSearch)
     return show_row;
-  }
 
   let search_index = 0,
     value_index = 0,
@@ -25,16 +23,22 @@ export default function searchRows(show_row, search_item, value,
       // test condition if value is rational
       search_index = tc.search_index;
       value_index = tc.value_index;
+
+      var compareValue = value.substr(value_index,
+        value.length);
+      var compareSearchItem =
+        String(search_item).substr(search_index,
+          compareValue.length);
+
+    } else {
+
+      var compareValue = value.substr(value_index,
+        value.length).toLowerCase();
+      var compareSearchItem =
+        String(search_item).substr(search_index,
+          compareValue.length).toLowerCase();
     }
 
-    // obtain substrings of both search value and value in the table
-    let compareValue = value.substr(value_index,
-      value.length).toLowerCase();
-    let compareSearchItem =
-      String(search_item).substr(search_index,
-        compareValue.length).toLowerCase();
-
-    // searches for matching value along length of string
     if (compareValue.length + search_index <= searchLength) {
       if (compareValue == compareSearchItem) {
         // reveals column, found a match

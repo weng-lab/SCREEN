@@ -1,18 +1,17 @@
 import matchFound from '../search/matchfound';
 import packageColumnCells from '../search/packagecolumncells';
 
-export default function generateRows(handleRowClicks, cols,
-  columnkey, data, value, prevValue, customSearch,
+export default function generateRows(handleRowClicks, rowClickedData, cols,
+  columnkey, data, value, prevValue,
   searchedResultsIndex, current_page, per_page) {
 
   let start_count = 0,
-    dataLength = 0;
+    dataLength = 0,
+    dataIndex = 0;
 
-  let start_offset = (current_page - 1) * per_page;
+  let start_offset = (current_page - 1) * per_page,
+    fullDataLength = data.length;
 
-  let dataIndex = 0;
-
-  let fullDataLength = data.length;
   if (value == '') {
     searchedResultsIndex = [];
     dataIndex = start_offset;
@@ -22,11 +21,9 @@ export default function generateRows(handleRowClicks, cols,
       dataIndex = start_offset;
       fullDataLength = searchedResultsIndex.length;
     }
-
     if (prevValue != value) {
       searchedResultsIndex = [];
     }
-
   }
 
   // stores search results
@@ -34,7 +31,7 @@ export default function generateRows(handleRowClicks, cols,
     rowComponents = [],
     newSearchedResultsIndex = [];
 
-let rowIndex;
+  let rowIndex;
 
   for (dataIndex; dataIndex < fullDataLength; dataIndex++) {
 
@@ -47,10 +44,10 @@ let rowIndex;
     } else {
       // data set to be outputted
       var item = data[dataIndex];
-rowIndex = dataIndex;
+      rowIndex = dataIndex;
 
       var show_row = matchFound(cols,
-        columnkey, item, value, customSearch);
+        columnkey, item, value);
 
     }
     // returns rows where pagination or search is true
@@ -67,8 +64,8 @@ rowIndex = dataIndex;
       if (dataIndex >= start_offset && start_count < per_page) {
         start_count++;
 
-        cells = packageColumnCells(handleRowClicks.bind(this, rowIndex), cols,
-          columnkey, item, customSearch);
+        cells = packageColumnCells(handleRowClicks.bind(this, rowIndex), rowClickedData, cols,
+          columnkey, item);
 
         rowComponents.push( < tr key = {
             dataIndex

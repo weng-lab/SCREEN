@@ -1,6 +1,5 @@
-import searchItem from './searchitem';
 
-export default function packageColumnCells(handleRowClicks, cols,
+export default function packageColumnCells(handleRowClicks, rowClickedData, cols,
   columnkey, item, customSearch) {
   let cells = [];
 
@@ -13,6 +12,18 @@ export default function packageColumnCells(handleRowClicks, cols,
 
     if ("defaultContent" in colData) {
       search_item = colData.defaultContent;
+
+if(rowClickedData != undefined) {
+      var buttons = document.getElementsByClassName("btn btn-default btn-xs");
+
+console.log(buttons);
+
+    buttons[0].addEventListener("click", function(){
+        document.getElementById("demo").innerHTML = "Hello World" + rowClickedData["info"].accession;
+    });
+
+
+}
     }
     if ("render" in colData) {
       search_item = colData.render(item[columnName]);
@@ -27,11 +38,15 @@ export default function packageColumnCells(handleRowClicks, cols,
       if (!isNaN(search_item)) {
         search_item = search_item.toLocaleString();
       }
+
+
+
+
       var search = [ < td > {
           search_item
         } < /td>]
         cells.push( < td onClick = {
-            handleRowClicks.bind(this, columnIndex, search)
+            handleRowClicks.bind(this, columnIndex)
           } > {
             (search_item)
           } < /td>);
