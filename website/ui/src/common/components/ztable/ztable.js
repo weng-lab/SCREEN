@@ -55,35 +55,51 @@ class PageBox extends React.Component {
 	    
 class Zheader extends React.Component {
     render(){
-	let visibleCols = filterVisibleCols(this.props.colInfos);
-	
-	let rowData = visibleCols.map((colInfo) => (
-	    [colInfo.title, klassName(colInfo)]
-	));
-	
 	return (
 	    <tr>
-		{rowData.map((r) => {
-		    let k = "text-center " + r[1];
-		    return (<th className={k}>{r[0]}</th>);
-		})}
+		{this.props.colInfos.map((col) => {
+		     let k = "text-center " + klassName(col);
+		     let sk = "table-sort";
+		     let sc = col.data; // sort column
+		     let so = 0; // sort order
+		     if("orderable" in col){
+			 if(!col.orderable){
+			     sc = '';
+			     so = -1;
+			 }
+		     }
+		     if(col.data === this.props.sortCol){
+			 if(1 === this.props.sortOrder){
+			     sk = "table-sort-asc";
+			     so = 1;
+			 } else if(2 === this.props.sortOrder){
+			     sk = "table-sort-desc";
+			     so = 2;
+			 }
+		     }
+		     k += ' ' + sk;
+		     return (
+			 <th className={k}
+			     onClick={this.props.onClick(col.data, so)}>
+			     {col.title}
+			 </th>);
+		 })}
 	    </tr>);
     }
 }
 
 class Zrow extends React.Component {
     render(){
-	let visibleCols = filterVisibleCols(this.props.colInfos);
-	
-	let rowData = visibleCols.map((colInfo) => {
+	let rowData = this.props.colInfos.map((colInfo) => {
+	    let k = klassName(colInfo);
 	    if("defaultContent" in colInfo){
-		return [colInfo.defaultContent, klassName(colInfo)];
+		return [colInfo.defaultContent, k];
 	    }
 	    let rd =  this.props.row[colInfo.data];	    
 	    if("render" in colInfo){
-		return [colInfo.render(rd), klassName(colInfo)];
+		return [colInfo.render(rd), k];
 	    }
-	    return [rd, klassName(colInfo)];
+	    return [rd, k];
 	});
 
 	return (
@@ -101,7 +117,9 @@ class Ztable extends React.Component {
         super(props);
 	this.state = {search: '',
 		      pageNum: 1, // page indexes are 1-based
-		      pageSize: 10};
+		      pageSize: 10,
+		      sortCol: '',
+		      sortOrder: 0};
     }
 
     searchFilter(){
@@ -122,6 +140,43 @@ class Ztable extends React.Component {
 	}
 	return ret;
     }
+
+    sort(rowIDs){
+	//console.log("sorting!", this.state.sortCol, this.state.sortOrder);
+	let c = this.state.sortCol;
+	if(!c){
+	    return rowIDs;
+	}
+	if(-1 == this.state.sortOrder){
+	    return rowIDs;
+	}
+	if(0 === rowIDs.length){
+	    return rowIDs;
+	}
+	let sample = this.props.data[rowIDs[0]][c];
+
+	// https://stackoverflow.com/a/16655847
+	let isNumArray = Number(sample) === sample; 
+	if(isNumArray){
+	    if(1 === this.state.sortOrder){ // ascending
+		return rowIDs.sort((a,b) => this.props.data[a][c] -
+					  this.props.data[b][c]);
+	    }
+	    return rowIDs.sort((a,b) => this.props.data[b][c] -
+				      this.props.data[a][c]);
+	}
+	// sort by strings https://stackoverflow.com/a/9645447
+	if(1 === this.state.sortOrder){ // ascending
+	    return rowIDs.sort((a,b) =>
+		this.props.data[a][c].toLowerCase().localeCompare(
+		    this.props.data[b][c].toLowerCase())
+	    )
+	}
+	return rowIDs.sort((a,b) =>
+	    this.props.data[b][c].toLowerCase().localeCompare(
+		this.props.data[a][c].toLowerCase())
+	)
+    }
         
     render(){
 	const searchBoxChange = (e) => {
@@ -133,8 +188,22 @@ class Ztable extends React.Component {
 	    this.setState({pageNum: e});
 	};
 
+	const sortClick = (col, curOrder) => () => {
+	    const nextSortOrder = {0:1,
+				   1:2,
+				   2:1};
+	    if(-1 === curOrder){
+		return;
+	    }
+	    this.setState({sortCol : col,
+			   sortOrder : nextSortOrder[curOrder]});
+	};
+	
 	let rowIDs = this.searchFilter();
-
+	rowIDs = this.sort(rowIDs);
+	
+	let visibleCols = filterVisibleCols(this.props.cols);
+	
 	let numPages = Math.ceil(rowIDs.length / this.state.pageSize);
 	// page indexes are 1-based
 	let rowStart = (this.state.pageNum - 1) * this.state.pageSize;
@@ -146,10 +215,14 @@ class Ztable extends React.Component {
 	    <div style={{width: "100%"}}>
 		<SearchBox value={this.state.search} onChange={searchBoxChange} />
 		<table className={tableKlass}>
-		    <Zheader colInfos={this.props.cols} />
+		    <Zheader colInfos={visibleCols}
+			     sortCol={this.state.sortCol}
+			     sortOrder={this.state.sortOrder}
+			     onClick={sortClick}
+		    />
 		    {rowIDs.slice(rowStart, rowEnd).map((idx) => (
 			 <Zrow row={this.props.data[idx]}
-			       colInfos={this.props.cols} />
+			       colInfos={visibleCols} />
 		    ))}
 		</table>
 		<PageBox pages={numPages}
