@@ -64,9 +64,11 @@ export default function generateRows(handleRowClicks, rowClickedData, cols,
       if (dataIndex >= start_offset && start_count < per_page) {
         start_count++;
 
-        cells = packageColumnCells(handleRowClicks.bind(this, rowIndex), rowClickedData, cols,
-          columnkey, item);
-
+        var cc = packageColumnCells(handleRowClicks.bind(this,
+          rowIndex), rowClickedData, cols,
+          columnkey, item, rowIndex);
+          cells = cc.cells;
+rowClickedData = cc.rowClickedData;
         rowComponents.push( < tr key = {
             dataIndex
           } > {
@@ -106,6 +108,7 @@ export default function generateRows(handleRowClicks, rowClickedData, cols,
       return {
         dataLength,
         rowComponents,
+        rowClickedData,
         searchedResultsIndex,
         prevValue
       };

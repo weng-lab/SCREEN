@@ -20,17 +20,19 @@ export default function matchFound(cols,
 
     filterSearch = false;
     if ("customSearch" in colData) {
-      if (colData["customSearch"].value != '') {
+      if (colData["customSearch"]["value"]) {
         search_item = item[columnName][colData["customSearch"].value];
       }
-      if (colData["customSearch"].filterSearch === false) {
+      if ('filterSearch' in colData["customSearch"]) {
+        if (colData["customSearch"]["filterSearch"]) {
+        if(colData["customSearch"].filterSearch === false)
         filterSearch = true;
+      }
       }
     }
 
     // test condition if search is true
-    show_row = searchRows(show_row, search_item, value,
-      columnName, filterSearch);
+    show_row = searchRows(show_row, search_item, value, filterSearch);
 
     if (show_row)
       return true;

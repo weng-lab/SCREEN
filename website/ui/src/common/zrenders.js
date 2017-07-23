@@ -65,6 +65,7 @@ export const browser_buttons = (names) => {
 }
 
 
+
 export const cart_img = (rmv, src_only) => {
     var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
     if(src_only){

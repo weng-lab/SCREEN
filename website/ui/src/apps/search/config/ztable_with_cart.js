@@ -16,9 +16,6 @@ const TableColumns = (cts) => {
         geneHelp += HelpTooltip("DifferentialGeneMouse");
     }
 
-
-
-
     return [
 	{
 	    title: accHelp, data: "info", className: klassCenter,
@@ -28,8 +25,7 @@ const TableColumns = (cts) => {
         }, columnSort: {
           column: "info",
           direction: 'asc',
-          sortOn: 'active',
-          customSort: 'on',
+          sortOn: 'inactive',
           custumFunction: function(data, columnSortType) {
 
             //case when it is a string
@@ -70,8 +66,7 @@ const TableColumns = (cts) => {
 	    render: Render.creTableCellTypeSpecific, name: "sctv", width: "12%", columnSort: {
           column: "ctspecifc",
           direction: 'asc',
-          sortOn: 'active',
-          customSort: 'on',
+          sortOn: 'inactive',
           custumFunction: function(data, columnSortType) {
 
             if (!isNaN(data[0][columnSortType.column].ctcf_zscore)) {
@@ -88,6 +83,9 @@ const TableColumns = (cts) => {
           }
 
         } }
+	}, {
+            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
+	    render: Render.sctSorter
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -121,9 +119,9 @@ const TableColumns = (cts) => {
 	    className: klassCenter + "browser",
 	    targets: -1,
 	    defaultContent: Render.browser_buttons(["UCSC"]), customSearch: {
-        value: '',
+        value: null,
         filterSearch: true,
-      }
+      },   orderable: false,
 
 	    //, "Ensembl"
 	}

@@ -10,51 +10,46 @@ export default function searchRows(show_row, search_item, value,
     value_index = 0,
     searchLength = String(search_item).length;
 
-  // cotinues to search items in table per row for a match
-  while (search_index < searchLength) {
+  // case when value is numberic, enter the loop only once
+  if (!isNaN(value) && value != 0 &&
+    !isNaN(search_item)) {
 
-    // case when value is numberic, enter the loop only once
-    if (!isNaN(value) && value != 0 &&
-      !isNaN(search_item)) {
+    let tc = ifRationalIncreaseIndex(
+      search_item, value, search_index, value_index);
 
-      let tc = ifRationalIncreaseIndex(
-        search_item, value, search_index, value_index);
+    // test condition if value is rational
+    search_index = tc.search_index;
+    value_index = tc.value_index;
 
-      // test condition if value is rational
-      search_index = tc.search_index;
-      value_index = tc.value_index;
+    var compareValue = value.substr(value_index,
+      value.length);
+    var compareSearchItem =
+      String(search_item).substr(search_index,
+        compareValue.length);
+    if (compareValue == compareSearchItem) {
+      // reveals column, found a match
+      return true;
+    }
+  } else {
+    var compareValue = value.toLowerCase();
+    while (search_index < searchLength) {
 
-      var compareValue = value.substr(value_index,
-        value.length);
-      var compareSearchItem =
-        String(search_item).substr(search_index,
-          compareValue.length);
-
-    } else {
-
-      var compareValue = value.substr(value_index,
-        value.length).toLowerCase();
       var compareSearchItem =
         String(search_item).substr(search_index,
           compareValue.length).toLowerCase();
-    }
 
-    if (compareValue.length + search_index <= searchLength) {
-      if (compareValue == compareSearchItem) {
-        // reveals column, found a match
-        show_row = true;
-        // found a match,
+      if (compareValue.length + search_index <= searchLength) {
+        if (compareValue == compareSearchItem) {
+          // reveals column, found a match
+          return true;
+        }
+      } else {
         break;
       }
-    } else {
-      break;
+      //increment search index of string
+      search_index++;
     }
-    // if numeric loop through only once
-    if (!isNaN(value) && value != 0 &&
-      !isNaN(search_item))
-      break;
-    //increment search index of string
-    search_index++;
+
   }
   // returns search condition
   return show_row;

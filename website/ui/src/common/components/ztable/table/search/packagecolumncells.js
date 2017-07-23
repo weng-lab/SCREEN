@@ -1,6 +1,5 @@
-
 export default function packageColumnCells(handleRowClicks, rowClickedData, cols,
-  columnkey, item, customSearch) {
+  columnkey, item, rowIndex) {
   let cells = [];
 
   for (let i = 0; i < cols.length; i++) {
@@ -8,30 +7,24 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
     var columnIndex = i;
     let columnName = colData[columnkey];
 
+    if ("visible" in colData) {
+      if (!colData["visible"])
+        continue;
+    }
+
     let search_item;
 
-    if ("defaultContent" in colData) {
+    if (colData["defaultContent"]) {
       search_item = colData.defaultContent;
 
-if(rowClickedData != undefined) {
-      var buttons = document.getElementsByClassName("btn btn-default btn-xs");
-
-console.log(buttons);
-
-    buttons[0].addEventListener("click", function(){
-        document.getElementById("demo").innerHTML = "Hello World" + rowClickedData["info"].accession;
-    });
-
-
-}
-    }
-    if ("render" in colData) {
+    } else if (colData["render"]) {
       search_item = colData.render(item[columnName]);
-    }
+    } else {
 
-    // if data cannot be outputted, returns blank
-    if (typeof(search_item) == 'object') {
-      cells.push( < td > {} < /td>);
+      search_item = item[columnName];
+      // if data cannot be outputted, returns blank
+      if (typeof(search_item) == 'object' || !search_item) {
+        continue;
       }
 
       // return data per row and column
@@ -39,18 +32,17 @@ console.log(buttons);
         search_item = search_item.toLocaleString();
       }
 
+    }
 
-
-
-      var search = [ < td > {
-          search_item
-        } < /td>]
-        cells.push( < td onClick = {
-            handleRowClicks.bind(this, columnIndex)
-          } > {
-            (search_item)
-          } < /td>);
-        }
-
-        return cells;
+    cells.push( < td className = {
+        "text-center " + colData["className"]
       }
+      onClick = {
+        handleRowClicks.bind(this, columnIndex)
+      } > {
+        (search_item)
+      } < /td>);
+    }
+
+    return {cells, rowClickedData};
+  }

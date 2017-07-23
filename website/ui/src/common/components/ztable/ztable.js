@@ -9,6 +9,8 @@ import SearchBar from './table/searchbar';
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
 
+import { Table, Pagination } from 'react-bootstrap';
+
 export default class ZTable extends React.Component {
 
   constructor(props) {
@@ -40,7 +42,7 @@ export default class ZTable extends React.Component {
 
   render() {
 
-let rowClickedData = this.state.rowClickedData;
+    let rowClickedData = this.state.rowClickedData;
 
 
     let data = this.props.data;
@@ -68,8 +70,11 @@ let rowClickedData = this.state.rowClickedData;
       var current_page = this.state.activePage;
 
     // generates header amd row components
-    let headerComponents = generateHeaders(this.handleColumnClicks,
-      cols, columnkey, columnlabel, columnSort);
+    let hc = generateHeaders(this.handleColumnClicks,
+      cols, columnkey, columnlabel, columnSort, data[0]);
+    let headerComponents = hc.columnHeader,
+      columnSortTypes = hc.columnSortTypes;
+
 
     let rc = generateRows(this.handleRowClicks, rowClickedData, cols,
       columnkey, data, value, prevValue,
@@ -84,7 +89,9 @@ let rowClickedData = this.state.rowClickedData;
     // updates seached data, search data packages the searched results
     this.state.searchedResultsIndex = rc.searchedResultsIndex;
     this.state.prevValue = rc.prevValue;
-
+    if (columnSortTypes.length == cols.length) {
+      this.state.columnSort = columnSortTypes;
+    }
 
 
     // returns search box and result table
@@ -118,9 +125,11 @@ let rowClickedData = this.state.rowClickedData;
       }
       />
 
-<p id="demo"></p>
+      <
+      p id = "demo" > < /p>
 
-      < /
+      <
+      /
       div >
     );
   }
@@ -158,134 +167,63 @@ let rowClickedData = this.state.rowClickedData;
 
   handleRowClicks(rowIndex, columnIndex) {
     var onTdClick = this.props.onTdClick;
-
+    var onButtonClick = this.props.onButtonClick;
     this.setState({
       rowClickedData: this.props.data[rowIndex]
     });
 
 
+    var data =this.props.data[rowIndex];
 
-if ("defaultContent" in this.props.cols[columnIndex]) {
+    if ("defaultContent" in this.props.cols[columnIndex]) {
 
+      buttons[i].addEventListener("mousedown", onButtonClick(this, data), false);
 
-
-}
+    }
 
   }
 
 
-  handleColumnClicks(columnClicksKey) {
+  handleColumnClicks(columnName, index) {
     // rerender if sorting is true
     this.setState({
       searchedResultsIndex: [],
       prevValue: undefined
     });
 
-
-    let condition = false;
-
-    // variables for column sorting
     let columnSort = this.state.columnSort,
       data = this.props.data;
 
-
-    let columnSortType = [];
-
-    // condition when columnSort is not empty,
-    // rechecks array to modify value based on key
     if (data.length > 1) {
+      let columnSortType = [];
       if (columnSort.length > 0) {
-        for (let i = 0; i < columnSort.length; i++) {
-
-          // inactivates filtering
-          if (columnSort[i].sortOn != 'disabled') {
-            Object.assign(columnSort[i], {
-              sortOn: 'inactive'
-            });
-          }
-
-          if (typeof(columnClicksKey) == 'object') {
-
-            if ("columnSort" in columnClicksKey) {
-
-              var matchColumn = columnClicksKey["columnSort"];
-              if (columnSort[i].column == matchColumn.column) {
-                condition = true;
-                // activates sorting
-                if (columnSort[i].sortOn != 'disabled') {
-                  Object.assign(columnSort[i], {
-                    sortOn: 'active'
-                  });
-
-                  if (columnSort[i].direction == 'asc')
-                    Object.assign(columnSort[i], {
-                      direction: 'desc',
-                    });
-                  else
-                    Object.assign(columnSort[i], {
-                      direction: 'asc',
-                    });
-                }
-                columnSortType = columnSort[i];
-              }
-            }
-          } else {
-            // if columnKey found change column sorting direction
-            if (columnSort[i].column == columnClicksKey) {
-              condition = true;
-
-              // activates sorting
-              if (columnSort[i].sortOn != 'disabled') {
-                Object.assign(columnSort[i], {
-                  sortOn: 'active'
-                });
-
-                if (columnSort[i].direction == 'asc')
-                  Object.assign(columnSort[i], {
-                    direction: 'desc',
-                  });
-                else
-                  Object.assign(columnSort[i], {
-                    direction: 'asc',
-                  });
-              }
-              columnSortType = columnSort[i];
+        if (columnSort[index]['sortOn'] != 'disabled') {
+          for (let i = 0; i < columnSort.length; i++) {
+            if (columnSort[i]['sortOn'] != 'disabled') {
+              Object.assign(columnSort[i], {
+                sortOn: 'inactive'
+              });
             }
           }
-        }
-      }
-
-      // case when columnSort is empty, push in new data
-      if (!condition) {
-        if (typeof(columnClicksKey) === 'object') {
-          if ("columnSort" in columnClicksKey) {
-            columnSort.push(columnClicksKey["columnSort"]);
+          columnSortType = columnSort[index];
+          Object.assign(columnSort[index], {
+            sortOn: 'active'
+          });
+          if (columnSortType["custumFunction"]) {
+            customSort(data, columnSortType, columnName);
+          } else {
+            sortData(data, columnSortType, columnName);
           }
-        } else {
-          if (typeof(data[0][columnClicksKey]) == 'string' ||
-            typeof(data[0][columnClicksKey]) == 'number') {
-            columnSort.push({
-              column: columnClicksKey,
-              direction: 'asc',
-              sortOn: 'active'
+          if (columnSort[index].direction == 'asc') {
+            Object.assign(columnSort[index], {
+              direction: 'desc',
             });
           } else {
-            columnSort.push({
-              column: columnClicksKey,
+            Object.assign(columnSort[index], {
               direction: 'asc',
-              sortOn: 'disabled'
             });
           }
         }
-
-        columnSortType = columnSort[columnSort.length - 1];
-      }
-      // sorts data either by default or custom function
-      if (columnSortType.customSort !== undefined &&
-        columnSortType.customSort !== null) {
-        customSort(data, columnSortType);
-      } else {
-        sortData(data, columnSortType);
       }
     }
   }
