@@ -1,4 +1,4 @@
-export default function packageColumnCells(handleRowClicks, rowClickedData, cols,
+export default function packageColumnCells(handleCellClicks, rowClickedData, cols,
   columnkey, columnlabel, item) {
   let cells = [];
 
@@ -34,7 +34,7 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
             "text-center " + colData["className"]
           }
           onClick = {
-            handleRowClicks.bind(this, columnIndex, columnkey)
+            handleCellClicks.bind(this, columnIndex, columnkey)
           } > { } < /td>);
 
         continue;
@@ -53,7 +53,7 @@ if(search_item) {
         "text-center " + colData["className"]
       }
       onClick = {
-        handleRowClicks.bind(this, columnIndex, columnkey)
+        handleCellClicks.bind(this, columnIndex, columnkey)
       } > {
         (search_item)
       } < /td>);
@@ -64,7 +64,7 @@ if(search_item) {
           "text-center " + colData["className"]
         }
         onClick = {
-          handleRowClicks.bind(this, columnIndex, columnkey)
+          handleCellClicks.bind(this, columnIndex, columnkey)
         } > { } < /td>);
 
     }

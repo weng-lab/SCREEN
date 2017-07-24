@@ -24,10 +24,10 @@ class TableWithCart extends React.Component {
 	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
-    table_click_handler(td, rowdata, actions){
-        if (td.className.indexOf("browser") != -1) return;
-        if (td.className.indexOf("geneexp") != -1) return;
-        if (td.className.indexOf("cart") != -1) {
+    table_click_handler(columnName, rowdata, actions){
+        if (columnName == null) return;
+        if (columnName == "genesallpc") return;
+        if (columnName == "in_cart") {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
@@ -51,6 +51,19 @@ class TableWithCart extends React.Component {
     button_click_handler(name, rowdata, actions){
 	let cre = {...rowdata, ...rowdata.info};
 	actions.showGenomeBrowser(cre, name);
+    }
+
+    cart_img_click_handler(columnName, rowdata){
+
+      if (columnName == "in_cart") {
+        if (rowdata[columnName] == false) {
+          rowdata[columnName] = true;
+        } else {
+          rowdata[columnName] = false;
+        }
+      }
+
+
     }
 
     addAllToCart() {
@@ -319,9 +332,11 @@ class TableWithCart extends React.Component {
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
+                                  cart_img_click_handler = {(columnName, rowdata) =>
+                                      this.cart_img_click_handler(columnName, rowdata)}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
-
+pageLimit = {10}
 columnkey={"data"}
 columnlabel={"title"}
 

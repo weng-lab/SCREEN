@@ -8,7 +8,7 @@ const TableColumns = (cts) => {
 
 
     let accHelp = <span> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </span>;
-    
+
 let sctHelp;
 if(cts){
     sctHelp = <span>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</span>;
@@ -54,7 +54,7 @@ if(cts){
 	}, {
             title: geneHelp, data: "genesallpc",
 	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
-            orderable: false,
+            orderable: false
 	}, {
 	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),

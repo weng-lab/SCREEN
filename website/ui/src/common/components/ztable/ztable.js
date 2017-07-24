@@ -9,11 +9,6 @@ import SearchBar from './table/searchbar';
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
 
-import {
-  Table,
-  Pagination
-} from 'react-bootstrap';
-
 export default class ZTable extends React.Component {
 
   constructor(props) {
@@ -40,10 +35,23 @@ export default class ZTable extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleColumnClicks = this.handleColumnClicks.bind(this);
-    this.handleRowClicks = this.handleRowClicks.bind(this);
+    this.handleCellClicks = this.handleCellClicks.bind(this);
+
   }
 
   render() {
+
+
+console.log("key", this.props.key);
+console.log("order", this.props.order);
+console.log("columnDefs", this.props.columnDefs);
+console.log("cvisibel", this.props.cvisible);
+console.log("cols", this.props.cols);
+console.log("key", this.props.key);
+console.log("key", this.props.key);
+console.log("key", this.props.key);
+
+
 
     let rowClickedData = this.state.rowClickedData;
 
@@ -64,7 +72,10 @@ export default class ZTable extends React.Component {
     let value = this.state.value;
 
     // divides pages in per_page for pagination
-    const per_page = this.state.pageLimit;
+    if(this.props.pageLimit)
+    var per_page = this.props.pageLimit;
+    else
+    var per_page = this.state.pageLimit;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -79,7 +90,7 @@ export default class ZTable extends React.Component {
       columnSortTypes = hc.columnSortTypes;
 
 
-    let rc = generateRows(this.handleRowClicks, rowClickedData, cols,
+    let rc = generateRows(this.handleCellClicks, rowClickedData, cols,
       columnkey, columnlabel, data, value, prevValue,
       searchedResultsIndex, current_page, per_page);
 
@@ -168,30 +179,19 @@ export default class ZTable extends React.Component {
       });
   }
 
-  handleRowClicks(rowIndex, columnIndex, columnkey) {
-    var onTdClick = this.props.onTdClick;
-    var onButtonClick = this.props.onButtonClick;
-    this.setState({
-      rowClickedData: this.props.data[rowIndex]
-    });
-
+  handleCellClicks(rowIndex, columnIndex, columnkey) {
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
-    if ("defaultContent" in this.props.cols[columnIndex]) {
-      var buttons = document.getElementsByClassName("btn btn-default btn-xs");
-      buttons[0].addEventListener("mouseup", onButtonClick(this, data), true);
-    } else if (cols[columnkey] == "in_cart") {
-      if (data[cols[columnkey]] == false) {
-        data[cols[columnkey]] = true;
-      } else {
-        data[cols[columnkey]] = false;
-      }
-    } else {
-    //  onTdClick(this, data);
-    }
+
+    var onTdClick = this.props.onTdClick;
+    var onButtonClick = this.props.onButtonClick;
+    var cart_img_click_handler = this.props.cart_img_click_handler;
+
+    onTdClick(cols[columnkey], data);
+    cart_img_click_handler(cols[columnkey], data);
+    //onButtonClick(this, data);
 
   }
-
 
   handleColumnClicks(columnName, index) {
     // rerender if sorting is true
@@ -222,7 +222,7 @@ export default class ZTable extends React.Component {
 
           if (columnSortType["custumFunction"]) {
             customSort(data, columnSortType, columnName);
-          }  else {
+          } else {
             sortData(data, columnSortType, columnName);
           }
           if (columnSort[index].direction == 'asc') {
