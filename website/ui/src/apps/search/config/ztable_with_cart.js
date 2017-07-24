@@ -8,8 +8,11 @@ const TableColumns = (cts) => {
 
 
     let accHelp = <span> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </span>;
-
-    let sctHelp = <span>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</span>;
+    
+let sctHelp;
+if(cts){
+    sctHelp = <span>{cts} {HelpTooltip("CellTypeSpecifiedClassification")}</span>;
+}
 
     let geneHelp = <span>nearest genes:<br/>protein-coding / all&nbsp;&nbsp; </span>
     if("mm10" == GlobalAssembly){
@@ -19,73 +22,15 @@ const TableColumns = (cts) => {
     return [
 	{
 	    title: accHelp, data: "info", className: klassCenter,
-            render: Render.creTableAccession, customSearch: {
-          value: 'accession',
-          filterSearch: true,
-        }, columnSort: {
-          column: "info",
-          direction: 'asc',
-          sortOn: 'inactive',
-          custumFunction: function(data, columnSortType) {
-
-            //case when it is a string
-            if (columnSortType.direction == 'asc') {
-              data.sort(function(a, b) {
-                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                if (nameA < nameB) {
-                  return -1;
-                }
-                if (nameA > nameB) {
-                  return 1;
-                }
-                // names must be equal
-                return 0;
-              });
-            } else {
-              data.sort(function(a, b) {
-                let nameA = a[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                let nameB = b[columnSortType.column].accession.toLowerCase(); // ignore upper and lowercase
-                if (nameA > nameB) {
-                  return -1;
-                }
-                if (nameA < nameB) {
-                  return 1;
-                }
-
-                // names must be equal
-                return 0;
-              });
-            }
-
-          }
-
+      render: Render.creTableAccession, customSearch: { value: 'accession',
+      filterSearch: true }, columnSort: { value: 'accession',
+      direction: 'asc', sortOn: 'inactive'
         }
 	}, {
-            title: sctHelp, data: "ctspecifc", className: klassCenter,
-	    render: Render.creTableCellTypeSpecific, name: "sctv", width: "12%", columnSort: {
-          column: "ctspecifc",
-          direction: 'asc',
-          sortOn: 'inactive',
-          custumFunction: function(data, columnSortType) {
-
-            if (!isNaN(data[0][columnSortType.column].ctcf_zscore)) {
-
-              if (columnSortType.direction == 'asc') {
-                data.sort(function(a, b) {
-                  return a[columnSortType.column].ctcf_zscore - b[columnSortType.column].ctcf_zscore;
-                });
-              } else {
-                data.sort(function(a, b) {
-                  return b[columnSortType.column].ctcf_zscore - a[columnSortType.column].ctcf_zscore;
-                });
-              }
-          }
-
-        } }
-	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
-	    render: Render.sctSorter
+      title: sctHelp, data: "ctspecifc", className: klassCenter,
+	    render: Render.creTableCellTypeSpecific, width: "12%",
+      columnSort: { direction: 'asc', sortOn: 'inactive',
+      custumFunction: Render.sctSorter}
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -115,15 +60,10 @@ const TableColumns = (cts) => {
             render: (d) => Render.cart_img(d, false),
             orderable: false,
 	}, {
-	    title: "genome browsers", data: null,
-	    className: klassCenter + "browser",
-	    targets: -1,
-	    defaultContent: Render.browser_buttons(["UCSC"]), customSearch: {
-        value: null,
-        filterSearch: true,
-      },   orderable: false,
+	    title: "genome browsers", data: null, className: klassCenter + "browser",
+	    targets: -1, defaultContent: Render.browser_buttons(["UCSC"]),
+      customSearch: { value: null, filterSearch: true },   orderable: false,
 
-	    //, "Ensembl"
 	}
     ];
 }

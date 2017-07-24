@@ -80,7 +80,7 @@ export default class ZTable extends React.Component {
 
 
     let rc = generateRows(this.handleRowClicks, rowClickedData, cols,
-      columnkey, data, value, prevValue,
+      columnkey, columnlabel, data, value, prevValue,
       searchedResultsIndex, current_page, per_page);
 
     // generates row components
@@ -175,7 +175,6 @@ export default class ZTable extends React.Component {
       rowClickedData: this.props.data[rowIndex]
     });
 
-
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
     if ("defaultContent" in this.props.cols[columnIndex]) {
@@ -188,7 +187,7 @@ export default class ZTable extends React.Component {
         data[cols[columnkey]] = false;
       }
     } else {
-      onTdClick(this, data);
+    //  onTdClick(this, data);
     }
 
   }

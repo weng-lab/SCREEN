@@ -4,11 +4,19 @@ export default function generateHeaders(handleColumnClicks,
   let columnSortTypes = [];
 
   for (let index = 0; index < cols.length; index++) {
-
     var colData = cols[index];
     var columnName = colData[columnkey];
 
     if (columnSort.length == 0) {
+
+      if(!colData[columnlabel]) {
+        columnSortTypes.push({
+          direction: 'asc',
+          sortOn: 'disabled'
+        });
+        continue;
+  }
+
       if ("visible" in colData) {
         if (!colData["visible"])
           columnSortTypes.push({
@@ -42,6 +50,7 @@ export default function generateHeaders(handleColumnClicks,
         }
       }
 
+
       columnHeader.push( < th key = { colData[columnkey] }
         className = { "text-center " + colData["className"] }
         onClick = { handleColumnClicks.bind(this,
@@ -51,11 +60,14 @@ export default function generateHeaders(handleColumnClicks,
       }
       else {
 
+        if(!colData[columnlabel]) {
+          continue;
+    }
+
         if ("visible" in colData) {
           if (!colData["visible"])
             continue;
         }
-
         // arrow icons for sorting
         var activeArrowColor,
           inactiveArrowColor = "#BEBEBE";
@@ -106,7 +118,6 @@ export default function generateHeaders(handleColumnClicks,
               </th>);
     }
   } else {
-
     columnHeader.push( <th key = { colData[columnkey] }
               className = { "text-center " + colData["className"] }
               onClick = { handleColumnClicks.bind(this, columnName, index)

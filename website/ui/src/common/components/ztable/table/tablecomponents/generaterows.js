@@ -2,7 +2,7 @@ import matchFound from '../search/matchfound';
 import packageColumnCells from '../search/packagecolumncells';
 
 export default function generateRows(handleRowClicks, rowClickedData, cols,
-  columnkey, data, value, prevValue,
+  columnkey, columnlabel, data, value, prevValue,
   searchedResultsIndex, current_page, per_page) {
 
   let start_count = 0,
@@ -66,11 +66,11 @@ export default function generateRows(handleRowClicks, rowClickedData, cols,
 
         var cc = packageColumnCells(handleRowClicks.bind(this,
           rowIndex), rowClickedData, cols,
-          columnkey, item, rowIndex);
+          columnkey, columnlabel, item);
           cells = cc.cells;
-rowClickedData = cc.rowClickedData;
-        rowComponents.push( < tr key = {
-            dataIndex
+          rowClickedData = cc.rowClickedData;
+          rowComponents.push( < tr key = {
+            start_count
           } > {
             cells
           } < /tr>);

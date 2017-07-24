@@ -1,11 +1,16 @@
 export default function packageColumnCells(handleRowClicks, rowClickedData, cols,
-  columnkey, item, rowIndex) {
+  columnkey, columnlabel, item) {
   let cells = [];
 
   for (let i = 0; i < cols.length; i++) {
     var colData = cols[i];
     var columnIndex = i;
     let columnName = colData[columnkey];
+
+
+    if(!colData[columnlabel]) {
+      continue;
+    }
 
     if ("visible" in colData) {
       if (!colData["visible"])
@@ -23,7 +28,15 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
 
       search_item = item[columnName];
       // if data cannot be outputted, returns blank
-      if (typeof(search_item) == 'object' || !search_item) {
+      if (typeof(search_item) == 'object') {
+
+        cells.push( < td className = {
+            "text-center " + colData["className"]
+          }
+          onClick = {
+            handleRowClicks.bind(this, columnIndex, columnkey)
+          } > { } < /td>);
+
         continue;
       }
 
@@ -31,9 +44,11 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
       if (!isNaN(search_item)) {
         search_item = search_item.toLocaleString();
       }
-
     }
 
+
+
+if(search_item) {
     cells.push( < td className = {
         "text-center " + colData["className"]
       }
@@ -42,6 +57,17 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
       } > {
         (search_item)
       } < /td>);
+
+    } else {
+
+      cells.push( < td className = {
+          "text-center " + colData["className"]
+        }
+        onClick = {
+          handleRowClicks.bind(this, columnIndex, columnkey)
+        } > { } < /td>);
+
+    }
     }
 
     return {cells, rowClickedData};

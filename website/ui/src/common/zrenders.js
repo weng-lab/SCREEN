@@ -544,15 +544,46 @@ export const creTitle = (cre) => {
 	</div>);
 }
 
-export const sctSorter = (data) => {
-    let col = (val) => {
-	if(null == val){
-	    return 0;
-	}
-	return val > 1.64 ? 2 : 1;
-    };
-    let p = Math.pow(2, col(data.promoter_zscore)) * 100;
-    let e = Math.pow(2, col(data.enhancer_zscore)) * 10;
-    let c = Math.pow(2, col(data.ctcf_zscore)) * 1;
-    return e + p + c;
+export const sctSorter = (data, columnSortType, columnName) => {
+
+  let col = (val) => {
+    if (null == val) {
+      return 0;
+    }
+    return val > 1.64 ? 2 : 1;
+  };
+
+  if (columnSortType.sortOn != 'disabled') {
+
+    if (columnSortType.direction == 'asc') {
+      data.sort(function(a, b) {
+        var p = Math.pow(2, col(a[columnName].promoter_zscore)) * 100;
+        var e = Math.pow(2, col(a[columnName].enhancer_zscore)) * 10;
+        var c = Math.pow(2, col(a[columnName].ctcf_zscore)) * 1;
+        var weightedDataA = e + p + c;
+
+        p = Math.pow(2, col(b[columnName].promoter_zscore)) * 100;
+        e = Math.pow(2, col(b[columnName].enhancer_zscore)) * 10;
+        c = Math.pow(2, col(b[columnName].ctcf_zscore)) * 1;
+        var weightedDataB = e + p + c;
+
+        return weightedDataA - weightedDataB;
+      });
+    } else {
+      data.sort(function(a, b) {
+
+        var p = Math.pow(2, col(a[columnName].promoter_zscore)) * 100;
+        var e = Math.pow(2, col(a[columnName].enhancer_zscore)) * 10;
+        var c = Math.pow(2, col(a[columnName].ctcf_zscore)) * 1;
+        var weightedDataA = e + p + c;
+
+        p = Math.pow(2, col(b[columnName].promoter_zscore)) * 100;
+        e = Math.pow(2, col(b[columnName].enhancer_zscore)) * 10;
+        c = Math.pow(2, col(b[columnName].ctcf_zscore)) * 1;
+        var weightedDataB = e + p + c;
+
+        return weightedDataB - weightedDataA;
+      });
+    }
+  }
 }
