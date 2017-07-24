@@ -38,7 +38,7 @@ export default function packageColumnCells(handleRowClicks, rowClickedData, cols
         "text-center " + colData["className"]
       }
       onClick = {
-        handleRowClicks.bind(this, columnIndex)
+        handleRowClicks.bind(this, columnIndex, columnkey)
       } > {
         (search_item)
       } < /td>);

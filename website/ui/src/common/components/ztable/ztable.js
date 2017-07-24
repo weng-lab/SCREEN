@@ -9,7 +9,10 @@ import SearchBar from './table/searchbar';
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
 
-import { Table, Pagination } from 'react-bootstrap';
+import {
+  Table,
+  Pagination
+} from 'react-bootstrap';
 
 export default class ZTable extends React.Component {
 
@@ -165,7 +168,7 @@ export default class ZTable extends React.Component {
       });
   }
 
-  handleRowClicks(rowIndex, columnIndex) {
+  handleRowClicks(rowIndex, columnIndex, columnkey) {
     var onTdClick = this.props.onTdClick;
     var onButtonClick = this.props.onButtonClick;
     this.setState({
@@ -173,12 +176,19 @@ export default class ZTable extends React.Component {
     });
 
 
-    var data =this.props.data[rowIndex];
-
+    var data = this.props.data[rowIndex];
+    var cols = this.props.cols[columnIndex];
     if ("defaultContent" in this.props.cols[columnIndex]) {
-
-      buttons[i].addEventListener("mousedown", onButtonClick(this, data), false);
-
+      var buttons = document.getElementsByClassName("btn btn-default btn-xs");
+      buttons[0].addEventListener("mouseup", onButtonClick(this, data), true);
+    } else if (cols[columnkey] == "in_cart") {
+      if (data[cols[columnkey]] == false) {
+        data[cols[columnkey]] = true;
+      } else {
+        data[cols[columnkey]] = false;
+      }
+    } else {
+      onTdClick(this, data);
     }
 
   }
@@ -192,7 +202,8 @@ export default class ZTable extends React.Component {
     });
 
     let columnSort = this.state.columnSort,
-      data = this.props.data;
+      data = this.props.data,
+      cols = this.props.cols;
 
     if (data.length > 1) {
       let columnSortType = [];
@@ -209,9 +220,10 @@ export default class ZTable extends React.Component {
           Object.assign(columnSort[index], {
             sortOn: 'active'
           });
+
           if (columnSortType["custumFunction"]) {
             customSort(data, columnSortType, columnName);
-          } else {
+          }  else {
             sortData(data, columnSortType, columnName);
           }
           if (columnSort[index].direction == 'asc') {
