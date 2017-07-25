@@ -59,12 +59,10 @@ class Zheader extends React.Component {
 	    <tr>
 		{this.props.colInfos.map((col) => {
 		     let k = "text-center " + klassName(col);
-		     let sk = "table-sort";
-		     let sc = col.data; // sort column
+		     let sk = "table-sort"; // sort CSS class
 		     let so = 0; // sort order
 		     if("orderable" in col){
 			 if(!col.orderable){
-			     sc = '';
 			     so = -1;
 			 }
 		     }
@@ -106,7 +104,13 @@ class Zrow extends React.Component {
 	    <tr>
 		{rowData.map((r) => {
 		     let k = "text-center " + r[1];
-		     return (<td className={k}>{r[0]}</td>);
+		     return (
+			 <td className={k}
+			     onClick={this.props.onRowClick(k,
+							    this.props.dataIdx)}
+			 >
+			     {r[0]}
+			 </td>);
 		})}
 	    </tr>);
     }
@@ -142,12 +146,8 @@ class Ztable extends React.Component {
     }
 
     sort(rowIDs){
-	//console.log("sorting!", this.state.sortCol, this.state.sortOrder);
 	let c = this.state.sortCol;
 	if(!c){
-	    return rowIDs;
-	}
-	if(-1 == this.state.sortOrder){
 	    return rowIDs;
 	}
 	if(0 === rowIDs.length){
@@ -189,20 +189,20 @@ class Ztable extends React.Component {
 	};
 
 	const sortClick = (col, curOrder) => () => {
-	    const nextSortOrder = {0:1,
-				   1:2,
-				   2:1};
 	    if(-1 === curOrder){
 		return;
 	    }
+	    const nextSortOrder = {0:1, 1:2, 2:1}; // sort col cycle
 	    this.setState({sortCol : col,
 			   sortOrder : nextSortOrder[curOrder]});
+	};
+
+	const rowClick = (klasses, dataIdx) => (e) => {
+	    this.props.onTdClick(klasses, this.props.data[dataIdx]);
 	};
 	
 	let rowIDs = this.searchFilter();
 	rowIDs = this.sort(rowIDs);
-	
-	let visibleCols = filterVisibleCols(this.props.cols);
 	
 	let numPages = Math.ceil(rowIDs.length / this.state.pageSize);
 	// page indexes are 1-based
@@ -210,6 +210,7 @@ class Ztable extends React.Component {
 	let rowEnd = this.state.pageNum * this.state.pageSize;
 	
 	let tableKlass = "table table-bordered table-condensed table-hover";
+	let visibleCols = filterVisibleCols(this.props.cols);
 	
 	return (
 	    <div style={{width: "100%"}}>
@@ -222,6 +223,8 @@ class Ztable extends React.Component {
 		    />
 		    {rowIDs.slice(rowStart, rowEnd).map((idx) => (
 			 <Zrow row={this.props.data[idx]}
+			       dataIdx={idx}
+			       onRowClick={rowClick}
 			       colInfos={visibleCols} />
 		    ))}
 		</table>
