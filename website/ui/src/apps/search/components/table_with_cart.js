@@ -20,9 +20,9 @@ class TableWithCart extends React.Component {
     }
 
     table_click_handler(td, rowdata, actions){
-        if (td.className.indexOf("browser") != -1) return;
-        if (td.className.indexOf("geneexp") != -1) return;
-        if (td.className.indexOf("cart") != -1) {
+        if (td.indexOf("browser") != -1) return;
+        if (td.indexOf("geneexp") != -1) return;
+        if (td.indexOf("cart") != -1) {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
