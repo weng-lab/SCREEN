@@ -41,9 +41,6 @@ export default class ZTable extends React.Component {
 
   render() {
 
-
-console.log(columnDefs);
-
     let data = this.props.data;
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
