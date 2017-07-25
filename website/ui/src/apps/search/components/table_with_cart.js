@@ -14,14 +14,18 @@ import {doToggle, isCart} from '../../../common/utility'
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.button_click_handler = this.button_click_handler.bind(this);
         this.table_click_handler = this.table_click_handler.bind(this);
-	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
     table_click_handler(td, rowdata, actions){
-        if (td.indexOf("browser") != -1) return;
-        if (td.indexOf("geneexp") != -1) return;
+        if (td.indexOf("browser") != -1) {
+	    let cre = {...rowdata, ...rowdata.info};
+	    actions.showGenomeBrowser(cre, name);
+	    return;
+	}
+        if (td.indexOf("geneexp") != -1) {
+	    return;
+	}
         if (td.indexOf("cart") != -1) {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
@@ -41,11 +45,6 @@ class TableWithCart extends React.Component {
         }
 	let cre = {...rowdata, ...rowdata.info};
         actions.showReDetail(cre);
-    }
-
-    button_click_handler(name, rowdata, actions){
-	let cre = {...rowdata, ...rowdata.info};
-	actions.showGenomeBrowser(cre, name);
     }
 
     addAllToCart() {
@@ -282,7 +281,12 @@ class TableWithCart extends React.Component {
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
-	
+
+	let ctCol = null;
+	if(this.props.cellType){
+	    ctCol = this.props.make_ct_friendly(this.props.cellType)
+	}
+
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -302,14 +306,10 @@ class TableWithCart extends React.Component {
 		<Ztable data={data}
                         order={table_order}
 			columnDefs={columnDefs}
-			cols={TableColumns(this.props.cellType ?
-					   this.props.make_ct_friendly(this.props.cellType) :
-					   null)}
+			cols={TableColumns(ctCol)}
                         onTdClick={(td, rowdata) =>
                             this.table_click_handler(td, rowdata, actions)}
                         cvisible={this._opposite(cols, this.props.cts)}
-                        onButtonClick={(td, rowdata) =>
-                            this.button_click_handler(td, rowdata, actions)}
                         bFilter={true}
                         bLengthChange={true} key={this.props.cellType}
                 />
