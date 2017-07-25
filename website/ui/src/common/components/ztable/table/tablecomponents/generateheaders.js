@@ -1,3 +1,8 @@
+
+
+import {Glyphicon} from 'react-bootstrap';
+
+
 export default function generateHeaders(handleColumnClicks,
   cols, columnkey, columnlabel, columnSort, sampleData) {
   let columnHeader = [];
@@ -68,20 +73,29 @@ export default function generateHeaders(handleColumnClicks,
           if (!colData["visible"])
             continue;
         }
-        // arrow icons for sorting
-        var activeArrowColor,
-          inactiveArrowColor = "#BEBEBE";
+
 
         if (columnSort[index].sortOn != 'disabled') {
+          var activeArrowColor = "#B4CFEC",
+            inactiveArrowColor = "#DCDCDC";
+
           // if inactive color gray
           if (columnSort[index].sortOn == 'inactive') {
-            activeArrowColor = "#BEBEBE";
-            // if active color blue
-          } else if (columnSort[index].sortOn == 'active') {
-            activeArrowColor = "#4682B4";
-          }
+            columnHeader.push( <th key = { colData[columnkey] }
+              className = { "text-center " + colData["className"] }
+              onClick = { handleColumnClicks.bind(this, columnName,
+                  index) }>
+              <tr>
+              <th className = { "text-center " + colData["className"] }>
+              { colData[columnlabel] } </th>
+              <th>  <font color = { inactiveArrowColor }
+              size = "3" ><Glyphicon glyph="sort" /></font>
+                  </th>
+                </tr>
+              </th> );
 
-          // case when sorting is asc
+          } else if (columnSort[index].sortOn == 'active') {
+
           if (columnSort[index].direction == 'desc') {
             columnHeader.push( <th key = { colData[columnkey] }
               className = { "text-center " + colData["className"] }
@@ -90,33 +104,30 @@ export default function generateHeaders(handleColumnClicks,
               <tr>
               <th className = { "text-center " + colData["className"] }>
               { colData[columnlabel] } </th>
-              <th> <font size = "5" color = { activeArrowColor } > &#8595;</font>
-                    <font color = { inactiveArrowColor }
-              size = "2" > &#8593;</font>
+              <th> <font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes" /></font>
                   </th>
                 </tr>
               </th> );
     } else {
-      // case when sorting is desc
-      columnHeader.push( <th key = { colData[columnkey] }
-              className = { "text-center " + colData["className"] }
-              onClick = {
-                handleColumnClicks.bind(this, columnName,
-                  index) }>
-              <tr>
-              <th className = {
-                "text-center " + colData["className"]}> {
-                colData[columnlabel]} </th>
-                <th> <font color = { inactiveArrowColor }
-              size = "2" > &#8595;</font>
-                    <font size= "5"
-              color = {
-                activeArrowColor
-              } > &#8593;</font>
-                  </th>
-                </tr>
-              </th>);
+
+        columnHeader.push( <th key = { colData[columnkey] }
+          className = { "text-center " + colData["className"] }
+          onClick = { handleColumnClicks.bind(this, columnName,
+              index) }>
+          <tr>
+          <th className = { "text-center " + colData["className"] }>
+          { colData[columnlabel] } </th>
+          <th><font size = "3" color = { activeArrowColor } > <Glyphicon glyph="sort-by-attributes-alt" /></font>
+              </th>
+            </tr>
+          </th> );
+
+
     }
+
+
+
+  }
   } else {
     columnHeader.push( <th key = { colData[columnkey] }
               className = { "text-center " + colData["className"] }
