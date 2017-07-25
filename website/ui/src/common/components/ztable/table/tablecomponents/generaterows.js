@@ -1,7 +1,7 @@
 import matchFound from '../search/matchfound';
 import packageColumnCells from '../search/packagecolumncells';
 
-export default function generateRows(handleCellClicks, rowClickedData, cols,
+export default function generateRows(handleCellClicks, cols,
   columnkey, columnlabel, data, value, prevValue,
   searchedResultsIndex, current_page, per_page) {
 
@@ -64,11 +64,10 @@ export default function generateRows(handleCellClicks, rowClickedData, cols,
       if (dataIndex >= start_offset && start_count < per_page) {
         start_count++;
 
-        var cc = packageColumnCells(handleCellClicks.bind(this,
-            rowIndex), rowClickedData, cols,
+        cells = packageColumnCells(handleCellClicks.bind(this,
+            rowIndex), cols,
           columnkey, columnlabel, item);
-        cells = cc.cells;
-        rowClickedData = cc.rowClickedData;
+
         rowComponents.push( < tr key = {
             start_count
           } > {
@@ -99,7 +98,10 @@ export default function generateRows(handleCellClicks, rowClickedData, cols,
     }
 
     if (dataLength == 0) {
-      rowComponents.push( < tr > No matching records found. < /tr>);
+      rowComponents.push( < tr >
+        No matching records found. <
+        /tr>);
+
       }
 
       prevValue = value;
@@ -107,7 +109,6 @@ export default function generateRows(handleCellClicks, rowClickedData, cols,
       return {
         dataLength,
         rowComponents,
-        rowClickedData,
         searchedResultsIndex,
         prevValue
       };

@@ -17,11 +17,13 @@ export default function sortData(data, columnSortType, columnName) {
         if (columnSortType["value"]) {
           if (columnSortType.direction == 'asc') {
             data.sort(function(a, b) {
-              return a[columnName][columnSortType["value"]] - b[columnName][columnSortType["value"]];
+              return a[columnName][columnSortType["value"]]
+              - b[columnName][columnSortType["value"]];
             });
           } else {
             data.sort(function(a, b) {
-              return b[columnName][columnSortType["value"]] - a[columnName][columnSortType["value"]];
+              return b[columnName][columnSortType["value"]]
+              - a[columnName][columnSortType["value"]];
             });
           }
         }
@@ -43,8 +45,10 @@ export default function sortData(data, columnSortType, columnName) {
 
           if (columnSortType.direction == 'asc') {
             data.sort(function(a, b) {
-              let nameA = a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
-              let nameB = b[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
+              let nameA =
+              a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
+              let nameB =
+              b[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
               if (nameA < nameB) {
                 return -1;
               }
@@ -56,8 +60,10 @@ export default function sortData(data, columnSortType, columnName) {
             });
           } else {
             data.sort(function(a, b) {
-              let nameA = a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
-              let nameB = b[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
+              let nameA =
+              a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
+              let nameB =
+              b[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
               if (nameA > nameB) {
                 return -1;
               }

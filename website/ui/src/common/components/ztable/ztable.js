@@ -16,19 +16,19 @@ export default class ZTable extends React.Component {
 
     // initializes state of variable
     this.state = {
-      // pagination variables
+
       activePage: 1,
-      activeSearchPage: 1, // when search is true
+      activeSearchPage: 1,
       pageLimit: 10,
-      // variables for search box
+
       value: '',
       searchCondition: false,
       prevValue: undefined,
       searchedResultsIndex: [],
-      rowClickedData: undefined,
 
       // variables for sorting
-      columnSort: []
+      columnSort: [],
+
     };
 
     // binds event handler
@@ -40,21 +40,6 @@ export default class ZTable extends React.Component {
   }
 
   render() {
-
-
-console.log("key", this.props.key);
-console.log("order", this.props.order);
-console.log("columnDefs", this.props.columnDefs);
-console.log("cvisibel", this.props.cvisible);
-console.log("cols", this.props.cols);
-console.log("key", this.props.key);
-console.log("key", this.props.key);
-console.log("key", this.props.key);
-
-
-
-    let rowClickedData = this.state.rowClickedData;
-
 
     let data = this.props.data;
     let cols = this.props.cols,
@@ -72,10 +57,10 @@ console.log("key", this.props.key);
     let value = this.state.value;
 
     // divides pages in per_page for pagination
-    if(this.props.pageLimit)
-    var per_page = this.props.pageLimit;
+    if (this.props.pageLimit)
+      var per_page = this.props.pageLimit;
     else
-    var per_page = this.state.pageLimit;
+      var per_page = this.state.pageLimit;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -90,7 +75,7 @@ console.log("key", this.props.key);
       columnSortTypes = hc.columnSortTypes;
 
 
-    let rc = generateRows(this.handleCellClicks, rowClickedData, cols,
+    let rc = generateRows(this.handleCellClicks, cols,
       columnkey, columnlabel, data, value, prevValue,
       searchedResultsIndex, current_page, per_page);
 
@@ -137,12 +122,7 @@ console.log("key", this.props.key);
       dataLength = {
         dataLength
       }
-      />
-
-      <
-      p id = "demo" > < /p>
-
-      <
+      /> <
       /
       div >
     );
@@ -183,14 +163,20 @@ console.log("key", this.props.key);
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
 
-    var onTdClick = this.props.onTdClick;
-    var onButtonClick = this.props.onButtonClick;
-    var cart_img_click_handler = this.props.cart_img_click_handler;
 
-    onTdClick(cols[columnkey], data);
-    cart_img_click_handler(cols[columnkey], data);
+    if (this.props.rowClicks) {
+      var rowClicks = this.props.rowClicks;
+      rowClicks(cols[columnkey], data);
+    }
+
+    //  var onTdClick = this.props.onTdClick;
+    //    onTdClick(cols[columnkey], data);
+    //var onTdClick = this.props.onTdClick;
+    //var onButtonClick = this.props.onButtonClick;
+    //var cart_img_click_handler = this.props.cart_img_click_handler;
+    //  onTdClick(cols[columnkey], data);
+    //cart_img_click_handler(cols[columnkey], data);
     //onButtonClick(this, data);
-
   }
 
   handleColumnClicks(columnName, index) {

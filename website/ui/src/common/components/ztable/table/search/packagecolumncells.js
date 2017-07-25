@@ -1,4 +1,4 @@
-export default function packageColumnCells(handleCellClicks, rowClickedData, cols,
+export default function packageColumnCells(handleCellClicks, cols,
   columnkey, columnlabel, item) {
   let cells = [];
 
@@ -7,8 +7,7 @@ export default function packageColumnCells(handleCellClicks, rowClickedData, col
     var columnIndex = i;
     let columnName = colData[columnkey];
 
-
-    if(!colData[columnlabel]) {
+    if (!colData[columnlabel]) {
       continue;
     }
 
@@ -35,40 +34,39 @@ export default function packageColumnCells(handleCellClicks, rowClickedData, col
           }
           onClick = {
             handleCellClicks.bind(this, columnIndex, columnkey)
-          } > { } < /td>);
+          } > {} < /td>);
 
-        continue;
-      }
-
-      // return data per row and column
-      if (!isNaN(search_item)) {
-        search_item = search_item.toLocaleString();
-      }
-    }
-
-
-
-if(search_item) {
-    cells.push( < td className = {
-        "text-center " + colData["className"]
-      }
-      onClick = {
-        handleCellClicks.bind(this, columnIndex, columnkey)
-      } > {
-        (search_item)
-      } < /td>);
-
-    } else {
-
-      cells.push( < td className = {
-          "text-center " + colData["className"]
+          continue;
         }
-        onClick = {
-          handleCellClicks.bind(this, columnIndex, columnkey)
-        } > { } < /td>);
 
-    }
-    }
+        // return data per row and column
+        if (!isNaN(search_item)) {
+          search_item = search_item.toLocaleString();
+        }
+      }
 
-    return {cells, rowClickedData};
-  }
+      if (search_item) {
+        cells.push( < td className = {
+            "text-center " + colData["className"]
+          }
+          onClick = {
+            handleCellClicks.bind(this, columnIndex, columnkey)
+          } > {
+            (search_item)
+          } < /td>);
+
+        }
+        else {
+
+          cells.push( < td className = {
+              "text-center " + colData["className"]
+            }
+            onClick = {
+              handleCellClicks.bind(this, columnIndex, columnkey)
+            } > {} < /td>);
+
+          }
+        }
+
+        return cells;
+      }

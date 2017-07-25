@@ -66,6 +66,52 @@ class TableWithCart extends React.Component {
 
     }
 
+rowClicks(columnName, rowdata, actions){
+
+  let table_click_handler = (columnName, rowdata, actions) => {
+      if (columnName == null) return;
+      if (columnName == "genesallpc") return;
+      if (columnName == "in_cart") {
+    //console.log(rowdata.info);
+          let accession = rowdata.info.accession;
+          let accessions = doToggle(this.props.cart_accessions, accession);
+    let j = {GlobalAssembly, accessions};
+    $.ajax({
+  type: "POST",
+  url: "/cart/set",
+  data: JSON.stringify(j),
+  dataType: "json",
+  contentType: "application/json",
+  success: (response) => {
+              }
+    });
+    actions.setCart(accessions);
+    return;
+      }
+
+let cre = {...rowdata, ...rowdata.info};
+      actions.showReDetail(cre);
+  };
+
+  let cart_img_click_handler = (columnName, rowdata) => {
+    if (columnName == "in_cart") {
+      if (rowdata[columnName] == false) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return "disabled";
+  };
+
+  table_click_handler(columnName, rowdata, actions);
+
+let cartCondition = cart_img_click_handler(columnName, rowdata);
+if(cartCondition != "disabled")
+rowdata[columnName] = cartCondition;
+
+}
+
     addAllToCart() {
 	let accessions = this.props.data.map((d) => {
 	    //console.log("addAllToCart:", d);
@@ -326,14 +372,16 @@ class TableWithCart extends React.Component {
       < ZTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
+            rowClicks = {(columnName, rowdata) =>
+                this.rowClicks(columnName, rowdata, actions)}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-                              onTdClick={(td, rowdata) =>
-                                  this.table_click_handler(td, rowdata, actions)}
+                            //  onTdClick={(td, rowdata) =>
+                              //    this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
-                                  cart_img_click_handler = {(columnName, rowdata) =>
-                                      this.cart_img_click_handler(columnName, rowdata)}
+                                  //cart_img_click_handler = {(columnName, rowdata) =>
+                                      //this.cart_img_click_handler(columnName, rowdata)}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
 pageLimit = {10}
