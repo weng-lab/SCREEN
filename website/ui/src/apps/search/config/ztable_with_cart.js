@@ -30,7 +30,7 @@ if(cts){
       title: sctHelp, data: "ctspecifc", className: klassCenter,
 	    render: Render.creTableCellTypeSpecific, width: "12%",
       columnSort: { direction: 'asc', sortOn: 'inactive',
-      custumFunction: Render.sctSorter}
+      customSort: Render.sctSorter}
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"

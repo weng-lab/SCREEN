@@ -19,7 +19,7 @@ export default class ZTable extends React.Component {
 
       activePage: 1,
       activeSearchPage: 1,
-      pageLimit: 10,
+      pageLength: 10,
 
       value: '',
       searchCondition: false,
@@ -41,6 +41,9 @@ export default class ZTable extends React.Component {
 
   render() {
 
+
+console.log(columnDefs);
+
     let data = this.props.data;
     let cols = this.props.cols,
       columnkey = this.props.columnkey,
@@ -58,9 +61,9 @@ export default class ZTable extends React.Component {
 
     // divides pages in per_page for pagination
     if (this.props.pageLimit)
-      var per_page = this.props.pageLimit;
+      var per_page = this.props.pageLength;
     else
-      var per_page = this.state.pageLimit;
+      var per_page = this.state.pageLength;
 
     // obtain the current page that user had clicked
     if (this.state.searchCondition)
@@ -122,8 +125,7 @@ export default class ZTable extends React.Component {
       dataLength = {
         dataLength
       }
-      /> <
-      /
+      /> < /
       div >
     );
   }
@@ -163,20 +165,10 @@ export default class ZTable extends React.Component {
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
 
-
     if (this.props.rowClicks) {
       var rowClicks = this.props.rowClicks;
       rowClicks(cols[columnkey], data);
     }
-
-    //  var onTdClick = this.props.onTdClick;
-    //    onTdClick(cols[columnkey], data);
-    //var onTdClick = this.props.onTdClick;
-    //var onButtonClick = this.props.onButtonClick;
-    //var cart_img_click_handler = this.props.cart_img_click_handler;
-    //  onTdClick(cols[columnkey], data);
-    //cart_img_click_handler(cols[columnkey], data);
-    //onButtonClick(this, data);
   }
 
   handleColumnClicks(columnName, index) {
@@ -206,7 +198,7 @@ export default class ZTable extends React.Component {
             sortOn: 'active'
           });
 
-          if (columnSortType["custumFunction"]) {
+          if (columnSortType["customSort"]) {
             customSort(data, columnSortType, columnName);
           } else {
             sortData(data, columnSortType, columnName);

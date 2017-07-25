@@ -1,7 +1,4 @@
-
-
 import {Glyphicon} from 'react-bootstrap';
-
 
 export default function generateHeaders(handleColumnClicks,
   cols, columnkey, columnlabel, columnSort, sampleData) {
@@ -55,7 +52,6 @@ export default function generateHeaders(handleColumnClicks,
         }
       }
 
-
       columnHeader.push( < th key = { colData[columnkey] }
         className = { "text-center " + colData["className"] }
         onClick = { handleColumnClicks.bind(this,
@@ -74,10 +70,9 @@ export default function generateHeaders(handleColumnClicks,
             continue;
         }
 
-
         if (columnSort[index].sortOn != 'disabled') {
-          var activeArrowColor = "#B4CFEC",
-            inactiveArrowColor = "#DCDCDC";
+          var activeArrowColor = "#9fbedf",
+            inactiveArrowColor = "#C0C0C0";
 
           // if inactive color gray
           if (columnSort[index].sortOn == 'inactive') {
@@ -89,7 +84,7 @@ export default function generateHeaders(handleColumnClicks,
               <th className = { "text-center " + colData["className"] }>
               { colData[columnlabel] } </th>
               <th>  <font color = { inactiveArrowColor }
-              size = "3" ><Glyphicon glyph="sort" /></font>
+              size = "3" ><p>{"     "}</p><Glyphicon glyph="sort" /></font>
                   </th>
                 </tr>
               </th> );
@@ -104,7 +99,7 @@ export default function generateHeaders(handleColumnClicks,
               <tr>
               <th className = { "text-center " + colData["className"] }>
               { colData[columnlabel] } </th>
-              <th> <font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes" /></font>
+              <th><font size = "3" color = { activeArrowColor } ><p>{"     "}</p><Glyphicon glyph="sort-by-attributes" /></font>
                   </th>
                 </tr>
               </th> );
@@ -117,7 +112,7 @@ export default function generateHeaders(handleColumnClicks,
           <tr>
           <th className = { "text-center " + colData["className"] }>
           { colData[columnlabel] } </th>
-          <th><font size = "3" color = { activeArrowColor } > <Glyphicon glyph="sort-by-attributes-alt" /></font>
+          <th><font size = "3" color = { activeArrowColor } ><p>{"     "}</p><Glyphicon glyph="sort-by-attributes-alt" /></font>
               </th>
             </tr>
           </th> );

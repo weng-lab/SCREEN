@@ -375,16 +375,12 @@ rowdata[columnName] = cartCondition;
             rowClicks = {(columnName, rowdata) =>
                 this.rowClicks(columnName, rowdata, actions)}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-                            //  onTdClick={(td, rowdata) =>
-                              //    this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
-                                  //cart_img_click_handler = {(columnName, rowdata) =>
-                                      //this.cart_img_click_handler(columnName, rowdata)}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
-pageLimit = {10}
+pageLength = {10}
 columnkey={"data"}
 columnlabel={"title"}
 
