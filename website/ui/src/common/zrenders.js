@@ -404,7 +404,7 @@ export const concordantStarReact = (concordant) => {
 }
 
 export const checkCt = (checked) => {
-    return (<input type={'checkbox' + (checked ? "checked " : "")}/>);
+    return (<input type='checkbox' checked = {(checked ? "checked " : "")}/>);
 }
 
 export const creTableAccessionBoxen = (cre) => {

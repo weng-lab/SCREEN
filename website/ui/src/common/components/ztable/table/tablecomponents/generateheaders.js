@@ -1,7 +1,8 @@
-import {Glyphicon} from 'react-bootstrap';
+import { Glyphicon } from 'react-bootstrap';
+import React from 'react'
 
 export default function generateHeaders(handleColumnClicks, positionText,
-  cols, columnkey, columnlabel, columnSort, sampleData) {
+  cols, columnkey, columnlabel, columnSort) {
   let columnHeader = [];
   let columnSortTypes = [];
 
@@ -9,106 +10,50 @@ export default function generateHeaders(handleColumnClicks, positionText,
     var colData = cols[index];
     var columnName = colData[columnkey];
     var columnLabel = colData[columnlabel];
-var kclass = "";
+    var kclass = "";
 
-if("className" in colData){
-kclass = positionText + colData["className"];
-
-}
-
+    if ("className" in colData) {
+      kclass = positionText + colData["className"];
+    }
 
     if (columnSort.length == 0) {
 
-      if(columnLabel == null || columnLabel == undefined) {
-        columnSortTypes.push({
-          direction: 'asc',
-          sortOn: 'disabled'
-        });
-        continue;
-  }
-
-
-if(columnLabel == "") {
-  columnSortTypes.push({
-    direction: 'asc',
-    sortOn: 'disabled'
-  });
-
-  columnHeader.push( < th key = { index }
-    className = { kclass }
-    onClick = { handleColumnClicks.bind(this,
-      columnName, index) } > {  }
-      </th>);
-      continue;
-
-}
-
-
-      if ("visible" in colData) {
-        if (!colData["visible"])
-          columnSortTypes.push({
-            direction: 'asc',
-            sortOn: 'disabled'
-          });
+      var cc = printColumn(colData, columnName,
+        columnLabel, index, kclass, handleColumnClicks);
+      var printCols = cc.printCols;
+      if (cc.columnSortTypes)
+        columnSortTypes.push(cc.columnSortTypes);
+      if (cc.columnHeader)
+        columnHeader.push(cc.columnHeader);
+      if (!printCols) {
         continue;
       }
 
-      if ("orderable" in colData) {
-        if (!colData["orderable"]) {
-          columnSortTypes.push({
-            direction: 'asc',
-            sortOn: 'disabled'
-          });
-        } else {
-          columnSortTypes.push({
-            direction: 'asc',
-            sortOn: 'inactive'
-          });
+      columnHeader.push( < th key = {
+          colData[columnkey]
         }
-
-      } else {
-        if ("columnSort" in colData) {
-          columnSortTypes.push(colData["columnSort"]);
-        } else {
-          columnSortTypes.push({
-            direction: 'asc',
-            sortOn: 'inactive'
-          });
+        className = {
+          kclass
         }
-      }
-
-      columnHeader.push( < th key = { colData[columnkey] }
-        className = { kclass }
-        onClick = { handleColumnClicks.bind(this,
-          columnName, index) } > { columnLabel }
-          </th>);
+        onClick = {
+          handleColumnClicks.bind(this,
+            columnName, index)
+        } > {
+          columnLabel
+        } <
+        /th>);
 
       }
       else {
 
-        if(columnLabel == null || columnLabel == undefined)  {
+        var cc = printColumn(colData, columnName,
+          columnLabel, index, kclass, handleColumnClicks);
+        var printCols = cc.printCols;
+
+        if (cc.columnHeader)
+          columnHeader.push(cc.columnHeader);
+        if (!printCols) {
           continue;
-    }
-
-
-    if(columnLabel == "") {
-      columnSortTypes.push({
-        direction: 'asc',
-        sortOn: 'disabled'
-      });
-
-      columnHeader.push( < th key = { index }
-        className = { kclass }
-        onClick = { handleColumnClicks.bind(this,
-          columnName, index) } > {  }
-          </th>);
-          continue;
-
-    }
-
-        if ("visible" in colData) {
-          if (!colData["visible"])
-            continue;
         }
 
         if (columnSort[index].sortOn != 'disabled') {
@@ -125,7 +70,7 @@ if(columnLabel == "") {
               <th>
               { columnLabel } </th>
               <th>  <font color = { inactiveArrowColor }
-              size = "3" ><p>{"     "}</p><Glyphicon glyph="sort" /></font>
+              size = "3" ><Glyphicon glyph="sort" /></font>
                   </th>
                 </tr>
               </th> );
@@ -157,12 +102,7 @@ if(columnLabel == "") {
               </th>
             </tr>
           </th> );
-
-
     }
-
-
-
   }
   } else {
     columnHeader.push( <th key = { colData[columnkey] }
@@ -172,10 +112,102 @@ if(columnLabel == "") {
             }
           }
         }
-
         // generate our header (th) cell components
         return {
           columnHeader,
           columnSortTypes
         }
       }
+
+      function printColumn(colData, columnName,
+        columnLabel, index, kclass, handleColumnClicks) {
+
+        var printCols = true;
+
+        if (columnLabel == null || columnLabel == undefined) {
+          return {
+            printCols: false,
+            columnSortTypes: {
+              direction: 'asc',
+              sortOn: 'disabled'
+            },
+            columnHeader: undefined
+          };
+        }
+        if (columnLabel == "") {
+          return {
+            printCols: false,
+            columnSortTypes: {
+              direction: 'asc',
+              sortOn: 'disabled'
+            },
+
+            columnHeader: ( < th key = {
+                index
+              }
+              className = {
+                kclass
+              }
+              onClick = {
+                handleColumnClicks.bind(this,
+                  columnName, index)
+              } > {} < /th>)
+            }
+          }
+          if ("visible" in colData) {
+            if (!colData["visible"]) {
+              return {
+                printCols: false,
+                columnSortTypes: {
+                  direction: 'asc',
+                  sortOn: 'disabled'
+                },
+                columnHeader: undefined
+              }
+            }
+          }
+          if ("orderable" in colData) {
+            if (!colData["orderable"]) {
+              return {
+                printCols: true,
+                columnSortTypes: {
+                  direction: 'asc',
+                  sortOn: 'disabled'
+                },
+                columnHeader: undefined
+              };
+            } else {
+              return {
+                printCols: true,
+                columnSortTypes: {
+                  direction: 'asc',
+                  sortOn: 'inactive'
+                },
+                columnHeader: undefined
+              };
+            }
+          } else {
+            if ("columnSort" in colData) {
+              return {
+                printCols: true,
+                columnSortTypes: colData["columnSort"],
+                columnHeader: undefined
+              };
+            } else {
+              return {
+                printCols: true,
+                columnSortTypes: {
+                  direction: 'asc',
+                  sortOn: 'inactive'
+                },
+                columnHeader: undefined
+              };
+            }
+          }
+          return {
+            printCols: true,
+            columnSortTypes: undefined,
+            columnHeader: undefined
+
+          }
+        }

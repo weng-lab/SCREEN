@@ -29,7 +29,6 @@ export default class ZTable extends React.Component {
       searchCondition: false,
       prevValue: undefined,
       searchedResultsIndex: [],
-
       // variables for sorting
       columnSort: [],
 
@@ -48,55 +47,96 @@ export default class ZTable extends React.Component {
     let data = this.props.data;
     let cols = this.props.cols;
 
-    if(this.props.columnkey)
+    if (this.props.table) {
+      var table = this.props.table;
+      if (table.cols) {
+        cols = table.cols;
+      }
+    }
+
+    if (this.props.columnkey)
       var columnkey = this.props.columnkey;
-      else
+    else
       var columnkey = this.state.columnkey;
 
-
-      if(this.props.columnlabel)
+    if (this.props.columnlabel)
       var columnlabel = this.props.columnlabel;
-      else
-        var columnlabel = this.state.columnlabel;
-if(this.props.positionText)
-var positionText = this.props.positionText;
-else
-var positionText = this.state.positionText;
+    else
+      var columnlabel = this.state.columnlabel;
 
-    let columnSort = this.state.columnSort;
-
-    let searchedResultsIndex = this.state.searchedResultsIndex,
-      searchCondition = this.state.searchCondition,
-      prevValue = this.state.prevValue;
-
-if(this.props.table){
-var table = this.props.table;
-if(table.cols){
-cols=table.cols;
-
-}
-
-}
-
-
-    // value from search box
-    let value = this.state.value;
+    if (this.props.positionText)
+      var positionText = this.props.positionText;
+    else
+      var positionText = this.state.positionText;
 
     // divides pages in per_page for pagination
-    if (this.props.pageLimit)
+    if (this.props.pageLength)
       var per_page = this.props.pageLength;
     else
       var per_page = this.state.pageLength;
 
-    // obtain the current page that user had clicked
+
+
+
+      if(this.props.bPaginate != undefined && this.props.bPaginate != null){
+      if(!this.props.bPaginate){
+        per_page = data.length;
+      }
+
+
+    }
+
+
+
     if (this.state.searchCondition)
       var current_page = this.state.activeSearchPage;
     else
       var current_page = this.state.activePage;
 
+    let columnSort = this.state.columnSort;
+
+
+    let searchedResultsIndex = this.state.searchedResultsIndex,
+      searchCondition = this.state.searchCondition,
+      prevValue = this.state.prevValue;
+
+    // value from search box
+    let value = this.state.value;
+
+if(this.props.bFilter != undefined && this.props.bFilter != null) {
+if(this.props.bFilter) {
+
+    var searchBar = (<
+    SearchBar value = {
+      this.state.value
+    }
+    searchEvent = {
+      this.handleChange
+    }
+    />); } else {
+
+  var searchBar = undefined;
+
+    }
+} else {
+  var searchBar = (<
+  SearchBar value = {
+    this.state.value
+  }
+  searchEvent = {
+    this.handleChange
+  }
+  />);
+}
+
+
+
+
+
+
     // generates header amd row components
     let hc = generateHeaders(this.handleColumnClicks, positionText,
-      cols, columnkey, columnlabel, columnSort, data[0]);
+      cols, columnkey, columnlabel, columnSort);
     let headerComponents = hc.columnHeader,
       columnSortTypes = hc.columnSortTypes;
 
@@ -119,22 +159,23 @@ cols=table.cols;
     }
 
 
+
+
+
+
+
     // returns search box and result table
     return ( <
       div >
-      <
-      SearchBar value = {
-        this.state.value
-      }
-      searchEvent = {
-        this.handleChange
-      }
-      /> <
+{searchBar} <
       ReactiveTable headerComponents = {
         headerComponents
       }
       rowComponents = {
         rowComponents
+      }
+      per_page = {
+        per_page
       }
       pages = {
         pages
@@ -142,6 +183,8 @@ cols=table.cols;
       current_page = {
         current_page
       }
+
+      bPaginate = {this.props.bPaginate}
       pageChange = {
         this.handleSelect
       }
@@ -173,7 +216,6 @@ cols=table.cols;
   }
 
   handleSelect(eventKey) {
-
     if (this.state.searchCondition)
       this.setState({
         activeSearchPage: eventKey
@@ -188,12 +230,14 @@ cols=table.cols;
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
 
-if (this.props.onTdClick){
-var onTdClick = this.props.onTdClick;
-onTdClick(kclass, data);
-
-}
-
+    if (this.props.onTdClick) {
+      var onTdClick = this.props.onTdClick;
+      onTdClick(kclass, data);
+    }
+    if (this.props.onButtonClick) {
+      var onButtonClick = this.props.onButtonClick;
+      onButtonClick(kclass, data);
+    }
     if (this.props.rowClicks) {
       var rowClicks = this.props.rowClicks;
       rowClicks(kclass, cols[columnkey], data);

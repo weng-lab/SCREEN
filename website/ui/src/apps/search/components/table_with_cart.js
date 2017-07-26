@@ -19,9 +19,44 @@ import {doToggle, isCart} from '../../../common/utility'
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-
+this.table_click_handler = this.table_click_handler.bind(this);
+this.rowClicks = this.rowClicks.bind(this);
 	this.button_click_handler = this.button_click_handler.bind(this);
     }
+
+
+    table_click_handler(td, rowdata, actions){
+        if (td.indexOf("browser") != -1) {
+	    let cre = {...rowdata, ...rowdata.info};
+	    actions.showGenomeBrowser(cre, name);
+	    return;
+	}
+        if (td.indexOf("geneexp") != -1) {
+	    return;
+	}
+        if (td.indexOf("cart") != -1) {
+	    //console.log(rowdata.info);
+            let accession = rowdata.info.accession;
+            let accessions = doToggle(this.props.cart_accessions, accession);
+	    let j = {GlobalAssembly, accessions};
+	    $.ajax({
+		type: "POST",
+		url: "/cart/set",
+		data: JSON.stringify(j),
+		dataType: "json",
+		contentType: "application/json",
+		success: (response) => {
+                }
+	    });
+	    actions.setCart(accessions);
+	    return;
+        }
+	let cre = {...rowdata, ...rowdata.info};
+        actions.showReDetail(cre);
+    }
+
+
+
 
 
     button_click_handler(name, rowdata, actions){
@@ -341,17 +376,14 @@ rowdata[columnName] = cartCondition;
       < ZTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
-            rowClicks = {(kclass, columnName, rowdata) =>
-                this.rowClicks(kclass, columnName, rowdata, actions)}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+          //  rowClicks = {(kclass, columnName, rowdata) =>
+        //       this.rowClicks(kclass, columnName, rowdata, actions)}
+           cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+           onTdClick={(td, rowdata) =>
+               this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
-                              onButtonClick={(td, rowdata) =>
-                                  this.button_click_handler(td, rowdata, actions)}
                                   positionText= {"text-center "}
-                              bFilter={true}
-                              bLengthChange={true} key={this.props.cellType}
-pageLength = {10}
-
+                              bLengthChange={true}
 
 />   <br></br><br></br><br></br>
 	    </div>

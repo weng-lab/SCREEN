@@ -2,7 +2,6 @@ import React from 'react';
 import { Form, FormGroup, FormControl, Nav } from 'react-bootstrap';
 
 class SearchBar extends React.Component {
-
   render() {
     let value = this.props.value, // value in entered in search box
       searchEvent = this.props.searchEvent;
@@ -23,7 +22,6 @@ class SearchBar extends React.Component {
       </Nav>
     );
   }
-
 }
 
 export default SearchBar;

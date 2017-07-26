@@ -32,12 +32,7 @@ function makeTable(data, key, table){
     if(table.bar_graph){
         return React.createElement(BarGraphTable, {data, ...table});
     }
-
     return React.createElement(ZTable, {data, ...table});
-
-
-
-
 }
 
 function tabEle(data, key, table, numCols) {
