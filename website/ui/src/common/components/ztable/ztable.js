@@ -69,6 +69,15 @@ var positionText = this.state.positionText;
       searchCondition = this.state.searchCondition,
       prevValue = this.state.prevValue;
 
+if(this.props.table){
+var table = this.props.table;
+if(table.cols){
+cols=table.cols;
+
+}
+
+}
+
 
     // value from search box
     let value = this.state.value;

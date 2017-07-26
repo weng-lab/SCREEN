@@ -130,13 +130,13 @@ export const geneDeLinks = (genesallpc) => {
 }
 
 export const dccImg = () => (
-    '<img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20">'
+    <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20">;
 )
 
 export const dccLink = (expID) => {
     var url = 'https://www.encodeproject.org/experiments/' + expID;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroupExpIDs = (accs) => {

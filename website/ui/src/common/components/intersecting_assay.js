@@ -2,6 +2,7 @@ import React from 'react'
 
 import * as Render from '../renders'
 import ResultsTable from './results_table'
+import ZTable from './ztable/ztable'
 
 const _renders = {
     peak: Render.dccLinkAndIconSplit,
@@ -72,7 +73,7 @@ class IntersectingAssay extends React.Component {
             details = (<div id={this.table}>
                        <br />
 	               <h4>{table.title}</h4>
-                       {React.createElement(ResultsTable,
+                       {React.createElement(ZTable,
                                             {data : this.state[target],
                                              ...table})}
                        </div>);

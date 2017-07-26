@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import GWASstudies from './gwas_studies';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
 import LongListFacet from '../../../common/components/longlist'
 import ResultsTable from '../../../common/components/results_table'
