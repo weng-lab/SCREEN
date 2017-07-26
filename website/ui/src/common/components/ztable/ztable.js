@@ -17,6 +17,10 @@ export default class ZTable extends React.Component {
     // initializes state of variable
     this.state = {
 
+      positionText: "text-left ",
+      columnkey: "data",
+      columnlabel: "title",
+
       activePage: 1,
       activeSearchPage: 1,
       pageLength: 10,
@@ -42,9 +46,22 @@ export default class ZTable extends React.Component {
   render() {
 
     let data = this.props.data;
-    let cols = this.props.cols,
-      columnkey = this.props.columnkey,
-      columnlabel = this.props.columnlabel;
+    let cols = this.props.cols;
+
+    if(this.props.columnkey)
+      var columnkey = this.props.columnkey;
+      else
+      var columnkey = this.state.columnkey;
+
+
+      if(this.props.columnlabel)
+      var columnlabel = this.props.columnlabel;
+      else
+        var columnlabel = this.state.columnlabel;
+if(this.props.positionText)
+var positionText = this.props.positionText;
+else
+var positionText = this.state.positionText;
 
     let columnSort = this.state.columnSort;
 
@@ -69,13 +86,13 @@ export default class ZTable extends React.Component {
       var current_page = this.state.activePage;
 
     // generates header amd row components
-    let hc = generateHeaders(this.handleColumnClicks,
+    let hc = generateHeaders(this.handleColumnClicks, positionText,
       cols, columnkey, columnlabel, columnSort, data[0]);
     let headerComponents = hc.columnHeader,
       columnSortTypes = hc.columnSortTypes;
 
 
-    let rc = generateRows(this.handleCellClicks, cols,
+    let rc = generateRows(this.handleCellClicks, positionText, cols,
       columnkey, columnlabel, data, value, prevValue,
       searchedResultsIndex, current_page, per_page);
 
@@ -158,13 +175,19 @@ export default class ZTable extends React.Component {
       });
   }
 
-  handleCellClicks(rowIndex, columnIndex, columnkey) {
+  handleCellClicks(rowIndex, columnIndex, columnkey, kclass) {
     var data = this.props.data[rowIndex];
     var cols = this.props.cols[columnIndex];
 
+if (this.props.onTdClick){
+var onTdClick = this.props.onTdClick;
+onTdClick(kclass, data);
+
+}
+
     if (this.props.rowClicks) {
       var rowClicks = this.props.rowClicks;
-      rowClicks(cols[columnkey], data);
+      rowClicks(kclass, cols[columnkey], data);
     }
   }
 
@@ -202,11 +225,11 @@ export default class ZTable extends React.Component {
           }
           if (columnSort[index].direction == 'asc') {
             Object.assign(columnSort[index], {
-              direction: 'desc',
+              direction: 'desc'
             });
           } else {
             Object.assign(columnSort[index], {
-              direction: 'asc',
+              direction: 'asc'
             });
           }
         }

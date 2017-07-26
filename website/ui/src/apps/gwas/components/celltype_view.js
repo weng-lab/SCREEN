@@ -7,6 +7,9 @@ import * as Render from '../../../common/renders'
 
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
+
 import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon'
 
 class CelltypeView extends React.Component {
@@ -21,7 +24,7 @@ class CelltypeView extends React.Component {
 	let cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
 	actions.showGenomeBrowser(cre, name);
     }
-    
+
     componentDidMount(){
         this.loadCres(this.props);
     }
@@ -102,8 +105,8 @@ class CelltypeView extends React.Component {
 
 	let columnDefs = [{ "orderData": 2, "targets": 1 }];
 	let actions = this.props.actions;
-	
-        let creTable = (<ResultsTable key={this.props.cellType.cellTypeName}
+
+        let creTable = (<ZTable key={this.props.cellType.cellTypeName}
 			    onButtonClick={(td, rowdata) =>
 					   this.button_click_handler(td, rowdata, actions)}
                             data={cres}

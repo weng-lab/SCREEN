@@ -1,13 +1,16 @@
-export default function packageColumnCells(handleCellClicks, cols,
+export default function packageColumnCells(handleCellClicks, positionText, cols,
   columnkey, columnlabel, item) {
   let cells = [];
 
   for (let i = 0; i < cols.length; i++) {
+
+    let search_item;
+
     var colData = cols[i];
     var columnIndex = i;
     let columnName = colData[columnkey];
-
-    if (!colData[columnlabel]) {
+    var kclass = "";
+    if (colData[columnlabel] == null || colData[columnlabel] == undefined) {
       continue;
     }
 
@@ -16,7 +19,10 @@ export default function packageColumnCells(handleCellClicks, cols,
         continue;
     }
 
-    let search_item;
+    if ("className" in colData) {
+      kclass = positionText + colData["className"];
+    }
+
 
     if (colData["defaultContent"]) {
       search_item = colData.defaultContent;
@@ -28,12 +34,11 @@ export default function packageColumnCells(handleCellClicks, cols,
       search_item = item[columnName];
       // if data cannot be outputted, returns blank
       if (typeof(search_item) == 'object') {
-
         cells.push( < td className = {
-            "text-center " + colData["className"]
+            kclass
           }
           onClick = {
-            handleCellClicks.bind(this, columnIndex, columnkey)
+            handleCellClicks.bind(this, columnIndex, columnkey, kclass)
           } > {} < /td>);
 
           continue;
@@ -47,10 +52,10 @@ export default function packageColumnCells(handleCellClicks, cols,
 
       if (search_item) {
         cells.push( < td className = {
-            "text-center " + colData["className"]
+            kclass
           }
           onClick = {
-            handleCellClicks.bind(this, columnIndex, columnkey)
+            handleCellClicks.bind(this, columnIndex, columnkey, kclass)
           } > {
             (search_item)
           } < /td>);
@@ -59,10 +64,10 @@ export default function packageColumnCells(handleCellClicks, cols,
         else {
 
           cells.push( < td className = {
-              "text-center " + colData["className"]
+              kclass
             }
             onClick = {
-              handleCellClicks.bind(this, columnIndex, columnkey)
+              handleCellClicks.bind(this, columnIndex, columnkey, kclass)
             } > {} < /td>);
 
           }

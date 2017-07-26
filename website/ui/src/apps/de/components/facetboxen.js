@@ -8,6 +8,8 @@ import * as Render from '../../../common/renders';
 import LongChecklistFacet from '../../../common/components/longchecklist'
 import LongListFacet from '../../../common/components/longlist'
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
@@ -53,7 +55,7 @@ const creBox = ({des, ct1, ct2, actions}) => {
     }
     let cres = des.diffCREs.data;
     let box = (
-	<ResultsTable
+	<ZTable
             data={cres}
             cols={[
                 {title: "accession", data: "accession",
@@ -79,12 +81,12 @@ const geneBox = ({des, ct1, ct2, actions}) => {
     }
     let genes = des.nearbyDEs.data;
     let box = (
-	<ResultsTable
+	<ZTable
             data={genes}
             cols={[
                 {title: "gene", data: "gene",
                  className: "dt-right"},
-                {title: "start", data: "sstart", 
+                {title: "start", data: "sstart",
                  className: "dt-right"},
                 {title: "fold &Delta;", data: "fc", render: Render.real,
                  className: "dt-right"}

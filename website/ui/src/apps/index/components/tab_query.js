@@ -8,6 +8,8 @@ import * as Actions from '../actions';
 import * as Render from '../../../common/renders'
 import {tabPanelize} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
 
 class TabQuery extends React.Component {
     constructor(props) {
@@ -39,7 +41,7 @@ class TabQuery extends React.Component {
 	return (tabPanelize(
             <div>
                 <h2>Possible Gene Matches</h2>
-                <ResultsTable
+                <ZTable
                     data={data.genes}
 	            cols={cols}
                     order={order}

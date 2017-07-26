@@ -160,7 +160,7 @@ export const dccLinkCtGroupCus = (ctn, content) => {
 	return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    return '<a target="_blank" href="' + url + '">' + content + '</a>';
+    return (<a target="_blank" href={url}>{content}</a>);
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {
@@ -331,8 +331,7 @@ export const sctGroupIcon = (creGroup) => {
 	    </svg>
 	</span>);
     let title = lookupTitle[creGroup];
-    let c = ReactDOMServer.renderToStaticMarkup(e);
-    return popup(title, c);
+    return popup(title, e);
 }
 
 export const sctGroupIconLegend = (creGroup) => {
@@ -403,7 +402,7 @@ export const concordantStarReact = (concordant) => {
 }
 
 export const checkCt = (checked) => {
-    return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
+    return (<input type={'checkbox' + (checked ? "checked " : "")}/>);
 }
 
 export const creTableAccessionBoxen = (cre) => {
@@ -448,8 +447,8 @@ export const creTableAccessionProx = (cre) => {
 }
 
 export const creTableAccessionProxReact = (cre) => {
-    return cre.isproximal ? popupReact("Proximal", "P") :
-	   popupReact("Distal", "D");
+    return cre.isproximal ? popup("Proximal", "P") :
+	   popup("Distal", "D");
 }
 
 export const creTableAccession = (cre, type, full, meta) => {
@@ -462,6 +461,51 @@ export const creTableAccession = (cre, type, full, meta) => {
 	    {creTableAccessionBoxen(cre)}
 	</div>);
 }
+
+
+export const creTableCellTypeSpecificReact = (data) => {
+    let w = 12;
+    let h = 9;
+    let fw = 4 * w + 4;
+    let fh = h + 2;
+    let rect = (x, y, color) => (
+        <rect x={x} y={y} width={w} height={h} style={{fill : color}} />
+    )
+    let line = (x1, y1, x2, y2) => (
+        <line x1={x1} y1={y1} x2={x2} y2={y2}
+              style={{strokeWidth: 1, stroke: "black"}} />
+    )
+    let border = () => (
+        <rect x={0} y={0} width={fw} height={fh}
+              style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
+    )
+    let colors = Globals.colors.cREs;
+
+    let col = (val, c) => {
+	if(null == val){
+	    return colors.NoData;
+	}
+	return val > 1.64 ? c : colors.Inactive;
+    }
+
+    let e = (
+        <span className={"text-nowrap"}>
+            <svg width={fw} height={fh}>
+	        <g>
+                    {border()}
+		    {rect(1, 1, col(data.dnase_zscore, colors.DNase))}
+                    {line(1*(w+1)-1, 0, 1*(w+1)-1, fh)}
+		    {rect(1*(w+1), 1, col(data.promoter_zscore, colors.H3K4me3))}
+                    {line(2*(w+1)-1, 0, 2*(w+1)-1, fh)}
+		    {rect(2*(w+1), 1, col(data.enhancer_zscore, colors.H3K27ac))}
+                    {line(3*(w+1)-1, 0, 3*(w+1)-1, fh)}
+		    {rect(3*(w+1), 1, col(data.ctcf_zscore, colors.CTCF))}
+        	</g>
+	    </svg>
+	</span>);
+    return e;
+}
+
 
 export const creTableCellTypeSpecific = (data) => {
     let w = 12;

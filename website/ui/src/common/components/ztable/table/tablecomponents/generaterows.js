@@ -1,7 +1,7 @@
 import matchFound from '../search/matchfound';
 import packageColumnCells from '../search/packagecolumncells';
 
-export default function generateRows(handleCellClicks, cols,
+export default function generateRows(handleCellClicks, positionText, cols,
   columnkey, columnlabel, data, value, prevValue,
   searchedResultsIndex, current_page, per_page) {
 
@@ -65,7 +65,7 @@ export default function generateRows(handleCellClicks, cols,
         start_count++;
 
         cells = packageColumnCells(handleCellClicks.bind(this,
-            rowIndex), cols,
+            rowIndex), positionText, cols,
           columnkey, columnlabel, item);
 
         rowComponents.push( < tr key = {

@@ -2,6 +2,7 @@ import React from 'react';
 var ReactDOM = require('react-dom');
 
 import ResultsTable from './results_table'
+import ZTable from './ztable/ztable'
 import {ListItem} from './list'
 
 import * as toggleswitch from './toggleswitch'
@@ -65,7 +66,7 @@ class LongChecklistFacet extends React.Component {
 	return (
 	    <div>
 		{checks}
-		<ResultsTable cols={cols}
+		<ZTable cols={cols}
 			      data={this.props.data}
 			      order={this.props.order}
 			      buttonsOff={this.props.buttonsOff}

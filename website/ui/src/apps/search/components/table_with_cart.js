@@ -19,79 +19,48 @@ import {doToggle, isCart} from '../../../common/utility'
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.button_click_handler = this.button_click_handler.bind(this);
-        this.table_click_handler = this.table_click_handler.bind(this);
+
 	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
-    table_click_handler(columnName, rowdata, actions){
-        if (columnName == null) return;
-        if (columnName == "genesallpc") return;
-        if (columnName == "in_cart") {
-	    //console.log(rowdata.info);
-            let accession = rowdata.info.accession;
-            let accessions = doToggle(this.props.cart_accessions, accession);
-	    let j = {GlobalAssembly, accessions};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/set",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {
-                }
-	    });
-	    actions.setCart(accessions);
-	    return;
-        }
-	let cre = {...rowdata, ...rowdata.info};
-        actions.showReDetail(cre);
-    }
 
     button_click_handler(name, rowdata, actions){
 	let cre = {...rowdata, ...rowdata.info};
 	actions.showGenomeBrowser(cre, name);
     }
 
-    cart_img_click_handler(columnName, rowdata){
 
-      if (columnName == "in_cart") {
-        if (rowdata[columnName] == false) {
-          rowdata[columnName] = true;
-        } else {
-          rowdata[columnName] = false;
-        }
-      }
-
-
-    }
-
-rowClicks(columnName, rowdata, actions){
+rowClicks(kclass, columnName, rowdata, actions){
 
   let table_click_handler = (columnName, rowdata, actions) => {
-      if (columnName == null) return;
-      if (columnName == "genesallpc") return;
-      if (columnName == "in_cart") {
-    //console.log(rowdata.info);
-          let accession = rowdata.info.accession;
-          let accessions = doToggle(this.props.cart_accessions, accession);
-    let j = {GlobalAssembly, accessions};
-    $.ajax({
-  type: "POST",
-  url: "/cart/set",
-  data: JSON.stringify(j),
-  dataType: "json",
-  contentType: "application/json",
-  success: (response) => {
-              }
-    });
-    actions.setCart(accessions);
-    return;
-      }
-
-let cre = {...rowdata, ...rowdata.info};
-      actions.showReDetail(cre);
-  };
+         if (columnName == null) {
+      let cre = {...rowdata, ...rowdata.info};
+      actions.showGenomeBrowser(cre, name);
+      return;
+  }
+         if (columnName == "genesallpc") {
+      return;
+  }
+         if (columnName == "in_cart") {
+      //console.log(rowdata.info);
+             let accession = rowdata.info.accession;
+             let accessions = doToggle(this.props.cart_accessions, accession);
+      let j = {GlobalAssembly, accessions};
+      $.ajax({
+    type: "POST",
+    url: "/cart/set",
+    data: JSON.stringify(j),
+    dataType: "json",
+    contentType: "application/json",
+    success: (response) => {
+                 }
+      });
+      actions.setCart(accessions);
+      return;
+         }
+  let cre = {...rowdata, ...rowdata.info};
+         actions.showReDetail(cre);
+     };
 
   let cart_img_click_handler = (columnName, rowdata) => {
     if (columnName == "in_cart") {
@@ -372,17 +341,17 @@ rowdata[columnName] = cartCondition;
       < ZTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
-            rowClicks = {(columnName, rowdata) =>
-                this.rowClicks(columnName, rowdata, actions)}
+            rowClicks = {(kclass, columnName, rowdata) =>
+                this.rowClicks(kclass, columnName, rowdata, actions)}
             cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
                               cvisible={this._opposite(cols, this.props.cts)}
                               onButtonClick={(td, rowdata) =>
                                   this.button_click_handler(td, rowdata, actions)}
+                                  positionText= {"text-center "}
                               bFilter={true}
                               bLengthChange={true} key={this.props.cellType}
 pageLength = {10}
-columnkey={"data"}
-columnlabel={"title"}
+
 
 />   <br></br><br></br><br></br>
 	    </div>

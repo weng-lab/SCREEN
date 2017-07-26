@@ -1,6 +1,6 @@
 import {Glyphicon} from 'react-bootstrap';
 
-export default function generateHeaders(handleColumnClicks,
+export default function generateHeaders(handleColumnClicks, positionText,
   cols, columnkey, columnlabel, columnSort, sampleData) {
   let columnHeader = [];
   let columnSortTypes = [];
@@ -8,16 +8,41 @@ export default function generateHeaders(handleColumnClicks,
   for (let index = 0; index < cols.length; index++) {
     var colData = cols[index];
     var columnName = colData[columnkey];
+    var columnLabel = colData[columnlabel];
+var kclass = "";
+
+if("className" in colData){
+kclass = positionText + colData["className"];
+
+}
+
 
     if (columnSort.length == 0) {
 
-      if(!colData[columnlabel]) {
+      if(columnLabel == null || columnLabel == undefined) {
         columnSortTypes.push({
           direction: 'asc',
           sortOn: 'disabled'
         });
         continue;
   }
+
+
+if(columnLabel == "") {
+  columnSortTypes.push({
+    direction: 'asc',
+    sortOn: 'disabled'
+  });
+
+  columnHeader.push( < th key = { index }
+    className = { kclass }
+    onClick = { handleColumnClicks.bind(this,
+      columnName, index) } > {  }
+      </th>);
+      continue;
+
+}
+
 
       if ("visible" in colData) {
         if (!colData["visible"])
@@ -53,16 +78,32 @@ export default function generateHeaders(handleColumnClicks,
       }
 
       columnHeader.push( < th key = { colData[columnkey] }
-        className = { "text-center " + colData["className"] }
+        className = { kclass }
         onClick = { handleColumnClicks.bind(this,
-          columnName, index) } > { colData[columnlabel] }
+          columnName, index) } > { columnLabel }
           </th>);
 
       }
       else {
 
-        if(!colData[columnlabel]) {
+        if(columnLabel == null || columnLabel == undefined)  {
           continue;
+    }
+
+
+    if(columnLabel == "") {
+      columnSortTypes.push({
+        direction: 'asc',
+        sortOn: 'disabled'
+      });
+
+      columnHeader.push( < th key = { index }
+        className = { kclass }
+        onClick = { handleColumnClicks.bind(this,
+          columnName, index) } > {  }
+          </th>);
+          continue;
+
     }
 
         if ("visible" in colData) {
@@ -77,12 +118,12 @@ export default function generateHeaders(handleColumnClicks,
           // if inactive color gray
           if (columnSort[index].sortOn == 'inactive') {
             columnHeader.push( <th key = { colData[columnkey] }
-              className = { "text-center " + colData["className"] }
+              className = { kclass }
               onClick = { handleColumnClicks.bind(this, columnName,
                   index) }>
               <tr>
-              <th className = { "text-center " + colData["className"] }>
-              { colData[columnlabel] } </th>
+              <th>
+              { columnLabel } </th>
               <th>  <font color = { inactiveArrowColor }
               size = "3" ><p>{"     "}</p><Glyphicon glyph="sort" /></font>
                   </th>
@@ -93,26 +134,26 @@ export default function generateHeaders(handleColumnClicks,
 
           if (columnSort[index].direction == 'desc') {
             columnHeader.push( <th key = { colData[columnkey] }
-              className = { "text-center " + colData["className"] }
+              className = { kclass }
               onClick = { handleColumnClicks.bind(this, columnName,
                   index) }>
               <tr>
-              <th className = { "text-center " + colData["className"] }>
-              { colData[columnlabel] } </th>
-              <th><font size = "3" color = { activeArrowColor } ><p>{"     "}</p><Glyphicon glyph="sort-by-attributes" /></font>
+              <th>
+              { columnLabel } </th>
+              <th><font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes" /></font>
                   </th>
                 </tr>
               </th> );
     } else {
 
         columnHeader.push( <th key = { colData[columnkey] }
-          className = { "text-center " + colData["className"] }
+          className = { kclass }
           onClick = { handleColumnClicks.bind(this, columnName,
               index) }>
           <tr>
-          <th className = { "text-center " + colData["className"] }>
-          { colData[columnlabel] } </th>
-          <th><font size = "3" color = { activeArrowColor } ><p>{"     "}</p><Glyphicon glyph="sort-by-attributes-alt" /></font>
+          <th>
+          { columnLabel } </th>
+          <th><font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes-alt" /></font>
               </th>
             </tr>
           </th> );
@@ -125,9 +166,9 @@ export default function generateHeaders(handleColumnClicks,
   }
   } else {
     columnHeader.push( <th key = { colData[columnkey] }
-              className = { "text-center " + colData["className"] }
+              className = { kclass }
               onClick = { handleColumnClicks.bind(this, columnName, index)
-              }> { colData[columnlabel] } </th>);
+              }> { columnLabel } </th>);
             }
           }
         }

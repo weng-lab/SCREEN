@@ -13,7 +13,7 @@ import SliderFacet from '../../../common/components/slider'
 
 import {default_margin} from '../config/constants'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
@@ -68,7 +68,7 @@ const cellTypesBox = ({cellType, actions}) => {
 	cols={[
 	    { title: "", data: "name",
 	      orderable: false,
-	      render: () => ("<input type='radio' />")},
+	      render: () => (<input type='radio' />)},
 	    { title: "cell type", data: "name",
 	      className: "dt-right"},
 	    { title: "tissue", data: "tissue",
@@ -157,7 +157,7 @@ const geneDistanceBox = (p) => {
 		      p.gene_all_start, p.gene_all_end,
 		      p.actions.setGeneAllDistance)}
 	</div>);
-    
+
     return panelize("Distance to Genes", box);
 }
 
@@ -167,7 +167,7 @@ const zscore_decimal = (v) => {
     if (Number.isInteger(r)) return r + ".";
     return r;
 }
-    
+
 const zrdecimal = (s) => (+s * 100.0);
 
 const _rankBox = ({element_type, actions, cellType}) => {
@@ -200,7 +200,7 @@ const rankBox = (p) => {
     let title =  (p.cellType ?
 		  make_ct_friendly(p.cellType) :
 		  "Maximum across cell types");
-    
+
     let promoterTitle = "H3K4me3 Z-score";
     let enhancerTitle = "H3K27ac Z-score";
     let sliders = [makeRankFacet(p.rfacets, "dnase", "DNase Z-score",
@@ -216,14 +216,14 @@ const rankBox = (p) => {
                                  p.rank_ctcf_start, p.rank_ctcf_end,
 			         p.actions.setRankCtcf)];
     sliders = sliders.filter((s) => s > "");
-    
+
     // http://stackoverflow.com/a/34034296
     let box = (
         <div>
             {sliders.map((s,i) => <span>{s}{sliders.length - 1 === i
 					  ? '' : <br />}</span>)}
         </div>);
-    
+
     return panelize(title, box, "Z-scoreFacet");
 };
 

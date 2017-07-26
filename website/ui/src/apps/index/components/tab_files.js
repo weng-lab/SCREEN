@@ -1,6 +1,9 @@
 import React from 'react'
 
 import ResultsTable from '../../../common/components/results_table';
+import ZTable from '../../../common/components/ztable/ztable';
+
+
 import * as Render from '../../../common/renders'
 import {tabPanelize} from '../../../common/utility'
 
@@ -26,7 +29,7 @@ const TableColumns = () => {
     const fiveGroupDownload = (a) => {
 	return fileDownload(a[0], a[1]);
     }
-    
+
     return [
 	{
 	    title: "Biosample", data: "celltypedesc", className: klassCenter,
@@ -65,7 +68,7 @@ class TabFiles extends React.Component {
 	}
 	return (tabPanelize(
             <div>
-		<ResultsTable data={NineState}
+		<ZTable data={NineState}
 			      cols={TableColumns()}
                               bFilter={true}
                               bLengthChange={true}
