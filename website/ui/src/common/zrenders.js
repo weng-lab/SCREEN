@@ -130,7 +130,7 @@ export const geneDeLinks = (genesallpc) => {
 }
 
 export const dccImg = () => (
-    <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20">;
+    <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20"></img>
 )
 
 export const dccLink = (expID) => {
@@ -166,16 +166,17 @@ export const dccLinkCtGroupCus = (ctn, content) => {
 export const dccLinkAndIconSplit = (expAndFileID) => {
     let expID = expAndFileID.split(' / ')[0];
     var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/pennant-encode.png" alt="ENCODE logo">';
-    return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
+    var img = <img src="/static/encode/pennant-encode.png" alt="ENCODE logo"></img>;
+    return (<a target="_blank" href={url}>{expAndFileID}{"&nbsp"} {img}</a>);
 }
 
 export const cistromeLink = (acc) => (
-    "<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc + "' target='_blank'>" + acc + "</a>"
+    <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + acc} target='_blank'>{acc}</a>
 );
 
 export const factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>'
+  );
 
 const factorbook_histones = [
     "H2AFZ",
