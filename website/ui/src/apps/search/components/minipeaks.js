@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import ReactDOMServer from 'react-dom/server'
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 import ResultsTable from '../../../common/components/results_table'
 import loading from '../../../common/components/loading'

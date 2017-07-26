@@ -414,7 +414,7 @@ export const creTableAccessionBoxen = (cre) => {
     let colors = Globals.colors.cREs;
 
     let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
-    
+
     let e = (
         <span className={"text-nowrap"}>
             <svg width={fw} height={fh}>
@@ -442,7 +442,7 @@ export const creTableAccessionProxReact = (cre) => {
 }
 
 export const creTableAccession = (cre, type, full, meta) => {
-    return '<div>' + 
+    return '<div>' +
 	   popup("Click for cRE details", creLink(cre.accession)) +
 	   '<br />' +
 	   popup("Concordant", concordantStar(cre.concordant)) +
@@ -475,7 +475,7 @@ export const creTableCellTypeSpecificReact = (data) => {
 	}
 	return val > 1.64 ? c : colors.Inactive;
     }
-    
+
     let e = (
         <span className={"text-nowrap"}>
             <svg width={fw} height={fh}>
@@ -520,7 +520,7 @@ export const creTitle = (cre) => {
 		{creTableCellTypeSpecificReact(cre.ctspecifc)}
 	    </span>);
     }
-    
+
     return (
 	<div>
 	    <h3 className="creDetailsTitle">{cre.accession}</h3>

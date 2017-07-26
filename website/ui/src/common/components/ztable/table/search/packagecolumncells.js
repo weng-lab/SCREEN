@@ -28,7 +28,13 @@ export default function packageColumnCells(handleCellClicks, positionText, cols,
       search_item = colData.defaultContent;
 
     } else if (colData["render"]) {
-      search_item = colData.render(item[columnName]);
+
+console.log("it weent here!!!", colData["render"]);
+if("display" in colData["render"])
+      search_item = colData["render"]["display"](item[columnName]);
+else {
+  search_item = colData.render(item[columnName]);
+}
     } else {
 
       search_item = item[columnName];

@@ -3,8 +3,8 @@ import {commajoin} from './utility'
 // datatbles render has params function (data, type, full, meta)
 
 export const relink = (a) => (v) => (
-    <a href={'/search?assembly=" + a + "&q=" + v + "'} target={'_blank'}>
-	v
+    <a href={'/search?assembly=' + a + "&q=" + v} target={'_blank'}>
+	{v}
     </a>
 );
 
@@ -13,8 +13,8 @@ export const snp_link = (d) => {
     if("mm10" == GlobalAssembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
-         + d + '</a>';
+    return (<a href={ url + '?vdb=variation;v=' + d} target="_blank">{
+          d } </a>);
 }
 
 export const snpLinks = (snps) => {
@@ -25,7 +25,7 @@ export const integer = (d) => (d)
 //{"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 
 export const integerLink = (href) => (d) => {
-    return "<a href='#" + href + "'>" + d + "</a>";
+    return (<a href={'#' + href}>{d}</a>);
 }
 
 export const toSciNot = (d) => {
@@ -143,7 +143,7 @@ export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroup = (ctn) => {
@@ -152,7 +152,7 @@ export const dccLinkCtGroup = (ctn) => {
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
     var img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return (<a target="_blank" href={url}>{img}</a>);
 }
 
 export const dccLinkCtGroupCus = (ctn, content) => {
@@ -175,7 +175,7 @@ export const cistromeLink = (acc) => (
 );
 
 export const factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>'
+    <a href={'http://beta.factorbook.org/human/chipseq/tf/' + d} target="_blank">{d}</a>
   );
 
 const factorbook_histones = [
@@ -196,12 +196,13 @@ const factorbook_histones = [
 
 export const factorbook_link_histone = (d) => (
     factorbook_histones.includes(d)
-    ? '<a href="http://factorbook.org/human/chipseq/histone/' + d + '" target="_blank">' + d.replace(/F/g, ".") + '</a>'
+    ? <a href={'http://factorbook.org/human/chipseq/histone/' + d} target="_blank"> {d.replace(/F/g, ".")}</a>
     : d.replace(/F/g, ".")
 );
 
 export const gene_link = (d) => (
-    '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
+    <a href={'http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d} target="_blank">{d}</a>
+  );
 
 export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 export const bp = (v) => (v + " bp");

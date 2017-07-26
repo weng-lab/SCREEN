@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions';
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 import {tabPanelize} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
 import ZTable from '../../../common/components/ztable/ztable'

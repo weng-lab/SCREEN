@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import ResultsTable from '../../../common/components/results_table'
 import ZTable from '../../../common/components/ztable/ztable'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 const cols = () => {
     return [

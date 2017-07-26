@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'

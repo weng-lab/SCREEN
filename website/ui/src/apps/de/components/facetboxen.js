@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
 import LongChecklistFacet from '../../../common/components/longchecklist'
 import LongListFacet from '../../../common/components/longlist'

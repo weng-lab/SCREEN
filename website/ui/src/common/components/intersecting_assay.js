@@ -1,6 +1,6 @@
 import React from 'react'
 
-import * as Render from '../zrenders'
+import * as Render from '../renders'
 import ResultsTable from './results_table'
 import ZTable from './ztable/ztable'
 
@@ -57,7 +57,7 @@ class IntersectingAssay extends React.Component {
         let table = this.props.table;
 
 
-console.log("this table data", table, "data", data);
+
 
         let onTdClick = (i, d) => {
             this.loadTarget(this.props, d.name);
@@ -85,7 +85,6 @@ console.log("this table data", table, "data", data);
 
 
 
-console.log("this table data", table, "data", data);
 	return (<div className={"intersectionTable"} >
                 {React.createElement(ZTable, {data, ...table,
                                                     onTdClick,
