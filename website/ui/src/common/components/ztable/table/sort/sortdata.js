@@ -17,13 +17,17 @@ export default function sortData(data, columnSortType, columnName) {
         if (columnSortType["value"]) {
           if (columnSortType.direction == 'asc') {
             data.sort(function(a, b) {
-              if (a[columnName][columnSortType["value"]] && b[columnName][columnSortType["value"]])
-                return a[columnName][columnSortType["value"]] - b[columnName][columnSortType["value"]];
+              if (a[columnName][columnSortType["value"]]
+              && b[columnName][columnSortType["value"]])
+                return a[columnName][columnSortType["value"]]
+                - b[columnName][columnSortType["value"]];
             });
           } else {
             data.sort(function(a, b) {
-              if (a[columnName][columnSortType["value"]] && b[columnName][columnSortType["value"]])
-                return b[columnName][columnSortType["value"]] - a[columnName][columnSortType["value"]];
+              if (a[columnName][columnSortType["value"]]
+              && b[columnName][columnSortType["value"]])
+                return b[columnName][columnSortType["value"]]
+                - a[columnName][columnSortType["value"]];
             });
           }
         }
@@ -47,7 +51,8 @@ export default function sortData(data, columnSortType, columnName) {
 
           if (columnSortType.direction == 'asc') {
             data.sort(function(a, b) {
-              if (a[columnName][columnSortType["value"]] && b[columnName][columnSortType["value"]]) {
+              if (a[columnName][columnSortType["value"]]
+              && b[columnName][columnSortType["value"]]) {
                 let nameA =
                   a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
                 let nameB =
@@ -65,7 +70,8 @@ export default function sortData(data, columnSortType, columnName) {
           } else {
             data.sort(function(a, b) {
 
-              if (a[columnName][columnSortType["value"]] && b[columnName][columnSortType["value"]]) {
+              if (a[columnName][columnSortType["value"]]
+              && b[columnName][columnSortType["value"]]) {
                 let nameA =
                   a[columnName][columnSortType["value"]].toLowerCase(); // ignore upper and lowercase
                 let nameB =

@@ -11,72 +11,50 @@ export default class ReactiveTable extends React.Component {
           pages = this.props.pages,
           current_page = this.props.current_page,
           pageChange = this.props.pageChange,
-          dataLength = this.props.dataLength;
+          dataLength = this.props.dataLength,
+          searchCondition = this.props.searchCondition;
 
-        if (this.props.bPaginate != undefined && this.props.bPaginate != null) {
+        if (this.props.bPaginate != undefined
+          && this.props.bPaginate != null) {
           if (this.props.bPaginate) {
 
-            var pagination = ( <
-              Pagination className = "users-pagination pull-right"
+            var pagination = (
+              <Pagination className = "users-pagination pull-right"
               bsSize = "medium"
-              maxButtons = {
-                3
-              }
-              first last next prev boundaryLinks items = {
-                pages
-              }
-              activePage = {
-                current_page
-              }
-              onSelect = {
-                pageChange
-              }
-              />);
+              maxButtons = { 3 }
+              first last next prev boundaryLinks
+              items = { pages }
+              activePage = { current_page }
+              onSelect = { pageChange } />);
             }
             else {
               var pagination = undefined;
             }
           } else {
-
-            var pagination = ( <
-              Pagination className = "users-pagination pull-right"
+            var pagination = (
+              <Pagination className = "users-pagination pull-right"
               bsSize = "medium"
-              maxButtons = {
-                3
-              }
-              first last next prev boundaryLinks items = {
-                pages
-              }
-              activePage = {
-                current_page
-              }
-              onSelect = {
-                pageChange
-              }
-              />);
+              maxButtons = { 3 }
+              first last next prev boundaryLinks
+              items = { pages }
+              activePage = { current_page }
+              onSelect = { pageChange }/>);
             }
-            if (dataLength == 0 || dataLength == per_page) {
+            if ((dataLength == 0 || dataLength <= per_page) && !searchCondition) {
               var helpBlock = undefined;
             } else {
               var helpBlock = (
                 <HelpBlock> Found { dataLength } result(s) </HelpBlock>);
               }
-              return ( <
-                div >
-                <
-                Table >
-                <
-                thead > {
-                  headerComponents
-                } < /thead> <
-                tbody > {
-                  rowComponents
-                } < /tbody> < /
-                Table > {
-                  pagination
-                } {
-                  helpBlock
-                } <
-                /div>);
+              return (
+                <div>
+                  <Table>
+                  <thead> { headerComponents } </thead>
+                    <tbody> { rowComponents }
+                    </tbody>
+                  </Table>
+                { pagination }
+                { helpBlock }
+                </div>);
               }
             }

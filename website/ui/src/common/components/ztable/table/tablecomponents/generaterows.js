@@ -68,11 +68,8 @@ export default function generateRows(handleCellClicks, positionText, cols,
             rowIndex), positionText, cols,
           columnkey, columnlabel, item);
 
-        rowComponents.push( < tr key = {
-            start_count
-          } > {
-            cells
-          } < /tr>);
+        rowComponents.push( < tr key = { start_count }>
+          { cells } </tr>);
         }
 
       } else {
@@ -98,10 +95,7 @@ export default function generateRows(handleCellClicks, positionText, cols,
     }
 
     if (dataLength == 0) {
-      rowComponents.push( < tr >
-        No matching records found. <
-        /tr>);
-
+      rowComponents.push( < tr >No matching records found. </tr>);
       }
 
       prevValue = value;

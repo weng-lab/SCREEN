@@ -20,7 +20,6 @@ class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
 this.table_click_handler = this.table_click_handler.bind(this);
-this.rowClicks = this.rowClicks.bind(this);
 	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
@@ -56,65 +55,12 @@ this.rowClicks = this.rowClicks.bind(this);
     }
 
 
-
-
-
     button_click_handler(name, rowdata, actions){
 	let cre = {...rowdata, ...rowdata.info};
 	actions.showGenomeBrowser(cre, name);
     }
 
 
-rowClicks(kclass, columnName, rowdata, actions){
-
-  let table_click_handler = (columnName, rowdata, actions) => {
-         if (columnName == null) {
-      let cre = {...rowdata, ...rowdata.info};
-      actions.showGenomeBrowser(cre, name);
-      return;
-  }
-         if (columnName == "genesallpc") {
-      return;
-  }
-         if (columnName == "in_cart") {
-      //console.log(rowdata.info);
-             let accession = rowdata.info.accession;
-             let accessions = doToggle(this.props.cart_accessions, accession);
-      let j = {GlobalAssembly, accessions};
-      $.ajax({
-    type: "POST",
-    url: "/cart/set",
-    data: JSON.stringify(j),
-    dataType: "json",
-    contentType: "application/json",
-    success: (response) => {
-                 }
-      });
-      actions.setCart(accessions);
-      return;
-         }
-  let cre = {...rowdata, ...rowdata.info};
-         actions.showReDetail(cre);
-     };
-
-  let cart_img_click_handler = (columnName, rowdata) => {
-    if (columnName == "in_cart") {
-      if (rowdata[columnName] == false) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    return "disabled";
-  };
-
-  table_click_handler(columnName, rowdata, actions);
-
-let cartCondition = cart_img_click_handler(columnName, rowdata);
-if(cartCondition != "disabled")
-rowdata[columnName] = cartCondition;
-
-}
 
     addAllToCart() {
 	let accessions = this.props.data.map((d) => {
@@ -376,8 +322,6 @@ rowdata[columnName] = cartCondition;
       < ZTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
-          //  rowClicks = {(kclass, columnName, rowdata) =>
-        //       this.rowClicks(kclass, columnName, rowdata, actions)}
            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
            onTdClick={(td, rowdata) =>
                this.table_click_handler(td, rowdata, actions)}

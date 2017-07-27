@@ -1,8 +1,8 @@
-import { Glyphicon } from 'react-bootstrap';
-import React from 'react'
+import printColumn from './hc/printcolumn';
+import { generateHC, inactiveArrow, activeAscArrow, activeDescArrow } from './hc/generatehc';
 
 export default function generateHeaders(handleColumnClicks, positionText,
-  cols, columnkey, columnlabel, columnSort) {
+  cols, columnkey, columnlabel, columnSort, dataLength) {
   let columnHeader = [];
   let columnSortTypes = [];
 
@@ -17,7 +17,6 @@ export default function generateHeaders(handleColumnClicks, positionText,
     }
 
     if (columnSort.length == 0) {
-
       var cc = printColumn(colData, columnName,
         columnLabel, index, kclass, handleColumnClicks);
       var printCols = cc.printCols;
@@ -29,185 +28,65 @@ export default function generateHeaders(handleColumnClicks, positionText,
         continue;
       }
 
-      columnHeader.push( < th key = {
-          colData[columnkey]
-        }
-        className = {
-          kclass
-        }
-        onClick = {
-          handleColumnClicks.bind(this,
-            columnName, index)
-        } > {
-          columnLabel
-        } <
-        /th>);
-
-      }
-      else {
-
-        var cc = printColumn(colData, columnName,
-          columnLabel, index, kclass, handleColumnClicks);
-        var printCols = cc.printCols;
-
-        if (cc.columnHeader)
-          columnHeader.push(cc.columnHeader);
-        if (!printCols) {
-          continue;
-        }
-
-        if (columnSort[index].sortOn != 'disabled') {
-          var activeArrowColor = "#9fbedf",
-            inactiveArrowColor = "#C0C0C0";
+      if (columnSortTypes) {
+        if (columnSortTypes.sortOn != 'disabled') {
+          var inactiveArrowColor = "#C0C0C0";
 
           // if inactive color gray
-          if (columnSort[index].sortOn == 'inactive') {
-            columnHeader.push( <th key = { colData[columnkey] }
-              className = { kclass }
-              onClick = { handleColumnClicks.bind(this, columnName,
-                  index) }>
-              <tr>
-              <th>
-              { columnLabel } </th>
-              <th>  <font color = { inactiveArrowColor }
-              size = "3" ><Glyphicon glyph="sort" /></font>
-                  </th>
-                </tr>
-              </th> );
+          if (columnSortTypes.sortOn == 'inactive') {
 
-          } else if (columnSort[index].sortOn == 'active') {
-
-          if (columnSort[index].direction == 'desc') {
-            columnHeader.push( <th key = { colData[columnkey] }
-              className = { kclass }
-              onClick = { handleColumnClicks.bind(this, columnName,
-                  index) }>
-              <tr>
-              <th>
-              { columnLabel } </th>
-              <th><font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes" /></font>
-                  </th>
-                </tr>
-              </th> );
-    } else {
-
-        columnHeader.push( <th key = { colData[columnkey] }
-          className = { kclass }
-          onClick = { handleColumnClicks.bind(this, columnName,
-              index) }>
-          <tr>
-          <th>
-          { columnLabel } </th>
-          <th><font size = "3" color = { activeArrowColor } ><Glyphicon glyph="sort-by-attributes-alt" /></font>
-              </th>
-            </tr>
-          </th> );
-    }
-  }
-  } else {
-    columnHeader.push( <th key = { colData[columnkey] }
-              className = { kclass }
-              onClick = { handleColumnClicks.bind(this, columnName, index)
-              }> { columnLabel } </th>);
-            }
+            inactiveArrow(columnHeader, columnName, columnLabel,
+              kclass, handleColumnClicks, index, inactiveArrowColor);
           }
         }
-        // generate our header (th) cell components
-        return {
-          columnHeader,
-          columnSortTypes
-        }
+      } else {
+        generateHC(columnHeader, columnName, columnLabel,
+          kclass, handleColumnClicks, index);
+      }
+    } else if (dataLength > 1) {
+
+      var cc = printColumn(colData, columnName,
+        columnLabel, index, kclass, handleColumnClicks);
+      var printCols = cc.printCols;
+
+      if (cc.columnHeader)
+        columnHeader.push(cc.columnHeader);
+      if (!printCols) {
+        continue;
       }
 
-      function printColumn(colData, columnName,
-        columnLabel, index, kclass, handleColumnClicks) {
+      if (columnSort[index].sortOn != 'disabled') {
+        var activeArrowColor = "#9fbedf",
+          inactiveArrowColor = "#C0C0C0";
 
-        var printCols = true;
+        // if inactive color gray
+        if (columnSort[index].sortOn == 'inactive') {
 
-        if (columnLabel == null || columnLabel == undefined) {
-          return {
-            printCols: false,
-            columnSortTypes: {
-              direction: 'asc',
-              sortOn: 'disabled'
-            },
-            columnHeader: undefined
-          };
-        }
-        if (columnLabel == "") {
-          return {
-            printCols: false,
-            columnSortTypes: {
-              direction: 'asc',
-              sortOn: 'disabled'
-            },
+          inactiveArrow(columnHeader, columnName, columnLabel,
+            kclass, handleColumnClicks, index, inactiveArrowColor);
 
-            columnHeader: ( < th key = {
-                index
-              }
-              className = {
-                kclass
-              }
-              onClick = {
-                handleColumnClicks.bind(this,
-                  columnName, index)
-              } > {} < /th>)
-            }
-          }
-          if ("visible" in colData) {
-            if (!colData["visible"]) {
-              return {
-                printCols: false,
-                columnSortTypes: {
-                  direction: 'asc',
-                  sortOn: 'disabled'
-                },
-                columnHeader: undefined
-              }
-            }
-          }
-          if ("orderable" in colData) {
-            if (!colData["orderable"]) {
-              return {
-                printCols: true,
-                columnSortTypes: {
-                  direction: 'asc',
-                  sortOn: 'disabled'
-                },
-                columnHeader: undefined
-              };
-            } else {
-              return {
-                printCols: true,
-                columnSortTypes: {
-                  direction: 'asc',
-                  sortOn: 'inactive'
-                },
-                columnHeader: undefined
-              };
-            }
+        } else if (columnSort[index].sortOn == 'active') {
+
+          if (columnSort[index].direction == 'desc') {
+            activeAscArrow(columnHeader, columnLabel, columnName,
+              kclass, handleColumnClicks, index, activeArrowColor);
           } else {
-            if ("columnSort" in colData) {
-              return {
-                printCols: true,
-                columnSortTypes: colData["columnSort"],
-                columnHeader: undefined
-              };
-            } else {
-              return {
-                printCols: true,
-                columnSortTypes: {
-                  direction: 'asc',
-                  sortOn: 'inactive'
-                },
-                columnHeader: undefined
-              };
-            }
-          }
-          return {
-            printCols: true,
-            columnSortTypes: undefined,
-            columnHeader: undefined
-
+            activeDescArrow(columnHeader, columnLabel, columnName,
+              kclass, handleColumnClicks, index, activeArrowColor);
           }
         }
+      } else {
+        generateHC(columnHeader, columnName, columnLabel,
+          kclass, handleColumnClicks, index);
+      }
+    } else {
+      generateHC(columnHeader, columnName, columnLabel,
+        kclass, handleColumnClicks, index);
+    }
+  }
+  // generate our header (th) cell components
+  return {
+    columnHeader,
+    columnSortTypes
+  }
+}
