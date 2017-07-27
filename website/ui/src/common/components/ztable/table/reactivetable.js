@@ -50,6 +50,7 @@ export default class ReactiveTable extends React.Component {
               }
               return (
                 <div>
+                  <style>{"table{table-layout: fixed;}"}</style>
                   <table className = { tableKlass }>
                   <thead> { headerComponents } </thead>
                     <tbody> { rowComponents } </tbody>

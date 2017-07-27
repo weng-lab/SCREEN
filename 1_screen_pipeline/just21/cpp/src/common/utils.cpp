@@ -9,10 +9,48 @@
 #include <iostream>
 #include <memory>
 #include <array>
+#include <iomanip>
+#include <unordered_map>
 
+#include <boost/filesystem.hpp>
+
+#include "cpp/files.hpp"
 #include "utils.hpp"
 
 namespace SCREEN {
+
+  /**
+     parse chromosome lengths from a chrom_info file
+     lines should be TSV, chromosome name then length
+  */
+  std::unordered_map<std::string, uint32_t> parseChromLengths(const boost::filesystem::path &chromInfo) {
+    std::ifstream f(chromInfo.string());
+    std::string line;
+    std::unordered_map<std::string, uint32_t> retval;
+    while (std::getline(f, line)) {
+      std::vector<std::string> p = split(line, '\t');
+      retval[p[0]] = std::stoi(p[1]);
+    }
+    return retval;
+  }
+  
+  // http://www.cplusplus.com/forum/general/15952/
+  std::string accession(size_t acc, char sig, int len) {
+    std::ostringstream ss, os;
+    ss << std::setw(len) << std::setfill('0') << acc;
+    os << "HP37" << sig << ss.str();
+    return os.str();
+  }
+  
+  std::vector<bfs::path> list_files(const bfs::path& path) {
+    std::vector<bfs::path> ret;
+    for (const auto& de : bib::files::dir(path)){
+      if (!is_directory(de.status())) {
+	ret.push_back(de.path());
+      }
+    }
+    return ret;
+  }
 
   std::vector<std::string> chrom_list(const std::string &path) {
     return split(run("bedextract --list-chr " + path), '\n');
@@ -22,10 +60,13 @@ namespace SCREEN {
     std::array<char, 128> buffer;
     std::string result;
     std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
+    if (!pipe) {
+      throw std::runtime_error("popen() failed!");
+    }
     while (!feof(pipe.get())) {
-      if (fgets(buffer.data(), 128, pipe.get()) != NULL)
+      if (fgets(buffer.data(), 128, pipe.get()) != NULL){
 	result += buffer.data();
+      }
     }
     return result;
   }
@@ -37,14 +78,6 @@ namespace SCREEN {
     }
   }
 
-  void read(std::vector<std::string> &lines, const std::string &path) {
-    std::ifstream i(path);
-    std::string line;
-    while (std::getline(i, line)) {
-      lines.push_back(line);
-    }
-  }
-  
   bool path_is_gzip(const std::string &path) {
     return path.size() >= 3 && 0 == path.compare(path.size() - 3, 3, ".gz");
   };

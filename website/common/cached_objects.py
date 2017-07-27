@@ -59,7 +59,7 @@ class CachedObjects:
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
-        self.filesJson = self.indexFilesTab(self.nineState.values())
+        self.filesList = self.indexFilesTab(self.nineState.values())
 
         self.moreTracks = self.pgSearch.loadMoreTracks()
         
@@ -71,9 +71,11 @@ class CachedObjects:
 
         self.tfHistCounts = {
             "peak": self.pgSearch.tfHistCounts(),
-            "cistrome": self.pgSearch.tfHistCounts(eset = "cistrome")
+            "cistrome": None
         }
-
+        if self.assembly in ["hg38", "mm10"]:
+            self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset = "cistrome")
+            
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
@@ -100,7 +102,7 @@ class CachedObjects:
             fn = '_'.join(accs) + ".cREs.bigBed.bed.gz"
             d["fiveGroup"] = [os.path.join(WWW, fn), fn]
             ret.append(d)
-        return json.dumps(ret)
+        return ret
             
     def global_data(self, ver):
         datasets = self.datasets

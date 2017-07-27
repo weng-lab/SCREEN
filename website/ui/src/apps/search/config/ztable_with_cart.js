@@ -55,7 +55,7 @@ if(cts){
             title: geneHelp, data: "genesallpc",
 	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
             orderable: false, customSave: {render: Render.genesallpcJoin,
-              headerValue: "nearest genes: protein-coding pc, nearest genes: protein-coding all"}
+              headerValue: "nearest genes: protein-coding pc, nearest genes: protein-coding all"}, width: "20%"
 	}, {
 	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),

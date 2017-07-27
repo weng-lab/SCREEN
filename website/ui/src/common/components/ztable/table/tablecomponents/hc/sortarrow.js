@@ -1,7 +1,7 @@
-export default function sortArrow(columnHeader, columnName, columnLabel,
+export default function sortArrow(width, columnHeader, columnName, columnLabel,
   kclass, handleColumnClicks, index, inactiveArrowColor, arrowDirection){
     if (arrowDirection) {
-      columnHeader.push( <th key = { columnName }
+      columnHeader.push( <th key = { columnName } width={width}
         className = { kclass }
         onClick = { handleColumnClicks.bind(this, columnName,
             index) }>
@@ -13,7 +13,7 @@ export default function sortArrow(columnHeader, columnName, columnLabel,
           </tr>
         </th> );
     } else {
-      columnHeader.push( <th key = { columnName }
+      columnHeader.push( <th key = { columnName } width={width}
                 className = { kclass }
                 onClick = { handleColumnClicks.bind(this, columnName, index)
                 }> { columnLabel } </th>);

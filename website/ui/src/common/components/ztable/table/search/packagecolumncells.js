@@ -43,10 +43,6 @@ export default function packageColumnCells(handleCellClicks, positionText, cols,
               columnkey, kclass) } > {} < /td>);
           continue;
         }
-        // return data per row and column
-        if (!isNaN(search_item)) {
-          search_item = search_item.toLocaleString();
-        }
       }
 
       if (!isNaN(search_item)) {

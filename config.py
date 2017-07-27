@@ -17,7 +17,8 @@ class Config:
 
     version = c.get("RE", "version")
     db_host = c.get("RE", "db_host")
-    database = c.get("RE", "database")
+    db_usr = c.get("RE", "db_usr")
+    db = c.get("RE", "db")
     assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
     minipeaks_ver = c.get("RE", "minipeaks_ver")
     minipeaks_nbins = c.get("RE", "minipeaks_nbins")

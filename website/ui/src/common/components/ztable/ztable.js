@@ -81,7 +81,8 @@ export default class ZTable extends React.Component {
         else
           var per_page = this.state.pageLength;
 
-        if (this.props.bPaginate != undefined && this.props.bPaginate != null) {
+        if (this.props.bPaginate != undefined &&
+          this.props.bPaginate != null) {
           if (!this.props.bPaginate) {
             per_page = data.length;
           }
@@ -101,7 +102,8 @@ export default class ZTable extends React.Component {
         // value from search box
         let value = this.state.value;
 
-        if (this.props.bFilter != undefined && this.props.bFilter != null) {
+        if (this.props.bFilter != undefined &&
+          this.props.bFilter != null) {
           if (this.props.bFilter) {
 
             var searchBar = ( <
@@ -117,8 +119,7 @@ export default class ZTable extends React.Component {
 
             }
           } else {
-            var searchBar = (
-              <
+            var searchBar = ( <
               SearchBar value = {
                 this.state.value
               }
@@ -128,7 +129,8 @@ export default class ZTable extends React.Component {
               />);
             }
 
-            let rc = generateRows(this.handleCellClicks.bind(this, cols), positionText, cols,
+            let rc = generateRows(
+              this.handleCellClicks.bind(this, cols), positionText, cols,
               columnkey, columnlabel, data, value, prevValue,
               searchedResultsIndex, current_page, per_page);
 
@@ -136,11 +138,11 @@ export default class ZTable extends React.Component {
             let rowComponents = rc.rowComponents,
               dataLength = rc.dataLength;
 
-              // generates header amd row components
-              let hc = generateHeaders(this.handleColumnClicks, positionText,
-                cols, columnkey, columnlabel, columnSort, dataLength);
-              let headerComponents = hc.columnHeader,
-                columnSortTypes = hc.columnSortTypes;
+            // generates header amd row components
+            let hc = generateHeaders(this.handleColumnClicks, positionText,
+              cols, columnkey, columnlabel, columnSort, dataLength);
+            let headerComponents = hc.columnHeader,
+              columnSortTypes = hc.columnSortTypes;
 
             let pages = Math.ceil(dataLength / per_page);
 
@@ -151,184 +153,192 @@ export default class ZTable extends React.Component {
               this.state.columnSort = columnSortTypes;
             }
 
-            var buttons = (
-              <Button bsSize="small" onClick = { this.handleCSVButtonClicks.bind(this, cols, columnkey, columnlabel, data) }> CSV
-              <font color = "#C0C0C0">
-              <Glyphicon glyph="save"/>
-              </font>
-              </Button>);
-          	if(this.props.buttonsOff){
-              buttons = [];
-          	}
-
-
-            // returns search box and result table
-            return ( <
-              div >
-              {buttons}
-              {
-                searchBar
-              } <br></br><
-              ReactiveTable headerComponents = {
-                headerComponents
-              }
-              rowComponents = {
-                rowComponents
-              }
-              per_page = {
-                per_page
-              }
-              pages = {
-                pages
-              }
-              current_page = {
-                current_page
+            var buttons = ( <
+              Button bsSize = "small"
+              onClick = {
+                this.handleCSVButtonClicks.bind(this,
+                  cols, columnkey, columnlabel, data)
+              } > CSV <
+              font color = "#C0C0C0" >
+              <
+              Glyphicon glyph = "save" / >
+              <
+              /font> <
+              /Button>);
+              if (this.props.buttonsOff) {
+                buttons = [];
               }
 
-              bPaginate = {
-                this.props.bPaginate
-              }
-              pageChange = {
-                this.handleSelect
-              }
-              dataLength = {
-                dataLength
-              }
-              searchCondition = { searchCondition }
-              /> < /
-              div >
-            );
-          }
 
-          handleChange(e) {
-            // sets current state of text entered on search box
-            this.setState({
-              value: e.target.value
-            });
+              // returns search box and result table
+              return ( <
+                div > {
+                  buttons
+                } {
+                  searchBar
+                } < br > < /br><
+                ReactiveTable headerComponents = {
+                  headerComponents
+                }
+                rowComponents = {
+                  rowComponents
+                }
+                per_page = {
+                  per_page
+                }
+                pages = {
+                  pages
+                }
+                current_page = {
+                  current_page
+                }
 
-            // case when search is true
-            if (e.target.value != '') {
-              this.setState({
-                searchCondition: true,
-                activeSearchPage: 1
-              });
-            } else {
-              this.setState({
-                searchCondition: false
-              });
+                bPaginate = {
+                  this.props.bPaginate
+                }
+                pageChange = {
+                  this.handleSelect
+                }
+                dataLength = {
+                  dataLength
+                }
+                searchCondition = {
+                  searchCondition
+                }
+                /> < /
+                div >
+              );
             }
-          }
 
-          handleSelect(eventKey) {
-            if (this.state.searchCondition)
+            handleChange(e) {
+              // sets current state of text entered on search box
               this.setState({
-                activeSearchPage: eventKey
+                value: e.target.value
               });
-            else
+
+              // case when search is true
+              if (e.target.value != '') {
+                this.setState({
+                  searchCondition: true,
+                  activeSearchPage: 1
+                });
+              } else {
+                this.setState({
+                  searchCondition: false
+                });
+              }
+            }
+
+            handleSelect(eventKey) {
+              if (this.state.searchCondition)
+                this.setState({
+                  activeSearchPage: eventKey
+                });
+              else
+                this.setState({
+                  activePage: eventKey
+                });
+            }
+
+
+            handleCSVButtonClicks(cols, columnkey, columnlabel, data) {
+              var csvContent = "data:text/csv;charset=utf-8,";
+              cols.map(function(colData) {
+                var headerLabel = printCSVHeader(colData, columnlabel);
+                csvContent += headerLabel + ',';
+              });
+
+              var searchCondition = this.state.searchCondition;
+              if (searchCondition) {
+                var searchedResultsIndex = this.state.searchedResultsIndex;
+
+                searchedResultsIndex.map(function(item) {
+                  var dataContent = '';
+                  csvContent += "\n";
+                  cols.map(function(colData) {
+                    dataContent = printCSVRowData(colData, columnkey, data[item]);
+                    csvContent += dataContent + ',';
+                  });
+                });
+              } else {
+                data.map(function(item) {
+                  var dataContent = '';
+                  csvContent += "\n";
+                  cols.map(function(colData) {
+                    dataContent = printCSVRowData(colData, columnkey, item);
+                    csvContent += dataContent + ',';
+                  });
+                });
+              }
+
+              var encodedUri = encodeURI(csvContent);
+              var link = document.createElement("a");
+              link.setAttribute("href", encodedUri);
+              link.setAttribute("download", "SCREEN.csv");
+              document.body.appendChild(link); // Required for FF
+
+              link.click();
+            }
+
+            handleCellClicks(cols, rowIndex, columnIndex, columnkey, kclass) {
+              var data = this.props.data[rowIndex];
+
+              if (this.props.onTdClick) {
+                var onTdClick = this.props.onTdClick;
+                onTdClick(kclass, data);
+              }
+              if (this.props.onButtonClick) {
+                var onButtonClick = this.props.onButtonClick;
+                onButtonClick(kclass, data);
+              }
+              if (this.props.rowClicks) {
+                var rowClicks = this.props.rowClicks;
+                rowClicks(kclass, cols[columnIndex][columnkey], data);
+              }
+            }
+
+            handleColumnClicks(columnName, index) {
+              // rerender if sorting is true
               this.setState({
-                activePage: eventKey
+                searchedResultsIndex: [],
+                prevValue: undefined
               });
-          }
 
+              let columnSort = this.state.columnSort,
+                data = this.props.data;
 
-handleCSVButtonClicks(cols, columnkey, columnlabel, data) {
-    var csvContent = "data:text/csv;charset=utf-8,";
-    cols.map(function(colData) {
-      var headerLabel = printCSVHeader(colData, columnlabel);
-      csvContent += headerLabel + ',';
-    });
+              if (data.length > 1) {
+                let columnSortType = [];
+                if (columnSort.length > 0) {
+                  if (columnSort[index]['sortOn'] != 'disabled') {
+                    for (let i = 0; i < columnSort.length; i++) {
+                      if (columnSort[i]['sortOn'] != 'disabled') {
+                        Object.assign(columnSort[i], {
+                          sortOn: 'inactive'
+                        });
+                      }
+                    }
+                    columnSortType = columnSort[index];
+                    Object.assign(columnSort[index], {
+                      sortOn: 'active'
+                    });
 
-    var searchCondition = this.state.searchCondition;
-    if (searchCondition) {
-      var searchedResultsIndex = this.state.searchedResultsIndex;
-
-      searchedResultsIndex.map(function(item) {
-        var dataContent = '';
-        csvContent += "\n";
-        cols.map(function(colData) {
-          dataContent = printCSVRowData(colData, columnkey, data[item]);
-          csvContent += dataContent + ',';
-        });
-      });
-    } else {
-      data.map(function(item) {
-        var dataContent = '';
-        csvContent += "\n";
-        cols.map(function(colData) {
-          dataContent = printCSVRowData(colData, columnkey, item);
-          csvContent += dataContent + ',';
-        });
-      });
-    }
-
-  var encodedUri = encodeURI(csvContent);
-  var link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "SCREEN.csv");
-  document.body.appendChild(link); // Required for FF
-
-  link.click();
-}
-
-          handleCellClicks(cols, rowIndex, columnIndex, columnkey, kclass) {
-            var data = this.props.data[rowIndex];
-
-            if (this.props.onTdClick) {
-              var onTdClick = this.props.onTdClick;
-              onTdClick(kclass, data);
-            }
-            if (this.props.onButtonClick) {
-              var onButtonClick = this.props.onButtonClick;
-              onButtonClick(kclass, data);
-            }
-            if (this.props.rowClicks) {
-              var rowClicks = this.props.rowClicks;
-              rowClicks(kclass, cols[columnIndex][columnkey], data);
-            }
-          }
-
-          handleColumnClicks(columnName, index) {
-            // rerender if sorting is true
-            this.setState({
-              searchedResultsIndex: [],
-              prevValue: undefined
-            });
-
-            let columnSort = this.state.columnSort,
-              data = this.props.data;
-
-            if (data.length > 1) {
-              let columnSortType = [];
-              if (columnSort.length > 0) {
-                if (columnSort[index]['sortOn'] != 'disabled') {
-                  for (let i = 0; i < columnSort.length; i++) {
-                    if (columnSort[i]['sortOn'] != 'disabled') {
-                      Object.assign(columnSort[i], {
-                        sortOn: 'inactive'
+                    if (columnSortType["customSort"]) {
+                      customSort(data, columnSortType, columnName);
+                    } else {
+                      sortData(data, columnSortType, columnName);
+                    }
+                    if (columnSort[index].direction == 'asc') {
+                      Object.assign(columnSort[index], {
+                        direction: 'desc'
+                      });
+                    } else {
+                      Object.assign(columnSort[index], {
+                        direction: 'asc'
                       });
                     }
-                  }
-                  columnSortType = columnSort[index];
-                  Object.assign(columnSort[index], {
-                    sortOn: 'active'
-                  });
-
-                  if (columnSortType["customSort"]) {
-                    customSort(data, columnSortType, columnName);
-                  } else {
-                    sortData(data, columnSortType, columnName);
-                  }
-                  if (columnSort[index].direction == 'asc') {
-                    Object.assign(columnSort[index], {
-                      direction: 'desc'
-                    });
-                  } else {
-                    Object.assign(columnSort[index], {
-                      direction: 'asc'
-                    });
                   }
                 }
               }
             }
           }
-        }

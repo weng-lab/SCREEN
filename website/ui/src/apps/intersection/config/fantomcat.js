@@ -1,5 +1,6 @@
 import HistogramTab from '../components/fantomcat/histogramtab';
 import HistogramZTab from '../components/fantomcat/histogramztab';
+import ViolinTab from '../components/fantomcat/violintab';
 import OverlapTab from '../components/fantomcat/overlaptab';
 
 const FantomCatTabs = {
@@ -27,6 +28,11 @@ const FantomCatTabs = {
 	title: "cREs per kb by cRE type",
 	enabled: true,
 	f: HistogramZTab
+    },
+    testviolin: {
+	title: "test violin",
+	enabled: true,
+	f: ViolinTab
     }
 };
 export default FantomCatTabs;

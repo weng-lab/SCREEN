@@ -5,7 +5,16 @@
 #include <sstream>
 #include <iterator>
 
-#include "utils.hpp"
+#include <armadillo>
+
+#include <boost/filesystem.hpp>
+
+#include "common/utils.hpp"
+#include "common/lambda.hpp"
+#include "common/region.hpp"
+#include "common/rDHS.hpp"
+#include "common/binarysignal.hpp"
+#include "paths.hpp"
 #include "lookup_matrix.hpp"
 
 namespace SCREEN {
@@ -37,12 +46,31 @@ namespace SCREEN {
     }
 
     // get lists by assay
-    for (auto & e : matrix_){
+    for (auto &e : matrix_){
       if (biosample_has_all(e.first)) { AllFour_.push_back(e.second); }
       if (biosample_has(e.first, "DNase")) { AllDNase_.push_back(e.second); }
       if (biosample_has(e.first, "H3K4me3")) { AllH3K4me3_.push_back(e.second); }
       if (biosample_has(e.first, "H3K27ac")) { AllH3K27ac_.push_back(e.second); }
       if (biosample_has(e.first, "CTCF")) { AllCTCF_.push_back(e.second); }
+    }
+  }
+
+  void LookupMatrix::binarize(Paths &path, RegionSet &r) {
+    const boost::filesystem::path root = path.root() / "rDHS";
+    BinarySignal dc(root / "signal");
+    BinarySignal h(root / "signal+500"); 
+    for (const auto &kv : matrix_) {
+      const auto &exp = kv.first;
+      for (const auto &entry : kv.second) {
+	if (0 != entry.second.compare("NA")) {
+	  if ((0 == entry.first.compare("DNase") || 0 == entry.first.compare("CTCF"))
+	      && !boost::filesystem::exists(root / "signal" / entry.second)) {
+	    dc.convertSignal(path.EncodeData(kv.first, entry.second, ".bigWig"));
+	  } else if (!boost::filesystem::exists(root / "signal+500" / entry.second)) {
+	    h.convertSignal(path.EncodeData(kv.first, entry.second, ".bigWig"));
+	  }
+	}
+      }
     }
   }
 

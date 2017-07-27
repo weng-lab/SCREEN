@@ -1,114 +1,147 @@
 #include <vector>
 #include <iostream>
-
 #include <string>
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
+#include <cmath>
+#include <numeric>
+#include <memory>
+#include <armadillo>
 
-#include "utils.hpp"
+#include <zi/zargs/zargs.hpp>
+
+//ZiARG_bool(boolExample, false, "bool example");
+ZiARG_int32(j, 1, "cores");
+ZiARG_string(rootPath, "/data/projects/cREs/", "root path");
+
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+
+// #include "hypertorus/src/tensor.hpp"
+// #include "hypertorus/src/hosvd.hpp"
+
+#include "zentLib/src/BigWigWrapper.hpp"
+
+#include "cpp/files.hpp"
+#include "cpp/string_utils.hpp"
+
+#include "common/utils.hpp"
+#include "common/lambda.hpp"
+#include "common/region.hpp"
+#include "paths.hpp"
 #include "lookup_matrix.hpp"
-#include "zscore.hpp"
-#include "rDHS.hpp"
+#include "common/zscore.hpp"
+#include "common/rDHS.hpp"
+#include "common/saturation.hpp"
 
-/*
- *  example usage of the lookup matrix
- */
-void test_lookupmatrix() {
+// #include "epitensor/epitensor.hpp"
 
-  std::cout << "--- test lookup matrix ---\n";
-  
-  // load mm10 matrix
-  SCREEN::LookupMatrix l("/data/projects/screen/Version-4/ver10/mm10/mm10-Look-Up-Matrix.txt");
+#include "encode.hpp"
+#include "cistrome.hpp"
 
-  // friendly name and DNase accession for WW6
-  std::cout << l["WW6"]["name"] << "\n";
-  std::cout << l["WW6"]["DNase"] << "\n";
+namespace SCREEN {
 
-  // friendly name for the first two biosamples
-  // with all four assays
-  std::cout << l.AllFour_[0]["name"] << "\n";
-  std::cout << l.AllFour_[1]["name"] << "\n";
-  std::cout << "--- /test lookup matrix ---\n\n";
-  
-}
+  /* void run_cistrome_rDHS(const std::string &assembly, bool force_recompute = false) {
 
-/*
- *  example usage of Z-score computation
- */
-void test_zscore() {
+    // load list of files
+    std::vector<bfs::path> cistrome_list;
+    std::vector<bfs::path> cistrome_comp;
 
-  std::cout << "--- test Z-score computation ---\n";
-  
-  // create Z-scores from a narrowPeak (top) and a bed plus signal bigWig (bottom)
-  SCREEN::ZScore r("/data/projects/cistrome/data/raw/dnase_human/1798_sort_peaks.narrowPeak.bed");
-  SCREEN::ZScore t("/data/projects/encode/data/ENCSR000BJC/ENCFF001TUZ.bed.gz", "/data/projects/encode/data/ENCSR000BJC/ENCFF155EOT.bigWig");
+    const auto lines = bib::files::readStrings(path.cistromeList());
+    std::vector<int> comp_idx;
+    std::vector<int> read_idx;
 
-  // print a peak and associated Z-score from both
-  // the peak is the original line from the bed with the Z-score in the signal column
-  std::cout << r.lines[0][0] << "\t" << r.lines[0][1] << "\t" << r.lines[0][2] << "\t" << r.zscores[0] << "\n";
-  std::cout << t.lines[0][0] << "\t" << t.lines[0][1] << "\t" << t.lines[0][2] << "\t" << t.zscores[0] << "\n";
-  std::cout << "--- /test Z-score computation ---\n\n";
-  
-}
+    int i = 0;
+    for(const auto& line : lines){
+      cistrome_list.push_back(line);
+      cistrome_comp.push_back(path.DHS_ZScore(trim_ext(basename(cistrome_list[i])), "cistrome").string());
+      if (force_recompute || !bfs::exists(cistrome_comp[i])) {
+	comp_idx.push_back(i++);
+      } else {
+	read_idx.push_back(i++);
+      }
+    }
 
-/*
- *  example usage of rDHS computation
- */
-void test_rdhs() {
+#pragma omp parallel for
+    for (auto n = 0; n < comp_idx.size(); ++n) {
+      int i = comp_idx[n];
+      ZScore z(cistrome_list[i], false);
+      z.qfilter(0.001);
+      z.write(trim_ext(basename(cistrome_list[i])),
+	      cistrome_comp[i]);
+      std::cout << cistrome_list[i] << "\t" << z.zscores_.size() << "\n";
+    }
 
-  std::cout << "--- test rDHS ---\n";
-  
-  // compute rDHSs from two narrowPeak files; save to /tmp/test_rdhs.bed
-  std::vector<std::string> nplist {
-    "/data/projects/cistrome/data/raw/dnase_human/1798_sort_peaks.narrowPeak.bed",
-    "/data/projects/cistrome/data/raw/dnase_human/1799_sort_peaks.narrowPeak.bed"
-  };
-  SCREEN::rDHS rr(nplist, "/tmp/test_rDHS.bed");
+    // compute rDHSs
+    std::cout << "computing rDHSs for " << cistrome_comp.size() << " exps\n";
+    for (const auto& fnp : cistrome_comp) {
+      std::cout << fnp << "\n";
+    }
+    rDHS rr(cistrome_comp);
+  } */
 
-  // output the first rDHS
-  std::cout << rr[0] << "\n";
-  std::cout << "--- /test rDHS ---\n";
-  
+} // namespace SCREEN
+
+void ENCODE_pipeline_run(SCREEN::ENCODE e) {
+  std::cout << "making saturation\n";
+  e.make_saturation();
+  return;
+  std::cout << "making binary signal files\n";
+  e.binarizeDHS();
+  std::cout << "computing Z-scores...\n";
+  e.computeZScores();
+  std::cout << "making rDHSs...\n";
+  e.make_rDHS();
+  std::cout << "making binary rDHS...\n";
+  e.binarize_rDHS();
+  std::cout << "creating cREs...\n";
+  e.create_cREs();
 }
 
 /*
  *  test entry point
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
 
-  /*
-  test_lookupmatrix();
-  test_zscore();
-  test_rdhs();
+  zi::parse_arguments(argc, argv, true);  // modifies argc and argv
+  std::vector<std::string> args(argv, argv + argc); // remaining arguments
+
+  // cistrome hg38
+  std::cout << "*** Cistrome hg38 ***\n";
+  SCREEN::Cistrome c("/data/projects/cistrome/data/raw", ZiARG_rootPath, "hg38");
+  std::cout << "computing Z-scores...\n";
+  c.computeZScores();
+  std::cout << "creating rDHSs...\n";
+  c.make_rDHS();
+
+  // hg38
+  std::cout << "*** ENCODE hg38 ***\n";
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "hg38"));
+
+  // hg19
+  std::cout << "*** ENCODE hg19 ***\n";
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "hg19"));
+
+  // mm10
+  std::cout << "*** ENCODE mm10 ***\n";
+  ENCODE_pipeline_run(SCREEN::ENCODE(ZiARG_rootPath, "mm10"));
+
+  /*  
+  std::cout << "correlating...\n";
+  e.runCorrelation();
   */
 
-  std::vector<std::string> ENCODE_DNase_bw;
-  std::vector<std::string> ENCODE_DNase_bed;
-  std::vector<std::string> ENCODE_DNase_np;
-  std::string line;
+  //std::cout << "computing density...\n";
+  //e.compute_density("CTCF", e.ctcf_list_, 10000);
+  //e.compute_density("H3K4me3", e.h3k4me3_list_, 10000);
+  //e.similar_DNase_jaccard();
 
-  std::ifstream in("/data/projects/cREs/hg19-Hotspot-List.txt");
-  while (getline(in, line)) {
-    std::vector<std::string> cols(SCREEN::split(line, '\t'));
-    ENCODE_DNase_bw.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[3] + ".bigWig");
-    ENCODE_DNase_bed.push_back("/data/projects/encode/data/" + cols[0] + "/" + cols[1] + ".bed.gz");
-  }
-  std::cout << "computing Z-scores for " << ENCODE_DNase_bw.size() << " exps\n";
+  //run_saturation("hg19");
 
-#pragma omp parallel for
-  for (auto i = 0; i < ENCODE_DNase_bw.size(); ++i) {
-    std::string f = "/data/projects/cREs/DNase/" + SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])) + ".zscores.bed";
-    SCREEN::ZScore z(ENCODE_DNase_bed[i], ENCODE_DNase_bw[i]);
-    z.qfilter(0.01);
-    z.write(SCREEN::trim_ext(SCREEN::basename(ENCODE_DNase_bed[i])), f);
-    ENCODE_DNase_np.push_back(f);
-  }
-
-  std::cout << "computing rDHSs\n";
-  SCREEN::rDHS rr(ENCODE_DNase_np, "/tmp/test_rdhs.bed");
-  std::cout << "/tmp/test_rdhs.bed\n";
+  //std::cout << "\n*** ENCODE mm10 ***\n";
+  //SCREEN::run_rDHS("mm10");
+  //SCREEN::run_cistrome_rDHS("mm10");
 
   return 0;
 }

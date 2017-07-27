@@ -83,9 +83,9 @@ class ConfigureGenomeBrowser extends React.Component {
 	let cols = [
 	    { title: "", data: "checked",
 	      render: Render.checkCt},
-	    { title: "cell type", data: "name",
+	    { title: "cell type", data: "name",  width: "60%",
 	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
+	    { title: "tissue", data: "tissue", width: "20%",
 	      className: "dt-right" },
 	    { title: "", data: "cellTypeName",
 	      className: "dt-right dcc",
@@ -95,9 +95,6 @@ class ConfigureGenomeBrowser extends React.Component {
 
 	const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 	let ctBox = (
-
-
-
 
 	    <ZTable
 		cols={cols}

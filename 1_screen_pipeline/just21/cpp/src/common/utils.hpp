@@ -2,10 +2,16 @@
 
 namespace SCREEN {
 
+  namespace bfs = boost::filesystem;
+
+  typedef std::unordered_map<std::string, uint32_t> ChrLengths;
+
+  ChrLengths parseChromLengths(const boost::filesystem::path&);
+  std::string accession(size_t, char, int = 7);
+  std::vector<bfs::path> list_files(const bfs::path&);
   template<typename Out> void split(const std::string &, char, Out);
   std::vector<std::string> split(const std::string &, char);
   void write(const std::vector<std::string> &, const std::string &);
-  void read(std::vector<std::string> &, const std::string &);
   bool path_is_gzip(const std::string &);
   std::string basename(const std::string &);
   std::string trim_ext(const std::string &);

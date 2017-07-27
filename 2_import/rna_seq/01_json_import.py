@@ -44,16 +44,7 @@ def doIndex(curs, assembly):
     tableName = "r_expression_" + assembly
     makeIndex(curs, tableName, ["gene_name"])
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="")
-    parser.add_argument('--index', action="store_true", default=False)
-    args = parser.parse_args()
-    return args
-
-def main():
-    args = parse_args()
-
+def run(args, DBCONN):
     d = os.path.join(Dirs.encyclopedia, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/")
     fnps = {}
     fnps["hg19"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
@@ -75,7 +66,6 @@ def main():
             print("writing csv from", inFnp)
             Utils.runCmds(cmds)
 
-        DBCONN = db_connect(os.path.realpath(__file__))
         with getcursor(DBCONN, "08_setup_log") as curs:
             if args.index:
                 doIndex(curs, assembly)
@@ -84,5 +74,18 @@ def main():
                 setupAndCopy(curs, assembly, outFnp)
                 doIndex(curs, assembly)
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="")
+    parser.add_argument('--index', action="store_true", default=False)
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+    DBCONN = db_connect(os.path.realpath(__file__))
+    run(args, DBCONN)
+    return 0
+
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

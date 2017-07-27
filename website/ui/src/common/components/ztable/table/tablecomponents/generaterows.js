@@ -78,12 +78,14 @@ export default function generateRows(handleCellClicks, positionText, cols,
       // case search is false loop through data only
       // per page limit
       if (value == '') {
-        if (start_count == per_page || dataIndex == fullDataLength - 1) {
+        if (start_count == per_page ||
+          dataIndex == fullDataLength - 1) {
           dataLength = data.length;
           break;
         }
       } else if (prevValue == value) {
-        if (start_count == per_page || dataIndex == fullDataLength - 1) {
+        if (start_count == per_page ||
+          dataIndex == fullDataLength - 1) {
           dataLength = fullDataLength;
           break;
         }

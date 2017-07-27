@@ -662,14 +662,24 @@ FROM r_rnas_{assembly}
         with getcursor(self.pg.DBCONN, "pg$loadNineStateGenomeBrowser",
         cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
-SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf
+            SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
 FROM {tn}
 """.format(tn = tableName))
             rows = curs.fetchall()
         ret = {}
         for r in rows:
             r = r._asdict()
+
+            for k in ["dnase", "h3k4me3", "h3k27ac", "ctcf"]:
+                fileID = r[k]
+                if "NA" == fileID:
+                    url = ""
+                else:
+	            fn = fileID + ".bigBed.bed.gz";
+	            url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" + fn;
+                r[k + "_url"] = url
             ret[r["celltypename"]] = r
+            
         return ret
 
     def loadMoreTracks(self):

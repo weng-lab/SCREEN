@@ -1,4 +1,6 @@
 *~
+config.custom.ini
+website/curl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

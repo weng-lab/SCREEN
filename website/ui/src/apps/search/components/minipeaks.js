@@ -30,7 +30,7 @@ class MiniPeaks extends React.Component {
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",
-	    "h3k27ac": "#1262EB"
+	    "h3k27ac": "#FFCD00"
 	};
     }
 

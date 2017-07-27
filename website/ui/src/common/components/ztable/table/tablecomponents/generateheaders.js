@@ -12,9 +12,15 @@ export default function generateHeaders(handleColumnClicks, positionText,
     var columnName = colData[columnkey];
     var columnLabel = colData[columnlabel];
     var kclass = "";
+    var width = 0;
 
     if ("className" in colData) {
       kclass = positionText + colData["className"];
+    }
+
+    if("width" in colData) {
+      width = colData["width"];
+
     }
 
     if (columnSort.length == 0) {
@@ -37,22 +43,19 @@ export default function generateHeaders(handleColumnClicks, positionText,
           // if inactive color gray
           if (columnSortTypes[index].sortOn == 'inactive') {
 
-
             var inactiveArrow = ( < font color = {
                 inactiveArrowColor
               } size = "3" > < Glyphicon glyph = "sort" / > < /font>);
 
-              sortArrow(columnHeader, columnName, columnLabel,
+              sortArrow(width,columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index, inactiveArrowColor, inactiveArrow);
             }
           }
         } else {
-
-          sortArrow(columnHeader, columnName, columnLabel,
+          sortArrow(width, columnHeader, columnName, columnLabel,
             kclass, handleColumnClicks, index);
         }
       } else if (dataLength > 1) {
-
         var cc = printColumn(colData, columnName,
           columnLabel, index, kclass, handleColumnClicks);
         var printCols = cc.printCols;
@@ -69,23 +72,18 @@ export default function generateHeaders(handleColumnClicks, positionText,
 
           // if inactive color gray
           if (columnSort[index].sortOn == 'inactive') {
-
             var inactiveArrow = ( < font color = {
                 inactiveArrowColor
               } size = "3" > < Glyphicon glyph = "sort" / > < /font>);
-
-              sortArrow(columnHeader, columnName, columnLabel,
+              sortArrow(width, columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index, inactiveArrowColor, inactiveArrow);
-
             }
             else if (columnSort[index].sortOn == 'active') {
-
               if (columnSort[index].direction == 'desc') {
                 var activeArrow = ( < font color = {
                     activeArrowColor
                   } size = "3" > < Glyphicon glyph = "sort-by-attributes" / > < /font>);
-
-                  sortArrow(columnHeader, columnName, columnLabel,
+                  sortArrow(width, columnHeader, columnName, columnLabel,
                     kclass, handleColumnClicks, index, activeArrowColor, activeArrow);
                 }
                 else {
@@ -93,16 +91,16 @@ export default function generateHeaders(handleColumnClicks, positionText,
                       activeArrowColor
                     } size = "3" > < Glyphicon glyph = "sort-by-attributes-alt" / > < /font>);
 
-                    sortArrow(columnHeader, columnName, columnLabel,
+                    sortArrow(width, columnHeader, columnName, columnLabel,
                       kclass, handleColumnClicks, index, activeArrowColor, activeArrow);
                   }
                 }
               } else {
-                sortArrow(columnHeader, columnName, columnLabel,
+                sortArrow(width, columnHeader, columnName, columnLabel,
                   kclass, handleColumnClicks, index);
               }
             } else {
-              sortArrow(columnHeader, columnName, columnLabel,
+              sortArrow(width, columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index);
             }
           }
