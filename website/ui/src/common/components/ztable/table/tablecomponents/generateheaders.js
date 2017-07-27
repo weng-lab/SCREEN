@@ -17,7 +17,6 @@ export default function generateHeaders(handleColumnClicks, positionText,
       kclass = positionText + colData["className"];
     }
 
-
     if (columnSort.length == 0) {
       var cc = printColumn(colData, columnName,
         columnLabel, index, kclass, handleColumnClicks);
@@ -31,7 +30,7 @@ export default function generateHeaders(handleColumnClicks, positionText,
         continue;
       }
 
-      if (columnSortTypes[index]) {
+      if (columnSortTypes[index] && dataLength > 1) {
         if (columnSortTypes[index].sortOn != 'disabled') {
           var inactiveArrowColor = "#C0C0C0";
 
@@ -45,7 +44,6 @@ export default function generateHeaders(handleColumnClicks, positionText,
 
               arrowDirectionality(columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index, inactiveArrowColor, inactiveArrow);
-
             }
           }
         } else {

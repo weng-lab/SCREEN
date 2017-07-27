@@ -13,7 +13,9 @@ export default class ReactiveTable extends React.Component {
           pageChange = this.props.pageChange,
           dataLength = this.props.dataLength,
           searchCondition = this.props.searchCondition;
-let tableKlass = "table table-bordered-bottom table-condensed table-hover";
+
+          let tableKlass = "table table-bordered-bottom table-condensed table-hover";
+
         if (this.props.bPaginate != undefined
           && this.props.bPaginate != null) {
           if (this.props.bPaginate) {
@@ -48,14 +50,11 @@ let tableKlass = "table table-bordered-bottom table-condensed table-hover";
               }
               return (
                 <div>
-
-
-
-                  <Table className = { tableKlass }>
+                  <table className = { tableKlass }>
                   <thead> { headerComponents } </thead>
                     <tbody> { rowComponents }
                     </tbody>
-                  </Table>
+                  </table>
                 { pagination }
                 { helpBlock }
                 </div>);
