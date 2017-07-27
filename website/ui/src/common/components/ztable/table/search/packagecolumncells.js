@@ -19,7 +19,7 @@ export default function packageColumnCells(handleCellClicks, positionText, cols,
       if (!colData["visible"])
         continue;
     }
-    
+
     if ("className" in colData) {
       kclass = positionText + colData["className"];
     }
@@ -48,6 +48,11 @@ export default function packageColumnCells(handleCellClicks, positionText, cols,
           search_item = search_item.toLocaleString();
         }
       }
+
+      if (!isNaN(search_item)) {
+        search_item = search_item.toLocaleString();
+      }
+
       if (search_item) {
         cells.push( < td className = {
             kclass

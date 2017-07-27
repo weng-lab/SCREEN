@@ -1,4 +1,4 @@
-export default function arrowDirectionality(columnHeader, columnName, columnLabel,
+export default function sortArrow(columnHeader, columnName, columnLabel,
   kclass, handleColumnClicks, index, inactiveArrowColor, arrowDirection){
     if (arrowDirection) {
       columnHeader.push( <th key = { columnName }

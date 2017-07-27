@@ -633,3 +633,21 @@ export const sctSorter = (data, columnSortType, columnName) => {
     }
   }
 }
+
+export const genesallpcJoin = (genesallpc) => {
+  let stringConcat = (val) => {
+    var stringItem = '';
+
+for(let i = 0; i < val.length - 2; i++){
+stringItem += val[i] + " ";
+}
+
+    stringItem += val[val.length - 1];
+    return stringItem;
+  };
+
+
+    let all = stringConcat(genesallpc[0]);
+    let pc = stringConcat(genesallpc[1]);
+    return "pc: " + pc + ", all: " + all;
+}

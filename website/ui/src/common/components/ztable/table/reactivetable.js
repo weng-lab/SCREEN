@@ -52,8 +52,7 @@ export default class ReactiveTable extends React.Component {
                 <div>
                   <table className = { tableKlass }>
                   <thead> { headerComponents } </thead>
-                    <tbody> { rowComponents }
-                    </tbody>
+                    <tbody> { rowComponents } </tbody>
                   </table>
                 { pagination }
                 { helpBlock }

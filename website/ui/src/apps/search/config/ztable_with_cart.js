@@ -7,7 +7,7 @@ const TableColumns = (cts) => {
     let klassCenter = "dt-body-center dt-head-center ";
 
 
-    let accHelp = <span> accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </span>;
+    let accHelp = <span>accession<br/> {HelpTooltip("CellTypeTableAccessionCol")} </span>;
 
 let sctHelp;
 if(cts){
@@ -24,13 +24,13 @@ if(cts){
 	    title: accHelp, data: "info", className: klassCenter,
       render: Render.creTableAccession, customSearch: { value: 'accession',
       filterSearch: true }, columnSort: { value: 'accession',
-      direction: 'asc', sortOn: 'inactive'
-        }
+      direction: 'asc', sortOn: 'inactive',
+    }, value: 'accession'
 	}, {
       title: sctHelp, data: "ctspecifc", className: klassCenter,
 	    render: Render.creTableCellTypeSpecific, width: "12%",
       columnSort: { direction: 'asc', sortOn: 'inactive',
-      customSort: Render.sctSorter}
+      customSort: Render.sctSorter}, customSave: {headerValue: cts},
 	}, {
 	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
 	    render: Render.real, width: "7%", name: "dnase"
@@ -54,7 +54,8 @@ if(cts){
 	}, {
             title: geneHelp, data: "genesallpc",
 	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
-            orderable: false
+            orderable: false, customSave: {render: Render.genesallpcJoin,
+              headerValue: "nearest genes: protein-coding pc, nearest genes: protein-coding all"}
 	}, {
 	    title: "cart", data: "in_cart", className: klassCenter + "cart",
             render: (d) => Render.cart_img(d, false),

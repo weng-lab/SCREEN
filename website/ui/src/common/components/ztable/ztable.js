@@ -4,10 +4,14 @@ import ReactiveTable from './table/reactivetable';
 import generateRows from './table/tablecomponents/generaterows';
 import generateHeaders from './table/tablecomponents/generateheaders';
 
+import { Button, Glyphicon } from 'react-bootstrap';
+
 import SearchBar from './table/searchbar';
 
 import customSort from './table/sort/customsort';
 import sortData from './table/sort/sortdata';
+
+import { printCSVHeader, printCSVRowData} from './printCSV/printcsv';
 
 export default class ZTable extends React.Component {
 
@@ -39,6 +43,8 @@ export default class ZTable extends React.Component {
       this.handleChange = this.handleChange.bind(this);
       this.handleColumnClicks = this.handleColumnClicks.bind(this);
       this.handleCellClicks = this.handleCellClicks.bind(this);
+
+      this.handleCSVButtonClicks = this.handleCSVButtonClicks.bind(this);
 
     }
 
@@ -111,7 +117,8 @@ export default class ZTable extends React.Component {
 
             }
           } else {
-            var searchBar = ( <
+            var searchBar = (
+              <
               SearchBar value = {
                 this.state.value
               }
@@ -121,7 +128,7 @@ export default class ZTable extends React.Component {
               />);
             }
 
-            let rc = generateRows(this.handleCellClicks, positionText, cols,
+            let rc = generateRows(this.handleCellClicks.bind(this, cols), positionText, cols,
               columnkey, columnlabel, data, value, prevValue,
               searchedResultsIndex, current_page, per_page);
 
@@ -144,11 +151,24 @@ export default class ZTable extends React.Component {
               this.state.columnSort = columnSortTypes;
             }
 
+            var buttons = (
+              <Button bsSize="small" onClick = { this.handleCSVButtonClicks.bind(this, cols, columnkey, columnlabel, data) }> CSV
+              <font color = "#C0C0C0">
+              <Glyphicon glyph="save"/>
+              </font>
+              </Button>);
+          	if(this.props.buttonsOff){
+              buttons = [];
+          	}
+
+
             // returns search box and result table
             return ( <
-              div > {
+              div >
+              {buttons}
+              {
                 searchBar
-              } <
+              } <br></br><
               ReactiveTable headerComponents = {
                 headerComponents
               }
@@ -210,9 +230,48 @@ export default class ZTable extends React.Component {
               });
           }
 
-          handleCellClicks(rowIndex, columnIndex, columnkey, kclass) {
+
+handleCSVButtonClicks(cols, columnkey, columnlabel, data) {
+    var csvContent = "data:text/csv;charset=utf-8,";
+    cols.map(function(colData) {
+      var headerLabel = printCSVHeader(colData, columnlabel);
+      csvContent += headerLabel + ',';
+    });
+
+    var searchCondition = this.state.searchCondition;
+    if (searchCondition) {
+      var searchedResultsIndex = this.state.searchedResultsIndex;
+
+      searchedResultsIndex.map(function(item) {
+        var dataContent = '';
+        csvContent += "\n";
+        cols.map(function(colData) {
+          dataContent = printCSVRowData(colData, columnkey, data[item]);
+          csvContent += dataContent + ',';
+        });
+      });
+    } else {
+      data.map(function(item) {
+        var dataContent = '';
+        csvContent += "\n";
+        cols.map(function(colData) {
+          dataContent = printCSVRowData(colData, columnkey, item);
+          csvContent += dataContent + ',';
+        });
+      });
+    }
+
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "SCREEN.csv");
+  document.body.appendChild(link); // Required for FF
+
+  link.click();
+}
+
+          handleCellClicks(cols, rowIndex, columnIndex, columnkey, kclass) {
             var data = this.props.data[rowIndex];
-            var cols = this.props.cols[columnIndex];
 
             if (this.props.onTdClick) {
               var onTdClick = this.props.onTdClick;
@@ -224,7 +283,7 @@ export default class ZTable extends React.Component {
             }
             if (this.props.rowClicks) {
               var rowClicks = this.props.rowClicks;
-              rowClicks(kclass, cols[columnkey], data);
+              rowClicks(kclass, cols[columnIndex][columnkey], data);
             }
           }
 
@@ -236,8 +295,7 @@ export default class ZTable extends React.Component {
             });
 
             let columnSort = this.state.columnSort,
-              data = this.props.data,
-              cols = this.props.cols;
+              data = this.props.data;
 
             if (data.length > 1) {
               let columnSortType = [];

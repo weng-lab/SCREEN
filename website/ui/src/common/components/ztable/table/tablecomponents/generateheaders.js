@@ -1,6 +1,6 @@
 import printColumn from './hc/printcolumn';
 import { Glyphicon } from 'react-bootstrap';
-import arrowDirectionality from './hc/generatehc';
+import sortArrow from './hc/sortarrow';
 
 export default function generateHeaders(handleColumnClicks, positionText,
   cols, columnkey, columnlabel, columnSort, dataLength) {
@@ -42,13 +42,13 @@ export default function generateHeaders(handleColumnClicks, positionText,
                 inactiveArrowColor
               } size = "3" > < Glyphicon glyph = "sort" / > < /font>);
 
-              arrowDirectionality(columnHeader, columnName, columnLabel,
+              sortArrow(columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index, inactiveArrowColor, inactiveArrow);
             }
           }
         } else {
 
-          arrowDirectionality(columnHeader, columnName, columnLabel,
+          sortArrow(columnHeader, columnName, columnLabel,
             kclass, handleColumnClicks, index);
         }
       } else if (dataLength > 1) {
@@ -74,7 +74,7 @@ export default function generateHeaders(handleColumnClicks, positionText,
                 inactiveArrowColor
               } size = "3" > < Glyphicon glyph = "sort" / > < /font>);
 
-              arrowDirectionality(columnHeader, columnName, columnLabel,
+              sortArrow(columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index, inactiveArrowColor, inactiveArrow);
 
             }
@@ -85,7 +85,7 @@ export default function generateHeaders(handleColumnClicks, positionText,
                     activeArrowColor
                   } size = "3" > < Glyphicon glyph = "sort-by-attributes" / > < /font>);
 
-                  arrowDirectionality(columnHeader, columnName, columnLabel,
+                  sortArrow(columnHeader, columnName, columnLabel,
                     kclass, handleColumnClicks, index, activeArrowColor, activeArrow);
                 }
                 else {
@@ -93,16 +93,16 @@ export default function generateHeaders(handleColumnClicks, positionText,
                       activeArrowColor
                     } size = "3" > < Glyphicon glyph = "sort-by-attributes-alt" / > < /font>);
 
-                    arrowDirectionality(columnHeader, columnName, columnLabel,
+                    sortArrow(columnHeader, columnName, columnLabel,
                       kclass, handleColumnClicks, index, activeArrowColor, activeArrow);
                   }
                 }
               } else {
-                arrowDirectionality(columnHeader, columnName, columnLabel,
+                sortArrow(columnHeader, columnName, columnLabel,
                   kclass, handleColumnClicks, index);
               }
             } else {
-              arrowDirectionality(columnHeader, columnName, columnLabel,
+              sortArrow(columnHeader, columnName, columnLabel,
                 kclass, handleColumnClicks, index);
             }
           }
