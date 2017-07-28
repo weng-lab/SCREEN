@@ -2,7 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import ResultsTable from '../../../common/components/results_table'
-import * as Render from '../../../common/renders'
+import ZTable from '../../../common/components/ztable/ztable'
+
+import * as Render from '../../../common/zrenders'
 
 const cols = () => {
     return [
@@ -53,7 +55,7 @@ class CandidateREs extends React.Component {
 	//console.log(this.props.candidate_res);
 	return (<div>
 		<h2>{GlobalParsedQuery["gene"]}</h2>
-		<ResultsTable
+		<ZTable
                 cols={cols()}
                 order={[[1, "desc"]]}
                 paging={true}

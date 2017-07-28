@@ -1,6 +1,8 @@
 import React from 'react'
 
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
 import BarGraphTable from '../components/bar_graph_table'
 
 import GeneExp from '../../geneexp/components/gene_exp'
@@ -15,7 +17,7 @@ import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
 
 import loading from '../../../common/components/loading'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
@@ -30,7 +32,7 @@ function makeTable(data, key, table){
     if(table.bar_graph){
         return React.createElement(BarGraphTable, {data, ...table});
     }
-    return React.createElement(ResultsTable, {data, ...table});
+    return React.createElement(ZTable, {data, ...table});
 }
 
 function tabEle(data, key, table, numCols) {
@@ -247,7 +249,7 @@ class GeTab extends ReTabBase{
     }
     constructor(props) {
 	super(props, "ge");
-	
+
         this.doRender = (data) => {
 	    let gene = data.genename;
 	    let gclick = this.gclick.bind(this);

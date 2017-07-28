@@ -1,5 +1,7 @@
 import React from 'react';
 
+
+
 var $ = require('jquery');
 require('jquery-ui');
 var _dt = require('datatables.net')
@@ -15,13 +17,19 @@ require( 'datatables.net-buttons/js/buttons.print.js' )
 class ResultsTable extends React.Component {
     constructor(props) {
 	super(props);
-        //console.log("making ResultsTable");
+console.log(this.refs.root);
     }
 
     render() {
+
+
+
 	return (<div ref={"container"} style={{"width": "100%"}}>
 		    <table ref="root" style={{width: "100%"}} />
-		</div>);
+		</div>
+
+	       );
+
     }
 
     componentDidUpdate() {
@@ -29,7 +37,7 @@ class ResultsTable extends React.Component {
         if (this.props.cvisible) {
 	    Object.keys(this.props.cvisible).map((k) => {
                 let isVis = this.props.cvisible[k];
-		this._datatable.column(k + ":name").visible(isVis);
+		this._datatable.column(k  + ":name").visible(isVis);
 	    });
 	}
     }
@@ -37,12 +45,14 @@ class ResultsTable extends React.Component {
     componentDidMount() {
 	let dom = this.props.dom || '<"top"f>t<B"bottom"p><"clear">';
 
+
 	let buttons = ['csvHtml5'];
 	if(this.props.buttonsOff){
 	    buttons = [];
 	}
 
 	var _datatable = $(this.refs.root).DataTable({
+	    data: this.props.data,
 	    data: this.props.data,
             columns: this.props.cols,
 	    buttons,
@@ -56,8 +66,10 @@ class ResultsTable extends React.Component {
 	    pageLength: this.props.pageLength,
 	    dom,
 	    columnDefs: this.props.columnDefs,
-            createdRow: this.props.createdRow
+            createdRow: this.props.createdRow,
+
 	});
+
 
 	var onTdClick = this.props.onTdClick;
 	var onButtonClick = this.props.onButtonClick;
@@ -83,5 +95,9 @@ class ResultsTable extends React.Component {
 	this._datatable = _datatable;
     }
 }
+
+
+
+
 
 export default ResultsTable;

@@ -111,7 +111,11 @@ strand VARCHAR(1)
     outF = StringIO.StringIO()
 
     mc = MemCacheWrapper(Config.memcache)
+<<<<<<< HEAD
+    qd = QueryDCC(cache = mc, auth = False)
+=======
     qd = QueryDCC(auth = False, cache = mc)
+>>>>>>> 0ed073a560007da51f316685033a07ad5afd6629
 
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileID)

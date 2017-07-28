@@ -13,7 +13,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
     }
     let content = data.title + '\n' + data.summary.replace(/\n\n/g, '\n');
 
-    return ReactDOMServer.renderToStaticMarkup((
+    return (
 	<span
             className="glyphicon glyphicon-info-sign has-tooltip"
             style={{color}}
@@ -22,7 +22,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
             data-html={"true"}
 	    data-delay={'{"show": 10, "hide": 3000}'}
             title={content}
-        />));
+        /> );
 }
 
 class HelpIcon extends React.Component {
@@ -40,7 +40,7 @@ class HelpIcon extends React.Component {
 	    console.log("help missing", this.props.helpkey);
 	    return false;
 	}
-	
+
         let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
 
 	return (

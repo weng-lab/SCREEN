@@ -2,6 +2,8 @@ import React from 'react';
 var ReactDOM = require('react-dom');
 
 import ResultsTable from './results_table'
+import ZTable from './ztable/ztable'
+
 import {ListItem} from './list'
 
 class LongListFacet extends React.Component {
@@ -37,7 +39,7 @@ class LongListFacet extends React.Component {
 	return (
 	    <div>
 		<div style={{display: table_display}}>
-		    <ResultsTable
+		    <ZTable
 			cols={this.props.cols}
 			data={this.props.data}
 			order={this.props.order}
@@ -48,7 +50,7 @@ class LongListFacet extends React.Component {
 			pageLength={this.props.pageLength}
                     />
 		</div>
-		
+
                 <div style={{display: sdisplay}}>
 		    <ListItem value={title}
 			      selected="true"
@@ -56,7 +58,7 @@ class LongListFacet extends React.Component {
 			      onclick={this._clear}
 		    />
 		</div>
-		
+
             </div>);
     }
 

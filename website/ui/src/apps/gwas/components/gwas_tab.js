@@ -9,6 +9,8 @@ import CelltypeView from '../components/celltype_view'
 import loading from '../../../common/components/loading'
 import {arrowNote} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
 import HelpIcon from '../../../common/components/help_icon'
 
 class GwasTab extends React.Component{
@@ -68,7 +70,7 @@ class GwasTab extends React.Component{
         var ctView = (cellType ? <CelltypeView rdata={data.mainTable[0]} /> :
                       arrowNote("Please choose a cell type.")
         );
-        let mainTable = (<ResultsTable
+        let mainTable = (<ZTable
                              data={data.mainTable}
                              cols={[
                                  {title: "Total LD blocks",

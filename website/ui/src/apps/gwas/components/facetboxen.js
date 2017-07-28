@@ -5,10 +5,13 @@ import {bindActionCreators} from 'redux';
 import GWASstudies from './gwas_studies';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
 import LongListFacet from '../../../common/components/longlist'
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
+
 
 import {panelize} from '../../../common/utility'
 
@@ -24,7 +27,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
         return (<div />);
     }
     let box = (
-	<ResultsTable
+	<ZTable
 	    data={gwas_cell_types}
 	    cols={[
                 {title: "Cell Type", data: "biosample_summary",

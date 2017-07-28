@@ -5,6 +5,12 @@
   "dependencies": {
     "commoner": "^0.10.4",
     "pileup": "^0.6.7",
+    "react": "^15.6.1",
+    "react-bootstrap": "^0.31.0",
+    "react-csv": "^1.0.8",
+    "react-dom": "^15.6.1",
+    "react-tap-event-plugin": "^2.0.1",
+    "react-ui-components": "^1.1.2",
     "recast": "^0.11.12"
   }
 }

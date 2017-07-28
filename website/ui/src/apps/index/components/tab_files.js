@@ -1,8 +1,15 @@
 import React from 'react'
 
 import ResultsTable from '../../../common/components/results_table';
+<<<<<<< HEAD
+import ZTable from '../../../common/components/ztable/ztable';
+
+
+import * as Render from '../../../common/zrenders'
+=======
 import * as Render from '../../../common/renders'
 import loading from '../../../common/components/loading'
+>>>>>>> 0ed073a560007da51f316685033a07ad5afd6629
 import {tabPanelize} from '../../../common/utility'
 
 const TableColumns = () => {
@@ -27,7 +34,7 @@ const TableColumns = () => {
     const fiveGroupDownload = (a) => {
 	return fileDownload(a[0], a[1]);
     }
-    
+
     return [
 	{
 	    title: "Assembly", data: "assembly", className: klassCenter,
@@ -127,7 +134,15 @@ class TabFiles extends React.Component {
 	}
 	return (tabPanelize(
             <div>
+<<<<<<< HEAD
+		<ZTable data={NineState}
+			      cols={TableColumns()}
+                              bFilter={true}
+                              bLengthChange={true}
+                />
+=======
                 {this.doRenderWrapper()}
+>>>>>>> 0ed073a560007da51f316685033a07ad5afd6629
 	    </div>));
     }
 }
