@@ -4,6 +4,8 @@ import {connect} from 'react-redux'
 import {render} from 'react-dom'
 
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
+
 import HorizontalBars from '../../../common/components/horizontal_bars'
 import {TissueColors} from '../config/colors'
 
@@ -33,7 +35,7 @@ class BarGraphTable extends React.Component {
                 <div ref="bargraph">
                 </div>
 
-                <ResultsTable data={n_data}
+                <ZTable data={n_data}
                 cols={this.props.cols}
 		order={this.props.order}
                 bFilter={false}

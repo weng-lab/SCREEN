@@ -1,28 +1,39 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
+import ZTable from '../../../common/components/ztable/ztable';
 import ResultsTable from '../../../common/components/results_table';
 
-import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
+
+import TableColumns, {table_order, columnDefs} from '../config/ztable_with_cart';
+
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
+
+
 import {doToggle, isCart} from '../../../common/utility'
 
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.button_click_handler = this.button_click_handler.bind(this);
-        this.table_click_handler = this.table_click_handler.bind(this);
+this.table_click_handler = this.table_click_handler.bind(this);
 	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
+
     table_click_handler(td, rowdata, actions){
-        if (td.className.indexOf("browser") != -1) return;
-        if (td.className.indexOf("geneexp") != -1) return;
-        if (td.className.indexOf("cart") != -1) {
+        if (td.indexOf("browser") != -1) {
+	    let cre = {...rowdata, ...rowdata.info};
+	    actions.showGenomeBrowser(cre, name);
+	    return;
+	}
+        if (td.indexOf("geneexp") != -1) {
+	    return;
+	}
+        if (td.indexOf("cart") != -1) {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
@@ -43,10 +54,13 @@ class TableWithCart extends React.Component {
         actions.showReDetail(cre);
     }
 
+
     button_click_handler(name, rowdata, actions){
 	let cre = {...rowdata, ...rowdata.info};
 	actions.showGenomeBrowser(cre, name);
     }
+
+
 
     addAllToCart() {
 	let accessions = this.props.data.map((d) => {
@@ -245,6 +259,10 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
+
+
+
+
 	var tooMany = "";
 	if(data.length < this.props.total){
 	    tooMany = (
@@ -268,7 +286,7 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	let click = "Click a cRE accession to view details about the cRE, including top tissues, nearby genomic features, etc.";
-		    
+
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
 	if("mm10" === GlobalAssembly){
@@ -282,10 +300,10 @@ class TableWithCart extends React.Component {
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
-	
+
 	return (
             <div ref={"searchTable"}
-                 style={{display: (this.props.isFetching ? "none" : "block")}}>
+            style={{display: (this.props.isFetching ? "none" : "block")}}>
 		<div className={"searchTableNotes"}>
 		    <ul className={"list-group searchTableNotesUl"}>
 			{tooMany}
@@ -299,19 +317,22 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-		<ResultsTable data={data}
+
+
+      < ZTable data={data}
                               order={table_order}
 			      columnDefs={columnDefs}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-                              onTdClick={(td, rowdata) =>
-                                  this.table_click_handler(td, rowdata, actions)}
+           cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
+           onTdClick={(td, rowdata) =>
+               this.table_click_handler(td, rowdata, actions)}
                               cvisible={this._opposite(cols, this.props.cts)}
-                              onButtonClick={(td, rowdata) =>
-                                  this.button_click_handler(td, rowdata, actions)}
-                              bFilter={true}
-                              bLengthChange={true} key={this.props.cellType}
-                />
-	    </div>);
+                                  positionText= {"text-center "}
+                              bLengthChange={true}
+
+/>   <br></br><br></br><br></br>
+	    </div>
+
+	);
     }
 
     legend(){
@@ -357,7 +378,7 @@ class TableWithCart extends React.Component {
 	    </div>
 	);
     }
-    
+
     render() {
 	var data = [...this.props.data];
         var actions = this.props.actions;
@@ -372,7 +393,7 @@ class TableWithCart extends React.Component {
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-		
+
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
 			<div className="col-md-12">
@@ -380,7 +401,7 @@ class TableWithCart extends React.Component {
 			</div>
 		    </div>
 		</div>
-		
+
      	    </div>);
     }
 }

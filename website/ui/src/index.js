@@ -14,6 +14,8 @@ function myCreateElement(Component, props) {
     return (<Component {...props} />);
 }
 
+console.log('loading');
+
 ReactDOM.render((
     <Router history={browserHistory} createElement={myCreateElement} >
 	<Route path="/" component={IndexPage} />

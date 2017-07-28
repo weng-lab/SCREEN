@@ -5,11 +5,12 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 
 import ResultsTable from '../../../common/components/results_table'
+import ZTable from '../../../common/components/ztable/ztable'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
 import loading from '../../../common/components/loading';
 import {getCommonState} from '../../../common/utility';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 import DraggableCtList from '../../../common/components/draggable';
 
@@ -74,25 +75,28 @@ class ConfigureGenomeBrowser extends React.Component {
     optionsChanged(s){
 	this.setState({showCombo: s});
     }
-    
+
     render() {
         let cre = this.props.configuregb_cre;
+
+
 	let cols = [
 	    { title: "", data: "checked",
 	      render: Render.checkCt},
-	    { title: "cell type", data: "name",
+	    { title: "cell type", data: "name",  width: "60%",
 	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
+	    { title: "tissue", data: "tissue", width: "20%",
 	      className: "dt-right" },
 	    { title: "", data: "cellTypeName",
 	      className: "dt-right dcc",
 	      render: Render.assayIcon,
 	      orderable: false }
 	]
-	
+
 	const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 	let ctBox = (
-	    <ResultsTable
+
+	    <ZTable
 		cols={cols}
 		data={this.props.configuregb_cts}
 		order={[]}
@@ -103,6 +107,7 @@ class ConfigureGenomeBrowser extends React.Component {
 		bFilter={true}
 		bLengthChange={false}
 		pageLength={10}
+
             />)
 
 	let rows = [];
@@ -139,8 +144,8 @@ class ConfigureGenomeBrowser extends React.Component {
 		<div className="panel-body">
 		    {ctBox}
 		</div>
-	    </div>);	    
-	
+	    </div>);
+
 	let combo = "5 group";
 	let notCombo = "9 state";
 	let options = (
@@ -157,7 +162,7 @@ class ConfigureGenomeBrowser extends React.Component {
 		    	   checked={this.state.showCombo} />
 		    {combo}
 		</label>
-	    </div>);	
+	    </div>);
 
 	return (
 	    <div className="container" style={{width: "100%"}}>
@@ -187,14 +192,14 @@ class ConfigureGenomeBrowser extends React.Component {
 		</div>
 
 		<br />
-		
+
 		<div className="row">
                     <div className="col-md-6">
                     </div>
                     <div className="col-md-6">
                     </div>
 		</div>
-		
+
 		<div className="row">
                     <div className="col-md-6">
 			{selectedBiosamples}
@@ -214,4 +219,3 @@ const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
 export default connect(mapStateToProps, mapDispatchToProps)
 (ConfigureGenomeBrowser);
-
