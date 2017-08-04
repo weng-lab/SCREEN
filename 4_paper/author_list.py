@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import print_function
 
@@ -50,9 +50,11 @@ class AuthorList:
 
     def run(self):
         authors = self._loadSheet("BigList")
+
+        numAuthors = 0
+
         def sorter(x):
             return [x.labGroup, x.lab]
-
         authors.sort(key = sorter)
         for labGroupLab, people in groupby(authors, sorter):
             people = sorted(list(people),
@@ -66,6 +68,8 @@ class AuthorList:
                     n += ' ' + a.midInitial + '.'
                 names.append(n)
             print('; '.join(names))
+            numAuthors =+ len(names)
+        print("found", numAuthors, "author names")
                                 
 def parse_args():
     parser = argparse.ArgumentParser()
