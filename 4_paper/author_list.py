@@ -33,17 +33,21 @@ class AuthorList:
                     numRows += 1
             print("numRows", numRows)
 
-            def getCol(letter):
+            def getCol(letter, isInt = False):
                 col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
-                return [x.value for x in col]
-
+                col = [x.value for x in col]
+                if isInt:
+                    ret = []
+                    return [int(x) if x else 0 for x in col]
+                return col
+            
             firstNames = getCol('A')
             midInitials = getCol('B')
             lastNames = getCol('C')
             emails = getCol('D')
             labs = getCol('I')
             labGroups = getCol('H')
-            orders = getCol('K')
+            orders = getCol('K', True)
             
             m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups, orders)
             authors = [Author(*x) for x in m]
@@ -56,11 +60,14 @@ class AuthorList:
                 people = sorted(list(people),
                                 key = lambda x: [x.order, x.lastName, x.firstName,
                                                  x.midInitial])
+                print('\n' + labGroupLab[0], '--', labGroupLab[1])
+                names = []
                 for a in people:
-                    n = a.lastName + ' ' + a.firstName
+                    n = a.lastName + ', ' + a.firstName
                     if a.midInitial:
-                        n += a.midInitial + '.'
-                    print(a.labGroup, a.lab, a.lastName, n)
+                        n += ' ' + a.midInitial + '.'
+                    names.append(n)
+                print('; '.join(names))
                                 
 def parse_args():
     parser = argparse.ArgumentParser()
