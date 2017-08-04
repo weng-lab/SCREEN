@@ -11,8 +11,8 @@ Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup 
 class AuthorList:
     def __init__(self, args):
         self.args = args
-        
-    def run(self):
+
+    def _loadSheet(self, sheetName):
         import gspread
         from oauth2client.service_account import ServiceAccountCredentials
         # http://www.tothenew.com/blog/access-and-modify-google-sheet-using-python/
@@ -22,52 +22,50 @@ class AuthorList:
         gs = gspread.authorize(credentials)
         gsheet = gs.open("ENCODE3 Paper Author List Source List")
 
-        
-        sheetNames = ["BigList"]
-        for sheetName in sheetNames:
-            print("***************", sheetName)
-            wsheet = gsheet.worksheet(sheetName)
-            numRows = 1
-            for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
-                if cell.value > "":
-                    numRows += 1
-            print("numRows", numRows)
+        print("***************", sheetName)
+        wsheet = gsheet.worksheet(sheetName)
+        numRows = 1
+        for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
+            if cell.value > "":
+                numRows += 1
+        print("numRows", numRows)
 
-            def getCol(letter, isInt = False):
-                col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
-                col = [x.value for x in col]
-                if isInt:
-                    ret = []
-                    return [int(x) if x else 0 for x in col]
-                return col
-            
-            firstNames = getCol('A')
-            midInitials = getCol('B')
-            lastNames = getCol('C')
-            emails = getCol('D')
-            labs = getCol('I')
-            labGroups = getCol('H')
-            orders = getCol('K', True)
-            
-            m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups, orders)
-            authors = [Author(*x) for x in m]
-            
-            def sorter(x):
-                return [x.labGroup, x.lab]
+        def getCol(letter, isInt = False):
+            col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
+            col = [x.value for x in col]
+            if isInt:
+                return [int(x) if x else 0 for x in col]
+            return col
 
-            authors.sort(key = sorter)
-            for labGroupLab, people in groupby(authors, sorter):
-                people = sorted(list(people),
-                                key = lambda x: [x.order, x.lastName, x.firstName,
-                                                 x.midInitial])
-                print('\n' + labGroupLab[0], '--', labGroupLab[1])
-                names = []
-                for a in people:
-                    n = a.lastName + ', ' + a.firstName
-                    if a.midInitial:
-                        n += ' ' + a.midInitial + '.'
-                    names.append(n)
-                print('; '.join(names))
+        firstNames = getCol('A')
+        midInitials = getCol('B')
+        lastNames = getCol('C')
+        emails = getCol('D')
+        labs = getCol('I')
+        labGroups = getCol('H')
+        orders = getCol('K', True)
+
+        m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups, orders)
+        return [Author(*x) for x in m]
+
+    def run(self):
+        authors = self._loadSheet("BigList")
+        def sorter(x):
+            return [x.labGroup, x.lab]
+
+        authors.sort(key = sorter)
+        for labGroupLab, people in groupby(authors, sorter):
+            people = sorted(list(people),
+                            key = lambda x: [x.order, x.lastName, x.firstName,
+                                             x.midInitial])
+            print('\n' + labGroupLab[0], '--', labGroupLab[1])
+            names = []
+            for a in people:
+                n = a.lastName + ', ' + a.firstName
+                if a.midInitial:
+                    n += ' ' + a.midInitial + '.'
+                names.append(n)
+            print('; '.join(names))
                                 
 def parse_args():
     parser = argparse.ArgumentParser()
