@@ -3,13 +3,10 @@
 from __future__ import print_function
 
 import os, sys, argparse, json, hashlib
-from joblib import Parallel, delayed
+from itertools import groupby
+from collections import namedtuple
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
-from exp import Exp
-from querydcc import QueryDCC
-from utils import Utils, printt
-from cache_memcache import MemCacheWrapper
+Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup order".split(' '))
 
 class AuthorList:
     def __init__(self, args):
@@ -36,17 +33,34 @@ class AuthorList:
                     numRows += 1
             print("numRows", numRows)
 
-            def getcol(letter):
+            def getCol(letter):
                 col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
                 return [x.value for x in col]
 
-            firstNames = getcol('A')
-            lastNames = getcol('C')
-            emails = getcol('D')
-            pis = getcol('I')
+            firstNames = getCol('A')
+            midInitials = getCol('B')
+            lastNames = getCol('C')
+            emails = getCol('D')
+            labs = getCol('I')
+            labGroups = getCol('H')
+            orders = getCol('K')
+            
+            m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups, orders)
+            authors = [Author(*x) for x in m]
+            
+            def sorter(x):
+                return [x.labGroup, x.lab]
 
-            for fn, ln, email, pi in zip(firstNames, lastNames, emails, pis):
-                print(pi, ln, fn)
+            authors.sort(key = sorter)
+            for labGroupLab, people in groupby(authors, sorter):
+                people = sorted(list(people),
+                                key = lambda x: [x.order, x.lastName, x.firstName,
+                                                 x.midInitial])
+                for a in people:
+                    n = a.lastName + ' ' + a.firstName
+                    if a.midInitial:
+                        n += a.midInitial + '.'
+                    print(a.labGroup, a.lab, a.lastName, n)
                                 
 def parse_args():
     parser = argparse.ArgumentParser()
