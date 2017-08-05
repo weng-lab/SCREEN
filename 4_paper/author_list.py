@@ -94,7 +94,10 @@ class AuthorList:
                     toShow[-1] += '*'
                 if False and last == counter:
                     toShow[-1] += '&'
-            print(', '.join(toShow))
+            if last == counter:
+                print(', '.join(toShow[:-1]), '&', toShow[-1])
+            else:
+                print(', '.join(toShow))
             counter += 1
     
     def run(self):
