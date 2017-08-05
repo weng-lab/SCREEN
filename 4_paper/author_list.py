@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os, sys, argparse, json, hashlib
 from itertools import groupby
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -75,7 +75,7 @@ class AuthorList:
 
     def _output(self, outArrays):
         labGroupLabToIdxCounter = 1
-        labGroupLabToIdx = {}
+        labGroupLabToIdx = OrderedDict()
 
         counter = 0
         lastIdx = len(outArrays) - 1
@@ -83,7 +83,7 @@ class AuthorList:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
             for p in people:
-                k = p.labGroup
+                k = p.lab
                 if k not in labGroupLabToIdx:
                     labGroupLabToIdx[k] = labGroupLabToIdxCounter
                     labGroupLabToIdxCounter += 1
@@ -99,7 +99,11 @@ class AuthorList:
             else:
                 print(', '.join(toShow))
             counter += 1
-    
+
+        print('\nlabs')
+        for k, v in labGroupLabToIdx.items():
+            print(k, v)
+            
     def run(self):
         authors = self._loadSheet("BigList")
         outArrays = self.organizeAuthors(authors)
