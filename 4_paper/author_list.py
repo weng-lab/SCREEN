@@ -11,7 +11,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, lab, labGroup,
-                 order, coAuthOrder, lastAuthNum):
+                 order, coAuthOrder, lastAuthNum, subLab):
         self.firstName = firstName
         self.midInitial = midInitial
         self.lastName = lastName
@@ -22,6 +22,10 @@ class Author:
         self.coAuthOrder = coAuthOrder
         self.lastAuthNum = lastAuthNum
 
+        self.subLab = subLab
+        if not subLab:
+            self.subLab = lab
+        
     def toName(self):
         n = self.firstName + ' '
         if self.midInitial:
@@ -66,11 +70,12 @@ class AuthorList:
         labs = getCol('I')
         labGroups = getCol('H')
         orders = getCol('K', True)
+        subLabs = getCol('M')
         coAuthOrders = getCol('N', True)
         lastAuthNums = getCol('O', True)
         
         m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups,
-                orders, coAuthOrders, lastAuthNums)
+                orders, coAuthOrders, lastAuthNums, subLabs)
         return [Author(*x) for x in m]
 
     def _output(self, outArrays):
@@ -83,7 +88,7 @@ class AuthorList:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
             for p in people:
-                k = p.lab
+                k = p.subLab
                 if k not in labGroupLabToIdx:
                     labGroupLabToIdx[k] = labGroupLabToIdxCounter
                     labGroupLabToIdxCounter += 1
