@@ -32,7 +32,7 @@ class AuthorList:
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
-            col = [x.value for x in col]
+            col = [x.value.rstrip() for x in col]
             if isInt:
                 return [int(x) if x else 0 for x in col]
             return col
@@ -81,7 +81,9 @@ class AuthorList:
             for a in people:
                 n = a.lastName + ', ' + a.firstName
                 if a.midInitial:
-                    n += ' ' + a.midInitial + '.'
+                    n += ' ' + a.midInitial
+                    if not n.endswith('.'):
+                        n += '.'
                 if a.coAuthOrder:
                     firstAuthors[1].append(n)
                     firstAuthors[2].append(a)
