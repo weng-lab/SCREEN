@@ -78,7 +78,7 @@ class AuthorList:
         labGroupLabToIdx = {}
 
         counter = 0
-        last = len(outArrays) - 1
+        lastIdx = len(outArrays) - 1
         for labGroupLab, people in outArrays:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
@@ -92,9 +92,9 @@ class AuthorList:
                 toShow.append(n)
                 if 0 == counter:
                     toShow[-1] += '*'
-                if False and last == counter:
+                if False and lastIdx == counter:
                     toShow[-1] += '&'
-            if last == counter:
+            if lastIdx == counter:
                 print(', '.join(toShow[:-1]), '&', toShow[-1])
             else:
                 print(', '.join(toShow))
