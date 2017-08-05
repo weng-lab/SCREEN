@@ -6,7 +6,7 @@ import os, sys, argparse, json, hashlib
 from itertools import groupby
 from collections import namedtuple
 
-Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup order".split(' '))
+Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup order coAuthOrder lastAuthNum".split(' '))
 
 class AuthorList:
     def __init__(self, args):
@@ -44,33 +44,55 @@ class AuthorList:
         labs = getCol('I')
         labGroups = getCol('H')
         orders = getCol('K', True)
-
-        m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups, orders)
+        coAuthOrders = getCol('N', True)
+        lastAuthNums = getCol('O', True)
+        
+        m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups,
+                orders, coAuthOrders, lastAuthNums)
         return [Author(*x) for x in m]
 
+    def _output(self, outArrays):
+        for labGroupLab, names, people in outArrays:
+            print('\n' + labGroupLab[0], '--', labGroupLab[1])
+            print('; '.join(names))
+    
     def run(self):
         authors = self._loadSheet("BigList")
-
+        outArrays = self.organizeAuthors(authors)
+        self._output(outArrays)
+        
+    def organizeAuthors(self, authors):
         numAuthors = 0
 
         def sorter(x):
             return [x.labGroup, x.lab]
         authors.sort(key = sorter)
+
+        outArrays = []
+
+        firstAuthors = [["co-first authors", ""], [], []]
+        
         for labGroupLab, people in groupby(authors, sorter):
             people = sorted(list(people),
                             key = lambda x: [x.order, x.lastName, x.firstName,
                                              x.midInitial])
-            print('\n' + labGroupLab[0], '--', labGroupLab[1])
             names = []
             for a in people:
                 n = a.lastName + ', ' + a.firstName
                 if a.midInitial:
                     n += ' ' + a.midInitial + '.'
-                names.append(n)
-            print('; '.join(names))
-            numAuthors =+ len(names)
+                if a.coAuthOrder:
+                    firstAuthors[1].append(n)
+                    firstAuthors[2].append(a)
+                    numAuthors += 1
+                else:
+                    names.append(n)
+            outArrays.append([labGroupLab, names, people])
+            numAuthors += len(names)
         print("found", numAuthors, "author names")
-                                
+        outArrays.insert(0, firstAuthors)
+        return outArrays
+        
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--cache', action="store_true", default=False)
