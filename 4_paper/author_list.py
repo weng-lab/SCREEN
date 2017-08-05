@@ -20,7 +20,7 @@ class AuthorList:
         fnp = os.path.join(os.path.dirname(__file__), ".client_secret.json")
         credentials = ServiceAccountCredentials.from_json_keyfile_name(fnp, scope)
         gs = gspread.authorize(credentials)
-        gsheet = gs.open("ENCODE3 Paper Author List Source List")
+        gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
 
         print("***************", sheetName)
         wsheet = gsheet.worksheet(sheetName)
@@ -28,7 +28,7 @@ class AuthorList:
         for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
-        print("numRows", numRows)
+        print("numRows", numRows, "(including header)")
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
@@ -71,6 +71,7 @@ class AuthorList:
         outArrays = []
 
         firstAuthors = [["co-first authors", ""], [], []]
+        lastAuthors = [["last authors", ""], [], []]
         
         for labGroupLab, people in groupby(authors, sorter):
             people = sorted(list(people),
@@ -85,12 +86,17 @@ class AuthorList:
                     firstAuthors[1].append(n)
                     firstAuthors[2].append(a)
                     numAuthors += 1
+                elif a.lastAuthNum:
+                    lastAuthors[1].append(n)
+                    lastAuthors[2].append(a)
+                    numAuthors += 1
                 else:
                     names.append(n)
             outArrays.append([labGroupLab, names, people])
             numAuthors += len(names)
         print("found", numAuthors, "author names")
         outArrays.insert(0, firstAuthors)
+        outArrays.append(lastAuthors)
         return outArrays
         
 def parse_args():
