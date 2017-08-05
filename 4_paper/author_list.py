@@ -6,6 +6,9 @@ import os, sys, argparse, json, hashlib
 from itertools import groupby
 from collections import namedtuple
 
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
 Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup order coAuthOrder lastAuthNum".split(' '))
 
 class AuthorList:
@@ -13,8 +16,6 @@ class AuthorList:
         self.args = args
 
     def _loadSheet(self, sheetName):
-        import gspread
-        from oauth2client.service_account import ServiceAccountCredentials
         # http://www.tothenew.com/blog/access-and-modify-google-sheet-using-python/
         scope = "https://spreadsheets.google.com/feeds"
         fnp = os.path.join(os.path.dirname(__file__), ".client_secret.json")
@@ -54,7 +55,7 @@ class AuthorList:
     def _output(self, outArrays):
         for labGroupLab, names, people in outArrays:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
-            print('; '.join(names))
+            print(', '.join(names))
     
     def run(self):
         authors = self._loadSheet("BigList")
@@ -72,19 +73,24 @@ class AuthorList:
 
         firstAuthors = [["co-first authors", ""], [], []]
         lastAuthors = [["last authors", ""], [], []]
-        
+
+        groupNum = 0
         for labGroupLab, people in groupby(authors, sorter):
+            groupNum += 1
             people = sorted(list(people),
                             key = lambda x: [x.order, x.lastName, x.firstName,
                                              x.midInitial])
             names = []
             for a in people:
-                n = a.lastName + ', ' + a.firstName
+                n = a.firstName + ' '
                 if a.midInitial:
                     n += ' ' + a.midInitial
                     if not n.endswith('.'):
                         n += '.'
+                n += ' ' + a.lastName
+                n += str(groupNum)
                 if a.coAuthOrder:
+                    n += '*'
                     firstAuthors[1].append(n)
                     firstAuthors[2].append(a)
                     numAuthors += 1
