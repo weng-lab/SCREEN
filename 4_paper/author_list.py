@@ -101,15 +101,6 @@ class AuthorList:
         
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cache', action="store_true", default=False)
-    parser.add_argument('--force_resubmit', action="store_true", default=False)
-    parser.add_argument('--patch', action="store_true", default=False)
-    parser.add_argument('--debug', action="store_true", default=False)
-    parser.add_argument('--real', action="store_true", default=False)
-    parser.add_argument('--host', action="store_true",
-                        default="https://test.encodedcc.org")
-    parser.add_argument('--keyFnp', action="store_true",
-                        default=os.path.expanduser('~/.encode.txt'))
     args = parser.parse_args()
     return args
 
