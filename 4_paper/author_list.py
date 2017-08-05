@@ -14,7 +14,7 @@ Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup 
 class AuthorList:
     def __init__(self, args):
         self.args = args
-
+        
     def _loadSheet(self, sheetName):
         # http://www.tothenew.com/blog/access-and-modify-google-sheet-using-python/
         scope = "https://spreadsheets.google.com/feeds"
@@ -53,22 +53,27 @@ class AuthorList:
         return [Author(*x) for x in m]
 
     def _output(self, outArrays):
-        counter = 1
+        labGroupLabToIdxCounter = 1
         labGroupLabToIdx = {}
 
+        counter = 0
+        last = len(outArrays) - 1
         for labGroupLab, names, people in outArrays:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
             for n, p in zip(names, people):
                 k = tuple(people[0])
                 if k not in labGroupLabToIdx:
-                    labGroupLabToIdx[k] = counter
-                    counter += 1
+                    labGroupLabToIdx[k] = labGroupLabToIdxCounter
+                    labGroupLabToIdxCounter += 1
                 superNum = labGroupLabToIdx[k]
                 toShow.append(n + str(superNum))
-                if "co-first authors" == labGroupLab[0]:
+                if 0 == counter:
                     toShow[-1] += '*'
+                if False and last == counter:
+                    toShow[-1] += '&'
             print(', '.join(toShow))
+            counter += 1
     
     def run(self):
         authors = self._loadSheet("BigList")
@@ -96,7 +101,7 @@ class AuthorList:
                 n = a.firstName + ' '
                 if a.midInitial:
                     n += a.midInitial
-                    if not n.endswith('.'):
+                    if not n.endswith('.') and len(a.midInitial) > 1:
                         n += '.'
                     n += ' '
                 n += a.lastName
