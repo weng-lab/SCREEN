@@ -9,7 +9,28 @@ from collections import namedtuple
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-Author = namedtuple('Author', "firstName midInitial lastName email lab labGroup order coAuthOrder lastAuthNum".split(' '))
+class Author:
+    def __init__(self, firstName, midInitial, lastName, email, lab, labGroup,
+                 order, coAuthOrder, lastAuthNum):
+        self.firstName = firstName
+        self.midInitial = midInitial
+        self.lastName = lastName
+        self.email = email
+        self.lab = lab
+        self.labGroup = labGroup
+        self.order = order
+        self.coAuthOrder = coAuthOrder
+        self.lastAuthNum = lastAuthNum
+
+    def toName(self):
+        n = self.firstName + ' '
+        if self.midInitial:
+            n += self.midInitial
+            if not n.endswith('.') and len(self.midInitial) > 1:
+                n += '.'
+            n += ' '
+        n += self.lastName
+        return n
 
 class AuthorList:
     def __init__(self, args):
@@ -58,16 +79,17 @@ class AuthorList:
 
         counter = 0
         last = len(outArrays) - 1
-        for labGroupLab, names, people in outArrays:
+        for labGroupLab, people in outArrays:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
-            for n, p in zip(names, people):
-                k = tuple(people[0])
+            for p in people:
+                k = p.labGroup
                 if k not in labGroupLabToIdx:
                     labGroupLabToIdx[k] = labGroupLabToIdxCounter
                     labGroupLabToIdxCounter += 1
                 superNum = labGroupLabToIdx[k]
-                toShow.append(n + str(superNum))
+                n = p.toName() + str(superNum)
+                toShow.append(n)
                 if 0 == counter:
                     toShow[-1] += '*'
                 if False and last == counter:
@@ -89,37 +111,34 @@ class AuthorList:
 
         outArrays = []
 
-        firstAuthors = [["co-first authors", ""], [], []]
-        lastAuthors = [["last authors", ""], [], []]
+        firstAuthors = [["co-first authors", ""], []]
+        lastAuthors = [["last authors", ""], []]
 
+        def peopleOrder(x):
+            return [x.order, x.lastName, x.firstName, x.midInitial]
+        
         for labGroupLab, people in groupby(authors, sorter):
-            people = sorted(list(people),
-                            key = lambda x: [x.order, x.lastName, x.firstName,
-                                             x.midInitial])
+            people = sorted(list(people), key = peopleOrder)
             names = []
             for a in people:
-                n = a.firstName + ' '
-                if a.midInitial:
-                    n += a.midInitial
-                    if not n.endswith('.') and len(a.midInitial) > 1:
-                        n += '.'
-                    n += ' '
-                n += a.lastName
                 if a.coAuthOrder:
-                    firstAuthors[1].append(n)
-                    firstAuthors[2].append(a)
+                    firstAuthors[1].append(a)
                     numAuthors += 1
                 elif a.lastAuthNum:
-                    lastAuthors[1].append(n)
-                    lastAuthors[2].append(a)
+                    lastAuthors[1].append(a)
                     numAuthors += 1
                 else:
-                    names.append(n)
-            outArrays.append([labGroupLab, names, people])
+                    names.append(a)
+            outArrays.append([labGroupLab, names])
             numAuthors += len(names)
         print("found", numAuthors, "author names")
+
+        firstAuthors[1].sort(key = peopleOrder)
         outArrays.insert(0, firstAuthors)
+
+        lastAuthors[1].sort(key = peopleOrder)
         outArrays.append(lastAuthors)
+        
         return outArrays
         
 def parse_args():
