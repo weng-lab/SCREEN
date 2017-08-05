@@ -32,7 +32,7 @@ class AuthorList:
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
-            col = [x.value.rstrip() for x in col]
+            col = [x.value.strip() for x in col]
             if isInt:
                 return [int(x) if x else 0 for x in col]
             return col
