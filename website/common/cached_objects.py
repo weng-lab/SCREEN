@@ -97,7 +97,7 @@ class CachedObjects:
         WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
         for r in rows:
             d = r
-            accs = [r["dnase"], r["h3k27ac"], r["h3k4me3"], r["ctcf"]]
+            accs = [r["dnase"], r["h3k4me3"], r["h3k27ac"], r["ctcf"]]
             accs = filter(lambda a: a != "NA", accs)
             fn = '_'.join(accs) + ".cREs.bigBed.bed.gz"
             d["fiveGroup"] = [os.path.join(WWW, fn), fn]
