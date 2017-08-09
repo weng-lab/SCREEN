@@ -62,18 +62,18 @@ class ListFacet extends React.Component {
 	var s = this.props.selection;
 	var i = this.props.items;
 
-	var items = this.props.items.map(function(kv) {
+	var items = this.props.items.map( kv => {
             var key = kv[0];
             var val = kv[1];
 	    var selected = (key == s);
 
 	    if(s == null || selected){
 	        return <ListItem onclick={click_handler} value={key} key={key}
-                n={val} selected={selected} />;
+                         n={val} selected={selected} />;
             } else {
                 return <div />;
             }
-	});
+	} );
 	return <div>{items}</div>;
     }
 }
@@ -87,18 +87,18 @@ export default ListFacet;
     if (!document.getElementById("list_facet")) return;
 
     var items = [
-	{
-	    value: "K562",
-	    n: 10
-	},
-	{
-	    value: "HeLa-S3",
-	    n: 20
-	},
-	{
-	    value: "GM12878",
-	    n: 100
-	}
+	[
+	    "K562",
+	    10
+	],
+	[
+	    "HeLa-S3",
+	    20
+	],
+	[
+	    "GM12878",
+	    100
+	]
     ];
     var selection = null;
 

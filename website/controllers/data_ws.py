@@ -16,6 +16,7 @@ from models.cytoband import Cytoband
 from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
+from models.tads import Tads
 
 from common.pg import PGsearch
 from common.get_set_mc import GetOrSetMemCache
@@ -61,6 +62,7 @@ class DataWebService(GetOrSetMemCache):
         self.pgGlobal = GlobalPG(assembly)
         self.tfEnrichment = TFEnrichment(ps, assembly, cache)
         self.pgFantomCat = PGFantomCat(assembly)
+        self.tads = Tads(assembly, ps)
 
         self.actions = {"cre_table" : self.cre_table,
                         "cre_tf_dcc" : self.cre_tf_dcc,
@@ -71,7 +73,9 @@ class DataWebService(GetOrSetMemCache):
                         "trees" : self.trees,
                         "tfenrichment": self.tfenrichment,
                         "global_object": self.global_object,
-                        "global_fantomcat": self.global_fantomcat
+                        "global_fantomcat": self.global_fantomcat,
+                        "ctcfdistr": self.ctcf_distr,
+                        "global_liftover": self.global_liftover
         }
 
         self.reDetailActions = {
@@ -100,17 +104,42 @@ class DataWebService(GetOrSetMemCache):
         orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
         return {accession: {"ortholog": orth.as_dict()}}
 
+    def global_liftover(self, j, args):
+        retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),
+                                 "hg38": self.external_global_object({"name": "saturation"}, args, "hg38"),
+                                 "hg38_encode_cistrome": self.external_global_object({"name": "saturation_encode_cistrome"}, args, "hg38") },
+                  "cistrome_encode": {}}
+        for a in ["hg19", "hg38"]:
+            for b in ["hg19", "hg38"]:
+                retval["%s_%s" % (a, b)] = self.global_object({"name": "liftOver_%s_%s" % (a, b)}, args)
+            retval["cistrome_encode_%s" % a] = self.global_object({"name": "encode_cistrome_%s" % a}, args)
+        return retval
+    
     def global_fantomcat(self, j, args):
         return {
             "main": self.global_object({"name": "fantomcat"}, args),
-            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args),
-            "saturation": self.global_object({"name": "saturation"}, args) #,
+            "fantomcat_2kb": self.global_object({"name": "fantomcat_2kb"}, args) #,
 #            "fantomcat_bymaxz": self.global_object({"name": "fantomcat_bymaxz"}, args)
         }
-    
+
+    def ctcf_distr(self, j, args):
+        result = self.global_object({"name": "ctcf_density_10000"}, args)
+        if j["chr"] not in result:
+            raise Exception("data_ws$DataWS::ctcf_distr: chr %s not valid" % j["chr"])
+        return {
+            "data": {
+                "results": result[j["chr"]],
+                "tads": [[x[0] / 10000, x[1] / 10000] for x in self.tads.get_chrom_btn(j["biosample"], j["chr"])]
+            }
+        }
+
     def global_object(self, j, args):
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
             return self.pgGlobal.select(j["name"], curs)
+
+    def external_global_object(self, j, args, assembly):
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::global_object") as curs:
+            return self.pgGlobal.select_external(j["name"], assembly, curs)
     
     def cre_table(self, j, args):
         chrom = checkChrom(self.assembly, j)

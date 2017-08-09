@@ -7,11 +7,11 @@ class PGFantomCat:
 
     GENECOLUMNS = [
         ("id", "serial PRIMARY KEY"),
-        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"),
+        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"), ("strand", "TEXT"),
         ("geneid", "TEXT"), ("genename", "TEXT"), ("aliases", "TEXT"),
         ("geneclass", "TEXT"),
         ("dhssupport", "TEXT"), ("genecategory", "TEXT"),
-        ("TIRconservation", "DECIMAL"),
+        ("TIRconservation", "FLOAT"),
         ("exonconservation", "FLOAT"), ("traitdfr", "FLOAT"),
         ("eqtlcoexpr", "FLOAT"), ("dynamicexpr", "FLOAT")
     ]
@@ -62,7 +62,7 @@ SELECT {fields} FROM {genes} AS g, {intersections} as i
 WHERE i.geneid = g.geneid AND i.cre = %(acc)s
 """.format(intersections = self._tables[key], genes = self._tables["genes"],
            fields = ",".join([("g." + x) for x in PGFantomCat.GENEFIELDS[1:]])), {"acc": acc})
-        return [{PGFantomCat.GENEFIELDS[i + 1]: v[i] if i < 9 or not math.isnan(v[i]) else "--"
+        return [{PGFantomCat.GENEFIELDS[i + 1]: v[i] if i < 10 or not math.isnan(v[i]) else "--"
                  for i in xrange(len(v)) } for v in curs.fetchall()]
 
     def select_rna_intersections(self, gid, curs, key = "intersections"):

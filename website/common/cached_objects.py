@@ -5,6 +5,7 @@ import os, sys, json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
+from models.tads import Tads
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, PageTitle, chrom_lengths
@@ -33,6 +34,10 @@ class CachedObjects:
         self.ps = ps
         self.pgSearch = PGsearch(ps, assembly)
         self.assembly = assembly
+        if "hg19" == assembly:
+            self.tad_biosamples = Tads(assembly, ps).get_biosamples()
+        else:
+            self.tad_biosamples = None
 
         with Timer("loaded CachedObjects " + assembly) as t:
             self._load()
@@ -116,7 +121,8 @@ class CachedObjects:
             "byCellType" : datasets.byCellType,
             "geBiosampleTypes" : self.geBiosampleTypes,
             "helpKeys" : self.help_keys,
-            "colors" : self.colors
+            "colors" : self.colors,
+            "tad_biosamples": self.tad_biosamples
         }
 
 def main():

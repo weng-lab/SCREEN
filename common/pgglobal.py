@@ -1,6 +1,8 @@
 from __future__ import print_function
 import sys
 
+from cre_utils import checkAssembly
+
 class GlobalPG:
     def __init__(self, assembly):
         self._tablename = "_".join((assembly, "global_objects"))
@@ -28,4 +30,12 @@ obj jsonb
 SELECT obj FROM {tn} 
 WHERE name = %s
 """.format(tn = self._tablename), (name,))
+        return curs.fetchone()[0]
+
+    def select_external(self, name, assembly, curs):
+        checkAssembly(assembly)
+        curs.execute("""
+SELECT obj FROM {assembly}_{tn}
+WHERE name = %s
+""".format(tn = "global_objects", assembly = assembly), (name,))
         return curs.fetchone()[0]

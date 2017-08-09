@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys, os, cherrypy, json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
@@ -22,4 +23,3 @@ class GlobalDataController:
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(g)
         return "var Globals = " + json.dumps(g)
-

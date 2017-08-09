@@ -18,7 +18,7 @@ from dbconnect import db_connect
 from pgglobal import GlobalPG
 
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19", "hg38"] #Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -27,13 +27,34 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "26_globalobjects$main") as curs:
             g = GlobalPG(assembly)
             g.drop_and_recreate(curs)
-            g.doimport([("fantomcat", FCPaths.global_statistics),
-                        ("fantomcat_2kb", FCPaths.twokb_statistics)],
-                       curs)
+            if os.path.exists(FCPaths.global_statistics) and os.path.exists(FCPaths.twokb_statistics):
+                g.doimport([("fantomcat", FCPaths.global_statistics),
+                            ("fantomcat_2kb", FCPaths.twokb_statistics)],
+                           curs)
+                print("imported fantomcat")
             if os.path.exists("/data/projects/cREs/%s/saturation.json" % assembly):
                 g.doimport([("saturation", "/data/projects/cREs/%s/saturation.json" % assembly)],
                            curs)
-                print("saturation")
+                if assembly == "hg38":
+                    g.doimport([("saturation_encode", "/data/projects/cREs/%s/saturation.encode.json" % assembly)],
+                               curs)
+                    g.doimport([("saturation_encode_cistrome", "/data/projects/cREs/%s/saturation.encode+cistrome.json" % assembly)],
+                               curs)
+                print("imported saturation")
+            if os.path.exists("/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly):
+                g.doimport([("ctcf_density_10000", "/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly)],
+                           curs)
+                print("imported CTCF density")
+            if "hg19" == assembly:
+                for a in ["hg19", "hg38"]:
+                    for b in ["hg19", "hg38"]:
+                        if os.path.exists("/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b)):
+                            g.doimport([("liftOver_%s_%s" % (a, b), "/data/projects/cREs/%s/CTA.%s.intersected.json" % (a, b))],
+                                       curs)
+                    if os.path.exists("/data/projects/cREs/hg38/CTA.%s.cistromeintersected.json" % a):
+                        g.doimport([("encode_cistrome_%s" % a, "/data/projects/cREs/hg38/CTA.%s.cistromeintersected.json" % a)],
+                                   curs)
+                print("imported liftOver intersect fractions")
 
 def parse_args():
     parser = argparse.ArgumentParser()

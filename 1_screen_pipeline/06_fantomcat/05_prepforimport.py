@@ -11,7 +11,7 @@ class PrepImport:
         with open(FCPaths.genebed, "r") as f:
             for line in f:
                 line = line.strip().split("\t")
-                m[line[3]] = line[:3]
+                m[line[3]] = line[:3] + [line[5]]
         
         with open(FCPaths.genetsv, "r") as t:
             t.readline() # skip header
@@ -28,12 +28,12 @@ class PrepImport:
             with open(FCPaths.forimport["intersections"], "wb") as o:
                 for line in f:
                     p = line.strip().split("\t")
-                    o.write("\t".join((p[3], p[8])) + "\n")
+                    o.write("\t".join((p[3], p[10])) + "\n")
         with open(FCPaths.twokb_intersected, "r") as f:
             with open(FCPaths.forimport["twokb_intersections"], "wb") as o:
                 for line in f:
                     p = line.strip().split("\t")
-                    o.write("\t".join((p[3], p[8])) + "\n")
+                    o.write("\t".join((p[3], p[10])) + "\n")
 
 def main():
     PrepImport()
