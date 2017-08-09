@@ -22,6 +22,7 @@ class FantomCatImport:
     def __init__(self, assembly):
         self.assembly = assembly
         self._db = PGFantomCat(assembly)
+
     def run(self, curs):
         self._db.drop_and_recreate(curs)
         self._db.import_genes_fromfile(FCPaths.forimport["genes"], curs)
