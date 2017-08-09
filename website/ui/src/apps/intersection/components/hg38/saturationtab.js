@@ -34,6 +34,11 @@ class SaturationTab extends React.Component {
 	                {this._render_boxplot(this.props.data.qsets.hg38, this.props.data.qset_order.hg38)}
 	            </div>
 		</div>
+		<div className="row">
+		    <div className="col-md-12">
+	                {this._render_boxplot(this.props.data.qsets.hg38_encode_cistrome, this.props.data.qset_order.hg38_encode_cistrome)}
+	            </div>
+		</div>		
 	    </div>
 	);
     }

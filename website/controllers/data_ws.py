@@ -106,7 +106,8 @@ class DataWebService(GetOrSetMemCache):
 
     def global_liftover(self, j, args):
         retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),
-                                 "hg38": self.external_global_object({"name": "saturation"}, args, "hg38") },
+                                 "hg38": self.external_global_object({"name": "saturation"}, args, "hg38"),
+                                 "hg38_encode_cistrome": self.external_global_object({"name": "saturation_encode_cistrome"}, args, "hg38") },
                   "cistrome_encode": {}}
         for a in ["hg19", "hg38"]:
             for b in ["hg19", "hg38"]:
