@@ -19,8 +19,18 @@ class Saturation:
             }
         with open(path, "wb") as o:
             o.write(json.dumps(results))
+    def estimate_total(self):
+        values = []
+        for k, v in self._sets.iteritems():
+            values += v
+        shape, _, scale = scipy.stats.weibull_min.fit(values, floc = 0)
+        return scipy.stats.weibull_min.ppf(0.999, shape, scale = scale)
 
 def main():
+    print(Saturation("/data/projects/cREs/hg19/saturation.tsv").estimate_total())
+    print(Saturation("/data/projects/cREs/hg38/saturation.tsv").estimate_total())
+    print(Saturation("/data/projects/cREs/hg38/saturation.encode+cistrome.tsv").estimate_total())
+    print(Saturation("/data/projects/cREs/hg38/saturation.encode.tsv").estimate_total())
     Saturation("/data/projects/cREs/hg19/saturation.tsv").write("/data/projects/cREs/hg19/saturation.json")
     Saturation("/data/projects/cREs/hg38/saturation.tsv").write("/data/projects/cREs/hg38/saturation.json")
     return 0
