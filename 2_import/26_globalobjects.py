@@ -18,7 +18,7 @@ from dbconnect import db_connect
 from pgglobal import GlobalPG
 
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19", "hg38"] #Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -35,6 +35,11 @@ def run(args, DBCONN):
             if os.path.exists("/data/projects/cREs/%s/saturation.json" % assembly):
                 g.doimport([("saturation", "/data/projects/cREs/%s/saturation.json" % assembly)],
                            curs)
+                if assembly == "hg38":
+                    g.doimport([("saturation_encode", "/data/projects/cREs/%s/saturation.encode.json" % assembly)],
+                               curs)
+                    g.doimport([("saturation_encode_cistrome", "/data/projects/cREs/%s/saturation.encode+cistrome.json" % assembly)],
+                               curs)
                 print("imported saturation")
             if os.path.exists("/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly):
                 g.doimport([("ctcf_density_10000", "/data/projects/cREs/%s/CTCF/10000.bed.json" % assembly)],
