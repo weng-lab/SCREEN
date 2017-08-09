@@ -26,9 +26,10 @@ class CoordMatcher:
                         line = line.strip().split("\t")
                         gpath = FCPaths.genepath(line[0])
                         names = line[3].split("|")
-                        o.write("%s\t%s\t%s\t%s\n" % (line[0], line[1], line[2], names[-1]))
-                        s = int(line[1]) - 2000
-                        u.write("%s\t%d\t%d\t%s\n" % (line[0], s if s > 0 else 0, int(line[1]) + 2000, names[-1]))
+                        o.write("%s\t%s\t%s\t%s\t0\t%s\n" % (line[0], line[1], line[2], names[-1], line[5]))
+                        tss = 1 if line[5] == '+' else 2
+                        s = int(line[tss]) - 2000
+                        u.write("%s\t%d\t%d\t%s\t0\t%s\n" % (line[0], s if s > 0 else 0, int(line[tss]) + 2000, names[-1], line[5]))
 
 def main():
     CoordMatcher.run()

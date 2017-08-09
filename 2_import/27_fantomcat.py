@@ -10,7 +10,7 @@ from constants import chroms, chrom_lengths, paths
 from config import Config
 from pgfantomcat import PGFantomCat
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../1_pipeline/06_fantomcat/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../1_screen_pipeline/06_fantomcat/'))
 from fc_common import FCPaths
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
