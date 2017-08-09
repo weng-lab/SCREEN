@@ -19,7 +19,7 @@ class TadPage extends React.Component {
 
 	const loggerMiddleware = createLogger();
 	const store = createStore(
-	    main_reducers, initialState,
+	    main_reducers, initialState(),
 	    applyMiddleware(
 		thunkMiddleware,
 		loggerMiddleware
