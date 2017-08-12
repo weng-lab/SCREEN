@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
 
 import Ztable from '../../../common/components/ztable/ztable';
 import * as Render from '../../../common/zrenders';
@@ -134,18 +133,16 @@ class TabFiles extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-        $.ajax({
-            url: "/globalData/index/index",
-            type: "GET",
-            error: function(jqxhr, status, error) {
-                console.log("err loading files");
-		console.log(error);
+        fetch("/globalData/index/index")
+	    .then((response) => (response.json()))
+	    .then((r) => {
+		this.setState({files: r, isFetching: false, isError: false});
+	    })
+	    .catch((err) => {
+		console.log("err loading files");
+		console.log(err);
                 this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({files: r, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	    });
     }
 
     doRenderWrapper(){
