@@ -6,14 +6,18 @@ import * as Render from '../../../common/zrenders';
 import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
 
+const fileDownload = (url, fn) => {
+    return (
+	<span>
+	    <a href={url} download={fn}>
+		<span className="glyphicon glyphicon-download" aria-hidden="true" />
+	    </a>
+	</span>);
+}
+
+
 const CtaTableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
-
-    const fileDownload = (url, fn) => {
-	return '<a href="' + url + '" download="'+ fn +'">' +
-	       '<span class="glyphicon glyphicon-download" aria-hidden="true">' +
-	       '</span>' + '</a>';
-    }
 
     const dl = (a) => {
 	return fileDownload(a.join('/'), a[1]);
@@ -57,12 +61,6 @@ const CtsTableColumns = () => {
 	let url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" +
 		  fn;
 	return fileDownload(url, fn);
-    }
-
-    const fileDownload = (url, fn) => {
-	return '<a href="' + url + '" download="'+ fn +'">' +
-	       '<span class="glyphicon glyphicon-download" aria-hidden="true">' +
-	       '</span>' + '</a>';
     }
 
     const fiveGroupDownload = (a) => {

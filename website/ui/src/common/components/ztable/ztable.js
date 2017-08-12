@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Form, FormGroup, FormControl, Nav, Pagination, HelpBlock } from 'react-bootstrap';
+import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
@@ -101,10 +101,11 @@ class Zrow extends React.Component {
 
 	return (
 	    <tr>
-		{rowData.map((r) => {
+		{rowData.map((r, idx) => {
 		     let k = "text-center " + r[1];
 		     return (
 			 <td className={k}
+			     key={this.props.dataIdx.toString() + '_' + idx.toString()}
 			     onClick={this.props.onRowClick(k,
 							    this.props.dataIdx)}
 			 >
