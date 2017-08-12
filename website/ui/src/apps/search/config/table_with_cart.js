@@ -1,5 +1,9 @@
+import React from 'react';
 import {ZHelpTooltip} from '../../../common/components/help_icon'
 import * as ZRender from '../../../common/zrenders'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const TableColumns = (cts) => {
 

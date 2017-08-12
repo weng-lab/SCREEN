@@ -1,14 +1,16 @@
-import React from 'react'
+import React from 'react';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
 
-import HelpIcon from '../../../common/components/help_icon'
-import * as Render from '../../../common/renders'
+import HelpIcon from '../../../common/components/help_icon';
+import * as Render from '../../../common/renders';
 
 import * as Actions from '../actions/main_actions';
+
+var d3 = require('d3');
 
 class Rampage extends React.Component {
     constructor(props) {

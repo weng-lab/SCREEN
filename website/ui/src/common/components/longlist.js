@@ -1,5 +1,6 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
 
 import ResultsTable from './results_table'
 import {ListItem} from './list'

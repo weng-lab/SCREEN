@@ -1,7 +1,12 @@
+import $ from 'jquery';
+
 import * as Render from '../../../common/renders'
 
 import IntersectingAssayTf from '../components/intersecting_assay_tf'
 import IntersectingAssayHistone from '../components/intersecting_assay_histone'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const fantomcat_link = (d) => (
     "<a href='http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d + "'>" + d + "</a>"

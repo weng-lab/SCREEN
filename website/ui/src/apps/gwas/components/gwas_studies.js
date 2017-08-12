@@ -8,6 +8,9 @@ import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/renders';
 
+/*global GwasGlobals */
+/*eslint no-undef: "error"*/
+
 const make_gwas_friendly = (gwas_study) => {
     let g = GwasGlobals.gwas.byStudy[gwas_study];
     return [g.author, g.trait].join(" / ");

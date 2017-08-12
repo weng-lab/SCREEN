@@ -12,11 +12,6 @@ const OverlapPieChart = ({ colspan, radius, height, data, header, headersize }) 
 );
 
 class OverlapTab extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-    
     _render_piecharts(q) {
 	return (
 	    <div>

@@ -1,4 +1,6 @@
 import React from 'react'
+import $ from 'jquery';
+
 import * as Actions from '../actions'
 
 import AutocompleteTextbox from '../../../common/components/autocompletetextbox';
@@ -44,7 +46,7 @@ class AutocompleteBox extends React.Component {
 		    actions.setGenes(r);
 		    actions.setMainTab("query");
 		} else {
-		    let params = jQuery.param({q: userQuery, assembly});
+		    let params = $.param({q: userQuery, assembly});
 		    let url = "/search/?" + params;
 		    window.location.href = url;
 		}

@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import $ from 'jquery';
 
 var d3 = require('d3');
 

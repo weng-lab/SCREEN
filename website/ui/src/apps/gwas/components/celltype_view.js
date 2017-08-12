@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/renders'
@@ -8,6 +9,9 @@ import * as Render from '../../../common/renders'
 import loading from '../../../common/components/loading'
 import ResultsTable from '../../../common/components/results_table'
 import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class CelltypeView extends React.Component {
     constructor(props) {

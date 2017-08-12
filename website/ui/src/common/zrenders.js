@@ -1,4 +1,13 @@
-import {commajoin} from './utility'
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import $ from 'jquery';
+
+import {commajoin} from './utility';
+
+/*global Globals */
+/*global GlobalAssembly */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
 
 // datatbles render has params function (data, type, full, meta)
 
@@ -215,7 +224,7 @@ export const tabTitle = (c) => {
 export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data) => (approved_symbol) => {
-    let params = jQuery.param({q: approved_symbol,
+    let params = $.param({q: approved_symbol,
 			       assembly: data.assembly});
     let url = "/search/?" + params;
     return "<a href='" + url + "'>" + approved_symbol + "</a>";
@@ -446,8 +455,8 @@ export const creTableAccessionProx = (cre) => {
 }
 
 export const creTableAccessionProxReact = (cre) => {
-    return cre.isproximal ? popupReact("Proximal", "P") :
-	   popupReact("Distal", "D");
+    return cre.isproximal ? popup("Proximal", "P") :
+	   popup("Distal", "D");
 }
 
 export const creTableAccession = (cre, type, full, meta) => {
@@ -521,7 +530,7 @@ export const creTitle = (cre) => {
 	cts = (
 	    <span>
 		{Globals.byCellType[ct][0]["name"]}:{'\u00A0'}
-		{creTableCellTypeSpecificReact(cre.ctspecifc)}
+		{creTableCellTypeSpecific(cre.ctspecifc)}
 	    </span>);
     }
     

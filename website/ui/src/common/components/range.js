@@ -1,10 +1,10 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
-var d3 = require('d3');
-var $ = require('jquery');
-var __jui = require('jquery-ui-bundle');
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
 
-import {chain_functions} from '../common'
+import {chain_functions} from '../common';
+
+var d3 = require('d3');
 
 class RangeSlider extends React.Component {
 

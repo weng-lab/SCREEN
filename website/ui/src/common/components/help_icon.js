@@ -1,7 +1,11 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
+import $ from 'jquery';
 
 import {brJoin} from '../utility'
+
+/*global Globals */
+/*eslint no-undef: "error"*/
 
 export const HelpTooltip = (helpkey, color = "#0000EE") => {
     return ReactDOMServer.renderToStaticMarkup(

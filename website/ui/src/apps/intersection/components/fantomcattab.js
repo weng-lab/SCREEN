@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
@@ -12,6 +13,9 @@ import FantomCatTabs from './fantomcat/fantomcattabs';
 import Histogram from '../../../plots/components/histogram';
 import PieChart from '../../../plots/components/piechart';
 import Boxplot from '../../../plots/components/boxplot';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 let o = ["non-coding", "coding", "", "pseudogenes", "protein coding mRNAs", "sense overlap RNAs", "uncertain coding", "lncRNA, intergenic", "lncRNA, antisense", "lncRNA, divergent"];
 

@@ -2,8 +2,14 @@ import React from 'react'
 import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+
+var d3 = require('d3');
+
+/*global Globals */
+/*eslint no-undef: "error"*/
 
 const geneRed = "#FF0000";
 const geneBlue = "#1E90FF";

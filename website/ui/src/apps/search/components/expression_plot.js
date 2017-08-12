@@ -1,14 +1,20 @@
-import React from 'react'
-import {render} from 'react-dom'
+import React from 'react';
+import {render} from 'react-dom';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
-import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
+import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
 
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/renders';
+
+/*global Globals */
+/*global GlobalAssembly */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
 
 class ExpressionPlot extends React.Component {
     constructor(props) {

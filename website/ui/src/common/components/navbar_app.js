@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom'
 
 import CartImage, {cart_connector} from './cart_image'
 
+/*global HOMEPAGE */
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 class NavBarApp extends React.Component {
     render() {
 	var SearchBox = "";

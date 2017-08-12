@@ -2,12 +2,16 @@ import React from 'react'
 import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
-import DePlot from '../components/de_plot'
-import loading from '../../../common/components/loading'
-import {arrowNote} from '../../../common/utility'
+import DePlot from '../components/de_plot';
+import loading from '../../../common/components/loading';
+import {arrowNote} from '../../../common/utility';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class DeExp extends React.Component{
     constructor(props) {

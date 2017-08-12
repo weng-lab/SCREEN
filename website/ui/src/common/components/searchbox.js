@@ -7,6 +7,9 @@ import AutocompleteTextbox from './autocompletetextbox'
 
 import * as Actions from '../actions/searchbox_actions';
 
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 class SearchBox extends React.Component {
     constructor(props, key) {
 	super(props);

@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import $ from 'jquery';
 
 import Ztable from '../../../common/components/ztable/ztable';
 
@@ -11,6 +12,9 @@ import loading from '../../../common/components/loading'
 import * as Render from '../../../common/renders'
 import {doToggle, isCart} from '../../../common/utility'
 
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
@@ -20,7 +24,7 @@ class TableWithCart extends React.Component {
     table_click_handler(td, rowdata, actions){
         if (td.indexOf("browser") != -1) {
 	    let cre = {...rowdata, ...rowdata.info};
-	    actions.showGenomeBrowser(cre, name);
+	    actions.showGenomeBrowser(cre, "");
 	    return;
 	}
         if (td.indexOf("geneexp") != -1) {

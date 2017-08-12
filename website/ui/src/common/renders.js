@@ -1,4 +1,10 @@
-import ReactDOMServer from 'react-dom/server'
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import $ from 'jquery';
+
+/*global Globals */
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 // datatbles render has params function (data, type, full, meta)
 
@@ -20,7 +26,7 @@ export const snpLinks = (snps) => {
     return snps.map(snp_link).join(", ");
 }
 
-export const integer = {"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
+export const integer = (d) => (d == 1e12 ? "" : d);
 
 export const integerLink = (href) => (d) => {
     return "<a href='#" + href + "'>" + d + "</a>";
@@ -33,8 +39,8 @@ export const toSciNot = (d) => {
     return Math.round(d * 100) / 100;
 }
 
-export const real = $.fn.dataTable.render.number( ',', '.', 2, '' );
-export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
+export const real = (d) => (d)
+export const z_score = (d) => (d == -11.0 ? "--" : d);
 export const cell_type = (ct) => (Globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -205,7 +211,7 @@ export const tabTitle = (c) => {
 export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data) => (approved_symbol) => {
-    let params = jQuery.param({q: approved_symbol,
+    let params = $.param({q: approved_symbol,
                                assembly: data.assembly});
     let url = "/search/?" + params;
     return "<a href='" + url + "'>" + approved_symbol + "</a>";

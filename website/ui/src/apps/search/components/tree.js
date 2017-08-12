@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import Tree from '../../../common/components/tree'
 
@@ -12,6 +13,9 @@ import loading from '../../../common/components/loading'
 import {asum} from '../../../common/common'
 
 import {primary_cell_colors, infer_primary_type, TissueColors} from '../config/colors'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const get_children = (node) => {
     if (!node.children) {

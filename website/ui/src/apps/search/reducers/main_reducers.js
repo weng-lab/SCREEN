@@ -1,6 +1,10 @@
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 import {doToggle} from '../../../common/utility'
+import $ from 'jquery'; 
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const mainTabSetter = (state, tabName) => {
     let ret = {maintabs_active: tabName};
