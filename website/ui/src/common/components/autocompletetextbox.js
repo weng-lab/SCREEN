@@ -11,13 +11,17 @@ class AutocompleteBox extends React.Component {
     }
 
     handleKeyPress = (event) => {
-	if(event.key == 'Enter'){
-	    if (this.props.onEnter) this.props.onEnter(this.refs.searchBox.value);
+	if('Enter' === event.key){
+	    if (this.props.onEnter){
+		this.props.onEnter(this.refs.searchBox.value);
+	    }
 	}
     }
 
     _onchange() {
-	if (this.props.onChange) this.props.onChange(this.refs.searchBox.value);
+	if (this.props.onChange) {
+	    this.props.onChange(this.refs.searchBox.value);
+	}
     }
     
     componentDidMount(){
@@ -37,7 +41,7 @@ class AutocompleteBox extends React.Component {
 		contentType : "application/json",
 		error: function(jqxhr, status, error) {
                     console.log("err during load");
-		}.bind(this),
+		},
 		success: function(r){
 		    this.userQueries[jq] = r;
 		    callback_f(r);
@@ -70,4 +74,6 @@ class AutocompleteBox extends React.Component {
     }
     
 }
+
 export default AutocompleteBox;
+

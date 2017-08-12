@@ -12,6 +12,8 @@ import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
 import TadPage from './apps/tads/main';
 
+import './css.css';
+
 function myCreateElement(Component, props) {
     return (<Component {...props} />);
 }

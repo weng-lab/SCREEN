@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
 import {chain_functions} from '../common';
@@ -49,7 +48,7 @@ class RangeSlider extends React.Component {
     }
 
     _keypress(e) {
-	if (e.which == 13) {
+	if (e.which === 13) {
 	    this.onMinChange();
 	}
     }
@@ -209,7 +208,7 @@ class RangeFacet extends React.Component {
     }
 
     render() {
-	var h_data = (this.props.h_data == null
+	var h_data = (this.props.h_data === null
 		      ? zeros(this.props.range, this.props.h_interval)
 		      : this.props.h_data);
 	return (<div>
@@ -236,25 +235,24 @@ export default RangeFacet;
 /*
  * test function with dummy data
  */
-(function() {
-
-    if (!document.getElementById("range_facet")) return;
-
-    var data = [];
-    for (var i = 0; i < 1000; i++) {
-	data.push({key: i * 10,
-		   doc_count: Math.round(Math.random() * 1000)
-		  });
-    }
-
-    var range = [0, 10000];
-    var srange = [0, 4000];
-    var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
-    var h_interval = 10;
-
-    ReactDOM.render(
-	<RangeFacet range={range} h_margin={h_margin}
-		    selection_range={srange} h_interval="10"
-		    h_data={data} />,
-	document.getElementById("range_facet"));
-})();
+/* (function() {
+ * 
+ *     if (!document.getElementById("range_facet")) return;
+ * 
+ *     var data = [];
+ *     for (var i = 0; i < 1000; i++) {
+ * 	data.push({key: i * 10,
+ * 		   doc_count: Math.round(Math.random() * 1000)
+ * 		  });
+ *     }
+ * 
+ *     var range = [0, 10000];
+ *     var srange = [0, 4000];
+ *     var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
+ * 
+ *     ReactDOM.render(
+ * 	<RangeFacet range={range} h_margin={h_margin}
+ * 		    selection_range={srange} h_interval="10"
+ * 		    h_data={data} />,
+ * 	document.getElementById("range_facet"));
+ * })();*/

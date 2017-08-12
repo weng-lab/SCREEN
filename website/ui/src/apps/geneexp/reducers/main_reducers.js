@@ -46,7 +46,7 @@ const main_reducers = (state, action) => {
 		   configuregb_browser: action.name,
 		   configuregb_cts: state.configuregb_cts.map(x => ({
 			   ...x,
-		       checked: x.checked || (x.cellTypeName && x.cellTypeName == state.cellType)
+		       checked: x.checked || (x.cellTypeName && x.cellTypeName === state.cellType)
 		   }))
 		  };
 	return ret;
@@ -55,7 +55,7 @@ const main_reducers = (state, action) => {
 	return {
 	    ...state,
 	    configuregb_cts: state.configuregb_cts.map(x => ({
-		...x, checked: (x.cellTypeName == action.ct) != x.checked
+		...x, checked: (x.cellTypeName === action.ct) !== x.checked
 	    }))
 	};
 	

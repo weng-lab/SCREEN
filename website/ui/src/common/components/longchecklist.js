@@ -1,10 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import Ztable from './ztable/ztable';
-import {ListItem} from './list';
 
-import * as toggleswitch from './toggleswitch';
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from './checklist'
 
 class LongChecklistFacet extends React.Component {
@@ -30,7 +27,7 @@ class LongChecklistFacet extends React.Component {
     }
 
     modeToggle() {
-	var n_value = (this.props.mode == CHECKLIST_MATCH_ANY
+	var n_value = (this.props.mode === CHECKLIST_MATCH_ANY
 		       ? CHECKLIST_MATCH_ALL : CHECKLIST_MATCH_ANY);
 	if (this.props.onModeChange) {
 	    this.props.onModeChange(n_value);
@@ -44,9 +41,9 @@ class LongChecklistFacet extends React.Component {
 	if(this.props.match_mode_enabled){
 	    checks = (
 		<div>
-		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ALL ? true : false}
+		    <input type="radio" defaultChecked={mode === CHECKLIST_MATCH_ALL ? true : false}
 			   onClick={this.modeToggle} />match all&nbsp;
-		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ANY ? true : false}
+		    <input type="radio" defaultChecked={mode === CHECKLIST_MATCH_ANY ? true : false}
 			   onClick={this.modeToggle} />match any
 		</div>);
 	}

@@ -53,7 +53,7 @@ class FacetBoxen extends React.Component {
         return (
             <div>
                 {bts(p)}
-                {"mm10" != GlobalAssembly && cell_compartments(p)}
+                {"mm10" !== GlobalAssembly && cell_compartments(p)}
             </div>);
     }
 

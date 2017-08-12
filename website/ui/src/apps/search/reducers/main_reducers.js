@@ -63,7 +63,7 @@ const main_reducers = (state, action) => {
 		       configuregb_browser: action.name,
 		       configuregb_cts: state.configuregb_cts.map(x => ({
 			   ...x,
-			   checked: x.checked || (x.cellTypeName && x.cellTypeName == state.cellType)
+			   checked: x.checked || (x.cellTypeName && x.cellTypeName === state.cellType)
 		       }))
 		      };
 	    return ret;
@@ -71,7 +71,7 @@ const main_reducers = (state, action) => {
 	case Actions.TOGGLE_GENOME_BROWSER_CELLTYPE:
 	    return {...state,
 		    configuregb_cts: state.configuregb_cts.map(x => ({
-			    ...x, checked: (x.cellTypeName == action.ct) != x.checked
+			    ...x, checked: (x.cellTypeName === action.ct) !== x.checked
 		    }))
 		   };
 	    
@@ -101,7 +101,7 @@ const main_reducers = (state, action) => {
 			     assembly: GlobalAssembly});
 	    var arr = window.location.href.split("/");
 	    var host = arr[0] + "//" + arr[2];
-	    window.location = host + "/" + "search?" + q;
+	    window.location = host + "/search?" + q;
             return state;
 
 	default:
