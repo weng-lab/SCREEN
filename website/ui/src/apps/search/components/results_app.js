@@ -52,7 +52,7 @@ class ResultsTableContainer extends React.Component {
         var q = getCommonState(props);
         var jq = JSON.stringify(q);
 	var setrfacets = this.props.actions.setrfacets;
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -197,6 +197,5 @@ class ResultsTableContainer extends React.Component {
 const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
-export default connect(mapStateToProps, mapDispatchToProps)
-(ResultsTableContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(ResultsTableContainer);
 

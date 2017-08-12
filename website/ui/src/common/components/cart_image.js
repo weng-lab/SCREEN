@@ -22,7 +22,7 @@ class CartImage extends React.Component {
 		id="shoppingcart_obj"
 		ref="svg"
 		onClick={this.onClick} title="show cart">
-	        <img src="/static/re_cart.view.png" />
+	        <img src="/static/re_cart.view.png" alt="cart" />
 	    </object>
 	);
     }

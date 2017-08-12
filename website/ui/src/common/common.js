@@ -1,9 +1,9 @@
-export const asum = (a) => {
-    var retval = [];
-    a.map((_a) => {
-	retval = retval.concat(_a);
-    });
-    return retval;
+export const asum = (arr) => {
+    let ret = [];
+    for(let a of arr){
+	ret = ret.concat(a);
+    }
+    return ret;
 };
 
 export const chr_sort = (a, b) => (
@@ -18,7 +18,7 @@ export function fit_to(a1, a2) {
     return a1;
 }
 
-const primitive_comparator = (a, b) => (a == b);
+const primitive_comparator = (a, b) => (a === b);
 
 export const chain_functions = (f, g) => () => {
     f && f();

@@ -6,7 +6,6 @@ import $ from 'jquery';
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
-import HelpIcon from '../../../common/components/help_icon'
 
 import Hg38TabsC from './hg38/hg38tabs';
 

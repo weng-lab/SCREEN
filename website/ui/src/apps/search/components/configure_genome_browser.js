@@ -11,7 +11,6 @@ import * as Render from '../../../common/zrenders';
 
 import DraggableCtList from '../../../common/components/draggable';
 
-/*global Globals */
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
 
@@ -164,7 +163,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="container" style={{width: "100%"}}>
 		<div className="row">
 		    <div className="col-md-12">
-		        {this.props.configuregb_type == "cre" ? Render.creTitle(cre) : Render.titlegeneric(cre)}
+		        {this.props.configuregb_type === "cre" ? Render.creTitle(cre) : Render.titlegeneric(cre)}
                     </div>
 		</div>
 
@@ -213,6 +212,4 @@ class ConfigureGenomeBrowser extends React.Component {
 const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
-export default connect(mapStateToProps, mapDispatchToProps)
-(ConfigureGenomeBrowser);
-
+export default connect(mapStateToProps, mapDispatchToProps)(ConfigureGenomeBrowser);
