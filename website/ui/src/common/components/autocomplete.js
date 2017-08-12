@@ -1,6 +1,6 @@
 import React from 'react';
-var $ = require('jquery');
-var __jui = require('jquery-ui');
+import $ from 'jquery';
+let autocomplete = require( "jquery-ui/ui/widgets/autocomplete" );
 
 class AutocompleteTextbox extends React.Component {
 
@@ -16,21 +16,24 @@ class AutocompleteTextbox extends React.Component {
     }
     
     render() {
-	return <input type="text" ref="input" onChange={this.onChange} value={this.props.value} />;
+	return <input type="text"
+		      ref="input"
+		      onChange={this.onChange}
+		      value={this.props.value} />;
     }
 
     componentDidUpdate() {
 	var input = this.refs.input;
 	var onChange = this.onChange;
 	//console.log($(input));
-	$(input).autocomplete({
+	autocomplete({
 	    source: this.props.source,
 	    select: function(event, ui) {
 		$(input).val(ui.item.value);
 		onChange();
 		return false;
 	    }
-	});
+	}, input);
     }
     
 };

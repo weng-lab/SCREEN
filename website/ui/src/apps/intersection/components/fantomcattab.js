@@ -6,13 +6,8 @@ import $ from 'jquery';
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
-import HelpIcon from '../../../common/components/help_icon'
 
 import FantomCatTabs from './fantomcat/fantomcattabs';
-
-import Histogram from '../../../plots/components/histogram';
-import PieChart from '../../../plots/components/piechart';
-import Boxplot from '../../../plots/components/boxplot';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -62,11 +57,11 @@ class FantomCatTab extends React.Component{
 		    return this._qsets.twokb[k] = r.fantomcat_2kb.classes[k].quartiles;
 		}).bind(this));
 		/* Object.keys(r.fantomcat_bymaxz).map((a => {
-		    this._qsets.bymaxz[a] = {};
-		    return Object.keys(r.fantomcat_bymaxz[a].classes).map((k => {
-			return this._qsets.bymaxz[a][k] = r.fantomcat_bymaxz[a].classes[k].quartiles;
-		    }).bind(this))
-		}).bind(this)); */
+		   this._qsets.bymaxz[a] = {};
+		   return Object.keys(r.fantomcat_bymaxz[a].classes).map((k => {
+		   return this._qsets.bymaxz[a][k] = r.fantomcat_bymaxz[a].classes[k].quartiles;
+		   }).bind(this))
+		   }).bind(this)); */
 		this.setState({data: r, isFetching: false, isError: false});
             }.bind(this)
         });

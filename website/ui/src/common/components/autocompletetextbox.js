@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+let autocomplete = require( "jquery-ui/ui/widgets/autocomplete" );
 
 class AutocompleteBox extends React.Component {
     
@@ -49,8 +50,8 @@ class AutocompleteBox extends React.Component {
 	    });
 	}
 
-	let sb = $("#" + this.props.id);
-	sb.autocomplete({
+	let sb = this.refs[this.props.id];
+	autocomplete({
 	    source: function (userQuery, callback_f) {
                 // http://stackoverflow.com/a/15977052
                 //let endIdx = sb[0].selectionStart;
@@ -62,15 +63,19 @@ class AutocompleteBox extends React.Component {
 	    },
 	    change: function() {
 	    }
-	});
+	}, sb);
     }
 
     render() {
-	return <input ref="searchBox" id={this.props.id}
-	           type={"text"} defaultValue={this.props.defaultvalue}
-	           onKeyPress={this.handleKeyPress} name={this.props.name}
-   	           className={this.props.className} size={this.props.size}
-  	           onChange={this._onchange} />;
+	return <input ref={this.props.id}
+		      id={this.props.id}
+	              type={"text"}
+		      defaultValue={this.props.defaultvalue}
+	              onKeyPress={this.handleKeyPress}
+		      name={this.props.name}
+   	              className={this.props.className}
+		      size={this.props.size}
+  	              onChange={this._onchange} />;
     }
     
 }
