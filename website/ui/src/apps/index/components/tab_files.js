@@ -14,7 +14,6 @@ const fileDownload = (url, fn) => {
 	</span>);
 }
 
-
 const CtaTableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
 
@@ -31,20 +30,20 @@ const CtaTableColumns = () => {
 	}, {
             title: "5 group url", data: "fiveGroup", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", className: klassCenter,
 	    render: dl
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", visible: false
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", className: klassCenter,
 	    render: dl
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", visible: false
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", visible: false
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", className: klassCenter,
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", className: klassCenter,
 	    render: dl
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", visible: false
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", visible: false
 	}
     ];
 }
@@ -79,25 +78,25 @@ const CtsTableColumns = () => {
 	}, {
             title: "5 group url", data: "fiveGroup", visible: false
 	}, {
-            title: "9 state high&nbsp;DNase", data: "dnase", className: klassCenter,
+            title: <span>9 state high&nbsp;DNase</span>, data: "dnase", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "9 state high&nbsp;DNase", data: "dnase_url", visible: false
+            title: <span>9 state high&nbsp;DNase</span>, data: "dnase_url", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac_url", visible: false
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac_url", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3_url", visible: false
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3_url", visible: false
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", className: klassCenter,
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf_url", visible: false
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf_url", visible: false
 	}
     ];
 }
