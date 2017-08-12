@@ -7,7 +7,7 @@ class TabContainer extends React.Component {
 	this.state = {
 	    active: Object.keys(this.props.tabs)[0]
 	};
-	this._active = key => key == this.state.active;
+	this._active = key => key === this.state.active;
     }
     
     title(key, tab) {
