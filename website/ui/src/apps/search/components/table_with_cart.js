@@ -7,10 +7,10 @@ import Ztable from '../../../common/components/ztable/ztable';
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
 import {getCommonState} from '../../../common/utility';
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
-import * as Render from '../../../common/renders'
-import {doToggle, isCart} from '../../../common/utility'
+import * as Render from '../../../common/zrenders';
+import {doToggle, isCart} from '../../../common/utility';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/

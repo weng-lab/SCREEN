@@ -1,21 +1,21 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
-import LongChecklistFacet from '../../../common/components/longchecklist'
-import LongListFacet from '../../../common/components/longlist'
-import ResultsTable from '../../../common/components/results_table'
+import LongChecklistFacet from '../../../common/components/longchecklist';
+import LongListFacet from '../../../common/components/longlist';
+import Ztable from '../../../common/components/ztable/ztable';
 
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/utility'
+import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
+import {panelize} from '../../../common/utility';
 
 const cols = [{ title: "cell type", data: "name",
 		className: "dt-right" },
 	      { title: "tissue", data: "tissue",
-		className: "dt-right" }]
+		className: "dt-right" }];
 
 /*global Globals */
 /*global GlobalAssembly */
@@ -57,7 +57,7 @@ const creBox = ({des, ct1, ct2, actions}) => {
     }
     let cres = des.diffCREs.data;
     let box = (
-	<ResultsTable
+	<Ztable
             data={cres}
             cols={[
                 {title: "accession", data: "accession",
@@ -83,7 +83,7 @@ const geneBox = ({des, ct1, ct2, actions}) => {
     }
     let genes = des.nearbyDEs.data;
     let box = (
-	<ResultsTable
+	<Ztable
             data={genes}
             cols={[
                 {title: "gene", data: "gene",

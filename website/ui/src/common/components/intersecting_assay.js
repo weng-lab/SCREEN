@@ -1,8 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
 
-import * as Render from '../renders';
-import ResultsTable from './results_table';
+import * as Render from '../zrenders';
+import Ztable from './ztable/ztable';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -76,20 +76,21 @@ class IntersectingAssay extends React.Component {
             details = (<div id={this.table}>
                        <br />
 	               <h4>{table.title}</h4>
-                       {React.createElement(ResultsTable,
+                       {React.createElement(Ztable,
                                             {data : this.state[target],
                                              ...table})}
                        </div>);
         }
 
-	return (<div className={"intersectionTable"} >
-                {React.createElement(ResultsTable, {data, ...table,
-                                                    onTdClick,
-		                                    onMouseEnter: true,
-                                                    onMouseExit: true
-                                                   })}
-                {details}
-                </div>);
+	return (
+	    <div className={"intersectionTable"} >
+                {React.createElement(Ztable, {data, ...table,
+                                              onTdClick,
+		                              onMouseEnter: true,
+                                              onMouseExit: true
+                 })}
+		{details}
+            </div>);
     }
 }
 

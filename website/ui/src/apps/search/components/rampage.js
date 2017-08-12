@@ -6,8 +6,8 @@ import {bindActionCreators} from 'redux';
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
 
 import HelpIcon from '../../../common/components/help_icon';
-import * as Render from '../../../common/renders';
 
+import * as Render from '../../../common/zrenders';
 import * as Actions from '../actions/main_actions';
 
 var d3 = require('d3');
@@ -173,17 +173,11 @@ class Rampage extends React.Component {
 	    </div>);
     }
 
-    componentDidMount() {
-        //this.d3Render();
-    }
-
-    componentDidUpdate() {
-        //this.d3Render();
-    }
-
     d3Render(){
 	if ("details" === this.props.maintabs_active
-	    && "rampage" != this.props.re_details_tab_active ) return;
+	    && "rampage" != this.props.re_details_tab_active ) {
+	    return;
+	}
 
         let allData = this.props.keysAndData.tsss;
         let transcript = allData[this.state.transcript];
@@ -221,113 +215,11 @@ class Rampage extends React.Component {
 	    grouplabel: d => d.tissue
 	};
 	
-	return <ScaledHorizontalBar itemsets={items} width={this.props.width}
-	         barheight={this.props.barheight} format={format} />;
-
-	for (var i in sorted_keys) {
-	    var key = sorted_keys[i];
-	    yoffsets[key] = total_items;
-	    labeloffsets.push(total_items + (
-		items[key].items.length / 2.0) + 0.25);
-	    total_items += items[key].items.length;
-	    d = d3.max(items[key].items, rank_f);
-	    if (d > cmax) {
-                cmax = d;
-            }
-	}
-
-	var barheight = +this.props.barheight;
-	var height = barheight * total_items + 10;
-
-	var xscale = d3.scale.linear()
-	    .domain([0, cmax])
-	    .range([0, +this.props.width * widthFactor]);
-
-	var yscale = d3.scale.linear()
-	    .domain([0, total_items])
-	    .range([0, total_items * barheight]);
-
-	var canvas = d3.select(this.refs.container)
-	    .append('svg')
-	    .attr({'width': +this.props.width + 200, 'height': height})
-	    .append('g')
-	    .attr({'width': +this.props.width, 'height': height - 10})
-	    .attr('transform', 'translate(0,10)');
-
-	var yAxis = d3.svg.axis()
-	    .orient('left')
-	    .scale(yscale)
-	    .tickSize(2)
-	    .tickFormat("")
-	    .tickValues(d3.range(total_items + 2));
-
-	var y_xis = canvas.append('g')
-	    .attr("transform", "translate(" + leftOffset + ",0)")
-	    .attr('id','yaxis')
-	    .call(yAxis);
-
-	var toolTip = d3.tip()
-	    .attr('class', 'd3-tip')
-	    .offset([0, 0])
-	    .html(function(rid) {
-                let d = itemsByID[rid];
-		return "cel type: <strong>" + d["biosample_term_name"] + "</strong>"+
-		    "<div>tissue: " + d["tissue"] + "</div>" +
-		    "<div>" + 'experiment: <a href="https://encodeproject.org/experiments/' + d["expid"] + '" target+"_blank">' + d["expid"] + "</a>" + "</div>" +
-		    "<div>" + 'file: <a href="https://encodeproject.org/' + d["fileid"] + '" target+"_blank">' + d["fileid"] + "</a>" + "</div>"
-		;
-	    })
-
-	for (var i in sorted_keys) {
-	    var key = sorted_keys[i];
-	    var itemset = items[key];
-	    var chart = canvas.append('g')
-		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[key] * barheight) + ")");
-	    chart.selectAll('rect')
-		.data(itemset.items)
-		.enter()
-		.append('rect')
-		.attr('height', barheight)
-		.attr({'x': 0, 'y': (d, i) => (+yscale(i))})
-		.style('fill', (d, i) => (itemset.color))
-		.attr("stroke-width", 1)
-		.attr("stroke", "white")
-		.attr('width', (d) => {return xscale(rank_f(d))})
-	    	.on("click", function(rid) {
-		    window.open("http://encodeproject.org/" +
-                                itemsByID[rid]["expid"])
-		});
-	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
-	    var transitext = chart.selectAll('text')
-		.data(itemset.items)
-		.enter()
-		.append('text')
-		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
-		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
-		.text((rid) => (rank_f(rid) + " " + subName_f(rid) ))
-		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
-		.on("click", function(rid) {
-		    window.open("http://encodeproject.org/" +
-                                itemsByID[rid]["expid"])
-		});
-	}
-	var ylabels = canvas.append('g')
-	    .attr("transform", "translate(0,0)")
-	    .selectAll('text')
-	    .data(sorted_keys)
-	    .enter()
-	    .append('text')
-	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
-	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (items[d].tissue))
-	    .style({'fill': '#000',
-		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
-		    "text-anchor": "end"});
-
-	d3.selectAll("rect").call(toolTip);
-	d3.selectAll("rect")
-	    .on('mouseover', toolTip.show)
-	    .on('mouseout', toolTip.hide);
+	return <ScaledHorizontalBar
+		   itemsets={items}
+		   width={this.props.width}
+	           barheight={this.props.barheight}
+		   format={format} />;
     }
 }
 

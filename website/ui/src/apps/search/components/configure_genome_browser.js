@@ -5,12 +5,12 @@ import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
-import ResultsTable from '../../../common/components/results_table'
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import Ztable from '../../../common/components/ztable/ztable';
+import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
 
 import loading from '../../../common/components/loading';
 import {getCommonState} from '../../../common/utility';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 import DraggableCtList from '../../../common/components/draggable';
 
@@ -97,7 +97,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	
 	const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 	let ctBox = (
-	    <ResultsTable
+	    <Ztable
 		cols={cols}
 		data={this.props.configuregb_cts}
 		order={[]}

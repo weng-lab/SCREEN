@@ -1,9 +1,9 @@
 import $ from 'jquery';
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
-import IntersectingAssayTf from '../components/intersecting_assay_tf'
-import IntersectingAssayHistone from '../components/intersecting_assay_histone'
+import IntersectingAssayTf from '../components/intersecting_assay_tf';
+import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/

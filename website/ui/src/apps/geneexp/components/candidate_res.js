@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import ResultsTable from '../../../common/components/results_table';
-import * as Render from '../../../common/renders';
+import Ztable from '../../../common/components/ztable/ztable';
+import * as Render from '../../../common/zrenders';
 
 /*global GlobalParsedQuery */
 /*eslint no-undef: "error"*/
@@ -54,20 +54,20 @@ class CandidateREs extends React.Component {
 
     render() {
 	//console.log(this.props.candidate_res);
-	return (<div>
+	return (
+	    <div>
 		<h2>{GlobalParsedQuery["gene"]}</h2>
-		<ResultsTable
-                cols={cols()}
-                order={[[1, "desc"]]}
-                paging={true}
-                bInfo={true}
-		bfilter={true}
-                pageLength={10}
-                onTdClick={this.onClick}
-		data={this.props.candidate_res} />
-		</div>);
+		<Ztable
+                    cols={cols()}
+                    order={[[1, "desc"]]}
+                    paging={true}
+                    bInfo={true}
+		    bfilter={true}
+                    pageLength={10}
+                    onTdClick={this.onClick}
+		    data={this.props.candidate_res} />
+	    </div>);
     }
-
 }
 
 export default CandidateREs;

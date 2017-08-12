@@ -1,14 +1,10 @@
-import React from 'react'
+import React from 'react';
 
-import TabMain from '../components/tab_main'
-import TabAbout from '../components/tab_about'
-import TabTutorial from '../components/tab_tutorial'
-import TabQuery from '../components/tab_query'
-import TabFiles from '../components/tab_files'
-
-import loading from '../../../common/components/loading'
-
-import * as Render from '../../../common/renders'
+import TabMain from '../components/tab_main';
+import TabAbout from '../components/tab_about';
+import TabTutorial from '../components/tab_tutorial';
+import TabQuery from '../components/tab_query';
+import TabFiles from '../components/tab_files';
 
 const MainTabsConfig = () => {
     return {main : {title: "Overview", visible: true, f: TabMain},

@@ -1,8 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table';
-import * as Render from '../../../common/renders';
+import Ztable from '../../../common/components/ztable/ztable';
+import * as Render from '../../../common/zrenders';
 import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
 
@@ -112,11 +112,13 @@ class TabFiles extends React.Component {
 
     doRenderWrapper(){
         if("files" in this.state){
-	    return (<ResultsTable data={this.state.files}
-		    cols={TableColumns()}
-                    bFilter={true}
-                    bLengthChange={true}
-                    />);
+	    return (
+		<Ztable
+		data={this.state.files}
+		cols={TableColumns()}
+                bFilter={true}
+                bLengthChange={true}
+                />);
         }
 	return loading({...this.state})
     }
