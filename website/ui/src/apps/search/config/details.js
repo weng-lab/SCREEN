@@ -1,22 +1,22 @@
-import React from 'react'
+import React from 'react';
 import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table'
-import BarGraphTable from '../components/bar_graph_table'
+import Ztable from '../../../common/components/ztable/ztable';
+import BarGraphTable from '../components/bar_graph_table';
 
-import GeneExp from '../../geneexp/components/gene_exp'
-import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
-import Rampage from '../components/rampage'
-import MiniPeaks from '../components/minipeaks'
+import GeneExp from '../../geneexp/components/gene_exp';
+import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
+import Rampage from '../components/rampage';
+import MiniPeaks from '../components/minipeaks';
 
-import HelpIcon from '../../../common/components/help_icon'
+import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
-        TfIntersectionTable, OrthologTable, FantomCatTable, CistromeIntersectionTable} from './details_tables'
+        TfIntersectionTable, OrthologTable, FantomCatTable, CistromeIntersectionTable} from './details_tables';
 
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -34,7 +34,7 @@ function makeTable(data, key, table){
     if(table.bar_graph){
         return React.createElement(BarGraphTable, {data, ...table});
     }
-    return React.createElement(ResultsTable, {data, ...table});
+    return React.createElement(Ztable, {data, ...table});
 }
 
 function tabEle(data, key, table, numCols) {

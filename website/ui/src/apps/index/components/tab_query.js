@@ -5,9 +5,9 @@ import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions';
 
-import * as Render from '../../../common/renders'
-import {tabPanelize} from '../../../common/utility'
-import ResultsTable from '../../../common/components/results_table'
+import * as Render from '../../../common/zrenders';
+import {tabPanelize} from '../../../common/utility';
+import Ztable from '../../../common/components/ztable/ztable';
 
 class TabQuery extends React.Component {
     constructor(props) {
@@ -39,7 +39,7 @@ class TabQuery extends React.Component {
 	return (tabPanelize(
             <div>
                 <h2>Possible Gene Matches</h2>
-                <ResultsTable
+                <Ztable
                     data={data.genes}
 	            cols={cols}
                     order={order}

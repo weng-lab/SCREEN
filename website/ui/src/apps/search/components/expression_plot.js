@@ -9,7 +9,7 @@ import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import loading from '../../../common/components/loading';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
 /*global Globals */
 /*global GlobalAssembly */

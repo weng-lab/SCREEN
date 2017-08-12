@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 
-import ResultsTable from './results_table'
-import {ListItem} from './list'
+import Ztable from './ztable/ztable';
+import {ListItem} from './list';
 
 class LongListFacet extends React.Component {
 
@@ -38,7 +38,7 @@ class LongListFacet extends React.Component {
 	return (
 	    <div>
 		<div style={{display: table_display}}>
-		    <ResultsTable
+		    <Ztable
 			cols={this.props.cols}
 			data={this.props.data}
 			order={this.props.order}

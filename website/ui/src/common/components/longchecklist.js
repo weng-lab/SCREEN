@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import ResultsTable from './results_table'
-import {ListItem} from './list'
+import Ztable from './ztable/ztable';
+import {ListItem} from './list';
 
-import * as toggleswitch from './toggleswitch'
+import * as toggleswitch from './toggleswitch';
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from './checklist'
 
 class LongChecklistFacet extends React.Component {
@@ -65,14 +65,14 @@ class LongChecklistFacet extends React.Component {
 	return (
 	    <div>
 		{checks}
-		<ResultsTable cols={cols}
-			      data={this.props.data}
-			      order={this.props.order}
-			      buttonsOff={this.props.buttonsOff}
-			      onTdClick={this._td_handler}
-			      bFilter={true}
-			      bLengthChange={false}
-			      paging={paging}
+		<Ztable cols={cols}
+			data={this.props.data}
+			order={this.props.order}
+			buttonsOff={this.props.buttonsOff}
+			onTdClick={this._td_handler}
+			bFilter={true}
+			bLengthChange={false}
+			paging={paging}
 		/>
 	    </div>);
     }

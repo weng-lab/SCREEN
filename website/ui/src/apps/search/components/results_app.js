@@ -1,10 +1,9 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
 
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin} from '../../../common/utility';

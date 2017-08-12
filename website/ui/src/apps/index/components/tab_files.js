@@ -1,8 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table';
-import * as Render from '../../../common/renders';
+import Ztable from '../../../common/components/ztable/ztable';
+import * as Render from '../../../common/zrenders';
 import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
 
@@ -169,13 +169,13 @@ class TabFiles extends React.Component {
 	    return (
 		<div>
 		    <h3>Cell type-agnostic</h3>
-		    <ResultsTable data={cta}
+		    <Ztable data={cta}
 				  cols={CtaTableColumns()}
 				  bFilter={true}
 				  bLengthChange={true}
 		    />
 		    <h3>Cell type-specific</h3>
-		    <ResultsTable data={this.state.files}
+		    <Ztable data={this.state.files}
 				  cols={CtsTableColumns()}
 				  bFilter={true}
 				  bLengthChange={true}

@@ -1,12 +1,12 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import LongListFacet from '../../../common/components/longlist'
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import LongListFacet from '../../../common/components/longlist';
+import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
 /*global GwasGlobals */
 /*eslint no-undef: "error"*/

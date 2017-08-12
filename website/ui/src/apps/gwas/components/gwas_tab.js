@@ -1,16 +1,16 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
-import CelltypeView from '../components/celltype_view'
+import CelltypeView from '../components/celltype_view';
 
-import loading from '../../../common/components/loading'
-import {arrowNote} from '../../../common/utility'
-import ResultsTable from '../../../common/components/results_table'
-import HelpIcon from '../../../common/components/help_icon'
+import loading from '../../../common/components/loading';
+import {arrowNote} from '../../../common/utility';
+import Ztable from '../../../common/components/ztable/ztable';
+import HelpIcon from '../../../common/components/help_icon';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -72,7 +72,7 @@ class GwasTab extends React.Component{
         var ctView = (cellType ? <CelltypeView rdata={data.mainTable[0]} /> :
                       arrowNote("Please choose a cell type.")
         );
-        let mainTable = (<ResultsTable
+        let mainTable = (<Ztable
                              data={data.mainTable}
                              cols={[
                                  {title: "Total LD blocks",

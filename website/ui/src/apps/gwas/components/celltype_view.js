@@ -4,11 +4,11 @@ import {bindActionCreators} from 'redux';
 import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
-import loading from '../../../common/components/loading'
-import ResultsTable from '../../../common/components/results_table'
-import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon'
+import loading from '../../../common/components/loading';
+import Ztable from '../../../common/components/ztable/ztable';
+import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -107,16 +107,18 @@ class CelltypeView extends React.Component {
 	let columnDefs = [{ "orderData": 2, "targets": 1 }];
 	let actions = this.props.actions;
 	
-        let creTable = (<ResultsTable key={this.props.cellType.cellTypeName}
-			    onButtonClick={(td, rowdata) =>
-					   this.button_click_handler(td, rowdata, actions)}
-                            data={cres}
-			    columnDefs={columnDefs}
-                            cols={cols}
-                            bFilter={true}
-		            cvisible={vcols}
-                            order={[[2, "desc"], [0, "asc"]]}
-                        />);
+        let creTable = (
+	    <Ztable
+		key={this.props.cellType.cellTypeName}
+		onButtonClick={(td, rowdata) =>
+		    this.button_click_handler(td, rowdata, actions)}
+		data={cres}
+		columnDefs={columnDefs}
+		cols={cols}
+		bFilter={true}
+		cvisible={vcols}
+		order={[[2, "desc"], [0, "asc"]]}
+            />);
 	let pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
 	return (
             <div>

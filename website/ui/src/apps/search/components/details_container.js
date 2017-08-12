@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 class DetailsContainer extends React.Component {
     render() {

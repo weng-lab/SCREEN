@@ -1,14 +1,14 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import ReactDOMServer from 'react-dom/server'
+import ReactDOMServer from 'react-dom/server';
 import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
-import ResultsTable from '../../../common/components/results_table'
-import loading from '../../../common/components/loading'
+import Ztable from '../../../common/components/ztable/ztable';
+import loading from '../../../common/components/loading';
 
 import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name} from '../config/colors'
 
@@ -146,7 +146,7 @@ class MiniPeaks extends React.Component {
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
 			    ]};
-        return React.createElement(ResultsTable,
+        return React.createElement(Ztable,
                                    {data: this.state[accession].rows,
                                     ...table});
     }

@@ -13,7 +13,7 @@ import SliderFacet from '../../../common/components/slider'
 
 import {default_margin} from '../config/constants'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 
