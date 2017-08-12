@@ -7,12 +7,9 @@ import TFDisplay from '../components/tf_display';
 import ActivityProfile from '../components/activity_profile';
 import ExpressionPlot from '../components/expression_plot';
 import ConfigureGenomeBrowser from '../components/configure_genome_browser';
-
-import loading from '../../../common/components/loading';
 import DetailsTabInfo from './details';
 
 import {isCart} from '../../../common/utility';
-import * as Render from '../../../common/zrenders';
 
 /*global GlobalParsedQuery */
 /*eslint no-undef: "error"*/

@@ -6,7 +6,6 @@ import {commajoin} from './utility';
 
 /*global Globals */
 /*global GlobalAssembly */
-/*global GlobalParsedQuery */
 /*eslint no-undef: "error"*/
 
 // datatbles render has params function (data, type, full, meta)
@@ -19,7 +18,7 @@ export const relink = (a) => (v) => (
 
 export const snp_link = (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
-    if("mm10" == GlobalAssembly){
+    if("mm10" === GlobalAssembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
     return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
@@ -31,7 +30,7 @@ export const snpLinks = (snps) => {
 }
 
 export const integer = (d) => (d)
-//{"display": (d) => (d == 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
+//{"display": (d) => (d === 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
 
 export const integerLink = (href) => (d) => {
     return "<a href='#" + href + "'>" + d + "</a>";
@@ -45,7 +44,7 @@ export const toSciNot = (d) => {
 }
 
 export const real = (d) => (d.toFixed(2))
-export const z_score = (d) => (d == -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
+export const z_score = (d) => (d === -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
 export const cell_type = (ct) => (Globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
@@ -53,12 +52,14 @@ export const support = (support) => (
 );
 export const len = (list) => (list ? list.length : 0);
 export const supporting_cts = (list) => {
-    if (list == null) return "";
+    if (list === null) return "";
     var map = {};
-    list.map((x) => {
-	if (!(x["cell-type"] in map)) map[x["cell-type"]] = 0;
+    for(let x of list){
+	if (!(x["cell-type"] in map)) {
+	    map[x["cell-type"]] = 0;
+	}
 	++map[x["cell-type"]];
-    });
+    }
     return Object.keys(map).map((k) => (k + " (" + map[k] + ")")).join(", ");
 };
 
@@ -79,7 +80,7 @@ export const cart_img = (rmv, src_only) => {
         return src;
     }
     var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
-    return <img className="rowCart" src={src} title={title} />;
+    return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
 export const creLink = (accession) => (
@@ -107,7 +108,7 @@ export const deLink = (gene) => (
 export const geDeButton = (d) => {
     let _d = d.replace(/\./g, "%2e");
     let ge = <a href={geLink(_d)} target={"_blank"}>{d}</a>;
-    if("mm10" != GlobalAssembly){
+    if("mm10" !== GlobalAssembly){
         return (<span>{ge}</span>);
     }
     var de = <a href={deLink(_d)} target={"_blank"}>&Delta;</a>;
@@ -489,7 +490,7 @@ export const creTableCellTypeSpecific = (data) => {
     let colors = Globals.colors.cREs;
 
     let col = (val, c) => {
-	if(null == val){
+	if(null === val){
 	    return colors.NoData;
 	}
 	return val > 1.64 ? c : colors.Inactive;
@@ -553,7 +554,7 @@ export const creTitle = (cre) => {
 
 export const sctSorter = (data) => {
     let col = (val) => {
-	if(null == val){
+	if(null === val){
 	    return 0;
 	}
 	return val > 1.64 ? 2 : 1;

@@ -6,7 +6,6 @@ import LongListFacet from '../../../common/components/longlist';
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/zrenders';
 
 /*global GwasGlobals */
 /*eslint no-undef: "error"*/
@@ -39,7 +38,11 @@ class SingleStudy  extends React.Component {
 		selection={this.props.gwas_study}
 		mode={CHECKLIST_MATCH_ANY}
 		pageLength={5}
-	    onTdClick={(c, td) => {if (!td || td.className.indexOf("pubmed") === -1) this.props.actions.setStudy(c) } }
+		onTdClick={(c, td) => {
+			if (!td || td.className.indexOf("pubmed") === -1) {
+			    this.props.actions.setStudy(c);
+			}
+		}}
             />);
     }
 }
@@ -47,7 +50,7 @@ class SingleStudy  extends React.Component {
 class GWASstudies extends React.Component {
     render(){
 	const makeTabTitle = (key, tab) => {
-            let active = key == this.props.gwas_study_tab;
+            let active = key === this.props.gwas_study_tab;
             if(!tab.enabled && !active){ return (<div />) }
 	    let cn = (active ? "active" : "") + " gwasTabTitle";
             return (
@@ -59,7 +62,7 @@ class GWASstudies extends React.Component {
         }
 
         const makeTab = (key, tab) => {
-            let active = key == this.props.gwas_study_tab;
+            let active = key === this.props.gwas_study_tab;
             if(!tab.enabled && !active){ return (<div />) }
             return (
 		<div
