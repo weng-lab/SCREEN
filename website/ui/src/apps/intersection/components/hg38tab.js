@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
@@ -8,6 +9,9 @@ import loading from '../../../common/components/loading'
 import HelpIcon from '../../../common/components/help_icon'
 
 import Hg38TabsC from './hg38/hg38tabs';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class Hg38Tab extends React.Component{
 

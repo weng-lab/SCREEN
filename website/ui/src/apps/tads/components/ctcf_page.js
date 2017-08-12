@@ -2,11 +2,15 @@ import React from 'react'
 import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
 import {TRBars} from '../../search/components/tf_display'
 import loading from '../../../common/components/loading'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class CTCFPage extends React.Component{
     
