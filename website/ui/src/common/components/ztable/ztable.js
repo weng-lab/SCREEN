@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
 
 const filterVisibleCols = (cols) => (
