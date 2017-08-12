@@ -19,6 +19,10 @@ import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/componen
 
 import {panelize, isCart} from '../../../common/utility'
 
+/*global Globals */
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
     return (
 	<RangeFacet

@@ -1,6 +1,10 @@
 import MainTabInfo from './maintabs.js'
 import {isCart} from '../../../common/utility'
 
+/*global Globals */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
+
 const initialState = (pmaintab, psubtab) => {
     let maintab = pmaintab || "results";
     let maintabs = MainTabInfo();

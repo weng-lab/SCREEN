@@ -1,7 +1,11 @@
-import React from 'react'
+import React from 'react';
+import $ from 'jquery';
 
-import * as Render from '../renders'
-import ResultsTable from './results_table'
+import * as Render from '../renders';
+import ResultsTable from './results_table';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const _renders = {
     peak: Render.dccLinkAndIconSplit,

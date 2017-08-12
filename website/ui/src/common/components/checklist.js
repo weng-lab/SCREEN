@@ -1,7 +1,6 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
-var $ = require('jquery');
-var __jui = require('jquery-ui-bundle');
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
 
 import AutocompleteTextbox from './autocomplete'
 import * as toggleswitch from './toggleswitch'

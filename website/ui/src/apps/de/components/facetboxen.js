@@ -17,6 +17,10 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }]
 
+/*global Globals */
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 const cellTypesBox1 = ({ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet

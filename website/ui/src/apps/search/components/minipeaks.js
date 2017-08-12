@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-
 import ReactDOMServer from 'react-dom/server'
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/renders'
@@ -11,6 +11,9 @@ import ResultsTable from '../../../common/components/results_table'
 import loading from '../../../common/components/loading'
 
 import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name} from '../config/colors'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const ROWHEIGHT = 30.0;
 const ROWMARGIN = 15;

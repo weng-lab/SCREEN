@@ -1,9 +1,10 @@
-import React from 'react'
+import React from 'react';
+import $ from 'jquery';
 
 import ResultsTable from '../../../common/components/results_table';
-import * as Render from '../../../common/renders'
-import loading from '../../../common/components/loading'
-import {tabPanelize} from '../../../common/utility'
+import * as Render from '../../../common/renders';
+import loading from '../../../common/components/loading';
+import {tabPanelize} from '../../../common/utility';
 
 const CtaTableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";

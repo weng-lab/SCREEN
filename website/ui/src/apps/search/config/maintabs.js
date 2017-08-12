@@ -14,6 +14,9 @@ import DetailsTabInfo from './details'
 import {isCart} from '../../../common/utility'
 import * as Render from '../../../common/renders'
 
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
+
 class ResultsTab extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
        return "results" === nextProps.maintabs_active;
@@ -42,10 +45,6 @@ class DetailsTab extends React.Component{
     }
 }
 
-class GcompareTab extends React.Component{
-    render() { return (gcompare); }
-}
-
 class TFTab extends React.Component {
     render() { return (<TFDisplay />); }
 }
@@ -71,8 +70,8 @@ const MainTabInfo = () => {
 		       f: ActivityProfileTab},
 	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
 	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
-	    details: {title: "cRE Details", visible: false, f: DetailsTab},
-	    gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}};
+	    details: {title: "cRE Details", visible: false, f: DetailsTab}
+    };
 }
 
 export default MainTabInfo;

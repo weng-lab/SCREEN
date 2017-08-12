@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
@@ -12,6 +13,10 @@ import {getCommonState} from '../../../common/utility';
 import * as Render from '../../../common/renders'
 
 import DraggableCtList from '../../../common/components/draggable';
+
+/*global Globals */
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class ConfigureGenomeBrowser extends React.Component {
     constructor(props) {

@@ -2,7 +2,6 @@ import React from 'react'
 import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
-import createLogger from 'redux-logger'
 
 import NavBarApp from '../../common/components/navbar_app'
 import SearchBox from '../../common/components/searchbox'
@@ -15,16 +14,11 @@ import initialState from './config/initial_state'
 
 class GeneExpPage extends React.Component {
     render() {
-	const loggerMiddleware = createLogger();
-
 	const store = createStore(main_reducers,
 				  initialState(),
 				  applyMiddleware(
 				      thunkMiddleware,
-				      //loggerMiddleware
 				  ));
-
-	//console.log(store.getState());
 
         return (
             <Provider store={store}>

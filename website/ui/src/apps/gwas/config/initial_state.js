@@ -1,5 +1,9 @@
 import MainTabInfo from './maintabs.js'
 
+/*global Globals */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
+
 const try_get_ct = ct => {
     for (let i = 0; i < Globals.cellTypeInfoArr.length; ++i) {
 	if (Globals.cellTypeInfoArr[i].cellTypeName === ct) { return Globals.cellTypeInfoArr[i]; }

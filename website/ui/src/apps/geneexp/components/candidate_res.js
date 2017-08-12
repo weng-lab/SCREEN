@@ -1,8 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import ResultsTable from '../../../common/components/results_table'
-import * as Render from '../../../common/renders'
+import ResultsTable from '../../../common/components/results_table';
+import * as Render from '../../../common/renders';
+
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
 
 const cols = () => {
     return [

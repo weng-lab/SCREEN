@@ -1,10 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 export class TRBars extends React.Component {
     render() {

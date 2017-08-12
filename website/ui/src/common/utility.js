@@ -1,4 +1,8 @@
+import React from 'react'
 import HelpIcon from './components/help_icon'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 export const panelize = (title, facet, helpkey = null) => {
     let helpicon = (helpkey ?

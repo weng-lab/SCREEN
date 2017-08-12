@@ -1,5 +1,10 @@
 import MainTabInfo from './maintabs.js'
 
+/*global Globals */
+/*global GlobalAssembly */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
+
 const initialState = () => ({
         ...GlobalParsedQuery,
     configuregb_cre: null,

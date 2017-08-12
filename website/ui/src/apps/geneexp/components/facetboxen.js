@@ -9,6 +9,9 @@ import LongChecklistFacet from '../../../common/components/longchecklist'
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
 
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
+
 const bts = ({biosample_types, biosample_types_selected, actions}) => {
     return panelize("Biosample Types",
                     <LongChecklistFacet

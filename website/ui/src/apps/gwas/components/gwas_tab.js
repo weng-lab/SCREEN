@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
@@ -10,6 +11,9 @@ import loading from '../../../common/components/loading'
 import {arrowNote} from '../../../common/utility'
 import ResultsTable from '../../../common/components/results_table'
 import HelpIcon from '../../../common/components/help_icon'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class GwasTab extends React.Component{
     constructor(props) {

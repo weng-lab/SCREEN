@@ -62,17 +62,6 @@ export function obj_remove(o, k) {
     return retval;
 }
 
-export function set_center_x(element, x, limits = null) {
-    var hw = $(element).width() / 2;
-    var nleft = (x - hw);
-    if (limits) {
-	var nlimits = [limits[0], limits[1] - hw];
-	if (nleft < nlimits[0]) nleft = nlimits[0];
-	if (nleft > nlimits[1]) nleft = nlimits[1];
-    }
-    element.style.left = nleft + "px";
-}
-
 export function numberWithCommas(x) {
     // http://stackoverflow.com/a/2901298
     var parts = x.toString().split(".");

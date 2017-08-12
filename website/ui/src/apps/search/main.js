@@ -2,7 +2,6 @@ import React from 'react'
 import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
-import createLogger from 'redux-logger'
 
 import NavBarApp from '../../common/components/navbar_app'
 import SearchBox from '../../common/components/searchbox'
@@ -16,8 +15,6 @@ import initialState from './config/initial_state'
 
 class SearchPage extends React.Component {
     render() {
-	//const loggerMiddleware = createLogger();
-
 	let maintab = null;
         let subtab = null;
 	if("maintab" in this.props.params){
@@ -31,11 +28,7 @@ class SearchPage extends React.Component {
 				  initialState(maintab, subtab),
 				  applyMiddleware(
 				      thunkMiddleware,
-				      //loggerMiddleware
 				  ));
-
-	//console.log(store.getState());
-
 	let drawMain = () => {
 	    if(isCart()){
 		return (

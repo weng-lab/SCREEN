@@ -1,7 +1,8 @@
-import 'babel-polyfill';
-
+import React from 'react'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory} from 'react-router';
+
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 import Intersection from './apps/intersection/main';
 import Search from './apps/search/main';

@@ -1,13 +1,13 @@
-var $ = require('jquery');
-import React from 'react'
-import {connect} from 'react-redux'
-import {render} from 'react-dom'
+import React from 'react';
+import {connect} from 'react-redux';
+import {render} from 'react-dom';
+import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table'
-import HorizontalBars from '../../../common/components/horizontal_bars'
-import {TissueColors} from '../config/colors'
+import ResultsTable from '../../../common/components/results_table';
+import HorizontalBars from '../../../common/components/horizontal_bars';
+import {TissueColors} from '../config/colors';
 
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
 const format_data_for_bar_graph = (data) => {
     var retval = {};

@@ -1,4 +1,5 @@
 import React from 'react'
+import $ from 'jquery';
 
 import ResultsTable from '../../../common/components/results_table'
 import BarGraphTable from '../components/bar_graph_table'
@@ -16,6 +17,9 @@ import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
 import loading from '../../../common/components/loading'
 
 import * as Render from '../../../common/renders'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 function chunkArr(arr, chunk){
     // from https://jsperf.com/array-splice-vs-underscore
@@ -226,16 +230,6 @@ class CistromeIntersectionTab extends ReTabBase {
     }
 }
 
-class RelatedGeneTab extends ReTabBase{
-    constructor(props) {
-	super(props, "relatedGene");
-        this.doRender = (data) => {
-            return (<div></div>);
-	    return (<ExpressionHeatmapSet />);
-        }
-    }
-}
-
 class GeTab extends ReTabBase{
     gclick(name, data) {
 	this.props.actions.showGenomeBrowser({
@@ -300,9 +294,7 @@ const DetailsTabInfo = () => {
 
     let off = {
         targetGene : {title: "Candidate Target Genes",
-                      enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab},
-        relatedGene: {title: "Related Gene Expression", enabled: false,
-                      f: RelatedGeneTab}};
+                      enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab}};
 
     return {
         topTissues : {title: Render.tabTitle(["Top", "Tissues"]),

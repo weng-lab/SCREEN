@@ -1,3 +1,6 @@
+/*global Globals */
+/*eslint no-undef: "error"*/
+
 export const friendly_celltype = (c) => (
     c.replace(/_/g, " ").replace(/\\u03bc/g, '\u03bc')
 );

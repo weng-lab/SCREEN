@@ -1,5 +1,8 @@
 import MainTabInfo from './maintabs.js'
 
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
+
 const initialState = () => ({
         ...GlobalParsedQuery,
     maintabs: MainTabInfo(),
