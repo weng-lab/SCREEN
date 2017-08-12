@@ -14,7 +14,6 @@
 			"dependencies": {
 						"bootstrap": "3",
 						"d3": "^4.2.2",
-						"es6-promise": "^4.1.1",
 						"jquery": "^3.2.1",
 						"jquery-ui": "github:jquery/jquery-ui#1.12.1",
 						"jszlib": "dasmoth/jszlib",
