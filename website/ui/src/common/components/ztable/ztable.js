@@ -22,19 +22,17 @@ const klassName = (colInfo) => {
 class SearchBox extends React.Component {
     render() {
 	return (
-	    <Nav pullRight>
-		<Form inline>
-		    <FormGroup controlId = "formBasicText">
-			Search:
-			<FormControl bsSize = "small"
-				     size = "15"
-				     type = "text"
-				     value = {this.props.value}
-				     onChange = {this.props.onChange}/>
-			<FormControl.Feedback />
-		    </FormGroup>
-		</Form>
-	    </Nav>
+	    <Form inline>
+		<FormGroup controlId = "formBasicText">
+		    Search:
+		    <FormControl bsSize = "small"
+				 size = "15"
+				 type = "text"
+				 value = {this.props.value}
+				 onChange = {this.props.onChange}/>
+		    <FormControl.Feedback />
+		</FormGroup>
+	    </Form>
 	);
     }
 }
@@ -57,7 +55,7 @@ class Zheader extends React.Component {
     render(){
 	return (
 	    <tr>
-		{this.props.colInfos.map((col) => {
+		{this.props.colInfos.map((col, idx) => {
 		     let k = "text-center " + klassName(col);
 		     let sk = "table-sort"; // sort CSS class
 		     let so = 0; // sort order
@@ -78,6 +76,7 @@ class Zheader extends React.Component {
 		     k += ' ' + sk;
 		     return (
 			 <th className={k}
+			     key={idx}
 			     onClick={this.props.onClick(col.data, so)}>
 			     {col.title}
 			 </th>);
@@ -216,17 +215,22 @@ class Ztable extends React.Component {
 	    <div style={{width: "100%"}}>
 		<SearchBox value={this.state.search} onChange={searchBoxChange} />
 		<table className={tableKlass}>
-		    <Zheader colInfos={visibleCols}
-			     sortCol={this.state.sortCol}
-			     sortOrder={this.state.sortOrder}
-			     onClick={sortClick}
-		    />
-		    {rowIDs.slice(rowStart, rowEnd).map((idx) => (
-			 <Zrow row={this.props.data[idx]}
-			       dataIdx={idx}
-			       onRowClick={rowClick}
-			       colInfos={visibleCols} />
-		    ))}
+		    <thead>
+			<Zheader colInfos={visibleCols}
+				 sortCol={this.state.sortCol}
+				 sortOrder={this.state.sortOrder}
+				 onClick={sortClick}
+			/>
+		    </thead>
+		    <tbody>
+			{rowIDs.slice(rowStart, rowEnd).map((idx) => (
+			     <Zrow row={this.props.data[idx]}
+				   key={idx}
+				   dataIdx={idx}
+				   onRowClick={rowClick}
+				   colInfos={visibleCols} />
+			 ))}
+		    </tbody>
 		</table>
 		<PageBox pages={numPages}
 			 curPage={this.state.pageNum}
