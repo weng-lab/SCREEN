@@ -6,21 +6,18 @@ import * as Actions from '../actions/main_actions';
 
 import RangeFacet from '../../../common/components/range'
 import ListFacet from '../../../common/components/list'
-import ChecklistFacet from '../../../common/components/checklist'
 import LongListFacet from '../../../common/components/longlist'
 import LongChecklistFacet from '../../../common/components/longchecklist'
-import SliderFacet from '../../../common/components/slider'
 
 import {default_margin} from '../config/constants'
 
 import * as Render from '../../../common/zrenders'
 
-import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 import {panelize, isCart} from '../../../common/utility'
 
 /*global Globals */
-/*global GlobalAssembly */
 /*eslint no-undef: "error"*/
 
 const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
@@ -130,40 +127,42 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
     return panelize("Coordinates: " + title, box, "CoordinateFacet");
 }
 
-const tfBox = ({actions}) => {
-    let box = (
-	<LongChecklistFacet
-	    title={""}
-	    data={Globals.tfs.map((tf) => {return {key: tf,
-						   selected: false}})}
-	    cols={[{
-		    title: "Assay", data: "key",
-		    className: "dt-right"
-		}]}
-	    order={[]}
-	    buttonsOff={true}
-	    match_mode_enable={true}
-	    onTdClick={(tf) => { actions.toggleTf(tf) } }
-	    onModeChange={(mode) => { actions.setTfsMode(mode) }}
-	    mode={CHECKLIST_MATCH_ALL}
-        />);
-    return panelize("Intersect TF/histone/DNase peaks", box);
-}
+/* const tfBox = ({actions}) => {
+ *     let box = (
+ * 	<LongChecklistFacet
+ * 	    title={""}
+ * 	    data={Globals.tfs.map((tf) => {return {key: tf,
+ * 						   selected: false}})}
+ * 	    cols={[{
+ * 		    title: "Assay", data: "key",
+ * 		    className: "dt-right"
+ * 		}]}
+ * 	    order={[]}
+ * 	    buttonsOff={true}
+ * 	    match_mode_enable={true}
+ * 	    onTdClick={(tf) => { actions.toggleTf(tf) } }
+ * 	    onModeChange={(mode) => { actions.setTfsMode(mode) }}
+ * 	    mode={CHECKLIST_MATCH_ALL}
+ *         />);
+ *     return panelize("Intersect TF/histone/DNase peaks", box);
+ * }
+ * */
 
-const geneDistanceBox = (p) => {
-    let range = [0, 500000];
-    let box = (
-	<div>
-	    {rangeBox("Protein-coding genes", range,
-		      p.gene_pc_start, p.gene_pc_end,
-		      p.actions.setGenePcDistance)}
-	    {rangeBox("All genes", range,
-		      p.gene_all_start, p.gene_all_end,
-		      p.actions.setGeneAllDistance)}
-	</div>);
-    
-    return panelize("Distance to Genes", box);
-}
+/* const geneDistanceBox = (p) => {
+ *     let range = [0, 500000];
+ *     let box = (
+ * 	<div>
+ * 	    {rangeBox("Protein-coding genes", range,
+ * 		      p.gene_pc_start, p.gene_pc_end,
+ * 		      p.actions.setGenePcDistance)}
+ * 	    {rangeBox("All genes", range,
+ * 		      p.gene_all_start, p.gene_all_end,
+ * 		      p.actions.setGeneAllDistance)}
+ * 	</div>);
+ *     
+ *     return panelize("Distance to Genes", box);
+ * }
+ * */
 
 const zscore_decimal = (v) => {
     if (isNaN(parseFloat(v)) || !isFinite(v)) return 0.0;
@@ -174,21 +173,22 @@ const zscore_decimal = (v) => {
     
 const zrdecimal = (s) => (+s * 100.0);
 
-const _rankBox = ({element_type, actions, cellType}) => {
-    let title = "cRE activity" + (cellType ?
-				  " in " + make_ct_friendly(cellType) : "");
-    let box = (
-	<ListFacet
-	    title={""}
-	    items={[["chromatin-accessible", ""],
-		    ["promoter-like", ""],
-		    ["enhancer-like", ""],
-		    ["insulator-like", ""]]}
-	    selection={element_type}
-	    onchange={(e) => { actions.setType(e) }}
-        />);
-    return panelize(title, box);
-}
+/* const _rankBox = ({element_type, actions, cellType}) => {
+ *     let title = "cRE activity" + (cellType ?
+ * 				  " in " + make_ct_friendly(cellType) : "");
+ *     let box = (
+ * 	<ListFacet
+ * 	    title={""}
+ * 	    items={[["chromatin-accessible", ""],
+ * 		    ["promoter-like", ""],
+ * 		    ["enhancer-like", ""],
+ * 		    ["insulator-like", ""]]}
+ * 	    selection={element_type}
+ * 	    onchange={(e) => { actions.setType(e) }}
+ *         />);
+ *     return panelize(title, box);
+ * }
+ * */
 
 const makeRankFacet = (rfacets, assay, title, start, end, action) =>
     {

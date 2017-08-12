@@ -7,7 +7,6 @@ import GWASstudies from './gwas_studies';
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
 
-import LongListFacet from '../../../common/components/longlist';
 import Ztable from '../../../common/components/ztable/ztable';
 
 import {panelize} from '../../../common/utility';
@@ -45,7 +44,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
 	    bFilter={true}
 	    onTdClick={(td, data) => {
 		    if(td){
-			if (td.className.indexOf("dcc") == -1) {
+			if (-1 === td.className.indexOf("dcc")) {
 			    actions.setCellType(data);
 			}
 		    } else {

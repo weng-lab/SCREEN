@@ -11,6 +11,8 @@ import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
 
+import './css.css';
+
 function myCreateElement(Component, props) {
     return (<Component {...props} />);
 }

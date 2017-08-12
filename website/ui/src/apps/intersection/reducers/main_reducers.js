@@ -1,6 +1,4 @@
 import * as Actions from '../actions/main_actions';
-import * as SearchAction from '../../../common/actions/searchbox_actions.js'
-import {doToggle} from '../../../common/utility'
 
 const mainTabSetter = (state, tabName) => {
     let ret = {maintabs_active: tabName};
@@ -31,7 +29,7 @@ const main_reducers = (state, action) => {
 		   configuregb_browser: action.name,
 		   configuregb_cts: state.configuregb_cts.map(x => ({
 			   ...x,
-		       checked: x.checked || (x.cellTypeName && x.cellTypeName == state.cellType)
+		       checked: x.checked || (x.cellTypeName && x.cellTypeName === state.cellType)
 		   }))
 		  };
 	return ret;
@@ -40,7 +38,7 @@ const main_reducers = (state, action) => {
 	return {
 	    ...state,
 	    configuregb_cts: state.configuregb_cts.map(x => ({
-		...x, checked: (x.cellTypeName == action.ct) != x.checked
+		...x, checked: (x.cellTypeName === action.ct) !== x.checked
 	    }))
 	};
 		

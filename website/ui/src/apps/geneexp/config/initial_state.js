@@ -1,7 +1,6 @@
 import MainTabInfo from './maintabs.js'
 
 /*global Globals */
-/*global GlobalAssembly */
 /*global GlobalParsedQuery */
 /*eslint no-undef: "error"*/
 

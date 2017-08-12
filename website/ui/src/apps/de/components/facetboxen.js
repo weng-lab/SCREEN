@@ -5,11 +5,9 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
 
-import LongChecklistFacet from '../../../common/components/longchecklist';
 import LongListFacet from '../../../common/components/longlist';
 import Ztable from '../../../common/components/ztable/ztable';
 
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
 import {panelize} from '../../../common/utility';
 
 const cols = [{ title: "cell type", data: "name",
