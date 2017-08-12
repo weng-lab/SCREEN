@@ -1,8 +1,8 @@
 import React from 'react';
 
-var $ = require('jquery');
+const $ = require('jquery');
 require('jquery-ui');
-var _dt = require('datatables.net')
+$.DataTable = require('datatables.net');
 require( 'datatables.net-bs' )
 //require( 'datatables.net-jqui' )
 require( 'datatables.net-buttons' )
@@ -42,7 +42,7 @@ class ResultsTable extends React.Component {
 	    buttons = [];
 	}
 
-	var _datatable = $(this.refs.root).DataTable({
+	let _datatable = $(this.refs.root).DataTable({
 	    data: this.props.data,
             columns: this.props.cols,
 	    buttons,
@@ -59,8 +59,8 @@ class ResultsTable extends React.Component {
             createdRow: this.props.createdRow
 	});
 
-	var onTdClick = this.props.onTdClick;
-	var onButtonClick = this.props.onButtonClick;
+	let onTdClick = this.props.onTdClick;
+	let onButtonClick = this.props.onButtonClick;
 
 	$(this.refs.root)
 	    .on("click", "td", function() {
