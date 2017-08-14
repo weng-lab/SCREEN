@@ -11,9 +11,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, lab, labGroup,
-                 order, coAuthOrder, lastAuthNum, subLab):
+                 order, coAuthOrder, lastAuthNum, address, subLab):
         self.firstName = firstName
-        self.midInitial = midInitial
+        self.midInitial = midInitial.strip()
         self.lastName = lastName
         self.email = email
         self.lab = lab
@@ -21,7 +21,8 @@ class Author:
         self.order = order
         self.coAuthOrder = coAuthOrder
         self.lastAuthNum = lastAuthNum
-
+        self.address = address
+        
         self.subLab = subLab
         if not subLab:
             self.subLab = lab
@@ -30,7 +31,7 @@ class Author:
         n = self.firstName + ' '
         if self.midInitial:
             n += self.midInitial
-            if not n.endswith('.') and len(self.midInitial) > 1:
+            if not n.endswith('.') and 1 == len(self.midInitial):
                 n += '.'
             n += ' '
         n += self.lastName
@@ -73,14 +74,15 @@ class AuthorList:
         subLabs = getCol('M')
         coAuthOrders = getCol('N', True)
         lastAuthNums = getCol('O', True)
+        addresses = getCol('L')
         
         m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups,
-                orders, coAuthOrders, lastAuthNums, subLabs)
+                orders, coAuthOrders, lastAuthNums, addresses, subLabs)
         return [Author(*x) for x in m]
 
     def _output(self, outArrays):
-        labGroupLabToIdxCounter = 1
-        labGroupLabToIdx = OrderedDict()
+        addressToIdxCounter = 1
+        addressToIdx = OrderedDict()
 
         counter = 0
         lastIdx = len(outArrays) - 1
@@ -88,11 +90,11 @@ class AuthorList:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
             for p in people:
-                k = p.subLab
-                if k not in labGroupLabToIdx:
-                    labGroupLabToIdx[k] = labGroupLabToIdxCounter
-                    labGroupLabToIdxCounter += 1
-                superNum = labGroupLabToIdx[k]
+                k = p.address
+                if k not in addressToIdx:
+                    addressToIdx[k] = addressToIdxCounter
+                    addressToIdxCounter += 1
+                superNum = addressToIdx[k]
                 n = p.toName() + str(superNum)
                 toShow.append(n)
                 if 0 == counter:
@@ -106,8 +108,8 @@ class AuthorList:
             counter += 1
 
         print('\nlabs')
-        for k, v in labGroupLabToIdx.items():
-            print(k, v)
+        for k, v in addressToIdx.items():
+            print(v, k)
             
     def run(self):
         authors = self._loadSheet("BigList")
