@@ -10,18 +10,20 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 class Author:
-    def __init__(self, firstName, midInitial, lastName, email, lab, labGroup,
-                 order, coAuthOrder, lastAuthNum, address, subLab):
+    def __init__(self, firstName, midInitial, lastName, email, email2, lab, labGroup,
+                 order, coAuthOrder, lastAuthNum, address, address2, subLab):
         self.firstName = firstName
         self.midInitial = midInitial.strip()
         self.lastName = lastName
         self.email = email
+        self.email2 = email2
         self.lab = lab
         self.labGroup = labGroup
         self.order = order
         self.coAuthOrder = coAuthOrder
         self.lastAuthNum = lastAuthNum
         self.address = address
+        self.address2 = address2
         
         self.subLab = subLab
         if not subLab:
@@ -71,13 +73,15 @@ class AuthorList:
         labGroups = getCol('H')
         labs = getCol('I')
         orders = getCol('K', True)
-        subLabs = getCol('M')
-        coAuthOrders = getCol('N', True)
-        lastAuthNums = getCol('O', True)
-        addresses = getCol('L')
+        addresses = getCol('L')        
+        addresses2 = getCol('M')
+        emails2 = getCol('N')
+        subLabs = getCol('O')
+        coAuthOrders = getCol('P', True)
+        lastAuthNums = getCol('Q', True)
         
-        m = zip(firstNames, midInitials, lastNames, emails, labs, labGroups,
-                orders, coAuthOrders, lastAuthNums, addresses, subLabs)
+        m = zip(firstNames, midInitials, lastNames, emails, emails2, labs, labGroups,
+                orders, coAuthOrders, lastAuthNums, addresses, addresses2, subLabs)
         return [Author(*x) for x in m]
 
     def _output(self, outArrays):
@@ -90,12 +94,22 @@ class AuthorList:
             print('\n' + labGroupLab[0], '--', labGroupLab[1])
             toShow = []
             for p in people:
+
                 k = p.address
                 if k not in addressToIdx:
                     addressToIdx[k] = addressToIdxCounter
                     addressToIdxCounter += 1
                 superNum = addressToIdx[k]
                 n = p.toName() + str(superNum)
+
+                if p.address2:
+                    k = p.address2
+                    if k not in addressToIdx:
+                        addressToIdx[k] = addressToIdxCounter
+                        addressToIdxCounter += 1
+                    superNum = addressToIdx[k]
+                    n += ',' + str(superNum)
+                
                 toShow.append(n)
                 if 0 == counter:
                     toShow[-1] += '*'
