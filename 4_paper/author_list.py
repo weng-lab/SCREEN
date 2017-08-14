@@ -67,8 +67,8 @@ class AuthorList:
         midInitials = getCol('B')
         lastNames = getCol('C')
         emails = getCol('D')
-        labs = getCol('I')
         labGroups = getCol('H')
+        labs = getCol('I')
         orders = getCol('K', True)
         subLabs = getCol('M')
         coAuthOrders = getCol('N', True)
@@ -128,27 +128,28 @@ class AuthorList:
 
         def peopleOrder(x):
             return [x.order, x.lastName, x.firstName, x.midInitial]
-        
+        def coFirstOrder(x):
+            return [x.coAuthOrder, x.lastName, x.firstName, x.midInitial]
+        def coLastOrder(x):
+            return [x.lastAuthNum, x.lastName, x.firstName, x.midInitial]
+                
         for labGroupLab, people in groupby(authors, sorter):
             people = sorted(list(people), key = peopleOrder)
             names = []
             for a in people:
                 if a.coAuthOrder:
                     firstAuthors[1].append(a)
-                    numAuthors += 1
                 elif a.lastAuthNum:
                     lastAuthors[1].append(a)
-                    numAuthors += 1
-                else:
-                    names.append(a)
+                names.append(a)
             outArrays.append([labGroupLab, names])
             numAuthors += len(names)
         print("found", numAuthors, "author names")
 
-        firstAuthors[1].sort(key = peopleOrder)
+        firstAuthors[1].sort(key = coFirstOrder)
         outArrays.insert(0, firstAuthors)
 
-        lastAuthors[1].sort(key = peopleOrder)
+        lastAuthors[1].sort(key = coLastOrder)
         outArrays.append(lastAuthors)
         
         return outArrays
