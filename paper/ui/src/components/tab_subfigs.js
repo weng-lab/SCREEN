@@ -1,13 +1,23 @@
 import React from 'react';
-import Tab from '../common/components/tab';
-import Figure from './figure';
 
-class TabSubFigs extends React.Component {
+import Tab from '../common/components/tab';
+import FigureTab from './figuretab'
+
+class TabSubFigs extends FigureTab {
+    
     constructor(props) {
 	super(props);
-        this.key = "figs"
+        this.key = "subFigs";
     }
 
+    _get_figures(props) {
+	return Array(22).fill().map( (_, i) => ({
+	    title: "Extended Data Figure " + (i + 1),
+	    url: "http://users.wenglab.org/pratth/Extended-Data-Figure-" + (i + 1) + ".svg",
+	    legend: props.globals.extlegends[i]
+	}) );
+    }
+    
     shouldComponentUpdate(nextProps, nextState) {
         return this.key === nextProps.maintabs_active;
     }
@@ -16,17 +26,10 @@ class TabSubFigs extends React.Component {
         if (this.key !== this.props.maintabs_active) {
 	    return false;
 	}
-	const ext_figures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			     11, 12, 13, 14, 15, 16, 17, 18,
-			     19, 20, 21, 22];
-        return (
+	return (
 	    <Tab>
-	      {ext_figures.map( i => (
-	        <Figure number={i} title={"Extended Data Figure " + i}
-		  description={this.props.globals.extlegends[i - 1]}
-		  url={"http://users.wenglab.org/pratth/Extended-Data-Figure-" + i + ".svg"} />
-	      ) )}
-            </Tab>
+		{super.render()}
+	    </Tab>
 	);
     }
 }
