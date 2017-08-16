@@ -22,7 +22,7 @@ class TabSubFigs extends React.Component {
         return (
 	    <Tab>
 	      {ext_figures.map( i => (
-	        <Figure number={i} title={"Extended Data Figure " + i} style={{}}
+	        <Figure number={i} title={"Extended Data Figure " + i}
 		  description={this.props.globals.extlegends[i - 1]}
 		  url={"http://users.wenglab.org/pratth/Extended-Data-Figure-" + i + ".svg"} />
 	      ) )}
