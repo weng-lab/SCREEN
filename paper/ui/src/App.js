@@ -8,7 +8,13 @@ import MainTabs from './components/maintabs'
 import main_reducers from './main_reducers'
 import initialState from './config/initial_state'
 
+import { FigureLegends } from './common/figurelegends'
+
 import './App.css';
+
+let Globals = {
+    legends: FigureLegends()
+};
 
 class App extends React.Component {
     render() {
@@ -32,7 +38,7 @@ class App extends React.Component {
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>
 			    <div className="col-md-9 nopadding-left" id="tabs-container">
-				<MainTabs />
+		                <MainTabs globals={Globals} />
 			    </div>
 			</div>
 		    </div>

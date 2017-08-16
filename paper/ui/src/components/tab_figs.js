@@ -1,6 +1,5 @@
 import React from 'react';
 
-import * as Para from './utils';
 import Tab from '../common/components/tab'
 import Figure from './figure'
 
@@ -20,7 +19,7 @@ class TabFigs extends React.Component {
 	}
         return (
 	    <Tab>
-		<Figure number={1} title={"Test"} style={{}} />
+		<Figure number={1} title={""} style={{}} description={this.props.globals.legends[0]} />
 	    </Tab>
 	);
     }
