@@ -1,17 +1,15 @@
 let React = require('react');
 
-export const Figure = ({ number, description, title, style = {} }) => (
+export const Figure = ({ number, url, description, title, style = {} }) => (
     <div className="row">
         <div className="col-md-12">
-            <h3>{title}</h3>
             <div className={"panel panel-default"}>
                 <div className="panel-body">
                     <figure className={"figure"}>
-	                <img src={"http://users.wenglab.org/pratth/Figure-" + number + ".svg"}
-                          className={"figure-img img-fluid rounded img-responsive"}
-                          alt={"Figure " + number} style={style} />
+	                <img src={url} alt={title} style={style}
+                          className={"figure-img img-fluid rounded img-responsive"} />
                         <figcaption className={"figure-caption"}>
-                            <b>Figure {number}</b>. {description}
+                            <b>{title}</b>. {description}
                         </figcaption>
                     </figure>
                 </div>

@@ -21,7 +21,9 @@ class TabFigs extends React.Component {
         return (
 	    <Tab>
 	      {main_figures.map( i => (
-	        <Figure number={i} title={""} style={{}} description={this.props.globals.legends[i - 1]} />
+	        <Figure number={i} title={"Figure " + i} style={{}}
+		  description={this.props.globals.legends[i - 1]}
+		  url={"http://users.wenglab.org/pratth/Figure-" + i + ".svg"} />
 	      ) )}
             </Tab>
 	);

@@ -8,12 +8,13 @@ import MainTabs from './components/maintabs'
 import main_reducers from './main_reducers'
 import initialState from './config/initial_state'
 
-import { FigureLegends } from './common/figurelegends'
+import { FigureLegends, ExtendedLegends } from './common/figurelegends'
 
 import './App.css';
 
 let Globals = {
-    legends: FigureLegends()
+    legends: FigureLegends(),
+    extlegends: ExtendedLegends()
 };
 
 class App extends React.Component {
