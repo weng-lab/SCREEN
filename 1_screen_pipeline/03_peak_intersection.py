@@ -63,26 +63,29 @@ def makeJobs(assembly):
     total = len(allExpsIndiv)
 
     i = 0
-    jobs = []
+    jobs = []; filepairs = {"histone": [], "tf": []}
     for exp, etype in allExpsIndiv:
         i += 1
         try:
             beds = exp.bedFilters(assembly)
+            bigwigs = exp.bigWigFilters(assembly)
             if not beds:
                 print("missing", exp)
-            for bed in beds:
+            for ii in xrange(len(beds)):
                 jobs.append({"exp": exp, # this is an Exp
-                             "bed": bed, # this is an ExpFile
+                             "bed": beds[ii], # this is an ExpFile
                              "i": i,
                              "total": total,
                              "assembly": assembly,
                              "etype": etype })
+                if len(bigwigs) > ii:
+                    filepairs[etype].append((exp.biosample_term_name, exp.label, exp.encodeID, beds[ii].fileID, bigwigs[ii].fileID))
         except Exception, e:
             print(str(e))
             print("bad exp:", exp)
 
     print("will run", len(jobs), "jobs")
-    return jobs
+    return (jobs, filepairs)
 
 def runIntersectJob(jobargs, bedfnp):
     exp = jobargs["exp"]
@@ -109,7 +112,7 @@ def computeIntersections(args, assembly):
         Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
                        bedFnp)
 
-    jobs = makeJobs(assembly)
+    jobs, filepairs = makeJobs(assembly)
 
     results = Parallel(n_jobs = args.j)(
         delayed(runIntersectJob)(job, bedFnp)
@@ -161,14 +164,19 @@ def main():
     for assembly in assemblies:
         print("***********************", assembly)
         if args.list:
-            jobs = makeJobs(assembly)
+            jobs, filepairs = makeJobs(assembly)
             for j in jobs:
                 #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
                 print(j["bed"].fileID)
+            for etype in "histone", "tf":
+                with open("/data/projects/cREs/%s/TF_histone/%s.list.tsv" % (assembly, etype), "wb") as o:
+                    for a, b, c, d, e in filepairs[etype]:
+                        o.write("%s\t%s\t%s\t%s\t%s\n" % (a, b, c, d, e))
+            print("wrote %s" % ("/data/projects/cREs/%s/TF_histone/%s.list.tsv" % (assembly, etype)))
             continue
-
-        printt("intersecting TFs and Histones")
-        computeIntersections(args, assembly)
+        else:
+            printt("intersecting TFs and Histones")
+            computeIntersections(args, assembly)
 
     return 0
 
