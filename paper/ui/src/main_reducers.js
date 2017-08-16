@@ -1,5 +1,4 @@
 import * as Actions from './main_actions';
-import {doToggle} from './common/utility'
 
 const mainTabSetter = (state, tabName) => {
     let ret = {maintabs_active: tabName};
