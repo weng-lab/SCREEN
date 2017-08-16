@@ -1,9 +1,9 @@
 import React from 'react'
 
-import * as Para from './utils';
-import {tabPanelize} from '../common/utility'
+import * as Para from './tab_encyc_desc';
+import {tabPanelize} from '../../../common/utility'
 
-class TabFigs extends React.Component {
+class TabAbout extends React.Component {
     constructor(props) {
 	super(props);
         this.key = "encyc"
@@ -75,4 +75,4 @@ class TabFigs extends React.Component {
     }
 }
 
-export default TabFigs;
+export default TabAbout;
