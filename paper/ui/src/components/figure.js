@@ -2,7 +2,7 @@ let React = require('react');
 
 export const Figure = ({ number, description, title, style = {} }) => (
     <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-12">
             <h3>{title}</h3>
             <div className={"panel panel-default"}>
                 <div className="panel-body">
