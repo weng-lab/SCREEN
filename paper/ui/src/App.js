@@ -39,11 +39,11 @@ class App extends React.Component {
 		    </nav>
 		    
 		    <div className="row" style={{width: "100%"}}>
-		        <div className="col-xs-2"/>
-		        <div className="col-xs-8 nopadding-left" id="tabs-container">
+		        <div className="col-xs-1"/>
+		        <div className="col-xs-10 nopadding-left" id="tabs-container">
 		            <MainTabs globals={Globals} />
 		        </div>
-		        <div className="col-xs-2"/>
+		        <div className="col-xs-1"/>
 		    </div>
 		</div>
             </Provider>
