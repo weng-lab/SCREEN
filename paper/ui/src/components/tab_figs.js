@@ -17,10 +17,13 @@ class TabFigs extends React.Component {
         if (this.key !== this.props.maintabs_active) {
 	    return false;
 	}
+	const main_figures = [1, 2, 3, 4, 5, 6, 7, 8];
         return (
 	    <Tab>
-		<Figure number={1} title={""} style={{}} description={this.props.globals.legends[0]} />
-	    </Tab>
+	      {main_figures.map( i => (
+	        <Figure number={i} title={""} style={{}} description={this.props.globals.legends[i - 1]} />
+	      ) )}
+            </Tab>
 	);
     }
 }
