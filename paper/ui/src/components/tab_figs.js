@@ -1,7 +1,6 @@
-import React from 'react'
+import React from 'react';
 
 import * as Para from './utils';
-import {tabPanelize} from '../common/utility'
 import Tab from '../common/components/tab'
 import Figure from './figure'
 
