@@ -1,5 +1,16 @@
 let React = require('react');
 
+export const FigureTitles = () => ([
+    "ENCODE Phase III data production as of February 1, 2017",
+    "New assays used in ENCODE Phase III",
+    "Overview of the ENCODE Encyclopedia and prediction and validation of mouse embryonic enhancers",
+    "Selection of cREs and assignment of cREs to nine states and five groups in a particular cell type",
+    "Overview of SCREEN",
+    "Analyzing differential gene expression and cRE activity across developmental time points",
+    "Annotating GWAS variants using SCREEN",
+    "Fine mapping GWAS variants using SCREEN"
+]);
+
 export const FigureLegends = () => ([
     
     <span><b> | ENCODE Phase III data production as of February 1, 2017. a</b>, Human and <b>b</b>, Mouse ENCODE phase III experiments available on the ENCODE portal.
@@ -156,3 +167,27 @@ export const ExtendedLegends = () => ([
 
 ]);
 
+export const ExtendedTitles = () => ([
+    "RAMPAGE data signal at EP300",
+    "DNA replication timing (RT) programs of distinct human cell types",
+    "DNA replication timing (RT) programs are cell type-specific",
+    "SCREEN display of gene and TSS expression levels",
+    "Enhancer prediction using the average rank of DNase and H3K27ac signals",
+    "In vivo validation of ENCODE-predicted enhancers",
+    "Methods and properties of cREs",
+    "Coverage of histone mark and CTCF peaks by the current human Registry of cREs",
+    "Coverage of histone mark peaks by the current mouse Registry of cREs",
+    "Coverage of the H3K4me3 peaks by the current Registry of cREs is plotted against the average -log(FDR) of the H3K4me3 peaks",
+    "Coverage, saturation and cell-type specific annotations of the Registry of cREs",
+    "Overlap of cREs with chromHMM states",
+    "Clustering of human cell and tissue types by cRE H3K27ac signal",
+    "Clustering of human cell and tissue types by cRE DNase signal",
+    "Clustering of and mouse cell types by cRE activity",
+    "Overall cell type enrichments for variants reported by genome-wide association studies",
+    "Top cell type enrichments for variants reported by genome-wide association studies",
+    "SCREEN display of the ZMIZ1 gene and its TSS expression levels",
+    "SCREEN display of PPIF gene and its TSS expression levels",
+    "SCREEN display of AGAP1 expression levels",
+    "H3K27ac signal at EM10E0042440 across mouse embryonic tissues",
+    "Method for normalizing epigenomics signals"
+]);

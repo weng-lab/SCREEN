@@ -22,14 +22,14 @@ class FigureTab extends React.Component {
     render() {
         return (
 	    <div className="row">
-	        <ul className="nav nav-pills nav-stacked col-xs-2">
+	        <ul className="nav nav-pills nav-stacked col-xs-4 col-md-3">
 	          {this.state.figures.map( (f, i) => (
 		    <li key={"li" + i} className={i === this.state.selected_figure ? "active" : ""}>
 	                <a href="#" onClick={() => {this.setSelection(i)}}>{f.title}</a>
 	  	    </li>
 		  ) )}
 	        </ul>
-		<div className="col-xs-10">
+		<div className="col-xs-8 col-md-9">
 	          {this.state.figures.map( (f, i) => ( i !== this.state.selected_figure ? null : 
  	            <Figure key={"fig" + i} number={i} title={f.title} description={f.legend} url={f.url} />
 		  ) )}
