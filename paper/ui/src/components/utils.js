@@ -1,7 +1,9 @@
+import React from 'react';
+
 export const figure = (num, alt, style = {}) => {
     return (
         <div className={"panel panel-default"}>
-            <div class="panel-body">
+            <div className="panel-body">
                 <figure className={"figure"}>
 	            <img src={"/static/encyc/images/Slide" + num + ".JPG"}
                          className={"figure-img img-fluid rounded img-responsive"}

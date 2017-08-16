@@ -1,12 +1,12 @@
-import React from 'react'
+import React from 'react';
 
 import * as Para from './utils';
-import {tabPanelize} from '../common/utility'
+import {tabPanelize} from '../common/utility';
 
 class TabFigs extends React.Component {
     constructor(props) {
 	super(props);
-        this.key = "encyc"
+        this.key = "figs"
     }
 
     shouldComponentUpdate(nextProps, nextState) {
