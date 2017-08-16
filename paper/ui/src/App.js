@@ -37,7 +37,7 @@ class App extends React.Component {
 		    
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>
-			    <div className="col-md-9 nopadding-left" id="tabs-container">
+			    <div className="col-md-12 nopadding-left" id="tabs-container">
 		                <MainTabs globals={Globals} />
 			    </div>
 			</div>
