@@ -44,6 +44,41 @@ class AuthorList:
     def __init__(self, args):
         self.args = args
 
+    def _loadGroups(self, sheetName):
+        scope = "https://spreadsheets.google.com/feeds"
+        fnp = os.path.join(os.path.dirname(__file__), ".client_secret.json")
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(fnp, scope)
+        gs = gspread.authorize(credentials)
+        gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
+
+        print("***************", sheetName)
+        wsheet = gsheet.worksheet(sheetName)
+        numRows = 1
+        for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
+            if cell.value > "":
+                numRows += 1
+        print("numRows", numRows, "(including header)")
+
+        def getCol(letter, isInt = False):
+            col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
+            col = [x.value.strip() for x in col]
+            if isInt:
+                return [int(x) if x else 0 for x in col]
+            return col
+
+        encodeGroups = getCol('A')
+        piNames = getCol('B')
+        orders = getCol('C', True)
+        groupTitles = getCol('D')
+        descs = getCol('E')
+
+        self.labOrder = {}
+        self.labTitle = {}
+        for eg, pi, order, title, desc in zip(encodeGroups, piNames, orders, groupTitles, descs):
+            k = (eg, pi)
+            self.labOrder[k] = order
+            self.labTitle[order] = "{title} ({desc})".format(title=title, desc=desc)
+
     def _loadSheet(self, sheetName):
         # http://www.tothenew.com/blog/access-and-modify-google-sheet-using-python/
         scope = "https://spreadsheets.google.com/feeds"
@@ -114,7 +149,8 @@ class AuthorList:
         return n
 
     def makeList(self, labGroupLab, people, coauth):
-        print('\n' + labGroupLab[0], '--', labGroupLab[1])
+        print()
+        print(labGroupLab)
         toShow = []
         for p in people:
             n = self.addr(p)
@@ -142,6 +178,7 @@ class AuthorList:
             print(v, k)
 
     def run(self):
+        groups = self._loadGroups("LabOrder")
         authors = self._loadSheet("BigList")
         firstAuthors, allAuthors, lastAuthors = self.organizeAuthors(authors)
         self._output(firstAuthors, allAuthors, lastAuthors)
@@ -150,7 +187,7 @@ class AuthorList:
         numAuthors = 0
 
         def sorter(x):
-            return [x.labGroup, x.lab]
+            return [self.labOrder[(x.labGroup, x.lab)], x.labGroup, x.lab]
         authors.sort(key = sorter)
 
         allAuthors = []
@@ -167,15 +204,13 @@ class AuthorList:
 
         for labGroupLab, people in groupby(authors, sorter):
             people = sorted(list(people), key = peopleOrder)
-            names = []
             for a in people:
                 if a.coAuthOrder:
                     firstAuthors[1].append(a)
                 elif a.lastAuthNum:
                     lastAuthors[1].append(a)
-                names.append(a)
-            allAuthors.append([labGroupLab, names])
-            numAuthors += len(names)
+            allAuthors.append([self.labTitle[labGroupLab[0]], people])
+            numAuthors += len(people)
         print("found", numAuthors, "author names")
 
         firstAuthors[1].sort(key = coFirstOrder)
