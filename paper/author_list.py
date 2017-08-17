@@ -173,7 +173,7 @@ class AuthorList:
         for labGroupLab, people in allAuthors:
             self.makeList(labGroupLab, people, False)
 
-        print('\nlabs')
+        print('\nAffiliations')
         for k, v in self.addressToIdx.items():
             print(v, k)
 
