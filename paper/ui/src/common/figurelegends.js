@@ -11,6 +11,11 @@ export const FigureTitles = () => ([
     "Fine mapping GWAS variants using SCREEN"
 ]);
 
+export const FigureHeaders = () => ([
+    "", "", "", "", "Some links in this figure are interactive. Click the blue text to see corresponding views on SCREEN.",
+    "", "", ""
+]);
+
 export const FigureLegends = () => ([
     
     <span><b> | ENCODE Phase III data production as of February 1, 2017. a</b>, Human and <b>b</b>, Mouse ENCODE phase III experiments available on the ENCODE portal.

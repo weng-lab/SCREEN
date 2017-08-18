@@ -15,6 +15,7 @@ class TabFigs extends FigureTab {
 	    title: "Figure " + (i + 1) + ": " + props.globals.titles[i],
 	    url: "http://users.wenglab.org/pratth/Figure-" + (i + 1) + ".svg",
 	    legend: props.globals.legends[i],
+	    header: props.globals.headers[i]
 	}) );
     }
     
