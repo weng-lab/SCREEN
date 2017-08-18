@@ -18,7 +18,7 @@ class GwasApp extends React.Component {
 	const loggerMiddleware = createLogger();
 
 	const store = createStore(main_reducers,
-				  initialState(),
+				  initialState(this.props.params.gs, this.props.params.ct),
 				  applyMiddleware(
 				      thunkMiddleware,
 				      //loggerMiddleware
