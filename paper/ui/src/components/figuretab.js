@@ -25,7 +25,7 @@ class FigureTab extends React.Component {
 	    <div className="row">
 	        <ul className="nav nav-pills col-xs-12">
 	          {this.state.figures.map( (f, i) => (
-		    <li key={"li" + i} className={i === this.state.selected_figure ? "active" : ""}>
+		    <li key={"li" + i} className={i === this.state.selected_figure ? "active" : ""} style={{width: Math.floor(100.0 / this.state.figures.length) + "%"}}>
 	                <a href="#" onClick={() => {this.setSelection(i)}}>{f.title}</a>
 	  	    </li>
 		  ) )}

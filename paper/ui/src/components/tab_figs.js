@@ -12,7 +12,7 @@ class TabFigs extends FigureTab {
 
     _get_figures(props) {
 	return Array(8).fill().map( (_, i) => ({
-	    title: "Figure " + (i + 1) + ": " + props.globals.titles[i],
+	    title: "Figure " + (i + 1), // + ": " + props.globals.titles[i],
 	    url: "http://users.wenglab.org/pratth/Figure-" + (i + 1) + ".svg",
 	    legend: props.globals.legends[i],
 	    header: props.globals.headers[i]

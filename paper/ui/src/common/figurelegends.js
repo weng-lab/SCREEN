@@ -13,7 +13,18 @@ export const FigureTitles = () => ([
 
 export const FigureHeaders = () => ([
     "", "", "", "", "Some links in this figure are interactive. Click the blue text to see corresponding views on SCREEN.",
-    "", "", ""
+    "The labels in this figure are interactive. Click 'a' or 'b' to see corresponding views on SCREEN and the UCSC Genome Browser.",
+    "This figure is interactive. Click the GWAS citations at the top left to view them in SCREEN. Click the genome browser tracks on the right to view them in the UCSC Genome Browser.", ""
+]);
+
+export const ExtFigureHeaders = () => ([
+    "", "", "",
+    "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
+    "", "", "", "", "", "", "", "", "", "", "", "", "",
+    "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
+    "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
+    "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
+    "", ""
 ]);
 
 export const FigureLegends = () => ([

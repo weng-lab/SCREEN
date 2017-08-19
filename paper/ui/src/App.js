@@ -9,7 +9,7 @@ import main_reducers from './main_reducers'
 import initialState from './config/initial_state'
 
 import { FigureLegends, FigureTitles, ExtendedLegends, ExtendedTitles,
-         FigureHeaders } from './common/figurelegends'
+         FigureHeaders, ExtFigureHeaders } from './common/figurelegends'
 
 import './App.css';
 
@@ -18,7 +18,8 @@ let Globals = {
     titles: FigureTitles(),
     extlegends: ExtendedLegends(),
     exttitles: ExtendedTitles(),
-    headers: FigureHeaders()
+    headers: FigureHeaders(),
+    extheaders: ExtFigureHeaders()
 };
 
 class App extends React.Component {
