@@ -25,6 +25,8 @@ ReactDOM.render((
 	<Route path="/geApp/:assembly/" component={GeneExp} />
 	<Route path="/deApp/:assembly/" component={De} />
 	<Route path="/gwasApp/:assembly" component={Gwas} />
+	<Route path="/gwasApp/:assembly/:gs" component={Gwas} />
+	<Route path="/gwasApp/:assembly/:gs/:ct" component={Gwas} />
 	<Route path="/intersections/:assembly" component={Intersection} />
 	<Route path="/tads/:assembly" component={TadPage} />
     </Router>), document.getElementById('root'));
