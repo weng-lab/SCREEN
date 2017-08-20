@@ -10,6 +10,7 @@ import initialState from './config/initial_state'
 
 import { FigureLegends, FigureTitles, ExtendedLegends, ExtendedTitles,
          FigureHeaders, ExtFigureHeaders } from './common/figurelegends'
+import SupplementaryTables from './common/supplementarytables'
 
 import './App.css';
 
@@ -19,7 +20,8 @@ let Globals = {
     extlegends: ExtendedLegends(),
     exttitles: ExtendedTitles(),
     headers: FigureHeaders(),
-    extheaders: ExtFigureHeaders()
+    extheaders: ExtFigureHeaders(),
+    tables: SupplementaryTables()
 };
 
 class App extends React.Component {
