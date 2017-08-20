@@ -13,10 +13,6 @@ require( 'datatables.net-buttons/js/buttons.flash.js' )
 require( 'datatables.net-buttons/js/buttons.print.js' )
 
 class ResultsTable extends React.Component {
-    constructor(props) {
-	super(props);
-        //console.log("making ResultsTable");
-    }
 
     render() {
 	return (<div ref={"container"} style={{"width": "100%"}}>
@@ -29,7 +25,7 @@ class ResultsTable extends React.Component {
         if (this.props.cvisible) {
 	    Object.keys(this.props.cvisible).map((k) => {
                 let isVis = this.props.cvisible[k];
-		this._datatable.column(k + ":name").visible(isVis);
+		return this._datatable.column(k + ":name").visible(isVis);
 	    });
 	}
     }

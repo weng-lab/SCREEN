@@ -1,6 +1,4 @@
 import React from 'react';
-import SupplementaryTable1 from './tables/supplementarytable1';
-import SupplementaryTable2 from './tables/supplementarytable2';
 
 class TabTables extends React.Component {
 
@@ -31,7 +29,7 @@ class TabTables extends React.Component {
 	    <div className="row">
 		<div className="col-xs-12">
 	          {this.props.globals.tables.map( (t, i) => ( i !== this.state.selected_table ? null : 
- 		    <t.component />
+	            <t.component key={i} />
 		  ) )}
 	        </div>
 	    </div>	      
