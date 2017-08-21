@@ -1,11 +1,37 @@
 import React from 'react';
 
-class TabFigs extends React.Component {
+import Tab from '../common/components/tab'
+import FigureTab from './figuretab'
+
+class TabFigs extends FigureTab {
+    
+    constructor(props) {
+	super(props);
+        this.key = "figs";
+    }
+
+    _get_figures(props) {
+	return Array(8).fill().map( (_, i) => ({
+	    title: "Figure " + (i + 1), // + ": " + props.globals.titles[i],
+	    url: "http://users.wenglab.org/pratth/Figure-" + (i + 1) + ".svg",
+	    legend: props.globals.legends[i],
+	    header: props.globals.headers[i]
+	}) );
+    }
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.key === nextProps.maintabs_active;
+    }
+    
     render() {
-      return (
-	  <div>
-	  </div>
-      );
+        if (this.key !== this.props.maintabs_active) {
+	    return false;
+	}
+	return (
+	    <Tab>
+		{super.render()}
+	    </Tab>
+	);
     }
 }
 

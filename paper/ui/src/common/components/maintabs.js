@@ -3,7 +3,7 @@ import React from 'react';
 class MainTabs extends React.Component {
     render(){
         const makeTabTitle = (key, tab) => {
-            let active = key == this.props.maintabs_active;
+            let active = key === this.props.maintabs_active;
             if(!tab.visible && !active){ return (<div />) }
 	    return (
                 <li className={active ? "active" : ""}
@@ -14,12 +14,11 @@ class MainTabs extends React.Component {
         }
 
         const makeTab = (key, tab) => {
-            let active = key == this.props.maintabs_active;
+            let active = key === this.props.maintabs_active;
             if(!tab.visible && !active){ return (<div />) }
             return (
                 <div
                     className={active ? "tab-pane active" : "tab-pane"}
-                    key={"tab_" + key}
                     id={"tab_main_" + key}
                     key={"tcontent_" + key}>
 		    {React.createElement(tab.f, this.props)}
@@ -28,7 +27,7 @@ class MainTabs extends React.Component {
 
         let tabs = this.props.maintabs;
         let mainDivId = this.props.mainDivId || "exTab1";
-        let mainDivClass = this.props.mainDivClass || "container";
+        let mainDivClass = this.props.mainDivClass || "";
         let tabUlClass = this.props.tabUlClass || "nav-tabs";
         return (
             <div id={mainDivId} className={mainDivClass}>
