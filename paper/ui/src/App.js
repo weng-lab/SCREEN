@@ -11,6 +11,7 @@ import initialState from './config/initial_state'
 import { FigureLegends, FigureTitles, ExtendedLegends, ExtendedTitles,
          FigureHeaders, ExtFigureHeaders } from './common/figurelegends'
 import SupplementaryTables from './common/supplementarytables'
+import Intro from './common/intro'
 
 import './App.css';
 
@@ -21,7 +22,8 @@ let Globals = {
     exttitles: ExtendedTitles(),
     headers: FigureHeaders(),
     extheaders: ExtFigureHeaders(),
-    tables: SupplementaryTables()
+    tables: SupplementaryTables(),
+    intro: Intro()
 };
 
 class App extends React.Component {

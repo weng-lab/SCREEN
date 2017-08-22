@@ -1,7 +1,7 @@
 import MainTabInfo from './maintabs.js'
 
 const initialState = () => {
-    const defaultTab = "figs";
+    const defaultTab = "intro";
     let maintabs = MainTabInfo();
     maintabs[defaultTab].visible = true;
 
