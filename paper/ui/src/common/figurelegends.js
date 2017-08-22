@@ -24,7 +24,7 @@ export const ExtFigureHeaders = () => ([
     "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
     "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
     "This figure is interactive. Click the gene names and bar graphs to see the corresponding views on SCREEN.",
-    "", ""
+    "", "", "", "", "", "", "", "", "", "", "", ""
 ]);
 
 export const FigureLegends = () => ([
@@ -98,7 +98,7 @@ export const ExtendedLegends = () => ([
     <span><b> | RAMPAGE data signal at EP300.</b> RAMPAGE signals across six human tissues at EP300 demonstrate that both the GENCODE- and UCSC-annotated TSSs for EP300 are active.</span>,
 
     <span><b> | DNA replication timing (RT) programs of distinct human cell types.</b>
-        Genome-wide RT programs were obtained for distinct human cell types, including embryonic stem cell (hESC)-derived, primary cells and established cell lines representing intermediate stages of endoderm, mesoderm, ectoderm, and neural crest development.
+        &nbsp;Genome-wide RT programs were obtained for distinct human cell types, including embryonic stem cell (hESC)-derived, primary cells and established cell lines representing intermediate stages of endoderm, mesoderm, ectoderm, and neural crest development.
         Solid arrow lines depict the in vitro differentiation pathways of the distinct cell types from hESCs; dashed arrows depict the embryonic origin of the cell types not derived from hESCs (primary cells and cell lines).
         Dataset and protocol ENCODE IDs are shown in blue and brown for each cell type.
     </span>,
@@ -179,7 +179,27 @@ export const ExtendedLegends = () => ([
 
     <span><b> | Method for normalizing epigenomics signals. a</b>, distribution of the H3K27ac signals at rDHSs from five cell types (B cell, Liver, K562, T cell, and GM12878; shown in different colors).
         &nbsp;<b>b</b>, Distributions of the Log of the H3K27ac signals in <b>a</b>. Individually, log(signal) values of the rDHSs in each cell type roughly follow a normal distribution. <b>c</b>, Distribution of the Z-scores corresponding to the log(signal) values in <b>b</b>. Zero signal values are assigned a Z-score of -10.
-    </span>
+    </span>,
+																			       
+   <span><b> | Precision-Recall (PR) curves for VISTA Enhancer prediction.</b> PR curves for <b>a</b>, limb, <b>b</b>, hindbrain, <b>c</b>, neural tube, and <b>d</b>, midbrain enhancers at e11.5. Colours indicate peaks and signals used for anchoring and ranking the enhancer predictions. All peaks were set to 300 bp centred on their summits and the 20k top-ranked peaks were used for each tissue to ensure consistent genome coverage.																	</span>,
+
+    <span><b> | Precision-Recall (PR) curves for VISTA Enhancer prediction anchored on DHSs.</b> PR curves for <b>a</b>, limb, <b>b</b>, hindbrain, <b>c</b>, neural tube, and <b>d</b>, midbrain enhancers at e11.5. All predictions were anchored on DHSs in the respective tissue. Colours indicate signals used for ranking predictions; black indicates the average of DNase and H3K27ac signals.</span>,
+
+    <span><b> | Correlation of gene expression with epigenomic signals to predict promoter-like regions in e11.5 mouse hindbrain.</b> Scatterplots demonstrating correlation of expression with <b>a</b>, DHSs ranked according to the DNase signal (r = 0.34), <b>b</b>, DHSs ranked according to the H3K4me3 signal (r = 0.73), <b>c</b>, H3K4me3 peaks ranked according to the DNase signal (r = 0.24), and <b>d</b>, H3K4me3 peaks ranked according to the H3K4me3 signal (r = 0.56).</span>,
+
+    <span><b> | POL2 signals for GM12878 cREs.</b> Violin plots show the average POL2 signal for cREs belonging to each of the nine cRE states. cREs proximal and distal to the nearest TSSs are displayed separately. Median values are displayed along with the number of cREs in each state. These median values are used in <b>Extended Data Figure 28</b>.</span>,
+
+    <span><b> | EP300 signals for GM12878 cREs.</b> Violin plots show the average EP300 signal for cREs belonging to each of the nine cRE states. cREs proximal and distal to the nearest TSSs are displayed separately. Median values are displayed along with the number of cREs in each state. These median values are used in <b>Extended Data Figure 28</b>.</span>,
+
+    <span><b> | cRE states cluster into groups</b>. Scatterplots of <b>a</b>, the median EP300 signal or <b>b</b>, the median RAD21 signal vs. the median POL2 signal for each cRE state in GM12878. The size of an icon is proportional to the number of cREs in that state except for the inactive state. Proximal cREs are represented by square icons. Distal cREs are represented by circular icons.</span>,
+
+    <span><b> | POL2 signals at cREs with promoter-like and DNase-only signatures.</b> Violin plots of POL2 signals for cREs belonging to three states, stratified on the basis of whether the cREs are proximal (±2 kb) or distal to a GENCODE V19 TSS. p-values were calculated using a Wilcoxon test.</span>,
+
+    <span><b> | UCSC Genome Browser views of cREs around the <em>HNF4a</em> TSS.</b> Browser views of hepatocyte, bipolar spindle neuron, and B cell cREs in <b>a</b>, five-group and <b>b</b>, nine-state classifications, revealing that the promoter region of <em>HNF4a</em> is active in hepatocytes but not in neurons or B cells.</span>,
+
+    <span><b> | UCSC Genome Browser views of cREs around the <em>SPI1</em> TSS.</b> Browser views of hepatocyte, bipolar spindle neuron, and B cell cREs in <b>a</b>, five-group and <b>b</b>, nine-state classifications, revealing that the promoter region of <em>SPI1</em> is active in B cells but not in neurons or hepatocytes.</span>,
+
+    <span><b> | UCSC Genome Browser views of cREs around the <em>NPAS4</em> TSS.</b> Browser views of hepatocyte, bipolar spindle neuron, and B cell cREs in <b>a</b>, five-group and <b>b</b>, nine-state classifications, revealing that the promoter region of <em>NPAS4</em> is active in bipolar spindle neurons but not in B cells or hepatocytes.</span>
 
 ]);
 
@@ -205,5 +225,15 @@ export const ExtendedTitles = () => ([
     "SCREEN display of PPIF gene and its TSS expression levels",
     "SCREEN display of AGAP1 expression levels",
     "H3K27ac signal at EM10E0042440 across mouse embryonic tissues",
-    "Method for normalizing epigenomics signals"
+    "Method for normalizing epigenomics signals",
+    "Precision-Recall (PR) curves for VISTA Enhancer prediction",
+    "Precision-Recall (PR) curves for VISTA Enhancer prediction anchored on DHSs",
+    "Correlation of gene expression with epigenomic signals to predict promoter-like regions in e11.5 mouse hindbrain",
+    "POL2 signals for GM12878 cREs",
+    "EP300 signals for GM12878 cREs",
+    "cRE states cluster into groups",
+    "POL2 signals at cREs with promoter-like and DNase-only signatures",
+    <span>UCSC Genome Browser views of cREs around the <em>HNF4a</em> TSS</span>,
+    <span>UCSC Genome Browser views of cREs around the <em>SPI1</em> TSS</span>,
+    <span>UCSC Genome Browser views of cREs around the <em>NPAS4</em> TSS</span>
 ]);
