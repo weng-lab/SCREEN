@@ -1,3 +1,4 @@
+import Table1 from '../components/tables/table1'
 import SupplementaryTable1 from '../components/tables/supplementarytable1'
 import SupplementaryTable2 from '../components/tables/supplementarytable2'
 import SupplementaryTable3 from '../components/tables/supplementarytable3'
@@ -10,6 +11,7 @@ import SupplementaryTable9 from '../components/tables/supplementarytable9'
 import SupplementaryTable10 from '../components/tables/supplementarytable10'
 
 const SupplementaryTables = () => ([
+    {component: Table1, title: "Table 1: Experiment Matrix"},
     {component: SupplementaryTable1, title: "Supplementary Table 1: Surveyed RBPs"},
     {component: SupplementaryTable2, title: "Supplementary Table 2: VISTA regions for PR curves"},
     {component: SupplementaryTable3, title: "Supplementary Table 3: PR curve results"},

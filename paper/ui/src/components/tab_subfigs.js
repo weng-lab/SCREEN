@@ -11,9 +11,13 @@ class TabSubFigs extends FigureTab {
     }
 
     _get_figures(props) {
-	return Array(22).fill().map( (_, i) => ({
+	const extensions = ["svg", "png", "png", "svg", "svg", "svg", "svg", "svg", "svg", "svg",
+			    "svg", "svg", "svg", "svg", "svg", "svg", "svg", "svg", "svg", "svg",
+			    "svg", "svg", "png", "png", "svg", "svg", "svg", "svg", "svg", "png",
+			    "png", "png"];
+	return Array(32).fill().map( (_, i) => ({
 	    title: "Extended Data Fig. " + (i + 1), // + ": " + props.globals.exttitles[i],
-	    url: "http://users.wenglab.org/pratth/Extended-Data-Figure-" + (i + 1) + ".svg",
+	    url: "http://users.wenglab.org/pratth/Extended-Data-Figure-" + (i + 1) + "." + extensions[i],
 	    legend: props.globals.extlegends[i],
 	    header: props.globals.extheaders[i]
 	}) );
