@@ -11,7 +11,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, email2, lab, labGroup,
-                 order, coAuthOrder, lastAuthNum, address, address2, address3, subLab):
+                 order, coAuthOrder, lastAuthNum, address, institue, country,
+                 address2, address3, subLab):
         self.firstName = firstName
         self.midInitial = midInitial.strip()
         self.lastName = lastName
@@ -23,6 +24,8 @@ class Author:
         self.coAuthOrder = coAuthOrder
         self.lastAuthNum = lastAuthNum
         self.address = address
+        self.institue = institue
+        self.country = country
         self.address2 = address2
         self.address3 = address3
 
@@ -30,16 +33,27 @@ class Author:
         if not subLab:
             self.subLab = lab
 
+        if not self.midInitial.endswith('.') and 1 == len(self.midInitial):
+            self.midInitial += '.'
+            
     def toName(self):
         n = self.firstName + ' '
         if self.midInitial:
-            n += self.midInitial
-            if not n.endswith('.') and 1 == len(self.midInitial):
-                n += '.'
-            n += ' '
+            n += self.midInitial + ' '
         n += self.lastName
         return n
 
+    def isFirstOrLastAuthor(self):
+        return self.coAuthOrder or self.lastAuthNum
+
+    def toNatureJson(self):
+        return {"firstName" : self.firstName,
+                "middleName" : self.midInitial,
+                "lastName": self.lastName,
+                "email" : self.email,
+                "org" : self.institue,
+                "country" : self.country}
+    
 class AuthorList:
     def __init__(self, args):
         self.args = args
@@ -110,15 +124,18 @@ class AuthorList:
         labs = getCol('I')
         orders = getCol('K', True)
         addresses = getCol('L')
-        addresses2 = getCol('M')
-        addresses3 = getCol('N')
-        emails2 = getCol('O')
-        subLabs = getCol('P')
-        coAuthOrders = getCol('Q', True)
-        lastAuthNums = getCol('R', True)
+        institues = getCol('M')
+        countries = getCol('N')
+        addresses2 = getCol('O')
+        addresses3 = getCol('P')
+        emails2 = getCol('Q')
+        subLabs = getCol('R')
+        coAuthOrders = getCol('S', True)
+        lastAuthNums = getCol('T', True)
 
-        m = zip(firstNames, midInitials, lastNames, emails, emails2, labs, labGroups,
-                orders, coAuthOrders, lastAuthNums, addresses, addresses2, addresses3,
+        m = zip(firstNames, midInitials, lastNames, emails, emails2, labs,
+                labGroups, orders, coAuthOrders, lastAuthNums, addresses,
+                institues, countries, addresses2, addresses3,
                 subLabs)
         return [Author(*x) for x in m]
 
@@ -177,12 +194,31 @@ class AuthorList:
         for k, v in self.addressToIdx.items():
             print(v, k)
 
+    def _outputJson(self, firstAuthors, allAuthors, lastAuthors):
+        r = []
+        for p in firstAuthors[1]:
+            r.append(p.toNatureJson())
+        for p in lastAuthors[1]:
+            if "Zhiping" == p.firstName and "Weng" == p.lastName:
+                r.insert(0, p.toNatureJson())
+            else:
+                r.append(p.toNatureJson())
+        for labGroupLab, people in allAuthors:
+            for p in people:
+                if not p.isFirstOrLastAuthor():
+                    r.append(p.toNatureJson())
+        fnp = "/home/mjp/Dropbox/authors.json"
+        with open(fnp, 'w') as f:
+            json.dump(r, f)
+        print("wrote", fnp)
+
     def run(self):
         groups = self._loadGroups("LabOrder")
         authors = self._loadSheet("BigList")
         firstAuthors, allAuthors, lastAuthors = self.organizeAuthors(authors)
+        self._outputJson(firstAuthors, allAuthors, lastAuthors)
         self._output(firstAuthors, allAuthors, lastAuthors)
-
+        
     def organizeAuthors(self, authors):
         numAuthors = 0
 
