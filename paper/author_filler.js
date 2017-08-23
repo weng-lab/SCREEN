@@ -9,7 +9,7 @@ let keys = {
     country: "contrib_auth_4_country"
 };
 
-for(let i = 4; i < 5; i++){
+for(let i = 4; i < 476; i++){
     let a = authors[i];
     for (let k in keys){
 	let d = keys[k].replace('_4_', '_' + i.toString() + '_');
