@@ -65,13 +65,13 @@ class AuthorList:
         gs = gspread.authorize(credentials)
         gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
 
-        print("***************", sheetName)
+        print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
         for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
-        print("numRows", numRows, "(including header)")
+        print("numRows", numRows, "(including header)", "<br>")
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
@@ -101,13 +101,13 @@ class AuthorList:
         gs = gspread.authorize(credentials)
         gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
 
-        print("***************", sheetName)
+        print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
         for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
-        print("numRows", numRows, "(including header)")
+        print("numRows", numRows, "(including header)", "<br>")
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
@@ -144,8 +144,9 @@ class AuthorList:
         if k not in self.addressToIdx:
             self.addressToIdx[k] = self.addressToIdxCounter
             self.addressToIdxCounter += 1
+            
         superNum = self.addressToIdx[k]
-        n = p.toName() + str(superNum)
+        n = p.toName() + '<sup>' + str(superNum)
 
         if p.address2:
             k = p.address2
@@ -163,11 +164,13 @@ class AuthorList:
             superNum = self.addressToIdx[k]
             n += ',' + str(superNum)
 
+        n += '</sup>'
+            
         return n
 
     def makeList(self, labGroupLab, people, coauth):
-        print()
-        print(labGroupLab)
+        print("<br>")
+        print(labGroupLab, "<br>")
         toShow = []
         for p in people:
             n = self.addr(p)
@@ -176,7 +179,7 @@ class AuthorList:
                 toShow[-1] += '*'
             if False and lastIdx == counter:
                 toShow[-1] += '&'
-        print(', '.join(toShow))
+        print(', '.join(toShow), "<br>")
 
     def _output(self, firstAuthors, allAuthors, lastAuthors):
         self.addressToIdxCounter = 1
@@ -186,13 +189,13 @@ class AuthorList:
         print(", The ENCODE Consortium,")
         self.makeList(lastAuthors[0], lastAuthors[1], False)
 
-        print("****************************")
+        print("****************************", "<br>")
         for labGroupLab, people in allAuthors:
             self.makeList(labGroupLab, people, False)
 
-        print('\nAffiliations')
+        print("<br>", "Affiliations", "<br>")
         for k, v in self.addressToIdx.items():
-            print(v, k)
+            print(v, k, "<br>")
 
     def _outputJson(self, firstAuthors, allAuthors, lastAuthors):
         r = []
