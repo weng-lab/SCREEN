@@ -209,17 +209,26 @@ class AuthorList:
 
     def _outputJson(self, firstAuthors, allAuthors, lastAuthors):
         r = []
+        emails = set()
         for p in firstAuthors[1]:
-            r.append(p.toNatureJson())
+            if p.email not in emails:
+                emails.add(p.email)
+                r.append(p.toNatureJson())            
         for p in lastAuthors[1]:
             if "Zhiping" == p.firstName and "Weng" == p.lastName:
                 r.insert(0, p.toNatureJson())
             else:
-                r.append(p.toNatureJson())
+                if p.email not in emails:
+                    emails.add(p.email)
+                    r.append(p.toNatureJson())
         for labGroupLab, people in allAuthors:
             for p in people:
                 if not p.isFirstOrLastAuthor():
-                    r.append(p.toNatureJson())
+                    if p.email not in emails:
+                        emails.add(p.email)
+                        r.append(p.toNatureJson())
+        for idx, e in enumerate(r):
+            e["idx"] = idx + 1
         fnp = "/home/mjp/Dropbox/authors.json"
         with open(fnp, 'w') as f:
             json.dump(r, f)
