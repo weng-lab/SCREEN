@@ -9,6 +9,9 @@ from collections import namedtuple, OrderedDict
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+with open('nature_allowed_coutnries.txt') as f:
+    Countries = set([x.strip() for x in f])
+
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, email2, lab, labGroup,
                  order, coAuthOrder, lastAuthNum, address, institue, country,
@@ -25,7 +28,6 @@ class Author:
         self.lastAuthNum = lastAuthNum
         self.address = address
         self.institue = institue
-        self.country = country
         self.address2 = address2
         self.address3 = address3
 
@@ -35,7 +37,15 @@ class Author:
 
         if not self.midInitial.endswith('.') and 1 == len(self.midInitial):
             self.midInitial += '.'
-            
+
+        cFix = {"USA" : "United States",
+                "UK" : "United Kingdom",
+                "CH" : "Switzerland"}
+        c = cFix.get(country, country)
+        if c not in Countries:
+            raise Exception("missing " + c)
+        self.country = c
+        
     def toName(self):
         n = self.firstName + ' '
         if self.midInitial:
