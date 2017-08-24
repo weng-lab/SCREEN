@@ -1,7 +1,6 @@
 let React = require('react');
 import Figure from './figure'
-
-const ITEMS_PER_ROW = 8.0;
+import { Pagination } from 'react-bootstrap'
 
 class FigureTab extends React.Component {
 
@@ -14,7 +13,7 @@ class FigureTab extends React.Component {
     }
 
     setSelection(i) {
-	this.setState({ selected_figure: i });
+	this.setState({ selected_figure: i - 1 });
     }
 
     componentWillReceiveProps(props) {
@@ -22,22 +21,12 @@ class FigureTab extends React.Component {
     }
     
     render() {
-	let subrows = Array(Math.ceil(this.state.figures.length / ITEMS_PER_ROW)).fill().map( () => [] );
-	this.state.figures.map( (f, i) => {
-	    subrows[Math.floor(i / ITEMS_PER_ROW)].push(f);
-	} );
         return (
 	  <div>
-	      <div className="row">
-		{subrows.map( (s, _i) => (
-		  <ul className="nav nav-pills col-xs-12" key={_i}>
-	            {s.map( (f, i) => (
-	              <li key={"li" + _i + "_" + i} className={i + (_i * ITEMS_PER_ROW) === this.state.selected_figure ? "active" : ""} style={{width: Math.floor(100.0 / ITEMS_PER_ROW) + "%"}}>
-	                  <a href="#" onClick={() => {this.setSelection(i + (_i * ITEMS_PER_ROW))}}>{f.title}</a>
-	  	      </li>
-		    ) )}
- 	          </ul>
-		) )}
+	      <div style={{width: "100%", align: "center"}}>	
+		<Pagination className="users-pagination" bsSize="medium"  maxButtons={32}
+	          items={this.state.figures.length} activePage={this.state.selected_figure + 1}
+	          onSelect={this.setSelection.bind(this)} />
               </div>
 	      <div className="row">	
 		<div className="col-xs-12">

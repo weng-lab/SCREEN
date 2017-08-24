@@ -1,7 +1,18 @@
 import React from 'react';
+import Tab from '../common/components/tab'
 
-const ITEMS_PER_ROW = 8.0;
-
+const CustomPagination = ({ items, active, onClick }) => (
+    <div style={{"width": "100%"}}>
+	<ul className="users-pagination pagination pagination-md">
+	  {items.map( (item, i) => (
+  	    <li key={i} className={i === active ? "active" : ""}>
+	        <a role="button" href="#" onClick={() => {onClick(i)}}>{item}</a>
+	    </li>
+	  ) )}
+        </ul>
+    </div>
+);
+    
 class TabTables extends React.Component {
 
     constructor(props) {
@@ -14,33 +25,30 @@ class TabTables extends React.Component {
     setSelection(i) {
 	this.setState({ selected_table: i });
     }
-    
+
+    _format(title) {
+	if (title === "Table 1") { return "T1"; }
+	return title.replace(/Supp. Table /g, "S");
+    }
+
     render() {
-      let subrows = Array(Math.ceil(this.props.globals.tables.length / ITEMS_PER_ROW)).fill().map( () => [] );
-      this.props.globals.tables.map( (f, i) => {
-	  subrows[Math.floor(i / ITEMS_PER_ROW)].push(f);
-      } );
       return (
-	  <div>
-	    <div className="row">
-	      {subrows.map( (s, _i) => (
-		  <ul className="nav nav-pills col-xs-12" key={_i}>
-	            {s.map( (t, i) => (
-	              <li key={"li" + _i + "_" + i} className={i + (_i * ITEMS_PER_ROW) === this.state.selected_table ? "active" : ""} style={{width: Math.floor(100.0 / ITEMS_PER_ROW) + "%"}}>
-	                  <a href="#" onClick={() => {this.setSelection(i + (_i * ITEMS_PER_ROW))}}>{t.title.split(":")[0]}</a>
-	  	      </li>
-		    ) )}
- 	          </ul>
-		) )}
-            </div>
-	    <div className="row">
-		<div className="col-xs-12">
+	  <Tab>
+	      <div className="row">
+	          <CustomPagination items={this.props.globals.tables.map(t => this._format(t.title.split(":")[0]))} active={this.state.selected_table}
+	            onClick={this.setSelection.bind(this)} />
+              </div>
+	      <div className="row">
+	        <div className="col-xs-12">
+	          <div className="alert alert-info" style={{fontSize: "16pt"}}>
+	              <span className="glyphicon glyphicon-info-sign" style={{marginRight: "10px"}}></span>These tables are interactive. Click the column headers to sort, use the textboxes to search, and click the CSV buttons to download the table contents in CSV format.
+	          </div>
 	          {this.props.globals.tables.map( (t, i) => ( i !== this.state.selected_table ? null : 
-	              <div><h2>{t.title.replace(/Supp./g, "Supplementary")}</h2><t.component key={i} /></div>
+		      <div key={i}><h2>{t.title.replace(/Supp./g, "Supplementary")}</h2><t.component /></div>
 		  ) )}
 	        </div>
-	    </div>	      
-	  </div>
+	      </div>	      
+	  </Tab>
       );
 	
     }
