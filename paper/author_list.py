@@ -180,7 +180,7 @@ class AuthorList:
 
     def makeList(self, labGroupLab, people, coauth):
         print("<br>")
-        print(labGroupLab, "<br>")
+        print("<b>", labGroupLab, "</b>", "<br>")
         toShow = []
         for p in people:
             n = self.addr(p)
