@@ -12,15 +12,15 @@ import SupplementaryTable10 from '../components/tables/supplementarytable10'
 
 const SupplementaryTables = () => ([
     {component: Table1, title: "Table 1: Experiment Matrix"},
-    {component: SupplementaryTable1, title: "Supplementary Table 1: Surveyed RBPs"},
-    {component: SupplementaryTable2, title: "Supplementary Table 2: VISTA regions for PR curves"},
-    {component: SupplementaryTable3, title: "Supplementary Table 3: PR curve results"},
-    {component: SupplementaryTable4, title: "Supplementary Table 4: Newly tested enhancers"},
-    {component: SupplementaryTable5, title: "Supplementary Table 5: Promoter prediction"},
-    {component: SupplementaryTable6, title: "Supplementary Table 6: Histone peak overlap"},
-    {component: SupplementaryTable7, title: "Supplementary Table 7: GWAS studies"},
-    {component: SupplementaryTable8, title: "Supplementary Table 8: Registry datasets"},
-    {component: SupplementaryTable9, title: "Supplementary Table 9: Consolidated ChromHMM states"},
-    {component: SupplementaryTable10, title: "Supplementary Table 10: MAF quartiles"}
+    {component: SupplementaryTable1, title: "Supp. Table 1: Surveyed RBPs"},
+    {component: SupplementaryTable2, title: "Supp. Table 2: VISTA regions for PR curves"},
+    {component: SupplementaryTable3, title: "Supp. Table 3: PR curve results"},
+    {component: SupplementaryTable4, title: "Supp. Table 4: Newly tested enhancers"},
+    {component: SupplementaryTable5, title: "Supp. Table 5: Promoter prediction"},
+    {component: SupplementaryTable6, title: "Supp. Table 6: Histone peak overlap"},
+    {component: SupplementaryTable7, title: "Supp. Table 7: GWAS studies"},
+    {component: SupplementaryTable8, title: "Supp. Table 8: Registry datasets"},
+    {component: SupplementaryTable9, title: "Supp. Table 9: Consolidated ChromHMM states"},
+    {component: SupplementaryTable10, title: "Supp. Table 10: MAF quartiles"}
 ]);
 export default SupplementaryTables;
