@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from common.pg_tads import PGtads
+from pg_tads import PGtads
 
 class Tads:
     def __init__(self, assembly, ps):

@@ -11,19 +11,21 @@ from collections import OrderedDict
 
 from trackinfo import TrackInfo
 
-from common.coord import Coord
-from models.cre import CRE
-from common.pg import PGsearch
-from common.db_trackhub import DbTrackhub
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from files_and_paths import Dirs
+from utils import Utils, eprint, AddPath
+    
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from coord import Coord
+from pg import PGsearch
+from db_trackhub import DbTrackhub
+from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
-from common.helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
+from cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from constants import paths
 from config import Config
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from files_and_paths import Dirs
 
 UCSC = 1
 WASHU = 2
@@ -227,7 +229,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             ct = tct["ct"]
             ret[ct] = {}
             ctInfos = cache.datasets.byCellType[ct] # one per assay
-            displayCT = ctInfos[0]["cellTypeDesc"][:50]
+            displayCT = ctInfos[0].get("cellTypeDesc")
+            if not displayCT:
+                displayCT = ctInfos[0]["cellTypeName"]
+            displayCT = displayCT[:50]
 
             # else JSON will be invalid for WashU
             ctwu = ct.replace("'", "_").replace('"', '_')
@@ -295,7 +300,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                                        j["showCombo"],
                                                        tracksByType["signal"],
                                                        tracksByType["9state"])
-
+                    
     def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
                         signals, nineState):
         tn = tct.replace(" ", "_")
@@ -410,3 +415,83 @@ parent {stname}
 
         return json.dumps(lines)
 
+    def makeAllTracks(self, assembly):
+        self.priority = 1
+        self.lines  = []
+        self.assembly = assembly
+        
+        tracksByCt = self.loadAllMetadata(assembly)
+        cache = self.cacheW[assembly]
+
+        for ct, tracksByType in tracksByCt.iteritems():
+            for fileID, tct, url in tracksByType["cts"]:
+                if self.browser in [UCSC, ENSEMBL]:
+                    self.lines += self.makeSuperTracks(cache, fileID, tct, url,
+                                                       False, #j["showCombo"],
+                                                       tracksByType["signal"],
+                                                       tracksByType["9state"])
+        for line in self.lines:
+            print(line)
+                    
+    def loadAllMetadata(self, assembly):
+        cache = self.cacheW[self.assembly]
+        assaymap = cache.assaymap
+        assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
+
+        ret = OrderedDict()
+
+        for ct, ctInfos in cache.datasets.byCellType.iteritems(): 
+            displayCT = ctInfos[0].get("cellTypeDesc")
+            if not displayCT:
+                displayCT = ctInfos[0]["cellTypeName"]
+            displayCT = displayCT[:50]
+            for expInfo in ctInfos: # per assays
+                ret[ct] = {}
+                ctwu = ct.replace("'", "_").replace('"', '_')
+                tissue = expInfo["tissue"]
+                fileIDs = []
+                ret[ct]["signal"] = []
+                ret[ct]["9state"] = []
+                for assay in assays:
+                    if assay in assaymap:
+                        if ct in assaymap[assay]:
+                            expBigWigID = assaymap[assay][ct]
+                            expID = expBigWigID[0]
+                            fileID = expBigWigID[1]
+                            fileIDs.append(fileID)
+                            ti = TrackInfo(cache, displayCT, tissue[:50],
+                                           assay, expID, fileID)
+                            ret[ct]["signal"].append(ti)
+                            fn = fileID + ".bigBed"
+                            url = os.path.join(WWW, "9-State", fn)
+                            ret[ct]["9state"].append((assay, displayCT, url))
+                fn = '_'.join(fileIDs) + ".cREs.bigBed"
+                ret[ct]["cts"] = []
+                url = os.path.join(WWW, fn)
+                ret[ct]["cts"].append((fileID, displayCT, url))
+        return ret
+    
+def main():
+    AddPath(__file__, '../../common/')
+    from dbconnect import db_connect
+    from postgres_wrapper import PostgresWrapper
+
+    AddPath(__file__, '../../website/common/')
+    from pg import PGsearch
+    from cached_objects import CachedObjects
+    from pg_common import PGcommon
+    from db_trackhub import DbTrackhub
+    from cached_objects import CachedObjectsWrapper
+    
+    DBCONN = db_connect(os.path.realpath(__file__))
+
+    ps = PostgresWrapper(DBCONN)
+    cacheW = CachedObjectsWrapper(ps)
+    db = DbTrackhub(DBCONN)
+
+    tdb = TrackhubDb(None, ps, cacheW, db, UCSC)
+    for assembly in ["hg19"]:
+        tdb.makeAllTracks(assembly)
+    
+if __name__ == '__main__':
+    main()
