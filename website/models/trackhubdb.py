@@ -7,6 +7,7 @@ import json
 import os
 import heapq
 import re
+import argparse
 from collections import OrderedDict
 
 from trackinfo import TrackInfo
@@ -56,7 +57,8 @@ class TrackhubDb:
         self.cacheW = cacheW
         self.db = db
         self.browser = browser
-
+        self.fileIDs = set()
+        
     def ucsc_trackhub(self, *args, **kwargs):
         #print("ucsc **************** args:", args)
         uuid = args[0]
@@ -168,7 +170,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def generalCREs(self, showCombo):
+    def generalCREs(self, showCombo, hideAll = True):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom",
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
@@ -176,7 +178,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             if showCombo:
                 url = os.path.join(base, self.assembly + "-cREs-V10.bigBed")
                 t = PredictionTrack("general cREs (5 group)",
-                                    self.priority, url, True).track("general cREs (5 group)")
+                                    self.priority, url, hideAll).track("general cREs (5 group)")
                 self.priority += 1
             else:
                 t = ""
@@ -190,7 +192,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                         a = "H3K4me3" 
                     t += PredictionTrack("general cREs (9 state) " + a,
                                          self.priority, url,
-                                         True).track("general cREs (9 state) " + a)
+                                         hideAll).track("general cREs (9 state) " + a)
                     self.priority += 1
         else:
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
@@ -200,7 +202,9 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             self.priority += 1
         return t
 
-    def trackhubExp(self, trackInfo, stname):
+    def trackhubExp(self, trackInfo, stname, hideAll = False):
+        self.fileIDs.add(trackInfo.fileID)
+        
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if self.browser in [WASHU, ENSEMBL]:
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
@@ -212,10 +216,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url,
                                 trackInfo.color(), stname,
-                                trackInfo.signalMax()).track(shortLabel)
+                                trackInfo.signalMax(), hide = hideAll).track(shortLabel)
         else:
             track = BigWigTrack(desc, self.priority, url,
-                                trackInfo.color()).track_washu()
+                                trackInfo.color(), hide = hideAll).track_washu()
         self.priority += 1
         return track
 
@@ -302,17 +306,25 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                                        tracksByType["9state"])
                     
     def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
-                        signals, nineState):
+                        signals, nineState, moreTracks = True, hideAll = False,
+                        signalOnly = False):
         tn = tct.replace(" ", "_")
-        stname = tn + "_super"
+        stname = "super_" + tn
+
+        supershow = "on show"
+        if hideAll:
+            supershow = "on"
         
         ret = ["""
 track {stname}
-superTrack on show
+superTrack {supershow}
 group regulation
-shortLabel {tct}
-longLabel {tct}
-        """.format(stname = stname, tct=tct)]
+shortLabel {tct_short}
+longLabel {tct_long}
+        """.format(supershow = supershow,
+                   stname = stname,
+                   tct_short = tct[:17],
+                   tct_long = tct[:80])]
 
         shortLabel = "cREs in " + tct
         title = ' '.join(["cREs in", tct, '(5 group)'])
@@ -334,8 +346,11 @@ parent {stname}
                 a = assays[a]
             shortLabel = ' '.join([tct, "cREs", a])
             title = ' '.join(["cREs in", tct, "with high", a, '(9 state)'])
+            show = not showCombo
+            if hideAll:
+                show = False
             t = PredictionTrack(title, self.priority, turl,
-                                not showCombo).track(shortLabel)
+                                show).track(shortLabel)
             self.priority += 1
             ret.append("""
 track {tn}
@@ -343,16 +358,20 @@ parent {stname}
 """.format(tn = "ninegroup_" + tn, stname = stname) + t)
 
         for ti in signals:
-            ret.append(self.trackhubExp(ti, stname))
+            ret.append(self.trackhubExp(ti, stname, hideAll))
 
-        mts = []
-        if tct in cache.moreTracks:
-            mts = cache.moreTracks[tct]
-            for mt in mts:
-                for bw in mt["bigWigs"]:
-                    ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
-                for bed in mt["beds"]:
-                    ret.append(self.mtTrackBed(tct, mt, bed, stname))
+        if moreTracks:
+            mts = []
+            if tct in cache.moreTracks:
+                mts = cache.moreTracks[tct]
+                for mt in mts:
+                    for bw in mt["bigWigs"]:
+                        if bw not in self.fileIDs:
+                            ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
+                            self.fileIDs.add(bw)
+                    if not signalOnly:
+                        for bed in mt["beds"]:
+                            ret.append(self.mtTrackBed(tct, mt, bed, stname))
         return ret
 
     def mtColor(self, assay, mt):
@@ -419,7 +438,7 @@ parent {stname}
         self.priority = 1
         self.lines  = []
         self.assembly = assembly
-        
+
         tracksByCt = self.loadAllMetadata(assembly)
         cache = self.cacheW[assembly]
 
@@ -429,7 +448,9 @@ parent {stname}
                     self.lines += self.makeSuperTracks(cache, fileID, tct, url,
                                                        False, #j["showCombo"],
                                                        tracksByType["signal"],
-                                                       tracksByType["9state"])
+                                                       tracksByType["9state"],
+                                                       True, True,
+                                                       signalOnly = True)
         for line in self.lines:
             print(line)
                     
@@ -444,34 +465,38 @@ parent {stname}
             displayCT = ctInfos[0].get("cellTypeDesc")
             if not displayCT:
                 displayCT = ctInfos[0]["cellTypeName"]
-            displayCT = displayCT[:50]
-            for expInfo in ctInfos: # per assays
-                ret[ct] = {}
+            #displayCT = displayCT[:50]
+            ret[ct] = {}
+            ret[ct]["signal"] = []
+            ret[ct]["cts"] = []
+            ret[ct]["9state"] = []
+            for expInfo in ctInfos: # per assay
                 ctwu = ct.replace("'", "_").replace('"', '_')
                 tissue = expInfo["tissue"]
                 fileIDs = []
-                ret[ct]["signal"] = []
-                ret[ct]["9state"] = []
-                for assay in assays:
-                    if assay in assaymap:
-                        if ct in assaymap[assay]:
-                            expBigWigID = assaymap[assay][ct]
-                            expID = expBigWigID[0]
-                            fileID = expBigWigID[1]
-                            fileIDs.append(fileID)
-                            ti = TrackInfo(cache, displayCT, tissue[:50],
-                                           assay, expID, fileID)
-                            ret[ct]["signal"].append(ti)
-                            fn = fileID + ".bigBed"
-                            url = os.path.join(WWW, "9-State", fn)
-                            ret[ct]["9state"].append((assay, displayCT, url))
+                expID = expInfo["expID"]
+                fileID = expInfo["fileID"]
+                fileIDs.append(fileID)
+                ti = TrackInfo(cache, displayCT, tissue[:50],
+                               expInfo["assay"], expID, fileID)
+                ret[ct]["signal"].append(ti)
+                fn = fileID + ".bigBed"
+                url = os.path.join(WWW, "9-State", fn)
+                ret[ct]["9state"].append((expInfo["assay"], displayCT, url))
                 fn = '_'.join(fileIDs) + ".cREs.bigBed"
                 ret[ct]["cts"] = []
                 url = os.path.join(WWW, fn)
                 ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
-    
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assembly", type=str, default="hg19")
+    return parser.parse_args()
+
 def main():
+    args = parse_args()
+
     AddPath(__file__, '../../common/')
     from dbconnect import db_connect
     from postgres_wrapper import PostgresWrapper
@@ -490,7 +515,7 @@ def main():
     db = DbTrackhub(DBCONN)
 
     tdb = TrackhubDb(None, ps, cacheW, db, UCSC)
-    for assembly in ["hg19"]:
+    for assembly in [args.assembly]:
         tdb.makeAllTracks(assembly)
     
 if __name__ == '__main__':
