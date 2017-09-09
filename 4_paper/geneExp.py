@@ -23,11 +23,6 @@ from pg_common import PGcommon
 from cached_objects import CachedObjectsWrapper
 
 def main():
-    DBCONN = db_connect(os.path.realpath(__file__))
-
-    ps = PostgresWrapper(DBCONN)
-    cacheW = CachedObjectsWrapper(ps)
-
     url = "https://www.encodeproject.org/search/?type=Annotation&annotation_type=gene+expression&annotation_type=transcript+expression"
     url += "&format=json"
     url += "&limit=all"
@@ -39,7 +34,6 @@ def main():
     exps = qd.getExps(url)
     
     for idx, exp in enumerate(exps):
-        print(idx+1, len(exps))
         for f in exp.files:
             if not f.isTSV():
                 continue
@@ -52,6 +46,8 @@ def main():
                 if t.startswith("EN"):
                     enc = t.split('_')[0]
                     derived.append(enc)
-        
+            #print(idx+1, len(exps),
+            print(exp.encodeID + '\t' + ','.join(sorted(list(set(derived)))))
+
 if __name__ == "__main__":
     sys.exit(main())
