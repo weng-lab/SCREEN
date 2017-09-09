@@ -42,10 +42,13 @@ def main():
     cacheW = CachedObjectsWrapper(ps)
 
     for assembly in ["hg19", "mm10"]:
-        for ct, exps in cacheW[assembly].datasets.byCellType.iteritems():
+        byCellType = cacheW[assembly].datasets.byCellType
+        counter = 0
+        total = len(byCellType.keys())
+        for ct, exps in byCellType.iteritems():
             for expInfo in exps:
+                counter += 1
                 fileID = expInfo["fileID"]
-                print(fileID)
                 exp = qd.getExpFromFileID(fileID)
                 try:
                     reps = exp.jsondata["replicates"]
@@ -57,31 +60,14 @@ def main():
                     for s in bs.jsondata["dbxrefs"]:
                         result = re.findall(".*(CVCL_....).*", s, re.MULTILINE)
                         for r in result:
-                            if r in badCts:
-                                raise Exception("found bad " + r)
-    sys.exit(1)
-    
-    url = "https://www.encodeproject.org/search/?searchTerm=Candidate+Regulatory+Elements+%28cREs%29&type=Annotation"
-    url += "&format=json"
-    url += "&limit=all"
-
-    #qd = QueryDCC()
-
-    for exp in qd.getExps(url):
-        if not "5-group" in exp.description:
-            continue
-        alias = exp.jsondata["aliases"][0]
-        toks = alias.split('-')
-        assembly = toks[2]
-        cache = cacheW[assembly]
-        if "zhiping-weng:cREs-mm10-v10-5group" == alias:
-            continue
-        cts = cache.datasets.byCellType.keys()
-
-
-        print(exp.encodeID, alias)
-        
-
+                            if r in badCts and r not in ["CVCL_8800", "CVCL_0004", "CVCL_0031",
+                                                         "CVCL_0131", "CVCL_0579", "CVCL_0065",
+                                                         "CVCL_0480", "CVCL_0546", "CVCL_0002",
+                                                         "CVCL_0027", "CVCL_0459", "CVCL_0014",
+                                                         "CVCL_0035", "CVCL_7260", "CVCL_0399",
+                                                         "CVCL_0023", "CVCL_0320", "CVCL_0317",
+                                                         "CVCL_0530", "CVCL_0067"]:
+                                print(assembly, counter, total, "found bad " + r)
 
 if __name__ == "__main__":
     sys.exit(main())
