@@ -68,6 +68,10 @@ def main():
         if rct not in rcts:
             raise Exception("missing " + rct)
         expInfos = cacheW[assembly].datasets.byCellType[ct]
+        assays = [e["assay"] for e in expInfos]
+        assays = filter(lambda x: x not in ["DNase"], assays)
+        if assays:
+            print(exp.encodeID, '\t'.join(assays))
         
 if __name__ == "__main__":
     sys.exit(main())
