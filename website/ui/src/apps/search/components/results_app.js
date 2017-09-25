@@ -26,8 +26,10 @@ class ResultsTableContainer extends React.Component {
 
     _get_missing(a) {
 	let r = [];
-	Object.keys(this._all).map((k) => {
-	    if (!a.includes(k)) r.push(this._all[k]);
+	Object.keys(this._all).forEach((k) => {
+	    if (!a.includes(k)) {
+		r.push(this._all[k]);
+	    }
 	});
 	return r;
     }

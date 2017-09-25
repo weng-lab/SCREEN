@@ -58,13 +58,13 @@ class CTCFPage extends React.Component{
 		    data: null, jq,
                     isDone: true, isFetching: false, isError: true
 		});
-            } ).bind(this),
+            } ),
             success: ( r => {
                 this.setState({
 		    data: r["data"], jq, isDone: true,
                     isFetching: false, isError: false
 		});
-            } ).bind(this)
+            } )
 	});
 	
     }

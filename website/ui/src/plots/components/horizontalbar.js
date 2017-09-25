@@ -4,7 +4,7 @@ import ScaledPlot from './scaledplot';
 export const compute_offsets = (sorted_keys, itemsets, value) => {
     let total_items = 0; let cmax = 0;
     let labeloffsets = []; let yoffsets = {};
-    sorted_keys.map((k) => {
+    sorted_keys.forEach((k) => {
 	yoffsets[k] = total_items;
 	labeloffsets.push(total_items + (
  	    itemsets[k].items.length / 2.0

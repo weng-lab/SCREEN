@@ -35,7 +35,7 @@ class ViolinPlot extends ScaledPlot {
     
     _path(q, o) {
 	let r = "M0 " + this._y(q.domain[0] - 1);
-	q.values.map( (v, i) => {
+	q.values.forEach( (v, i) => {
 	    r += " L" + (this._vscale * v * o) + " " + this._y(q.domain[0] + (i * +q.step));
 	} );
 	return r + "L0 " + this._y(q.domain[1] + 1);

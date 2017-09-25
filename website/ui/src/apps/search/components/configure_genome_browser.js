@@ -46,6 +46,8 @@ class ConfigureGenomeBrowser extends React.Component {
                 this.openGenomeBrowser(jdata, "/washu_trackhub_url"); break;
 	    case "Ensembl":
                 this.openGenomeBrowser(jdata, "/ensembl_trackhub_url"); break;
+	    default:
+		console.log("unknown genome browser " + gbrowser);
 	}
     }
 
