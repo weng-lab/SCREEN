@@ -1,7 +1,6 @@
 import cherrypy
 
 from common.page_info import PageInfoMain
-from common.page_info_search import PageInfoSearch
 from common.session import Sessions
 
 class MainController:

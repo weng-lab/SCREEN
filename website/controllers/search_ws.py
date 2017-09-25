@@ -7,6 +7,8 @@ import cherrypy
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from config import Config
 from cre_utils import checkChrom
+from parse_search import ParseSearch
+from pg_cart import PGcart
 
 class SearchWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
@@ -32,12 +34,30 @@ class SearchWebService(object):
 
         self.actions = {"search" : self.search}
         
-    def process(self, j, args, kwargs):
+    def process(self, j, args, uuid):
         action = args[0]
         try:
-            return self.actions[action](j, args[1:])
+            return self.actions[action](j, args[1:], uuid)
         except:
             raise
 
-    def search(self, j, args):
+    def search(self, j, args, uuid):
         chrom = checkChrom(self.assembly, j)
+
+        parsed = ""
+        if "q" in j:
+            p = ParseSearch(self.ps.DBCONN, self.assembly, j)
+            parsed = p.parse()
+            if j["q"] and not p.haveresults(parsed):
+                ret["failed"] = j["q"]
+
+        cart = PGcart(self.ps, self.assembly)
+        accessions = cart.get(uuid)
+
+        parsed["cart_accessions"] = accessions
+        if "cart" in j:
+            parsed["accessions"] = accessions
+
+        ret = {"parsedQuery" : parsed,
+               "globalSessionUid" : uuid}
+        return ret

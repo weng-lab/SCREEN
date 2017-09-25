@@ -90,7 +90,6 @@ class SearchPage extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-
 	fetch("/searchws/search",
 	      {
 		  headers: {
@@ -98,14 +97,11 @@ class SearchPage extends React.Component {
 		      'Content-Type': 'application/json'
 		  },
 		  method: "POST",
-		  body: JSON.stringify({
-		      assembly: "hg19",
-		      a: 1,
-		      b: 2})
+		  body: JSON.stringify(nextProps.location.query)
 	      })
 	    .then((response) => (response.json()))
 	    .then((r) => {
-		this.setState({search: r, isFetching: false, isError: false});
+		this.setState({parsedQuery: r, isFetching: false, isError: false});
 	    })
 	    .catch((err) => {
 		console.log("err loading files");

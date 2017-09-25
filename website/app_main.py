@@ -118,7 +118,7 @@ class MainApp():
     def searchws(self, *args, **kwargs):
         #print(cherrypy.request)
         j = cherrypy.request.json
-        return self.searchWS.process(j, args, kwargs)
+        return self.searchWS.process(j, args, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()

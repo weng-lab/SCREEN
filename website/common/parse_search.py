@@ -44,6 +44,10 @@ class ParseSearch:
         # TODO: add more here!
         return self.kwargs["q"][:2048]
 
+    def haveresults(self, parsed):
+        return parsed["coord_chrom"] or parsed["cellType"] or (
+            parsed["accessions"] and len(parsed["accessions"]))
+
     def _find_coord(self, s):
         _p = s.split()
         for x in _p:
