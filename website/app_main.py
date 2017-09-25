@@ -16,11 +16,8 @@ from controllers.search_ws import SearchWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
 from controllers.intersection_controller import IntersectionController
 from controllers.tads_controller import TadsController
-#from controllers.comparison_controller import ComparisonController
 
 from common.session import Sessions
-
-from timeit import default_timer as timer
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
@@ -171,5 +168,5 @@ class MainApp():
         return self.tf.tfJson(j)
 
     @cherrypy.expose
-    def globalData(self, assembly, ver):
+    def globalData(self, ver, assembly):
         return self.global_data.static(assembly, ver)

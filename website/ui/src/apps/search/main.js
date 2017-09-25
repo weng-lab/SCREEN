@@ -15,17 +15,8 @@ import initialState from './config/initial_state'
 
 class SearchPageInner extends React.Component {
     render() {
-	let maintab = null;
-        let subtab = null;
-	if("maintab" in this.props.params){
-	    maintab = this.props.params.maintab;
-            if("subtab" in this.props.params){
-                subtab = this.props.params.subtab;
-            }
-	}
-
 	const store = createStore(main_reducers,
-				  initialState(maintab, subtab),
+				  initialState(this.props.search, this.props.globals),
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
@@ -56,7 +47,8 @@ class SearchPageInner extends React.Component {
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
-                            <NavBarApp show_cartimage={true}
+                            <NavBarApp assembly={this.props.search.assembly}
+				       show_cartimage={true}
                                        searchbox={SearchBox} />}/>
                         </div>
 		    </nav>
@@ -74,18 +66,23 @@ class SearchPageInner extends React.Component {
 class SearchPage extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { isFetching: false, isError: false };
+	this.state = { isFetching: false, isFetchingGlobals: false, isError: false };
     }
 
     componentDidMount(){
 	this.search(this.props);
+	this.globals(this.props);
     }
 
     componentWillReceiveProps(nextProps){
 	this.search(nextProps);
+	this.globals(nextProps);
     }
     
     search(nextProps){
+	if("search" in this.state){
+	    return;
+	}
 	if(this.state.isFetching){
 	    return;
 	}
@@ -101,16 +98,45 @@ class SearchPage extends React.Component {
 	      })
 	    .then((response) => (response.json()))
 	    .then((r) => {
-		this.setState({parsedQuery: r, isFetching: false, isError: false});
+		this.setState({search: r, isFetching: false, isError: false});
 	    })
 	    .catch((err) => {
-		console.log("err loading files");
+		console.log("err searching ");
+		console.log(nextProps.location.query);
 		console.log(err);
                 this.setState({isFetching: false, isError: true});
 	    });
     }
     
+    globals(nextProps){
+	if("globals" in this.state){
+	    return;
+	}
+	if(this.state.isFetchingGlobals){
+	    return;
+	}
+	this.setState({isFetchingGlobals: true});
+	fetch("/globalData/0/" + nextProps.location.query.assembly)
+	    .then((response) => (response.json()))
+	    .then((r) => {
+		this.setState({globals: r, isFetchingGlobals: false, isError: false});
+	    })
+	    .catch((err) => {
+		console.log("err searching ");
+		console.log(nextProps.location.query);
+		console.log(err);
+                this.setState({isFetchingGlobals: false, isError: true});
+	    });
+    }
+    
     render() {
+	if("search" in this.state && "globals" in this.state){
+	    return (
+		<div>
+		    <SearchPageInner search={this.state.search}
+				     globals={this.state.globals}/>
+		</div>);
+	}
 	return (<div />);
     }
 }

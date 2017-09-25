@@ -2,10 +2,6 @@ import React from 'react'
 
 import CartImage, {cart_connector} from './cart_image'
 
-/*global HOMEPAGE */
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class NavBarApp extends React.Component {
     render() {
 	var SearchBox = "";
@@ -28,8 +24,8 @@ class NavBarApp extends React.Component {
 
 	return (
 	    <div className="navbar-header">
-		<a className="navbar-brand" href={HOMEPAGE.url}>
-		    {HOMEPAGE.title} {GlobalAssembly}
+		<a className="navbar-brand" href={"/"}>
+		    {"SCREEN"} {this.props.assembly}
                 </a>
 		
                 {SearchBox}
