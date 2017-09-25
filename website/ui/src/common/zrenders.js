@@ -83,10 +83,6 @@ export const cart_img = (rmv, src_only) => {
     return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
-export const creLink = (accession) => (
-    <a href="#">{accession}</a>
-)
-
 export const popup = (p, c) => (
     <span data-toggle="tooltip" data-placement="top" title={p}>
 	{c}
@@ -94,7 +90,7 @@ export const popup = (p, c) => (
 )
 
 export const creLinkPop = (accession, type, full, meta) => (
-    popup("Click for cRE details", creLink(accession))
+    popup("Click for cRE details")
 )
 
 export const geLink = (gene) => (
@@ -463,7 +459,7 @@ export const creTableAccessionProxReact = (cre) => {
 export const creTableAccession = (cre, type, full, meta) => {
     return (
 	<div>
-	    {popup("Click for cRE details", creLink(cre.accession))}
+	    {popup("Click for cRE details")}
 	    <br />
 	    {popup("Concordant", concordantStarReact(cre.concordant))}
 	    {creTableAccessionProx(cre)}
