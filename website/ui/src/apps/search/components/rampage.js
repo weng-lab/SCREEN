@@ -10,8 +10,6 @@ import HelpIcon from '../../../common/components/help_icon';
 import * as Render from '../../../common/zrenders';
 import * as Actions from '../actions/main_actions';
 
-var d3 = require('d3');
-
 class Rampage extends React.Component {
     constructor(props) {
 	super(props);
@@ -76,9 +74,9 @@ class Rampage extends React.Component {
 	    }
 	}
 
-	if(event.key == 'n'){
+	if(event.key === 'n'){
             this.transcriptUp();
-	} else if(event.key == 'm'){
+	} else if(event.key === 'm'){
             this.transcriptDown();
 	}
     }
@@ -88,7 +86,6 @@ class Rampage extends React.Component {
         let data = this.props.keysAndData.tsss;
         let gene = this.props.keysAndData.gene;
 
-        let tsses = sortedTranscripts.map((tss) => { return data[tss]; });
         let selectTsses = sortedTranscripts.map((tss) => {
             return (<option value={tss}>{tss}</option>); });
 
@@ -175,7 +172,7 @@ class Rampage extends React.Component {
 
     d3Render(){
 	if ("details" === this.props.maintabs_active
-	    && "rampage" != this.props.re_details_tab_active ) {
+	    && "rampage" !== this.props.re_details_tab_active ) {
 	    return;
 	}
 
@@ -185,29 +182,7 @@ class Rampage extends React.Component {
         var itemsByID = transcript.itemsByID;
 	var items = transcript.itemsGrouped[this.state.sortOrder];
 
-	var sorted_keys = Object.keys(items).sort( (a, b) => (
-	    // from http://stackoverflow.com/a/9645447
-	    a.toLowerCase().localeCompare(b.toLowerCase())
-	));
-
 	var rank_f = rid => itemsByID[rid][this.state.datascale];
-
-	var subName_f = (rid) => {
-	    let t = itemsByID[rid];
-	    return t["biosample_term_name"] + ' (' + t.strand + ')';
-	}
-
-	var grid = d3.range(items.length).map((i) => {
-	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
-	});
-
-	var leftOffset = 200;
-	var widthFactor = 0.5;
-	var total_items = 0;
-	var labeloffsets = [];
-	var yoffsets = {};
-	var cmax = 0;
-	var d;
 
 	let format = {
 	    value: rank_f,

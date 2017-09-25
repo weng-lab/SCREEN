@@ -6,9 +6,6 @@ import * as ZRender from '../../../common/zrenders'
 /*eslint no-undef: "error"*/
 
 const TableColumns = (cts) => {
-
-    let klassCenter = "text-center";
-
     let accHelp = (
 	<span>
 	    accession
@@ -28,7 +25,7 @@ const TableColumns = (cts) => {
 	    nearest genes:
 	    <br />
 	    protein-coding / all&nbsp;&nbsp;
-            {"mm10" == GlobalAssembly && ZHelpTooltip("DifferentialGeneMouse")}
+            {"mm10" === GlobalAssembly && ZHelpTooltip("DifferentialGeneMouse")}
 	</span>);
 
     let tz = (name) => ( <span>{name}<br />Z</span>)

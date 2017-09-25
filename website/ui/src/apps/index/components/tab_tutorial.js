@@ -19,6 +19,7 @@ class TabTutorial extends React.Component {
 	const Iframe = (url) => (
             <iframe width="560" height="315"
 	            src={url}
+		    title={url}
 	            frameBorder="0" allowFullScreen>
 	    </iframe>);
 	    

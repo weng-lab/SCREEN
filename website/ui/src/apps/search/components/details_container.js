@@ -8,7 +8,7 @@ import * as Render from '../../../common/zrenders';
 class DetailsContainer extends React.Component {
     render() {
         const makeTabTitle = (key, tab) => {
-            let active = key == this.props.re_details_tab_active;
+            let active = key === this.props.re_details_tab_active;
             if(!tab.enabled && !active){ return (<div />) }
 	    let cn = (active ? "active" : "") + " detailsTabTitle";
             return (
@@ -20,7 +20,7 @@ class DetailsContainer extends React.Component {
         }
 
         const makeTab = (key, tab) => {
-            let active = key == this.props.re_details_tab_active;
+            let active = key === this.props.re_details_tab_active;
             if(!tab.enabled && !active){ return (<div />) }
             return (
 		<div

@@ -22,10 +22,11 @@ class Tree extends React.Component {
 
     _list_to_tree(list) {
 	var nodes = [], l = (list.length + 1) * 2, p;
-	for (var i = 0; i < l - 1; ++i) {
+	let i;
+	for (i = 0; i < l - 1; ++i) {
 	    nodes.push({"name": i, "left": null, "right": null});
 	}
-	for (var i = list.length - 1; i >= 0; --i) {
+	for (i = list.length - 1; i >= 0; --i) {
 	    p = +list[i];
 	    nodes[i + list.length + 1].left = nodes[Math.floor(p / l)];
 	    nodes[i + list.length + 1].right = nodes[p % l];
@@ -66,9 +67,13 @@ class Tree extends React.Component {
 
     componentDidUpdate() {
 
-	if (!this.refs.container.style.display == "block") return;
+	if (!this.refs.container.style.display === "block") {
+	    return;
+	}
 	$(this.refs.container).empty();
-	if (!this.props.data) return;
+	if (!this.props.data) {
+	    return;
+	}
 
 	var tree = this._list_to_tree(this.props.data);
 	var data = this._format_for_d3(tree, this._tree_depth(tree));
@@ -99,7 +104,7 @@ class Tree extends React.Component {
 		  "translate(0," + margin.top + ")");
 
 	// adds the links between the nodes
-	var link = g.selectAll(".link")
+	g.selectAll(".link")
 	    .data(nodes.descendants().slice(1))
 	    .enter().append("path")
 	    .attr("class", "link")
@@ -117,13 +122,13 @@ class Tree extends React.Component {
 	    .append("g")
 	    .attr("class", function(d) {
 		return "node" +
-		    (d.children && d.children.length != 1 ? " node--internal" : " node--leaf"); })
+		    (d.children && d.children.length !== 1 ? " node--internal" : " node--leaf"); })
 	    .attr("transform", function(d) {
 		return "translate(" + _x(d.y) + "," + _y(d.x) + ")"; })
 	    .on("click", (d) => {this._on_click(d)});
 
 	node.append("path")
-	    .style("fill-opacity", (d) => (d.children && d.children.length != 1 ? "1.0" : "0.0"))
+	    .style("fill-opacity", (d) => (d.children && d.children.length !== 1 ? "1.0" : "0.0"))
 	    .attr("d", d3.symbol().size(5));
 
 	// adds the text to the node

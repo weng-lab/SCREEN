@@ -50,7 +50,7 @@ export const infer_primary_type = (cell_type, tissue) => {
 	return "ectoderm";
     else if (cell_type.includes("epitheli"))
 	return "endoderm";
-    else if (tissue == "blood")
+    else if (tissue === "blood")
 	return "hemocytoblast derivatives";
     return "unknown";
 };
@@ -70,7 +70,7 @@ export const tissue_name = (cell_type) => {
 
 export const name_and_tissue = (d) => {
     var t = tissue_name(d);
-    return friendly_celltype(d) + (t == "" ? "" : " (" + t + ")");
+    return friendly_celltype(d) + (t === "" ? "" : " (" + t + ")");
 };
 
 export const tissue_color = (cell_type) => {

@@ -1,5 +1,4 @@
 import React from 'react';
-import {render} from 'react-dom';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';
@@ -58,7 +57,7 @@ class ExpressionPlot extends React.Component {
 		 compartments_selected: new Set(["cell"]),
 		 biosample_types_selected: new Set(Globals.geBiosampleTypes)};
         var jq = JSON.stringify(q);
-	if(this.state.jq == jq){
+	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }

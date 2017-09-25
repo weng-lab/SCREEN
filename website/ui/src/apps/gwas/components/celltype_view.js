@@ -8,7 +8,7 @@ import * as Render from '../../../common/zrenders';
 
 import loading from '../../../common/components/loading';
 import Ztable from '../../../common/components/ztable/ztable';
-import HelpIcon, {HelpTooltip} from '../../../common/components/help_icon';
+import HelpIcon from '../../../common/components/help_icon';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/

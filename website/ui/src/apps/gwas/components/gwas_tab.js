@@ -10,7 +10,6 @@ import CelltypeView from '../components/celltype_view';
 import loading from '../../../common/components/loading';
 import {arrowNote} from '../../../common/utility';
 import Ztable from '../../../common/components/ztable/ztable';
-import HelpIcon from '../../../common/components/help_icon';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/

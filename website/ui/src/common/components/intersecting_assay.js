@@ -35,7 +35,7 @@ class IntersectingAssay extends React.Component {
         }
         let q = {GlobalAssembly, accession: cre_accession_detail, target, eset: table.eset};
         var jq = JSON.stringify(q);
-        if (this.state.jq == jq) { return; } // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
+        if (this.state.jq === jq) { return; } // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
         this.setState({jq, isFetching: true});
         $.ajax({
             url: this.url,

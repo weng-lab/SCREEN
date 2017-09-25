@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Ztable from '../../../common/components/ztable/ztable';
-import * as Render from '../../../common/zrenders';
 import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
 

@@ -32,7 +32,7 @@ class GeneExp extends React.Component{
         var q = {GlobalAssembly, gene, compartments_selected,
                  biosample_types_selected};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -56,7 +56,6 @@ class GeneExp extends React.Component{
 
 
     doRenderWrapper(){
-        let gene = this.props.gene;
         if("items" in this.state){
             return <ExpressionBoxplot data={this.state} />;
         }

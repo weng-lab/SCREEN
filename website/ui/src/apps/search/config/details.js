@@ -4,14 +4,13 @@ import $ from 'jquery';
 import Ztable from '../../../common/components/ztable/ztable';
 import BarGraphTable from '../components/bar_graph_table';
 
-import GeneExp from '../../geneexp/components/gene_exp';
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
 import Rampage from '../components/rampage';
 import MiniPeaks from '../components/minipeaks';
 
 import HelpIcon from '../../../common/components/help_icon';
 
-import {TopTissuesTables, TargetGeneTable, NearbyGenomicTable,
+import {TopTissuesTables, NearbyGenomicTable,
         TfIntersectionTable, OrthologTable, FantomCatTable, CistromeIntersectionTable} from './details_tables';
 
 import loading from '../../../common/components/loading';
@@ -62,7 +61,7 @@ function tabEles(data, tables, numCols){
         let table = tables[key];
 	cols.push(tabEle(_data, key, table, numCols));
     };
-    if(0 == numCols){
+    if(0 === numCols){
 	return cols;
     }
     var chunks = chunkArr(cols, numCols);
@@ -116,7 +115,7 @@ class ReTabBase extends React.Component{
         }
         var q = {GlobalAssembly, "accession" : cre_accession_detail};
         var jq = JSON.stringify(q);
-	if(this.state.jq == jq){
+	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -186,16 +185,6 @@ class FantomCatTab extends ReTabBase {
 	this.doRender = (data) => {
 	    return tabEles(data, FantomCatTable(this.props.actions), 1);
 	}
-    }
-}
-
-class TargetGeneTab extends ReTabBase{
-    constructor(props) {
-	super(props, "targetGene");
-        this.doRender = (data) => {
-            return (<div>hi!</div>);
-            return tabEles(data, TargetGeneTable(), 1);
-        }
     }
 }
 
@@ -271,10 +260,9 @@ class RampageTab extends ReTabBase{
 	super(props, "rampage");
 
         this.doRender = (keysAndData) => {
-            let sortedKeys = keysAndData.sortedKeys;
             let data = keysAndData.tsss;
 
-	    if(0 == data.length) {
+	    if(0 === data.length) {
 		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
 	    }
 
@@ -290,11 +278,7 @@ class RampageTab extends ReTabBase{
 }
 
 const DetailsTabInfo = () => {
-    let otherAssembly = GlobalAssembly == "mm10" ? "hg19" : "mm10";
-
-    let off = {
-        targetGene : {title: "Candidate Target Genes",
-                      enabled: 0 && "mm10" != GlobalAssembly, f: TargetGeneTab}};
+    let otherAssembly = GlobalAssembly === "mm10" ? "hg19" : "mm10";
 
     return {
         topTissues : {title: Render.tabTitle(["Top", "Tissues"]),
@@ -304,13 +288,13 @@ const DetailsTabInfo = () => {
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
 	cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
-                         enabled: GlobalAssembly == "mm10" || GlobalAssembly == "hg38", f: CistromeIntersectionTab},
+                         enabled: GlobalAssembly === "mm10" || GlobalAssembly === "hg38", f: CistromeIntersectionTab},
 	fantom_cat: {title: Render.tabTitle(["FANTOM CAT", "Intersection"]),
-		    enabled: GlobalAssembly == "hg19", f: FantomCatTab},
+		    enabled: GlobalAssembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
-                  enabled: "mm10" != GlobalAssembly,
+                  enabled: "mm10" !== GlobalAssembly,
                   f: RampageTab},
         ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},

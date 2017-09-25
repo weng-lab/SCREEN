@@ -31,14 +31,14 @@ class DeExp extends React.Component{
     }
 
     loadDe({gene, ct1, ct2, actions}){
-        if(null == ct1 || null == ct2){
+        if(null === ct1 || null === ct2){
             this.props.actions.setDes(null);
             this.setState({selectCT: true});
             return;
         }
         var q = {GlobalAssembly, gene, ct1, ct2};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }

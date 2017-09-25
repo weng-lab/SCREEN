@@ -1,12 +1,10 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import $ from 'jquery';
 
 import Ztable from '../../../common/components/ztable/ztable';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
-import {getCommonState} from '../../../common/utility';
 import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
@@ -22,15 +20,15 @@ class TableWithCart extends React.Component {
     }
 
     table_click_handler(td, rowdata, actions){
-        if (td.indexOf("browser") != -1) {
+        if (td.indexOf("browser") !== -1) {
 	    let cre = {...rowdata, ...rowdata.info};
 	    actions.showGenomeBrowser(cre, "");
 	    return;
 	}
-        if (td.indexOf("geneexp") != -1) {
+        if (td.indexOf("geneexp") !== -1) {
 	    return;
 	}
-        if (td.indexOf("cart") != -1) {
+        if (td.indexOf("cart") !== -1) {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
@@ -193,7 +191,7 @@ class TableWithCart extends React.Component {
     }
 
     _format_message(a) {
-	if (a.length == 0) {
+	if (a.length === 0) {
             return a;
         }
 	let r = "";

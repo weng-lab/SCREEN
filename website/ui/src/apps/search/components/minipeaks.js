@@ -10,20 +10,10 @@ import * as Render from '../../../common/zrenders';
 import Ztable from '../../../common/components/ztable/ztable';
 import loading from '../../../common/components/loading';
 
-import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name} from '../config/colors'
-
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
 
 const ROWHEIGHT = 30.0;
-const ROWMARGIN = 15;
-const COLMARGIN = 10;
-const LEFTMARGIN = 450;
-const TOPMARGIN = 100;
-const TOPANGLED = 60.0;
-const TOPANGLE = TOPANGLED * Math.PI / 180.0;
-
-const _tissuecolor = (t) => (TissueColors[t] ? TissueColors[t] : "#000000");
 
 class MiniPeaks extends React.Component {
     constructor(props) {
@@ -49,7 +39,7 @@ class MiniPeaks extends React.Component {
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
 	if("details" === nextProps.maintabs_active){
-            if(this.key == nextProps.re_details_tab_active){
+            if(this.key === nextProps.re_details_tab_active){
                 this.loadPeaks(nextProps);
             }
         }
@@ -61,7 +51,7 @@ class MiniPeaks extends React.Component {
 	}
 	var q = {GlobalAssembly, accession: cre_accession_detail};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -90,7 +80,7 @@ class MiniPeaks extends React.Component {
 		return "";
 	    }
 	    // let fileID = dataRaw.fileID; if needed....
-	    var mmax = (assay == "dnase") ? 150 : 50;
+	    var mmax = (assay === "dnase") ? 150 : 50;
 	    var mfactor = ROWHEIGHT / mmax;
 	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];

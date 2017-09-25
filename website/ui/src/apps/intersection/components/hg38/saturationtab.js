@@ -4,13 +4,10 @@ import ViolinPlot from '../../../../plots/components/violinplot';
 import PlotWithHeader from '../../../../plots/components/plotwithheader';
 
 class SaturationTab extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     _render_boxplot(q, o) {
-	if (!q) return <div />;
+	if (!q) {
+	    return <div />;
+	}
 	return (<div>
 		<div className="row">
 	            <PlotWithHeader colspan={12} text="saturation test" height={850} headersize={3}>
