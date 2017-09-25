@@ -11,9 +11,6 @@ import DetailsTabInfo from './details';
 
 import {isCart} from '../../../common/utility';
 
-/*global GlobalParsedQuery */
-/*eslint no-undef: "error"*/
-
 class ResultsTab extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
        return "results" === nextProps.maintabs_active;
@@ -50,10 +47,10 @@ class ActivityProfileTab extends React.Component {
     render() { return <ActivityProfile key="aprofile" />;}
 }
 
-const MainTabInfo = () => {
+const MainTabInfo = (parsedQuery) => {
     let gene = null;
-    if(GlobalParsedQuery.genes.length > 0){
-	gene = GlobalParsedQuery.genes[0].approved_symbol;
+    if(parsedQuery.genes.length > 0){
+	gene = parsedQuery.genes[0].approved_symbol;
     }
     let geTitle = gene ? gene + " Expression" : "";
 

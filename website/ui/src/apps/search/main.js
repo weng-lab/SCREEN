@@ -13,7 +13,7 @@ import {isCart} from '../../common/utility'
 
 import initialState from './config/initial_state'
 
-class SearchPage extends React.Component {
+class SearchPageInner extends React.Component {
     render() {
 	let maintab = null;
         let subtab = null;
@@ -70,4 +70,53 @@ class SearchPage extends React.Component {
         );
     }
 }
+
+class SearchPage extends React.Component {
+    constructor(props) {
+	super(props);
+	this.state = { isFetching: false, isError: false };
+    }
+
+    componentDidMount(){
+	this.search(this.props);
+    }
+
+    componentWillReceiveProps(nextProps){
+	this.search(nextProps);
+    }
+    
+    search(nextProps){
+	if(this.state.isFetching){
+	    return;
+	}
+	this.setState({isFetching: true});
+
+	fetch("/searchws/search",
+	      {
+		  headers: {
+		      'Accept': 'application/json',
+		      'Content-Type': 'application/json'
+		  },
+		  method: "POST",
+		  body: JSON.stringify({
+		      assembly: "hg19",
+		      a: 1,
+		      b: 2})
+	      })
+	    .then((response) => (response.json()))
+	    .then((r) => {
+		this.setState({search: r, isFetching: false, isError: false});
+	    })
+	    .catch((err) => {
+		console.log("err loading files");
+		console.log(err);
+                this.setState({isFetching: false, isError: true});
+	    });
+    }
+    
+    render() {
+	return (<div />);
+    }
+}
+
 export default SearchPage;

@@ -13,6 +13,7 @@ from controllers.tf_controller import TfController
 from controllers.trackhub_controller import TrackhubController
 from controllers.cart_ws import CartWebServiceWrapper
 from controllers.data_ws import DataWebServiceWrapper
+from controllers.search_ws import SearchWebServiceWrapper
 from controllers.autocomplete_controller import AutocompleteWebService
 from controllers.intersection_controller import IntersectionController
 from controllers.tads_controller import TadsController
@@ -36,11 +37,11 @@ class MainApp():
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
         self.ic = IntersectionController(self.templates, ps, cache)
-        #self.cp = ComparisonController(self.templates, ps, cache)
         self.cartWS = CartWebServiceWrapper(ps, cache)
         self.trackhub = TrackhubController(self.templates, ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.autoWS = AutocompleteWebService(ps)
+        self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
 
     @cherrypy.expose
@@ -110,6 +111,14 @@ class MainApp():
     @cherrypy.expose
     def tads(self, *args, **kwargs):
         return self.tc.tads(args, kwargs, self.sessions.userUid())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def searchws(self, *args, **kwargs):
+        #print(cherrypy.request)
+        j = cherrypy.request.json
+        return self.searchWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
