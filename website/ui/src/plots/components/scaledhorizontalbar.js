@@ -2,11 +2,6 @@ import React from 'react';
 import HorizontalBar, {compute_offsets} from './horizontalbar';
 
 class ScaledHorizontalBar extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     render() {
 	let format = this.props.format.value ? this.props.format.value : x => x;
 	let offsets = compute_offsets(

@@ -8,7 +8,7 @@ class HorizontalBars extends React.Component {
     }
 
     _render() {
-	if(this.refs.container.style.display != "block") {
+	if(this.refs.container.style.display !== "block") {
 	    return;
 	}
 	if(this.props.width < 200){

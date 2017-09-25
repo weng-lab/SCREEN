@@ -47,7 +47,7 @@ class CelltypeView extends React.Component {
         var q = {GlobalAssembly, gwas_study,
                  "cellType" : cellType.cellTypeName };
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -78,8 +78,6 @@ class CelltypeView extends React.Component {
         let vcols = data.vcols;
 
 	let klassCenter = "dt-body-center dt-head-center ";
-	let ctsHelp = "SCT<br />" +
-	    HelpTooltip("CellTypeSpecifiedClassification");
         let cols = [
             {title: "accession", data: "info", className: klassCenter,
              render: Render.creTableAccession },

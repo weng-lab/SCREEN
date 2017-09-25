@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 import * as Render from '../../../common/zrenders';
 
 import IntersectingAssayTf from '../components/intersecting_assay_tf';
@@ -105,7 +103,7 @@ export const OrthologTable = () => ({
 	emptyText: "No orthologous cRE identified",
 	cols: [
 	    {title: "accession", "data": "accession", className: "dt-right",
-             render: Render.relink(GlobalAssembly == "mm10" ? "hg19" : "mm10")},
+             render: Render.relink(GlobalAssembly === "mm10" ? "hg19" : "mm10")},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: Render.integer},
 	    {title: "end", "data": "stop", render: Render.integer},
@@ -204,40 +202,6 @@ export const TargetGeneTable = () => ({
     }
 });
 
-const table_click_handler = (td, snp) => {
-    if (td.className.indexOf("browser") != -1){
-	var half_window = 7500;
-	var arr = window.location.href.split("/");
-	var host = arr[0] + "//" + arr[2];
-	var data = JSON.stringify({"snp" : snp,
-				   "halfWindow" : half_window,
-				   "host" : host,
-				   GlobalAssembly});
-	var url = "/ucsc_trackhub_url_snp";
-
-	$.ajax({
-	    type: "POST",
-	    url: url,
-	    data: data,
-	    dataType: "json",
-	    contentType : "application/json",
-	    async: false, // http://stackoverflow.com/a/20235765
-	    success: (r) => {
-		if ("err" in r) {
-		    $("#errMsg").text(r.err);
-		    $("#errBox").show()
-		    return true;
-		}
-		console.log(r.url, r.trackhubUrl);
-		window.open(r.url, '_blank');
-	    },
-	    error: (a, b, c) => {
-		console.log(a);
-	    }
-	});
-    }
-};
-
 export const NearbyGenomicTable = () => {
     let ret = {
         nearby_genes: {
@@ -289,7 +253,7 @@ export const NearbyGenomicTable = () => {
 	    order: [[1, "asc"]]
         }
     };
-    if("hg19" == GlobalAssembly){
+    if("hg19" === GlobalAssembly){
         ret = {...ret,
                tads: {
 	           title: "Genes within TAD",

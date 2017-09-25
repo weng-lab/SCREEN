@@ -1,5 +1,4 @@
 import React from 'react'
-import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';

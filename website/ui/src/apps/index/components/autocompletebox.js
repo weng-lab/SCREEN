@@ -1,8 +1,6 @@
 import React from 'react'
 import $ from 'jquery';
 
-import * as Actions from '../actions'
-
 import AutocompleteTextbox from '../../../common/components/autocompletetextbox';
 
 class AutocompleteBox extends React.Component {
@@ -65,7 +63,7 @@ class AutocompleteBox extends React.Component {
     }
 
     handleKeyPress = (event) => {
-	if(event.key == 'Enter'){
+	if(event.key === 'Enter'){
 	    this.searchHg19();
 	}
     }

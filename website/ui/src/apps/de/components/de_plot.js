@@ -1,5 +1,4 @@
 import React from 'react'
-import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';
@@ -90,9 +89,6 @@ class DePlot extends React.Component {
             .range(["#ffcd00", "#ff0000"]);
         var x = d3.scale.linear()
             .domain(xdomain).nice()
-            .range([0, width]);
-        var xr = d3.scale.linear()
-            .domain([0, xdomain[1] - xdomain[0]]).nice()
             .range([0, width]);
         var y = d3.scale.linear()
             .domain(y_domain).nice()
