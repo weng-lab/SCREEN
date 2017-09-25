@@ -4,7 +4,6 @@ from __future__ import print_function
 
 import cherrypy, jinja2, os, sys
 
-from controllers.main_controller import MainController
 from controllers.geneexp_controller import GeneExpController
 from controllers.de_controller import DeController
 from controllers.gwas_controller import GwasController
@@ -29,7 +28,6 @@ from templates import Templates
 class MainApp():
     def __init__(self, args, viewDir, staticDir, ps, cache):
         self.templates = Templates(viewDir, staticDir)
-        self.mc = MainController(self.templates, ps, cache)
         self.ge = GeneExpController(self.templates, ps, cache)
         self.de = DeController(self.templates, ps, cache)
         self.tc = TadsController(self.templates, ps, cache)
@@ -43,10 +41,6 @@ class MainApp():
         self.autoWS = AutocompleteWebService(ps)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
-
-    @cherrypy.expose
-    def index(self, *args, **kwargs):
-        return self.mc.Index()
 
     @cherrypy.expose
     def intersections(self, *args, **kwargs):
@@ -95,10 +89,6 @@ class MainApp():
     @cherrypy.expose
     def comparison(self, *args, **kwargs):
         return self.cp.comparison(args, kwargs, self.sessions.userUid())
-
-    @cherrypy.expose
-    def search(self, *args, **kwargs):
-        return self.mc.search(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
