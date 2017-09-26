@@ -96,6 +96,12 @@ class RangeSlider extends React.Component {
 	var xrange = this.props.range;
 	var srange = this.props.selection_range;
 
+	let data  =this.props.data;
+	console.log("data:", data);
+	if(!data){
+	    return;
+	}
+	
 	var svg = d3.select(destination_div).append("svg")
 	    .attr("width", width)
 	    .attr("height", height);
@@ -108,11 +114,11 @@ class RangeSlider extends React.Component {
 	    .rangeRound([0, width]);
 
 	var y = d3.scaleLinear()
-	    .domain([0, this.props.data.binMax])
+	    .domain([0, data.binMax])
 	    .range([height, 0]);
 
 	var bar = svg.selectAll(".bar")
-	    .data(this.props.data.bins)
+	    .data(data.bins)
 	    .enter().append("g")
 	    .attr("fill", function(d) {
 		return (d[0] >= +srange[0] && d[0] < +srange[1]

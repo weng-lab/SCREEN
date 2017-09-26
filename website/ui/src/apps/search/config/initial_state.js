@@ -14,7 +14,7 @@ const initialState = (search, globals) => {
     const parsedQuery = search.parsedQuery;
     
     let maintab = pmaintab || "results";
-    let maintabs = MainTabInfo(parsedQuery);
+    let maintabs = MainTabInfo(parsedQuery, globals);
     maintabs[maintab].visible = true;
     let maintab_visible = pmaintab ? true : isCart();
 

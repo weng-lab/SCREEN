@@ -8,10 +8,6 @@ import * as Actions from '../actions/main_actions';
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin} from '../../../common/utility';
 
-/*global Globals */
-/*global GlobalParsedQuery */
-/*eslint no-undef: "error"*/
-
 class ResultsTableContainer extends React.Component {
     constructor(props) {
 	super(props);
@@ -161,7 +157,7 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
-	let interp = GlobalParsedQuery["interpretation"];
+	let interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
 	    let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
@@ -190,7 +186,8 @@ class ResultsTableContainer extends React.Component {
 		    missingAssays={this.state.missingAssays}
                     cts={this.state.cts}
 	            hasct={this.props.cellType}
-	            make_ct_friendly={ct => Globals.byCellType[ct][0]["name"]}
+	            make_ct_friendly={ct =>
+			this.props.globals.byCellType[ct][0]["name"]}
 		/>
 	    </div>);
     }

@@ -10,9 +10,6 @@ import loading from '../../../common/components/loading';
 import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
@@ -32,7 +29,7 @@ class TableWithCart extends React.Component {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
-	    let j = {GlobalAssembly, accessions};
+	    let j = {assembly: this.props.assembly, accessions};
 	    $.ajax({
 		type: "POST",
 		url: "/cart/set",
@@ -56,7 +53,7 @@ class TableWithCart extends React.Component {
 	})
         accessions = new Set([...this.props.cart_accessions,
                               ...accessions]);
-	let j = {GlobalAssembly, accessions};
+	let j = {assembly: this.props.assembly, accessions};
 	$.ajax({
 	    type: "POST",
 	    url: "/cart/set",
@@ -77,7 +74,7 @@ class TableWithCart extends React.Component {
 
     clearCart() {
 	let accessions = new Set([]);
-	let j = {GlobalAssembly, accessions}
+	let j = {assembly: this.props.assembly, accessions}
 	$.ajax({
 	    type: "POST",
 	    url: "/cart/set",
@@ -272,7 +269,7 @@ class TableWithCart extends React.Component {
 		    
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
-	if("mm10" === GlobalAssembly){
+	if("mm10" === this.props.assembly){
 	    diffExp = (
 		<span>
 		    {"Click the "}

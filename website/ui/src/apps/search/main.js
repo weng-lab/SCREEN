@@ -16,7 +16,8 @@ import initialState from './config/initial_state'
 class SearchPageInner extends React.Component {
     render() {
 	const store = createStore(main_reducers,
-				  initialState(this.props.search, this.props.globals),
+				  initialState(this.props.search,
+					       this.props.globals),
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
@@ -31,13 +32,15 @@ class SearchPageInner extends React.Component {
 	    } else {
 		return (
                     <div className="row" style={{width: "100%"}}>
-			<div className="col-md-3 nopadding-right" id="facets-container">
+			<div className="col-md-3 nopadding-right"
+			     id="facets-container">
                             <FacetBoxen globals={this.props.globals} />
 			</div>
-			<div className="col-md-9 nopadding-left" id="tabs-container">
-			    {/*
-                            <MainTabs />
-			    */}
+			<div className="col-md-9 nopadding-left"
+			     id="tabs-container">
+			    <MainTabs globals={this.props.globals}
+				      search={this.props.search}
+			    />
 			</div>
 		    </div>);
 	    }

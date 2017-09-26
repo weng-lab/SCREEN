@@ -15,13 +15,16 @@ class ResultsTab extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
        return "results" === nextProps.maintabs_active;
     }
+
     render() {
        if("results" !== this.props.maintabs_active){
             return false;
         }
-        return (<ResultsTableContainer />);
+        return (<ResultsTableContainer globals={this.props.globals} />);
     }
 }
+
+let ResultsTabWrapper = (globals) => () => <ResultsTab globals={globals} />
 
 class TreeTab extends React.Component{
     render() { return (<ResultsTree />); }
@@ -47,7 +50,7 @@ class ActivityProfileTab extends React.Component {
     render() { return <ActivityProfile key="aprofile" />;}
 }
 
-const MainTabInfo = (parsedQuery) => {
+const MainTabInfo = (parsedQuery, globals) => {
     let gene = null;
     if(parsedQuery.genes.length > 0){
 	gene = parsedQuery.genes[0].approved_symbol;
@@ -56,7 +59,8 @@ const MainTabInfo = (parsedQuery) => {
 
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
 
-    return {results : {title: resultsTitle, visible: true, f: ResultsTab},
+    return {results : {title: resultsTitle, visible: true,
+		       f: ResultsTabWrapper(globals)},
 	    configgb: {title: "Configure Genome Browser", visible: false,
 		       f: ConfigureGenomeBrowser},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
