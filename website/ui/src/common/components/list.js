@@ -1,5 +1,4 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
 
 export class ListItem extends React.Component {
 
@@ -73,37 +72,10 @@ class ListFacet extends React.Component {
 				 n={val}
 				 selected={selected} />;
             } else {
-                return <div />;
+                return <div key={key} />;
             }
 	} );
 	return <div>{items}</div>;
     }
 }
 export default ListFacet;
-
-/*
- * test function with dummy data
- */
-(function() {
-
-    if (!document.getElementById("list_facet")) return;
-
-    var items = [
-	[
-	    "K562",
-	    10
-	],
-	[
-	    "HeLa-S3",
-	    20
-	],
-	[
-	    "GM12878",
-	    100
-	]
-    ];
-    var selection = null;
-
-    ReactDOM.render(<ListFacet items={items} selection={selection} />, document.getElementById("list_facet"));
-
-})();

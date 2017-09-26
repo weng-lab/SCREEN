@@ -61,36 +61,36 @@ const accessionsBox = ({accessions, actions}) => {
 const cellTypesBox = ({cellType, actions, globals}) => {
     let box = (
 	<LongListFacet
-	title={""}
-	data={globals.cellTypeInfoArr}
-	cols={[
-	    { title: "", data: "name",
-	      orderable: false,
-	      render: () => ("<input type='radio' />")},
-	    { title: "cell type", data: "name",
-	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
-	      className: "dt-right" },
-	    { title: "", data: "cellTypeName",
-	      className: "dt-right dcc",
-	      render: Render.assayIcon,
-	      orderable: false }
-	]}
-	order={[]}
-	buttonsOff={true}
-	selection={cellType}
-	friendlySelectionLookup={make_ct_friendly(globals)}
-	onTdClick={(value, td, cellObj) => {
-	    if(td){
-		if (td.className.indexOf("dcc") === -1) {
-		    actions.setCellType(value);
-		}
-	    } else {
-		actions.setCellType(value);
-	    }
-	}}
+	    title={""}
+	    data={globals.cellTypeInfoArr}
+	    cols={[
+		{ title: "", data: "name",
+		  orderable: false,
+		  render: () => ("<input type='radio' />")},
+		{ title: "cell type", data: "name",
+		  className: "dt-right"},
+		{ title: "tissue", data: "tissue",
+		  className: "dt-right" },
+		{ title: "", data: "cellTypeName",
+		  className: "dt-right dcc",
+		  render: Render.assayIcon(globals),
+		  orderable: false }
+	    ]}
+	    order={[]}
+	    buttonsOff={true}
+	    selection={cellType}
+	    friendlySelectionLookup={make_ct_friendly(globals)}
+	    onTdClick={(value, td, cellObj) => {
+		    if(td){
+			if (td.className.indexOf("dcc") === -1) {
+			    actions.setCellType(value);
+			}
+		    } else {
+			actions.setCellType(value);
+		    }
+		}}
         />);
-    return panelize("Cell types", box, "CellTypeFacet");
+    return panelize("Cell types", box, "CellTypeFacet", globals);
 }
 
 const chromBox = ({coord_chrom, actions, globals}) => {
@@ -121,7 +121,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
 	    h_interval={chromLen / histBins.numBins}
 	    onchange={(se) => { actions.setCoords(se[0], se[1]) }}
         />);
-    return panelize("Coordinates: " + title, box, "CoordinateFacet");
+    return panelize("Coordinates: " + title, box, "CoordinateFacet", globals);
 }
 
 const zscore_decimal = (v) => {
@@ -175,7 +175,7 @@ const rankBox = (p) => {
 		</span>)}
         </div>);
     
-    return panelize(title, box, "Z-scoreFacet");
+    return panelize(title, box, "Z-scoreFacet", p.globals);
 };
 
 class FacetBoxen extends React.Component {
@@ -204,11 +204,11 @@ class FacetBoxen extends React.Component {
 
         return (
 	    <div>
-		{/*accessionsBox(this.props)*/}
-		{/*cellTypesBox(this.props)*/}
-		{/*chromBox(this.props)*/}
-		{/*startEndBox(this.props)*/}
-		{/*rankBox(this.props)*/}
+		{accessionsBox(this.props)}
+		{cellTypesBox(this.props)}
+		{chromBox(this.props)}
+		{startEndBox(this.props)}
+		{rankBox(this.props)}
             </div>);
     }
 }

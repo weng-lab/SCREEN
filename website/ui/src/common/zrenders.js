@@ -159,8 +159,8 @@ export const dccLinkCtGroup = (ctn) => {
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
-export const dccLinkCtGroupCus = (ctn, content) => {
-    let accs = Globals.byCellType[ctn].map((info) => {
+export const dccLinkCtGroupCus = (globals, ctn, content) => {
+    let accs = globals.byCellType[ctn].map((info) => {
 	return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
@@ -227,10 +227,10 @@ export const searchLink = (data) => (approved_symbol) => {
     return "<a href='" + url + "'>" + approved_symbol + "</a>";
 }
 
-export const assayIcon = (ctn) => {
-    let colors = Globals.colors.cREs;
+export const assayIcon = (globals) => (ctn) => {
+    let colors = globals.colors.cREs;
 
-    let assays = Globals.byCellType[ctn].map((a) => (a.assay));
+    let assays = globals.byCellType[ctn].map((a) => (a.assay));
     assays.sort();
     let w = 12;
     let fw = 2 * w + 4;
@@ -265,7 +265,7 @@ export const assayIcon = (ctn) => {
 	    </svg>
 	</span>);
     let title = assays.join(", ");
-    let c = dccLinkCtGroupCus(ctn, e);
+    let c = dccLinkCtGroupCus(globals, ctn, e);
     return popup(title, c);
 }
 

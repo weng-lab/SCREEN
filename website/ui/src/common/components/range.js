@@ -3,7 +3,8 @@ import $ from 'jquery';
 
 import {chain_functions} from '../common';
 
-var d3 = require('d3');
+let d3 = require('d3');
+let slider = require( "jquery-ui/ui/widgets/slider" );
 
 class RangeSlider extends React.Component {
 
@@ -54,27 +55,39 @@ class RangeSlider extends React.Component {
     }
     
     render() {
-	let histogram = (this.props.nohistogram ? "" : <div ref="histogram" style={{width: "100%", height: "20px"}} />);
-	return (<div>
-		   <div style={{fontWeight: "bold"}}>{this.props.title}</div>
-	           {histogram}
-  		   <div ref="container" />
+	let histogram = (this.props.nohistogram ? "" :
+			 <div ref="histogram"
+			      style={{width: "100%", height: "20px"}} />);
+	return (
+	    <div>
+		<div style={{fontWeight: "bold"}}>{this.props.title}</div>
+	        {histogram}
+  		<div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
-		<input ref="txmin" type="text" value={this.state.selection_range[0]} onChange={this._ontxchange} onBlur={this.onMinChange}
-	 	         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} onKeyDown={this._keypress} /> -&nbsp;
-		<input ref="txmax" type="text" value={this.state.selection_range[1]} onChange={this._ontxchange} onBlur={this.onMaxChange}
-		         style={{textAlign: "center", width: "40%", position: "relative", fontWeight: "bold"}} onKeyDown={this._keypress} />
+		    <input ref="txmin"
+			   type="text"
+			   value={this.state.selection_range[0]}
+			   onChange={this._ontxchange} onBlur={this.onMinChange}
+	 	           style={{textAlign: "center", width: "40%",
+				   position: "relative", fontWeight: "bold"}}
+			   onKeyDown={this._keypress} /> -&nbsp;
+		    <input ref="txmax" type="text"
+			   value={this.state.selection_range[1]}
+			   onChange={this._ontxchange} onBlur={this.onMaxChange}
+		           style={{textAlign: "center", width: "40%",
+				   position: "relative", fontWeight: "bold"}}
+			   onKeyDown={this._keypress} />
 		</div>
-		</div>
-	       );
+	    </div>);
     }
 
     _update_width() {
-	if (this.props.updateWidth) this.props.updateWidth($(this.refs.histogram).width());
+	if (this.props.updateWidth) {
+	    this.props.updateWidth($(this.refs.histogram).width());
+	}
     }
 
     create_histogram(destination_div) {
-
 	$(destination_div).empty();
 
 	var div = $(destination_div);
@@ -150,12 +163,14 @@ class RangeSlider extends React.Component {
     }
 
     create_range_slider(dcontainer) {
-	var container = $(dcontainer);
-	container.empty().slider({
+	let container = $(dcontainer);
+	let selection = this.props.selection_range;
+	slider({
+	    source: dcontainer,
 	    range: true,
 	    min: this.props.range[0],
 	    max: this.props.range[1],
-	    values: [ +this.props.selection_range[0], +this.props.selection_range[1] ],
+	    values: [ +selection[0], +selection[1] ],
 	    stop: this._set_selection,
 	    slide: this.update_selection
 	});

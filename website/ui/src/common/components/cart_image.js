@@ -17,11 +17,12 @@ class CartImage extends React.Component {
 	return (
 	    <object
 		type="image/svg+xml"
-		data="/static/re_cart.view.svg"
+		data={process.env.PUBLIC_URL + "/re_cart.view.svg"}
 		id="shoppingcart_obj"
 		ref="svg"
 		onClick={this.onClick} title="show cart">
-	        <img src="/static/re_cart.view.png" alt="cart" />
+	        <img src={process.env.PUBLIC_URL + "/re_cart.view.png"}
+			 alt="cart" />
 	    </object>
 	);
     }
@@ -31,8 +32,10 @@ class CartImage extends React.Component {
 	this.refs.svg.addEventListener("load", () => {
 	    var svg = this.refs.svg.contentDocument.getElementsByTagName("svg")[0];
 	    var img = svg.getElementsByTagName("image")[0];
-	    img.onclick = () => {if (this.props.number > 0) {
-		onClick();};
+	    img.onclick = () => {
+		if (this.props.number > 0) {
+		    onClick();
+		};
 	    }
 	    this.refs.svg.contentDocument.getElementById("number").firstChild.nodeValue = this.props.number;
 	});

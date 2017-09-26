@@ -1,8 +1,6 @@
 import React from 'react'
 import $ from 'jquery';
 
-import {brJoin} from '../utility'
-
 export const ZHelpTooltip = (globals, helpkey, color = "#0000EE") => {
     let data = null;
     if(helpkey in globals.helpKeys){
@@ -34,14 +32,16 @@ class HelpIcon extends React.Component {
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
 	let data = null
-	if(this.props.helpkey in this.props.globals.helpKeys){
-	    data = this.props.globals.helpKeys[this.props.helpkey];
+
+	let helpKeys = this.props.globals.helpKeys;
+	if(this.props.helpkey in helpKeys){
+	    data = helpKeys[this.props.helpkey];
 	} else {
 	    console.log("help missing", this.props.helpkey);
 	    return false;
 	}
 	
-        let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
+        let content = data.summary.replace(/\n\n/g, '\n').split('\n');
 
 	return (
             <span style={{fontSize: "14pt"}}>
@@ -59,7 +59,7 @@ class HelpIcon extends React.Component {
                         {data.title}
                     </h3>
                     <div className="popover-content">
-                        {content}
+                        {content.map((e, i) => <span key={i}>{e}</span>)}
                     </div>
 		</div>
 	    </span>);
