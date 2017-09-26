@@ -2,22 +2,19 @@ import React from 'react';
 import {ZHelpTooltip} from '../../../common/components/help_icon'
 import * as ZRender from '../../../common/zrenders'
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
-const TableColumns = (cts) => {
+const TableColumns = (globals, assembly, cts) => {
     let accHelp = (
 	<span>
 	    accession
 	    <br />
-	    {ZHelpTooltip("CellTypeTableAccessionCol")}
+	    {ZHelpTooltip(globals, "CellTypeTableAccessionCol")}
 	</span>);
     
     let sctHelp = (
 	<span>
 	    {cts}
 	    <br />
-	    {ZHelpTooltip("CellTypeSpecifiedClassification")}
+	    {ZHelpTooltip(globals, "CellTypeSpecifiedClassification")}
 	</span>);
     
     let geneHelp = (
@@ -25,7 +22,7 @@ const TableColumns = (cts) => {
 	    nearest genes:
 	    <br />
 	    protein-coding / all&nbsp;&nbsp;
-            {"mm10" === GlobalAssembly && ZHelpTooltip("DifferentialGeneMouse")}
+            {"mm10" === assembly && ZHelpTooltip(globals, "DifferentialGeneMouse")}
 	</span>);
 
     let tz = (name) => ( <span>{name}<br />Z</span>)

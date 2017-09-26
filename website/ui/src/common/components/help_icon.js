@@ -1,21 +1,12 @@
 import React from 'react'
-import ReactDOMServer from 'react-dom/server'
 import $ from 'jquery';
 
 import {brJoin} from '../utility'
 
-/*global Globals */
-/*eslint no-undef: "error"*/
-
-export const HelpTooltip = (helpkey, color = "#0000EE") => {
-    return ReactDOMServer.renderToStaticMarkup(
-	ZHelpTooltip(helpkey, color));
-}
-
-export const ZHelpTooltip = (helpkey, color = "#0000EE") => {
+export const ZHelpTooltip = (globals, helpkey, color = "#0000EE") => {
     let data = null;
-    if(helpkey in Globals.helpKeys){
-	data = Globals.helpKeys[helpkey];
+    if(helpkey in globals.helpKeys){
+	data = globals.helpKeys[helpkey];
     } else {
 	console.log("help missing", helpkey);
 	return "";
@@ -43,8 +34,8 @@ class HelpIcon extends React.Component {
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
 	let data = null
-	if(this.props.helpkey in Globals.helpKeys){
-	    data = Globals.helpKeys[this.props.helpkey];
+	if(this.props.helpkey in this.props.globals.helpKeys){
+	    data = this.props.globals.helpKeys[this.props.helpkey];
 	} else {
 	    console.log("help missing", this.props.helpkey);
 	    return false;

@@ -13,7 +13,7 @@ from models.minipeaks import MiniPeaks
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.cytoband import Cytoband
-from models.trees import Trees
+#from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
 from models.tads import Tads

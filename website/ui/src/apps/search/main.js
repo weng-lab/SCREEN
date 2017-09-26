@@ -32,10 +32,12 @@ class SearchPageInner extends React.Component {
 		return (
                     <div className="row" style={{width: "100%"}}>
 			<div className="col-md-3 nopadding-right" id="facets-container">
-                            <FacetBoxen />
+                            <FacetBoxen globals={this.props.globals} />
 			</div>
 			<div className="col-md-9 nopadding-left" id="tabs-container">
+			    {/*
                             <MainTabs />
+			    */}
 			</div>
 		    </div>);
 	    }
