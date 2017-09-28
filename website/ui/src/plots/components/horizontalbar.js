@@ -61,11 +61,18 @@ class HorizontalBar extends ScaledPlot {
 	);
 	let bars = (this._sorted_keys.map((key, k) => (
 	    this.props.itemsets[key].items.map((item, i) => (
-		<g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + "," + this._y(this._item_distribution.yoffsets[key]) + ")"}>
-		    <rect height={this._barheight} x="0" y={this._y(i)} strokeWidth="1" stroke="white"
-		      width={this._value(item) * this._xscale} style={{fill: this.props.itemsets[key].color}} />
-	            <text x={this._value(item) * this._xscale + 5} y={this._y(i) + fontsize}
-		      style={{fill: "#000", fontSize: fontsize + "px"}}>
+		
+		<g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + "," +
+			      this._y(this._item_distribution.yoffsets[key]) + ")"}>
+		    <rect height={this._barheight} x="0" y={this._y(i)}
+			  strokeWidth="1" stroke="white"
+			  width={this._value(item) * this._xscale}
+			  style={{fill: this.props.itemsets[key].color}} />
+		    
+	            <text x={this._value(item) * this._xscale + 5}
+			  y={this._y(i) + fontsize}
+			  style={{fill: "#000000", fontSize: fontsize + "px"}}
+		    >
 		        {this._value(item) + " " + this._label(item)}
 		    </text>
 		</g>
@@ -76,7 +83,8 @@ class HorizontalBar extends ScaledPlot {
 	    <text key={key}
 		  x={this.props.axis_offsets[0] * 0.45}
 		  y={this._y(this._item_distribution.labeloffsets[k])}
-		  style={{fill: "000", fontSize: this._barheight + "px", textAnchor: "end"}}>
+		  style={{fill: "#000000", fontSize: this._barheight + "px", textAnchor: "end"}}
+	    >
 		{this._grouplabel(this.props.itemsets[key])}
 	    </text>
 	)));
