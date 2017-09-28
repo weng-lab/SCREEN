@@ -17,28 +17,24 @@ class GeneExp extends React.Component{
     }
 
     componentDidMount(){
-	console.log("componentDidMount", this.props);
         this.loadGene(this.props);
     }
 
     componentWillReceiveProps(nextProps){
-        console.log("componentWillReceiveProps", nextProps);
         this.loadGene(nextProps);
     }
 
     loadGene(p){
-	console.log("p", p);
-        var q = {assembly: p.assembly,
-		 gene: p.search.gene,
-		 compartments_selected: p.compartments_selected,
-                 biosample_types_selected: p.biosample_types_selected};
-	console.log("loadGene", q);
-        var jq = JSON.stringify(q);
+        const q = {assembly: p.assembly,
+		   gene: p.search.gene,
+		   compartments_selected: Array.from(p.compartments_selected),
+                   biosample_types_selected:
+		   Array.from(p.biosample_types_selected)};
+        const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
             url: "/gews/search",
@@ -55,7 +51,6 @@ class GeneExp extends React.Component{
             }.bind(this)
         });
     }
-
 
     doRenderWrapper(){
         if("items" in this.state){

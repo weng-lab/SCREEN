@@ -42,9 +42,12 @@ class GeneExpWebService(object):
         gene = j["gene"] # TODO: check for valid gene
         compartments = j.get("compartments_selected", ["cell"])
 
-        allBiosampleTypes = ["immortalized cell line", "induced pluripotent stem cell line",
-                             "in vitro differentiated cells", "primary cell", "stem cell", "tissue"]
-        biosample_types_selected = j.get("biosample_types_selected", allBiosampleTypes)
+        allBiosampleTypes = ["immortalized cell line",
+                             "induced pluripotent stem cell line",
+                             "in vitro differentiated cells", "primary cell",
+                             "stem cell", "tissue"]
+        biosample_types_selected = j.get("biosample_types_selected",
+                                         allBiosampleTypes)
 
         # TODO: check value of compartments, biosample_types_selected
 
@@ -54,4 +57,5 @@ class GeneExpWebService(object):
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         ret = cge.computeHorBars(gene, compartments, biosample_types_selected)
         ret["assembly"] = self.assembly
+        ret["gene"] = gene
         return ret
