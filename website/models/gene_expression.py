@@ -151,9 +151,9 @@ WHERE approved_symbol = %(gene)s
                 tissue = fixedmap[row[2]] if row[2] in fixedmap else ""
             return {"tissue" : tissue,
                     "cellType" : row[2],
-                    "rawTPM" : row[0],
+                    "rawTPM" : float(row[0]),
                     "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01, base)),
-                    "rawFPKM" : row[5],
+                    "rawFPKM" : float(row[5]),
                     "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
                     "expID" : row[3],
                     "rep" : row[4]}

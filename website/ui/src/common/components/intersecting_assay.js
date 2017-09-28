@@ -14,7 +14,6 @@ class IntersectingAssay extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log("in IntersectingAssay: componentWillReceiveProps", nextProps);
         this.loadTarget(nextProps, this.state.target);
     }
 
