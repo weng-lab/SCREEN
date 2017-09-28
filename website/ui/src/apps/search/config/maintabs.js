@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ResultsTableContainer from '../components/results_app';
+import ResultsTableContainer from '../components/results_table_container';
 import ResultsTree from '../components/tree';
 import DetailsContainer from '../components/details_container';
 import TFDisplay from '../components/tf_display';
@@ -17,14 +17,12 @@ class ResultsTab extends React.Component{
     }
 
     render() {
-       if("results" !== this.props.maintabs_active){
+	if("results" !== this.props.maintabs_active){
             return false;
         }
-        return (<ResultsTableContainer globals={this.props.globals} />);
+        return React.createElement(ResultsTableContainer, this.props);
     }
 }
-
-let ResultsTabWrapper = (globals) => () => <ResultsTab globals={globals} />
 
 class TreeTab extends React.Component{
     render() { return (<ResultsTree />); }
@@ -59,8 +57,7 @@ const MainTabInfo = (parsedQuery, globals) => {
 
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
 
-    return {results : {title: resultsTitle, visible: true,
-		       f: ResultsTabWrapper(globals)},
+    return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    configgb: {title: "Configure Genome Browser", visible: false,
 		       f: ConfigureGenomeBrowser},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},

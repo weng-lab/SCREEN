@@ -65,12 +65,15 @@ export const supporting_cts = (list) => {
 
 export const browser_buttons = (names) => {
     let content = names.map((name) => (
-	<button type="button" className="btn btn-default btn-xs">
+	<button
+	    type="button"
+	    key={name}
+	    className="btn btn-default btn-xs">
 	    {name}
 	</button>));
     return (
-	<div class="btn-group" role="group">
-	{content}
+	<div className="btn-group" role="group">
+	    {content}
 	</div>);
 }
 
@@ -93,21 +96,21 @@ export const creLinkPop = (accession, type, full, meta) => (
     popup("Click for cRE details")
 )
 
-export const geLink = (gene) => (
-    '/geApp/' + GlobalAssembly + "/?gene=" + gene
+export const geLink = (assembly, gene) => (
+    '/geApp/' + assembly + "/?gene=" + gene
 )
 
-export const deLink = (gene) => (
-    '/deApp/' + GlobalAssembly + "/?gene=" + gene
+export const deLink = (assembly, gene) => (
+    '/deApp/' + assembly + "/?gene=" + gene
 )
 
-export const geDeButton = (d) => {
+export const geDeButton = (assembly) => (d) => {
     let _d = d.replace(/\./g, "%2e");
-    let ge = <a href={geLink(_d)} target={"_blank"}>{d}</a>;
-    if("mm10" !== GlobalAssembly){
+    let ge = <a href={geLink(assembly, _d)} target={"_blank"}>{d}</a>;
+    if("mm10" !== assembly){
         return (<span>{ge}</span>);
     }
-    var de = <a href={deLink(_d)} target={"_blank"}>&Delta;</a>;
+    var de = <a href={deLink(assembly, _d)} target={"_blank"}>&Delta;</a>;
     return (
 	<span>
 	    {ge}
@@ -122,9 +125,9 @@ export const openGeLink = (gene) => (
     </div>
 )
 
-export const geneDeLinks = (genesallpc) => {
-    let all = commajoin(genesallpc[0].map(geDeButton));
-    let pc = commajoin(genesallpc[1].map(geDeButton));
+export const geneDeLinks = (assembly) => (genesallpc) => {
+    let all = commajoin(genesallpc[0].map(geDeButton(assembly)));
+    let pc = commajoin(genesallpc[1].map(geDeButton(assembly)));
     return (
 	<div>
 	{"pc: "}{pc}
@@ -339,8 +342,8 @@ export const sctGroupIcon = (creGroup) => {
     return popup(title, c);
 }
 
-export const sctGroupIconLegend = (creGroup) => {
-    let colors = Globals.colors.cREs;
+export const sctGroupIconLegend = (globals, creGroup) => {
+    let colors = globals.colors.cREs;
     let lookupTitle = {'C' : "High CTCF",
 		       'E' : "High H3K27ac",
 		       'P' : "High H3K4me3",
@@ -410,7 +413,7 @@ export const checkCt = (checked) => {
     return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
 }
 
-export const creTableAccessionBoxen = (cre) => {
+export const creTableAccessionBoxen = (globals, cre) => {
     let w = 12;
     let h = 9;
     let fw = 3 * w + 3;
@@ -426,7 +429,7 @@ export const creTableAccessionBoxen = (cre) => {
 	<rect x={0} y={0} width={fw} height={fh}
 	      style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
-    let colors = Globals.colors.cREs;
+    let colors = globals.colors.cREs;
 
     let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
     
@@ -456,18 +459,18 @@ export const creTableAccessionProxReact = (cre) => {
 	   popup("Distal", "D");
 }
 
-export const creTableAccession = (cre, type, full, meta) => {
+export const creTableAccession = (globals) => (cre, type, full, meta) => {
     return (
 	<div>
 	    {popup("Click for cRE details")}
 	    <br />
 	    {popup("Concordant", concordantStarReact(cre.concordant))}
 	    {creTableAccessionProx(cre)}
-	    {creTableAccessionBoxen(cre)}
+	    {creTableAccessionBoxen(globals, cre)}
 	</div>);
 }
 
-export const creTableCellTypeSpecific = (data) => {
+export const creTableCellTypeSpecific = (globals) => (data) => {
     let w = 12;
     let h = 9;
     let fw = 4 * w + 4;
@@ -483,7 +486,7 @@ export const creTableCellTypeSpecific = (data) => {
 	<rect x={0} y={0} width={fw} height={fh}
 	      style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
-    let colors = Globals.colors.cREs;
+    let colors = globals.colors.cREs;
 
     let col = (val, c) => {
 	if(null === val){
@@ -520,14 +523,14 @@ export const titlegeneric = (e) => {
 	</div>);
 };
 
-export const creTitle = (cre) => {
+export const creTitle = (globals, cre) => {
     let cts = "";
     let ct = cre.ctspecifc.ct;
     if(ct){
 	cts = (
 	    <span>
 		{Globals.byCellType[ct][0]["name"]}:{'\u00A0'}
-		{creTableCellTypeSpecific(cre.ctspecifc)}
+		{creTableCellTypeSpecific(globals, cre.ctspecifc)}
 	    </span>);
     }
     

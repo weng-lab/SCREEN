@@ -305,7 +305,7 @@ class TableWithCart extends React.Component {
 		<Ztable data={data}
                         order={table_order}
 			columnDefs={columnDefs}
-			cols={TableColumns(ctCol)}
+			cols={TableColumns(this.props.globals, this.props.assembly, ctCol)}
                         onTdClick={(td, rowdata) =>
                             this.table_click_handler(td, rowdata, actions)}
                         cvisible={this._opposite(cols, this.props.cts)}
@@ -321,22 +321,22 @@ class TableWithCart extends React.Component {
 		<div className="panel-body legendPanel">
 		    <div className="row">
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('P')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'P')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('E')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'E')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('C')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'C')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('D')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'D')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('I')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'I')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('U')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'U')}
 			</div>
 		    </div>
 		    <div className="row">

@@ -174,7 +174,7 @@ class ResultsTableContainer extends React.Component {
 
 	return (
 	    <div>
-		{interpBox}
+	    {interpBox}
 		<TableWithCart
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
@@ -186,6 +186,7 @@ class ResultsTableContainer extends React.Component {
 		    missingAssays={this.state.missingAssays}
                     cts={this.state.cts}
 	            hasct={this.props.cellType}
+		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
 		/>

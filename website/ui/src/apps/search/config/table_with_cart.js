@@ -30,10 +30,10 @@ const TableColumns = (globals, assembly, cts) => {
     return [
 	{
 	    title: accHelp, data: "info", 
-            render: ZRender.creTableAccession
+            render: ZRender.creTableAccession(globals)
 	}, {
             title: sctHelp, data: "ctspecifc",
-	    render: ZRender.creTableCellTypeSpecific, name: "sctv", width: "12%"
+	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
 	}, {
             title: "SCTsorter", data: "ctspecifc", visible: false, 
 	    render: ZRender.sctSorter, name: "sct",
@@ -59,7 +59,7 @@ const TableColumns = (globals, assembly, cts) => {
             render: ZRender.numWithCommas
 	}, {
             title: geneHelp, data: "genesallpc",
-	    className: "geneexp", render: ZRender.geneDeLinks,
+	    className: "geneexp", render: ZRender.geneDeLinks(assembly),
             orderable: false,
 	}, {
 	    title: "cart", data: "in_cart", className: "cart",

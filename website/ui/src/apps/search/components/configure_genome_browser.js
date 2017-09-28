@@ -165,7 +165,8 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="container" style={{width: "100%"}}>
 		<div className="row">
 		    <div className="col-md-12">
-		        {this.props.configuregb_type === "cre" ? Render.creTitle(cre) : Render.titlegeneric(cre)}
+		        {this.props.configuregb_type === "cre" ?
+			 Render.creTitle(this.props.globals, cre) : Render.titlegeneric(cre)}
                     </div>
 		</div>
 
