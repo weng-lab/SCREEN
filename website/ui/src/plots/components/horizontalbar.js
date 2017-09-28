@@ -42,7 +42,11 @@ class HorizontalBar extends ScaledPlot {
 	this._item_distribution = compute_offsets(this._sorted_keys, props.itemsets, this._value);
 
 	// for coordinate conversion
+	//console.log("xscale:", this._viewsize[0], this._item_distribution.max);
 	this._xscale = this._viewsize[0] / this._item_distribution.max;
+	if(0 === this._item_distribution.max){
+	    this._xscale = 0;
+	}
 	this._x = x => x * this._xscale + props.axis_offsets[0] / 2.0;
 	this._barheight = this._viewsize[1] / (this._item_distribution.total + 1);
 	this._y = y => y * this._barheight;
@@ -60,23 +64,26 @@ class HorizontalBar extends ScaledPlot {
 		</g>
 	);
 	let bars = (this._sorted_keys.map((key, k) => (
-	    this.props.itemsets[key].items.map((item, i) => (
+	    this.props.itemsets[key].items.map((item, i) => {
+
+		//console.log(this._value(item), this._xscale);
 		
-		<g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + "," +
-			      this._y(this._item_distribution.yoffsets[key]) + ")"}>
-		    <rect height={this._barheight} x="0" y={this._y(i)}
-			  strokeWidth="1" stroke="white"
-			  width={this._value(item) * this._xscale}
-			  style={{fill: this.props.itemsets[key].color}} />
-		    
-	            <text x={this._value(item) * this._xscale + 5}
-			  y={this._y(i) + fontsize}
-			  style={{fill: "#000000", fontSize: fontsize + "px"}}
-		    >
-		        {this._value(item) + " " + this._label(item)}
-		    </text>
-		</g>
-	    ))
+		return (
+		    <g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + "," +
+				  this._y(this._item_distribution.yoffsets[key]) + ")"}>
+			<rect height={this._barheight} x="0" y={this._y(i)}
+			      strokeWidth="1" stroke="white"
+			      width={this._value(item) * this._xscale}
+			      style={{fill: this.props.itemsets[key].color}} />
+			
+			<text x={this._value(item) * this._xscale + 5}
+			      y={this._y(i) + fontsize}
+			      style={{fill: "#000000", fontSize: fontsize + "px"}}
+			>
+			    {this._value(item) + " " + this._label(item)}
+			</text>
+		    </g>);
+	    })
 	)));
 
 	let leftlabels = (this._sorted_keys.map((key, k) => (
