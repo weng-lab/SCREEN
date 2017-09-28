@@ -1,10 +1,9 @@
 import React from 'react';
-import $ from 'jquery';
 
 import {commajoin} from './utility';
 
-export const relink = (a) => (v) => (
-    <a href={'/search?assembly=" + a + "&q=" + v + "'} target={'_blank'}>
+export const relink = (assembly) => (v) => (
+    <a href={"/search?assembly=" + assembly + "&q=" + v} target={'_blank'}>
 	{v}
     </a>
 );
@@ -218,9 +217,9 @@ export const tabTitle = (c) => (
 export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data) => (approved_symbol) => {
-    let params = $.param({q: approved_symbol,
-			  assembly: data.assembly});
-    let url = "/search/?" + params;
+    const d = {q: approved_symbol, assembly: data.assembly};
+    const params = Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&');
+    const url = "/search/?" + params;
     return <a href={url}>{approved_symbol}</a>;
 }
 

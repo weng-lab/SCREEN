@@ -10,9 +10,6 @@ import * as Render from '../../../common/zrenders';
 import Ztable from '../../../common/components/ztable/ztable';
 import loading from '../../../common/components/loading';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 const ROWHEIGHT = 30.0;
 
 class MiniPeaks extends React.Component {
@@ -45,11 +42,11 @@ class MiniPeaks extends React.Component {
         }
     }
 
-    loadPeaks({cre_accession_detail}){
+    loadPeaks({assembly, cre_accession_detail}){
 	if(cre_accession_detail in this.state){
 	    return;
 	}
-	var q = {GlobalAssembly, accession: cre_accession_detail};
+	var q = {assembly, accession: cre_accession_detail};
         var jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html

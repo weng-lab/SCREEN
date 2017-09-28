@@ -197,7 +197,9 @@ class Ztable extends React.Component {
 	};
 
 	const rowClick = (klasses, dataIdx) => (e) => {
-	    this.props.onTdClick(klasses, this.props.data[dataIdx]);
+	    if(this.props.onTdClick){
+		this.props.onTdClick(klasses, this.props.data[dataIdx]);
+	    }
 	};
 	
 	let rowIDs = this.searchFilter();
