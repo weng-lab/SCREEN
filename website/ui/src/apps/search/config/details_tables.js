@@ -3,9 +3,6 @@ import * as Render from '../../../common/zrenders';
 import IntersectingAssayTf from '../components/intersecting_assay_tf';
 import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 const fantomcat_link = (d) => (
     "<a href='http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d + "'>" + d + "</a>"
 );
@@ -14,13 +11,13 @@ const gene_link_list = (d) => (
     d.split(", ").map(Render.gene_link).join(", ")
 );
 
-export const TopTissuesTables = (globals) => ({
+export const TopTissuesTables = (globals, assembly) => ({
     promoter: {
 	title: "H3K4me3 Z-scores",
 	helpkey: "H3K4me3Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
-		render: Render.cell_type(globals)},
+	     render: Render.cell_type(globals)},
 	    {title: "H3K4me3 and DNase", data: "two",
 	     render: Render.z_score},
 	    {title: "H3K4me3 only", data: "one",
@@ -93,7 +90,7 @@ export const TopTissuesTables = (globals) => ({
     }
 });
 
-export const OrthologTable = () => ({
+export const OrthologTable = (globals, assembly) => ({
     ortholog: {
 	title: "",
 	paging: false,
@@ -103,7 +100,7 @@ export const OrthologTable = () => ({
 	emptyText: "No orthologous cRE identified",
 	cols: [
 	    {title: "accession", "data": "accession", className: "dt-right",
-             render: Render.relink(GlobalAssembly === "mm10" ? "hg19" : "mm10")},
+             render: Render.relink(assembly === "mm10" ? "hg19" : "mm10")},
 	    {title: "chromosome", "data": "chrom", className: "dt-right"},
 	    {title: "start", "data": "start", render: Render.integer},
 	    {title: "end", "data": "stop", render: Render.integer},
@@ -113,7 +110,7 @@ export const OrthologTable = () => ({
     }
 });
 
-export const FantomCatTable = (actions) => ({
+export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat_twokb: {
 	title: "Intersecting FANTOM CAT RNAs (cRE within 2kb of RNA TSS)",
 	cols: [
@@ -176,7 +173,7 @@ export const FantomCatTable = (actions) => ({
     }
 });
 
-export const TargetGeneTable = () => ({
+export const TargetGeneTable = (globals, assembly) => ({
     candidate_links: {
 	title: "",
 	paging: true,
@@ -202,7 +199,7 @@ export const TargetGeneTable = () => ({
     }
 });
 
-export const NearbyGenomicTable = () => {
+export const NearbyGenomicTable = (globals, assembly) => {
     let ret = {
         nearby_genes: {
 	    title: "Nearby Genes",
@@ -229,7 +226,7 @@ export const NearbyGenomicTable = () => {
             bLengthChange: true,
 	    cols: [
 	        {title: "accession", data: "name", className: "dt-right",
-	         render: Render.relink(GlobalAssembly) },
+	         render: Render.relink(assembly) },
 	        {title: "distance", data: "distance",
 	         render: Render.integer } ],
             pageLength: 5,
@@ -245,7 +242,7 @@ export const NearbyGenomicTable = () => {
 	    emptyText: "No SNPs within 10Kb",
 	    cols: [
 	        {title: "accession", data: "name",
-	         render: Render.snp_link },
+	         render: Render.snp_link(assembly) },
 	        {title: "distance", data: "distance",
 	         render: Render.integer }
 	    ],
@@ -253,7 +250,7 @@ export const NearbyGenomicTable = () => {
 	    order: [[1, "asc"]]
         }
     };
-    if("hg19" === GlobalAssembly){
+    if("hg19" === assembly){
         ret = {...ret,
                tads: {
 	           title: "Genes within TAD",
@@ -281,7 +278,7 @@ export const NearbyGenomicTable = () => {
 	           emptyText: "No cREs within TAD with 100 Kb",
 	           cols: [
 	               {title: "accession", data: "accession",
-	                render: Render.relink(GlobalAssembly) },
+	                render: Render.relink(assembly) },
 	               {title: "distance", data: "distance",
                         render: Render.integer} ],
                    pageLength: 5,
@@ -292,7 +289,7 @@ export const NearbyGenomicTable = () => {
     return ret;
 };
 
-export const TfIntersectionTable = () => ({
+export const TfIntersectionTable = (globals, assembly) => ({
     "tf": {
 	title: "TFs that bind this cRE",
         typ: IntersectingAssayTf,
@@ -323,7 +320,7 @@ export const TfIntersectionTable = () => ({
     }
 });
 
-export const CistromeIntersectionTable = () => ({
+export const CistromeIntersectionTable = (globals, assembly) => ({
     "tf": {
 	title: "intersecting cistrome TF exps",
 	eset: "cistrome",

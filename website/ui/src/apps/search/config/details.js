@@ -141,7 +141,7 @@ class ReTabBase extends React.Component{
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
 	    //console.log("doRenderWrapper", this.key);
-            return this.doRender(this.props.globals, this.state[accession]);
+            return this.doRender(this.props.globals, this.props.assembly, this.state[accession]);
         }
 	//console.log(this.props);
         return loading({...this.state, message: this.props.message});
@@ -163,8 +163,8 @@ class ReTabBase extends React.Component{
 class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
-        this.doRender = (globals, data) => {
-            return tabEles(globals, data, TopTissuesTables(globals), 2);
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, TopTissuesTables(globals, assembly), 2);
         }
     }
 }
@@ -172,8 +172,8 @@ class TopTissuesTab extends ReTabBase{
 class NearbyGenomicTab extends ReTabBase{
     constructor(props) {
 	super(props, "nearbyGenomic");
-        this.doRender = (globals, data) => {
-            return tabEles(globals, data, NearbyGenomicTable(), 3);
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, NearbyGenomicTable(globals, assembly), 3);
         }
     }
 }
@@ -181,8 +181,8 @@ class NearbyGenomicTab extends ReTabBase{
 class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
-	this.doRender = (globals, data) => {
-	    return tabEles(globals, data, FantomCatTable(this.props.actions), 1);
+	this.doRender = (globals, assembly, data) => {
+	    return tabEles(globals, data, FantomCatTable(globals, assembly, this.props.actions), 1);
 	}
     }
 }
@@ -190,10 +190,10 @@ class FantomCatTab extends ReTabBase {
 class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
-	this.doRender = (globals, data) => {
+	this.doRender = (globals, assembly, data) => {
             let d = data.ortholog;
 	    if(d.length > 0) {
-	        return tabEles(globals, data, OrthologTable(), 1);
+	        return tabEles(globals, data, OrthologTable(globals, assembly), 1);
 	    }
             return <div><br />{"No orthologous cRE identified."}</div>;
 	}
@@ -203,8 +203,8 @@ class OrthologTab extends ReTabBase {
 class TfIntersectionTab extends ReTabBase{
     constructor(props) {
 	super(props, "tfIntersection");
-        this.doRender = (globals, data) => {
-            return tabEles(globals, data, TfIntersectionTable(), 2);
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, TfIntersectionTable(globals, assembly), 2);
         }
     }
 }
@@ -212,8 +212,8 @@ class TfIntersectionTab extends ReTabBase{
 class CistromeIntersectionTab extends ReTabBase {
     constructor(props) {
 	super(props, "cistromeIntersection");
-	this.doRender = (globals, data) => {
-	    return tabEles(globals, data, CistromeIntersectionTable(), 2);
+	this.doRender = (globals, assembly, data) => {
+	    return tabEles(globals, data, CistromeIntersectionTable(globals, assembly), 2);
 	}
     }
 }
@@ -230,7 +230,7 @@ class GeTab extends ReTabBase{
     constructor(props) {
 	super(props, "ge");
 	
-        this.doRender = (globals, data) => {
+        this.doRender = (globals, assembly, data) => {
 	    let gene = data.genename;
 	    let gclick = this.gclick.bind(this);
 	    return (

@@ -1,39 +1,28 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import $ from 'jquery';
 
 import {commajoin} from './utility';
 
-/*global Globals */
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
-// datatbles render has params function (data, type, full, meta)
-
 export const relink = (a) => (v) => (
     <a href={'/search?assembly=" + a + "&q=" + v + "'} target={'_blank'}>
-	v
+	{v}
     </a>
 );
 
-export const snp_link = (d) => {
+export const snp_link = (assembly) => (d) => {
     var url = "http://ensembl.org/Homo_sapiens/Variation/Explore";
-    if("mm10" === GlobalAssembly){
+    if("mm10" === assembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return '<a href="' + url + '?vdb=variation;v=' + d + '" target="_blank">'
-         + d + '</a>';
+    return <a href={url + "?vdb=variation;v=" + d} target="_blank">{d}</a>;
 }
 
 export const snpLinks = (snps) => {
     return snps.map(snp_link).join(", ");
 }
 
-export const integer = (d) => (d)
-//{"display": (d) => (d === 1e12 ? "" : $.fn.dataTable.render.number( ',', '.', 0, '' )["display"](d))};
-
 export const integerLink = (href) => (d) => {
-    return "<a href='#" + href + "'>" + d + "</a>";
+    return <a href={'#' + href}>{d}</a>;
 }
 
 export const toSciNot = (d) => {
@@ -43,6 +32,7 @@ export const toSciNot = (d) => {
     return Math.round(d * 100) / 100;
 }
 
+export const integer = (d) => (d === 1e12 ? "" : d.toFixed(0))
 export const real = (d) => (d.toFixed(2))
 export const z_score = (d) => (d === -11.0 ? "--" : d.toFixed(2));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
@@ -52,7 +42,9 @@ export const support = (support) => (
 );
 export const len = (list) => (list ? list.length : 0);
 export const supporting_cts = (list) => {
-    if (list === null) return "";
+    if (list === null) {
+	return "";
+    }
     var map = {};
     for(let x of list){
 	if (!(x["cell-type"] in map)) {
@@ -153,8 +145,8 @@ export const dccLinkCtGroupExpIDs = (accs) => {
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
-export const dccLinkCtGroup = (ctn) => {
-    let accs = Globals.byCellType[ctn].map((info) => {
+export const dccLinkCtGroup = (globals, ctn) => {
+    let accs = globals.byCellType[ctn].map((info) => {
 	return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
@@ -207,7 +199,10 @@ export const factorbook_link_histone = (d) => (
 );
 
 export const gene_link = (d) => (
-    '<em><a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + d + '" target="_blank">' + d + '</a></em>');
+    <em>
+	<a href={"http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d}
+	   target="_blank">{d}</a>
+    </em>);
 
 export const position = (pos) => (pos.chrom + ":" + pos.start + "-" + pos.end);
 export const bp = (v) => (v + " bp");
@@ -225,7 +220,7 @@ export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data) => (approved_symbol) => {
     let params = $.param({q: approved_symbol,
-			       assembly: data.assembly});
+			  assembly: data.assembly});
     let url = "/search/?" + params;
     return "<a href='" + url + "'>" + approved_symbol + "</a>";
 }
@@ -272,8 +267,8 @@ export const assayIcon = (globals) => (ctn) => {
     return popup(title, c);
 }
 
-export const creGroupIcon = (creGroup) => {
-    let colors = Globals.colors.cREs;
+export const creGroupIcon = (globals, creGroup) => {
+    let colors = globals.colors.cREs;
     let lookupTitle = {'C' : "CTCF-only",
 		       'E' : "Enhancer-like",
 		       'P' : "Promoter-like"};
@@ -302,44 +297,6 @@ export const creGroupIcon = (creGroup) => {
 	</span>);
     let title = lookupTitle[creGroup];
     return popup(title, e);
-}
-
-export const sctGroupIcon = (creGroup) => {
-    let colors = Globals.colors.cREs;
-    let lookupTitle = {'C' : "CTCF-only",
-		       'E' : "Enhancer-like",
-		       'P' : "Promoter-like",
-		       'D' : "DNase",
-		       'I' : "Inactive",
-		       'U' : "Unclassified" };
-    let lookupColor = {'C' : colors.CTCF,
-		       'E' : colors.H3K27ac,
-		       'P' : colors.H3K4me3,
-		       'D' : colors.DNase,
-		       'I' : colors.Inactive,
-		       'U' : colors.Unclassified}
-    let w = 18;
-    let fw = w + 2;
-    let rect = (x, y, color) => (
-	<rect x={x} y={y} width={w} height={w} style={{fill : color}} />
-    )
-    let border = () => (
-	<rect x={0} y={0} width={fw} height={fw}
-	      style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
-    )
-
-    let e = (
-	<span className={"text-nowrap"}>
-	    <svg width={fw} height={fw}>
-		<g>
-		    {border()}
-		    {rect(1, 1, lookupColor[creGroup])}
-  		</g>
-	    </svg>
-	</span>);
-    let title = lookupTitle[creGroup];
-    let c = ReactDOMServer.renderToStaticMarkup(e);
-    return popup(title, c);
 }
 
 export const sctGroupIconLegend = (globals, creGroup) => {
