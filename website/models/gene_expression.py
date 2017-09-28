@@ -151,7 +151,7 @@ WHERE approved_symbol = %(gene)s
                 tissue = fixedmap[row[2]] if row[2] in fixedmap else ""
             return {"tissue" : tissue,
                     "cellType" : row[2],
-                    "rawTPM" : float(row[0]),
+                    "rawTPM" : float(row[0]), # built-in JSON encoder doesn't know Decimal type
                     "logTPM" : "{0:.2f}".format(math.log(float(row[0]) + 0.01, base)),
                     "rawFPKM" : float(row[5]),
                     "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
