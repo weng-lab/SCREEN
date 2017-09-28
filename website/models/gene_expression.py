@@ -95,6 +95,7 @@ class GeneExpression:
         exp = {ct1: {}, ct2: {}}
         fc = {}
         counts = {ct1: {}, ct2: {}}
+
         with getcursor(self.ps.DBCONN, "ComputeGeneExpression::computeFoldChange") as curs:
             curs.execute("""
 SELECT r.tpm, r.fpkm, r_rnas_{assembly}.cellType, r.gene_name
@@ -104,6 +105,7 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
 """.format(assembly = self.assembly),
                          {"ct1": ct1, "ct2": ct2})
             rows = curs.fetchall()
+
         for row in rows:
             if row[3] not in exp[row[2]]: exp[row[2]][row[3]] = 0.0
             exp[row[2]][row[3]] += float(row[0])
@@ -127,10 +129,12 @@ WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 """.format(assembly = self.assembly)
+
         a = """
 SELECT chrom, start, stop FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
 """.format(assembly = self.assembly)
+
         #print(q, gene)
         with getcursor(self.ps.DBCONN, "_gene") as curs:
             curs.execute(q, { "gene" : gene,
