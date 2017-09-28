@@ -73,7 +73,7 @@ class AppPageBase extends React.Component {
 	    return (
 		<div>
 		    {React.createElement(this.innerClass, {search: this.state.search,
-							  globals: this.state.globals})}
+							   globals: this.state.globals})}
 		</div>);
 	}
 	return (<div />);

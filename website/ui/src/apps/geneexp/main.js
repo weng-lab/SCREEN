@@ -22,6 +22,7 @@ class GeneExpPageInner extends React.Component {
 				      thunkMiddleware,
 				  ));
 
+	const assembly = this.props.search.assembly;
         return (
             <Provider store={store}>
 	        <div>
@@ -29,7 +30,7 @@ class GeneExpPageInner extends React.Component {
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
-                            <NavBarApp assembly={this.props.search.assembly}
+                            <NavBarApp assembly={assembly}
 				       show_cartimage={false}
                                        searchbox={SearchBox} />
                         </div>
@@ -39,11 +40,13 @@ class GeneExpPageInner extends React.Component {
                         <div className="row" style={{width: "100%"}}>
                             <div className="col-md-3 nopadding-right"
                                  id="facets-container">
-                                <FacetBoxen globals={this.props.globals} />
+                                <FacetBoxen assembly={assembly}
+					    globals={this.props.globals} />
                             </div>
                             <div className="col-md-9 nopadding-left"
                                  id="tabs-container">
-                                <MainTabs globals={this.props.globals}
+                                <MainTabs assembly={assembly}
+					  globals={this.props.globals}
 					  search={this.props.search}
 				/>
                             </div>
@@ -57,7 +60,7 @@ class GeneExpPageInner extends React.Component {
 
 class GeneExpPage  extends AppPageBase {
     constructor(props) {
-	super(props, "/searchws/search", GeneExpPageInner);
+	super(props, "/gews/search", GeneExpPageInner);
     }
 }
 

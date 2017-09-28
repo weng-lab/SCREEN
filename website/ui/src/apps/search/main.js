@@ -23,12 +23,15 @@ class SearchPageInner extends React.Component {
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
-	let drawMain = () => {
+	const assembly = this.props.search.assembly;
+	let mainTabs = (<MainTabs globals={this.props.globals} search={this.props.search} />);
+	    
+	    let drawMain = () => {
 	    if(isCart()){
 		return (
 		    <div className="row" style={{width: "100%"}}>
 			<div className="col-md-12" id="tabs-container">
-                            <MainTabs />
+                            {mainTabs}
 			</div>
 		    </div>);
 	    } else {
@@ -36,13 +39,12 @@ class SearchPageInner extends React.Component {
                     <div className="row" style={{width: "100%"}}>
 			<div className="col-md-3 nopadding-right"
 			     id="facets-container">
-                            <FacetBoxen globals={this.props.globals} />
+                            <FacetBoxen assembly={assembly}
+					globals={this.props.globals} />
 			</div>
 			<div className="col-md-9 nopadding-left"
 			     id="tabs-container">
-			    <MainTabs globals={this.props.globals}
-				      search={this.props.search}
-			    />
+			    {mainTabs}
 			</div>
 		    </div>);
 	    }
@@ -54,7 +56,7 @@ class SearchPageInner extends React.Component {
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
-                            <NavBarApp assembly={this.props.search.assembly}
+                            <NavBarApp assembly={assembly}
 				       show_cartimage={true}
                                        searchbox={SearchBox} />}/>
                         </div>
@@ -62,7 +64,6 @@ class SearchPageInner extends React.Component {
 
 		    <div className="container" style={{width: "100%"}}>
 			{drawMain()}
-
                     </div>
 		</div>
             </Provider>

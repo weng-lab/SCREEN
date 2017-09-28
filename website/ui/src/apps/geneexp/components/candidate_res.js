@@ -53,7 +53,7 @@ class CandidateREs extends React.Component {
     }
 
     render() {
-	//console.log(this.props.candidate_res);
+	console.log("candidate_res", this.props);
 	return (
 	    <div>
 		<h2>{GlobalParsedQuery["gene"]}</h2>

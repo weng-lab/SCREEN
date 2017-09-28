@@ -12,17 +12,17 @@ from pg_cart import PGcart
 
 class SearchWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
-        def makeSWS(assembly):
+        def makeWS(assembly):
             return SearchWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies
-        self.swss = {a : makeSWS(a) for a in self.assemblies}
+        self.wss = {a : makeWS(a) for a in self.assemblies}
 
     def process(self, j, args, kwargs):
         if "assembly" not in j:
             raise Exception("assembly not defined")
         if j["assembly"] not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.swss[j["assembly"]].process(j, args, kwargs)
+        return self.wss[j["assembly"]].process(j, args, kwargs)
 
 class SearchWebService(object):
     def __init__(self, args, ps, cache, staticDir, assembly):

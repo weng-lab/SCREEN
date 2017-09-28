@@ -8,9 +8,6 @@ import * as Actions from '../actions/main_actions';
 import ExpressionBoxplot from '../components/expression_boxplot'
 import loading from '../../../common/components/loading'
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
@@ -20,17 +17,22 @@ class GeneExp extends React.Component{
     }
 
     componentDidMount(){
+	console.log("componentDidMount", this.props);
         this.loadGene(this.props);
     }
 
     componentWillReceiveProps(nextProps){
-        //console.log("componentWillReceiveProps", nextProps);
+        console.log("componentWillReceiveProps", nextProps);
         this.loadGene(nextProps);
     }
 
-    loadGene({compartments_selected, biosample_types_selected, gene}){
-        var q = {GlobalAssembly, gene, compartments_selected,
-                 biosample_types_selected};
+    loadGene(p){
+	console.log("p", p);
+        var q = {assembly: p.assembly,
+		 gene: p.search.gene,
+		 compartments_selected: p.compartments_selected,
+                 biosample_types_selected: p.biosample_types_selected};
+	console.log("loadGene", q);
         var jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -39,13 +41,13 @@ class GeneExp extends React.Component{
         //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/geneexpjson",
+            url: "/gews/search",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
 	    contentType: "application/json",
             error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
+                console.log("err loading ge");
                 this.setState({isFetching: false, isError: true});
             }.bind(this),
             success: function(r) {

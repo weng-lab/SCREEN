@@ -88,13 +88,8 @@ export const creLinkPop = (accession, type, full, meta) => (
     popup("Click for cRE details")
 )
 
-export const geLink = (assembly, gene) => (
-    '/geApp/' + assembly + "/?gene=" + gene
-)
-
-export const deLink = (assembly, gene) => (
-    '/deApp/' + assembly + "/?gene=" + gene
-)
+export const geLink = (assembly, gene) => ("/geApp/?assembly=" + assembly + "&gene=" + gene)
+export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&gene=" + gene)
 
 export const geDeButton = (assembly) => (d) => {
     let _d = d.replace(/\./g, "%2e");

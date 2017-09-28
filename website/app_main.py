@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import cherrypy, jinja2, os, sys
 
-from controllers.geneexp_controller import GeneExpController
+from controllers.geneexp_ws import GeneExpWebServiceWrapper
 from controllers.de_controller import DeController
 from controllers.gwas_controller import GwasController
 from controllers.global_data_controller import GlobalDataController
@@ -25,7 +25,7 @@ from templates import Templates
 class MainApp():
     def __init__(self, args, viewDir, staticDir, ps, cache):
         self.templates = Templates(viewDir, staticDir)
-        self.ge = GeneExpController(self.templates, ps, cache)
+        self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.de = DeController(self.templates, ps, cache)
         self.tc = TadsController(self.templates, ps, cache)
         self.gwas = GwasController(self.templates, ps, cache)
@@ -103,7 +103,6 @@ class MainApp():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def searchws(self, *args, **kwargs):
-        #print(cherrypy.request)
         j = cherrypy.request.json
         return self.searchWS.process(j, args, self.sessions.userUid())
 
@@ -124,19 +123,11 @@ class MainApp():
         return self.autoWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    def geApp(self, *args, **kwargs):
-        return self.ge.geneexp(args, kwargs, self.sessions.userUid())
-
-    @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def geneexpjson(self):
+    def gews(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.ge.geneexpjson(j)
-
-    @cherrypy.expose
-    def deApp(self, *args, **kwargs):
-        return self.de.de(args, kwargs, self.sessions.userUid())
+        return self.geWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
