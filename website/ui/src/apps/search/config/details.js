@@ -258,7 +258,7 @@ class RampageTab extends ReTabBase{
     constructor(props) {
 	super(props, "rampage");
 
-        this.doRender = (keysAndData) => {
+        this.doRender = (globals, assembly, keysAndData) => {
             let data = keysAndData.tsss;
 
 	    if(0 === data.length) {
@@ -268,7 +268,7 @@ class RampageTab extends ReTabBase{
             return (
                 <div className={"container"} style={{paddingTop: "10px"}}>
 		    {React.createElement(Rampage,
-                                         {keysAndData,
+                                         {globals, assembly, keysAndData,
                                           width: 800,
                                           barheight: "15"})}
                 </div>);

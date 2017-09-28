@@ -33,7 +33,10 @@ class Rampage extends React.Component {
 
     _bb(transcript) {
 	let gclick = this.gclick.bind(this);
-	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC", transcript);}}>UCSC</button>;
+	return <button type="button"
+		       className="btn btn-default btn-xs"
+		       onClick={() => {gclick("UCSC", transcript);}}
+	       >UCSC</button>;
     }
 
     gclick(name, transcript) {
@@ -82,23 +85,25 @@ class Rampage extends React.Component {
     }
 
     render() {
-        let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
-        let data = this.props.keysAndData.tsss;
-        let gene = this.props.keysAndData.gene;
+        const sortedTranscripts = this.props.keysAndData.sortedTranscripts;
+        const data = this.props.keysAndData.tsss;
+        const gene = this.props.keysAndData.gene;
 
-        let selectTsses = sortedTranscripts.map((tss) => {
-            return (<option value={tss}>{tss}</option>); });
+        const selectTsses = sortedTranscripts.map((tss) => (
+            <option key={tss} value={tss}>{tss}</option>)
+	);
+	const numTranscripts = sortedTranscripts.length;
+	
+        const transcript = data[this.state.transcript];
 
-        let transcript = data[this.state.transcript];
-
-        let title = (
+        const title = (
             <div className="container-fluid" style={{"width": "100%"}} >
                 <div className="row">
                     <div className="col-md-8">
                         <span className={"rampageGeneName"}>
 			    <h4>
 				TSS Activity Profiles by RAMPAGE
-				<HelpIcon helpkey={"RAMPAGEOverview"} />
+				<HelpIcon globals={this.props.globals} helpkey={"RAMPAGEOverview"} />
 			    </h4>
                             <h2>
 				<em>{gene.name}</em>
@@ -121,14 +126,12 @@ class Rampage extends React.Component {
                                 }}>
 		        {selectTsses}
 		    </select>
-                    <span className="glyphicon glyphicon-arrow-up"
-                          aria-hidden="true"
-                          onClick={this.transcriptUp}>
-                    </span>
-                    <span className="glyphicon glyphicon-arrow-down"
-                          aria-hidden="true"
-                          onClick={this.transcriptDown}>
-                    </span>
+                    {numTranscripts > 1 && <span className="glyphicon glyphicon-arrow-up"
+						 aria-hidden="true"
+						 onClick={this.transcriptUp}></span>}
+		    {numTranscripts > 1 && <span className="glyphicon glyphicon-arrow-down"
+						 aria-hidden="true"
+						 onClick={this.transcriptDown}></span>}
 		    {this._bb(transcript)}
                 </span>
                 <div className="rampageCoord">
