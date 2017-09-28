@@ -4,38 +4,33 @@ import $ from 'jquery';
 import * as Render from '../zrenders';
 import Ztable from './ztable/ztable';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
-const _renders = {
-    peak: Render.dccLinkAndIconSplit,
-    cistrome: Render.cistromeLink
-};
-
 class IntersectingAssay extends React.Component {
     constructor(props, url, table) {
 	super(props);
         this.url = url;
         this.table = table;
-        this.state = { target: null, isFetching: true, isError: false,
-                       jq : null}
+        this.state = { target: null, isFetching: true, isError: false, jq : null}
         this.loadTarget = this.loadTarget.bind(this);
     }
 
     componentWillReceiveProps(nextProps){
-        //console.log("in componentWillReceiveProps");
+        console.log("in IntersectingAssay: componentWillReceiveProps", nextProps);
         this.loadTarget(nextProps, this.state.target);
     }
 
-    loadTarget({cre_accession_detail, table}, target) {
-	if(!target) { return; }
+    loadTarget({assembly, cre_accession_detail, table}, target) {
+	if(!target){
+	    return;
+	}
         if(target in this.state){
             this.setState({target});
             return;
         }
-        let q = {GlobalAssembly, accession: cre_accession_detail, target, eset: table.eset};
+        let q = {assembly, accession: cre_accession_detail, target, eset: table.eset};
         var jq = JSON.stringify(q);
-        if (this.state.jq === jq) { return; } // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
+        if (this.state.jq === jq) {
+	    return;
+	}
         this.setState({jq, isFetching: true});
         $.ajax({
             url: this.url,
@@ -64,12 +59,19 @@ class IntersectingAssay extends React.Component {
 
         let details = "";
         let target = this.state.target;
-        if(target && target in this.state){
+
+	const _renders = {
+	    peak: Render.dccLinkAndIconSplit,
+	    cistrome: Render.cistromeLink
+	};
+
+	if(target && target in this.state){
             let table = {title: "ChIP-seq " + target + " Experiments",
 	                 cols: [
 	                     {title: "cell type", data: "biosample_term_name"},
                              {title: "experiment / file", data: "expID",
-	                      render: _renders[this.props.table.eset ? this.props.table.eset : "peak"] }
+	                      render: _renders[this.props.table.eset ?
+					       this.props.table.eset : "peak"] }
                              ],
 	                 order: [[0, "asc"]]
                         }

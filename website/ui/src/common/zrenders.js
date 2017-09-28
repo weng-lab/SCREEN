@@ -133,15 +133,15 @@ export const dccImg = () => (
 )
 
 export const dccLink = (expID) => {
-    var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = dccImg();
+    const url = 'https://www.encodeproject.org/experiments/' + expID;
+    const img = dccImg();
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
 export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
-    var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    var img = dccImg();
+    const url = 'https://www.encodeproject.org/search/?accession=' + q;
+    const img = dccImg();
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
@@ -149,8 +149,8 @@ export const dccLinkCtGroup = (globals, ctn) => {
     let accs = globals.byCellType[ctn].map((info) => {
 	return info.expID; });
     let q = accs.join("&accession=");
-    var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    var img = dccImg();
+    const url = 'https://www.encodeproject.org/search/?accession=' + q;
+    const img = dccImg();
     return '<a target="_blank" href="' + url + '">' + img + '</a>';
 }
 
@@ -158,23 +158,24 @@ export const dccLinkCtGroupCus = (globals, ctn, content) => {
     let accs = globals.byCellType[ctn].map((info) => {
 	return info.expID; });
     let q = accs.join("&accession=");
-    var url = 'https://www.encodeproject.org/search/?accession=' + q;
+    const url = 'https://www.encodeproject.org/search/?accession=' + q;
     return (<a target="_blank" href={url}>{content}</a>);
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {
     let expID = expAndFileID.split(' / ')[0];
-    var url = 'https://www.encodeproject.org/experiments/' + expID;
-    var img = '<img src="/static/encode/pennant-encode.png" alt="ENCODE logo">';
-    return '<a target="_blank" href="' + url + '">' + expAndFileID + "&nbsp;" + img + '</a>';
+    const url = 'https://www.encodeproject.org/experiments/' + expID;
+    const img = <img src="/static/encode/pennant-encode.png" alt="ENCODE logo"
+		style={{paddingLeft: "10px"}} />;
+    return <a target="_blank" href={url}>{expAndFileID}{img}</a>;
 }
 
 export const cistromeLink = (acc) => (
-    "<a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc + "' target='_blank'>" + acc + "</a>"
+    <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target='_blank'>{acc}</a>
 );
 
-export const factorbook_link_tf = (d) => (
-    '<a href="http://beta.factorbook.org/human/chipseq/tf/' + d + '" target="_blank">' + d + '</a>');
+export const factorbook_link_tf = (assembly) => (d) => (
+    <a href={"http://beta.factorbook.org/" + assembly + "/chipseq/tf/" + d} target="_blank">{d}</a>);
 
 const factorbook_histones = [
     "H2AFZ",
@@ -209,12 +210,10 @@ export const bp = (v) => (v + " bp");
 
 export const nul = (d) => ('')
 
-export const tabTitle = (c) => {
-    return (
-	<span className="text-center">
-	    {c[0]}<br />{c[1]}
-	</span>);
-};
+export const tabTitle = (c) => (
+    <span className="text-center">
+	{c[0]}<br />{c[1]}
+    </span>);
 
 export const upperCase = (d) => (d.toUpperCase())
 
@@ -222,7 +221,7 @@ export const searchLink = (data) => (approved_symbol) => {
     let params = $.param({q: approved_symbol,
 			  assembly: data.assembly});
     let url = "/search/?" + params;
-    return "<a href='" + url + "'>" + approved_symbol + "</a>";
+    return <a href={url}>{approved_symbol}</a>;
 }
 
 export const assayIcon = (globals) => (ctn) => {
