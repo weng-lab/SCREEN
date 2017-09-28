@@ -167,7 +167,7 @@ export const dccLinkCtGroupCus = (globals, ctn, content) => {
 	return info.expID; });
     let q = accs.join("&accession=");
     var url = 'https://www.encodeproject.org/search/?accession=' + q;
-    return '<a target="_blank" href="' + url + '">' + content + '</a>';
+    return (<a target="_blank" href={url}>{content}</a>);
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {

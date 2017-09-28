@@ -58,7 +58,7 @@ const accessionsBox = ({accessions, actions}) => {
     return panelize("Accessions", box);
 }
 
-const cellTypesBox = ({cellType, actions, globals}) => {
+const biosamplesBox = ({cellType, actions, globals}) => {
     let box = (
 	<LongListFacet
 	    title={""}
@@ -66,7 +66,7 @@ const cellTypesBox = ({cellType, actions, globals}) => {
 	    cols={[
 		{ title: "", data: "name",
 		  orderable: false,
-		  render: () => ("<input type='radio' />")},
+		  render: () => (<input type='radio' />)},
 		{ title: "cell type", data: "name",
 		  className: "dt-right"},
 		{ title: "tissue", data: "tissue",
@@ -90,7 +90,7 @@ const cellTypesBox = ({cellType, actions, globals}) => {
 		    }
 		}}
         />);
-    return panelize("Cell types", box, "CellTypeFacet", globals);
+    return panelize("Biosamples", box, "CellTypeFacet", globals);
 }
 
 const chromBox = ({coord_chrom, actions, globals}) => {
@@ -205,7 +205,7 @@ class FacetBoxen extends React.Component {
         return (
 	    <div>
 		{accessionsBox(this.props)}
-		{cellTypesBox(this.props)}
+		{biosamplesBox(this.props)}
 		{chromBox(this.props)}
 		{startEndBox(this.props)}
 		{rankBox(this.props)}
