@@ -37,8 +37,9 @@ export const z_score = (d) => (d === -11.0 ? "--" : d.toFixed(2));
 export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
-    ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ? support.chiapet.length : 0)
-);
+    ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ?
+						       support.chiapet.length : 0));
+
 export const len = (list) => (list ? list.length : 0);
 export const supporting_cts = (list) => {
     if (list === null) {
@@ -128,50 +129,46 @@ export const geneDeLinks = (assembly) => (genesallpc) => {
 }
 
 export const dccImg = () => (
-    '<img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20">'
-)
+    <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20" />);
 
 export const dccLink = (expID) => {
     const url = 'https://www.encodeproject.org/experiments/' + expID;
     const img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return <a target="_blank" href={url}>{img}</a>;
 }
 
 export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     const img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return <a target="_blank" href={url}>{img}</a>;
 }
 
 export const dccLinkCtGroup = (globals, ctn) => {
-    let accs = globals.byCellType[ctn].map((info) => {
-	return info.expID; });
-    let q = accs.join("&accession=");
+    const accs = globals.byCellType[ctn].map((info) => (info.expID));
+    const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
     const img = dccImg();
-    return '<a target="_blank" href="' + url + '">' + img + '</a>';
+    return <a target="_blank" href={url}>{img}</a>;
 }
 
 export const dccLinkCtGroupCus = (globals, ctn, content) => {
-    let accs = globals.byCellType[ctn].map((info) => {
-	return info.expID; });
-    let q = accs.join("&accession=");
+    const accs = globals.byCellType[ctn].map((info) => (info.expID));
+    const q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;
-    return (<a target="_blank" href={url}>{content}</a>);
+    return <a target="_blank" href={url}>{content}</a>;
 }
 
 export const dccLinkAndIconSplit = (expAndFileID) => {
-    let expID = expAndFileID.split(' / ')[0];
+    const expID = expAndFileID.split(' / ')[0];
     const url = 'https://www.encodeproject.org/experiments/' + expID;
     const img = <img src="/static/encode/pennant-encode.png" alt="ENCODE logo"
-		style={{paddingLeft: "10px"}} />;
+		     style={{paddingLeft: "10px"}} />;
     return <a target="_blank" href={url}>{expAndFileID}{img}</a>;
 }
 
 export const cistromeLink = (acc) => (
-    <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target='_blank'>{acc}</a>
-);
+    <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + acc} target='_blank'>{acc}</a>);
 
 export const factorbook_link_tf = (assembly) => (d) => (
     <a href={"http://beta.factorbook.org/" + assembly + "/chipseq/tf/" + d} target="_blank">{d}</a>);
