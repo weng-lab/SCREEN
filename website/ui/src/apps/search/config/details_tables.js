@@ -14,13 +14,13 @@ const gene_link_list = (d) => (
     d.split(", ").map(Render.gene_link).join(", ")
 );
 
-export const TopTissuesTables = () => ({
+export const TopTissuesTables = (globals) => ({
     promoter: {
 	title: "H3K4me3 Z-scores",
 	helpkey: "H3K4me3Z-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
-		render: Render.cell_type},
+		render: Render.cell_type(globals)},
 	    {title: "H3K4me3 and DNase", data: "two",
 	     render: Render.z_score},
 	    {title: "H3K4me3 only", data: "one",
@@ -39,7 +39,7 @@ export const TopTissuesTables = () => ({
 	helpkey: "H3K27acZ-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
-	     render: Render.cell_type},
+	     render: Render.cell_type(globals)},
 	    {title: "H3K27ac and DNase", data: "two",
 	     render: Render.z_score},
 	    {title: "H3K27ac only", data: "one",
@@ -58,7 +58,7 @@ export const TopTissuesTables = () => ({
 	helpkey: "CTCFZ-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
-	     render: Render.cell_type},
+	     render: Render.cell_type(globals)},
 	    {title: "CTCF and DNase", data: "two",
              render: Render.z_score},
 	    {title: "CTCF only", data: "one",
@@ -78,7 +78,7 @@ export const TopTissuesTables = () => ({
 	helpkey: "DNaseZ-scores",
 	cols: [
 	    {title: "cell type", data: "ct", className: "dt-right",
-		render: Render.cell_type},
+	     render: Render.cell_type(globals)},
 	    {title: "Z-score", data: "one",
 	     render: Render.z_score
 	    }

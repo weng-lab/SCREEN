@@ -35,8 +35,9 @@ class DetailsTab extends React.Component{
     render() {
        if("details" !== this.props.maintabs_active){
             return false;
-        }
-        return (<DetailsContainer tabs={DetailsTabInfo()} />);
+       }
+	return React.createElement(DetailsContainer, {...this.props,
+						      tabs: DetailsTabInfo()});
     }
 }
 

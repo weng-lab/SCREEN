@@ -9,7 +9,9 @@ class DetailsContainer extends React.Component {
     render() {
         const makeTabTitle = (key, tab) => {
             let active = key === this.props.re_details_tab_active;
-            if(!tab.enabled && !active){ return (<div />) }
+            if(!tab.enabled && !active){
+		return (<div key={key} />)
+	    }
 	    let cn = (active ? "active" : "") + " detailsTabTitle";
             return (
 		<li className={cn}
@@ -21,7 +23,9 @@ class DetailsContainer extends React.Component {
 
         const makeTab = (key, tab) => {
             let active = key === this.props.re_details_tab_active;
-            if(!tab.enabled && !active){ return (<div />) }
+            if(!tab.enabled && !active){
+		return (<div key={key} />)
+	    }
             return (
 		<div
                     className={active ? "tab-pane active" : "tab-pane"}
@@ -41,7 +45,7 @@ class DetailsContainer extends React.Component {
             <div className="container" style={{width: "100%"}}>
                 <div className="row">
                     <div className="col-md-10">
-			{Render.creTitle(cre)}
+			{Render.creTitle(this.props.globals, cre)}
                     </div>
                 </div>
 

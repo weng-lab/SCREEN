@@ -44,8 +44,8 @@ export const toSciNot = (d) => {
 }
 
 export const real = (d) => (d.toFixed(2))
-export const z_score = (d) => (d === -11.0 ? "--" : $.fn.dataTable.render.number(',', '.', 2, '')["display"](d));
-export const cell_type = (ct) => (Globals.byCellType[ct][0]["name"]);
+export const z_score = (d) => (d === -11.0 ? "--" : d.toFixed(2));
+export const cell_type = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 export const support = (support) => (
     ("eqtls" in support ? support.eqtls.length : 0) + ("chiapet" in support ? support.chiapet.length : 0)
@@ -454,15 +454,10 @@ export const creTableAccessionProx = (cre) => {
 	   popup("Distal", "D");
 }
 
-export const creTableAccessionProxReact = (cre) => {
-    return cre.isproximal ? popup("Proximal", "P") :
-	   popup("Distal", "D");
-}
-
 export const creTableAccession = (globals) => (cre, type, full, meta) => {
     return (
 	<div>
-	    {popup("Click for cRE details")}
+	    {popup("Click for cRE details", cre.accession)}
 	    <br />
 	    {popup("Concordant", concordantStarReact(cre.concordant))}
 	    {creTableAccessionProx(cre)}
@@ -529,7 +524,7 @@ export const creTitle = (globals, cre) => {
     if(ct){
 	cts = (
 	    <span>
-		{Globals.byCellType[ct][0]["name"]}:{'\u00A0'}
+		{globals.byCellType[ct][0]["name"]}:{'\u00A0'}
 		{creTableCellTypeSpecific(globals, cre.ctspecifc)}
 	    </span>);
     }
@@ -543,9 +538,9 @@ export const creTitle = (globals, cre) => {
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {concordantStarReact(cre.concordant)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {creTableAccessionProxReact(cre)}
+	    {creTableAccessionProx(cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {creTableAccessionBoxen(cre)}
+	    {creTableAccessionBoxen(globals, cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {cts}
 	</div>);

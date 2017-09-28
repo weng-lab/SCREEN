@@ -164,7 +164,7 @@ class TopTissuesTab extends ReTabBase{
     constructor(props) {
 	super(props, "topTissues");
         this.doRender = (globals, data) => {
-            return tabEles(globals, data, TopTissuesTables(), 2);
+            return tabEles(globals, data, TopTissuesTables(globals), 2);
         }
     }
 }
