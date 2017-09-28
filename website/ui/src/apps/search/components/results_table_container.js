@@ -176,6 +176,7 @@ class ResultsTableContainer extends React.Component {
 	    <div>
 	    {interpBox}
 		<TableWithCart
+		    assembly={this.props.assembly}
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
                     data={this.state.cres}

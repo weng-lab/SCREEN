@@ -285,7 +285,7 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-
+	
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>

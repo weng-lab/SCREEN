@@ -12,10 +12,12 @@ import main_reducers from './reducers/main_reducers'
 
 import initialState from './config/initial_state'
 
-class GeneExpPage extends React.Component {
+import AppPageBase from '../../common/app_page_base'
+
+class GeneExpPageInner extends React.Component {
     render() {
 	const store = createStore(main_reducers,
-				  initialState(),
+				  initialState(this.props.search, this.props.globals),
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
@@ -27,8 +29,9 @@ class GeneExpPage extends React.Component {
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
-                            <NavBarApp show_cartimage={false}
-                                       searchbox={SearchBox} />}/>
+                            <NavBarApp assembly={this.props.search.assembly}
+				       show_cartimage={false}
+                                       searchbox={SearchBox} />
                         </div>
 		    </nav>
 
@@ -36,17 +39,25 @@ class GeneExpPage extends React.Component {
                         <div className="row" style={{width: "100%"}}>
                             <div className="col-md-3 nopadding-right"
                                  id="facets-container">
-                                <FacetBoxen />
+                                <FacetBoxen globals={this.props.globals} />
                             </div>
                             <div className="col-md-9 nopadding-left"
                                  id="tabs-container">
-                                <MainTabs />
+                                <MainTabs globals={this.props.globals}
+					  search={this.props.search}
+				/>
                             </div>
                         </div>
                     </div>
 		</div>
             </Provider>
         );
+    }
+}
+
+class GeneExpPage  extends AppPageBase {
+    constructor(props) {
+	super(props, "/searchws/search", GeneExpPageInner);
     }
 }
 
