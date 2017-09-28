@@ -22,10 +22,9 @@ export const compute_offsets = (sorted_keys, itemsets, value) => {
 };
 
 class HorizontalBar extends ScaledPlot {
-
     constructor(props) {
 	super(props);
-	this.componentWillReceiveProps(props);
+	this.componentWillReceiveProps(props); // TODO: why?
     }
 
     componentWillReceiveProps(props) {
@@ -72,9 +71,12 @@ class HorizontalBar extends ScaledPlot {
 		</g>
 	    ))
 	)));
+
 	let leftlabels = (this._sorted_keys.map((key, k) => (
-	    <text x={this.props.axis_offsets[0] * 0.45} y={this._y(this._item_distribution.labeloffsets[k])}
-	      style={{fill: "000", fontSize: this._barheight + "px", textAnchor: "end"}}>
+	    <text key={key}
+		  x={this.props.axis_offsets[0] * 0.45}
+		  y={this._y(this._item_distribution.labeloffsets[k])}
+		  style={{fill: "000", fontSize: this._barheight + "px", textAnchor: "end"}}>
 		{this._grouplabel(this.props.itemsets[key])}
 	    </text>
 	)));

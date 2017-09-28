@@ -15,8 +15,8 @@ class LongChecklistFacet extends React.Component {
 
     _render_checkbox(selected) {
 	return (selected
-		? '<input type="checkbox" checked />'
-		: '<input type="checkbox" />'
+		? <input type="checkbox" checked />
+		: <input type="checkbox" />
 	       );
     }
 

@@ -237,7 +237,7 @@ class GeTab extends ReTabBase{
 		<div>
 		    <h4>
 			Gene Expression Profiles by RNA-seq
-			<HelpIcon helpkey={"GeneExpression"} />
+			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
 		    </h4>
 		    <h2 style={{display: "inline"}}>
 			<em>{data.genename}</em>

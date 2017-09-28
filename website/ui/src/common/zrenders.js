@@ -350,24 +350,13 @@ export const numWithCommas = (x) => {
 
 export const concordantStar = (concordant) => {
     if(concordant){
-	return '<span class="glyphicon glyphicon-star concordantStar" aria-hidden="true"></span>';
+	return (<span className="glyphicon glyphicon-star concordantStar"
+		      aria-hidden="true"></span>);
     }
     return "";
 }
 
-export const concordantStarReact = (concordant) => {
-    if(concordant){
-	return (
-	    <span className="glyphicon glyphicon-star concordantStar"
-		  aria-hidden="true">
-	    </span>);
-    }
-    return "";
-}
-
-export const checkCt = (checked) => {
-    return "<input type='checkbox' " + (checked ? "checked " : "") + "/>";
-}
+export const checkCt = (checked) => (<input type={'checkbox' + (checked ? "checked " : "")} />);
 
 export const creTableAccessionBoxen = (globals, cre) => {
     let w = 12;
@@ -415,7 +404,7 @@ export const creTableAccession = (globals) => (cre, type, full, meta) => {
 	<div>
 	    {popup("Click for cRE details", cre.accession)}
 	    <br />
-	    {popup("Concordant", concordantStarReact(cre.concordant))}
+	    {popup("Concordant", concordantStar(cre.concordant))}
 	    {creTableAccessionProx(cre)}
 	    {creTableAccessionBoxen(globals, cre)}
 	</div>);
@@ -492,7 +481,7 @@ export const creTitle = (globals, cre) => {
 	    {cre.chrom}:{numWithCommas(cre.start)}-
 	    {numWithCommas(cre.start + cre.len)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {concordantStarReact(cre.concordant)}
+	    {concordantStar(cre.concordant)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {creTableAccessionProx(cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
