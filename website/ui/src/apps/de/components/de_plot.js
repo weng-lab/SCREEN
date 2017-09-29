@@ -7,9 +7,6 @@ import * as Actions from '../actions/main_actions';
 
 var d3 = require('d3');
 
-/*global Globals */
-/*eslint no-undef: "error"*/
-
 const geneRed = "#FF0000";
 const geneBlue = "#1E90FF";
 
@@ -19,8 +16,8 @@ class DePlot extends React.Component {
     }
 
     render() {
-        let ct1 = Globals.byCellType[this.props.ct1][0]["name"];
-        let ct2 = Globals.byCellType[this.props.ct2][0]["name"];
+        let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
+        let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
         let geneName1 = this.props.data.nearbyDEs.names[0];
         let geneName2 = this.props.data.nearbyDEs.names[1];
 
@@ -84,13 +81,13 @@ class DePlot extends React.Component {
         var width = 1000 - margin.left - margin.right;
         var height = 1200 - margin.top - margin.bottom;
 
-	var color = d3.scale.ordinal()
+	var color = d3.scaleOrdinal()
             .domain(["enhancer-like signature", "promoter-like signature"])
             .range(["#ffcd00", "#ff0000"]);
-        var x = d3.scale.linear()
+        var x = d3.scaleLinear()
             .domain(xdomain).nice()
             .range([0, width]);
-        var y = d3.scale.linear()
+        var y = d3.scaleLinear()
             .domain(y_domain).nice()
             .range([height, 0]);
         var xAxis = d3.svg.axis()

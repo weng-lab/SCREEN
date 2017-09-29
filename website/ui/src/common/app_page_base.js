@@ -1,10 +1,11 @@
 import React from 'react';
 
 class AppPageBase extends React.Component {
-    constructor(props, url, innerClass) {
+    constructor(props, url, innerClass, extraProps = {}) {
 	super(props);
 	this.url = url;
 	this.innerClass = innerClass;
+	this.extraProps = extraProps;
 	this.state = { isFetching: false, isFetchingGlobals: false, isError: false };
     }
 
@@ -33,7 +34,8 @@ class AppPageBase extends React.Component {
 		      'Content-Type': 'application/json'
 		  },
 		  method: "POST",
-		  body: JSON.stringify(nextProps.location.query)
+		  body: JSON.stringify({...nextProps.location.query,
+					...this.extraProps})
 	      })
 	    .then((response) => (response.json()))
 	    .then((r) => {

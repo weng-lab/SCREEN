@@ -59,7 +59,11 @@ class DeWebService(object):
             return {gene : {"xdomain" : nearbyDEs["xdomain"],
                             "coord" : de.coord().toDict(),
                             "diffCREs": diffCREs,
-                            "nearbyDEs": nearbyDEs}}
+                            "nearbyDEs": nearbyDEs},
+                    "assembly": self.assembly,
+                    "gene": gene,
+                    "ct1": ct1,
+                    "ct2": ct2}
         except:
             raise
             return {}

@@ -26,7 +26,7 @@ class MainApp():
     def __init__(self, args, viewDir, staticDir, ps, cache):
         self.templates = Templates(viewDir, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
-        self.de_ws = DeWebServiceWrapper(args, ps, cache, staticDir)
+        self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.tc = TadsController(self.templates, ps, cache)
         self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
@@ -132,7 +132,7 @@ class MainApp():
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def deGeneJson(self, *args, **kwargs):
+    def dews(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.deWS.process(j, args, kwargs)
 

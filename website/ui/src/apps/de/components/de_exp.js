@@ -9,9 +9,6 @@ import DePlot from '../components/de_plot';
 import loading from '../../../common/components/loading';
 import {arrowNote} from '../../../common/utility';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class DeExp extends React.Component{
     constructor(props) {
         super(props);
@@ -30,13 +27,14 @@ class DeExp extends React.Component{
         this.loadDe(nextProps);
     }
 
-    loadDe({gene, ct1, ct2, actions}){
-        if(null === ct1 || null === ct2){
+    loadDe(p){
+	console.log("loadDe", p);
+        if(null === p.ct1 || null === p.ct2){
             this.props.actions.setDes(null);
             this.setState({selectCT: true});
             return;
         }
-        const q = {GlobalAssembly, gene, ct1, ct2};
+        const q = {assembly: p.assembly, gene: p.gene, ct1: p.ct1, ct2: p.ct2};
         const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -45,7 +43,7 @@ class DeExp extends React.Component{
         //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true, selectCT: false});
         $.ajax({
-            url: "/deGeneJson",
+            url: "/dews/search",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -56,7 +54,7 @@ class DeExp extends React.Component{
             }.bind(this),
             success: function(r) {
                 this.setState({...r, isFetching: false, isError: false});
-                actions.setDes(r[gene]);
+                p.actions.setDes(r[p.gene]);
             }.bind(this)
         });
     }
@@ -75,7 +73,7 @@ class DeExp extends React.Component{
 
         let gene = this.props.gene;
         if(gene in this.state){
-	    let data = this.state[gene];
+	    const data = this.state[gene];
 	    if(!data.nearbyDEs.data){
 		return (
 		    <div>
@@ -85,7 +83,7 @@ class DeExp extends React.Component{
 			  " at FDR threshold of 0.05" }
 		    </div>);
             }
-	    return <DePlot data={data} />;
+	    return React.createElement(DePlot, {...this.props, data: data});
         }
         return loading(this.state);
     }

@@ -15,41 +15,37 @@ const cols = [{ title: "cell type", data: "name",
 	      { title: "tissue", data: "tissue",
 		className: "dt-right" }];
 
-/*global Globals */
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
-const cellTypesBox1 = ({ct1, actions}) => {
+const cellTypesBox1 = ({globals, ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
 			title={""}
-			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
 			buttonsOff={true}
 			selection={ct1}
 			friendlySelectionLookup={(value) => {
-				return Globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value][0]["name"]; }}
 			onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
 
-const cellTypesBox2 = ({ct2, actions}) => {
+const cellTypesBox2 = ({globals, ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
 			title={""}
-			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
 			buttonsOff={true}
 			selection={ct2}
 			friendlySelectionLookup={(value) => {
-				return Globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value][0]["name"]; }}
 			onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }
 
-const creBox = ({des, ct1, ct2, actions}) => {
+const creBox = ({assembly, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
         return (<div />);
     }
@@ -59,7 +55,7 @@ const creBox = ({des, ct1, ct2, actions}) => {
             data={cres}
             cols={[
                 {title: "accession", data: "accession",
-                 render: Render.relink(GlobalAssembly),
+                 render: Render.relink(assembly),
                  className: "dt-right"},
                 {title: "start", data: "start", render: Render.integer,
                  className: "dt-right"},

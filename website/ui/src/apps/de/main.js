@@ -12,7 +12,7 @@ import main_reducers from './reducers/main_reducers'
 import initialState from './config/initial_state'
 import AppPageBase from '../../common/app_page_base'
 
-class DePage extends React.Component {
+class DePageInner extends React.Component {
     render() {
 	let store = createStore(main_reducers,
 				initialState(this.props.search,
@@ -22,24 +22,28 @@ class DePage extends React.Component {
 				));
 	const assembly = this.props.search.assembly;
         return (
-		<Provider store={store}>
+	    <Provider store={store}>
 	        <div>
-		
-		<nav id="mainNavBar"
+		    
+		    <nav id="mainNavBar"
 			 className="navbar navbar-default navbar-inverse navbar-main">
 			<div className="container-fluid" id="navbar-main">
-		<NavBarApp assembly={assembly}
-	    show_cartimage={false} searchbox={SearchBox} />}/>
-	    </div>
-	    </nav>
+			    <NavBarApp assembly={assembly}
+				       show_cartimage={false}
+				       searchbox={SearchBox} />
+			</div>
+		    </nav>
 		    
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>
 			    <div className="col-md-3 nopadding-right" id="facets-container">
-				<FacetBoxen />
+				<FacetBoxen assembly={assembly}
+					    globals={this.props.globals} />
 			    </div>
 			    <div className="col-md-9 nopadding-left" id="tabs-container">
-				<MainTabs />
+				<MainTabs assembly={assembly}
+					  globals={this.props.globals}
+					  search={this.props.search} />
 			    </div>
 			</div>
 		    </div>
@@ -47,6 +51,14 @@ class DePage extends React.Component {
 		</div>
             </Provider>
         );
+    }
+}
+
+class DePage extends AppPageBase {
+    constructor(props) {
+	super(props, "/dews/search", DePageInner,
+	      {ct1: "C57BL/6_limb_embryo_11.5_days",
+	       ct2: "C57BL/6_limb_embryo_15.5_days"});
     }
 }
 
