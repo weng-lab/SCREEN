@@ -78,12 +78,11 @@ const geneBox = ({globals, des, ct1, ct2, actions}) => {
 	<Ztable
             data={genes}
             cols={[
-                {title: "gene", data: "gene",
-                 className: "dt-right"},
-                {title: "start", data: "sstart", 
-                 className: "dt-right"},
-                {title: "fold &Delta;", data: "fc", render: Render.real,
-                 className: "dt-right"}
+                { title: "gene", data: "gene",
+		}, {title: "start", data: "sstart",
+		}, {title: <span>fold &Delta;</span>, data: "fc",
+		    render: Render.real
+		}
             ]}
             pageLength={5}
 	    bFilter={true}
