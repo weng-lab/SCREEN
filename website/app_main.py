@@ -40,6 +40,10 @@ class MainApp():
         self.sessions = Sessions(ps.DBCONN)
 
     @cherrypy.expose
+    def index(self):
+        raise cherrypy.HTTPRedirect("http://screen-beta.wenglab.org/static/index.html", status=307)
+        
+    @cherrypy.expose
     def intersections(self, *args, **kwargs):
         return self.gwas.gwas(args, kwargs, self.sessions.userUid())
 
