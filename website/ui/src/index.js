@@ -15,7 +15,7 @@ import TadPage from './apps/tads/main';
 import './css.css';
 
 function myCreateElement(Component, props) {
-    return (<Component {...props} />);
+    return React.createElement(Component, props);
 }
 
 ReactDOM.render((
@@ -27,9 +27,7 @@ ReactDOM.render((
 	<Route path="/search/:maintab/:subtab(.*)" component={Search} />
 	<Route path="/geApp/" component={GeneExp} />
 	<Route path="/deApp/" component={De} />
-	<Route path="/gwasApp/:assembly" component={Gwas} />
-	<Route path="/gwasApp/:assembly/:gs" component={Gwas} />
-	<Route path="/gwasApp/:assembly/:gs/:ct" component={Gwas} />
+	<Route path="/gwasApp/" component={Gwas} />
 	<Route path="/intersections/:assembly" component={Intersection} />
 	<Route path="/tads/:assembly" component={TadPage} />
     </Router>), document.getElementById('root'));

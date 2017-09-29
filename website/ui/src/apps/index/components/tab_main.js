@@ -38,7 +38,7 @@ class TabMain extends React.Component {
                     </div>
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
-                           href={"/gwasApp/hg19/"} role={"button"}>
+                           href={"/gwasApp/?assembly=hg19"} role={"button"}>
 		            {"Browse GWAS"}
 		        </a>
 		    </div>
@@ -52,10 +52,9 @@ class TabMain extends React.Component {
     }
 
     logo(){
-	return (<img
-                    className={"img-responsive mainLogo"}
-                    src={"/static/encode/classic-image3.jpg"}
-                    alt={"ENCODE logo"} />);
+	return (<img className={"img-responsive mainLogo"}
+                     src={"/static/encode/classic-image3.jpg"}
+                     alt={"ENCODE logo"} />);
     }
 
     searchBox() {
