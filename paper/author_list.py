@@ -9,9 +9,13 @@ from collections import namedtuple, OrderedDict
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+with open('nature_allowed_coutnries.txt') as f:
+    Countries = set([x.strip() for x in f])
+
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, email2, lab, labGroup,
-                 order, coAuthOrder, lastAuthNum, address, address2, address3, subLab):
+                 order, coAuthOrder, lastAuthNum, address, institue, country,
+                 address2, address3, subLab):
         self.firstName = firstName
         self.midInitial = midInitial.strip()
         self.lastName = lastName
@@ -23,6 +27,7 @@ class Author:
         self.coAuthOrder = coAuthOrder
         self.lastAuthNum = lastAuthNum
         self.address = address
+        self.institue = institue
         self.address2 = address2
         self.address3 = address3
 
@@ -30,16 +35,35 @@ class Author:
         if not subLab:
             self.subLab = lab
 
+        if not self.midInitial.endswith('.') and 1 == len(self.midInitial):
+            self.midInitial += '.'
+
+        cFix = {"USA" : "United States",
+                "UK" : "United Kingdom",
+                "CH" : "Switzerland"}
+        c = cFix.get(country, country)
+        if c not in Countries:
+            raise Exception("missing " + c)
+        self.country = c
+        
     def toName(self):
         n = self.firstName + ' '
         if self.midInitial:
-            n += self.midInitial
-            if not n.endswith('.') and 1 == len(self.midInitial):
-                n += '.'
-            n += ' '
+            n += self.midInitial + ' '
         n += self.lastName
         return n
 
+    def isFirstOrLastAuthor(self):
+        return self.coAuthOrder or self.lastAuthNum
+
+    def toNatureJson(self):
+        return {"firstName" : self.firstName,
+                "middleName" : self.midInitial,
+                "lastName": self.lastName,
+                "email" : self.email,
+                "org" : self.institue,
+                "country" : self.country}
+    
 class AuthorList:
     def __init__(self, args):
         self.args = args
@@ -51,13 +75,13 @@ class AuthorList:
         gs = gspread.authorize(credentials)
         gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
 
-        print("***************", sheetName)
+        print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
         for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
-        print("numRows", numRows, "(including header)")
+        print("numRows", numRows, "(including header)", "<br>")
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
@@ -87,13 +111,13 @@ class AuthorList:
         gs = gspread.authorize(credentials)
         gsheet = gs.open("ENCODE3 Paper Author List Source List (Purcaro)")
 
-        print("***************", sheetName)
+        print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
         for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
-        print("numRows", numRows, "(including header)")
+        print("numRows", numRows, "(including header)", "<br>")
 
         def getCol(letter, isInt = False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
@@ -110,15 +134,18 @@ class AuthorList:
         labs = getCol('I')
         orders = getCol('K', True)
         addresses = getCol('L')
-        addresses2 = getCol('M')
-        addresses3 = getCol('N')
-        emails2 = getCol('O')
-        subLabs = getCol('P')
-        coAuthOrders = getCol('Q', True)
-        lastAuthNums = getCol('R', True)
+        institues = getCol('M')
+        countries = getCol('N')
+        addresses2 = getCol('O')
+        addresses3 = getCol('P')
+        emails2 = getCol('Q')
+        subLabs = getCol('R')
+        coAuthOrders = getCol('S', True)
+        lastAuthNums = getCol('T', True)
 
-        m = zip(firstNames, midInitials, lastNames, emails, emails2, labs, labGroups,
-                orders, coAuthOrders, lastAuthNums, addresses, addresses2, addresses3,
+        m = zip(firstNames, midInitials, lastNames, emails, emails2, labs,
+                labGroups, orders, coAuthOrders, lastAuthNums, addresses,
+                institues, countries, addresses2, addresses3,
                 subLabs)
         return [Author(*x) for x in m]
 
@@ -127,8 +154,9 @@ class AuthorList:
         if k not in self.addressToIdx:
             self.addressToIdx[k] = self.addressToIdxCounter
             self.addressToIdxCounter += 1
+            
         superNum = self.addressToIdx[k]
-        n = p.toName() + str(superNum)
+        n = p.toName() + '<sup>' + str(superNum)
 
         if p.address2:
             k = p.address2
@@ -146,11 +174,13 @@ class AuthorList:
             superNum = self.addressToIdx[k]
             n += ',' + str(superNum)
 
+        n += '</sup>'
+            
         return n
 
     def makeList(self, labGroupLab, people, coauth):
-        print()
-        print(labGroupLab)
+        print("<br>")
+        print("<b>", labGroupLab, "</b>", "<br>")
         toShow = []
         for p in people:
             n = self.addr(p)
@@ -159,7 +189,7 @@ class AuthorList:
                 toShow[-1] += '*'
             if False and lastIdx == counter:
                 toShow[-1] += '&'
-        print(', '.join(toShow))
+        print(', '.join(toShow), "<br>")
 
     def _output(self, firstAuthors, allAuthors, lastAuthors):
         self.addressToIdxCounter = 1
@@ -169,20 +199,48 @@ class AuthorList:
         print(", The ENCODE Consortium,")
         self.makeList(lastAuthors[0], lastAuthors[1], False)
 
-        print("****************************")
+        print("****************************", "<br>")
         for labGroupLab, people in allAuthors:
             self.makeList(labGroupLab, people, False)
 
-        print('\nAffiliations')
+        print("<br>", "Affiliations", "<br>")
         for k, v in self.addressToIdx.items():
-            print(v, k)
+            print(v, k, "<br>")
+
+    def _outputJson(self, firstAuthors, allAuthors, lastAuthors):
+        r = []
+        emails = set()
+        for p in firstAuthors[1]:
+            if p.email not in emails:
+                emails.add(p.email)
+                r.append(p.toNatureJson())            
+        for p in lastAuthors[1]:
+            if "Zhiping" == p.firstName and "Weng" == p.lastName:
+                r.insert(0, p.toNatureJson())
+            else:
+                if p.email not in emails:
+                    emails.add(p.email)
+                    r.append(p.toNatureJson())
+        for labGroupLab, people in allAuthors:
+            for p in people:
+                if not p.isFirstOrLastAuthor():
+                    if p.email not in emails:
+                        emails.add(p.email)
+                        r.append(p.toNatureJson())
+        for idx, e in enumerate(r):
+            e["idx"] = idx + 1
+        fnp = "/home/mjp/Dropbox/Final-Images/authors.json"
+        with open(fnp, 'w') as f:
+            json.dump(r, f)
+        print("wrote", fnp)
 
     def run(self):
         groups = self._loadGroups("LabOrder")
         authors = self._loadSheet("BigList")
         firstAuthors, allAuthors, lastAuthors = self.organizeAuthors(authors)
+        self._outputJson(firstAuthors, allAuthors, lastAuthors)
         self._output(firstAuthors, allAuthors, lastAuthors)
-
+        
     def organizeAuthors(self, authors):
         numAuthors = 0
 
