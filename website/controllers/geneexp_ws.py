@@ -1,10 +1,9 @@
 from __future__ import print_function
 import sys, os
 
-from common.page_info_geneexp import PageInfoGeneExp
 from models.gene_expression import GeneExpression
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
 
 class GeneExpWebServiceWrapper:

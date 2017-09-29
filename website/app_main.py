@@ -6,7 +6,7 @@ import cherrypy, jinja2, os, sys
 
 from controllers.geneexp_ws import GeneExpWebServiceWrapper
 from controllers.de_ws import DeWebServiceWrapper
-from controllers.gwas_controller import GwasController
+from controllers.gwas_ws import GwasWebServiceWrapper
 from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
 from controllers.trackhub_controller import TrackhubController
@@ -28,7 +28,7 @@ class MainApp():
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.tc = TadsController(self.templates, ps, cache)
-        self.gwas = GwasController(self.templates, ps, cache)
+        self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.global_data = GlobalDataController(ps, cache)
         self.tf = TfController(self.templates, ps, cache)
         self.ic = IntersectionController(self.templates, ps, cache)
@@ -38,10 +38,6 @@ class MainApp():
         self.autoWS = AutocompleteWebService(ps)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
-
-    @cherrypy.expose
-    def intersections(self, *args, **kwargs):
-        return self.gwas.gwas(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
@@ -118,7 +114,6 @@ class MainApp():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def autows(self, *args, **kwargs):
-        #print(cherrypy.request)
         j = cherrypy.request.json
         return self.autoWS.process(j, args, kwargs)
 
@@ -137,15 +132,11 @@ class MainApp():
         return self.deWS.process(j, args, kwargs)
 
     @cherrypy.expose
-    def gwasApp(self, *args, **kwargs):
-        return self.gwas.gwas(args, kwargs, self.sessions.userUid())
-
-    @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def gwasJson(self, *args, **kwargs):
+    def gwasws(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.gwas.gwasJson(j, args, kwargs)
+        return self.gwasWS.process(j, args, kwargs)
 
     @cherrypy.expose
     def tfApp(self, *args, **kwargs):
