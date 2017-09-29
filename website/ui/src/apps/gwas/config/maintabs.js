@@ -5,9 +5,10 @@ import ConfigureGenomeBrowser from '../../search/components/configure_genome_bro
 
 class Gwas extends React.Component{
     render() {
-        return (<div>
-                <GwasTab />
-                </div>);
+        return (
+	    <div>
+		{React.createElement(GwasTab, this.props)}
+            </div>);
     }
 }
 

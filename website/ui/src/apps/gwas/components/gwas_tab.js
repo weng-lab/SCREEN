@@ -11,9 +11,6 @@ import loading from '../../../common/components/loading';
 import {arrowNote} from '../../../common/utility';
 import Ztable from '../../../common/components/ztable/ztable';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class GwasTab extends React.Component{
     constructor(props) {
         super(props);
@@ -23,11 +20,10 @@ class GwasTab extends React.Component{
     }
 
     componentDidMount(){
-        this.loadGwas(this.props);
+	this.loadGwas(this.props);
     }
 
     componentWillReceiveProps(nextProps){
-        //console.log("componentWillReceiveProps", nextProps);
         this.loadGwas(nextProps);
     }
 
@@ -37,20 +33,19 @@ class GwasTab extends React.Component{
         this.props.actions.setGwasCellTypes(null);
     }
 
-    loadGwas({gwas_study, actions}){
+    loadGwas({assembly, gwas_study, actions}){
 	if(!gwas_study){
 	    return;
 	}
-        var q = {GlobalAssembly, gwas_study};
-        var jq = JSON.stringify(q);
+        const q = {assembly, gwas_study};
+        const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/gwasJson/main",
+            url: "/gwasws/main",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -68,7 +63,8 @@ class GwasTab extends React.Component{
 
     doRenderWrapper({gwas_study, cellType, actions}){
 	var data = this.state[gwas_study];
-        var ctView = (cellType ? <CelltypeView rdata={data.mainTable[0]} /> :
+        var ctView = (cellType ? <CelltypeView globals={this.props.globals}
+					       rdata={data.mainTable[0]} /> :
                       arrowNote("Please choose a cell type.")
         );
         let mainTable = (<Ztable

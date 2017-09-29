@@ -67,12 +67,12 @@ class Gwas:
     def mainTable(self, gwas_study):
         return {gwas_study : {"gwas_study" : self.byStudy[gwas_study],
                               "mainTable" : self._mainTableInfo(gwas_study),
-                              "topCellTypes" : self.allCellTypes()}}
+                              "topCellTypes" : self.allCellTypes(gwas_study)}}
         
-    def mainTableInfo(self, gwas_study):
+    def _mainTableInfo(self, gwas_study):
+        total = self.totalLDblocks(gwas_study)
         overlap = self.numLdBlocksOverlap(gwas_study)
         overlapStr = "%d (%d%%)" % (overlap, int(float(overlap) / float(total) * 100.0))
-        total = self.totalLDblocks(gwas_study)
         return [{"totalLDblocks": total,
                  "numLdBlocksOverlap": overlap,
                  "numLdBlocksOverlapFormat": overlapStr,
