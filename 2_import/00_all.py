@@ -89,7 +89,10 @@ def main():
                             sample = args.sample,
                             index = False,
                             metadata = False,
-                            yes = True)
+                            yes = True, 
+			    nbins=0,
+                            ver=4,
+			    j=8)
 
     runAll(passedArgs, DBCONN, args.start, args.skip)
     vacAll(DBCONN)
