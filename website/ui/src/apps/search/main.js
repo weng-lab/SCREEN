@@ -8,23 +8,23 @@ import SearchBox from '../../common/components/searchbox'
 import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
-import main_reducers from './reducers/main_reducers'
 import {isCart} from '../../common/utility'
 
+import main_reducers from './reducers/main_reducers'
 import initialState from './config/initial_state'
-
 import AppPageBase from '../../common/app_page_base'
 
 class SearchPageInner extends React.Component {
     render() {
-	const store = createStore(main_reducers,
-				  initialState(this.props.search,
-					       this.props.globals),
-				  applyMiddleware(
-				      thunkMiddleware,
-				  ));
+	let store = createStore(main_reducers,
+				initialState(this.props.search,
+					     this.props.globals),
+				applyMiddleware(
+				    thunkMiddleware,
+				));
 	const assembly = this.props.search.assembly;
-	let mainTabs = (<MainTabs globals={this.props.globals} search={this.props.search} />);
+	let mainTabs = (<MainTabs globals={this.props.globals}
+			search={this.props.search} />);
 	    
 	    let drawMain = () => {
 	    if(isCart()){

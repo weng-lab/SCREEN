@@ -9,26 +9,29 @@ import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
-
 import initialState from './config/initial_state'
+import AppPageBase from '../../common/app_page_base'
 
 class DePage extends React.Component {
     render() {
-	const store = createStore(main_reducers,
-				  initialState(),
-				  applyMiddleware(
-				      thunkMiddleware,
-				  ));
+	let store = createStore(main_reducers,
+				initialState(this.props.search,
+					     this.props.globals),
+				applyMiddleware(
+				    thunkMiddleware,
+				));
+	const assembly = this.props.search.assembly;
         return (
-            <Provider store={store}>
+		<Provider store={store}>
 	        <div>
-		    
-		    <nav id="mainNavBar"
+		
+		<nav id="mainNavBar"
 			 className="navbar navbar-default navbar-inverse navbar-main">
 			<div className="container-fluid" id="navbar-main">
-			    <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
-			</div>
-		    </nav>
+		<NavBarApp assembly={assembly}
+	    show_cartimage={false} searchbox={SearchBox} />}/>
+	    </div>
+	    </nav>
 		    
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>

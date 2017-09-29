@@ -36,8 +36,8 @@ class DeExp extends React.Component{
             this.setState({selectCT: true});
             return;
         }
-        var q = {GlobalAssembly, gene, ct1, ct2};
-        var jq = JSON.stringify(q);
+        const q = {GlobalAssembly, gene, ct1, ct2};
+        const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
