@@ -55,14 +55,11 @@ const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
             data={cres}
             cols={[
                 {title: "accession", data: "accession",
-                 render: Render.relink(assembly),
-                 className: "dt-right"},
-                {title: "start", data: "start", render: Render.integer,
-                 className: "dt-right"},
-                {title: "len", data: "len", render: Render.integer,
-                 className: "dt-right"},
-                {title: "Z &Delta;", data: "value",
-                 className: "dt-right"}
+                 render: Render.relink(assembly)
+		}, {title: "start", data: "start", render: Render.integer,
+                }, {title: "len", data: "len", render: Render.integer,
+                }, {title: <span>&Delta;Z</span>, data: "value",
+                }
             ]}
             pageLength={5}
 	    bFilter={true}
