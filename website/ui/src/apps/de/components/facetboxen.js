@@ -45,7 +45,7 @@ const cellTypesBox2 = ({globals, ct2, actions}) => {
                     />);
 }
 
-const creBox = ({assembly, des, ct1, ct2, actions}) => {
+const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
         return (<div />);
     }
@@ -68,10 +68,11 @@ const creBox = ({assembly, des, ct1, ct2, actions}) => {
 	    bFilter={true}
             order={[[3, "desc"], [1, "asc"]]}
         />);
-    return panelize("Candidate Regulatory Elements", box, "DE_cRE_Table");
+    return panelize("candidate Regulatory Elements", box,
+		    "DE_cRE_Table", globals);
 }
 
-const geneBox = ({des, ct1, ct2, actions}) => {
+const geneBox = ({globals, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
         return (<div />);
     }
@@ -91,7 +92,8 @@ const geneBox = ({des, ct1, ct2, actions}) => {
 	    bFilter={true}
             order={[[2, "desc"]]}
         />);
-    return panelize("Differentially Expressed Genes", box, "DE_Gene_Table");
+    return panelize("Differentially Expressed Genes", box,
+		    "DE_Gene_Table", globals);
 }
 
 class FacetBoxen extends React.Component {

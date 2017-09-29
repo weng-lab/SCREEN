@@ -28,7 +28,6 @@ class DeExp extends React.Component{
     }
 
     loadDe(p){
-	console.log("loadDe", p);
         if(null === p.ct1 || null === p.ct2){
             this.props.actions.setDes(null);
             this.setState({selectCT: true});
@@ -40,7 +39,6 @@ class DeExp extends React.Component{
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true, selectCT: false});
         $.ajax({
             url: "/dews/search",
