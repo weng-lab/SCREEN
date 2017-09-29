@@ -47,12 +47,15 @@ class GwasWebService(object):
     def _initialLoad(self, j, args):
         g = Gwas(self.assembly, self.ps, self.assembly)
         return {"gwas": {"studies" : g.studies,
-                         "byStudy" : g.byStudy}}
+                         "byStudy" : g.byStudy},
+                "gwas_study": "",
+                "ct": "",
+                "assembly": self.assembly}
         
     def _mainTable(self, j, args):
         g = Gwas(self.assembly, self.ps, self.cache)
         self.gwas_study = j["gwas_study"]
-        if not g.checkStudy(gwas_study):
+        if not g.checkStudy(self.gwas_study):
             raise Exception("invalid gwas study")
 
         return g.mainTable(self.gwas_study)
@@ -60,7 +63,7 @@ class GwasWebService(object):
     def _cres(self, j, args):
         g = Gwas(self.assembly, self.ps, self.cache)
         self.gwas_study = j["gwas_study"]
-        if not g.checkStudy(gwas_study):
+        if not g.checkStudy(self.gwas_study):
             raise Exception("invalid gwas study")
 
         ct = j["cellType"]

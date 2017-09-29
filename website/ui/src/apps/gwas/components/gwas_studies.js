@@ -7,42 +7,35 @@ import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist';
 
 import * as Actions from '../actions/main_actions';
 
-/*global GwasGlobals */
-/*eslint no-undef: "error"*/
-
-const make_gwas_friendly = (gwas_study) => {
-    let g = GwasGlobals.gwas.byStudy[gwas_study];
+const make_gwas_friendly = (gwas) => (gwas_study) => {
+    const g = gwas.byStudy[gwas_study];
     return [g.author, g.trait].join(" / ");
 }
 
 const render_pubmed_link = (id) => (
-    "<a target='_blank' href='https://www.ncbi.nlm.nih.gov/pubmed/" + id + "'>" + id + "</a>"
-);
+    <a target='_blank' href={"https://www.ncbi.nlm.nih.gov/pubmed/" + id}>{id}</a>);
 
 class SingleStudy  extends React.Component {
     render() {
 	return (
-	    <LongListFacet
-		title={""}
-		data={GwasGlobals.gwas.studies}
-		cols={[
-		    {title: "Study", data: "trait",
-		     className: "dt-right"},
-		    {title: "Author", data: "author",
-                     className: "dt-right"},
-		    {title: "Pubmed", data: "pubmed",
-                     className: "dt-right pubmed", render: render_pubmed_link}
-		]}
-		friendlySelectionLookup={make_gwas_friendly}
-		order={[[0, "asc"], [1, "asc"]]}
-		selection={this.props.gwas_study}
-		mode={CHECKLIST_MATCH_ANY}
-		pageLength={5}
-		onTdClick={(c, td) => {
-			if (!td || td.className.indexOf("pubmed") === -1) {
-			    this.props.actions.setStudy(c);
-			}
-		}}
+	    <LongListFacet title={""}
+	    data={this.props.gwas.studies}
+	    cols={[
+		{ title: "Study", data: "trait"
+		}, {title: "Author", data: "author",
+		}, {title: "Pubmed", data: "pubmed",
+		    className: "pubmed", render: render_pubmed_link}
+	    ]}
+	    friendlySelectionLookup={make_gwas_friendly(this.props.gwas)}
+	    order={[[0, "asc"], [1, "asc"]]}
+	    selection={this.props.gwas_study}
+	    mode={CHECKLIST_MATCH_ANY}
+	    pageLength={5}
+	    onTdClick={(c, td) => {
+		if (td && -1 === td.indexOf("pubmed")) {
+		    this.props.actions.setStudy(c);
+		}
+	    }}
             />);
     }
 }

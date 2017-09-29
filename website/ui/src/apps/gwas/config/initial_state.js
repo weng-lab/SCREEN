@@ -1,32 +1,31 @@
 import MainTabInfo from './maintabs.js'
 
-/*global Globals */
-/*global GlobalParsedQuery */
-/*eslint no-undef: "error"*/
-
-const try_get_ct = ct => {
-    for (let i = 0; i < Globals.cellTypeInfoArr.length; ++i) {
-	if (Globals.cellTypeInfoArr[i].cellTypeName === ct) { return Globals.cellTypeInfoArr[i]; }
-    }
+const try_get_ct = (globals, ct) => {
+    globals.cellTypeInfoArr.forEach((arr) => {
+	if(arr.cellTypeName === ct) {
+	    return arr;
+	}
+    })
     return null;
 }
 
-const initialState = (gwas_study = null, ct = null) => ({
-        ...GlobalParsedQuery,
-    configuregb_cre: null,
-    configuregb_browser: null,
-    configuregb_cts: Globals.cellTypeInfoArr.map(x => ({
-	...x,
-	checked: false
-    })),
-    maintabs: MainTabInfo(),
-    maintabs_active: "gwas",
-    maintabs_visible: true,
-    gwas_study,
-    gwas_study_tab: "single",
-    cellType: try_get_ct(ct),
-    gwas_cell_types: null,
-    cart_accessions: new Set()
-});
+const initialState = (search, globals) => {
+    return {
+        ...search,
+	configuregb_cre: null,
+	configuregb_browser: null,
+	configuregb_cts: globals.cellTypeInfoArr.map(x => ({
+	    ...x,
+	    checked: false
+	})),
+	maintabs: MainTabInfo(),
+	maintabs_active: "gwas",
+	maintabs_visible: true,
+	gwas_study_tab: "single",
+	cellType: try_get_ct(globals, search.ct),
+	gwas_cell_types: null,
+	cart_accessions: new Set()
+    }
+}
 
 export default initialState;
