@@ -1,12 +1,11 @@
 import sys, os
 
-from common.page_info_de import PageInfoDe
 from models.de import DE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from common.pg import PGsearch
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
 
 class DeWebServiceWrapper:
