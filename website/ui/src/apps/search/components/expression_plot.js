@@ -1,14 +1,19 @@
-import React from 'react'
-import {render} from 'react-dom'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
-import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
+import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
 
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
+
+/*global Globals */
+/*global GlobalAssembly */
+/*global GlobalParsedQuery */
+/*eslint no-undef: "error"*/
 
 class ExpressionPlot extends React.Component {
     constructor(props) {
@@ -52,7 +57,7 @@ class ExpressionPlot extends React.Component {
 		 compartments_selected: new Set(["cell"]),
 		 biosample_types_selected: new Set(Globals.geBiosampleTypes)};
         var jq = JSON.stringify(q);
-	if(this.state.jq == jq){
+	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }

@@ -16,44 +16,33 @@ class TabTutorial extends React.Component {
         if(this.key !== this.props.maintabs_active){
 	    return false;
 	}
-        return (tabPanelize(
+	const Iframe = (url) => (
+            <iframe width="560" height="315"
+	            src={url}
+		    title={url}
+	            frameBorder="0" allowFullScreen>
+	    </iframe>);
+	    
+	return (tabPanelize(
             <div>
                 <h2>Tutorials</h2>
                 <h3>Main Search</h3>
-                <iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/gOS7Eyi0xvM"
-	                frameborder="0" allowfullscreen>
-		</iframe>
+                {Iframe("https://www.youtube.com/embed/gOS7Eyi0xvM")}
 
 	        <h3>Search Results Table</h3>
-		<iframe width="560" height="315"
-	            src="https://www.youtube.com/embed/tOUJJ1L1E20"
-	            frameborder="0" allowfullscreen>
-		</iframe>
-	    
+		{Iframe("https://www.youtube.com/embed/tOUJJ1L1E20")}
+
 		<h3>cRE Details</h3>
-                <iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/58U6k86vz2U"
-	                frameborder="0" allowfullscreen>
-		</iframe>
+                {Iframe("https://www.youtube.com/embed/58U6k86vz2U")}
 
                 <h3>Gene Expression</h3>
-		<iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/D6dxzSX2XTE"
-	                frameborder="0" allowfullscreen>
-		</iframe>
-
+		{Iframe("https://www.youtube.com/embed/D6dxzSX2XTE")}
+		
 	        <h3>Differential Gene Expression</h3>
-		<iframe width="560" height="315"
-	                src="https://www.youtube.com/embed/KzsuZ8oGxZk"
-	                frameborder="0" allowfullscreen>
-		</iframe>
+		{Iframe("https://www.youtube.com/embed/KzsuZ8oGxZk")}
 
 	        <h3>GWAS</h3>
-		<iframe width="560" height="315"
-	            src="https://www.youtube.com/embed/eunBo1-yF9M"
-	            frameborder="0" allowfullscreen>
-		</iframe>
+		{Iframe("https://www.youtube.com/embed/eunBo1-yF9M")}
 		
 	    </div>));
     }

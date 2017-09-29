@@ -1,13 +1,16 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
-import HelpIcon from '../../../common/components/help_icon'
 
 import Hg38TabsC from './hg38/hg38tabs';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class Hg38Tab extends React.Component{
 
@@ -28,7 +31,7 @@ class Hg38Tab extends React.Component{
     _process_cistrome(r) {
 	let interval = 1.0 / r.cistrome_encode_hg19.length;
 	let data = {cistrome: []};
-	r.cistrome_encode_hg19.map( (_, i) => {
+	r.cistrome_encode_hg19.forEach( (_, i) => {
 	    data.cistrome.push({
 		name: Math.round(interval * i * 100) / 100,
 		"lifted over ENCODE hg19 cREs": r.cistrome_encode_hg19[i],
@@ -41,7 +44,7 @@ class Hg38Tab extends React.Component{
     _process_hg19(r) {
 	let data = {hg19: [], hg38: []};
 	let interval = 1.0 / r.hg19_hg38.all.length;
-	r.hg19_hg38.all.map( (_, i) => {
+	r.hg19_hg38.all.forEach( (_, i) => {
 	    data.hg19.push({
 		name: Math.round(interval * i * 100) / 100,
 		"original hg19 cREs": r.hg19_hg19.all[i],
@@ -70,7 +73,7 @@ class Hg38Tab extends React.Component{
 	    qsets: r.saturation,
 	    qset_order: {}
 	};
-	Object.keys(r.saturation).map( k => {
+	Object.keys(r.saturation).forEach( k => {
 	    data.qset_order[k] = Object.keys(r.saturation[k]).sort( (a, b) => (+a - +b) );
 	} );
 	return data;

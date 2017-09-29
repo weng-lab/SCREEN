@@ -1,19 +1,17 @@
 import React from 'react'
-import ReactDOMServer from 'react-dom/server'
+import $ from 'jquery';
 
-import {brJoin} from '../utility'
-
-export const HelpTooltip = (helpkey, color = "#0000EE") => {
+export const ZHelpTooltip = (globals, helpkey, color = "#0000EE") => {
     let data = null;
-    if(helpkey in Globals.helpKeys){
-	data = Globals.helpKeys[helpkey];
+    if(helpkey in globals.helpKeys){
+	data = globals.helpKeys[helpkey];
     } else {
 	console.log("help missing", helpkey);
 	return "";
     }
     let content = data.title + '\n' + data.summary.replace(/\n\n/g, '\n');
 
-    return ReactDOMServer.renderToStaticMarkup((
+    return (
 	<span
             className="glyphicon glyphicon-info-sign has-tooltip"
             style={{color}}
@@ -22,7 +20,7 @@ export const HelpTooltip = (helpkey, color = "#0000EE") => {
             data-html={"true"}
 	    data-delay={'{"show": 10, "hide": 3000}'}
             title={content}
-        />));
+        />);
 }
 
 class HelpIcon extends React.Component {
@@ -34,14 +32,16 @@ class HelpIcon extends React.Component {
     render() {
 	let color = (this.props.color ? this.props.color : "#0000EE");
 	let data = null
-	if(this.props.helpkey in Globals.helpKeys){
-	    data = Globals.helpKeys[this.props.helpkey];
+
+	let helpKeys = this.props.globals.helpKeys;
+	if(this.props.helpkey in helpKeys){
+	    data = helpKeys[this.props.helpkey];
 	} else {
 	    console.log("help missing", this.props.helpkey);
 	    return false;
 	}
 	
-        let content = brJoin(data.summary.replace(/\n\n/g, '\n').split('\n'));
+        let content = data.summary.replace(/\n\n/g, '\n').split('\n');
 
 	return (
             <span style={{fontSize: "14pt"}}>
@@ -59,7 +59,7 @@ class HelpIcon extends React.Component {
                         {data.title}
                     </h3>
                     <div className="popover-content">
-                        {content}
+                        {content.map((e, i) => <span key={i}>{e}</span>)}
                     </div>
 		</div>
 	    </span>);

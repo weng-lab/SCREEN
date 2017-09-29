@@ -1,17 +1,18 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
-import ResultsTable from '../../../common/components/results_table'
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import Ztable from '../../../common/components/ztable/ztable';
 
-import loading from '../../../common/components/loading';
-import {getCommonState} from '../../../common/utility';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 import DraggableCtList from '../../../common/components/draggable';
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class ConfigureGenomeBrowser extends React.Component {
     constructor(props) {
@@ -45,6 +46,8 @@ class ConfigureGenomeBrowser extends React.Component {
                 this.openGenomeBrowser(jdata, "/washu_trackhub_url"); break;
 	    case "Ensembl":
                 this.openGenomeBrowser(jdata, "/ensembl_trackhub_url"); break;
+	    default:
+		console.log("unknown genome browser " + gbrowser);
 	}
     }
 
@@ -90,9 +93,8 @@ class ConfigureGenomeBrowser extends React.Component {
 	      orderable: false }
 	]
 	
-	const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
 	let ctBox = (
-	    <ResultsTable
+	    <Ztable
 		cols={cols}
 		data={this.props.configuregb_cts}
 		order={[]}
@@ -163,7 +165,8 @@ class ConfigureGenomeBrowser extends React.Component {
 	    <div className="container" style={{width: "100%"}}>
 		<div className="row">
 		    <div className="col-md-12">
-		        {this.props.configuregb_type == "cre" ? Render.creTitle(cre) : Render.titlegeneric(cre)}
+		        {this.props.configuregb_type === "cre" ?
+			 Render.creTitle(this.props.globals, cre) : Render.titlegeneric(cre)}
                     </div>
 		</div>
 
@@ -212,6 +215,4 @@ class ConfigureGenomeBrowser extends React.Component {
 const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
-export default connect(mapStateToProps, mapDispatchToProps)
-(ConfigureGenomeBrowser);
-
+export default connect(mapStateToProps, mapDispatchToProps)(ConfigureGenomeBrowser);

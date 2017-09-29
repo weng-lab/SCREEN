@@ -1,32 +1,35 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table';
+import Ztable from '../../../common/components/ztable/ztable';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
-import {getCommonState} from '../../../common/utility';
-import loading from '../../../common/components/loading'
+import loading from '../../../common/components/loading';
 
-import * as Render from '../../../common/renders'
-import {doToggle, isCart} from '../../../common/utility'
+import * as Render from '../../../common/zrenders';
+import {doToggle, isCart} from '../../../common/utility';
 
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.button_click_handler = this.button_click_handler.bind(this);
         this.table_click_handler = this.table_click_handler.bind(this);
-	this.button_click_handler = this.button_click_handler.bind(this);
     }
 
     table_click_handler(td, rowdata, actions){
-        if (td.className.indexOf("browser") != -1) return;
-        if (td.className.indexOf("geneexp") != -1) return;
-        if (td.className.indexOf("cart") != -1) {
+        if (td.indexOf("browser") !== -1) {
+	    let cre = {...rowdata, ...rowdata.info};
+	    actions.showGenomeBrowser(cre, "");
+	    return;
+	}
+        if (td.indexOf("geneexp") !== -1) {
+	    return;
+	}
+        if (td.indexOf("cart") !== -1) {
 	    //console.log(rowdata.info);
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
-	    let j = {GlobalAssembly, accessions};
+	    let j = {assembly: this.props.assembly, accessions};
 	    $.ajax({
 		type: "POST",
 		url: "/cart/set",
@@ -43,11 +46,6 @@ class TableWithCart extends React.Component {
         actions.showReDetail(cre);
     }
 
-    button_click_handler(name, rowdata, actions){
-	let cre = {...rowdata, ...rowdata.info};
-	actions.showGenomeBrowser(cre, name);
-    }
-
     addAllToCart() {
 	let accessions = this.props.data.map((d) => {
 	    //console.log("addAllToCart:", d);
@@ -55,7 +53,7 @@ class TableWithCart extends React.Component {
 	})
         accessions = new Set([...this.props.cart_accessions,
                               ...accessions]);
-	let j = {GlobalAssembly, accessions};
+	let j = {assembly: this.props.assembly, accessions};
 	$.ajax({
 	    type: "POST",
 	    url: "/cart/set",
@@ -76,7 +74,7 @@ class TableWithCart extends React.Component {
 
     clearCart() {
 	let accessions = new Set([]);
-	let j = {GlobalAssembly, accessions}
+	let j = {assembly: this.props.assembly, accessions}
 	$.ajax({
 	    type: "POST",
 	    url: "/cart/set",
@@ -190,7 +188,7 @@ class TableWithCart extends React.Component {
     }
 
     _format_message(a) {
-	if (a.length == 0) {
+	if (a.length === 0) {
             return a;
         }
 	let r = "";
@@ -271,7 +269,7 @@ class TableWithCart extends React.Component {
 		    
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
-	if("mm10" === GlobalAssembly){
+	if("mm10" === this.props.assembly){
 	    diffExp = (
 		<span>
 		    {"Click the "}
@@ -282,6 +280,11 @@ class TableWithCart extends React.Component {
 
 	let cols = (this.props.hasct ? this.props.missingAssays :
                     ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
+
+	let ctCol = null;
+	if(this.props.cellType){
+	    ctCol = this.props.make_ct_friendly(this.props.cellType)
+	}
 	
 	return (
             <div ref={"searchTable"}
@@ -299,17 +302,15 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-		<ResultsTable data={data}
-                              order={table_order}
-			      columnDefs={columnDefs}
-            cols={TableColumns(this.props.cellType ? this.props.make_ct_friendly(this.props.cellType) : null)}
-                              onTdClick={(td, rowdata) =>
-                                  this.table_click_handler(td, rowdata, actions)}
-                              cvisible={this._opposite(cols, this.props.cts)}
-                              onButtonClick={(td, rowdata) =>
-                                  this.button_click_handler(td, rowdata, actions)}
-                              bFilter={true}
-                              bLengthChange={true} key={this.props.cellType}
+		<Ztable data={data}
+                        order={table_order}
+			columnDefs={columnDefs}
+			cols={TableColumns(this.props.globals, this.props.assembly, ctCol)}
+                        onTdClick={(td, rowdata) =>
+                            this.table_click_handler(td, rowdata, actions)}
+                        cvisible={this._opposite(cols, this.props.cts)}
+                        bFilter={true}
+                        bLengthChange={true} key={this.props.cellType}
                 />
 	    </div>);
     }
@@ -320,22 +321,22 @@ class TableWithCart extends React.Component {
 		<div className="panel-body legendPanel">
 		    <div className="row">
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('P')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'P')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('E')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'E')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('C')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'C')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('D')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'D')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('I')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'I')}
 			</div>
 			<div className="col-md-2">
-			    {Render.sctGroupIconLegend('U')}
+			    {Render.sctGroupIconLegend(this.props.globals, 'U')}
 			</div>
 		    </div>
 		    <div className="row">

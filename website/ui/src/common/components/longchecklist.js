@@ -1,10 +1,7 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
 
-import ResultsTable from './results_table'
-import {ListItem} from './list'
+import Ztable from './ztable/ztable';
 
-import * as toggleswitch from './toggleswitch'
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from './checklist'
 
 class LongChecklistFacet extends React.Component {
@@ -18,8 +15,8 @@ class LongChecklistFacet extends React.Component {
 
     _render_checkbox(selected) {
 	return (selected
-		? '<input type="checkbox" checked />'
-		: '<input type="checkbox" />'
+		? <input type="checkbox" checked />
+		: <input type="checkbox" />
 	       );
     }
 
@@ -30,7 +27,7 @@ class LongChecklistFacet extends React.Component {
     }
 
     modeToggle() {
-	var n_value = (this.props.mode == CHECKLIST_MATCH_ANY
+	var n_value = (this.props.mode === CHECKLIST_MATCH_ANY
 		       ? CHECKLIST_MATCH_ALL : CHECKLIST_MATCH_ANY);
 	if (this.props.onModeChange) {
 	    this.props.onModeChange(n_value);
@@ -44,9 +41,9 @@ class LongChecklistFacet extends React.Component {
 	if(this.props.match_mode_enabled){
 	    checks = (
 		<div>
-		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ALL ? true : false}
+		    <input type="radio" defaultChecked={mode === CHECKLIST_MATCH_ALL ? true : false}
 			   onClick={this.modeToggle} />match all&nbsp;
-		    <input type="radio" defaultChecked={mode == CHECKLIST_MATCH_ANY ? true : false}
+		    <input type="radio" defaultChecked={mode === CHECKLIST_MATCH_ANY ? true : false}
 			   onClick={this.modeToggle} />match any
 		</div>);
 	}
@@ -65,14 +62,14 @@ class LongChecklistFacet extends React.Component {
 	return (
 	    <div>
 		{checks}
-		<ResultsTable cols={cols}
-			      data={this.props.data}
-			      order={this.props.order}
-			      buttonsOff={this.props.buttonsOff}
-			      onTdClick={this._td_handler}
-			      bFilter={true}
-			      bLengthChange={false}
-			      paging={paging}
+		<Ztable cols={cols}
+			data={this.props.data}
+			order={this.props.order}
+			buttonsOff={this.props.buttonsOff}
+			onTdClick={this._td_handler}
+			bFilter={true}
+			bLengthChange={false}
+			paging={paging}
 		/>
 	    </div>);
     }

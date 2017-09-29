@@ -1,10 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 export class TRBars extends React.Component {
     render() {
@@ -38,12 +42,12 @@ class TFDisplay extends React.Component {
     }
 
     loadTFs({tree_nodes_compare, tree_rank_method}) {
-        if(null == tree_nodes_compare){
+        if(null === tree_nodes_compare){
             return;
         }
         var q = {GlobalAssembly, tree_nodes_compare, tree_rank_method};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }

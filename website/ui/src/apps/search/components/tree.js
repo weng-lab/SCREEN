@@ -1,10 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import Tree from '../../../common/components/tree'
-
-import AssayDropdown from './assaydropdown'
 
 import * as Actions from '../actions/main_actions';
 import loading from '../../../common/components/loading'
@@ -12,6 +11,9 @@ import loading from '../../../common/components/loading'
 import {asum} from '../../../common/common'
 
 import {primary_cell_colors, infer_primary_type, TissueColors} from '../config/colors'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 const get_children = (node) => {
     if (!node.children) {
@@ -66,7 +68,7 @@ class ResultsTree extends React.Component {
 
     componentWillReceiveProps(nextProps){
         //console.log("in componentWillReceiveProps");
-        if("ct_tree" == nextProps.maintabs_active){
+        if("ct_tree" === nextProps.maintabs_active){
 	    //this.loadTrees(nextProps);
 	}
     }
@@ -96,7 +98,7 @@ class ResultsTree extends React.Component {
 
     makeTree(data, k, _formatter, actions){
 	k = k.replace(/_/g, " ");
-	var formatter = (k == "primary cell" ?
+	var formatter = (k === "primary cell" ?
 			 primary_cell_formatter : _formatter);
 	var labels = (data.labels ? data.labels.map(formatter) : null);
 	var height = (labels ? labels.length * 15 : 0);

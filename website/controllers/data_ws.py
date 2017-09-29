@@ -13,7 +13,7 @@ from models.minipeaks import MiniPeaks
 from models.tss_bar import TSSBarGraph
 from models.rank_heatmap import RankHeatmap
 from models.cytoband import Cytoband
-from models.trees import Trees
+#from models.trees import Trees
 from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
 from models.tads import Tads
@@ -43,11 +43,11 @@ class DataWebServiceWrapper:
         self.dwss = {a : makeDWS(a) for a in self.assemblies}
 
     def process(self, j, args, kwargs):
-        if "GlobalAssembly" not in j:
-            raise Exception("GlobalAssembly not defined")
-        if j["GlobalAssembly"] not in self.assemblies:
-            raise Exception("invalid GlobalAssembly")
-        return self.dwss[j["GlobalAssembly"]].process(j, args, kwargs)
+        if "assembly" not in j:
+            raise Exception("assembly not defined")
+        if j["assembly"] not in self.assemblies:
+            raise Exception("invalid assembly")
+        return self.dwss[j["assembly"]].process(j, args, kwargs)
 
 class DataWebService(GetOrSetMemCache):
     def __init__(self, args, ps, cache, staticDir, assembly):

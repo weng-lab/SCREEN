@@ -1,5 +1,4 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
 
 export class ListItem extends React.Component {
 
@@ -18,7 +17,7 @@ export class ListItem extends React.Component {
 	var classname, rtxt;
 	if (this.props.selected) {
 	    classname = "result_row_selected";
-	    rtxt = <img src="/static/x.png" />;
+	    rtxt = <img src="/static/x.png" alt="check/uncheck"  />;
 	} else {
 	    classname = "result_row";
 	    rtxt = this.props.n;
@@ -49,7 +48,7 @@ class ListFacet extends React.Component {
     }
 
     click_handler(k) {
-	if (k == this.props.selection) {
+	if (k === this.props.selection) {
             k = null;
         }
 	if (this.props.onchange) {
@@ -58,50 +57,25 @@ class ListFacet extends React.Component {
     }
 
     render() {
-	var click_handler = this.click_handler;
-	var s = this.props.selection;
-	var i = this.props.items;
+	let click_handler = this.click_handler;
+	const s = this.props.selection;
 
-	var items = this.props.items.map( kv => {
-            var key = kv[0];
-            var val = kv[1];
-	    var selected = (key == s);
+	let items = this.props.items.map(function(kv) {
+            let key = kv[0];
+            let val = kv[1];
+	    let selected = (key === s);
 
-	    if(s == null || selected){
-	        return <ListItem onclick={click_handler} value={key} key={key}
-                         n={val} selected={selected} />;
+	    if(s === null || selected){
+	        return <ListItem onclick={click_handler}
+				 value={key}
+				 key={key}
+				 n={val}
+				 selected={selected} />;
             } else {
-                return <div />;
+                return <div key={key} />;
             }
 	} );
 	return <div>{items}</div>;
     }
 }
 export default ListFacet;
-
-/*
- * test function with dummy data
- */
-(function() {
-
-    if (!document.getElementById("list_facet")) return;
-
-    var items = [
-	[
-	    "K562",
-	    10
-	],
-	[
-	    "HeLa-S3",
-	    20
-	],
-	[
-	    "GM12878",
-	    100
-	]
-    ];
-    var selection = null;
-
-    ReactDOM.render(<ListFacet items={items} selection={selection} />, document.getElementById("list_facet"));
-
-})();

@@ -1,18 +1,17 @@
-var $ = require('jquery');
-import React from 'react'
-import {connect} from 'react-redux'
-import {render} from 'react-dom'
+import React from 'react';
+import {render} from 'react-dom';
+import $ from 'jquery';
 
-import ResultsTable from '../../../common/components/results_table'
-import HorizontalBars from '../../../common/components/horizontal_bars'
-import {TissueColors} from '../config/colors'
-
-import loading from '../../../common/components/loading'
+import Ztable from '../../../common/components/ztable/ztable';
+import HorizontalBars from '../../../common/components/horizontal_bars';
+import {TissueColors} from '../config/colors';
 
 const format_data_for_bar_graph = (data) => {
     var retval = {};
     for (var i in data) {
-	if (data[i].tissue == "") continue;
+	if (data[i].tissue === "") {
+	    continue;
+	}
 	if (!(data[i].tissue in retval)) {
 	    retval[data[i].tissue] = {
 		name: data[i].tissue,
@@ -28,22 +27,20 @@ const format_data_for_bar_graph = (data) => {
 class BarGraphTable extends React.Component {
     render() {
         var n_data = [...this.props.data];
-	return (<div style={{"width": "100%"}} ref="box">
-
+	return (
+	    <div style={{"width": "100%"}} ref="box">
                 <div ref="bargraph">
                 </div>
-
-                <ResultsTable data={n_data}
-                cols={this.props.cols}
-		order={this.props.order}
-                bFilter={false}
-                info={false}
-                paging={true}
-		bLengthChange={this.props.bLengthChange}
-		pageLength={this.props.pageLength}
-                emptyText={""}
+                <Ztable data={n_data}
+			cols={this.props.cols}
+			order={this.props.order}
+			bFilter={false}
+			info={false}
+			paging={true}
+			bLengthChange={this.props.bLengthChange}
+			pageLength={this.props.pageLength}
+			emptyText={""}
 		/>
-
                </div>);
     }
 

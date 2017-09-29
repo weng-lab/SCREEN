@@ -1,26 +1,16 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-
-import ReactDOMServer from 'react-dom/server'
+import ReactDOMServer from 'react-dom/server';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
-import ResultsTable from '../../../common/components/results_table'
-import loading from '../../../common/components/loading'
-
-import {TissueColors, primary_cell_color, tissue_color, friendly_celltype, tissue_name} from '../config/colors'
+import Ztable from '../../../common/components/ztable/ztable';
+import loading from '../../../common/components/loading';
 
 const ROWHEIGHT = 30.0;
-const ROWMARGIN = 15;
-const COLMARGIN = 10;
-const LEFTMARGIN = 450;
-const TOPMARGIN = 100;
-const TOPANGLED = 60.0;
-const TOPANGLE = TOPANGLED * Math.PI / 180.0;
-
-const _tissuecolor = (t) => (TissueColors[t] ? TissueColors[t] : "#000000");
 
 class MiniPeaks extends React.Component {
     constructor(props) {
@@ -46,19 +36,19 @@ class MiniPeaks extends React.Component {
     componentWillReceiveProps(nextProps){
         // only check/get data if we will become active tab...
 	if("details" === nextProps.maintabs_active){
-            if(this.key == nextProps.re_details_tab_active){
+            if(this.key === nextProps.re_details_tab_active){
                 this.loadPeaks(nextProps);
             }
         }
     }
 
-    loadPeaks({cre_accession_detail}){
+    loadPeaks({assembly, cre_accession_detail}){
 	if(cre_accession_detail in this.state){
 	    return;
 	}
-	var q = {GlobalAssembly, accession: cre_accession_detail};
+	var q = {assembly, accession: cre_accession_detail};
         var jq = JSON.stringify(q);
-        if(this.state.jq == jq){
+        if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
@@ -87,7 +77,7 @@ class MiniPeaks extends React.Component {
 		return "";
 	    }
 	    // let fileID = dataRaw.fileID; if needed....
-	    var mmax = (assay == "dnase") ? 150 : 50;
+	    var mmax = (assay === "dnase") ? 150 : 50;
 	    var mfactor = ROWHEIGHT / mmax;
 	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
 	    let color = this._colors[assay];
@@ -143,7 +133,7 @@ class MiniPeaks extends React.Component {
 			     [7, "asc"],  // tissue
 			     [9, "asc"]   // cell type
 			    ]};
-        return React.createElement(ResultsTable,
+        return React.createElement(Ztable,
                                    {data: this.state[accession].rows,
                                     ...table});
     }

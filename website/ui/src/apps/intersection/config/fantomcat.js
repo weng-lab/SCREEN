@@ -1,6 +1,5 @@
 import HistogramTab from '../components/fantomcat/histogramtab';
 import HistogramZTab from '../components/fantomcat/histogramztab';
-import ViolinTab from '../components/fantomcat/violintab';
 import OverlapTab from '../components/fantomcat/overlaptab';
 
 const FantomCatTabs = {

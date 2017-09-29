@@ -11,18 +11,15 @@ const Hg19Hg38Plot = ({ width, height, data, keys }) => (
         <Tooltip />
         <Legend />
 	{keys.map(k => (
-	    <Line type="monotone" dataKey={k.text} stroke={k.color}
-	      type={k.type ? k.type : "monotone"} />
+	     <Line
+		 dataKey={k.text}
+		 stroke={k.color}
+		 type={k.type ? k.type : "monotone"} />
 	) )}
     </LineChart>
 );
 
 class CistromeTab extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-    
     render() {
 	return (
 	    <div className="container-fluid">

@@ -1,16 +1,15 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import GWASstudies from './gwas_studies';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
-import LongListFacet from '../../../common/components/longlist'
-import ResultsTable from '../../../common/components/results_table'
+import Ztable from '../../../common/components/ztable/ztable';
 
-import {panelize} from '../../../common/utility'
+import {panelize} from '../../../common/utility';
 
 const gwas_studies = ({gwas_study}) => {
     let box = (
@@ -24,7 +23,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
         return (<div />);
     }
     let box = (
-	<ResultsTable
+	<Ztable
 	    data={gwas_cell_types}
 	    cols={[
                 {title: "Cell Type", data: "biosample_summary",
@@ -45,7 +44,7 @@ const cellTypesBox = ({gwas_study, gwas_cell_types, actions}) => {
 	    bFilter={true}
 	    onTdClick={(td, data) => {
 		    if(td){
-			if (td.className.indexOf("dcc") == -1) {
+			if (-1 === td.className.indexOf("dcc")) {
 			    actions.setCellType(data);
 			}
 		    } else {

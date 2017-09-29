@@ -1,9 +1,11 @@
 import React from 'react'
-import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+
+var d3 = require('d3');
 
 const geneRed = "#FF0000";
 const geneBlue = "#1E90FF";
@@ -14,8 +16,8 @@ class DePlot extends React.Component {
     }
 
     render() {
-        let ct1 = Globals.byCellType[this.props.ct1][0]["name"];
-        let ct2 = Globals.byCellType[this.props.ct2][0]["name"];
+        let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
+        let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
         let geneName1 = this.props.data.nearbyDEs.names[0];
         let geneName2 = this.props.data.nearbyDEs.names[1];
 
@@ -26,19 +28,21 @@ class DePlot extends React.Component {
         let title = (
             <div>
                 <table className={"deTitleTable"}>
-                    <tr>
-                        <td><span className={"deGene"}>{geneName1}</span></td>
-                        <td>
-                            <span className={"deCT"}>{ct1}</span>
-                            <span className={"deVS"}>{" vs "}</span>
-                            <span className={"deCT"}>{ct2}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {subtitle}
-                        </td>
-                    </tr>
+		    <tbody>
+			<tr>
+                            <td><span className={"deGene"}>{geneName1}</span></td>
+                            <td>
+				<span className={"deCT"}>{ct1}</span>
+				<span className={"deVS"}>{" vs "}</span>
+				<span className={"deCT"}>{ct2}</span>
+                            </td>
+			</tr>
+			<tr>
+                            <td>
+				{subtitle}
+                            </td>
+			</tr>
+		    </tbody>
                 </table>
             </div>);
 
@@ -63,7 +67,7 @@ class DePlot extends React.Component {
 	let xdomain = this.props.data.xdomain;
         let coord = this.props.data.coord;
 
-        var y_domain = d3.extent(creData, function(d) { return d["value"]; });
+        let y_domain = d3.extent(creData, function(d) { return d["value"]; });
 
 	// make sure 0 is in range to show dashed line at 0
 	y_domain = [Math.min(0, y_domain[0]),
@@ -75,29 +79,23 @@ class DePlot extends React.Component {
 	y_domain = [Math.min(y_domain[0], barYdomain[0]),
                     Math.max(y_domain[1], barYdomain[1])];
 
-        var margin = {top: 20, right: 20, bottom: 800, left: 40};
-        var width = 1000 - margin.left - margin.right;
-        var height = 1200 - margin.top - margin.bottom;
+        let margin = {top: 20, right: 20, bottom: 800, left: 40};
+        let width = 1000 - margin.left - margin.right;
+        let height = 1200 - margin.top - margin.bottom;
 
-	var color = d3.scale.ordinal()
+	let color = d3.scaleOrdinal()
             .domain(["enhancer-like signature", "promoter-like signature"])
             .range(["#ffcd00", "#ff0000"]);
-        var x = d3.scale.linear()
+        let x = d3.scaleLinear()
             .domain(xdomain).nice()
             .range([0, width]);
-        var xr = d3.scale.linear()
-            .domain([0, xdomain[1] - xdomain[0]]).nice()
-            .range([0, width]);
-        var y = d3.scale.linear()
+        let y = d3.scaleLinear()
             .domain(y_domain).nice()
             .range([height, 0]);
-        var xAxis = d3.svg.axis()
-            .ticks(6)
-            .scale(x)
-            .orient("bottom");
-        var yAxisRight = d3.svg.axis().scale(y)
-            .orient("right");
-        var svg = d3.select(chart).append("svg")
+        let xAxis = d3.axisBottom(x)
+            .ticks(6);
+        let yAxisRight = d3.axisRight().scale(y);
+        let svg = d3.select(chart).append("svg")
             .attr("width", width + margin.left + margin.right + 50)
             .attr("height", height + margin.top + margin.bottom + deData.length * 20 + genes.length * 20)
             .append("g")
@@ -140,7 +138,7 @@ class DePlot extends React.Component {
            .attr("cy", function(c) { return y(c["value"]); })
 	   .attr("r", function(c) { return c["width"]; })
            .style("fill", function(c) { return color(c["typ"]); });
-	var genelabels = svg.append("g")
+	let genelabels = svg.append("g")
 	    .attr("transform", "translate(0," + (height + margin.top + 20) + ")")
 	    .attr("width", width)
 	    .attr("height", genes.length * 20);
@@ -166,14 +164,14 @@ class DePlot extends React.Component {
 	    .attr("y", (d, i) => (i * 20 + 4))
             .style("font-style", "italic")
 	    .text((d) => (d["gene"]));
-        var legend = svg.selectAll(".legend")
+        let legend = svg.selectAll(".legend")
             .data(color.domain())
             .enter().append("g")
             .attr("class", "legend")
             .attr("transform", function(d, i) {
                 return "translate(0," + i * 20 + ")"; });
-        var legendX = width - 80;
-        var lengthTextX = legendX - 6;
+        let legendX = width - 80;
+        let lengthTextX = legendX - 6;
         legend.append("circle")
             .attr("cx", legendX + 9)
 	    .attr("r", 9)
@@ -186,7 +184,7 @@ class DePlot extends React.Component {
             .style("text-anchor", "end")
             .text(function(d) { return d; });
 
-        var bar = svg.selectAll(".bar")
+        let bar = svg.selectAll(".bar")
             .data(deData)
             .enter()
             .append("g");
@@ -206,9 +204,7 @@ class DePlot extends React.Component {
                     -y(d["fc"]) + y(0);
 		return (height < 2 ? 2 : height);
             });
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+        let yAxis = d3.axisLeft().scale(y);
         svg.append("g")
             .attr("class", "y axis")
             .style("fill", "steelblue")

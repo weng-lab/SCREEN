@@ -1,13 +1,13 @@
-import React from 'react'
+import React from 'react';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
 
-import HelpIcon from '../../../common/components/help_icon'
-import * as Render from '../../../common/renders'
+import HelpIcon from '../../../common/components/help_icon';
 
+import * as Render from '../../../common/zrenders';
 import * as Actions from '../actions/main_actions';
 
 class Rampage extends React.Component {
@@ -33,7 +33,10 @@ class Rampage extends React.Component {
 
     _bb(transcript) {
 	let gclick = this.gclick.bind(this);
-	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC", transcript);}}>UCSC</button>;
+	return <button type="button"
+		       className="btn btn-default btn-xs"
+		       onClick={() => {gclick("UCSC", transcript);}}
+	       >UCSC</button>;
     }
 
     gclick(name, transcript) {
@@ -74,32 +77,33 @@ class Rampage extends React.Component {
 	    }
 	}
 
-	if(event.key == 'n'){
+	if(event.key === 'n'){
             this.transcriptUp();
-	} else if(event.key == 'm'){
+	} else if(event.key === 'm'){
             this.transcriptDown();
 	}
     }
 
     render() {
-        let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
-        let data = this.props.keysAndData.tsss;
-        let gene = this.props.keysAndData.gene;
+        const sortedTranscripts = this.props.keysAndData.sortedTranscripts;
+        const data = this.props.keysAndData.tsss;
+        const gene = this.props.keysAndData.gene;
 
-        let tsses = sortedTranscripts.map((tss) => { return data[tss]; });
-        let selectTsses = sortedTranscripts.map((tss) => {
-            return (<option value={tss}>{tss}</option>); });
+        const selectTsses = sortedTranscripts.map((tss) => (
+            <option key={tss} value={tss}>{tss}</option>)
+	);
+	const numTranscripts = sortedTranscripts.length;
+	
+        const transcript = data[this.state.transcript];
 
-        let transcript = data[this.state.transcript];
-
-        let title = (
+        const title = (
             <div className="container-fluid" style={{"width": "100%"}} >
                 <div className="row">
                     <div className="col-md-8">
                         <span className={"rampageGeneName"}>
 			    <h4>
 				TSS Activity Profiles by RAMPAGE
-				<HelpIcon helpkey={"RAMPAGEOverview"} />
+				<HelpIcon globals={this.props.globals} helpkey={"RAMPAGEOverview"} />
 			    </h4>
                             <h2>
 				<em>{gene.name}</em>
@@ -122,14 +126,12 @@ class Rampage extends React.Component {
                                 }}>
 		        {selectTsses}
 		    </select>
-                    <span className="glyphicon glyphicon-arrow-up"
-                          aria-hidden="true"
-                          onClick={this.transcriptUp}>
-                    </span>
-                    <span className="glyphicon glyphicon-arrow-down"
-                          aria-hidden="true"
-                          onClick={this.transcriptDown}>
-                    </span>
+                    {numTranscripts > 1 && <span className="glyphicon glyphicon-arrow-up"
+						 aria-hidden="true"
+						 onClick={this.transcriptUp}></span>}
+		    {numTranscripts > 1 && <span className="glyphicon glyphicon-arrow-down"
+						 aria-hidden="true"
+						 onClick={this.transcriptDown}></span>}
 		    {this._bb(transcript)}
                 </span>
                 <div className="rampageCoord">
@@ -171,17 +173,11 @@ class Rampage extends React.Component {
 	    </div>);
     }
 
-    componentDidMount() {
-        //this.d3Render();
-    }
-
-    componentDidUpdate() {
-        //this.d3Render();
-    }
-
     d3Render(){
 	if ("details" === this.props.maintabs_active
-	    && "rampage" != this.props.re_details_tab_active ) return;
+	    && "rampage" !== this.props.re_details_tab_active ) {
+	    return;
+	}
 
         let allData = this.props.keysAndData.tsss;
         let transcript = allData[this.state.transcript];
@@ -189,29 +185,7 @@ class Rampage extends React.Component {
         var itemsByID = transcript.itemsByID;
 	var items = transcript.itemsGrouped[this.state.sortOrder];
 
-	var sorted_keys = Object.keys(items).sort( (a, b) => (
-	    // from http://stackoverflow.com/a/9645447
-	    a.toLowerCase().localeCompare(b.toLowerCase())
-	));
-
 	var rank_f = rid => itemsByID[rid][this.state.datascale];
-
-	var subName_f = (rid) => {
-	    let t = itemsByID[rid];
-	    return t["biosample_term_name"] + ' (' + t.strand + ')';
-	}
-
-	var grid = d3.range(items.length).map((i) => {
-	    return {'x1': 0, 'y1': 0, 'x2': 0, 'y2': items.length};
-	});
-
-	var leftOffset = 200;
-	var widthFactor = 0.5;
-	var total_items = 0;
-	var labeloffsets = [];
-	var yoffsets = {};
-	var cmax = 0;
-	var d;
 
 	let format = {
 	    value: rank_f,
@@ -219,113 +193,11 @@ class Rampage extends React.Component {
 	    grouplabel: d => d.tissue
 	};
 	
-	return <ScaledHorizontalBar itemsets={items} width={this.props.width}
-	         barheight={this.props.barheight} format={format} />;
-
-	for (var i in sorted_keys) {
-	    var key = sorted_keys[i];
-	    yoffsets[key] = total_items;
-	    labeloffsets.push(total_items + (
-		items[key].items.length / 2.0) + 0.25);
-	    total_items += items[key].items.length;
-	    d = d3.max(items[key].items, rank_f);
-	    if (d > cmax) {
-                cmax = d;
-            }
-	}
-
-	var barheight = +this.props.barheight;
-	var height = barheight * total_items + 10;
-
-	var xscale = d3.scale.linear()
-	    .domain([0, cmax])
-	    .range([0, +this.props.width * widthFactor]);
-
-	var yscale = d3.scale.linear()
-	    .domain([0, total_items])
-	    .range([0, total_items * barheight]);
-
-	var canvas = d3.select(this.refs.container)
-	    .append('svg')
-	    .attr({'width': +this.props.width + 200, 'height': height})
-	    .append('g')
-	    .attr({'width': +this.props.width, 'height': height - 10})
-	    .attr('transform', 'translate(0,10)');
-
-	var yAxis = d3.svg.axis()
-	    .orient('left')
-	    .scale(yscale)
-	    .tickSize(2)
-	    .tickFormat("")
-	    .tickValues(d3.range(total_items + 2));
-
-	var y_xis = canvas.append('g')
-	    .attr("transform", "translate(" + leftOffset + ",0)")
-	    .attr('id','yaxis')
-	    .call(yAxis);
-
-	var toolTip = d3.tip()
-	    .attr('class', 'd3-tip')
-	    .offset([0, 0])
-	    .html(function(rid) {
-                let d = itemsByID[rid];
-		return "cel type: <strong>" + d["biosample_term_name"] + "</strong>"+
-		    "<div>tissue: " + d["tissue"] + "</div>" +
-		    "<div>" + 'experiment: <a href="https://encodeproject.org/experiments/' + d["expid"] + '" target+"_blank">' + d["expid"] + "</a>" + "</div>" +
-		    "<div>" + 'file: <a href="https://encodeproject.org/' + d["fileid"] + '" target+"_blank">' + d["fileid"] + "</a>" + "</div>"
-		;
-	    })
-
-	for (var i in sorted_keys) {
-	    var key = sorted_keys[i];
-	    var itemset = items[key];
-	    var chart = canvas.append('g')
-		.attr("transform", "translate(" + leftOffset + "," + (yoffsets[key] * barheight) + ")");
-	    chart.selectAll('rect')
-		.data(itemset.items)
-		.enter()
-		.append('rect')
-		.attr('height', barheight)
-		.attr({'x': 0, 'y': (d, i) => (+yscale(i))})
-		.style('fill', (d, i) => (itemset.color))
-		.attr("stroke-width", 1)
-		.attr("stroke", "white")
-		.attr('width', (d) => {return xscale(rank_f(d))})
-	    	.on("click", function(rid) {
-		    window.open("http://encodeproject.org/" +
-                                itemsByID[rid]["expid"])
-		});
-	    if (barheight * 0.75 < 8) continue; // skip drawing text smaller than 12px
-	    var transitext = chart.selectAll('text')
-		.data(itemset.items)
-		.enter()
-		.append('text')
-		.attr({'x': (d) => (xscale(rank_f(d)) + 5),
-		       'y': (d, i) => (+yscale(i) + barheight * 0.75)})
-		.text((rid) => (rank_f(rid) + " " + subName_f(rid) ))
-		.style({'fill': '#000', 'font-size': (barheight * 0.75) + 'px'})
-		.on("click", function(rid) {
-		    window.open("http://encodeproject.org/" +
-                                itemsByID[rid]["expid"])
-		});
-	}
-	var ylabels = canvas.append('g')
-	    .attr("transform", "translate(0,0)")
-	    .selectAll('text')
-	    .data(sorted_keys)
-	    .enter()
-	    .append('text')
-	    .attr({'x': 0, 'y': (d, i) => (+yscale(labeloffsets[i]))})
-	    .attr("transform", "translate(" + (leftOffset - 10) + ",0)")
-	    .text((d) => (items[d].tissue))
-	    .style({'fill': '#000',
-		    'font-size': (+barheight < 8 ? 8 : barheight) + "px",
-		    "text-anchor": "end"});
-
-	d3.selectAll("rect").call(toolTip);
-	d3.selectAll("rect")
-	    .on('mouseover', toolTip.show)
-	    .on('mouseout', toolTip.hide);
+	return <ScaledHorizontalBar
+		   itemsets={items}
+		   width={this.props.width}
+	           barheight={this.props.barheight}
+		   format={format} />;
     }
 }
 

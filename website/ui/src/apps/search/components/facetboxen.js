@@ -6,16 +6,14 @@ import * as Actions from '../actions/main_actions';
 
 import RangeFacet from '../../../common/components/range'
 import ListFacet from '../../../common/components/list'
-import ChecklistFacet from '../../../common/components/checklist'
 import LongListFacet from '../../../common/components/longlist'
 import LongChecklistFacet from '../../../common/components/longchecklist'
-import SliderFacet from '../../../common/components/slider'
 
 import {default_margin} from '../config/constants'
 
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders'
 
-import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
+import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 import {panelize, isCart} from '../../../common/utility'
 
@@ -34,7 +32,7 @@ const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
         />);
 }
 
-const make_ct_friendly = (ct) => (Globals.byCellType[ct][0]["name"]);
+const make_ct_friendly = (globals) => (ct) => (globals.byCellType[ct][0]["name"]);
 
 const accessionsBox = ({accessions, actions}) => {
     if(0 === accessions.length){
@@ -60,58 +58,58 @@ const accessionsBox = ({accessions, actions}) => {
     return panelize("Accessions", box);
 }
 
-const cellTypesBox = ({cellType, actions}) => {
+const biosamplesBox = ({cellType, actions, globals}) => {
     let box = (
 	<LongListFacet
-	title={""}
-	data={Globals.cellTypeInfoArr}
-	cols={[
-	    { title: "", data: "name",
-	      orderable: false,
-	      render: () => ("<input type='radio' />")},
-	    { title: "cell type", data: "name",
-	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
-	      className: "dt-right" },
-	    { title: "", data: "cellTypeName",
-	      className: "dt-right dcc",
-	      render: Render.assayIcon,
-	      orderable: false }
-	]}
-	order={[]}
-	buttonsOff={true}
-	selection={cellType}
-	friendlySelectionLookup={make_ct_friendly}
-	onTdClick={(value, td, cellObj) => {
-	    if(td){
-		if (td.className.indexOf("dcc") === -1) {
-		    actions.setCellType(value);
-		}
-	    } else {
-		actions.setCellType(value);
-	    }
-	}}
+	    title={""}
+	    data={globals.cellTypeInfoArr}
+	    cols={[
+		{ title: "", data: "name",
+		  orderable: false,
+		  render: () => (<input type='radio' />)},
+		{ title: "cell type", data: "name",
+		  className: "dt-right"},
+		{ title: "tissue", data: "tissue",
+		  className: "dt-right" },
+		{ title: "", data: "cellTypeName",
+		  className: "dt-right dcc",
+		  render: Render.assayIcon(globals),
+		  orderable: false }
+	    ]}
+	    order={[]}
+	    buttonsOff={true}
+	    selection={cellType}
+	    friendlySelectionLookup={make_ct_friendly(globals)}
+	    onTdClick={(value, td, cellObj) => {
+		    if(td){
+			if (td.className.indexOf("dcc") === -1) {
+			    actions.setCellType(value);
+			}
+		    } else {
+			actions.setCellType(value);
+		    }
+		}}
         />);
-    return panelize("Cell types", box, "CellTypeFacet");
+    return panelize("Biosamples", box, "CellTypeFacet", globals);
 }
 
-const chromBox = ({coord_chrom, actions}) => {
+const chromBox = ({coord_chrom, actions, globals}) => {
     let box = (
 	<ListFacet
-	title={""}
-	items={Globals.chromCounts}
-	selection={coord_chrom}
-	onchange={(chrom) => { actions.setChrom(chrom) }}
+	    title={""}
+	    items={globals.chromCounts}
+	    selection={coord_chrom}
+	    onchange={(chrom) => { actions.setChrom(chrom) }}
         />);
     return panelize("Chromosome", box);
 }
 
-const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
+const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) => {
     if(!coord_chrom){
         return (<div />);
     }
-    var chromLen = Globals.chromLens[coord_chrom];
-    var histBins = Globals.creHistBins[coord_chrom];
+    var chromLen = globals.chromLens[coord_chrom];
+    var histBins = globals.creHistBins[coord_chrom];
     let title = coord_chrom + ":" + coord_start + "-" + coord_end;
     let box = (
 	<RangeFacet
@@ -123,42 +121,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions}) => {
 	    h_interval={chromLen / histBins.numBins}
 	    onchange={(se) => { actions.setCoords(se[0], se[1]) }}
         />);
-    return panelize("Coordinates: " + title, box, "CoordinateFacet");
-}
-
-const tfBox = ({actions}) => {
-    let box = (
-	<LongChecklistFacet
-	    title={""}
-	    data={Globals.tfs.map((tf) => {return {key: tf,
-						   selected: false}})}
-	    cols={[{
-		    title: "Assay", data: "key",
-		    className: "dt-right"
-		}]}
-	    order={[]}
-	    buttonsOff={true}
-	    match_mode_enable={true}
-	    onTdClick={(tf) => { actions.toggleTf(tf) } }
-	    onModeChange={(mode) => { actions.setTfsMode(mode) }}
-	    mode={CHECKLIST_MATCH_ALL}
-        />);
-    return panelize("Intersect TF/histone/DNase peaks", box);
-}
-
-const geneDistanceBox = (p) => {
-    let range = [0, 500000];
-    let box = (
-	<div>
-	    {rangeBox("Protein-coding genes", range,
-		      p.gene_pc_start, p.gene_pc_end,
-		      p.actions.setGenePcDistance)}
-	    {rangeBox("All genes", range,
-		      p.gene_all_start, p.gene_all_end,
-		      p.actions.setGeneAllDistance)}
-	</div>);
-    
-    return panelize("Distance to Genes", box);
+    return panelize("Coordinates: " + title, box, "CoordinateFacet", globals);
 }
 
 const zscore_decimal = (v) => {
@@ -169,22 +132,6 @@ const zscore_decimal = (v) => {
 }
     
 const zrdecimal = (s) => (+s * 100.0);
-
-const _rankBox = ({element_type, actions, cellType}) => {
-    let title = "cRE activity" + (cellType ?
-				  " in " + make_ct_friendly(cellType) : "");
-    let box = (
-	<ListFacet
-	    title={""}
-	    items={[["chromatin-accessible", ""],
-		    ["promoter-like", ""],
-		    ["enhancer-like", ""],
-		    ["insulator-like", ""]]}
-	    selection={element_type}
-	    onchange={(e) => { actions.setType(e) }}
-        />);
-    return panelize(title, box);
-}
 
 const makeRankFacet = (rfacets, assay, title, start, end, action) =>
     {
@@ -220,11 +167,15 @@ const rankBox = (p) => {
     // http://stackoverflow.com/a/34034296
     let box = (
         <div>
-            {sliders.map((s,i) => <span>{s}{sliders.length - 1 === i
-					  ? '' : <br />}</span>)}
+            {sliders.map((s,i) =>
+		<span key={i}>
+		    {s}
+		    {sliders.length - 1 === i
+		     ? '' : <br />}
+		</span>)}
         </div>);
     
-    return panelize(title, box, "Z-scoreFacet");
+    return panelize(title, box, "Z-scoreFacet", p.globals);
 };
 
 class FacetBoxen extends React.Component {
@@ -254,7 +205,7 @@ class FacetBoxen extends React.Component {
         return (
 	    <div>
 		{accessionsBox(this.props)}
-		{cellTypesBox(this.props)}
+		{biosamplesBox(this.props)}
 		{chromBox(this.props)}
 		{startEndBox(this.props)}
 		{rankBox(this.props)}

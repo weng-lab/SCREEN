@@ -1,8 +1,12 @@
+import React from 'react'
+
 class MainTabs extends React.Component {
     render(){
         const makeTabTitle = (key, tab) => {
-            let active = key == this.props.maintabs_active;
-            if(!tab.visible && !active){ return (<div />) }
+            let active = key === this.props.maintabs_active;
+            if(!tab.visible && !active){
+		return (<li key={"tab_" + key} />)
+	    }
 	    return (
                 <li className={active ? "active" : ""}
                     key={"tab_" + key}
@@ -12,12 +16,13 @@ class MainTabs extends React.Component {
         }
 
         const makeTab = (key, tab) => {
-            let active = key == this.props.maintabs_active;
-            if(!tab.visible && !active){ return (<div />) }
+            let active = key === this.props.maintabs_active;
+            if(!tab.visible && !active){
+		return (<div key={"tab_" + key} />)
+	    }
             return (
                 <div
                     className={active ? "tab-pane active" : "tab-pane"}
-                    key={"tab_" + key}
                     id={"tab_main_" + key}
                     key={"tcontent_" + key}>
 		    {React.createElement(tab.f, this.props)}

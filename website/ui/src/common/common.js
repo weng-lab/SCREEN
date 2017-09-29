@@ -1,9 +1,9 @@
-export const asum = (a) => {
-    var retval = [];
-    a.map((_a) => {
-	retval = retval.concat(_a);
-    });
-    return retval;
+export const asum = (arr) => {
+    let ret = [];
+    for(let a of arr){
+	ret = ret.concat(a);
+    }
+    return ret;
 };
 
 export const chr_sort = (a, b) => (
@@ -18,7 +18,7 @@ export function fit_to(a1, a2) {
     return a1;
 }
 
-const primitive_comparator = (a, b) => (a == b);
+const primitive_comparator = (a, b) => (a === b);
 
 export const chain_functions = (f, g) => () => {
     f && f();
@@ -60,17 +60,6 @@ export function obj_remove(o, k) {
     var retval = Object.assign({}, o);
     delete retval[k];
     return retval;
-}
-
-export function set_center_x(element, x, limits = null) {
-    var hw = $(element).width() / 2;
-    var nleft = (x - hw);
-    if (limits) {
-	var nlimits = [limits[0], limits[1] - hw];
-	if (nleft < nlimits[0]) nleft = nlimits[0];
-	if (nleft > nlimits[1]) nleft = nlimits[1];
-    }
-    element.style.left = nleft + "px";
 }
 
 export function numberWithCommas(x) {

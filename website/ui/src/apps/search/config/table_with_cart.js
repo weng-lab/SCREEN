@@ -1,63 +1,76 @@
-import {HelpTooltip} from '../../../common/components/help_icon'
-import * as Render from '../../../common/renders'
+import React from 'react';
+import {ZHelpTooltip} from '../../../common/components/help_icon'
+import * as ZRender from '../../../common/zrenders'
 
-const TableColumns = (cts) => {
+const TableColumns = (globals, assembly, cts) => {
+    let accHelp = (
+	<span>
+	    accession
+	    <br />
+	    {ZHelpTooltip(globals, "CellTypeTableAccessionCol")}
+	</span>);
+    
+    let sctHelp = (
+	<span>
+	    {cts}
+	    <br />
+	    {ZHelpTooltip(globals, "CellTypeSpecifiedClassification")}
+	</span>);
+    
+    let geneHelp = (
+	<span>
+	    nearest genes:
+	    <br />
+	    protein-coding / all&nbsp;&nbsp;
+            {"mm10" === assembly && ZHelpTooltip(globals, "DifferentialGeneMouse")}
+	</span>);
 
-    let klassLeft = "dt-body-left dt-head-left ";
-    let klassCenter = "dt-body-center dt-head-center ";
-
-    let accHelp = "accession<br />" + HelpTooltip("CellTypeTableAccessionCol");
-    let sctHelp = cts + " " + HelpTooltip("CellTypeSpecifiedClassification");
-
-    let geneHelp = "nearest genes:<br />protein-coding / all&nbsp;&nbsp;";
-    if("mm10" == GlobalAssembly){
-        geneHelp += HelpTooltip("DifferentialGeneMouse");
-    }
-
+    let tz = (name) => ( <span>{name}<br />Z</span>)
+    
     return [
 	{
-	    title: accHelp, data: "info", className: klassCenter,
-            render: Render.creTableAccession
+	    title: accHelp, data: "info", 
+            render: ZRender.creTableAccession(globals)
 	}, {
-            title: sctHelp, data: "ctspecifc", className: klassCenter,
-	    render: Render.creTableCellTypeSpecific, name: "sctv", width: "12%"
+            title: sctHelp, data: "ctspecifc",
+	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
 	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false, name: "sct",
-	    render: Render.sctSorter
+            title: "SCTsorter", data: "ctspecifc", visible: false, 
+	    render: ZRender.sctSorter, name: "sct",
 	}, {
-	    title: "DNase Z", data: "dnase_zscore", className: klassCenter,
-	    render: Render.real, width: "7%", name: "dnase"
+	    title: tz("DNase"), data: "dnase_zscore",
+	    render: ZRender.real, name: "dnase", width: "7%"
 	}, {
-	    title: "H3K4me3 Z", data: "promoter_zscore", className: klassCenter,
-	    render: Render.real, width: "7%", name: "promoter"
+	    title: tz("H3K4me3"), data: "promoter_zscore",
+	    render: ZRender.real, name: "promoter", width: "7%"
 	}, {
-	    title: "H3K27ac Z", data: "enhancer_zscore", className: klassCenter,
-	    render: Render.real, width: "7%", name: "enhancer"
+	    title: tz("H3K27ac"), data: "enhancer_zscore",
+	    render: ZRender.real, name: "enhancer", width: "7%"
 	}, {
-	    title: "CTCF Z", data: "ctcf_zscore", className: klassCenter,
-	    render: Render.real, width: "7%", name: "ctcf"
+	    title: tz("CTCF"), data: "ctcf_zscore", 
+	    render: ZRender.real, name: "ctcf", width: "7%"
 	}, {
-	    title: "chr", data: "chrom", className: klassCenter
+	    title: "chr", data: "chrom", 
 	}, {
-	    title: "start", data: "start", className: klassCenter,
-            render: Render.integer
+	    title: "start", data: "start", 
+            render: ZRender.numWithCommas
 	}, {
-	    title: "length", data: "len", className: klassCenter,
-            render: Render.integer
+	    title: "length", data: "len", 
+            render: ZRender.numWithCommas
 	}, {
             title: geneHelp, data: "genesallpc",
-	    className: klassCenter + "geneexp", render: Render.geneDeLinks,
+	    className: "geneexp", render: ZRender.geneDeLinks(assembly),
             orderable: false,
 	}, {
-	    title: "cart", data: "in_cart", className: klassCenter + "cart",
-            render: (d) => Render.cart_img(d, false),
+	    title: "cart", data: "in_cart", className: "cart",
+            render: (d) => ZRender.cart_img(d, false),
             orderable: false,
 	}, {
-	    title: "genome browsers", data: null,
-	    className: klassCenter + "browser",
+	    title: (<span>genome<br />browsers</span>), data: null,
+	    className: "browser",
 	    targets: -1,
 	    orderable: false,
-	    defaultContent: Render.browser_buttons(["UCSC"])
+	    defaultContent: ZRender.browser_buttons(["UCSC"])
 	    //, "Ensembl"
 	}
     ];

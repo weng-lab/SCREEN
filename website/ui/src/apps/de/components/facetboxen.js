@@ -1,99 +1,95 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders';
+import * as Render from '../../../common/zrenders';
 
-import LongChecklistFacet from '../../../common/components/longchecklist'
-import LongListFacet from '../../../common/components/longlist'
-import ResultsTable from '../../../common/components/results_table'
+import LongListFacet from '../../../common/components/longlist';
+import Ztable from '../../../common/components/ztable/ztable';
 
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/utility'
+import {panelize} from '../../../common/utility';
 
 const cols = [{ title: "cell type", data: "name",
 		className: "dt-right" },
 	      { title: "tissue", data: "tissue",
-		className: "dt-right" }]
+		className: "dt-right" }];
 
-const cellTypesBox1 = ({ct1, actions}) => {
+const cellTypesBox1 = ({globals, ct1, actions}) => {
     return panelize("Cell type 1",
                     <LongListFacet
 			title={""}
-			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
 			buttonsOff={true}
 			selection={ct1}
 			friendlySelectionLookup={(value) => {
-				return Globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value][0]["name"]; }}
 			onTdClick={(value) => { actions.setCt1(value) }}
                     />);
 }
 
-const cellTypesBox2 = ({ct2, actions}) => {
+const cellTypesBox2 = ({globals, ct2, actions}) => {
     return panelize("Cell type 2",
                     <LongListFacet
 			title={""}
-			data={Globals.cellTypeInfoArr.filter((x) => (x.isde))}
+			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
 			order={[]}
 			buttonsOff={true}
 			selection={ct2}
 			friendlySelectionLookup={(value) => {
-				return Globals.byCellType[value][0]["name"]; }}
+				return globals.byCellType[value][0]["name"]; }}
 			onTdClick={(value) => { actions.setCt2(value) }}
                     />);
 }
 
-const creBox = ({des, ct1, ct2, actions}) => {
+const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
         return (<div />);
     }
     let cres = des.diffCREs.data;
     let box = (
-	<ResultsTable
+	<Ztable
             data={cres}
             cols={[
                 {title: "accession", data: "accession",
-                 render: Render.relink(GlobalAssembly),
-                 className: "dt-right"},
-                {title: "start", data: "start", render: Render.integer,
-                 className: "dt-right"},
-                {title: "len", data: "len", render: Render.integer,
-                 className: "dt-right"},
-                {title: "Z &Delta;", data: "value",
-                 className: "dt-right"}
+                 render: Render.relink(assembly)
+		}, {title: "start", data: "start", render: Render.integer,
+                }, {title: "len", data: "len", render: Render.integer,
+                }, {title: <span>&Delta;Z</span>, data: "value",
+                }
             ]}
             pageLength={5}
 	    bFilter={true}
             order={[[3, "desc"], [1, "asc"]]}
         />);
-    return panelize("Candidate Regulatory Elements", box, "DE_cRE_Table");
+    return panelize("candidate Regulatory Elements", box,
+		    "DE_cRE_Table", globals);
 }
 
-const geneBox = ({des, ct1, ct2, actions}) => {
+const geneBox = ({globals, des, ct1, ct2, actions}) => {
     if(!des || !ct1 || !ct2){
         return (<div />);
     }
     let genes = des.nearbyDEs.data;
     let box = (
-	<ResultsTable
+	<Ztable
             data={genes}
             cols={[
-                {title: "gene", data: "gene",
-                 className: "dt-right"},
-                {title: "start", data: "sstart", 
-                 className: "dt-right"},
-                {title: "fold &Delta;", data: "fc", render: Render.real,
-                 className: "dt-right"}
+                { title: "gene", data: "gene",
+		}, {title: "start", data: "sstart",
+		}, {title: <span>fold &Delta;</span>, data: "fc",
+		    render: Render.real
+		}
             ]}
             pageLength={5}
 	    bFilter={true}
             order={[[2, "desc"]]}
         />);
-    return panelize("Differentially Expressed Genes", box, "DE_Gene_Table");
+    return panelize("Differentially Expressed Genes", box,
+		    "DE_Gene_Table", globals);
 }
 
 class FacetBoxen extends React.Component {

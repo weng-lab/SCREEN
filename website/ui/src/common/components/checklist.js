@@ -1,10 +1,7 @@
 import React from 'react';
-var ReactDOM = require('react-dom');
-var $ = require('jquery');
-var __jui = require('jquery-ui-bundle');
+import $ from 'jquery';
 
 import AutocompleteTextbox from './autocomplete'
-import * as toggleswitch from './toggleswitch'
 
 export const CHECKLIST_MATCH_ALL = 'CHECKLIST_MATCH_ALL';
 export const CHECKLIST_MATCH_ANY = 'CHECKLIST_MATCH_ANY';
@@ -61,7 +58,7 @@ class ChecklistFacet extends React.Component {
 
     handleSubmit(e) {
 	e.preventDefault();
-	if ($.trim(this.state.text) == "") return;
+	if ($.trim(this.state.text) === "") return;
 	var next_items = [...this.state.items, {
 	    value: this.state.text,
 	    checked: true
@@ -100,9 +97,9 @@ class ChecklistFacet extends React.Component {
 
 	var checks = (!this.props.match_mode_enabled ? ""
 		      : (<div><select ref="mode">
-		            <option value={this.props.mode == CHECKLIST_MATCH_ALL} value={CHECKLIST_MATCH_ALL}>match all</option>
-		            <option value={this.props.mode == CHECKLIST_MATCH_ANY} value={CHECKLIST_MATCH_ANY}>match any</option>
-		         </select></div>
+		            <option value={this.props.mode === CHECKLIST_MATCH_ALL}>match all</option>
+		            <option value={this.props.mode === CHECKLIST_MATCH_ANY}>match any</option>
+		      </select></div>
 		        ));
 
 	return (<div>

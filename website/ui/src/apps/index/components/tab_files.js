@@ -1,18 +1,20 @@
-import React from 'react'
+import React from 'react';
 
-import ResultsTable from '../../../common/components/results_table';
-import * as Render from '../../../common/renders'
-import loading from '../../../common/components/loading'
-import {tabPanelize} from '../../../common/utility'
+import Ztable from '../../../common/components/ztable/ztable';
+import loading from '../../../common/components/loading';
+import {tabPanelize} from '../../../common/utility';
+
+const fileDownload = (url, fn) => {
+    return (
+	<span>
+	    <a href={url} download={fn}>
+		<span className="glyphicon glyphicon-download" aria-hidden="true" />
+	    </a>
+	</span>);
+}
 
 const CtaTableColumns = () => {
     let klassCenter = "dt-body-center dt-head-center ";
-
-    const fileDownload = (url, fn) => {
-	return '<a href="' + url + '" download="'+ fn +'">' +
-	       '<span class="glyphicon glyphicon-download" aria-hidden="true">' +
-	       '</span>' + '</a>';
-    }
 
     const dl = (a) => {
 	return fileDownload(a.join('/'), a[1]);
@@ -27,20 +29,20 @@ const CtaTableColumns = () => {
 	}, {
             title: "5 group url", data: "fiveGroup", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", className: klassCenter,
 	    render: dl
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", visible: false
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", className: klassCenter,
 	    render: dl
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", visible: false
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", visible: false
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", className: klassCenter,
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", className: klassCenter,
 	    render: dl
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", visible: false
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", visible: false
 	}
     ];
 }
@@ -56,12 +58,6 @@ const CtsTableColumns = () => {
 	let url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" +
 		  fn;
 	return fileDownload(url, fn);
-    }
-
-    const fileDownload = (url, fn) => {
-	return '<a href="' + url + '" download="'+ fn +'">' +
-	       '<span class="glyphicon glyphicon-download" aria-hidden="true">' +
-	       '</span>' + '</a>';
     }
 
     const fiveGroupDownload = (a) => {
@@ -81,25 +77,25 @@ const CtsTableColumns = () => {
 	}, {
             title: "5 group url", data: "fiveGroup", visible: false
 	}, {
-            title: "9 state high&nbsp;DNase", data: "dnase", className: klassCenter,
+            title: <span>9 state high&nbsp;DNase</span>, data: "dnase", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "9 state high&nbsp;DNase", data: "dnase_url", visible: false
+            title: <span>9 state high&nbsp;DNase</span>, data: "dnase_url", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state high&nbsp;H3K27ac", data: "h3k27ac_url", visible: false
+	    title: <span>9 state high&nbsp;H3K27ac</span>, data: "h3k27ac_url", visible: false
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3", className: klassCenter,
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3", className: klassCenter,
 	    render: dccLink
 	}, {
-	    title: "9 state high&nbsp;H3K4me3", data: "h3k4me3_url", visible: false
+	    title: <span>9 state high&nbsp;H3K4me3</span>, data: "h3k4me3_url", visible: false
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf", className: klassCenter,
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf", className: klassCenter,
 	    render: dccLink
 	}, {
-            title: "9 state high&nbsp;CTCF", data: "ctcf_url", visible: false
+            title: <span>9 state high&nbsp;CTCF</span>, data: "ctcf_url", visible: false
 	}
     ];
 }
@@ -135,18 +131,16 @@ class TabFiles extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-        $.ajax({
-            url: "/globalData/index/index",
-            type: "GET",
-            error: function(jqxhr, status, error) {
-                console.log("err loading files");
-		console.log(error);
+        fetch("/globalData/index/index")
+	    .then((response) => (response.json()))
+	    .then((r) => {
+		this.setState({files: r, isFetching: false, isError: false});
+	    })
+	    .catch((err) => {
+		console.log("err loading files");
+		console.log(err);
                 this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({files: r, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	    });
     }
 
     doRenderWrapper(){
@@ -168,13 +162,13 @@ class TabFiles extends React.Component {
 	    return (
 		<div>
 		    <h3>Cell type-agnostic</h3>
-		    <ResultsTable data={cta}
+		    <Ztable data={cta}
 				  cols={CtaTableColumns()}
 				  bFilter={true}
 				  bLengthChange={true}
 		    />
 		    <h3>Cell type-specific</h3>
-		    <ResultsTable data={this.state.files}
+		    <Ztable data={this.state.files}
 				  cols={CtsTableColumns()}
 				  bFilter={true}
 				  bLengthChange={true}

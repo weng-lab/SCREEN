@@ -1,18 +1,13 @@
 import React from 'react';
 
 const header = (text, size) => {
-    if (size == 1) return <h1>{text}</h1>;
-    if (size == 2) return <h2>{text}</h2>;
-    if (size == 3) return <h3>{text}</h3>;
+    if (1 === size) return <h1>{text}</h1>;
+    if (2 === size) return <h2>{text}</h2>;
+    if (3 === size) return <h3>{text}</h3>;
     return <h4>{text}</h4>;
 };
 
 class PlotWithHeader extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     render() {
 	return (
 	    <div className={"col-md-" + this.props.colspan}>

@@ -15,8 +15,8 @@ class SearchBox extends React.Component {
     }
     
     _search() {
-	console.log("/search/?q=" + this.state.searchtext + "&assembly=" + GlobalAssembly);
-	window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + GlobalAssembly;
+	console.log("/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly);
+	window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly;
 	return false;
     }
     
@@ -38,7 +38,7 @@ class SearchBox extends React.Component {
     componentWillReceiveProps(nextProps){
 	var val = this.makeVal(nextProps);
 	var jq = JSON.stringify(val);
-	if(this.state.jq != jq){
+	if(this.state.jq !== jq){
 	    //this.refs.input.value = val;
 	    this.setState({jq});
 	}
@@ -50,7 +50,7 @@ class SearchBox extends React.Component {
 	        <AutocompleteTextbox defaultvalue={this.state.searchtext} id="acnav"
 		    name="q" hideerr="true" actions={this.props.actions} size={100}
 		    className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
-		    onEnter={this._search} assemblies={[GlobalAssembly]} />&nbsp;
+		    onEnter={this._search} assemblies={[this.props.assembly]} />&nbsp;
 
                 <a className="btn btn-primary btn-lg searchButton"
                     onClick={this._search} role="button">Search</a>

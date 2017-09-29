@@ -1,10 +1,12 @@
+import React from 'react'
 import HelpIcon from './components/help_icon'
 
-export const panelize = (title, facet, helpkey = null) => {
+export const panelize = (title, facet, helpkey = null, globals = null) => {
     let helpicon = (helpkey ?
-                    <HelpIcon helpkey={helpkey} color={"#ffffff"} /> :
+                    <HelpIcon globals={globals}
+			      helpkey={helpkey}
+			      color={"#ffffff"} /> :
                     "");
-    //console.log("rendering panel", title);
     return (
         <div className="panel-group facet">
 	    <div className="panel panel-primary">
@@ -40,7 +42,7 @@ export const doToggle = (oldSet, item) => {
 }
 
 export const getCommonState =
-    ({accessions, coord_chrom, coord_start, coord_end,
+    ({assembly, accessions, coord_chrom, coord_start, coord_end,
       gene_all_start, gene_all_end,
       gene_pc_start, gene_pc_end,
       rank_dnase_start, rank_dnase_end,
@@ -48,7 +50,7 @@ export const getCommonState =
       rank_enhancer_start, rank_enhancer_end,
       rank_ctcf_start, rank_ctcf_end,
       cellType, element_type}) => {
-	  return {GlobalAssembly,
+	  return {assembly,
                   accessions, coord_chrom, coord_start, coord_end,
                   gene_all_start, gene_all_end,
 		  gene_pc_start, gene_pc_end,
@@ -75,11 +77,16 @@ export const isCart = () => {
     return href.includes("&cart");
 }
 
+export const commajoin = (a) => {
+    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
+	    ", ", a.slice(-1)];
+}
+
 export const orjoin = (a) => {
     return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
 	    " or ", a.slice(-1)];
 }
 
 export const brJoin = (a) => {
-   return a.reduce((prev, curr) => [prev, (<br />), curr]);
+    return a.reduce((prev, curr) => [prev, (<br />), curr]);
 }

@@ -5,11 +5,6 @@ import Histogram from '../../../../plots/components/histogram';
 import PlotWithHeader from '../../../../plots/components/plotwithheader';
 
 class HistogramZTab extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     _render_boxplot(q, o, l) {
 	if (!q) return <div />;
 	return (<div>

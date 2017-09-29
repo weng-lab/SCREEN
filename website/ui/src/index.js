@@ -1,7 +1,8 @@
-import 'babel-polyfill';
-
+import React from 'react'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory} from 'react-router';
+
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 import Intersection from './apps/intersection/main';
 import Search from './apps/search/main';
@@ -10,6 +11,8 @@ import De from './apps/de/main';
 import Gwas from './apps/gwas/main';
 import IndexPage from './apps/index/main';
 import TadPage from './apps/tads/main';
+
+import './css.css';
 
 function myCreateElement(Component, props) {
     return (<Component {...props} />);
@@ -22,8 +25,8 @@ ReactDOM.render((
 	<Route path="/search(.*)" component={Search} />
 	<Route path="/search/:maintab(.*)" component={Search} />
 	<Route path="/search/:maintab/:subtab(.*)" component={Search} />
-	<Route path="/geApp/:assembly/" component={GeneExp} />
-	<Route path="/deApp/:assembly/" component={De} />
+	<Route path="/geApp/" component={GeneExp} />
+	<Route path="/deApp/" component={De} />
 	<Route path="/gwasApp/:assembly" component={Gwas} />
 	<Route path="/gwasApp/:assembly/:gs" component={Gwas} />
 	<Route path="/gwasApp/:assembly/:gs/:ct" component={Gwas} />

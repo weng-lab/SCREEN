@@ -1,17 +1,16 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
 import loading from '../../../common/components/loading'
-import HelpIcon from '../../../common/components/help_icon'
 
 import FantomCatTabs from './fantomcat/fantomcattabs';
 
-import Histogram from '../../../plots/components/histogram';
-import PieChart from '../../../plots/components/piechart';
-import Boxplot from '../../../plots/components/boxplot';
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 let o = ["non-coding", "coding", "", "pseudogenes", "protein coding mRNAs", "sense overlap RNAs", "uncertain coding", "lncRNA, intergenic", "lncRNA, antisense", "lncRNA, divergent"];
 
@@ -53,16 +52,16 @@ class FantomCatTab extends React.Component{
 		this._qsets = {main: {}, twokb: {}}; //, bymaxz: {}};
 		Object.keys(r.main.classes).map((k => {
 		    return this._qsets.main[k] = r.main.classes[k].quartiles;
-		}).bind(this));
+		}));
 		Object.keys(r.fantomcat_2kb.classes).map((k => {
 		    return this._qsets.twokb[k] = r.fantomcat_2kb.classes[k].quartiles;
-		}).bind(this));
+		}));
 		/* Object.keys(r.fantomcat_bymaxz).map((a => {
-		    this._qsets.bymaxz[a] = {};
-		    return Object.keys(r.fantomcat_bymaxz[a].classes).map((k => {
-			return this._qsets.bymaxz[a][k] = r.fantomcat_bymaxz[a].classes[k].quartiles;
-		    }).bind(this))
-		}).bind(this)); */
+		   this._qsets.bymaxz[a] = {};
+		   return Object.keys(r.fantomcat_bymaxz[a].classes).map((k => {
+		   return this._qsets.bymaxz[a][k] = r.fantomcat_bymaxz[a].classes[k].quartiles;
+		   }).bind(this))
+		   }).bind(this)); */
 		this.setState({data: r, isFetching: false, isError: false});
             }.bind(this)
         });

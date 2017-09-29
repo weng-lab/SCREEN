@@ -237,7 +237,7 @@ select.ui-toggle-switch { display: none; }
 
 .tableInfo {
     float: right;
-    margin-top: -25px;
+    /*margin-top: -25px;*/
     padding-right: 50px;
 }
 
@@ -667,4 +667,47 @@ div.dataTables_wrapper div.dataTables_paginate {
   width: 85px; /* 80 / cos(45) - 40 cos (45) = 85 where 80 is the height of the cell, 40 the width of the cell and 45 the transform angle*/
   text-align: left;
   // white-space: nowrap; /*whether to display in one line or not*/
+}
+
+table-sort::after {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: block;
+    font-family: 'Glyphicons Halflings';
+    opacity: 0.5;
+    top: 6px;
+    right: 6px;
+    top: inherit;
+    opacity: 0.2;
+    content: "\e150";
+}
+
+table-sort-asc::after {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: block;
+    font-family: 'Glyphicons Halflings';
+    opacity: 0.5;
+    top: 6px;
+    right: 6px;
+    top: inherit;
+    content: "\e155";
+}
+
+table-sort-desc::after {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: block;
+    font-family: 'Glyphicons Halflings';
+    opacity: 0.5;
+    top: 6px;
+    right: 6px;
+    top: inherit;
+    content: "\e156";
 }

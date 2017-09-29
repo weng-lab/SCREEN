@@ -1,15 +1,17 @@
-import React from 'react'
+import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/renders'
+import * as Render from '../../../common/zrenders';
 
 class DetailsContainer extends React.Component {
     render() {
         const makeTabTitle = (key, tab) => {
-            let active = key == this.props.re_details_tab_active;
-            if(!tab.enabled && !active){ return (<div />) }
+            let active = key === this.props.re_details_tab_active;
+            if(!tab.enabled && !active){
+		return (<div key={key} />)
+	    }
 	    let cn = (active ? "active" : "") + " detailsTabTitle";
             return (
 		<li className={cn}
@@ -20,8 +22,10 @@ class DetailsContainer extends React.Component {
         }
 
         const makeTab = (key, tab) => {
-            let active = key == this.props.re_details_tab_active;
-            if(!tab.enabled && !active){ return (<div />) }
+            let active = key === this.props.re_details_tab_active;
+            if(!tab.enabled && !active){
+		return (<div key={key} />)
+	    }
             return (
 		<div
                     className={active ? "tab-pane active" : "tab-pane"}
@@ -41,7 +45,7 @@ class DetailsContainer extends React.Component {
             <div className="container" style={{width: "100%"}}>
                 <div className="row">
                     <div className="col-md-10">
-			{Render.creTitle(cre)}
+			{Render.creTitle(this.props.globals, cre)}
                     </div>
                 </div>
 

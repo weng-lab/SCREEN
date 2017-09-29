@@ -6,7 +6,7 @@ class DePage extends React.Component{
     render() {
         return (
 	    <div>
-		<DeExp />
+		{React.createElement(DeExp, this.props)}
             </div>);
     }
 }

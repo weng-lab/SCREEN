@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 import CartImage, {cart_connector} from './cart_image'
 
@@ -25,8 +24,8 @@ class NavBarApp extends React.Component {
 
 	return (
 	    <div className="navbar-header">
-		<a className="navbar-brand" href={HOMEPAGE.url}>
-		    {HOMEPAGE.title} {GlobalAssembly}
+		<a className="navbar-brand" href={"/"}>
+		    {"SCREEN"} {this.props.assembly}
                 </a>
 		
                 {SearchBox}
@@ -34,6 +33,7 @@ class NavBarApp extends React.Component {
                 <form className="navbar-form navbar-right">
 		    <a href="http://www.encodeproject.org"
                        target="_blank"
+		       rel="noopener noreferrer"
                        className="btn btn-success btn-lg navbarEncodeImgBtn">
 			<img src={"/static/encode/ENCODE_logo.small3.png"}
 			     alt={"ENCODE logo"}

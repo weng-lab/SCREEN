@@ -4,11 +4,6 @@ import ViolinPlot from '../../../../plots/components/violinplot';
 import PlotWithHeader from '../../../../plots/components/plotwithheader';
 
 class ViolinTab extends React.Component {
-
-    constructor(props) {
-	super(props);
-    }
-
     _render_boxplot(q, o) {
 	if (!q) return <div />;
 	return (<div>

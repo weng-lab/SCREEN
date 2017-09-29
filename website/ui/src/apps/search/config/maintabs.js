@@ -1,28 +1,26 @@
-import React from 'react'
+import React from 'react';
 
-import ResultsTableContainer from '../components/results_app'
-import ResultsTree from '../components/tree'
-import DetailsContainer from '../components/details_container'
-import TFDisplay from '../components/tf_display'
-import ActivityProfile from '../components/activity_profile'
-import ExpressionPlot from '../components/expression_plot'
-import ConfigureGenomeBrowser from '../components/configure_genome_browser'
+import ResultsTableContainer from '../components/results_table_container';
+import ResultsTree from '../components/tree';
+import DetailsContainer from '../components/details_container';
+import TFDisplay from '../components/tf_display';
+import ActivityProfile from '../components/activity_profile';
+import ExpressionPlot from '../components/expression_plot';
+import ConfigureGenomeBrowser from '../components/configure_genome_browser';
+import DetailsTabInfo from './details';
 
-import loading from '../../../common/components/loading'
-import DetailsTabInfo from './details'
-
-import {isCart} from '../../../common/utility'
-import * as Render from '../../../common/renders'
+import {isCart} from '../../../common/utility';
 
 class ResultsTab extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
        return "results" === nextProps.maintabs_active;
     }
+
     render() {
-       if("results" !== this.props.maintabs_active){
+	if("results" !== this.props.maintabs_active){
             return false;
         }
-        return (<ResultsTableContainer />);
+        return React.createElement(ResultsTableContainer, this.props);
     }
 }
 
@@ -37,13 +35,10 @@ class DetailsTab extends React.Component{
     render() {
        if("details" !== this.props.maintabs_active){
             return false;
-        }
-        return (<DetailsContainer tabs={DetailsTabInfo()} />);
+       }
+	return React.createElement(DetailsContainer, {...this.props,
+						      tabs: DetailsTabInfo()});
     }
-}
-
-class GcompareTab extends React.Component{
-    render() { return (gcompare); }
 }
 
 class TFTab extends React.Component {
@@ -54,10 +49,10 @@ class ActivityProfileTab extends React.Component {
     render() { return <ActivityProfile key="aprofile" />;}
 }
 
-const MainTabInfo = () => {
+const MainTabInfo = (parsedQuery, globals) => {
     let gene = null;
-    if(GlobalParsedQuery.genes.length > 0){
-	gene = GlobalParsedQuery.genes[0].approved_symbol;
+    if(parsedQuery.genes.length > 0){
+	gene = parsedQuery.genes[0].approved_symbol;
     }
     let geTitle = gene ? gene + " Expression" : "";
 
@@ -71,8 +66,8 @@ const MainTabInfo = () => {
 		       f: ActivityProfileTab},
 	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
 	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
-	    details: {title: "cRE Details", visible: false, f: DetailsTab},
-	    gcompare: {title: "Group Comparison", visible: false, f: GcompareTab}};
+	    details: {title: "cRE Details", visible: false, f: DetailsTab}
+    };
 }
 
 export default MainTabInfo;

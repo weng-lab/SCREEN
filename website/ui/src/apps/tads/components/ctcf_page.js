@@ -1,12 +1,14 @@
 import React from 'react'
-import {render} from 'react-dom'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 
-import {TRBars} from '../../search/components/tf_display'
 import loading from '../../../common/components/loading'
+
+/*global GlobalAssembly */
+/*eslint no-undef: "error"*/
 
 class CTCFPage extends React.Component{
     
@@ -30,18 +32,18 @@ class CTCFPage extends React.Component{
 
     loadChr({ chr, biosample, actions }) {
 	
-        if (null == chr) {
+        if (null === chr) {
             this.setState({ selectChr: true });
             return;
         }
-	if (null == biosample) {
+	if (null === biosample) {
 	    this.setState({ selectBiosample: true });
 	    return;
 	}
 	
 	actions.setloading();
         var jq = JSON.stringify({ GlobalAssembly, chr, biosample });
-        if (this.state.jq == jq) { return; }
+        if (this.state.jq === jq) { return; }
         this.setState({ jq, isFetching: true, selectChr: false, selectBiosample: false, isDone: false });
 	
 	$.ajax({
@@ -56,13 +58,13 @@ class CTCFPage extends React.Component{
 		    data: null, jq,
                     isDone: true, isFetching: false, isError: true
 		});
-            } ).bind(this),
+            } ),
             success: ( r => {
                 this.setState({
 		    data: r["data"], jq, isDone: true,
                     isFetching: false, isError: false
 		});
-            } ).bind(this)
+            } )
 	});
 	
     }
