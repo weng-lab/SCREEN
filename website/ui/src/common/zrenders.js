@@ -92,16 +92,16 @@ export const geLink = (assembly, gene) => ("/geApp/?assembly=" + assembly + "&ge
 export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&gene=" + gene)
 
 export const geDeButton = (assembly) => (d) => {
-    let _d = d.replace(/\./g, "%2e");
-    let ge = <a href={geLink(assembly, _d)} target={"_blank"}>{d}</a>;
+    const _d = d.replace(/\./g, "%2e");
+    const ge = <a href={geLink(assembly, _d)} target={"_blank"}>{d}</a>;
     if("mm10" !== assembly){
         return (<span>{ge}</span>);
     }
-    var de = <a href={deLink(assembly, _d)} target={"_blank"}>&Delta;</a>;
+    const de = <span style={{paddingLeft: "4px"}}>
+	  <a href={deLink(assembly, _d)} target={"_blank"}>&Delta;</a></span>;
     return (
 	<span>
 	    {ge}
-	    {"&nbsp;&nbsp;"}
 	    {de}
 	</span>);
 };

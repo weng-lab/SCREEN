@@ -26,7 +26,7 @@ ReactDOM.render((
 	<Route path="/search/:maintab(.*)" component={Search} />
 	<Route path="/search/:maintab/:subtab(.*)" component={Search} />
 	<Route path="/geApp/" component={GeneExp} />
-	<Route path="/deApp/:assembly/" component={De} />
+	<Route path="/deApp/" component={De} />
 	<Route path="/gwasApp/:assembly" component={Gwas} />
 	<Route path="/gwasApp/:assembly/:gs" component={Gwas} />
 	<Route path="/gwasApp/:assembly/:gs/:ct" component={Gwas} />

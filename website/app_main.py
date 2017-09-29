@@ -5,7 +5,7 @@ from __future__ import print_function
 import cherrypy, jinja2, os, sys
 
 from controllers.geneexp_ws import GeneExpWebServiceWrapper
-from controllers.de_controller import DeController
+from controllers.de_ws import DeWebServiceWrapper
 from controllers.gwas_controller import GwasController
 from controllers.global_data_controller import GlobalDataController
 from controllers.tf_controller import TfController
@@ -26,7 +26,7 @@ class MainApp():
     def __init__(self, args, viewDir, staticDir, ps, cache):
         self.templates = Templates(viewDir, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
-        self.de = DeController(self.templates, ps, cache)
+        self.de_ws = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.tc = TadsController(self.templates, ps, cache)
         self.gwas = GwasController(self.templates, ps, cache)
         self.global_data = GlobalDataController(ps, cache)
@@ -134,7 +134,7 @@ class MainApp():
     @cherrypy.tools.json_out()
     def deGeneJson(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.de.deGeneJson(j)
+        return self.deWS.process(j, args, kwargs)
 
     @cherrypy.expose
     def gwasApp(self, *args, **kwargs):
