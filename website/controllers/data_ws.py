@@ -148,7 +148,6 @@ class DataWebService(GetOrSetMemCache):
                                          j.get("coord_end", None))
         lookup = self.cache.geneIDsToApprovedSymbol
         for r in results["cres"]:
-            print(r)
             r["genesallpc"] = {"all": [lookup[gid] for gid in r["gene_all_id"][:3]],
                                "pc": [lookup[gid] for gid in r["gene_pc_id"][:3]],
                                "accession": r["info"]["accession"]}
