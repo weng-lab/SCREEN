@@ -115,6 +115,74 @@ class Zrow extends React.Component {
     }
 }
 
+class DataSource {
+    constructor(data, cols) {
+	this.data = data;
+	this.cols = cols;
+    }
+
+    filterAndSort(state){
+	let rowIDs = this._searchFilter(state.search);
+	this.rowIDs = this._sort(state.sortCol, state.sortOrder, rowIDs);
+
+	this.numPages = Math.ceil(rowIDs.length / state.pageSize);
+	// page indexes are 1-based
+	this.rowStart = (state.pageNum - 1) * state.pageSize;
+	this.rowEnd = state.pageNum * state.pageSize;
+    }
+
+    _searchFilter(s){
+	let ret = [];
+	for(let i = 0; i < this.data.length; i++){
+	    if(!s){
+		ret.push(i);
+		continue;
+	    }
+	    for(let colInfo of this.cols){
+		let t = String(this.data[i][colInfo.data]).toLowerCase();
+		if(t.includes(s)){
+		    ret.push(i);
+		    break;
+		}
+	    }
+	}
+	return ret;
+    }
+
+    _sort(sortCol, sortOrder, rowIDs){
+	let c = sortCol;
+	if(!c){
+	    return rowIDs;
+	}
+	if(0 === rowIDs.length){
+	    return rowIDs;
+	}
+	let sample = this.data[rowIDs[0]][c];
+
+	// https://stackoverflow.com/a/16655847
+	let isNumArray = Number(sample) === sample; 
+	if(isNumArray){
+	    if(1 === sortOrder){ // ascending
+		return rowIDs.sort((a,b) => this.data[a][c] -
+					  this.data[b][c]);
+	    }
+	    return rowIDs.sort((a,b) => this.data[b][c] -
+				      this.data[a][c]);
+	}
+	// sort by strings https://stackoverflow.com/a/9645447
+	if(1 === sortOrder){ // ascending
+	    return rowIDs.sort((a,b) =>
+		this.data[a][c].toLowerCase().localeCompare(
+		    this.data[b][c].toLowerCase())
+	    )
+	}
+	return rowIDs.sort((a,b) =>
+	    this.data[b][c].toLowerCase().localeCompare(
+		this.data[a][c].toLowerCase())
+	)
+    }
+}
+
 class Ztable extends React.Component {
     constructor(props) {
         super(props);
@@ -125,58 +193,6 @@ class Ztable extends React.Component {
 		      sortOrder: 0};
     }
 
-    searchFilter(){
-	let ret = [];
-	let s = this.state.search;
-	for(let i = 0; i < this.props.data.length; i++){
-	    if(!this.state.search){
-		ret.push(i);
-		continue;
-	    }
-	    for(let colInfo of this.props.cols){
-		let t = String(this.props.data[i][colInfo.data]).toLowerCase();
-		if(t.includes(s)){
-		    ret.push(i);
-		    break;
-		}
-	    }
-	}
-	return ret;
-    }
-
-    sort(rowIDs){
-	let c = this.state.sortCol;
-	if(!c){
-	    return rowIDs;
-	}
-	if(0 === rowIDs.length){
-	    return rowIDs;
-	}
-	let sample = this.props.data[rowIDs[0]][c];
-
-	// https://stackoverflow.com/a/16655847
-	let isNumArray = Number(sample) === sample; 
-	if(isNumArray){
-	    if(1 === this.state.sortOrder){ // ascending
-		return rowIDs.sort((a,b) => this.props.data[a][c] -
-					  this.props.data[b][c]);
-	    }
-	    return rowIDs.sort((a,b) => this.props.data[b][c] -
-				      this.props.data[a][c]);
-	}
-	// sort by strings https://stackoverflow.com/a/9645447
-	if(1 === this.state.sortOrder){ // ascending
-	    return rowIDs.sort((a,b) =>
-		this.props.data[a][c].toLowerCase().localeCompare(
-		    this.props.data[b][c].toLowerCase())
-	    )
-	}
-	return rowIDs.sort((a,b) =>
-	    this.props.data[b][c].toLowerCase().localeCompare(
-		this.props.data[a][c].toLowerCase())
-	)
-    }
-        
     render(){
 	const searchBoxChange = (e) => {
 	    this.setState({search: e.target.value,
@@ -202,13 +218,8 @@ class Ztable extends React.Component {
 	    }
 	};
 	
-	let rowIDs = this.searchFilter();
-	rowIDs = this.sort(rowIDs);
-	
-	let numPages = Math.ceil(rowIDs.length / this.state.pageSize);
-	// page indexes are 1-based
-	let rowStart = (this.state.pageNum - 1) * this.state.pageSize;
-	let rowEnd = this.state.pageNum * this.state.pageSize;
+	let ds = new DataSource(this.props.data, this.props.cols);
+	ds.filterAndSort(this.state);
 	
 	let tableKlass = "table table-bordered table-condensed table-hover";
 	let visibleCols = filterVisibleCols(this.props.cols);
@@ -225,7 +236,7 @@ class Ztable extends React.Component {
 			/>
 		    </thead>
 		    <tbody>
-			{rowIDs.slice(rowStart, rowEnd).map((idx) => (
+			{ds.rowIDs.slice(ds.rowStart, ds.rowEnd).map((idx) => (
 			     <Zrow row={this.props.data[idx]}
 				   key={idx}
 				   dataIdx={idx}
@@ -234,10 +245,10 @@ class Ztable extends React.Component {
 			 ))}
 		    </tbody>
 		</table>
-		<PageBox pages={numPages}
+		<PageBox pages={ds.numPages}
 			 curPage={this.state.pageNum}
 			 onSelect={pageClick} />
-		<HelpBlock>Found {rowIDs.length}</HelpBlock>
+		<HelpBlock>Found {ds.rowIDs.length}</HelpBlock>
 	    </div>);
     }
 }
