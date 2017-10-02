@@ -98,19 +98,16 @@ export const creLinkPop = (accession, type, full, meta) => (
 export const geLink = (assembly, gene) => ("/geApp/?assembly=" + assembly + "&gene=" + gene)
 export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&gene=" + gene)
 
-export const geDeButton = (assembly) => (d) => {
+export const geDeButton = (assembly, accession) => (d) => {
     const _d = d.replace(/\./g, "%2e");
-    const ge = <a href={geLink(assembly, _d)} target={"_blank"}>{d}</a>;
+    const ge = <a href={geLink(assembly, _d)} target={"_blank"}
+	       key={[accession, d]}>{d}</a>;
     if("mm10" !== assembly){
-        return (<span>{ge}</span>);
+        return ge;
     }
-    const de = <span style={{paddingLeft: "4px"}}>
-	  <a href={deLink(assembly, _d)} target={"_blank"}>&Delta;</a></span>;
-    return (
-	<span>
-	    {ge}
-	    {de}
-	</span>);
+    const de = <a href={deLink(assembly, _d)} target={"_blank"}
+		  style={{paddingLeft: "4px"}}>&Delta;</a>;
+    return [ge, de];
 };
 
 export const openGeLink = (gene) => (
@@ -120,15 +117,13 @@ export const openGeLink = (gene) => (
 )
 
 export const geneDeLinks = (assembly) => (genesallpc) => {
-    let all = commajoin(genesallpc[0].map(geDeButton(assembly)));
-    let pc = commajoin(genesallpc[1].map(geDeButton(assembly)));
-    return (
-	<div>
-	{"pc: "}{pc}
-	<br />
-	{"all: "}{all}
-	</div>);
-}
+    const accession = genesallpc.accession;
+    const all = commajoin(genesallpc.all.map(geDeButton(assembly, accession)));
+    const pc = commajoin(genesallpc.pc.map(geDeButton(assembly, accession)));
+    return ["pc: ", pc,
+	    <br key={accession}/>,
+	    "all: ", all];
+    }
 
 export const dccImg = () => (
     <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20" />);

@@ -101,7 +101,7 @@ class Zrow extends React.Component {
 	return (
 	    <tr>
 		{rowData.map((r, idx) => {
-		     let k = "text-center " + r[1];
+		     const k = "text-center " + r[1];
 		     return (
 			 <td className={k}
 			     key={this.props.dataIdx.toString() + '_' + idx.toString()}
@@ -157,9 +157,9 @@ class DataSource {
 	    return rowIDs;
 	}
 	const sample = this.data[rowIDs[0]][sortCol];
-
 	// https://stackoverflow.com/a/16655847
 	const isNumArray = Number(sample) === sample; 
+
 	// sort numerically
 	if(isNumArray){
 	    if(1 === sortOrder){ // ascending
