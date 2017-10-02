@@ -397,32 +397,34 @@ export const creTableAccession = (globals) => (cre, type, full, meta) => {
 }
 
 export const creTableCellTypeSpecific = (globals) => (data) => {
-    let w = 12;
-    let h = 9;
-    let fw = 4 * w + 4;
-    let fh = h + 2;
-    let rect = (x, y, color) => (
+    const w = 12;
+    const h = 9;
+    const fw = 4 * w + 4;
+    const fh = h + 2;
+    const rect = (x, y, color) => (
 	<rect x={x} y={y} width={w} height={h} style={{fill : color}} />
     )
-    let line = (x1, y1, x2, y2) => (
+    const line = (x1, y1, x2, y2) => (
 	<line x1={x1} y1={y1} x2={x2} y2={y2}
 	      style={{strokeWidth: 1, stroke: "black"}} />
     )
-    let border = () => (
+    const border = () => (
 	<rect x={0} y={0} width={fw} height={fh}
 	      style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
-    let colors = globals.colors.cREs;
+    const colors = globals.colors.cREs;
 
-    let col = (val, c) => {
+    const col = (val, c) => {
 	if(null === val){
 	    return colors.NoData;
 	}
 	return val > 1.64 ? c : colors.Inactive;
     }
+
+    const k = Object.entries(data).join('_');
     
-    let e = (
-	<span className={"text-nowrap"}>
+    return (
+	<span className={"text-nowrap"} key={k}>
 	    <svg width={fw} height={fh}>
 		<g>
 		    {border()}
@@ -436,7 +438,6 @@ export const creTableCellTypeSpecific = (globals) => (data) => {
         	</g>
 	    </svg>
 	</span>);
-    return e;
 }
 
 export const titlegeneric = (e) => {
@@ -450,16 +451,7 @@ export const titlegeneric = (e) => {
 };
 
 export const creTitle = (globals, cre) => {
-    let cts = "";
-    let ct = cre.ctspecifc.ct;
-    if(ct){
-	cts = (
-	    <span>
-		{globals.byCellType[ct][0]["name"]}:{'\u00A0'}
-		{creTableCellTypeSpecific(globals, cre.ctspecifc)}
-	    </span>);
-    }
-    
+    const ct = cre.ctspecifc.ct;
     return (
 	<div>
 	    <h3 className="creDetailsTitle">{cre.accession}</h3>
@@ -473,7 +465,8 @@ export const creTitle = (globals, cre) => {
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {creTableAccessionBoxen(globals, cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {cts}
+	    {ct && [globals.byCellType[ct][0]["name"], ":\u00A0",
+		    creTableCellTypeSpecific(globals)(cre.ctspecifc)]}
 	</div>);
 }
 
