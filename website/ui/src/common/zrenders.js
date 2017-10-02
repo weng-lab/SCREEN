@@ -342,7 +342,9 @@ export const concordantStar = (concordant) => {
     return "";
 }
 
-export const checkCt = (checked) => (<input type={'checkbox' + (checked ? "checked " : "")} />);
+export const checkCt = (checked) => {
+    return <input type={"checkbox"} checked={checked} />
+}
 
 export const creTableAccessionBoxen = (globals, cre) => {
     let w = 12;
