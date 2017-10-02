@@ -34,7 +34,7 @@ class TrackhubController:
         return tdb.washu_trackhub(*args, **kwargs)
 
     def _trackhub_url_info(self, j):
-        assembly = self.assembly = j["GlobalAssembly"]
+        assembly = self.assembly = j["assembly"]
         pgSearch = PGsearch(self.ps, assembly)
 
         if "coord_start" not in j:
@@ -74,7 +74,7 @@ class TrackhubController:
         return {"url" : url, "trackhubUrl" : trackhubUrl}
 
     def ucsc_trackhub_url_snp(self, j, uuid):
-        assembly = self.assembly = j["GlobalAssembly"]
+        assembly = self.assembly = j["assembly"]
         pgSearch = PGsearch(self.ps, assembly)
 
         snp = j["snp"]
