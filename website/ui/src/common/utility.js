@@ -89,13 +89,10 @@ function intersperse(arr, sep) {
 }
 
 export const commajoin = (a) => (intersperse(a, ', '))
+export const brJoin = (a) => (intersperse(a, (idx) => (<br />)))
+export const nbspJoin = (a) => (intersperse(a, (idx) => (<span key={idx}>,&nbsp;</span>)))
 
-export const brJoin = (a) => (intersperse(a, (idx) => {
-    return <br />; //span key={idx}>,&nbsp;</span>
-}))
-    
 export const orjoin = (a) => {
     return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
 	    " or ", a.slice(-1)];
 }
-

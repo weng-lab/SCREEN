@@ -16,10 +16,7 @@ export const snp_link = (assembly) => (d) => {
     return <a href={url + "?vdb=variation;v=" + d} target="_blank" key={d}>{d}</a>;
 }
 
-export const snpLinks = (assembly) => (snps) => {
-    const ret = snps.map(snp_link(assembly));
-    return commajoin(ret);
-}
+export const snpLinks = (assembly) => (snps) => ( commajoin(snps.map(snp_link(assembly))) )
 
 export const integerLink = (href) => (d) => {
     return <a href={'#' + href}>{d}</a>;
