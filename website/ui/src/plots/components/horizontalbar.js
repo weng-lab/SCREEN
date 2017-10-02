@@ -66,12 +66,13 @@ class HorizontalBar extends ScaledPlot {
 	let bars = (this._sorted_keys.map((key, k) => (
 	    this.props.itemsets[key].items.map((item, i) => {
 
-		//console.log(this._value(item), this._xscale);
-		
+		const uniqueK = key + '_' + i;
 		return (
 		    <g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + "," +
-				  this._y(this._item_distribution.yoffsets[key]) + ")"}>
-			<rect height={this._barheight} x="0" y={this._y(i)}
+				  this._y(this._item_distribution.yoffsets[key]) + ")"}
+		       key={uniqueK}>
+			<rect height={this._barheight}
+			      x="0" y={this._y(i)}
 			      strokeWidth="1" stroke="white"
 			      width={this._value(item) * this._xscale}
 			      style={{fill: this.props.itemsets[key].color}} />
@@ -95,6 +96,7 @@ class HorizontalBar extends ScaledPlot {
 		{this._grouplabel(this.props.itemsets[key])}
 	    </text>
 	)));
+	
 	return super.render(
 	    <g>
 		{yaxis}
