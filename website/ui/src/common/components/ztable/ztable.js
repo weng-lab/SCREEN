@@ -27,11 +27,6 @@ class SortCols {
 	this.sortCols = new Map();
     }
 
-    print(){
-	console.log("hi!");
-	console.log("SortCols:", this.sortCols.forEach((v,k) => { console.log(k, v); }));
-    }
-    
     shouldSort(){
 	return this.sortCols.size > 0;
     }
@@ -226,24 +221,24 @@ class DataSource {
 	// sort by strings, from https://stackoverflow.com/a/9645447
 	if(SortOrder.ASC === sortOrder){
 	    if(sortDataF){
-		console.log("sorting by text, asceding, with custom data");
+		console.log("sorting", sortCol, "by text, asceding, with custom data");
 		this.rowIDs.sort((a,b) =>
 		    sortDataF(this.data[a][sortCol]).toLowerCase().localeCompare(
 			sortDataF(this.data[b][sortCol]).toLowerCase()));
 	    } else {
-		console.log("sorting by text, asceding, without custom data");
+		console.log("sorting", sortCol, "by text, asceding, without custom data");
 		this.rowIDs.sort((a,b) =>
 		    this.data[a][sortCol].toLowerCase().localeCompare(
 			this.data[b][sortCol].toLowerCase()));
 	    }
 	} else {
-	    console.log("sorting by text, descending, with custom data");
+	    console.log("sorting by", sortCol, "text, descending, with custom data");
 	    if(sortDataF){
 		this.rowIDs.sort((a,b) =>
 		    sortDataF(this.data[b][sortCol]).toLowerCase().localeCompare(
 			sortDataF(this.data[a][sortCol]).toLowerCase()));
 	    } else {
-		console.log("sorting by text, descending, without custom data");
+		console.log("sorting", sortCol, "by text, descending, without custom data");
 		this.rowIDs.sort((a,b) =>
 		    this.data[b][sortCol].toLowerCase().localeCompare(
 			this.data[a][sortCol].toLowerCase()));
@@ -258,8 +253,6 @@ class DataSource {
 	if(0 === this.rowIDs.length){
 	    return;
 	}
-	console.log("sortCols", sortCols);
-	sortCols.print();
 	sortCols.sortCols.forEach((sortOrder, sortCol) => {
 	    const sample = this.data[this.rowIDs[0]][sortCol];
 	    const colInfo = this.colsByData[sortCol];
