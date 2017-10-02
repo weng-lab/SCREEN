@@ -1,5 +1,6 @@
 import React from 'react';
 import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
+const firstBy = require('thenby');
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {

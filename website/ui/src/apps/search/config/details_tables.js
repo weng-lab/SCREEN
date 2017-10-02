@@ -7,8 +7,8 @@ const fantomcat_link = (d) => (
     "<a href='http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d + "'>" + d + "</a>"
 );
 
-const gene_link_list = (d) => (
-    d.split(", ").map(Render.gene_link).join(", ")
+const geneLink_list = (d) => (
+    d.split(", ").map(Render.geneLink).join(", ")
 );
 
 export const TopTissuesTables = (globals, assembly) => ({
@@ -114,17 +114,20 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat_twokb: {
 	title: "Intersecting FANTOM CAT RNAs (cRE within 2kb of RNA TSS)",
 	cols: [
-	    {title: "FANTOM CAT RNA accession", data: "geneid", className: "dt-right", render: fantomcat_link},
-	    {title: "aliases", data: "other_names", className: "dt-right", render: gene_link_list},
-	    {title: "RNA class", data: "geneclass", className: "dt-right"},
-	    {title: "chr", data: "chrom", className: "dt-right"},
+	    {title: "FANTOM CAT RNA accession", data: "geneid", 
+	     render: fantomcat_link},
+	    {title: "aliases", data: "other_names",
+	     render: geneLink_list},
+	    {title: "RNA class", data: "geneclass"},
+	    {title: "chr", data: "chrom"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer},
-	    {title: "strand", data: "strand", className: "dt-right"},
+	    {title: "strand", data: "strand"},
 	    {title: "", data: null,
 	     className: "browser",
 	     targets: -1, orderable: false,
-	     defaultContent: Render.browser_buttons(["UCSC"]) }
+	     defaultContent: Render.browser_buttons(["UCSC"])
+	    }
 	],
 	onButtonClick: (td, rowdata) => {
 	    actions.showGenomeBrowser({
@@ -144,8 +147,10 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat: {
 	title: "Intersecting FANTOM CAT RNAs (cRE within entire RNA body)",
 	cols: [
-	    {title: "FANTOM CAT RNA accession", data: "geneid", className: "dt-right", render: fantomcat_link},
-	    {title: "aliases", data: "other_names", className: "dt-right", render: gene_link_list},
+	    {title: "FANTOM CAT RNA accession", data: "geneid", 
+	     render: fantomcat_link},
+	    {title: "aliases", data: "other_names",
+	     render: geneLink_list},
 	    {title: "RNA class", data: "geneclass", className: "dt-right"},
 	    {title: "chr", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
@@ -183,7 +188,7 @@ export const TargetGeneTable = (globals, assembly) => ({
 	emptyText: "No target genes predicted",
 	cols: [
 	    {title: "name", data: "gene.common-gene-name",  className: "dt-right",
-	     render: Render.gene_link},
+	     render: Render.geneLink},
             {title: "ensembl ID", data: "gene.ensemble-id", className: "dt-right"},
             {title: "# supporting exps", data: "evidence",
              render: Render.support},
@@ -211,7 +216,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    emptyText: "No genes within 1Mb",
 	    cols: [
 	        {title: "symbol", data: "name",
-	         render: Render.gene_link},
+	         render: Render.geneLink},
 	        {title: "distance", data: "distance",
 	         render: Render.integer}],
             pageLength: 5,
@@ -262,7 +267,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	           emptyText: "No genes within TAD",
 	           cols: [
 	               {title: "symbol", data: "name",
-	                render: Render.gene_link},
+	                render: Render.geneLink},
 	               //{title: "coordinates", data: "coordinates"}
                    ],
                    pageLength: 5,
