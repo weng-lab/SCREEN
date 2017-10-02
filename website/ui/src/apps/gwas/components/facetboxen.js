@@ -30,7 +30,6 @@ const cellTypesBox = ({globals, gwas_study, gwas_cell_types, actions}) => {
 		 width: "50%"},
                 {title: "p", data: "pval", 
 		 render: Render.toSciNot, width: "20%"},
-                {title: "", data: "pval", visible: false},
                 {title: "FDR", data: "fdr", 
 		 render: Render.toSciNot, width: "20%"},
 		{title: "", data: "cellTypeName", className: "dcc",
@@ -38,8 +37,7 @@ const cellTypesBox = ({globals, gwas_study, gwas_cell_types, actions}) => {
                 {title: "", data: "expID", render: Render.dccLink, visible: false,
 		 className: "dcc"},
 	    ]}
-	    order={[[2, "asc"], [0, "asc"]]}
-	    columnDefs ={[{ "orderData": 2, "targets": 1 }]}
+	    order={[[1, "asc"], [0, "asc"]]}
 	    bFilter={true}
 	    onTdClick={(td, data) => {
 		    if(td && -1 === td.indexOf("dcc")) {

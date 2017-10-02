@@ -139,7 +139,7 @@ class DataSource {
 		continue;
 	    }
 	    for(let colInfo of this.cols){
-		let t = String(this.data[i][colInfo.data]).toLowerCase();
+		const t = String(this.data[i][colInfo.data]).toLowerCase();
 		if(t.includes(s)){
 		    ret.push(i);
 		    break;
@@ -150,35 +150,36 @@ class DataSource {
     }
 
     _sort(sortCol, sortOrder, rowIDs){
-	let c = sortCol;
-	if(!c){
+	if(!sortCol){
 	    return rowIDs;
 	}
 	if(0 === rowIDs.length){
 	    return rowIDs;
 	}
-	let sample = this.data[rowIDs[0]][c];
+	const sample = this.data[rowIDs[0]][sortCol];
 
 	// https://stackoverflow.com/a/16655847
-	let isNumArray = Number(sample) === sample; 
+	const isNumArray = Number(sample) === sample; 
+	// sort numerically
 	if(isNumArray){
 	    if(1 === sortOrder){ // ascending
-		return rowIDs.sort((a,b) => this.data[a][c] -
-					  this.data[b][c]);
+		return rowIDs.sort((a,b) => this.data[a][sortCol] -
+					  this.data[b][sortCol]);
 	    }
-	    return rowIDs.sort((a,b) => this.data[b][c] -
-				      this.data[a][c]);
+	    return rowIDs.sort((a,b) => this.data[b][sortCol] -
+				      this.data[a][sortCol]);
 	}
-	// sort by strings https://stackoverflow.com/a/9645447
+	
+	// sort by strings, from https://stackoverflow.com/a/9645447
 	if(1 === sortOrder){ // ascending
 	    return rowIDs.sort((a,b) =>
-		this.data[a][c].toLowerCase().localeCompare(
-		    this.data[b][c].toLowerCase())
+		this.data[a][sortCol].toLowerCase().localeCompare(
+		    this.data[b][sortCol].toLowerCase())
 	    )
 	}
 	return rowIDs.sort((a,b) =>
-	    this.data[b][c].toLowerCase().localeCompare(
-		this.data[a][c].toLowerCase())
+	    this.data[b][sortCol].toLowerCase().localeCompare(
+		this.data[a][sortCol].toLowerCase())
 	)
     }
 }
