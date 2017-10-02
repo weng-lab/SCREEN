@@ -72,26 +72,25 @@ class CelltypeView extends React.Component {
         let cres = data.accessions;
         let vcols = data.vcols;
 
-	let klassCenter = "dt-body-center dt-head-center ";
         let cols = [
-            {title: "accession", data: "info", className: klassCenter,
-             render: Render.creTableAccession },
-	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", visible: true,
-	     name: "cts", render: Render.creTableCellTypeSpecific,
-	     className: klassCenter, width: "15%"},
+            {title: "accession", data: "info", 
+             render: Render.creTableAccession(this.props.globals) },
+	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", 
+	     name: "cts", render: Render.creTableCellTypeSpecific(this.props.globals),
+	     width: "15%"},
 	    {title: "H3K4me3 Z", data: "promoter zscore", render: Render.real,
-	     className: klassCenter, visible: vcols["promoter zscore"]},
+	     visible: vcols["promoter zscore"]},
             {title: "H3K27ac Z", data: "enhancer zscore", render: Render.real,
-             className: klassCenter, visible: vcols["enhancer zscore"]},
+             visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
-             className: klassCenter, visible: vcols["dnase zscore"]},
-            {title: "SNPs", data: "snps", className: klassCenter,
-	     render: Render.snpLinks},
-            {title: "gene", data: "geneid", className: klassCenter,
-	     render: Render.gene_link},
+             visible: vcols["dnase zscore"]},
+            {title: "SNPs", data: "snps", 
+	     render: Render.snpLinks(this.props.assembly)},
+            {title: "gene", data: "geneid", 
+	     render: Render.geneLink},
 	    {
 		title: "genome browsers", data: null,
-		className: klassCenter + "browser",
+		className: "browser",
 		targets: -1,
 		orderable: false,
 		defaultContent: Render.browser_buttons(["UCSC"])

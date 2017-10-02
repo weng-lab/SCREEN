@@ -13,11 +13,12 @@ export const snp_link = (assembly) => (d) => {
     if("mm10" === assembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return <a href={url + "?vdb=variation;v=" + d} target="_blank">{d}</a>;
+    return <a href={url + "?vdb=variation;v=" + d} target="_blank" key={d}>{d}</a>;
 }
 
-export const snpLinks = (snps) => {
-    return snps.map(snp_link).join(", ");
+export const snpLinks = (assembly) => (snps) => {
+    const ret = snps.map(snp_link(assembly));
+    return commajoin(ret);
 }
 
 export const integerLink = (href) => (d) => {
@@ -52,7 +53,7 @@ export const supporting_cts = (list) => {
     if (list === null) {
 	return "";
     }
-    var map = {};
+    let map = {};
     for(let x of list){
 	if (!(x["cell-type"] in map)) {
 	    map[x["cell-type"]] = 0;
@@ -63,7 +64,7 @@ export const supporting_cts = (list) => {
 };
 
 export const browser_buttons = (names) => {
-    let content = names.map((name) => (
+    const content = names.map((name) => (
 	<button
 	    type="button"
 	    key={name}
@@ -77,11 +78,11 @@ export const browser_buttons = (names) => {
 }
 
 export const cart_img = (rmv, src_only) => {
-    var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
+    const src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
     if(src_only){
         return src;
     }
-    var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
+    const title = (rmv ? "remove cRE from cart" : "add cRE to cart");
     return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
@@ -192,7 +193,7 @@ export const factorbook_link_histone = (d) => (
     : d.replace(/F/g, ".")
 );
 
-export const gene_link = (d) => (
+export const geneLink = (d) => (
     <em>
 	<a href={"http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d}
 	   target="_blank">{d}</a>

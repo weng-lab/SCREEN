@@ -33,7 +33,7 @@ const cellTypesBox = ({globals, gwas_study, gwas_cell_types, actions}) => {
                 {title: "FDR", data: "fdr", 
 		 render: Render.toSciNot, width: "20%"},
 		{title: "", data: "cellTypeName", className: "dcc",
-		 render: Render.assayIcon, orderable: false},
+		 render: Render.assayIcon(globals), orderable: false},
                 {title: "", data: "expID", render: Render.dccLink, visible: false,
 		 className: "dcc"},
 	    ]}
