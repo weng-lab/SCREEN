@@ -133,23 +133,22 @@ const zscore_decimal = (v) => {
     
 const zrdecimal = (s) => (+s * 100.0);
 
-const makeRankFacet = (rfacets, assay, title, start, end, action) =>
-    {
-	let range = [-1000, 1000];
-        if(!rfacets.includes(assay)){
-            return "";
-        }
-        return rangeBox(title, range, start, end,
-		        action, zscore_decimal, zrdecimal, true);
+const makeRankFacet = (rfacets, assay, title, start, end, action) => {
+    const range = [-1000, 1000];
+    if(!rfacets.includes(assay)){
+        return "";
     }
+    return rangeBox(title, range, start, end,
+		    action, zscore_decimal, zrdecimal, true);
+}
 
-const rankBox = (p) => {
-    let title =  (p.cellType ?
-		  make_ct_friendly(p.cellType) :
+const zscoreBox = (p) => {
+    const title =  (p.cellType ?
+		  make_ct_friendly(p.globals)(p.cellType) :
 		  "Maximum across cell types");
     
-    let promoterTitle = "H3K4me3 Z-score";
-    let enhancerTitle = "H3K27ac Z-score";
+    const promoterTitle = "H3K4me3 Z-score";
+    const enhancerTitle = "H3K27ac Z-score";
     let sliders = [makeRankFacet(p.rfacets, "dnase", "DNase Z-score",
                                  p.rank_dnase_start, p.rank_dnase_end,
 			         p.actions.setRankDnase),
@@ -165,7 +164,7 @@ const rankBox = (p) => {
     sliders = sliders.filter((s) => s > "");
     
     // http://stackoverflow.com/a/34034296
-    let box = (
+    const box = (
         <div>
             {sliders.map((s,i) =>
 		<span key={i}>
@@ -186,9 +185,9 @@ class FacetBoxen extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        let np = nextProps;
-        let pp  = this.props;
-	let unchanged = (pp.accessions === np.accessions) &&
+        const np = nextProps;
+        const pp  = this.props;
+	const unchanged = (pp.accessions === np.accessions) &&
                         (pp.cellType === np.cellType) &&
                         (pp.coord_chrom === np.coord_chrom) &&
                         (pp.coord_start === np.coord_start) &&
@@ -208,7 +207,7 @@ class FacetBoxen extends React.Component {
 		{biosamplesBox(this.props)}
 		{chromBox(this.props)}
 		{startEndBox(this.props)}
-		{rankBox(this.props)}
+		{zscoreBox(this.props)}
             </div>);
     }
 }
