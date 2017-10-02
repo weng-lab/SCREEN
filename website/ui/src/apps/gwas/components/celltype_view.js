@@ -73,8 +73,10 @@ class CelltypeView extends React.Component {
         let vcols = data.vcols;
 
         let cols = [
-            {title: "accession", data: "info", 
-             render: Render.creTableAccession(this.props.globals) },
+            {title: "cRE", data: "info", 
+             render: Render.creTableAccession(this.props.globals),
+	     sortDataF: (info) => (info.accession)
+	    },
 	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", 
 	     name: "cts", render: Render.creTableCellTypeSpecific(this.props.globals),
 	     width: "15%"},

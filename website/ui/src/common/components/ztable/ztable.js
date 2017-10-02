@@ -1,6 +1,68 @@
 import React from 'react';
 import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
+import {Enum} from 'enumify';
+
 const firstBy = require('thenby');
+
+class SortOrder extends Enum {
+    cycleOrder(){
+        switch (this) {
+	    case SortOrder.DISABLED:
+		return SortOrder.DISABLED;
+	    case SortOrder.NONE:
+		return SortOrder.ASC;
+	    case SortOrder.ASC:
+		return SortOrder.DSC;
+	    case SortOrder.DSC:
+		return SortOrder.ASC;
+	    default:
+		return SortOrder.NONE;
+	}
+    }
+}
+SortOrder.initEnum(['ASC', 'DSC', 'NONE', 'DISABLED']);
+
+class SortCols {
+    constructor(){
+	this.sortCols = new Map();
+    }
+
+    print(){
+	console.log("hi!");
+	console.log("SortCols:", this.sortCols.forEach((v,k) => { console.log(k, v); }));
+    }
+    
+    shouldSort(){
+	return this.sortCols.size > 0;
+    }
+    
+    colClick(colInfo, curOrder){
+	let m = new SortCols();
+	m.sortCols.set(colInfo.data, curOrder.cycleOrder());
+	return m;
+    }
+
+    getHeaderKlass(colInfo){
+	let sk = "table-sort";
+	let so = SortOrder.NONE;
+	if("orderable" in colInfo){
+	    if(!colInfo.orderable){
+		so = SortOrder.DISABLED;
+	    }
+	}
+	if(colInfo.data in this.sortCols){
+	    const sortOrder = this.sortCols[colInfo.data];
+	    if(SortOrder.ASC === sortOrder){
+		sk = "table-sort-asc";
+		so = SortOrder.ASC;
+	    } else if(SortOrder.DSC === sortOrder){
+		sk = "table-sort-desc";
+		so = SortOrder.DSC;
+	    }
+	}
+	return { sk, so };
+    }
+}
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
@@ -55,30 +117,15 @@ class Zheader extends React.Component {
     render(){
 	return (
 	    <tr>
-		{this.props.colInfos.map((col, idx) => {
-		     let k = "text-center " + klassName(col);
-		     let sk = "table-sort"; // sort CSS class
-		     let so = 0; // sort order
-		     if("orderable" in col){
-			 if(!col.orderable){
-			     so = -1;
-			 }
-		     }
-		     if(col.data === this.props.sortCol){
-			 if(1 === this.props.sortOrder){
-			     sk = "table-sort-asc";
-			     so = 1;
-			 } else if(2 === this.props.sortOrder){
-			     sk = "table-sort-desc";
-			     so = 2;
-			 }
-		     }
+		{this.props.colInfos.map((colInfo, idx) => {
+		     let k = "text-center " + klassName(colInfo);
+		     let {sk, so} = this.props.sortCols.getHeaderKlass(colInfo);
 		     k += ' ' + sk;
 		     return (
 			 <th className={k}
 			     key={idx}
-			     onClick={this.props.onClick(col.data, so)}>
-			     {col.title}
+			     onClick={this.props.onClick(colInfo, so)}>
+			     {colInfo.title}
 			 </th>);
 		 })}
 	    </tr>);
@@ -120,13 +167,18 @@ class DataSource {
     constructor(data, cols) {
 	this.data = data;
 	this.cols = cols;
+
+	this.colsByData = {}
+	this.cols.forEach((col) => {
+	    this.colsByData[col.data] = col;
+	});
     }
 
     filterAndSort(state){
-	let rowIDs = this._searchFilter(state.search);
-	this.rowIDs = this._sort(state.sortCol, state.sortOrder, rowIDs);
+	this._searchFilter(state.search);
+	this._sort(state.sortCols);
 
-	this.numPages = Math.ceil(rowIDs.length / state.pageSize);
+	this.numPages = Math.ceil(this.rowIDs.length / state.pageSize);
 	// page indexes are 1-based
 	this.rowStart = (state.pageNum - 1) * state.pageSize;
 	this.rowEnd = state.pageNum * state.pageSize;
@@ -147,41 +199,83 @@ class DataSource {
 		}
 	    }
 	}
-	return ret;
+	this.rowIDs = ret;
     }
 
-    _sort(sortCol, sortOrder, rowIDs){
-	if(!sortCol){
-	    return rowIDs;
-	}
-	if(0 === rowIDs.length){
-	    return rowIDs;
-	}
-	const sample = this.data[rowIDs[0]][sortCol];
-	// https://stackoverflow.com/a/16655847
-	const isNumArray = Number(sample) === sample; 
-
-	// sort numerically
-	if(isNumArray){
-	    if(1 === sortOrder){ // ascending
-		return rowIDs.sort((a,b) => this.data[a][sortCol] -
-					  this.data[b][sortCol]);
+    _sortByColNumeric(sortCol, sortOrder, sortDataF){
+	if(SortOrder.ASC === sortOrder){
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) => sortDataF(this.data[a][sortCol]) -
+					sortDataF(this.data[b][sortCol]));
+	    } else {
+		this.rowIDs.sort((a,b) => this.data[a][sortCol] -
+					this.data[b][sortCol]);
 	    }
-	    return rowIDs.sort((a,b) => this.data[b][sortCol] -
-				      this.data[a][sortCol]);
+	} else {
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) => sortDataF(this.data[b][sortCol]) -
+					sortDataF(this.data[a][sortCol]));
+	    } else {
+		this.rowIDs.sort((a,b) => this.data[b][sortCol] -
+					this.data[a][sortCol]);
+	    }
 	}
-	
+    }
+
+    _sortByColStr(sortCol, sortOrder, sortDataF){
 	// sort by strings, from https://stackoverflow.com/a/9645447
-	if(1 === sortOrder){ // ascending
-	    return rowIDs.sort((a,b) =>
-		this.data[a][sortCol].toLowerCase().localeCompare(
-		    this.data[b][sortCol].toLowerCase())
-	    )
+	if(SortOrder.ASC === sortOrder){
+	    if(sortDataF){
+		console.log("sorting by text, asceding, with custom data");
+		this.rowIDs.sort((a,b) =>
+		    sortDataF(this.data[a][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[b][sortCol]).toLowerCase()));
+	    } else {
+		console.log("sorting by text, asceding, without custom data");
+		this.rowIDs.sort((a,b) =>
+		    this.data[a][sortCol].toLowerCase().localeCompare(
+			this.data[b][sortCol].toLowerCase()));
+	    }
+	} else {
+	    console.log("sorting by text, descending, with custom data");
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) =>
+		    sortDataF(this.data[b][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[a][sortCol]).toLowerCase()));
+	    } else {
+		console.log("sorting by text, descending, without custom data");
+		this.rowIDs.sort((a,b) =>
+		    this.data[b][sortCol].toLowerCase().localeCompare(
+			this.data[a][sortCol].toLowerCase()));
+	    }
 	}
-	return rowIDs.sort((a,b) =>
-	    this.data[b][sortCol].toLowerCase().localeCompare(
-		this.data[a][sortCol].toLowerCase())
-	)
+    }
+    
+    _sort(sortCols){
+	if(!sortCols.shouldSort()){
+	    return;
+	}
+	if(0 === this.rowIDs.length){
+	    return;
+	}
+	console.log("sortCols", sortCols);
+	sortCols.print();
+	sortCols.sortCols.forEach((sortOrder, sortCol) => {
+	    const sample = this.data[this.rowIDs[0]][sortCol];
+	    const colInfo = this.colsByData[sortCol];
+	    let sortDataF = null;
+	    if("sortDataF" in colInfo){
+		sortDataF = colInfo.sortDataF;
+	    }
+	    	    
+	    // https://stackoverflow.com/a/16655847
+	    const isNumArray = Number(sample) === sample;
+	    if(isNumArray){
+		this._sortByColNumeric(sortCol, sortOrder, sortDataF);
+	    } else {
+		this._sortByColStr(sortCol, sortOrder, sortDataF);
+	    }
+	});
     }
 }
 
@@ -191,10 +285,9 @@ class Ztable extends React.Component {
 	this.state = {search: '',
 		      pageNum: 1, // page indexes are 1-based
 		      pageSize: 10,
-		      sortCol: '',
-		      sortOrder: 0};
+		      sortCols: new SortCols()};
     }
-
+    
     render(){
 	const searchBoxChange = (e) => {
 	    this.setState({search: e.target.value,
@@ -205,13 +298,12 @@ class Ztable extends React.Component {
 	    this.setState({pageNum: e});
 	};
 
-	const sortClick = (col, curOrder) => () => {
-	    if(-1 === curOrder){
+	const sortClick = (colInfo, curOrder) => () => {
+	    if(SortOrder.DISABLED === curOrder){
 		return;
 	    }
-	    const nextSortOrder = {0:1, 1:2, 2:1}; // sort col cycle
-	    this.setState({sortCol : col,
-			   sortOrder : nextSortOrder[curOrder]});
+	    const m = this.state.sortCols.colClick(colInfo, curOrder);
+	    this.setState({sortCols: m});
 	};
 
 	const rowClick = (klasses, dataIdx) => (e) => {
@@ -232,8 +324,7 @@ class Ztable extends React.Component {
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
-				 sortCol={this.state.sortCol}
-				 sortOrder={this.state.sortOrder}
+				 sortCols={this.state.sortCols}
 				 onClick={sortClick}
 			/>
 		    </thead>
