@@ -331,26 +331,16 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 });
 
 export const LinkedGenesTable = (globals, assembly) => ({
-    linked_genes: {
-	title: "",
-	paging: true,
-	info: true,
-	bFilter: true,
-        bLengthChange: true,
+    "linked_genes": {
+	title: "Linked Genes",
 	emptyText: "No linked genes predicted",
-	cols: [
-	    {title: "name", data: "gene.common-gene-name",
-	     render: Render.geneLink},
-            {title: "# supporting exps", data: "evidence",
-             render: Render.support},
-            {title: "# ChIA-PET exps", data: "evidence.chiapet",
-             render: Render.len},
-	    {title: "ChIA-PET cell types", data: "evidence.chiapet",
-	     render: Render.supporting_cts},
-	    {title: "# eQTL exps", data: "evidence.eqtls",
-	     render: Render.len},
-	    {title: "eQTL cell types", data: "evidence.eqtls",
-	     render: Render.supporting_cts}],
+	cols: [{ title: "gene", data: "gene",
+		 //render: Render.geneLink
+	       },{
+		   title: "supporting exp", data: "method",
+		   //render: Render.support
+	       },{ title: "based on", data: "dccaccession",
+		 }],
 	order: [[2, "desc"]]
     }
 });

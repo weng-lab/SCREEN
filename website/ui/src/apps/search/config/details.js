@@ -10,7 +10,7 @@ import MiniPeaks from '../components/minipeaks';
 
 import HelpIcon from '../../../common/components/help_icon';
 
-import {TopTissuesTables, NearbyGenomicTable,
+import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
         TfIntersectionTable, OrthologTable, FantomCatTable, CistromeIntersectionTable} from './details_tables';
 
 import loading from '../../../common/components/loading';
@@ -275,7 +275,6 @@ class LinkedGenesTab extends ReTabBase{
         }
     }
 }
-
 
 const DetailsTabInfo = (assembly) => {
     const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
