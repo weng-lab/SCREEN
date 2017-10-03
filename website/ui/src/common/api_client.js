@@ -40,4 +40,3 @@ export const globals = (assembly, successF, errF) => {
 	.then(successF)
 	.catch(errF);
 }
-

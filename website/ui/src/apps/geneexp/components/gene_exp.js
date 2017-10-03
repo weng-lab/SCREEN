@@ -1,9 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+import * as ApiClient from '../../../common/api_client';
 
 import ExpressionBoxplot from '../components/expression_boxplot'
 import loading from '../../../common/components/loading'
@@ -36,20 +36,14 @@ class GeneExp extends React.Component{
             return;
         }
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/gews/search",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading ge");
-                this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/gews/search",
+			    (r) => {
+				this.setState({...r, isFetching: false, isError: false});
+			    },
+			    (msg) => {
+				console.log("err loading ge");
+				this.setState({isFetching: false, isError: true});
+			    });
     }
 
     doRenderWrapper(){
