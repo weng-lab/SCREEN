@@ -4,36 +4,26 @@ from __future__ import print_function
 
 import cherrypy, jinja2, os, sys
 
-from controllers.geneexp_ws import GeneExpWebServiceWrapper
-from controllers.de_ws import DeWebServiceWrapper
-from controllers.gwas_ws import GwasWebServiceWrapper
-from controllers.global_data_controller import GlobalDataController
-from controllers.tf_controller import TfController
-from controllers.trackhub_controller import TrackhubController
-from controllers.cart_ws import CartWebServiceWrapper
-from controllers.data_ws import DataWebServiceWrapper
-from controllers.search_ws import SearchWebServiceWrapper
-from controllers.autocomplete_controller import AutocompleteWebService
-from controllers.intersection_controller import IntersectionController
-from controllers.tads_controller import TadsController
+from api.autocomplete_controller import AutocompleteWebService
+from api.cart_ws import CartWebServiceWrapper
+from api.data_ws import DataWebServiceWrapper
+from api.de_ws import DeWebServiceWrapper
+from api.geneexp_ws import GeneExpWebServiceWrapper
+from api.global_data_controller import GlobalDataController
+from api.gwas_ws import GwasWebServiceWrapper
+from api.search_ws import SearchWebServiceWrapper
+from api.trackhub_controller import TrackhubController
 
 from common.session import Sessions
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
-from templates import Templates
-
-class MainApp():
+class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
-        self.templates = Templates(viewDir, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
-        self.tc = TadsController(self.templates, ps, cache)
         self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.global_data = GlobalDataController(ps, cache)
-        self.tf = TfController(self.templates, ps, cache)
-        self.ic = IntersectionController(self.templates, ps, cache)
         self.cartWS = CartWebServiceWrapper(ps, cache)
-        self.trackhub = TrackhubController(self.templates, ps, cache)
+        self.trackhub = TrackhubController(ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.autoWS = AutocompleteWebService(ps)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
@@ -80,20 +70,12 @@ class MainApp():
         return self.trackhub.washu_trackhub_url(j, self.sessions.userUid())
 
     @cherrypy.expose
-    def comparison(self, *args, **kwargs):
-        return self.cp.comparison(args, kwargs, self.sessions.userUid())
-
-    @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.cartWS.process(j, self.sessions.userUid(),
                                    args, kwargs)
-
-    @cherrypy.expose
-    def tads(self, *args, **kwargs):
-        return self.tc.tads(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
@@ -144,17 +126,6 @@ class MainApp():
     def gwasws(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.gwasWS.process(j, args, kwargs)
-
-    @cherrypy.expose
-    def tfApp(self, *args, **kwargs):
-        return self.tf.tf(args, kwargs, self.sessions.userUid())
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def tfJson(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.tf.tfJson(j)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

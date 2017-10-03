@@ -7,7 +7,7 @@ import psycopg2, psycopg2.pool
 import cherrys
 cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
-from app_main import MainApp
+from main_apis import Apis
 from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -89,7 +89,7 @@ def main():
     cow = CachedObjectsWrapper(ps)
 
     wsconfig = WebServerConfig("main", args.production)
-    main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
+    main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)

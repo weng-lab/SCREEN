@@ -51,8 +51,7 @@ AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
                "CTCF" : ["0,176,240", "#00B0F0"]}
 
 class TrackhubDb:
-    def __init__(self, templates, ps, cacheW, db, browser):
-        self.templates = templates
+    def __init__(self, ps, cacheW, db, browser):
         self.ps = ps
         self.cacheW = cacheW
         self.db = db
