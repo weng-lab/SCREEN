@@ -701,7 +701,8 @@ FROM {tn}
             curs.execute("""
             SELECT gene, celltype, method, dccaccession
 FROM {tn}
-""".format(tn = tableName))
+WHERE cre = %s
+            """.format(tn = tableName), (accession, ))
             rows = curs.fetchall()
         return rows
 
