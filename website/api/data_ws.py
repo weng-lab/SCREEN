@@ -225,7 +225,7 @@ class DataWebService(GetOrSetMemCache):
 
     def _re_detail_linkedGenes(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
-        return {accession: cre.linkedGenes()}
+        return { accession: cre.linkedGenes() }
         
     def _re_detail_ge(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
