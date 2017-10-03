@@ -335,11 +335,13 @@ export const LinkedGenesTable = (globals, assembly) => ({
 	title: "Linked Genes",
 	emptyText: "No linked genes predicted",
 	cols: [{ title: "gene", data: "gene",
-		 //render: Render.geneLink
-	       },{
-		   title: "supporting exp", data: "method",
+		 render: Render.geneLink
+	       },{ title: "biosample", data: "celltype",
+		   //render: Render.support
+	       },{ title: "supporting exp", data: "method",
 		   //render: Render.support
 	       },{ title: "based on", data: "dccaccession",
+		   render: Render.dccLink
 		 }],
 	order: [[2, "desc"]]
     }
