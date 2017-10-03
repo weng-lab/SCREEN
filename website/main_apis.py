@@ -4,30 +4,30 @@ from __future__ import print_function
 
 import cherrypy, jinja2, os, sys
 
-from api.autocomplete_controller import AutocompleteWebService
+from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
 from api.data_ws import DataWebServiceWrapper
 from api.de_ws import DeWebServiceWrapper
 from api.geneexp_ws import GeneExpWebServiceWrapper
-from api.global_data_controller import GlobalDataController
+from api.global_data_ws import GlobalDataController
 from api.gwas_ws import GwasWebServiceWrapper
 from api.search_ws import SearchWebServiceWrapper
-from api.trackhub_controller import TrackhubController
+from api.trackhub_ws import TrackhubController
 
 from common.session import Sessions
 
 class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
-        self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
-        self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
-        self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
-        self.global_data = GlobalDataController(ps, cache)
-        self.cartWS = CartWebServiceWrapper(ps, cache)
-        self.trackhub = TrackhubController(ps, cache)
-        self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.autoWS = AutocompleteWebService(ps)
+        self.cartWS = CartWebServiceWrapper(ps, cache)
+        self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
+        self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
+        self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
+        self.global_data = GlobalDataController(ps, cache)
+        self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
+        self.trackhub = TrackhubController(ps, cache)
 
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
