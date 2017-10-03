@@ -695,3 +695,13 @@ FROM {tn}
             ret[r[0]] = r[1]
         return ret
 
+    def linkedGenes(self, accession):
+        tableName = self.assembly + "_linked_genes"
+        with getcursor(self.pg.DBCONN, "pg$linkedgenes") as curs:
+            curs.execute("""
+            SELECT gene, celltype, method, dccaccession
+FROM {tn}
+""".format(tn = tableName))
+            rows = curs.fetchall()
+        return rows
+

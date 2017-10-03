@@ -21,7 +21,7 @@ class Links:
     def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.tableName = self.assembly + "_links"
+        self.tableName = self.assembly + "_linked_genes"
 
     def run(self):
         self._import()

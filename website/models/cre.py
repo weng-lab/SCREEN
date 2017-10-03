@@ -144,3 +144,9 @@ class CRE:
         if not self.intersectCounts:
             self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom, self.cache.tfHistCounts[eset], eset = eset)
         return self.intersectCounts
+
+    def linkedGenes(self):
+        if "mm10" == self.assembly:
+            return []
+        return self.pgSearch.linkedGenes(self.accession)
+

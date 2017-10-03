@@ -267,8 +267,18 @@ class RampageTab extends ReTabBase{
     }
 }
 
+class LinkedGenesTab extends ReTabBase{
+    constructor(props) {
+	super(props, "linkedGenes");
+        this.doRender = (globals, assembly, data) => {
+            return tabEles(globals, data, LinkedGenesTable(globals, assembly), 1);
+        }
+    }
+}
+
+
 const DetailsTabInfo = (assembly) => {
-    let otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
+    const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
 
     return {
         topTissues : {title: Render.tabTitle(["Top", "Tissues"]),
@@ -289,7 +299,9 @@ const DetailsTabInfo = (assembly) => {
         ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
         similarREs: {title: Render.tabTitle(["Signal", "Profile"]),
-                     enabled: true, f: MiniPeaks}
+                     enabled: true, f: MiniPeaks},
+	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
+		      enabled: true, f: LinkedGenesTab}
     };
 }
 
