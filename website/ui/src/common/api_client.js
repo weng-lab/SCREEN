@@ -40,3 +40,10 @@ export const globals = (assembly, successF, errF) => {
 	.then(successF)
 	.catch(errF);
 }
+
+export const globalTabFiles = (successF, errF) => {
+    fetch(Servers("/globalData/index/index"))
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
