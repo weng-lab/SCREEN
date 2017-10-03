@@ -1,10 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
+import * as ApiClient from '../../../common/api_client';
 
 import loading from '../../../common/components/loading';
 import Ztable from '../../../common/components/ztable/ztable';
@@ -48,20 +48,14 @@ class CelltypeView extends React.Component {
             return;
         }
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/gwasws/cres",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
-                this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r, isFetching: false, isError: false});
-            }.bind(this)
-        });
+        ApiClient.getByPost(jq, "/gwasws/cres",
+			    (r) => {
+				this.setState({...r, isFetching: false, isError: false});
+			    },
+			    (msg) => {
+				console.log("err loading cres for table");
+				this.setState({isFetching: false, isError: true});
+			    });
     }
 
     render() {

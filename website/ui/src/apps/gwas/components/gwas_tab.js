@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+import * as ApiClient from '../../../common/api_client';
 
 import CelltypeView from '../components/celltype_view';
 
@@ -44,21 +44,15 @@ class GwasTab extends React.Component{
             return;
         }
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/gwasws/main",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
-                this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r, isFetching: false, isError: false});
-                actions.setGwasCellTypes(r[gwas_study].topCellTypes);
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/gwasws/main",
+			    (r) => {
+				this.setState({...r, isFetching: false, isError: false});
+				actions.setGwasCellTypes(r[gwas_study].topCellTypes);
+			    },
+			    (msg) => {
+				console.log("err loading cres for table");
+				this.setState({isFetching: false, isError: true});
+			    });
     }
 
     doRenderWrapper({gwas_study, cellType, actions}){

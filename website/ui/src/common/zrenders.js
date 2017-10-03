@@ -125,7 +125,8 @@ export const geneDeLinks = (assembly) => (genesallpc) => {
     }
 
 export const dccImg = () => (
-    <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20" />);
+	<img src={ApiClient.StaticUrl("/static/encode/pennant-encode.png")}
+    alt="DCC logo" width="20" />);
 
 export const dccLink = (expID) => {
     const url = 'https://www.encodeproject.org/experiments/' + expID;
@@ -158,8 +159,8 @@ export const dccLinkCtGroupCus = (globals, ctn, content) => {
 export const dccLinkAndIconSplit = (expAndFileID) => {
     const expID = expAndFileID.split(' / ')[0];
     const url = 'https://www.encodeproject.org/experiments/' + expID;
-    const img = <img src="/static/encode/pennant-encode.png" alt="ENCODE logo"
-		     style={{paddingLeft: "10px"}} />;
+    const img = <img src={ApiClient.StaticUrl("/static/encode/pennant-encode.png")}
+    alt="ENCODE logo" style={{paddingLeft: "10px"}} />;
     return <a target="_blank" href={url}>{expAndFileID}{img}</a>;
 }
 

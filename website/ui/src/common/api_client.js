@@ -12,7 +12,6 @@ const Servers = (b) => {
 };
 
 export const getByPost  = (jq, url, successF, errF) => {
-    console.log(jq, url);
     fetch(Servers(url),
 	  {
 	      headers: {
@@ -28,18 +27,7 @@ export const getByPost  = (jq, url, successF, errF) => {
 }
 
 export const autocompleteBox = (jq, successF, errF) => {
-    fetch(Servers("/autows/search"),
-	  {
-	      headers: {
-		  'Accept': 'application/json',
-		  'Content-Type': 'application/json'
-	      },
-	      method: "POST",
-	      body: jq
-	  })
-	.then((response) => (response.json()))
-	.then(successF)
-	.catch(errF);
+    getByPost(jq, "/autows/search", successF, errF);
 }
 
 export const appPageBaseInit = (jq, url, successF, errF) => {
@@ -52,4 +40,3 @@ export const globals = (assembly, successF, errF) => {
 	.then(successF)
 	.catch(errF);
 }
-
