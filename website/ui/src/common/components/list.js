@@ -1,5 +1,7 @@
 import React from 'react';
 
+import * as ApiClient from '../api_client';
+
 export class ListItem extends React.Component {
 
     constructor(props) {
@@ -17,19 +19,17 @@ export class ListItem extends React.Component {
 	var classname, rtxt;
 	if (this.props.selected) {
 	    classname = "result_row_selected";
-	    rtxt = <img src="/static/x.png" alt="check/uncheck"  />;
+	    rtxt = <img src={ApiClient.StaticUrl("/static/x.png")} alt="check/uncheck" />;
 	} else {
 	    classname = "result_row";
 	    rtxt = this.props.n;
 	}
 
-	let draggable = this.props.draggable ? this.props.draggable(
-		<span><span className="glyphicon glyphicon-align-justify" />{" "}</span>
-	) : null;
-
 	return (<div>
 		   <div className={classname} key={this.props.value}>
-		      {draggable}
+		{this.props.draggable && this.props.draggable(
+			<span><span className="glyphicon glyphicon-align-justify" />{" "}</span>)}
+		
 		      <a onClick={this.onclick}>
 		          <span>{this.props.value}</span>
 		          <span className="pull-right">{rtxt}</span>
