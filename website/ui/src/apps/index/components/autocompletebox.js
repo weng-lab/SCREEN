@@ -2,6 +2,7 @@ import React from 'react'
 import $ from 'jquery';
 
 import AutocompleteTextbox from '../../../common/components/autocompletetextbox';
+import * as ApiClient from '../../../common/api_client';
 
 class AutocompleteBox extends React.Component {
     
@@ -18,38 +19,33 @@ class AutocompleteBox extends React.Component {
     loadSearch(assembly, userQuery, actions) {
 	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
 				          style={{fontSize : "24px"}}></i>)});
-	let jq = JSON.stringify({assembly, userQuery});
-	$.ajax({
-	    url: "/autows/search",
-	    type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType : "application/json",
-	    error: function(jqxhr, status, error) {
-		this.setState({userQueryErr : "err during load"});
-	    }.bind(this),
-	    success: (r) => {
-		if(r.failed){
-		    let userQueryErr = (
-			    <span>
-			    Error: no results for your query.
-			    <br />
-			    Please check your spelling and search assembly, and try again.
-			    </span>);
-		    this.setState({userQueryErr});
-		    return;
-		}
-
-		if(r.multipleGenes){
-		    actions.setGenes(r);
-		    actions.setMainTab("query");
-		} else {
-		    let params = $.param({q: userQuery, assembly});
-		    let url = "/search/?" + params;
-		    window.location.href = url;
-		}
-	    }
-	});
+	const q = {assembly, userQuery};
+	const userQueryErr = (
+		<span>
+		Error: no results for your query.
+		<br />
+		Please check your spelling and search assembly, and try again.
+		</span>);
+	
+	ApiClient.autocompleteBox(JSON.stringify(q),
+				  (r) => {
+				      if(r.failed){
+					  this.setState({userQueryErr});
+					  return;
+				      }
+				      
+				      if(r.multipleGenes){
+					  actions.setGenes(r);
+					  actions.setMainTab("query");
+				      } else {
+					  const params = $.param({q: userQuery, assembly});
+					  const url = "/search/?" + params;
+					  window.location.href = url;
+				      }
+				  },
+				  (msg) => {
+				      this.setState({userQueryErr : "err during load"});
+				  });
     }
 
     searchHg19() {

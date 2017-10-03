@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import AutocompleteBox from './autocompletebox'
-
+import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions';
 import {tabPanelize} from '../../../common/utility'
 
@@ -53,8 +53,8 @@ class TabMain extends React.Component {
 
     logo(){
 	return (<img className={"img-responsive mainLogo"}
-                     src={"/static/encode/classic-image3.jpg"}
-                     alt={"ENCODE logo"} />);
+                src={ApiClient.StaticUrl("/static/encode/classic-image3.jpg")}
+                alt={"ENCODE logo"} />);
     }
 
     searchBox() {

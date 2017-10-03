@@ -1,5 +1,7 @@
 import React from 'react';
 
+import * as ApiClient from './api_client';
+
 class AppPageBase extends React.Component {
     constructor(props, url, innerClass, extraProps = {}) {
 	super(props);
@@ -27,26 +29,18 @@ class AppPageBase extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-	fetch(this.url,
-	      {
-		  headers: {
-		      'Accept': 'application/json',
-		      'Content-Type': 'application/json'
-		  },
-		  method: "POST",
-		  body: JSON.stringify({...nextProps.location.query,
-					...this.extraProps})
-	      })
-	    .then((response) => (response.json()))
-	    .then((r) => {
-		this.setState({search: r, isFetching: false, isError: false});
-	    })
-	    .catch((err) => {
-		console.log("err searching ");
-		console.log(nextProps.location.query);
-		console.log(err);
-                this.setState({isFetching: false, isError: true});
-	    });
+	const jq = JSON.stringify({...nextProps.location.query,
+				   ...this.extraProps});
+	ApiClient.appPageBaseInit(jq, this.url,
+				  (r) => {
+				      this.setState({search: r, isFetching: false, isError: false});
+				  },
+				  (err) => {
+				      console.log("err searching ");
+				      console.log(nextProps.location.query);
+				      console.log(err);
+				      this.setState({isFetching: false, isError: true});
+				  });
     }
     
     globals(nextProps){
@@ -57,17 +51,16 @@ class AppPageBase extends React.Component {
 	    return;
 	}
 	this.setState({isFetchingGlobals: true});
-	fetch("/globalData/0/" + nextProps.location.query.assembly)
-	    .then((response) => (response.json()))
-	    .then((r) => {
-		this.setState({globals: r, isFetchingGlobals: false, isError: false});
-	    })
-	    .catch((err) => {
-		console.log("err searching ");
-		console.log(nextProps.location.query);
-		console.log(err);
-                this.setState({isFetchingGlobals: false, isError: true});
-	    });
+	ApiClient.globals(nextProps.location.query.assembly,
+			  (r) => {
+			      this.setState({globals: r, isFetchingGlobals: false, isError: false});
+			  },
+			  (err) => {
+			      console.log("err searching ");
+			      console.log(nextProps.location.query);
+			      console.log(err);
+			      this.setState({isFetchingGlobals: false, isError: true});
+			  });
     }
     
     render() {

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {commajoin} from './utility';
+import * as ApiClient from './api_client';
 
 export const relink = (assembly) => (v) => (
     <a href={"/search?assembly=" + assembly + "&q=" + v} target={'_blank'}>
@@ -75,7 +76,7 @@ export const browser_buttons = (names) => {
 }
 
 export const cart_img = (rmv, src_only) => {
-    const src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
+    const src = ApiClient.StaticUrl("/static/re_cart." + (rmv ? "rmv" : "add") + ".png");
     if(src_only){
         return src;
     }

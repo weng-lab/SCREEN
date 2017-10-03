@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+import * as ApiClient from '../../../common/api_client';
 
 import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin} from '../../../common/utility';
@@ -47,8 +47,7 @@ class ResultsTableContainer extends React.Component {
 
     loadCREs(props){
 	//console.log("loadCREs in results_app");
-        var q = getCommonState(props);
-        var jq = JSON.stringify(q);
+        var jq = JSON.stringify(getCommonState(props));
 	var setrfacets = this.props.actions.setrfacets;
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -56,26 +55,21 @@ class ResultsTableContainer extends React.Component {
         }
         //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/dataws/cre_table",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
-                this.setState({cres: [], total: 0,
-                               jq, isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({cres: r["cres"],
-                               total: r["total"],
-                               cts: r["cts"],
-			       missingAssays: this._get_missing(r["rfacets"]),
-                               jq, isFetching: false, isError: false});
-		setrfacets(r["rfacets"]);
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/dataws/cre_table",
+			    (r) => {
+				console.log(r);
+				this.setState({cres: r["cres"],
+					       total: r["total"],
+					       cts: r["cts"],
+					       missingAssays: this._get_missing(r["rfacets"]),
+					       jq, isFetching: false, isError: false});
+				setrfacets(r["rfacets"])},
+			    (msg) => {
+				console.log("err loading cres for table");
+				console.log(msg);
+				this.setState({cres: [], total: 0,
+					       jq, isFetching: false, isError: true});
+			    });
     }
 
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
