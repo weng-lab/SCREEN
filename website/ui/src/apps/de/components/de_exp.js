@@ -1,9 +1,9 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import * as Actions from '../actions/main_actions';
+import * as ApiClient from '../../../common/api_client';
 
 import DePlot from '../components/de_plot';
 import loading from '../../../common/components/loading';
@@ -40,21 +40,15 @@ class DeExp extends React.Component{
             return;
         }
         this.setState({jq, isFetching: true, selectCT: false});
-        $.ajax({
-            url: "/dews/search",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err during load");
-                this.setState({isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r, isFetching: false, isError: false});
-                p.actions.setDes(r[p.gene]);
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/dews/search",
+			    (r) => {
+				this.setState({...r, isFetching: false, isError: false});
+				p.actions.setDes(r[p.gene]);
+			    },
+			    (msg) => {
+				console.log("err during load");
+				this.setState({isFetching: false, isError: true});
+			    });
     }
 
     doRenderWrapper(){

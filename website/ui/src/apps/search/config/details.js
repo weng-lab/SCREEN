@@ -1,8 +1,8 @@
 import React from 'react';
-import $ from 'jquery';
 
 import Ztable from '../../../common/components/ztable/ztable';
 import BarGraphTable from '../components/bar_graph_table';
+import * as ApiClient from '../../../common/api_client';
 
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
 import Rampage from '../components/rampage';
@@ -118,32 +118,23 @@ class ReTabBase extends React.Component{
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: this.url,
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cre details");
-		console.log(error);
-                this.setState({jq: null, isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, this.url,
+			    (r) => {
+				this.setState({...r, isFetching: false, isError: false});
+			    },
+			    (msg) => {
+				console.log("err loading cre details");
+				console.log(msg);
+				this.setState({jq: null, isFetching: false, isError: true});
+			    });
     }
 
     doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
-	    //console.log("doRenderWrapper", this.key);
             return this.doRender(this.props.globals, this.props.assembly, this.state[accession]);
         }
-	//console.log(this.props);
         return loading({...this.state, message: this.props.message});
     }
 
