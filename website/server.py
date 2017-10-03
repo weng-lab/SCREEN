@@ -58,6 +58,19 @@ class WebServerConfig:
                 }
         }
 
+def cors():
+    # from https://stackoverflow.com/a/28065698
+    if cherrypy.request.method == 'OPTIONS':
+        # preflign request 
+        # see http://www.w3.org/TR/cors/#cross-origin-request-with-preflight-0
+        cherrypy.response.headers['Access-Control-Allow-Methods'] = 'POST'
+        cherrypy.response.headers['Access-Control-Allow-Headers'] = 'content-type'
+        cherrypy.response.headers['Access-Control-Allow-Origin']  = '*'
+        # tell CherryPy no avoid normal handler
+        return True
+    else:
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_false")
@@ -79,6 +92,8 @@ def main():
     main = MainApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
+    cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
+    
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
     cherrypy.config.update({'server.socket_host': '0.0.0.0',

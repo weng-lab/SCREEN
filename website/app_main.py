@@ -104,6 +104,7 @@ class MainApp():
         return self.tc.tads(args, kwargs, self.sessions.userUid())
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def searchws(self, *args, **kwargs):
@@ -111,6 +112,7 @@ class MainApp():
         return self.searchWS.process(j, args, self.sessions.userUid())
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def dataws(self, *args, **kwargs):
@@ -119,6 +121,7 @@ class MainApp():
         return self.dataWS.process(j, args, kwargs)
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def autows(self, *args, **kwargs):
@@ -163,5 +166,6 @@ class MainApp():
         return self.tf.tfJson(j)
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     def globalData(self, ver, assembly):
         return self.global_data.static(assembly, ver)
