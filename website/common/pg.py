@@ -660,7 +660,7 @@ FROM r_rnas_{assembly}
     def loadNineStateGenomeBrowser(self):
         tableName = self.assembly + "_nine_state"
         with getcursor(self.pg.DBCONN, "pg$loadNineStateGenomeBrowser",
-        cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
             SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
 FROM {tn}
@@ -697,7 +697,8 @@ FROM {tn}
 
     def linkedGenes(self, accession):
         tableName = self.assembly + "_linked_genes"
-        with getcursor(self.pg.DBCONN, "pg$linkedgenes") as curs:
+        with getcursor(self.pg.DBCONN, "pg$linkedgenes",
+                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
             SELECT gene, celltype, method, dccaccession
 FROM {tn}
