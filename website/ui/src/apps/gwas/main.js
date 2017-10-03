@@ -12,13 +12,16 @@ import main_reducers from './reducers/main_reducers'
 
 import initialState from './config/initial_state'
 
-class GwasApp extends React.Component {
+import AppPageBase from '../../common/app_page_base'
+
+class GwasAppInner extends React.Component {
     render() {
 	const store = createStore(main_reducers,
-				  initialState(this.props.params.gs, this.props.params.ct),
+				  initialState(this.props.search, this.props.globals),
 				  applyMiddleware(
 				      thunkMiddleware,
 				  ));
+	const assembly = this.props.search.assembly;
 
         return (
             <Provider store={store}>
@@ -27,17 +30,23 @@ class GwasApp extends React.Component {
 		    <nav id="mainNavBar"
 			 className="navbar navbar-default navbar-inverse navbar-main">
 			<div className="container-fluid" id="navbar-main">
-			    <NavBarApp show_cartimage={false} searchbox={SearchBox} />}/>
+			    <NavBarApp assembly={assembly}
+				       show_cartimage={false}
+				       searchbox={SearchBox} />
 			</div>
 		    </nav>
 
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>
 			    <div className="col-md-3 nopadding-right" id="facets-container">
-				<FacetBoxen />
+                                <FacetBoxen assembly={assembly}
+					    globals={this.props.globals} />
 			    </div>
 			    <div className="col-md-9 nopadding-left" id="tabs-container">
-				<MainTabs />
+                                <MainTabs assembly={assembly}
+					  globals={this.props.globals}
+					  search={this.props.search}
+				/>
 			    </div>
 			</div>
 
@@ -45,7 +54,13 @@ class GwasApp extends React.Component {
 		</div>
             </Provider>
         );
+    }
 }
+
+class GwasApp  extends AppPageBase {
+    constructor(props) {
+	super(props, "/gwasws/search", GwasAppInner);
+    }
 }
 
 export default GwasApp;

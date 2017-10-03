@@ -1,5 +1,63 @@
 import React from 'react';
 import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
+import {Enum} from 'enumify';
+
+const firstBy = require('thenby');
+
+class SortOrder extends Enum {
+    cycleOrder(){
+        switch (this) {
+	    case SortOrder.DISABLED:
+		return SortOrder.DISABLED;
+	    case SortOrder.NONE:
+		return SortOrder.ASC;
+	    case SortOrder.ASC:
+		return SortOrder.DSC;
+	    case SortOrder.DSC:
+		return SortOrder.ASC;
+	    default:
+		return SortOrder.NONE;
+	}
+    }
+}
+SortOrder.initEnum(['ASC', 'DSC', 'NONE', 'DISABLED']);
+
+class SortCols {
+    constructor(){
+	this.sortCols = new Map();
+    }
+
+    shouldSort(){
+	return this.sortCols.size > 0;
+    }
+    
+    colClick(colInfo, curOrder){
+	let m = new SortCols();
+	m.sortCols.set(colInfo.data, curOrder.cycleOrder());
+	return m;
+    }
+
+    getHeaderKlass(colInfo){
+	let sk = "table-sort";
+	let so = SortOrder.NONE;
+	if("orderable" in colInfo){
+	    if(!colInfo.orderable){
+		so = SortOrder.DISABLED;
+	    }
+	}
+	if(colInfo.data in this.sortCols){
+	    const sortOrder = this.sortCols[colInfo.data];
+	    if(SortOrder.ASC === sortOrder){
+		sk = "table-sort-asc";
+		so = SortOrder.ASC;
+	    } else if(SortOrder.DSC === sortOrder){
+		sk = "table-sort-desc";
+		so = SortOrder.DSC;
+	    }
+	}
+	return { sk, so };
+    }
+}
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
@@ -54,30 +112,15 @@ class Zheader extends React.Component {
     render(){
 	return (
 	    <tr>
-		{this.props.colInfos.map((col, idx) => {
-		     let k = "text-center " + klassName(col);
-		     let sk = "table-sort"; // sort CSS class
-		     let so = 0; // sort order
-		     if("orderable" in col){
-			 if(!col.orderable){
-			     so = -1;
-			 }
-		     }
-		     if(col.data === this.props.sortCol){
-			 if(1 === this.props.sortOrder){
-			     sk = "table-sort-asc";
-			     so = 1;
-			 } else if(2 === this.props.sortOrder){
-			     sk = "table-sort-desc";
-			     so = 2;
-			 }
-		     }
+		{this.props.colInfos.map((colInfo, idx) => {
+		     let k = "text-center " + klassName(colInfo);
+		     let {sk, so} = this.props.sortCols.getHeaderKlass(colInfo);
 		     k += ' ' + sk;
 		     return (
 			 <th className={k}
 			     key={idx}
-			     onClick={this.props.onClick(col.data, so)}>
-			     {col.title}
+			     onClick={this.props.onClick(colInfo, so)}>
+			     {colInfo.title}
 			 </th>);
 		 })}
 	    </tr>);
@@ -101,7 +144,7 @@ class Zrow extends React.Component {
 	return (
 	    <tr>
 		{rowData.map((r, idx) => {
-		     let k = "text-center " + r[1];
+		     const k = "text-center " + r[1];
 		     return (
 			 <td className={k}
 			     key={this.props.dataIdx.toString() + '_' + idx.toString()}
@@ -115,68 +158,129 @@ class Zrow extends React.Component {
     }
 }
 
-class Ztable extends React.Component {
-    constructor(props) {
-        super(props);
-	this.state = {search: '',
-		      pageNum: 1, // page indexes are 1-based
-		      pageSize: 10,
-		      sortCol: '',
-		      sortOrder: 0};
+class DataSource {
+    constructor(data, cols) {
+	this.data = data;
+	this.cols = cols;
+
+	this.colsByData = {}
+	this.cols.forEach((col) => {
+	    this.colsByData[col.data] = col;
+	});
     }
 
-    searchFilter(){
+    filterAndSort(state){
+	this._searchFilter(state.search);
+	this._sort(state.sortCols);
+
+	this.numPages = Math.ceil(this.rowIDs.length / state.pageSize);
+	// page indexes are 1-based
+	this.rowStart = (state.pageNum - 1) * state.pageSize;
+	this.rowEnd = state.pageNum * state.pageSize;
+    }
+
+    _searchFilter(s){
 	let ret = [];
-	let s = this.state.search;
-	for(let i = 0; i < this.props.data.length; i++){
-	    if(!this.state.search){
+	for(let i = 0; i < this.data.length; i++){
+	    if(!s){
 		ret.push(i);
 		continue;
 	    }
-	    for(let colInfo of this.props.cols){
-		let t = String(this.props.data[i][colInfo.data]).toLowerCase();
+	    for(let colInfo of this.cols){
+		const t = String(this.data[i][colInfo.data]).toLowerCase();
 		if(t.includes(s)){
 		    ret.push(i);
 		    break;
 		}
 	    }
 	}
-	return ret;
+	this.rowIDs = ret;
     }
 
-    sort(rowIDs){
-	let c = this.state.sortCol;
-	if(!c){
-	    return rowIDs;
-	}
-	if(0 === rowIDs.length){
-	    return rowIDs;
-	}
-	let sample = this.props.data[rowIDs[0]][c];
-
-	// https://stackoverflow.com/a/16655847
-	let isNumArray = Number(sample) === sample; 
-	if(isNumArray){
-	    if(1 === this.state.sortOrder){ // ascending
-		return rowIDs.sort((a,b) => this.props.data[a][c] -
-					  this.props.data[b][c]);
+    _sortByColNumeric(sortCol, sortOrder, sortDataF){
+	if(SortOrder.ASC === sortOrder){
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) => sortDataF(this.data[a][sortCol]) -
+					sortDataF(this.data[b][sortCol]));
+	    } else {
+		this.rowIDs.sort((a,b) => this.data[a][sortCol] -
+					this.data[b][sortCol]);
 	    }
-	    return rowIDs.sort((a,b) => this.props.data[b][c] -
-				      this.props.data[a][c]);
+	} else {
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) => sortDataF(this.data[b][sortCol]) -
+					sortDataF(this.data[a][sortCol]));
+	    } else {
+		this.rowIDs.sort((a,b) => this.data[b][sortCol] -
+					this.data[a][sortCol]);
+	    }
 	}
-	// sort by strings https://stackoverflow.com/a/9645447
-	if(1 === this.state.sortOrder){ // ascending
-	    return rowIDs.sort((a,b) =>
-		this.props.data[a][c].toLowerCase().localeCompare(
-		    this.props.data[b][c].toLowerCase())
-	    )
-	}
-	return rowIDs.sort((a,b) =>
-	    this.props.data[b][c].toLowerCase().localeCompare(
-		this.props.data[a][c].toLowerCase())
-	)
     }
-        
+
+    _sortByColStr(sortCol, sortOrder, sortDataF){
+	// sort by strings, from https://stackoverflow.com/a/9645447
+	if(SortOrder.ASC === sortOrder){
+	    if(sortDataF){
+		console.log("sorting", sortCol, "by text, asceding, with custom data");
+		this.rowIDs.sort((a,b) =>
+		    sortDataF(this.data[a][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[b][sortCol]).toLowerCase()));
+	    } else {
+		console.log("sorting", sortCol, "by text, asceding, without custom data");
+		this.rowIDs.sort((a,b) =>
+		    this.data[a][sortCol].toLowerCase().localeCompare(
+			this.data[b][sortCol].toLowerCase()));
+	    }
+	} else {
+	    console.log("sorting by", sortCol, "text, descending, with custom data");
+	    if(sortDataF){
+		this.rowIDs.sort((a,b) =>
+		    sortDataF(this.data[b][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[a][sortCol]).toLowerCase()));
+	    } else {
+		console.log("sorting", sortCol, "by text, descending, without custom data");
+		this.rowIDs.sort((a,b) =>
+		    this.data[b][sortCol].toLowerCase().localeCompare(
+			this.data[a][sortCol].toLowerCase()));
+	    }
+	}
+    }
+    
+    _sort(sortCols){
+	if(!sortCols.shouldSort()){
+	    return;
+	}
+	if(0 === this.rowIDs.length){
+	    return;
+	}
+	sortCols.sortCols.forEach((sortOrder, sortCol) => {
+	    const sample = this.data[this.rowIDs[0]][sortCol];
+	    const colInfo = this.colsByData[sortCol];
+	    let sortDataF = null;
+	    if("sortDataF" in colInfo){
+		sortDataF = colInfo.sortDataF;
+	    }
+	    	    
+	    // https://stackoverflow.com/a/16655847
+	    const isNumArray = Number(sample) === sample;
+	    if(isNumArray){
+		this._sortByColNumeric(sortCol, sortOrder, sortDataF);
+	    } else {
+		this._sortByColStr(sortCol, sortOrder, sortDataF);
+	    }
+	});
+    }
+}
+
+class Ztable extends React.Component {
+    constructor(props) {
+        super(props);
+	this.state = {search: '',
+		      pageNum: 1, // page indexes are 1-based
+		      pageSize: 10,
+		      sortCols: new SortCols()};
+    }
+    
     render(){
 	const searchBoxChange = (e) => {
 	    this.setState({search: e.target.value,
@@ -187,13 +291,12 @@ class Ztable extends React.Component {
 	    this.setState({pageNum: e});
 	};
 
-	const sortClick = (col, curOrder) => () => {
-	    if(-1 === curOrder){
+	const sortClick = (colInfo, curOrder) => () => {
+	    if(SortOrder.DISABLED === curOrder){
 		return;
 	    }
-	    const nextSortOrder = {0:1, 1:2, 2:1}; // sort col cycle
-	    this.setState({sortCol : col,
-			   sortOrder : nextSortOrder[curOrder]});
+	    const m = this.state.sortCols.colClick(colInfo, curOrder);
+	    this.setState({sortCols: m});
 	};
 
 	const rowClick = (klasses, dataIdx) => (e) => {
@@ -202,13 +305,8 @@ class Ztable extends React.Component {
 	    }
 	};
 	
-	let rowIDs = this.searchFilter();
-	rowIDs = this.sort(rowIDs);
-	
-	let numPages = Math.ceil(rowIDs.length / this.state.pageSize);
-	// page indexes are 1-based
-	let rowStart = (this.state.pageNum - 1) * this.state.pageSize;
-	let rowEnd = this.state.pageNum * this.state.pageSize;
+	let ds = new DataSource(this.props.data, this.props.cols);
+	ds.filterAndSort(this.state);
 	
 	let tableKlass = "table table-bordered table-condensed table-hover";
 	let visibleCols = filterVisibleCols(this.props.cols);
@@ -219,13 +317,12 @@ class Ztable extends React.Component {
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
-				 sortCol={this.state.sortCol}
-				 sortOrder={this.state.sortOrder}
+				 sortCols={this.state.sortCols}
 				 onClick={sortClick}
 			/>
 		    </thead>
 		    <tbody>
-			{rowIDs.slice(rowStart, rowEnd).map((idx) => (
+			{ds.rowIDs.slice(ds.rowStart, ds.rowEnd).map((idx) => (
 			     <Zrow row={this.props.data[idx]}
 				   key={idx}
 				   dataIdx={idx}
@@ -234,10 +331,10 @@ class Ztable extends React.Component {
 			 ))}
 		    </tbody>
 		</table>
-		<PageBox pages={numPages}
+		<PageBox pages={ds.numPages}
 			 curPage={this.state.pageNum}
 			 onSelect={pageClick} />
-		<HelpBlock>Found {rowIDs.length}</HelpBlock>
+		<HelpBlock>Found {ds.rowIDs.length}</HelpBlock>
 	    </div>);
     }
 }

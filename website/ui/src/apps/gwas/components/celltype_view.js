@@ -10,9 +10,6 @@ import loading from '../../../common/components/loading';
 import Ztable from '../../../common/components/ztable/ztable';
 import HelpIcon from '../../../common/components/help_icon';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class CelltypeView extends React.Component {
     constructor(props) {
         super(props);
@@ -40,21 +37,19 @@ class CelltypeView extends React.Component {
         this.props.actions.setCellType(null);
     }
 
-    loadCres({gwas_study, cellType, actions}){
+    loadCres({assembly, gwas_study, cellType, actions}){
         if(cellType.cellTypeName in this.state){
             return;
         }
-        var q = {GlobalAssembly, gwas_study,
-                 "cellType" : cellType.cellTypeName };
-        var jq = JSON.stringify(q);
+        const q = {assembly, gwas_study, "cellType" : cellType.cellTypeName };
+        const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadGene....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
         $.ajax({
-            url: "/gwasJson/cres",
+            url: "/gwasws/cres",
             type: "POST",
 	    data: jq,
 	    dataType: "json",
@@ -77,24 +72,27 @@ class CelltypeView extends React.Component {
         let cres = data.accessions;
         let vcols = data.vcols;
 
-	let klassCenter = "dt-body-center dt-head-center ";
         let cols = [
-            {title: "accession", data: "info", className: klassCenter,
-             render: Render.creTableAccession },
-	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", visible: true, name: "cts", render: Render.creTableCellTypeSpecific,
-	     className: klassCenter, width: "15%"},
+            {title: "cRE", data: "info", 
+             render: Render.creTableAccession(this.props.globals),
+	     sortDataF: (info) => (info.accession)
+	    },
+	    {title: this.props.cellType.biosample_summary, data: "ctspecifc", 
+	     name: "cts", render: Render.creTableCellTypeSpecific(this.props.globals),
+	     width: "15%"},
 	    {title: "H3K4me3 Z", data: "promoter zscore", render: Render.real,
-	     className: klassCenter, visible: vcols["promoter zscore"]},
+	     visible: vcols["promoter zscore"]},
             {title: "H3K27ac Z", data: "enhancer zscore", render: Render.real,
-             className: klassCenter, visible: vcols["enhancer zscore"]},
+             visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
-             className: klassCenter, visible: vcols["dnase zscore"]},
-            {title: "SNPs", data: "snps", className: klassCenter,
-	     render: Render.snpLinks},
-            {title: "gene", data: "geneid", className: klassCenter, render: Render.gene_link},
+             visible: vcols["dnase zscore"]},
+            {title: "SNPs", data: "snps", 
+	     render: Render.snpLinks(this.props.assembly)},
+            {title: "gene", data: "geneid", 
+	     render: Render.geneLink},
 	    {
 		title: "genome browsers", data: null,
-		className: klassCenter + "browser",
+		className: "browser",
 		targets: -1,
 		orderable: false,
 		defaultContent: Render.browser_buttons(["UCSC"])
@@ -102,10 +100,10 @@ class CelltypeView extends React.Component {
 	     }
         ];
 
-	let columnDefs = [{ "orderData": 2, "targets": 1 }];
-	let actions = this.props.actions;
+	const columnDefs = [{ "orderData": 2, "targets": 1 }];
+	const actions = this.props.actions;
 	
-        let creTable = (
+        const creTable = (
 	    <Ztable
 		key={this.props.cellType.cellTypeName}
 		onButtonClick={(td, rowdata) =>
@@ -117,14 +115,19 @@ class CelltypeView extends React.Component {
 		cvisible={vcols}
 		order={[[2, "desc"], [0, "asc"]]}
             />);
-	let pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
+	const pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
+	const numCresOverlap = this.props.rdata.numCresOverlap;
 	return (
             <div>
                 <h3 style={{display: "inline"}}>
                     {this.props.cellType.biosample_summary}
-                    <HelpIcon helpkey={"GWAS_Results_Table"} />
+                    <HelpIcon globals={this.props.globals}
+			      helpkey={"GWAS_Results_Table"} />
                 </h3>{" "}
-		<em>{cres.length} / {this.props.rdata.numCresOverlap} cREs ({pct}%) active in this cell type</em><br /><br />
+		<em>{cres.length} / {numCresOverlap} cREs ({pct}%) active in this cell type
+		</em>
+		<br />
+		<br />
                 {creTable}
 	    </div>);
     }

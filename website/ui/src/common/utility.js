@@ -2,18 +2,16 @@ import React from 'react'
 import HelpIcon from './components/help_icon'
 
 export const panelize = (title, facet, helpkey = null, globals = null) => {
-    let helpicon = (helpkey ?
-                    <HelpIcon globals={globals}
-			      helpkey={helpkey}
-			      color={"#ffffff"} /> :
-                    "");
     return (
         <div className="panel-group facet">
 	    <div className="panel panel-primary">
-	        <div className="panel-heading">{title} {helpicon}</div>
-	        <div className="panel-body">
-                    {facet}
-	        </div>
+	        <div className="panel-heading">
+		    {title}
+		    {helpkey && <HelpIcon globals={globals}
+					  helpkey={helpkey}
+					  color={"#ffffff"} />}
+		</div>
+	        <div className="panel-body">{facet}</div>
 	    </div>
 	</div>);
 };
@@ -77,16 +75,24 @@ export const isCart = () => {
     return href.includes("&cart");
 }
 
-export const commajoin = (a) => {
-    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
-	    ", ", a.slice(-1)];
+function intersperse(arr, sep) {
+    // from https://stackoverflow.com/a/23619085
+    if (0 === arr.length) {
+	return [];
+    }
+    return arr.slice(1).reduce((xs, x, idx) => {
+	const separator = (typeof sep === 'function')
+			? sep(idx)
+			: sep;
+	return xs.concat([separator, x]);
+    }, [arr[0]]);
 }
+
+export const commajoin = (a) => (intersperse(a, ', '))
+export const brJoin = (a) => (intersperse(a, (idx) => (<br />)))
+export const nbspJoin = (a) => (intersperse(a, (idx) => (<span key={idx}>,&nbsp;</span>)))
 
 export const orjoin = (a) => {
     return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
 	    " or ", a.slice(-1)];
-}
-
-export const brJoin = (a) => {
-    return a.reduce((prev, curr) => [prev, (<br />), curr]);
 }

@@ -13,12 +13,10 @@ export const snp_link = (assembly) => (d) => {
     if("mm10" === assembly){
         url = "http://ensembl.org/Mus_musculus/Variation/Explore";
     }
-    return <a href={url + "?vdb=variation;v=" + d} target="_blank">{d}</a>;
+    return <a href={url + "?vdb=variation;v=" + d} target="_blank" key={d}>{d}</a>;
 }
 
-export const snpLinks = (snps) => {
-    return snps.map(snp_link).join(", ");
-}
+export const snpLinks = (assembly) => (snps) => ( commajoin(snps.map(snp_link(assembly))) )
 
 export const integerLink = (href) => (d) => {
     return <a href={'#' + href}>{d}</a>;
@@ -52,7 +50,7 @@ export const supporting_cts = (list) => {
     if (list === null) {
 	return "";
     }
-    var map = {};
+    let map = {};
     for(let x of list){
 	if (!(x["cell-type"] in map)) {
 	    map[x["cell-type"]] = 0;
@@ -63,7 +61,7 @@ export const supporting_cts = (list) => {
 };
 
 export const browser_buttons = (names) => {
-    let content = names.map((name) => (
+    const content = names.map((name) => (
 	<button
 	    type="button"
 	    key={name}
@@ -77,11 +75,11 @@ export const browser_buttons = (names) => {
 }
 
 export const cart_img = (rmv, src_only) => {
-    var src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
+    const src = "/static/re_cart." + (rmv ? "rmv" : "add") + ".png";
     if(src_only){
         return src;
     }
-    var title = (rmv ? "remove cRE from cart" : "add cRE to cart");
+    const title = (rmv ? "remove cRE from cart" : "add cRE to cart");
     return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
@@ -98,19 +96,16 @@ export const creLinkPop = (accession, type, full, meta) => (
 export const geLink = (assembly, gene) => ("/geApp/?assembly=" + assembly + "&gene=" + gene)
 export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&gene=" + gene)
 
-export const geDeButton = (assembly) => (d) => {
+export const geDeButton = (assembly, accession) => (d) => {
     const _d = d.replace(/\./g, "%2e");
-    const ge = <a href={geLink(assembly, _d)} target={"_blank"}>{d}</a>;
+    const ge = <a href={geLink(assembly, _d)} target={"_blank"}
+	       key={[accession, d]}>{d}</a>;
     if("mm10" !== assembly){
-        return (<span>{ge}</span>);
+        return ge;
     }
-    const de = <span style={{paddingLeft: "4px"}}>
-	  <a href={deLink(assembly, _d)} target={"_blank"}>&Delta;</a></span>;
-    return (
-	<span>
-	    {ge}
-	    {de}
-	</span>);
+    const de = <a href={deLink(assembly, _d)} target={"_blank"}
+		  style={{paddingLeft: "4px"}}>&Delta;</a>;
+    return [ge, de];
 };
 
 export const openGeLink = (gene) => (
@@ -120,15 +115,13 @@ export const openGeLink = (gene) => (
 )
 
 export const geneDeLinks = (assembly) => (genesallpc) => {
-    let all = commajoin(genesallpc[0].map(geDeButton(assembly)));
-    let pc = commajoin(genesallpc[1].map(geDeButton(assembly)));
-    return (
-	<div>
-	{"pc: "}{pc}
-	<br />
-	{"all: "}{all}
-	</div>);
-}
+    const accession = genesallpc.accession;
+    const all = commajoin(genesallpc.all.map(geDeButton(assembly, accession)));
+    const pc = commajoin(genesallpc.pc.map(geDeButton(assembly, accession)));
+    return ["pc: ", pc,
+	    <br key={accession}/>,
+	    "all: ", all];
+    }
 
 export const dccImg = () => (
     <img src="/static/encode/pennant-encode.png" alt="DCC logo" width="20" />);
@@ -197,7 +190,7 @@ export const factorbook_link_histone = (d) => (
     : d.replace(/F/g, ".")
 );
 
-export const gene_link = (d) => (
+export const geneLink = (d) => (
     <em>
 	<a href={"http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d}
 	   target="_blank">{d}</a>
@@ -347,7 +340,9 @@ export const concordantStar = (concordant) => {
     return "";
 }
 
-export const checkCt = (checked) => (<input type={'checkbox' + (checked ? "checked " : "")} />);
+export const checkCt = (checked) => {
+    return <input type={"checkbox"} checked={checked} />
+}
 
 export const creTableAccessionBoxen = (globals, cre) => {
     let w = 12;
@@ -402,32 +397,34 @@ export const creTableAccession = (globals) => (cre, type, full, meta) => {
 }
 
 export const creTableCellTypeSpecific = (globals) => (data) => {
-    let w = 12;
-    let h = 9;
-    let fw = 4 * w + 4;
-    let fh = h + 2;
-    let rect = (x, y, color) => (
+    const w = 12;
+    const h = 9;
+    const fw = 4 * w + 4;
+    const fh = h + 2;
+    const rect = (x, y, color) => (
 	<rect x={x} y={y} width={w} height={h} style={{fill : color}} />
     )
-    let line = (x1, y1, x2, y2) => (
+    const line = (x1, y1, x2, y2) => (
 	<line x1={x1} y1={y1} x2={x2} y2={y2}
 	      style={{strokeWidth: 1, stroke: "black"}} />
     )
-    let border = () => (
+    const border = () => (
 	<rect x={0} y={0} width={fw} height={fh}
 	      style={{fill: "white", strokeWidth: 1, stroke: "black"}} />
     )
-    let colors = globals.colors.cREs;
+    const colors = globals.colors.cREs;
 
-    let col = (val, c) => {
+    const col = (val, c) => {
 	if(null === val){
 	    return colors.NoData;
 	}
 	return val > 1.64 ? c : colors.Inactive;
     }
+
+    const k = Object.entries(data).join('_');
     
-    let e = (
-	<span className={"text-nowrap"}>
+    return (
+	<span className={"text-nowrap"} key={k}>
 	    <svg width={fw} height={fh}>
 		<g>
 		    {border()}
@@ -441,7 +438,6 @@ export const creTableCellTypeSpecific = (globals) => (data) => {
         	</g>
 	    </svg>
 	</span>);
-    return e;
 }
 
 export const titlegeneric = (e) => {
@@ -455,16 +451,7 @@ export const titlegeneric = (e) => {
 };
 
 export const creTitle = (globals, cre) => {
-    let cts = "";
-    let ct = cre.ctspecifc.ct;
-    if(ct){
-	cts = (
-	    <span>
-		{globals.byCellType[ct][0]["name"]}:{'\u00A0'}
-		{creTableCellTypeSpecific(globals, cre.ctspecifc)}
-	    </span>);
-    }
-    
+    const ct = cre.ctspecifc.ct;
     return (
 	<div>
 	    <h3 className="creDetailsTitle">{cre.accession}</h3>
@@ -478,7 +465,8 @@ export const creTitle = (globals, cre) => {
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
 	    {creTableAccessionBoxen(globals, cre)}
 	    {'\u00A0'}{"\u00A0"}{"\u00A0"}
-	    {cts}
+	    {ct && [globals.byCellType[ct][0]["name"], ":\u00A0",
+		    creTableCellTypeSpecific(globals)(cre.ctspecifc)]}
 	</div>);
 }
 

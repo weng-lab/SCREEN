@@ -11,9 +11,6 @@ import * as Render from '../../../common/zrenders';
 
 import DraggableCtList from '../../../common/components/draggable';
 
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
-
 class ConfigureGenomeBrowser extends React.Component {
     constructor(props) {
 	super(props);
@@ -37,7 +34,7 @@ class ConfigureGenomeBrowser extends React.Component {
 		    "cellTypes" : cts,
 		    "showCombo" : this.state.showCombo,
 		    host,
-		    GlobalAssembly};
+		    "assembly": this.props.assembly};
 	let jdata = JSON.stringify(data);
 	switch (gbrowser) {
 	    case "UCSC":
@@ -89,7 +86,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	      className: "dt-right" },
 	    { title: "", data: "cellTypeName",
 	      className: "dt-right dcc",
-	      render: Render.assayIcon,
+	      render: Render.assayIcon(this.props.globals),
 	      orderable: false }
 	]
 	
@@ -100,7 +97,7 @@ class ConfigureGenomeBrowser extends React.Component {
 		order={[]}
 		buttonsOff={true}
 		onTdClick={(td, cellObj) => {
-		    this.props.actions.toggleGenomeBrowserCelltype(cellObj.value);
+			this.props.actions.toggleGenomeBrowserCelltype(cellObj.value);
 		}}
 		bFilter={true}
 		bLengthChange={false}
@@ -150,13 +147,13 @@ class ConfigureGenomeBrowser extends React.Component {
 		<label className="btn btn-info active"
 		       onClick={() => { this.optionsChanged(false); }}>
 		    <input type="radio" name="notCombo"
-			   checked={!this.state.showCombo} />
+			   defaultChecked={!this.state.showCombo} />
 		    {notCombo}
 		</label>
 		<label className="btn btn-info"
 		       onClick={() => { this.optionsChanged(true); }}>
 		    <input type="radio" name="combo"
-		    	   checked={this.state.showCombo} />
+		    	   defaultChecked={this.state.showCombo} />
 		    {combo}
 		</label>
 	    </div>);	

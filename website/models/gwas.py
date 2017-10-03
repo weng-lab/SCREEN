@@ -61,8 +61,22 @@ class Gwas:
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
-        return {"accessions" : activeCres,
-                "vcols" : vcols}
+        return {ct: {"accessions" : activeCres,
+                     "vcols" : vcols}}
+
+    def mainTable(self, gwas_study):
+        return {gwas_study : {"gwas_study" : self.byStudy[gwas_study],
+                              "mainTable" : self._mainTableInfo(gwas_study),
+                              "topCellTypes" : self.allCellTypes(gwas_study)}}
+        
+    def _mainTableInfo(self, gwas_study):
+        total = self.totalLDblocks(gwas_study)
+        overlap = self.numLdBlocksOverlap(gwas_study)
+        overlapStr = "%d (%d%%)" % (overlap, int(float(overlap) / float(total) * 100.0))
+        return [{"totalLDblocks": total,
+                 "numLdBlocksOverlap": overlap,
+                 "numLdBlocksOverlapFormat": overlapStr,
+                 "numCresOverlap": self.numCresOverlap(gwas_study) }]
 
 
 

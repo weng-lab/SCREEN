@@ -26,14 +26,15 @@ class LongListFacet extends React.Component {
     }
 
     render() {
-	var table_display = (this.props.selection == null ? "block" : "none");
-	var sdisplay = (this.props.selection == null ? "none" : "block");
+	const s = this.props.selection;
+	const table_display = (!s || 0 === s.length ? "block" : "none");
+	const sdisplay = (!s || 0 === s.length ? "none" : "block");
 
-	var title = this.props.selection;
+	let title = this.props.selection;
         if(title && this.props.friendlySelectionLookup){
             title = this.props.friendlySelectionLookup(title)
         }
-
+	
 	return (
 	    <div>
 		<div style={{display: table_display}}>
