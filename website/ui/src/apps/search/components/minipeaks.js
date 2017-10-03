@@ -1,9 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import ReactDOMServer from 'react-dom/server';
-import $ from 'jquery';
 
+import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
 
@@ -52,25 +51,18 @@ class MiniPeaks extends React.Component {
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/dataws/re_detail/similarREs",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
-                this.setState({jq: null, isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({...r,
-                               jq, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/dataws/re_detail/similarREs",
+			    (r) => {
+				this.setState({...r,
+					       jq, isFetching: false, isError: false});
+			    },
+			    (msg) => {
+				console.log("err loading minipeaks");
+				this.setState({jq: null, isFetching: false, isError: true});
+			    });
     }
-
+    
     doRender(accession){
 	let renderPeaks = (assay) => (allData) => {
 	    if(!allData[assay]){
@@ -92,7 +84,7 @@ class MiniPeaks extends React.Component {
 		    </svg>
 		    {" "}{Math.max(...allData[assay].data).toFixed(1)}
 		</span>);
-	    return ReactDOMServer.renderToStaticMarkup(e);
+	    return e;
 	}
 	let renderMax = (assay) => (allData) => {
 	    if (!allData[assay]){
