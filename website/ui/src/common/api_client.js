@@ -3,8 +3,8 @@ export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
     const server = "http://megatux.purcaro.com:9006";
-    const override = {//"/autows/search" : "/autows/search"
-		     };
+    const override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
+		      "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
     if(b in override){
 	return override[b];
     }
@@ -33,7 +33,7 @@ export const autocompleteBox = (jq, successF, errF) => {
 export const appPageBaseInit = (jq, url, successF, errF) => {
     getByPost(jq, url, successF, errF);
 }
-    
+
 export const globals = (assembly, successF, errF) => {
     fetch(Servers("/globalData/0/") + assembly)
 	.then((response) => (response.json()))

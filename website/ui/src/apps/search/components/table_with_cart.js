@@ -9,7 +9,7 @@ import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
-
+import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
@@ -266,7 +266,7 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	let click = "Click a cRE accession to view details about the cRE, including top tissues, nearby genomic features, etc.";
-		    
+
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
 	if("mm10" === this.props.assembly){
@@ -285,7 +285,7 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-	
+
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -301,6 +301,7 @@ class TableWithCart extends React.Component {
 			</ul>
 		    </ul>
 		</div>
+    <GenomeBrowser/>
 
 		<Ztable data={data}
                         order={table_order}
@@ -358,7 +359,7 @@ class TableWithCart extends React.Component {
 	    </div>
 	);
     }
-    
+
     render() {
 	var data = [...this.props.data];
         var actions = this.props.actions;
@@ -373,7 +374,7 @@ class TableWithCart extends React.Component {
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-		
+
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
 			<div className="col-md-12">
@@ -381,7 +382,7 @@ class TableWithCart extends React.Component {
 			</div>
 		    </div>
 		</div>
-		
+
      	    </div>);
     }
 }

@@ -711,3 +711,15 @@ table-sort-desc::after {
     top: inherit;
     content: "\e156";
 }
+.y-grid .tick{
+    stroke: #4b5f87;
+    opacity: 0.3;
+}
+.axis{
+    opacity: 1;
+}
+.search
+{
+padding-left:115px;
+
+}
