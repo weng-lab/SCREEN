@@ -331,9 +331,9 @@ class Ztable extends React.Component {
 			 ))}
 		    </tbody>
 		</table>
-		<PageBox pages={ds.numPages}
-			 curPage={this.state.pageNum}
-			 onSelect={pageClick} />
+		{ds.numPages > 1 && <PageBox pages={ds.numPages}
+					     curPage={this.state.pageNum}
+					     onSelect={pageClick} />}
 		<HelpBlock>Found {ds.rowIDs.length}</HelpBlock>
 	    </div>);
     }
