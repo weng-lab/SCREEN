@@ -153,14 +153,17 @@ class ResultsTableContainer extends React.Component {
 
 
 	let cresWithChecks = this.state.cres;
-	for(let cre in cresWithChecks){
-	    cre["checked"] = false;
-	    if(cre.accession in this.props.gb_cres){
-		cre["checked"] = true;	
-	    }
-	}
+	cresWithChecks.forEach( (cre) =>
+	   { cre["checked"] = false
+        if(cre.info.accession=== this.props.gb_cres.accession)
+        {
+          cre["checked"] = true
+        }
+   	  }
 
-	
+	)
+console.log("cresWithChecks :",cresWithChecks)
+
 	let interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
@@ -183,7 +186,7 @@ class ResultsTableContainer extends React.Component {
 		    assembly={this.props.assembly}
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
-                    data={this.state.cres}
+                    data={cresWithChecks}
                     total={this.state.total}
                     cart_accessions={this.props.cart_accessions}
                     isFetching={this.state.isFetching}
@@ -203,4 +206,3 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
 export default connect(mapStateToProps, mapDispatchToProps)(ResultsTableContainer);
-

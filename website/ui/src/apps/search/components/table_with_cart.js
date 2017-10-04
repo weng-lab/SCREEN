@@ -42,8 +42,16 @@ class TableWithCart extends React.Component {
 	    actions.setCart(accessions);
 	    return;
         }
-	let cre = {...rowdata, ...rowdata.info};
-        actions.showReDetail(cre);
+        if(td.indexOf("selectcre")!==-1)
+        {
+          let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
+            actions.selectcre(accessiondetails);
+        }
+        else {
+          let cre = {...rowdata, ...rowdata.info};
+                actions.showReDetail(cre);
+        }
+
     }
 
     addAllToCart() {

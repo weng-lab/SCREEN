@@ -9,14 +9,14 @@ const TableColumns = (globals, assembly, cts) => {
 	    <br />
 	    {ZHelpTooltip(globals, "CellTypeTableAccessionCol")}
 	</span>);
-    
+
     let sctHelp = (
 	<span>
 	    {cts}
 	    <br />
 	    {ZHelpTooltip(globals, "CellTypeSpecifiedClassification")}
 	</span>);
-    
+
     let geneHelp = (
 	<span>
 	    nearest genes:
@@ -26,16 +26,18 @@ const TableColumns = (globals, assembly, cts) => {
 	</span>);
 
     let tz = (name) => ( <span>{name}<br />Z</span>)
-    
+
     return [
+      { title: "", data: "checked", className: "selectcre",
+	      render: ZRender.checkRd},
 	{
-	    title: accHelp, data: "info", 
+	    title: accHelp, data: "info",
             render: ZRender.creTableAccession(globals)
 	}, {
             title: sctHelp, data: "ctspecifc",
 	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
 	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false, 
+            title: "SCTsorter", data: "ctspecifc", visible: false,
 	    render: ZRender.sctSorter, name: "sct",
 	}, {
 	    title: tz("DNase"), data: "dnase_zscore",
@@ -47,15 +49,15 @@ const TableColumns = (globals, assembly, cts) => {
 	    title: tz("H3K27ac"), data: "enhancer_zscore",
 	    render: ZRender.real, name: "enhancer", width: "7%"
 	}, {
-	    title: tz("CTCF"), data: "ctcf_zscore", 
+	    title: tz("CTCF"), data: "ctcf_zscore",
 	    render: ZRender.real, name: "ctcf", width: "7%"
 	}, {
-	    title: "chr", data: "chrom", 
+	    title: "chr", data: "chrom",
 	}, {
-	    title: "start", data: "start", 
+	    title: "start", data: "start",
             render: ZRender.numWithCommas
 	}, {
-	    title: "length", data: "len", 
+	    title: "length", data: "len",
             render: ZRender.numWithCommas
 	}, {
             title: geneHelp, data: "genesallpc",

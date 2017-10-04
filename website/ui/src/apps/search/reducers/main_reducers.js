@@ -1,7 +1,7 @@
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
 import {doToggle} from '../../../common/utility'
-import $ from 'jquery'; 
+import $ from 'jquery';
 
 /*global GlobalAssembly */
 /*eslint no-undef: "error"*/
@@ -69,21 +69,25 @@ const main_reducers = (state, action) => {
 		      };
 	    return ret;
 
-	case.Actions.asdfjhasldfh:
+	case Actions.SELECT_CRE:
 	    let newGbCres = {};
-	    if(state.gb_cres){
-		if new
+	    if(state.gb_cres.accession===action.accession.accession){
+        return {...state,
+          gb_cres: {}}
 		}
-	    return {..state,
-		    gb_cres: 
-	    
+    else {
+      return {...state,
+		    gb_cres: action.accession}
+    }
+
+
 	case Actions.TOGGLE_GENOME_BROWSER_CELLTYPE:
 	    return {...state,
 		    configuregb_cts: state.configuregb_cts.map(x => ({
 			    ...x, checked: (x.cellTypeName === action.ct) !== x.checked
 		    }))
 		   };
-	    
+
 	case Actions.SHOW_RE_DETAIL:
             return {...state, ...mainTabSetter(state, "details"),
                     active_cre: action.cre,

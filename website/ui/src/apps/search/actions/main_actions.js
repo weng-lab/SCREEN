@@ -73,3 +73,6 @@ export const setTreeRankMethod = (tree_rank_method) => ({
 export const SET_TREE_NODES_COMPARE = 'SET_TREE_NODES_COMPARE';
 export const setTreeNodesCompare = (left, right) => ({
     type: SET_TREE_NODES_COMPARE, left, right })
+
+export const SELECT_CRE = 'SELECT_CRE';
+export const selectcre = (accession) => ({type: SELECT_CRE,accession});
