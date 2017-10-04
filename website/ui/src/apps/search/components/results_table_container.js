@@ -151,6 +151,16 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
+
+	let cresWithChecks = this.state.cres;
+	for(let cre in cresWithChecks){
+	    cre["checked"] = false;
+	    if(cre.accession in this.props.gb_cres){
+		cre["checked"] = true;	
+	    }
+	}
+
+	
 	let interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){

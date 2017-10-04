@@ -41,14 +41,19 @@ const initialState = (search, globals) => {
         maintabs: maintabs,
         maintabs_active: maintab,
         maintabs_visible: maintab_visible,
+
+        active_cre: null,
         cre_accession_detail: accession,
+
 	configuregb_cre: accession,
 	configuregb_browser: null,
 	configuregb_cts: globals.cellTypeInfoArr.map(x => ({
 	    ...x,
 	    checked: false
 	})),
-        active_cre: null,
+
+	gb_cres: acession, // set of accessions to show in GB, and their metadata
+	
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",
         tree_nodes_compare : null

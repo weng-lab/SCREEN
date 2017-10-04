@@ -54,10 +54,10 @@ class GenomeBrowserWebService(object):
     "priority" : 1,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/hg19-cRE.CTCF.cREs.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
     "track" : "general_cREs_(9_state)_H3K27ac",
@@ -70,10 +70,10 @@ class GenomeBrowserWebService(object):
     "priority" : 2,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/hg19-cRE.Enhancer.cREs.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
     "track" : "general_cREs_(9_state)_H3K4me3",
@@ -86,10 +86,10 @@ class GenomeBrowserWebService(object):
     "priority" : 3,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/hg19-cRE.Promoter.cREs.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
     "track" : "cREs_in_K562_(5_group)",
@@ -102,10 +102,10 @@ class GenomeBrowserWebService(object):
     "priority" : 4,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/ENCFF686NUN_ENCFF689TMV_ENCFF000BWY_ENCFF000YMA.cREs.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
      "track" : "cREs_in_K562_with_high_DNase_(9_state)",
@@ -118,10 +118,10 @@ class GenomeBrowserWebService(object):
     "priority" : 5,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/ENCFF686NUN.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
       "track" : "cREs_in_K562_with_high_H3K4me3_(9_state)",
@@ -134,10 +134,10 @@ class GenomeBrowserWebService(object):
     "priority" : 6,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/ENCFF689TMV.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
     "track" : "cREs_in_K562_with_high_H3k27ac_(9_state)",
@@ -150,10 +150,10 @@ class GenomeBrowserWebService(object):
     "priority" : 7,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/ENCFF000BWY.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
      "track" : "cREs_in_K562_with_high_CTCF_(9_state)",
@@ -166,10 +166,10 @@ class GenomeBrowserWebService(object):
     "priority" : 8,
     "darkerLabels" : "on",
     "bigDataUrl" : "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/ENCFF000YMA.bigBed",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 },
 {
       "track" : "ENCFF686NUN_Signal_DNase_K562",
@@ -246,7 +246,7 @@ class GenomeBrowserWebService(object):
     "priority" : 14,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF227NLJ/@@download/ENCFF227NLJ.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -262,7 +262,7 @@ class GenomeBrowserWebService(object):
     "priority" : 15,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF852ZNV/@@download/ENCFF852ZNV.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -278,7 +278,7 @@ class GenomeBrowserWebService(object):
     "priority" : 16,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF079PRE/@@download/ENCFF079PRE.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -294,7 +294,7 @@ class GenomeBrowserWebService(object):
     "priority" : 17,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF000UOI/@@download/ENCFF000UOI.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -310,7 +310,7 @@ class GenomeBrowserWebService(object):
     "priority" : 18,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF000UOG/@@download/ENCFF000UOG.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -326,7 +326,7 @@ class GenomeBrowserWebService(object):
     "priority" : 19,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF425BKY/@@download/ENCFF425BKY.bigWig?proxy=true",
-    "color" : null,
+    "color" : None,
     "maxHeightPixels" : "128:32:8",
     "autoScale" : "off",
     "viewLimits" : "0:50"
@@ -342,9 +342,9 @@ class GenomeBrowserWebService(object):
     "priority" : 20,
     "darkerLabels" : "on",
     "bigDataUrl" : "https://www.encodeproject.org/files/ENCFF540IXI/@@download/ENCFF540IXI.bigBed?proxy=true",
-    "color" : null,
-    "maxHeightPixels" : null,
-    "autoScale" : null,
-    "viewLimits" : null
+    "color" : None,
+    "maxHeightPixels" : None,
+    "autoScale" : None,
+    "viewLimits" : None
 }
 ]
