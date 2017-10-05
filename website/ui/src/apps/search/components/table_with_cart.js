@@ -10,10 +10,40 @@ import loading from '../../../common/components/loading';
 import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
+
+import * as ApiClient from '../../../common/api_client';
+
+//var bigwig = require('../../../common/components/genomebrowser/external/igvjs/bigwig');
+//var bin = require('../../../common/components/genomebrowser/external/igvjs/bin.js');
+
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
+  this.state = { trackhub : [],
+                 isFetching: true, isError: false,minrange:0,maxrange: 0
+               }
         this.table_click_handler = this.table_click_handler.bind(this);
+    }
+    componentDidMount()
+    {
+      //this.loadTrackhub();
+    }
+    loadTrackhub()
+    {
+        const q = {assembly:""};
+        var jq = JSON.stringify(q);
+      //console.log("loadCREs....", this.state.jq, jq);
+      this.setState({isFetching: true});
+      ApiClient.getByPost(jq, "/gbws/trackhub",
+        (r) => {
+      console.log(r);
+          },
+        (msg) => {
+      console.log("err loading cres for table");
+      console.log(msg);
+      this.setState({trackhub: [],
+               isFetching: false, isError: true});
+        });
     }
 
     table_click_handler(td, rowdata, actions){
@@ -44,8 +74,9 @@ class TableWithCart extends React.Component {
         }
         if(td.indexOf("selectcre")!==-1)
         {
+          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)
           let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
-            actions.selectcre(accessiondetails);
+          this.setState({minrange: rowdata.start,maxrange:maxrange},()=>{ actions.selectcre(accessiondetails)})
         }
         else {
           let cre = {...rowdata, ...rowdata.info};
@@ -293,7 +324,14 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-
+  let gb
+  if(Object.keys(this.props.gb_cres).length === 0 && this.props.gb_cres.constructor === Object)
+  {
+     gb=null;
+  }
+  else {
+     gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange}/>)
+  }
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -309,7 +347,8 @@ class TableWithCart extends React.Component {
 			</ul>
 		    </ul>
 		</div>
-    <GenomeBrowser/>
+
+     {gb}
 
 		<Ztable data={data}
                         order={table_order}

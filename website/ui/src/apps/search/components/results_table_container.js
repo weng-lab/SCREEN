@@ -197,6 +197,7 @@ console.log("cresWithChecks :",cresWithChecks)
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
+      gb_cres={this.props.gb_cres}
 		/>
 	    </div>);
     }

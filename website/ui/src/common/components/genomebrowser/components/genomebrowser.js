@@ -2,7 +2,8 @@
   import ReactDOM from 'react-dom';
   import * as d3 from "d3";
   import '../../../../css.css'
-
+  //var bigwig = require('../external/igvjs/bigwig');
+  //var bin = require('../external/igvjs/bin.js');
   class Polylines extends React.Component {
 
      render() {
@@ -117,7 +118,7 @@
   }
   class GenomeBrowser extends React.Component {
 
-       static defaultProps = { width: 1200, height: 200,minrange: 5270000 ,maxrange:5285231, marginleft:100,marginright: 100};
+       static defaultProps = { width: 1200, height: 200, marginleft:100,marginright: 100};
        constructor(props)
        {
          super(props)
@@ -130,7 +131,22 @@
                         isModalOpen: false, showK562: false,height:50,signaltype : {}
                       }
        }
+       componentWillReceiveProps(nextProps)  {
+         this.changerange(nextProps);
+       }
+       componentWillMount(nextProps)
+       {
+         this.changerange(nextProps);
+       }
+       changerange(nextProps)
+       {
+         this.setState({ x : d3.scaleLinear().domain([this.props.minrange,this.props.maxrange]).range([this.props.marginleft , this.props.width ])})
+       }
 
+       componentDidMount()
+       {
+
+       }
        updateforwardSize = (e) =>
        {
                   var range =0;
