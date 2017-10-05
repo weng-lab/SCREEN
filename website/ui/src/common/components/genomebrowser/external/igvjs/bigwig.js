@@ -594,7 +594,6 @@ BigWigView.prototype.getFirstAdjacentById = function(chr, pos, dir, callback) {
     }
 
     var cirFobStartFetch = function(offset, fr, level, attempts) {
-        var length = fr.max() - fr.min();
         thisB.bwg.data.slice(fr.min(), fr.max() - fr.min()).fetch(function(resultBuffer) {
             for (var i = 0; i < offset.length; ++i) {
                 if (fr.contains(offset[i])) {
@@ -729,7 +728,7 @@ BigWig.prototype.getZoomedView = function(z) {
     return zh.view;
 }
 
-function makeBwg(data, callback, name) {
+export function makeBwg(data, callback, name) {
     var bwg = new BigWig();
     bwg.data = data;
     bwg.name = name;

@@ -3,8 +3,9 @@ export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
     const server = "http://megatux.purcaro.com:9006";
-    const override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
+    let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
 		      "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
+    override = {};
     if(b in override){
 	return override[b];
     }

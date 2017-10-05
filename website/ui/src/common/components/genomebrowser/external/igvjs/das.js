@@ -12,17 +12,10 @@
 // DAS 1.6 features command
 //
 
-function DASFeature() {
+export function DASFeature() {
 }
 
-function DASGroup(id) {
+export function DASGroup(id) {
     if (id)
         this.id = id;
-}
-
-if (typeof(module) !== 'undefined') {
-    module.exports = {
-        DASGroup: DASGroup,
-        DASFeature: DASFeature,
-    };
 }
