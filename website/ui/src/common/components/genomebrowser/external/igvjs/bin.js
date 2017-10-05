@@ -1,15 +1,18 @@
-/* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+export function URLFetchable(url, start, end, opts) {
+    if (!opts) {
+        if (typeof start === 'object') {
+            opts = start;
+            start = undefined;
+        } else {
+            opts = {};
+        }
+    }
 
-// 
-// Dalliance Genome Explorer
-// (c) Thomas Down 2006-2011
-//
-// bin.js general binary data support
-//
-
-// Read from Uint8Array
-
-export const readInt = (ba, offset) => {
-    return (ba[offset + 3] << 24) | (ba[offset + 2] << 16) | (ba[offset + 1] << 8) | (ba[offset]);
+    this.url = url;
+    this.start = start || 0;
+    if (end) {
+        this.end = end;
+    }
+    this.opts = opts;
 }
 
