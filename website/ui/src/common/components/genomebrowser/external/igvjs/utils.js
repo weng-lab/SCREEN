@@ -7,7 +7,6 @@
 // utils.js: odds, sods, and ends.
 //
 
-define(function(require, exports, module) {
 "use strict";
 
 function pusho(obj, k, v) {
@@ -32,4 +31,3 @@ if (typeof(module) !== 'undefined') {
         pusho: pusho,
     };
 }
-});

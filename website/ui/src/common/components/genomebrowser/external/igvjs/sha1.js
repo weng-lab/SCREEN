@@ -6,7 +6,6 @@
  * Distributed under the BSD License
  * See http://pajhome.org.uk/crypt/md5 for details.
  */
-define(function(require, exports, module) {
  "use strict";
 
 /*
@@ -337,4 +336,3 @@ if (typeof(module) !== 'undefined') {
     hex_sha1: hex_sha1
   };
 }
-});

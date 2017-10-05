@@ -9,6 +9,9 @@
 
 "use strict";
 
+/*global FileReaderSync b:true*/
+/*eslint no-undef: "error"*/
+
 if (typeof(require) !== 'undefined') {
     var utils = require('./utils');
     var shallowCopy = utils.shallowCopy;

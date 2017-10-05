@@ -7,7 +7,6 @@
 // das.js: queries and low-level data model.
 //
 
-define(function(require, exports, module) {
 "use strict";
 
 if (typeof(require) !== 'undefined') {
@@ -31,4 +30,3 @@ if (typeof(module) !== 'undefined') {
         DASFeature: DASFeature,
     };
 }
-});
