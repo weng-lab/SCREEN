@@ -11,75 +11,54 @@ import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 
-import * as ApiClient from '../../../common/api_client';
 
-var bigwig = require('../../../common/components/genomebrowser/external/igvjs/bigwig');
-var bin = require('../../../common/components/genomebrowser/external/igvjs/bin.js');
 
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-  this.state = { trackhub : [],
-                 isFetching: true, isError: false,minrange:0,maxrange: 0
-               }
+  this.state = { minrange:0,maxrange: 0,selectedaccession: {}}
         this.table_click_handler = this.table_click_handler.bind(this);
     }
-    componentDidMount()
-    {
-       this.loadTrackhub();
-    }
-    loadTrackhub()
-    {
-        const q = {};
-        var jq = JSON.stringify(q);
-        console.log("jq: ",jq)
-      //console.log("loadCREs....", this.state.jq, jq);
-      this.setState({isFetching: true});
-      ApiClient.getByPost(jq, "/gbws/trackhub",
-        (r) => {
-      console.log(r);
-          },
-        (msg) => {
-      console.log("err loading trackhub");
-      console.log(msg);
-      this.setState({trackhub: [],
-               isFetching: false, isError: true});
-        });
-    }
 
-    table_click_handler(td, rowdata, actions){
-        if (td.indexOf("browser") !== -1) {
-	    let cre = {...rowdata, ...rowdata.info};
-	    actions.showGenomeBrowser(cre, "");
-	    return;
-	}
-        if (td.indexOf("geneexp") !== -1) {
-	    return;
-	}
-        if (td.indexOf("cart") !== -1) {
-	    //console.log(rowdata.info);
+    table_click_handler(td, rowdata, actions)
+    {
+        if (td.indexOf("browser") !== -1)
+        {
+    	    let cre = {...rowdata, ...rowdata.info};
+    	    actions.showGenomeBrowser(cre, "");
+    	    return;
+	      }
+        if (td.indexOf("geneexp") !== -1)
+        {
+    	    return;
+	      }
+        if (td.indexOf("cart") !== -1)
+        {
+
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
-	    let j = {assembly: this.props.assembly, accessions};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/set",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {
-                }
-	    });
-	    actions.setCart(accessions);
-	    return;
+      	    let j = {assembly: this.props.assembly, accessions};
+      	    $.ajax({
+      		type: "POST",
+      		url: "/cart/set",
+      		data: JSON.stringify(j),
+      		dataType: "json",
+      		contentType: "application/json",
+      		success: (response) => {
+                      }
+      	    });
+      	    actions.setCart(accessions);
+	          return;
         }
         if(td.indexOf("selectcre")!==-1)
         {
-          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)
+          let minrange =parseInt(rowdata.start) - 20000
+          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +20000
           let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
-          this.setState({minrange: rowdata.start,maxrange:maxrange},()=>{ actions.selectcre(accessiondetails)})
+          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails },()=>{ actions.selectcre(accessiondetails)})
         }
-        else {
+        else
+        {
           let cre = {...rowdata, ...rowdata.info};
                 actions.showReDetail(cre);
         }
@@ -325,13 +304,11 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-  let gb
-  if(Object.keys(this.props.gb_cres).length === 0 && this.props.gb_cres.constructor === Object)
+  let gb = null;
+  if(Object.keys(this.props.gb_cres).length !== 0)
   {
-     gb=null;
-  }
-  else {
-     gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange}/>)
+    gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
+
   }
 	return (
             <div ref={"searchTable"}

@@ -3,8 +3,11 @@
   import * as d3 from "d3";
   import '../../../../css.css'
   import Modal from './modal'
-  //var bigwig = require('../external/igvjs/bigwig');
-  //var bin = require('../external/igvjs/bin.js');
+  import Rects from './rects'
+  import ToolTip from './tooltip'
+  import * as ApiClient from '../../../api_client';
+  var bigwig = require('../external/igvjs/bigwig');
+  var bin = require('../external/igvjs/bin.js');
   class Polylines extends React.Component {
 
      render() {
@@ -129,24 +132,122 @@
                         chrom : 'chr11', bp : (this.props.maxrange -this.props.minrange),
                         x : d3.scaleLinear().domain([this.props.minrange,this.props.maxrange]).range([this.props.marginleft , this.props.width ]),
                         bbdata: {},bwdata :{} ,bwinput : [],bbinput: [],checkedstatus: {},exons : [],
-                        isModalOpen: false, showK562: false,height:50,signaltype : {}
+                        isModalOpen: false, showK562: false,height:50,signaltype : {},isFetching: true, isError: false,input: []
                       }
        }
-       componentWillReceiveProps(nextProps)  {
-         this.changerange(nextProps);
-       }
-       componentWillMount(nextProps)
+       showToolTip = (e) =>
        {
-         this.changerange(nextProps);
+           this.setState({tooltip:{
+               display:true,
+               data: {
+                   width:e.target.getAttribute('width'),
+                   height:e.target.getAttribute('height'),
+                   value:e.target.getAttribute('data-value')
+                   },
+               pos:{
+                   x:e.target.getAttribute('x'),
+                   y:e.target.getAttribute('y')
+                   }
+               }
+           });
        }
-       changerange(nextProps)
+       hideToolTip =(e) =>
        {
-         this.setState({ x : d3.scaleLinear().domain([this.props.minrange,this.props.maxrange]).range([this.props.marginleft , this.props.width ])})
+           this.setState({tooltip:{ display:false,data:{width:'',height:'',value:''},pos:{x:'',y:''}}});
        }
+       componentWillMount(){
+          this.changerange();
+       }
+       componentWillReceiveProps()  {
+         this.changerange();
+       }
+       changerange()
+       {
+         this.setState({xminrange:this.props.minrange,xmaxrange:this.props.maxrange},() =>{
+             var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
+           this.setState({x:xrange},() =>{
+             this.readBigBed();
+             this.readBigWig();
+           });
+           })
 
+       }
        componentDidMount()
        {
+         this.loadThub()
+       }
+       loadThub()
+       {
+         const q = {assembly: this.props.assembly};
+         var jq = JSON.stringify(q);
+         this.setState({isFetching: true});
+         ApiClient.getByPost(jq, "/gbws/trackhub",
+         (r) => {
+                  this.setState({input: r});
+             },
+           (msg) => {
+         console.log("err loading trackhub");
+         console.log(msg);
+        this.setState({bbinput: [],
+                 isFetching: false, isError: true});
+           });
+       }
+       handlecheck = (e) =>
+       {
+         let key = e.target.id;
+         let c = this.refs[key].checked;
+         this.setState({checkedstatus: Object.assign({},this.state.checkedstatus,{ [key]: c })});
+         if(c===false)
+         {
+              let signaltype =this.state.signaltype,obj
+              Object.keys(signaltype).forEach(function(k)
+              {
+                if(key===k)
+                {
+                   obj = signaltype[k];
+                }
+              });
+              if(obj === "bigbed")
+              {
+               this.setState((prevState)=> {return{height:prevState.height - 40}});
+               let bb = this.state.bbdata;
+               delete bb[key];
 
+               this.setState(
+               {
+                   bbdata: bb// Object.assign( {},this.state.bbdata, { [key]: [] })
+               });
+              }
+              else if (obj === "bigwig") {
+                this.setState((prevState)=> {return{height:prevState.height - 100}});
+                let bw = this.state.bbdata;
+                delete bw[key];
+                this.setState(
+                {
+                    bwdata: bw//Object.assign({},this.state.bwdata,{ [key]: [] })
+                });
+               }
+         }
+         else {
+
+               let input=this.state.input;
+
+               for (let j = 0; j < input.length; j++)
+               {
+                 if(input[j]["shortLabel"]===key &&  input[j]["type"]!=="bigWig")
+                 {
+                   this.setState((prevState)=> {return{height:prevState.height + 50}});
+                   this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigbed" })});
+                   this.setState({ bbinput: [...this.state.bbinput, input[j]] },()=> {this.readBigBed()})
+                 }
+                 else if(input[j]["shortLabel"]===key &&  input[j]["type"]==="bigWig")
+                 {
+                   this.setState((prevState)=> {return{height:prevState.height + 100}});
+                   this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+                   this.setState({ bwinput: [...this.state.bwinput, input[j]] },()=> {this.readBigWig()})
+                 }
+               }
+         }
        }
        closeModal = () =>
        {
@@ -154,54 +255,145 @@
        }
        loadTrackhub = () =>
        {
-          this.setState({ isModalOpen: true })
+          this.setState({ isModalOpen: true },()=>{this.loadcheckboxes()})
+       }
+       readBigWig()
+       {
+         let bwurl =[];
+         bwurl = this.state.bwinput;
+         let start= this.state.xminrange,end=this.state.xmaxrange,chrom=this.state.chrom;
+         let urlLength = bwurl.length;
+
+         for (let j = 0; j < urlLength; j++)
+         {
+           let key = bwurl[j]["shortLabel"],
+           url = bwurl[j]["bigDataUrl"],
+           color = bwurl[j]["color"],
+           viewLimits = bwurl[j]["viewLimits"],
+           shortLabel = bwurl[j]["shortLabel"];
+           bigwig.makeBwg(new bin.URLFetchable(url), function(bwg, err) {
+           if (bwg)
+           {
+            let data,zoomFactor=-1;
+            if (zoomFactor< 0)
+            {
+              data = bwg.getUnzoomedView();
+            } else {
+              data = bwg.getZoomedView();
+            }
+
+            data.readWigData(chrom, start, end, function(data, err)
+            {
+              if(data)
+              {
+                  this.setState(
+                    {
+                        bwdata: Object.assign(
+                          {},
+                          this.state.bwdata,
+                          { [key]:[data,bwurl[j]["longLabel"],shortLabel,color,viewLimits] }
+                        )
+                    });
+              }
+              else
+              {
+                    console.log("error!", err);
+              }
+            }.bind(this));
+            }
+            else
+            {
+            console.log("error!", err);
+            }
+          }.bind(this));
+        }
+       }
+       readBigBed()
+       {
+         let bburl = this.state.bbinput;
+         for (let j = 0; j < bburl.length; j++)
+         {
+             let key = bburl[j]["shortLabel"],
+             longLabel = bburl[j]["longLabel"],
+             shortLabel = bburl[j]["shortLabel"];
+             let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
+             bigwig.makeBwg(new bin.URLFetchable("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed"), function(bwg, err)
+                {
+                  if(bwg)
+                  {
+                     let data,zoomFactor=-1;
+                     if (zoomFactor< 0)
+                      data = bwg.getUnzoomedView();
+                     else
+                      data = bwg.getZoomedView();
+                     data.readWigData(chrom, start, end, function(data, err)
+                     {
+                        if(data)
+                        {
+                          this.setState({
+                        bbdata: Object.assign(
+                          {},
+                          this.state.bbdata,
+                          { [key]: [data,longLabel,shortLabel] }
+                        )})
+                        }
+                        else
+                          console.log("error!", err);
+
+                     }.bind(this));
+                  }
+                  else
+                    console.log("error!", err);
+
+                }.bind(this));
+          }
        }
        updateforwardSize = (e) =>
        {
-                  var range =0;
-                  if (e.target.id==='forwardbtn10')
-                  {
-                     range=Math.round(this.state.bp *0.10);
-                  }
-                  else if(e.target.id==='forwardbtn47.5')
-                  {
-                    range=Math.round(this.state.bp *0.475);
-                  }
-                  else if (e.target.id==='forwardbtn95')
-                  {
-                      range=Math.round(this.state.bp *0.95);
-                  }
-                 this.setState((prevState) =>
-                  {
-                    return {xminrange: parseInt(prevState.xminrange) + parseInt(range),xmaxrange: parseInt(prevState.xmaxrange) + parseInt(range)};
-                  },() => {
-                       let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
-                       this.setState({x:xrange},() => { //this.readBigBed();this.readBigWig();
-                       })
-                  });
+          var range =0;
+          if (e.target.id==='forwardbtn10')
+          {
+             range=Math.round(this.state.bp *0.10);
+          }
+          else if(e.target.id==='forwardbtn47.5')
+          {
+            range=Math.round(this.state.bp *0.475);
+          }
+          else if (e.target.id==='forwardbtn95')
+          {
+              range=Math.round(this.state.bp *0.95);
+          }
+         this.setState((prevState) =>
+          {
+            return {xminrange: parseInt(prevState.xminrange) + parseInt(range),xmaxrange: parseInt(prevState.xmaxrange) + parseInt(range)};
+          },() => {
+               let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
+               this.setState({x:xrange},() => { this.readBigBed();this.readBigWig();
+               })
+          });
        }
        updatebackwardSize = (e) =>
        {
-            var range =0;
-            if (e.target.id==='backwardbtn10')
-            {
-                     range=Math.round(this.state.bp *0.10);
-            }
-            else if(e.target.id==='backwardbtn47.5')
-            {
-                    range=Math.round(this.state.bp *0.475);
-            }
-            else if (e.target.id==='backwardbtn95')
-            {
-                    range=Math.round(this.state.bp *0.95);
-            }
-            this.setState((prevState) => {
-                      return {xminrange: parseInt(prevState.xminrange) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange) - parseInt(range,10)};
-                    },() => {
-                      var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-                       this.setState({x:xrange},() => {//this.readBigBed(); this.readBigWig();
-                        })
-                      });
+          var range =0;
+          if (e.target.id==='backwardbtn10')
+          {
+                   range=Math.round(this.state.bp *0.10);
+          }
+          else if(e.target.id==='backwardbtn47.5')
+          {
+                  range=Math.round(this.state.bp *0.475);
+          }
+          else if (e.target.id==='backwardbtn95')
+          {
+                  range=Math.round(this.state.bp *0.95);
+          }
+          this.setState((prevState) => {
+                    return {xminrange: parseInt(prevState.xminrange) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange) - parseInt(range,10)};
+                  },() => {
+                    var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
+                     this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig();
+                      })
+                    });
        }
        zoomin = (e) =>
        {
@@ -228,7 +420,7 @@
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},()=>{ //this.readBigBed(); this.readBigWig();
+             this.setState({x:xrange},()=>{ this.readBigBed(); this.readBigWig();
              });
               })
             });
@@ -258,10 +450,13 @@
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},() =>{ //this.readBigBed(); this.readBigWig();
+             this.setState({x:xrange},() =>{ this.readBigBed(); this.readBigWig();
              });
            })
          });
+       }
+       pasteonselect = (e) => {
+        this.refs.itext.value =e.target.value;
        }
        buttonclick = () =>
        {
@@ -279,8 +474,8 @@
            this.setState({xminrange:iv[0],xmaxrange:iv[1]},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
-            // this.readBigBed();
-            // this.readBigWig();
+             this.readBigBed();
+             this.readBigWig();
            });
          })
          this.setState({chrom:ivc[0]});
@@ -288,14 +483,94 @@
          }
 
        }
+       toggleshow = () =>
+       {
+          this.setState((prevState)=> {return{showK562:!prevState.showK562}},()=>{
+            if(this.state.showK562===true)
+            this.loadcheckboxes();
+          });
+       }
+       loadcheckboxes = () =>
+       {
+         let checkedstatus =  this.state.checkedstatus, _self = this;
+         Object.keys(checkedstatus).forEach(function(key)
+         {
+               let obj = checkedstatus[key];
+               if(obj ===true)
+               {
+                _self.refs[key].checked = true;
+               }
+         });
+       }
        render()
        {
-         let currentrange = this.state.chrom+":"+this.state.xminrange+"-"+this.state.xmaxrange;
-          let bp = parseInt(this.state.bp,10)+1;
-          let  xAxis = d3.axisBottom().scale(this.state.x);
-          let xGrid = d3.axisBottom().scale(this.state.x).ticks(100).tickSize(this.state.height, 0, 0).tickFormat("");
+           let currentrange = this.state.chrom+":"+this.state.xminrange+"-"+this.state.xmaxrange;
+           let bp = parseInt(this.state.bp,10)+1;
+           let  xAxis = d3.axisBottom().scale(this.state.x);
+           let  xGrid = d3.axisBottom().scale(this.state.x).ticks(100).tickSize(this.state.height, 0, 0).tickFormat("");
+           let bigbed = this.state.bbdata, bigwig = this.state.bwdata,bbarr = [],bwarr = [];
+           let _self=this,rects = [],r=70,pls=[],diff,max,show,hide,labels,k562lables,crerect;
+           max =   parseInt(this.props.selectedaccession.start) + parseInt(this.props.selectedaccession.len)
+           diff = this.state.x(max)-this.state.x(this.props.selectedaccession.start)
 
+           if(Object.keys(this.state.bbdata).length !== 0 || Object.keys(this.state.bwdata).length !== 0)
+           {
+               crerect = (<rect x={this.state.x(this.props.selectedaccession.start)} y={20} style={{opacity:"0.5",fill:"lightblue"}} data-value={this.props.selectedaccession.accession} width={diff} height={this.state.height} onMouseOver={this.showToolTip} onMouseOut={this.hideToolTip}/>)
+           }
 
+           //Modal Tracks
+           if(this.state.isModalOpen===true)
+           {
+              show =   <input type="submit" value="+" onClick={_self.toggleshow}/>;
+              hide =   <input type="submit" value="-" onClick={_self.toggleshow}/>;
+           }
+
+           //Labels
+            labels =this.state.input.map((d,i) => {
+             if(d.parent==="")
+             return ( <div key={i}> <input type="checkbox" ref={d.shortLabel} onClick={_self.handlecheck} id={d.shortLabel} key={i} value={d.longLabel} ></input> {d.longLabel} </div>);
+             else return []
+           });
+
+           //showK562 Labels
+           if(this.state.showK562===true)
+           {
+             k562lables =this.state.input.map((d,i) => {
+              if(d.parent!=="")
+              return ( <div key={i}> <input type="checkbox" ref={d.shortLabel} onClick={_self.handlecheck} id={d.shortLabel} key={i} value={d.longLabel} ></input> {d.longLabel}</div>);
+               else return []
+            });
+           }
+          //bigbed rects
+           Object.keys(bigbed).forEach(function (key)
+           {
+             let obj = bigbed[key];
+             bbarr = [];
+             bbarr.push(obj[0])
+             if(obj[0]!==undefined)
+             {
+               rects.push(bbarr.map((d) =>
+               {
+                   return (<Rects text={obj[1]} data={d} leftMargin={_self.props.marginleft} width={_self.props.width} shortLabel={obj[2]} key={r} x={_self.state.x} min={_self.state.xminrange} max={_self.state.xmaxrange} y={r}  showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}   />);           }));
+               r+=40;
+             }
+
+           });
+           //bigwig signals
+            Object.keys(bigwig).forEach(function(key)
+            {
+                let obj = bigwig[key];
+                bwarr = [];
+                bwarr.push(obj[0])
+                if(obj[0]!==undefined)
+                {
+                  pls.push(bwarr.map((d)=>
+                  {
+                      return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
+                  }));
+                  r+=100;
+                }
+            });
           return (
               <div>
               <div className="search">
@@ -304,18 +579,29 @@
                 <input type="submit" onClick={this.buttonclick} value="Search" />
                 <br/>
                 <br/>
-                <MoveZoom loadTrackhub={this.loadTrackhub} backward={this.updatebackwardSize} forward={this.updateforwardSize} zoomin={this.zoomin} zoomout={this.zoomout}/>
+                <MoveZoom loadTrackhub={this.loadTrackhub} backward={this.updatebackwardSize} forward={this.updateforwardSize} zoomin={this.zoomin} zoomout={this.zoomout} />
               </div>
               { this.state.isModalOpen && <Modal onClose={this.closeModal}>
-                <div >
-                  nishi
+                <div className="chkbox">
+                  {labels}
+                   <br/>
+                  K562 Tracks &nbsp;{show}{hide} <br/>
+                  <br/>
+                  {k562lables}
+                  <br/>
+                  <button onClick={this.closeModal}>Close</button>
                   </div>
               </Modal> }
               <svg width={this.props.width+50} height={this.state.height}>
                   <g transform="translate(0,20)">
+                    <ToolTip tooltip={this.state.tooltip}/>
                     <Axis axis={xAxis} />
                     <Grid h={this.props.height} grid={xGrid} gridType="y"/>
                   </g>
+                  {crerect}
+                  {this.state.bbdata && rects}
+                  {this.state.bwdata && pls}
+
               </svg>
               </div>
           );

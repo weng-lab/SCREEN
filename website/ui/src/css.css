@@ -723,3 +723,11 @@ table-sort-desc::after {
 padding-left:115px;
 
 }
+.chkbox
+{
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  border-style: solid;
+}
