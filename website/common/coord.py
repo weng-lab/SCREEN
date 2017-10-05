@@ -1,8 +1,8 @@
 class Coord:
     def __init__(self, chrom, start, end):
         self.chrom = chrom
-        self.start = start
-        self.end = end
+        self.start = int(start)
+        self.end = int(end)
 
     def __repr__(self):
         return "{chrom}:{start}-{end}".format(chrom=self.chrom,
