@@ -9,7 +9,7 @@
 						"test": "react-scripts test --env=jsdom",
 						"eject": "react-scripts eject"
 			},
-    "homepage": "http://megatux.purcaro.com:9006",
+			"homepage": "http://megatux.purcaro.com:9006",
 			"devDependencies": {},
 			"dependencies": {
 						"bootstrap": "3",
@@ -17,6 +17,7 @@
 						"enumify": "^1.0.4",
 						"jquery": "^3.2.1",
 						"jquery-ui": "github:jquery/jquery-ui#1.12.1",
+						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
 						"react": "^16.0.0",
 						"react-bootstrap": "^0.31.2",

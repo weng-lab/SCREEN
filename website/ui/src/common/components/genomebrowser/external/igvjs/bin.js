@@ -7,12 +7,8 @@
 // bin.js general binary data support
 //
 
-var utils = require('./utils');
-
-var sha1 = require('./sha1');
-var b64_sha1 = sha1.b64_sha1;
-
-var Promise = require('es6-promise').Promise;
+import Hashes from 'jshashes';
+import {shallowCopy} from './utils';
 
 var seed=0;
 var isSafari = typeof(navigator) !== 'undefined' &&
@@ -77,7 +73,7 @@ export class URLFetchable{
 
     slice(s, l) {
         if (s < 0) {
-            throw 'Bad slice ' + s;
+            throw Error('Bad slice ' + s);
         }
 
         var ns = this.start, ne = this.end;
@@ -95,7 +91,7 @@ export class URLFetchable{
     }
 
     salted() {
-        var o = utils.shallowCopy(this.opts);
+        var o = shallowCopy(this.opts);
         o.salt = true;
         return new URLFetchable(this.url, this.start, this.end, o);
     }
@@ -141,26 +137,28 @@ export class URLFetchable{
                 var req = new XMLHttpRequest();
                 var length;
                 if ((isSafari || thisB.opts.salt) && url.indexOf('?') < 0) {
-                    url = url + '?salt=' + b64_sha1('' + Date.now() + ',' + (++seed));
+                    const str = '' + Date.now() + ',' + (++seed);
+                    const hash = new Hashes.SHA1().b64(str)
+                    url = url + '?salt=' + hash;
                 }
                 req.open('GET', url, true);
                 req.overrideMimeType('text/plain; charset=x-user-defined');
                 if (thisB.end) {
                     if (thisB.end - thisB.start > 100000000) {
-                        throw 'Monster fetch!';
+                        throw Error('Monster fetch!');
                     }
                     req.setRequestHeader('Range', 'bytes=' + thisB.start + '-' + thisB.end);
                     length = thisB.end - thisB.start + 1;
                 }
                 req.responseType = 'arraybuffer';
                 req.onreadystatechange = function() {
-                    if (req.readyState == 4) {
+                    if (req.readyState === 4) {
                         if (timeout)
                             clearTimeout(timeout);
-                        if (req.status == 200 || req.status == 206) {
+                        if (req.status === 200 || req.status === 206) {
                             if (req.response) {
                                 var bl = req.response.byteLength;
-                                if (length && length != bl && (!truncatedLength || bl != truncatedLength)) {
+                                if (length && length !== bl && (!truncatedLength || bl !== truncatedLength)) {
                                     return thisB.fetch(callback, {attempt: attempt + 1, truncatedLength: bl});
                                 } else {
                                     return callback(req.response);
@@ -169,7 +167,7 @@ export class URLFetchable{
                                 return callback(req.mozResponseArrayBuffer);
                             } else {
                                 var r = req.responseText;
-                                if (length && length != r.length && (!truncatedLength || r.length != truncatedLength)) {
+                                if (length && length !== r.length && (!truncatedLength || r.length !== truncatedLength)) {
                                     return thisB.fetch(callback, {attempt: attempt + 1, truncatedLength: r.length});
                                 } else {
                                     return callback(bstringToBuffer(req.responseText));
@@ -204,38 +202,4 @@ function bstringToBuffer(result) {
         ba[i] = result.charCodeAt(i);
     }
     return ba.buffer;
-}
-
-// Read from Uint8Array
-
-var convertBuffer = new ArrayBuffer(8);
-var ba = new Uint8Array(convertBuffer);
-var fa = new Float32Array(convertBuffer);
-
-function readFloat(buf, offset) {
-    ba[0] = buf[offset];
-    ba[1] = buf[offset+1];
-    ba[2] = buf[offset+2];
-        ba[3] = buf[offset+3];
-    return fa[0];
-}
-
-function readInt64(ba, offset) {
-    return (ba[offset + 7] << 24) | (ba[offset + 6] << 16) | (ba[offset + 5] << 8) | (ba[offset + 4]);
-}
-
-function readInt(ba, offset) {
-    return (ba[offset + 3] << 24) | (ba[offset + 2] << 16) | (ba[offset + 1] << 8) | (ba[offset]);
-}
-
-function readShort(ba, offset) {
-    return (ba[offset + 1] << 8) | (ba[offset]);
-}
-
-function readByte(ba, offset) {
-    return ba[offset];
-}
-
-function readIntBE(ba, offset) {
-    return (ba[offset] << 24) | (ba[offset + 1] << 16) | (ba[offset + 2] << 8) | (ba[offset + 3]);
 }
