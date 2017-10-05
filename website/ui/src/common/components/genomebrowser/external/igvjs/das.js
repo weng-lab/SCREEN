@@ -7,10 +7,6 @@
 // das.js: queries and low-level data model.
 //
 
-"use strict";
-
-if (typeof(require) !== 'undefined') {
-}
 
 //
 // DAS 1.6 features command

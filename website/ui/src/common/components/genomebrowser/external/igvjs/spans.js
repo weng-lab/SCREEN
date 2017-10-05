@@ -7,12 +7,11 @@
 // spans.js: JavaScript Intset/Location port.
 //
 
-"use strict";
-
 function Range(min, max)
 {
-    if (typeof(min) != 'number' || typeof(max) != 'number')
-        throw 'Bad range ' + min + ',' + max;
+    if (typeof(min) !== 'number' || typeof(max) !== 'number'){
+        throw new Error('Bad range ' + min + ',' + max);
+    }
     this._min = min;
     this._max = max;
 }
@@ -171,9 +170,9 @@ function union(s0, s1) {
     return s0;
 }
 
-function intersection(s0, s1) {
-    var r0 = s0.ranges();
-    var r1 = s1.ranges();
+function intersection(ss0, ss1) {
+    var r0 = ss0.ranges();
+    var r1 = ss1.ranges();
     var l0 = r0.length, l1 = r1.length;
     var i0 = 0, i1 = 0;
     var or = [];
@@ -192,9 +191,9 @@ function intersection(s0, s1) {
         }
     }
 
-    if (or.length == 0) {
+    if (or.length === 0) {
         return null; // FIXME
-    } else if (or.length == 1) {
+    } else if (or.length === 1) {
         return or[0];
     } else {
         return new _Compound(or);

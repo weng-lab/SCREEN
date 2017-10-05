@@ -64,11 +64,8 @@ BigWig.prototype.readChromTree = function(callback) {
         var ba = new Uint8Array(bpt);
         var sa = new Int16Array(bpt);
         var la = new Int32Array(bpt);
-        var bptMagic = la[0];
-        var blockSize = la[1];
         var keySize = la[2];
-        var valSize = la[3];
-        var itemCount = bwg_readOffset(ba, 16);
+
         var rootNodeOffset = 32;
 
         var bptReadNode = function(offset) {

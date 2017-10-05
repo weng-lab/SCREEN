@@ -7,8 +7,6 @@
 // utils.js: odds, sods, and ends.
 //
 
-"use strict";
-
 function pusho(obj, k, v) {
     if (obj[k]) {
         obj[k].push(v);
