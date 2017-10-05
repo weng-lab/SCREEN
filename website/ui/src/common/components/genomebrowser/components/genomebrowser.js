@@ -1,14 +1,15 @@
-  import React from 'react';
-  import ReactDOM from 'react-dom';
-  import * as d3 from "d3";
-  import '../../../../css.css'
-  import Modal from './modal'
-  import Rects from './rects'
-  import ToolTip from './tooltip'
-  import * as ApiClient from '../../../api_client';
-  var bigwig = require('../external/igvjs/bigwig');
-  var bin = require('../external/igvjs/bin.js');
-  class Polylines extends React.Component {
+import React from 'react';
+import ReactDOM from 'react-dom';
+import * as d3 from "d3";
+import '../../../../css.css'
+import Modal from './modal'
+import Rects from './rects'
+import ToolTip from './tooltip'
+import * as ApiClient from '../../../api_client';
+import {makeBwg} from '../external/igvjs/bigwig';
+import {URLFetchable} from '../external/igvjs/bin';
+
+class Polylines extends React.Component {
 
      render() {
           var _self=this;
@@ -271,7 +272,7 @@
            color = bwurl[j]["color"],
            viewLimits = bwurl[j]["viewLimits"],
            shortLabel = bwurl[j]["shortLabel"];
-           bigwig.makeBwg(new bin.URLFetchable(url), function(bwg, err) {
+           makeBwg(new URLFetchable(url), function(bwg, err) {
            if (bwg)
            {
             let data,zoomFactor=-1;
@@ -317,7 +318,7 @@
              longLabel = bburl[j]["longLabel"],
              shortLabel = bburl[j]["shortLabel"];
              let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
-             bigwig.makeBwg(new bin.URLFetchable("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed"), function(bwg, err)
+             makeBwg(new URLFetchable("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed"), function(bwg, err)
                 {
                   if(bwg)
                   {
