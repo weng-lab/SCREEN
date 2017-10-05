@@ -12,8 +12,8 @@ export default class Modal extends React.Component {
 
    let modalStyle = {
      position: 'absolute',
-     top: '20%',
-     left: '20%',
+     top: '350px',
+     left: '20px',
      transform: 'translate(-20%, -20%)',
      zIndex: '9999',
      background: '#fff'
@@ -23,7 +23,7 @@ export default class Modal extends React.Component {
      position: 'absolute',
      width: '100%',
      height: '100%',
-     top: '0px',
+     top: '300px',
      left: '0px',
      zIndex: '9998',
      background: 'rgba(0, 0, 0, 0.3)'

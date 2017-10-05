@@ -13,8 +13,8 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 
 import * as ApiClient from '../../../common/api_client';
 
-//var bigwig = require('../../../common/components/genomebrowser/external/igvjs/bigwig');
-//var bin = require('../../../common/components/genomebrowser/external/igvjs/bin.js');
+var bigwig = require('../../../common/components/genomebrowser/external/igvjs/bigwig');
+var bin = require('../../../common/components/genomebrowser/external/igvjs/bin.js');
 
 class TableWithCart extends React.Component {
     constructor(props) {
@@ -26,12 +26,13 @@ class TableWithCart extends React.Component {
     }
     componentDidMount()
     {
-      //this.loadTrackhub();
+       this.loadTrackhub();
     }
     loadTrackhub()
     {
-        const q = {assembly:""};
+        const q = {};
         var jq = JSON.stringify(q);
+        console.log("jq: ",jq)
       //console.log("loadCREs....", this.state.jq, jq);
       this.setState({isFetching: true});
       ApiClient.getByPost(jq, "/gbws/trackhub",
@@ -39,7 +40,7 @@ class TableWithCart extends React.Component {
       console.log(r);
           },
         (msg) => {
-      console.log("err loading cres for table");
+      console.log("err loading trackhub");
       console.log(msg);
       this.setState({trackhub: [],
                isFetching: false, isError: true});

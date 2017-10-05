@@ -2,6 +2,7 @@
   import ReactDOM from 'react-dom';
   import * as d3 from "d3";
   import '../../../../css.css'
+  import Modal from './modal'
   //var bigwig = require('../external/igvjs/bigwig');
   //var bin = require('../external/igvjs/bin.js');
   class Polylines extends React.Component {
@@ -146,6 +147,14 @@
        componentDidMount()
        {
 
+       }
+       closeModal = () =>
+       {
+          this.setState({ isModalOpen: false })
+       }
+       loadTrackhub = () =>
+       {
+          this.setState({ isModalOpen: true })
        }
        updateforwardSize = (e) =>
        {
@@ -297,6 +306,11 @@
                 <br/>
                 <MoveZoom loadTrackhub={this.loadTrackhub} backward={this.updatebackwardSize} forward={this.updateforwardSize} zoomin={this.zoomin} zoomout={this.zoomout}/>
               </div>
+              { this.state.isModalOpen && <Modal onClose={this.closeModal}>
+                <div >
+                  nishi
+                  </div>
+              </Modal> }
               <svg width={this.props.width+50} height={this.state.height}>
                   <g transform="translate(0,20)">
                     <Axis axis={xAxis} />

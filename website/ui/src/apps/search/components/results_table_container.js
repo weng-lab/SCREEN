@@ -53,6 +53,7 @@ class ResultsTableContainer extends React.Component {
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
+        console.log("jq :",jq)
         //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/dataws/cre_table",
@@ -162,7 +163,6 @@ class ResultsTableContainer extends React.Component {
    	  }
 
 	)
-console.log("cresWithChecks :",cresWithChecks)
 
 	let interp = this.props.interpretation;
 	let interpBox = "";
