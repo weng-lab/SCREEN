@@ -45,33 +45,43 @@ class Slider extends React.Component {
 		const ls = linearScale([0, this.state.width], this.props.range);
 		const lpixels = this.state.lpixels + dxPixels;
 		const lvalue = ls(lpixels)
-		console.log(this.state.width, "left:", dxPixels, lpixels, lvalue);
 		this.setState({lpixels, lvalue});
 	    }
 
 	    const handleDragRight = (e, ui) => {
-		const dx = ui.deltaX;
-		console.log("right:", dx);
+		const dxPixels = ui.deltaX;
+		const ls = linearScale([0, this.state.width], this.props.range);
+		const rpixels = this.state.rpixels + dxPixels;
+		const rvalue = ls(rpixels)
+		this.setState({rpixels, rvalue});
 	    }
 
+	    console.log("state:", this.state);
 	    const perc = (v) => (v / this.state.width * 100.0);
 	    const lhLeft = perc(this.state.lpixels);
 	    const rhLeft = perc(this.state.rpixels);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
+
+	    // left: -17px;
+	    
 	    return (
 		<div className={"sliderBase"}>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
+			       defaultPosition={{x: Math.max(0, this.state.lpixels - 34),
+						 y: 0}}
 			       onDrag={handleDragLeft} >
-			<div className={"sliderLeft"} style={{"left": strP(lhLeft)}}>
+			<div className={"sliderLeft"}>
 			</div>
 		    </Draggable>
 		    <div className={"sliderConnect"} style={{"left": strP(lhLeft),
 							     "right": strP(cRight)}}>
 		    </div>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
+			       defaultPosition={{x: this.state.rpixels - 34,
+						y: 0}}
 			       onDrag={handleDragRight}>
-			<div className={"sliderRight"} style={{"left": strP(rhLeft)}}>
+			<div className={"sliderRight"}>
 			</div>
 		    </Draggable>
 		</div>);
