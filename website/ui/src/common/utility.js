@@ -96,3 +96,7 @@ export const orjoin = (a) => {
     return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
 	    " or ", a.slice(-1)];
 }
+
+export const linearScale = (d, r) => (v) => (
+    // https://gist.github.com/vectorsize/7031902
+    r[0] + (r[1] - r[0]) * ((v - d[0]) / (d[1] - d[0])));

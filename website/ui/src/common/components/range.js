@@ -1,10 +1,11 @@
 import React from 'react';
 import $ from 'jquery';
 
+import Slider from './slider';
+
 import {chain_functions} from '../common';
 
 let d3 = require('d3');
-let slider = require( "jquery-ui/ui/widgets/slider" );
 
 class RangeSlider extends React.Component {
 
@@ -55,6 +56,9 @@ class RangeSlider extends React.Component {
     }
     
     render() {
+	//stop: this._set_selection,
+	//slide: this.update_selection
+
 	let histogram = (this.props.nohistogram ? "" :
 			 <div ref="histogram"
 			      style={{width: "100%", height: "20px"}} />);
@@ -62,6 +66,11 @@ class RangeSlider extends React.Component {
 	    <div>
 		<div style={{fontWeight: "bold"}}>{this.props.title}</div>
 	        {histogram}
+		<Slider
+		    range={this.props.range}
+		    start={this.props.selection_range}
+		    connect
+		/>
   		<div ref="container" />
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
 		    <input ref="txmin"
@@ -140,10 +149,7 @@ class RangeSlider extends React.Component {
     }
 
     componentDidUpdate() {
-	this._slider = this.create_range_slider(this.refs.container);
 	this._histogram = this.create_histogram(this.refs.histogram);
-	this._handles = $(this._slider).find(".ui-slider-handle");
-	$(this._handles[1]).css("margin-left", "0px");
     }
 
     onMinChange() {
@@ -166,21 +172,6 @@ class RangeSlider extends React.Component {
 //	if (srange[1] < srange[0]) srange[1] = srange[0];
 //	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
 	this.set_selection(srange);
-    }
-
-    create_range_slider(dcontainer) {
-	let container = $(dcontainer);
-	let selection = this.props.selection_range;
-	slider({
-	    source: dcontainer,
-	    range: true,
-	    min: this.props.range[0],
-	    max: this.props.range[1],
-	    values: [ +selection[0], +selection[1] ],
-	    stop: this._set_selection,
-	    slide: this.update_selection
-	});
-	return container;
     }
 
     update_selection(event, ui) {
@@ -231,7 +222,7 @@ class RangeFacet extends React.Component {
     render() {
 	var h_data = (this.props.h_data === null
 		      ? zeros(this.props.range, this.props.h_interval)
-		      : this.props.h_data);
+		    : this.props.h_data);
 	return (<div>
 		   <RangeSlider
 		      nohistogram={this.props.nohistogram}
@@ -251,29 +242,5 @@ class RangeFacet extends React.Component {
     }
 
 }
-export default RangeFacet;
 
-/*
- * test function with dummy data
- */
-/* (function() {
- * 
- *     if (!document.getElementById("range_facet")) return;
- * 
- *     var data = [];
- *     for (var i = 0; i < 1000; i++) {
- * 	data.push({key: i * 10,
- * 		   doc_count: Math.round(Math.random() * 1000)
- * 		  });
- *     }
- * 
- *     var range = [0, 10000];
- *     var srange = [0, 4000];
- *     var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
- * 
- *     ReactDOM.render(
- * 	<RangeFacet range={range} h_margin={h_margin}
- * 		    selection_range={srange} h_interval="10"
- * 		    h_data={data} />,
- * 	document.getElementById("range_facet"));
- * })();*/
+export default RangeFacet;
