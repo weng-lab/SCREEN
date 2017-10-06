@@ -125,10 +125,13 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
 }
 
 const zscore_decimal = (v) => {
-    if (isNaN(parseFloat(v)) || !isFinite(v)) return 0.0;
-    let r = v / 100.0;
-    if (Number.isInteger(r)) return r + ".";
-    return r;
+    if (isNaN(parseFloat(v)) || !isFinite(v)) {
+	return 0.0;
+    }
+    if (Number.isInteger(v)) {
+	return v + ".";
+    }
+    return v;
 }
     
 const zrdecimal = (s) => (+s * 100.0);
