@@ -318,36 +318,14 @@ class Polylines extends React.Component {
              longLabel = bburl[j]["longLabel"],
              shortLabel = bburl[j]["shortLabel"];
              let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
-             makeBwg(new URLFetchable("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed"), function(bwg, err)
-                {
-                  if(bwg)
-                  {
-                     let data,zoomFactor=-1;
-                     if (zoomFactor< 0)
-                      data = bwg.getUnzoomedView();
-                     else
-                      data = bwg.getZoomedView();
-                     data.readWigData(chrom, start, end, function(data, err)
-                     {
-                        if(data)
-                        {
-                          this.setState({
-                        bbdata: Object.assign(
-                          {},
-                          this.state.bbdata,
-                          { [key]: [data,longLabel,shortLabel] }
-                        )})
-                        }
-                        else
-                          console.log("error!", err);
-
-                     }.bind(this));
-                  }
-                  else
-                    console.log("error!", err);
-
-                }.bind(this));
-          }
+	     GBUtils.getBigWigData(url,
+				   (data) => {
+				       this.setState({url: data});
+				   },
+				   (msg) => {
+				       console.log("GBUtils:", msg);
+				   });
+         }
        }
        updateforwardSize = (e) =>
        {

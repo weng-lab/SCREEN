@@ -50,6 +50,8 @@ class SearchPageInner extends React.Component {
 	    }
 	}
 
+	console.log(this.props.globals);
+	
         return (
             <Provider store={store}>
 	        <div>
