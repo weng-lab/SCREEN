@@ -203,3 +203,7 @@ function bstringToBuffer(result) {
     }
     return ba.buffer;
 }
+
+export const readInt = (ba, offset) => {
+    return (ba[offset + 3] << 24) | (ba[offset + 2] << 16) | (ba[offset + 1] << 8) | (ba[offset]);
+}

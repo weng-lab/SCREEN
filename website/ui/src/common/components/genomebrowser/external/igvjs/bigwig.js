@@ -7,23 +7,12 @@
 // bigwig.js: indexed binary WIG (and BED) files
 //
 
-var jszlib = require('jszlib');
-var jszlib_inflate_buffer = jszlib.inflateBuffer;
-var arrayCopy = jszlib.arrayCopy;
+import {inflateBuffer, arrayCopy} from 'jszlib';
 
-var spans = require('./spans');
-var Range = spans.Range;
-var union = spans.union;
-var intersection = spans.intersection;
-
-var das = require('./das');
-var DASFeature = das.DASFeature;
-var DASGroup = das.DASGroup;
-
-var utils = require('./utils');
-var shallowCopy = utils.shallowCopy;
-
-var bin = require('./bin');
+import {Range, union, intersection} from './spans';
+import {DASFeature, DASGroup} from './das';
+import {shallowCopy} from './utils';
+import {readInt} from './bin';
 
 var BIG_WIG_MAGIC = 0x888FFC26;
 var BIG_WIG_MAGIC_BE = 0x26FC8F88;
@@ -380,7 +369,7 @@ class BBIExtraIndex{
                             // Specific for EI case.
                             if (key === name) {
                                 var start = bwg_readOffset(ba, offset);
-                                var length = bin.readInt(ba, offset + 8);
+                                var length = readInt(ba, offset + 8);
 
                                 return thisB.bbi.getUnzoomedView().fetchFeatures(
                                     function(chr, min, max, toks) {
@@ -596,7 +585,9 @@ class BigWigView{
 
                                 var data;
                                 if (thisB.bwg.uncompressBufSize > 0) {
-                                    data = jszlib_inflate_buffer(result, offset + 2, fb.size - 2);
+                                    data = inflateBuffer(result,
+                                                         offset + 2,
+                                                         fb.size - 2);
                                 } else {
                                     var tmp = new Uint8Array(fb.size);    // FIXME is this really the best we can do?
                                     arrayCopy(new Uint8Array(result, offset, fb.size), 0, tmp, 0, fb.size);
