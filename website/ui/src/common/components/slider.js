@@ -12,14 +12,22 @@ class Slider extends React.Component {
     constructor(props){
 	super(props);
 	this.state = {width: 0, lvalue: 0, rvalue: 0};
+	//this.calcBarState = this.calcBarState.bind(this);
     }
     
     componentDidMount(){
-	this.setState({width: this.refs.bar.clientWidth,
-		       lvalue: this.props.start[0],
-		       rvalue: this.props.start[1]});
+	const width = this.refs.bar.clientWidth;
+	const lvalue = this.props.start[0];
+	const rvalue = this.props.start[1];
+
+	const ls = linearScale(this.props.range, [0, width]);
+	const lpixels = ls(lvalue);
+	const rpixels = ls(rvalue);
+	
+	this.setState({width, lvalue, rvalue, lpixels, rpixels});
     }
 
+    
     render() {
 	const makeBars = () => {
 	    const onStart = () => {
@@ -33,10 +41,12 @@ class Slider extends React.Component {
 	    const dragHandlers = {onStart, onStop};
 
 	    const handleDragLeft = (e, ui) => {
-		const ls = linearScale([0, this.state.width], this.props.range);
 		const dxPixels = ui.deltaX;
-		const dx = ls(dxPixels);
-		console.log("left:", dxPixels, dx);
+		const ls = linearScale([0, this.state.width], this.props.range);
+		const lpixels = this.state.lpixels + dxPixels;
+		const lvalue = ls(lpixels)
+		console.log(this.state.width, "left:", dxPixels, lpixels, lvalue);
+		this.setState({lpixels, lvalue});
 	    }
 
 	    const handleDragRight = (e, ui) => {
@@ -44,10 +54,9 @@ class Slider extends React.Component {
 		console.log("right:", dx);
 	    }
 
-	    const lsP = (r, w) => (v) => (linearScale(r, [0, w])(v) / w * 100.0);
-	    const ls = lsP(this.props.range, this.state.width);
-	    const lhLeft = ls(this.state.lvalue);
-	    const rhLeft = ls(this.state.rvalue);
+	    const perc = (v) => (v / this.state.width * 100.0);
+	    const lhLeft = perc(this.state.lpixels);
+	    const rhLeft = perc(this.state.rpixels);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
 	    return (
