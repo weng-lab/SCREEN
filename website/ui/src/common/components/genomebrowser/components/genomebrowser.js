@@ -6,9 +6,7 @@ import Modal from './modal'
 import Rects from './rects'
 import ToolTip from './tooltip'
 import * as ApiClient from '../../../api_client';
-import {makeBwg} from '../external/igvjs/bigwig';
-import {URLFetchable} from '../external/igvjs/bin';
-
+import readBig from './gbutils.js'
 class Polylines extends React.Component {
 
      render() {
@@ -156,15 +154,16 @@ class Polylines extends React.Component {
        {
            this.setState({tooltip:{ display:false,data:{width:'',height:'',value:''},pos:{x:'',y:''}}});
        }
-       componentWillMount(){
-          this.changerange();
+       componentDidMount(){
+          this.changerange(this.props);this.loadThub()
        }
-       componentWillReceiveProps()  {
-         this.changerange();
+       componentWillReceiveProps(nextProps)  {
+         if(this.props.minrange!=nextProps.minrange || this.props.maxrange!=nextProps.maxrange)
+         this.changerange(nextProps);
        }
-       changerange()
+       changerange(nextProps)
        {
-         this.setState({xminrange:this.props.minrange,xmaxrange:this.props.maxrange},() =>{
+         this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
              this.readBigBed();
@@ -173,10 +172,7 @@ class Polylines extends React.Component {
            })
 
        }
-       componentDidMount()
-       {
-         this.loadThub()
-       }
+
        loadThub()
        {
          const q = {assembly: this.props.assembly};
@@ -211,27 +207,25 @@ class Polylines extends React.Component {
               if(obj === "bigbed")
               {
                this.setState((prevState)=> {return{height:prevState.height - 40}});
-               let bb = this.state.bbdata;
-               delete bb[key];
 
                this.setState(
                {
-                   bbdata: bb// Object.assign( {},this.state.bbdata, { [key]: [] })
+                   bbdata:  Object.assign( {},this.state.bbdata, { [key]: [] })
                });
               }
               else if (obj === "bigwig") {
                 this.setState((prevState)=> {return{height:prevState.height - 100}});
-                let bw = this.state.bbdata;
-                delete bw[key];
+
                 this.setState(
                 {
-                    bwdata: bw//Object.assign({},this.state.bwdata,{ [key]: [] })
+                    bwdata: Object.assign({},this.state.bwdata,{ [key]: [] })
                 });
                }
          }
          else {
 
                let input=this.state.input;
+               let start= this.state.xminrange,end=this.state.xmaxrange,chrom=this.state.chrom;
 
                for (let j = 0; j < input.length; j++)
                {
@@ -239,13 +233,50 @@ class Polylines extends React.Component {
                  {
                    this.setState((prevState)=> {return{height:prevState.height + 50}});
                    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigbed" })});
-                   this.setState({ bbinput: [...this.state.bbinput, input[j]] },()=> {this.readBigBed()})
+                   this.setState({ bbinput: [...this.state.bbinput, input[j]] },()=> {
+
+                     let key = input[j]["shortLabel"],
+                     longLabel = input[j]["longLabel"],
+                     shortLabel = input[j]["shortLabel"];
+                     let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
+                     readBig("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed",chrom,start,end,
+                 (data) => {
+                   this.setState({
+                       bbdata: Object.assign(
+                         {},
+                         this.state.bbdata,
+                         { [key]: [data,longLabel,shortLabel] }
+                       )})
+                 });
+
+
+                   })
                  }
                  else if(input[j]["shortLabel"]===key &&  input[j]["type"]==="bigWig")
                  {
                    this.setState((prevState)=> {return{height:prevState.height + 100}});
                    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
-                   this.setState({ bwinput: [...this.state.bwinput, input[j]] },()=> {this.readBigWig()})
+                   this.setState({ bwinput: [...this.state.bwinput, input[j]] },()=> {
+
+                     let key = input[j]["shortLabel"],
+                     url = input[j]["bigDataUrl"],
+                     color = input[j]["color"],
+                     viewLimits = input[j]["viewLimits"],
+                     shortLabel = input[j]["shortLabel"],longLabel=input[j]["longLabel"];
+                     readBig(url,chrom,start,end,
+                        (data) => {
+                              this.setState(
+                                {
+                                    bwdata: Object.assign(
+                                      {},
+                                      this.state.bwdata,
+                                      { [key]:[data,longLabel,shortLabel,color,viewLimits] }
+                                    )
+                                });
+                        });
+
+
+                   })
                  }
                }
          }
@@ -271,42 +302,18 @@ class Polylines extends React.Component {
            url = bwurl[j]["bigDataUrl"],
            color = bwurl[j]["color"],
            viewLimits = bwurl[j]["viewLimits"],
-           shortLabel = bwurl[j]["shortLabel"];
-           makeBwg(new URLFetchable(url), function(bwg, err) {
-           if (bwg)
-           {
-            let data,zoomFactor=-1;
-            if (zoomFactor< 0)
-            {
-              data = bwg.getUnzoomedView();
-            } else {
-              data = bwg.getZoomedView();
-            }
-
-            data.readWigData(chrom, start, end, function(data, err)
-            {
-              if(data)
-              {
-                  this.setState(
-                    {
-                        bwdata: Object.assign(
-                          {},
-                          this.state.bwdata,
-                          { [key]:[data,bwurl[j]["longLabel"],shortLabel,color,viewLimits] }
-                        )
-                    });
-              }
-              else
-              {
-                    console.log("error!", err);
-              }
-            }.bind(this));
-            }
-            else
-            {
-            console.log("error!", err);
-            }
-          }.bind(this));
+           shortLabel = bwurl[j]["shortLabel"],longLabel=bwurl[j]["longLabel"];
+           readBig(url,chrom,start,end,
+              (data) => {
+                    this.setState(
+                      {
+                          bwdata: Object.assign(
+                            {},
+                            this.state.bwdata,
+                            { [key]:[data,longLabel,shortLabel,color,viewLimits] }
+                          )
+                      });
+              });
         }
        }
        readBigBed()
@@ -318,13 +325,15 @@ class Polylines extends React.Component {
              longLabel = bburl[j]["longLabel"],
              shortLabel = bburl[j]["shortLabel"];
              let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
-	     GBUtils.getBigWigData(url,
-				   (data) => {
-				       this.setState({url: data});
-				   },
-				   (msg) => {
-				       console.log("GBUtils:", msg);
-				   });
+             readBig("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed",chrom,start,end,
+         (data) => {
+           this.setState({
+               bbdata: Object.assign(
+                 {},
+                 this.state.bbdata,
+                 { [key]: [data,longLabel,shortLabel] }
+               )})
+         });
          }
        }
        updateforwardSize = (e) =>
