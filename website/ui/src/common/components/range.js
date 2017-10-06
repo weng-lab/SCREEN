@@ -13,7 +13,7 @@ class RangeSlider extends React.Component {
 	super(props);
 	this.onMinChange = this.onMinChange.bind(this);
 	this.onMaxChange = this.onMaxChange.bind(this);
-	this._set_selection = this._set_selection.bind(this);
+	this.set_selection = this.set_selection.bind(this);
 	this.update_selection = this.update_selection.bind(this);
 	this._update_width = this._update_width.bind(this);
 	this.componentDidUpdate = this.componentDidUpdate.bind(this);
@@ -56,19 +56,17 @@ class RangeSlider extends React.Component {
     }
     
     render() {
-	//stop: this._set_selection,
-	//slide: this.update_selection
-
-	let histogram = (this.props.nohistogram ? "" :
-			 <div ref="histogram"
-			      style={{width: "100%", height: "20px"}} />);
 	return (
 	    <div>
 		<div style={{fontWeight: "bold"}}>{this.props.title}</div>
-	        {histogram}
+	        {!this.props.nohistogram && <div ref="histogram"
+						 style={{width: "100%", height: "20px"}} />}
 		<Slider
 		    range={this.props.range}
 		    start={this.props.selection_range}
+		    dragLeft={this.update_selection}
+		    dragRight={this.update_selection}
+		    onStop={this.set_selection}
 		    connect
 		/>
   		<div ref="container" />
@@ -173,24 +171,23 @@ class RangeSlider extends React.Component {
 	this.set_selection(srange);
     }
 
-    update_selection(event, ui) {
-	var r = this._slider.slider("values");
-	this.refs.txmin.value = this._value(r[0]);
-	this.refs.txmax.value = this._value(r[1]);
-	this._histogram.selectAll("g")
-            .data(this.props.data)
-            .attr("class", function(d) { return (d.key >= +r[0] && d.key < +r[1] ? "barselected" : "bardeselected"); });
+    update_selection(lvalue, rvalue) {
+	this.refs.txmin.value = lvalue;
+	this.refs.txmax.value = rvalue;
+	if(!this.props.nohistogram){
+	    this._histogram.selectAll("g")
+		.data(this.props.data)
+		.attr("class", (d) => (d.key >= lvalue && d.key < rvalue ? "barselected"
+				     : "bardeselected"));
+	}
     }
 
-    _set_selection(event, ui) {
-	var r = this._slider.slider("values");
-	this.set_selection(r);
-    }
-
-    set_selection(r) {
-	if (r[1] <= r[0]) r[1] = r[0] + 1;
+    set_selection(lvalue, rvalue) {
+	if (rvalue <= lvalue) {
+	    rvalue = lvalue + 1;
+	}
 	if (this.props.onchange) {
-            this.props.onchange(r);
+            this.props.onchange(lvalue, rvalue);
         }
     }
 }

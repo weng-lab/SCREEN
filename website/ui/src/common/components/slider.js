@@ -11,7 +11,7 @@ class Slider extends React.Component {
 
     constructor(props){
 	super(props);
-	this.state = {width: 0, lvalue: 0, rvalue: 0};
+	this.state = {width: 0, lvalue: 0, rvalue: 0, numDecimals: 2};
     }
     
     componentDidMount(){
@@ -26,28 +26,28 @@ class Slider extends React.Component {
 	this.setState({width, lvalue, rvalue, lpixels, rpixels});
     }
 
-    
     render() {
 	const makeBars = () => {
 	    const onStart = () => {
 		if(this.props.onStart){
-		    this.props.onStart();
+		    this.props.onStart(this.state.lvalue, this.state.rvalue);
 		}
 	    }
-	    
-	    const onStop= () => {
+	    const onStop = () => {
 		if(this.props.onStop){
-		    this.props.onStop();
+		    this.props.onStop(this.state.lvalue, this.state.rvalue);
 		}
 	    }
-
 	    const dragHandlers = {onStart, onStop};
 
 	    const handleDragLeft = (e, ui) => {
 		const dxPixels = ui.deltaX;
 		const ls = linearScale([0, this.state.width], this.props.range);
 		const lpixels = this.state.lpixels + dxPixels;
-		const lvalue = ls(lpixels)
+		const lvalue = ls(lpixels).toFixed(this.state.numDecimals);
+		if(this.props.dragLeft){
+		    this.props.dragLeft(lvalue, this.state.rvalue);
+		}
 		this.setState({lpixels, lvalue});
 	    }
 
@@ -55,7 +55,10 @@ class Slider extends React.Component {
 		const dxPixels = ui.deltaX;
 		const ls = linearScale([0, this.state.width], this.props.range);
 		const rpixels = this.state.rpixels + dxPixels;
-		const rvalue = ls(rpixels)
+		const rvalue = ls(rpixels).toFixed(this.state.numDecimals);
+		if(this.props.dragRight){
+		    this.props.dragRight(this.state.lvalue, rvalue);
+		}
 		this.setState({rpixels, rvalue});
 	    }
 
@@ -64,11 +67,12 @@ class Slider extends React.Component {
 	    const rhLeft = perc(this.state.rpixels);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
-
+	    const buttonWidth = 34;
+	    
 	    return (
 		<div className={"sliderBase"}>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
-			       defaultPosition={{x: Math.max(0, this.state.lpixels - 34),
+			       defaultPosition={{x: Math.max(0, this.state.lpixels - buttonWidth),
 						 y: 0}}
 			       onDrag={handleDragLeft} >
 			<div className={"sliderLeft"}>
@@ -78,7 +82,7 @@ class Slider extends React.Component {
 							     "right": strP(cRight)}}>
 		    </div>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
-			       defaultPosition={{x: this.state.rpixels - 34,
+			       defaultPosition={{x: this.state.rpixels - buttonWidth,
 						y: 0}}
 			       onDrag={handleDragRight}>
 			<div className={"sliderRight"}>
