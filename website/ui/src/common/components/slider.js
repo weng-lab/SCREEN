@@ -12,7 +12,6 @@ class Slider extends React.Component {
     constructor(props){
 	super(props);
 	this.state = {width: 0, lvalue: 0, rvalue: 0};
-	//this.calcBarState = this.calcBarState.bind(this);
     }
     
     componentDidMount(){
@@ -23,7 +22,7 @@ class Slider extends React.Component {
 	const ls = linearScale(this.props.range, [0, width]);
 	const lpixels = ls(lvalue);
 	const rpixels = ls(rvalue);
-	
+
 	this.setState({width, lvalue, rvalue, lpixels, rpixels});
     }
 
@@ -31,11 +30,15 @@ class Slider extends React.Component {
     render() {
 	const makeBars = () => {
 	    const onStart = () => {
-		console.log("onStart");
+		if(this.props.onStart){
+		    this.props.onStart();
+		}
 	    }
 	    
 	    const onStop= () => {
-		console.log("onStop");
+		if(this.props.onStop){
+		    this.props.onStop();
+		}
 	    }
 
 	    const dragHandlers = {onStart, onStop};
@@ -56,15 +59,12 @@ class Slider extends React.Component {
 		this.setState({rpixels, rvalue});
 	    }
 
-	    console.log("state:", this.state);
 	    const perc = (v) => (v / this.state.width * 100.0);
 	    const lhLeft = perc(this.state.lpixels);
 	    const rhLeft = perc(this.state.rpixels);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
 
-	    // left: -17px;
-	    
 	    return (
 		<div className={"sliderBase"}>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}

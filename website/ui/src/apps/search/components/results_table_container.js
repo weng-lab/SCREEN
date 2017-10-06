@@ -57,7 +57,6 @@ class ResultsTableContainer extends React.Component {
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/dataws/cre_table",
 			    (r) => {
-				console.log(r);
 				this.setState({cres: r["cres"],
 					       total: r["total"],
 					       cts: r["cts"],

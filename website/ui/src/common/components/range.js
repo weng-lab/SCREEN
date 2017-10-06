@@ -105,8 +105,7 @@ class RangeSlider extends React.Component {
 	var xrange = this.props.range;
 	var srange = this.props.selection_range;
 
-	let data  =this.props.data;
-	console.log("data:", data);
+	const data = this.props.data;
 	if(!data){
 	    return;
 	}
