@@ -11,39 +11,43 @@ class Slider extends React.Component {
 
     constructor(props){
 	super(props);
-	this.state = {width: 0};
+	this.state = {width: 0, lvalue: 0, rvalue: 0};
     }
     
     componentDidMount(){
-	this.setState({width: this.refs.bar.clientWidth});
+	this.setState({width: this.refs.bar.clientWidth,
+		       lvalue: this.props.start[0],
+		       rvalue: this.props.start[1]});
     }
-    
+
     render() {
-	const onStart = () => {
-	    console.log("onStart");
-	}
-	
-	const onStop= () => {
-	    console.log("onStop");
-	}
-
-	const dragHandlers = {onStart, onStop};
-
-	const handleDragLeft = (e, ui) => {
-	    const dx = ui.deltaX;
-	    console.log("left:", dx);
-	}
-
-	const handleDragRight = (e, ui) => {
-	    const dx = ui.deltaX;
-	    console.log("right:", dx);
-	}
-
 	const makeBars = () => {
+	    const onStart = () => {
+		console.log("onStart");
+	    }
+	    
+	    const onStop= () => {
+		console.log("onStop");
+	    }
+
+	    const dragHandlers = {onStart, onStop};
+
+	    const handleDragLeft = (e, ui) => {
+		const ls = linearScale([0, this.state.width], this.props.range);
+		const dxPixels = ui.deltaX;
+		const dx = ls(dxPixels);
+		console.log("left:", dxPixels, dx);
+	    }
+
+	    const handleDragRight = (e, ui) => {
+		const dx = ui.deltaX;
+		console.log("right:", dx);
+	    }
+
 	    const lsP = (r, w) => (v) => (linearScale(r, [0, w])(v) / w * 100.0);
 	    const ls = lsP(this.props.range, this.state.width);
-	    const lhLeft = ls(this.props.start[0]);
-	    const rhLeft = ls(this.props.start[1]);
+	    const lhLeft = ls(this.state.lvalue);
+	    const rhLeft = ls(this.state.rvalue);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
 	    return (

@@ -134,7 +134,7 @@ const zscore_decimal = (v) => {
 const zrdecimal = (s) => (+s * 100.0);
 
 const makeRankFacet = (rfacets, assay, title, start, end, action) => {
-    const range = [-1000, 1000];
+    const range = [-10, 10];
     if(!rfacets.includes(assay)){
         return "";
     }
