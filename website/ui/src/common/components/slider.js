@@ -4,8 +4,6 @@ import Draggable from 'react-draggable';
 
 import {linearScale} from '../utility';
 
-require('nouislider/distribute/nouislider.min.css');
-
 class Slider extends React.Component {
     // based off https://github.com/algolia/react-nouislider/blob/master/index.js
 
