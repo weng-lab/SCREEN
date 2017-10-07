@@ -28,22 +28,26 @@
     <meta name="msapplication-TileImage" content="%PUBLIC_URL%/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
-    <title>SCREEN</title>
+    <link rel="stylesheet" href="loader.css">
     
+    <title>SCREEN</title>
+
   </head>
+  
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
 
     <div id="root">
-      <div class="loadingCont">
-	<div class="loading">
-	  <img src="%PUBLIC_URL%/monitor-512b.png" alt="SCREEN Logo" width="200">
-	  <h2>loading SCREEN...</h2>
-	  <i class="fa fa-refresh fa-spin" style="font-size:24px"></i>
-	</div>
-      </div>
+      <table id="wrapper">
+	<tr>
+	  <td>
+	    <img src="%PUBLIC_URL%/monitor-512b.png" alt="SCREEN Logo" width="200">
+	    <h2>loading SCREEN...</h2>
+	    <img src="%PUBLIC_URL%/spinner.gif" alt="loader">
+	  </td>
+      </table>
     </div>
   </body>
 </html>
