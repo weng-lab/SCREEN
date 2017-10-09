@@ -2,16 +2,19 @@ import React from 'react';
 import Draggable from 'react-draggable';
 
 import {linearScale} from '../utility';
+import {chain_functions} from '../common';
 
 class DualSlider extends React.Component {
     // based off https://github.com/algolia/react-nouislider/blob/master/index.js
 
     constructor(props){
 	super(props);
+	this.updateDimensions = this.updateDimensions.bind(this);
 	this.updateWithProps = this.updateWithProps.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
 		      numDecimals: props.numDecimals || 2,
 		      buttonWidth: props.buttonWidth || 34};
+	//window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
     
     componentDidMount(){
@@ -22,17 +25,22 @@ class DualSlider extends React.Component {
 	this.updateWithProps(nextProps);
     }
 
+    updateDimensions(){
+	console.log("updateDimensions");
+	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
+	const ls = linearScale(this.props.range, [0, width]);
+	const lpixels = ls(this.state.lvalue);
+	const rpixels = ls(this.state.rvalue);
+	this.setState({width, lpixels, rpixels});
+    }
+    
     updateWithProps(p){
 	// tighten width by button slider icon width, else button will overhang slider bar
 	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
-	const lvalue = p.lvalue;
-	const rvalue = p.rvalue;
-
 	const ls = linearScale(p.range, [0, width]);
-	const lpixels = ls(lvalue);
-	const rpixels = ls(rvalue);
-		    
-	this.setState({width, lvalue, rvalue, lpixels, rpixels});
+	const lpixels = ls(p.lvalue);
+	const rpixels = ls(p.rvalue);
+	this.setState({width, lpixels, rpixels, lvalue: p.lvalue, rvalue: p.rvalue});
     }
     
     render() {

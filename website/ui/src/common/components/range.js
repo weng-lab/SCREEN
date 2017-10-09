@@ -126,6 +126,7 @@ class RangeFacet extends React.Component {
 		    onChange={this.props.onChange}
                     title={this.props.title}
 		    updateWidth={this.props.updateWidth}
+		    numDecimals={this.props.numDecimals}
 		/>
 	</div>);
     }
