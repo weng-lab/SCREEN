@@ -5,8 +5,6 @@ import {linearScale} from '../utility';
 import {chain_functions} from '../common';
 
 class DualSlider extends React.Component {
-    // based off https://github.com/algolia/react-nouislider/blob/master/index.js
-
     constructor(props){
 	super(props);
 	this.updateDimensions = this.updateDimensions.bind(this);
@@ -14,7 +12,7 @@ class DualSlider extends React.Component {
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
 		      numDecimals: props.numDecimals || 2,
 		      buttonWidth: props.buttonWidth || 34};
-	//window.onresize = chain_functions(window.onresize, this.updateDimensions);
+	window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
     
     componentDidMount(){
@@ -26,7 +24,6 @@ class DualSlider extends React.Component {
     }
 
     updateDimensions(){
-	console.log("updateDimensions");
 	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
 	const ls = linearScale(this.props.range, [0, width]);
 	const lpixels = ls(this.state.lvalue);
