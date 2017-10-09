@@ -2,7 +2,7 @@ export const StaticServer = "http://screen-beta.wenglab.org"; //"http://megatux.
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
-    const server = "http://megatux.purcaro.com:9006";
+    const server = "http://screen-beta.wenglab.org";
     let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
 		      "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
     override = {};

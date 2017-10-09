@@ -52,8 +52,8 @@ class TableWithCart extends React.Component {
         }
         if(td.indexOf("selectcre")!==-1)
         {
-          let minrange =parseInt(rowdata.start) - 20000
-          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +20000
+          let minrange =parseInt(rowdata.start) - 2000
+          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +2000
           let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
           this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails },()=>{ actions.selectcre(accessiondetails)})
         }
@@ -305,9 +305,10 @@ class TableWithCart extends React.Component {
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
   let gb = null;
+  let byCellType = this.props.globals["byCellType"][this.props.cellType]
   if(Object.keys(this.props.gb_cres).length !== 0)
   {
-    gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
+    gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange} byCellType={byCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
   }
 	return (

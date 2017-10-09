@@ -7,8 +7,8 @@ import Rects from './rects'
 import ToolTip from './tooltip'
 import * as ApiClient from '../../../api_client';
 import readBig from './gbutils.js'
-class Polylines extends React.Component {
-
+ class Polylines extends React.Component
+  {
      render() {
           var _self=this;
           if(_self.props.range===undefined  || _self.props.viewLimits===undefined  )
@@ -155,7 +155,7 @@ class Polylines extends React.Component {
            this.setState({tooltip:{ display:false,data:{width:'',height:'',value:''},pos:{x:'',y:''}}});
        }
        componentDidMount(){
-          this.changerange(this.props);this.loadThub()
+          this.changerange(this.props);this.loadThub();
        }
        componentWillReceiveProps(nextProps)  {
          if(this.props.minrange!=nextProps.minrange || this.props.maxrange!=nextProps.maxrange)
@@ -167,7 +167,46 @@ class Polylines extends React.Component {
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
              this.readBigBed();
-             this.readBigWig();
+             let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
+                    "RNA-seq" : ["0,170,0", "", "#00aa00"],
+                    "RAMPAGE" : ["214,66,202", "#D642CA"],
+                    "H3K4me1" : ["255,223,0", "#FFDF00"],
+                    "H3K4me2" : ["255,255,128", "#FFFF80"],
+                    "H3K4me3" : ["255,0,0", "#FF0000"],
+                    "H3K9ac" : ["255,121,3", "#FF7903"],
+                    "H3K27ac" : ["255,205,0", "#FFCD00"],
+                    "H3K27me3" : ["174,175,174", "#AEAFAE"],
+                    "H3K36me3" : ["0,128,0", "#008000"],
+                    "H3K9me3" : ["180,221,228", "#B4DDE4"],
+                    "Conservation" : ["153,153,153", "#999999"],
+                    "TF ChIP-seq" : ["18,98,235", "#1262EB"],
+                    "CTCF" : ["0,176,240", "#00B0F0"]}
+              let globalinput = this.props.byCellType,gi=[]
+
+              let h = globalinput.length * 100;
+              for(let i=0; i < globalinput.length ;i++)
+              {
+                let signalcolor = AssayColors[globalinput[i]["assay"]][0];
+                let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
+                viewLimits ,
+                shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+                if(globalinput[i]["assay"]==="DNase")
+                {
+                  viewLimits="0:150"
+                }
+                else {
+                  viewLimits="0:50"
+                }
+                let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
+                let key= (globalinput[i]["assay"] + globalinput[i]["cellTypeName"])
+                //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+                gi.push(bwinpt)
+                 //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+
+              }
+              this.setState((prevState)=> {return{height:prevState.height + h}},()=>{
+                 this.setState({ bwinput: gi },()=>{this.readBigWig();})
+               });
            });
            })
 
@@ -204,22 +243,33 @@ class Polylines extends React.Component {
                    obj = signaltype[k];
                 }
               });
+
               if(obj === "bigbed")
               {
-               this.setState((prevState)=> {return{height:prevState.height - 40}});
-
-               this.setState(
-               {
-                   bbdata:  Object.assign( {},this.state.bbdata, { [key]: [] })
-               });
-              }
-              else if (obj === "bigwig") {
-                this.setState((prevState)=> {return{height:prevState.height - 100}});
-
-                this.setState(
-                {
-                    bwdata: Object.assign({},this.state.bwdata,{ [key]: [] })
+                var bbinp = this.state.bbinput.filter(function(d){
+                  return (d.shortLabel !== key)
                 });
+                this.setState({bbinput:bbinp },()=>{
+                  this.setState((prevState)=> {return{height:prevState.height - 40}});
+                  this.setState(
+                  {
+                      bbdata:  Object.assign( {},this.state.bbdata, { [key]: [] })
+                  });
+                })
+
+              }
+              else  {
+                var bwinp = this.state.bwinput.filter(function(d){
+                  return (d.shortLabel !== key)
+                });
+                this.setState({bwinput:bwinp },()=>{
+                  this.setState((prevState)=> {return{height:prevState.height - 100}});
+                  this.setState(
+                  {
+                      bwdata: Object.assign({},this.state.bwdata,{ [key]: [] })
+                  });
+                });
+
                }
          }
          else {
@@ -248,7 +298,6 @@ class Polylines extends React.Component {
                          { [key]: [data,longLabel,shortLabel] }
                        )})
                  });
-
 
                    })
                  }
@@ -279,6 +328,46 @@ class Polylines extends React.Component {
                    })
                  }
                }
+               let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
+                     "RNA-seq" : ["0,170,0", "", "#00aa00"],
+                     "RAMPAGE" : ["214,66,202", "#D642CA"],
+                     "H3K4me1" : ["255,223,0", "#FFDF00"],
+                     "H3K4me2" : ["255,255,128", "#FFFF80"],
+                     "H3K4me3" : ["255,0,0", "#FF0000"],
+                     "H3K9ac" : ["255,121,3", "#FF7903"],
+                     "H3K27ac" : ["255,205,0", "#FFCD00"],
+                     "H3K27me3" : ["174,175,174", "#AEAFAE"],
+                     "H3K36me3" : ["0,128,0", "#008000"],
+                     "H3K9me3" : ["180,221,228", "#B4DDE4"],
+                     "Conservation" : ["153,153,153", "#999999"],
+                     "TF ChIP-seq" : ["18,98,235", "#1262EB"],
+                     "CTCF" : ["0,176,240", "#00B0F0"]}
+               let globalinput = this.props.byCellType
+               for(let i=0; i < globalinput.length ;i++)
+               {
+                 let signalcolor = AssayColors[globalinput[i]["assay"]][0];
+                 let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
+                 viewLimits ,
+                 shortLabel = (globalinput[i]["assay"]+ globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+                 if(globalinput[i]["assay"]==="DNase")
+                 {
+                   viewLimits="0:150"
+                 }
+                 else {
+                   viewLimits="0:50"
+                 }
+                 let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
+
+                 if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+                 {
+                   this.setState((prevState)=> {return{height:prevState.height + 100}},()=>{
+                     this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+                     this.setState({ bwinput: [...this.state.bwinput, bwinpt] },()=> {this.readBigWig()})
+
+                   });
+
+                 }
+               }
          }
        }
        closeModal = () =>
@@ -299,7 +388,7 @@ class Polylines extends React.Component {
          for (let j = 0; j < urlLength; j++)
          {
            let key = bwurl[j]["shortLabel"],
-           url = bwurl[j]["bigDataUrl"],
+           url = bwurl[j]["url"],
            color = bwurl[j]["color"],
            viewLimits = bwurl[j]["viewLimits"],
            shortLabel = bwurl[j]["shortLabel"],longLabel=bwurl[j]["longLabel"];
@@ -497,7 +586,7 @@ class Polylines extends React.Component {
            let  xAxis = d3.axisBottom().scale(this.state.x);
            let  xGrid = d3.axisBottom().scale(this.state.x).ticks(100).tickSize(this.state.height, 0, 0).tickFormat("");
            let bigbed = this.state.bbdata, bigwig = this.state.bwdata,bbarr = [],bwarr = [];
-           let _self=this,rects = [],r=70,pls=[],diff,max,show,hide,labels,k562lables,crerect;
+           let _self=this,rects = [],r=70,pls=[],diff,max,show,hide,labels,k562lables,crerect,bycelltype;
            max =   parseInt(this.props.selectedaccession.start) + parseInt(this.props.selectedaccession.len)
            diff = this.state.x(max)-this.state.x(this.props.selectedaccession.start)
 
@@ -505,6 +594,17 @@ class Polylines extends React.Component {
            {
                crerect = (<rect x={this.state.x(this.props.selectedaccession.start)} y={20} style={{opacity:"0.5",fill:"lightblue"}} data-value={this.props.selectedaccession.accession} width={diff} height={this.state.height} onMouseOver={this.showToolTip} onMouseOut={this.hideToolTip}/>)
            }
+
+           //bycelltype
+
+           bycelltype =this.props.byCellType.map((d,i) => {
+             if(this.state.bwinput.length!=0)
+           return ( <div key={i}> <input type="checkbox" defaultChecked={true} ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+            else {
+              return ( <div key={i}> <input type="checkbox"  ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+
+            }
+          });
 
            //Modal Tracks
            if(this.state.isModalOpen===true)
@@ -571,6 +671,7 @@ class Polylines extends React.Component {
               </div>
               { this.state.isModalOpen && <Modal onClose={this.closeModal}>
                 <div className="chkbox">
+                  {bycelltype}
                   {labels}
                    <br/>
                   K562 Tracks &nbsp;{show}{hide} <br/>
