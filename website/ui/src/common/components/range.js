@@ -90,7 +90,7 @@ class RangeSlider extends React.Component {
 		    numDecimals={this.state.numDecimals}
 		    connect
 		/>
-		<div style={{textAlign: "center", paddingTop: "10px"}}>
+		<div style={{paddingTop: "10px"}}>
 		    <input type="text"
 			   value={this.state.lvalue}
 			   onChange={this.updateSelectionLeft}

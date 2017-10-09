@@ -115,7 +115,8 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
 	    title={""}
 	    h_data={histBins}
 	    range={[0, chromLen]}
-	    selection_range={[coord_start, coord_end]}
+	    lvalue={coord_start}
+	    rvalue={coord_end}
 	    h_margin={default_margin}
 	    h_interval={chromLen / histBins.numBins}
 	    numDecimals={0}
@@ -160,7 +161,7 @@ const zscoreBox = (p) => {
 		<span key={i}>
 		    {s}
 		    {sliders.length - 1 === i
-		     ? '' : <br />}
+		     ? '' : <div style={{padding: "5px"}} />}
 		</span>)}
         </div>);
     
