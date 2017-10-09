@@ -73,18 +73,15 @@ class Slider extends React.Component {
 			       defaultPosition={{x: Math.max(0, this.state.lpixels - buttonWidth),
 						 y: 0}}
 			       onDrag={handleDragLeft} >
-			<div className={"sliderLeft"}>
-			</div>
+			<div className={"sliderLeft"} />
 		    </Draggable>
 		    <div className={"sliderConnect"} style={{"left": strP(lhLeft),
-							     "right": strP(cRight)}}>
-		    </div>
+							     "right": strP(cRight)}} />
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
 			       defaultPosition={{x: this.state.rpixels - buttonWidth,
-						y: 0}}
+						 y: 0}}
 			       onDrag={handleDragRight}>
-			<div className={"sliderRight"}>
-			</div>
+			<div className={"sliderRight"} />
 		    </Draggable>
 		</div>);
 	}

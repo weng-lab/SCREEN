@@ -2,16 +2,20 @@ import React from 'react';
 import ScaledPlot from './scaledplot';
 
 export const compute_offsets = (sorted_keys, itemsets, value) => {
-    let total_items = 0; let cmax = 0;
-    let labeloffsets = []; let yoffsets = {};
+    let total_items = 0;
+    let cmax = 0;
+    let labeloffsets = [];
+    let yoffsets = {};
     sorted_keys.forEach((k) => {
 	yoffsets[k] = total_items;
 	labeloffsets.push(total_items + (
  	    itemsets[k].items.length / 2.0
 	) + 0.25);
 	total_items += itemsets[k].items.length;
-	var d = Math.max(...itemsets[k].items.map(value));
-	if (d > cmax) cmax = d;
+	let d = Math.max(...itemsets[k].items.map(value));
+	if (d > cmax) {
+	    cmax = d;
+	}
     });
     return {
 	total: total_items,
@@ -29,7 +33,7 @@ class HorizontalBar extends ScaledPlot {
 
     componentWillReceiveProps(props) {
 	super.componentWillReceiveProps(props, props.axis_offsets);
-	let t0 = x => x > 0 ? x : 0;
+	const t0 = x => x > 0 ? x : 0;
 	this._format = props.format.value ? props.format.value : x => x;
 	this._label = props.format.label ? props.format.label : x => "";
 	this._grouplabel = props.format.grouplabel ? props.format.grouplabel : x => "";
@@ -55,15 +59,15 @@ class HorizontalBar extends ScaledPlot {
     render() {
 	
 	// prepare formatting functions
-	let fontsize = this._barheight * 0.75;
+	const fontsize = this._barheight * 0.75;
 
 	// elements for rendering
-	let yaxis = (
+	const yaxis = (
 		<g transform={"translate(" + (this.props.axis_offsets[0] * 0.5) + ",0)"}>
 	            <path className="domain" d={"M-2,0H0V" + this._viewsize[1] + "H-2"} />
 		</g>
 	);
-	let bars = (this._sorted_keys.map((key, k) => (
+	const bars = (this._sorted_keys.map((key, k) => (
 	    this.props.itemsets[key].items.map((item, i) => {
 
 		const uniqueK = key + '_' + i;
@@ -87,7 +91,7 @@ class HorizontalBar extends ScaledPlot {
 	    })
 	)));
 
-	let leftlabels = (this._sorted_keys.map((key, k) => (
+	const leftlabels = (this._sorted_keys.map((key, k) => (
 	    <text key={key}
 		  x={this.props.axis_offsets[0] * 0.45}
 		  y={this._y(this._item_distribution.labeloffsets[k])}
