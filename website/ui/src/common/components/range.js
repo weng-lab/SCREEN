@@ -15,35 +15,39 @@ class RangeSlider extends React.Component {
 	this.doChangeLeft = this.doChangeLeft.bind(this);
 	this.doChangeRight = this.doChangeRight.bind(this);
 	this.state = { lvalue: props.lvalue, rvalue: props.rvalue,
-		       numDecimals: this.props.numDecimals || 2};
+		       numDecimals: props.numDecimals || 2};
     }
 
-    updateSelectionLeft(e){
-	const lvalue = e.target.value;
-	if(!isNaN(lvalue) && this.props.range[0] <= lvalue){
-	    this.setState({lvalue: e.target.value});
-	}
-    }
-
-    updateSelectionRight(e){
-	const rvalue = e.target.value;
-	if(!isNaN(rvalue) && this.props.range[1] >= rvalue){
-	    this.setState({rvalue: e.target.value});
-	}
-    }
-    
+    // show transient changes, from slider
     updateSelection(lvalue, rvalue){
 	this.setState({lvalue, rvalue});
     }
 
+    // show transient changes, from left text box move
+    updateSelectionLeft(e){
+	const lvalue = e.target.value;
+	if(!isNaN(lvalue) && this.props.range[0] <= lvalue){
+	    this.setState({lvalue});
+	}
+    }
+
+    // show transient changes, from right text box move
+    updateSelectionRight(e){
+	const rvalue = e.target.value;
+	if(!isNaN(rvalue) && this.props.range[1] >= rvalue){
+	    this.setState({rvalue});
+	}
+    }
+    
+    // call parent onChange() action, from slider move
     doChange(lvalue, rvalue){
 	this.setState({lvalue, rvalue});
 	if(this.props.onChange){
-	    console.log("RangeFacet: calling: onChange:", lvalue, rvalue);
 	    this.props.onChange(lvalue, rvalue);
 	}
     }
 
+    // call parent onChange() action, from left text box change
     doChangeLeft(e){
 	let lvalue = +((+e.target.value).toFixed(this.state.numDecimals));
 	if(isNaN(lvalue)){
@@ -55,6 +59,7 @@ class RangeSlider extends React.Component {
 	this.doChange(lvalue, this.state.rvalue);
     }
 
+    // call parent onChange() action, from right text box change
     doChangeRight(e){
 	let rvalue = +((+e.target.value).toFixed(this.state.numDecimals));
 	if(isNaN(rvalue)){
@@ -82,6 +87,7 @@ class RangeSlider extends React.Component {
 		    dragLeft={this.updateSelection}
 		    dragRight={this.updateSelection}
 		    onStop={this.doChange}
+		    numDecimals={this.state.numDecimals}
 		    connect
 		/>
 		<div style={{textAlign: "center", paddingTop: "10px"}}>
@@ -106,21 +112,8 @@ class RangeSlider extends React.Component {
     }
 }
 
-const zeros = (range, interval) => {
-    var bins = [];
-    for (var i = range[0]; i < range[1]; i += interval) {
-	bins.push([i, 0]);
-    }
-    return {"bins" : bins,
-            "numBins" : bins.lengths,
-            "binMax" : 0}
-};
-
 class RangeFacet extends React.Component {
     render() {
-	var h_data = (this.props.h_data === null
-		      ? zeros(this.props.range, this.props.h_interval)
-		    : this.props.h_data);
 	return (<div>
 		<RangeSlider
 		    nohistogram={this.props.nohistogram}
@@ -128,13 +121,11 @@ class RangeFacet extends React.Component {
                     lvalue={this.props.lvalue}
 		    rvalue={this.props.rvalue}
 		    interval={this.props.h_interval}
-		    data={h_data}
+		    data={this.props.h_data}
                     margin={this.props.h_margin}
 		    onChange={this.props.onChange}
                     title={this.props.title}
 		    updateWidth={this.props.updateWidth}
-		    rendervalue={this.props.rendervalue}
-		    reversevalue={this.props.reversevalue}
 		/>
 	</div>);
     }

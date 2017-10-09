@@ -10,8 +10,8 @@ class DualSlider extends React.Component {
 	super(props);
 	this.updateWithProps = this.updateWithProps.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
-		      numDecimals: this.props.numDecimals || 2,
-		      buttonWidth: this.props.buttonWidth || 34};
+		      numDecimals: props.numDecimals || 2,
+		      buttonWidth: props.buttonWidth || 34};
     }
     
     componentDidMount(){

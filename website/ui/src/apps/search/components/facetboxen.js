@@ -17,7 +17,7 @@ import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 import {panelize, isCart} from '../../../common/utility'
 
-const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
+const rangeBox = (title, range, start, end, action, nohistogram) => {
     return (
 	<RangeFacet
 	    title={title}
@@ -27,8 +27,6 @@ const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
 	    onChange={(lvalue, rvalue) => { action(lvalue, rvalue)} }
-	    rendervalue={_f}
-	    reversevalue={_rf}
 	    nohistogram={nohistogram}
         />);
 }
@@ -125,25 +123,12 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
     return panelize("Coordinates: " + title, box, "CoordinateFacet", globals);
 }
 
-const zscore_decimal = (v) => {
-    if (isNaN(parseFloat(v)) || !isFinite(v)) {
-	return 0.0;
-    }
-    if (Number.isInteger(v)) {
-	return v + ".";
-    }
-    return v;
-}
-    
-const zrdecimal = (s) => (+s * 100.0);
-
 const makeRankFacet = (rfacets, assay, title, start, end, action) => {
     const range = [-10, 10];
     if(!rfacets.includes(assay)){
         return "";
     }
-    return rangeBox(title, range, start, end,
-		    action, zscore_decimal, zrdecimal, true);
+    return rangeBox(title, range, start, end, action, true);
 }
 
 const zscoreBox = (p) => {
