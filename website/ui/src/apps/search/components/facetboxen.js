@@ -22,10 +22,11 @@ const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
 	<RangeFacet
 	    title={title}
 	    range={range}
-	    selection_range={[start, end]}
+	    lvalue={start}
+	    rvalue={end}
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
-	    onchange={(lvalue, rvalue) => { action(lvalue, rvalue)}}
+	    onChange={(lvalue, rvalue) => { action(lvalue, rvalue)} }
 	    rendervalue={_f}
 	    reversevalue={_rf}
 	    nohistogram={nohistogram}

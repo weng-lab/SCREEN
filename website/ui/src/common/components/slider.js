@@ -3,26 +3,37 @@ import Draggable from 'react-draggable';
 
 import {linearScale} from '../utility';
 
-class Slider extends React.Component {
+class DualSlider extends React.Component {
     // based off https://github.com/algolia/react-nouislider/blob/master/index.js
 
     constructor(props){
 	super(props);
-	this.state = {width: 0, lvalue: 0, rvalue: 0, numDecimals: 2};
+	this.updateWithProps = this.updateWithProps.bind(this);
+	this.state = {width: 0, lvalue: 0, rvalue: 0,
+		      numDecimals: this.props.numDecimals || 2,
+		      buttonWidth: this.props.buttonWidth || 34};
     }
     
     componentDidMount(){
-	const width = this.refs.bar.clientWidth;
-	const lvalue = this.props.start[0];
-	const rvalue = this.props.start[1];
-
-	const ls = linearScale(this.props.range, [0, width]);
-	const lpixels = ls(lvalue);
-	const rpixels = ls(rvalue);
-
-	this.setState({width, lvalue, rvalue, lpixels, rpixels});
+	this.updateWithProps(this.props, this.state.buttonWidth);
     }
 
+    componentWillReceiveProps(nextProps){
+	this.updateWithProps(nextProps);
+    }
+
+    updateWithProps(p, offset = 0){
+	const width = this.refs.bar.clientWidth;
+	const lvalue = p.lvalue;
+	const rvalue = p.rvalue;
+
+	const ls = linearScale(p.range, [0, width]);
+	const lpixels = Math.max(0, ls(lvalue) - offset);
+	const rpixels = ls(rvalue) - offset;
+		    
+	this.setState({width, lvalue, rvalue, lpixels, rpixels});
+    }
+    
     render() {
 	const makeBars = () => {
 	    const onStart = () => {
@@ -72,21 +83,18 @@ class Slider extends React.Component {
 	    const rhLeft = perc(this.state.rpixels);
 	    const cRight = 100.0 - rhLeft;
 	    const strP = (v) => (v.toString() + '%');
-	    const buttonWidth = 34;
 	    
 	    return (
 		<div className={"sliderBase"}>
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
-			       defaultPosition={{x: Math.max(0, this.state.lpixels - buttonWidth),
-						 y: 0}}
+			       position={{x: this.state.lpixels, y: 0}}
 			       onDrag={handleDragLeft} >
 			<div className={"sliderLeft"} />
 		    </Draggable>
 		    <div className={"sliderConnect"} style={{"left": strP(lhLeft),
 							     "right": strP(cRight)}} />
 		    <Draggable axis="x" bounds='parent' {...dragHandlers}
-			       defaultPosition={{x: this.state.rpixels - buttonWidth,
-						 y: 0}}
+			       position={{x: this.state.rpixels, y: 0}}
 			       onDrag={handleDragRight}>
 			<div className={"sliderRight"} />
 		    </Draggable>
@@ -101,4 +109,4 @@ class Slider extends React.Component {
     }
 }
 
-export default Slider;
+export default DualSlider;
