@@ -19,6 +19,7 @@
 						"jquery-ui": "github:jquery/jquery-ui#1.12.1",
 						"jszlib": "dasmoth/jszlib",
 						"react": "^16.0.0",
+						"react-autosuggest": "^9.3.2",
 						"react-bootstrap": "^0.31.2",
 						"react-bootstrap-table": "^3.4.1",
 						"react-dom": "^16.0.0",
