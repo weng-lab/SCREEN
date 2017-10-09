@@ -53,7 +53,7 @@ class RangeSlider extends React.Component {
 	if(isNaN(lvalue)){
 	    return false;
 	}
-	if(lvalue >= this.state.rvalue){
+	if(lvalue >= this.state.rvalue){ // pad with episilon
 	    lvalue = this.state.rvalue - Math.pow(10, -this.state.numDecimals);
 	}
 	this.doChange(lvalue, this.state.rvalue);
@@ -65,7 +65,7 @@ class RangeSlider extends React.Component {
 	if(isNaN(rvalue)){
 	    return false;
 	}
-	if(rvalue <= this.state.lvalue){
+	if(rvalue <= this.state.lvalue){ // pad with episilon
 	    rvalue = this.state.lvalue + Math.pow(10, -this.state.numDecimals);
 	}
 	this.doChange(this.state.lvalue, rvalue);
