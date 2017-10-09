@@ -10,7 +10,6 @@ class DualSlider extends React.Component {
 	this.updateDimensions = this.updateDimensions.bind(this);
 	this.updateWithProps = this.updateWithProps.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
-		      numDecimals: props.numDecimals || 2,
 		      buttonWidth: props.buttonWidth || 34};
 	window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
@@ -24,6 +23,7 @@ class DualSlider extends React.Component {
     }
 
     updateDimensions(){
+	// tighten width by button slider icon width, else button will overhang slider bar
 	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
 	const ls = linearScale(this.props.range, [0, width]);
 	const lpixels = ls(this.state.lvalue);
@@ -58,7 +58,7 @@ class DualSlider extends React.Component {
 		const dxPixels = ui.deltaX;
 		const ls = linearScale([0, this.state.width], this.props.range);
 		const lpixels = this.state.lpixels + dxPixels;
-		const lvalue = +(ls(lpixels).toFixed(this.state.numDecimals));
+		const lvalue = +(ls(lpixels).toFixed(this.props.numDecimals));
 		if(lvalue >= this.state.rvalue){
 		    return false;
 		}
@@ -73,7 +73,7 @@ class DualSlider extends React.Component {
 		const dxPixels = ui.deltaX;
 		const ls = linearScale([0, this.state.width], this.props.range);
 		const rpixels = this.state.rpixels + dxPixels;
-		const rvalue = +(ls(rpixels).toFixed(this.state.numDecimals));
+		const rvalue = +(ls(rpixels).toFixed(this.props.numDecimals));
 		if(this.state.lvalue >= rvalue){
 		    return false;
 		}

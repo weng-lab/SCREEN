@@ -1,9 +1,6 @@
 import React from 'react';
-import $ from 'jquery';
 
 import {chain_functions} from '../common';
-
-let d3 = require('d3');
 
 class HistogramSlider extends React.Component {
     constructor(props) {
@@ -11,74 +8,73 @@ class HistogramSlider extends React.Component {
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
 
-    componentDidMount() {
-	this._histogram = this.create_histogram(this.refs.histogram);
-    }
+    /* componentDidMount() {
+       this._histogram = this.create_histogram(this.refs.histogram);
+     * }
 
-    update_selection(lvalue, rvalue) {
-	this._histogram.selectAll("g")
-	    .data(this.props.data)
-	    .attr("class", (d) => (d.key >= this.props.lvalue && d.key < this.props.rvalue ?
-				   "barselected"
-				 : "bardeselected"));
-    }
-    
-    _update_width() {
-	if (this.props.updateWidth) {
-	    this.props.updateWidth($(this.refs.histogram).width());
-	}
-    }
+     * update_selection(lvalue, rvalue) {
+       this._histogram.selectAll("g")
+       .data(this.props.data)
+       .attr("class", (d) => (d.key >= this.props.lvalue && d.key < this.props.rvalue ?
+       "barselected"
+       : "bardeselected"));
+     * }
+     * 
+     * _update_width() {
+       if (this.props.updateWidth) {
+       this.props.updateWidth($(this.refs.histogram).width());
+       }
+     * }
 
-    create_histogram(destination_div) {
-	$(destination_div).empty();
+     * create_histogram(destination_div) {
+       $(destination_div).empty();
 
-	var div = $(destination_div);
-	var height = div.height();
-	var width = div.width();
-	var xrange = this.props.range;
+       var div = $(destination_div);
+       var height = div.height();
+       var width = div.width();
+       var xrange = this.props.range;
 
-	const data = this.props.data;
-	if(!data){
-	    return;
-	}
-	
-	var svg = d3.select(destination_div).append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
+       const data = this.props.data;
+       if(!data){
+       return;
+       }
+       
+       var svg = d3.select(destination_div).append("svg")
+       .attr("width", width)
+       .attr("height", height);
 
-	svg.append("g")
-	    .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
+       svg.append("g")
+       .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
 
-	var x = d3.scaleLinear()
-            .domain(xrange)
-	    .rangeRound([0, width]);
+       var x = d3.scaleLinear()
+     *         .domain(xrange)
+       .rangeRound([0, width]);
 
-	var y = d3.scaleLinear()
-	    .domain([0, data.binMax])
-	    .range([height, 0]);
+       var y = d3.scaleLinear()
+       .domain([0, data.binMax])
+       .range([height, 0]);
 
-	var bar = svg.selectAll(".bar")
-	    .data(data.bins)
-	    .enter().append("g")
-	    .attr("fill", function(d) {
-		return (d[0] >= this.state.lvalue && d[0] < this.state.rvalue
-			? "#000090" : "#a0a0a0");
-	    })
-	    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
+       var bar = svg.selectAll(".bar")
+       .data(data.bins)
+       .enter().append("g")
+       .attr("fill", function(d) {
+       return (d[0] >= this.state.lvalue && d[0] < this.state.rvalue
+       ? "#000090" : "#a0a0a0");
+       })
+       .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
 
-	bar.append("rect")
-	    .attr("x", 1)
-	    .attr("width", x(this.props.interval + xrange[0]))
-	    .attr("height", function(d) { return height - y(d[1]); });
+       bar.append("rect")
+       .attr("x", 1)
+       .attr("width", x(this.props.interval + xrange[0]))
+       .attr("height", function(d) { return height - y(d[1]); });
 
-	return svg;
+       return svg;
 
-    }
-
+     * }
+     */
     render() {
 	return (
-	    <div ref="histogram"
-		 style={{width: "100%", height: "20px"}} />);
+	    <div style={{width: "100%", height: "20px"}} />);
     }
 }
 
