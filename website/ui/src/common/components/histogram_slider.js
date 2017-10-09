@@ -1,10 +1,13 @@
 import React from 'react';
 
+import {linearScale} from '../utility';
 import {chain_functions} from '../common';
 
 class HistogramSlider extends React.Component {
     constructor(props) {
 	super(props);
+	this.makeBars = this.makeBars.bind(this);
+	this.state = {height: 0};
 	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
     }
 
@@ -72,9 +75,20 @@ class HistogramSlider extends React.Component {
 
      * }
      */
+    makeBars(){
+
+    }
+    
     render() {
+	const width = 10;
+	const height = 10;
+	const xScale = linearScale(this.props.range, [0, width]);
+	const yScale = linearScale([0, this.props.data.binMax], [height, 0]);
+	
 	return (
-	    <div style={{width: "100%", height: "20px"}} />);
+	    <div style={{width: "100%", height: "20px"}}>
+	    {this.state.height > 0 && this.makeBars()}
+	    </div>);
     }
 }
 

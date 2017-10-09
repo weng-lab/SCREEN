@@ -26,6 +26,7 @@ const rangeBox = (title, range, start, end, action, nohistogram) => {
 	    rvalue={end}
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
+	    numDecimals={2}
 	    onChange={(lvalue, rvalue) => { action(lvalue, rvalue)} }
 	    nohistogram={nohistogram}
         />);
