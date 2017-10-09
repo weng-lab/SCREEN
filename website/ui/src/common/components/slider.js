@@ -15,21 +15,22 @@ class DualSlider extends React.Component {
     }
     
     componentDidMount(){
-	this.updateWithProps(this.props, this.state.buttonWidth);
+	this.updateWithProps(this.props);
     }
 
     componentWillReceiveProps(nextProps){
 	this.updateWithProps(nextProps);
     }
 
-    updateWithProps(p, offset = 0){
-	const width = this.refs.bar.clientWidth;
+    updateWithProps(p){
+	// tighten width by button slider icon width, else button will overhang slider bar
+	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
 	const lvalue = p.lvalue;
 	const rvalue = p.rvalue;
 
 	const ls = linearScale(p.range, [0, width]);
-	const lpixels = Math.max(0, ls(lvalue) - offset);
-	const rpixels = ls(rvalue) - offset;
+	const lpixels = ls(lvalue);
+	const rpixels = ls(rvalue);
 		    
 	this.setState({width, lvalue, rvalue, lpixels, rpixels});
     }
