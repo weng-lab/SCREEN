@@ -10,7 +10,7 @@
 						"eject": "react-scripts eject"
 			},
 			"homepage": "http://megatux.purcaro.com:9006",
-			"devDependencies": {},
+    "devDependencies": {},
 			"dependencies": {
 						"bootstrap": "3",
 						"d3": "^4.2.2",

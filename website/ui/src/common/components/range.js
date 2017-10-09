@@ -172,6 +172,7 @@ class RangeSlider extends React.Component {
     }
 
     update_selection(lvalue, rvalue) {
+	//console.log("range:", "update_selection", lvalue, rvalue);
 	this.refs.txmin.value = lvalue;
 	this.refs.txmax.value = rvalue;
 	if(!this.props.nohistogram){
@@ -183,9 +184,7 @@ class RangeSlider extends React.Component {
     }
 
     set_selection(lvalue, rvalue) {
-	if (rvalue <= lvalue) {
-	    rvalue = lvalue + 1;
-	}
+	//console.log("range:", "set_selection", lvalue, rvalue);
 	if (this.props.onchange) {
             this.props.onchange(lvalue, rvalue);
         }

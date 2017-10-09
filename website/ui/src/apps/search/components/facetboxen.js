@@ -25,7 +25,7 @@ const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
 	    selection_range={[start, end]}
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
-	    onchange={(se) => { action(se[0], se[1])}}
+	    onchange={(lvalue, rvalue) => { action(lvalue, rvalue)}}
 	    rendervalue={_f}
 	    reversevalue={_rf}
 	    nohistogram={nohistogram}
