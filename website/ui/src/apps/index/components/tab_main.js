@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import AutocompleteBox from './autocompletebox'
+import Autocompleter from './autocompletebox'
 import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions';
 import {tabPanelize} from '../../../common/utility'
@@ -61,7 +61,7 @@ class TabMain extends React.Component {
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	let dv = "K562 chr11:5226493-5403124";
 	return (<div>
-		    <AutocompleteBox defaultvalue={dv} actions={this.props.actions}
+		    <Autocompleter defaultvalue={dv} actions={this.props.actions}
 		        id="mainSearchbox" examples={examples} />
 	        </div>);
     }

@@ -1,15 +1,56 @@
 import React from 'react';
-import $ from 'jquery';
-let autocomplete = require( "jquery-ui/ui/widgets/autocomplete" );
+import Autosuggest from 'react-autosuggest';
+
+import * as ApiClient from '../api_client';
 
 class AutocompleteBox extends React.Component {
     
     constructor(props) {
 	super(props);
+	this.onChange = this.onChange.bind(this);
+	this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+	this.getSuggestionValue = this.getSuggestionValue.bind(this);
+	this.renderSuggestion = this.renderSuggestion.bind(this);
+	this.loadSuggestion = this.loadSuggestion.bind(this);
+	
 	this.userQueries = {}; // cache
 	this.handleKeyPress = this.handleKeyPress.bind(this);
 	this._onchange = this._onchange.bind(this);
+
+	this.state = {value: '', suggestions: []}
     }
+
+    onSuggestionsClearRequested(){
+    }
+    
+    onChange = (event, { newValue }) => {
+	this.setState({
+	    value: newValue
+	});
+    };
+
+    // Autosuggest will call this function every time you need to clear suggestions.
+    onSuggestionsClearRequested = () => {
+	this.setState({
+	    suggestions: []
+	});
+    };
+
+    // When suggestion is clicked, Autosuggest needs to populate the input
+    // based on the clicked suggestion. Teach Autosuggest how to calculate the
+    // input value for every given suggestion.
+    getSuggestionValue(suggestion){
+	return suggestion;
+    }
+
+    // Use your imagination to render suggestions.
+    renderSuggestion(suggestion){
+	return (
+	    <div>
+		{suggestion}
+	    </div>);
+    }
+
 
     handleKeyPress = (event) => {
 	if('Enter' === event.key){
@@ -25,60 +66,43 @@ class AutocompleteBox extends React.Component {
 	}
     }
     
-    componentDidMount(){
-	const loadAuto = (userQuery, callback_f) => {
-	    let qobj = {userQuery};
-	    if (this.props.assemblies) qobj.assemblies = this.props.assemblies;
-	    let jq = JSON.stringify(qobj);
-	    if(jq in this.userQueries){
-		callback_f(this.userQueries[jq]);
-		return;
-	    }
-	    $.ajax({
-		url: "/autows/suggestions",
-		type: "POST",
-		data: jq,
-		dataType: "json",
-		contentType : "application/json",
-		error: function(jqxhr, status, error) {
-                    console.log("err during load");
-		},
-		success: function(r){
-		    this.userQueries[jq] = r;
-		    callback_f(r);
-		}.bind(this)
-	    });
+    loadSuggestion({ value }){
+	let q = {userQuery: value};
+	if (this.props.assemblies) {
+	    q.assemblies = this.props.assemblies;
 	}
-
-	let sb = this.refs[this.props.id];
-	autocomplete({
-	    source: function (userQuery, callback_f) {
-                // http://stackoverflow.com/a/15977052
-                //let endIdx = sb[0].selectionStart;
-		loadAuto(userQuery.term, callback_f)
-	    },
-	    select: function(event, ui) {
-		sb.val(ui.item.value);
-		return false;
-	    },
-	    change: function() {
-	    }
-	}, sb);
+	const jq = JSON.stringify(q);
+	ApiClient.autocompleteBoxSuggestions(jq,
+					     (r) => {
+						 this.setState({
+						     suggestions: r
+						 })
+					     },
+					     (msg) => {
+						 console.log("err during load");
+					     });
     }
 
     render() {
-	return <input ref={this.props.id}
-		      id={this.props.id}
-	              type={"text"}
-		      defaultValue={this.props.defaultvalue}
-	              onKeyPress={this.handleKeyPress}
-		      name={this.props.name}
-   	              className={this.props.className}
-		      size={this.props.size}
-  	              onChange={this._onchange} />;
+	const { value, suggestions } = this.state;
+
+	// Autosuggest will pass through all these props to the input.
+	const inputProps = {
+	    placeholder: 'Type a programming language',
+	    value,
+	    onChange: this.onChange
+	};
+	
+	return <Autosuggest
+		   suggestions={suggestions}
+		   onSuggestionsFetchRequested={this.loadSuggestion}
+		   onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+		   getSuggestionValue={this.getSuggestionValue}
+		   renderSuggestion={this.renderSuggestion}
+		   inputProps={inputProps}
+	       />;
     }
     
 }
 
 export default AutocompleteBox;
-

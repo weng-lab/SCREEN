@@ -210,9 +210,12 @@ export const tabTitle = (c) => (
 
 export const upperCase = (d) => (d.toUpperCase())
 
+export const toParams = (d) => (
+    Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&'))    
+
 export const searchLink = (data) => (approved_symbol) => {
     const d = {q: approved_symbol, assembly: data.assembly};
-    const params = Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&');
+    const params = toParams(d);
     const url = "/search/?" + params;
     return <a href={url}>{approved_symbol}</a>;
 }

@@ -30,6 +30,10 @@ export const autocompleteBox = (jq, successF, errF) => {
     getByPost(jq, "/autows/search", successF, errF);
 }
 
+export const autocompleteBoxSuggestions = (jq, successF, errF) => {
+    getByPost(jq, "/autows/suggestions", successF, errF);
+}
+
 export const appPageBaseInit = (jq, url, successF, errF) => {
     getByPost(jq, url, successF, errF);
 }
