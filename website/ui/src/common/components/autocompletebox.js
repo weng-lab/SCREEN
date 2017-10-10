@@ -19,12 +19,13 @@ class AutocompleteBox extends React.Component {
 	this.state = {value: '', suggestions: []}
     }
 
-    onSuggestionsClearRequested(){}
-    
     onChange(event, { newValue }){
 	this.setState({
 	    value: newValue
 	});
+	if(this.props.onChange){
+	    this.props.onChange(newValue);
+	}
     }
 
     // Autosuggest will call this function every time you need to clear suggestions.
@@ -53,7 +54,7 @@ class AutocompleteBox extends React.Component {
     handleKeyPress = (event) => {
 	if('Enter' === event.key){
 	    if (this.props.onEnter){
-		this.props.onEnter(this.refs.searchBox.value);
+		this.props.onEnter();
 	    }
 	}
     }
@@ -82,17 +83,21 @@ class AutocompleteBox extends React.Component {
 	const inputProps = {
 	    placeholder: this.props.defaultvalue,
 	    value,
-	    onChange: this.onChange
+	    onChange: this.onChange,
+	    onKeyPress: this.handleKeyPress
 	};
 	
-	return <Autosuggest
-		   suggestions={suggestions}
-		   onSuggestionsFetchRequested={this.loadSuggestion}
-		   onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-		   getSuggestionValue={this.getSuggestionValue}
-		   renderSuggestion={this.renderSuggestion}
-		   inputProps={inputProps}
-	       />;
+	return (
+	    <div>
+		<Autosuggest
+		    suggestions={suggestions}
+		    onSuggestionsFetchRequested={this.loadSuggestion}
+		    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+		    getSuggestionValue={this.getSuggestionValue}
+		    renderSuggestion={this.renderSuggestion}
+		    inputProps={inputProps}
+		/>
+	    </div>);
     }
 }
 

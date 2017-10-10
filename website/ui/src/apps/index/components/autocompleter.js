@@ -13,9 +13,10 @@ class Autocompleter extends React.Component {
  	this.loadSearch = this.loadSearch.bind(this);
  	this.searchHg19 = this.searchHg19.bind(this);
  	this.searchMm10 = this.searchMm10.bind(this);
- 	this.handleKeyPress = this.handleKeyPress.bind(this);
+ 	this.onEnter = this.onEnter.bind(this);
+	this.onChange = this.onChange.bind(this);
 
- 	this.state = {userQueryErr : null, searchtext: this.props.defaultvalue};
+ 	this.state = {userQueryErr : null, value: props.defaultvalue};
     }
 
     loadSearch(assembly, userQuery, actions) {
@@ -52,27 +53,27 @@ class Autocompleter extends React.Component {
     }
     
     searchHg19() {
- 	const userQuery = this.state.searchtext;
- 	this.loadSearch("hg19", userQuery, this.props.actions);
+ 	this.loadSearch("hg19", this.state.value, this.props.actions);
     }
     
     searchMm10() {
- 	const userQuery = this.state.searchtext;
- 	this.loadSearch("mm10", userQuery, this.props.actions);
+ 	this.loadSearch("mm10", this.state.value, this.props.actions);
     }
     
-    handleKeyPress = (event) => {
- 	if(event.key === 'Enter'){
- 	    this.searchHg19();
- 	}
+    onEnter(){
+ 	this.loadSearch("hg19", this.state.value, this.props.actions);
+    }
+
+    onChange(value){
+	this.setState({value});
     }
     
     render() {
  	let input = <AutocompleteBox defaultvalue={this.props.defaultvalue}
- 				     name={this.props.name}
+				     name={this.props.name}
 				     size={this.props.size}
     				     className={this.props.className}
-   				     onChange={(x) => {this.setState({searchtext: x})}}
+				     onChange={this.onChange}
  				     onEnter={this.searchHg19}
 		    />;
 	
