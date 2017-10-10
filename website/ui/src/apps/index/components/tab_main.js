@@ -60,13 +60,11 @@ class TabMain extends React.Component {
     searchBox() {
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
 	let dv = "K562 chr11:5226493-5403124";
-	return
-	(<div>
+	return (
 	    <Autocompleter defaultvalue={dv}
 			   actions={this.props.actions}
 		           id="mainSearchbox"
-			   examples={examples} />
-	</div>);
+			   examples={examples} />);
     }
     
     render() {

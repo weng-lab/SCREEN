@@ -1,11 +1,11 @@
 import React from 'react'
 
-import AutocompleteBox from '../../../common/components/autocompletetextbox';
+import AutocompleteBox from '../../../common/components/autocompletebox';
 
 import * as ApiClient from '../../../common/api_client';
 import * as Render from '../../../common/zrenders';
 
-class AutocompleteBox extends React.Component {
+class Autocompleter extends React.Component {
     constructor(props) {
 	super(props);
 
@@ -112,4 +112,4 @@ class AutocompleteBox extends React.Component {
     
 }
 
-export default AutocompleteBox;
+export default Autocompleter;
