@@ -10,11 +10,6 @@ import loading from '../../../common/components/loading';
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
 
-/*global Globals */
-/*global GlobalAssembly */
-/*global GlobalParsedQuery */
-/*eslint no-undef: "error"*/
-
 class ExpressionPlot extends React.Component {
     constructor(props) {
 	super(props);
