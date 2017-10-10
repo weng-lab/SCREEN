@@ -7,6 +7,7 @@ import Rects from './rects'
 import ToolTip from './tooltip'
 import * as ApiClient from '../../../api_client';
 import readBig from './gbutils.js'
+import Exons from './exons.js'
  class Polylines extends React.Component
   {
      render() {
@@ -24,7 +25,7 @@ import readBig from './gbutils.js'
           yAxis.tickValues(y.ticks(1).concat(y.domain()));
           var data=this.props.data;
           var color ="rgb("+this.props.color+")";
-          var x=((_self.props.x(_self.props.min)+_self.props.x(_self.props.max)/parseInt(2)))-parseInt(100);
+          var x=((_self.props.x(_self.props.min)+_self.props.x(_self.props.max)/parseInt(2)))-parseInt(_self.props.leftMargin);
           var points=_self.props.x(_self.props.min)+","+y(0)+" ";
           var text = _self.props.text;
           if(data===undefined)
@@ -48,7 +49,7 @@ import readBig from './gbutils.js'
               points=points +_self.props.x(_self.props.max)+","+y(0);
           return(
               <g>
-                  <g transform="translate(100,0)">
+                  <g transform="translate(130,0)">
                     <Axis  axis={yAxis}/>
                   </g>
                   <polygon points={points} stroke={color} fill={color} strokeWidth="0.1"/>
@@ -121,7 +122,7 @@ import readBig from './gbutils.js'
   }
   class GenomeBrowser extends React.Component {
 
-       static defaultProps = { width: 1200, height: 200, marginleft:100,marginright: 100};
+       static defaultProps = { width: 1200, height: 200, marginleft:130,marginright: 100};
        constructor(props)
        {
          super(props)
@@ -202,19 +203,57 @@ import readBig from './gbutils.js'
                 //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
                 gi.push(bwinpt)
                  //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
-
               }
-              this.setState((prevState)=> {return{height:prevState.height + h}},()=>{
+              this.setState((prevState)=> {return{height: h + 50}},()=>{
                  this.setState({ bwinput: gi },()=>{this.readBigWig();})
                });
+               //gene
+               const q = {assembly: this.props.assembly,coord_chrom:this.state.chrom,coord_end: this.state.xmaxrange,coord_start: this.state.xminrange};
+               var jq = JSON.stringify(q);
+               ApiClient.getByPost(jq, "/gbws/geneTrack",
+               (r) => {
+                        this.setState({exons: r},()=> {
+                          this.setState((prevState)=> {return{height: prevState.height +300}},()=>{
+                           });
+                        });
+                   },
+                 (msg) => {
+               console.log("err loading trackhub");
+               console.log(msg);
+              this.setState({exons: [],
+                       isFetching: false, isError: true});
+                 });
            });
            })
 
        }
+       nextexon = (r) =>
+       {
+         let bp = parseInt(this.state.bp)
+         let diff = parseInt(0.05 * bp)
+         let max = parseInt(r)+diff,min=parseInt(max)-parseInt(this.state.bp);
 
+         this.setState({xminrange: min ,xmaxrange: max}
+           ,() => {
+             var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
+              this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig(); })
+            });
+       }
+       prevexon = (r) =>
+       {
+         let bp = parseInt(this.state.bp)
+         let diff = parseInt(0.05 * bp)
+         let min = parseInt(r)-diff,max=parseInt(min)+parseInt(this.state.bp);
+
+         this.setState({xminrange: min ,xmaxrange: max}
+           ,() => {
+             var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
+              this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig(); })
+            });
+       }
        loadThub()
        {
-         const q = {assembly: this.props.assembly};
+         const q = {assembly: this.props.assembly,coord_end: this.state.xmaxrange,coord_start: this.state.xminrange};
          var jq = JSON.stringify(q);
          this.setState({isFetching: true});
          ApiClient.getByPost(jq, "/gbws/trackhub",
@@ -224,9 +263,11 @@ import readBig from './gbutils.js'
            (msg) => {
          console.log("err loading trackhub");
          console.log(msg);
-        this.setState({bbinput: [],
+        this.setState({input: [],
                  isFetching: false, isError: true});
            });
+
+
        }
        handlecheck = (e) =>
        {
@@ -606,15 +647,15 @@ import readBig from './gbutils.js'
             }
           });
 
-           //Modal Tracks
+          /* //Modal Tracks
            if(this.state.isModalOpen===true)
            {
               show =   <input type="submit" value="+" onClick={_self.toggleshow}/>;
               hide =   <input type="submit" value="-" onClick={_self.toggleshow}/>;
-           }
+           }*/
 
            //Labels
-            labels =this.state.input.map((d,i) => {
+          /*  labels =this.state.input.map((d,i) => {
              if(d.parent==="")
              return ( <div key={i}> <input type="checkbox" ref={d.shortLabel} onClick={_self.handlecheck} id={d.shortLabel} key={i} value={d.longLabel} ></input> {d.longLabel} </div>);
              else return []
@@ -628,7 +669,7 @@ import readBig from './gbutils.js'
               return ( <div key={i}> <input type="checkbox" ref={d.shortLabel} onClick={_self.handlecheck} id={d.shortLabel} key={i} value={d.longLabel} ></input> {d.longLabel}</div>);
                else return []
             });
-           }
+          } */
           //bigbed rects
            Object.keys(bigbed).forEach(function (key)
            {
@@ -644,21 +685,36 @@ import readBig from './gbutils.js'
              }
 
            });
-           //bigwig signals
-            Object.keys(bigwig).forEach(function(key)
-            {
-                let obj = bigwig[key];
-                bwarr = [];
-                bwarr.push(obj[0])
-                if(obj[0]!==undefined)
+
+
+            let e= []
+            e=this.state.exons.map((d,i)=>{
+                if( (d.start < this.state.xminrange && d.end > this.state.xmaxrange) ||
+                    ((d.start >= this.state.xminrange && d.start <= this.state.xmaxrange) && d.end > this.state.xmaxrange) ||
+                    (d.start < this.state.xminrange && (d.end >= this.state.xminrange && d.end <= this.state.xmaxrange)) ||
+                    (d.start >= this.state.xminrange && d.end <= this.state.xmaxrange))
                 {
-                  pls.push(bwarr.map((d)=>
-                  {
-                      return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
-                  }));
-                  r+=100;
+                    r+=30;
+                    return(<Exons key={i} strand={d.strand} tstart={d.start} tend={d.end} leftMargin={this.props.marginleft} width={this.props.width} prevExon={_self.prevexon} nextExon={_self.nextexon} data={d.values} x={this.state.x} transcript_id={d.transcript_id} range={r} showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}/>)
+
                 }
-            });
+            })
+            r+=50;
+            //bigwig signals
+             Object.keys(bigwig).forEach(function(key)
+             {
+                 let obj = bigwig[key];
+                 bwarr = [];
+                 bwarr.push(obj[0])
+                 if(obj[0]!==undefined)
+                 {
+                   pls.push(bwarr.map((d)=>
+                   {
+                       return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
+                   }));
+                   r+=100;
+                 }
+             });
           return (
               <div>
               <div className="search">
@@ -674,7 +730,6 @@ import readBig from './gbutils.js'
                   {bycelltype}
                   {labels}
                    <br/>
-                  K562 Tracks &nbsp;{show}{hide} <br/>
                   <br/>
                   {k562lables}
                   <br/>
@@ -689,8 +744,8 @@ import readBig from './gbutils.js'
                   </g>
                   {crerect}
                   {this.state.bbdata && rects}
+                  {this.state.exons.length >0 && e}
                   {this.state.bwdata && pls}
-
               </svg>
               </div>
           );

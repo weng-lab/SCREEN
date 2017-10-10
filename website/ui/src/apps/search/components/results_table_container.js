@@ -70,6 +70,7 @@ class ResultsTableContainer extends React.Component {
 				this.setState({cres: [], total: 0,
 					       jq, isFetching: false, isError: true});
 			    });
+        
     }
 
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){

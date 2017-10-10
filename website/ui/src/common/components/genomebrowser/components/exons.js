@@ -11,17 +11,19 @@ export default class Exons extends React.Component {
   render() {
 
     let exon =this.props.data,t =this.props.transcript_id.split("."),transcript_id=t[0];
-    let res = Math.max.apply(Math,exon.map(function(o){return o.attributes.exon_number;}))
+    let res = Math.max.apply(Math,exon.map(function(o){return o.exon_number;}))
     let y = this.props.range,introns = [],paths = [],exonarr=[],arrows =[];
     //backward prev exons
-    const ps1 = "M 100 " + (y+5) +" L 105 "+(y)+" L 105 "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
-    const ps2 = "M 105 " + (y+5) +" L 110 "+(y)+" L 110 "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
+    let leftarr = +(this.props.leftMargin),leftarrup=+(this.props.leftMargin) + +(5),leftarrdn=+(this.props.leftMargin) + +(10);
+
+    const ps1 = "M "+leftarr+" " + (y+5) +" L "+leftarrup+" "+(y)+" L "+leftarrup+" "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
+    const ps2 = "M "+leftarrup+" " + (y+5) +" L "+leftarrdn+" "+(y)+" L "+leftarrdn+" "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
     //forward next exons
     const pe1 = "M 1200 " + (y+5) +" L 1195 "+(y)+" L 1195 "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
     const pe2 = "M 1195 " + (y+5) +" L 1190 "+(y)+" L 1190 "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
 
     const rects=exon.map((d,i) => {
-      let exoncount= "Exon "+ d.attributes.exon_number+"/"+res,check=false;
+      let exoncount= "Exon "+ d.exon_number+"/"+res,check=false;
       if((this.props.x(d.end) > this.props.leftMargin)  && (this.props.x(d.start) < this.props.width ))
       {
         let width =parseInt(this.props.x(d.end))-parseInt(this.props.x(d.start)),x=this.props.x(d.start),ex="";
@@ -32,11 +34,11 @@ export default class Exons extends React.Component {
           check=true;
 
           if(d.strand==="-")
-            ex="end of exon "+ d.attributes.exon_number+"/"+res
+            ex="end of exon "+ d.exon_number+"/"+res
           else
-            ex="start of exon "+ d.attributes.exon_number+"/"+res
-          paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x="100" y={y+5} onClick={()=>this.handlePrevClick(d.start)} />)
-          paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x="100" y={y+5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+            ex="start of exon "+ d.exon_number+"/"+res
+          paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} onClick={()=>this.handlePrevClick(d.start)} />)
+          paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
 
         }
         //chr11:5526573-5526739
@@ -47,9 +49,9 @@ export default class Exons extends React.Component {
           else
               width= parseInt(this.props.width)-parseInt(this.props.x(d.start));
           if(d.strand==="-")
-              ex="start of exon "+ d.attributes.exon_number+"/"+res
+              ex="start of exon "+ d.exon_number+"/"+res
           else
-              ex="end of exon "+ d.attributes.exon_number+"/"+res
+              ex="end of exon "+ d.exon_number+"/"+res
           paths.push(<path d={pe1} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5}  onClick={()=>this.handleNextClick(d.end)}   />)
           paths.push(<path d={pe2} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
         }
@@ -73,7 +75,7 @@ export default class Exons extends React.Component {
     });
 
     exonarr.sort(function(a, b) {
-    return a.attributes.exon_number - b.attributes.exon_number;
+    return a.exon_number - b.exon_number;
     });
 
     for(let i=0; i< exonarr.length;i++)
@@ -102,13 +104,13 @@ export default class Exons extends React.Component {
         {
           if(exonarr[i].strand==="-")
           {
-            prevexon="Prev Exon "+(exonarr[i+1].attributes.exon_number)+"/"+(res)
-            nextexon="Next Exon "+(exonarr[i].attributes.exon_number)+"/"+(res) ;
+            prevexon="Prev Exon "+(exonarr[i+1].exon_number)+"/"+(res)
+            nextexon="Next Exon "+(exonarr[i].exon_number)+"/"+(res) ;
           }
           else
           {
-            prevexon="Prev Exon "+(exonarr[i].attributes.exon_number)+"/"+(res)
-            nextexon="Next Exon "+(exonarr[i+1].attributes.exon_number)+"/"+(res) ;
+            prevexon="Prev Exon "+(exonarr[i].exon_number)+"/"+(res)
+            nextexon="Next Exon "+(exonarr[i+1].exon_number)+"/"+(res) ;
           }
           if(start ===this.props.leftMargin || end ===this.props.leftMargin)
           {
@@ -117,8 +119,8 @@ export default class Exons extends React.Component {
             else
               pe=exonarr[i].start
 
-            paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x="100" y={y+5} data-value={prevexon}  onClick={()=>this.handlePrevClick(pe)} />)
-            paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x="100" y={y+5} data-value={prevexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+            paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={prevexon}  onClick={()=>this.handlePrevClick(pe)} />)
+            paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={prevexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
           }
           if(start ===this.props.width || end ===this.props.width)
           {
