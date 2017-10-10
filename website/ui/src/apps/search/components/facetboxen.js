@@ -121,7 +121,7 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
 	    h_margin={default_margin}
 	    h_interval={chromLen / histBins.numBins}
 	    numDecimals={0}
-	    onchange={(lvalue, rvalue) => { actions.setCoords(lvalue, rvalue); }}
+	    onChange={(lvalue, rvalue) => { actions.setCoords(lvalue, rvalue); }}
         />);
     return panelize("Coordinates: " + title, box, "CoordinateFacet", globals);
 }

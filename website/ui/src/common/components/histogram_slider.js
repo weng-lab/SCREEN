@@ -7,87 +7,56 @@ class HistogramSlider extends React.Component {
     constructor(props) {
 	super(props);
 	this.makeBars = this.makeBars.bind(this);
-	this.state = {height: 0};
-	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
+	this.updateDimensions = this.updateDimensions.bind(this);
+	this.state = {width: 0};
+	window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
 
-    /* componentDidMount() {
-       this._histogram = this.create_histogram(this.refs.histogram);
-     * }
-
-     * update_selection(lvalue, rvalue) {
-       this._histogram.selectAll("g")
-       .data(this.props.data)
-       .attr("class", (d) => (d.key >= this.props.lvalue && d.key < this.props.rvalue ?
-       "barselected"
-       : "bardeselected"));
-     * }
-     * 
-     * _update_width() {
-       if (this.props.updateWidth) {
-       this.props.updateWidth($(this.refs.histogram).width());
-       }
-     * }
-
-     * create_histogram(destination_div) {
-       $(destination_div).empty();
-
-       var div = $(destination_div);
-       var height = div.height();
-       var width = div.width();
-       var xrange = this.props.range;
-
-       const data = this.props.data;
-       if(!data){
-       return;
-       }
-       
-       var svg = d3.select(destination_div).append("svg")
-       .attr("width", width)
-       .attr("height", height);
-
-       svg.append("g")
-       .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
-
-       var x = d3.scaleLinear()
-     *         .domain(xrange)
-       .rangeRound([0, width]);
-
-       var y = d3.scaleLinear()
-       .domain([0, data.binMax])
-       .range([height, 0]);
-
-       var bar = svg.selectAll(".bar")
-       .data(data.bins)
-       .enter().append("g")
-       .attr("fill", function(d) {
-       return (d[0] >= this.state.lvalue && d[0] < this.state.rvalue
-       ? "#000090" : "#a0a0a0");
-       })
-       .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
-
-       bar.append("rect")
-       .attr("x", 1)
-       .attr("width", x(this.props.interval + xrange[0]))
-       .attr("height", function(d) { return height - y(d[1]); });
-
-       return svg;
-
-     * }
-     */
-    makeBars(){
-
+    updateDimensions(){
+	// tighten width by button slider icon width, else button will overhang slider bar
+	const width = this.refs.box.clientWidth;
+	this.setState({width});
     }
     
-    render() {
-	const width = 10;
+    componentDidMount(){
+	this.updateDimensions();
+    }
+
+    componentWillReceiveProps(nextProps){
+	this.updateDimensions();
+    }
+
+    makeBars(){
+	const width = this.state.width;
 	const height = 10;
 	const xScale = linearScale(this.props.range, [0, width]);
 	const yScale = linearScale([0, this.props.data.binMax], [height, 0]);
+	let e = (
+            <span className={"text-nowrap"}>
+                <svg width={width} height={height} >
+	            <g>
+			{this.props.data.bins.map((v, i) => {
+			     const x = xScale(v[0]);
+			     const y = yScale(v[1]);
+			     const color = v[0] >= this.props.lvalue && v[0] < this.props.rvalue
+					 ? "#000090" : "#a0a0a0";
+			     return <rect width="1" height={height}
+					  x={x}
+					  y={y}
+					  key={i}
+					  fill={color} />;
+			 })}
+		    </g>
+		</svg>
+	    </span>);
+	return e;
+    }
+    
+    render() {
 	
 	return (
-	    <div style={{width: "100%", height: "20px"}}>
-	    {this.state.height > 0 && this.makeBars()}
+	    <div ref="box" style={{width: "100%", height: "20px"}}>
+		{this.state.width > 0 && this.makeBars()}
 	    </div>);
     }
 }
