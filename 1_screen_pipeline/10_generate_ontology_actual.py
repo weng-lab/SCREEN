@@ -1109,7 +1109,7 @@ def run(uberon_url, efo_url, obi_url):
     terms.update(ntr_assays)
 
 def main():
-        ''' Downloads UBERON, EFO and OBI ontologies and create a JSON file '''
+    ''' Downloads UBERON, EFO and OBI ontologies and create a JSON file '''
 
     import argparse
     parser = argparse.ArgumentParser(
