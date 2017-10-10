@@ -1,9 +1,8 @@
 import React from 'react';
-
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import AutocompleteTextbox from './autocompletetextbox'
+import AutocompleteBox from './autocomplebox';
 
 import * as Actions from '../actions/searchbox_actions';
 

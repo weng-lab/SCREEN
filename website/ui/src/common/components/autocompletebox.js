@@ -15,26 +15,24 @@ class AutocompleteBox extends React.Component {
 	
 	this.userQueries = {}; // cache
 	this.handleKeyPress = this.handleKeyPress.bind(this);
-	this._onchange = this._onchange.bind(this);
 
 	this.state = {value: '', suggestions: []}
     }
 
-    onSuggestionsClearRequested(){
-    }
+    onSuggestionsClearRequested(){}
     
-    onChange = (event, { newValue }) => {
+    onChange(event, { newValue }){
 	this.setState({
 	    value: newValue
 	});
-    };
+    }
 
     // Autosuggest will call this function every time you need to clear suggestions.
-    onSuggestionsClearRequested = () => {
+    onSuggestionsClearRequested(){
 	this.setState({
 	    suggestions: []
 	});
-    };
+    }
 
     // When suggestion is clicked, Autosuggest needs to populate the input
     // based on the clicked suggestion. Teach Autosuggest how to calculate the
@@ -60,12 +58,6 @@ class AutocompleteBox extends React.Component {
 	}
     }
 
-    _onchange() {
-	if (this.props.onChange) {
-	    this.props.onChange(this.refs.searchBox.value);
-	}
-    }
-    
     loadSuggestion({ value }){
 	let q = {userQuery: value};
 	if (this.props.assemblies) {
@@ -88,7 +80,7 @@ class AutocompleteBox extends React.Component {
 
 	// Autosuggest will pass through all these props to the input.
 	const inputProps = {
-	    placeholder: 'Type a programming language',
+	    placeholder: this.props.defaultvalue,
 	    value,
 	    onChange: this.onChange
 	};
@@ -102,7 +94,6 @@ class AutocompleteBox extends React.Component {
 		   inputProps={inputProps}
 	       />;
     }
-    
 }
 
 export default AutocompleteBox;

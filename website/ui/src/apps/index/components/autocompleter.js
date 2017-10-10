@@ -1,6 +1,6 @@
 import React from 'react'
 
-import AutocompleteTextbox from '../../../common/components/autocompletetextbox';
+import AutocompleteBox from '../../../common/components/autocompletetextbox';
 
 import * as ApiClient from '../../../common/api_client';
 import * as Render from '../../../common/zrenders';
@@ -52,12 +52,12 @@ class AutocompleteBox extends React.Component {
     }
     
     searchHg19() {
- 	let userQuery = this.state.searchtext;
+ 	const userQuery = this.state.searchtext;
  	this.loadSearch("hg19", userQuery, this.props.actions);
     }
     
     searchMm10() {
- 	let userQuery = this.state.searchtext;
+ 	const userQuery = this.state.searchtext;
  	this.loadSearch("mm10", userQuery, this.props.actions);
     }
     
@@ -68,8 +68,7 @@ class AutocompleteBox extends React.Component {
     }
     
     render() {
- 	let input = <AutocompleteTextbox id={this.props.id}
- 				     defaultvalue={this.props.defaultvalue}
+ 	let input = <AutocompleteBox defaultvalue={this.props.defaultvalue}
  				     name={this.props.name}
 				     size={this.props.size}
     				     className={this.props.className}
