@@ -180,34 +180,38 @@ import Exons from './exons.js'
                     "Conservation" : ["153,153,153", "#999999"],
                     "TF ChIP-seq" : ["18,98,235", "#1262EB"],
                     "CTCF" : ["0,176,240", "#00B0F0"]}
-              let globalinput = this.props.byCellType,gi=[]
+                    if(this.props.byCellType!=undefined)
+                    {
+                      let globalinput = this.props.byCellType,gi=[]
+                      let h = globalinput.length * 100;
+                      for(let i=0; i < globalinput.length ;i++)
+                      {
+                        let signalcolor = AssayColors[globalinput[i]["assay"]][0];
+                        let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
+                        viewLimits ,
+                        shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+                        if(globalinput[i]["assay"]==="DNase")
+                        {
+                          viewLimits="0:150"
+                        }
+                        else {
+                          viewLimits="0:50"
+                        }
+                        let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
+                        let key= (globalinput[i]["assay"] + globalinput[i]["cellTypeName"])
+                        //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+                        gi.push(bwinpt)
+                         //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+                      }
+                      this.setState((prevState)=> {return{height: h + 50}},()=>{
+                         this.setState({ bwinput: gi },()=>{this.readBigWig();
+                           this.loadgenes()
+                         })
+                       });
+                    }
 
-              let h = globalinput.length * 100;
-              for(let i=0; i < globalinput.length ;i++)
-              {
-                let signalcolor = AssayColors[globalinput[i]["assay"]][0];
-                let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
-                viewLimits ,
-                shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
-                if(globalinput[i]["assay"]==="DNase")
-                {
-                  viewLimits="0:150"
-                }
-                else {
-                  viewLimits="0:50"
-                }
-                let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
-                let key= (globalinput[i]["assay"] + globalinput[i]["cellTypeName"])
-                //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
-                gi.push(bwinpt)
-                 //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
-              }
-              this.setState((prevState)=> {return{height: h + 50}},()=>{
-                 this.setState({ bwinput: gi },()=>{this.readBigWig();
-                   this.loadgenes()
 
-                 })
-               });
+
            });
            })
 
@@ -404,6 +408,7 @@ import Exons from './exons.js'
        }
        loadTrackhub = () =>
        {
+         if(this.props.byCellType!=undefined)
           this.setState({ isModalOpen: true },()=>{this.loadcheckboxes()})
        }
        readBigWig()
@@ -572,11 +577,7 @@ import Exons from './exons.js'
          var jq = JSON.stringify(q);
          ApiClient.getByPost(jq, "/gbws/geneTrack",
          (r) => {
-                  let h = r.length*30;
-                  this.setState({exons: r},()=> {
-                  //  this.setState((prevState)=> {return{height: prevState.height +500}},()=>{
-                  //   });
-                  });
+                  this.setState({exons: r});
              },
            (msg) => {
          console.log("err loading geneTrack");
@@ -654,15 +655,18 @@ import Exons from './exons.js'
            }
 
            //bycelltype
+           if(this.props.byCellType!=undefined)
+           {
+             bycelltype =this.props.byCellType.map((d,i) => {
+               if(this.state.bwinput.length!=0)
+             return ( <div key={i}> <input type="checkbox" defaultChecked={true} ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+              else {
+                return ( <div key={i}> <input type="checkbox"  ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
 
-           bycelltype =this.props.byCellType.map((d,i) => {
-             if(this.state.bwinput.length!=0)
-           return ( <div key={i}> <input type="checkbox" defaultChecked={true} ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
-            else {
-              return ( <div key={i}> <input type="checkbox"  ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+              }
+            });
+           }
 
-            }
-          });
 
           /* //Modal Tracks
            if(this.state.isModalOpen===true)

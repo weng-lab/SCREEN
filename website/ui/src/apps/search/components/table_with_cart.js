@@ -320,7 +320,7 @@ class TableWithCart extends React.Component {
 	}
   let gb = null;
   let byCellType = this.props.globals["byCellType"][this.props.cellType]
-  if(Object.keys(this.props.gb_cres).length !== 0)
+  if(Object.keys(this.props.gb_cres).length !== 0 && byCellType!=undefined)
   {
     gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange} byCellType={byCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
