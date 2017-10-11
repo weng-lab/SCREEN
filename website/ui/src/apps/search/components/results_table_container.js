@@ -11,25 +11,11 @@ import {getCommonState, orjoin} from '../../../common/utility';
 class ResultsTableContainer extends React.Component {
     constructor(props) {
 	super(props);
-        this.state = { cres: [], total: 0, cts: null,
+        this.state = { cres: [], rfacets: [], total: 0, cts: null,
                        isFetching: true, isError: false,
                        jq : null}
-	this._all = {"dnase": "DNase-seq",
-		     "promoter": "H3K4me3 ChIP-seq",
-		     "enhancer": "H3K27ac ChIP-seq",
-		     "ctcf": "CTCF ChIP-seq" };
     }
-
-    _get_missing(a) {
-	let r = [];
-	Object.keys(this._all).forEach((k) => {
-	    if (!a.includes(k)) {
-		r.push(this._all[k]);
-	    }
-	});
-	return r;
-    }
-
+    
     shouldComponentUpdate(nextProps, nextState) {
 	return "results" === nextProps.maintabs_active;
     }
@@ -41,26 +27,23 @@ class ResultsTableContainer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-        //console.log("in componentWillReceiveProps");
         this.loadCREs(nextProps);
     }
 
     loadCREs(props){
-	//console.log("loadCREs in results_app");
         var jq = JSON.stringify(getCommonState(props));
 	var setrfacets = this.props.actions.setrfacets;
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/dataws/cre_table",
 			    (r) => {
 				this.setState({cres: r["cres"],
 					       total: r["total"],
 					       cts: r["cts"],
-					       missingAssays: this._get_missing(r["rfacets"]),
+				      	       rfacets: r["rfacets"],
 					       jq, isFetching: false, isError: false});
 				setrfacets(r["rfacets"])},
 			    (msg) => {
@@ -100,7 +83,7 @@ class ResultsTableContainer extends React.Component {
 	    firstLastTss = "";
 	}
 
-	let tssUpstream = (
+	const tssUpstream = (
 	    <li key={"tssUpstream"}>
 		{"within "}{distsRefs}{" upstream of the TSSs"}
 	    </li>);
@@ -116,7 +99,7 @@ class ResultsTableContainer extends React.Component {
     }
 
     firstLine(useTss, tssDist, geneTitle){
-	let click = " Click to see candidate Regulatory Elements:";
+	const click = " Click to see candidate Regulatory Elements:";
 	if(useTss){
 	    if(tssDist){
 		return (
@@ -140,7 +123,7 @@ class ResultsTableContainer extends React.Component {
     }
 
     doInterpGene({gene, useTss, tssDist, assembly}){
-        let geneTitle = (<em>{gene}</em>);
+        const geneTitle = (<em>{gene}</em>);
 	return (
 	    <div>
 		{this.firstLine(useTss, tssDist, geneTitle)}
@@ -154,7 +137,7 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
-	let interp = this.props.interpretation;
+	const interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
 	    let interpMsb = interp.hasOwnProperty("msg") ? interp.msg : "";
@@ -181,7 +164,7 @@ class ResultsTableContainer extends React.Component {
                     cart_accessions={this.props.cart_accessions}
                     isFetching={this.state.isFetching}
 		    jq={this.state.jq}
-		    missingAssays={this.state.missingAssays}
+		    rfacets={this.state.rfacets}
                     cts={this.state.cts}
 	            hasct={this.props.cellType}
 		    globals={this.props.globals}

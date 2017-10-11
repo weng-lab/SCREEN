@@ -112,3 +112,7 @@ export const orjoin = (a) => (orJoinHelper(a, ', '))
 export const linearScale = (d, r) => (v) => (
     // https://gist.github.com/vectorsize/7031902
     r[0] + (r[1] - r[0]) * ((v - d[0]) / (d[1] - d[0])));
+
+export const toParams = (d) => (
+    Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&'))    
+

@@ -3,7 +3,7 @@ import React from 'react'
 import AutocompleteBox from '../../../common/components/autocompletebox';
 
 import * as ApiClient from '../../../common/api_client';
-import * as Render from '../../../common/zrenders';
+import {toParams} from '../../../common/utility';
 
 class Autocompleter extends React.Component {
     constructor(props) {
@@ -41,8 +41,8 @@ class Autocompleter extends React.Component {
  					  actions.setGenes(r);
  					  actions.setMainTab("query");
  				      } else {
- 					  const params = Render.toParams({q: userQuery,
-									  assembly});
+ 					  const params = toParams({q: userQuery,
+								   assembly});
  					  const url = "/search/?" + params;
  					  window.location.href = url;
  				      }

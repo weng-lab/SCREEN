@@ -82,7 +82,7 @@ const biosamplesBox = ({cellType, actions, globals}) => {
 	    friendlySelectionLookup={make_ct_friendly(globals)}
 	    onTdClick={(value, td, cellObj) => {
 		    if(td){
-			if (td.className.indexOf("dcc") === -1) {
+			if (td.indexOf("dcc") === -1) {
 			    actions.setCellType(value);
 			}
 		    } else {
