@@ -11,7 +11,8 @@ import MiniPeaks from '../components/minipeaks';
 import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
-        TfIntersectionTable, OrthologTable, FantomCatTable, CistromeIntersectionTable} from './details_tables';
+        TfIntersectionTable, OrthologTable, FantomCatTable,
+	CistromeIntersectionTable} from './details_tables';
 
 import loading from '../../../common/components/loading';
 

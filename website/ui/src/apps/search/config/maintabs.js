@@ -41,6 +41,19 @@ class DetailsTab extends React.Component{
     }
 }
 
+class ExpressionPlotTab extends React.Component{
+    shouldComponentUpdate(nextProps, nextState) {
+       return "expression" === nextProps.maintabs_active;
+    }
+
+    render() {
+	if("expression" !== this.props.maintabs_active){
+            return false;
+        }
+        return React.createElement(ExpressionPlot, this.props);
+    }
+}
+
 class TFTab extends React.Component {
     render() { return (<TFDisplay />); }
 }
@@ -61,7 +74,7 @@ const MainTabInfo = (parsedQuery, globals) => {
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    configgb: {title: "Configure Genome Browser", visible: false,
 		       f: ConfigureGenomeBrowser},
-	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlot},
+	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlotTab},
 	    aprofile: {title: "Activity Profile", visible: false,
 		       f: ActivityProfileTab},
 	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},

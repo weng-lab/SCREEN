@@ -74,7 +74,8 @@ class ResultsTableContainer extends React.Component {
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
 	let dists = [1000, 2000, 5000, 10000, 25000, 50000];
 	let distsRefs = orjoin(dists.map((d) => (
-	    <a href={"/search?q=" + gene + "&tssDist=" + d + "&promoter&assembly=" + assembly}>
+	    <a href={"/search?q=" + gene + "&tssDist=" + d + "&promoter&assembly=" + assembly}
+	       key={"ahref" + d}>
 		{d / 1000}{"kb"}
 	    </a>))
 	);
@@ -82,7 +83,7 @@ class ResultsTableContainer extends React.Component {
 	let geneBody = "";
 	if(useTss){
 	    geneBody = (
-		<li>{"overlapping the "}
+		<li key={"geneBody"}>{"overlapping the "}
 		    <a href={"/search?q=" + gene + "&assembly=" + assembly}>
 			gene body
 		    </a>{" of "}{geneTitle}
@@ -90,7 +91,7 @@ class ResultsTableContainer extends React.Component {
 	}
 
 	let firstLastTss = (
-	    <li>{"located between the "}
+	    <li key={"firstLastTss"}>{"located between the "}
 		<a href={"/search?q=" + gene + "&tss&promoter&assembly=" + assembly}>
 		    first and last Transcription Start Sites (TSSs)
 		</a>{" of "}{geneTitle}
@@ -99,7 +100,10 @@ class ResultsTableContainer extends React.Component {
 	    firstLastTss = "";
 	}
 
-	let tssUpstream = (<li>{"within "}{distsRefs}{" upstream of the TSSs"}</li>);
+	let tssUpstream = (
+	    <li key={"tssUpstream"}>
+		{"within "}{distsRefs}{" upstream of the TSSs"}
+	    </li>);
 
 	return (
 	    <div>

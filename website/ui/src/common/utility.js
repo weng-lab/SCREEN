@@ -92,10 +92,22 @@ export const commajoin = (a) => (intersperse(a, ', '))
 export const brJoin = (a) => (intersperse(a, (idx) => (<br />)))
 export const nbspJoin = (a) => (intersperse(a, (idx) => (<span key={idx}>,&nbsp;</span>)))
 
-export const orjoin = (a) => {
-    return [a.slice(0, -1).reduce((prev, curr) => [prev, ", ", curr]),
-	    " or ", a.slice(-1)];
+function orJoinHelper(arr, sep) {
+    // from https://stackoverflow.com/a/23619085
+    if (0 === arr.length) {
+	return [];
+    }
+    return arr.slice(1).reduce((xs, x, idx) => {
+	let separator = (typeof sep === 'function')
+		      ? sep(idx)
+		      : sep;
+	if((idx + 2) === arr.length){ // skipped first element!
+	    separator += 'or ';
+	}
+	return xs.concat([separator, x]);
+    }, [arr[0]]);
 }
+export const orjoin = (a) => (orJoinHelper(a, ', '))
 
 export const linearScale = (d, r) => (v) => (
     // https://gist.github.com/vectorsize/7031902
