@@ -213,7 +213,7 @@ import Exons from './exons.js'
                ApiClient.getByPost(jq, "/gbws/geneTrack",
                (r) => {
                         this.setState({exons: r},()=> {
-                          this.setState((prevState)=> {return{height: prevState.height +300}},()=>{
+                          this.setState((prevState)=> {return{height: prevState.height +500}},()=>{
                            });
                         });
                    },
