@@ -16,7 +16,7 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { minrange:0,maxrange: 0,selectedaccession: {}}
+	this.state = { minrange:0,maxrange: 0,selectedaccession: {},chrom:''}
         this.table_click_handler = this.table_click_handler.bind(this);
     }
 
@@ -68,7 +68,7 @@ class TableWithCart extends React.Component {
           let minrange =parseInt(rowdata.start) - 2000
           let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +2000
           let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
-          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails },()=>{ actions.selectcre(accessiondetails)})
+          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom },()=>{ actions.selectcre(accessiondetails)})
         }
         else
         {
@@ -322,7 +322,7 @@ class TableWithCart extends React.Component {
   let byCellType = this.props.globals["byCellType"][this.props.cellType]
   if(Object.keys(this.props.gb_cres).length !== 0 && byCellType!=undefined)
   {
-    gb= (<GenomeBrowser minrange={this.state.minrange} maxrange={this.state.maxrange} byCellType={byCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
+    gb= (<GenomeBrowser minrange={this.state.minrange} chrom={this.state.chrom} maxrange={this.state.maxrange} byCellType={byCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
   }
 	return (

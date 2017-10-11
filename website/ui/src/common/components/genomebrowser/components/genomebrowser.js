@@ -162,7 +162,7 @@ import Exons from './exons.js'
        }
        changerange(nextProps)
        {
-         this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange},() =>{
+         this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange,chrom:nextProps.chrom},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
              //this.readBigBed();
@@ -183,7 +183,7 @@ import Exons from './exons.js'
                     if(this.props.byCellType!=undefined)
                     {
                       let globalinput = this.props.byCellType,gi=[]
-                      let h = globalinput.length * 100;
+                      let h = globalinput.length * 60;
                       for(let i=0; i < globalinput.length ;i++)
                       {
                         let signalcolor = AssayColors[globalinput[i]["assay"]][0];
@@ -209,9 +209,6 @@ import Exons from './exons.js'
                          })
                        });
                     }
-
-
-
            });
            })
 
@@ -242,24 +239,7 @@ import Exons from './exons.js'
                  this.readBigWig(); this.loadgenes();})
             });
        }
-       loadThub()
-       {
-         const q = {assembly: this.props.assembly,coord_end: this.state.xmaxrange,coord_start: this.state.xminrange};
-         var jq = JSON.stringify(q);
-         this.setState({isFetching: true});
-         ApiClient.getByPost(jq, "/gbws/trackhub",
-         (r) => {
-                  this.setState({input: r});
-             },
-           (msg) => {
-         console.log("err loading trackhub");
-         console.log(msg);
-        this.setState({input: [],
-                 isFetching: false, isError: true});
-           });
 
-
-       }
        handlecheck = (e) =>
        {
          let key = e.target.id;
