@@ -7,8 +7,22 @@ export default class Exons extends React.Component {
   handlePrevClick = (r) => {
         this.props.prevExon(r);
       }
-
+      componentDidMount(){
+         this.changeheight(this.props);
+      }
+      componentWillReceiveProps(nextProps)  {
+        if(this.props.range!=nextProps.range || this.props.height!=nextProps.height)
+        this.changeheight(nextProps);
+      }
+    changeheight(nextProps)
+    {
+      if(nextProps.range > nextProps.height-30)
+      {
+        nextProps.increaseheight();
+      }
+    }
   render() {
+
 
     let exon =this.props.data,t =this.props.transcript_id.split("."),transcript_id=t[0];
     let res = Math.max.apply(Math,exon.map(function(o){return o.exon_number;}))

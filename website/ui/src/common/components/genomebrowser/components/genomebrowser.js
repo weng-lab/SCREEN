@@ -140,8 +140,6 @@ import Exons from './exons.js'
            this.setState({tooltip:{
                display:true,
                data: {
-                   width:e.target.getAttribute('width'),
-                   height:e.target.getAttribute('height'),
                    value:e.target.getAttribute('data-value')
                    },
                pos:{
@@ -156,7 +154,7 @@ import Exons from './exons.js'
            this.setState({tooltip:{ display:false,data:{width:'',height:'',value:''},pos:{x:'',y:''}}});
        }
        componentDidMount(){
-          this.changerange(this.props);this.loadThub();
+          this.changerange(this.props);
        }
        componentWillReceiveProps(nextProps)  {
          if(this.props.minrange!=nextProps.minrange || this.props.maxrange!=nextProps.maxrange)
@@ -167,7 +165,7 @@ import Exons from './exons.js'
          this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
-             this.readBigBed();
+             //this.readBigBed();
              let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
                     "RNA-seq" : ["0,170,0", "", "#00aa00"],
                     "RAMPAGE" : ["214,66,202", "#D642CA"],
@@ -205,24 +203,11 @@ import Exons from './exons.js'
                  //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
               }
               this.setState((prevState)=> {return{height: h + 50}},()=>{
-                 this.setState({ bwinput: gi },()=>{this.readBigWig();})
+                 this.setState({ bwinput: gi },()=>{this.readBigWig();
+                   this.loadgenes()
+
+                 })
                });
-               //gene
-               const q = {assembly: this.props.assembly,coord_chrom:this.state.chrom,coord_end: this.state.xmaxrange,coord_start: this.state.xminrange};
-               var jq = JSON.stringify(q);
-               ApiClient.getByPost(jq, "/gbws/geneTrack",
-               (r) => {
-                        this.setState({exons: r},()=> {
-                          this.setState((prevState)=> {return{height: prevState.height +500}},()=>{
-                           });
-                        });
-                   },
-                 (msg) => {
-               console.log("err loading trackhub");
-               console.log(msg);
-              this.setState({exons: [],
-                       isFetching: false, isError: true});
-                 });
            });
            })
 
@@ -236,7 +221,8 @@ import Exons from './exons.js'
          this.setState({xminrange: min ,xmaxrange: max}
            ,() => {
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-              this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig(); })
+              this.setState({x:xrange},() => {//this.readBigBed();
+                this.readBigWig(); this.loadgenes() })
             });
        }
        prevexon = (r) =>
@@ -248,7 +234,8 @@ import Exons from './exons.js'
          this.setState({xminrange: min ,xmaxrange: max}
            ,() => {
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-              this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig(); })
+              this.setState({x:xrange},() => {//this.readBigBed();
+                 this.readBigWig(); this.loadgenes();})
             });
        }
        loadThub()
@@ -318,7 +305,7 @@ import Exons from './exons.js'
                let input=this.state.input;
                let start= this.state.xminrange,end=this.state.xmaxrange,chrom=this.state.chrom;
 
-               for (let j = 0; j < input.length; j++)
+              /* for (let j = 0; j < input.length; j++)
                {
                  if(input[j]["shortLabel"]===key &&  input[j]["type"]!=="bigWig")
                  {
@@ -368,7 +355,7 @@ import Exons from './exons.js'
 
                    })
                  }
-               }
+               }*/
                let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
                      "RNA-seq" : ["0,170,0", "", "#00aa00"],
                      "RAMPAGE" : ["214,66,202", "#D642CA"],
@@ -486,7 +473,8 @@ import Exons from './exons.js'
             return {xminrange: parseInt(prevState.xminrange) + parseInt(range),xmaxrange: parseInt(prevState.xmaxrange) + parseInt(range)};
           },() => {
                let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
-               this.setState({x:xrange},() => { this.readBigBed();this.readBigWig();
+               this.setState({x:xrange},() => { //this.readBigBed();
+                 this.readBigWig();this.loadgenes();
                })
           });
        }
@@ -509,7 +497,8 @@ import Exons from './exons.js'
                     return {xminrange: parseInt(prevState.xminrange) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange) - parseInt(range,10)};
                   },() => {
                     var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-                     this.setState({x:xrange},() => {this.readBigBed(); this.readBigWig();
+                     this.setState({x:xrange},() => {//this.readBigBed();
+                        this.readBigWig();this.loadgenes();
                       })
                     });
        }
@@ -538,7 +527,8 @@ import Exons from './exons.js'
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},()=>{ this.readBigBed(); this.readBigWig();
+             this.setState({x:xrange},()=>{ //this.readBigBed();
+                this.readBigWig();this.loadgenes();
              });
               })
             });
@@ -568,13 +558,32 @@ import Exons from './exons.js'
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},() =>{ this.readBigBed(); this.readBigWig();
+             this.setState({x:xrange},() =>{// this.readBigBed();
+               this.readBigWig();this.loadgenes();
              });
            })
          });
        }
        pasteonselect = (e) => {
         this.refs.itext.value =e.target.value;
+       }
+       loadgenes=()=>{
+         const q = {assembly: this.props.assembly,coord_chrom:this.state.chrom,coord_end: this.state.xmaxrange,coord_start: this.state.xminrange};
+         var jq = JSON.stringify(q);
+         ApiClient.getByPost(jq, "/gbws/geneTrack",
+         (r) => {
+                  let h = r.length*30;
+                  this.setState({exons: r},()=> {
+                  //  this.setState((prevState)=> {return{height: prevState.height +500}},()=>{
+                  //   });
+                  });
+             },
+           (msg) => {
+         console.log("err loading geneTrack");
+         console.log(msg);
+        this.setState({exons: [],
+                 isFetching: false, isError: true});
+           });
        }
        buttonclick = () =>
        {
@@ -592,8 +601,9 @@ import Exons from './exons.js'
            this.setState({xminrange:iv[0],xmaxrange:iv[1]},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
-             this.readBigBed();
+             //this.readBigBed();
              this.readBigWig();
+             this.loadgenes();
            });
          })
          this.setState({chrom:ivc[0]});
@@ -620,6 +630,10 @@ import Exons from './exons.js'
                }
          });
        }
+       increaseheight=()=>
+       {
+         this.setState((prevState)=> {return{height: prevState.height +30}});
+       }
        render()
        {
            let currentrange = this.state.chrom+":"+this.state.xminrange+"-"+this.state.xmaxrange;
@@ -631,9 +645,12 @@ import Exons from './exons.js'
            max =   parseInt(this.props.selectedaccession.start) + parseInt(this.props.selectedaccession.len)
            diff = this.state.x(max)-this.state.x(this.props.selectedaccession.start)
 
-           if(Object.keys(this.state.bbdata).length !== 0 || Object.keys(this.state.bwdata).length !== 0)
+           if(Object.keys(this.state.bbinput).length !== 0 || Object.keys(this.state.bwinput).length !== 0)
            {
-               crerect = (<rect x={this.state.x(this.props.selectedaccession.start)} y={20} style={{opacity:"0.5",fill:"lightblue"}} data-value={this.props.selectedaccession.accession} width={diff} height={this.state.height} onMouseOver={this.showToolTip} onMouseOut={this.hideToolTip}/>)
+               if(parseInt(this.state.x(this.props.selectedaccession.start)) >= this.props.marginleft && (parseInt(this.state.x(max)) <= this.props.width) )
+               {
+                 crerect = (<rect x={this.state.x(this.props.selectedaccession.start)} y={20} style={{opacity:"0.5",fill:"lightblue"}} data-value={this.props.selectedaccession.accession} width={diff} height={this.state.height} onMouseOver={this.showToolTip} onMouseOut={this.hideToolTip}/>)
+               }
            }
 
            //bycelltype
@@ -682,24 +699,8 @@ import Exons from './exons.js'
                {
                    return (<Rects text={obj[1]} data={d} leftMargin={_self.props.marginleft} width={_self.props.width} shortLabel={obj[2]} key={r} x={_self.state.x} min={_self.state.xminrange} max={_self.state.xmaxrange} y={r}  showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}   />);           }));
                r+=40;
-             }
-
+               }
            });
-
-
-            let e= []
-            e=this.state.exons.map((d,i)=>{
-                if( (d.start < this.state.xminrange && d.end > this.state.xmaxrange) ||
-                    ((d.start >= this.state.xminrange && d.start <= this.state.xmaxrange) && d.end > this.state.xmaxrange) ||
-                    (d.start < this.state.xminrange && (d.end >= this.state.xminrange && d.end <= this.state.xmaxrange)) ||
-                    (d.start >= this.state.xminrange && d.end <= this.state.xmaxrange))
-                {
-                    r+=30;
-                    return(<Exons key={i} strand={d.strand} tstart={d.start} tend={d.end} leftMargin={this.props.marginleft} width={this.props.width} prevExon={_self.prevexon} nextExon={_self.nextexon} data={d.values} x={this.state.x} transcript_id={d.transcript_id} range={r} showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}/>)
-
-                }
-            })
-            r+=50;
             //bigwig signals
              Object.keys(bigwig).forEach(function(key)
              {
@@ -715,6 +716,19 @@ import Exons from './exons.js'
                    r+=100;
                  }
              });
+
+             let e= []
+             e=this.state.exons.map((d,i)=>{
+               /*  if((d.start <= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end <= this.state.xmaxrange) ||
+                     (d.start <= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end >= this.state.xmaxrange) ||
+                     (d.start >= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end <= this.state.xmaxrange) ||
+                     (d.start >= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end >= this.state.xmaxrange))*/
+                 {
+                     r+=30;
+                     return(<Exons key={i} strand={d.strand} tstart={d.start} tend={d.end} height={this.state.height} increaseheight={_self.increaseheight}leftMargin={this.props.marginleft} width={this.props.width} prevExon={_self.prevexon} nextExon={_self.nextexon} data={d.values} x={this.state.x} transcript_id={d.transcript_id} range={r} showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}/>)
+
+                 }
+             })
           return (
               <div>
               <div className="search">
@@ -744,8 +758,8 @@ import Exons from './exons.js'
                   </g>
                   {crerect}
                   {this.state.bbdata && rects}
-                  {this.state.exons.length >0 && e}
                   {this.state.bwdata && pls}
+                  {this.state.exons.length >0 && e}
               </svg>
               </div>
           );
