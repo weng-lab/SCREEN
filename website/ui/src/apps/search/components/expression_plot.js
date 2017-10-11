@@ -105,6 +105,8 @@ class ExpressionPlot extends React.Component {
 	    return <div />;
 	}
 
+	// TODO: make width (below) dynamic!
+	
 	if(gene in this.state.ges){
 	    let data = this.state.ges[gene];
 	    return (
