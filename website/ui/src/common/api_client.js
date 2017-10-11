@@ -1,8 +1,8 @@
-export const StaticServer = "http://megatux.purcaro.com:9006";
+export const StaticServer = "http://screen-beta.wenglab.org";
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
-    const server = "http://megatux.purcaro.com:9006";
+    const server = "http://api.wenglab.org";
     const override = {//"/autows/search" : "/autows/search"
 		     };
     if(b in override){
