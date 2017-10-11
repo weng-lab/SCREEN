@@ -136,7 +136,16 @@ class Zrow extends React.Component {
 	    }
 	    let rd =  this.props.row[colInfo.data];	    
 	    if("render" in colInfo){
-		return [colInfo.render(rd), k];
+		try {
+		    const rend = colInfo.render(rd);
+		    return [rend, k]
+		} catch(err){
+		    console.log("Zrow: error when rendering: row col data was:", rd);
+		    console.log("Zrow: error when rendering: row data was:", this.props.row);
+		    console.log("Zrow: error when rendering: row klass was:", k);
+		    console.log("Zrow: error when rendering: colInfo was:", colInfo);
+		    throw err;
+		}
 	    }
 	    return [rd, k];
 	});
@@ -307,7 +316,7 @@ class Ztable extends React.Component {
 	
 	let ds = new DataSource(this.props.data, this.props.cols);
 	ds.filterAndSort(this.state);
-	
+
 	let tableKlass = "table table-bordered table-condensed table-hover";
 	let visibleCols = filterVisibleCols(this.props.cols);
 	
@@ -331,9 +340,9 @@ class Ztable extends React.Component {
 			 ))}
 		    </tbody>
 		</table>
-		<PageBox pages={ds.numPages}
-			 curPage={this.state.pageNum}
-			 onSelect={pageClick} />
+		{ds.numPages > 1 && <PageBox pages={ds.numPages}
+					     curPage={this.state.pageNum}
+					     onSelect={pageClick} />}
 		<HelpBlock>Found {ds.rowIDs.length}</HelpBlock>
 	    </div>);
     }

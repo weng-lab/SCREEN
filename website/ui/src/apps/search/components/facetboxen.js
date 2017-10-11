@@ -17,17 +17,17 @@ import {CHECKLIST_MATCH_ALL} from '../../../common/components/checklist'
 
 import {panelize, isCart} from '../../../common/utility'
 
-const rangeBox = (title, range, start, end, action, _f, _rf, nohistogram) => {
+const rangeBox = (title, range, start, end, action, nohistogram) => {
     return (
 	<RangeFacet
 	    title={title}
 	    range={range}
-	    selection_range={[start, end]}
+	    lvalue={start}
+	    rvalue={end}
 	    h_margin={default_margin}
 	    h_interval={(end - start) / 500}
-	    onchange={(se) => { action(se[0], se[1])}}
-	    rendervalue={_f}
-	    reversevalue={_rf}
+	    numDecimals={2}
+	    onChange={(lvalue, rvalue) => { action(lvalue, rvalue)} }
 	    nohistogram={nohistogram}
         />);
 }
@@ -82,7 +82,7 @@ const biosamplesBox = ({cellType, actions, globals}) => {
 	    friendlySelectionLookup={make_ct_friendly(globals)}
 	    onTdClick={(value, td, cellObj) => {
 		    if(td){
-			if (td.className.indexOf("dcc") === -1) {
+			if (td.indexOf("dcc") === -1) {
 			    actions.setCellType(value);
 			}
 		    } else {
@@ -116,30 +116,22 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
 	    title={""}
 	    h_data={histBins}
 	    range={[0, chromLen]}
-	    selection_range={[coord_start, coord_end]}
+	    lvalue={coord_start}
+	    rvalue={coord_end}
 	    h_margin={default_margin}
 	    h_interval={chromLen / histBins.numBins}
-	    onchange={(se) => { actions.setCoords(se[0], se[1]) }}
+	    numDecimals={0}
+	    onChange={(lvalue, rvalue) => { actions.setCoords(lvalue, rvalue); }}
         />);
     return panelize("Coordinates: " + title, box, "CoordinateFacet", globals);
 }
 
-const zscore_decimal = (v) => {
-    if (isNaN(parseFloat(v)) || !isFinite(v)) return 0.0;
-    let r = v / 100.0;
-    if (Number.isInteger(r)) return r + ".";
-    return r;
-}
-    
-const zrdecimal = (s) => (+s * 100.0);
-
 const makeRankFacet = (rfacets, assay, title, start, end, action) => {
-    const range = [-1000, 1000];
+    const range = [-10, 10];
     if(!rfacets.includes(assay)){
         return "";
     }
-    return rangeBox(title, range, start, end,
-		    action, zscore_decimal, zrdecimal, true);
+    return rangeBox(title, range, start, end, action, true);
 }
 
 const zscoreBox = (p) => {
@@ -170,7 +162,7 @@ const zscoreBox = (p) => {
 		<span key={i}>
 		    {s}
 		    {sliders.length - 1 === i
-		     ? '' : <br />}
+		     ? '' : <div style={{padding: "5px"}} />}
 		</span>)}
         </div>);
     

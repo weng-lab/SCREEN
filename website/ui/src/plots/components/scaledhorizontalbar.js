@@ -3,12 +3,12 @@ import HorizontalBar, {compute_offsets} from './horizontalbar';
 
 class ScaledHorizontalBar extends React.Component {
     render() {
-	let format = this.props.format.value ? this.props.format.value : x => x;
-	let offsets = compute_offsets(
+	const format = this.props.format.value ? this.props.format.value : x => x;
+	const offsets = compute_offsets(
 	    Object.keys(this.props.itemsets),
 	    this.props.itemsets, format
 	);
-	let viewBox = {width: +this.props.width, height: offsets.total * this.props.barheight};
+	const viewBox = {width: +this.props.width, height: offsets.total * this.props.barheight};
 
 	return (
 	    <div style={{width: viewBox.width + "px", height: viewBox.height + "px"}}>

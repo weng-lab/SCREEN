@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 
-import AutocompleteTextbox from './autocomplete'
+import AutocompleteBox from './autocompletebox'
 
 export const CHECKLIST_MATCH_ALL = 'CHECKLIST_MATCH_ALL';
 export const CHECKLIST_MATCH_ANY = 'CHECKLIST_MATCH_ANY';
@@ -106,7 +106,7 @@ class ChecklistFacet extends React.Component {
 		  <div style={{"fontWeight": "bold"}}>{this.props.title}</div>
 		  {checks}
 		  <form onSubmit={this.handleSubmit}>
- 		      <AutocompleteTextbox
+ 		      <AutocompleteBox
 			  source={this.props.autocomplete_source}
 			  onChange={this.onChange}
 			  value={this.state.text} />

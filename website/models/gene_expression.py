@@ -122,7 +122,7 @@ WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2
     def computeHorBars(self, gene, compartments, biosample_types_selected):
         q = """
 SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, r.replicate, r.fpkm
+r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle
 FROM r_expression_{assembly} AS r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
 WHERE gene_name = %(gene)s
@@ -160,7 +160,8 @@ WHERE approved_symbol = %(gene)s
                     "rawFPKM" : float(row[5]),
                     "logFPKM" : "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
                     "expID" : row[3],
-                    "rep" : row[4]}
+                    "rep" : row[4],
+                    "ageTitle": row[6]}
 
         rows = [makeEntry(x) for x in rows]
         ret = {"hasData" : True,

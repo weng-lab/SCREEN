@@ -178,32 +178,6 @@ export const FantomCatTable = (globals, assembly, actions) => ({
     }
 });
 
-export const TargetGeneTable = (globals, assembly) => ({
-    candidate_links: {
-	title: "",
-	paging: true,
-	info: true,
-	bFilter: true,
-        bLengthChange: true,
-	emptyText: "No target genes predicted",
-	cols: [
-	    {title: "name", data: "gene.common-gene-name",  className: "dt-right",
-	     render: Render.geneLink},
-            {title: "ensembl ID", data: "gene.ensemble-id", className: "dt-right"},
-            {title: "# supporting exps", data: "evidence",
-             render: Render.support},
-            {title: "# ChIA-PET exps", data: "evidence.chiapet",
-             render: Render.len},
-	    {title: "ChIA-PET cell types", data: "evidence.chiapet",
-	     render: Render.supporting_cts},
-	    {title: "# eQTL exps", data: "evidence.eqtls",
-	     render: Render.len},
-	    {title: "eQTL cell types", data: "evidence.eqtls",
-	     render: Render.supporting_cts}],
-	order: [[2, "desc"]]
-    }
-});
-
 export const NearbyGenomicTable = (globals, assembly) => {
     let ret = {
         nearby_genes: {
@@ -355,3 +329,21 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 	order: [[1, "desc"]]
     }
 });
+
+export const LinkedGenesTable = (globals, assembly) => ({
+    "linked_genes": {
+	title: "Linked Genes",
+	emptyText: "No linked genes predicted",
+	cols: [{ title: "gene", data: "gene",
+		 render: Render.geneLink
+	       },{ title: "biosample", data: "celltype",
+		   //render: Render.support
+	       },{ title: "supporting exp", data: "method",
+		   //render: Render.support
+	       },{ title: "based on", data: "dccaccession",
+		   render: Render.dccLink
+		 }],
+	order: [[2, "desc"]]
+    }
+});
+

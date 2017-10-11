@@ -172,8 +172,8 @@ FROM {tn} AS cre
                   "ctcf": "ctcf_max" }
         for x in ["dnase", "promoter", "enhancer", "ctcf"]:
             if "rank_%s_start" % x in j and "rank_%s_end" % x in j:
-                _range = [j["rank_%s_start" % x] / 100.0,
-                          j["rank_%s_end" % x] / 100.0]
+                _range = [j["rank_%s_start" % x],
+                          j["rank_%s_end" % x]]
                 self.whereClauses.append("(%s)" % " and ".join(
                     ["cre.%s >= %f" % (allmap[x], _range[0]),
                      "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
@@ -194,8 +194,8 @@ FROM {tn} AS cre
             self.ctSpecifc[name + "_zscore"] = "cre.%s_zscores[%d]" % (exp, cti)
             
             if "rank_%s_start" % name in j and "rank_%s_end" % name in j:
-                _range = [j["rank_%s_start" % name] / 100.0,
-                          j["rank_%s_end" % name] / 100.0]
+                _range = [j["rank_%s_start" % name],
+                          j["rank_%s_end" % name]]
                 minDefault = -10.0  # must match slider default
                 maxDefault = 10.0   # must match slider default
                 if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):

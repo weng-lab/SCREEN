@@ -1,279 +1,138 @@
 import React from 'react';
-import $ from 'jquery';
 
-import {chain_functions} from '../common';
+import DualSlider from './dual_slider';
+import HistogramSlider from './histogram_slider';
 
-let d3 = require('d3');
-let slider = require( "jquery-ui/ui/widgets/slider" );
+//import * as Render from '../zrenders';
 
 class RangeSlider extends React.Component {
-
     constructor(props) {
 	super(props);
-	this.onMinChange = this.onMinChange.bind(this);
-	this.onMaxChange = this.onMaxChange.bind(this);
-	this._set_selection = this._set_selection.bind(this);
-	this.update_selection = this.update_selection.bind(this);
-	this._update_width = this._update_width.bind(this);
-	this.componentDidUpdate = this.componentDidUpdate.bind(this);
-	this._rvalue = this._rvalue.bind(this);
-	this._ontxchange = this._ontxchange.bind(this);
-	this._value = this._value.bind(this);
-	this._keypress = this._keypress.bind(this);
-	let _v = this._value;
-	this.state = {
-	    selection_range: props.selection_range.map(_v)
-	};
-	window.onresize = chain_functions(window.onresize, this.componentDidUpdate);
+	this.updateSelection = this.updateSelection.bind(this);
+	this.updateSelectionLeft = this.updateSelectionLeft.bind(this);
+	this.updateSelectionRight = this.updateSelectionRight.bind(this);
+	this.doChange = this.doChange.bind(this);
+	this.doChangeLeft = this.doChangeLeft.bind(this);
+	this.doChangeRight = this.doChangeRight.bind(this);
+	this.state = { lvalue: props.lvalue, rvalue: props.rvalue};
     }
 
-    componentWillReceiveProps(props) {
-	let _v = this._value;
-	this.setState({
-	    selection_range: props.selection_range.map(_v)
-	});
+    // show transient changes, from slider
+    updateSelection(lvalue, rvalue){
+	this.setState({lvalue, rvalue});
     }
 
-    _value(v) {
-	return (this.props.rendervalue ? this.props.rendervalue(v) : v);
+    // show transient changes, from left text box move
+    updateSelectionLeft(e){
+	const lvalue = e.target.value;
+	if(!isNaN(lvalue) && this.props.range[0] <= lvalue){
+	    this.setState({lvalue});
+	}
     }
 
-    _rvalue(s) {
-	return (this.props.reversevalue ? this.props.reversevalue(s) : s);
-    }
-
-    _ontxchange() {
-	this.setState({
-	    selection_range: [this.refs.txmin.value, this.refs.txmax.value]
-	});
-    }
-
-    _keypress(e) {
-	if (e.which === 13) {
-	    this.onMinChange();
+    // show transient changes, from right text box move
+    updateSelectionRight(e){
+	const rvalue = e.target.value;
+	if(!isNaN(rvalue) && this.props.range[1] >= rvalue){
+	    this.setState({rvalue});
 	}
     }
     
+    // call parent onChange() action, from slider move
+    doChange(lvalue, rvalue){
+	this.setState({lvalue, rvalue});
+	if(this.props.onChange){
+	    this.props.onChange(lvalue, rvalue);
+	}
+    }
+
+    // call parent onChange() action, from left text box change
+    doChangeLeft(e){
+	let lvalue = +((+e.target.value).toFixed(this.props.numDecimals));
+	if(isNaN(lvalue)){
+	    return false;
+	}
+	if(lvalue >= this.state.rvalue){ // pad with episilon
+	    lvalue = this.state.rvalue - Math.pow(10, -this.props.numDecimals);
+	}
+	this.doChange(lvalue, this.state.rvalue);
+    }
+
+    // call parent onChange() action, from right text box change
+    doChangeRight(e){
+	let rvalue = +((+e.target.value).toFixed(this.props.numDecimals));
+	if(isNaN(rvalue)){
+	    return false;
+	}
+	if(rvalue <= this.state.lvalue){ // pad with episilon
+	    rvalue = this.state.lvalue + Math.pow(10, -this.props.numDecimals);
+	}
+	this.doChange(this.state.lvalue, rvalue);
+    }
+    
     render() {
-	let histogram = (this.props.nohistogram ? "" :
-			 <div ref="histogram"
-			      style={{width: "100%", height: "20px"}} />);
 	return (
 	    <div>
-		<div style={{fontWeight: "bold"}}>{this.props.title}</div>
-	        {histogram}
-  		<div ref="container" />
-		<div style={{textAlign: "center", paddingTop: "10px"}}>
-		    <input ref="txmin"
-			   type="text"
-			   value={this.state.selection_range[0]}
-			   onChange={this._ontxchange} onBlur={this.onMinChange}
+		<div style={{fontWeight: "bold"}}>
+		    {this.props.title}
+		</div>
+	        {!this.props.nohistogram && <HistogramSlider
+					    	range={this.props.range}
+						data={this.props.data}
+						lvalue={this.state.lvalue}
+						rvalue={this.state.rvalue}
+					    />}
+		<DualSlider
+		    range={this.props.range}
+		    lvalue={this.state.lvalue}
+		    rvalue={this.state.rvalue}
+		    dragLeft={this.updateSelection}
+		    dragRight={this.updateSelection}
+		    onStop={this.doChange}
+		    numDecimals={this.props.numDecimals}
+		    connect
+		/>
+		<div style={{paddingTop: "10px"}}>
+		    <input type="text"
+			   value={this.state.lvalue}
+			   onChange={this.updateSelectionLeft}
+			   onBlur={this.doChangeLeft}
+			   onKeyPress={this.updateSelectionLeft}
 	 	           style={{textAlign: "center", width: "40%",
 				   position: "relative", fontWeight: "bold"}}
-			   onKeyDown={this._keypress} /> -&nbsp;
-		    <input ref="txmax" type="text"
-			   value={this.state.selection_range[1]}
-			   onChange={this._ontxchange} onBlur={this.onMaxChange}
-		           style={{textAlign: "center", width: "40%",
+		    /> -&nbsp;
+		    <input type="text"
+			   value={this.state.rvalue}
+			   onChange={this.updateSelectionRight}
+			   onBlur={this.doChangeRight}
+			   onKeyPress={this.updateSelectionRight}
+	 	           style={{textAlign: "center", width: "40%",
 				   position: "relative", fontWeight: "bold"}}
-			   onKeyDown={this._keypress} />
+		    />
 		</div>
 	    </div>);
     }
-
-    _update_width() {
-	if (this.props.updateWidth) {
-	    this.props.updateWidth($(this.refs.histogram).width());
-	}
-    }
-
-    create_histogram(destination_div) {
-	$(destination_div).empty();
-
-	var div = $(destination_div);
-	var height = div.height();
-	var width = div.width();
-	var xrange = this.props.range;
-	var srange = this.props.selection_range;
-
-	let data  =this.props.data;
-	console.log("data:", data);
-	if(!data){
-	    return;
-	}
-	
-	var svg = d3.select(destination_div).append("svg")
-	    .attr("width", width)
-	    .attr("height", height);
-
-	svg.append("g")
-	    .attr("transform", "translate(" + this.props.margin.left + "," + this.props.margin.top + ")");
-
-	var x = d3.scaleLinear()
-            .domain(xrange)
-	    .rangeRound([0, width]);
-
-	var y = d3.scaleLinear()
-	    .domain([0, data.binMax])
-	    .range([height, 0]);
-
-	var bar = svg.selectAll(".bar")
-	    .data(data.bins)
-	    .enter().append("g")
-	    .attr("fill", function(d) {
-		return (d[0] >= +srange[0] && d[0] < +srange[1]
-			? "#000090" : "#a0a0a0");
-	    })
-	    .attr("transform", function(d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; });
-
-	bar.append("rect")
-	    .attr("x", 1)
-	    .attr("width", x(this.props.interval + xrange[0]))
-	    .attr("height", function(d) { return height - y(d[1]); });
-
-	return svg;
-
-    }
-
-    componentDidMount() {
-	this.componentDidUpdate();
-    }
-
-    componentDidUpdate() {
-	this._slider = this.create_range_slider(this.refs.container);
-	this._histogram = this.create_histogram(this.refs.histogram);
-	this._handles = $(this._slider).find(".ui-slider-handle");
-	$(this._handles[1]).css("margin-left", "0px");
-    }
-
-    onMinChange() {
-	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
-	if (isNaN(srange[0])) srange[0] = 0.0;
-	if (isNaN(srange[1])) srange[1] = srange[0];
-	if (Math.round(srange[1]) <= Math.round(srange[0])) srange[1] = srange[0] + 1;
-	//console.log(srange);
-//	if (srange[0] > srange[1]) srange[0] = srange[1];
-//	if (srange[0] < this.props.range[0]) srange[0] = this.props.range[0];
-	this.set_selection(srange);
-    }
-
-    onMaxChange() {
-	var srange = [+this._rvalue(this.refs.txmin.value), +this._rvalue(this.refs.txmax.value)];
-	if (isNaN(srange[0])) srange[0] = 0.0;
-	if (isNaN(srange[1])) srange[1] = srange[0];
-	if (Math.round(srange[1]) <= Math.round(srange[0])) srange[1] = srange[0] + 1;
-	//console.log(srange);
-//	if (srange[1] < srange[0]) srange[1] = srange[0];
-//	if (srange[1] > this.props.range[1]) srange[1] = this.props.range[1];
-	this.set_selection(srange);
-    }
-
-    create_range_slider(dcontainer) {
-	let container = $(dcontainer);
-	let selection = this.props.selection_range;
-	slider({
-	    source: dcontainer,
-	    range: true,
-	    min: this.props.range[0],
-	    max: this.props.range[1],
-	    values: [ +selection[0], +selection[1] ],
-	    stop: this._set_selection,
-	    slide: this.update_selection
-	});
-	return container;
-    }
-
-    update_selection(event, ui) {
-	var r = this._slider.slider("values");
-	this.refs.txmin.value = this._value(r[0]);
-	this.refs.txmax.value = this._value(r[1]);
-	this._histogram.selectAll("g")
-            .data(this.props.data)
-            .attr("class", function(d) { return (d.key >= +r[0] && d.key < +r[1] ? "barselected" : "bardeselected"); });
-    }
-
-    _set_selection(event, ui) {
-	var r = this._slider.slider("values");
-	this.set_selection(r);
-    }
-
-    set_selection(r) {
-	if (r[1] <= r[0]) r[1] = r[0] + 1;
-	if (this.props.onchange) {
-            this.props.onchange(r);
-        }
-    }
 }
-
-const zeros = (range, interval) => {
-    var bins = [];
-    for (var i = range[0]; i < range[1]; i += interval) {
-	bins.push([i, 0]);
-    }
-    return {"bins" : bins,
-            "numBins" : bins.lengths,
-            "binMax" : 0}
-};
 
 class RangeFacet extends React.Component {
-
-    constructor(props) {
-	super(props);
-	this.selection_change_handler = this.selection_change_handler.bind(this);
-    }
-
-    selection_change_handler(r) {
-	if (this.props.onchange) {
-            this.props.onchange(r);
-        }
-    }
-
     render() {
-	var h_data = (this.props.h_data === null
-		      ? zeros(this.props.range, this.props.h_interval)
-		      : this.props.h_data);
 	return (<div>
-		   <RangeSlider
-		      nohistogram={this.props.nohistogram}
-		      range={this.props.range}
-                      selection_range={this.props.selection_range}
-		      interval={this.props.h_interval} data={h_data}
-                      margin={this.props.h_margin}
-		      onchange={this.selection_change_handler}
-                      ref="slider"
-                      title={this.props.title}
-		      updateWidth={this.props.updateWidth}
-		      rendervalue={this.props.rendervalue}
-		      reversevalue={this.props.reversevalue}
-		   />
-		</div>
-	       );
+		<RangeSlider
+		    nohistogram={this.props.nohistogram}
+		    range={this.props.range}
+                    lvalue={this.props.lvalue}
+		    rvalue={this.props.rvalue}
+		    interval={this.props.h_interval}
+		    data={this.props.h_data}
+                    margin={this.props.h_margin}
+		    onChange={this.props.onChange}
+                    title={this.props.title}
+		    updateWidth={this.props.updateWidth}
+		    numDecimals={this.props.numDecimals}
+		/>
+	</div>);
     }
 
 }
-export default RangeFacet;
 
-/*
- * test function with dummy data
- */
-/* (function() {
- * 
- *     if (!document.getElementById("range_facet")) return;
- * 
- *     var data = [];
- *     for (var i = 0; i < 1000; i++) {
- * 	data.push({key: i * 10,
- * 		   doc_count: Math.round(Math.random() * 1000)
- * 		  });
- *     }
- * 
- *     var range = [0, 10000];
- *     var srange = [0, 4000];
- *     var h_margin = {top: 1, bottom: 1, left: 1, right: 1};
- * 
- *     ReactDOM.render(
- * 	<RangeFacet range={range} h_margin={h_margin}
- * 		    selection_range={srange} h_interval="10"
- * 		    h_data={data} />,
- * 	document.getElementById("range_facet"));
- * })();*/
+export default RangeFacet;

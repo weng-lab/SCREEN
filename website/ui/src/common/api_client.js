@@ -1,8 +1,8 @@
-export const StaticServer = "http://megatux.purcaro.com:9006";
+export const StaticServer = "http://screen-beta.wenglab.org";
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
-    const server = "http://megatux.purcaro.com:9006";
+    const server = "http://api.wenglab.org";
     const override = {//"/autows/search" : "/autows/search"
 		     };
     if(b in override){
@@ -30,12 +30,23 @@ export const autocompleteBox = (jq, successF, errF) => {
     getByPost(jq, "/autows/search", successF, errF);
 }
 
+export const autocompleteBoxSuggestions = (jq, successF, errF) => {
+    getByPost(jq, "/autows/suggestions", successF, errF);
+}
+
 export const appPageBaseInit = (jq, url, successF, errF) => {
     getByPost(jq, url, successF, errF);
 }
     
 export const globals = (assembly, successF, errF) => {
     fetch(Servers("/globalData/0/") + assembly)
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
+
+export const globalTabFiles = (successF, errF) => {
+    fetch(Servers("/globalData/index/index"))
 	.then((response) => (response.json()))
 	.then(successF)
 	.catch(errF);
