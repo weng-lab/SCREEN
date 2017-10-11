@@ -94,18 +94,18 @@ class ParseSearch:
                "interpretation": {}}
         if "promoter" in self.kwargs or useTss:
             ret["element_type"] = "promoter-like"
-            ret["rank_promoter_start"] = 164
-            ret["rank_dnase_start"] = 164
+            ret["rank_promoter_start"] = 1.64
+            ret["rank_dnase_start"] = 1.64
             ret["gene_all_end"] = 5000
             s = s.replace("promoter", "")
         elif "enhancer" in toks:
             ret["element_type"] = "enhancer-like"
-            ret["rank_enhancer_start"] = 164
-            ret["rank_dnase_start"] = 164
+            ret["rank_enhancer_start"] = 1.64
+            ret["rank_dnase_start"] = 1.64
             s = s.replace("enhancer", "")
         elif "insulator" in toks:
             ret["element_type"] = "insulator-like"
-            ret["rank_ctcf_start"] = 164
+            ret["rank_ctcf_start"] = 1.64
             s = s.replace("insulator", "")
 
         accessions = []

@@ -21,18 +21,24 @@ class BuildOntology:
         self.assembly = assembly
 
     def run(self):
-        mod = import_module("10_generate_ontology")
+        mod = import_module("10_generate_ontology_actual")
         runF = getattr(mod, "run")
-
-        # from https://github.com/ENCODE-DCC/encoded/blob/0c740649bad8fd15ec32e4a92e869fb59ed2ab6c/src/encoded/docs/updating_ontologies.md
-        uberon_url = "http://ontologies.berkeleybop.org/uberon/composite-metazoan.owl"
-        efo_url = "http://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoinowl/InferredEFOOWLview/EFO_inferred.owl?format=raw"
-        obi_url = "http://purl.obolibrary.org/obo/obi.owl"
+        
+        if 1:
+            downloadData
+            uberon_url = "http://ontologies.berkeleybop.org/uberon/composite-metazoan.owl"
+            efo_url = "http://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoinowl/InferredEFOOWLview/EFO_inferred.owl?format=raw"
+            obi_url = "http://purl.obolibrary.org/obo/obi.owl"
+        else:
+            downloadDate = '2017-10Oct-10'
+            uberon_url = paths.path("ontology", downloadDate, "composite-metazoan.owl")
+            efo_url = paths.path("ontology", downloadDate, "EFO_inferred.owl")
+            obi_url = paths.path("ontology", downloadDate, "obi.owl")
 
         printt("running ENCODE DCC generate ontology...")
         terms = runF(uberon_url, efo_url, obi_url)
 
-        fnp = paths.path(self.assembly, "ontology", "ontology.json")
+        fnp = paths.path("ontology", downloadDate, "ontology.json")
         printt("done; about to write", fnp)
         with open(fnp, 'w') as f:
             json.dump(terms, f)

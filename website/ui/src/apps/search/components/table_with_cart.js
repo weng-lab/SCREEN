@@ -16,8 +16,22 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-  this.state = { minrange:0,maxrange: 0,selectedaccession: {}}
+	this.state = { minrange:0,maxrange: 0,selectedaccession: {}}
         this.table_click_handler = this.table_click_handler.bind(this);
+    }
+
+    _get_missing(a) {
+	const assays = {"dnase": "DNase-seq",
+			"promoter": "H3K4me3 ChIP-seq",
+			"enhancer": "H3K27ac ChIP-seq",
+			"ctcf": "CTCF ChIP-seq" };
+	let r = [];
+	Object.keys(assays).forEach((k) => {
+	    if (!a.includes(k)) {
+		r.push(assays[k]);
+	    }
+	});
+	return r;
     }
 
     table_click_handler(td, rowdata, actions)
@@ -34,7 +48,6 @@ class TableWithCart extends React.Component {
 	      }
         if (td.indexOf("cart") !== -1)
         {
-
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
       	    let j = {assembly: this.props.assembly, accessions};
@@ -221,8 +234,10 @@ class TableWithCart extends React.Component {
     _oppositeAssays(a){
 	let r = {"dnase" : true, "promoter": true,
                  "enhancer": true, "ctcf": true};
-	let map = {"DNase-seq": "dnase", "H3K4me3 ChIP-seq": "promoter",
-                   "H3K27ac ChIP-seq": "enhancer", "CTCF ChIP-seq": "ctcf"};
+	let map = {"DNase-seq": "dnase",
+		   "H3K4me3 ChIP-seq": "promoter",
+                   "H3K27ac ChIP-seq": "enhancer",
+		   "CTCF ChIP-seq": "ctcf"};
 	if (!a) {
             return r;
         }
@@ -262,6 +277,8 @@ class TableWithCart extends React.Component {
     }
 
     table(data, actions){
+	const missingAssays = this._get_missing(this.props.rfacets);
+
 	var tooMany = "";
 	if(data.length < this.props.total){
 	    tooMany = (
@@ -270,10 +287,10 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	var failMsg = "";
-	if(this.props.missingAssays && this.props.missingAssays.length){
+	if(missingAssays && missingAssays.length){
 	    failMsg = (
 		<li className={"list-group-item"}>
-		    <em>The cell type you have selected does not have {this._format_message(this.props.missingAssays)} data available.</em>
+		    <em>The cell type you have selected does not have {this._format_message(missingAssays)} data available.</em>
 		</li>);
 	}
 
@@ -296,9 +313,6 @@ class TableWithCart extends React.Component {
 		    {" following a gene ID to explore the differential expression of the gene between two cell types."}
 		</span>);
 	}
-
-	let cols = (this.props.hasct ? this.props.missingAssays :
-                    ["H3K4me3 ChIP-seq", "H3K27ac ChIP-seq", "CTCF ChIP-seq"]);
 
 	let ctCol = null;
 	if(this.props.cellType){
@@ -332,10 +346,10 @@ class TableWithCart extends React.Component {
 		<Ztable data={data}
                         order={table_order}
 			columnDefs={columnDefs}
-			cols={TableColumns(this.props.globals, this.props.assembly, ctCol)}
+			cols={TableColumns(this.props.globals, this.props.assembly, ctCol,
+					   this.props.rfacets)}
                         onTdClick={(td, rowdata) =>
                             this.table_click_handler(td, rowdata, actions)}
-                        cvisible={this._opposite(cols, this.props.cts)}
                         bFilter={true}
                         bLengthChange={true} key={this.props.cellType}
                 />

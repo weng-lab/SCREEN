@@ -12,9 +12,8 @@ class ExpressionBoxplot extends React.Component {
     }
 
     componentDidUpdate() {
-	var width = 800;
-	var barheight = "15";
-	//console.log("ExpressionBoxplot componentDidUpdate");
+	const width = Math.max(1200, this.refs.box.clientWidth);
+	const barheight = "15";
 	render(React.createElement(LargeHorizontalBars,
                                    {...this.props.data, width, barheight}),
 	       this.refs.bargraph);
@@ -22,7 +21,9 @@ class ExpressionBoxplot extends React.Component {
 
     _bb() {
 	let gclick = this.gclick.bind(this);
-	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC");}}>UCSC</button>;
+	return <button type="button" className="btn btn-default btn-xs"
+		       onClick={() => {gclick("UCSC");}}
+	       >UCSC</button>;
     }
 
     gclick(name) {
@@ -36,7 +37,7 @@ class ExpressionBoxplot extends React.Component {
     
     render() {
 	return (
-            <div>
+            <div ref="box">
  	        <span style={{fontSize: "18pt"}}>
                 <em>{this.props.gene}</em> {this._bb()} <span ref="help_icon" />
                 </span>

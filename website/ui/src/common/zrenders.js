@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {commajoin} from './utility';
+import {toParams, commajoin} from './utility';
 import * as ApiClient from './api_client';
 
 export const relink = (assembly) => (v) => (
@@ -212,7 +212,7 @@ export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data) => (approved_symbol) => {
     const d = {q: approved_symbol, assembly: data.assembly};
-    const params = Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&');
+    const params = toParams(d);
     const url = "/search/?" + params;
     return <a href={url}>{approved_symbol}</a>;
 }

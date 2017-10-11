@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import $ from 'jquery';
 
 import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
 
@@ -9,11 +8,7 @@ import loading from '../../../common/components/loading';
 
 import * as Actions from '../actions/main_actions';
 import * as Render from '../../../common/zrenders';
-
-/*global Globals */
-/*global GlobalAssembly */
-/*global GlobalParsedQuery */
-/*eslint no-undef: "error"*/
+import * as ApiClient from '../../../common/api_client';
 
 class ExpressionPlot extends React.Component {
     constructor(props) {
@@ -24,6 +19,12 @@ class ExpressionPlot extends React.Component {
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
 
+    componentDidMount(){
+	if("expression" === this.props.maintabs_active){
+	    this.loadCRE(this.props);
+	}
+    }
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if("expression" === nextProps.maintabs_active){
 	    return true;
@@ -39,13 +40,19 @@ class ExpressionPlot extends React.Component {
 
     _bb() {
 	let gclick = this.gclick.bind(this);
-	return <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC");}}>UCSC</button>;
+	return (
+	    <button type="button"
+		    className="btn btn-default btn-xs"
+		    onClick={() => {gclick("UCSC");}}>
+		UCSC
+	    </button>);
     }
     
     loadCRE(){
 	let gene = null;
-	if(GlobalParsedQuery.genes.length > 0){
-	    gene = GlobalParsedQuery.genes[0].approved_symbol;
+	const genes = this.props.search.parsedQuery.genes;
+	if(genes.length > 0){
+	    gene = genes[0].approved_symbol;
 	}
 	if (!gene) {
 	    return;
@@ -53,54 +60,53 @@ class ExpressionPlot extends React.Component {
 	if(gene in this.state.ges){
 	    return;
 	}
-	var q = {GlobalAssembly, gene,
-		 compartments_selected: new Set(["cell"]),
-		 biosample_types_selected: new Set(Globals.geBiosampleTypes)};
-        var jq = JSON.stringify(q);
+	const q = {assembly: this.props.assembly,
+		   gene,
+		   compartments_selected: ["cell"],
+		   biosample_types_selected: this.props.globals.geBiosampleTypes};
+        const jq = JSON.stringify(q);
 	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
-        //console.log("loadCREs....", this.state.jq, jq);
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: "/geneexpjson",
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading cres for table");
-                this.setState({jq: null, isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-		let nges = {...this.state.ges};
-		nges[gene] = r;
-		this.setState({ges : nges, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq, "/gews/search",
+			    (r) => {
+				let nges = {...this.state.ges};
+				nges[gene] = r;
+				this.setState({ges : nges, isFetching: false, isError: false});
+			    },
+			    (msg) => {
+				console.log("err loading cres for table");
+				this.setState({jq: null, isFetching: false, isError: true});
+			    });
     }
 
     gclick(name) {
-	if (GlobalParsedQuery.genes.length > 0) {
+	const genes = this.props.search.parsedQuery.genes;
+	if (genes.length > 0) {
+	    const gene = genes[0];
 	    this.props.actions.showGenomeBrowser({
-		title: GlobalParsedQuery.genes[0].oname,
-		start: GlobalParsedQuery.genes[0].start,
-		len: GlobalParsedQuery.genes[0].stop - GlobalParsedQuery.genes[0].start,
-		chrom: GlobalParsedQuery.genes[0].chrom
+		title: gene.oname,
+		start: gene.start,
+		len: gene.stop - gene.start,
+		chrom: gene.chrom
 	    }, name, "gene");
 	}
     }
     
     doRenderWrapper(){
+	const genes = this.props.search.parsedQuery.genes;
 	let gene = null;
-	if(GlobalParsedQuery.genes.length > 0){
-	    gene = GlobalParsedQuery.genes[0].approved_symbol;
+	if(genes.length > 0){
+	    gene = genes[0].approved_symbol;
 	}
         if (!gene) {
 	    return <div />;
 	}
 
+	// TODO: make width (below) dynamic!
+	
 	if(gene in this.state.ges){
 	    let data = this.state.ges[gene];
 	    return (

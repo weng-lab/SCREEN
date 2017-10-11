@@ -3,6 +3,7 @@ import React from 'react';
 import Ztable from '../../../common/components/ztable/ztable';
 import loading from '../../../common/components/loading';
 import {tabPanelize} from '../../../common/utility';
+import * as ApiClient from '../../../common/api_client';
 
 const fileDownload = (url, fn) => {
     return (
@@ -131,12 +132,11 @@ class TabFiles extends React.Component {
 	    return;
 	}
 	this.setState({isFetching: true});
-        fetch("/globalData/index/index")
-	    .then((response) => (response.json()))
-	    .then((r) => {
+	ApiClient.globalTabFiles(
+	    (r) => {
 		this.setState({files: r, isFetching: false, isError: false});
-	    })
-	    .catch((err) => {
+	    },
+	    (err) => {
 		console.log("err loading files");
 		console.log(err);
                 this.setState({isFetching: false, isError: true});

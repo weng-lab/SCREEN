@@ -2,7 +2,7 @@ import React from 'react';
 import {ZHelpTooltip} from '../../../common/components/help_icon'
 import * as ZRender from '../../../common/zrenders'
 
-const TableColumns = (globals, assembly, cts) => {
+const TableColumns = (globals, assembly, cts, rfacets) => {
     let accHelp = (
 	<span>
 	    accession
@@ -25,8 +25,8 @@ const TableColumns = (globals, assembly, cts) => {
             {"mm10" === assembly && ZHelpTooltip(globals, "DifferentialGeneMouse")}
 	</span>);
 
-    let tz = (name) => ( <span>{name}<br />Z</span>)
-
+    const tz = (name) => (<span>{name}<br />Z</span>)
+    
     return [
       { title: "", data: "checked", className: "selectcre",
 	      render: ZRender.checkRd},
@@ -40,16 +40,16 @@ const TableColumns = (globals, assembly, cts) => {
             title: "SCTsorter", data: "ctspecifc", visible: false,
 	    render: ZRender.sctSorter, name: "sct",
 	}, {
-	    title: tz("DNase"), data: "dnase_zscore",
+	    title: tz("DNase"), data: "dnase_zscore", visible: rfacets.includes("dnase"),
 	    render: ZRender.real, name: "dnase", width: "7%"
 	}, {
-	    title: tz("H3K4me3"), data: "promoter_zscore",
+	    title: tz("H3K4me3"), data: "promoter_zscore", visible: rfacets.includes("promoter"),
 	    render: ZRender.real, name: "promoter", width: "7%"
 	}, {
-	    title: tz("H3K27ac"), data: "enhancer_zscore",
+	    title: tz("H3K27ac"), data: "enhancer_zscore", visible: rfacets.includes("enhancer"),
 	    render: ZRender.real, name: "enhancer", width: "7%"
 	}, {
-	    title: tz("CTCF"), data: "ctcf_zscore",
+	    title: tz("CTCF"), data: "ctcf_zscore", visible: rfacets.includes("ctcf"),
 	    render: ZRender.real, name: "ctcf", width: "7%"
 	}, {
 	    title: "chr", data: "chrom",

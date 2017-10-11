@@ -1,10 +1,6 @@
 import * as Actions from '../actions/main_actions';
 import * as SearchAction from '../../../common/actions/searchbox_actions.js'
-import {doToggle} from '../../../common/utility'
-import $ from 'jquery';
-
-/*global GlobalAssembly */
-/*eslint no-undef: "error"*/
+import {toParams, doToggle} from '../../../common/utility'
 
 const mainTabSetter = (state, tabName) => {
     let ret = {maintabs_active: tabName};
@@ -110,8 +106,8 @@ const main_reducers = (state, action) => {
 
 	case SearchAction.MAKE_SEARCH_QUERY:
 	    // TODO: avoid the full page refresh
-	    var q = $.param({q : action.q,
-			     assembly: GlobalAssembly});
+	    const q = toParams({q : action.q,
+				assembly: action.assembly});
 	    var arr = window.location.href.split("/");
 	    var host = arr[0] + "//" + arr[2];
 	    window.location = host + "/search?" + q;

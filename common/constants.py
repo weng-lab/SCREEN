@@ -102,7 +102,6 @@ class paths(object):
 
     @staticmethod
     def path(assembly, *args):
-        #print('\n'.join([V4d, CreVerStr, assembly] + list(args)))
         return os.path.join(V4d, CreVerStr, assembly, *args)
 
     def dBase(assembly, *args):

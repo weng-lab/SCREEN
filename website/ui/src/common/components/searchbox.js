@@ -1,9 +1,8 @@
 import React from 'react';
-
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
-import AutocompleteTextbox from './autocompletetextbox'
+import AutocompleteBox from './autocompletebox';
 
 import * as Actions from '../actions/searchbox_actions';
 
@@ -46,32 +45,23 @@ class SearchBox extends React.Component {
 
     render() {
 
-	return (<span className="navbar-collapse navbar-searchform">
-	        <AutocompleteTextbox defaultvalue={this.state.searchtext} id="acnav"
-		    name="q" hideerr="true" actions={this.props.actions} size={100}
-		    className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
-		    onEnter={this._search} assemblies={[this.props.assembly]} />&nbsp;
-
-                <a className="btn btn-primary btn-lg searchButton"
-                    onClick={this._search} role="button">Search</a>
-
-		</span>);
+	return (
+	    <span className="navbar-collapse navbar-searchform">
+		<AutocompleteBox defaultvalue={this.state.searchtext}
+				 id="acnav"
+				 name="q" hideerr="true" actions={this.props.actions} size={100}
+				 className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
+				 onEnter={this._search} assemblies={[this.props.assembly]} />&nbsp;
+	    
+            <a className="btn btn-primary btn-lg searchButton"
+               onClick={this._search} role="button">Search</a>
+	    
+	    </span>);
     }
 }
-/*
-<input className="searchbox" type="text" size="100" name="q"
-                ref="input" defaultValue={this.makeVal(this.props)}/>
-*/
 
-const mapStateToProps = (state) => ({
-        ...state
-});
-
+const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
 });
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(SearchBox);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);

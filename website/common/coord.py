@@ -1,8 +1,8 @@
 class Coord:
     def __init__(self, chrom, start, end):
         self.chrom = chrom
-        self.start = start
-        self.end = end
+        self.start = int(start)
+        self.end = int(end)
 
     def __repr__(self):
         return "{chrom}:{start}-{end}".format(chrom=self.chrom,
@@ -11,8 +11,8 @@ class Coord:
 
     def resize(self, halfWindow):
         # 1-based coords for UCSC Genome Browser
-        self.start = str(max(1, int(self.start) - halfWindow))
-        self.end = str(int(self.end) + halfWindow)
+        self.start = str(max(1, self.start - halfWindow))
+        self.end = str(self.end + halfWindow)
         
     def toDict(self):
         return {"chrom": self.chrom, "start": self.start, "end": self.end}
@@ -43,4 +43,4 @@ class Coord:
         center = float(self.end - self.start) / 2 + self.start
         s = max(0, center - halfWindow)
         e = center + halfWindow
-        return Coord(self.chrom, int(s), int(e))
+        return Coord(self.chrom, s, e)
