@@ -20,7 +20,7 @@ import Exons from './exons.js'
 
           if(viewl!==undefined)
              vl=viewl.split(":");
-          var y =  d3.scaleLinear().domain([vl[1],vl[0]]).range([_self.props.range ,_self.props.range+50]);
+          var y =  d3.scaleLinear().domain([vl[1],vl[0]]).range([_self.props.range ,_self.props.range+30]);
           var yAxis = d3.axisLeft().scale(y);
           yAxis.tickValues(y.ticks(1).concat(y.domain()));
           var data=this.props.data;
@@ -53,7 +53,7 @@ import Exons from './exons.js'
                     <Axis  axis={yAxis}/>
                   </g>
                   <polygon points={points} stroke={color} fill={color} strokeWidth="0.1"/>
-                  <text x={x} y={_self.props.range-10} fill={color} >{text}</text>
+                  <text x={x} y={_self.props.range-5} fill={color} >{text}</text>
                   <text x={0} y={y(0)}>{_self.props.shortLabel}</text>
               </g>
           );
@@ -291,7 +291,7 @@ import Exons from './exons.js'
                   return (d.shortLabel !== key)
                 });
                 this.setState({bwinput:bwinp },()=>{
-                  this.setState((prevState)=> {return{height:prevState.height - 100}});
+                  this.setState((prevState)=> {return{height:prevState.height - 60}});
                   this.setState(
                   {
                       bwdata: Object.assign({},this.state.bwdata,{ [key]: [] })
@@ -713,7 +713,7 @@ import Exons from './exons.js'
                    {
                        return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
                    }));
-                   r+=100;
+                   r+=60;
                  }
              });
 
