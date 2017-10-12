@@ -58,8 +58,8 @@ class BuildGwas:
     def run(self):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
 
-        origBedFnp = os.path.join(dataF, "GWAS.v3.bed")
-        bedFnp = os.path.join(dataF, "GWAS.v3.sorted.bed")
+        origBedFnp = os.path.join(dataF, "GWAS.v4.bed")
+        bedFnp = os.path.join(dataF, "GWAS.v4.sorted.bed")
         self.processGwasBed(origBedFnp, bedFnp)
 
 def run(args, DBCONN):

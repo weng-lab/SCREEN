@@ -97,8 +97,8 @@ class ImportGwas:
                    fields = ','.join([r + " real" for r in fields])))
 
     def _enrichment(self):
-        files = (("GWAS.v3.Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
-                 ("GWAS.v3.Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
+        files = (("GWAS.v4.Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
+                 ("GWAS.v4.Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
         headers = []
         for fn, tableName, takeLog in files:
             printt("******************* GWAS enrichment", fn)
@@ -248,8 +248,8 @@ class ImportGwas:
     def run(self):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
 
-        origBedFnp = os.path.join(dataF, "GWAS.v3.bed")
-        bedFnp = os.path.join(dataF, "GWAS.v3.sorted.bed")
+        origBedFnp = os.path.join(dataF, "GWAS.v4.bed")
+        bedFnp = os.path.join(dataF, "GWAS.v4.sorted.bed")
 
         self._gwas(bedFnp)
         header = self._enrichment()
