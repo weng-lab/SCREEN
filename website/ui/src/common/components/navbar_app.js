@@ -7,7 +7,7 @@ class NavBarApp extends React.Component {
     render() {
 	var SearchBox = "";
 	if (this.props.searchbox) {
-	    var SearchBoxC = this.props.searchbox;
+	    let SearchBoxC = this.props.searchbox;
 	    SearchBox = <SearchBoxC store={this.props.store} />;
 	}
 

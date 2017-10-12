@@ -22,11 +22,13 @@ class SearchPageInner extends React.Component {
 				applyMiddleware(
 				    thunkMiddleware,
 				));
-	const assembly = this.props.search.assembly;
-	let mainTabs = (<MainTabs globals={this.props.globals}
-			search={this.props.search} />);
-	    
-	    let drawMain = () => {
+
+	const assembly = this.props.search.parsedQuery.assembly;
+	let mainTabs = (<MainTabs
+			    globals={this.props.globals}
+			    search={this.props.search} />);
+	
+	let drawMain = () => {
 	    if(isCart()){
 		return (
 		    <div className="row" style={{width: "100%"}}>
@@ -49,7 +51,7 @@ class SearchPageInner extends React.Component {
 		    </div>);
 	    }
 	}
-
+	
         return (
             <Provider store={store}>
 	        <div>
@@ -68,7 +70,7 @@ class SearchPageInner extends React.Component {
 		</div>
             </Provider>
         );
-    }
+}
 }
 
 class SearchPage extends AppPageBase {

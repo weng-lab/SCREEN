@@ -19,7 +19,8 @@ class Autocompleter extends React.Component {
  	this.state = {userQueryErr : null, value: props.defaultvalue};
     }
 
-    loadSearch(assembly, userQuery, actions) {
+    loadSearch(assembly) {
+	const userQuery = this.state.value;
  	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
  				          style={{fontSize : "24px"}}></i>)});
  	const q = {assembly, userQuery};
@@ -38,8 +39,8 @@ class Autocompleter extends React.Component {
  				      }
  				      
  				      if(r.multipleGenes){
- 					  actions.setGenes(r);
- 					  actions.setMainTab("query");
+ 					  this.props.actions.setGenes(r);
+ 					  this.props.actions.setMainTab("query");
  				      } else {
  					  const params = toParams({q: userQuery,
 								   assembly});
@@ -53,15 +54,15 @@ class Autocompleter extends React.Component {
     }
     
     searchHg19() {
- 	this.loadSearch("hg19", this.state.value, this.props.actions);
+ 	this.loadSearch("hg19");
     }
     
     searchMm10() {
- 	this.loadSearch("mm10", this.state.value, this.props.actions);
+ 	this.loadSearch("mm10");
     }
     
     onEnter(){
- 	this.loadSearch("hg19", this.state.value, this.props.actions);
+ 	this.loadSearch("hg19");
     }
 
     onChange(value){
@@ -78,7 +79,7 @@ class Autocompleter extends React.Component {
 		    />;
 	
  	let err = "";
- 	if (this.state.userQueryErr && !this.props.hideerr) {
+ 	if (this.state.userQueryErr) {
  	    err = (<span>
  		<span className={"mainPageErr"}>
  		    {this.state.userQueryErr}
