@@ -166,51 +166,84 @@ import Exons from './exons.js'
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
              //this.readBigBed();
-             let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
-                    "RNA-seq" : ["0,170,0", "", "#00aa00"],
-                    "RAMPAGE" : ["214,66,202", "#D642CA"],
-                    "H3K4me1" : ["255,223,0", "#FFDF00"],
-                    "H3K4me2" : ["255,255,128", "#FFFF80"],
-                    "H3K4me3" : ["255,0,0", "#FF0000"],
-                    "H3K9ac" : ["255,121,3", "#FF7903"],
-                    "H3K27ac" : ["255,205,0", "#FFCD00"],
-                    "H3K27me3" : ["174,175,174", "#AEAFAE"],
-                    "H3K36me3" : ["0,128,0", "#008000"],
-                    "H3K9me3" : ["180,221,228", "#B4DDE4"],
-                    "Conservation" : ["153,153,153", "#999999"],
-                    "TF ChIP-seq" : ["18,98,235", "#1262EB"],
-                    "CTCF" : ["0,176,240", "#00B0F0"]}
-                    if(this.props.byCellType!=undefined)
-                    {
-                      let globalinput = this.props.byCellType,gi=[]
-                      let h = globalinput.length * 60;
-                      for(let i=0; i < globalinput.length ;i++)
-                      {
-                        let signalcolor = AssayColors[globalinput[i]["assay"]][0];
-                        let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
-                        viewLimits ,
-                        shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
-                        if(globalinput[i]["assay"]==="DNase")
-                        {
-                          viewLimits="0:150"
-                        }
-                        else {
-                          viewLimits="0:50"
-                        }
-                        let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
-                        let key= (globalinput[i]["assay"] + globalinput[i]["cellTypeName"])
-                        //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
-                        gi.push(bwinpt)
-                         //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
-                      }
-                      this.setState((prevState)=> {return{height: h + 50}},()=>{
-                         this.setState({ bwinput: gi },()=>{this.readBigWig();
-                           this.loadgenes()
-                         })
-                       });
-                    }
+             if(this.props.byCellType!=undefined)
+             {
+                this.loadbigbed();
+                this.loadbigwig();
+                this.loadgenes();
+             }
            });
            })
+       }
+       loadbigbed()
+       {
+         let _self=this,globalinput = _self.props.bigBedByCellType,gi=[],signaltype={}
+         let h = Object.keys(globalinput).length * 20;
+
+         Object.keys(globalinput).forEach(function (key)
+         {
+              let url =  "https://www.encodeproject.org/files/"+globalinput[key]+"/@@download/"+globalinput[key]+".bigBed?proxy=true",
+              shortLabel = key + " "+_self.props.cellType,longLabel= globalinput[key]+" Signal "+ key +" "+ _self.props.cellType
+              let bbinpt = {shortLabel:shortLabel,longLabel: longLabel,url:url}
+              gi.push(bbinpt)
+              signaltype = _self.state.signaltype
+              signaltype[shortLabel]="bigbed"
+         });
+         let res = Object.assign({}, this.state.signaltype, signaltype)
+         this.setState({signaltype:Object.assign({}, this.state.signaltype, signaltype)});
+         this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
+            this.setState({ bbinput: gi },()=>{
+              this.readBigBed();
+            })
+          });
+
+       }
+       loadbigwig()
+       {
+         let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
+                "RNA-seq" : ["0,170,0", "", "#00aa00"],
+                "RAMPAGE" : ["214,66,202", "#D642CA"],
+                "H3K4me1" : ["255,223,0", "#FFDF00"],
+                "H3K4me2" : ["255,255,128", "#FFFF80"],
+                "H3K4me3" : ["255,0,0", "#FF0000"],
+                "H3K9ac" : ["255,121,3", "#FF7903"],
+                "H3K27ac" : ["255,205,0", "#FFCD00"],
+                "H3K27me3" : ["174,175,174", "#AEAFAE"],
+                "H3K36me3" : ["0,128,0", "#008000"],
+                "H3K9me3" : ["180,221,228", "#B4DDE4"],
+                "Conservation" : ["153,153,153", "#999999"],
+                "TF ChIP-seq" : ["18,98,235", "#1262EB"],
+                "CTCF" : ["0,176,240", "#00B0F0"]}
+         let globalinput = this.props.byCellType,gi=[],signaltype={}
+         let h = globalinput.length * 60;
+         for(let i=0; i < globalinput.length ;i++)
+         {
+           let signalcolor = AssayColors[globalinput[i]["assay"]][0];
+           let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
+           viewLimits ,
+           shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+           if(globalinput[i]["assay"]==="DNase")
+           {
+             viewLimits="0:150"
+           }
+           else {
+             viewLimits="0:50"
+           }
+           let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
+           let key= (globalinput[i]["assay"] + globalinput[i]["cellTypeName"])
+           //if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+           gi.push(bwinpt)
+           signaltype= this.state.signaltype;
+           signaltype[key]="bigwig"
+            //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+         }
+          let res = Object.assign({}, this.state.signaltype, signaltype)
+        this.setState({signaltype:signaltype});
+         this.setState((prevState)=> {return{height: h + 50}},()=>{
+            this.setState({ bwinput: gi },()=>{
+              this.readBigWig();
+            })
+          });
        }
        nextexon = (r) =>
        {
@@ -286,7 +319,7 @@ import Exons from './exons.js'
          else {
 
                let input=this.state.input;
-               let start= this.state.xminrange,end=this.state.xmaxrange,chrom=this.state.chrom;
+               let start= this.state.xminrange,end=this.state.xmaxrange,chrom=this.state.chrom,_self=this;
 
               /* for (let j = 0; j < input.length; j++)
                {
@@ -339,6 +372,22 @@ import Exons from './exons.js'
                    })
                  }
                }*/
+               let globalinputbigbed = this.props.bigBedByCellType,gi=[]
+
+               Object.keys(globalinputbigbed).forEach(function (k)
+               {
+                 if(key===k+" "+_self.props.cellType)
+                 {
+                   let url =  "https://www.encodeproject.org/files/"+globalinputbigbed[k]+"/@@download/"+globalinputbigbed[k]+".bigBed?proxy=true",
+                   shortLabel = k + " "+_self.props.cellType,longLabel= globalinputbigbed[k]+" Signal "+ k +" "+ _self.props.cellType
+                   let bbinpt = {shortLabel:shortLabel,longLabel: longLabel,url:url}
+                   _self.setState((prevState)=> {return{height:prevState.height + 20}},()=>{
+                     _self.setState({signaltype: Object.assign({},_self.state.signaltype,{ [key]: "bigbed" })});
+                     _self.setState({ bbinput: [..._self.state.bbinput, bbinpt] },()=> {_self.readBigBed()})
+                   });
+                 }
+
+               });
                let AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
                      "RNA-seq" : ["0,170,0", "", "#00aa00"],
                      "RAMPAGE" : ["214,66,202", "#D642CA"],
@@ -356,28 +405,26 @@ import Exons from './exons.js'
                let globalinput = this.props.byCellType
                for(let i=0; i < globalinput.length ;i++)
                {
-                 let signalcolor = AssayColors[globalinput[i]["assay"]][0];
-                 let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
-                 viewLimits ,
-                 shortLabel = (globalinput[i]["assay"]+ globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
-                 if(globalinput[i]["assay"]==="DNase")
-                 {
-                   viewLimits="0:150"
-                 }
-                 else {
-                   viewLimits="0:50"
-                 }
-                 let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
-
-                 if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
-                 {
-                   this.setState((prevState)=> {return{height:prevState.height + 100}},()=>{
-                     this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
-                     this.setState({ bwinput: [...this.state.bwinput, bwinpt] },()=> {this.readBigWig()})
-
-                   });
-
-                 }
+                   if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+                   {
+                     let signalcolor = AssayColors[globalinput[i]["assay"]][0];
+                     let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
+                     viewLimits ,
+                     shortLabel = (globalinput[i]["assay"]+ globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+                     if(globalinput[i]["assay"]==="DNase")
+                     {
+                       viewLimits="0:150"
+                     }
+                     else
+                     {
+                       viewLimits="0:50"
+                     }
+                     let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
+                       this.setState((prevState)=> {return{height:prevState.height + 100}},()=>{
+                         this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
+                         this.setState({ bwinput: [...this.state.bwinput, bwinpt] },()=> {this.readBigWig()})
+                       });
+                   }
                }
          }
        }
@@ -424,9 +471,10 @@ import Exons from './exons.js'
          {
              let key = bburl[j]["shortLabel"],
              longLabel = bburl[j]["longLabel"],
-             shortLabel = bburl[j]["shortLabel"];
+             shortLabel = bburl[j]["shortLabel"],
+             url =  bburl[j]["url"];
              let chrom=this.state.chrom,start=this.state.xminrange,end=this.state.xmaxrange
-             readBig("https://www.encodeproject.org/files/ENCFF415FGZ/@@download/ENCFF415FGZ.bigBed",chrom,start,end,
+             readBig(url,chrom,start,end,
          (data) => {
            this.setState({
                bbdata: Object.assign(
@@ -457,7 +505,7 @@ import Exons from './exons.js'
             return {xminrange: parseInt(prevState.xminrange) + parseInt(range),xmaxrange: parseInt(prevState.xmaxrange) + parseInt(range)};
           },() => {
                let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
-               this.setState({x:xrange},() => { //this.readBigBed();
+               this.setState({x:xrange},() => { this.readBigBed();
                  this.readBigWig();this.loadgenes();
                })
           });
@@ -481,7 +529,7 @@ import Exons from './exons.js'
                     return {xminrange: parseInt(prevState.xminrange) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange) - parseInt(range,10)};
                   },() => {
                     var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-                     this.setState({x:xrange},() => {//this.readBigBed();
+                     this.setState({x:xrange},() => {this.readBigBed();
                         this.readBigWig();this.loadgenes();
                       })
                     });
@@ -511,7 +559,7 @@ import Exons from './exons.js'
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},()=>{ //this.readBigBed();
+             this.setState({x:xrange},()=>{ this.readBigBed();
                 this.readBigWig();this.loadgenes();
              });
               })
@@ -542,7 +590,7 @@ import Exons from './exons.js'
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},() =>{// this.readBigBed();
+             this.setState({x:xrange},() =>{ this.readBigBed();
                this.readBigWig();this.loadgenes();
              });
            })
@@ -581,7 +629,7 @@ import Exons from './exons.js'
            this.setState({xminrange:iv[0],xmaxrange:iv[1]},() =>{
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
-             //this.readBigBed();
+             this.readBigBed();
              this.readBigWig();
              this.loadgenes();
            });
@@ -646,6 +694,21 @@ import Exons from './exons.js'
             });
            }
 
+           if(this.props.bigBedByCellType!=undefined)
+           {
+             Object.keys(this.props.bigBedByCellType).forEach(function (k)
+             {
+               if(_self.state.bbinput.length!=0)
+              bycelltype.push( <div key={k}> <input type="checkbox" defaultChecked={true} ref={k + " "+_self.props.cellType}  onClick={_self.handlecheck} id={k + " "+_self.props.cellType} value={k + " "+_self.props.cellType} ></input> {k + " "+_self.props.cellType} </div>);
+              else {
+                bycelltype.push( <div key={k}> <input type="checkbox"  ref={k + " "+_self.props.cellType}  onClick={_self.handlecheck} id={k + " "+_self.props.cellType}  value={k + " "+_self.props.cellType} ></input> {k + " "+_self.props.cellType} </div>);
+
+              }
+             })
+
+
+           }
+
 
           /* //Modal Tracks
            if(this.state.isModalOpen===true)
@@ -681,7 +744,7 @@ import Exons from './exons.js'
                rects.push(bbarr.map((d) =>
                {
                    return (<Rects text={obj[1]} data={d} leftMargin={_self.props.marginleft} width={_self.props.width} shortLabel={obj[2]} key={r} x={_self.state.x} min={_self.state.xminrange} max={_self.state.xmaxrange} y={r}  showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}   />);           }));
-               r+=40;
+               r+=30;
                }
            });
             //bigwig signals
