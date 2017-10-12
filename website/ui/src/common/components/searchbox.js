@@ -46,17 +46,24 @@ class SearchBox extends React.Component {
     render() {
 
 	return (
-	    <span className="navbar-collapse navbar-searchform">
+	    <div className="navbar-collapse navbar-searchform">
 		<AutocompleteBox defaultvalue={this.state.searchtext}
 				 id="acnav"
-				 name="q" hideerr="true" actions={this.props.actions} size={100}
-				 className="searchbox" onChange={(t) => {this.setState({searchtext: t})}}
-				 onEnter={this._search} assemblies={[this.props.assembly]} />&nbsp;
-	    
-            <a className="btn btn-primary btn-lg searchButton"
-               onClick={this._search} role="button">Search</a>
-	    
-	    </span>);
+				 name="q"
+				 style={{float: "left"}}
+				 hideerr="true"
+				 actions={this.props.actions}
+				 size={100}
+				 className="searchbox"
+				 onChange={(t) => {this.setState({searchtext: t})}}
+				 onEnter={this._search}
+				 assemblies={[this.props.assembly]} />&nbsp;
+	    <a className="btn btn-primary btn-lg searchButton"
+               onClick={this._search}
+	       role="button">
+		Search
+	    </a>
+	    </div>);
     }
 }
 

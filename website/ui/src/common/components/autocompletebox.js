@@ -88,7 +88,7 @@ class AutocompleteBox extends React.Component {
 	};
 	
 	return (
-	    <div>
+	    <div style={this.props.style}>
 		<Autosuggest
 		    suggestions={suggestions}
 		    onSuggestionsFetchRequested={this.loadSuggestion}
