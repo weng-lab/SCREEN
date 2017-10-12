@@ -76,7 +76,7 @@ export const browser_buttons = (names) => {
 }
 
 export const cart_img = (rmv, src_only) => {
-    const src = ApiClient.StaticUrl("/static/re_cart." + (rmv ? "rmv" : "add") + ".png");
+    const src = ApiClient.StaticUrl("/re_cart." + (rmv ? "rmv" : "add") + ".png");
     if(src_only){
         return src;
     }
@@ -125,7 +125,7 @@ export const geneDeLinks = (assembly) => (genesallpc) => {
     }
 
 export const dccImg = () => (
-	<img src={ApiClient.StaticUrl("/static/encode/pennant-encode.png")}
+	<img src={ApiClient.StaticUrl("/encode/pennant-encode.png")}
     alt="DCC logo" width="20" />);
 
 export const dccLink = (expID) => {
@@ -159,7 +159,7 @@ export const dccLinkCtGroupCus = (globals, ctn, content) => {
 export const dccLinkAndIconSplit = (expAndFileID) => {
     const expID = expAndFileID.split(' / ')[0];
     const url = 'https://www.encodeproject.org/experiments/' + expID;
-    const img = <img src={ApiClient.StaticUrl("/static/encode/pennant-encode.png")}
+    const img = <img src={ApiClient.StaticUrl("/encode/pennant-encode.png")}
     alt="ENCODE logo" style={{paddingLeft: "10px"}} />;
     return <a target="_blank" href={url}>{expAndFileID}{img}</a>;
 }

@@ -53,7 +53,7 @@ class TabMain extends React.Component {
 
     logo(){
 	return (<img className={"img-responsive mainLogo"}
-                src={ApiClient.StaticUrl("/static/encode/classic-image3.jpg")}
+                src={ApiClient.StaticUrl("/encode/classic-image3.jpg")}
                 alt={"ENCODE logo"} />);
     }
 

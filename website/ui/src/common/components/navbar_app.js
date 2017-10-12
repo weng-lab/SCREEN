@@ -36,7 +36,7 @@ class NavBarApp extends React.Component {
                        target="_blank"
 		       rel="noopener noreferrer"
                        className="btn btn-success btn-lg navbarEncodeImgBtn">
-		<img src={ApiClient.StaticUrl("/static/encode/ENCODE_logo.small3.png")}
+		<img src={ApiClient.StaticUrl("/encode/ENCODE_logo.small3.png")}
 			     alt={"ENCODE logo"}
 			     className={"navbarEncodeImg"} />
                     </a>

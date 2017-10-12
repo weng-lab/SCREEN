@@ -19,7 +19,7 @@ export class ListItem extends React.Component {
 	var classname, rtxt;
 	if (this.props.selected) {
 	    classname = "result_row_selected";
-	    rtxt = <img src={ApiClient.StaticUrl("/static/x.png")} alt="check/uncheck" />;
+	    rtxt = <img src={ApiClient.StaticUrl("/x.png")} alt="check/uncheck" />;
 	} else {
 	    classname = "result_row";
 	    rtxt = this.props.n;

@@ -1,4 +1,4 @@
-export const StaticServer = "http://screen-beta.wenglab.org"; //"http://megatux.purcaro.com:9006";
+export const StaticServer = "http://screen-beta.wenglab.org/assets"; //"http://megatux.purcaro.com:9006";
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {

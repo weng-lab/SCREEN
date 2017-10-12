@@ -104,7 +104,7 @@ export const citation = () => (
     </ul>)
 
 export const figure = (num, alt, style = {}) => {
-    const imgSrc = "/static/about/images/figure" + num + ".png";
+    const imgSrc = "/about/images/figure" + num + ".png";
     return (
         <div className={"panel panel-default"}>
             <div className="panel-body">
