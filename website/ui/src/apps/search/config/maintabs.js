@@ -8,6 +8,7 @@ import ActivityProfile from '../components/activity_profile';
 import ExpressionPlot from '../components/expression_plot';
 import ConfigureGenomeBrowser from '../components/configure_genome_browser';
 import DetailsTabInfo from './details';
+import BedUpload from '../components/bed_upload';
 
 import {isCart} from '../../../common/utility';
 
@@ -21,6 +22,19 @@ class ResultsTab extends React.Component{
             return false;
         }
         return React.createElement(ResultsTableContainer, this.props);
+    }
+}
+
+class BedUploadTab extends React.Component{
+    shouldComponentUpdate(nextProps, nextState) {
+       return "bedupload" === nextProps.maintabs_active;
+    }
+
+    render() {
+	if("bedupload" !== this.props.maintabs_active){
+            return false;
+        }
+        return React.createElement(BedUpload, this.props);
     }
 }
 
@@ -72,6 +86,7 @@ const MainTabInfo = (parsedQuery, globals) => {
     let resultsTitle = isCart() ? "cREs in Cart" : "cRE Search Results";
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
+	    bedupload : {title: "Bed Upload", visible: true, f: BedUploadTab},
 	    configgb: {title: "Configure Genome Browser", visible: false,
 		       f: ConfigureGenomeBrowser},
 	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlotTab},
