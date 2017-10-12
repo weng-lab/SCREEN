@@ -1,10 +1,10 @@
-export const StaticServer = "http://screen-beta.wenglab.org";
+export const StaticServer = "http://screen-beta.wenglab.org"; //"http://megatux.purcaro.com:9006";
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 const Servers = (b) => {
     const server = "http://api.wenglab.org";
-    const override = {//"/autows/search" : "/autows/search"
-		     };
+    let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
+		    "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
     if(b in override){
 	return override[b];
     }
@@ -37,7 +37,7 @@ export const autocompleteBoxSuggestions = (jq, successF, errF) => {
 export const appPageBaseInit = (jq, url, successF, errF) => {
     getByPost(jq, url, successF, errF);
 }
-    
+
 export const globals = (assembly, successF, errF) => {
     fetch(Servers("/globalData/0/") + assembly)
 	.then((response) => (response.json()))

@@ -52,6 +52,7 @@ class ResultsTableContainer extends React.Component {
 				this.setState({cres: [], total: 0,
 					       jq, isFetching: false, isError: true});
 			    });
+        
     }
 
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
@@ -137,6 +138,14 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
+	let cresWithChecks = this.state.cres;
+	cresWithChecks.forEach( (cre) => {
+	    cre["checked"] = false;
+	    if(cre.info.accession=== this.props.gb_cres.accession){
+		cre["checked"] = true;
+	    }
+   	});
+		
 	const interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
@@ -159,7 +168,7 @@ class ResultsTableContainer extends React.Component {
 		    assembly={this.props.assembly}
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
-                    data={this.state.cres}
+                    data={cresWithChecks}
                     total={this.state.total}
                     cart_accessions={this.props.cart_accessions}
                     isFetching={this.state.isFetching}
@@ -170,6 +179,7 @@ class ResultsTableContainer extends React.Component {
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
+      gb_cres={this.props.gb_cres}
 		/>
 	    </div>);
     }
@@ -179,4 +189,3 @@ const mapStateToProps = (state) => ({ ...state });
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch) });
 export default connect(mapStateToProps, mapDispatchToProps)(ResultsTableContainer);
-

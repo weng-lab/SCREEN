@@ -10,13 +10,14 @@
 						"eject": "react-scripts eject"
 			},
 			"homepage": "http://megatux.purcaro.com:9006",
-    "devDependencies": {},
+			"devDependencies": {},
 			"dependencies": {
 						"bootstrap": "3",
 						"d3": "^4.2.2",
 						"enumify": "^1.0.4",
 						"jquery": "^3.2.1",
 						"jquery-ui": "github:jquery/jquery-ui#1.12.1",
+						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
 						"react": "^16.0.0",
 						"react-autosuggest": "^9.3.2",

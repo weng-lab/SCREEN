@@ -8,6 +8,7 @@ from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
 from api.data_ws import DataWebServiceWrapper
 from api.de_ws import DeWebServiceWrapper
+from api.gb_ws import GenomeBrowserWebServiceWrapper
 from api.geneexp_ws import GeneExpWebServiceWrapper
 from api.global_data_ws import GlobalDataController
 from api.gwas_ws import GwasWebServiceWrapper
@@ -23,6 +24,7 @@ class Apis():
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
         self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
+        self.gbWS = GenomeBrowserWebServiceWrapper(args, ps, cache, staticDir)
         self.global_data = GlobalDataController(ps, cache)
         self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
@@ -93,6 +95,15 @@ class Apis():
         #print(cherrypy.request)
         j = cherrypy.request.json
         return self.dataWS.process(j, args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def gbws(self, *args, **kwargs):
+        #print(cherrypy.request)
+        j = cherrypy.request.json
+        return self.gbWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

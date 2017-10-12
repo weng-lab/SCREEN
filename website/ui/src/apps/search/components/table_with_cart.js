@@ -9,10 +9,14 @@ import loading from '../../../common/components/loading';
 
 import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
+import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
+
+
 
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
+	this.state = { minrange:0,maxrange: 0,selectedaccession: {},chrom:''}
         this.table_click_handler = this.table_click_handler.bind(this);
     }
 
@@ -30,34 +34,48 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    table_click_handler(td, rowdata, actions){
-        if (td.indexOf("browser") !== -1) {
-	    let cre = {...rowdata, ...rowdata.info};
-	    actions.showGenomeBrowser(cre, "");
-	    return;
-	}
-        if (td.indexOf("geneexp") !== -1) {
-	    return;
-	}
-        if (td.indexOf("cart") !== -1) {
-	    //console.log(rowdata.info);
+    table_click_handler(td, rowdata, actions)
+    {
+        if (td.indexOf("browser") !== -1)
+        {
+    	    let cre = {...rowdata, ...rowdata.info};
+    	    actions.showGenomeBrowser(cre, "");
+    	    return;
+	      }
+        if (td.indexOf("geneexp") !== -1)
+        {
+    	    return;
+	      }
+        if (td.indexOf("cart") !== -1)
+        {
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
-	    let j = {assembly: this.props.assembly, accessions};
-	    $.ajax({
-		type: "POST",
-		url: "/cart/set",
-		data: JSON.stringify(j),
-		dataType: "json",
-		contentType: "application/json",
-		success: (response) => {
-                }
-	    });
-	    actions.setCart(accessions);
-	    return;
+      	    let j = {assembly: this.props.assembly, accessions};
+      	    $.ajax({
+      		type: "POST",
+      		url: "/cart/set",
+      		data: JSON.stringify(j),
+      		dataType: "json",
+      		contentType: "application/json",
+      		success: (response) => {
+                      }
+      	    });
+      	    actions.setCart(accessions);
+	          return;
         }
-	let cre = {...rowdata, ...rowdata.info};
-        actions.showReDetail(cre);
+        if(td.indexOf("selectcre")!==-1)
+        {
+          let minrange =parseInt(rowdata.start) - 2000
+          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +2000
+          let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
+          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom },()=>{ actions.selectcre(accessiondetails)})
+        }
+        else
+        {
+          let cre = {...rowdata, ...rowdata.info};
+                actions.showReDetail(cre);
+        }
+
     }
 
     addAllToCart() {
@@ -284,7 +302,7 @@ class TableWithCart extends React.Component {
 		</li>);
 	}
 	let click = "Click a cRE accession to view details about the cRE, including top tissues, nearby genomic features, etc.";
-		    
+
 	let geneView = "Click a gene ID to view the expression profile of the gene.";
 	let diffExp = "";
 	if("mm10" === this.props.assembly){
@@ -300,7 +318,13 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-	
+  let gb = null;
+  let byCellType = this.props.globals["byCellType"][this.props.cellType]
+  if(Object.keys(this.props.gb_cres).length !== 0 && byCellType!=undefined)
+  {
+    gb= (<GenomeBrowser minrange={this.state.minrange} chrom={this.state.chrom} maxrange={this.state.maxrange} byCellType={byCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
+
+  }
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -316,6 +340,8 @@ class TableWithCart extends React.Component {
 			</ul>
 		    </ul>
 		</div>
+
+     {gb}
 
 		<Ztable data={data}
                         order={table_order}
@@ -373,7 +399,7 @@ class TableWithCart extends React.Component {
 	    </div>
 	);
     }
-    
+
     render() {
 	var data = [...this.props.data];
         var actions = this.props.actions;
@@ -388,7 +414,7 @@ class TableWithCart extends React.Component {
                 {loading(this.props)}
                 {this.table(data, actions)}
                 {this.tableFooter(data)}
-		
+
 		<div style={{display: (this.props.isFetching ? "none" : "block")}}>
 		    <div className="row">
 			<div className="col-md-12">
@@ -396,7 +422,7 @@ class TableWithCart extends React.Component {
 			</div>
 		    </div>
 		</div>
-		
+
      	    </div>);
     }
 }

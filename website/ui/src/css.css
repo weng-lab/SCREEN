@@ -713,6 +713,25 @@ table-sort-desc::after {
     content: "\e156";
 }
 
+.y-grid .tick{
+    stroke: #4b5f87;
+    opacity: 0.3;
+}
+.axis{
+    opacity: 1;
+}
+.search{
+    padding-left:115px;
+
+}
+.chkbox{
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  border-style: solid;
+}
+
 .sliderBar {
     height: 18px;
     background: #FAFAFA;

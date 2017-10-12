@@ -345,6 +345,9 @@ export const concordantStar = (concordant) => {
 export const checkCt = (checked) => {
     return <input type={"checkbox"} checked={checked} />
 }
+export const checkRd = (checked) => {
+    return <input type={"radio"} checked={checked} />
+}
 
 export const creTableAccessionBoxen = (globals, cre) => {
     let w = 12;
@@ -365,7 +368,7 @@ export const creTableAccessionBoxen = (globals, cre) => {
     let colors = globals.colors.cREs;
 
     let col = (val, c) => ( val > 1.64 ? c : colors.Inactive )
-    
+
     let e = (
 	<span className={"text-nowrap"}>
 	    <svg width={fw} height={fh}>
@@ -424,7 +427,7 @@ export const creTableCellTypeSpecific = (globals) => (data) => {
     }
 
     const k = Object.entries(data).join('_');
-    
+
     return (
 	<span className={"text-nowrap"} key={k}>
 	    <svg width={fw} height={fh}>

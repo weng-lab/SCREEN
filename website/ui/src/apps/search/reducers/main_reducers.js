@@ -28,7 +28,8 @@ const main_reducers = (state, action) => {
 	case Actions.SET_RANK_PROMOTER: return {...state, rank_promoter_start: action.start, rank_promoter_end: action.end};
 	case Actions.SET_RANK_ENHANCER: return {...state, rank_enhancer_start: action.start, rank_enhancer_end: action.end};
     case Actions.SET_RANK_CTCF: return {...state, rank_ctcf_start: action.start, rank_ctcf_end: action.end};
-    case Actions.SET_GENOME_BROWSER_CTS: return {
+
+	case Actions.SET_GENOME_BROWSER_CTS: return {
 	...state,
 	configuregb_cts: [
 	    ...action.list,
@@ -64,13 +65,25 @@ const main_reducers = (state, action) => {
 		      };
 	    return ret;
 
+	case Actions.SELECT_CRE:
+	    let newGbCres = {};
+	    if(state.gb_cres.accession===action.accession.accession){
+        return {...state,
+          gb_cres: {}}
+		}
+    else {
+      return {...state,
+		    gb_cres: action.accession}
+    }
+
+
 	case Actions.TOGGLE_GENOME_BROWSER_CELLTYPE:
 	    return {...state,
 		    configuregb_cts: state.configuregb_cts.map(x => ({
 			    ...x, checked: (x.cellTypeName === action.ct) !== x.checked
 		    }))
 		   };
-	    
+
 	case Actions.SHOW_RE_DETAIL:
             return {...state, ...mainTabSetter(state, "details"),
                     active_cre: action.cre,

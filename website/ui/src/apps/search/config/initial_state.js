@@ -10,9 +10,9 @@ const initialState = (search, globals) => {
             psubtab = search.subtab;
         }
     }
-    
+
     const parsedQuery = search.parsedQuery;
-    
+
     let maintab = pmaintab || "results";
     let maintabs = MainTabInfo(parsedQuery, globals);
     maintabs[maintab].visible = true;
@@ -20,7 +20,7 @@ const initialState = (search, globals) => {
 
     let subtab = psubtab || "topTissues";
     let accession = null;
-    
+
     if(parsedQuery["accessions"] &&
        1 === parsedQuery["accessions"].length){
         accession = parsedQuery["accessions"][0].toUpperCase();
@@ -41,14 +41,19 @@ const initialState = (search, globals) => {
         maintabs: maintabs,
         maintabs_active: maintab,
         maintabs_visible: maintab_visible,
+
+      //  active_cre: null,
         cre_accession_detail: accession,
-	configuregb_cre: accession,
-	configuregb_browser: null,
-	configuregb_cts: globals.cellTypeInfoArr.map(x => ({
-	    ...x,
-	    checked: false
-	})),
-        active_cre: null,
+
+      	configuregb_cre: accession,
+      	configuregb_browser: null,
+      	configuregb_cts: globals.cellTypeInfoArr.map(x => ({
+      	    ...x,
+      	    checked: false
+      	})),
+
+	      gb_cres: {}, // set of accessions to show in GB, and their metadata
+
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",
         tree_nodes_compare : null
