@@ -114,7 +114,7 @@ class paths(object):
     @staticmethod
     def cistrome(*args):
         return os.path.join(Dirs.cistrome, *args)
-    
+
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
         "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}
@@ -124,10 +124,14 @@ class paths(object):
     gene_files = {
         "hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
         "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gtf.gz"), "gtf") }
+        
+    gene_files_path = {
+        "hg19": (Dirs.GenomeFnp("gencode.v19/gencode.v19.annotation.gff3.gz"), "gff"),
+        "mm10" : (Dirs.GenomeFnp("gencode.m4/gencode.vM4.annotation.gff3.gz"), "gff") }
+
 
 def main():
     print(chroms)
 
 if __name__ == '__main__':
     sys.exit(main())
-

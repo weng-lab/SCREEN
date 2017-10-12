@@ -94,8 +94,11 @@ class PGcreTable(GetOrSetMemCache):
             ret = "WHERE " + " and ".join(self.whereClauses)
         return fields, ret
     def geneTable(self, j,chrom,start,stop):
-        with getcursor(self.pg.DBCONN, "_gene_table") as curs:
-            curs.execute("SELECT  * from geneinfo WHERE transcript_id IN (SELECT transcript_id from geneinfo WHERE feature='transcript' AND seqname=(%s) AND (int4range(%s, %s) && int4range(startpos, endpos)  ))",(chrom,start,stop,))
+        print(self.assembly+'_gene_details')
+        with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
+            curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
+             WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
+             int4range(startpos, endpos)  ))""".format(tableName=self.assembly+'_gene_details',seqname=chrom,startpos=start,endpos=stop))
             records = curs.fetchall()
         response = []
         transcript_id = ''
