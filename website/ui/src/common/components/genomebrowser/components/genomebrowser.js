@@ -49,12 +49,12 @@ import Exons from './exons.js'
               points=points +_self.props.x(_self.props.max)+","+y(0);
           return(
               <g>
-                  <g transform="translate(130,0)">
+                  <g transform="translate(100,0)">
                     <Axis  axis={yAxis}/>
                   </g>
                   <polygon points={points} stroke={color} fill={color} strokeWidth="0.1"/>
-                  <text x={x} y={_self.props.range-5} fill={color} >{text}</text>
-                  <text x={0} y={y(0)}>{_self.props.shortLabel}</text>
+                  <text x={x} y={_self.props.range-5} style={{fontSize: 10 }} fill={color} >{text}</text>
+                  <text x={0} y={y(0)} style={{fontSize: 10 }} >{_self.props.shortLabel}</text>
               </g>
           );
       }
@@ -122,7 +122,7 @@ import Exons from './exons.js'
   }
   class GenomeBrowser extends React.Component {
 
-       static defaultProps = { width: 1200, height: 200, marginleft:130,marginright: 100};
+       static defaultProps = { width: 1200, height: 200, marginleft:100,marginright: 100};
        constructor(props)
        {
          super(props)
@@ -160,10 +160,14 @@ import Exons from './exons.js'
          if(this.props.minrange!=nextProps.minrange || this.props.maxrange!=nextProps.maxrange)
          this.changerange(nextProps);
        }
+
        changerange(nextProps)
        {
+         this.setState({bbdata:{},bwdata:{}})
          this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange,chrom:nextProps.chrom},() =>{
-             var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
+           this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
+
+           var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
              //this.readBigBed();
              if(this.props.byCellType!=undefined)
@@ -191,11 +195,13 @@ import Exons from './exons.js'
          });
          let res = Object.assign({}, this.state.signaltype, signaltype)
          this.setState({signaltype:Object.assign({}, this.state.signaltype, signaltype)});
-         this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
-            this.setState({ bbinput: gi },()=>{
-              this.readBigBed();
-            })
-          });
+
+         this.setState({ bbinput: gi },()=>{
+           this.readBigBed();
+         })
+        /* this.setState((prevState)=> {return{height: h+50}},()=>{
+
+        });*/
 
        }
        loadbigwig()
@@ -239,11 +245,12 @@ import Exons from './exons.js'
          }
           let res = Object.assign({}, this.state.signaltype, signaltype)
         this.setState({signaltype:signaltype});
-         this.setState((prevState)=> {return{height: h + 50}},()=>{
-            this.setState({ bwinput: gi },()=>{
-              this.readBigWig();
-            })
-          });
+        this.setState({ bwinput: gi },()=>{
+          this.readBigWig();
+        })
+      /*   this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
+
+      });*/
        }
        nextexon = (r) =>
        {
@@ -271,7 +278,6 @@ import Exons from './exons.js'
                  this.readBigWig(); this.loadgenes();})
             });
        }
-
        handlecheck = (e) =>
        {
          let key = e.target.id;
@@ -559,7 +565,8 @@ import Exons from './exons.js'
            () => {
              this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
              let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
-             this.setState({x:xrange},()=>{ this.readBigBed();
+             this.setState({x:xrange},()=>{
+               this.readBigBed();
                 this.readBigWig();this.loadgenes();
              });
               })
@@ -658,9 +665,11 @@ import Exons from './exons.js'
                }
          });
        }
-       increaseheight=()=>
+       increaseheight=(type)=>
        {
+         if(type==="exons")
          this.setState((prevState)=> {return{height: prevState.height +30}});
+
        }
        render()
        {
@@ -757,12 +766,12 @@ import Exons from './exons.js'
                  {
                    pls.push(bwarr.map((d)=>
                    {
-                       return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
+                       return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} height={_self.state.height} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
                    }));
                    r+=60;
                  }
              });
-
+             r-=30
              let e= []
              e=this.state.exons.map((d,i)=>{
                /*  if((d.start <= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end <= this.state.xmaxrange) ||
@@ -770,7 +779,7 @@ import Exons from './exons.js'
                      (d.start >= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end <= this.state.xmaxrange) ||
                      (d.start >= this.state.xminrange && d.start <= this.state.xmaxrange && d.end >= this.state.xminrange && d.end >= this.state.xmaxrange))*/
                  {
-                     r+=30;
+                     r+=20;
                      return(<Exons key={i} strand={d.strand} tstart={d.start} tend={d.end} height={this.state.height} increaseheight={_self.increaseheight}leftMargin={this.props.marginleft} width={this.props.width} prevExon={_self.prevexon} nextExon={_self.nextexon} data={d.values} x={this.state.x} transcript_id={d.transcript_id} range={r} showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}/>)
 
                  }

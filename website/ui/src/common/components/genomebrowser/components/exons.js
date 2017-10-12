@@ -18,7 +18,7 @@ export default class Exons extends React.Component {
     {
       if(nextProps.range > nextProps.height-30)
       {
-        nextProps.increaseheight();
+        nextProps.increaseheight("exons");
       }
     }
   render() {
@@ -51,8 +51,8 @@ export default class Exons extends React.Component {
             ex="end of exon "+ d.exon_number+"/"+res
           else
             ex="start of exon "+ d.exon_number+"/"+res
-          paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} onClick={()=>this.handlePrevClick(d.start)} />)
-          paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+          paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y-5} onClick={()=>this.handlePrevClick(d.start)} />)
+          paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y-5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
 
         }
         //chr11:5526573-5526739
@@ -66,8 +66,8 @@ export default class Exons extends React.Component {
               ex="start of exon "+ d.exon_number+"/"+res
           else
               ex="end of exon "+ d.exon_number+"/"+res
-          paths.push(<path d={pe1} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5}  onClick={()=>this.handleNextClick(d.end)}   />)
-          paths.push(<path d={pe2} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+          paths.push(<path d={pe1} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y-5}  onClick={()=>this.handleNextClick(d.end)}   />)
+          paths.push(<path d={pe2} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y-5} data-value={ex} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
         }
 
         if(d.type==="CDS")
@@ -133,8 +133,8 @@ export default class Exons extends React.Component {
             else
               pe=exonarr[i].start
 
-            paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={prevexon}  onClick={()=>this.handlePrevClick(pe)} />)
-            paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y+5} data-value={prevexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+            paths.push(<path d={ps1} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y-5} data-value={prevexon}  onClick={()=>this.handlePrevClick(pe)} />)
+            paths.push(<path d={ps2} key={Math.random()} stroke="#8B0000" fill="white" x={this.props.leftMargin} y={y-5} data-value={prevexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
           }
           if(start ===this.props.width || end ===this.props.width)
           {
@@ -143,11 +143,11 @@ export default class Exons extends React.Component {
             else
               ne=exonarr[i+1].end
 
-            paths.push(<path d={pe1} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5} data-value={nextexon} onClick={()=>this.handleNextClick(ne)}  />)
-            paths.push(<path d={pe2} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y+5} data-value={nextexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
+            paths.push(<path d={pe1} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y-5} data-value={nextexon} onClick={()=>this.handleNextClick(ne)}  />)
+            paths.push(<path d={pe2} key={Math.random()} stroke="#8B0000" fill="white" x="1150" y={y-5} data-value={nextexon} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>)
           }
           introns.push(<line key={i} x1={start} y1={y+5} x2={end} y2={y+5}
-          strokeWidth="1" stroke="#8B0000" opacity="0.5" x={(start+end)/2} y={y+5}  data-value={intron} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip} /> )
+          strokeWidth="1" stroke="#8B0000" opacity="0.5" x={(start+end)/2} y={y-5}  data-value={intron} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip} /> )
         }
        //left and right arrows
        if(start > end)
@@ -171,7 +171,7 @@ export default class Exons extends React.Component {
 
    return (
      <g>
-       <text x={0} y={y+5} fill="#8B0000" >{transcript_id}</text>
+       <text x={0} y={y+5} style={{fontSize: 10 }} fill="#8B0000" >{transcript_id}</text>
        {introns}
        {rects}
        {paths}
