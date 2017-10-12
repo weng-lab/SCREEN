@@ -51,7 +51,7 @@ class DetailsTab extends React.Component{
             return false;
        }
 	return React.createElement(DetailsContainer, {...this.props,
-						      tabs: DetailsTabInfo()});
+						      tabs: DetailsTabInfo(this.props.assembly)});
     }
 }
 

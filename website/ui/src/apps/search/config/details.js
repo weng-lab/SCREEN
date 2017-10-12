@@ -279,7 +279,7 @@ class LinkedGenesTab extends ReTabBase{
 
 const DetailsTabInfo = (assembly) => {
     const otherAssembly = assembly === "mm10" ? "hg19" : "mm10";
-
+    
     return {
         topTissues : {title: Render.tabTitle(["Top", "Tissues"]),
                       enabled: true, f: TopTissuesTab},

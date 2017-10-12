@@ -100,11 +100,12 @@ export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&ge
 export const geDeButton = (assembly, accession) => (d) => {
     const _d = d.replace(/\./g, "%2e");
     const ge = <a href={geLink(assembly, _d)} target={"_blank"}
-	       key={[accession, d]}>{d}</a>;
+	       key={[accession, d, "ge"]}>{d}</a>;
     if("mm10" !== assembly){
         return ge;
     }
     const de = <a href={deLink(assembly, _d)} target={"_blank"}
+		  key={[accession, d, "de"]}
 		  style={{paddingLeft: "4px"}}>&Delta;</a>;
     return [ge, de];
 };
