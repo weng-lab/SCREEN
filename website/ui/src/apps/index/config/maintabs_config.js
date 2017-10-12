@@ -1,3 +1,5 @@
+import React from 'react'
+
 import TabMain from '../components/tab_main';
 import TabAbout from '../components/tab_about';
 import TabTutorial from '../components/tab_tutorial';
@@ -11,7 +13,12 @@ const MainTabsConfig = () => {
             tutorial : {title: "Tutorial", visible: true, f: TabTutorial},
             query: {title: "Query Results", visible: false, f: TabQuery},
 	    files: {title: "Files", visible: true, f: TabFiles},
-	    ashg2017: {title: "ASHG 2017", visible: true, f: TabAshg2017}
+	    ashg2017: {title: (
+		<span className="label label-warning">
+		    <span className="glyphicon glyphicon-star" aria-hidden="true"></span>
+		    ASHG 2017
+		</span>),
+		       visible: true, f: TabAshg2017}
     };
 }
 
