@@ -14,7 +14,7 @@ const MainTabsConfig = () => {
             query: {title: "Query Results", visible: false, f: TabQuery},
 	    files: {title: "Files", visible: true, f: TabFiles},
 	    ashg2017: {title: (
-		<span className="label label-warning">
+		<span className="btn btn-warning" style={{display: "inline"}}>
 		    <span className="glyphicon glyphicon-star" aria-hidden="true"></span>
 		    ASHG 2017
 		</span>),
