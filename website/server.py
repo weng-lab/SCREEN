@@ -37,7 +37,7 @@ class WebServerConfig:
         self.errorFnp = os.path.join(self.logDir,
                                      "error-" + ts + ".log")
 
-        self.staticDir = os.path.join(self.root, "static")
+        self.staticDir = os.path.join(self.root, "assets")
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
@@ -61,7 +61,7 @@ class WebServerConfig:
 def cors():
     # from https://stackoverflow.com/a/28065698
     if cherrypy.request.method == 'OPTIONS':
-        # preflign request 
+        # preflign request
         # see http://www.w3.org/TR/cors/#cross-origin-request-with-preflight-0
         cherrypy.response.headers['Access-Control-Allow-Methods'] = 'POST'
         cherrypy.response.headers['Access-Control-Allow-Headers'] = 'content-type'
@@ -70,7 +70,7 @@ def cors():
         return True
     else:
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-    
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_false")
@@ -93,7 +93,7 @@ def main():
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
-    
+
     if args.dev:
         cherrypy.config.update({'server.environment': "development", })
     cherrypy.config.update({'server.socket_host': '0.0.0.0',

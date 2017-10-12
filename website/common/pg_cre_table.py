@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import psycopg2
+import json
+import itertools
+from io import StringIO
+from operator import itemgetter
 
 import sys
 import os
@@ -37,7 +42,7 @@ class PGcreTable(GetOrSetMemCache):
         for k, v in PGcreTable.infoFields.iteritems():
             pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as info"
-    
+
     def __init__(self, pg, assembly, ctmap, ctsTable):
         GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
 
@@ -47,7 +52,7 @@ class PGcreTable(GetOrSetMemCache):
         self.ctsTable = ctsTable
 
         self.tableName = self.assembly + "_cre_all"
-        
+
         self.ctSpecifc = {}
         self.fields = [
             "maxZ",
@@ -63,7 +68,7 @@ class PGcreTable(GetOrSetMemCache):
         for k, v in self.ctSpecifc.iteritems():
             pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as ctSpecifc"
-    
+
     def _sct(self, ct):
         if ct in self.ctsTable:
             self.fields.append("cre.creGroupsSpecific[%s] AS sct" % # TODO rename to sct
@@ -79,7 +84,7 @@ class PGcreTable(GetOrSetMemCache):
             self._ctSpecific(ct, j)
         else:
             self._notCtSpecific(j)
-            
+
         self._accessions(j)
         self._where(chrom, start, stop)
 
@@ -88,7 +93,55 @@ class PGcreTable(GetOrSetMemCache):
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
         return fields, ret
-            
+    def geneTable(self, j,chrom,start,stop):
+        print(self.assembly+'_gene_details')
+        with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
+            curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
+             WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
+             int4range(startpos, endpos)  ))""".format(tableName=self.assembly+'_gene_details',seqname=chrom,startpos=start,endpos=stop))
+            records = curs.fetchall()
+        response = []
+        transcript_id = ''
+        transcript_id_value = ''
+        for row in records:
+            response.append({
+                'transcript_id': row[9],
+                'seqid': row[1].rstrip(),
+                'type': row[4],
+                'start': row[2],
+                'end': row[3],
+                'strand': row[6].rstrip(),
+                'exon_number': row[5],
+                'parent': row[7],
+                })
+        result = []
+        response = sorted(response, key=itemgetter('transcript_id'))
+        for (key, value) in itertools.groupby(response,
+                key=itemgetter('transcript_id')):
+            v = []
+            start = ''
+            end = ''
+            strand = ''
+            for i in value:
+                gtype = i.get('type')
+                if gtype == 'transcript':
+                    start = i.get('start')
+                    end = i.get('end')
+                    strand = i.get('strand')
+                    seqid = i.get('seqid')
+                if gtype == 'CDS' or gtype == 'exon':
+                    v.append(i)
+            if len(v) > 0:
+                result.append({
+                    'transcript_id': key,
+                    'seqid': seqid,
+                    'start': start,
+                    'end': end,
+                    'strand': strand,
+                    'values': v,
+                    })
+        return result
+
     def creTable(self, j, chrom, start, stop):
         if 0:
             print(j, """TODO need more variables here:
@@ -141,12 +194,12 @@ LIMIT 1000) r
                 accs = ["'%s'" % x.upper() for x in accs]
                 accsQuery = "accession IN (%s)" % ','.join(accs)
                 self.whereClauses.append("(%s)" % accsQuery)
-    
+
     def _where(self, chrom, start, stop):
         if chrom and start and stop:
             self.whereClauses += ["cre.chrom = '%s'" % chrom,
                                   "int4range(cre.start, cre.stop) && int4range(%s, %s)" % (int(start), int(stop))]
-            
+
     def _creTableEstimate(self, curs, whereClause):
         # estimate count
         # from https://wiki.postgresql.org/wiki/Count_estimate
@@ -178,7 +231,7 @@ FROM {tn} AS cre
                     ["cre.%s >= %f" % (allmap[x], _range[0]),
                      "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
             self.fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
-                
+
     def _ctSpecific(self, ct, j):
         self.ctSpecifc["ct"] = "'" + ct + "'"
         for name, exp in [("dnase", "dnase"),
@@ -192,7 +245,7 @@ FROM {tn} AS cre
             cti = self.ctmap[name][ct]
             self.fields.append("cre.%s_zscores[%d] AS %s_zscore" % (exp, cti, name))
             self.ctSpecifc[name + "_zscore"] = "cre.%s_zscores[%d]" % (exp, cti)
-            
+
             if "rank_%s_start" % name in j and "rank_%s_end" % name in j:
                 _range = [j["rank_%s_start" % name],
                           j["rank_%s_end" % name]]
