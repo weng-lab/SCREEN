@@ -211,7 +211,6 @@ import Exons from './exons.js'
                     }
            });
            })
-
        }
        nextexon = (r) =>
        {

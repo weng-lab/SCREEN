@@ -35,13 +35,13 @@ class PGsearch(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGsearch")
         self.pg = pg
-        checkAssembly(assembly)            
+        checkAssembly(assembly)
         self.assembly = assembly
 
         self.pgc = PGcommon(self.pg, self.assembly)
         self.ctmap = self.pgc.makeCtMap()
         self.ctsTable = self.pgc.makeCTStable()
-        
+
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
         q = """
@@ -98,6 +98,10 @@ FROM {tn}
     def creTable(self, j, chrom, start, stop):
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTable(j, chrom, start, stop)
+
+    def geneTable(self, j, chrom, start, stop):
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        return pct.geneTable(j, chrom, start, stop)
 
     def creTableDownloadBed(self, j, fnp):
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
@@ -340,7 +344,7 @@ ORDER BY similarity DESC LIMIT 10
         if eset not in [None, "cistrome", "peak"]: raise Exception("pg$PGSearch::_intersections_tablename: invalid dataset %s" % eset)
         if eset is None: eset = "peak"
         return eset + "Intersections" + ("" if not metadata else "Metadata")
-    
+
     def peakIntersectCount(self, accession, chrom, totals, eset = None):
         tableName = self.assembly + "_" + self._intersections_tablename(eset = eset)
         with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
@@ -679,7 +683,7 @@ FROM {tn}
 	            url = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/" + fn;
                 r[k + "_url"] = url
             ret[r["celltypename"]] = r
-            
+
         return ret
 
     def loadMoreTracks(self):
@@ -721,4 +725,3 @@ FROM {tn}
                 ret[ct] = {}
             ret[ct][typ] = acc
         return ret
-
