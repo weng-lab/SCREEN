@@ -8,6 +8,7 @@ import gzip
 import argparse
 import json
 import re
+import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath, printt
@@ -39,32 +40,36 @@ class DCCCres:
         qd = QueryDCC(cache=mc)
 
         fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")
-        ctToBtid = {}
+        printt("parsing", fnp)
+        btidToCt = {}
         with open(fnp) as f:
             for line in f:
                 line = line.strip().split('\t')
                 btid = re.sub('[^0-9a-zA-Z]+', '-', line[0]) 
-                ctToBtid[btid] = line[0]
-
-        lines = []
+                btidToCt[btid] = line[0]
+                
+        printt("looking up ENCODE accessions...")
+        rows = []
         for exp in qd.getExps(url):
             for f in exp.files:
                 if not f.isBigBed():
                     continue
-                # [u'zhiping-weng:cREs-hg19-v10-ganglionic-eminence-derived-neurospheres-female-fetal-17-weeks-5group-bigBed', u'zhiping-weng:cREs-hg19-v10-ganglionic-eminence-derived-neurospheres-female-fetal-17-weeks-9state-H3K4me3-bigBed']
+                # [u'zhiping-weng:cREs-hg19-v10-ganglionic...-5group-bigBed',
+                #  u'zhiping-weng:cREs-hg19-v10-ganglionic-...-9state-H3K4me3-bigBed']
                 aliases = f.jsondata["aliases"]
                 typs = ["5group", "9state-H3K4me3", "9state-DNase",
                         "9state-H3K27ac", "9state-CTCF"]
                 for a in aliases:
-                    a = a.replace("zhiping-weng:cREs-hg19-v10-", '').replace("-bigBed", '')
+                    a = a.replace("zhiping-weng:cREs-" + self.assembly + "-v10-", '')
+                    a = a.replace("-bigBed", '')
                     for t in typs:
                         if t in a:
                             ct = a.replace(t, '')[:-1] # remove trailing hyphen
                             if not ct:
                                 continue # agnostic
-                            if ct not in ctToBtid:
+                            if ct not in btidToCt:
                                 raise Exception("missing " + ct)
-                            lines.append((ct, f.fileID, t))
+                            rows.append([btidToCt[ct], str(f.fileID), t])
                         
         printt('***********', "drop and create", self.tableName)
         self.curs.execute("""
@@ -76,13 +81,16 @@ dcc_accession text,
 typ text
 );""".format(tableName = self.tableName))
 
-        printt('***********', "import links")
-        fnp = paths.path(self.assembly, "Gene-Links.v0.txt.gz")
+        printt('***********', "import acceions")
+        printt("rewrite rows")
+        outF = StringIO.StringIO()
+        for r in rows:
+            outF.write('\t'.join(r) + '\n')
+        outF.seek(0)
 
-        with gzip.open(fnp, "r") as f:
-            cols = ["cre", "gene", "celltype", "method", "dccaccession"]
-            self.curs.copy_from(f, self.tableName, '\t', columns=cols)
-        printt("imported", self.curs.rowcount, "rows", self.tableName)
+        cols = ["celltype", "dcc_accession", "typ"]
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
+        print("copied in", self.curs.rowcount)
 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["celltype"])
