@@ -707,3 +707,18 @@ WHERE cre = %s
             rows = curs.fetchall()
         return rows
 
+    def creBigBeds(self):
+        tableName = self.assembly + "_dcc_cres"
+        with getcursor(self.pg.DBCONN, "pg$creBigBeds") as curs:
+            curs.execute("""
+            SELECT celltype, dcc_accession, typ
+FROM {tn}
+            """.format(tn = tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for ct, acc, typ in rows:
+            if ct not in ret:
+                ret[ct] = {}
+            ret[ct][typ] = acc
+        return ret
+

@@ -80,6 +80,8 @@ class CachedObjects:
         }
         if self.assembly in ["hg38", "mm10"]:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset = "cistrome")
+
+        self.creBigBeds = self.pgSearch.creBigBeds()
             
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
@@ -122,7 +124,8 @@ class CachedObjects:
             "geBiosampleTypes" : self.geBiosampleTypes,
             "helpKeys" : self.help_keys,
             "colors" : self.colors,
-            "tad_biosamples": self.tad_biosamples
+            "tad_biosamples": self.tad_biosamples,
+            "creBigBedsByCellType": self.creBigBeds
         }
 
 def main():
