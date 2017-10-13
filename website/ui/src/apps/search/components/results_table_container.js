@@ -138,27 +138,15 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
-	let cresWithChecks = this.state.cres,gb_cres,defaultaccession=false;
+	let cresWithChecks = this.state.cres;
 
-  if(Object.keys(this.props.gb_cres).length === 0 && cresWithChecks.length > 0)
-  {
-    cresWithChecks[0]["checked"]=true;
-    gb_cres=cresWithChecks[0];
-    defaultaccession=true
-  }
-  else {
-    gb_cres=this.props.gb_cres;
-  }
 	cresWithChecks.forEach( (cre) => {
 	    cre["checked"] = false;
-	    if(cre.info.accession=== gb_cres.accession){
+	    if(cre.info.accession=== this.props.gb_cres.accession){
 		  cre["checked"] = true;
 	    }
    	});
-    if(Object.keys(this.props.gb_cres).length === 0 && cresWithChecks.length > 0)
-    {
-      cresWithChecks[0]["checked"]=true;
-    }
+
 	const interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
@@ -192,8 +180,8 @@ class ResultsTableContainer extends React.Component {
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
-      gb_cres={gb_cres}
-      defaultaccession={defaultaccession}
+      gb_cres={this.props.gb_cres}
+      chrom = {this.props.coord_chrom}
 		/>
 	    </div>);
     }
