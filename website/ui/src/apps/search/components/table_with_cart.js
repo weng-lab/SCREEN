@@ -65,8 +65,8 @@ class TableWithCart extends React.Component {
         }
         if(td.indexOf("selectcre")!==-1)
         {
-          let minrange =parseInt(rowdata.start) - 2000
-          let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +2000
+          let minrange =+(rowdata.start) - +(2000)
+          let maxrange = +(rowdata.start) + +(rowdata.len) + +(2000)
           let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len,chrom: rowdata.chrom}
           this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom,cellType:this.props.cellType },()=>{ actions.selectcre(accessiondetails)})
         }

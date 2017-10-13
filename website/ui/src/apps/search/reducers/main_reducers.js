@@ -66,7 +66,7 @@ const main_reducers = (state, action) => {
 	    return ret;
 
 	case Actions.SELECT_CRE:
-	    let newGbCres = {};
+	    
 	    if(state.gb_cres.accession===action.accession.accession){
         return {...state,
           gb_cres: {}}

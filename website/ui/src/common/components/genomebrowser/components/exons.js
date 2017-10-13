@@ -11,7 +11,7 @@ export default class Exons extends React.Component {
          this.changeheight(this.props);
       }
       componentWillReceiveProps(nextProps)  {
-        if(this.props.range!=nextProps.range || this.props.height!=nextProps.height)
+        if(this.props.range!==nextProps.range || this.props.height!==nextProps.height)
         this.changeheight(nextProps);
       }
     changeheight(nextProps)
@@ -38,10 +38,10 @@ export default class Exons extends React.Component {
       let exoncount= "Exon "+ d.exon_number+"/"+res,check=false;
       if((this.props.x(d.end) > this.props.leftMargin)  && (this.props.x(d.start) < this.props.width ))
       {
-        let width =parseInt(this.props.x(d.end))-parseInt(this.props.x(d.start)),x=this.props.x(d.start),ex="";
+        let width =+(this.props.x(d.end))-+(this.props.x(d.start)),x=this.props.x(d.start),ex="";
         if(this.props.x(d.start) < this.props.leftMargin)
         {
-          width= parseInt(this.props.x(d.end))-parseInt(this.props.leftMargin);
+          width= +(this.props.x(d.end))-+(this.props.leftMargin);
           x=this.props.leftMargin;
           check=true;
 
@@ -57,9 +57,9 @@ export default class Exons extends React.Component {
         if(this.props.x(d.end) > this.props.width)
         {
           if(check===true)
-              width= parseInt(this.props.width)-parseInt(x)
+              width= +(this.props.width)- +(x)
           else
-              width= parseInt(this.props.width)-parseInt(this.props.x(d.start));
+              width= +(this.props.width)- +(this.props.x(d.start));
           if(d.strand==="-")
               ex="start of exon "+ d.exon_number+"/"+res
           else
@@ -78,6 +78,9 @@ export default class Exons extends React.Component {
           return (<rect  x={x} fill="#8B0000" y={y+2} width={width} height="6"
            stroke="none" strokeWidth="1px" key={i}  data-value={exoncount} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>);
         }
+      }
+      else{        
+        return []
       }
     });
 
