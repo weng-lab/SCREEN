@@ -10,7 +10,7 @@ export default class ToolTip extends React.Component {
        {
            var position = this.props.tooltip.pos;
            x= position.x;
-           y=parseInt(position.y) + parseInt(5);
+           y=parseInt(position.y);
            visibility="visible";
            var tp=parseInt(x);
        }
@@ -21,7 +21,7 @@ export default class ToolTip extends React.Component {
 
        return (
            <g>
-              <text visibility={visibility} x={tp} y={y} >{this.props.tooltip.data.value}</text>
+              <text visibility={visibility} x={tp} y={y} style={{fontSize:10}} >{this.props.tooltip.data.value}</text>
            </g>
        );
    }

@@ -15,7 +15,7 @@ class ResultsTableContainer extends React.Component {
                        isFetching: true, isError: false,
                        jq : null}
     }
-    
+
     shouldComponentUpdate(nextProps, nextState) {
 	return "results" === nextProps.maintabs_active;
     }
@@ -52,7 +52,7 @@ class ResultsTableContainer extends React.Component {
 				this.setState({cres: [], total: 0,
 					       jq, isFetching: false, isError: true});
 			    });
-        
+
     }
 
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
@@ -138,14 +138,27 @@ class ResultsTableContainer extends React.Component {
             return false;
         }
 
-	let cresWithChecks = this.state.cres;
+	let cresWithChecks = this.state.cres,gb_cres,defaultaccession=false;
+
+  if(Object.keys(this.props.gb_cres).length === 0 && cresWithChecks.length > 0)
+  {
+    cresWithChecks[0]["checked"]=true;
+    gb_cres=cresWithChecks[0];
+    defaultaccession=true
+  }
+  else {
+    gb_cres=this.props.gb_cres;
+  }
 	cresWithChecks.forEach( (cre) => {
 	    cre["checked"] = false;
-	    if(cre.info.accession=== this.props.gb_cres.accession){
-		cre["checked"] = true;
+	    if(cre.info.accession=== gb_cres.accession){
+		  cre["checked"] = true;
 	    }
    	});
-		
+    if(Object.keys(this.props.gb_cres).length === 0 && cresWithChecks.length > 0)
+    {
+      cresWithChecks[0]["checked"]=true;
+    }
 	const interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
@@ -179,7 +192,8 @@ class ResultsTableContainer extends React.Component {
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
-      gb_cres={this.props.gb_cres}
+      gb_cres={gb_cres}
+      defaultaccession={defaultaccession}
 		/>
 	    </div>);
     }

@@ -321,8 +321,13 @@ class TableWithCart extends React.Component {
   let gb = null;
   let bigWigByCellType = this.props.globals["byCellType"][this.props.cellType]
   let bigBedByCellType = this.props.globals["creBigBedsByCellType"][this.props.cellType]
-  if(Object.keys(this.props.gb_cres).length !== 0)
+  if(this.props.defaultaccession)
   {
+     gb= (<GenomeBrowser minrange={+(this.props.gb_cres.start)- +(2000)} chrom={this.props.gb_cres.chrom} maxrange={(+(this.props.gb_cres.start)+ +(this.props.gb_cres.len))+ +(2000)} cellType={this.props.cellType} bigBedByCellType={bigBedByCellType} byCellType={bigWigByCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
+  }
+  else
+  {
+    if(this.state.minrange!=0)
     gb= (<GenomeBrowser minrange={this.state.minrange} chrom={this.state.chrom} maxrange={this.state.maxrange} cellType={this.props.cellType} bigBedByCellType={bigBedByCellType} byCellType={bigWigByCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
   }

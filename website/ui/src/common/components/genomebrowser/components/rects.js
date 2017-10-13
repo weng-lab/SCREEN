@@ -1,17 +1,20 @@
 import React from 'react';
-function Rects (props) {
+export default class Rects extends React.Component {
+  
 
-        var data=props.data;
-        var y =props.y;
+       render()
+       {
+        var data=this.props.data;
+        var y =this.props.y;
         var rects;
-        var x=((parseInt(props.x(props.min))+parseInt(props.x(props.max))/parseInt(2)))-parseInt(100);
+        var x=((parseInt(this.props.x(this.props.min))+parseInt(this.props.x(this.props.max))/parseInt(2)))-parseInt(100);
 
         if(data)
         {
             rects=data.map((d,i) => {
-            if(parseInt(props.x(d.min)) >= props.leftMargin && (parseInt(props.x(d.max)) <= props.width) )
-            return ( <rect  x={props.x(d.min)} y={y} width={parseInt(props.x(d.max))-parseInt(props.x(d.min))} height="10" fill={d.itemRgb} 
-             stroke="none" strokeWidth="1px" key={i}  data-value={d.label} onMouseOver={props.showToolTip} onMouseOut={props.hideToolTip}/>);
+            if(parseInt(this.props.x(d.min)) >= this.props.leftMargin && (parseInt(this.props.x(d.max)) <= this.props.width) )
+            return ( <rect  x={this.props.x(d.min)} y={y} width={parseInt(this.props.x(d.max))-parseInt(this.props.x(d.min))} height="8" fill={d.itemRgb}
+             stroke="none" strokeWidth="1px" key={i}  data-value={d.label} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>);
 
         });
         }
@@ -19,10 +22,9 @@ function Rects (props) {
         return(
             <g>
                 {rects}
-                <text x={x} y={y-5} >{props.text}</text>
-                <text x={0} y={y+5}>{props.shortLabel}</text>
+                <text x={x} y={y-5} style={{fontSize: 10 }} >{this.props.text}</text>
+                <text x={0}  y={y+5} style={{fontSize: 10 }} >{this.props.shortLabel}</text>
             </g>
         );
+      }
     }
-
-export default Rects
