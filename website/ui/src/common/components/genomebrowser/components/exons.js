@@ -16,14 +16,12 @@ export default class Exons extends React.Component {
       }
     changeheight(nextProps)
     {
-      if(nextProps.range > nextProps.height-30)
+      if(nextProps.range > nextProps.height-25)
       {
         nextProps.increaseheight("exons");
       }
     }
   render() {
-
-
     let exon =this.props.data,t =this.props.transcript_id.split("."),transcript_id=t[0];
     let res = Math.max.apply(Math,exon.map(function(o){return o.exon_number;}))
     let y = this.props.range,introns = [],paths = [],exonarr=[],arrows =[];

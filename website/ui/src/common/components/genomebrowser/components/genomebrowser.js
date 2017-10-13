@@ -10,6 +10,20 @@ import readBig from './gbutils.js'
 import Exons from './exons.js'
  class Polylines extends React.Component
   {
+    componentDidMount(){
+       this.changeheight(this.props);
+    }
+    componentWillReceiveProps(nextProps)  {
+      if(this.props.range!=nextProps.range || this.props.height!=nextProps.height)
+      this.changeheight(nextProps);
+    }
+  changeheight(nextProps)
+  {
+    if(nextProps.range > nextProps.height-25)
+    {
+      nextProps.increaseheight("bigwigs");
+    }
+  }
      render() {
           var _self=this;
           if(_self.props.range===undefined  || _self.props.viewLimits===undefined  )
@@ -25,7 +39,7 @@ import Exons from './exons.js'
           yAxis.tickValues(y.ticks(1).concat(y.domain()));
           var data=this.props.data;
           var color ="rgb("+this.props.color+")";
-          var x=((_self.props.x(_self.props.min)+_self.props.x(_self.props.max)/parseInt(2)))-parseInt(_self.props.leftMargin);
+          var x=((_self.props.x(_self.props.min)+_self.props.x(_self.props.max)/parseInt(2)))-parseInt(200);
           var points=_self.props.x(_self.props.min)+","+y(0)+" ";
           var text = _self.props.text;
           if(data===undefined)
@@ -131,8 +145,8 @@ import Exons from './exons.js'
                         xminrange:this.props.minrange,xmaxrange:this.props.maxrange,
                         chrom : 'chr11', bp : (this.props.maxrange -this.props.minrange),
                         x : d3.scaleLinear().domain([this.props.minrange,this.props.maxrange]).range([this.props.marginleft , this.props.width ]),
-                        bbdata: {},bwdata :{} ,bwinput : [],bbinput: [],checkedstatus: {},exons : [],
-                        isModalOpen: false, showK562: false,height:50,signaltype : {},isFetching: true, isError: false,input: []
+                        bbdata: {},bwdata :{} ,bwinput : [],bbinput: [],checkedstatus: {},exons : [],bwheight: 0,
+                        isModalOpen: false, showK562: false,height:0,signaltype : {},isFetching: true, isError: false,input: []
                       }
        }
        showToolTip = (e) =>
@@ -157,19 +171,21 @@ import Exons from './exons.js'
           this.changerange(this.props);
        }
        componentWillReceiveProps(nextProps)  {
+         if(this.props.selectedaccession!=nextProps.selectedaccession)
+            this.setState({height:0})
          if(this.props.minrange!=nextProps.minrange || this.props.maxrange!=nextProps.maxrange)
          this.changerange(nextProps);
-       }
 
+       }
        changerange(nextProps)
        {
-         this.setState({bbdata:{},bwdata:{}})
+
          this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange,chrom:nextProps.chrom},() =>{
            this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
 
            var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
            this.setState({x:xrange},() =>{
-             //this.readBigBed();
+
              if(this.props.byCellType!=undefined)
              {
                 this.loadbigbed();
@@ -187,7 +203,7 @@ import Exons from './exons.js'
          Object.keys(globalinput).forEach(function (key)
          {
               let url =  "https://www.encodeproject.org/files/"+globalinput[key]+"/@@download/"+globalinput[key]+".bigBed?proxy=true",
-              shortLabel = key + " "+_self.props.cellType,longLabel= globalinput[key]+" Signal "+ key +" "+ _self.props.cellType
+              shortLabel = key,longLabel= globalinput[key]+" Signal "+ key +" "+ _self.props.cellType
               let bbinpt = {shortLabel:shortLabel,longLabel: longLabel,url:url}
               gi.push(bbinpt)
               signaltype = _self.state.signaltype
@@ -195,11 +211,12 @@ import Exons from './exons.js'
          });
          let res = Object.assign({}, this.state.signaltype, signaltype)
          this.setState({signaltype:Object.assign({}, this.state.signaltype, signaltype)});
-
-         this.setState({ bbinput: gi },()=>{
+         this.setState((prevState)=> {return{bwheight: prevState.bwheight + h}},()=>{
+          });
+          this.setState({ bbinput: gi },()=>{
            this.readBigBed();
          })
-        /* this.setState((prevState)=> {return{height: h+50}},()=>{
+         /*this.setState((prevState)=> {return{height: prevState.height+ h}},()=>{
 
         });*/
 
@@ -227,7 +244,7 @@ import Exons from './exons.js'
            let signalcolor = AssayColors[globalinput[i]["assay"]][0];
            let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
            viewLimits ,
-           shortLabel = (globalinput[i]["assay"]+globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+           shortLabel = (globalinput[i]["assay"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
            if(globalinput[i]["assay"]==="DNase")
            {
              viewLimits="0:150"
@@ -245,12 +262,14 @@ import Exons from './exons.js'
          }
           let res = Object.assign({}, this.state.signaltype, signaltype)
         this.setState({signaltype:signaltype});
-        this.setState({ bwinput: gi },()=>{
-          this.readBigWig();
-        })
-      /*   this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
+        this.setState((prevState)=> {return{bwheight: prevState.bwheight + h}},()=>{
+         });
+         this.setState({ bwinput: gi },()=>{
+           this.readBigWig();
+         /*this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
 
-      });*/
+         })*/
+      });
        }
        nextexon = (r) =>
        {
@@ -261,8 +280,9 @@ import Exons from './exons.js'
          this.setState({xminrange: min ,xmaxrange: max}
            ,() => {
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-              this.setState({x:xrange},() => {//this.readBigBed();
-                this.readBigWig(); this.loadgenes() })
+              this.setState({x:xrange},() => {this.readBigBed();
+                this.readBigWig();
+                this.loadgenes(); })
             });
        }
        prevexon = (r) =>
@@ -274,7 +294,7 @@ import Exons from './exons.js'
          this.setState({xminrange: min ,xmaxrange: max}
            ,() => {
              var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
-              this.setState({x:xrange},() => {//this.readBigBed();
+              this.setState({x:xrange},() => {this.readBigBed();
                  this.readBigWig(); this.loadgenes();})
             });
        }
@@ -382,10 +402,10 @@ import Exons from './exons.js'
 
                Object.keys(globalinputbigbed).forEach(function (k)
                {
-                 if(key===k+" "+_self.props.cellType)
+                 if(key===k)
                  {
                    let url =  "https://www.encodeproject.org/files/"+globalinputbigbed[k]+"/@@download/"+globalinputbigbed[k]+".bigBed?proxy=true",
-                   shortLabel = k + " "+_self.props.cellType,longLabel= globalinputbigbed[k]+" Signal "+ k +" "+ _self.props.cellType
+                   shortLabel = k,longLabel= globalinputbigbed[k]+" Signal "+ k +" "+ _self.props.cellType
                    let bbinpt = {shortLabel:shortLabel,longLabel: longLabel,url:url}
                    _self.setState((prevState)=> {return{height:prevState.height + 20}},()=>{
                      _self.setState({signaltype: Object.assign({},_self.state.signaltype,{ [key]: "bigbed" })});
@@ -411,12 +431,12 @@ import Exons from './exons.js'
                let globalinput = this.props.byCellType
                for(let i=0; i < globalinput.length ;i++)
                {
-                   if((globalinput[i]["assay"] + globalinput[i]["cellTypeName"])===key)
+                   if((globalinput[i]["assay"])===key)
                    {
                      let signalcolor = AssayColors[globalinput[i]["assay"]][0];
                      let url = "https://www.encodeproject.org/files/"+globalinput[i]["fileID"]+"/@@download/"+globalinput[i]["fileID"]+".bigWig?proxy=true",
                      viewLimits ,
-                     shortLabel = (globalinput[i]["assay"]+ globalinput[i]["cellTypeName"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
+                     shortLabel = (globalinput[i]["assay"]),longLabel=globalinput[i]["fileID"]+" Signal "+ (globalinput[i]["assay"]+ " "+ globalinput[i]["cellTypeName"]);
                      if(globalinput[i]["assay"]==="DNase")
                      {
                        viewLimits="0:150"
@@ -426,7 +446,7 @@ import Exons from './exons.js'
                        viewLimits="0:50"
                      }
                      let bwinpt = {shortLabel:shortLabel,longLabel: longLabel,color:signalcolor,viewLimits:viewLimits,url:url}
-                       this.setState((prevState)=> {return{height:prevState.height + 100}},()=>{
+                       this.setState((prevState)=> {return{height:prevState.height + 60}},()=>{
                          this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
                          this.setState({ bwinput: [...this.state.bwinput, bwinpt] },()=> {this.readBigWig()})
                        });
@@ -611,7 +631,19 @@ import Exons from './exons.js'
          var jq = JSON.stringify(q);
          ApiClient.getByPost(jq, "/gbws/geneTrack",
          (r) => {
-                  this.setState({exons: r});
+                  if(this.state.exons.length>r.length)
+                  {
+                    let h= (+(this.state.exons.length)- +(r.length))*30;
+                      this.setState((prevState)=> {return{height:+(prevState.height) - +(h)}},()=>{
+                          this.setState({exons: r});
+                      });
+                  }
+                  else {
+                    this.setState({exons: r});
+                  }
+
+
+
              },
            (msg) => {
          console.log("err loading geneTrack");
@@ -667,9 +699,7 @@ import Exons from './exons.js'
        }
        increaseheight=(type)=>
        {
-         if(type==="exons")
-         this.setState((prevState)=> {return{height: prevState.height +30}});
-
+         this.setState((prevState)=> {return{height: prevState.height +10}});
        }
        render()
        {
@@ -695,9 +725,9 @@ import Exons from './exons.js'
            {
              bycelltype =this.props.byCellType.map((d,i) => {
                if(this.state.bwinput.length!=0)
-             return ( <div key={i}> <input type="checkbox" defaultChecked={true} ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+             return ( <div key={i}> <input type="checkbox" defaultChecked={true} ref={d.assay}  onClick={_self.handlecheck} id={d.assay} key={i} value={d.assay} ></input> {d.assay +" "+ d.cellTypeName} </div>);
               else {
-                return ( <div key={i}> <input type="checkbox"  ref={d.assay + d.cellTypeName}  onClick={_self.handlecheck} id={d.assay + d.cellTypeName} key={i} value={d.assay + d.cellTypeName} ></input> {d.assay +" "+ d.cellTypeName} </div>);
+                return ( <div key={i}> <input type="checkbox"  ref={d.assay}  onClick={_self.handlecheck} id={d.assay} key={i} value={d.assay} ></input> {d.assay +" "+ d.cellTypeName} </div>);
 
               }
             });
@@ -708,9 +738,9 @@ import Exons from './exons.js'
              Object.keys(this.props.bigBedByCellType).forEach(function (k)
              {
                if(_self.state.bbinput.length!=0)
-              bycelltype.push( <div key={k}> <input type="checkbox" defaultChecked={true} ref={k + " "+_self.props.cellType}  onClick={_self.handlecheck} id={k + " "+_self.props.cellType} value={k + " "+_self.props.cellType} ></input> {k + " "+_self.props.cellType} </div>);
+              bycelltype.push( <div key={k}> <input type="checkbox" defaultChecked={true} ref={k}  onClick={_self.handlecheck} id={k} value={k} ></input> {k} </div>);
               else {
-                bycelltype.push( <div key={k}> <input type="checkbox"  ref={k + " "+_self.props.cellType}  onClick={_self.handlecheck} id={k + " "+_self.props.cellType}  value={k + " "+_self.props.cellType} ></input> {k + " "+_self.props.cellType} </div>);
+                bycelltype.push( <div key={k}> <input type="checkbox"  ref={k}  onClick={_self.handlecheck} id={k}  value={k} ></input> {k} </div>);
 
               }
              })
@@ -752,7 +782,7 @@ import Exons from './exons.js'
              {
                rects.push(bbarr.map((d) =>
                {
-                   return (<Rects text={obj[1]} data={d} leftMargin={_self.props.marginleft} width={_self.props.width} shortLabel={obj[2]} key={r} x={_self.state.x} min={_self.state.xminrange} max={_self.state.xmaxrange} y={r}  showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}   />);           }));
+                   return (<Rects text={obj[1]} data={d} increaseheight={_self.increaseheight} height={_self.state.height}leftMargin={_self.props.marginleft} width={_self.props.width} shortLabel={obj[2]} key={r} x={_self.state.x} min={_self.state.xminrange} max={_self.state.xmaxrange} y={r}  showToolTip={_self.showToolTip} hideToolTip={_self.hideToolTip}   />);           }));
                r+=30;
                }
            });
@@ -766,7 +796,7 @@ import Exons from './exons.js'
                  {
                    pls.push(bwarr.map((d)=>
                    {
-                       return (<Polylines text={obj[1]} leftMargin={_self.props.marginleft} height={_self.state.height} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
+                       return (<Polylines text={obj[1]} increaseheight={_self.increaseheight} height={_self.state.height} leftMargin={_self.props.marginleft} height={_self.state.height} width={_self.props.width} key={r} data={d} shortLabel={obj[2]} viewLimits={obj[4]} color={obj[3]} min={_self.state.xminrange} max={_self.state.xmaxrange} x={_self.state.x} range={r}/>);
                    }));
                    r+=60;
                  }
@@ -809,7 +839,7 @@ import Exons from './exons.js'
                   <g transform="translate(0,20)">
                     <ToolTip tooltip={this.state.tooltip}/>
                     <Axis axis={xAxis} />
-                    <Grid h={this.props.height} grid={xGrid} gridType="y"/>
+                    <Grid h={this.state.height} grid={xGrid} gridType="y"/>
                   </g>
                   {crerect}
                   {this.state.bbdata && rects}

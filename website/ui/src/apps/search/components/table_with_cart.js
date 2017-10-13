@@ -16,7 +16,7 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { minrange:0,maxrange: 0,selectedaccession: {},chrom:''}
+	this.state = { minrange:0,maxrange: 0,selectedaccession: {},chrom:'',cellType:''}
         this.table_click_handler = this.table_click_handler.bind(this);
     }
 
@@ -67,8 +67,8 @@ class TableWithCart extends React.Component {
         {
           let minrange =parseInt(rowdata.start) - 2000
           let maxrange = parseInt(rowdata.start) + parseInt(rowdata.len)  +2000
-          let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len}
-          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom },()=>{ actions.selectcre(accessiondetails)})
+          let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len,chrom: rowdata.chrom}
+          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom,cellType:this.props.cellType },()=>{ actions.selectcre(accessiondetails)})
         }
         else
         {
@@ -321,13 +321,8 @@ class TableWithCart extends React.Component {
   let gb = null;
   let bigWigByCellType = this.props.globals["byCellType"][this.props.cellType]
   let bigBedByCellType = this.props.globals["creBigBedsByCellType"][this.props.cellType]
-  if(this.props.defaultaccession)
+  if(Object.keys(this.props.gb_cres).length !== 0 && this.props.chrom === this.state.chrom && this.state.cellType === this.props.cellType )
   {
-     gb= (<GenomeBrowser minrange={+(this.props.gb_cres.start)- +(2000)} chrom={this.props.gb_cres.chrom} maxrange={(+(this.props.gb_cres.start)+ +(this.props.gb_cres.len))+ +(2000)} cellType={this.props.cellType} bigBedByCellType={bigBedByCellType} byCellType={bigWigByCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
-  }
-  else
-  {
-    if(this.state.minrange!=0)
     gb= (<GenomeBrowser minrange={this.state.minrange} chrom={this.state.chrom} maxrange={this.state.maxrange} cellType={this.props.cellType} bigBedByCellType={bigBedByCellType} byCellType={bigWigByCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
   }

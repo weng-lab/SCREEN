@@ -1,13 +1,27 @@
 import React from 'react';
 export default class Rects extends React.Component {
-  
+
+    componentDidMount(){
+       this.changeheight(this.props);
+    }
+    componentWillReceiveProps(nextProps)  {
+      if(this.props.y!=nextProps.y || this.props.height!=nextProps.height)
+      this.changeheight(nextProps);
+    }
+  changeheight(nextProps)
+  {
+    if(nextProps.y > nextProps.height-25)
+    {
+      nextProps.increaseheight("bigbeds");
+    }
+  }
 
        render()
        {
         var data=this.props.data;
         var y =this.props.y;
         var rects;
-        var x=((parseInt(this.props.x(this.props.min))+parseInt(this.props.x(this.props.max))/parseInt(2)))-parseInt(100);
+        var x=((parseInt(this.props.x(this.props.min))+parseInt(this.props.x(this.props.max))/parseInt(2)))-parseInt(200);
 
         if(data)
         {

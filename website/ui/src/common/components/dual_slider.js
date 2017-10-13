@@ -12,9 +12,9 @@ class DualSlider extends React.Component {
 	this.makeBars = this.makeBars.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
 		      buttonWidth: props.buttonWidth || 34};
-	window.onresize = chain_functions(window.onresize, this.updateDimensions);
+	//window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
-    
+
     componentDidMount(){
 	this.updateWithProps(this.props);
     }
@@ -31,7 +31,7 @@ class DualSlider extends React.Component {
 	const rpixels = ls(this.state.rvalue);
 	this.setState({width, lpixels, rpixels});
     }
-    
+
     updateWithProps(p){
 	// tighten width by button slider icon width, else button will overhang slider bar
 	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
@@ -89,7 +89,7 @@ class DualSlider extends React.Component {
 	const rhLeft = perc(this.state.rpixels);
 	const cRight = 100.0 - rhLeft;
 	const strP = (v) => (v.toString() + '%');
-	
+
 	return (
 	    <div className={"sliderBase"}>
 		<Draggable axis="x" bounds='parent' {...dragHandlers}
