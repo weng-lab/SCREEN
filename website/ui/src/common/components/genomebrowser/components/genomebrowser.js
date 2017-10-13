@@ -213,7 +213,6 @@ class GenomeBrowser extends React.Component
      /*this.setState((prevState)=> {return{height: prevState.height+ h}},()=>{
 
     });*/
-
     }
     loadbigwig()
     {
@@ -254,21 +253,21 @@ class GenomeBrowser extends React.Component
        signaltype[key]="bigwig"
         //    this.setState({signaltype: Object.assign({},this.state.signaltype,{ [key]: "bigwig" })});
      }
-    this.setState({signaltype:signaltype});
-    this.setState((prevState)=> {return{bwheight: prevState.bwheight + h}},()=>{
-     });
-     this.setState({ bwinput: gi },()=>{
-       this.readBigWig();
-     /*this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
+      this.setState({signaltype:signaltype});
+      this.setState((prevState)=> {return{bwheight: prevState.bwheight + h}},()=>{
+       });
+       this.setState({ bwinput: gi },()=>{
+         this.readBigWig();
+       /*this.setState((prevState)=> {return{height: prevState.height + h}},()=>{
 
-     })*/
-    });
+       })*/
+      });
     }
     nextexon = (r) =>
     {
-     let bp = +(this.state.bp)
-     let diff = +(0.05) * +(bp)
-     let max = +(r)+ +(diff),min=+(max)- +(this.state.bp);
+      let bp = parseInt(this.state.bp)
+      let diff = parseInt(0.05 * bp)
+      let max = parseInt(r)+diff,min=parseInt(max)-parseInt(this.state.bp);
 
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
@@ -280,9 +279,9 @@ class GenomeBrowser extends React.Component
     }
     prevexon = (r) =>
     {
-     let bp = +(this.state.bp)
-     let diff = +(0.05 * bp)
-     let min = +(r)-diff,max=+(min)+ +(this.state.bp);
+      let bp = parseInt(this.state.bp)
+      let diff = parseInt(0.05 * bp)
+      let min = parseInt(r)-diff,max=parseInt(min)+parseInt(this.state.bp);
 
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
@@ -466,7 +465,7 @@ class GenomeBrowser extends React.Component
       }
      this.setState((prevState) =>
       {
-        return {xminrange: +(prevState.xminrange) + +(range),xmaxrange: +(prevState.xmaxrange) + +(range)};
+        return {xminrange: parseInt(prevState.xminrange,10) + parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange,10) + parseInt(range,10)};
       },() => {
            let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
            this.setState({x:xrange},() => { this.readBigBed();
@@ -490,7 +489,7 @@ class GenomeBrowser extends React.Component
               range=Math.round(this.state.bp *0.95);
       }
       this.setState((prevState) => {
-                return {xminrange: +(prevState.xminrange) - +(range,10),xmaxrange: +(prevState.xmaxrange) - +(range,10)};
+                return {xminrange: parseInt(prevState.xminrange,10) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange,10) - parseInt(range,10)};
               },() => {
                 var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
                  this.setState({x:xrange},() => {this.readBigBed();
@@ -581,11 +580,11 @@ class GenomeBrowser extends React.Component
               }
          },
        (msg) => {
-     console.log("err loading geneTrack");
-     console.log(msg);
-    this.setState({exons: [],
-             isFetching: false, isError: true});
-       });
+       console.log("err loading geneTrack");
+       console.log(msg);
+       this.setState({exons: [],
+               isFetching: false, isError: true});
+         });
     }
     buttonclick = () =>
     {
@@ -639,7 +638,7 @@ class GenomeBrowser extends React.Component
     render()
     {
        let currentrange = this.state.chrom+":"+this.state.xminrange+"-"+this.state.xmaxrange;
-       let bp = +(this.state.bp,10)+ +(1);
+       let bp = +(this.state.bp)+ +(1);
        let  xAxis = d3.axisBottom().scale(this.state.x);
        let  xGrid = d3.axisBottom().scale(this.state.x).ticks(100).tickSize(this.state.height, 0, 0).tickFormat("");
        let bigbed = this.state.bbdata, bigwig = this.state.bwdata,bbarr = [],bwarr = [];
