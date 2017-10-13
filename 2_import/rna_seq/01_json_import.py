@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
@@ -18,6 +23,7 @@ from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
 
+
 def setupAndCopy(cur, assembly, fnp):
     tableName = "r_expression_" + assembly
 
@@ -32,7 +38,7 @@ dataset VARCHAR(256) NOT NULL,
 replicate INT NOT NULL,
 fpkm NUMERIC NOT NULL,
 tpm NUMERIC NOT NULL);
-    """.format(tableName = tableName))
+    """.format(tableName=tableName))
 
     printt("importing", fnp)
     with gzip.open(fnp) as f:
@@ -40,9 +46,11 @@ tpm NUMERIC NOT NULL);
                       columns=("ensembl_id", "gene_name", "dataset",
                                "replicate", "fpkm", "tpm"))
 
+
 def doIndex(curs, assembly):
     tableName = "r_expression_" + assembly
     makeIndex(curs, tableName, ["gene_name"])
+
 
 def run(args, DBCONN):
     d = os.path.join(Dirs.encyclopedia, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/")
@@ -74,6 +82,7 @@ def run(args, DBCONN):
                 setupAndCopy(curs, assembly, outFnp)
                 doIndex(curs, assembly)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -81,11 +90,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

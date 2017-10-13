@@ -4,6 +4,7 @@ import time
 import sys
 import os
 
+
 class BigWig:
     def __init__(self, minipeaks_cache):
         self.minipeaks_cache = minipeaks_cache
@@ -86,5 +87,5 @@ class BigWig:
         l = len(regions) / n
         results = []
         for i in xrange(n):
-            results.append(round(sum(regions[l * i : l * (i + 1)]) / l, 2))
+            results.append(round(sum(regions[l * i: l * (i + 1)]) / l, 2))
         return results

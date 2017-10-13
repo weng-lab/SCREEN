@@ -2,7 +2,9 @@
 
 from __future__ import print_function
 
-import os, sys, argparse
+import os
+import sys
+import argparse
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
@@ -12,6 +14,7 @@ from utils import AddPath, printt
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from config import Config
+
 
 def setupDB(DBCONN):
     tableName = "sessions"
@@ -23,21 +26,25 @@ CREATE TABLE {tn}
 (id serial PRIMARY KEY,
 uid text,
 session_id text
-) """.format(tn = tableName))
+) """.format(tn=tableName))
+
 
 def run(args, DBCONN):
     setupDB(DBCONN)
-        
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
+
 
 if __name__ == '__main__':
     main()

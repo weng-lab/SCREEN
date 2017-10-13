@@ -26,6 +26,7 @@ from cached_objects import CachedObjectsWrapper
 mc = MemCacheWrapper("localhost")
 qd = QueryDCC(cache=mc)
 
+
 def main():
     with open("/home/mjp/Dropbox/Cross-Contaminations-v8_0.txt") as f:
         lines = [x.strip() for x in f]
@@ -68,6 +69,7 @@ def main():
                                                          "CVCL_0023", "CVCL_0320", "CVCL_0317",
                                                          "CVCL_0530", "CVCL_0067"]:
                                 print(assembly, counter, total, "found bad " + r)
+
 
 if __name__ == "__main__":
     sys.exit(main())

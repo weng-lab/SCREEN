@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../1_screen_pipeline/03_peak_intersection'))
@@ -17,6 +22,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/')
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
+
 
 class ImportPeakIntersections:
     def __init__(self, curs, assembly, tsuffix):
@@ -35,7 +41,7 @@ class ImportPeakIntersections:
     tf jsonb,
     histone jsonb
     );
-    """.format(tableName = self.tableName))
+    """.format(tableName=self.tableName))
 
     def run(self):
         self.setupTable()
@@ -51,6 +57,7 @@ class ImportPeakIntersections:
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
 
+
 def encode_peak_metadata(assembly, t, curs):
     printt("dropping and creating table", t)
     curs.execute("""
@@ -62,7 +69,7 @@ fileID text,
 assay text,
 label text,
 biosample_term_name text
-)""".format(tn = t))
+)""".format(tn=t))
     jobs = peakIntersections.makeJobs(assembly)
     outF = StringIO.StringIO()
     for r in jobs:
@@ -76,6 +83,7 @@ biosample_term_name text
     cols = "expID fileID assay label biosample_term_name".split(' ')
     return (outF, cols)
 
+
 def cistrome_peak_metadata(assembly, t, curs):
     printt("dropping and creating table", t)
     curs.execute("""
@@ -87,16 +95,17 @@ assay text,
 label text,
 biosample_term_name text,
 tissue text
-)""".format(tn = t))
+)""".format(tn=t))
     jobs = cistromeIntersections.makeJobs(assembly, paths.cistrome("data", "raw"))
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write("\t".join([r["bed"]["fileID"],
                               r["etype"], r["label"],
-                              r["celltype"], r["tissue"] ]) + "\n")
+                              r["celltype"], r["tissue"]]) + "\n")
     outF.seek(0)
     cols = ["fileID", "assay", "label", "biosample_term_name", "tissue"]
     return (outF, cols)
+
 
 class ImportPeakIntersectionMetadata:
     def __init__(self, curs, assembly, tsuffix, jobgen):
@@ -108,9 +117,10 @@ class ImportPeakIntersectionMetadata:
 
     def run(self):
         outF, cols = self._jobgen(self.assembly, self.tableName, self.curs)
-        self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("\tcopied in", self.curs.rowcount)
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -119,7 +129,7 @@ def run(args, DBCONN):
 
     Encode = ["peakIntersections", encode_peak_metadata]
     Cistrome = ["cistromeIntersections", cistrome_peak_metadata]
-                    
+
     def doRun(args, assembly, curs, tsuffix, jobgen):
         if args.metadata:
             ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
@@ -130,13 +140,14 @@ def run(args, DBCONN):
             ipi = ImportPeakIntersections(curs, assembly, tsuffix)
             ipi.run()
             ipi.index()
-        
+
     for assembly in assemblies:
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             doRun(args, assembly, curs, Encode[0], Encode[1])
             if assembly in ["hg38", "mm10"]:
                 doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -146,11 +157,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()

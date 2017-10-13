@@ -1,6 +1,8 @@
 from __future__ import print_function
 
-import os, sys, json
+import os
+import sys
+import json
 import time
 import numpy as np
 import cherrypy
@@ -15,13 +17,14 @@ from autocompleter import AutocompleterWrapper
 AddPath(__file__, "../common")
 from parse_search import ParseSearch
 
+
 class AutocompleteWebService:
     def __init__(self, ps):
         self.ps = ps
         self.ac = AutocompleterWrapper(ps)
-        
-        self.actions = {"suggestions" : self.suggestions,
-                        "search" : self.search}
+
+        self.actions = {"suggestions": self.suggestions,
+                        "search": self.search}
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -46,7 +49,7 @@ class AutocompleteWebService:
             raise Exception("userQuery not in j")
         userQuery = j["userQuery"]
 
-        p = ParseSearch(self.ps.DBCONN, assembly, {"q" : userQuery})
+        p = ParseSearch(self.ps.DBCONN, assembly, {"q": userQuery})
         ret = {}
         try:
             ret = p.parse()
@@ -57,5 +60,3 @@ class AutocompleteWebService:
             ret["failed"] = True
 
         return ret
-
-

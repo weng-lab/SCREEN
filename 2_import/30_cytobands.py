@@ -17,6 +17,7 @@ from dbconnect import db_connect
 from constants import paths
 from config import Config
 
+
 class Cytoband:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -27,7 +28,7 @@ class Cytoband:
         self._load()
         self._import()
         self.show()
-        
+
     def _load(self):
         fnp = paths.cytobands[self.assembly]
 
@@ -41,11 +42,11 @@ class Cytoband:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
                                              "feature": p[4],
-                                             "color": float(p[4].replace("gpos", "")) / 100.0 })
+                                             "color": float(p[4].replace("gpos", "")) / 100.0})
                 else:
                     self.bands[p[0]].append({"start": int(p[1]),
                                              "end": int(p[2]),
-                                             "feature": p[4] })
+                                             "feature": p[4]})
 
     def _import(self):
         printt('***********', "drop and create", self.tableName)
@@ -54,24 +55,25 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 assembly text,
-cytobands jsonb);""".format(tableName = self.tableName))
+cytobands jsonb);""".format(tableName=self.tableName))
 
         printt('***********', "import cytobands")
         self.curs.execute("""
         INSERT INTO {tableName} 
         (assembly, cytobands)
         VALUES (%s, %s)
-        """.format(tableName = self.tableName),
-                          (self.assembly,
-                           json.dumps(self.bands)))
+        """.format(tableName=self.tableName),
+            (self.assembly,
+             json.dumps(self.bands)))
         print("updated", self.tableName)
-                    
+
     def show(self):
         for chrom, bands in self.bands.iteritems():
             print(chrom, len(bands), bands[0])
         print()
         print(json.dumps(self.bands, sort_keys=True, indent=4))
-            
+
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -83,19 +85,22 @@ def run(args, DBCONN):
             c = Cytoband(curs, assembly)
             c.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

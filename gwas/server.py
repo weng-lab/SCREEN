@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
-import cherrypy, os, sys, argparse, time
+import cherrypy
+import os
+import sys
+import argparse
+import time
 import socket
-import psycopg2, psycopg2.pool
+import psycopg2
+import psycopg2.pool
 
 from app_ld import SnpApp
 
@@ -14,6 +19,7 @@ from utils import Utils, AddPath
 AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
+
 
 class WebServerConfig:
     def __init__(self, siteName):
@@ -38,13 +44,15 @@ class WebServerConfig:
     def getRootConfig(self):
         return {
             '/': {
-                },
-            }
+            },
+        }
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', default=9005, type=int)
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
@@ -60,12 +68,13 @@ def main():
                             'server.socket_port': int(args.port),
                             'server.socket_queue_size': 512,
                             'server.thread_pool': 30,
-                            'log.screen' : True,
-                            'log.access_file' : "",
-                            'log.error_file' : wsconfig.errorFnp
+                            'log.screen': True,
+                            'log.access_file': "",
+                            'log.error_file': wsconfig.errorFnp
                             })
     cherrypy.engine.start()
     cherrypy.engine.block()
+
 
 if __name__ == "__main__":
     sys.exit(main())

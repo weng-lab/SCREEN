@@ -1,8 +1,9 @@
 import math
 
+
 class RankHeatmap:
 
-    def __init__(self, TissueMap, rank_types, threshold = 20000):
+    def __init__(self, TissueMap, rank_types, threshold=20000):
         self.aggs = {}
         self._rank_types = rank_types
         for v in TissueMap:
@@ -20,7 +21,8 @@ class RankHeatmap:
         total = results["hits"]["total"]
         retval = {"_".join(k.split("_")[2:]): {} for k, v in results["aggregations"].iteritems()}
         for k, v in results["aggregations"].iteritems():
-            if not k.startswith("rank_"): continue
+            if not k.startswith("rank_"):
+                continue
             rank_type = k.split("_")[1]
             cell_type = "_".join(k.split("_")[2:])
             retval[cell_type][rank_type] = math.log((v["doc_count"] + 0.01) / (float(total) + 0.01))

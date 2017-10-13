@@ -5,10 +5,12 @@
 #  https://bedops.readthedocs.org/en/latest/content/usage-examples/master-list.html
 
 from __future__ import print_function
-import os, sys
+import os
+import sys
 import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
 
@@ -22,6 +24,7 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils, numLines, printWroteNumLines
 from exp import Exp
+
 
 class MakeRepDHSs:
     def __init__(self, assembly):
@@ -41,13 +44,13 @@ class MakeRepDHSs:
         fnp = os.path.join(self.d, "list.txt")
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
-            ctToExpIDsRows = [line.rstrip('\n').split('\t') for line in  f if line]
+            ctToExpIDsRows = [line.rstrip('\n').split('\t') for line in f if line]
         allExps = {}
         for ctToExpIDs in ctToExpIDsRows:
             ct = ctToExpIDs[0]
             allExps[ct] = {}
             for idx, expID in enumerate(ctToExpIDs[1:]):
-                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID) #, True)
+                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID)  # , True)
         if 0:
             for ct, exps in allExps.iteritems():
                 print(ct, exps["DNase"], exps["H3K4me3"], exps["H3K27ac"], exps["CTCF"])
@@ -60,7 +63,7 @@ class MakeRepDHSs:
                 f = exp.getDccUniformProcessedHotspots("hg19")
                 if not f:
                     #f = exp.bigWigFilters("hg19")
-                    #if len(f) != 1:
+                    # if len(f) != 1:
                     print("missing", ct, assay, exp.encodeID)
                     continue
                     # raise Exception("could not find", ct, assay, exp.encodeID)
@@ -117,8 +120,8 @@ class MakeRepDHSs:
             peaks = line.strip().split("\t")[3].split(',')
             peaks = [x.split('-') for x in peaks]
             for peak in peaks:
-                peak[0] = float(peak[0]) # signal
-                peak[2] = int(peak[2]) # line number
+                peak[0] = float(peak[0])  # signal
+                peak[2] = int(peak[2])  # line number
 
             maxPeak = peaks[0]
             for peak in peaks[1:]:
@@ -129,7 +132,7 @@ class MakeRepDHSs:
                     if peak[0] > maxPeak[0]:
                         maxPeak = peak
 
-            line = self.fnToPeakNumToPeak[maxPeak[1]][maxPeak[2]] # fileName x line number
+            line = self.fnToPeakNumToPeak[maxPeak[1]][maxPeak[2]]  # fileName x line number
             outF.write('\t'.join([line[0], line[1], line[2], maxPeak[1], str(maxPeak[0])]) + "\n")
 
     def addExtraMasterPeaks(self):
@@ -180,16 +183,18 @@ class MakeRepDHSs:
         Utils.runCmds(cmds)
         printWroteNumLines(self.allMergedPeaks)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -199,6 +204,7 @@ def main():
         j.run()
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

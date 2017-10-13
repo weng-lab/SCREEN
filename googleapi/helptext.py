@@ -17,6 +17,7 @@ SCOPES = 'https://www.googleapis.com/auth/drive.readonly'
 CLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__), 'client_secret.json')
 APPLICATION_NAME = 'Visualizer HelpText'
 
+
 def _get_credentials(flags):
     """Gets valid user credentials from storage.
 
@@ -40,10 +41,11 @@ def _get_credentials(flags):
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
+        else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
+
 
 class GoogleDocs:
     def __init__(self, flags):
@@ -53,12 +55,13 @@ class GoogleDocs:
         self.files = self.service.files()
 
     def getcontents(self, docid):
-        return self.files.export(fileId = docid, mimeType = "text/plain").execute()
+        return self.files.export(fileId=docid, mimeType="text/plain").execute()
 
     def save(self, docid, mimetype, onp):
-        contents = self.files.export(fileId = docid, mimeType = mimetype).execute()
+        contents = self.files.export(fileId=docid, mimeType=mimetype).execute()
         with open(onp, "wb") as o:
             o.write(contents)
+
 
 if __name__ == "__main__":
     try:

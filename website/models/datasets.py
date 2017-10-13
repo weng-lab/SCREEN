@@ -9,6 +9,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from db_utils import getcursor
 
+
 class Datasets:
     def __init__(self, assembly, pgSearch):
         self.assembly = assembly
@@ -20,7 +21,7 @@ class Datasets:
         for r in rows:
             self.globalCellTypeInfo[r["cellTypeName"]] = r
 
-        self.byFileID = {r["fileID"] : r for r in rows}
+        self.byFileID = {r["fileID"]: r for r in rows}
         self.byCellType = {}
         for r in rows:
             ctn = r["cellTypeName"]
@@ -46,6 +47,7 @@ class Datasets:
         self.biosample_types = sorted(list(set([b["biosample_type"]
                                                 for b in rows])))
 
+
 def main():
     from utils import Utils, eprint, AddPath
 
@@ -67,6 +69,7 @@ def main():
     for ctn, vs in ds.byCellType.iteritems():
         for v in vs:
             print(ctn, v)
+
 
 if __name__ == '__main__':
     main()

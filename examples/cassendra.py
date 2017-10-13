@@ -62,4 +62,3 @@ if(0):
     print result.firstname, result.age
 
     session.execute("delete from users where lastname = 'Jones'")
-

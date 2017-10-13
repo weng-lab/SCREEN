@@ -2,7 +2,8 @@
 
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
@@ -12,21 +13,24 @@ from db_utils import getcursor
 AddPath(__file__, "../common")
 from pg_autocomplete import PGautocomplete
 
+
 def _second_onward(arr):
-    if len(arr) == 1: return []
+    if len(arr) == 1:
+        return []
     return arr[1:]
+
 
 class AutocompleterWrapper:
     def __init__(self, ps):
         self.ps = ps
         self.acs = {
-            "hg19" : Autocompleter(ps, "hg19"),
-            "mm10" : Autocompleter(ps, "mm10")}
-        
+            "hg19": Autocompleter(ps, "hg19"),
+            "mm10": Autocompleter(ps, "mm10")}
+
     def __getitem__(self, assembly):
         return self.acs[assembly]
 
-    def get_suggestions(self, q, assemblies = ["hg19", "mm10"]):
+    def get_suggestions(self, q, assemblies=["hg19", "mm10"]):
         p = q.split(" ")
 
         results = []
@@ -41,6 +45,7 @@ class AutocompleterWrapper:
                     results = sorted([prefix + " " + x for x in results])
                     break
             return [q] + results
+
 
 class Autocompleter:
     def __init__(self, ps, assembly):

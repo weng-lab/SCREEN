@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 import StringIO
 
 from determine_tissue import DetermineTissue
@@ -20,6 +26,7 @@ from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
 
+
 def doImport(curs, assembly):
     fnp = paths.path(assembly, "hg19-tss-rampage-matrix.txt.gz")
     printt("reading", fnp)
@@ -31,19 +38,19 @@ def doImport(curs, assembly):
     fnp = paths.path(assembly, "hg19-tss-filtered.bed.gz")
     with gzip.open(fnp) as f:
         tsses = [line.rstrip('\n').split('\t') for line in f]
-    lookup = {r[3] : r for r in tsses}
+    lookup = {r[3]: r for r in tsses}
 
     printt("rewriting")
     outF = StringIO.StringIO()
     for row in rows:
         r = [row[0]]
         t = lookup[row[0]]
-        r.append(t[6]) # gene
-        r.append(t[0]) # chrom
-        r.append(t[1]) # start
-        r.append(t[2]) # stop
-        r.append(t[5]) # strand
-        r.append(t[7].replace("_", " ")) # gene info
+        r.append(t[6])  # gene
+        r.append(t[0])  # chrom
+        r.append(t[1])  # start
+        r.append(t[2])  # stop
+        r.append(t[5])  # strand
+        r.append(t[7].replace("_", " "))  # gene info
         r += row[1:]
         outF.write('\t'.join(r) + '\n')
     outF.seek(0)
@@ -68,20 +75,22 @@ strand VARCHAR(1),
 geneInfo text,
 maxVal real,
 {fields}
-);""".format(tn = tableName, fields = ','.join([f + " real" for f in fileIDs])))
+);""".format(tn=tableName, fields=','.join([f + " real" for f in fileIDs])))
 
-    curs.copy_from(outF, tableName, '\t', columns = cols)
+    curs.copy_from(outF, tableName, '\t', columns=cols)
     printt("inserted", curs.rowcount)
 
     curs.execute("""
 UPDATE {tn}
 SET maxVal = GREATEST( {fields} )
-""".format(tn = tableName, fields = ','.join(fileIDs)))
+""".format(tn=tableName, fields=','.join(fileIDs)))
+
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rampage"
     makeIndex(curs, tableName, ["ensemblid_ver", "chrom"])
     makeIndexIntRange(curs, tableName, ["start", "stop"])
+
 
 def metadata(curs, assembly):
     fnp = paths.path(assembly, "hg19-tss-rampage-matrix.txt.gz")
@@ -106,12 +115,12 @@ biosample_type text,
 biosample_summary text,
 tissue text,
 strand VARCHAR(1)
-) """.format(tn = tableName))
+) """.format(tn=tableName))
 
     outF = StringIO.StringIO()
 
     mc = MemCacheWrapper(Config.memcache)
-    qd = QueryDCC(auth = False, cache = mc)
+    qd = QueryDCC(auth=False, cache=mc)
 
     for fileID in fileIDs:
         exp = qd.getExpFromFileID(fileID)
@@ -129,22 +138,23 @@ strand VARCHAR(1)
                 else:
                     raise Exception("unknown strand " + f.output_type)
                 outF.write('\t'.join([expID,
-                              fileID,
-                              exp.biosample_term_name,
-                              exp.biosample_type,
-                              exp.getExpJson()["biosample_summary"],
-                              tissue,
-                              strand
-                              ]) + '\n')
+                                      fileID,
+                                      exp.biosample_term_name,
+                                      exp.biosample_type,
+                                      exp.getExpJson()["biosample_summary"],
+                                      tissue,
+                                      strand
+                                      ]) + '\n')
     outF.seek(0)
 
     cols = ["expID", "fileID", "biosample_term_name", "biosample_type",
             "biosample_summary", "tissue", "strand"]
-    curs.copy_from(outF, tableName, '\t', columns = cols)
+    curs.copy_from(outF, tableName, '\t', columns=cols)
     printt("\tok", curs.rowcount)
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -158,19 +168,22 @@ def run(args, DBCONN):
             metadata(curs, assembly)
             doIndex(curs, assembly)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-    
+
     return 0
+
 
 if __name__ == '__main__':
     main()

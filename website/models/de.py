@@ -6,6 +6,7 @@ from cre import CRE
 from common.pg import PGsearch
 from common.pg_de import PGde
 
+
 class DE:
     def __init__(self, cache, ps, assembly, gene, ct1, ct2):
         self.cache = cache
@@ -31,14 +32,14 @@ class DE:
 
     def _parseCE(self, typ, c):
         radius = float(c[2] - c[1]) / 2
-        return {"center" : radius + c[1],
-                "value" : round(float(c[4] - c[3]), 3),
-                "typ" : typ,
-                "width" : 4,
+        return {"center": radius + c[1],
+                "value": round(float(c[4] - c[3]), 3),
+                "typ": typ,
+                "width": 4,
                 "accession": c[0],
                 "start": c[1],
-                "stop" : c[2],
-                "len" : c[2] - c[1]}
+                "stop": c[2],
+                "len": c[2] - c[1]}
 
     def _nearbyPromoters(self):
         rmLookup = self.cache.rankMethodToIDxToCellType["H3K4me3"]
@@ -81,7 +82,7 @@ class DE:
         xstop = xdomain[1]
         ret = self._nearbyPromoters() + self._nearbyEnhancers()
         ret = filter(lambda x: x["start"] >= xstart and x["stop"] <= xstop, ret)
-        return {"data" : ret}
+        return {"data": ret}
 
     def _genesInRegion(self, start, stop):
         pos = self.coord()
@@ -91,12 +92,12 @@ class DE:
         ret = []
         for d in nearbyDEs:
             genename, strand = self.cache.lookupEnsembleGene(d[3])
-            ret.append({"fc" : round(float(d[2]), 3),
-                        "gene" : genename,
-                        "start" : d[0],
-                        "stop" : d[1],
-                        "strand" : strand,
-                        "sstart" : "{:,} ({})".format(d[0], strand)})
+            ret.append({"fc": round(float(d[2]), 3),
+                        "gene": genename,
+                        "start": d[0],
+                        "stop": d[1],
+                        "strand": strand,
+                        "sstart": "{:,} ({})".format(d[0], strand)})
         return ret
 
     def nearbyDEs(self):
@@ -110,7 +111,7 @@ class DE:
         nearbyDEs = pg.nearbyDEs(cd, self.halfWindow, ct1, ct2, 0.05)
 
         if not nearbyDEs:
-            return { "data" : None, "xdomain" : None }
+            return {"data": None, "xdomain": None}
 
         # center on middle of DEs
         cxdomain = [max(0, min([d[0] for d in nearbyDEs])),
@@ -127,9 +128,9 @@ class DE:
 
         ret = self._DEsForDisplay(nearbyDEs)
 
-        return {"names" : self.names,
-                "data" : ret,
-                "xdomain" : xdomain,
-                "genes" : genes,
-                "ymin" : min([d["fc"] for d in ret]),
-                "ymax" : max([d["fc"] for d in ret])}
+        return {"names": self.names,
+                "data": ret,
+                "xdomain": xdomain,
+                "genes": genes,
+                "ymin": min([d["fc"] for d in ret]),
+                "ymax": max([d["fc"] for d in ret])}

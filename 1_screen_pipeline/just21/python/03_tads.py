@@ -1,10 +1,12 @@
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 import gzip
 
 sys.path.append("../../../../metadata/utils")
 from exp import Exp
+
 
 class TADConverter:
 
@@ -41,12 +43,14 @@ class TADConverter:
                     for tad in tadlist:
                         o.write("%s\t%s\t%s\t%d\n" % (acc, chrom, tad[0], tad[1]))
 
+
 def main():
     t = TADConverter("/data/projects/screen/Version-4/ver10/hg19/extras/TADs.bed.gz")
     t.write_biosamples("/data/projects/cREs/hg19/CTCF/tad_biosamples.tsv")
     t.write_all_tads("/data/projects/cREs/hg19/CTCF/all_tads.tsv")
     t.write_tads("/data/projects/cREs/hg19/CTCF/tads")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

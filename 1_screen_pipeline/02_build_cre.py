@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
+import os
+import sys
 import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
 
@@ -18,6 +20,7 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils
 from get_yes_no import GetYesNoToQuestion
+
 
 def run(yes, assembly):
     runFnp = os.path.join(os.path.dirname(__file__), '02_build_cre/bin/read_json')
@@ -49,12 +52,14 @@ def run(yes, assembly):
     printt("about to run", " ".join(cmds))
     Utils.runCmds(cmds)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--yes', action="store_true", default=False)
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -68,6 +73,7 @@ def main():
         run(args.yes, assembly)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

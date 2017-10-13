@@ -6,6 +6,7 @@ import os
 
 from coord import Coord
 
+
 class GeneParse:
     def __init__(self, assembly, r, s, useTss, tssDist):
         self.assembly = assembly
@@ -28,13 +29,13 @@ class GeneParse:
         self.sm = r[7]
 
     def toJson(self):
-        return {"oname" : self.oname,
-                "approved_symbol" : self.approved_symbol,
-                "chrom" : self.coord.chrom,
-                "start" : self.coord.start,
-                "stop" : self.coord.end,
-                "strand" : self.strand,
-                "sm" : self.sm
+        return {"oname": self.oname,
+                "approved_symbol": self.approved_symbol,
+                "chrom": self.coord.chrom,
+                "start": self.coord.start,
+                "stop": self.coord.end,
+                "strand": self.strand,
+                "sm": self.sm
                 }
 
     def get_genetext(self):
@@ -43,8 +44,8 @@ class GeneParse:
         else:
             gene = self.oname
 
-        ret = {"gene" : gene,
-               "useTss" : self.useTss,
-               "tssDist" : self.tssDist,
-               "assembly" : self.assembly}
+        ret = {"gene": gene,
+               "useTss": self.useTss,
+               "tssDist": self.tssDist,
+               "assembly": self.assembly}
         return ret

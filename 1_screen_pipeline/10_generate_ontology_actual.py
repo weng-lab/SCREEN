@@ -1040,7 +1040,7 @@ def run(uberon_url, efo_url, obi_url):
                 if term_id not in terms:
                     terms[term_id] = getTermStructure()
                 terms[term_id]['id'] = term_id
-                
+
                 try:
                     terms[term_id]['name'] = data.rdfGraph.label(c).__str__()
                 except:
@@ -1069,7 +1069,7 @@ def run(uberon_url, efo_url, obi_url):
                                         terms[term_id]['achieves_planned_objective'].append(splitNameFromNamespace(o1)[0].replace('_', ':'))
                     else:
                         terms[term_id]['parents'].append(splitNameFromNamespace(parent)[0].replace('_', ':'))
-                
+
                 for syn in data.entitySynonyms(c):
                     try:
                         terms[term_id]['synonyms'].append(syn.__str__())
@@ -1087,7 +1087,7 @@ def run(uberon_url, efo_url, obi_url):
         d = iterativeChildren(terms[term]['data_with_develops_from'], terms, 'data_with_develops_from')
         for dd in d:
             terms[term]['closure_with_develops_from'].append(dd)
-       
+
         terms[term]['closure'].append(term)
         terms[term]['closure_with_develops_from'].append(term)
 
@@ -1100,13 +1100,14 @@ def run(uberon_url, efo_url, obi_url):
         terms[term]['types'] = getSlims(term, terms, 'type')
 
         del terms[term]['closure'], terms[term]['closure_with_develops_from']
-    
+
     for term in terms:
         del terms[term]['parents'], terms[term]['develops_from']
         del terms[term]['has_part'], terms[term]['achieves_planned_objective']
         del terms[term]['id'], terms[term]['data'], terms[term]['data_with_develops_from']
-    
+
     terms.update(ntr_assays)
+
 
 def main():
     ''' Downloads UBERON, EFO and OBI ontologies and create a JSON file '''
@@ -1126,9 +1127,10 @@ def main():
     obi_url = args.obi_url
 
     terms = run(uberon_url, efo_url, obi_url)
-    
+
     with open('ontology.json', 'w') as outfile:
         json.dump(terms, outfile)
+
 
 if __name__ == '__main__':
     main()

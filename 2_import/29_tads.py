@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -13,6 +19,7 @@ from get_tss import Genes
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
+
 
 class TADImporter:
     def __init__(self, curs, assembly):
@@ -27,7 +34,7 @@ class TADImporter:
             CREATE TABLE {tableName}
             (id serial PRIMARY KEY,
             acc TEXT, name TEXT);
-        """.format(tableName = tableName))
+        """.format(tableName=tableName))
         with open("/data/projects/cREs/%s/CTCF/tad_biosamples.tsv" % self.assembly, "r") as f:
             cols = ["acc", "name"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
@@ -42,7 +49,7 @@ class TADImporter:
             CREATE TABLE {tableName}
             (id serial PRIMARY KEY,
             acc TEXT, chrom TEXT, start INTEGER, stop INTEGER);
-        """.format(tableName = tableName))
+        """.format(tableName=tableName))
         with open("/data/projects/cREs/%s/CTCF/all_tads.tsv" % self.assembly, "r") as f:
             cols = ["acc", "chrom", "start", "stop"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
@@ -53,8 +60,9 @@ class TADImporter:
         self._import_biosamples()
         self._import_tads()
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] # Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -63,20 +71,23 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "29_tads") as curs:
             g = TADImporter(curs, assembly)
             g.run()
-        
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-            
+
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
 import StringIO
 
 from determine_tissue import DetermineTissue
@@ -16,6 +21,7 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, chrom_lengths, paths
 from config import Config
+
 
 class CellTypeInfoRow:
     def __init__(self, assembly, assay, toks):
@@ -50,12 +56,13 @@ class CellTypeInfoRow:
             self.biosample_summary = bs
 
         out = self.output().encode('ascii', 'ignore').decode('ascii')
-        #print(out)
+        # print(out)
 
     def output(self):
         return '\t'.join([self.assay, self.expID, self.fileID,
                           self.tissue, self.biosample_summary,
                           self.biosample_type, self.cellTypeName])
+
 
 class ImportCellTypeInfo:
     def __init__(self, curs, assembly):
@@ -71,7 +78,7 @@ CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 rankMethod text,
 cellType text,
-idx integer);""".format(tableName = tableName))
+idx integer);""".format(tableName=tableName))
 
         fnBases = [("CTCF", 2),
                    ("DNase", 2),
@@ -104,10 +111,10 @@ idx integer);""".format(tableName = tableName))
     def importDatasets(self):
         d = paths.path(self.assembly, "raw")
 
-        fns = {"CTCF" : "ctcf-list.txt",
-               "DNase" : "dnase-list.txt",
-               "H3K27ac" : "h3k27ac-list.txt",
-               "H3K4me3" : "h3k4me3-list.txt"}
+        fns = {"CTCF": "ctcf-list.txt",
+               "DNase": "dnase-list.txt",
+               "H3K27ac": "h3k27ac-list.txt",
+               "H3K4me3": "h3k4me3-list.txt"}
 
         outRows = []
         for assay, fn in fns.iteritems():
@@ -130,7 +137,7 @@ fileID text,
 tissue text,
 biosample_summary text,
 biosample_type text,
-cellTypeName text);""".format(tableName = tableName))
+cellTypeName text);""".format(tableName=tableName))
 
         cols = ["assay", "expID", "fileID", "tissue", "biosample_summary",
                 "biosample_type", "cellTypeName"]
@@ -145,9 +152,9 @@ cellTypeName text);""".format(tableName = tableName))
     def importDatasetsMulti(self):
         d = paths.path(self.assembly, "raw")
 
-        fns = {"Enhancer" : ("enhancer-list.txt", "H3K27ac"),
-               "Insulator" : ("insulator-list.txt", "CTCF"),
-               "Promoter" : ("promoter-list.txt", "H3K4me3")}
+        fns = {"Enhancer": ("enhancer-list.txt", "H3K27ac"),
+               "Insulator": ("insulator-list.txt", "CTCF"),
+               "Promoter": ("promoter-list.txt", "H3K4me3")}
 
         outRows = []
         for assay, fnAndAssay in fns.iteritems():
@@ -174,7 +181,7 @@ dnase_fileID text,
 other_assay text,
 other_expID text,
 other_fileID text,
-cellTypeName text);""".format(tableName = tableName))
+cellTypeName text);""".format(tableName=tableName))
 
         cols = "assays dnase_expID dnase_fileID other_assay other_expID other_fileID cellTypeName".split(' ')
 
@@ -190,6 +197,7 @@ cellTypeName text);""".format(tableName = tableName))
         self.importDatasets()
         self.importRankIndexes()
 
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -201,19 +209,22 @@ def run(args, DBCONN):
             pd = ImportCellTypeInfo(curs, assembly)
             pd.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
     return 0
+
 
 if __name__ == '__main__':
     main()

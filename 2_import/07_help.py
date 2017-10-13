@@ -16,6 +16,7 @@ from dbconnect import db_connect
 from postgres_wrapper import PostgresWrapper
 from constants import helptext, paths
 
+
 class HelpTextImport:
     def __init__(self, args, curs):
         self.args = args
@@ -30,7 +31,7 @@ class HelpTextImport:
         with open(fnp) as f:
             j = json.load(f)
         records_list_template = j["records_list_template"]
-        rows = [tuple(r) for r in j["rows"]] # for psycopg2
+        rows = [tuple(r) for r in j["rows"]]  # for psycopg2
 
         keys = [r[0] for r in rows]
         print('\n'.join(keys))
@@ -43,7 +44,7 @@ VALUES {}
 
         self.curs.execute(q, rows)
         print("inserted", "{:,}".format(self.curs.rowcount), "help text items")
-        
+
     def _recreate_tables(self):
         self.curs.execute("""
 DROP TABLE IF EXISTS helpkeys;
@@ -54,22 +55,26 @@ title text,
 summary text
 )""")
 
+
 def run(args, DBCONN):
     printt('***********')
     with getcursor(DBCONN, "DB::recreate_tables") as curs:
         hti = HelpTextImport(args, curs)
         return hti.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     return run(args, DBCONN)
-            
+
+
 if __name__ == "__main__":
     sys.exit(main())

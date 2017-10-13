@@ -27,6 +27,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from db_utils import getcursor, timedQuery
 from utils import eprint
 
+
 class PGcreTable(GetOrSetMemCache):
 
     infoFields = {"accession": "cre.accession",
@@ -71,8 +72,8 @@ class PGcreTable(GetOrSetMemCache):
 
     def _sct(self, ct):
         if ct in self.ctsTable:
-            self.fields.append("cre.creGroupsSpecific[%s] AS sct" % # TODO rename to sct
-                              self.ctsTable[ct])
+            self.fields.append("cre.creGroupsSpecific[%s] AS sct" %  # TODO rename to sct
+                               self.ctsTable[ct])
         else:
             self.fields.append("0::int AS sct")
 
@@ -93,12 +94,13 @@ class PGcreTable(GetOrSetMemCache):
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
         return fields, ret
-    def geneTable(self, j,chrom,start,stop):
-        print(self.assembly+'_gene_details')
+
+    def geneTable(self, j, chrom, start, stop):
+        print(self.assembly + '_gene_details')
         with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
             curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
              WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
-             int4range(startpos, endpos)  ))""".format(tableName=self.assembly+'_gene_details',seqname=chrom,startpos=start,endpos=stop))
+             int4range(startpos, endpos)  ))""".format(tableName=self.assembly + '_gene_details', seqname=chrom, startpos=start, endpos=stop))
             records = curs.fetchall()
         response = []
         transcript_id = ''
@@ -113,11 +115,11 @@ class PGcreTable(GetOrSetMemCache):
                 'strand': row[6].rstrip(),
                 'exon_number': row[5],
                 'parent': row[7],
-                })
+            })
         result = []
         response = sorted(response, key=itemgetter('transcript_id'))
         for (key, value) in itertools.groupby(response,
-                key=itemgetter('transcript_id')):
+                                              key=itemgetter('transcript_id')):
             v = []
             start = ''
             end = ''
@@ -139,7 +141,7 @@ class PGcreTable(GetOrSetMemCache):
                     'end': end,
                     'strand': strand,
                     'values': v,
-                    })
+                })
         return result
 
     def creTable(self, j, chrom, start, stop):
@@ -164,8 +166,8 @@ FROM {tn} AS cre
 {whereClause}
 ORDER BY maxz DESC
 LIMIT 1000) r
-""".format(fields = fields, tn = self.tableName,
-           whereClause = whereClause)
+""".format(fields=fields, tn=self.tableName,
+                whereClause=whereClause)
 
             #print("\n", q, "\n")
             if 0:
@@ -177,7 +179,7 @@ LIMIT 1000) r
                 rows = []
 
             total = len(rows)
-            if total >= 1000: # reached query limit
+            if total >= 1000:  # reached query limit
                 total = self._creTableEstimate(curs, whereClause)
         return {"cres": rows, "total": total}
 
@@ -210,7 +212,7 @@ LIMIT 1000) r
 SELECT count(0)
 FROM {tn} AS cre
 {wc}
-""".format(tn = self.tableName, wc = whereClause)
+""".format(tn=self.tableName, wc=whereClause)
         if 0:
             timedQuery(curs, q)
         else:
@@ -222,14 +224,14 @@ FROM {tn} AS cre
         allmap = {"dnase": "dnase_max",
                   "promoter": "h3k4me3_max",
                   "enhancer": "h3k27ac_max",
-                  "ctcf": "ctcf_max" }
+                  "ctcf": "ctcf_max"}
         for x in ["dnase", "promoter", "enhancer", "ctcf"]:
             if "rank_%s_start" % x in j and "rank_%s_end" % x in j:
                 _range = [j["rank_%s_start" % x],
                           j["rank_%s_end" % x]]
                 self.whereClauses.append("(%s)" % " and ".join(
                     ["cre.%s >= %f" % (allmap[x], _range[0]),
-                     "cre.%s <= %f" % (allmap[x], _range[1]) ] ))
+                     "cre.%s <= %f" % (allmap[x], _range[1])]))
             self.fields.append("cre.%s AS %s_zscore" % (allmap[x], x))
 
     def _ctSpecific(self, ct, j):
@@ -252,17 +254,17 @@ FROM {tn} AS cre
                 minDefault = -10.0  # must match slider default
                 maxDefault = 10.0   # must match slider default
                 if isclose(_range[0], minDefault) and isclose(_range[1], maxDefault):
-                    continue # not actually filtering on zscore, yet...
+                    continue  # not actually filtering on zscore, yet...
                 if not isclose(_range[0], minDefault) and not isclose(_range[1], maxDefault):
                     self.whereClauses.append("(%s)" % " and ".join(
-                            ["cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]),
-                             "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1])] ))
+                        ["cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]),
+                         "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1])]))
                 elif not isclose(_range[0], minDefault):
                     self.whereClauses.append("(%s)" %
-                                        "cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]))
+                                             "cre.%s_zscores[%d] >= %f" % (exp, cti, _range[0]))
                 elif not isclose(_range[1], maxDefault):
                     self.whereClauses.append("(%s)" %
-                                        "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1]))
+                                             "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1]))
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)
@@ -281,8 +283,8 @@ FROM {tn} AS cre
 {whereClause}
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(fields = fields, tn = self.tableName,
-           whereClause = whereClause)
+""".format(fields=fields, tn=self.tableName,
+           whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
             with gzip.open(fnp, 'w') as f:
@@ -304,8 +306,8 @@ FROM {tn} AS cre
 ) r
 ) to STDOUT
 with DELIMITER E'\t'
-""".format(tn = self.tableName,
-           whereClause = whereClause)
+""".format(tn=self.tableName,
+           whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
             with gzip.open(fnp, 'w') as f:

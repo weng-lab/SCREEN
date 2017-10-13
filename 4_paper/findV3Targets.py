@@ -22,6 +22,7 @@ from cached_objects import CachedObjects
 from pg_common import PGcommon
 from cached_objects import CachedObjectsWrapper
 
+
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
@@ -34,7 +35,7 @@ def main():
 
     mc = MemCacheWrapper("localhost")
     qd = QueryDCC(cache=mc)
-    
+
     for exp in qd.getExps(url):
         targets = []
         if "H3K27ac" in exp.description:
@@ -43,6 +44,7 @@ def main():
             targets.append("H3K4me3")
         if targets:
             print(exp.encodeID, '\t'.join(targets))
-            
+
+
 if __name__ == "__main__":
     sys.exit(main())

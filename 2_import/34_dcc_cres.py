@@ -21,6 +21,7 @@ from dbconnect import db_connect
 from constants import paths
 from config import Config
 
+
 class DCCCres:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -45,9 +46,9 @@ class DCCCres:
         with open(fnp) as f:
             for line in f:
                 line = line.strip().split('\t')
-                btid = re.sub('[^0-9a-zA-Z]+', '-', line[0]) 
+                btid = re.sub('[^0-9a-zA-Z]+', '-', line[0])
                 btidToCt[btid] = line[0]
-                
+
         printt("looking up ENCODE accessions...")
         rows = []
         for exp in qd.getExps(url):
@@ -64,13 +65,13 @@ class DCCCres:
                     a = a.replace("-bigBed", '')
                     for t in typs:
                         if t in a:
-                            ct = a.replace(t, '')[:-1] # remove trailing hyphen
+                            ct = a.replace(t, '')[:-1]  # remove trailing hyphen
                             if not ct:
-                                continue # agnostic
+                                continue  # agnostic
                             if ct not in btidToCt:
                                 raise Exception("missing " + ct)
                             rows.append([btidToCt[ct], str(f.fileID), t])
-                        
+
         printt('***********', "drop and create", self.tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
@@ -79,7 +80,7 @@ CREATE TABLE {tableName}
 celltype text,
 dcc_accession text,
 typ text
-);""".format(tableName = self.tableName))
+);""".format(tableName=self.tableName))
 
         printt('***********', "import acceions")
         printt("rewrite rows")
@@ -94,7 +95,8 @@ typ text
 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["celltype"])
-   
+
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -106,19 +108,22 @@ def run(args, DBCONN):
             c = DCCCres(curs, assembly)
             c.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import StringIO
 import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -14,6 +19,7 @@ from exp import Exp
 from utils import Utils, printt, printWroteNumLines, cat
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
+
 
 class BuildGwas:
     def __init__(self, assembly):
@@ -62,8 +68,9 @@ class BuildGwas:
         bedFnp = os.path.join(dataF, "GWAS.v4.sorted.bed")
         self.processGwasBed(origBedFnp, bedFnp)
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
 
     if args.assembly:
         assemblies = [args.assembly]
@@ -76,16 +83,19 @@ def run(args, DBCONN):
         ig = BuildGwas(assembly)
         ig.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     run(args, None)
-        
+
+
 if __name__ == '__main__':
     main()

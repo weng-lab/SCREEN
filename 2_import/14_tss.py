@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
 from itertools import groupby
 import StringIO
 
@@ -15,6 +20,7 @@ from get_tss import Genes, Transcripts
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printt
+
 
 class AddTSS:
     def __init__(self, curs, assembly):
@@ -31,7 +37,7 @@ class AddTSS:
             rows.append([t.geneid_, tss[0], tss[1],
                          tss[2], tss[3]])
 
-        rows.sort(key = lambda x: x[0])
+        rows.sort(key=lambda x: x[0])
 
         ret = []
         for gid, group in groupby(rows, lambda x: x[0]):
@@ -63,7 +69,7 @@ ensemblid_ver text,
 chrom text,
 start integer,
 stop integer
-);""".format(tableName = tableName))
+);""".format(tableName=tableName))
 
         cols = ["ensemblid_ver", "chrom", "start", "stop"]
 
@@ -76,6 +82,7 @@ stop integer
 
         makeIndex(self.curs, tableName, ["ensemblid_ver"])
 
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -87,19 +94,22 @@ def run(args, DBCONN):
             at = AddTSS(curs, assembly)
             at.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
     return 0
+
 
 if __name__ == '__main__':
     main()

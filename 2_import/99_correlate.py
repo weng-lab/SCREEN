@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -12,6 +18,7 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, Timer
 from get_yes_no import GetYesNoToQuestion
+
 
 class Correlate:
 
@@ -24,14 +31,14 @@ class Correlate:
         with getcursor(self.DBCONN, "Correlate::exportTable") as curs:
             with gzip.open(fnp, 'wb') as f:
                 curs.copy_to(f, self.tableName, '\t',
-                             columns = ["assay", "correlations"])
+                             columns=["assay", "correlations"])
 
     def importTable(self, fnp):
         self.setupTable()
         with getcursor(self.DBCONN, "Correlate::importTable") as curs:
             with gzip.open(fnp) as f:
                 curs.copy_from(f, self.tableName, '\t',
-                               columns = ["assay", "correlations"])
+                               columns=["assay", "correlations"])
 
     def setupTable(self):
         print("dropping and creating", self.tableName, "...")
@@ -41,7 +48,7 @@ class Correlate:
             CREATE TABLE {tableName}
             (id serial PRIMARY KEY,
             assay VARCHAR(20),
-            correlations double precision[][]);""".format(tableName = self.tableName))
+            correlations double precision[][]);""".format(tableName=self.tableName))
 
     def insertmatrix(self, assay, matrix):
         print("inserting %s to table %s" % (assay, self.tableName))
@@ -49,7 +56,8 @@ class Correlate:
             curs.execute("""
 INSERT INTO {tableName} (assay, correlations)
             VALUES (%(assay)s, %(corrs)s)
-            """.format(tableName = self.tableName), {"assay": assay, "corrs": matrix})
+            """.format(tableName=self.tableName), {"assay": assay, "corrs": matrix})
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -59,12 +67,14 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def loadmatrix(fnp):
     r = []
     with open(fnp, "r") as f:
         for line in f:
             r.append([float(x) for x in line.rstrip().split(',')])
     return r
+
 
 def main():
     args = parse_args()
@@ -99,6 +109,7 @@ def main():
                     print("error in", fnp)
                     raise
     return 0
+
 
 if __name__ == '__main__':
     main()

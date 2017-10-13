@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -14,6 +20,7 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
+
 
 class ImportCREs:
     def __init__(self, DBCONN, assembly, sample):
@@ -82,7 +89,7 @@ class ImportCREs:
      gene_all_id integer[],
      gene_pc_distance integer[],
      gene_pc_id integer[]
-    ); """.format(tn = self.tableName_cre))
+    ); """.format(tn=self.tableName_cre))
 
     def doImport(self, curs):
         print('***********', "create tables")
@@ -94,7 +101,7 @@ class ImportCREs:
                     fnp = paths.fnpCreTsvs(self.assembly, "sample", fn)
             with gzip.open(fnp) as f:
                 printt("importing", fnp, "into", self.tableName_cre)
-                curs.copy_from(f, self.tableName_cre, '\t', columns = DB_COLS)
+                curs.copy_from(f, self.tableName_cre, '\t', columns=DB_COLS)
 
     def selectInto(self, curs):
         print('***********', "selecting into new table")
@@ -107,8 +114,8 @@ class ImportCREs:
         ORDER BY maxZ, chrom, start;
 
         DROP TABLE {tn};
-        """.format(tn = self.tableName_cre,
-                   ntn = self.tableName_cre_all))
+        """.format(tn=self.tableName_cre,
+                   ntn=self.tableName_cre_all))
 
     def addCol(self):
         printt("adding col...")
@@ -118,7 +125,8 @@ class ImportCREs:
 
     UPDATE {tn}
     SET ...
-    """.format(tn = self.tableName_cre_all))
+    """.format(tn=self.tableName_cre_all))
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -134,7 +142,8 @@ def run(args, DBCONN):
             # example to show how to add and populate column to
             #  master and, by inheritance, children tables...
             ic.addCol()
-        
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -142,12 +151,14 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
 
     return run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     sys.exit(main())

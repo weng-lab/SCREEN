@@ -13,6 +13,7 @@ from utils import AddPath
 AddPath(__file__, "..")
 from config import Config
 
+
 class MemCacheHelper:
     mc_pool_size = 32
 
@@ -21,12 +22,13 @@ class MemCacheHelper:
                         behaviors={"tcp_nodelay": True,
                                    "ketama": True})
 
+
 class MemCacheWrapper:
     # Borg pattern: http://code.activestate.com/recipes/66531/
     # http://sendapatch.se/projects/pylibmc/pooling.html#pylibmc.ClientPool
     __shared_state = {
-        "mc_pool" : pylibmc.ClientPool(MemCacheHelper.mc,
-                                       MemCacheHelper.mc_pool_size)}
+        "mc_pool": pylibmc.ClientPool(MemCacheHelper.mc,
+                                      MemCacheHelper.mc_pool_size)}
 
     def __init__(self, assembly, subNamespace):
         self.__dict__ = self.__shared_state

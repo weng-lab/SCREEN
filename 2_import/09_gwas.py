@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, StringIO
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import StringIO
 import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -14,6 +19,7 @@ from exp import Exp
 from utils import Utils, printt, printWroteNumLines, cat
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
+
 
 class ImportGwas:
     def __init__(self, curs, assembly):
@@ -47,7 +53,7 @@ class ImportGwas:
         author text,
         authorPubmedTrait text
         );
-        """.format(tn = self.tableNameGwas))
+        """.format(tn=self.tableNameGwas))
 
     def _gwas(self, fnp):
         printt("******************* GWAS")
@@ -93,8 +99,8 @@ class ImportGwas:
         biosample_summary text,
         {fields}
         );
-        """.format(tn = tableName,
-                   fields = ','.join([r + " real" for r in fields])))
+        """.format(tn=tableName,
+                   fields=','.join([r + " real" for r in fields])))
 
     def _enrichment(self):
         files = (("GWAS.v4.Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
@@ -141,9 +147,9 @@ class ImportGwas:
         biosample_summary = d.biosample_summary
         from {tnd} as d
         where ge.expID = d.expID
-        """.format(tne = tableName, tnd = self.tableNameDatasets))
+        """.format(tne=tableName, tnd=self.tableNameDatasets))
         printt("updated", self.curs.rowcount)
-        
+
         return header
 
     def _setupStudies(self):
@@ -159,7 +165,7 @@ class ImportGwas:
         authorPubmedTrait text,
         numLDblocks integer
         );
-        """.format(tn = self.tableNameStudies))
+        """.format(tn=self.tableNameStudies))
 
     def _studies(self, header):
         printt("******************* GWAS studies")
@@ -171,15 +177,15 @@ class ImportGwas:
     SELECT DISTINCT(authorpubmedtrait), author, pubmed, trait, COUNT(DISTINCT(ldblock))
     FROM {gwasTn}
     GROUP BY authorpubmedtrait, author, pubmed, trait
-     """.format(tn = self.tableNameStudies,
-                gwasTn = self.tableNameGwas))
+     """.format(tn=self.tableNameStudies,
+                gwasTn=self.tableNameGwas))
         printt("inserted", self.curs.rowcount)
 
         self.curs.execute("""
     SELECT authorpubmedtrait
     FROM {tn}
     ORDER BY authorpubmedtrait
-     """.format(tn = self.tableNameStudies))
+     """.format(tn=self.tableNameStudies))
         return [r[0] for r in self.curs.fetchall()]
 
     def _setupOverlap(self):
@@ -192,7 +198,7 @@ class ImportGwas:
         accession text,
         snp text
         );
-        """.format(tn = self.tableNameOverlap))
+        """.format(tn=self.tableNameOverlap))
 
     def _overlap(self, bedFnp):
         printt("******************* GWAS overlap")
@@ -256,8 +262,9 @@ class ImportGwas:
         self._studies(header)
         self._overlap(bedFnp)
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
 
     if args.assembly:
         assemblies = [args.assembly]
@@ -271,17 +278,20 @@ def run(args, DBCONN):
             ig = ImportGwas(curs, assembly)
             ig.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()
