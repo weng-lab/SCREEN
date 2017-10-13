@@ -25,20 +25,24 @@ class DualSlider extends React.Component {
 
     updateDimensions(){
 	// tighten width by button slider icon width, else button will overhang slider bar
-	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
-	const ls = linearScale(this.props.range, [0, width]);
-	const lpixels = ls(this.state.lvalue);
-	const rpixels = ls(this.state.rvalue);
-	this.setState({width, lpixels, rpixels});
+	if(this.refs.bar){
+	    const width = this.refs.bar.clientWidth - this.state.buttonWidth;
+	    const ls = linearScale(this.props.range, [0, width]);
+	    const lpixels = ls(this.state.lvalue);
+	    const rpixels = ls(this.state.rvalue);
+	    this.setState({width, lpixels, rpixels});
+	}
     }
     
     updateWithProps(p){
 	// tighten width by button slider icon width, else button will overhang slider bar
-	const width = this.refs.bar.clientWidth - this.state.buttonWidth;
-	const ls = linearScale(p.range, [0, width]);
-	const lpixels = ls(p.lvalue);
-	const rpixels = ls(p.rvalue);
-	this.setState({width, lpixels, rpixels, lvalue: p.lvalue, rvalue: p.rvalue});
+	if(this.refs.bar){
+	    const width = this.refs.bar.clientWidth - this.state.buttonWidth;
+	    const ls = linearScale(p.range, [0, width]);
+	    const lpixels = ls(p.lvalue);
+	    const rpixels = ls(p.rvalue);
+	    this.setState({width, lpixels, rpixels, lvalue: p.lvalue, rvalue: p.rvalue});
+	}
     }
 
     makeBars(){
