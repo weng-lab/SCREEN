@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import sys, os
+import sys
+import os
 import re
 
 from coord import Coord
@@ -20,12 +21,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              "../../../metadata/utils"))
 from db_utils import getcursor
 
+
 def _unpack_tuple_array(a):
     return ([i[0] for i in a], [i[1] for i in a])
+
 
 re_coord1 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+")
 re_coord2 = re.compile("^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+")
 re_coord3 = re.compile("^[cC][hH][rR][0-9XxYy][0-9]?")
+
 
 class ParseSearch:
     def __init__(self, DBCONN, assembly, kwargs):
@@ -86,9 +90,9 @@ class ParseSearch:
         interpretation = {}
 
         ret = {"cellType": None,
-               "coord_chrom" : None,
-               "coord_start" : None,
-               "coord_end" : None,
+               "coord_chrom": None,
+               "coord_start": None,
+               "coord_end": None,
                "element_type": None,
                "approved_symbol": None,
                "interpretation": {}}
@@ -160,6 +164,7 @@ class ParseSearch:
         ret["genes"] = [g.toJson() for g in genes]
         return ret
 
+
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
@@ -176,7 +181,7 @@ def main():
 
     for q in queries:
         print("***************", q)
-        ps = ParseSearch(DBCONN, assembly, {"q" : q})
+        ps = ParseSearch(DBCONN, assembly, {"q": q})
 
         output = ps.parse()
         keys = sorted(output.keys())
@@ -187,6 +192,7 @@ def main():
                     print(g)
             else:
                 print(k + ':', v)
+
 
 if __name__ == '__main__':
     main()

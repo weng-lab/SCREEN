@@ -15,7 +15,7 @@ from trackinfo import TrackInfo
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath
-    
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from coord import Coord
 from pg import PGsearch
@@ -35,20 +35,21 @@ ENSEMBL = 3
 #WWW = "http://users.wenglab.org/moorej3/cREs"
 WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
-AssayColors = {"DNase" : ["6,218,147", "#06DA93"],
-               "RNA-seq" : ["0,170,0", "", "#00aa00"],
-               "RAMPAGE" : ["214,66,202", "#D642CA"],
-               "H3K4me1" : ["255,223,0", "#FFDF00"],
-               "H3K4me2" : ["255,255,128", "#FFFF80"],
-               "H3K4me3" : ["255,0,0", "#FF0000"],
-               "H3K9ac" : ["255,121,3", "#FF7903"],
-               "H3K27ac" : ["255,205,0", "#FFCD00"],
-               "H3K27me3" : ["174,175,174", "#AEAFAE"],
-               "H3K36me3" : ["0,128,0", "#008000"],
-               "H3K9me3" : ["180,221,228", "#B4DDE4"],
-               "Conservation" : ["153,153,153", "#999999"],
-               "TF ChIP-seq" : ["18,98,235", "#1262EB"],
-               "CTCF" : ["0,176,240", "#00B0F0"]}
+AssayColors = {"DNase": ["6,218,147", "#06DA93"],
+               "RNA-seq": ["0,170,0", "", "#00aa00"],
+               "RAMPAGE": ["214,66,202", "#D642CA"],
+               "H3K4me1": ["255,223,0", "#FFDF00"],
+               "H3K4me2": ["255,255,128", "#FFFF80"],
+               "H3K4me3": ["255,0,0", "#FF0000"],
+               "H3K9ac": ["255,121,3", "#FF7903"],
+               "H3K27ac": ["255,205,0", "#FFCD00"],
+               "H3K27me3": ["174,175,174", "#AEAFAE"],
+               "H3K36me3": ["0,128,0", "#008000"],
+               "H3K9me3": ["180,221,228", "#B4DDE4"],
+               "Conservation": ["153,153,153", "#999999"],
+               "TF ChIP-seq": ["18,98,235", "#1262EB"],
+               "CTCF": ["0,176,240", "#00B0F0"]}
+
 
 class TrackhubDb:
     def __init__(self, ps, cacheW, db, browser):
@@ -57,7 +58,7 @@ class TrackhubDb:
         self.db = db
         self.browser = browser
         self.fileIDs = set()
-        
+
     def ucsc_trackhub(self, *args, **kwargs):
         #print("ucsc **************** args:", args)
         uuid = args[0]
@@ -132,13 +133,13 @@ class TrackhubDb:
         uuid = args[0]
 
         if 3 != len(args):
-            return { "error" : "wrong num of args", "args" : args }
+            return {"error": "wrong num of args", "args": args}
 
         try:
             info = self.db.get(uuid)
         except:
             raise
-            return {"error" : "couldn't find uuid", "args" : args }
+            return {"error": "couldn't find uuid", "args": args}
 
         self.assembly = info["assembly"]
 
@@ -147,29 +148,28 @@ class TrackhubDb:
             self.hubNum = loc.split('_')[1].split('.')[0]
             return self.makeTrackDbWashU(info["reAccession"], info["j"])
 
-        return {"error" : "invalid path", "args" : args }
+        return {"error": "invalid path", "args": args}
 
     def makeGenomes(self):
         return """genome\t{assembly}
-trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
-                                                   hubNum = self.hubNum)
+trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
+                                                   hubNum=self.hubNum)
 
     def makeHub(self):
         f = StringIO.StringIO()
         t = "ENCODE Candidate Regulatory Elements " + self.assembly
         if Config.ribbon:
             t += " (%s)" % Config.ribbon
-        
+
         for r in [["hub", t],
                   ["shortLabel", t],
                   ["longLabel", t],
-                  ["genomesFile", "genomes_{hubNum}.txt".format(hubNum=
-                                                                self.hubNum)],
+                  ["genomesFile", "genomes_{hubNum}.txt".format(hubNum=self.hubNum)],
                   ["email", "zhiping.weng@umassmed.edu"]]:
             f.write(" ".join(r) + "\n")
         return f.getvalue()
 
-    def generalCREs(self, showCombo, hideAll = True):
+    def generalCREs(self, showCombo, hideAll=True):
         base = os.path.join("http://bib7.umassmed.edu/~purcarom",
                             "encyclopedia/Version-4",
                             "ver10", self.assembly)
@@ -188,7 +188,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                     if a == "Enhancer":
                         a = "H3K27ac"
                     if a == "Promoter":
-                        a = "H3K4me3" 
+                        a = "H3K4me3"
                     t += PredictionTrack("general cREs (9 state) " + a,
                                          self.priority, url,
                                          hideAll).track("general cREs (9 state) " + a)
@@ -197,13 +197,13 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             url = os.path.join(base, self.assembly + "-cREs-V10.bed.gz")
             t = Track("cREs",
                       self.priority, url,
-                      type = "hammock").track_washu()
+                      type="hammock").track_washu()
             self.priority += 1
         return t
 
-    def trackhubExp(self, trackInfo, stname, hideAll = False):
+    def trackhubExp(self, trackInfo, stname, hideAll=False):
         self.fileIDs.add(trackInfo.fileID)
-        
+
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
         if self.browser in [WASHU, ENSEMBL]:
             url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
@@ -211,14 +211,14 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
 
         desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
-        
+
         if self.browser in [UCSC, ENSEMBL]:
             track = BigWigTrack(desc, self.priority, url,
                                 trackInfo.color(), stname,
-                                trackInfo.signalMax(), hide = hideAll).track(shortLabel)
+                                trackInfo.signalMax(), hide=hideAll).track(shortLabel)
         else:
             track = BigWigTrack(desc, self.priority, url,
-                                trackInfo.color(), hide = hideAll).track_washu()
+                                trackInfo.color(), hide=hideAll).track_washu()
         self.priority += 1
         return track
 
@@ -231,7 +231,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
         for tct in cts:
             ct = tct["ct"]
             ret[ct] = {}
-            ctInfos = cache.datasets.byCellType[ct] # one per assay
+            ctInfos = cache.datasets.byCellType[ct]  # one per assay
             displayCT = ctInfos[0].get("cellTypeDesc")
             if not displayCT:
                 displayCT = ctInfos[0]["cellTypeName"]
@@ -265,7 +265,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
     def getLines(self, accession, j):
         self.priority = 1
 
-        self.lines  = []
+        self.lines = []
         if self.browser in [UCSC, ENSEMBL]:
             self.lines += [self.generalCREs(j["showCombo"])]
 
@@ -284,15 +284,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
             if not ct:
                 topN = 5
                 topCellTypes = cre.topTissues()["dnase"]
-                tcts = sorted(topCellTypes, key = lambda x: x["one"],
+                tcts = sorted(topCellTypes, key=lambda x: x["one"],
                               reverse=True)[:topN]
             else:
-                tcts = [{"ct" : ct, "tissue" : ct}]
+                tcts = [{"ct": ct, "tissue": ct}]
         else:
             if 2 == j["version"]:
                 tcts = []
                 for ct in j["cellTypes"]:
-                    tcts.append({"ct" : ct, "tissue" : ct})
+                    tcts.append({"ct": ct, "tissue": ct})
 
         tracksByCt = self._getCreTracks(tcts)
 
@@ -303,27 +303,27 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly = self.assembly,
                                                        j["showCombo"],
                                                        tracksByType["signal"],
                                                        tracksByType["9state"])
-                    
+
     def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
-                        signals, nineState, moreTracks = True, hideAll = False,
-                        signalOnly = False):
+                        signals, nineState, moreTracks=True, hideAll=False,
+                        signalOnly=False):
         tn = tct.replace(" ", "_")
         stname = "super_" + tn
 
         supershow = "on show"
         if hideAll:
             supershow = "on"
-        
+
         ret = ["""
 track {stname}
 superTrack {supershow}
 group regulation
 shortLabel {tct_short}
 longLabel {tct_long}
-        """.format(supershow = supershow,
-                   stname = stname,
-                   tct_short = tct[:17],
-                   tct_long = tct[:80])]
+        """.format(supershow=supershow,
+                   stname=stname,
+                   tct_short=tct[:17],
+                   tct_long=tct[:80])]
 
         shortLabel = "cREs in " + tct
         title = ' '.join(["cREs in", tct, '(5 group)'])
@@ -332,12 +332,12 @@ longLabel {tct_long}
         ret.append("""
 track {tn}
 parent {stname}
-""".format(tn = "fivegroup_" + tn,  stname = stname) + t)
+""".format(tn="fivegroup_" + tn, stname=stname) + t)
 
-        assays  = {"dnase" : "DNase",
-                   "h3k27ac" : "H3k27ac",
-                   "h3k4me3" : "H3K4me3",
-                   "ctcf" : "CTCF"}
+        assays = {"dnase": "DNase",
+                  "h3k27ac": "H3k27ac",
+                  "h3k4me3": "H3K4me3",
+                  "ctcf": "CTCF"}
 
         for assay, displayCT, turl in nineState:
             a = assay
@@ -354,7 +354,7 @@ parent {stname}
             ret.append("""
 track {tn}
 parent {stname}
-""".format(tn = "ninegroup_" + tn, stname = stname) + t)
+""".format(tn="ninegroup_" + tn, stname=stname) + t)
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname, hideAll))
@@ -384,7 +384,7 @@ parent {stname}
                 else:
                     c = AssayColors["TF ChIP-seq"][0]
         return c
-    
+
     def mtTrackBigWig(self, tct, mt, bw, stname):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
 
@@ -404,7 +404,7 @@ parent {stname}
         desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
                          mt["tf"], tct])
         shortLabel = desc[:17]
-                    
+
         track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
                             stname, True).track(shortLabel)
         self.priority += 1
@@ -429,13 +429,13 @@ parent {stname}
 
         if 0:
             pos = [self.makePos(x) for x in self.re_pos]
-            lines = [{"type" : "splinters", "list" : sorted(pos)}] + lines
+            lines = [{"type": "splinters", "list": sorted(pos)}] + lines
 
         return json.dumps(lines)
 
     def makeAllTracks(self, assembly):
         self.priority = 1
-        self.lines  = []
+        self.lines = []
         self.assembly = assembly
 
         tracksByCt = self.loadAllMetadata(assembly)
@@ -445,14 +445,14 @@ parent {stname}
             for fileID, tct, url in tracksByType["cts"]:
                 if self.browser in [UCSC, ENSEMBL]:
                     self.lines += self.makeSuperTracks(cache, fileID, tct, url,
-                                                       False, #j["showCombo"],
+                                                       False,  # j["showCombo"],
                                                        tracksByType["signal"],
                                                        tracksByType["9state"],
                                                        True, True,
-                                                       signalOnly = True)
+                                                       signalOnly=True)
         for line in self.lines:
             print(line)
-                    
+
     def loadAllMetadata(self, assembly):
         cache = self.cacheW[self.assembly]
         assaymap = cache.assaymap
@@ -460,7 +460,7 @@ parent {stname}
 
         ret = OrderedDict()
 
-        for ct, ctInfos in cache.datasets.byCellType.iteritems(): 
+        for ct, ctInfos in cache.datasets.byCellType.iteritems():
             displayCT = ctInfos[0].get("cellTypeDesc")
             if not displayCT:
                 displayCT = ctInfos[0]["cellTypeName"]
@@ -469,7 +469,7 @@ parent {stname}
             ret[ct]["signal"] = []
             ret[ct]["cts"] = []
             ret[ct]["9state"] = []
-            for expInfo in ctInfos: # per assay
+            for expInfo in ctInfos:  # per assay
                 ctwu = ct.replace("'", "_").replace('"', '_')
                 tissue = expInfo["tissue"]
                 fileIDs = []
@@ -488,10 +488,12 @@ parent {stname}
                 ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="hg19")
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
@@ -506,7 +508,7 @@ def main():
     from pg_common import PGcommon
     from db_trackhub import DbTrackhub
     from cached_objects import CachedObjectsWrapper
-    
+
     DBCONN = db_connect(os.path.realpath(__file__))
 
     ps = PostgresWrapper(DBCONN)
@@ -516,6 +518,7 @@ def main():
     tdb = TrackhubDb(None, ps, cacheW, db, UCSC)
     for assembly in [args.assembly]:
         tdb.makeAllTracks(assembly)
-    
+
+
 if __name__ == '__main__':
     main()

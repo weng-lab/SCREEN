@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
-import json #import ujson as json
+import os
+import sys
+import json  # import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
 
@@ -26,15 +28,18 @@ from config import Config
 
 from pcommon import doIntersection, runIntersectJob, processResults
 
+
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
             "biosample_term_name": exp.biosample_term_name,
             "assay_term_name": exp.assay_term_name,
             "target": exp.target,
-            "label": exp.label }
+            "label": exp.label}
+
 
 emap = {"tf": "TF", "histone": "histone"}
+
 
 def makeJobs(assembly, rootpath):
     species = "human" if assembly == "hg19" else "mouse"
@@ -49,7 +54,8 @@ def makeJobs(assembly, rootpath):
     random.shuffle(allExpsIndiv)
     total = len(allExpsIndiv)
 
-    i = 0; jobs = []
+    i = 0
+    jobs = []
     for exp, etype in allExpsIndiv:
         i += 1
         fnp = os.path.join(rootpath, "_".join((emap[etype], species)), exp["fnp"])
@@ -61,15 +67,17 @@ def makeJobs(assembly, rootpath):
                          "label": exp["mark"] if etype == "histone" else exp["factor"],
                          "total": total,
                          "assembly": assembly,
-                         "etype": etype })
+                         "etype": etype})
         else:
             print("warning: file %s not found" % fnp)
 
-    print("will run %d jobs" % len(jobs), file = sys.stderr)
+    print("will run %d jobs" % len(jobs), file=sys.stderr)
     return jobs
+
 
 def cistromeIntersectJob(jobargs, bedfnp):
     return (jobargs, runIntersectJob(jobargs, bedfnp))
+
 
 def computeIntersections(args, assembly):
     bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
@@ -79,7 +87,7 @@ def computeIntersections(args, assembly):
 
     jobs = makeJobs(assembly, paths.cistrome("data", "raw"))
 
-    results = Parallel(n_jobs = args.j)(
+    results = Parallel(n_jobs=args.j)(
         delayed(cistromeIntersectJob)(job, bedFnp)
         for job in jobs)
 
@@ -89,6 +97,7 @@ def computeIntersections(args, assembly):
     processResults(results, paths.path(assembly, "extras",
                                        "cistromeIntersections.json.gz"))
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
@@ -96,6 +105,7 @@ def parse_args():
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -117,6 +127,7 @@ def main():
         computeIntersections(args, assembly)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, argparse
+import os
+import sys
+import argparse
 from importlib import import_module
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
@@ -20,6 +22,7 @@ rna1 = import_module('01_json_import')
 rna2 = import_module('02_init')
 rna3 = import_module('03_genes')
 
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -30,6 +33,7 @@ def run(args, DBCONN):
         rna2.run(args, DBCONN)
         rna3.run(args, DBCONN)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -37,11 +41,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

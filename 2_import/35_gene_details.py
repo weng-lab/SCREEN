@@ -21,6 +21,7 @@ from dbconnect import db_connect
 from constants import paths
 from config import Config
 
+
 class Genes:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -32,10 +33,10 @@ class Genes:
         self._doIndex()
 
     def _doIndex(self):
-        makeIndex(self.curs, self.tableName, ["startpos","endpos","feature"])
+        makeIndex(self.curs, self.tableName, ["startpos", "endpos", "feature"])
 
     def _import(self):
-        fnp,ftype = paths.gene_files_path[self.assembly]
+        fnp, ftype = paths.gene_files_path[self.assembly]
         printt("parsing", fnp)
         with gzip.open(fnp, 'r') as f:
             lines = f.readlines()
@@ -77,7 +78,7 @@ class Genes:
                     str(parent_value),
                     str(gene_id),
                     str(transcript_id_value)
-                    ]))
+                ]))
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
@@ -90,7 +91,7 @@ exon_number integer,
 strand CHAR(5),
 parent VARCHAR(50),
 gene_id VARCHAR(50),
-transcript_id VARCHAR(50));""".format(tableName = self.tableName))
+transcript_id VARCHAR(50));""".format(tableName=self.tableName))
         cols = [
             'seqname',
             'startpos',
@@ -101,7 +102,7 @@ transcript_id VARCHAR(50));""".format(tableName = self.tableName))
             'parent',
             'gene_id',
             'transcript_id'
-            ]
+        ]
         outF = StringIO.StringIO()
         for r in outRows:
             outF.write(r + '\n')
@@ -121,11 +122,13 @@ def run(args, DBCONN):
             c = Genes(curs, assembly)
             c.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -134,6 +137,7 @@ def main():
     run(args, DBCONN)
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

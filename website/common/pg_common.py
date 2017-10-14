@@ -20,13 +20,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
+
 class PGcommonWrapper:
     def __init__(self, pg):
         self.assemblies = Config.assemblies
-        self.pgs = {a : PGcommon(pg, a) for a in self.assemblies}
+        self.pgs = {a: PGcommon(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
+
 
 class PGcommon(GetOrSetMemCache):
     def __init__(self, pg, assembly):
@@ -39,7 +41,7 @@ class PGcommon(GetOrSetMemCache):
             curs.execute("""
 SELECT idx, celltype, rankmethod
 FROM {tn}
-""".format(tn = self.assembly + "_rankcelltypeindexex"))
+""".format(tn=self.assembly + "_rankcelltypeindexex"))
             ret = {}
             for r in curs.fetchall():
                 rank_method = r[2]
@@ -51,13 +53,13 @@ FROM {tn}
 
     def makeCtMap(self):
         amap = {"DNase": "dnase",
-                "H3K4me3": "promoter", # FIXME: this could be misleading
-                "H3K27ac": "enhancer", # FIXME: this too
+                "H3K4me3": "promoter",  # FIXME: this could be misleading
+                "H3K27ac": "enhancer",  # FIXME: this too
                 "CTCF": "ctcf",
-                "Enhancer" : "Enhancer",
-                "Promoter" : "Promoter",
-                "Insulator" : "Insulator"
-        }
+                "Enhancer": "Enhancer",
+                "Promoter": "Promoter",
+                "Insulator": "Insulator"
+                }
         rmInfo = self.rankMethodToIDxToCellType()
         return {amap[k]: v for k, v in rmInfo.iteritems() if k in amap}
 
@@ -67,9 +69,9 @@ FROM {tn}
             curs.execute("""
 SELECT cellTypeName, pgidx
 FROM {tn}
-""".format(tn = tableName))
+""".format(tn=tableName))
             rows = curs.fetchall()
-        return {r[0] : r[1] for r in rows}
+        return {r[0]: r[1] for r in rows}
 
     def datasets(self, assay):
         with getcursor(self.pg.DBCONN, "datasets") as curs:
@@ -77,21 +79,21 @@ FROM {tn}
 SELECT cellTypeName, expID, fileID
 FROM {tn}
 where assay = %s
-""".format(tn = self.assembly + "_datasets")
+""".format(tn=self.assembly + "_datasets")
             curs.execute(q, (assay, ))
             rows = curs.fetchall()
             if 0 == curs.rowcount:
                 raise Exception("no rows found--bad assay? " + assay)
-        return {r[0] : (r[1], r[2]) for r in rows}
+        return {r[0]: (r[1], r[2]) for r in rows}
 
     def datasets_multi(self, assay):
         with getcursor(self.pg.DBCONN, "datasets",
-                       cursor_factory = psycopg2.extras.NamedTupleCursor) as curs:
+                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             q = """
 SELECT *
 FROM {tn}
 where assays = %s
-""".format(tn = self.assembly + "_datasets_multi")
+""".format(tn=self.assembly + "_datasets_multi")
             curs.execute(q, (assay, ))
             rows = curs.fetchall()
             if 0 == curs.rowcount:
@@ -101,4 +103,3 @@ where assays = %s
             r = r._asdict()
             ret[r["celltypename"]] = r
         return ret
-

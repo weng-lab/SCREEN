@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import sys, os
+import sys
+import os
 from configparser import ConfigParser
 import json
+
 
 class Config:
     fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")

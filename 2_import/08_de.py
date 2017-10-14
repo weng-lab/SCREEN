@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -12,6 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/')
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex
 from files_and_paths import Dirs
+
 
 class ImportDE:
     def __init__(self, curs):
@@ -31,7 +37,7 @@ class ImportDE:
     log2FoldChange real,
     padj numeric
     );
-    """.format(tn = self.tableName))
+    """.format(tn=self.tableName))
 
         printt("dropping and creating", self.ctTableName)
         self.curs.execute("""
@@ -42,7 +48,7 @@ class ImportDE:
     biosample_summary text,
     tissues text
     );
-    """.format(tn = self.ctTableName))
+    """.format(tn=self.ctTableName))
 
     def setupCellTypes(self, cts):
         outF = StringIO.StringIO()
@@ -57,8 +63,8 @@ class ImportDE:
 
         self.curs.execute("""
         SELECT id, deCtName FROM {tn}
-    """.format(tn = self.ctTableName))
-        ctsToId = {r[1] : r[0] for r in self.curs.fetchall()}
+    """.format(tn=self.ctTableName))
+        ctsToId = {r[1]: r[0] for r in self.curs.fetchall()}
         return ctsToId
 
     def loadFileLists(self):
@@ -76,7 +82,7 @@ class ImportDE:
 
     def readFile(self, fnp):
         with gzip.open(fnp) as f:
-            f.readline() # consume header
+            f.readline()  # consume header
             data = []
             skipped = 0
             for r in f:
@@ -104,7 +110,7 @@ class ImportDE:
         for fnp, ct1, ct2 in fnps:
             counter += 1
             if sample:
-                #if "_0" not in ct1 and "_0" not in ct2:
+                # if "_0" not in ct1 and "_0" not in ct2:
                 if "limb_15" not in ct1 or "limb_11" not in ct2:
                     continue
             printt(counter, len(fnps), fnp)
@@ -122,6 +128,7 @@ class ImportDE:
     def index(self):
         makeIndex(self.curs, self.tableName, ["leftCtId", "rightCtId", "ensembl"])
 
+
 def run(args, DBCONN):
     printt('***********', "mm10")
     with getcursor(DBCONN, "import DEs") as curs:
@@ -131,6 +138,7 @@ def run(args, DBCONN):
         ide.setupAll(args.sample)
         ide.index()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--index', action="store_true", default=False)
@@ -138,11 +146,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     return run(args, DBCONN)
+
 
 if __name__ == '__main__':
     main()

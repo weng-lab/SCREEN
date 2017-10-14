@@ -2,6 +2,7 @@ from natsort import natsorted
 
 from helper_grouper import HelperGrouper
 
+
 class Rampage:
     def __init__(self, assembly, pgSearch, cache):
         self.assembly = assembly
@@ -34,9 +35,9 @@ class Rampage:
         ensemblid_ver = gene["ensemblid_ver"]
         transcripts = self.pgSearch.rampageByGene(ensemblid_ver)
         if not transcripts:
-            return {"sortedTranscripts" : [],
-                    "tsss" : [],
-                    "gene" : ""}
+            return {"sortedTranscripts": [],
+                    "tsss": [],
+                    "gene": ""}
 
         ri = self.pgSearch.rampage_info()
         byTranscript = {}
@@ -45,6 +46,6 @@ class Rampage:
             byTranscript[transcript["transcript"]] = info
 
         transcripts = natsorted(byTranscript.keys())
-        return {"sortedTranscripts" : transcripts,
-                "tsss" : byTranscript,
-                "gene" : gene}
+        return {"sortedTranscripts": transcripts,
+                "tsss": byTranscript,
+                "gene": gene}

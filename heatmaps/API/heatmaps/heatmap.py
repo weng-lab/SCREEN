@@ -1,19 +1,22 @@
 from ctypes import *
 from base import _c_heatmaps
 
+
 class Tree:
-    def __init__(self, Label = -1, Left = None, Right = None):
+    def __init__(self, Label=-1, Left=None, Right=None):
         self.Left = Left
         self.Right = Right
         self.Label = Label
-        
-    def _print(self, prefix = "", labels = []):
+
+    def _print(self, prefix="", labels=[]):
         if self.Label < 0 or self.Label >= len(labels):
             print(prefix + str(self.Label))
         else:
             print(prefix + str(labels[self.Label]))
-        if self.Left is not None: self.Left._print(prefix + "  ", labels)
-        if self.Right is not None: self.Right._print(prefix + "  ", labels)
+        if self.Left is not None:
+            self.Left._print(prefix + "  ", labels)
+        if self.Right is not None:
+            self.Right._print(prefix + "  ", labels)
 
     def depth(self):
         if self.Left is not None:
@@ -24,19 +27,19 @@ class Tree:
             return 1 + self.Right.depth()
         return 1
 
-    def to_json(self, labels = [], root_depth = 0):
+    def to_json(self, labels=[], root_depth=0):
         if self.Left is not None and self.Right is not None:
             return {"name": "",
                     "children": [self.Right.to_json(labels, root_depth - 1),
-                                 self.Left.to_json(labels, root_depth - 1) ]}
+                                 self.Left.to_json(labels, root_depth - 1)]}
         if root_depth > 0:
             return {"name": "",
-                    "children": [self.to_json(labels, root_depth - 1)] }
+                    "children": [self.to_json(labels, root_depth - 1)]}
         name = str(self.Label)
         if self.Label >= 0 and self.Label < len(labels):
             name = labels[self.Label]
         return {"name": name}
-        
+
     @staticmethod
     def from_list(lst):
         l = (len(lst) + 1) * 2
@@ -49,17 +52,21 @@ class Tree:
             nodes[x + len(lst) + 1].Right = nodes[p % l]
         return nodes[-1]
 
+
 """
 "   python wrapper of a heatmap
 """
+
+
 class Heatmap:
 
     @staticmethod
     def _collapse_2d_arr(a):
         retval = []
-        for r in a: retval += r
+        for r in a:
+            retval += r
         return retval
-    
+
     def __init__(self, values):
         self.values = values
         self.width = len(values)
@@ -93,7 +100,7 @@ class Heatmap:
         roworder = [0 for i in range(0, self.width * 2 - 1)]
         output = self._do_cluster(_c_heatmaps.simple_cluster, [roworder])
         return (output[:self.width], output[self.width:])
-    
+
     def cluster_by_cols(self):
         global _c_heatmaps
         colorder = [0 for i in range(0, self.height * 2 - 1)]
@@ -107,6 +114,7 @@ class Heatmap:
         rowoutput, coloutput = self._do_cluster(_c_heatmaps.cluster_by_both, [roworder, colorder])
         return ((rowoutput[:self.width], rowoutput[self.width:]),
                 (coloutput[:self.height], coloutput[self.height:]))
+
 
 """
 "   this region prepares CTypes to make heatmap-related calls

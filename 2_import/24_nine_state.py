@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 import StringIO
 
 from determine_tissue import DetermineTissue
@@ -25,6 +31,7 @@ from pg_common import PGcommon
 from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
 
+
 class NineState:
     def __init__(self, curs, assembly, pg):
         self.curs = curs
@@ -39,7 +46,7 @@ class NineState:
         self._doImport()
         self._doIndex()
         self._doUpdate()
-        
+
     def _setupTable(self):
         printt("drop and create", self.tableName)
         self.curs.execute("""
@@ -54,22 +61,22 @@ class NineState:
         h3k4me3 text,
         h3k27ac text,
         ctcf text
-        );""".format(tn = self.tableName))
+        );""".format(tn=self.tableName))
 
     def _doImport(self):
         printt("reading", self.inFnp)
         with open(self.inFnp) as f:
             rows = [line.rstrip('\n').split('\t') for line in f]
         printt("rows", "{:,}".format(len(rows)))
-        
+
         mc = MemCacheWrapper(Config.memcache)
-        qd = QueryDCC(auth = False, cache = mc)
-        
+        qd = QueryDCC(auth=False, cache=mc)
+
         printt("rewrite rows")
         outF = StringIO.StringIO()
         for r in rows:
             fileIDs = filter(lambda x: x.startswith("EN"),
-                            [r[2], r[3], r[4], r[5]])
+                             [r[2], r[3], r[4], r[5]])
             for fileID in fileIDs:
                 exp = qd.getExpFromFileID(fileIDs[0])
                 tissue = DetermineTissue.TranslateTissue(self.assembly, exp)
@@ -79,7 +86,7 @@ class NineState:
         outF.seek(0)
         cols = ["cellTypeName", "cellTypeDesc", "dnase", "h3k4me3",
                 "h3k27ac", "ctcf", "assembly", "tissue"]
-        self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
 
     def _doUpdate(self):
@@ -95,13 +102,14 @@ class NineState:
         SET cellTypeDesc = ns.cellTypeDesc
         FROM {tn} as ns
         where ds.cellTypeName = ns.cellTypeName
-    """.format(tn = self.tableName, tncres = self.assembly + "_datasets"))
+    """.format(tn=self.tableName, tncres=self.assembly + "_datasets"))
         if 0 == self.curs.rowcount:
             raise Exception("error: no cRE rows updated")
         printt("updated", "{:,}".format(self.curs.rowcount))
 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["cellTypeName", "cellTypeDesc"])
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -119,11 +127,13 @@ def run(args, DBCONN):
         with db_connect_single(os.path.realpath(__file__)) as conn:
             vacumnAnalyze(conn, assembly + "_cre_all", [])
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -131,6 +141,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     return run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()

@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, StringIO
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from utils import Utils, eprint, AddPath
@@ -22,6 +28,7 @@ from cre import CRE
 
 from collections import namedtuple
 CREnt = namedtuple('CREnt', ["chrom", "start", "stop", "mpName", "accession"])
+
 
 class CheckCellTypes:
     def __init__(self, DBCONN, assembly):
@@ -71,7 +78,7 @@ class CheckCellTypes:
     def run(self):
         fnp = paths.path(self.assembly, "raw", "cREs.bed")
         cmds = ["cat", fnp,
-                '|', 
+                '|',
                 """awk 'BEGIN {srand()} !/^$/ { if(rand() <= .00001) print $0}'"""]
         cres = [x.rstrip('\n').split('\t') for x in Utils.runCmds(cmds) if x]
         cres = filter(lambda x: x[0] in chroms[self.assembly], cres)
@@ -94,16 +101,18 @@ class CheckCellTypes:
                     eprint(zscore)
                     eprint("from DB lookup")
                     eprint(zscoreDb)
-                    #eprint(allRanks)
+                    # eprint(allRanks)
                     raise Exception("error")
                 sys.stdout.write('.',)
             print(cre.accession, "ok")
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -120,6 +129,7 @@ def main():
         ctt.run()
 
     return 0
+
 
 if __name__ == '__main__':
     main()

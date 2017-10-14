@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -12,6 +18,7 @@ from get_tss import Genes
 from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
+
 
 class GWASsnps:
     def __init__(self, curs, assembly):
@@ -30,12 +37,12 @@ chrom text,
 start integer,
 stop integer
 );
-""".format(tableName = tableName))
+""".format(tableName=tableName))
 
-        fns = {"mm10" : "snps142common.mm10.bed.gz",
-               "hg19" : "snps144common.hg19.bed.gz"}
+        fns = {"mm10": "snps142common.mm10.bed.gz",
+               "hg19": "snps144common.hg19.bed.gz"}
         fnp = os.path.join(Dirs.dbsnps, fns[self.assembly])
-        
+
         printt("importing", fnp)
         with gzip.open(fnp) as f:
             cols = ["chrom", "start", "stop", "snp"]
@@ -44,10 +51,12 @@ stop integer
 
         makeIndex(self.curs, tableName, ["snp"])
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -61,6 +70,7 @@ def main():
             g.run()
 
     return 0
+
 
 if __name__ == '__main__':
     main()

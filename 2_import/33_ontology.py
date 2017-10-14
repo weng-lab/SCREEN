@@ -17,6 +17,7 @@ from dbconnect import db_connect
 from constants import paths
 from config import Config
 
+
 class Links:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -41,7 +42,7 @@ CREATE TABLE {tableName}
 
 
 
-);""".format(tableName = self.tableName))
+);""".format(tableName=self.tableName))
 
         printt('***********', "import links")
         fnp = paths.path(self.assembly, "Gene-Links.v0.txt.gz")
@@ -53,9 +54,10 @@ CREATE TABLE {tableName}
 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["cre"])
-   
+
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] # Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -65,19 +67,22 @@ def run(args, DBCONN):
             c = Links(curs, assembly)
             c.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
-        
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

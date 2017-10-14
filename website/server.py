@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
-import cherrypy, os, sys, argparse, time
+import cherrypy
+import os
+import sys
+import argparse
+import time
 import socket
-import psycopg2, psycopg2.pool
+import psycopg2
+import psycopg2.pool
 
 import cherrys
 cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
@@ -18,6 +23,7 @@ from utils import Utils, AddPath
 AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
+
 
 class WebServerConfig:
     def __init__(self, siteName, production):
@@ -47,16 +53,17 @@ class WebServerConfig:
 
         return {
             '/': {
-                'tools.sessions.on' : True,
-                'tools.sessions.storage_type' : 'redis',
-                'tools.sessions.host' : redisHost,
-                'tools.sessions.locking' : 'explicit'
+                'tools.sessions.on': True,
+                'tools.sessions.storage_type': 'redis',
+                'tools.sessions.host': redisHost,
+                'tools.sessions.locking': 'explicit'
             },
-            '/static' : {
-                'tools.staticdir.on' : True,
-                'tools.staticdir.dir' : self.staticDir
-                }
+            '/static': {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': self.staticDir
+            }
         }
+
 
 def cors():
     # from https://stackoverflow.com/a/28065698
@@ -65,11 +72,12 @@ def cors():
         # see http://www.w3.org/TR/cors/#cross-origin-request-with-preflight-0
         cherrypy.response.headers['Access-Control-Allow-Methods'] = 'POST'
         cherrypy.response.headers['Access-Control-Allow-Headers'] = 'content-type'
-        cherrypy.response.headers['Access-Control-Allow-Origin']  = '*'
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         # tell CherryPy no avoid normal handler
         return True
     else:
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -78,6 +86,7 @@ def parse_args():
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--port', default=8000, type=int)
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
@@ -102,12 +111,13 @@ def main():
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,
                                 'server.thread_pool': 30,
-                                'log.screen' : False,
-                                'log.access_file' : "",
-                                'log.error_file' : wsconfig.errorFnp
+                                'log.screen': False,
+                                'log.access_file': "",
+                                'log.error_file': wsconfig.errorFnp
                                 })
     cherrypy.engine.start()
     cherrypy.engine.block()
+
 
 if __name__ == "__main__":
     sys.exit(main())

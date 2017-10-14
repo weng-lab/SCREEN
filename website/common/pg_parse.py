@@ -20,13 +20,15 @@ from db_utils import getcursor
 AddPath(__file__, "../../common")
 from cre_utils import isaccession, isclose, checkChrom, checkAssembly
 
+
 class PGparseWrapper:
     def __init__(self, pg):
         self.assemblies = Config.assemblies
-        self.pgs = {a : PGparse(pg, a) for a in self.assemblies}
+        self.pgs = {a: PGparse(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
+
 
 class PGparse(GetOrSetMemCache):
     def __init__(self, pg, assembly):
@@ -41,7 +43,7 @@ class PGparse(GetOrSetMemCache):
 SELECT chrom, start, stop
 FROM {tn}
 WHERE snp = %s
-""".format(tn = self.assembly + "_snps"), (s, ))
+""".format(tn=self.assembly + "_snps"), (s, ))
             r = curs.fetchone()
             if r:
                 return Coord(r[0], r[1], r[2])
@@ -53,7 +55,7 @@ WHERE snp = %s
 SELECT gi.approved_symbol
 FROM {assembly}_gene_info gi
 WHERE gi.id = %s
-            """.format(assembly = self.assembly), (_id,))
+            """.format(assembly=self.assembly), (_id,))
             rows = curs.fetchall()
         if not rows:
             return None
@@ -74,11 +76,11 @@ ON gi.id = ac.pointer
 WHERE gi.approved_symbol = %s
 ORDER BY sm DESC
 LIMIT 50
-                """.format(assembly = self.assembly), (slo, s))
+                """.format(assembly=self.assembly), (slo, s))
             rows = curs.fetchall()
         if rows:
             r = rows[0]
-            if isclose(1, r[7]): # similarity
+            if isclose(1, r[7]):  # similarity
                 return [GeneParse(self.assembly, r, s, usetss, tssDist)]
         return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
@@ -97,7 +99,7 @@ ON gi.id = ac.pointer
 WHERE ac.name %% %s
 ORDER BY sm DESC
 LIMIT 50
-                """.format(assembly = self.assembly),
+                """.format(assembly=self.assembly),
                          (slo, slo))
             rows = curs.fetchall()
         return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
@@ -118,13 +120,13 @@ FROM {tn}
 WHERE maxZ >= 1.64
 AND chrom = %s
 AND int4range(start, stop) && int4range(%s, %s)
-""".format(tn = self.assembly + "_cre_all"),
-                         (coord.chrom, coord.start, coord.end))
+""".format(tn=self.assembly + "_cre_all"),
+                (coord.chrom, coord.start, coord.end))
             if curs.fetchone():
                 return True
         return False
 
-    def _find_celltype(self, q, rev = False):
+    def _find_celltype(self, q, rev=False):
         p = q.split()
         interpretation = None
 

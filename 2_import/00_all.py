@@ -16,6 +16,7 @@ from utils import AddPath, printt
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
 
+
 def runAll(args, DBCONN, startIdx, skipIdx):
 
     steps = OrderedDict()
@@ -43,7 +44,8 @@ def runAll(args, DBCONN, startIdx, skipIdx):
         f = steps[name]
         printt("**********************************************", name)
         f(args, DBCONN)
-        
+
+
 def vacumnAnalyze(conn, tableName):
     # http://stackoverflow.com/a/1017655
     print("about to vacuum analyze", tableName)
@@ -52,6 +54,7 @@ def vacumnAnalyze(conn, tableName):
     curs = conn.cursor()
     curs.execute("vacuum analyze " + tableName)
     conn.set_isolation_level(old_isolation_level)
+
 
 def vacAll(DBCONN):
     with getcursor(DBCONN, "pg") as curs:
@@ -63,6 +66,7 @@ def vacAll(DBCONN):
         vacumnAnalyze(conn, t)
         DBCONN.putconn(conn)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--vac', action="store_true", default=False)
@@ -72,6 +76,7 @@ def parse_args():
     parser.add_argument("--skip", type=int, default=-1)
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -83,21 +88,22 @@ def main():
 
     # http://stackoverflow.com/a/14903641
     class PassedArgs(object):
-         def __init__(self, **kw):
-             self.__dict__.update(kw)
-    passedArgs = PassedArgs(assembly = args.assembly,
-                            sample = args.sample,
-                            index = False,
-                            metadata = False,
-                            yes = True, 
-			    nbins=0,
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+    passedArgs = PassedArgs(assembly=args.assembly,
+                            sample=args.sample,
+                            index=False,
+                            metadata=False,
+                            yes=True,
+                            nbins=0,
                             ver=4,
-			    j=8)
+                            j=8)
 
     runAll(passedArgs, DBCONN, args.start, args.skip)
     vacAll(DBCONN)
-    
+
     return 0
+
 
 if __name__ == '__main__':
     main()

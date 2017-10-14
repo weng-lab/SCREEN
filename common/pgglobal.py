@@ -3,6 +3,7 @@ import sys
 
 from cre_utils import checkAssembly
 
+
 class GlobalPG:
     def __init__(self, assembly):
         self._tablename = "_".join((assembly, "global_objects"))
@@ -14,7 +15,7 @@ class GlobalPG:
 id serial PRIMARY KEY, 
 name TEXT, 
 obj jsonb
-);""".format(tn = self._tablename))
+);""".format(tn=self._tablename))
 
     def doimport(self, keys, curs):
         for key, fnp in keys:
@@ -22,14 +23,14 @@ obj jsonb
                 curs.execute("""
                 INSERT INTO {tn} (name, obj)
                 VALUES (%s, %s::jsonb)
-""".format(tn = self._tablename),
-                             (key, f.read()))
+""".format(tn=self._tablename),
+                    (key, f.read()))
 
     def select(self, name, curs):
         curs.execute("""
 SELECT obj FROM {tn} 
 WHERE name = %s
-""".format(tn = self._tablename), (name,))
+""".format(tn=self._tablename), (name,))
         return curs.fetchone()[0]
 
     def select_external(self, name, assembly, curs):
@@ -37,5 +38,5 @@ WHERE name = %s
         curs.execute("""
 SELECT obj FROM {assembly}_{tn}
 WHERE name = %s
-""".format(tn = "global_objects", assembly = assembly), (name,))
+""".format(tn="global_objects", assembly=assembly), (name,))
         return curs.fetchone()[0]

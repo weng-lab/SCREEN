@@ -22,6 +22,7 @@ from cached_objects import CachedObjects
 from pg_common import PGcommon
 from cached_objects import CachedObjectsWrapper
 
+
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
@@ -38,7 +39,7 @@ def main():
 
     def ctRename(s):
         return re.sub('[^0-9a-zA-Z]+', '-', s)
-    
+
     rctsByAssembly = {}
     rctToCtByAssembly = {}
     for assembly in ["hg19", "mm10"]:
@@ -49,7 +50,7 @@ def main():
             rctToCtByAssembly[assembly][rct] = ct
         rcts = [ctRename(x) for x in cts]
         rctsByAssembly[assembly] = set(rcts)
-    
+
     for exp in qd.getExps(url):
         if not "5-group" in exp.description:
             continue
@@ -72,6 +73,7 @@ def main():
         assays = filter(lambda x: x not in ["DNase"], assays)
         if assays:
             print(exp.encodeID, '\t'.join(assays))
-        
+
+
 if __name__ == "__main__":
     sys.exit(main())

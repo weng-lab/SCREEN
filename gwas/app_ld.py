@@ -2,11 +2,15 @@
 
 from __future__ import print_function
 
-import cherrypy, jinja2, os, sys
+import cherrypy
+import jinja2
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from templates import Templates
 from db_utils import getcursor
+
 
 class SnpApp():
     def __init__(self, args, viewDir, staticDir, pg):
@@ -28,7 +32,7 @@ WHERE snp IN %s
         for r in rows:
             ret.append('\t'.join(r))
         return '\n'.join(ret)
-        
+
     @cherrypy.expose
     def snp_coord(self, *args, **kwargs):
         assembly = args[0]
@@ -38,7 +42,7 @@ WHERE snp IN %s
 SELECT chrom, start, stop, snp
 FROM {tn}
 WHERE snp IN %s
-""".format(tn = tableName)
+""".format(tn=tableName)
         with getcursor(self.pg.DBCONN, "pg") as curs:
             curs.execute(q, (tuple(snps),))
             rows = curs.fetchall()

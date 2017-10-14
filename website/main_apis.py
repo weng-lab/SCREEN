@@ -2,7 +2,10 @@
 
 from __future__ import print_function
 
-import cherrypy, jinja2, os, sys
+import cherrypy
+import jinja2
+import os
+import sys
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
@@ -16,6 +19,7 @@ from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
 
 from common.session import Sessions
+
 
 class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
@@ -92,7 +96,7 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def dataws(self, *args, **kwargs):
-        #print(cherrypy.request)
+        # print(cherrypy.request)
         j = cherrypy.request.json
         return self.dataWS.process(j, args, kwargs)
 
@@ -101,7 +105,7 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def gbws(self, *args, **kwargs):
-        #print(cherrypy.request)
+        # print(cherrypy.request)
         j = cherrypy.request.json
         return self.gbWS.process(j, args, kwargs)
 
@@ -110,7 +114,7 @@ class Apis():
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def autows(self, *args, **kwargs):
-        #print(cherrypy.request)
+        # print(cherrypy.request)
         j = cherrypy.request.json
         return self.autoWS.process(j, args, kwargs)
 

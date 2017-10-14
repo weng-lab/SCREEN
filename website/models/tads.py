@@ -4,11 +4,12 @@ from __future__ import print_function
 
 from pg_tads import PGtads
 
+
 class Tads:
     def __init__(self, assembly, ps):
         self.assembly = assembly
         self.pgTads = PGtads(ps, assembly)
-    
+
     def get_biosamples(self):
         return self.pgTads.get_biosamples()
 

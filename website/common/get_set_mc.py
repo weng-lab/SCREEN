@@ -12,6 +12,7 @@ from utils import AddPath
 AddPath(__file__, "..")
 from config import Config
 
+
 class GetOrSetMemCache(object):
     def __init__(self, assembly, subNamespace):
         self.mc = None
@@ -30,4 +31,3 @@ class GetOrSetMemCache(object):
             return newfunc
         else:
             return attr
-

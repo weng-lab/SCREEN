@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
-import json #import ujson as json
+import os
+import sys
+import json  # import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
 
@@ -24,13 +26,15 @@ from config import Config
 
 from pcommon import doIntersection, runIntersectJob, processResults
 
+
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
             "biosample_term_name": exp.biosample_term_name,
             "assay_term_name": exp.assay_term_name,
             "target": exp.target,
-            "label": exp.label }
+            "label": exp.label}
+
 
 def makeJobs(assembly):
     if "mm10" == assembly:
@@ -60,18 +64,19 @@ def makeJobs(assembly):
             if not beds:
                 print("missing", exp)
             for bed in beds:
-                jobs.append({"exp": exp, # this is an Exp
-                             "bed": bed, # this is an ExpFile
+                jobs.append({"exp": exp,  # this is an Exp
+                             "bed": bed,  # this is an ExpFile
                              "i": i,
                              "total": total,
                              "assembly": assembly,
-                             "etype": etype })
+                             "etype": etype})
         except Exception, e:
             print(str(e))
             print("bad exp:", exp)
 
-    print("will run %d jobs" % len(jobs), file = sys.stderr)
+    print("will run %d jobs" % len(jobs), file=sys.stderr)
     return jobs
+
 
 def encodeIntersectJob(jobargs, bedfnp):
     exp = jobargs["exp"]
@@ -79,8 +84,9 @@ def encodeIntersectJob(jobargs, bedfnp):
     fileJson = getFileJson(exp, bed)
     label = exp.label if jobargs["etype"] != "dnase" else "dnase"
     jobargs.update({"bed": {"fnp": bed.fnp(), "fileID": bed.fileID},
-                    "label": label })
+                    "label": label})
     return (fileJson, runIntersectJob(jobargs, bedfnp))
+
 
 def computeIntersections(args, assembly):
     bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
@@ -90,7 +96,7 @@ def computeIntersections(args, assembly):
 
     jobs = makeJobs(assembly)
 
-    results = Parallel(n_jobs = args.j)(
+    results = Parallel(n_jobs=args.j)(
         delayed(encodeIntersectJob)(job, bedFnp)
         for job in jobs)
 
@@ -99,6 +105,7 @@ def computeIntersections(args, assembly):
 
     processResults(results, paths.path(assembly, "extras", "peakIntersections.json.gz"))
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=32)
@@ -106,6 +113,7 @@ def parse_args():
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -127,6 +135,7 @@ def main():
         computeIntersections(args, assembly)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

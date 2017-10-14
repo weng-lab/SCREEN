@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -12,6 +17,7 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
+
 
 class ImportTADs:
     def __init__(self, curs, assembly):
@@ -29,7 +35,7 @@ class ImportTADs:
  tadName text,
  geneIDs integer[]
 );
-    """.format(tableName = self.tableName))
+    """.format(tableName=self.tableName))
 
     def run(self):
         fnp = paths.path(self.assembly, "raw", "tads.txt")
@@ -41,7 +47,7 @@ class ImportTADs:
         printt("reading", fnp)
         with open(fnp) as f:
             ensemblidVerToGeneID = [line.rstrip('\n').split(',') for line in f]
-        lookup = {r[0] : r[2] for r in ensemblidVerToGeneID}
+        lookup = {r[0]: r[2] for r in ensemblidVerToGeneID}
 
         f = StringIO.StringIO()
         for tr in tadRows:
@@ -53,11 +59,12 @@ class ImportTADs:
 
         self.setupTable()
         self.curs.copy_from(f, self.tableName, '\t',
-                          columns=("accession", "tadName", "geneIDs"))
+                            columns=("accession", "tadName", "geneIDs"))
         printt("copied in TADs", self.curs.rowcount)
 
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession", "tadName"])
+
 
 class ImportTADinfo:
     def __init__(self, curs, assembly):
@@ -76,7 +83,7 @@ start integer,
 stop integer,
 tadName text
 );
-    """.format(tableName = self.tableName))
+    """.format(tableName=self.tableName))
 
     def run(self):
         fnp = paths.path(self.assembly, "extras", "TADs.bed.gz")
@@ -91,15 +98,16 @@ tadName text
 
         self.setupTable()
         self.curs.copy_from(f, self.tableName, '\t',
-                          columns=("chrom", "start", "stop", "tadName"))
+                            columns=("chrom", "start", "stop", "tadName"))
         printt("copied in TADs", self.curs.rowcount)
 
     def index(self):
         makeIndex(self.curs, self.tableName, ["tadName"])
         makeIndexIntRange(self.curs, self.tableName, ["start", "stop"])
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -117,11 +125,13 @@ def run(args, DBCONN):
             iti.run()
             iti.index()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -129,6 +139,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()

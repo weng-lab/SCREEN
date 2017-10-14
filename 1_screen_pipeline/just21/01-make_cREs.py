@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
+import os
+import sys
 import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
-import numpy, math
+import numpy
+import math
 
 from joblib import Parallel, delayed
 
@@ -22,6 +25,7 @@ from peaks import Peaks
 from exp import Exp
 from files_and_paths import Tools
 
+
 class Just21:
     def __init__(self, assembly):
         self.assembly = assembly
@@ -34,13 +38,13 @@ class Just21:
         fnp = os.path.join(self.d, "list.txt")
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
-            ctToExpIDsRows = [line.rstrip('\n').split('\t') for line in  f if line]
+            ctToExpIDsRows = [line.rstrip('\n').split('\t') for line in f if line]
         allExps = {}
         for ctToExpIDs in ctToExpIDsRows:
             ct = ctToExpIDs[0]
             allExps[ct] = {}
             for idx, expID in enumerate(ctToExpIDs[1:]):
-                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID) #, True)
+                allExps[ct][header[idx + 1]] = Exp.fromJsonFile(expID)  # , True)
         if 0:
             for ct, exps in allExps.iteritems():
                 print(ct, exps["DNase"], exps["H3K4me3"], exps["H3K27ac"], exps["CTCF"])
@@ -48,7 +52,7 @@ class Just21:
 
     @staticmethod
     def _process(outputbed):
-        sig = [[],[]]
+        sig = [[], []]
         masterPeak = []
         calculate = []
         retval = {}
@@ -56,20 +60,20 @@ class Just21:
         for line in bed:
             line = line.rstrip().split("\t")
             if float(line[4]) == 0:
-	        sig[1].append("Zero")
-	        sig[0].append((float(line[4])))
-	        masterPeak.append(line[0])
+                sig[1].append("Zero")
+                sig[0].append((float(line[4])))
+                masterPeak.append(line[0])
             else:
-                sig[1].append(math.log(float(line[4])+0.01,10))
-	        sig[0].append((float(line[4])))
-	        calculate.append(math.log(float(line[4]),10))
-	        masterPeak.append(line[0])
+                sig[1].append(math.log(float(line[4]) + 0.01, 10))
+                sig[0].append((float(line[4])))
+                calculate.append(math.log(float(line[4]), 10))
+                masterPeak.append(line[0])
         lmean = numpy.mean(calculate)
         lstd = numpy.std(calculate)
         i = 0
         for entry in sig[1]:
             if entry != "Zero":
-	        retval[masterPeak[i]] = ((entry-lmean)/lstd, sig[0][i], sig[1][i])
+                retval[masterPeak[i]] = ((entry - lmean) / lstd, sig[0][i], sig[1][i])
             else:
                 retval[masterPeak[i]] = (-10, 0, -10)
             i += 1
@@ -124,10 +128,11 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
-    assemblies = ["hg19"] #Config.assemblies
+    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -142,6 +147,7 @@ def main():
             f.write(json.dumps(scores))
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

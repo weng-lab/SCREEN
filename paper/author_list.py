@@ -2,7 +2,11 @@
 
 from __future__ import print_function
 
-import os, sys, argparse, json, hashlib
+import os
+import sys
+import argparse
+import json
+import hashlib
 from itertools import groupby
 from collections import namedtuple, OrderedDict
 
@@ -11,6 +15,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 with open('nature_allowed_coutnries.txt') as f:
     Countries = set([x.strip() for x in f])
+
 
 class Author:
     def __init__(self, firstName, midInitial, lastName, email, email2, lab, labGroup,
@@ -38,14 +43,14 @@ class Author:
         if not self.midInitial.endswith('.') and 1 == len(self.midInitial):
             self.midInitial += '.'
 
-        cFix = {"USA" : "United States",
-                "UK" : "United Kingdom",
-                "CH" : "Switzerland"}
+        cFix = {"USA": "United States",
+                "UK": "United Kingdom",
+                "CH": "Switzerland"}
         c = cFix.get(country, country)
         if c not in Countries:
             raise Exception("missing " + c)
         self.country = c
-        
+
     def toName(self):
         n = self.firstName + ' '
         if self.midInitial:
@@ -57,13 +62,14 @@ class Author:
         return self.coAuthOrder or self.lastAuthNum
 
     def toNatureJson(self):
-        return {"firstName" : self.firstName,
-                "middleName" : self.midInitial,
+        return {"firstName": self.firstName,
+                "middleName": self.midInitial,
                 "lastName": self.lastName,
-                "email" : self.email,
-                "org" : self.institue,
-                "country" : self.country}
-    
+                "email": self.email,
+                "org": self.institue,
+                "country": self.country}
+
+
 class AuthorList:
     def __init__(self, args):
         self.args = args
@@ -78,12 +84,12 @@ class AuthorList:
         print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
-        for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
+        for cell in wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
         print("numRows", numRows, "(including header)", "<br>")
 
-        def getCol(letter, isInt = False):
+        def getCol(letter, isInt=False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
             col = [x.value.strip() for x in col]
             if isInt:
@@ -114,12 +120,12 @@ class AuthorList:
         print("***************", sheetName, "<br>")
         wsheet = gsheet.worksheet(sheetName)
         numRows = 1
-        for cell in  wsheet.range('A2:A' + str(wsheet.row_count)):
+        for cell in wsheet.range('A2:A' + str(wsheet.row_count)):
             if cell.value > "":
                 numRows += 1
         print("numRows", numRows, "(including header)", "<br>")
 
-        def getCol(letter, isInt = False):
+        def getCol(letter, isInt=False):
             col = wsheet.range('{c}2:{c}{nr}'.format(c=letter, nr=numRows))
             col = [x.value.strip() for x in col]
             if isInt:
@@ -154,7 +160,7 @@ class AuthorList:
         if k not in self.addressToIdx:
             self.addressToIdx[k] = self.addressToIdxCounter
             self.addressToIdxCounter += 1
-            
+
         superNum = self.addressToIdx[k]
         n = p.toName() + '<sup>' + str(superNum)
 
@@ -175,7 +181,7 @@ class AuthorList:
             n += ',' + str(superNum)
 
         n += '</sup>'
-            
+
         return n
 
     def makeList(self, labGroupLab, people, coauth):
@@ -213,7 +219,7 @@ class AuthorList:
         for p in firstAuthors[1]:
             if p.email not in emails:
                 emails.add(p.email)
-                r.append(p.toNatureJson())            
+                r.append(p.toNatureJson())
         for p in lastAuthors[1]:
             if "Zhiping" == p.firstName and "Weng" == p.lastName:
                 r.insert(0, p.toNatureJson())
@@ -240,13 +246,13 @@ class AuthorList:
         firstAuthors, allAuthors, lastAuthors = self.organizeAuthors(authors)
         self._outputJson(firstAuthors, allAuthors, lastAuthors)
         self._output(firstAuthors, allAuthors, lastAuthors)
-        
+
     def organizeAuthors(self, authors):
         numAuthors = 0
 
         def sorter(x):
             return [self.labOrder[(x.labGroup, x.lab)], x.labGroup, x.lab]
-        authors.sort(key = sorter)
+        authors.sort(key=sorter)
 
         allAuthors = []
 
@@ -255,13 +261,15 @@ class AuthorList:
 
         def peopleOrder(x):
             return [x.order, x.lastName, x.firstName, x.midInitial]
+
         def coFirstOrder(x):
             return [x.coAuthOrder, x.lastName, x.firstName, x.midInitial]
+
         def coLastOrder(x):
             return [x.lastAuthNum, x.lastName, x.firstName, x.midInitial]
 
         for labGroupLab, people in groupby(authors, sorter):
-            people = sorted(list(people), key = peopleOrder)
+            people = sorted(list(people), key=peopleOrder)
             for a in people:
                 if a.coAuthOrder:
                     firstAuthors[1].append(a)
@@ -271,21 +279,24 @@ class AuthorList:
             numAuthors += len(people)
         print("found", numAuthors, "author names")
 
-        firstAuthors[1].sort(key = coFirstOrder)
-        lastAuthors[1].sort(key = coLastOrder)
+        firstAuthors[1].sort(key=coFirstOrder)
+        lastAuthors[1].sort(key=coLastOrder)
 
         return firstAuthors, allAuthors, lastAuthors
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     s = AuthorList(args)
     s.run()
+
 
 if __name__ == "__main__":
     sys.exit(main())

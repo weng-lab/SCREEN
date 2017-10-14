@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -15,6 +21,7 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config
+
 
 class ImportCreGroups:
     def __init__(self, curs, assembly):
@@ -38,7 +45,7 @@ class ImportCreGroups:
         (id serial PRIMARY KEY,
         accession text,
         creGroupsSpecific VARCHAR[]
-        );""".format(tn = self.tableName))
+        );""".format(tn=self.tableName))
 
     def runCts(self):
         printt("drop and create", self.tableNameCts)
@@ -48,7 +55,7 @@ class ImportCreGroups:
         (id serial PRIMARY KEY,
 cellTypeName text,
 pgidx integer
-        );""".format(tn = self.tableNameCts))
+        );""".format(tn=self.tableNameCts))
 
         printt("reading", self.fnp)
         with gzip.open(self.fnp) as f:
@@ -61,7 +68,7 @@ pgidx integer
             counter += 1
         outF.seek(0)
         cols = ["cellTypeName", "pgidx"]
-        self.curs.copy_from(outF, self.tableNameCts, '\t', columns = cols)
+        self.curs.copy_from(outF, self.tableNameCts, '\t', columns=cols)
         printt("inserted", "{:,}".format(self.curs.rowcount), self.tableNameCts)
 
     def _doImport(self):
@@ -80,7 +87,7 @@ pgidx integer
             outF.write('\t'.join([r[0], "{" + ",".join(r[1:]) + "}"]) + '\n')
         outF.seek(0)
         cols = ["accession", "creGroupsSpecific"]
-        self.curs.copy_from(outF, self.tableName, '\t', columns = cols)
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("inserted", "{:,}".format(self.curs.rowcount))
 
     def _doUpdate(self):
@@ -96,13 +103,14 @@ pgidx integer
         SET creGroupsSpecific = cg.creGroupsSpecific
         FROM {tn} as cg
         where cg.accession = cres.accession
-    """.format(tn = self.tableName, tncres = self.assembly + "_cre_all"))
+    """.format(tn=self.tableName, tncres=self.assembly + "_cre_all"))
         if 0 == self.curs.rowcount:
             raise Exception("error: no cRE rows updated")
         printt("updated", "{:,}".format(self.curs.rowcount))
 
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["accession"])
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -118,11 +126,13 @@ def run(args, DBCONN):
         with db_connect_single(os.path.realpath(__file__)) as conn:
             vacumnAnalyze(conn, assembly + "_cre_all", [])
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -130,6 +140,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     return run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()

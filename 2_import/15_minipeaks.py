@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, argparse
+import os
+import sys
+import argparse
 import tempfile
 
 from cassandra.cluster import Cluster
@@ -17,13 +19,14 @@ from utils import Utils, printt, printWroteNumLines
 from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
 
+
 class ImportMinipeaks:
     def __init__(self, assembly, nbins, ver, cores):
         self.assembly = assembly
         self.nbins = nbins
         self.ver = ver
         self.cores = cores
-        
+
         self.cluster = Cluster(Config.cassandra)
         self.session = self.cluster.connect()
         self.session.execute("""CREATE KEYSPACE IF NOT EXISTS minipeaks
@@ -53,8 +56,8 @@ chrom text,
 {fields},
 PRIMARY KEY (accession, chrom) )
 WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
-""".format(tn = tableName,
-           fields = ",".join([r + " text" for r in fileIDs])))
+""".format(tn=tableName,
+           fields=",".join([r + " text" for r in fileIDs])))
 
         mergedFnp = os.path.join(self.minipeaks, "merged",
                                  assay + "_merged.txt")
@@ -66,11 +69,12 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 
         cols = ["accession", "chrom"] + fileIDs
         q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = {cores} AND MAXBATCHSIZE = 1;""".format(
-            tn = tableName,
-            cores = self.cores,
-            fields = ",".join(cols),
-            fn = mergedFnp)
+            tn=tableName,
+            cores=self.cores,
+            fields=",".join(cols),
+            fn=mergedFnp)
         outF.write(q + '\n\n')
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -86,7 +90,7 @@ def run(args, DBCONN):
     cores = args.j
     if args.sample:
         cores = 1
-                
+
     for assembly in assemblies:
         printt('***********', assembly, ver, nbins)
 
@@ -105,7 +109,7 @@ def run(args, DBCONN):
             im.importAll(outF, args.sample)
 
         printWroteNumLines(queryFnp)
-        cmds = ['CQLSH_HOST="{hosts}"'.format(hosts = Config.cassandra[0]),
+        cmds = ['CQLSH_HOST="{hosts}"'.format(hosts=Config.cassandra[0]),
                 os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
                 "--cqlversion=3.4.2",
                 "-f", queryFnp]
@@ -113,7 +117,8 @@ def run(args, DBCONN):
             print(Utils.runCmds(cmds))
 
         os.remove(queryFnp)
-            
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -125,10 +130,12 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
 
     run(args, None)
+
 
 if __name__ == '__main__':
     main()

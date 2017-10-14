@@ -8,13 +8,14 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath
 
+
 class DetermineTissue:
     # translate tissue name to tissue name
     lookupTissue = {}
     lookupTissue["hg19"] = {}
-    lookupTissue["mm10"] = {"small intestine" : "intestine",
-                            "large intestine" : "intestine",
-                            "bone element" : "bone"}
+    lookupTissue["mm10"] = {"small intestine": "intestine",
+                            "large intestine": "intestine",
+                            "bone element": "bone"}
 
     # translate biosample term name
     lookupBTN = {}

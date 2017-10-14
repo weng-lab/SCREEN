@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../common/'))
 from dbconnect import db_connect
@@ -11,10 +17,11 @@ from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, makehash
 
+
 class CopyIn:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN
-        
+
     def setupDb(self, cur):
         cur.execute("""
     DROP TABLE IF EXISTS r_expression;
@@ -38,7 +45,7 @@ class CopyIn:
         print("imported", fnp)
 
     def process(self, assembly, inFnp, t):
-        binFnp = os.path.join(os.path.dirname(__file__), "json_parser/bin/read_json") 
+        binFnp = os.path.join(os.path.dirname(__file__), "json_parser/bin/read_json")
         outFnp = inFnp + ".csv.gz"
         if not os.path.exists(outFnp):
             cmds = [binFnp, inFnp, assembly, t[0], t[1]]
@@ -72,7 +79,7 @@ class CopyIn:
             self.process("hg19", fnp, t)
 
         for t in [("gene", "RBP_disruption", "gene.human.V24.GRCh38.RBP_disruption.2016_11_23.json.gz"),
-                  ("gene", "RNAseq", "gene.human.V24.GRCh38.RNAseq.2016_11_23.json.gz"),                    
+                  ("gene", "RNAseq", "gene.human.V24.GRCh38.RNAseq.2016_11_23.json.gz"),
                   ("gene", "RNAseq.polyAdepleted", "gene.human.V24.GRCh38.RNAseq.polyAdepleted.2016_11_23.json.gz"),
                   ("gene", "RNAseq.polyAselected", "gene.human.V24.GRCh38.RNAseq.polyAselected.2016_11_23.json.gz"),
                   ("gene", "single", "gene.human.V24.GRCh38.single.2016_11_23.json.gz"),
@@ -93,12 +100,14 @@ class CopyIn:
                   ("transcript", "single", "transcript.mouse.M4.mm10.single.2016_11_23.json.gz")]:
             fnp = os.path.join(d, "M.musculus/mm10/2016_11/", t[2])
             self.process("mm10", fnp, t)
-    
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--local', action="store_true", default=False)
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -107,6 +116,7 @@ def main():
 
     copyin = CopyIn(DBCONN)
     copyin.run()
-    
+
+
 if __name__ == '__main__':
     main()

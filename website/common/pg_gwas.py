@@ -21,13 +21,15 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
+
 class PGgwasWrapper:
     def __init__(self, pg):
-        self.assemblies = ["hg19"] #Config.assemblies
-        self.pgs = {a : PGgwas(pg, a) for a in self.assemblies}
+        self.assemblies = ["hg19"]  # Config.assemblies
+        self.pgs = {a: PGgwas(pg, a) for a in self.assemblies}
 
     def __getitem__(self, assembly):
         return self.pgs[assembly]
+
 
 class PGgwas(GetOrSetMemCache):
     def __init__(self, pg, assembly):
@@ -46,7 +48,7 @@ class PGgwas(GetOrSetMemCache):
 SELECT authorpubmedtrait, author, pubmed, trait, numLDblocks
 FROM {tn}
 ORDER BY trait
-""".format(tn = self.assembly + "_gwas_studies")
+""".format(tn=self.assembly + "_gwas_studies")
             curs.execute(q)
             rows = curs.fetchall()
         keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
@@ -62,9 +64,9 @@ FROM {tnfdr} fdr
 INNER JOIN {tnpval} pval
 ON fdr.expid = pval.expid
 ORDER BY fdr DESC, pval
-""".format(tnfdr = self.assembly + "_gwas_enrichment_fdr",
-           tnpval = self.assembly + "_gwas_enrichment_pval",
-           col = gwas_study)
+""".format(tnfdr=self.assembly + "_gwas_enrichment_fdr",
+                tnpval=self.assembly + "_gwas_enrichment_pval",
+                col=gwas_study)
             curs.execute(q)
             rows = curs.fetchall()
         cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval"]
@@ -81,7 +83,7 @@ WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
 AND cre.accession = over.accession
 AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
 AND gwas.authorPubmedTrait = %s
-""".format(assembly = self.assembly)
+""".format(assembly=self.assembly)
             curs.execute(q, (gwas_study, ))
             return curs.fetchone()[0]
 
@@ -91,7 +93,7 @@ AND gwas.authorPubmedTrait = %s
 SELECT accession
 FROM {tn}
 where authorPubmedTrait = %s
-""".format(tn = self.assembly + "_gwas_overlap")
+""".format(tn=self.assembly + "_gwas_overlap")
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
 
@@ -101,7 +103,7 @@ where authorPubmedTrait = %s
 SELECT count(0)
 FROM {tn}
 where authorPubmedTrait = %s
-""".format(tn = self.assembly + "_gwas_overlap")
+""".format(tn=self.assembly + "_gwas_overlap")
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
 
@@ -111,7 +113,6 @@ where authorPubmedTrait = %s
         groupBy = ["cre.accession", "cre.start", "cre.stop", "cre.chrom",
                    "infoAll.approved_symbol"] + [v for k, v in PGcreTable.infoFields.iteritems()]
 
-
         if ct in self.ctsTable:
             fields.append("cre.creGroupsSpecific[%s] AS cts" %
                           self.ctsTable[ct])
@@ -119,7 +120,7 @@ where authorPubmedTrait = %s
                            self.ctsTable[ct])
         else:
             fields.append("0::int AS cts")
-        
+
         fieldsOut = ["accession", "snps", "info", "geneid", "start", "stop", "chrom", "cts"]
         for assay in [("dnase", "dnase"),
                       ("promoter", "h3k4me3"),
@@ -132,7 +133,7 @@ where authorPubmedTrait = %s
             fields.append("cre.%s_zscores[%d] AS %s_zscore" %
                           (assay[1], cti, assay[0]))
             groupBy.append("cre.%s_zscores[%d]" %
-                          (assay[1], cti))
+                           (assay[1], cti))
 
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
@@ -144,9 +145,9 @@ WHERE cre.gene_all_id[1] = infoAll.geneid
 AND cre.accession = over.accession
 AND over.authorPubmedTrait = %s
 GROUP BY {groupBy}
-""".format(assembly = self.assembly,
-           fields = ', '.join(fields),
-           groupBy = ', '.join(groupBy))
+""".format(assembly=self.assembly,
+                fields=', '.join(fields),
+                groupBy=', '.join(groupBy))
             curs.execute(q, (gwas_study, ))
             rows = curs.fetchall()
         ret = [dict(zip(fieldsOut, r)) for r in rows]
@@ -158,4 +159,3 @@ GROUP BY {groupBy}
                 }
             })
         return ret, fieldsOut
-
