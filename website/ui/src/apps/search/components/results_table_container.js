@@ -155,7 +155,8 @@ class ResultsTableContainer extends React.Component {
 			     this.doInterpGene(interp["gene"]) : "";
 	    if(interp.hasOwnProperty("msg") || interp.hasOwnProperty("gene")){
 		interpBox = (
-		    <div className="interpretation panel">
+		    <div className="interpretation panel"
+		    style={{backgroundColor: "#ffa588", marginBottom: "0px"}}>
 		        {interpMsb}
 		        {interpGene}
 	            </div>);
