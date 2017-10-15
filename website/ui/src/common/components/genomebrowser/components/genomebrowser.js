@@ -265,9 +265,9 @@ class GenomeBrowser extends React.Component
     }
     nextexon = (r) =>
     {
-      let bp = parseInt(this.state.bp)
-      let diff = parseInt(0.05 * bp)
-      let max = parseInt(r)+diff,min=parseInt(max)-parseInt(this.state.bp);
+      let bp = +(this.state.bp)
+      let diff = +(0.05 * bp)
+      let max = +(r)+diff, min=+(max) - +(this.state.bp);
 
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
@@ -279,10 +279,11 @@ class GenomeBrowser extends React.Component
     }
     prevexon = (r) =>
     {
-      let bp = parseInt(this.state.bp)
-      let diff = parseInt(0.05 * bp)
-      let min = parseInt(r)-diff,max=parseInt(min)+parseInt(this.state.bp);
-
+	let bp = +(this.state.bp)
+	let diff = +(0.05 * bp)
+	let min = +(r)-diff;
+	let max= +(min) + +(this.state.bp);
+	
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
          var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);

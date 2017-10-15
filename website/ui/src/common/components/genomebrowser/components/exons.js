@@ -38,10 +38,10 @@ export default class Exons extends React.Component {
       let exoncount= "Exon "+ d.exon_number+"/"+res,check=false;
       if((this.props.x(d.end) > this.props.leftMargin)  && (this.props.x(d.start) < this.props.width ))
       {
-        let width =parseInt(this.props.x(d.end))-parseInt(this.props.x(d.start)),x=this.props.x(d.start),ex="";
+        let width = +(this.props.x(d.end)) - +(this.props.x(d.start)), x=this.props.x(d.start),ex="";
         if(this.props.x(d.start) < this.props.leftMargin)
         {
-          width= parseInt(this.props.x(d.end))-parseInt(this.props.leftMargin);
+          width= +(this.props.x(d.end))- +(this.props.leftMargin);
           x=this.props.leftMargin;
           check=true;
 
@@ -56,10 +56,11 @@ export default class Exons extends React.Component {
         //chr11:5526573-5526739
         if(this.props.x(d.end) > this.props.width)
         {
-          if(check===true)
-              width= parseInt(this.props.width)-parseInt(x)
-          else
-              width= parseInt(this.props.width)-parseInt(this.props.x(d.start));
+          if(check===true){
+              width= +(this.props.width) - +(x)
+          } else {
+              width= +(this.props.width) - +(this.props.x(d.start));
+	  }
           if(d.strand==="-")
               ex="start of exon "+ d.exon_number+"/"+res
           else
