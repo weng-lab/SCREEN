@@ -6,7 +6,7 @@ import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
-from constants import paths
+from constants import paths, GwasVersion
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
@@ -25,7 +25,8 @@ class ImportGwas:
         self.tableNameDatasets = assembly + "_datasets"
         self.tableNameStudies = assembly + "_gwas_studies"
         self.tableNameOverlap = assembly + "_gwas_overlap"
-
+        self.version = GwasVersion
+        
     def setupGWAS(self):
         # chr1    62963737        62963737        rs1002687       rs11207995      0.85    25961943-2      Cholesterol     25961943        Surakka"""
         #                                         snpItself       taggedSNP       r2      unqiueLDblock(pubmed-num)       trait   pubmed  firstAuthor""
@@ -97,8 +98,8 @@ class ImportGwas:
                    fields = ','.join([r + " real" for r in fields])))
 
     def _enrichment(self):
-        files = (("GWAS.v4.Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
-                 ("GWAS.v4.Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
+        files = ((".Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
+                 (".Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
         headers = []
         for fn, tableName, takeLog in files:
             printt("******************* GWAS enrichment", fn)
@@ -110,9 +111,8 @@ class ImportGwas:
             raise Exception("different headers?")
         return headers[0]
 
-    def _do_enrichment(self, fn, tableName, takeLog):
-        dataF = paths.path(self.assembly, "gwas", "h3k27ac")
-        fnp = os.path.join(dataF, fn)
+    def _do_enrichment(self, fnBase, tableName, takeLog):
+        fnp = paths.gwasFnp(self.assembly, self.version, fnBase)
         printt("reading", fnp)
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
@@ -248,8 +248,8 @@ class ImportGwas:
     def run(self):
         dataF = paths.path(self.assembly, "gwas", "h3k27ac")
 
-        origBedFnp = os.path.join(dataF, "GWAS.v4.bed")
-        bedFnp = os.path.join(dataF, "GWAS.v4.sorted.bed")
+        origBedFnp = paths.gwasFnp(self.assembly, self.version, ".bed")
+        bedFnp = paths.gwasFnp(self.assembly, self.version, ".sorted.bed")
 
         self._gwas(bedFnp)
         header = self._enrichment()

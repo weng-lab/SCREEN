@@ -6,7 +6,7 @@ import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
-from constants import paths
+from constants import paths, GwasVersion
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
@@ -18,7 +18,8 @@ from files_and_paths import Dirs
 class BuildGwas:
     def __init__(self, assembly):
         self.assembly = assembly
-
+        self.version = GwasVersion
+        
     def processGwasBed(self, origBedFnp, bedFnp):
         printt("reading", origBedFnp)
         with open(origBedFnp) as f:
@@ -56,10 +57,8 @@ class BuildGwas:
         printWroteNumLines(bedFnp)
 
     def run(self):
-        dataF = paths.path(self.assembly, "gwas", "h3k27ac")
-
-        origBedFnp = os.path.join(dataF, "GWAS.v4.bed")
-        bedFnp = os.path.join(dataF, "GWAS.v4.sorted.bed")
+        origBedFnp = paths.gwasFnp(self.assembly, self.version, ".bed")
+        bedFnp = paths.gwasFnp(self.assembly, self.version, ".sorted.bed")
         self.processGwasBed(origBedFnp, bedFnp)
 
 def run(args, DBCONN):

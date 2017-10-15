@@ -93,6 +93,7 @@ V4d = os.path.join(Dirs.encyclopedia, "Version-4")
 CreVer = Config.version
 CreVerStr = "ver" + str(CreVer)
 fantomcat = os.path.join(Dirs.encyclopedia, "..", "fantomcat")
+GwasVersion = 5
 
 class paths(object):
     creVer = CreVer
@@ -114,6 +115,11 @@ class paths(object):
     @staticmethod
     def cistrome(*args):
         return os.path.join(Dirs.cistrome, *args)
+
+    @staticmethod
+    def gwasFnp(assembly, version, fnBase):
+        return os.path.join(V4d, CreVerStr, assembly, "gwas", "h3k27ac",
+                            "GWAS.v" + str(version) + fnBase)
     
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
