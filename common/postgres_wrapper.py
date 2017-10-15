@@ -14,6 +14,7 @@ from db_utils import getcursor
 from dbconnect import db_connect
 from constants import chroms
 
+
 class PostgresWrapper:
     def __init__(self, DBCONN):
         self.DBCONN = DBCONN

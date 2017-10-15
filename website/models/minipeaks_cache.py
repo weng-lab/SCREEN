@@ -11,6 +11,7 @@ from cassandra import ConsistencyLevel
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from config import Config
 
+
 class MiniPeaksCache:
     def __init__(self, assembly, nbins, ver):
         self.assembly = assembly
@@ -28,7 +29,7 @@ class MiniPeaksCache:
 
         select_stmt = self.session.prepare("""
 SELECT * FROM {tn} WHERE accession IN ?
-""".format(tn = tableName ))
+""".format(tn=tableName))
 
         rows = list(self.session.execute(select_stmt, (accessions,)))
 
@@ -41,6 +42,7 @@ SELECT * FROM {tn} WHERE accession IN ?
                 data[k.upper()] = [float(x) for x in v[1:-1].split(',')]
             ret[row["accession"]] = data
         return ret
+
 
 if __name__ == "__main__":
     mpc = MiniPeaksCache("mm10", 20, 2)

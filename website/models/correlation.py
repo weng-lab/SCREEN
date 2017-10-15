@@ -9,6 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from db_utils import getcursor
 from dbconnect import db_connect
 
+
 class Correlation:
     def __init__(self, assembly, DBCONN, cache):
         self.assembly = assembly
@@ -20,7 +21,7 @@ class Correlation:
         with getcursor(self.DBCONN, "Correlation::dbcorr") as curs:
             curs.execute("""
 SELECT correlations, assay FROM {tn} WHERE assay = %s
-""".format(tn = self.tableName), (tableName,))
+""".format(tn=self.tableName), (tableName,))
             try:
                 r = curs.fetchone()[0]
             except:
@@ -28,7 +29,7 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
         if not r:
             return None, None
 
-        ctToIdx = self.cache.rankMethodToIDxToCellType[rankMethod] # 1 based!
+        ctToIdx = self.cache.rankMethodToIDxToCellType[rankMethod]  # 1 based!
         tokeep = []
         flabels = []
         for ct in cellTypes:
@@ -43,8 +44,9 @@ SELECT correlations, assay FROM {tn} WHERE assay = %s
         for i in xrange(dim):
             for j in xrange(dim):
                 ret[i][j] = r[tokeep[i]][tokeep[j]]
-        #print(flabels)
+        # print(flabels)
         return (flabels, ret)
+
 
 if __name__ == "__main__":
     DBCONN = db_connect(os.path.realpath(__file__), True)

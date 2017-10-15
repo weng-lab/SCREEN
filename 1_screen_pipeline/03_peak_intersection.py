@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
+import os
+import sys
 import ujson as json
 import argparse
-import fileinput, StringIO
+import fileinput
+import StringIO
 import gzip
 import random
 
@@ -22,13 +24,15 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
+
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
             "biosample_term_name": exp.biosample_term_name,
             "assay_term_name": exp.assay_term_name,
             "target": exp.target,
-            "label": exp.label }
+            "label": exp.label}
+
 
 def doIntersection(bed, refnp):
     cmds = ["bedtools", "intersect",
@@ -41,7 +45,8 @@ def doIntersection(bed, refnp):
         print("failed to run", " ".join(cmds))
         return None
 
-    return [p.rstrip().split("\t")[4] for p in peaks] # return cRE accessions
+    return [p.rstrip().split("\t")[4] for p in peaks]  # return cRE accessions
+
 
 def makeJobs(assembly):
     if "mm10" == assembly:
@@ -71,18 +76,19 @@ def makeJobs(assembly):
             if not beds:
                 print("missing", exp)
             for bed in beds:
-                jobs.append({"exp": exp, # this is an Exp
-                             "bed": bed, # this is an ExpFile
+                jobs.append({"exp": exp,  # this is an Exp
+                             "bed": bed,  # this is an ExpFile
                              "i": i,
                              "total": total,
                              "assembly": assembly,
-                             "etype": etype })
+                             "etype": etype})
         except Exception, e:
             print(str(e))
             print("bad exp:", exp)
 
     print("will run", len(jobs), "jobs")
     return jobs
+
 
 def runIntersectJob(jobargs, bedfnp):
     exp = jobargs["exp"]
@@ -103,6 +109,7 @@ def runIntersectJob(jobargs, bedfnp):
         ret.append((jobargs["etype"], label, bed.fileID, accessions))
     return (fileJson, ret)
 
+
 def computeIntersections(args, assembly):
     bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
     if not os.path.exists(bedFnp):
@@ -111,7 +118,7 @@ def computeIntersections(args, assembly):
 
     jobs = makeJobs(assembly)
 
-    results = Parallel(n_jobs = args.j)(
+    results = Parallel(n_jobs=args.j)(
         delayed(runIntersectJob)(job, bedFnp)
         for job in jobs)
 
@@ -136,12 +143,13 @@ def computeIntersections(args, assembly):
 
     outFnp = paths.path(assembly, "extras", "peakIntersections.json.gz")
     with gzip.open(outFnp, 'w') as f:
-        for k,v in tfImap.iteritems():
+        for k, v in tfImap.iteritems():
             f.write('\t'.join([k,
                                json.dumps(v["tf"]),
                                json.dumps(v["histone"])
                                ]) + '\n')
     printt("wrote", outFnp)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -150,6 +158,7 @@ def parse_args():
     parser.add_argument('--assembly', type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -171,6 +180,7 @@ def main():
         computeIntersections(args, assembly)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

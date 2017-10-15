@@ -3,6 +3,7 @@ import cherrypy
 from common.page_info import PageInfoMain
 from common.session import Sessions
 
+
 class IndexController:
     def __init__(self, templates, ps, cache):
         self.t = templates

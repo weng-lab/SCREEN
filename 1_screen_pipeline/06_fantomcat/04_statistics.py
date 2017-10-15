@@ -2,21 +2,25 @@
 
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 import json
 import numpy
 
 from fc_common import FCPaths
 
+
 class Statistics:
-    
+
     def __init__(self, intersection_fnp):
         self.ixgenes = {}
         self.ixcres = {}
         with open(FCPaths.genetsv, "r") as f:
             i = 0
             for line in f:
-                if i == 0: i = 1; continue
+                if i == 0:
+                    i = 1
+                    continue
                 p = line.strip().split("\t")
                 self.ixgenes[p[0]] = {
                     "class": p[3],
@@ -33,13 +37,13 @@ class Statistics:
                 self.ixcres[p[8]].append(p[3])
             sys.stdout.flush()
 
-    def cres_per_kb(self, f = lambda x: True):
+    def cres_per_kb(self, f=lambda x: True):
         return {
             k: float(len(v["cREs"])) / float(v["len"]) * 1000.0
             for k, v in self.ixgenes.iteritems() if f(v)
         }
 
-    def cres_per_kb_distr(self, hbins, f = lambda x: True):
+    def cres_per_kb_distr(self, hbins, f=lambda x: True):
         q = self.cres_per_kb(f)
         x = [x for _, x in q.iteritems() if x > 0.0]
         qr = [numpy.percentile(x, z) for z in range(0, 125, 25)]
@@ -54,6 +58,7 @@ class Statistics:
                 "outliers": [v for v in x if v < qr[1] - 1.5 * (qr[3] - qr[1]) or v > qr[3] + 1.5 * (qr[3] - qr[1])]
             }
         }
+
 
 def _process(intersection_fnp, out_fnp):
     s = Statistics(intersection_fnp)
@@ -79,14 +84,16 @@ def _process(intersection_fnp, out_fnp):
         j["classes"][_class] = s.cres_per_kb_distr(hbins, lambda x: x["class"] == _class)
     j["classes"]["non-coding"] = s.cres_per_kb_distr(hbins, lambda x: "lncRNA" in x["class"])
     j["classes"]["coding"] = s.cres_per_kb_distr(hbins, lambda x: "coding" in x["class"] or "pseudogene" in x["class"])
-    
+
     with open(out_fnp, "wb") as o:
         o.write(json.dumps(j) + "\n")
+
 
 def main():
     _process(FCPaths.intersected, FCPaths.global_statistics)
     _process(FCPaths.twokb_intersected, FCPaths.twokb_statistics)
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

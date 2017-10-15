@@ -7,14 +7,14 @@ class TrackInfo:
         self.expID = expID
         self.fileID = fileID
 
-        self.assays  = {"dnase" : "DNase",
-                        "h3k27ac" : "H3k27ac",
-                        "h3k4me3" : "H3K4me3",
-                        "ctcf" : "CTCF"}
+        self.assays = {"dnase": "DNase",
+                       "h3k27ac": "H3k27ac",
+                       "h3k4me3": "H3K4me3",
+                       "ctcf": "CTCF"}
         self.aassay = assay
         if assay in self.assays:
             self.aassay = self.assays[assay]
-        
+
     def __repr__(self):
         return "\t".join([str(x) for x in [self.ct, self.assay]])
 
@@ -28,7 +28,7 @@ class TrackInfo:
         if self.isDNase():
             return "0:150"
         return "0:50"
-    
+
     def shortLabel(self):
         a = self.assay
         if a in self.assays:
@@ -37,7 +37,7 @@ class TrackInfo:
         # https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbHub.html
         # limited to 17 characters
         return ret[:16]
-            
+
     def name(self):
         a = self.assay
         if a in self.assays:
@@ -45,7 +45,7 @@ class TrackInfo:
         ret = " ".join([a, self.ct, '(' + self.fileID + ')'])
         # https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbHub.html
         # limited to 76 characters
-        return ret[:75] 
+        return ret[:75]
 
     def hex_to_rgb(self, value):
         # http://stackoverflow.com/a/214657
@@ -54,7 +54,7 @@ class TrackInfo:
         lv = len(value)
         rgb = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
         return ','.join([str(x) for x in rgb])
-    
+
     def color(self):
         tcs = self.cache.colors["trackhub"]
         if self.assay in tcs:

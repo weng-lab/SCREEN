@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -16,6 +22,7 @@ from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
 
+
 class DumpAccessions:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -26,7 +33,7 @@ class DumpAccessions:
         self.curs.execute("""
 SELECT fileID
 from {tn}
-        """.format(tn = tableName))
+        """.format(tn=tableName))
         for r in self.curs.fetchall():
             self.fileIDs.add(r[0])
 
@@ -35,7 +42,7 @@ from {tn}
         self.curs.execute("""
 SELECT encode_id
 from {tn}
-        """.format(tn = tableName))
+        """.format(tn=tableName))
         expIDs = [r[0] for r in self.curs.fetchall()]
 
         for expID in expIDs:
@@ -53,7 +60,7 @@ from {tn}
 
         self._ge()
 
-        self.fileIDs.add("ENCFF471EYL") # Hi-C
+        self.fileIDs.add("ENCFF471EYL")  # Hi-C
         printt("found", len(self.fileIDs))
         return self.fileIDs
 
@@ -61,7 +68,7 @@ from {tn}
         self.curs.execute("""
 SELECT expID
 from {tn}
-        """.format(tn = tableName))
+        """.format(tn=tableName))
         return set([r[0] for r in self.curs.fetchall()])
 
     def justForCRes(self):
@@ -72,10 +79,11 @@ from {tn}
             except:
                 print("ERROR with " + expID)
                 raise
-            
+
         printt("found", len(expIDs))
         return expIDs
-    
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -83,6 +91,7 @@ def parse_args():
     parser.add_argument('--just', action="store_true", default=False)
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -107,7 +116,7 @@ def main():
             f.write('\n'.join(sorted(expIDs)))
         printWroteNumLines(outFnp)
         return
-    
+
     fileIDs = set()
     for fnp in ["/home/mjp/Dropbox/0_accessionsV4/arjan.tsv",
                 "/home/mjp/Dropbox/0_accessionsV4/peaks.txt"]:
@@ -135,6 +144,7 @@ def main():
     printWroteNumLines(outFnp)
 
     return 0
+
 
 if __name__ == '__main__':
     main()

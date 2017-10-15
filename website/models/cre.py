@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os
 
+
 class CRE:
     def __init__(self, pgSearch, accession, cache):
         self.pgSearch = pgSearch
@@ -38,11 +39,11 @@ class CRE:
         pcGenes = set([g[0] for g in self.genesPC])
         ret = []
         for g in self.genesPC:
-            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         for g in self.genesAll:
             if g[0] not in pcGenes:
-                ret.append({"name" : g[0], "distance" : g[1],
-                            "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+                ret.append({"name": g[0], "distance": g[1],
+                            "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         ret.sort(key=lambda g: g["distance"])
         return ret
 
@@ -53,7 +54,7 @@ class CRE:
                                                                  coord.chrom)
         ret = []
         for g in self.genesPC:
-            ret.append({"name" : g[0], "distance" : g[1], "ensemblid_ver" : g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
         return ret
 
     def genesInTad(self):
@@ -65,7 +66,7 @@ class CRE:
         ret = []
         for r in rows:
             for g in r[0]:
-                ret.append({"name" : lookup[g]})
+                ret.append({"name": lookup[g]})
         return ret
 
     def cresInTad(self):
@@ -103,6 +104,7 @@ class CRE:
 
         def get_rank(ct, d):
             return -11.0 if ct not in d else d[ct]
+
         def arrToCtDict(arr, cts):
             if len(arr) != len(cts):
                 print("\n****************************")
@@ -115,20 +117,22 @@ class CRE:
             for idx, v in enumerate(arr):
                 ret[cts[idx]] = v
             return ret
+
         def makeArrRanks(rm1):
             ret = []
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
             for ct, v in oneAssay.iteritems():
-                r = {"tissue" : self._ctToTissue(ct), "ct" : ct, "one" : v}
+                r = {"tissue": self._ctToTissue(ct), "ct": ct, "one": v}
                 ret.append(r)
             return ret
+
         def makeArrMulti(rm1, rm2):
             ret = []
             oneAssay = arrToCtDict(ranks[rm1.lower()], rmToCts[rm1])
             multiAssay = arrToCtDict(ranks[rm2.lower()], rmToCts[rm2])
             for ct, v in oneAssay.iteritems():
-                r = {"tissue" : self._ctToTissue(ct), "ct" : ct,
-                     "one" : v, "two": get_rank(ct, multiAssay)}
+                r = {"tissue": self._ctToTissue(ct), "ct": ct,
+                     "one": v, "two": get_rank(ct, multiAssay)}
                 ret.append(r)
             return ret
 
@@ -137,16 +141,15 @@ class CRE:
                 "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
                 "ctcf": makeArrMulti("CTCF", "Insulator")}
 
-    def peakIntersectCount(self, eset = None):
+    def peakIntersectCount(self, eset=None):
         coord = self.coord()
-        if eset is None: 
+        if eset is None:
             eset = "peak"
         if not self.intersectCounts:
-            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom, self.cache.tfHistCounts[eset], eset = eset)
+            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom, self.cache.tfHistCounts[eset], eset=eset)
         return self.intersectCounts
 
     def linkedGenes(self):
         if "mm10" == self.assembly:
             return []
         return self.pgSearch.linkedGenes(self.accession)
-

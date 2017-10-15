@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse
+import os
+import sys
+import json
+import psycopg2
+import argparse
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
@@ -15,11 +19,12 @@ from exp import Exp
 from utils import Utils, printt
 from metadataws import MetadataWS
 
+
 class LoadRNAseq:
     def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        
+
     def setupDB(self):
         tableName = "r_rnas_" + self.assembly
         printt("dropping and creating", tableName)
@@ -38,7 +43,7 @@ class LoadRNAseq:
     assay_term_name text,
     biosample_type text,
     ageTitle text
-    )""".format(tn = tableName))
+    )""".format(tn=tableName))
 
     def processRow(self, row, outF, lookup):
         encodeID = row[0]
@@ -62,7 +67,7 @@ class LoadRNAseq:
 
         if not organ or "na" == organ:
             print("missing organ", "'" + biosample["biosample_term_name"] + "'")
-            organ = "" #biosample["biosample_term_name"]
+            organ = ""  # biosample["biosample_term_name"]
 
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
@@ -92,7 +97,7 @@ class LoadRNAseq:
              exp.assay_term_name,
              exp.biosample_type,
              ageTitle]
-        #print(a)
+        # print(a)
         outF.write('\t'.join(a) + '\n')
 
     def insertRNAs(self):
@@ -125,12 +130,13 @@ class LoadRNAseq:
                 "assay_term_name", "biosample_type", "ageTitle"]
 
         tableName = "r_rnas_" + self.assembly
-        self.curs.copy_from(outF, tableName, '\t', columns = cols)
+        self.curs.copy_from(outF, tableName, '\t', columns=cols)
         printt("inserted", self.curs.rowcount)
 
     def doIndex(self):
         tableName = "r_rnas_" + self.assembly
         makeIndexMultiCol(self.curs, tableName, ["cellCompartment", "biosample_type"])
+
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -148,6 +154,7 @@ def run(args, DBCONN):
                 lr.insertRNAs()
                 lr.doIndex()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
@@ -155,11 +162,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

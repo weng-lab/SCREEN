@@ -13,7 +13,7 @@ class Coord:
         # 1-based coords for UCSC Genome Browser
         self.start = str(max(1, self.start - halfWindow))
         self.end = str(self.end + halfWindow)
-        
+
     def toDict(self):
         return {"chrom": self.chrom, "start": self.start, "end": self.end}
 
@@ -29,7 +29,8 @@ class Coord:
             chrom = toks[0]
             start = int(toks[1].split('-')[0])
             end = int(toks[1].split('-')[1])
-            if not chrom.startswith("chr"): chrom = "chr" + chrom
+            if not chrom.startswith("chr"):
+                chrom = "chr" + chrom
             return cls(chrom, start, end)
         except:
             return None

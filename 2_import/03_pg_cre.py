@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -12,6 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils
 from db_utils import getcursor
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printt
+
 
 class PolishData:
     def __init__(self, curs, assembly):
@@ -28,7 +34,7 @@ CREATE TABLE {tableName}
 AS SELECT chrom, count(0)
 FROM {src}
 GROUP BY chrom
-        """.format(tableName = tableName, src=src))
+        """.format(tableName=tableName, src=src))
         printt("created", tableName)
 
     def setupCREhistograms(self):
@@ -41,10 +47,10 @@ CREATE TABLE {tableName}
 chrom VARCHAR(5),
 numBins integer,
 binMax integer,
-buckets jsonb);""".format(tableName = outTableName))
+buckets jsonb);""".format(tableName=outTableName))
         printt("created", outTableName)
 
-        numBins = 500 # open end, so will get numBins + 1
+        numBins = 500  # open end, so will get numBins + 1
         for chrom, mmax in chrom_lengths[self.assembly].iteritems():
             if chrom not in chroms[self.assembly]:
                 continue
@@ -56,10 +62,10 @@ COUNT(start) FROM {tn}
 WHERE chrom = %s
 GROUP BY 2
 ORDER BY 2
-""".format(outTableName = outTableName,
-           chrom = chrom, mmax = mmax, numBins = numBins,
-           tn = tn), (chrom, ))
-            buckets = [[0,0]] * (numBins+1)
+""".format(outTableName=outTableName,
+                chrom=chrom, mmax=mmax, numBins=numBins,
+                tn=tn), (chrom, ))
+            buckets = [[0, 0]] * (numBins + 1)
             mmax = 0
             for r in self.curs.fetchall():
                 buckets[r[1]] = [r[0], r[2]]
@@ -67,7 +73,7 @@ ORDER BY 2
             #printt(chrom, numBins, buckets, mmax)
             self.curs.execute("""
 INSERT INTO {outTableName} (chrom, numBins, binMax, buckets)
-VALUES (%s, %s, %s, %s)""".format(outTableName =  outTableName),
+VALUES (%s, %s, %s, %s)""".format(outTableName=outTableName),
                               (chrom,
                                numBins + 1,
                                mmax,
@@ -111,6 +117,7 @@ $func$ LANGUAGE plpgsql;
         self.setupCREhistograms()
         self.setupCREcounts()
 
+
 def run(args, DBCONN):
     assemblies = Config.assemblies
     if args.assembly:
@@ -122,11 +129,13 @@ def run(args, DBCONN):
             pd = PolishData(curs, assembly)
             pd.run()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -134,6 +143,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     return run(args, DBCONN)
-        
+
+
 if __name__ == '__main__':
     main()

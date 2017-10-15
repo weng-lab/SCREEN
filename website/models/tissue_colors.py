@@ -15,13 +15,14 @@ fixedmap = {"limb": "limb",
             "G1E": "embryonic stem cell",
             "MEP": "blood",
             "G1E-ER4": "embryonic stem cell",
-            "CMP": "blood" }
+            "CMP": "blood"}
+
 
 class TissueColors:
     def __init__(self, cache):
         self.cache = cache
         self.tissueToColor = self.cache.colors["tissues"]
-        self.randColorGen = lambda: random.randint(0,255)
+        self.randColorGen = lambda: random.randint(0, 255)
 
     def randColor(self):
         return '#%02X%02X%02X' % (self.randColorGen(),
@@ -37,8 +38,10 @@ class TissueColors:
             return '#' + c
         return c
 
+
 def main():
-    import sys, os
+    import sys
+    import os
     sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
     sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
@@ -75,4 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

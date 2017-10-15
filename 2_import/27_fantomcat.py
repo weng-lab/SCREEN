@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, re, argparse
+import os
+import sys
+import json
+import psycopg2
+import re
+import argparse
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -18,6 +23,7 @@ from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printt
 
+
 class FantomCatImport:
     def __init__(self, assembly):
         self.assembly = assembly
@@ -29,6 +35,7 @@ class FantomCatImport:
         self._db.import_intersections_fromfile(FCPaths.forimport["intersections"], curs)
         self._db.import_intersections_fromfile(FCPaths.forimport["twokb_intersections"], curs, "twokb_intersections")
 
+
 def run(args, DBCONN):
     assemblies = ["hg19"]
     if args.assembly:
@@ -38,17 +45,20 @@ def run(args, DBCONN):
         with getcursor(DBCONN, "27_fantomcat$run") as curs:
             FantomCatImport(assembly).run(curs)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
     DBCONN = db_connect(os.path.realpath(__file__))
     run(args, DBCONN)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

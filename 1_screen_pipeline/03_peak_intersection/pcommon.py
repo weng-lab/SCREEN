@@ -1,6 +1,7 @@
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 import gzip
 import json
 
@@ -11,19 +12,21 @@ from utils import AddPath, Utils, Timer, printt, printWroteNumLines
 AddPath(__file__, '../../common/')
 from common import printr, printt
 
+
 def doIntersection(cres, others):
     try:
         return [p.rstrip().split("\t")[4] for p in Utils.runCmds([
-                    "bedtools", "intersect", "-a", cres, "-b", others, "-wa"
-               ])]
+            "bedtools", "intersect", "-a", cres, "-b", others, "-wa"
+        ])]
     except:
         print("pcommon$doIntersection: failed to intersect %s with %s" % (cres, others),
-              file = sys.stderr)
+              file=sys.stderr)
+
 
 def runIntersectJob(jobargs, bedfnp):
     if not os.path.exists(jobargs["bed"]["fnp"]):
         print("pcommon$runIntersectJob: missing bed %s; cannot intersect" % jobargs["bed"]["fnp"],
-              file = sys.stderr)
+              file=sys.stderr)
         return None
 
     ret = []
@@ -32,10 +35,11 @@ def runIntersectJob(jobargs, bedfnp):
     accessions = doIntersection(bedfnp, jobargs["bed"]["fnp"])
     if accessions is None:
         print("pcommon$runIntersectJob: warning: unable to intersect REs with bed %s" % jobargs["bed"]["fnp"],
-              file = sys.stderr)
+              file=sys.stderr)
     else:
         ret.append((jobargs["etype"], jobargs["label"], jobargs["bed"]["fileID"], accessions))
     return ret
+
 
 def processResults(results, outFnp):
     tfImap = {}
@@ -55,7 +59,7 @@ def processResults(results, outFnp):
     printt("completed hash merge")
 
     with gzip.open(outFnp, 'w') as f:
-        for k,v in tfImap.iteritems():
+        for k, v in tfImap.iteritems():
             f.write('\t'.join([k,
                                json.dumps(v["tf"]),
                                json.dumps(v["histone"])

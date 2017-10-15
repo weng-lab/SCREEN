@@ -7,6 +7,8 @@
 // bigwig.js: indexed binary WIG (and BED) files
 //
 
+/* eslint-disable */
+
 import {inflateBuffer, arrayCopy} from 'jszlib';
 
 import {Range, union, intersection} from './spans';
@@ -398,7 +400,7 @@ class BigWigView{
         this.cirTreeLength = cirTreeLength;
         this.isSummary = isSummary;
     }
-    
+
     readWigData(chrName, min, max, callback) {
         var chr = this.bwg.chromsToIDs[chrName];
         if (chr === undefined) {
@@ -480,12 +482,12 @@ class BigWigView{
             var sa = new Int16Array(cirBlockData);
             var la = new Int32Array(cirBlockData);
             var startChrom, startBase, endChrom, endBase, blockOffset;
-            
+
             var isLeaf = ba[offset];
             var cnt = sa[offset/2 + 1];
             offset += 4;
             var i, lo;
-            
+
             if (isLeaf !== 0) {
                 for (i = 0; i < cnt; ++i) {
                     lo = offset/4;
@@ -610,7 +612,7 @@ class BigWigView{
     parseFeatures(data, createFeature, filter) {
         var ba = new Uint8Array(data);
         var sa, la, fa, chromId,  itemCount, i, start, end, score;
-        
+
         if (this.isSummary) {
             sa = new Int16Array(data);
             la = new Int32Array(data);

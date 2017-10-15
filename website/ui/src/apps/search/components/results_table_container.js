@@ -15,7 +15,7 @@ class ResultsTableContainer extends React.Component {
                        isFetching: true, isError: false,
                        jq : null}
     }
-    
+
     shouldComponentUpdate(nextProps, nextState) {
 	return "results" === nextProps.maintabs_active;
     }
@@ -52,7 +52,7 @@ class ResultsTableContainer extends React.Component {
 				this.setState({cres: [], total: 0,
 					       jq, isFetching: false, isError: true});
 			    });
-        
+
     }
 
     searchLinks(gene, useTss, tssDist, assembly, geneTitle){
@@ -139,13 +139,14 @@ class ResultsTableContainer extends React.Component {
         }
 
 	let cresWithChecks = this.state.cres;
+
 	cresWithChecks.forEach( (cre) => {
 	    cre["checked"] = false;
 	    if(cre.info.accession=== this.props.gb_cres.accession){
-		cre["checked"] = true;
+		  cre["checked"] = true;
 	    }
    	});
-		
+
 	const interp = this.props.interpretation;
 	let interpBox = "";
 	if(interp){
@@ -180,6 +181,7 @@ class ResultsTableContainer extends React.Component {
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
       gb_cres={this.props.gb_cres}
+      chrom = {this.props.coord_chrom}
 		/>
 	    </div>);
     }

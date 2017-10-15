@@ -1,17 +1,19 @@
 from __future__ import print_function
-import sys, os
+import sys
+import os
 
 from models.gene_expression import GeneExpression
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
 
+
 class GeneExpWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
         def makeWS(assembly):
             return GeneExpWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies
-        self.wss = {a : makeWS(a) for a in self.assemblies}
+        self.wss = {a: makeWS(a) for a in self.assemblies}
 
     def process(self, j, args, kwargs):
         if "assembly" not in j:
@@ -19,6 +21,7 @@ class GeneExpWebServiceWrapper:
         if j["assembly"] not in self.assemblies:
             raise Exception("invalid assembly")
         return self.wss[j["assembly"]].process(j, args, kwargs)
+
 
 class GeneExpWebService(object):
     def __init__(self, args, ps, cache, staticDir, assembly):
@@ -28,7 +31,7 @@ class GeneExpWebService(object):
         self.staticDir = staticDir
         self.assembly = assembly
 
-        self.actions = {"search" : self.search}
+        self.actions = {"search": self.search}
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -38,7 +41,7 @@ class GeneExpWebService(object):
             raise
 
     def search(self, j, args):
-        gene = j["gene"] # TODO: check for valid gene
+        gene = j["gene"]  # TODO: check for valid gene
         compartments = j.get("compartments_selected", ["cell"])
 
         allBiosampleTypes = ["immortalized cell line",
@@ -51,7 +54,7 @@ class GeneExpWebService(object):
         # TODO: check value of compartments, biosample_types_selected
 
         if not biosample_types_selected or not compartments:
-            return {"hasData" : False, "items" : {}}
+            return {"hasData": False, "items": {}}
 
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         ret = cge.computeHorBars(gene, compartments, biosample_types_selected)

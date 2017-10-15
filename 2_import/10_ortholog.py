@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json, psycopg2, argparse, gzip
+import os
+import sys
+import json
+import psycopg2
+import argparse
+import gzip
 import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
@@ -12,6 +17,7 @@ from config import Config
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from utils import Utils, printt
 from db_utils import getcursor, makeIndex
+
 
 class ImportLiftover:
     def __init__(self, curs):
@@ -31,7 +37,7 @@ class ImportLiftover:
     humanAccession text,
     overlap integer
     );
-    """.format(tableName = self.tableName))
+    """.format(tableName=self.tableName))
 
     def run(self):
         fnp = paths.path("mm10", "mm10-orthologs.txt.gz")
@@ -55,17 +61,20 @@ class ImportLiftover:
 
         makeIndex(self.curs, self.tableName, ["mouseAccession", "humanAccession"])
 
+
 def run(args, DBCONN):
     printt('***********')
     with getcursor(DBCONN, "main") as curs:
         il = ImportLiftover(curs)
         il.run()
     return 0
-        
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -73,6 +82,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
 
     return run(args, DBCONN)
+
 
 if __name__ == '__main__':
     main()

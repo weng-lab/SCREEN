@@ -18,6 +18,7 @@ from constants import helptext, paths
 AddPath(__file__, "../googleapi")
 from helptext import GoogleDocs
 
+
 class HelpTextImport:
     def __init__(self, args):
         self.args = args
@@ -30,7 +31,7 @@ class HelpTextImport:
         if len(self.data) == 0:
             print("no help text could be downloaded; please check GoogleDoc contents at https://docs.google.com/document/d/%s" % helptext.docid)
             return 1
-        
+
         self._parse()
         self._save()
 
@@ -76,28 +77,32 @@ class HelpTextImport:
 
         # from http://stackoverflow.com/a/30985541
         records_list_template = ','.join(['%s'] * len(self.rows))
-        
+
         fnp = paths.path('', "extras", "google-help-text.json")
         Utils.ensureDir(fnp)
-        j = {"records_list_template" : records_list_template,
-             "rows" : self.rows}
+        j = {"records_list_template": records_list_template,
+             "rows": self.rows}
         with open(fnp, 'w') as f:
             json.dump(j, f)
         print("wrote", fnp)
+
 
 def run(args, DBCONN):
     printt('***********')
     hti = HelpTextImport(args)
     return hti.run()
 
+
 def parse_args():
-    parser = argparse.ArgumentParser(parents = [tools.argparser])
+    parser = argparse.ArgumentParser(parents=[tools.argparser])
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
 
     return run(args, None)
-            
+
+
 if __name__ == "__main__":
     sys.exit(main())

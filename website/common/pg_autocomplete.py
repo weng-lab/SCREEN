@@ -19,6 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from db_utils import getcursor
 
+
 class PGautocomplete(GetOrSetMemCache):
     def __init__(self, pg, assembly):
         GetOrSetMemCache.__init__(self, assembly, "PGautocomplete")
@@ -32,10 +33,9 @@ SELECT oname
 FROM {tn}
 WHERE name LIKE %s || '%%'
 LIMIT 5
-            """.format(tn = self.assembly + "_autocomplete"), (q,))
+            """.format(tn=self.assembly + "_autocomplete"), (q,))
         r = curs.fetchall()
         if not r:
             print("no results for %s in %s" % (q, self.assembly))
             return []
         return [x[0] for x in r]
-

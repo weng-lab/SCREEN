@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys, json
+import os
+import sys
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from models.datasets import Datasets
@@ -22,12 +24,14 @@ Compartments = ["cell", "nucleoplasm", "cytosol",
                 "nucleus", "membrane", "chromatin",
                 "nucleolus"]
 
+
 class CachedObjectsWrapper:
     def __init__(self, ps):
-        self.cos = {a : CachedObjects(ps, a) for a in Config.assemblies}
+        self.cos = {a: CachedObjects(ps, a) for a in Config.assemblies}
 
     def __getitem__(self, assembly):
         return self.cos[assembly]
+
 
 class CachedObjects:
     def __init__(self, ps, assembly):
@@ -60,14 +64,14 @@ class CachedObjects:
         self.assaymap = {"dnase": self.pgSearch.datasets("DNase"),
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),
                          "h3k4me3": self.pgSearch.datasets("H3K4me3"),
-                         "ctcf" : self.pgSearch.datasets("CTCF")}
+                         "ctcf": self.pgSearch.datasets("CTCF")}
         self.ensemblToSymbol, self.ensemblToStrand = self.pgSearch.genemap()
 
         self.nineState = self.pgSearch.loadNineStateGenomeBrowser()
         self.filesList = self.indexFilesTab(self.nineState.values())
 
         self.moreTracks = self.pgSearch.loadMoreTracks()
-        
+
         self.geBiosampleTypes = self.pgSearch.geBiosampleTypes()
 
         self.geneIDsToApprovedSymbol = self.pgSearch.geneIDsToApprovedSymbol()
@@ -79,10 +83,10 @@ class CachedObjects:
             "cistrome": None
         }
         if self.assembly in ["hg38", "mm10"]:
-            self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset = "cistrome")
+            self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
 
         self.creBigBeds = self.pgSearch.creBigBeds()
-            
+
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
@@ -110,23 +114,24 @@ class CachedObjects:
             d["fiveGroup"] = [os.path.join(WWW, fn), fn]
             ret.append(d)
         return ret
-            
+
     def global_data(self, ver):
         datasets = self.datasets
         return {
-            "tfs" : self.tf_list,
-            "cellCompartments" : Compartments,
+            "tfs": self.tf_list,
+            "cellCompartments": Compartments,
             "cellTypeInfoArr": datasets.globalCellTypeInfoArr,
-            "chromCounts" : self.chromCounts,
-            "chromLens" : chrom_lengths[self.assembly],
-            "creHistBins" : self.creHist,
-            "byCellType" : datasets.byCellType,
-            "geBiosampleTypes" : self.geBiosampleTypes,
-            "helpKeys" : self.help_keys,
-            "colors" : self.colors,
+            "chromCounts": self.chromCounts,
+            "chromLens": chrom_lengths[self.assembly],
+            "creHistBins": self.creHist,
+            "byCellType": datasets.byCellType,
+            "geBiosampleTypes": self.geBiosampleTypes,
+            "helpKeys": self.help_keys,
+            "colors": self.colors,
             "tad_biosamples": self.tad_biosamples,
             "creBigBedsByCellType": self.creBigBeds
         }
+
 
 def main():
     DBCONN = db_connect(os.path.realpath(__file__))
@@ -139,6 +144,7 @@ def main():
 
     for k, v in cache.assaymap["dnase"].iteritems():
         print(k, v, n[k])
+
 
 if __name__ == '__main__':
     main()

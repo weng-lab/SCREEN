@@ -3,10 +3,12 @@
 
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 import json
 
 from fc_common import FCPaths
+
 
 class CoordMatcher:
 
@@ -34,9 +36,11 @@ class CoordMatcher:
                         s = int(line[tss]) - 2000
                         u.write("%s\t%d\t%d\t%s\t0\t%s\n" % (line[0], s if s > 0 else 0, int(line[tss]) + 2000, names[-1], line[5]))
 
+
 def main():
     CoordMatcher.run()
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

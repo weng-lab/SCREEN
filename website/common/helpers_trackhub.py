@@ -1,6 +1,8 @@
-import sys, os
+import sys
+import os
 
 BIB5 = "http://bib5.umassmed.edu/~purcarom/annotations_demo/"
+
 
 class TempWrap:
     def __init__(self, expID, fileID):
@@ -11,6 +13,7 @@ class TempWrap:
 
     def isBigWig(self):
         return self.url.endswith(".bigWig")
+
 
 def bedFilters(assembly, files):
     files = filter(lambda x: x.assembly == assembly, files)
@@ -25,6 +28,7 @@ def bedFilters(assembly, files):
         if beds:
             beds = filter(lambda x: not x.isHotSpot(), beds)
             return beds
+
 
 def bigWigFilters(assembly, files):
     files = filter(lambda x: x.isBigWig() and x.assembly == assembly, files)
@@ -47,9 +51,10 @@ def bigWigFilters(assembly, files):
         if bigWigs:
             return bigWigs
 
+
 class Track(object):
     def __init__(self, desc, priority, url,
-                 color = None, type = None):
+                 color=None, type=None):
         self.desc = desc
         self.priority = priority
 
@@ -67,7 +72,7 @@ class Track(object):
         self.autoScale = None
         self.viewLimits = None
         self.superTrackName = None
-        
+
     @staticmethod
     def MakeDesc(name, age, biosample_term_name):
         desc = [biosample_term_name]
@@ -77,7 +82,7 @@ class Track(object):
         desc = " ".join(desc)
         return desc
 
-    def track(self, shortLabel = None):
+    def track(self, shortLabel=None):
         if not self.type:
             raise Exception("unknown type")
         if not shortLabel:
@@ -111,16 +116,17 @@ class Track(object):
         typee = self.type
         if typee in ["bigBed 8", "bigBed 9"]:
             typee = "hammock"
-        track = {"name" : self.desc,
-                 "type" : typee,
-                 "mode" : "show",
+        track = {"name": self.desc,
+                 "type": typee,
+                 "mode": "show",
                  #"priority " + str(self.priority),
-                 "url" : url}
+                 "url": url}
         if self.color:
             track["colorpositive"] = self.color
         if self.height:
             track["height"] = int(self.height.split(':')[1])
         return track
+
 
 class PredictionTrack(Track):
     def __init__(self, desc, priority, url, show):
@@ -130,15 +136,17 @@ class PredictionTrack(Track):
         if not show:
             self.visibility = "hide"
 
+
 class VistaTrack(Track):
     def __init__(self, desc, priority, url):
         super(VistaTrack, self).__init__(desc, priority, url)
         self.color = None
         self.type = "bigBed 5"
 
+
 class BigWigTrack(Track):
-    def __init__(self, desc, priority, url, color, superTrackName = "",
-                 viewLimits = None, hide = False):
+    def __init__(self, desc, priority, url, color, superTrackName="",
+                 viewLimits=None, hide=False):
         super(BigWigTrack, self).__init__(desc, priority, url)
         self.color = color
         self.type = "bigWig"
@@ -154,6 +162,7 @@ class BigWigTrack(Track):
         if superTrackName:
             self.superTrackName = superTrackName
 
+
 class BigGenePredTrack(Track):
     def __init__(self, desc, priority, url):
         super(BigGenePredTrack, self).__init__(desc, priority, url)
@@ -161,9 +170,10 @@ class BigGenePredTrack(Track):
         self.type = "bigBed"
         self.visibility = "pack"
 
+
 class BigBedTrack(Track):
-    def __init__(self, desc, priority, url, color, superTrackName = "",
-                 hide = False):
+    def __init__(self, desc, priority, url, color, superTrackName="",
+                 hide=False):
         super(BigBedTrack, self).__init__(desc, priority, url)
         if color:
             self.color = color
@@ -174,8 +184,9 @@ class BigBedTrack(Track):
         if superTrackName:
             self.superTrackName = superTrackName
 
+
 def officialVistaTrack(assembly):
-    byAssembly = {"mm10" : """
+    byAssembly = {"mm10": """
 track VISTAenhancers
 bigDataUrl http://portal.nersc.gov/dna/RD/ChIP-Seq/VISTA_enhancer_e/mm10_ext_latest.bb
 shortLabel VISTA Enhancers
@@ -187,7 +198,7 @@ urlLabel Vista Enhancer Browser (elementID:organismID(1 for human, 2 for mouse))
 bedNameLabel VISTA Enhancers
 html http://portal.nersc.gov/dna/RD/ChIP-Seq/VISTA_enhancer_e/VistaEnhancerTrackHub/enhancerAssay.html
 visibility full""",
-                  "hg19" : """
+                  "hg19": """
 track VISTAenhancers
 bigDataUrl http://portal.nersc.gov/dna/RD/ChIP-Seq/VISTA_enhancer_e/hg19_ext_latest.bb
 shortLabel VISTA Enhancers

@@ -1,11 +1,13 @@
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 
 import gzip
 import subprocess
 import json
 from pyliftover import LiftOver
+
 
 class WLiftOver:
 
@@ -13,16 +15,20 @@ class WLiftOver:
     def _validate(chrom, original, liftedover):
 
         # sanity checks
-        if not liftedover[0] or not liftedover[1]: return None # no match in new assembly
+        if not liftedover[0] or not liftedover[1]:
+            return None  # no match in new assembly
         start = liftedover[0][0]
         end = liftedover[1][0]
-        if start[0] != chrom or end[0] != chrom: return None # mismatched chromosome
+        if start[0] != chrom or end[0] != chrom:
+            return None  # mismatched chromosome
 
         # length checks
         origlen = original[1] - original[0]
         newlen = end[1] - start[1]
-        if origlen < 0 or newlen < 0: return None # negative length
-        if abs(origlen - newlen) > 5000: return None # excessive length change
+        if origlen < 0 or newlen < 0:
+            return None  # negative length
+        if abs(origlen - newlen) > 5000:
+            return None  # excessive length change
 
         # new region OK
         return (start[1], end[1])
@@ -46,9 +52,10 @@ class WLiftOver:
             with _oopen(output_path, 'wb') as o:
                 for line in f:
                     p = line.strip().split('\t')
-                    nregion = self.liftOverRegion( p[0], (int(p[1]), int(p[2])) )
+                    nregion = self.liftOverRegion(p[0], (int(p[1]), int(p[2])))
                     if nregion:
-                        o.write( "%s\t%d\t%d\t%s\n" % (p[0], nregion[0], nregion[1], '\t'.join(p[3:])) )
+                        o.write("%s\t%d\t%d\t%s\n" % (p[0], nregion[0], nregion[1], '\t'.join(p[3:])))
+
 
 class Intersect:
     def __init__(self, a, b):
@@ -61,13 +68,17 @@ class Intersect:
                 self.total += 1
                 line = line.strip().split('\t')
                 for i in range(4, 8):
-                    if i >= len(line): continue
-                    if float(line[i]) > 1.64: self.filteredZTotal[i - 4] += 1
-    
+                    if i >= len(line):
+                        continue
+                    if float(line[i]) > 1.64:
+                        self.filteredZTotal[i - 4] += 1
+
     def _intersected_regions(self, fraction):
-        if fraction > 1.0: fraction = 1.0
+        if fraction > 1.0:
+            fraction = 1.0
         cmd = ["bedtools", "intersect"]
-        if fraction > 0.0: cmd += ["-f", str(fraction)]
+        if fraction > 0.0:
+            cmd += ["-f", str(fraction)]
         return list(set(subprocess.check_output(cmd + ["-a", self.a, "-b", self.b, "-wa"]).split('\n')))
 
     def _intersect(self, fraction):
@@ -97,9 +108,11 @@ class Intersect:
             ztotals = [0, 0, 0, 0]
             for region in regions:
                 region = region.strip().split('\t')
-                if len(region) < 8: continue
+                if len(region) < 8:
+                    continue
                 for j in range(4, 8):
-                    if float(region[j]) > 1.64: ztotals[j - 4] += 1
+                    if float(region[j]) > 1.64:
+                        ztotals[j - 4] += 1
             for j in xrange(len(ztotals)):
                 ZResults[j].append(float(ztotals[j]) / self.filteredZTotal[j])
 
@@ -110,17 +123,19 @@ def _writeIntersection(a, b, path, n_intervals):
     results, zresults = Intersect(a, b).intersectRangeWithZ(n_intervals)
     with open(path, "wb") as o:
         o.write(json.dumps({
-                    "all": results,
-                    "DNase": zresults[0],
-                    "H3K4me3": zresults[1],
-                    "H3K27ac": zresults[2],
-                    "CTCF": zresults[3]
-                }) + '\n')
+            "all": results,
+            "DNase": zresults[0],
+            "H3K4me3": zresults[1],
+            "H3K27ac": zresults[2],
+            "CTCF": zresults[3]
+        }) + '\n')
+
 
 def _writeIntersectionNoZ(a, b, path, n_intervals):
     results = Intersect(a, b).intersectRange(n_intervals)
     with open(path, "wb") as o:
         o.write(json.dumps(results))
+
 
 def main():
 
@@ -156,11 +171,12 @@ def main():
 
     # do Cistrome intersection with hg19
     _writeIntersectionNoZ("/data/projects/cREs/hg19/CTA.hg38.liftOver.bed", "/data/projects/cREs/hg38/rDHS.encode+cistrome.bed",
-                       "/data/projects/cREs/hg38/CTA.hg19.cistromeintersected.json", 20) # fraction of lifted over hg19 cREs overlapping
+                          "/data/projects/cREs/hg38/CTA.hg19.cistromeintersected.json", 20)  # fraction of lifted over hg19 cREs overlapping
     _writeIntersectionNoZ("/data/projects/cREs/hg38/rDHS.encode+cistrome.bed", "/data/projects/cREs/hg19/CTA.hg38.liftOver.bed",
-                       "/data/projects/cREs/hg38/CTA.hg38.cistromeintersected.json", 20) # fraction of Cistrome+ENCODE cREs overlapping
+                          "/data/projects/cREs/hg38/CTA.hg38.cistromeintersected.json", 20)  # fraction of Cistrome+ENCODE cREs overlapping
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

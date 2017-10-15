@@ -5,6 +5,7 @@ from __future__ import print_function
 from cre import CRE
 from common.pg_gwas import PGgwas
 
+
 class Gwas:
     def __init__(self, assembly, ps, cache):
         self.assembly = assembly
@@ -12,7 +13,7 @@ class Gwas:
         self.pgGwas = PGgwas(ps, assembly)
 
         self.studies = self.pgGwas.gwasStudies()
-        self.byStudy = {r["value"] : r for r in self.studies}
+        self.byStudy = {r["value"]: r for r in self.studies}
 
     def checkStudy(self, gwas_study):
         return gwas_study in self.byStudy
@@ -61,14 +62,14 @@ class Gwas:
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
-        return {ct: {"accessions" : activeCres,
-                     "vcols" : vcols}}
+        return {ct: {"accessions": activeCres,
+                     "vcols": vcols}}
 
     def mainTable(self, gwas_study):
-        return {gwas_study : {"gwas_study" : self.byStudy[gwas_study],
-                              "mainTable" : self._mainTableInfo(gwas_study),
-                              "topCellTypes" : self.allCellTypes(gwas_study)}}
-        
+        return {gwas_study: {"gwas_study": self.byStudy[gwas_study],
+                             "mainTable": self._mainTableInfo(gwas_study),
+                             "topCellTypes": self.allCellTypes(gwas_study)}}
+
     def _mainTableInfo(self, gwas_study):
         total = self.totalLDblocks(gwas_study)
         overlap = self.numLdBlocksOverlap(gwas_study)
@@ -76,8 +77,4 @@ class Gwas:
         return [{"totalLDblocks": total,
                  "numLdBlocksOverlap": overlap,
                  "numLdBlocksOverlapFormat": overlapStr,
-                 "numCresOverlap": self.numCresOverlap(gwas_study) }]
-
-
-
-
+                 "numCresOverlap": self.numCresOverlap(gwas_study)}]

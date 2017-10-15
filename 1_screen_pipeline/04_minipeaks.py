@@ -18,9 +18,14 @@ from paste import chunkedPaste
 # from http://stackoverflow.com/a/19861595
 import copy_reg
 import types
+
+
 def _reduce_method(meth):
     return (getattr, (meth.__self__, meth.__func__.__name__))
+
+
 copy_reg.pickle(types.MethodType, _reduce_method)
+
 
 class ExtractRawPeaks:
     def __init__(self, assembly, ver, nbins, j):
@@ -90,9 +95,9 @@ class ExtractRawPeaks:
 
         if self.debug:
             bfnps = [bfnps[0]]
-        Parallel(n_jobs = self.j)(delayed(self._runBwtool)
-                                  (outD, fnp)
-                                  for fnp in bfnps)
+        Parallel(n_jobs=self.j)(delayed(self._runBwtool)
+                                (outD, fnp)
+                                for fnp in bfnps)
 
     def writeBed(self):
         inFnp = self.masterPeakFnp
@@ -113,6 +118,7 @@ class ExtractRawPeaks:
                                            int(stop + padding),
                                            accession]]) + '\n')
         printt("wrote", outFnp)
+
 
 class MergeFiles:
     def __init__(self, assembly, ver, nbins, assay):
@@ -177,6 +183,7 @@ class MergeFiles:
         printt("paste into", mergedFnp)
         chunkedPaste(mergedFnp, [accessionFnp] + fnps)
 
+
 def sample(assembly, ver, nbins):
     minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
@@ -196,9 +203,10 @@ def sample(assembly, ver, nbins):
                                           "sample", assay + "_merged.txt")
         Utils.ensureDir(sampleMiniPeaksFnp)
         cmds = ["grep -f", accessionsFnp, mergedFnp,
-                '>',  sampleMiniPeaksFnp]
+                '>', sampleMiniPeaksFnp]
         Utils.runCmds(cmds)
         printWroteNumLines(sampleMiniPeaksFnp)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -210,6 +218,7 @@ def parse_args():
     parser.add_argument('--nbins', type=int, default=0)
     args = parser.parse_args()
     return args
+
 
 def main():
     args = parse_args()
@@ -231,6 +240,7 @@ def main():
             sample(assembly, ver, nbins)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -2,7 +2,8 @@
 
 from __future__ import print_function
 
-import sys, os
+import sys
+import os
 import argparse
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -17,8 +18,9 @@ AddPath(__file__, '../common/')
 from dbconnect import db_connect
 from pgglobal import GlobalPG
 
+
 def run(args, DBCONN):
-    assemblies = ["hg19", "hg38"] #Config.assemblies
+    assemblies = ["hg19", "hg38"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
@@ -56,17 +58,19 @@ def run(args, DBCONN):
                                    curs)
                 print("imported liftOver intersect fractions")
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
     args = parser.parse_args()
     return args
 
+
 def main():
     args = parse_args()
     DBCONN = db_connect(os.path.realpath(__file__))
     return run(args, DBCONN)
 
+
 if __name__ == "__main__":
     sys.exit(main())
-                
