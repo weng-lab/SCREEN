@@ -31,11 +31,6 @@ table.dataTable.table-condensed .sorting:after,table.dataTable.table-condensed .
     stroke: #ff0000;
 }
 
-.navbar-form{
-    margin-bottom: 5px;
-    margin-top: 5px;
-}
-
 div.result_row {
     width: 100%;
 }
@@ -60,10 +55,6 @@ div.result_row_selected {
 .searchbox {
     padding: 10px;
     height: 36px;
-}
-
-.navbar-main {
-    margin-bottom: 0px;
 }
 
 .facet {
@@ -191,11 +182,6 @@ div.result_row_selected {
     display: inline-block;
     vertical-align: middle;
     float: none;
-}
-
-.navbar-searchform {
-    float: left;
-    padding: 5px;
 }
 
 #compareInWashU {
@@ -363,14 +349,6 @@ select.ui-toggle-switch { display: none; }
 }
 .intersectionTable tbody > tr:hover {
     background-color: #FAD7A0;
-}
-
-.navbarEncodeImg {
-    height: 34px;
-}
-.navbarEncodeImgBtn {
-    padding-top: 1px;
-    padding-bottom: 1px;
 }
 
 table tr td.minipeak {
@@ -795,4 +773,12 @@ table-sort-desc::after {
 .react-autosuggest__suggestions-list {
 list-style: none;
 border: 1px solid black;
+}
+
+.navbar {
+    height: 50px;
+}
+
+.navbar > div {
+    margin: 0px;
 }
