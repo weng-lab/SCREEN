@@ -92,6 +92,10 @@ div.result_row_selected {
     padding-top: 10px;
 }
 
+#facets-container > div > div {
+    margin-bottom: 5px;
+}
+
 .nopadding {
     padding: 0 !important;
     margin: 0 !important;
@@ -770,6 +774,21 @@ table-sort-desc::after {
 }
 .react-autosuggest__suggestions-container--open_index{
 }
+
+.react-autosuggest__input_navbar {
+    width: 500px;
+    color: black;
+}
+.react-autosuggest__suggestions-container_navbar {
+    margin: 0 auto;
+}
+.react-autosuggest__suggestions-container--open_navbar{
+}
+.react-autosuggest__container--open_navbar {
+z-index: 1000;
+}
+
+
 .react-autosuggest__suggestions-list {
 list-style: none;
 border: 1px solid black;
@@ -783,8 +802,9 @@ nav.navbar > div {
     margin: 0px;
 }
 
+/* encode button */
 nav > div > ul > li:nth-child(3) > a {
-    padding-top: 6px;
+    padding-top: 4px;
 }
 
 nav > div > ul > li:nth-child(2) > a {

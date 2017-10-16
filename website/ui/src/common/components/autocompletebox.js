@@ -87,11 +87,17 @@ class AutocompleteBox extends React.Component {
 	    onKeyPress: this.handleKeyPress
 	};
 
+	let loadSugg = this.loadSuggestion;
+	if(this.props.loadSugg){
+	    loadSugg = this.props.loadSugg;
+	}
+
 	return (
 	    <div style={this.props.style}>
 		<Autosuggest
+	    shouldRenderSuggestions={this.props.shouldRenderSuggestions}
 		    suggestions={suggestions}
-		    onSuggestionsFetchRequested={this.loadSuggestion}
+		    onSuggestionsFetchRequested={loadSugg}
 		    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
 		    getSuggestionValue={this.getSuggestionValue}
 		    renderSuggestion={this.renderSuggestion}

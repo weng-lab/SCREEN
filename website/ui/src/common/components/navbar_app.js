@@ -30,7 +30,9 @@ class NavBarApp extends React.Component {
           </Navbar.Header>
         <Nav>
           <NavItem>{SearchBox}</NavItem>
-        <NavItem>{cartimage}</NavItem>
+	      </Nav>
+	  <Nav pullRight>
+              <NavItem>{cartimage}</NavItem>
           <NavItem href="http://www.encodeproject.org" target="_blank">
               <img src={ApiClient.StaticUrl("/encode/ENCODE_logo.small3.png")}
 		   style={{padding: "4px",

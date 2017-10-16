@@ -45,10 +45,19 @@ class SearchBox extends React.Component {
   }
 
   render() {
+      const shouldRenderSuggestions = (v) => {
+	  return false;
+      }
+      const loadSugg = (v) => {
+	  return v;
+      }
 
     return (
       <div>
-      <AutocompleteBox defaultvalue={this.state.searchtext}
+      <AutocompleteBox 
+	shouldRenderSuggestions={shouldRenderSuggestions}
+	loadSugg={loadSugg}
+	defaultvalue={this.state.searchtext}
       id="acnav"
       name="q"
       style={{float: "left"}}
@@ -58,7 +67,27 @@ class SearchBox extends React.Component {
       className="searchbox"
       onChange={(t) => {this.setState({searchtext: t})}}
       onEnter={this._search}
-      assemblies={[this.props.assembly]} />&nbsp;
+      assemblies={[this.props.assembly]} 
+
+             theme={{
+  container:                'react-autosuggest__container',
+  containerOpen:            'react-autosuggest__container--open_navbar',
+  input:                    'react-autosuggest__input_navbar',
+  inputOpen:                'react-autosuggest__input--open',
+  inputFocused:             'react-autosuggest__input--focused',
+  suggestionsContainer:     'react-autosuggest__suggestions-container_navbar',
+  suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open_navbar',
+  suggestionsList:          'react-autosuggest__suggestions-list',
+  suggestion:               'react-autosuggest__suggestion',
+  suggestionFirst:          'react-autosuggest__suggestion--first',
+  suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
+  sectionContainer:         'react-autosuggest__section-container',
+  sectionContainerFirst:    'react-autosuggest__section-container--first',
+  sectionTitle:             'react-autosuggest__section-title'
+}}
+
+
+/>&nbsp;
 
       <Button onClick={this._search}>Search
       </Button>
