@@ -32,29 +32,34 @@ class BedUpload extends React.Component {
             reader.onload = (r) => {
 		const contents = r.target.result;
 		const lines = contents.split('\n');
-		allLines.push(lines);
+		lines.forEach((e) => {
+		    allLines.push(e);
+		});
             };
             reader.onabort = () => console.log('file reading was aborted');
             reader.onerror = () => console.log('file reading has failed');
-		reader.onprogress  = (e) => {
-		    if (e.lengthComputable) {
-			if(e.loaded === e.total){
-			    const j = {uuid: this.props.uuid, 
-				       assembly: this.props.assembly,
-				       allLines};
-			    console.log("about to post", j);
-			    ApiClient.setByPost(JSON.stringify(j),
-						"/post/lines",
-						(r) => {},
-						(msg) => {
-						    console.log("error!");
-						});				    
-			}
-		    };
+		reader.onloadend  = (e) => {
+		    const j = {uuid: this.props.uuid, 
+			       assembly: this.props.assembly,
+			       allLines};
+		    const jq = JSON.stringify(j);
+		    ApiClient.setByPost(jq,
+					"/postws/lines",
+			    (r) => {
+				let href = window.location.href;
+				if(!href.includes("&cart")){
+				    href += "&cart";
+				}
+				window.location.assign(href);				    
+			    },
+			    (msg) => {
+				console.log("error posting to cart/set", msg);
+			    });
 		};
-		reader.readAsText(f);
+	    reader.readAsText(f);
 	});
     }
+				
 
     render() {
 	return (
