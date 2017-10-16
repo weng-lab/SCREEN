@@ -1,4 +1,5 @@
 import React from 'react'
+import uuider from 'react-native-uuid';
 
 import AutocompleteBox from '../../../common/components/autocompletebox';
 
@@ -16,14 +17,16 @@ class Autocompleter extends React.Component {
  	this.onEnter = this.onEnter.bind(this);
 	this.onChange = this.onChange.bind(this);
 
- 	this.state = {userQueryErr : null, value: props.defaultvalue};
+ 	this.state = {userQueryErr : null, value: props.defaultvalue,
+		      uuid: uuider.v4()};
     }
 
     loadSearch(assembly) {
 	const userQuery = this.state.value;
+	const uuid = this.state.uuid;
  	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
  				          style={{fontSize : "24px"}}></i>)});
- 	const q = {assembly, userQuery};
+ 	const q = {assembly, userQuery, uuid};
  	const userQueryErr = (
  	    <span>
  		Error: no results for your query.
@@ -43,7 +46,7 @@ class Autocompleter extends React.Component {
  					  this.props.actions.setMainTab("query");
  				      } else {
  					  const params = toParams({q: userQuery,
-								   assembly});
+								   assembly, uuid});
  					  const url = "/search/?" + params;
  					  window.location.href = url;
  				      }

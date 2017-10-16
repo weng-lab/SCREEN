@@ -6,6 +6,7 @@ import json
 import time
 import numpy as np
 import cherrypy
+import uuid as uuider
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
@@ -49,6 +50,8 @@ class AutocompleteWebService:
             raise Exception("userQuery not in j")
         userQuery = j["userQuery"]
 
+        uuid = j.get("uuid", uuider.uuid4())
+
         p = ParseSearch(self.ps.DBCONN, assembly, {"q": userQuery})
         ret = {}
         try:
@@ -58,5 +61,7 @@ class AutocompleteWebService:
                 ret["failed"] = True
         except:
             ret["failed"] = True
+
+        ret["uuid"] = uuid
 
         return ret
