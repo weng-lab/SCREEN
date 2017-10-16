@@ -71,6 +71,7 @@ class PostWebService(object):
         cmds = ["cat", filename,
                 '|', 'sort -k1,1 -k2,2n',
                 '|', 'bedtools intersect -a ', cres[assembly], ' -b stdin'
+                '|', 'sort | uniq',
                 '|', "head -n 1000",
                 '|', "awk '{ print $5 }'"]
         accessions = Utils.runCmds(cmds)
