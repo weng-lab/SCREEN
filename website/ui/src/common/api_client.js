@@ -26,6 +26,21 @@ export const getByPost  = (jq, url, successF, errF) => {
 	.catch(errF);
 }
 
+export const setByPost  = (jq, url, successF, errF) => {
+    fetch(Servers(url),
+	  {
+	      headers: {
+		  'Accept': 'application/json',
+		  'Content-Type': 'application/json'
+	      },
+	      method: "POST",
+	      body: jq
+	  })
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
+
 export const autocompleteBox = (jq, successF, errF) => {
     getByPost(jq, "/autows/search", successF, errF);
 }

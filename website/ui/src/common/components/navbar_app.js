@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Button, Nav, Navbar, NavDropdown, MenuItem, NavItem } from 'react-bootstrap';
+import {Nav, Navbar, NavItem } from 'react-bootstrap';
 
 import CartImage, {cart_connector} from './cart_image'
 import * as ApiClient from '../api_client';

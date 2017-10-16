@@ -1,7 +1,7 @@
 import React from 'react';
-import $ from 'jquery';
 
 import Ztable from '../../../common/components/ztable/ztable';
+import * as ApiClient from '../../../common/api_client';
 
 import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
@@ -11,12 +11,13 @@ import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 
-
-
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { minrange:0,maxrange: 0,selectedaccession: {},chrom:'',cellType:''}
+	this.state = {minrange:0, 
+		      maxrange: 0, selectedaccession: {},
+		      chrom:'',
+		      cellType:''}
         this.table_click_handler = this.table_click_handler.bind(this);
     }
 
@@ -34,8 +35,7 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    table_click_handler(td, rowdata, actions)
-    {
+    table_click_handler(td, rowdata, actions){
         if (td.indexOf("browser") !== -1)
         {
     	    let cre = {...rowdata, ...rowdata.info};
@@ -51,15 +51,12 @@ class TableWithCart extends React.Component {
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
       	    let j = {assembly: this.props.assembly, accessions};
-      	    $.ajax({
-      		type: "POST",
-      		url: "/cart/set",
-      		data: JSON.stringify(j),
-      		dataType: "json",
-      		contentType: "application/json",
-      		success: (response) => {
-                      }
-      	    });
+	    ApiClient.setByPost(JSON.stringify(j),
+				"/cart/set",
+				(r) => {},
+				(msg) => {
+				    console.log("error posting to cart/set", msg);
+				});
       	    actions.setCart(accessions);
 	          return;
         }
@@ -86,89 +83,78 @@ class TableWithCart extends React.Component {
         accessions = new Set([...this.props.cart_accessions,
                               ...accessions]);
 	let j = {assembly: this.props.assembly, accessions};
-	$.ajax({
-	    type: "POST",
-	    url: "/cart/set",
-	    data: JSON.stringify(j),
-	    dataType: "json",
-	    contentType: "application/json",
-	    success: (response) => {
-		let href = window.location.href;
-		if(href.includes("&cart")){
-		    return;
-		}
-		// go to cart page
-		window.open(href + "&cart", '_blank');
-	    }
-	});
+	ApiClient.setByPost(JSON.stringify(j),
+			    "/cart/set",
+			    (response) => {
+				let href = window.location.href;
+				if(href.includes("&cart")){
+				    return;
+				}
+				// go to cart page
+				window.open(href + "&cart", '_blank');
+			    },
+			    (msg) => {
+				console.log("error posting to cart/set", msg);
+			    });
 	this.props.actions.setCart(accessions);
     }
 
     clearCart() {
 	let accessions = new Set([]);
 	let j = {assembly: this.props.assembly, accessions}
-	$.ajax({
-	    type: "POST",
-	    url: "/cart/set",
-	    data: JSON.stringify(j),
-	    dataType: "json",
-	    contentType: "application/json",
-	    success: (response) => {
-		let href = window.location.href;
-		if(href.includes("&cart")){
-		    // go back to search page
-		    href = href.replace("&cart", "");
-		    window.location.href = href;
-		}
-	    }
-	});
+	ApiClient.setByPost(JSON.stringify(j),
+			    "/cart/set",
+			    (response) => {
+				let href = window.location.href;
+				if(href.includes("&cart")){
+				    // go back to search page
+				    href = href.replace("&cart", "");
+				    window.location.href = href;
+				}
+			    },
+			    (msg) => {
+				console.log("error posting to cart/set", msg);
+			    });
         this.props.actions.setCart(accessions);
     }
 
     downloadBed() {
+	console.log("download bed");
 	var jq = this.props.jq;
-
-	$.ajax({
-            type: "POST",
-            url: "/dataws/bed_download",
-            data: jq,
-            dataType: "json",
-            contentType : "application/json",
-            async: false, // http://stackoverflow.com/a/20235765
-            success: function(got){
-		if("error" in got){
-		    console.log(got["error"]);
-                    $("#errMsg").text(got["err"]);
-                    $("#errBox").show()
-                    return true;
-		}
-
-		return window.open(got["url"], '_blank');
-            }
-	});
+	// async: false, // http://stackoverflow.com/a/20235765
+	ApiClient.getByPost(jq,
+			    "/dataws/bed_download",
+			    (got) => {
+				if("error" in got){
+				    console.log(got["error"]);
+				    //$("#errMsg").text(got["err"]);
+				    //$("#errBox").show()
+				    return true;
+				}
+				return window.open(got["url"]);
+			    },
+			    (msg) => {
+				console.log("error getting bed download", msg);
+			    });
     }
 
     downloadJSON() {
 	var jq = this.props.jq;
-
-	$.ajax({
-            type: "POST",
-            url: "/dataws/json_download",
-            data: jq,
-            dataType: "json",
-            contentType : "application/json",
-            async: false, // http://stackoverflow.com/a/20235765
-            success: function(got){
-		if("error" in got){
-		    console.log(got["error"]);
-                    $("#errMsg").text(got["err"]);
-                    $("#errBox").show()
-                    return true;
-		}
-
-		return window.open(got["url"], '_blank');
-            }
-	});
+	// async: false, // http://stackoverflow.com/a/20235765
+	ApiClient.getByPost(jq,
+			    "/dataws/json_download",
+			    (got) => {
+				if("error" in got){
+				    console.log(got["error"]);
+				    //$("#errMsg").text(got["err"]);
+				    //$("#errBox").show()
+				    return true;
+				}
+				return window.open(got["url"], '_blank');
+			    },
+			    (msg) => {
+				console.log("error getting bed download", msg);
+			    });
     }
 
     totalText(data){
@@ -257,23 +243,6 @@ class TableWithCart extends React.Component {
             }
         }
         return r;
-    }
-
-    colorCreGroup(row, data, index){
-	// add via createdRow={this.colorCreGroup}
-        // https://datatables.net/examples/advanced_init/row_callback.html
-        let lookup = {1 : "creCtcfLike",
-                      2 : "creEnhancerLike",
-                      3 : "crePromoterLike"};
-        let lookupTitle = {1 : "CTCF-bound",
-                           2 : "Enhancer-like",
-                           3 : "Promoter-like"};
-        //console.log(row, data, index);
-        let klass = lookup[data.cregroup];
-        $('td', row).eq(1)
-                    .addClass(klass)
-                    .attr("data-toggle", "tooltip")
-                    .attr("title", lookupTitle[data.cregroup]);
     }
 
     table(data, actions){
