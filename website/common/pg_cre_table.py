@@ -196,7 +196,7 @@ LIMIT 1000) r
                 accs = ["'%s'" % x.upper() for x in accs]
                 accsQuery = "accession IN (%s)" % ','.join(accs)
                 self.whereClauses.append("(%s)" % accsQuery)
-
+        
     def _where(self, chrom, start, stop):
         if chrom and start and stop:
             self.whereClauses += ["cre.chrom = '%s'" % chrom,

@@ -74,7 +74,8 @@ class PostWebService(object):
                 '|', "head -n 1000",
                 '|', "awk '{ print $5 }'"]
         accessions = Utils.runCmds(cmds)
-
+        accessions = [x.strip() for x in accessions]
+        
         ret = self.cart.set(uuid, accessions)
         ret["uuid"] = uuid
         return ret
