@@ -2,73 +2,73 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import { Button } from 'react-bootstrap';
 import AutocompleteBox from './autocompletebox';
 
 import * as Actions from '../actions/searchbox_actions';
 
 class SearchBox extends React.Component {
-    constructor(props, key) {
-	super(props);
-        this.state = { jq: null, searchtext: this.makeVal(this.props) };
-	this._search = this._search.bind(this);
-    }
-    
-    _search() {
-	console.log("/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly);
-	window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly;
-	return false;
-    }
-    
-    makeVal(p) {
-        let r = "";
-        if(p.coord_chrom && p.coord_start && p.coord_end){
-            r += p.coord_chrom + ":" + p.coord_start + "-" + p.coord_end + " ";
-        } else if(p.coord_start && p.coord_end){
-            r += p.coord_start + "-" + p.coord_end + " ";
-        }
+  constructor(props, key) {
+    super(props);
+    this.state = { jq: null, searchtext: this.makeVal(this.props) };
+    this._search = this._search.bind(this);
+  }
 
-        if(p.cellType){
-            r += p.cellType;
-        }
+  _search() {
+    console.log("/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly);
+    window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly;
+    return false;
+  }
 
-        return r;
+  makeVal(p) {
+    let r = "";
+    if(p.coord_chrom && p.coord_start && p.coord_end){
+      r += p.coord_chrom + ":" + p.coord_start + "-" + p.coord_end + " ";
+    } else if(p.coord_start && p.coord_end){
+      r += p.coord_start + "-" + p.coord_end + " ";
     }
 
-    componentWillReceiveProps(nextProps){
-	var val = this.makeVal(nextProps);
-	var jq = JSON.stringify(val);
-	if(this.state.jq !== jq){
-	    //this.refs.input.value = val;
-	    this.setState({jq});
-	}
+    if(p.cellType){
+      r += p.cellType;
     }
 
-    render() {
+    return r;
+  }
 
-	return (
-	    <div className="navbar-collapse navbar-searchform">
-		<AutocompleteBox defaultvalue={this.state.searchtext}
-				 id="acnav"
-				 name="q"
-				 style={{float: "left"}}
-				 hideerr="true"
-				 actions={this.props.actions}
-				 size={100}
-				 className="searchbox"
-				 onChange={(t) => {this.setState({searchtext: t})}}
-				 onEnter={this._search}
-				 assemblies={[this.props.assembly]} />&nbsp;
-	    <a className="btn btn-primary btn-lg searchButton"
-               onClick={this._search}
-	       role="button">
-		Search
-	    </a>
-	    </div>);
+  componentWillReceiveProps(nextProps){
+    var val = this.makeVal(nextProps);
+    var jq = JSON.stringify(val);
+    if(this.state.jq !== jq){
+      //this.refs.input.value = val;
+      this.setState({jq});
     }
-}
+  }
 
-const mapStateToProps = (state) => ({ ...state });
-const mapDispatchToProps = (dispatch) => ({
+  render() {
+
+    return (
+      <div>
+      <AutocompleteBox defaultvalue={this.state.searchtext}
+      id="acnav"
+      name="q"
+      style={{float: "left"}}
+      hideerr="true"
+      actions={this.props.actions}
+      size={100}
+      className="searchbox"
+      onChange={(t) => {this.setState({searchtext: t})}}
+      onEnter={this._search}
+      assemblies={[this.props.assembly]} />&nbsp;
+
+      <Button onClick={this._search}>Search
+      </Button>
+
+      </div>);
+    }
+  }
+
+  const mapStateToProps = (state) => ({ ...state });
+  const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators(Actions, dispatch)
-});
-export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);
+  });
+  export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);

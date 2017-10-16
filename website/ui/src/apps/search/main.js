@@ -15,68 +15,64 @@ import initialState from './config/initial_state'
 import AppPageBase from '../../common/app_page_base'
 
 class SearchPageInner extends React.Component {
-    render() {
-	let store = createStore(main_reducers,
-				initialState(this.props.search,
-					     this.props.globals),
-				applyMiddleware(
-				    thunkMiddleware,
-				));
+  render() {
+    let store = createStore(main_reducers,
+      initialState(this.props.search,
+        this.props.globals),
+        applyMiddleware(
+          thunkMiddleware,
+        ));
 
-	const assembly = this.props.search.parsedQuery.assembly;
-	let mainTabs = (<MainTabs
-			    globals={this.props.globals}
-			    search={this.props.search} />);
-	
-	let drawMain = () => {
-	    if(isCart()){
-		return (
-		    <div className="row" style={{width: "100%"}}>
-			<div className="col-md-12" id="tabs-container">
-                            {mainTabs}
-			</div>
-		    </div>);
-	    } else {
-		return (
-                    <div className="row" style={{width: "100%"}}>
-			<div className="col-md-3 nopadding-right"
-			     id="facets-container">
-                            <FacetBoxen assembly={assembly}
-					globals={this.props.globals} />
-			</div>
-			<div className="col-md-9 nopadding-left"
-			     id="tabs-container">
-			    {mainTabs}
-			</div>
-		    </div>);
-	    }
-	}
-	
-        return (
-            <Provider store={store}>
-	        <div>
-		    <nav id="mainNavBar"
-                         className="navbar navbar-default navbar-inverse navbar-main">
-		        <div className="container-fluid" id="navbar-main">
-                            <NavBarApp assembly={assembly}
-				       show_cartimage={true}
-                                       searchbox={SearchBox} />}/>
-                        </div>
-		    </nav>
+        const assembly = this.props.search.parsedQuery.assembly;
+        let mainTabs = (<MainTabs
+          globals={this.props.globals}
+          search={this.props.search} />);
 
-		    <div className="container" style={{width: "100%"}}>
-			{drawMain()}
-                    </div>
-		</div>
-            </Provider>
-        );
-}
-}
+          let drawMain = () => {
+            if(isCart()){
+              return (
+                <div className="row" style={{width: "100%"}}>
+                <div className="col-md-12" id="tabs-container">
+                {mainTabs}
+                </div>
+                </div>);
+              } else {
+                return (
+                  <div className="row" style={{width: "100%"}}>
+                  <div className="col-md-3 nopadding-right"
+                  id="facets-container">
+                  <FacetBoxen assembly={assembly}
+                  globals={this.props.globals} />
+                  </div>
+                  <div className="col-md-9 nopadding-left"
+                  id="tabs-container">
+                  {mainTabs}
+                  </div>
+                  </div>);
+                }
+              }
 
-class SearchPage extends AppPageBase {
-    constructor(props) {
-	super(props, "/searchws/search", SearchPageInner);
-    }
-}
+              return (
+                <Provider store={store}>
+                <div>
+                <NavBarApp assembly={assembly}
+                show_cartimage={true}
+                searchbox={SearchBox} />
 
-export default SearchPage;
+                <div className="container" style={{width: "100%"}}>
+                {drawMain()}
+                </div>
+
+                </div>
+                </Provider>
+              );
+            }
+          }
+
+          class SearchPage extends AppPageBase {
+            constructor(props) {
+              super(props, "/searchws/search", SearchPageInner);
+            }
+          }
+
+          export default SearchPage;
