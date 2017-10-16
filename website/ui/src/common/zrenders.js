@@ -1,4 +1,5 @@
 import React from 'react';
+import {Button, ButtonGroup} from 'react-bootstrap';
 
 import {toParams, commajoin} from './utility';
 import * as ApiClient from './api_client';
@@ -73,6 +74,13 @@ export const browser_buttons = (names) => {
 	<div className="btn-group" role="group">
 	    {content}
 	</div>);
+}
+
+export const browser_button = (name, onClick) => {
+    return (
+	    <ButtonGroup>
+	    <Button bsSize="xsmall" onClick={onClick}>{name}</Button>
+	    </ButtonGroup>);
 }
 
 export const cart_img = (rmv, src_only) => {
@@ -194,7 +202,7 @@ export const factorbook_link_histone = (d) => (
 );
 
 export const geneLink = (d) => (
-    <em>
+	<em key={d}>
 	<a href={"http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d}
 	   target="_blank">{d}</a>
     </em>);
