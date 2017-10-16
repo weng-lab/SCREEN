@@ -50,7 +50,7 @@ class AutocompleteWebService:
             raise Exception("userQuery not in j")
         userQuery = j["userQuery"]
 
-        uuid = j.get("uuid", uuider.uuid4())
+        uuid = j.get("uuid", uuider.uuid4().hex)
 
         p = ParseSearch(self.ps.DBCONN, assembly, {"q": userQuery})
         ret = {}
