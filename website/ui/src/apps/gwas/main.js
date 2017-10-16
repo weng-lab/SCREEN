@@ -9,8 +9,8 @@ import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
-
 import initialState from './config/initial_state'
+import {PageTitle} from '../../common/utility'
 
 import AppPageBase from '../../common/app_page_base'
 
@@ -26,6 +26,7 @@ class GwasAppInner extends React.Component {
         return (
             <Provider store={store}>
 	        <div>
+		  {PageTitle(assembly)}
 
 		    <nav id="mainNavBar"
 			 className="navbar navbar-default navbar-inverse navbar-main">

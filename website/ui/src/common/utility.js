@@ -1,4 +1,6 @@
 import React from 'react'
+import {Helmet} from "react-helmet";
+
 import HelpIcon from './components/help_icon'
 
 export const panelize = (title, facet, helpkey = null, globals = null) => {
@@ -116,3 +118,15 @@ export const linearScale = (d, r) => (v) => (
 export const toParams = (d) => (
     Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&'))    
 
+export const PageTitle = (assembly = null) => {
+      const pageTitle = () => {
+	  if(assembly){
+              return "SCREEN " + assembly + ": Search Candidate Regulatory Elements by ENCODE";
+	  }
+	  return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
+      }
+    return (
+	    <Helmet>
+            <title>{pageTitle()}</title>
+	    </Helmet>);
+}

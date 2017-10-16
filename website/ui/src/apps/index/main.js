@@ -7,6 +7,7 @@ import MainTabs from './components/maintabs'
 
 import reducers from './reducers'
 import initialState from './config/initial_state'
+import {PageTitle} from '../../common/utility'
 
 class IndexPage extends React.Component {
   footer() {
@@ -47,6 +48,8 @@ class IndexPage extends React.Component {
           return (
             <Provider store={store}>
               <div>
+		  {PageTitle()}
+
                 {this.title()}
                 <MainTabs
                   mainDivId={"mainTabs"}

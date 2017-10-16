@@ -8,13 +8,14 @@ import SearchBox from '../../common/components/searchbox'
 import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
-import {isCart} from '../../common/utility'
+import {isCart, PageTitle} from '../../common/utility'
 
 import main_reducers from './reducers/main_reducers'
 import initialState from './config/initial_state'
 import AppPageBase from '../../common/app_page_base'
 
 class SearchPageInner extends React.Component {
+
   render() {
     let store = createStore(main_reducers,
       initialState(this.props.search,
@@ -55,6 +56,7 @@ class SearchPageInner extends React.Component {
               return (
                 <Provider store={store}>
                 <div>
+		      {PageTitle(assembly)}
                 <NavBarApp assembly={assembly}
                 show_cartimage={true}
                 searchbox={SearchBox} />
