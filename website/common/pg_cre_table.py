@@ -64,10 +64,11 @@ class PGcreTable(GetOrSetMemCache):
             "cre.pct"]
         self.whereClauses = []
 
-    def _getCtSpecific(self):
+    def _getCtSpecific(self, useAccs):
         pairs = []
-        for k, v in self.ctSpecifc.iteritems():
-            pairs.append("'%s', %s" % (k, v))
+        if not useAccs:
+            for k, v in self.ctSpecifc.iteritems():
+                pairs.append("'%s', %s" % (k, v))
         return "json_build_object(" + ','.join(pairs) + ") as ctSpecifc"
 
     def _sct(self, ct):
@@ -78,18 +79,21 @@ class PGcreTable(GetOrSetMemCache):
             self.fields.append("0::int AS sct")
 
     def _buildWhereStatement(self, j, chrom, start, stop):
-        ct = j.get("cellType", None)
-
-        self._sct(ct)
-        if ct:
-            self._ctSpecific(ct, j)
-        else:
+        useAccs = self._accessions(j)
+        if useAccs:
             self._notCtSpecific(j)
+        else:
+            ct = j.get("cellType", None)
 
-        self._accessions(j)
-        self._where(chrom, start, stop)
+            self._sct(ct)
+            if ct:
+                self._ctSpecific(ct, j)
+            else:
+                self._notCtSpecific(j)
 
-        fields = ', '.join([PGcreTable._getInfo(), self._getCtSpecific()] + self.fields)
+            self._where(chrom, start, stop)
+
+        fields = ', '.join([PGcreTable._getInfo(), self._getCtSpecific(False)] + self.fields)
         ret = ""
         if len(self.whereClauses) > 0:
             ret = "WHERE " + " and ".join(self.whereClauses)
@@ -186,7 +190,7 @@ LIMIT 1000) r
     def _accessions(self, j):
         accs = j.get("accessions", [])
         if not accs or 0 == len(accs):
-            return
+            return False
 
         if accs and len(accs) > 0:
             if type(accs[0]) is dict:
@@ -196,7 +200,9 @@ LIMIT 1000) r
                 accs = ["'%s'" % x.upper() for x in accs]
                 accsQuery = "accession IN (%s)" % ','.join(accs)
                 self.whereClauses.append("(%s)" % accsQuery)
-        
+                return True
+        return False
+    
     def _where(self, chrom, start, stop):
         if chrom and start and stop:
             self.whereClauses += ["cre.chrom = '%s'" % chrom,
