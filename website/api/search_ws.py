@@ -5,6 +5,7 @@ import sys
 import json
 import time
 import cherrypy
+import uuid as uuider
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from config import Config
@@ -45,7 +46,7 @@ class SearchWebService(object):
         except:
             raise
 
-    def search(self, j, args, uuid):
+    def search(self, j, args, olduuid):
         chrom = checkChrom(self.assembly, j)
 
         parsed = ""
@@ -55,6 +56,8 @@ class SearchWebService(object):
             if j["q"] and not p.haveresults(parsed):
                 ret["failed"] = j["q"]
 
+        uuid = j.get("uuid", uuider.uuid4().hex)
+
         cart = PGcart(self.ps, self.assembly)
         accessions = cart.get(uuid)
 
@@ -62,6 +65,8 @@ class SearchWebService(object):
         if "cart" in j:
             parsed["accessions"] = accessions
 
+        parsed["uuid"] = uuid
+
         ret = {"parsedQuery": parsed,
-               "globalSessionUid": uuid}
+               "uuid": uuid}
         return ret
