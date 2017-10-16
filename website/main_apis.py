@@ -17,6 +17,7 @@ from api.global_data_ws import GlobalDataController
 from api.gwas_ws import GwasWebServiceWrapper
 from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
+from api.post_ws import PostWebServiceWrapper
 
 from common.session import Sessions
 
@@ -32,6 +33,7 @@ class Apis():
         self.global_data = GlobalDataController(ps, cache)
         self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
+        self.postWS = PostWebServiceWrapper(args, ps, cache, staticDir)
         self.sessions = Sessions(ps.DBCONN)
         self.trackhub = TrackhubController(ps, cache)
 
@@ -90,6 +92,14 @@ class Apis():
     def searchws(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.searchWS.process(j, args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def postws(self, *args, **kwargs):
+        j = cherrypy.request.json
+        return self.postWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
