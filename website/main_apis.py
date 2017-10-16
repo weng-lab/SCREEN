@@ -50,6 +50,7 @@ class Apis():
         return self.trackhub.washu_trackhub(*args, **kwargs)
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):

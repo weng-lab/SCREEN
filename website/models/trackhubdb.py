@@ -515,7 +515,7 @@ def main():
     cacheW = CachedObjectsWrapper(ps)
     db = DbTrackhub(DBCONN)
 
-    tdb = TrackhubDb(None, ps, cacheW, db, UCSC)
+    tdb = TrackhubDb(ps, cacheW, db, UCSC)
     for assembly in [args.assembly]:
         tdb.makeAllTracks(assembly)
 
