@@ -36,7 +36,7 @@ class NavBarApp extends React.Component {
           <NavItem href="http://www.encodeproject.org" target="_blank">
               <img src={ApiClient.StaticUrl("/encode/ENCODE_logo.small3.png")}
 		   style={{padding: "4px",
-			   height: "40px",
+			   height: "36px",
 			   backgroundColor: "#5cb85c",
 			   borderColor: "#4cae4c"}}
                 alt={"ENCODE logo"} />

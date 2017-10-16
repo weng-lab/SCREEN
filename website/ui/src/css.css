@@ -778,6 +778,7 @@ table-sort-desc::after {
 .react-autosuggest__input_navbar {
     width: 500px;
     color: black;
+    height: 32px;
 }
 .react-autosuggest__suggestions-container_navbar {
     margin: 0 auto;
@@ -795,7 +796,8 @@ border: 1px solid black;
 }
 
 nav.navbar {
-    height: 55px;
+    height: 50px;
+    margin-bottom: 0px;
 }
 
 nav.navbar > div {
@@ -806,21 +808,27 @@ nav.navbar > div {
 nav > div > ul > li:nth-child(3) > a {
     padding-top: 4px;
 }
+nav > div > ul.nav.navbar-nav.navbar-right > li:nth-child(2) > a {
+    padding-top: 6px;
+   height: 50px;
+}
 
 nav > div > ul > li:nth-child(2) > a {
    padding-top: 9px;
 }
+nav > div > ul:nth-child(2){
+   height: 50px;
+}
 
 nav > div > ul > li:nth-child(1) > a {
    padding-top: 9px;
+}
+nav > div > ul.nav.navbar-nav.navbar-right {
+   height: 50px;
 }
 
 nav > div > ul > li:nth-child(1) > a > div > button {
     color: #fff;
     background-color: #337ab7;
     border-color: #2e6da4;
-}
-
-nav > div > ul > li:nth-child(1) > a > div > div > div {
-   padding-top: 3px;
 }
