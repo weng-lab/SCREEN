@@ -3,11 +3,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import $ from 'jquery';
 
+import * as ApiClient from '../../../common/api_client';
 import * as Actions from '../actions/main_actions';
-
-import Ztable from '../../../common/components/ztable/ztable';
-
 import * as Render from '../../../common/zrenders';
+import Ztable from '../../../common/components/ztable/ztable';
 
 import DraggableCtList from '../../../common/components/draggable';
 
@@ -48,10 +47,27 @@ class ConfigureGenomeBrowser extends React.Component {
 	}
     }
 
+    // openGenomeBrowser(data, url){
+    // 	ApiClient.setByPost(data,
+    // 			    url,
+    // 			    (r) => {
+    // 				if ("err" in r) {
+    // 				    //$("#errMsg").text(r.err);
+    // 				    //$("#errBox").show()
+    // 				    return true;
+    // 				}
+    // 				console.log(r.url, r.trackhubUrl);
+    // 				window.open(r.url, '_blank');
+    // 			    },
+    // 			    (msg) =>{
+    // 				console.log(msg);
+    // 			    });
+    // }
+
     openGenomeBrowser(data, url){
         $.ajax({
 	    type: "POST",
-	    url: url,
+	    url: ApiClient.Servers(url),
 	    data: data,
 	    dataType: "json",
 	    contentType : "application/json",

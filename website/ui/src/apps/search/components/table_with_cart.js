@@ -1,4 +1,5 @@
 import React from 'react';
+import downloadjs from 'downloadjs';
 
 import Ztable from '../../../common/components/ztable/ztable';
 import * as ApiClient from '../../../common/api_client';
@@ -11,7 +12,6 @@ import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 
-import downloadjs from 'downloadjs';
 
 class TableWithCart extends React.Component {
     constructor(props) {
@@ -122,8 +122,7 @@ class TableWithCart extends React.Component {
     }
 
     downloadBed() {
-	var jq = this.props.jq;
-	// async: false, // http://stackoverflow.com/a/20235765
+	const jq = this.props.jq;
 	ApiClient.getByPost(jq,
 			    "/dataws/bed_download",
 			    (got) => {
@@ -141,8 +140,7 @@ class TableWithCart extends React.Component {
     }
 
     downloadJSON() {
-	var jq = this.props.jq;
-	// async: false, // http://stackoverflow.com/a/20235765
+	const jq = this.props.jq;
 	ApiClient.getByPost(jq,
 			    "/dataws/json_download",
 			    (got) => {
