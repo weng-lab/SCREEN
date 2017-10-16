@@ -79,21 +79,19 @@ class TableWithCart extends React.Component {
 
     addAllToCart() {
 	let accessions = this.props.data.map((d) => {
-	    //console.log("addAllToCart:", d);
 	    return d.info.accession;
 	})
         accessions = new Set([...this.props.cart_accessions,
-                              ...accessions]);
-	let j = {assembly: this.props.assembly, accessions};
+					 ...accessions]);
+	let j = {assembly: this.props.assembly, accessions: Array.from(accessions)};
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
 			    (response) => {
 				let href = window.location.href;
-				if(href.includes("&cart")){
-				    return;
+				if(!href.includes("&cart")){
+				    href += "&cart";
 				}
-				// go to cart page
-				window.open(href + "&cart", '_blank');
+				window.location.assign(href);				    
 			    },
 			    (msg) => {
 				console.log("error posting to cart/set", msg);
@@ -103,7 +101,7 @@ class TableWithCart extends React.Component {
 
     clearCart() {
 	let accessions = new Set([]);
-	let j = {assembly: this.props.assembly, accessions}
+	let j = {assembly: this.props.assembly, accessions: Array.from(accessions)}
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
 			    (response) => {
@@ -111,8 +109,8 @@ class TableWithCart extends React.Component {
 				if(href.includes("&cart")){
 				    // go back to search page
 				    href = href.replace("&cart", "");
-				    window.location.href = href;
 				}
+				window.location.assign(href);				    
 			    },
 			    (msg) => {
 				console.log("error posting to cart/set", msg);
@@ -121,7 +119,6 @@ class TableWithCart extends React.Component {
     }
 
     downloadBed() {
-	console.log("download bed");
 	var jq = this.props.jq;
 	// async: false, // http://stackoverflow.com/a/20235765
 	ApiClient.getByPost(jq,
