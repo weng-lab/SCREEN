@@ -2,7 +2,7 @@ import React from 'react';
 import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
 import {Enum} from 'enumify';
 
-const firstBy = require('thenby');
+//const firstBy = require('thenby');
 
 class SortOrder extends Enum {
     cycleOrder(){

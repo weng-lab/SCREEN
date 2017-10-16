@@ -5,9 +5,6 @@ import {bindActionCreators} from 'redux';
 import { Button } from 'react-bootstrap';
 import Dropzone from 'react-dropzone';
 
-import HelpIcon from '../../../common/components/help_icon';
-
-import * as Render from '../../../common/zrenders';
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 

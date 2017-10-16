@@ -45,19 +45,17 @@ class Polylines extends React.Component {
         {
           text=""
         }
-        if(data)
-        {
-            data.map(function(d,i)
-            {
-              if(d.score > vl[1])
-                d.score =vl[1];
-
-              for(var j= _self.props.x(d.min);j<=_self.props.x(d.max);j++)
-              {
-                if(j>=_self.props.leftMargin && j <=_self.props.width)
-                points=points + j+","+y(d.score)+" ";
-              }
-            });
+        if(data){
+	    for (const d of data) {
+		if(d.score > vl[1]){
+                    d.score = vl[1];
+		}
+		
+		for(var j= _self.props.x(d.min); j<=_self.props.x(d.max); j++){
+                    if(j>=_self.props.leftMargin && j <=_self.props.width)
+			points=points + j+","+y(d.score)+" ";
+		}
+            }
         }
         points=points +_self.props.x(_self.props.max)+","+y(0);
         return(

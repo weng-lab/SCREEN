@@ -1,14 +1,17 @@
+import React from 'react';
 import * as Render from '../../../common/zrenders';
+import {commajoin} from '../../../common/utility';
 
 import IntersectingAssayTf from '../components/intersecting_assay_tf';
 import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
 const fantomcat_link = (d) => (
-    "<a href='http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d + "'>" + d + "</a>"
+	<a href={"http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d}
+    target="_blank">{d}</a>
 );
 
 const geneLink_list = (d) => (
-    d.split(", ").map(Render.geneLink).join(", ")
+    commajoin(d.split(", ").map(Render.geneLink))
 );
 
 export const TopTissuesTables = (globals, assembly) => ({
@@ -129,13 +132,16 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	     defaultContent: Render.browser_buttons(["UCSC"])
 	    }
 	],
-	onButtonClick: (td, rowdata) => {
-	    actions.showGenomeBrowser({
-		title: rowdata.geneid + " (TSS +/- 2kb)",
-		start: rowdata.start - 2000,
-		len: 4000,
-		chrom: rowdata.chrom
-	    }, "UCSC", "FantomCAT")
+	onTdClick: (td, rowdata) => {
+            if (td.indexOf("browser") !== -1){
+		const args = {
+		    title: rowdata.geneid + " (TSS +/- 2kb)",
+		    start: rowdata.start - 2000,
+		    len: 4000,
+		    chrom: rowdata.chrom
+		};
+		actions.showGenomeBrowser(args, "UCSC", "FantomCAT");
+	    }
 	},
 	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
 	pagLength: 5,
@@ -161,14 +167,16 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	     targets: -1, orderable: false,
 	     defaultContent: Render.browser_buttons(["UCSC"]) }
 	],
-	onButtonClick: (td, rowdata) => {
-	    actions.showGenomeBrowser({
-		title: rowdata.geneid,
-		start: rowdata.start,
-		len: rowdata.stop - rowdata.start,
-		chrom: rowdata.chrom
-	    }, "UCSC", "FantomCAT")
-	},
+	onTdClick: (td, rowdata) => {
+            if (td.indexOf("browser") !== -1){
+		const args = {
+		    title: rowdata.geneid,
+		    start: rowdata.start,
+		    len: rowdata.stop - rowdata.start,
+		    chrom: rowdata.chrom
+		};
+		actions.showGenomeBrowser(args, "UCSC", "FantomCAT");
+	    }},
 	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
 	pagLength: 5,
 	paging: true,
