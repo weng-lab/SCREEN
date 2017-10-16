@@ -56,8 +56,9 @@ class SearchWebService(object):
             if j["q"] and not p.haveresults(parsed):
                 ret["failed"] = j["q"]
 
-        uuid = kwargs.get("uuid", uuider.uuid4().hex)
-
+        uuid = j["uuid"]
+        print("uuid", uuid, "\n")
+        
         cart = PGcart(self.ps, self.assembly)
         accessions = cart.get(uuid)
 

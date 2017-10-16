@@ -18,12 +18,12 @@ class CartWebServiceWrapper:
         self.assemblies = Config.assemblies
         self.cwss = {a: makeCWS(a) for a in self.assemblies}
 
-    def process(self, j, uuid, args, kwargs):
+    def process(self, j, args, kwargs):
         if "assembly" not in j:
             raise Exception("assembly not defined")
         if j["assembly"] not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.cwss[j["assembly"]].process(j, uuid, args, kwargs)
+        return self.cwss[j["assembly"]].process(j, args, kwargs)
 
 
 class CartWebService:
@@ -43,6 +43,7 @@ class CartWebService:
             raise
 
     def set(self, j, args, kwargs):
-        uuid = kwargs["uuid"]
+        uuid = j["uuid"]
         accessions = filter(lambda a: isaccession(a), j["accessions"])
-        return self.cart.set(uuid, accessions)
+        ret = self.cart.set(uuid, accessions)
+        return ret
