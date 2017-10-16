@@ -30,14 +30,14 @@ class Autocompleter extends React.Component {
  		<br />
  		Please check your spelling and search assembly, and try again.
  	    </span>);
- 	
+
  	ApiClient.autocompleteBox(JSON.stringify(q),
  				  (r) => {
  				      if(r.failed){
  					  this.setState({userQueryErr});
  					  return;
  				      }
- 				      
+
  				      if(r.multipleGenes){
  					  this.props.actions.setGenes(r);
  					  this.props.actions.setMainTab("query");
@@ -52,15 +52,15 @@ class Autocompleter extends React.Component {
  				      this.setState({userQueryErr : "err during load"});
  				  });
     }
-    
+
     searchHg19() {
  	this.loadSearch("hg19");
     }
-    
+
     searchMm10() {
  	this.loadSearch("mm10");
     }
-    
+
     onEnter(){
  	this.loadSearch("hg19");
     }
@@ -68,7 +68,7 @@ class Autocompleter extends React.Component {
     onChange(value){
 	this.setState({value});
     }
-    
+
     render() {
  	let input = <AutocompleteBox defaultvalue={this.props.defaultvalue}
 				     name={this.props.name}
@@ -76,8 +76,24 @@ class Autocompleter extends React.Component {
     				     className={this.props.className}
 				     onChange={this.onChange}
  				     onEnter={this.searchHg19}
+             theme={{
+  container:                'react-autosuggest__container',
+  containerOpen:            'react-autosuggest__container--open',
+  input:                    'react-autosuggest__input_index',
+  inputOpen:                'react-autosuggest__input--open',
+  inputFocused:             'react-autosuggest__input--focused',
+  suggestionsContainer:     'react-autosuggest__suggestions-container_index',
+  suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open_index',
+  suggestionsList:          'react-autosuggest__suggestions-list',
+  suggestion:               'react-autosuggest__suggestion',
+  suggestionFirst:          'react-autosuggest__suggestion--first',
+  suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
+  sectionContainer:         'react-autosuggest__section-container',
+  sectionContainerFirst:    'react-autosuggest__section-container--first',
+  sectionTitle:             'react-autosuggest__section-title'
+}}
 		    />;
-	
+
  	let err = "";
  	if (this.state.userQueryErr) {
  	    err = (<span>
@@ -94,7 +110,7 @@ class Autocompleter extends React.Component {
  		        {input}
  		    </span>
  	        </div>
-		
+
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                        onClick={this.searchHg19} role={"button"}>
@@ -111,7 +127,7 @@ class Autocompleter extends React.Component {
  		</div>
  	</div>);
     }
-    
+
 }
 
 export default Autocompleter;

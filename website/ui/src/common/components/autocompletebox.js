@@ -4,7 +4,7 @@ import Autosuggest from 'react-autosuggest';
 import * as ApiClient from '../api_client';
 
 class AutocompleteBox extends React.Component {
-    
+
     constructor(props) {
 	super(props);
 	this.onChange = this.onChange.bind(this);
@@ -12,7 +12,7 @@ class AutocompleteBox extends React.Component {
 	this.getSuggestionValue = this.getSuggestionValue.bind(this);
 	this.renderSuggestion = this.renderSuggestion.bind(this);
 	this.loadSuggestion = this.loadSuggestion.bind(this);
-	
+
 	this.userQueries = {}; // cache
 	this.handleKeyPress = this.handleKeyPress.bind(this);
 
@@ -86,7 +86,7 @@ class AutocompleteBox extends React.Component {
 	    onChange: this.onChange,
 	    onKeyPress: this.handleKeyPress
 	};
-	
+
 	return (
 	    <div style={this.props.style}>
 		<Autosuggest
@@ -96,6 +96,7 @@ class AutocompleteBox extends React.Component {
 		    getSuggestionValue={this.getSuggestionValue}
 		    renderSuggestion={this.renderSuggestion}
 		    inputProps={inputProps}
+        theme={this.props.theme}
 		/>
 	    </div>);
     }
