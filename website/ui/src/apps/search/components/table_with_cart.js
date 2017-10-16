@@ -11,6 +11,8 @@ import * as Render from '../../../common/zrenders';
 import {doToggle, isCart} from '../../../common/utility';
 import GenomeBrowser from '../../../common/components/genomebrowser/components/genomebrowser'
 
+import downloadjs from 'downloadjs';
+
 class TableWithCart extends React.Component {
     constructor(props) {
 	super(props);
@@ -131,7 +133,7 @@ class TableWithCart extends React.Component {
 				    //$("#errBox").show()
 				    return true;
 				}
-				return window.open(got["url"]);
+				downloadjs(got["url"]);
 			    },
 			    (msg) => {
 				console.log("error getting bed download", msg);
@@ -150,7 +152,7 @@ class TableWithCart extends React.Component {
 				    //$("#errBox").show()
 				    return true;
 				}
-				return window.open(got["url"], '_blank');
+				return downloadjs(got["url"]);
 			    },
 			    (msg) => {
 				console.log("error getting bed download", msg);

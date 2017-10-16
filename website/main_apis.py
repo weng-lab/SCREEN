@@ -76,6 +76,7 @@ class Apis():
         return self.trackhub.washu_trackhub_url(j, self.sessions.userUid())
 
     @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
