@@ -35,13 +35,14 @@ class CartWebService:
         self.cart = PGcart(ps, assembly)
         self.actions = {"set": self.set}
 
-    def process(self, j, uuid, args, kwargs):
+    def process(self, j, args, kwargs):
         action = args[0]
         try:
-            return self.actions[action](j, uuid, args[1:])
+            return self.actions[action](j, args[1:], kwargs)
         except:
             raise
 
-    def set(self, j, uuid, args):
+    def set(self, j, args, kwargs):
+        uuid = kwargs["uuid"]
         accessions = filter(lambda a: isaccession(a), j["accessions"])
         return self.cart.set(uuid, accessions)

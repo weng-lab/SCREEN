@@ -39,14 +39,14 @@ class SearchWebService(object):
 
         self.actions = {"search": self.search}
 
-    def process(self, j, args, uuid):
+    def process(self, j, args, kwargs):
         action = args[0]
         try:
-            return self.actions[action](j, args[1:], uuid)
+            return self.actions[action](j, args[1:], kwargs)
         except:
             raise
 
-    def search(self, j, args, olduuid):
+    def search(self, j, args, kwargs):
         chrom = checkChrom(self.assembly, j)
 
         parsed = ""
@@ -56,7 +56,7 @@ class SearchWebService(object):
             if j["q"] and not p.haveresults(parsed):
                 ret["failed"] = j["q"]
 
-        uuid = j.get("uuid", uuider.uuid4().hex)
+        uuid = kwargs.get("uuid", uuider.uuid4().hex)
 
         cart = PGcart(self.ps, self.assembly)
         accessions = cart.get(uuid)

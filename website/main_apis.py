@@ -81,8 +81,7 @@ class Apis():
     @cherrypy.tools.json_out()
     def cart(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.cartWS.process(j, self.sessions.userUid(),
-                                   args, kwargs)
+        return self.cartWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
@@ -90,7 +89,7 @@ class Apis():
     @cherrypy.tools.json_out()
     def searchws(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.searchWS.process(j, args, self.sessions.userUid())
+        return self.searchWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
