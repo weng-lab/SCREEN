@@ -775,10 +775,32 @@ list-style: none;
 border: 1px solid black;
 }
 
-.navbar {
-    height: 50px;
+nav.navbar {
+    height: 55px;
 }
 
-.navbar > div {
+nav.navbar > div {
     margin: 0px;
+}
+
+nav > div > ul > li:nth-child(3) > a {
+    padding-top: 6px;
+}
+
+nav > div > ul > li:nth-child(2) > a {
+   padding-top: 9px;
+}
+
+nav > div > ul > li:nth-child(1) > a {
+   padding-top: 9px;
+}
+
+nav > div > ul > li:nth-child(1) > a > div > button {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+nav > div > ul > li:nth-child(1) > a > div > div > div {
+   padding-top: 3px;
 }
