@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 
 import { Button } from 'react-bootstrap';
 import AutocompleteBox from './autocompletebox';
+import {toParams} from '../utility';
 
 import * as Actions from '../actions/searchbox_actions';
 
@@ -15,9 +16,13 @@ class SearchBox extends React.Component {
   }
 
   _search() {
-    console.log("/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly);
-    window.location.href = "/search/?q=" + this.state.searchtext + "&assembly=" + this.props.assembly;
-    return false;
+      const params = toParams({q: this.state.searchtext,
+			       assembly: this.props.assembly,
+			       uuid: this.props.uuid});
+      const url = "/search/?" + params;
+      console.log(url)
+      window.location.href = url;
+      return false;
   }
 
   makeVal(p) {

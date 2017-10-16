@@ -52,7 +52,8 @@ class TableWithCart extends React.Component {
         {
             let accession = rowdata.info.accession;
             let accessions = doToggle(this.props.cart_accessions, accession);
-      	    let j = {assembly: this.props.assembly, accessions};
+      	    let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+		     uuid: this.props.uuid};
 	    ApiClient.setByPost(JSON.stringify(j),
 				"/cart/set",
 				(r) => {},
@@ -83,7 +84,8 @@ class TableWithCart extends React.Component {
 	})
         accessions = new Set([...this.props.cart_accessions,
 					 ...accessions]);
-	let j = {assembly: this.props.assembly, accessions: Array.from(accessions)};
+	let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+		 uuid: this.props.uuid};
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
 			    (response) => {
@@ -101,7 +103,8 @@ class TableWithCart extends React.Component {
 
     clearCart() {
 	let accessions = new Set([]);
-	let j = {assembly: this.props.assembly, accessions: Array.from(accessions)}
+	let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+		 uuid: this.props.uuid}
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
 			    (response) => {

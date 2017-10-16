@@ -26,7 +26,7 @@ class Autocompleter extends React.Component {
 	const uuid = this.state.uuid;
  	this.setState({userQueryErr : (<i className="fa fa-refresh fa-spin"
  				          style={{fontSize : "24px"}}></i>)});
- 	const q = {assembly, userQuery};
+ 	const q = {assembly, userQuery, uuid};
  	const userQueryErr = (
  	    <span>
  		Error: no results for your query.

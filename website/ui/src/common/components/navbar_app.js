@@ -10,7 +10,8 @@ class NavBarApp extends React.Component {
     var SearchBox = "";
     if (this.props.searchbox) {
       let SearchBoxC = this.props.searchbox;
-      SearchBox = <SearchBoxC store={this.props.store} />;
+	SearchBox = <SearchBoxC uuid={this.props.uuid}
+	store={this.props.store} />;
     }
 
     var cartimage = "";

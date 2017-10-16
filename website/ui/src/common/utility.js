@@ -42,7 +42,7 @@ export const doToggle = (oldSet, item) => {
 }
 
 export const getCommonState =
-    ({assembly, accessions, coord_chrom, coord_start, coord_end,
+    ({uuid, assembly, accessions, coord_chrom, coord_start, coord_end,
       gene_all_start, gene_all_end,
       gene_pc_start, gene_pc_end,
       rank_dnase_start, rank_dnase_end,
@@ -50,7 +50,7 @@ export const getCommonState =
       rank_enhancer_start, rank_enhancer_end,
       rank_ctcf_start, rank_ctcf_end,
       cellType, element_type}) => {
-	  return {assembly,
+	  return {uuid, assembly,
                   accessions, coord_chrom, coord_start, coord_end,
                   gene_all_start, gene_all_end,
 		  gene_pc_start, gene_pc_end,

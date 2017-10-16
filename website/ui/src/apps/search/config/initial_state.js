@@ -27,6 +27,7 @@ const initialState = (search, globals) => {
     }
 
     return {
+	uuid: search.uuid,
         rfacets: ["dnase", "promoter", "enhancer", "ctcf"],
         rank_dnase_start: 1.64, rank_dnase_end: 10.00,
         rank_promoter_start: -10, rank_promoter_end: 10,

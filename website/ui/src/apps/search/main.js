@@ -19,7 +19,7 @@ class SearchPageInner extends React.Component {
   render() {
     let store = createStore(main_reducers,
       initialState(this.props.search,
-        this.props.globals),
+		   this.props.globals),
         applyMiddleware(
           thunkMiddleware,
         ));
@@ -58,6 +58,7 @@ class SearchPageInner extends React.Component {
                 <div>
 		      {PageTitle(assembly)}
                 <NavBarApp assembly={assembly}
+		  uuid={this.props.search.uuid}
                 show_cartimage={true}
                 searchbox={SearchBox} />
 
