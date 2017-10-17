@@ -24,16 +24,19 @@ SortOrder.initEnum(['ASC', 'DSC', 'NONE', 'DISABLED']);
 
 class SortCols {
     constructor(){
-	this.sortCols = new Map();
+	this.sortCols = [];
+	this.keys = {};
     }
 
     shouldSort(){
-	return this.sortCols.size > 0;
+	return this.sortCols.length > 0;
     }
     
     colClick(colInfo, curOrder){
 	let m = new SortCols();
-	m.sortCols.set(colInfo.data, curOrder.cycleOrder());
+	const newOrder = curOrder.cycleOrder();
+	m.sortCols = [colInfo.data, newOrder]
+	m.keys[colInfo.data] = newOrder;
 	return m;
     }
 
@@ -45,8 +48,8 @@ class SortCols {
 		so = SortOrder.DISABLED;
 	    }
 	}
-	if(colInfo.data in this.sortCols){
-	    const sortOrder = this.sortCols[colInfo.data];
+	if(colInfo.data in this.keys){
+	    const sortOrder = this.keys[colInfo.data];
 	    if(SortOrder.ASC === sortOrder){
 		sk = "table-sort-asc";
 		so = SortOrder.ASC;
@@ -264,22 +267,25 @@ class DataSource {
 	if(0 === this.rowIDs.length){
 	    return;
 	}
-	sortCols.sortCols.forEach((sortOrder, sortCol) => {
-	    const sample = this.data[this.rowIDs[0]][sortCol];
-	    const colInfo = this.colsByData[sortCol];
-	    let sortDataF = null;
-	    if("sortDataF" in colInfo){
-		sortDataF = colInfo.sortDataF;
-	    }
-	    	    
-	    // https://stackoverflow.com/a/16655847
-	    const isNumArray = Number(sample) === sample;
-	    if(isNumArray){
-		this._sortByColNumeric(sortCol, sortOrder, sortDataF);
-	    } else {
-		this._sortByColStr(sortCol, sortOrder, sortDataF);
-	    }
-	});
+
+	const sortOrder = sortCols.sortCols[1];
+	const sortCol = sortCols.sortCols[0];
+	
+	const sample = this.data[this.rowIDs[0]][sortCol];
+	const colInfo = this.colsByData[sortCol];
+
+	let sortDataF = null;
+	if("sortDataF" in colInfo){
+	    sortDataF = colInfo.sortDataF;
+	}
+	
+	// https://stackoverflow.com/a/16655847
+	const isNumArray = Number(sample) === sample;
+	if(isNumArray){
+	    this._sortByColNumeric(sortCol, sortOrder, sortDataF);
+	} else {
+	    this._sortByColStr(sortCol, sortOrder, sortDataF);
+	}
     }
 }
 
