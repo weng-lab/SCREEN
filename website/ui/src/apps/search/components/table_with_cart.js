@@ -4,7 +4,7 @@ import downloadjs from 'downloadjs';
 import Ztable from '../../../common/components/ztable/ztable';
 import * as ApiClient from '../../../common/api_client';
 
-import TableColumns, {table_order, columnDefs} from '../config/table_with_cart';
+import TableColumns, {table_order} from '../config/table_with_cart';
 import {numberWithCommas} from '../../../common/common';
 import loading from '../../../common/components/loading';
 
@@ -314,8 +314,7 @@ class TableWithCart extends React.Component {
      {gb}
 
 		<Ztable data={data}
-                        order={table_order}
-			columnDefs={columnDefs}
+                        sortCol={table_order}
 			cols={TableColumns(this.props.globals, this.props.assembly, ctCol,
 					   this.props.rfacets)}
                         onTdClick={(td, rowdata) =>

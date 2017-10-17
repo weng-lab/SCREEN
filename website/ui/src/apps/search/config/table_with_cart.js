@@ -78,11 +78,7 @@ const TableColumns = (globals, assembly, cts, rfacets) => {
 
 export default TableColumns;
 
-export const table_order = [];
-//    [2, "desc"],
+export const table_order = ["dnase_zscore", false];
 //    [3, "asc"],
 //    [4, "asc"],
 //    [5, "asc"]
-
-export const columnDefs = [{ "orderData": 2, "targets": 1 }]
-//                           { "orderData": 4, "targets": 3 }]

@@ -23,9 +23,19 @@ class SortOrder extends Enum {
 SortOrder.initEnum(['ASC', 'DSC', 'NONE', 'DISABLED']);
 
 class SortCols {
-    constructor(){
+    constructor(sortColOrder){
 	this.sortCols = [];
 	this.keys = {};
+	if(sortColOrder && sortColOrder.length > 0){
+	    let so = sortColOrder[1];
+	    if(so){
+		so = SortOrder.ASC;
+	    } else {
+		so = SortOrder.DSC;
+	    }
+	    this.sortCols = [sortColOrder[0], so]
+	    this.keys[sortColOrder[0]] = so;
+	}
     }
 
     shouldSort(){
@@ -296,7 +306,7 @@ class Ztable extends React.Component {
 	this.state = {search: '',
 		      pageNum: 1, // page indexes are 1-based
 		      pageSize: 10,
-		      sortCols: new SortCols()};
+		      sortCols: new SortCols(props.sortCol)};
     }
     
     render(){
