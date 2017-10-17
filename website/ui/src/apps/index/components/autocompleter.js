@@ -24,7 +24,7 @@ class Autocompleter extends React.Component {
 	const userQuery = this.state.value;
 	const uuid = this.state.uuid;
  	this.setState({userQueryErr : (<img src={ApiClient.StaticUrl("spinner.gif")}
-				       alt={"loader"} />)});
+				       alt={"loading"} />)});
  	const q = {assembly, userQuery, uuid};
  	const userQueryErr = (
  	    <span>
