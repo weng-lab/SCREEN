@@ -97,7 +97,7 @@ V4d = os.path.join(Dirs.encyclopedia, "Version-4")
 CreVer = Config.version
 CreVerStr = "ver" + str(CreVer)
 fantomcat = os.path.join(Dirs.encyclopedia, "..", "fantomcat")
-GwasVersion = 5
+GwasVersion = 6
 
 
 class paths(object):
