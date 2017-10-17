@@ -20,6 +20,7 @@ from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
 
+rootDir = os.path.join(Dirs.projects_base, "cREs")
 
 class TADImporter:
     def __init__(self, curs, assembly):
@@ -35,7 +36,8 @@ class TADImporter:
             (id serial PRIMARY KEY,
             acc TEXT, name TEXT);
         """.format(tableName=tableName))
-        with open("/data/projects/cREs/%s/CTCF/tad_biosamples.tsv" % self.assembly, "r") as f:
+
+        with open(os.path.join(rootDir, "%s/CTCF/tad_biosamples.tsv" % self.assembly), "r") as f:
             cols = ["acc", "name"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
@@ -50,7 +52,7 @@ class TADImporter:
             (id serial PRIMARY KEY,
             acc TEXT, chrom TEXT, start INTEGER, stop INTEGER);
         """.format(tableName=tableName))
-        with open("/data/projects/cREs/%s/CTCF/all_tads.tsv" % self.assembly, "r") as f:
+        with open(os.path.join(rootDir, "%s/CTCF/all_tads.tsv" % self.assembly), "r") as f:
             cols = ["acc", "chrom", "start", "stop"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
