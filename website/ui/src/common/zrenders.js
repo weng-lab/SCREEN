@@ -503,7 +503,7 @@ export const sctSorter = (data) => {
 	if(null === val){
 	    return 0;
 	}
-	return val > 1.64 ? 2 : 1;
+	return val; // > 1.64 ? 2 : 1;
     };
     let p = Math.pow(2, col(data.promoter_zscore)) * 100;
     let e = Math.pow(2, col(data.enhancer_zscore)) * 10;
