@@ -78,6 +78,7 @@ class MiniPeaks extends React.Component {
                     <svg width={data.length} height={ROWHEIGHT} >
 	                <g>
 		            {data.map((v, i) => (<rect width="1" height={v}
+						 key={i}
 					               y={ROWHEIGHT - v} x={i}
 					               fill={color} />))}
 		        </g>
@@ -98,12 +99,12 @@ class MiniPeaks extends React.Component {
 			    h3k4me3 : "H3K4me3"}
 	for(let acc of this.state[accession].accessions){
 	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
-		cols.push({title: assayToTitle[assay], data: acc,
+		cols.push({title: assayToTitle[assay], 
+			   data: acc,
+			   //sortDataF: (d) => (renderMax(assay)(d)),
+			   orderable: false,
 			   className: "dt-right minipeak",
 			   render: renderPeaks(assay)});
-		cols.push({title: "", data: acc,
-			   visible: false,
-			   render: renderMax(assay)});
 	    }
 	}
 	cols = cols.concat([{title: "", data: "expIDs",
@@ -112,19 +113,11 @@ class MiniPeaks extends React.Component {
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);
 
-	// move sorting of peaks to signal cols...
-	let columnDefs = [{ "orderData": 1, "targets": 0 },
-			  { "orderData": 3, "targets": 2 },
-			  { "orderData": 5, "targets": 4 }];
-
         let table = {title: "Minipeaks",
 	             cols,
-		     columnDefs,
 		     bFilter: true,
-		     order: [[1, "desc"], // DNase signal
-			     [7, "asc"],  // tissue
-			     [9, "asc"]   // cell type
-			    ]};
+		     //sortCol: ["dnase", false]
+		    };
         return React.createElement(Ztable,
                                    {data: this.state[accession].rows,
                                     ...table});
