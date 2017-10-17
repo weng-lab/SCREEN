@@ -148,9 +148,10 @@ export const gwasLink = (ref) => {
 	return dccLink(ref);
     }
     if(ref.startsWith("PMID:")){
+	ref = ref.replace('PMID:', '');
 	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
 	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
-			 alt="DCC logo" width="20" />;
+			 alt="DCC logo" height="20" />;
 	return <a target="_blank" href={url}>{img}</a>;
     }
     return ref;
