@@ -45,6 +45,7 @@ class GwasAppInner extends React.Component {
 			    </div>
 			    <div className="col-md-9 nopadding-left" id="tabs-container">
                                 <MainTabs assembly={assembly}
+	    uuid={this.props.uuid}
 					  globals={this.props.globals}
 					  search={this.props.search}
 				/>
