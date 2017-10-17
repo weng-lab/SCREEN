@@ -18,7 +18,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from config import Config
 from cre_utils import checkChrom
 from parse_search import ParseSearch
-from pg_cart import PGcart
 
 
 class PostWebServiceWrapper:
@@ -44,7 +43,6 @@ class PostWebService(object):
         self.staticDir = staticDir
         self.assembly = assembly
 
-        self.cart = PGcart(ps, assembly)
         self.actions = {"lines": self.lines}
 
     def process(self, j, args, kwargs):
@@ -77,6 +75,6 @@ class PostWebService(object):
         accessions = Utils.runCmds(cmds)
         accessions = [x.strip() for x in accessions]
         
-        ret = self.cart.set(uuid, accessions)
-        ret["uuid"] = uuid
+        ret = {"uuid": uuid,
+               "accessions": accessions}
         return ret
