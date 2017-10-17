@@ -12,7 +12,7 @@ class RampagePlot extends React.Component {
 	//console.log(props);
 	super(props);
         this.key = "rampage";
-        this.url = "/dataws/rampage/"
+        this.url = "/dataws/rampage"
         this.state = { jq: null, isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
@@ -84,10 +84,9 @@ class RampagePlot extends React.Component {
     }
 
     render(){
-	if(this.key === this.props.maintabs_active){
+	if(this.key !== this.props.maintabs_active){
             return false;
         }
-	console.log(this.props);
         return (
             <div style={{"width": "100%"}} >
                 {this.doRenderWrapper()}
