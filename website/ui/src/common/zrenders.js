@@ -418,7 +418,7 @@ export const creTableAccession = (globals) => (cre, type, full, meta) => {
 	<div>
 	    {popup("Click for cRE details", cre.accession)}
 	    <br />
-	    {popup("Concordant", concordantStar(cre.concordant))}
+	    {popup("Concordant", concordantStar(cre.concordant))}&nbsp;
 	    {creTableAccessionProx(cre)}&nbsp;
 	    {creTableAccessionBoxen(globals, cre)}
 	</div>);
