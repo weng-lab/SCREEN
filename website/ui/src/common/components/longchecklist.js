@@ -14,10 +14,9 @@ class LongChecklistFacet extends React.Component {
     }
 
     _render_checkbox(selected) {
-	return (selected
-		? <input type="checkbox" defaultChecked />
-		: <input type="checkbox" />
-	       );
+	return <input type="checkbox" 
+	checked={selected}
+	onChange={() => {} } />; // onTdClick will still fire
     }
 
     _td_handler(r, k) {

@@ -24,7 +24,9 @@ const bts = ({biosample_types, biosample_types_selected, actions}) => {
                         order={[]}
 			buttonsOff={true}
         	        mode={CHECKLIST_MATCH_ANY}
-                        onTdClick={(c) => { actions.toggleBiosampleType(c) } }
+                        onTdClick={(c) => { 
+			    actions.toggleBiosampleType(c) 
+			} }
                     />);
 }
 
