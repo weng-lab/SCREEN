@@ -34,11 +34,8 @@ const TableColumns = (globals, assembly, cts, rfacets) => {
 	    title: accHelp, data: "info",
             render: ZRender.creTableAccession(globals)
 	}, {
-            title: sctHelp, data: "ctspecifc",
+            title: sctHelp, data: "ctspecifc", visible: cts,
 	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
-	}, {
-            title: "SCTsorter", data: "ctspecifc", visible: false,
-	    render: ZRender.sctSorter, name: "sct",
 	}, {
 	    title: tz("DNase"), data: "dnase_zscore", visible: rfacets.includes("dnase"),
 	    render: ZRender.real, name: "dnase", width: "7%"
