@@ -100,7 +100,7 @@ class PageBox extends React.Component {
     render(){
 	return (
 	    <Pagination className="users-pagination pull-right"
-			bsSize="medium"
+			bsSize="small"
 			maxButtons={ 3 }
 			first last next prev boundaryLinks
 			items={this.props.pages}
@@ -319,7 +319,7 @@ class Ztable extends React.Component {
 	let ds = new DataSource(this.props.data, this.props.cols);
 	ds.filterAndSort(this.state);
 
-	let tableKlass = "table table-bordered table-condensed table-hover";
+	let tableKlass = "table table-bordered-bottom table-condensed table-hover";
 	let visibleCols = filterVisibleCols(this.props.cols);
 	
 	return (
