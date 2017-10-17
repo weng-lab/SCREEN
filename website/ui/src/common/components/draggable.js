@@ -7,8 +7,8 @@ export class DraggableListItem extends React.Component {
 	return <ListItem
 		   value={this.props.item.name}
 	           selected="true"
-	           n="0" o
-		   nclick={this.props.item.onClick}
+	           n="0" 
+	onclick={this.props.item.onClick}
 	           draggable={this.props.dragHandle} />
     }
 };
