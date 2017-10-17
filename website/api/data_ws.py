@@ -79,7 +79,8 @@ class DataWebService(GetOrSetMemCache):
                         "global_object": self.global_object,
                         "global_fantomcat": self.global_fantomcat,
                         "ctcfdistr": self.ctcf_distr,
-                        "global_liftover": self.global_liftover
+                        "global_liftover": self.global_liftover,
+                        "rampage": self.rampage
                         }
 
         self.reDetailActions = {
@@ -253,6 +254,11 @@ class DataWebService(GetOrSetMemCache):
         rampage = Rampage(self.assembly, self.pgSearch, self.cache)
         ret = rampage.getByGene(nearest)
         return {accession: ret}
+
+    def rampage(self, j, args):
+        rampage = Rampage(self.assembly, self.pgSearch, self.cache)
+        ret = rampage.getByGene(j["gene"])
+        return {[gene: ret}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = Config.minipeaks_nbins

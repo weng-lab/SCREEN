@@ -246,7 +246,7 @@ class GeTab extends ReTabBase{
     }
 }
 
-class RampageTab extends ReTabBase{
+export class RampageTab extends ReTabBase{
     constructor(props) {
 	super(props, "rampage");
 
