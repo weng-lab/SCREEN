@@ -714,7 +714,7 @@ table-sort-desc::after {
 }
 
 .sliderBar {
-    height: 18px;
+    height: 4px;
     background: #FAFAFA;
     border-radius: 4px;
     border: 1px solid #D3D3D3;
@@ -729,8 +729,8 @@ table-sort-desc::after {
     box-sizing: border-box;
 }
 .sliderLeft {
-    width: 34px;
-    height: 28px;
+    width: 14px;
+    height: 14px;
     top: -6px;
     z-index: 5;
     border: 1px solid #D9D9D9;
@@ -751,8 +751,8 @@ table-sort-desc::after {
     box-sizing: border-box;
 }
 .sliderRight {
-    width: 34px;
-    height: 28px;
+    width: 14px;
+    height: 14px;
     top: -6px;
     z-index: 4;
     border: 1px solid #D9D9D9;

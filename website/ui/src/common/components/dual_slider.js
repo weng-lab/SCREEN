@@ -11,7 +11,7 @@ class DualSlider extends React.Component {
 	this.updateWithProps = this.updateWithProps.bind(this);
 	this.makeBars = this.makeBars.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
-		      buttonWidth: props.buttonWidth || 34};
+		      buttonWidth: 14};
 	window.onresize = chain_functions(window.onresize, this.updateDimensions);
     }
 

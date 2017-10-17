@@ -362,7 +362,7 @@ class Ztable extends React.Component {
 		{ds.numPages > 1 && <PageBox pages={ds.numPages}
 					     curPage={this.state.pageNum}
 					     onSelect={pageClick} />}
-		<HelpBlock>Found {ds.rowIDs.length}</HelpBlock>
+		<HelpBlock>Total: {ds.rowIDs.length}</HelpBlock>
 	    </div>);
     }
 }

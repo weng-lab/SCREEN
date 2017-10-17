@@ -26,7 +26,13 @@ class RangeSlider extends React.Component {
     updateSelectionLeft(e){
 	const lvalue = e.target.value;
 	if(!isNaN(lvalue) && this.props.range[0] <= lvalue){
-	    this.setState({lvalue});
+	    if('Enter' === e.key){
+		this.doChangeLeft(e);
+	    } else {
+		this.setState({lvalue});
+	    }
+	} else {
+	    this.setState({lvalue: ''});
 	}
     }
 
@@ -34,7 +40,13 @@ class RangeSlider extends React.Component {
     updateSelectionRight(e){
 	const rvalue = e.target.value;
 	if(!isNaN(rvalue) && this.props.range[1] >= rvalue){
-	    this.setState({rvalue});
+	    if('Enter' === e.key){
+		this.doChangeRight(e);
+	    } else {
+		this.setState({rvalue});
+	    }
+	} else {
+	    this.setState({rvalue: ''});
 	}
     }
     
