@@ -62,7 +62,8 @@ class TabMain extends React.Component {
 	let dv = "K562 chr11:5226493-5403124";
 	return (
 	    <Autocompleter defaultvalue={dv}
-			   actions={this.props.actions}
+	    uuid={this.props.uuid}
+	    actions={this.props.actions}
 		           id="mainSearchbox"
 			   examples={examples} />);
     }

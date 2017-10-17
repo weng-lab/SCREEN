@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory} from 'react-router';
+import uuider from 'react-native-uuid';
 
 import Intersection from './apps/intersection/main';
 import Search from './apps/search/main';
@@ -13,8 +14,15 @@ import TadPage from './apps/tads/main';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './css.css';
 
+const uuid = uuider.v4();
+
+const myCreateElement = (Component, props) => {
+    return React.createElement(Component, {...props,
+					   uuid});
+}
+
 ReactDOM.render((
-    <Router history={browserHistory} >
+    <Router history={browserHistory} createElement={myCreateElement} >
 	<Route path="/" component={IndexPage} />
 	<Route path="/index/:tab" component={IndexPage} />
 	<Route path="/search(.*)" component={Search} />

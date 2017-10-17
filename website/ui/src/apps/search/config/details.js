@@ -134,7 +134,8 @@ class ReTabBase extends React.Component{
     doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
-            return this.doRender(this.props.globals, this.props.assembly, this.state[accession]);
+            return this.doRender(this.props.globals, this.props.assembly, 
+				 this.state[accession], this.props.uuid);
         }
         return loading({...this.state, message: this.props.message});
     }
@@ -182,10 +183,10 @@ class FantomCatTab extends ReTabBase {
 class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
-	this.doRender = (globals, assembly, data) => {
+	this.doRender = (globals, assembly, data, uuid) => {
             let d = data.ortholog;
 	    if(d.length > 0) {
-	        return tabEles(globals, data, OrthologTable(globals, assembly), 1);
+	        return tabEles(globals, data, OrthologTable(globals, assembly, uuid), 1);
 	    }
             return <div><br />{"No orthologous cRE identified."}</div>;
 	}

@@ -1,5 +1,4 @@
 import React from 'react'
-import uuider from 'react-native-uuid';
 
 import AutocompleteBox from '../../../common/components/autocompletebox';
 
@@ -18,7 +17,7 @@ class Autocompleter extends React.Component {
 	this.onChange = this.onChange.bind(this);
 
  	this.state = {userQueryErr : null, value: props.defaultvalue,
-		      uuid: uuider.v4()};
+		      uuid: props.uuid};
     }
 
     loadSearch(assembly) {

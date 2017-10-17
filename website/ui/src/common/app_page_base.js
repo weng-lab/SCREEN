@@ -67,7 +67,8 @@ class AppPageBase extends React.Component {
 	if("search" in this.state && "globals" in this.state){
 	    return (
 		<div>
-		    {React.createElement(this.innerClass, {search: this.state.search,
+		    {React.createElement(this.innerClass, {uuid: this.props.uuid,
+							   search: this.state.search,
 							   globals: this.state.globals})}
 		</div>);
 	}

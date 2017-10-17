@@ -4,8 +4,8 @@ import {Button, ButtonGroup} from 'react-bootstrap';
 import {toParams, commajoin} from './utility';
 import * as ApiClient from './api_client';
 
-export const relink = (assembly) => (v) => (
-    <a href={"/search?assembly=" + assembly + "&q=" + v} target={'_blank'}>
+export const relink = (assembly, uuid) => (v) => (
+	<a href={"/search?" + toParams({assembly, q: v, uuid})} target={'_blank'}>
 	{v}
     </a>
 );

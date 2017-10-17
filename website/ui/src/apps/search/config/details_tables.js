@@ -93,7 +93,7 @@ export const TopTissuesTables = (globals, assembly) => ({
     }
 });
 
-export const OrthologTable = (globals, assembly) => ({
+export const OrthologTable = (globals, assembly, uuid) => ({
     ortholog: {
 	title: "",
 	paging: false,
@@ -103,7 +103,7 @@ export const OrthologTable = (globals, assembly) => ({
 	emptyText: "No orthologous cRE identified",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
-             render: Render.relink(assembly === "mm10" ? "hg19" : "mm10")},
+             render: Render.relink(assembly === "mm10" ? "hg19" : "mm10", uuid)},
 	    {title: "chromosome", data: "chrom", className: "dt-right"},
 	    {title: "start", data: "start", render: Render.integer},
 	    {title: "end", data: "stop", render: Render.integer},
