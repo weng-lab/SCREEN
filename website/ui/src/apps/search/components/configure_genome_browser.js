@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {ButtonToolbar, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
+
 import $ from 'jquery';
 
 import * as ApiClient from '../../../common/api_client';
@@ -159,20 +161,19 @@ class ConfigureGenomeBrowser extends React.Component {
 	let combo = "5 group";
 	let notCombo = "9 state";
 	let options = (
-	    <div ref="options" className="btn-group" data-toggle="buttons">
-		<label className="btn btn-info active"
-		       onClick={() => { this.optionsChanged(false); }}>
-		    <input type="radio" name="notCombo"
-			   defaultChecked={!this.state.showCombo} />
-		    {notCombo}
-		</label>
-		<label className="btn btn-info"
-		       onClick={() => { this.optionsChanged(true); }}>
-		    <input type="radio" name="combo"
-		    	   defaultChecked={this.state.showCombo} />
-		    {combo}
-		</label>
-	    </div>);	
+		<ButtonToolbar>
+		<ToggleButtonGroup type="radio" name="options" defaultValue={1}>
+		<ToggleButton value={1}
+	    onClick={() => { this.optionsChanged(false); }}>
+		{notCombo}
+            </ToggleButton>
+		<ToggleButton value={2}
+	    onClick={() => { this.optionsChanged(true); }}>
+		{combo}
+	    </ToggleButton>
+		
+		</ToggleButtonGroup>
+		</ButtonToolbar>);
 
 	return (
 	    <div className="container" style={{width: "100%"}}>
