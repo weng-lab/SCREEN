@@ -210,6 +210,7 @@ class DataSource {
 		ret.push(i);
 		continue;
 	    }
+	    s = s.toLowerCase().trim();
 	    for(let colInfo of this.cols){
 		const t = String(this.data[i][colInfo.data]).toLowerCase();
 		if(t.includes(s)){
