@@ -56,7 +56,7 @@ const click_handler = (dispatch) => (state) => {
 	return;
     }
     // go to cart page
-    window.open(href + "&cart", '_blank');
+    window.open(href + "&cart");
 };
 
 const props_map = (state) => {
