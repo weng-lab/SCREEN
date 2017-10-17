@@ -31,9 +31,13 @@ class SingleStudy  extends React.Component {
 	    selection={this.props.gwas_study}
 	    mode={CHECKLIST_MATCH_ANY}
 	    pageLength={5}
-	    onTdClick={(c, td) => {
-		if (td && -1 === td.indexOf("pubmed")) {
-		    this.props.actions.setStudy(c);
+	    onTdClick={(val, td, cellObj) => {
+		if(td){
+		    if (td.indexOf("pubmed") === -1) {
+			this.props.actions.setStudy(val);
+		    } 
+		} else {
+		    this.props.actions.setStudy(val);
 		}
 	    }}
             />);
@@ -70,7 +74,7 @@ class GWASstudies extends React.Component {
 				enabled: true, f: SingleStudy}};
 	
 	return (
-	    <div className="container gwasStudyContainer">
+		<div className="container" style={{width: "100%"}}>
                 <ul className="nav nav-tabs">
   		    {Object.keys(tabs).map((key) => (
                          makeTabTitle(key, tabs[key] )))}
