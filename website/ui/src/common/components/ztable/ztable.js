@@ -79,6 +79,7 @@ const klassName = (colInfo) => {
 class SearchBox extends React.Component {
     render() {
 	return (
+		<div style={{float: "right"}}>
 	    <Form inline>
 		<FormGroup controlId = "formBasicText">
 		    Search:
@@ -90,6 +91,7 @@ class SearchBox extends React.Component {
 		    <FormControl.Feedback />
 		</FormGroup>
 	    </Form>
+		</div>
 	);
     }
 }
