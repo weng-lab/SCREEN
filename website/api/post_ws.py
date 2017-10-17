@@ -60,7 +60,7 @@ class PostWebService(object):
         f, filename = tempfile.mkstemp(dir="/home/purcarom/intersect/incoming")
         for arr in lines:
             arr = arr.strip()
-            os.write(f, arr)
+            os.write(f, arr + '\n')
         os.close(f)
 
         cres = {"hg19": "/home/purcarom/intersect/hg19.sorted.bed",
