@@ -143,6 +143,19 @@ export const dccLink = (expID) => {
     return <a target="_blank" href={url}>{img}</a>;
 }
 
+export const gwasLink = (ref) => {
+    if(ref.startsWith("ENCFF")){
+	return dccLink(ref);
+    }
+    if(ref.startsWith("PMID:")){
+	const url = 'https://www.ncbi.nlm.nih.gov/pubmed/' + ref;
+	const img = <img src={ApiClient.StaticUrl("/logo_pubmed.jpg")}
+			 alt="DCC logo" width="20" />;
+	return <a target="_blank" href={url}>{img}</a>;
+    }
+    return ref;
+}
+
 export const dccLinkCtGroupExpIDs = (accs) => {
     let q = accs.join("&accession=");
     const url = 'https://www.encodeproject.org/search/?accession=' + q;

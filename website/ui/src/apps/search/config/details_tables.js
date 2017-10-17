@@ -349,7 +349,7 @@ export const LinkedGenesTable = (globals, assembly) => ({
 	       },{ title: "supporting exp", data: "method",
 		   //render: Render.support
 	       },{ title: "based on", data: "dccaccession",
-		   render: Render.dccLink
+		   render: Render.gwasLink
 		 }],
 	order: [[2, "desc"]]
     }
