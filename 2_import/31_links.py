@@ -42,7 +42,7 @@ dccaccession text
 );""".format(tableName=self.tableName))
 
         printt('***********', "import links")
-        fnp = paths.path(self.assembly, "Gene-Links.v0.txt.gz")
+        fnp = paths.path(self.assembly, "Gene-Links.v1.txt.gz")
 
         with gzip.open(fnp, "r") as f:
             cols = ["cre", "gene", "celltype", "method", "dccaccession"]
