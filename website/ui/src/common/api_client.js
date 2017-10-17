@@ -26,6 +26,38 @@ export const getByPost  = (jq, url, successF, errF) => {
 	.catch(errF);
 }
 
+export const getMinipeaks = (jq, successF, errF) => {
+    const url = "http://screen.encodeproject.org/api/dataws/re_detail/similarREs";
+    fetch(url,
+	  {
+	      headers: {
+		  'Accept': 'application/json',
+		  'Content-Type': 'application/json'
+	      },
+	      method: "POST",
+	      body: jq
+	  })
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
+
+export const getIntersect = (jq, successF, errF) => {
+    const url = "http://api.wenglab.org/postws/lines";
+    fetch(url,
+	  {
+	      headers: {
+		  'Accept': 'application/json',
+		  'Content-Type': 'application/json'
+	      },
+	      method: "POST",
+	      body: jq
+	  })
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
+
 export const setByPost  = (jq, url, successF, errF) => {
     fetch(Servers(url),
 	  {

@@ -40,15 +40,25 @@ class BedUpload extends React.Component {
 			       assembly: this.props.assembly,
 			       allLines};
 		    const jq = JSON.stringify(j);
-		    ApiClient.setByPost(jq,
-					"/postws/lines",
-			    (r) => {
-				let href = window.location.href;
-				if(!href.includes("&cart")){
-				    href += "&cart";
-				}
-				window.location.assign(href);				    
-			    },
+		    ApiClient.getIntersect(jq,
+					   (r) => {
+					       let j = {assembly: this.props.assembly, 
+							accessions: r.accessions,
+							uuid: r.uuid};
+					       ApiClient.setByPost(JSON.stringify(j),
+								   "/cart/set",
+								   (response) => {
+								       let href = window.location.href;
+								       if(!href.includes("&cart")){
+									   href += "&cart";
+								       }
+								       window.location.assign(href);				    
+								   },
+								   (msg) => {
+								       console.log("error posting to cart/set", msg);
+								   });
+					       this.props.actions.setCart(r.accessions);
+					   },
 			    (msg) => {
 				console.log("error posting to cart/set", msg);
 			    });

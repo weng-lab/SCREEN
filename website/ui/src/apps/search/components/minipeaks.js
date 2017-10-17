@@ -52,9 +52,9 @@ class MiniPeaks extends React.Component {
             return;
         }
         this.setState({jq, isFetching: true});
-	ApiClient.getByPost(jq, "/dataws/re_detail/similarREs",
-			    (r) => {
-				this.setState({...r,
+	ApiClient.getMinipeaks(jq, 
+			       (r) => {
+				   this.setState({...r,
 					       jq, isFetching: false, isError: false});
 			    },
 			    (msg) => {
