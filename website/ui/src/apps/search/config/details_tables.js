@@ -314,7 +314,7 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
         typ: IntersectingAssayTf,
 	cols: [
 	    {title: "factor", data: "name",
-	     render: Render.factorbook_link_tf },
+	     render: Render.factorbook_link_tf(assembly) },
 	    {title: "# of experiments that support TF binding", data: "n",
 	     render: Render.integerLink("tf") },
 	    {title: "# experiments in total", data: "total",
