@@ -250,15 +250,15 @@ class DataWebService(GetOrSetMemCache):
         cre = CRE(self.pgSearch, accession, self.cache)
         nearbyGenes = cre.nearbyPcGenes()
         nearest = min(nearbyGenes, key=lambda x: x["distance"])
-        cre = CRE(self.pgSearch, accession, self.cache)
         rampage = Rampage(self.assembly, self.pgSearch, self.cache)
         ret = rampage.getByGene(nearest)
         return {accession: ret}
 
     def rampage(self, j, args):
         rampage = Rampage(self.assembly, self.pgSearch, self.cache)
-        ret = rampage.getByGene(j["gene"])
-        return {[gene: ret}
+        gene = j["gene"]
+        ret = rampage.getByGeneApprovedSymbol(gene)
+        return {gene: ret}
 
     def _re_detail_similarREs(self, j, accession):
         nbins = Config.minipeaks_nbins

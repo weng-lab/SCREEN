@@ -49,3 +49,9 @@ class Rampage:
         return {"sortedTranscripts": transcripts,
                 "tsss": byTranscript,
                 "gene": gene}
+
+    def getByGeneApprovedSymbol(self, gene):
+        egene = self.pgSearch.rampageEnsemblID(gene)
+        r = {"ensemblid_ver": egene}
+        r["name"] = gene
+        return self.getByGene(r)

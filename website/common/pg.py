@@ -615,6 +615,17 @@ FROM {tn}
             ret[d["fileid"]] = d
         return ret
 
+    def rampageEnsemblID(self, gene):
+        q = """
+SELECT ensemblid_ver FROM {assembly}_gene_info
+WHERE approved_symbol = %(gene)s
+        """.format(assembly=self.assembly)
+        
+        with getcursor(self.pg.DBCONN, "_gene") as curs:
+            curs.execute(q, {"gene": gene})
+            rows = curs.fetchone()
+            return rows[0]
+        
     def geBiosampleTypes(self):
         q = """
 SELECT DISTINCT(biosample_type)
