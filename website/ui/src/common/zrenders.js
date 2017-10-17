@@ -510,3 +510,16 @@ export const sctSorter = (data) => {
     let c = Math.pow(2, col(data.ctcf_zscore)) * 1;
     return e + p + c;
 }
+
+export const accSorter = (data) => {
+    let col = (val) => {
+	if(null === val){
+	    return 0;
+	}
+	return val; // > 1.64 ? 2 : 1;
+    };
+    let p = Math.pow(2, col(data.k4me3max)) * 100;
+    let e = Math.pow(2, col(data.k27acmax)) * 10;
+    let c = Math.pow(2, col(data.ctcfmax));
+    return e + p + c;
+}

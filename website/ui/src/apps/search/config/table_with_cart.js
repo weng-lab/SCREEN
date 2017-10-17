@@ -31,10 +31,11 @@ const TableColumns = (globals, assembly, cts, rfacets) => {
       { title: "", data: "checked", className: "selectcre",
 	      render: ZRender.checkRd},
 	{
-	    title: accHelp, data: "info",
+	    title: accHelp, data: "info", sortDataF: (d) => (ZRender.accSorter(d)),
             render: ZRender.creTableAccession(globals)
 	}, {
             title: sctHelp, data: "ctspecifc", visible: cts,
+	    sortDataF: (d) => (ZRender.sctSorter(d)),
 	    render: ZRender.creTableCellTypeSpecific(globals), name: "sctv", width: "12%"
 	}, {
 	    title: tz("DNase"), data: "dnase_zscore", visible: rfacets.includes("dnase"),
