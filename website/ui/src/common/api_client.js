@@ -1,14 +1,14 @@
 export const StaticServer = "http://screen.encodeproject.org/assets";
 export const StaticUrl = (fn) => (StaticServer + fn)
+export const ApiServer = "http://screen.encodeproject.org/api"; // "/api/"
 
 export const Servers = (b) => {
-    const server = "/api"; //"http://api.wenglab.org";
   /*  let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
 		    "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
     if(b in override){
 	return override[b];
 }*/
-    return server + b;
+    return ApiServer + b;
 };
 
 export const getByPost  = (jq, url, successF, errF) => {

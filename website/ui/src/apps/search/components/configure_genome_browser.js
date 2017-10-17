@@ -25,7 +25,7 @@ class ConfigureGenomeBrowser extends React.Component {
     gbclick(cre, cts, gbrowser){
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
-	var host = arr[0] + "//" + arr[2];
+	var host = arr[0] + "//" + arr[2] + "/api";
 	var data = {"accession" : cre.accession ? cre.accession : cre.title,
 		    "coord_chrom" : cre.chrom,
 		    "coord_start" : cre.start,
