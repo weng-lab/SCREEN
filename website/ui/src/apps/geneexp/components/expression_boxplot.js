@@ -28,6 +28,7 @@ class ExpressionBoxplot extends React.Component {
 
     gclick(name) {
 	this.props.actions.showGenomeBrowser({
+	    accession: [],
 	    title: this.props.gene,
 	    start: this.props.data.coords.start,
 	    len: this.props.data.coords.len,
