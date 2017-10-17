@@ -19,8 +19,12 @@ class CelltypeView extends React.Component {
     }
 
     button_click_handler(name, rowdata, actions){
-	let cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
-	actions.showGenomeBrowser(cre, name);
+	const cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
+	if(name.indexOf("browser") !== -1){
+	    actions.showGenomeBrowser(cre, name);
+	} else {
+            actions.showReDetail(cre);
+	}
     }
     
     componentDidMount(){
@@ -100,7 +104,7 @@ class CelltypeView extends React.Component {
         const creTable = (
 	    <Ztable
 		key={this.props.cellType.cellTypeName}
-		onButtonClick={(td, rowdata) =>
+		onTdClick={(td, rowdata) =>
 		    this.button_click_handler(td, rowdata, actions)}
 		data={cres}
 		columnDefs={columnDefs}

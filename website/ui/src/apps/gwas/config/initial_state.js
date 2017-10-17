@@ -10,6 +10,8 @@ const try_get_ct = (globals, ct) => {
 }
 
 const initialState = (search, globals) => {
+    const subtab = "topTissues";
+
     return {
         ...search,
 	configuregb_cre: null,
@@ -24,7 +26,8 @@ const initialState = (search, globals) => {
 	gwas_study_tab: "single",
 	cellType: try_get_ct(globals, search.ct),
 	gwas_cell_types: null,
-	cart_accessions: new Set()
+	cart_accessions: new Set(),
+        re_details_tab_active: subtab,
     }
 }
 

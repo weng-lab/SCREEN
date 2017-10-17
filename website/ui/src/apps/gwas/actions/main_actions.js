@@ -23,3 +23,8 @@ export const setGwasStudyTab = (tab) => ({ type: SET_GWAS_STUDY_TAB, tab});
 
 export const SET_MAIN_TAB = 'SET_MAIN_TAB';
 export const setMainTab = (name) => ({ type: SET_MAIN_TAB, name });
+
+export const SHOW_RE_DETAIL = 'SHOW_RE_DETAIL';
+export const showReDetail = (cre) => ({ type: SHOW_RE_DETAIL, cre})
+export const SET_RE_DETAIL_TAB = 'SET_RE_DETAIL_TAB';
+export const setReDetailTab = (name) => ({ type: SET_RE_DETAIL_TAB, name });

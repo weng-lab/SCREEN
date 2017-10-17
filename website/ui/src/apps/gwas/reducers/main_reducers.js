@@ -58,6 +58,15 @@ const main_reducers = (state, action) => {
 		...x, checked: (x.cellTypeName === action.ct) !== x.checked
 	    }))
 	};
+
+    case Actions.SHOW_RE_DETAIL:
+        return {...state, ...mainTabSetter(state, "details"),
+                active_cre: action.cre,
+                cre_accession_detail: action.cre.accession,
+               };
+
+    case Actions.SET_RE_DETAIL_TAB:
+        return {...state, re_details_tab_active: action.name};
 		
     default:
 	return state;
