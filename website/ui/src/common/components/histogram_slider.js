@@ -28,7 +28,7 @@ class HistogramSlider extends React.Component {
 
     makeBars(){
 	const width = this.state.width;
-	const height = 10;
+	const height = 20;
 	const xScale = linearScale(this.props.range, [0, width]);
 	const yScale = linearScale([0, this.props.data.binMax], [height, 0]);
 	let e = (
