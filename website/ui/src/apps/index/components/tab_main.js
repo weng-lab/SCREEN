@@ -59,7 +59,7 @@ class TabMain extends React.Component {
 
     searchBox() {
 	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
-	let dv = "K562 chr11:5226493-5403124";
+	let dv = "chr11:5226493-5403124";
 	return (
 	    <Autocompleter defaultvalue={dv}
 	    uuid={this.props.uuid}
