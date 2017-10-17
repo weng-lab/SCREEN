@@ -2,7 +2,7 @@ export const StaticServer = "http://screen.encodeproject.org/assets";
 export const StaticUrl = (fn) => (StaticServer + fn)
 
 export const Servers = (b) => {
-    const server = "http://api.wenglab.org";
+    const server = "/api"; "http://api.wenglab.org";
   /*  let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
 		    "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
     if(b in override){
