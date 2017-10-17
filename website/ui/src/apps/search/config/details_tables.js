@@ -26,7 +26,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 	    {title: "H3K4me3 only", data: "one",
 	     render: Render.z_score}
 	],
-	order: [[2, "desc"], [1, "desc"]],
+	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
@@ -45,7 +45,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 	    {title: "H3K27ac only", data: "one",
 	     render: Render.z_score}
 	],
-	order: [[2, "desc"], [1, "desc"]],
+	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
@@ -65,7 +65,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 	     render: Render.z_score
 	    }
 	],
-	order: [[2, "desc"], [1, "desc"]],
+	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
@@ -83,7 +83,7 @@ export const TopTissuesTables = (globals, assembly) => ({
 	     render: Render.z_score
 	    }
 	],
-	order: [[1, "desc"]],
+	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
 	bar_graph: false, //GlobalAssembly != "hg19",
@@ -102,14 +102,14 @@ export const OrthologTable = (globals, assembly) => ({
 	bLengthChange: false,
 	emptyText: "No orthologous cRE identified",
 	cols: [
-	    {title: "accession", "data": "accession", className: "dt-right",
+	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.relink(assembly === "mm10" ? "hg19" : "mm10")},
-	    {title: "chromosome", "data": "chrom", className: "dt-right"},
-	    {title: "start", "data": "start", render: Render.integer},
-	    {title: "end", "data": "stop", render: Render.integer},
-	    {title: "overlap", "data": "overlap", render: Render.bp}
+	    {title: "chromosome", data: "chrom", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer},
+	    {title: "overlap", data: "overlap", render: Render.bp}
 	],
-	order: [[4, "desc"]]
+	sortCol: ["overlap", false]
     }
 });
 
@@ -202,7 +202,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	        {title: "distance", data: "distance",
 	         render: Render.integer}],
             pageLength: 5,
-	    order: [[1, "asc"]]
+	    sortCol: ["distance", true]
         },
         nearby_res: {
 	    title: "Nearby cREs",
@@ -217,7 +217,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	        {title: "distance", data: "distance",
 	         render: Render.integer } ],
             pageLength: 5,
-	    order: [[1, "asc"]]
+	    sortCol: ["distance", true]
         },
         overlapping_snps: {
 	    title: "Nearby SNPs",
@@ -234,7 +234,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	         render: Render.integer }
 	    ],
             pageLength: 5,
-	    order: [[1, "asc"]]
+	    sortCol: ["distance", true]
         }
     };
     if("hg19" === assembly){
@@ -253,7 +253,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	               //{title: "coordinates", data: "coordinates"}
                    ],
                    pageLength: 5,
-	           order: [[0, "asc"]]
+		   sortCol: ["name", true]
                },
                re_tads: {
 	           title: "Other cREs within TAD and <100 kb",
@@ -269,7 +269,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	               {title: "distance", data: "distance",
                         render: Render.integer} ],
                    pageLength: 5,
-	           order: [[1, "asc"]]
+		   sortCol: ["distance", true]
                }
         };
     }
@@ -289,7 +289,7 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
 	bFilter: true,
-	order: [[1, "desc"]]
+	sortCol: ["n", false]
     },
     "histone": {
 	title: "Histone Marks at this cRE",
@@ -303,7 +303,7 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
 	bFilter: true,
-	order: [[1, "desc"]]
+	sortCol: ["n", false]
     }
 });
 
@@ -320,7 +320,7 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
 	bFilter: true,
-	order: [[1, "desc"]]
+	sortCol: ["n", false]
     },
     "histone": {
 	title: "intersecting cistrome histone mark exps",
@@ -334,7 +334,7 @@ export const CistromeIntersectionTable = (globals, assembly) => ({
 	    {title: "# experiments in total", data: "total",
 	     render: Render.integer }],
 	bFilter: true,
-	order: [[1, "desc"]]
+	sortCol: ["n", false]
     }
 });
 
@@ -351,7 +351,6 @@ export const LinkedGenesTable = (globals, assembly) => ({
 	       },{ title: "based on", data: "dccaccession",
 		   render: Render.gwasLink
 		 }],
-	order: [[2, "desc"]]
     }
 });
 

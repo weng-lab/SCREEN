@@ -1,5 +1,5 @@
 import React from 'react';
-import $ from 'jquery';
+import * as ApiClient from '../api_client';
 
 import * as Render from '../zrenders';
 import Ztable from './ztable/ztable';
@@ -31,22 +31,17 @@ class IntersectingAssay extends React.Component {
 	    return;
 	}
         this.setState({jq, isFetching: true});
-        $.ajax({
-            url: this.url,
-            type: "POST",
-	    data: jq,
-	    dataType: "json",
-	    contentType: "application/json",
-            error: function(jqxhr, status, error) {
-                console.log("err loading target for table");
-                this.setState({target: null,
-                               jq: null, isFetching: false, isError: true});
-            }.bind(this),
-            success: function(r) {
-                this.setState({target, ...r,
-                               jq, isFetching: false, isError: false});
-            }.bind(this)
-        });
+	ApiClient.getByPost(jq,
+			    this.url,
+			    (r) => {
+				this.setState({target, ...r,
+					       jq, isFetching: false, isError: false});
+			    },
+			    (msg)=> {
+				console.log("err loading target for table");
+				this.setState({target: null,
+					       jq: null, isFetching: false, isError: true});
+			    });
     }
 
     render() {
