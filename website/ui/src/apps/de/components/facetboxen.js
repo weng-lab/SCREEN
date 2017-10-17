@@ -21,7 +21,6 @@ const cellTypesBox1 = ({globals, ct1, actions}) => {
 			title={""}
 			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
-			order={[]}
 			buttonsOff={true}
 			selection={ct1}
 			friendlySelectionLookup={(value) => {
@@ -36,7 +35,6 @@ const cellTypesBox2 = ({globals, ct2, actions}) => {
 			title={""}
 			data={globals.cellTypeInfoArr.filter((x) => (x.isde))}
 			cols={cols}
-			order={[]}
 			buttonsOff={true}
 			selection={ct2}
 			friendlySelectionLookup={(value) => {
@@ -63,7 +61,7 @@ const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
             ]}
             pageLength={5}
 	    bFilter={true}
-            order={[[3, "desc"], [1, "asc"]]}
+        sortCol={["value", false]}
         />);
     return panelize("candidate Regulatory Elements", box,
 		    "DE_cRE_Table", globals);
@@ -86,7 +84,7 @@ const geneBox = ({globals, des, ct1, ct2, actions}) => {
             ]}
             pageLength={5}
 	    bFilter={true}
-            order={[[2, "desc"]]}
+        sortCol={["fc", false]}
         />);
     return panelize("Differentially Expressed Genes", box,
 		    "DE_Gene_Table", globals);

@@ -9,7 +9,7 @@
 						"test": "react-scripts test --env=jsdom",
 						"eject": "react-scripts eject"
 			},
-			"homepage": "http://screen-beta.wenglab.org",
+			"homepage": "http://screen.encodeproject.org",
 			"devDependencies": {},
 			"dependencies": {
 						"bootstrap": "3",
