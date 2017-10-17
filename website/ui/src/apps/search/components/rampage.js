@@ -96,6 +96,11 @@ class Rampage extends React.Component {
 	
         const transcript = data[this.state.transcript];
 
+	let distance = ""
+	if("distance" in gene){
+	    distance = "   (" + Render.numWithCommas(gene.distance) + " bases from cRE)";
+	}
+
         const title = (
             <div className="container-fluid" style={{"width": "100%"}} >
                 <div className="row">
@@ -109,8 +114,7 @@ class Rampage extends React.Component {
 				<em>{gene.name}</em>
 			    </h2>
                             {gene.ensemblid_ver}
-			    {"   ("}{Render.numWithCommas(gene.distance)}
-			    {" bases from cRE)"}
+	                    {distance}
                         </span>
                     </div>
                 </div>
