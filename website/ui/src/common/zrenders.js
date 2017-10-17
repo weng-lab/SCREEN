@@ -369,7 +369,7 @@ export const checkCt = (checked) => {
     return <input type={"checkbox"} checked={checked} />
 }
 export const checkRd = (checked) => {
-    return <input type={"radio"} checked={checked} />
+    return <input type={"radio"} defaultChecked={checked} />
 }
 
 export const creTableAccessionBoxen = (globals, cre) => {
