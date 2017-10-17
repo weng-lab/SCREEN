@@ -205,17 +205,19 @@ class DataSource {
 
     _searchFilter(s){
 	let ret = [];
-	for(let i = 0; i < this.data.length; i++){
-	    if(!s){
-		ret.push(i);
-		continue;
-	    }
-	    s = s.toLowerCase().trim();
-	    for(let colInfo of this.cols){
-		const t = String(this.data[i][colInfo.data]).toLowerCase();
-		if(t.includes(s)){
+	if(this.data){
+	    for(let i = 0; i < this.data.length; i++){
+		if(!s){
 		    ret.push(i);
-		    break;
+		    continue;
+		}
+		s = s.toLowerCase().trim();
+		for(let colInfo of this.cols){
+		    const t = String(this.data[i][colInfo.data]).toLowerCase();
+		    if(t.includes(s)){
+			ret.push(i);
+			break;
+		    }
 		}
 	    }
 	}
