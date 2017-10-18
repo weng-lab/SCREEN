@@ -60,7 +60,7 @@ class ResultsTableContainer extends React.Component {
 	let distsRefs = orjoin(dists.map((d) => (
 		<a href={"/search?promoter&" + toParams({q: gene,
 							 tssDist: d,
-							 assembly, 
+							 assembly,
 							 uuid: this.props.uuid})}
 	    key={["dist", d]}>
 		{d / 1000}{"kb"}
@@ -71,7 +71,7 @@ class ResultsTableContainer extends React.Component {
 	if(useTss){
 	    geneBody = (
 		<li key={"geneBody"}>{"overlapping the "}
-		    <a href={"/search?" + toParams({q: gene, assembly, 
+		    <a href={"/search?" + toParams({q: gene, assembly,
 						    uuid: this.props.uuid})}>
 			gene body
 		    </a>{" of "}{geneTitle}

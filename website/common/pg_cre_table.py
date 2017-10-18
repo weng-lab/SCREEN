@@ -202,7 +202,7 @@ LIMIT 1000) r
                 self.whereClauses.append("(%s)" % accsQuery)
                 return True
         return False
-    
+
     def _where(self, chrom, start, stop):
         if chrom and start and stop:
             self.whereClauses += ["cre.chrom = '%s'" % chrom,

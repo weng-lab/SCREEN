@@ -38,7 +38,7 @@ class Polylines extends React.Component {
         yAxis.tickValues(y.ticks(1).concat(y.domain()));
         var data=this.props.data;
         var color ="rgb("+this.props.color+")";
-        var x=((+(_self.props.x(_self.props.min))+ +(_self.props.x(_self.props.max))/+(2)))-+(200);
+        var x=((Math.trunc(_self.props.x(_self.props.min))+ Math.trunc(_self.props.x(_self.props.max))/Math.trunc(2)))-Math.trunc(200);
         var points=_self.props.x(_self.props.min)+","+y(0)+" ";
         var text = _self.props.text;
         if(data===undefined)
@@ -50,7 +50,7 @@ class Polylines extends React.Component {
 		if(d.score > vl[1]){
                     d.score = vl[1];
 		}
-		
+
 		for(var j= _self.props.x(d.min); j<=_self.props.x(d.max); j++){
                     if(j>=_self.props.leftMargin && j <=_self.props.width)
 			points=points + j+","+y(d.score)+" ";
@@ -174,7 +174,7 @@ class GenomeBrowser extends React.Component
     changerange(nextProps)
     {
      this.setState({xminrange:nextProps.minrange,xmaxrange:nextProps.maxrange,chrom:nextProps.chrom},() =>{
-       this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
+       this.setState({bp:(Math.trunc(this.state.xmaxrange)-Math.trunc(this.state.xminrange))});
 
        var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
        this.setState({x:xrange},() =>{
@@ -263,9 +263,9 @@ class GenomeBrowser extends React.Component
     }
     nextexon = (r) =>
     {
-      let bp = +(this.state.bp)
-      let diff = +(0.05 * bp)
-      let max = +(r)+diff, min=+(max) - +(this.state.bp);
+      let bp = Math.trunc(this.state.bp)
+      let diff = Math.trunc(0.05 * bp)
+      let max = Math.trunc(r)+diff, min=Math.trunc(max) - Math.trunc(this.state.bp);
 
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
@@ -277,11 +277,11 @@ class GenomeBrowser extends React.Component
     }
     prevexon = (r) =>
     {
-	let bp = +(this.state.bp)
-	let diff = +(0.05 * bp)
-	let min = +(r)-diff;
-	let max= +(min) + +(this.state.bp);
-	
+	let bp = Math.trunc(this.state.bp)
+	let diff = Math.trunc(0.05 * bp)
+	let min = Math.trunc(r)-diff;
+	let max= Math.trunc(min) + Math.trunc(this.state.bp);
+
      this.setState({xminrange: min ,xmaxrange: max}
        ,() => {
          var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
@@ -464,7 +464,7 @@ class GenomeBrowser extends React.Component
       }
      this.setState((prevState) =>
       {
-        return {xminrange: parseInt(prevState.xminrange,10) + parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange,10) + parseInt(range,10)};
+        return {xminrange: Math.trunc(prevState.xminrange) + Math.trunc(range),xmaxrange: Math.trunc(prevState.xmaxrange) + Math.trunc(range)};
       },() => {
            let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width ]);
            this.setState({x:xrange},() => { this.readBigBed();
@@ -488,7 +488,7 @@ class GenomeBrowser extends React.Component
               range=Math.round(this.state.bp *0.95);
       }
       this.setState((prevState) => {
-                return {xminrange: parseInt(prevState.xminrange,10) - parseInt(range,10),xmaxrange: parseInt(prevState.xmaxrange,10) - parseInt(range,10)};
+                return {xminrange: Math.trunc(prevState.xminrange) - Math.trunc(range),xmaxrange: Math.trunc(prevState.xmaxrange) - Math.trunc(range)};
               },() => {
                 var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange ]).range([this.props.marginleft , this.props.width]);
                  this.setState({x:xrange},() => {this.readBigBed();
@@ -498,7 +498,7 @@ class GenomeBrowser extends React.Component
     }
     zoomin = (e) =>
     {
-     var mean= Math.round((parseInt(this.state.xminrange,10) + parseInt(this.state.xmaxrange,10))/2);
+     var mean= Math.round((Math.trunc(this.state.xminrange) + Math.trunc(this.state.xmaxrange))/2);
      var range =0,diff=0;
      if (e.target.id==='zoomin1.5x')
      {
@@ -515,11 +515,11 @@ class GenomeBrowser extends React.Component
          diff= Math.round((this.state.bp)/10);
          range =Math.round(diff/2);
      }
-     this.setState({xminrange:parseInt(mean,10)-parseInt(range,10)},
+     this.setState({xminrange:Math.trunc(mean)-Math.trunc(range)},
      () => {
-       this.setState({xmaxrange:parseInt(this.state.xminrange,10)+parseInt(diff,10)},
+       this.setState({xmaxrange:Math.trunc(this.state.xminrange)+Math.trunc(diff)},
        () => {
-         this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
+         this.setState({bp:(Math.trunc(this.state.xmaxrange)-Math.trunc(this.state.xminrange))});
          let xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
          this.setState({x:xrange},()=>{
            this.readBigBed();
@@ -530,7 +530,7 @@ class GenomeBrowser extends React.Component
     }
     zoomout = (e) =>
     {
-     var mean= Math.round((parseInt(this.state.xminrange,10) + parseInt(this.state.xmaxrange,10))/2);
+     var mean= Math.round((Math.trunc(this.state.xminrange) + Math.trunc(this.state.xmaxrange))/2);
      var range =0,diff=0;
      if (e.target.id==='zoomout1.5x')
      {
@@ -547,11 +547,11 @@ class GenomeBrowser extends React.Component
        diff= Math.round(this.state.bp*10);
        range =Math.round(diff/2);
      }
-     this.setState({xminrange:parseInt(mean,10)-parseInt(range,10)},
+     this.setState({xminrange:Math.trunc(mean)-Math.trunc(range)},
      () => {
-       this.setState({xmaxrange:parseInt(this.state.xminrange,10)+parseInt(diff,10)},
+       this.setState({xmaxrange:Math.trunc(this.state.xminrange)+Math.trunc(diff)},
        () => {
-         this.setState({bp:(parseInt(this.state.xmaxrange,10)-parseInt(this.state.xminrange,10))});
+         this.setState({bp:(Math.trunc(this.state.xmaxrange)-Math.trunc(this.state.xminrange))});
          var xrange = d3.scaleLinear().domain([this.state.xminrange,this.state.xmaxrange]).range([this.props.marginleft , this.props.width]);
          this.setState({x:xrange},() =>{ this.readBigBed();
            this.readBigWig();this.loadgenes();
@@ -569,8 +569,8 @@ class GenomeBrowser extends React.Component
      (r) => {
               if(this.state.exons.length>r.length)
               {
-                let h= (+(this.state.exons.length)- +(r.length))*30;
-                  this.setState((prevState)=> {return{height:+(prevState.height) - +(h)}},()=>{
+                let h= (Math.trunc(this.state.exons.length)- Math.trunc(r.length))*30;
+                  this.setState((prevState)=> {return{height:Math.trunc(prevState.height) - Math.trunc(h)}},()=>{
                       this.setState({exons: r});
                   });
               }
@@ -637,17 +637,17 @@ class GenomeBrowser extends React.Component
     render()
     {
        let currentrange = this.state.chrom+":"+this.state.xminrange+"-"+this.state.xmaxrange;
-       let bp = +(this.state.bp)+ +(1);
+       let bp = Math.trunc(this.state.bp)+ Math.trunc(1);
        let  xAxis = d3.axisBottom().scale(this.state.x);
        let  xGrid = d3.axisBottom().scale(this.state.x).ticks(100).tickSize(this.state.height, 0, 0).tickFormat("");
        let bigbed = this.state.bbdata, bigwig = this.state.bwdata,bbarr = [],bwarr = [];
        let _self=this,rects = [],r=70,pls=[],diff,max,labels,k562lables,crerect,bycelltype;
-       max =   +(this.props.selectedaccession.start) + +(this.props.selectedaccession.len)
+       max =   Math.trunc(this.props.selectedaccession.start) + Math.trunc(this.props.selectedaccession.len)
        diff = this.state.x(max)-this.state.x(this.props.selectedaccession.start)
 
        if(Object.keys(this.state.bbinput).length !== 0 || Object.keys(this.state.bwinput).length !== 0)
        {
-           if(+(this.state.x(this.props.selectedaccession.start)) >= this.props.marginleft && (+(this.state.x(max)) <= this.props.width) )
+           if(Math.trunc(this.state.x(this.props.selectedaccession.start)) >= this.props.marginleft && (Math.trunc(this.state.x(max)) <= this.props.width) )
            {
              crerect = (<rect x={this.state.x(this.props.selectedaccession.start)} y={20} style={{opacity:"0.5",fill:"lightblue"}} data-value={this.props.selectedaccession.accession} width={diff} height={this.state.height} onMouseOver={this.showToolTip} onMouseOut={this.hideToolTip}/>)
            }

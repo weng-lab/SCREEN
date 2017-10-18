@@ -26,7 +26,7 @@ export default class Exons extends React.Component {
     let res = Math.max.apply(Math,exon.map(function(o){return o.exon_number;}))
     let y = this.props.range,introns = [],paths = [],exonarr=[],arrows =[];
     //backward prev exons
-    let leftarr = +(this.props.leftMargin),leftarrup=+(this.props.leftMargin) + +(5),leftarrdn=+(this.props.leftMargin) + +(10);
+    let leftarr = Math.trunc(this.props.leftMargin),leftarrup=Math.trunc(this.props.leftMargin) + Math.trunc(5),leftarrdn=Math.trunc(this.props.leftMargin) + Math.trunc(10);
 
     const ps1 = "M "+leftarr+" " + (y+5) +" L "+leftarrup+" "+(y)+" L "+leftarrup+" "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
     const ps2 = "M "+leftarrup+" " + (y+5) +" L "+leftarrdn+" "+(y)+" L "+leftarrdn+" "+(y+10)+"Z"// M 100 y+5 L 105 y-10 L 105 y Z
@@ -38,10 +38,10 @@ export default class Exons extends React.Component {
       let exoncount= "Exon "+ d.exon_number+"/"+res,check=false;
       if((this.props.x(d.end) > this.props.leftMargin)  && (this.props.x(d.start) < this.props.width ))
       {
-        let width = +(this.props.x(d.end)) - +(this.props.x(d.start)), x=this.props.x(d.start),ex="";
+        let width = Math.trunc(this.props.x(d.end)) - Math.trunc(this.props.x(d.start)), x=this.props.x(d.start),ex="";
         if(this.props.x(d.start) < this.props.leftMargin)
         {
-          width= +(this.props.x(d.end))- +(this.props.leftMargin);
+          width= Math.trunc(this.props.x(d.end))- Math.trunc(this.props.leftMargin);
           x=this.props.leftMargin;
           check=true;
 
@@ -57,10 +57,12 @@ export default class Exons extends React.Component {
         if(this.props.x(d.end) > this.props.width)
         {
           if(check===true){
-              width= +(this.props.width) - +(x)
-          } else {
-              width= +(this.props.width) - +(this.props.x(d.start));
-	  }
+              width= Math.trunc(this.props.width) - Math.trunc(x)
+          }
+          else
+          {
+              width= Math.trunc(this.props.width) - Math.trunc(this.props.x(d.start));
+	        }
           if(d.strand==="-")
               ex="start of exon "+ d.exon_number+"/"+res
           else
