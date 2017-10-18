@@ -10,9 +10,9 @@ export default class ToolTip extends React.Component {
        {
            var position = this.props.tooltip.pos;
            x= position.x;
-           y=+(position.y);
+           y=Math.trunc(position.y);
            visibility="visible";
-           var tp=+(x);
+           var tp=Math.trunc(x);
        }
        else
        {

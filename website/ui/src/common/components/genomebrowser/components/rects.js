@@ -10,7 +10,7 @@ export default class Rects extends React.Component {
     }
   changeheight(nextProps)
   {
-    if(nextProps.y > +(nextProps.height)-+(25))
+    if(nextProps.y > Math.trunc(nextProps.height)-Math.trunc(25))
     {
       nextProps.increaseheight("bigbeds");
     }
@@ -21,13 +21,13 @@ export default class Rects extends React.Component {
         var data=this.props.data;
         var y =this.props.y;
         var rects;
-        var x=((+(this.props.x(+(this.props.min)))+ +(this.props.x(+(this.props.max)))/ +(2)))- +(200);
+        var x=((Math.trunc(this.props.x(Math.trunc(this.props.min)))+ Math.trunc(this.props.x(Math.trunc(this.props.max)))/ Math.trunc(2)))- Math.trunc(200);
 
         if(data)
         {
             rects=data.map((d,i) => {
-            if(+(this.props.x(d.min)) >= +(this.props.leftMargin) && (+(this.props.x(d.max)) <= this.props.width) )
-            return ( <rect  x={this.props.x(d.min)} y={y} width={+(this.props.x(d.max))-+(this.props.x(d.min))} height="8" fill={d.itemRgb}
+            if(Math.trunc(this.props.x(d.min)) >= Math.trunc(this.props.leftMargin) && (Math.trunc(this.props.x(d.max)) <= this.props.width) )
+            return ( <rect  x={this.props.x(d.min)} y={y} width={Math.trunc(this.props.x(d.max))-Math.trunc(this.props.x(d.min))} height="8" fill={d.itemRgb}
              stroke="none" strokeWidth="1px" key={i}  data-value={d.label} onMouseOver={this.props.showToolTip} onMouseOut={this.props.hideToolTip}/>);
             else
             return []
