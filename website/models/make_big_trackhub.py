@@ -243,7 +243,7 @@ parent {ctname}
 """.format(ctname=ctname))
 
         for ti in signals:
-            ret.append(self.trackhubExp(ti, ctname, hideAll))
+            ret.append(self.trackhubExp(ti, ctname, hideAll) + '\n')
 
         if moreTracks:
             mts = []
@@ -252,11 +252,11 @@ parent {ctname}
                 for mt in mts:
                     for bw in mt["bigWigs"]:
                         if bw not in self.fileIDs:
-                            ret.append(self.mtTrackBigWig(tct, mt, bw, ctname))
+                            ret.append(self.mtTrackBigWig(tct, mt, bw, ctname) + '\n')
                             self.fileIDs.add(bw)
                     if not signalOnly:
                         for bed in mt["beds"]:
-                            ret.append(self.mtTrackBed(tct, mt, bed, ctname))
+                            ret.append(self.mtTrackBed(tct, mt, bed, ctname) + '\n')
         return ret
 
     def mtColor(self, assay, mt):
