@@ -22,7 +22,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from coord import Coord
 from pg import PGsearch
 from db_trackhub import DbTrackhub
-from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
+from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack, makeTrackName, makeShortLabel, makeLongLabel
 
 from cre import CRE
 
@@ -41,7 +41,13 @@ BiosampleTypes = ["primary cell",
                   "induced pluripotent stem cell line",
                   "whole organisms",
                   "stem cell"]
-                  
+
+def stName(n):
+    tn = n.replace(" ", "_").replace('(','').replace(')','')
+    return "super_" + tn
+
+BiosampleTypeToSupertrackFolder = {n: stName(n) for n in BiosampleTypes}
+
 WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
@@ -161,53 +167,8 @@ class TrackhubDb:
             ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
 
-    def getLines(self, accession, j):
-        self.priority = 1
-
-        self.lines = []
-        if self.browser in [UCSC, ENSEMBL]:
-            self.lines += [self.generalCREs(j["showCombo"])]
-
-        self._addSignalFiles(accession, j)
-
-        return filter(lambda x: x, self.lines)
-
-    def _addSignalFiles(self, accession, j):
-        pgSearch = PGsearch(self.ps, self.assembly)
-
-        cache = self.cacheW[self.assembly]
-        cre = CRE(pgSearch, accession, cache)
-
-        if "version" not in j:
-            ct = j.get("cellType", None)
-            if not ct:
-                topN = 5
-                topCellTypes = cre.topTissues()["dnase"]
-                tcts = sorted(topCellTypes, key=lambda x: x["one"],
-                              reverse=True)[:topN]
-            else:
-                tcts = [{"ct": ct, "tissue": ct}]
-        else:
-            if 2 == j["version"]:
-                tcts = []
-                for ct in j["cellTypes"]:
-                    tcts.append({"ct": ct, "tissue": ct})
-
-        tracksByCt = self._getCreTracks(tcts)
-
-        for ct, tracksByType in tracksByCt.iteritems():
-            for fileID, tct, url in tracksByType["cts"]:
-                if self.browser in [UCSC, ENSEMBL]:
-                    self.lines += self.makeSuperTracks(cache, fileID, tct, url,
-                                                       j["showCombo"],
-                                                       tracksByType["signal"],
-                                                       tracksByType["9state"])
-
-    def makeSuperTracks(self, cache, fileID, tct, url, showCombo,
-                        signals, nineState, moreTracks=True, hideAll=False,
-                        signalOnly=False):
-        tn = tct.replace(" ", "_")
-        stname = "super_" + tn
+    def makeSuperTrackFolder(self, name, hideAll):
+        stname = stName(name)
 
         supershow = "on show"
         if hideAll:
@@ -216,22 +177,49 @@ class TrackhubDb:
         ret = ["""
 track {stname}
 superTrack {supershow}
-group regulation
 shortLabel {tct_short}
 longLabel {tct_long}
         """.format(supershow=supershow,
                    stname=stname,
-                   tct_short=tct[:17],
-                   tct_long=tct[:80])]
+                   tct_short=makeShortLabel(name),
+                   tct_long=makeLongLabel(name)
+                   )]
+        return ret
+                    
+    def makeCompostiteTracks(self, cache, fileID,
+                             biosample_type,
+                             tct, url, showCombo,
+                             signals, nineState, moreTracks=True, hideAll=False,
+                             signalOnly=False):
+        stname = BiosampleTypeToSupertrackFolder[biosample_type]
+                                                 
+        tn = makeTrackName(tct)
+        ctname = makeTrackName("compos_" + tct)
 
-        shortLabel = "cREs in " + tct
-        title = ' '.join(["cREs in", tct, '(5 group)'])
+        composShow = "on show"
+        if hideAll:
+            composShow = "on"
+
+        ret = ["""
+track {ctname}
+compositeTrack {composShow}
+type bigWig
+parent {stname}
+shortLabel {tct_short}
+longLabel {tct_long}
+        """.format(composShow=composShow,
+                   ctname=ctname,
+                   stname=stname,
+                   tct_short=makeShortLabel(tct),
+                   tct_long=makeLongLabel(tct))]
+
+        shortLabel = makeShortLabel("cREs (5 group) in " + tct)
+        title = ' '.join(["cREs", '(5 group)', "in", tct])
         t = PredictionTrack(title, self.priority, url, showCombo).track()
         self.priority += 1
-        ret.append("""
-track {tn}
-parent {stname}
-""".format(tn="fivegroup_" + tn, stname=stname) + t)
+        ret.append(t + """
+parent {ctname}
+""".format(ctname=ctname))
 
         assays = {"dnase": "DNase",
                   "h3k27ac": "H3k27ac",
@@ -242,21 +230,20 @@ parent {stname}
             a = assay
             if a in assays:
                 a = assays[a]
-            shortLabel = ' '.join([tct, "cREs", a])
-            title = ' '.join(["cREs in", tct, "with high", a, '(9 state)'])
+            shortLabel = makeShortLabel(' '.join(["cREs", '(9 state ' + a + ')', tct]))
+            title = ' '.join(["cREs", "with high", a, '(9 state)', "in", tct])
             show = not showCombo
             if hideAll:
                 show = False
             t = PredictionTrack(title, self.priority, turl,
-                                show).track(shortLabel)
+                                show).track(shortLabel = shortLabel)
             self.priority += 1
-            ret.append("""
-track {tn}
-parent {stname}
-""".format(tn="ninegroup_" + tn, stname=stname) + t)
+            ret.append(t + """
+parent {ctname}
+""".format(ctname=ctname))
 
         for ti in signals:
-            ret.append(self.trackhubExp(ti, stname, hideAll))
+            ret.append(self.trackhubExp(ti, ctname, hideAll))
 
         if moreTracks:
             mts = []
@@ -265,11 +252,11 @@ parent {stname}
                 for mt in mts:
                     for bw in mt["bigWigs"]:
                         if bw not in self.fileIDs:
-                            ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
+                            ret.append(self.mtTrackBigWig(tct, mt, bw, ctname))
                             self.fileIDs.add(bw)
                     if not signalOnly:
                         for bed in mt["beds"]:
-                            ret.append(self.mtTrackBed(tct, mt, bed, stname))
+                            ret.append(self.mtTrackBed(tct, mt, bed, ctname))
         return ret
 
     def mtColor(self, assay, mt):
@@ -289,7 +276,7 @@ parent {stname}
 
         assay = mt["assay_term_name"]
         desc = ' '.join([bw, "Signal", assay, mt["target"], mt["tf"], tct])
-        shortLabel = desc[:17]
+        shortLabel = makeShortLabel(desc)
 
         track = BigWigTrack(desc, self.priority, url, self.mtColor(assay, mt),
                             stname, "0:50", True).track(shortLabel)
@@ -302,60 +289,42 @@ parent {stname}
         assay = mt["assay_term_name"]
         desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
                          mt["tf"], tct])
-        shortLabel = desc[:17]
+        shortLabel = makeShortLabel(desc)
 
         track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
                             stname, True).track(shortLabel)
         self.priority += 1
         return track
 
-    def makeTrackDb(self, accession, j):
-        lines = self.getLines(accession, j)
-
-        f = StringIO.StringIO()
-        map(lambda line: f.write(line + "\n"), lines)
-
-        return f.getvalue()
-
-    def makePos(self, p):
-        halfWindow = 2500
-        start = str(max(1, p.start - halfWindow))
-        end = str(p.end + halfWindow)
-        return p.chrom + ':' + start + '-' + end
-
-    def makeTrackDbWashU(self, accession, j):
-        lines = self.getLines(accession, j)
-
-        if 0:
-            pos = [self.makePos(x) for x in self.re_pos]
-            lines = [{"type": "splinters", "list": sorted(pos)}] + lines
-
-        return json.dumps(lines)
-
     def makeAllTracks(self, assembly):
         self.priority = 1
         self.lines = []
         self.assembly = assembly
 
-        tracksByCt = self.loadAllMetadata(assembly)
+        tracksByCt = self.makeTracksByCt(assembly)
         cache = self.cacheW[assembly]
 
-        for ct, tracksByType in tracksByCt.iteritems():
-            for fileID, tct, url in tracksByType["cts"]:
-                if self.browser in [UCSC, ENSEMBL]:
-                    self.lines += self.makeSuperTracks(cache, fileID, tct, url,
-                                                       False,  # j["showCombo"],
-                                                       tracksByType["signal"],
-                                                       tracksByType["9state"],
-                                                       True, True,
-                                                       signalOnly=True)
+        for biosample_type, tracks in tracksByCt.iteritems():
+            self.lines += self.makeSuperTrackFolder(biosample_type, True)
+
+            for ct, tracksByType in tracks.iteritems():
+                for fileID, tct, url in tracksByType["cts"]:
+                    if self.browser in [UCSC, ENSEMBL]:
+                        self.lines += self.makeCompostiteTracks(cache, fileID,
+                                                                biosample_type,
+                                                                tct, url,
+                                                                False,  # j["showCombo"],
+                                                                tracksByType["signal"],
+                                                                tracksByType["9state"],
+                                                                True, True,
+                                                                signalOnly=True)
         fnp = '/home/mjp/public_html/ucsc/' + self.assembly + '/trackDb.txt'
         with open(fnp, 'w') as f:
             for line in self.lines:
                 f.write(line + '\n')
         printWroteNumLines(fnp)
 
-    def loadAllMetadata(self, assembly):
+    def makeTracksByCt(self, assembly):
         cache = self.cacheW[self.assembly]
         assaymap = cache.assaymap
         assays = ["dnase", "h3k4me3", "h3k27ac", "ctcf"]
@@ -367,10 +336,14 @@ parent {stname}
             if not displayCT:
                 displayCT = ctInfos[0]["cellTypeName"]
             #displayCT = displayCT[:50]
-            ret[ct] = {}
-            ret[ct]["signal"] = []
-            ret[ct]["cts"] = []
-            ret[ct]["9state"] = []
+            biosample_type = ctInfos[0]["biosample_type"]
+            if biosample_type not in ret:
+                ret[biosample_type] = {}
+            if ct not in ret[biosample_type]:
+                ret[biosample_type][ct] = {}
+            ret[biosample_type][ct]["signal"] = []
+            ret[biosample_type][ct]["cts"] = []
+            ret[biosample_type][ct]["9state"] = []
             for expInfo in ctInfos:  # per assay
                 ctwu = ct.replace("'", "_").replace('"', '_')
                 tissue = expInfo["tissue"]
@@ -380,14 +353,14 @@ parent {stname}
                 fileIDs.append(fileID)
                 ti = TrackInfo(cache, displayCT, tissue[:50],
                                expInfo["assay"], expID, fileID)
-                ret[ct]["signal"].append(ti)
+                ret[biosample_type][ct]["signal"].append(ti)
                 fn = fileID + ".bigBed"
                 url = os.path.join(WWW, "9-State", fn)
-                ret[ct]["9state"].append((expInfo["assay"], displayCT, url))
+                ret[biosample_type][ct]["9state"].append((expInfo["assay"], displayCT, url))
                 fn = '_'.join(fileIDs) + ".cREs.bigBed"
-                ret[ct]["cts"] = []
+                ret[biosample_type][ct]["cts"] = []
                 url = os.path.join(WWW, fn)
-                ret[ct]["cts"].append((fileID, displayCT, url))
+                ret[biosample_type][ct]["cts"].append((fileID, displayCT, url))
         return ret
 
 
