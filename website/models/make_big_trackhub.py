@@ -250,13 +250,19 @@ parent {ctname}
             if tct in cache.moreTracks:
                 mts = cache.moreTracks[tct]
                 for mt in mts:
-                    for bw in mt["bigWigs"]:
+                    for fnTechRep in mt["bigWigs"]:
+                        bw = fnTechRep["fileID"]
+                        techRep = fnTechRep["techRep"]
+                        techRep = "reps " + ' and '.join(techRep)
                         if bw not in self.fileIDs:
-                            ret.append(self.mtTrackBigWig(tct, mt, bw, ctname) + '\n')
+                            ret.append(self.mtTrackBigWig(tct, mt, bw, ctname, techRep) + '\n')
                             self.fileIDs.add(bw)
                     if not signalOnly:
-                        for bed in mt["beds"]:
-                            ret.append(self.mtTrackBed(tct, mt, bed, ctname) + '\n')
+                        for fnTechRep in mt["beds"]:
+                            bw = fnTechRep["fileID"]
+                            techRep = fnTechRep["techRep"]
+                            techRep = "reps " + ' and '.join(techRep)
+                            ret.append(self.mtTrackBed(tct, mt, bed, ctname, techRep) + '\n')
         return ret
 
     def mtColor(self, assay, mt):
@@ -271,28 +277,28 @@ parent {ctname}
                     c = AssayColors["TF ChIP-seq"][0]
         return c
 
-    def mtTrackBigWig(self, tct, mt, bw, stname):
+    def mtTrackBigWig(self, tct, mt, bw, ctname, techRep):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
 
         assay = mt["assay_term_name"]
-        desc = ' '.join([bw, "Signal", assay, mt["target"], mt["tf"], tct])
+        desc = ' '.join([bw, "Signal", assay, mt["target"], mt["tf"], techRep, tct])
         shortLabel = makeShortLabel(desc)
 
         track = BigWigTrack(desc, self.priority, url, self.mtColor(assay, mt),
-                            stname, "0:50", True).track(shortLabel)
+                            ctname, "0:50", True).track(shortLabel)
         self.priority += 1
         return track
 
-    def mtTrackBed(self, tct, mt, bw, stname):
+    def mtTrackBed(self, tct, mt, bw, ctname, techRep):
         url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigBed?proxy=true".format(e=bw)
 
         assay = mt["assay_term_name"]
         desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
-                         mt["tf"], tct])
+                         mt["tf"], techRep, tct])
         shortLabel = makeShortLabel(desc)
 
         track = BigBedTrack(desc, self.priority, url, self.mtColor(assay, mt),
-                            stname, True).track(shortLabel)
+                            ctname, True).track(shortLabel)
         self.priority += 1
         return track
 

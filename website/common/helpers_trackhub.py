@@ -9,7 +9,8 @@ def makeTrackName(n):
     if match:
 	n = match.group(1) + match.group(2)
     n = n.replace(" ", "_").replace('(','').replace(')','')
-    return n[:100]
+    n = n[:102]
+    return n
 
 def makeLongLabel(n):
     match = re.search("(.*) {.*}(.*)", n)

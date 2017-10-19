@@ -60,12 +60,15 @@ class MoreTracks:
 
         m = MetadataWS.byAssembly(self.assembly)
         allExps = m.all_bigBeds_bigWigs(self.assembly)
-        print("found", len(allExps))
+        printt("found", len(allExps))
 
         ret = {}
         ns = self.pgSearch.loadNineStateGenomeBrowser()
+        total = len(ns)
+        counter = 1
         for ctn, v in ns.iteritems():
-            print(ctn)
+            printt(counter, 'of', total, ctn)
+            counter += 1
             btns = set()
             for fileID in [v["dnase"], v["h3k4me3"], v["h3k27ac"], v["ctcf"]]:
                 if 'NA' == fileID:
@@ -80,8 +83,10 @@ class MoreTracks:
                      "assay_term_name": e.assay_term_name,
                      "target": e.target,
                      "tf": e.tf,
-                     "bigWigs": [f.fileID for f in e.files if f.isBigWig()],
-                     "beds": [f.fileID for f in e.files if f.isBigBed()]}
+                     "bigWigs": [{"fileID": f.fileID, "techRep": f.technical_replicates}
+                                 for f in e.files if f.isBigWig()],
+                     "beds": [{"fileID": f.fileID, "techRep": f.technical_replicates}
+                              for f in e.files if f.isBigBed()]}
                 ret[ctn].append(q)
 
             ret[ctn] = sorted(ret[ctn], key=lambda q: (q["assay_term_name"],
