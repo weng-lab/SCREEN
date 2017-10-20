@@ -7,10 +7,9 @@ import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars'
 import loading from '../../../common/components/loading';
 
 import * as Actions from '../actions/main_actions';
-import * as Render from '../../../common/zrenders';
 import * as ApiClient from '../../../common/api_client';
 
-import LongChecklistFacet from '../../../common/components/longchecklist'
+import LongChecklist from '../../../common/components/longchecklist'
 
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import {panelize} from '../../../common/utility'
@@ -54,20 +53,20 @@ class ExpressionPlot extends React.Component {
 	    </button>);
     }
     
-    loadCRE(){
+    loadCRE(p){
 	let gene = null;
-	const genes = this.props.search.parsedQuery.genes;
+	const genes = p.search.parsedQuery.genes;
 	if(genes.length > 0){
 	    gene = genes[0].approved_symbol;
 	}
 	if (!gene) {
 	    return;
 	}
-        const q = {assembly: this.props.assembly,
+        const q = {assembly: p.assembly,
 		   gene: gene,
-		   compartments_selected: Array.from(this.props.compartments_selected),
+		   compartments_selected: Array.from(p.compartments_selected),
                    biosample_types_selected:
-		   Array.from(this.props.biosample_types_selected)};
+		   Array.from(p.biosample_types_selected)};
         const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -76,7 +75,7 @@ class ExpressionPlot extends React.Component {
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/gews/search",
 			    (r) => {
-				this.setState({[q]: r, isFetching: false, isError: false});
+				this.setState({[jq]: r, isFetching: false, isError: false});
 			    },
 			    (msg) => {
 				console.log("err loading cres for table");
@@ -95,21 +94,46 @@ class ExpressionPlot extends React.Component {
 	}
     }
 
+    cellCompartments(){
+	const compartments = this.props.globals.cellCompartments;
+	const compartments_selected = this.props.compartments_selected;
+	return panelize("Cellular Compartments",
+			<LongChecklist
+			title={""}
+			data={compartments.map((e) => {
+			    return {key: e, selected: compartments_selected.has(e)}})}
+			cols={[{
+				title: "", data: "key",
+				className: "nopadding"
+			    }]}
+			order={[]}
+			buttonsOff={true}
+			noSearchBox={true}
+			checkBoxClassName={"nopadding"}
+			noTotal={true}
+			mode={CHECKLIST_MATCH_ANY}
+			onTdClick={(c) => { this.props.actions.toggleCompartment(c) } }
+		    />);
+    }
+
     biosampleTypes(){
 	const biosample_types = this.props.globals.geBiosampleTypes;
 	const biosample_types_selected = this.props.biosample_types_selected;
 	return panelize("Biosample Types",
-                    <LongChecklistFacet
+                    <LongChecklist
                         title={""}
                         data={biosample_types.map((e) => {
                                 return {key: e,
                                         selected: biosample_types_selected.has(e)
                                 }})}
                         cols={[{
-		                title: "Assay", data: "key",
-		                className: "dt-right"
+		                title: "", data: "key",
+		                className: "nopadding"
 	                    }]}
                         order={[]}
+			noSearchBox={true}
+			checkBoxClassName={"nopadding"}
+			noTotal={true}
 			buttonsOff={true}
         	        mode={CHECKLIST_MATCH_ANY}
                         onTdClick={(c) => { 
@@ -130,15 +154,22 @@ class ExpressionPlot extends React.Component {
 		       compartments_selected: Array.from(this.props.compartments_selected),
                        biosample_types_selected:
 		       Array.from(this.props.biosample_types_selected)};
-            if(q in this.state){
-		const gi = this.state[q];
+            const jq = JSON.stringify(q);
+            if(jq in this.state){
+		const gi = this.state[jq];
 		return (
-			<div>
+			<div className="row" style={{width: "100%"}}>
+			<div className="col-md-3">
 			<h2><em>{gi.gene}</em> {this._bb()}</h2>
+			</div>
+			<div className="col-md-3">
 			{this.biosampleTypes()}
+		    </div>
+			<div className="col-md-3">
+			{this.cellCompartments()}
+		    </div>
 		    {React.createElement(LargeHorizontalBars,
-					 {...gi, width: 800, barheight: "15",
-					  isFetching: false})}
+					 {...gi, width: 800, barheight: "15"})}
 		    </div>);
 	    }
 	}

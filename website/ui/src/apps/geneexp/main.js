@@ -62,7 +62,16 @@ class GeneExpPageInner extends React.Component {
 
 class GeneExpPage  extends AppPageBase {
     constructor(props) {
-	super(props, "/gews/search", GeneExpPageInner);
+	super(props, "/gews/search", GeneExpPageInner,
+	      {compartments_selected: ["cell"],
+	       biosample_types_selected: [
+		   "immortalized cell line",
+		   "induced pluripotent stem cell line",
+		   "in vitro differentiated cells",
+		   "primary cell",
+		   "stem cell",
+		   "tissue"]}	      
+	);
     }
 }
 

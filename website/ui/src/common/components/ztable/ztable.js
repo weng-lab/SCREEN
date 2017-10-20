@@ -23,8 +23,22 @@ const klassName = (colInfo) => {
     return k;
 }
 
+class Footer extends React.Component {
+    render() {
+	if(this.props.noTotal){
+	    return false;
+	}
+
+	return <HelpBlock>Total: {this.props.ds.rowIDs.length}</HelpBlock>;
+    }
+}
+
 class SearchBox extends React.Component {
     render() {
+	if(this.props.noSearchBox){
+	    return false;
+	}
+
 	return (
 		<div style={{float: "right"}}>
 	    <Form inline>
@@ -157,7 +171,8 @@ class Ztable extends React.Component {
 	
 	return (
 	    <div style={{width: "100%"}}>
-		<SearchBox value={this.state.search} onChange={searchBoxChange} />
+		<SearchBox value={this.state.search} onChange={searchBoxChange} 
+	                   noSearchBox={this.props.noSearchBox}/>
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
@@ -178,7 +193,7 @@ class Ztable extends React.Component {
 		{ds.numPages > 1 && <PageBox pages={ds.numPages}
 					     curPage={this.state.pageNum}
 					     onSelect={pageClick} />}
-		<HelpBlock>Total: {ds.rowIDs.length}</HelpBlock>
+		<Footer ds={ds} noTotal={this.props.noTotal} />
 	    </div>);
     }
 }

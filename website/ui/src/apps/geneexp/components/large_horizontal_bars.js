@@ -2,6 +2,7 @@ import React from 'react'
 
 import loading from '../../../common/components/loading'
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
+import {panelize} from '../../../common/utility';
 
 class LargeHorizontalBars extends React.Component {
 
@@ -15,28 +16,31 @@ class LargeHorizontalBars extends React.Component {
 
     sortSelect(){
          return (
-	     <div className="col-md-4">
-	         Choose sort order:&nbsp;
-	         <select ref="sortorder" defaultValue={"byExpressionTPM"}
-	           onChange={() => {this.setState({sortorder: this.refs.sortorder.value})}}>
-		     <option value="byExpressionTPM">
-                         by expression &#40;TPM&#41;</option>
-		     <option value="byExpressionFPKM">
-                         by expression &#40;FPKM&#41;</option>
-		     <option value="byTissue">
-                         by tissue</option>
-		     <option value="byTissueMaxTPM">
-                         by tissue max &#40;TPM&#41;</option>
-		     <option value="byTissueMaxFPKM">
-                         by tissue max &#40;FPKM&#41;</option>
-	         </select>
+	     <div className="col-md-3">
+		 {panelize("Sort order",
+			   <div>
+			   <select ref="sortorder" defaultValue={"byExpressionTPM"}
+			   onChange={() => {this.setState({sortorder: this.refs.sortorder.value})}}>
+			   <option value="byExpressionTPM">
+                           by expression &#40;TPM&#41;</option>
+			   <option value="byExpressionFPKM">
+                           by expression &#40;FPKM&#41;</option>
+			   <option value="byTissue">
+                           by tissue</option>
+			   <option value="byTissueMaxTPM">
+                           by tissue max &#40;TPM&#41;</option>
+			   <option value="byTissueMaxFPKM">
+                           by tissue max &#40;FPKM&#41;</option>
+			   </select>
+			   </div>)}
 	     </div>);
      }
 
     dataScale(){
         return (
-	    <div className="col-md-4">
-	        Data:&nbsp;
+	    <div className="col-md-3">
+		 {panelize("Data",
+			   <div>
 	        <select ref="datascale" defaultValue={"logTPM"}
 	          onChange={() => {this.setState({datascale: this.refs.datascale.value})}}>
 		    <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
@@ -44,6 +48,7 @@ class LargeHorizontalBars extends React.Component {
 		    <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
 		    <option value="rawFPKM">FPKM</option>
 	        </select>
+			   </div>)}
 	    </div>);
     }
 
