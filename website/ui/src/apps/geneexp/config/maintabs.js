@@ -12,7 +12,6 @@ class GeBigTab extends React.Component{
 	if("expression" !== this.props.maintabs_active){
             return false;
         }
-	console.log(this.props)
 	return React.createElement(GeneExp, {...this.props, useBoxes: true});
     }
 }

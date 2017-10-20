@@ -31,14 +31,15 @@ class GeneExp extends React.Component{
     }
 
     _bb(gbName) {
+	const d = this.props.search;
 	return <Button bsSize="xsmall" 
 		       onClick={() => {
 			       const q = {
 				   accession: [],
 				   title: this.props.gene,
-				   start: this.props.data.coords.start,
-				   len: this.props.data.coords.len,
-				   chrom: this.props.data.coords.chrom
+				   start: d.coords.start,
+				   len: d.coords.len,
+				   chrom: d.coords.chrom
 			       };
 			       this.props.actions.showGenomeBrowser(q, gbName, "gene");
 		       }}>
