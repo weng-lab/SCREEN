@@ -1,3 +1,6 @@
+bipolar neuron,brain
+GM23338,iPSC
+myocyte,muscle
 A172,brain
 A375,skin
 airway epithelial cell,lung
@@ -63,3 +66,5 @@ hematopoietic stem cell,HSC
 intestine,intestine
 limb,limb
 neural tube,brain
+common myeloid progenitor,blood
+megakaryocyte-erythroid progenitor cell,blood

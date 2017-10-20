@@ -83,7 +83,7 @@ class LoadRNAseq:
                 age_units = bs.get("age_units", "")
                 age = bs.get("age", "")
                 ageTitle = '(%s %s %s)' % (life_stage, age, age_units)
-                print(ageTitle)
+                #print(ageTitle)
         except:
             raise
             ageTitle = ''
