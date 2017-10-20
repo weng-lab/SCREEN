@@ -25,11 +25,12 @@ class GeneExp extends React.Component{
     }
 
     makeKey(p){
-	return {assembly: p.assembly,
-		accession: p.cre_accession_detail,
-		gene: p.gene,
-		compartments_selected: Array.from(p.compartments_selected),
-                biosample_types_selected: Array.from(p.biosample_types_selected)};
+	const r = {assembly: p.assembly,
+		   accession: p.cre_accession_detail,
+		   gene: p.gene,
+		   compartments_selected: Array.from(p.compartments_selected),
+                   biosample_types_selected: Array.from(p.biosample_types_selected)};
+	return r;
     }
     
     loadGene(p){
