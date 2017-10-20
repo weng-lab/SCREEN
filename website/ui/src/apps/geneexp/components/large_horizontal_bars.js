@@ -73,8 +73,8 @@ class LargeHorizontalBars extends React.Component {
     sortSelect(){
         return panelize("Sort order",
 			<select ref="sortorder" defaultValue={this.state.sortorder}
-			    onChange={() => {
-				    this.setState({sortorder:
+				onChange={() => {
+					this.setState({sortorder:
 					this.refs.sortorder.value})}}>
 			    <option value="byExpressionTPM">
 				by expression &#40;TPM&#41;</option>
@@ -92,8 +92,8 @@ class LargeHorizontalBars extends React.Component {
     dataScale(){
         return panelize("Data",
 			<select ref="datascale" defaultValue={"logTPM"}
-				onChange={() => {
-					this.setState({datascale:
+			    onChange={() => {
+				    this.setState({datascale:
 				    this.refs.datascale.value})}}>
 			    <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
 			    <option value="rawTPM">TPM</option>
@@ -125,7 +125,7 @@ class LargeHorizontalBars extends React.Component {
 	};
 
         return (
-            <div style={{display: (isFetching ? "none" : "block")}}>
+            <div>
                 <span className="geTissueOfOrigin">Tissue of origin</span>
 		<ScaledHorizontalBar itemsets={this.props.items[this.state.sortorder]}
 				     width={width}

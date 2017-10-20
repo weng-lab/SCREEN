@@ -5,7 +5,6 @@ import thunkMiddleware from 'redux-thunk'
 
 import NavBarApp from '../../common/components/navbar_app'
 import SearchBox from '../../common/components/searchbox'
-import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
@@ -39,7 +38,7 @@ class GeneExpPageInner extends React.Component {
 		    </nav>
 
 		    <div className="container" style={{width: "100%"}}>
-                        <div className="row" style={{width: "100%"}}>
+                        <div className="row">
                             <div className="col-md-12" id="tabs-container">
                                 <MainTabs assembly={assembly}
 				gene={this.props.search.gene}

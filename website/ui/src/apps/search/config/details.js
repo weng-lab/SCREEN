@@ -78,7 +78,7 @@ class ReTabBase extends React.Component{
 	//console.log(props);
 	super(props);
         this.key = key;
-	this.loadData = true;
+	this.loadData = true; // inner component will dynamically load its own data
         this.url = "/dataws/re_detail/" + key;
         this.state = { jq: null, isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
