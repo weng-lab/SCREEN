@@ -63,9 +63,8 @@ class GeneExpWebService(object):
         if not compartments:
             return abort("no compartments")
 
-        accession = ''
-        if "accession" in j:
-            accession = j["accession"]
+        accession = j.get("accession", None)
+        if accession:
             if not isaccession(accession):
                 return abort("invalid accession")
             cre = CRE(self.pgSearch, accession, self.cache)
@@ -74,8 +73,8 @@ class GeneExpWebService(object):
         else:
             gene = j["gene"]  # TODO: check for valid gene
             gi = self.pgSearch.geneInfo(gene)
-            name = gi["name"]
-            strand = gi["strand"]
+            name = gi.approved_symbol
+            strand = gi.strand
             
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         r = cge.computeHorBars(name, compartments, biosample_types_selected)
@@ -83,9 +82,9 @@ class GeneExpWebService(object):
         r["assembly"] = self.assembly
         r["gene"] = name
         r["genename"] = name
-        r["ensemblid_ver"] = gi["ensemblid_ver"]
-        r["chrom"] = gi["chrom"]
-        r["start"] = gi["start"]
-        r["stop"] = gi["stop"]
+        r["ensemblid_ver"] = gi.ensemblid_ver
+        r["chrom"] = gi.chrom
+        r["start"] = gi.start
+        r["stop"] = gi.stop
         return r
 

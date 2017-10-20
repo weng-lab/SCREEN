@@ -150,14 +150,13 @@ ON g.geneid = gi.geneid
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
             curs.execute("""
 SELECT *
-FROM gtn
-WHERE geneid = %s
-OR approved_symbol = %s
+FROM {gtn}
+WHERE approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s
             """.format(gtn=self.assembly + "_gene_info"),
-                         (gene, gene, gene, gene))
-            return curs.fetchall()
+                         (gene, gene, gene))
+            return curs.fetchone()
         
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
