@@ -112,7 +112,7 @@ class ExpressionPlot extends React.Component {
 	    return (
 		<div>
 		    <h2><em>{gene}</em> {this._bb()}</h2>
-		    {Render.openGeLink(gene)}
+		    {Render.openGeLink(this.props.assembly, gene)}
 		    <br />
 		    {React.createElement(LargeHorizontalBars,
 					 {...data, width: 800, barheight: "15",

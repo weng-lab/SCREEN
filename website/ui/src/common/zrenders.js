@@ -118,9 +118,9 @@ export const geDeButton = (assembly, accession) => (d) => {
     return [ge, de];
 };
 
-export const openGeLink = (gene) => (
+export const openGeLink = (assembly, gene) => (
     <div>
-	This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(gene)} target={"_blank"}>click here</a>.
+	This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(assembly, gene)} target={"_blank"}>click here</a>.
     </div>
 )
 
