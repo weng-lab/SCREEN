@@ -8,7 +8,8 @@ class ScaledHorizontalBar extends React.Component {
 	    Object.keys(this.props.itemsets),
 	    this.props.itemsets, format
 	);
-	const viewBox = {width: +this.props.width, height: offsets.total * this.props.barheight};
+	const viewBox = {width: +this.props.width,
+			 height: offsets.total * this.props.barheight};
 
 	return (
 	    <div style={{width: viewBox.width + "px",
