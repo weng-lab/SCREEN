@@ -1,29 +1,59 @@
 import React from 'react'
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import { Button } from 'react-bootstrap';
 
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
-import ExpressionBoxplot from '../components/expression_boxplot'
+import LargeHorizontalBars from '../components/large_horizontal_bars'
 import loading from '../../../common/components/loading'
+import HelpIcon from '../../../common/components/help_icon';
 
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
-        this.state = { jq: null, isFetching: true, isError: false };
+        this.state = {jq: null, isFetching: true, isError: false,
+		      width: 0};
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
+	this.updateWidth = this.updateWidth.bind(this);
     }
 
     componentDidMount(){
+	this.updateWidth();
         this.loadGene(this.props);
     }
 
     componentWillReceiveProps(nextProps){
+	this.updateWidth();
         this.loadGene(nextProps);
     }
 
+    _bb(gbName) {
+	return <Button bsSize="xsmall" 
+		       onClick={() => {
+			       const q = {
+				   accession: [],
+				   title: this.props.gene,
+				   start: this.props.data.coords.start,
+				   len: this.props.data.coords.len,
+				   chrom: this.props.data.coords.chrom
+			       };
+			       this.props.actions.showGenomeBrowser(q, gbName, "gene");
+		       }}>
+	    {gbName}
+	</Button>;
+    }
+    
+    updateWidth(){
+	if(this.refs.box){
+	    const width = Math.max(1200, this.refs.box.clientWidth);
+	    this.setState({width});
+	}
+
+    }
+    
     makeKey(p){
 	const r = {assembly: p.assembly,
 		   accession: p.cre_accession_detail,
@@ -55,19 +85,36 @@ class GeneExp extends React.Component{
     }
 
     doRenderWrapper(){
+	const barheight = "15";
 	const q = this.makeKey(this.props);
         const jq = JSON.stringify(q);
         if(jq in this.state){
 	    const data = this.state[jq];
-            return React.createElement(ExpressionBoxplot, {...this.props, ...data});
+
+            return (
+		<div>
+ 	            <span style={{fontSize: "18pt"}}>
+			<em>{this.props.gene}</em> {this._bb("UCSC")}
+			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
+                    </span>
+		    <div style={{"width": "100%"}} ref="bargraph">
+			{this.state.width > 0 &&
+			 React.createElement(LargeHorizontalBars,
+					     {...this.props,
+					      ...data,
+					      width: this.state.width,
+					      barheight})}
+		    </div>
+		</div>);
         }
         return loading(this.state);
     }
 
     render(){
-        return (<div style={{"width": "100%"}} >
-                {this.doRenderWrapper()}
-                </div>);
+        return (
+	    <div ref="box" style={{"width": "100%"}} >
+		{this.doRenderWrapper()}
+            </div>);
     }
 }
 
