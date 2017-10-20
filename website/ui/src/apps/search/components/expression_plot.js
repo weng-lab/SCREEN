@@ -9,18 +9,12 @@ import loading from '../../../common/components/loading';
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
-import LongChecklist from '../../../common/components/longchecklist'
-
-import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
-import {panelize} from '../../../common/utility'
-
 class ExpressionPlot extends React.Component {
     constructor(props) {
 	super(props);
         this.key = "ge";
         this.state = { ges : {}, jq: null, isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
-        this.biosampleTypes = this.biosampleTypes.bind(this);
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
 
@@ -93,54 +87,6 @@ class ExpressionPlot extends React.Component {
 	    }, name, "gene");
 	}
     }
-
-    cellCompartments(){
-	const compartments = this.props.globals.cellCompartments;
-	const compartments_selected = this.props.compartments_selected;
-	return panelize("Cellular Compartments",
-			<LongChecklist
-			title={""}
-			data={compartments.map((e) => {
-			    return {key: e, selected: compartments_selected.has(e)}})}
-			cols={[{
-				title: "", data: "key",
-				className: "nopadding"
-			    }]}
-			order={[]}
-			buttonsOff={true}
-			noSearchBox={true}
-			checkBoxClassName={"nopadding"}
-			noTotal={true}
-			mode={CHECKLIST_MATCH_ANY}
-			onTdClick={(c) => { this.props.actions.toggleCompartment(c) } }
-		    />);
-    }
-
-    biosampleTypes(){
-	const biosample_types = this.props.globals.geBiosampleTypes;
-	const biosample_types_selected = this.props.biosample_types_selected;
-	return panelize("Biosample Types",
-                    <LongChecklist
-                        title={""}
-                        data={biosample_types.map((e) => {
-                                return {key: e,
-                                        selected: biosample_types_selected.has(e)
-                                }})}
-                        cols={[{
-		                title: "", data: "key",
-		                className: "nopadding"
-	                    }]}
-                        order={[]}
-			noSearchBox={true}
-			checkBoxClassName={"nopadding"}
-			noTotal={true}
-			buttonsOff={true}
-        	        mode={CHECKLIST_MATCH_ANY}
-                        onTdClick={(c) => { 
-			    this.props.actions.toggleBiosampleType(c) 
-			} }
-			/>);
-    }
     
     doRenderWrapper(){
 	let gene = null;
@@ -158,18 +104,19 @@ class ExpressionPlot extends React.Component {
             if(jq in this.state){
 		const gi = this.state[jq];
 		return (
+		    <div>
 			<div className="row" style={{width: "100%"}}>
-			<div className="col-md-3">
-			<h2><em>{gi.gene}</em> {this._bb()}</h2>
+			    <div className="col-md-3">
+				<h2><em>{gi.gene}</em> {this._bb()}</h2>
+			    </div>
 			</div>
-			<div className="col-md-3">
-			{this.biosampleTypes()}
-		    </div>
-			<div className="col-md-3">
-			{this.cellCompartments()}
-		    </div>
-		    {React.createElement(LargeHorizontalBars,
-					 {...gi, width: 800, barheight: "15"})}
+			{React.createElement(LargeHorizontalBars,
+					     {...gi, width: 800, barheight: "15",
+					      globals: this.props.globals,
+					      actions: this.props.actions,
+					      biosample_types_selected: this.props.biosample_types_selected,
+					      compartments_selected: this.props.compartments_selected,
+					      useBoxes: true})}
 		    </div>);
 	    }
 	}

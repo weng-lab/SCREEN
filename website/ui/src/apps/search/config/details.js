@@ -40,17 +40,17 @@ function tabEle(globals, data, key, table, numCols) {
 		  : "");
     if(table && "typ" in table){
         return (<div className={"col-md-" + (12/numCols)} key={key}>
-		<h4>{table.title} {helpicon}</h4>
-    {React.createElement(table.typ, {data, table})}
-    <br/>
+	    <h4>{table.title} {helpicon}</h4>
+	    {React.createElement(table.typ, {data, table})}
+	    <br/>
 	</div>);
     }
     if (!data || !table) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
     }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
-	    <h4>{table.title} {helpicon}</h4>
-	    {makeTable(data, key, table)}<br/>
+	<h4>{table.title} {helpicon}</h4>
+	{makeTable(data, key, table)}<br/>
     </div>);
 }
 
@@ -135,7 +135,7 @@ class ReTabBase extends React.Component{
         let accession = this.props.cre_accession_detail;
         if(accession in this.state){
             return this.doRender(this.props.globals, this.props.assembly, 
-				 this.state[accession], this.props.uuid);
+				 this.state[accession], this.props.uuid, this.props.actions);
         }
         return loading({...this.state, message: this.props.message});
     }
@@ -223,7 +223,7 @@ class GeTab extends ReTabBase{
     constructor(props) {
 	super(props, "ge");
 	
-        this.doRender = (globals, assembly, data) => {
+        this.doRender = (globals, assembly, data, uuid, actions) => {
 	    let gene = data.genename;
 	    let gclick = this.gclick.bind(this);
 	    return (
@@ -241,7 +241,10 @@ class GeTab extends ReTabBase{
 		    <br />
 		    {React.createElement(LargeHorizontalBars,
 					 {...data, width: 800, barheight: "15",
-					 isFetching: false})}
+					  globals, actions,
+					  biosample_types_selected: this.props.biosample_types_selected,
+					  compartments_selected: this.props.compartments_selected,
+					  useBoxes: true})}
 		</div>);
         }
     }
@@ -289,9 +292,9 @@ const DetailsTabInfo = (assembly) => {
         tfIntersection: {title: Render.tabTitle(["TF and His-mod", "Intersection"]),
                          enabled: true, f: TfIntersectionTab},
 	cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
-                         enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab},
+                               enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab},
 	fantom_cat: {title: Render.tabTitle(["FANTOM CAT", "Intersection"]),
-		    enabled: assembly === "hg19", f: FantomCatTab},
+		     enabled: assembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
