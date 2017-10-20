@@ -9,7 +9,7 @@ class LargeHorizontalBars extends React.Component {
     constructor(props) {
 	super(props);
 	this.state = {
-	    sortorder: "byExpressionTPM",
+	    sortorder: "byTissue",
 	    datascale: "logTPM"
 	};
     }
@@ -19,7 +19,7 @@ class LargeHorizontalBars extends React.Component {
 	     <div className="col-md-3">
 		 {panelize("Sort order",
 			   <div>
-			   <select ref="sortorder" defaultValue={"byTissue"}
+			   <select ref="sortorder" defaultValue={this.state.sortorder}
 			   onChange={() => {this.setState({sortorder: this.refs.sortorder.value})}}>
 			   <option value="byExpressionTPM">
                            by expression &#40;TPM&#41;</option>
