@@ -40,15 +40,9 @@ class GeneExpPageInner extends React.Component {
 
 		    <div className="container" style={{width: "100%"}}>
                         <div className="row" style={{width: "100%"}}>
-                            <div className="col-md-3 nopadding-right"
-                                 id="facets-container">
-                                <FacetBoxen assembly={assembly}
-					    globals={this.props.globals} />
-                            </div>
-                            <div className="col-md-9 nopadding-left"
-                                 id="tabs-container">
+                            <div className="col-md-12" id="tabs-container">
                                 <MainTabs assembly={assembly}
-				genes={this.props.search.gene}
+				gene={this.props.search.gene}
 					  globals={this.props.globals}
 					  search={this.props.search}
 				/>

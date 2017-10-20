@@ -16,7 +16,7 @@ const initialState = (search, globals) => {
 	biosample_types: globals.geBiosampleTypes,
 	biosample_types_selected: new Set(globals.geBiosampleTypes),
 	maintabs: MainTabInfo(parsedQuery, globals),
-	maintabs_active: "gene_expression",
+	maintabs_active: "expression",
 	maintabs_visible: true
     };
 }
