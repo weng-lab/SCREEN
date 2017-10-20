@@ -42,14 +42,13 @@ class GeneExpWebService(object):
 
     def search(self, j, args):
         gene = j["gene"]  # TODO: check for valid gene
-        compartments = j.get("compartments_selected", ["cell"])
+        compartments = j["compartments_selected"]
 
         allBiosampleTypes = ["immortalized cell line",
                              "induced pluripotent stem cell line",
                              "in vitro differentiated cells", "primary cell",
                              "stem cell", "tissue"]
-        biosample_types_selected = j.get("biosample_types_selected",
-                                         allBiosampleTypes)
+        biosample_types_selected = j["biosample_types_selected"]
 
         # TODO: check value of compartments, biosample_types_selected
 

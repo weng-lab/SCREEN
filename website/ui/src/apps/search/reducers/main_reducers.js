@@ -104,6 +104,17 @@ const main_reducers = (state, action) => {
             return { ...state, tree_nodes_compare : [action.left, action.right] };
 	}
 
+    case Actions.TOGGLE_COMPARTMENT: {
+        return { ...state,
+                 compartments_selected: doToggle(state.compartments_selected,
+                                                 action.c)}
+    }
+
+    case Actions.TOGGLE_BIOSAMPLE_TYPE: {
+	const biosample_types_selected = doToggle(state.biosample_types_selected, action.bt);
+        return { ...state, biosample_types_selected};
+    }
+
 	case SearchAction.MAKE_SEARCH_QUERY:
 	    // TODO: avoid the full page refresh
 	    const q = toParams({q : action.q,
