@@ -18,6 +18,7 @@ class GeneExp extends React.Component{
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
 	this.updateWidth = this.updateWidth.bind(this);
+	this.makeBrowserButton = this.makeBrowserButton.bind(this);
     }
 
     componentDidMount(){
@@ -30,23 +31,6 @@ class GeneExp extends React.Component{
         this.loadGene(nextProps);
     }
 
-    _bb(gbName) {
-	const d = this.props.search;
-	return <Button bsSize="xsmall" 
-		       onClick={() => {
-			       const q = {
-				   accession: [],
-				   title: this.props.gene,
-				   start: d.coords.start,
-				   len: d.coords.len,
-				   chrom: d.coords.chrom
-			       };
-			       this.props.actions.showGenomeBrowser(q, gbName, "gene");
-		       }}>
-	    {gbName}
-	</Button>;
-    }
-    
     updateWidth(){
 	if(this.refs.box){
 	    const width = Math.max(1200, this.refs.box.clientWidth);
@@ -85,6 +69,23 @@ class GeneExp extends React.Component{
 			    });
     }
 
+    makeBrowserButton(gbName) {
+	const d = this.props.search;
+	return <Button bsSize="small"
+		       onClick={() => {
+			       const q = {
+				   accession: [],
+				   title: this.props.gene,
+				   start: d.coords.start,
+				   len: d.coords.len,
+				   chrom: d.coords.chrom
+			       };
+			       this.props.actions.showGenomeBrowser(q, gbName, "gene");
+		       }}>
+	    {gbName}
+	</Button>;
+    }
+    
     doRenderWrapper(){
 	const barheight = "15";
 	const q = this.makeKey(this.props);
@@ -94,10 +95,15 @@ class GeneExp extends React.Component{
 
             return (
 		<div>
- 	            <span style={{fontSize: "18pt"}}>
-			<em>{this.props.gene}</em> {this._bb("UCSC")}
+		    <h4>
+			<em>{this.props.gene}</em>
+			{" Gene Expression Profiles by RNA-seq"}
 			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
-                    </span>
+			<span style={{paddingLeft: "20px"}}>
+			    {this.makeBrowserButton("UCSC")}
+			</span>
+		    </h4>
+		    <em>{this.props.ensemblid_ver}</em>
 		    <div style={{"width": "100%"}} ref="bargraph">
 			{this.state.width > 0 &&
 			 React.createElement(LargeHorizontalBars,
