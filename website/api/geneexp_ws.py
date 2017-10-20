@@ -50,14 +50,14 @@ class GeneExpWebService(object):
             raise
 
     def search(self, j, args):
-        def abort():
-            return {"hasData": False, "items": {}}
+        def abort(err):
+            return {"hasData": False, "items": {}, "err": err}
             
         compartments = j["compartments_selected"]
 
         biosample_types_selected = j["biosample_types_selected"]
         if biosample_types_selected not in self.allBiosampleTypes:
-            return abort()
+            return abort("invalid biosample type")
         
         # TODO: check value of compartments
         if not compartments:
@@ -67,7 +67,7 @@ class GeneExpWebService(object):
         if "accession" in j:
             accession = j["accession"]
             if not isaccession(accession):
-                return abort()
+                return abort("invalid accession")
             cre = CRE(self.pgSearch, accession, self.cache)
             gi = cre.nearbyPcGenes()[0] # nearest gene
             name, strand = self.cache.lookupEnsembleGene(gene["name"])

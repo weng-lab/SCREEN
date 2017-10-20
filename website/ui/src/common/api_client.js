@@ -6,7 +6,7 @@ export const Servers = (b) => {
     let override = {}
     //override["/gbws/geneTrack"] = "http://localhost:9006/gbws/geneTrack";
     //override["/gbws/trackhub"] = "http://localhost:9006/gbws/trackhub";
-    override["/gwws/search"] = "http://localhost:9006/gews/search";
+    override["/gews/search"] = "http://megatux.purcaro.com:9006/gews/search";
     if(b in override){
 	return override[b];
     }
