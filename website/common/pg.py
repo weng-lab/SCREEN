@@ -155,8 +155,8 @@ WHERE geneid = %s
 OR approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s
-""".format(gtn=self.assembly + "_gene_info",
-           (gene, gene, gene, gene)))
+            """.format(gtn=self.assembly + "_gene_info"),
+                         (gene, gene, gene, gene))
             return curs.fetchall()
         
     def intersectingSnps(self, accession, coord, halfWindow):

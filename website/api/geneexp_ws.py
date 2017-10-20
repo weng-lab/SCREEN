@@ -35,10 +35,10 @@ class GeneExpWebService(object):
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
 
-        self.allBiosampleTypes = ["immortalized cell line",
-                                  "induced pluripotent stem cell line",
-                                  "in vitro differentiated cells", "primary cell",
-                                  "stem cell", "tissue"]
+        self.allBiosampleTypes = set(["immortalized cell line",
+                                      "induced pluripotent stem cell line",
+                                      "in vitro differentiated cells", "primary cell",
+                                      "stem cell", "tissue"])
 
         self.actions = {"search": self.search}
 
@@ -56,12 +56,12 @@ class GeneExpWebService(object):
         compartments = j["compartments_selected"]
 
         biosample_types_selected = j["biosample_types_selected"]
-        if biosample_types_selected not in self.allBiosampleTypes:
+        if not set(biosample_types_selected).issubset(self.allBiosampleTypes):
             return abort("invalid biosample type")
         
         # TODO: check value of compartments
         if not compartments:
-            return abort()
+            return abort("no compartments")
 
         accession = ''
         if "accession" in j:
@@ -70,7 +70,7 @@ class GeneExpWebService(object):
                 return abort("invalid accession")
             cre = CRE(self.pgSearch, accession, self.cache)
             gi = cre.nearbyPcGenes()[0] # nearest gene
-            name, strand = self.cache.lookupEnsembleGene(gene["name"])
+            name, strand = self.cache.lookupEnsembleGene(gi["name"])
         else:
             gene = j["gene"]  # TODO: check for valid gene
             gi = self.pgSearch.geneInfo(gene)
@@ -78,10 +78,10 @@ class GeneExpWebService(object):
             strand = gi["strand"]
             
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        r = cge.computeHorBars(gene, compartments, biosample_types_selected)
+        r = cge.computeHorBars(name, compartments, biosample_types_selected)
         r["acccession"] = accession
         r["assembly"] = self.assembly
-        r["gene"] = gene
+        r["gene"] = name
         r["genename"] = name
         r["ensemblid_ver"] = gi["ensemblid_ver"]
         r["chrom"] = gi["chrom"]
