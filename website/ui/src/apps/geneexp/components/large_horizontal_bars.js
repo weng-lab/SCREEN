@@ -19,7 +19,7 @@ class LargeHorizontalBars extends React.Component {
 	     <div className="col-md-3">
 		 {panelize("Sort order",
 			   <div>
-			   <select ref="sortorder" defaultValue={"byExpressionTPM"}
+			   <select ref="sortorder" defaultValue={"byTissue"}
 			   onChange={() => {this.setState({sortorder: this.refs.sortorder.value})}}>
 			   <option value="byExpressionTPM">
                            by expression &#40;TPM&#41;</option>
