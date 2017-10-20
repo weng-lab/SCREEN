@@ -68,6 +68,7 @@ class ControlBar extends React.Component {
         return panelize("Sort order",
 			<select
 			    defaultValue={this.props.sortOrder}
+			    onChange={this.props.changeSortOrder}
 			>
 			    <option value="byExpressionTPM">
 				by expression &#40;TPM&#41;</option>

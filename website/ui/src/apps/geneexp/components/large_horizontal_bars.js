@@ -38,7 +38,6 @@ class LargeHorizontalBars extends React.Component {
 	};
 
 	const items = this.props.items[this.state.sortOrder];
-	console.log("items", items, this.state.sortOrder, this.state.dataScale);
 	
 	return (
             <div>
