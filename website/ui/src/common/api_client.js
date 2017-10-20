@@ -3,11 +3,13 @@ export const StaticUrl = (fn) => (StaticServer + fn)
 export const ApiServer = "http://screen.encodeproject.org/api"; // "/api/"
 
 export const Servers = (b) => {
-  /*  let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
-		    "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
+    let override = {}
+    //override["/gbws/geneTrack"] = "http://localhost:9006/gbws/geneTrack";
+    //override["/gbws/trackhub"] = "http://localhost:9006/gbws/trackhub";
+    override["/gwws/search"] = "http://localhost:9006/gews/search";
     if(b in override){
 	return override[b];
-}*/
+    }
     return ApiServer + b;
 };
 
