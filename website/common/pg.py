@@ -145,6 +145,20 @@ ON g.geneid = gi.geneid
             return (self._getGenes(accession, chrom, curs, "all"),
                     self._getGenes(accession, chrom, curs, "pc"))
 
+    def geneInfo(self, gene):
+        with getcursor(self.pg.DBCONN, "pg$geneInfo",
+                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute("""
+SELECT *
+FROM gtn
+WHERE geneid = %s
+OR approved_symbol = %s
+OR ensemblid = %s
+OR ensemblid_ver = %s
+""".format(gtn=self.assembly + "_gene_info",
+           (gene, gene, gene, gene)))
+            return curs.fetchall()
+        
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_snps"

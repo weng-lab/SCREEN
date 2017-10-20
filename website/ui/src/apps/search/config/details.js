@@ -4,7 +4,7 @@ import Ztable from '../../../common/components/ztable/ztable';
 import BarGraphTable from '../components/bar_graph_table';
 import * as ApiClient from '../../../common/api_client';
 
-import LargeHorizontalBars from '../../geneexp/components/large_horizontal_bars';
+import GeneExp from '../../geneexp/components/gene_exp';
 import Rampage from '../components/rampage';
 import MiniPeaks from '../components/minipeaks';
 
@@ -78,6 +78,7 @@ class ReTabBase extends React.Component{
 	//console.log(props);
 	super(props);
         this.key = key;
+	this.loadData = true;
         this.url = "/dataws/re_detail/" + key;
         this.state = { jq: null, isFetching: true, isError: false };
         this.loadCRE = this.loadCRE.bind(this);
@@ -110,6 +111,9 @@ class ReTabBase extends React.Component{
     }
 
     loadCRE({assembly, cre_accession_detail}){
+	if(!this.loadData){
+	    return;
+	}
         if(!cre_accession_detail || cre_accession_detail in this.state){
             return;
         }
@@ -133,9 +137,9 @@ class ReTabBase extends React.Component{
 
     doRenderWrapper(){
         let accession = this.props.cre_accession_detail;
-        if(accession in this.state){
+        if(!this.loadData || accession in this.state){
             return this.doRender(this.props.globals, this.props.assembly, 
-				 this.state[accession], this.props.uuid, this.props.actions);
+				 this.state[accession]);
         }
         return loading({...this.state, message: this.props.message});
     }
@@ -183,10 +187,11 @@ class FantomCatTab extends ReTabBase {
 class OrthologTab extends ReTabBase {
     constructor(props) {
 	super(props, "ortholog");
-	this.doRender = (globals, assembly, data, uuid) => {
+	this.doRender = (globals, assembly, data) => {
             let d = data.ortholog;
 	    if(d.length > 0) {
-	        return tabEles(globals, data, OrthologTable(globals, assembly, uuid), 1);
+	        return tabEles(globals, data, OrthologTable(globals, assembly,
+							    this.props.uuid), 1);
 	    }
             return <div><br />{"No orthologous cRE identified."}</div>;
 	}
@@ -212,41 +217,14 @@ class CistromeIntersectionTab extends ReTabBase {
 }
 
 class GeTab extends ReTabBase{
-    gclick(name, data) {
-	this.props.actions.showGenomeBrowser({
-	    title: data.genename,
-	    start: data.start,
-	    len: data.stop - data.start,
-	    chrom: data.chrom
-	}, name, "gene");
-    }
     constructor(props) {
 	super(props, "ge");
+	this.loadData = false;
 	
-        this.doRender = (globals, assembly, data, uuid, actions) => {
-	    let gene = data.genename;
-	    let gclick = this.gclick.bind(this);
-	    return (
-		<div>
-		    <h4>
-			Gene Expression Profiles by RNA-seq
-			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
-		    </h4>
-		    <h2 style={{display: "inline"}}>
-			<em>{data.genename}</em>
-		    </h2>{" "}
-		    <button type="button" className="btn btn-default btn-xs" onClick={() => {gclick("UCSC", data)}}>UCSC</button><br />
-                    {data.ensemblid_ver}
-		    {Render.openGeLink(gene)}
-		    <br />
-		    {React.createElement(LargeHorizontalBars,
-					 {...data, width: 800, barheight: "15",
-					  globals, actions,
-					  biosample_types_selected: this.props.biosample_types_selected,
-					  compartments_selected: this.props.compartments_selected,
-					  useBoxes: true})}
-		</div>);
-        }
+        this.doRender = (globals, assembly, data) => {
+	    console.log("this.props", this.props);
+	    return React.createElement(GeneExp, {...this.props, useBoxes: true});
+	}
     }
 }
 

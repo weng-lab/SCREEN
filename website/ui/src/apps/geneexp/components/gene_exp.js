@@ -24,12 +24,16 @@ class GeneExp extends React.Component{
         this.loadGene(nextProps);
     }
 
+    makeKey(p){
+	return {assembly: p.assembly,
+		accession: p.cre_accession_detail,
+		gene: p.gene,
+		compartments_selected: Array.from(p.compartments_selected),
+                biosample_types_selected: Array.from(p.biosample_types_selected)};
+    }
+    
     loadGene(p){
-        const q = {assembly: p.assembly,
-		   gene: p.search.gene,
-		   compartments_selected: Array.from(p.compartments_selected),
-                   biosample_types_selected:
-		   Array.from(p.biosample_types_selected)};
+	const q = this.makeKey(p);
         const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
@@ -38,7 +42,7 @@ class GeneExp extends React.Component{
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/gews/search",
 			    (r) => {
-				this.setState({...r, isFetching: false, isError: false});
+				this.setState({[jq]: r, isFetching: false, isError: false});
 			    },
 			    (msg) => {
 				console.log("err loading ge");
@@ -47,8 +51,11 @@ class GeneExp extends React.Component{
     }
 
     doRenderWrapper(){
-        if("items" in this.state){
-            return <ExpressionBoxplot data={this.state} />;
+	const q = this.makeKey(this.props);
+        const jq = JSON.stringify(q);
+        if(jq in this.state){
+	    const data = this.state[jq];
+            return React.createElement(ExpressionBoxplot, {...this.props, data});
         }
         return loading(this.state);
     }

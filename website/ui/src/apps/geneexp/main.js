@@ -27,7 +27,7 @@ class GeneExpPageInner extends React.Component {
         return (
             <Provider store={store}>
 	        <div>
-		  {PageTitle(assembly)}
+		    {PageTitle(assembly)}
 
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
@@ -48,6 +48,7 @@ class GeneExpPageInner extends React.Component {
                             <div className="col-md-9 nopadding-left"
                                  id="tabs-container">
                                 <MainTabs assembly={assembly}
+				genes={this.props.search.gene}
 					  globals={this.props.globals}
 					  search={this.props.search}
 				/>

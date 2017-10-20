@@ -22,7 +22,6 @@ from models.tads import Tads
 
 from common.pg import PGsearch
 from common.get_set_mc import GetOrSetMemCache
-from models.gene_expression import GeneExpression
 from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
@@ -91,7 +90,6 @@ class DataWebService(GetOrSetMemCache):
             "cistromeIntersection": self._re_detail_cistromeIntersection,
             "linkedGenes": self._re_detail_linkedGenes,
             "rampage": self._re_detail_rampage,
-            "ge": self._re_detail_ge,
             "similarREs": self._re_detail_similarREs,
             "fantom_cat": self.fantom_cat,
             "ortholog": self._ortholog}
@@ -232,19 +230,6 @@ class DataWebService(GetOrSetMemCache):
     def _re_detail_linkedGenes(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         return {accession: {"linked_genes": cre.linkedGenes()}}
-
-    def _re_detail_ge(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        nearest = cre.nearbyPcGenes()[0]
-        cge = GeneExpression(self.ps, self.cache, self.assembly)
-        name, strand = self.cache.lookupEnsembleGene(nearest["name"])
-        r = cge.computeHorBars(name, ["cell"], self.cache.geBiosampleTypes)
-        r["genename"] = name
-        r["ensemblid_ver"] = nearest["ensemblid_ver"]
-        r["chrom"] = nearest["chrom"]
-        r["start"] = nearest["start"]
-        r["stop"] = nearest["stop"]
-        return {accession: r}
 
     def _re_detail_rampage(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)

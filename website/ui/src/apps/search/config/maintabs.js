@@ -5,7 +5,7 @@ import ResultsTree from '../components/tree';
 import DetailsContainer from '../components/details_container';
 import TFDisplay from '../components/tf_display';
 import ActivityProfile from '../components/activity_profile';
-import ExpressionPlot from '../components/expression_plot';
+import GeneExp from '../../geneexp/components/gene_exp';
 import RampagePlot from '../components/rampage_plot';
 import ConfigureGenomeBrowser from '../components/configure_genome_browser';
 import DetailsTabInfo from './details';
@@ -57,7 +57,7 @@ class DetailsTab extends React.Component{
     }
 }
 
-class ExpressionPlotTab extends React.Component{
+class GeBigTab extends React.Component{
     shouldComponentUpdate(nextProps, nextState) {
        return "expression" === nextProps.maintabs_active;
     }
@@ -66,7 +66,7 @@ class ExpressionPlotTab extends React.Component{
 	if("expression" !== this.props.maintabs_active){
             return false;
         }
-        return React.createElement(ExpressionPlot, this.props);
+        return React.createElement(GeneExp, this.props);
     }
 }
 
@@ -115,7 +115,7 @@ const MainTabInfo = (parsedQuery, globals) => {
 			 f: BedUploadTab},
 	    configgb: {title: Render.tabTitle(["Configure", "Genome Browser"]), 
 		       visible: false, f: ConfigureGenomeBrowser},
-	    expression: {title: geTitle, visible: !!gene, f: ExpressionPlotTab},
+	    expression: {title: geTitle, visible: !!gene, f: GeBigTab},
 	    rampage: {title: rTitle,  visible: showRampage, f: RampageBigTab},
 	    aprofile: {title: "Activity Profile", visible: false,
 		       f: ActivityProfileTab},

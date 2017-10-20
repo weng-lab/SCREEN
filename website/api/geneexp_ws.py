@@ -2,10 +2,13 @@ from __future__ import print_function
 import sys
 import os
 
+from models.cre import CRE
 from models.gene_expression import GeneExpression
+from common.pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
+from cre_utils import isaccession
 
 
 class GeneExpWebServiceWrapper:
@@ -30,6 +33,12 @@ class GeneExpWebService(object):
         self.cache = cache
         self.staticDir = staticDir
         self.assembly = assembly
+        self.pgSearch = PGsearch(ps, assembly)
+
+        self.allBiosampleTypes = ["immortalized cell line",
+                                  "induced pluripotent stem cell line",
+                                  "in vitro differentiated cells", "primary cell",
+                                  "stem cell", "tissue"]
 
         self.actions = {"search": self.search}
 
@@ -41,22 +50,42 @@ class GeneExpWebService(object):
             raise
 
     def search(self, j, args):
-        gene = j["gene"]  # TODO: check for valid gene
+        def abort():
+            return {"hasData": False, "items": {}}
+            
         compartments = j["compartments_selected"]
 
-        allBiosampleTypes = ["immortalized cell line",
-                             "induced pluripotent stem cell line",
-                             "in vitro differentiated cells", "primary cell",
-                             "stem cell", "tissue"]
         biosample_types_selected = j["biosample_types_selected"]
+        if biosample_types_selected not in self.allBiosampleTypes:
+            return abort()
+        
+        # TODO: check value of compartments
+        if not compartments:
+            return abort()
 
-        # TODO: check value of compartments, biosample_types_selected
-
-        if not biosample_types_selected or not compartments:
-            return {"hasData": False, "items": {}}
-
+        accession = ''
+        if "accession" in j:
+            accession = j["accession"]
+            if not isaccession(accession):
+                return abort()
+            cre = CRE(self.pgSearch, accession, self.cache)
+            gi = cre.nearbyPcGenes()[0] # nearest gene
+            name, strand = self.cache.lookupEnsembleGene(gene["name"])
+        else:
+            gene = j["gene"]  # TODO: check for valid gene
+            gi = self.pgSearch.geneInfo(gene)
+            name = gi["name"]
+            strand = gi["strand"]
+            
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        ret = cge.computeHorBars(gene, compartments, biosample_types_selected)
-        ret["assembly"] = self.assembly
-        ret["gene"] = gene
-        return ret
+        r = cge.computeHorBars(gene, compartments, biosample_types_selected)
+        r["acccession"] = accession
+        r["assembly"] = self.assembly
+        r["gene"] = gene
+        r["genename"] = name
+        r["ensemblid_ver"] = gi["ensemblid_ver"]
+        r["chrom"] = gi["chrom"]
+        r["start"] = gi["start"]
+        r["stop"] = gi["stop"]
+        return r
+
