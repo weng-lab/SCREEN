@@ -35,6 +35,9 @@ class GeneExp extends React.Component{
     loadGene(p){
 	const q = this.makeKey(p);
         const jq = JSON.stringify(q);
+	if(jq in this.state){
+	    return;
+	}
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
@@ -46,7 +49,7 @@ class GeneExp extends React.Component{
 			    },
 			    (msg) => {
 				console.log("err loading ge");
-				this.setState({isFetching: false, isError: true});
+				this.setState({jq: null, isFetching: false, isError: true});
 			    });
     }
 
@@ -55,7 +58,7 @@ class GeneExp extends React.Component{
         const jq = JSON.stringify(q);
         if(jq in this.state){
 	    const data = this.state[jq];
-            return React.createElement(ExpressionBoxplot, {...this.props, data});
+            return React.createElement(ExpressionBoxplot, {...this.props, ...data});
         }
         return loading(this.state);
     }
