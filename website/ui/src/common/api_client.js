@@ -1,14 +1,13 @@
-export const StaticServer = "http://screen.encodeproject.org/assets";
+import Config from '../config.json';
+
+export const StaticServer = Config.UI.staticServer;
 export const StaticUrl = (fn) => (StaticServer + fn)
-export const ApiServer = "http://screen.encodeproject.org/api"; // "/api/"
+export const ApiServer = Config.UI.apiServer;
 
 export const Servers = (b) => {
-    let override = {}
-    //override["/gbws/geneTrack"] = "http://localhost:9006/gbws/geneTrack";
-    //override["/gbws/trackhub"] = "http://localhost:9006/gbws/trackhub";
-    //override["/gews/search"] = "http://api.wenglab.org/gews/search";
-    if(b in override){
-	return override[b];
+    const overrides = Config.UI.overrides;
+    if(b in overrides){
+	return overrides[b];
     }
     return ApiServer + b;
 };

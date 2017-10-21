@@ -10,5 +10,10 @@
   "googleAnalytics": false,
   "memache": false,
   "cassandra": "127.0.0.1"
+ },
+ "UI":
+ {"apiServer": "http://megatux.purcaro.com:9006",
+  "staticServer": "http://screen.encodeproject.org/assets",
+  "overrides": {}
  }
 }
