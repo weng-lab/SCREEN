@@ -52,24 +52,18 @@ class LargeHorizontalBars extends React.Component {
     
 
     render() {
-	const changeSortOrder = (e) => {
-	    this.setState({sortOrder: e.target.value});
-	}
-	const changeDataScale = (e) => {
-	    this.setState({dataScale: e.target.value});
+	const changeView = (sortOrder, dataScale) => {
+	    this.setState({sortOrder, dataScale});
 	}
 
 	return (
             <div>
-		<ControlBar
-		biosample_types_selected={this.props.biosample_types_selected}
+		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
 		compartments_selected={this.props.compartments_selected}
 		globals={this.props.globals}
-		    useBoxes={this.props.useBoxes}
-		    changeSortOrder={changeSortOrder}
-		    changeDataScale={changeDataScale}
 		dataScale={this.state.dataScale}
 		sortOrder={this.state.sortOrder}
+			    changeView={changeView}
 		/>
 		{this.doRender(this.props)}
 	    </div>);

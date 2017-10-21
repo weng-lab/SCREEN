@@ -161,19 +161,18 @@ class ConfigureGenomeBrowser extends React.Component {
 	let combo = "5 group";
 	let notCombo = "9 state";
 	let options = (
-		<ButtonToolbar>
+	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" defaultValue={1}>
-		<ToggleButton value={1}
-	    onClick={() => { this.optionsChanged(false); }}>
-		{notCombo}
-            </ToggleButton>
-		<ToggleButton value={2}
-	    onClick={() => { this.optionsChanged(true); }}>
-		{combo}
-	    </ToggleButton>
-		
-		</ToggleButtonGroup>
-		</ButtonToolbar>);
+		    <ToggleButton value={1}
+				  onClick={() => { this.optionsChanged(false); }}>
+			{notCombo}
+		    </ToggleButton>
+		    <ToggleButton value={2}
+				  onClick={() => { this.optionsChanged(true); }}>
+			{combo}
+		    </ToggleButton>
+	    	</ToggleButtonGroup>
+	    </ButtonToolbar>);
 
 	return (
 	    <div className="container" style={{width: "100%"}}>

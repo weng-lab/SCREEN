@@ -1,4 +1,5 @@
 import React from 'react'
+import {ButtonToolbar, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 
 import {panelize} from '../../../common/utility';
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
@@ -57,58 +58,128 @@ class BiosampleTypesBox extends React.Component {
     }
 }
 
+class TmpFpkmBox extends React.Component {
+    render(){
+	let a = "TPM";
+	let b = "FPKM";
+	return (
+	    <ButtonToolbar>
+		<ToggleButtonGroup type="radio" name="options" 
+				   defaultValue={this.props.defaultValue}>
+		    <ToggleButton value={true}
+				  onClick={() => {this.props.setVal(true);}}>
+			{a}
+		    </ToggleButton>
+		    <ToggleButton value={false}
+				  onClick={() => {this.props.setVal(false);}}>
+			{b}
+		    </ToggleButton>
+		</ToggleButtonGroup>
+	    </ButtonToolbar>);
+    }
+}
+
+class LinearLogBox extends React.Component {
+    render(){
+	let a = "Linear";
+	let b = "Log2";
+	return (
+	    <ButtonToolbar>
+		<ToggleButtonGroup type="radio" name="options"
+				   defaultValue={this.props.defaultValue}>
+		    <ToggleButton value={true}
+				  onClick={() => {this.props.setVal(true);}}>
+			{a}
+		    </ToggleButton>
+		    <ToggleButton value={false}
+				  onClick={() => {this.props.setVal(false);}}>
+			{b}
+		    </ToggleButton>
+		</ToggleButtonGroup>
+	    </ButtonToolbar>);
+    }
+}
+
+class ByExpTissueTissueMax extends React.Component {
+    render(){
+	const a = "Experiment";
+	const b = "Tissue";
+	const c = "Tissue Max";
+	return (
+	    <ButtonToolbar>
+		<ToggleButtonGroup type="radio" name="options" 
+				   defaultValue={this.props.defaultValue}>
+		    <ToggleButton value={1}
+				  onClick={() => {this.props.setVal(1);}}>
+			{a}
+		    </ToggleButton>
+		    <ToggleButton value={2}
+				  onClick={() => {this.props.setVal(2);}}>
+			{b}
+		    </ToggleButton>
+		    <ToggleButton value={3}
+				  onClick={() => {this.props.setVal(3);}}>
+			{c}
+		    </ToggleButton>
+		</ToggleButtonGroup>
+	    </ButtonToolbar>);
+    }
+}
+
 class ControlBar extends React.Component {
     constructor(props) {
 	super(props);
-	this.sortSelect = this.sortSelect.bind(this);
-	this.dataScale = this.dataScale.bind(this);
+	this.isTpm = true;
+	this.isLinear = false;
+	this.sampleTisOrTisMax = 2;
     }
 
-    sortSelect(){
-        return panelize("Sort order",
-			<select
-			    defaultValue={this.props.sortOrder}
-			    onChange={this.props.changeSortOrder}
-			>
-			    <option value="byExpressionTPM">
-				by expression &#40;TPM&#41;</option>
-			    <option value="byExpressionFPKM">
-				by expression &#40;FPKM&#41;</option>
-			    <option value="byTissue">
-				by tissue</option>
-			    <option value="byTissueMaxTPM">
-				by tissue max &#40;TPM&#41;</option>
-			    <option value="byTissueMaxFPKM">
-				by tissue max &#40;FPKM&#41;</option>
-			</select>);
-    }
-    
-    dataScale(){
-        return panelize("Data",
-			<select
-			    defaultValue={this.props.dataScale}
-			    onChange={this.props.changeDataScale}
-			>
-			    <option value="logTPM">log2&#40;TPM + 0.01&#41;</option>
-			    <option value="rawTPM">TPM</option>
-			    <option value="logFPKM">log2&#40;FPKM + 0.01&#41;</option>
-			    <option value="rawFPKM">FPKM</option>
-			</select>);
+    setView(){
+	const lookup1 = {true: {true: ["byExpressionTPM", "rawTPM"],
+				false: ["byExpressionTPM", "logTPM"]},
+			 false: {true: ["byExpressionFPKM", "rawFPKM"],
+				 false: ["byExpressionFPKM", "logFPKM"]}};
+	const lookup2 = {true: {true: ["byTissue", "rawTPM"],
+				false: ["byTissue", "logTPM"]},
+			 false: {true: ["byTissue", "rawFPKM"],
+				 false: ["byTissue", "logFPKM"]}};
+	const lookup3 = {true: {true: ["byTissueMaxTPM", "rawTPM"],
+				false: ["byTissueMaxTPM", "logTPM"]},
+			 false: {true: ["byTissueMaxFPKM", "rawFPKM"],
+				 false: ["byTissueMaxFPKM", "logFPKM"]}};
+	let r = [];
+	if(1 === this.sampleTisOrTisMax){
+	    r = lookup1[this.isTpm][this.isLinear];
+	} else if(2 === this.sampleTisOrTisMax){
+	    r = lookup2[this.isTpm][this.isLinear];
+	} else if(3 === this.sampleTisOrTisMax){
+	    r = lookup3[this.isTpm][this.isLinear];
+	}
+	this.props.changeView(r[0], r[1]);
     }
     
     render(){
-	if(!this.props.useBoxes){
-	    return (
-	        <div className="row">
-                    {this.sortSelect()}
-                    {this.dataScale()}
-	        </div>);
-	}
 	return(
 	    <div className="row">
 		<div className="col-md-3">
-		    {this.sortSelect()}
-		    {this.dataScale()}
+		    {React.createElement(ByExpTissueTissueMax, 
+					 {defaultValue: this.sampleTisOrTisMax,
+					  setVal: (v) => {
+					      this.sampleTisOrTisMax = v;
+					      this.setView();}})
+		    }
+		    {React.createElement(TmpFpkmBox,
+					 {defaultValue: this.isTpm,
+					  setVal: (v) => {
+					      this.isTpm = v;
+					      this.setView();}})
+		    }
+		    {React.createElement(LinearLogBox,
+					 {defaultValue: this.isLinear,
+					  setVal: (v) => {
+					      this.isLinear = v;
+					      this.setView();}})
+		    }
 		</div>
 		<div className="col-md-3">
 	 	    {React.createElement(BiosampleTypesBox, this.props)}

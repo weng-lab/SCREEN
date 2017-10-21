@@ -130,3 +130,4 @@ export const PageTitle = (assembly = null) => {
             <title>{pageTitle()}</title>
 	    </Helmet>);
 }
+
