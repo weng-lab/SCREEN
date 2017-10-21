@@ -9,12 +9,16 @@ import * as ApiClient from '../../../common/api_client';
 import LargeHorizontalBars from '../components/large_horizontal_bars'
 import loading from '../../../common/components/loading'
 import HelpIcon from '../../../common/components/help_icon';
+import ControlBar from './control_bar';
 
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
         this.state = {jq: null, isFetching: true, isError: false,
-		      width: 0};
+		      width: 0,
+		      sortOrder: "byTissue",
+		      dataScale: "logTPM"
+	};
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
 	this.updateWidth = this.updateWidth.bind(this);
@@ -108,6 +112,7 @@ class GeneExp extends React.Component{
 			{this.state.width > 0 &&
 			 React.createElement(LargeHorizontalBars,
 					     {...this.props,
+					      ...this.state,
 					      ...data,
 					      width: this.state.width,
 					      barheight})}
@@ -118,10 +123,22 @@ class GeneExp extends React.Component{
     }
 
     render(){
+	const changeView = (sortOrder, dataScale) => {
+	    this.setState({sortOrder, dataScale});
+	}
+
         return (
 	    <div ref="box" style={{"width": "100%"}} >
+		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
+			    compartments_selected={this.props.compartments_selected}
+			    globals={this.props.globals}
+			    actions={this.props.actions}
+			    dataScale={this.state.dataScale}
+			    sortOrder={this.state.sortOrder}
+			    changeView={changeView}
+		/>
 		{this.doRenderWrapper()}
-            </div>);
+	    </div>);
     }
 }
 

@@ -2,17 +2,12 @@ import React from 'react'
 
 import loading from '../../../common/components/loading'
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
-import ControlBar from './control_bar';
 
 class LargeHorizontalBars extends React.Component {
 
     constructor(props) {
 	super(props);
 	this.doRender = this.doRender.bind(this);
-	this.state = {
-	    sortOrder: "byTissue",
-	    dataScale: "logTPM"
-	};
     }
 
     doRender({isFetching, hasData, width}){
@@ -28,7 +23,7 @@ class LargeHorizontalBars extends React.Component {
 	}
 
 	let format = {
-	    value: d => d[this.state.dataScale],
+	    value: d => d[this.props.dataScale],
 	    label: d => {
 		if(d.ageTitle){
 		    return d.cellType + ' ' + d.ageTitle;
@@ -37,7 +32,7 @@ class LargeHorizontalBars extends React.Component {
 	    grouplabel: d => d.displayName
 	};
 
-	const items = this.props.items[this.state.sortOrder];
+	const items = this.props.items[this.props.sortOrder];
 	
 	return (
             <div>
@@ -52,20 +47,8 @@ class LargeHorizontalBars extends React.Component {
     
 
     render() {
-	const changeView = (sortOrder, dataScale) => {
-	    this.setState({sortOrder, dataScale});
-	}
-
 	return (
             <div>
-		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
-		compartments_selected={this.props.compartments_selected}
-		globals={this.props.globals}
-		actions={this.props.actions}
-		dataScale={this.state.dataScale}
-		sortOrder={this.state.sortOrder}
-			    changeView={changeView}
-		/>
 		{this.doRender(this.props)}
 	    </div>);
     }

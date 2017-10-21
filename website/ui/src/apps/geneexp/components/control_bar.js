@@ -66,11 +66,11 @@ class TmpFpkmBox extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={true}
+		    <ToggleButton value={true} bsSize="small"
 				  onClick={() => {this.props.setVal(true);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={false}
+		    <ToggleButton value={false} bsSize="small"
 				  onClick={() => {this.props.setVal(false);}}>
 			{b}
 		    </ToggleButton>
@@ -87,11 +87,11 @@ class LinearLogBox extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options"
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={true}
+		    <ToggleButton value={true} bsSize="small"
 				  onClick={() => {this.props.setVal(true);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={false}
+		    <ToggleButton value={false} bsSize="small"
 				  onClick={() => {this.props.setVal(false);}}>
 			{b}
 		    </ToggleButton>
@@ -109,15 +109,15 @@ class ByExpTissueTissueMax extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={1}
+		    <ToggleButton value={1} bsSize="small"
 				  onClick={() => {this.props.setVal(1);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={2}
+		    <ToggleButton value={2} bsSize="small"
 				  onClick={() => {this.props.setVal(2);}}>
 			{b}
 		    </ToggleButton>
-		    <ToggleButton value={3}
+		    <ToggleButton value={3} bsSize="small"
 				  onClick={() => {this.props.setVal(3);}}>
 			{c}
 		    </ToggleButton>
