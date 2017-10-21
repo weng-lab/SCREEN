@@ -66,11 +66,11 @@ class TmpFpkmBox extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={true} bsSize="small"
+		    <ToggleButton value={true} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(true);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={false} bsSize="small"
+		    <ToggleButton value={false} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(false);}}>
 			{b}
 		    </ToggleButton>
@@ -87,11 +87,11 @@ class LinearLogBox extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options"
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={true} bsSize="small"
+		    <ToggleButton value={true} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(true);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={false} bsSize="small"
+		    <ToggleButton value={false} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(false);}}>
 			{b}
 		    </ToggleButton>
@@ -102,17 +102,17 @@ class LinearLogBox extends React.Component {
 
 class RepBox extends React.Component {
     render(){
-	let a = "Single";
-	let b = "Mean";
+	let a = "Ind.";
+	let b = "Avg.";
 	return (
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options"
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={true} bsSize="small"
+		    <ToggleButton value={true} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(true);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={false} bsSize="small"
+		    <ToggleButton value={false} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(false);}}>
 			{b}
 		    </ToggleButton>
@@ -130,15 +130,15 @@ class ByExpTissueTissueMax extends React.Component {
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
-		    <ToggleButton value={1} bsSize="small"
+		    <ToggleButton value={1} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(1);}}>
 			{a}
 		    </ToggleButton>
-		    <ToggleButton value={2} bsSize="small"
+		    <ToggleButton value={2} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(2);}}>
 			{b}
 		    </ToggleButton>
-		    <ToggleButton value={3} bsSize="small"
+		    <ToggleButton value={3} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(3);}}>
 			{c}
 		    </ToggleButton>
@@ -210,7 +210,7 @@ class ControlBar extends React.Component {
 						       this.setView();}}))}
 		</div>
 		<div className="col-md-4">
-		    {panelize("Rep",
+		    {panelize("Replicates",
 			      React.createElement(RepBox,
 						  {defaultValue: this.isSingle,
 						   setVal: (v) => {
@@ -227,7 +227,7 @@ class ControlBar extends React.Component {
 		<div className="col-md-3">
 	 	    {React.createElement(BiosampleTypesBox, this.props)}
 		</div>
-		<div className="col-md-3">
+		<div className="col-md-2">
 		    {React.createElement(CellCompartmentsBox, this.props)}
 		</div>
 	    </div>);
