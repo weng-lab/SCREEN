@@ -80,14 +80,14 @@ class GeneExpWebService(object):
         strand = gi.strand
             
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        r = cge.computeHorBars(name, compartments, biosample_types_selected)
-        r["acccession"] = accession
-        r["assembly"] = self.assembly
-        r["gene"] = name
-        r["genename"] = name
-        r["ensemblid_ver"] = gi.ensemblid_ver
-        r["chrom"] = gi.chrom
-        r["start"] = gi.start
-        r["stop"] = gi.stop
+        r = {"acccession": accession,
+             "assembly": self.assembly,
+             "gene": name,
+             "genename": name,
+             "ensemblid_ver": gi.ensemblid_ver,
+             "chrom": gi.chrom,
+             "start": gi.start,
+             "stop": gi.stop}
+        r["single"] = cge.computeHorBars(name, compartments, biosample_types_selected)
+        r["mean"] = cge.computeHorBarsMean(name, compartments, biosample_types_selected)
         return r
-
