@@ -68,13 +68,14 @@ class GeneExpWebService(object):
             if not isaccession(accession):
                 return abort("invalid accession")
             cre = CRE(self.pgSearch, accession, self.cache)
-            gi = cre.nearbyPcGenes()[0] # nearest gene
-            name, strand = self.cache.lookupEnsembleGene(gi["name"])
+            nearest = cre.nearbyPcGenes()[0] # nearest gene
+            gi = self.pgSearch.geneInfo(nearest["name"])
         else:
             gene = j["gene"]  # TODO: check for valid gene
             gi = self.pgSearch.geneInfo(gene)
-            name = gi.approved_symbol
-            strand = gi.strand
+
+        name = gi.approved_symbol
+        strand = gi.strand
             
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         r = cge.computeHorBars(name, compartments, biosample_types_selected)

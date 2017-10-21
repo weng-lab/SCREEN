@@ -30,13 +30,12 @@ class BuildOntology:
         mod = import_module("10_generate_ontology_actual")
         runF = getattr(mod, "run")
 
+        downloadDate = '2017-10Oct-10'
         if 1:
-            downloadData
             uberon_url = "http://ontologies.berkeleybop.org/uberon/composite-metazoan.owl"
             efo_url = "http://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoinowl/InferredEFOOWLview/EFO_inferred.owl?format=raw"
             obi_url = "http://purl.obolibrary.org/obo/obi.owl"
         else:
-            downloadDate = '2017-10Oct-10'
             uberon_url = paths.path("ontology", downloadDate, "composite-metazoan.owl")
             efo_url = paths.path("ontology", downloadDate, "EFO_inferred.owl")
             obi_url = paths.path("ontology", downloadDate, "obi.owl")
