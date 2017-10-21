@@ -222,7 +222,7 @@ class GeTab extends ReTabBase{
 	this.loadData = false;
 	
         this.doRender = (globals, assembly, data) => {
-	    return React.createElement(GeneExp, {...this.props, useBoxes: true});
+	    return React.createElement(GeneExp, {...this.props});
 	}
     }
 }

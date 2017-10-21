@@ -137,6 +137,7 @@ class GeneExp extends React.Component{
 			    dataScale={this.state.dataScale}
 			    sortOrder={this.state.sortOrder}
 		isSingle={this.props.isSingle}
+		assembly={this.props.assembly}
 			    changeView={changeView}
 		/>
 		{this.doRenderWrapper()}

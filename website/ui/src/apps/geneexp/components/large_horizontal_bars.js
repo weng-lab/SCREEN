@@ -15,9 +15,7 @@ class LargeHorizontalBars extends React.Component {
             return loading(this.props);
         }
 
-	const ds = this.props.isSingle ? this.props.single : this.props.mean;
-
-	if (!ds.hasData){
+	if("hasData" in this.props && !this.props.hasData){
 	    return (
                 <div>
                     <br />
@@ -36,6 +34,7 @@ class LargeHorizontalBars extends React.Component {
 	    grouplabel: d => d.displayName
 	};
 
+	const ds = this.props.isSingle ? this.props.single : this.props.mean;
 	const items = ds.items[this.props.sortOrder];
 	
 	return (

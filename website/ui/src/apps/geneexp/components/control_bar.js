@@ -1,7 +1,7 @@
 import React from 'react'
 import {ButtonToolbar, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 
-import {panelize} from '../../../common/utility';
+import {panelize, CenterView} from '../../../common/utility';
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import LongChecklist from '../../../common/components/longchecklist'
 
@@ -63,7 +63,7 @@ class TmpFpkmBox extends React.Component {
 	let a = "TPM";
 	let b = "FPKM";
 	return (
-	    <ButtonToolbar>
+	    <ButtonToolbar style={{display: "flex", justifyContent: "center"}}>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
 		    <ToggleButton value={true} bsSize="xsmall"
@@ -84,7 +84,7 @@ class LinearLogBox extends React.Component {
 	let a = "Linear";
 	let b = "Log2";
 	return (
-	    <ButtonToolbar>
+	    <ButtonToolbar style={{display: "flex", justifyContent: "center"}}>
 		<ToggleButtonGroup type="radio" name="options"
 				   defaultValue={this.props.defaultValue}>
 		    <ToggleButton value={true} bsSize="xsmall"
@@ -105,7 +105,7 @@ class RepBox extends React.Component {
 	let a = "Ind.";
 	let b = "Avg.";
 	return (
-	    <ButtonToolbar>
+	    <ButtonToolbar style={{display: "flex", justifyContent: "center"}}>
 		<ToggleButtonGroup type="radio" name="options"
 				   defaultValue={this.props.defaultValue}>
 		    <ToggleButton value={true} bsSize="xsmall"
@@ -127,7 +127,7 @@ class ByExpTissueTissueMax extends React.Component {
 	const b = "Tissue";
 	const c = "Tissue Max";
 	return (
-	    <ButtonToolbar>
+	    <ButtonToolbar style={{display: "flex", justifyContent: "center"}}>
 		<ToggleButtonGroup type="radio" name="options" 
 				   defaultValue={this.props.defaultValue}>
 		    <ToggleButton value={1} bsSize="xsmall"
@@ -135,14 +135,14 @@ class ByExpTissueTissueMax extends React.Component {
 			{a}
 		    </ToggleButton>
 		    <ToggleButton value={2} bsSize="xsmall"
-				  onClick={() => {this.props.setVal(2);}}>
+				      onClick={() => {this.props.setVal(2);}}>
 			{b}
 		    </ToggleButton>
 		    <ToggleButton value={3} bsSize="xsmall"
 				  onClick={() => {this.props.setVal(3);}}>
-			{c}
+			    {c}
 		    </ToggleButton>
-		</ToggleButtonGroup>
+		    </ToggleButtonGroup>
 	    </ButtonToolbar>);
     }
 }
@@ -189,27 +189,30 @@ class ControlBar extends React.Component {
 						  {defaultValue: this.sampleTisOrTisMax,
 						   setVal: (v) => {
 						       this.sampleTisOrTisMax = v;
-						       this.setView();}}))}
+						       this.setView();}}
+			      ), null, null, {display: "flex", justifyContent: "center"})}
 		</div>
 	    </div>,
 	    <div className="row" key="datascale">
-		<div className="col-md-4">
-		    {panelize("TPM/FPKM",
+		<div className="col-md-4" style={{paddingRight: "0px"}}>
+		    {panelize("TPM/FPKM", 
 			      React.createElement(TmpFpkmBox,
 						  {defaultValue: this.isTpm,
 						   setVal: (v) => {
 						       this.isTpm = v;
-						       this.setView();}}))}
+						       this.setView();}}
+			      ), null, null, {display: "flex", justifyContent: "center"})}
 		</div>
-		<div className="col-md-4">
+		<div className="col-md-4" style={{paddingLeft: "2px", paddingRight: "2px"}}>
 		    {panelize("Scale",
 			      React.createElement(LinearLogBox,
 						  {defaultValue: this.isLinear,
 						   setVal: (v) => {
 						       this.isLinear = v;
-						       this.setView();}}))}
+						       this.setView();}}
+			      ), null, null, {display: "flex", justifyContent: "center"})}
 		</div>
-		<div className="col-md-4">
+		<div className="col-md-4" style={{paddingLeft: "0px"}}>
 		    {panelize("Replicates",
 			      React.createElement(RepBox,
 						  {defaultValue: this.isSingle,
@@ -218,7 +221,7 @@ class ControlBar extends React.Component {
 						       this.setView();}}))}
 		</div>
 	    </div>];
-	    	    
+	
 	return(
 	    <div className="row">
 		<div className="col-md-4">
@@ -227,9 +230,10 @@ class ControlBar extends React.Component {
 		<div className="col-md-3">
 	 	    {React.createElement(BiosampleTypesBox, this.props)}
 		</div>
-		<div className="col-md-2">
-		    {React.createElement(CellCompartmentsBox, this.props)}
-		</div>
+		{"mm10" !== this.props.assembly &&
+		 <div className="col-md-2">
+		     {React.createElement(CellCompartmentsBox, this.props)}
+		 </div>}
 	    </div>);
     }
 }
