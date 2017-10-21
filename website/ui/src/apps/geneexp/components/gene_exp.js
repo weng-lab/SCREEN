@@ -111,6 +111,7 @@ class GeneExp extends React.Component{
 	const q = this.makeKey(this.props);
         const jq = JSON.stringify(q);
         if(jq in this.state){
+	    //console.log("jq in state");
 	    const data = this.state[jq];
             return (
 		<div style={{"width": "100%"}} ref="bargraph">
@@ -123,6 +124,7 @@ class GeneExp extends React.Component{
 					  barheight})}
 		</div>);
         }
+	//console.log("jq NOT in state", q, "state:", this.state);
         return loading(this.state);
     }
 

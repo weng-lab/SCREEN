@@ -57,10 +57,7 @@ class LargeHorizontalBars extends React.Component {
     
 
     render() {
-	return (
-            <div>
-		{this.doRender(this.props)}
-	    </div>);
+	return this.doRender(this.props);
     }
 
 }
