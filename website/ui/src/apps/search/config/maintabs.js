@@ -66,12 +66,7 @@ class GeBigTab extends React.Component{
 	if("expression" !== this.props.maintabs_active){
             return false;
         }
-	const genes = this.props.search.parsedQuery.genes;
-	let gene = null;
-	if(genes && genes.length > 0){
-	    gene = genes[0].approved_symbol;
-	}
-	return React.createElement(GeneExp, {...this.props, gene, useBoxes: true});
+	return React.createElement(GeneExp, {...this.props});
     }
 }
 

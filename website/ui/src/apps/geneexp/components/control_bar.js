@@ -232,7 +232,7 @@ class ControlBar extends React.Component {
 	 	    {React.createElement(BiosampleTypesBox, this.props)}
 		</div>
 		{"mm10" !== this.props.assembly &&
-		 <div className="col-md-2">
+		 <div className="col-md-3">
 		     {React.createElement(CellCompartmentsBox, this.props)}
 		 </div>}
 	    </div>);

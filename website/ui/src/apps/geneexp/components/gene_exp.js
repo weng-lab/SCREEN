@@ -18,7 +18,8 @@ class GeneExp extends React.Component{
 		      width: 0,
 		      isSingle: false,
 		      sortOrder: "byTissue",
-		      dataScale: "logTPM"
+		      dataScale: "logTPM",
+		      gene: props.gene || props.genes[0].approved_symbol
 	};
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
@@ -47,7 +48,7 @@ class GeneExp extends React.Component{
     makeKey(p){
 	const r = {assembly: p.assembly,
 		   accession: p.cre_accession_detail,
-		   gene: p.gene,
+		   gene: this.state.gene,
 		   compartments_selected: Array.from(p.compartments_selected),
                    biosample_types_selected: Array.from(p.biosample_types_selected)};
 	return r;
@@ -80,7 +81,7 @@ class GeneExp extends React.Component{
 		       onClick={() => {
 			       const q = {
 				   accession: [],
-				   title: this.props.gene,
+				   title: this.state.gene,
 				   start: d.coords.start,
 				   len: d.coords.len,
 				   chrom: d.coords.chrom
@@ -97,27 +98,15 @@ class GeneExp extends React.Component{
         const jq = JSON.stringify(q);
         if(jq in this.state){
 	    const data = this.state[jq];
-
             return (
-		<div>
-		    <h4>
-			<em>{this.props.gene}</em>
-			{" Gene Expression Profiles by RNA-seq"}
-			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
-			<span style={{paddingLeft: "20px"}}>
-			    {this.makeBrowserButton("UCSC")}
-			</span>
-		    </h4>
-		    <em>{this.props.ensemblid_ver}</em>
-		    <div style={{"width": "100%"}} ref="bargraph">
-			{this.state.width > 0 &&
-			 React.createElement(LargeHorizontalBars,
-					     {...this.props,
-					      ...this.state,
-					      ...data,
-					      width: this.state.width,
-					      barheight})}
-		    </div>
+		<div style={{"width": "100%"}} ref="bargraph">
+		    {this.state.width > 0 &&
+		     React.createElement(LargeHorizontalBars,
+					 {...this.props,
+					  ...this.state,
+					  ...data,
+					  width: this.state.width,
+					  barheight})}
 		</div>);
         }
         return loading(this.state);
@@ -127,18 +116,29 @@ class GeneExp extends React.Component{
 	const changeView = (isSingle, sortOrder, dataScale) => {
 	    this.setState({isSingle, sortOrder, dataScale});
 	}
-
+	
         return (
 	    <div ref="box" style={{"width": "100%"}} >
+		<div>
+		    <h4>
+			<em>{this.state.gene}</em>
+			{" Gene Expression Profiles by RNA-seq"}
+			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
+			<span style={{paddingLeft: "20px"}}>
+			    {this.makeBrowserButton("UCSC")}
+			</span>
+		    </h4>
+		    <em>{this.props.ensemblid_ver}</em>
+		</div>
 		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
-			    compartments_selected={this.props.compartments_selected}
-			    globals={this.props.globals}
-			    actions={this.props.actions}
-			    dataScale={this.state.dataScale}
-			    sortOrder={this.state.sortOrder}
-		isSingle={this.props.isSingle}
-		assembly={this.props.assembly}
-			    changeView={changeView}
+		compartments_selected={this.props.compartments_selected}
+		globals={this.props.globals}
+		actions={this.props.actions}
+		dataScale={this.state.dataScale}
+		sortOrder={this.state.sortOrder}
+			    isSingle={this.props.isSingle}
+			    assembly={this.props.assembly}
+		changeView={changeView}
 		/>
 		{this.doRenderWrapper()}
 	    </div>);
