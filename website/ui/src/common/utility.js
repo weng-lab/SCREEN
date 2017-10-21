@@ -1,6 +1,5 @@
 import React from 'react'
 import {Helmet} from "react-helmet";
-import {Grid, Row, Col} from 'react-bootstrap';
 
 import HelpIcon from './components/help_icon'
 

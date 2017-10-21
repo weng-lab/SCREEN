@@ -22,6 +22,14 @@ class LargeHorizontalBars extends React.Component {
 		    <h4>No expression data available.</h4>
 		</div>);
 	}
+	const ds = this.props.isSingle ? this.props.single : this.props.mean;
+	if(!ds.hasData){
+	    return (
+                <div>
+                    <br />
+		    <h4>No expression data available.</h4>
+		</div>);
+	}
 
 	
 	let format = {
@@ -34,7 +42,6 @@ class LargeHorizontalBars extends React.Component {
 	    grouplabel: d => d.displayName
 	};
 
-	const ds = this.props.isSingle ? this.props.single : this.props.mean;
 	const items = ds.items[this.props.sortOrder];
 	
 	return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import {ButtonToolbar, ToggleButtonGroup, ToggleButton} from 'react-bootstrap';
 
-import {panelize, CenterView} from '../../../common/utility';
+import {panelize} from '../../../common/utility';
 import {CHECKLIST_MATCH_ANY} from '../../../common/components/checklist'
 import LongChecklist from '../../../common/components/longchecklist'
 
@@ -218,7 +218,8 @@ class ControlBar extends React.Component {
 						  {defaultValue: this.isSingle,
 						   setVal: (v) => {
 						       this.isSingle = v;
-						       this.setView();}}))}
+						       this.setView();}}
+			      ), null, null, {display: "flex", justifyContent: "center"})}
 		</div>
 	    </div>];
 	
