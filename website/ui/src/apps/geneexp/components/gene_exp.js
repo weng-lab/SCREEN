@@ -14,13 +14,21 @@ import ControlBar from './control_bar';
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
+	let gene = props.gene;
+	if("genes" in props){
+	    if(props.genes.length > 0){
+		gene = props.genes[0].approved_symbol;
+	    }
+	}
+	
         this.state = {jq: null, isFetching: true, isError: false,
 		      width: 0,
 		      isSingle: false,
 		      sortOrder: "byTissue",
 		      dataScale: "logTPM",
-		      gene: props.gene || props.genes[0].approved_symbol
+		      gene
 	};
+	
         this.doRenderWrapper = this.doRenderWrapper.bind(this);
         this.loadGene = this.loadGene.bind(this);
 	this.updateWidth = this.updateWidth.bind(this);
@@ -67,7 +75,9 @@ class GeneExp extends React.Component{
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, "/gews/search",
 			    (r) => {
-				this.setState({[jq]: r, isFetching: false, isError: false});
+				this.setState({[jq]: r,
+					       gene: r.gene,
+					       isFetching: false, isError: false});
 			    },
 			    (msg) => {
 				console.log("err loading ge");
