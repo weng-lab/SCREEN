@@ -93,17 +93,7 @@ class GeneExpression:
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM": self.sortByExpression(rows, "rawFPKM")}
 
-    def computeHorBars(self, gene, compartments, biosample_types_selected):
-        q = """
-SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle
-FROM r_expression_{assembly} AS r
-INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
-WHERE gene_name = %(gene)s
-AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
-AND r_rnas_{assembly}.biosample_type IN %(bts)s
-""".format(assembly=self.assembly)
-
+    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected):
         a = """
 SELECT chrom, start, stop FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
@@ -144,3 +134,31 @@ WHERE approved_symbol = %(gene)s
                           "start": grows[0][1],
                           "len": grows[0][2] - grows[0][1]}}
         return ret
+
+
+    def computeHorBars(self, gene, compartments, biosample_types_selected):
+        q = """
+SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
+r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle
+FROM r_expression_{assembly} AS r
+INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+WHERE gene_name = %(gene)s
+AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
+AND r_rnas_{assembly}.biosample_type IN %(bts)s
+""".format(assembly=self.assembly)
+
+        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected)
+    
+    def computeHorBarsMean(self, gene, compartments, biosample_types_selected):
+        q = """
+SELECT avg(r.tpm), r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
+r.dataset, 'mean' as replicate, avg(r.fpkm), r_rnas_{assembly}.ageTitle
+FROM r_expression_{assembly} AS r
+INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+WHERE gene_name = %(gene)s
+AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
+AND r_rnas_{assembly}.biosample_type IN %(bts)s
+GROUP BY r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r_rnas_{assembly}.ageTitle
+""".format(assembly=self.assembly)
+
+        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected)
