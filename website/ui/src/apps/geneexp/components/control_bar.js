@@ -100,6 +100,27 @@ class LinearLogBox extends React.Component {
     }
 }
 
+class RepBox extends React.Component {
+    render(){
+	let a = "Single";
+	let b = "Mean";
+	return (
+	    <ButtonToolbar>
+		<ToggleButtonGroup type="radio" name="options"
+				   defaultValue={this.props.defaultValue}>
+		    <ToggleButton value={true} bsSize="small"
+				  onClick={() => {this.props.setVal(true);}}>
+			{a}
+		    </ToggleButton>
+		    <ToggleButton value={false} bsSize="small"
+				  onClick={() => {this.props.setVal(false);}}>
+			{b}
+		    </ToggleButton>
+		</ToggleButtonGroup>
+	    </ButtonToolbar>);
+    }
+}
+
 class ByExpTissueTissueMax extends React.Component {
     render(){
 	const a = "Experiment";
@@ -131,6 +152,7 @@ class ControlBar extends React.Component {
 	super(props);
 	this.isTpm = true;
 	this.isLinear = false;
+	this.isSingle = false;
 	this.sampleTisOrTisMax = 2;
     }
 
@@ -155,7 +177,7 @@ class ControlBar extends React.Component {
 	} else if(3 === this.sampleTisOrTisMax){
 	    r = lookup3[this.isTpm][this.isLinear];
 	}
-	this.props.changeView(r[0], r[1]);
+	this.props.changeView(this.isSingle, r[0], r[1]);
     }
     
     render(){
@@ -171,7 +193,7 @@ class ControlBar extends React.Component {
 		</div>
 	    </div>,
 	    <div className="row" key="datascale">
-		<div className="col-md-6">
+		<div className="col-md-4">
 		    {panelize("TPM/FPKM",
 			      React.createElement(TmpFpkmBox,
 						  {defaultValue: this.isTpm,
@@ -179,12 +201,20 @@ class ControlBar extends React.Component {
 						       this.isTpm = v;
 						       this.setView();}}))}
 		</div>
-		<div className="col-md-6">
+		<div className="col-md-4">
 		    {panelize("Scale",
 			      React.createElement(LinearLogBox,
 						  {defaultValue: this.isLinear,
 						   setVal: (v) => {
 						       this.isLinear = v;
+						       this.setView();}}))}
+		</div>
+		<div className="col-md-4">
+		    {panelize("Rep",
+			      React.createElement(RepBox,
+						  {defaultValue: this.isSingle,
+						   setVal: (v) => {
+						       this.isSingle = v;
 						       this.setView();}}))}
 		</div>
 	    </div>];

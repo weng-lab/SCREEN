@@ -126,7 +126,8 @@ const MainTabInfo = (parsedQuery, globals) => {
 		       f: ActivityProfileTab},
 	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
 	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
-	    details: {title: "cRE Details", visible: false, f: DetailsTab}
+	    details: {title: Render.tabTitle(["cRE", "Details"]), visible: false,
+		      f: DetailsTab}
     };
 }
 

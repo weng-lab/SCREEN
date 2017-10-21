@@ -10,11 +10,14 @@ class LargeHorizontalBars extends React.Component {
 	this.doRender = this.doRender.bind(this);
     }
 
-    doRender({isFetching, hasData, width}){
+    doRender({isFetching, width}){
         if(isFetching){
             return loading(this.props);
         }
-	if (!hasData){
+
+	const ds = this.props.isSingle ? this.props.single : this.props.mean;
+
+	if (!ds.hasData){
 	    return (
                 <div>
                     <br />
@@ -22,6 +25,7 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
+	
 	let format = {
 	    value: d => d[this.props.dataScale],
 	    label: d => {
@@ -32,7 +36,7 @@ class LargeHorizontalBars extends React.Component {
 	    grouplabel: d => d.displayName
 	};
 
-	const items = this.props.items[this.props.sortOrder];
+	const items = ds.items[this.props.sortOrder];
 	
 	return (
             <div>

@@ -16,6 +16,7 @@ class GeneExp extends React.Component{
         super(props);
         this.state = {jq: null, isFetching: true, isError: false,
 		      width: 0,
+		      isSingle: false,
 		      sortOrder: "byTissue",
 		      dataScale: "logTPM"
 	};
@@ -123,8 +124,8 @@ class GeneExp extends React.Component{
     }
 
     render(){
-	const changeView = (sortOrder, dataScale) => {
-	    this.setState({sortOrder, dataScale});
+	const changeView = (isSingle, sortOrder, dataScale) => {
+	    this.setState({isSingle, sortOrder, dataScale});
 	}
 
         return (
@@ -135,6 +136,7 @@ class GeneExp extends React.Component{
 			    actions={this.props.actions}
 			    dataScale={this.state.dataScale}
 			    sortOrder={this.state.sortOrder}
+		isSingle={this.props.isSingle}
 			    changeView={changeView}
 		/>
 		{this.doRenderWrapper()}
