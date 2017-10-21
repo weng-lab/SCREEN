@@ -76,17 +76,21 @@ class GeneExp extends React.Component{
     }
 
     makeBrowserButton(gbName) {
-	const d = this.props.search;
 	return <Button bsSize="small"
 		       onClick={() => {
-			       const q = {
-				   accession: [],
-				   title: this.state.gene,
-				   start: d.coords.start,
-				   len: d.coords.len,
-				   chrom: d.coords.chrom
-			       };
-			       this.props.actions.showGenomeBrowser(q, gbName, "gene");
+			       const q = this.makeKey(this.props);
+			       const jq = JSON.stringify(q);
+			       if(jq in this.state){
+				   const d = this.state[jq];
+				   const gbq = {
+				       accession: [],
+				       title: d.gene,
+				       start: d.start,
+				       len: d.stop - d.start,
+				       chrom: d.chrom
+				   };
+				   this.props.actions.showGenomeBrowser(gbq, gbName, "gene");
+			       }
 		       }}>
 	    {gbName}
 	</Button>;
