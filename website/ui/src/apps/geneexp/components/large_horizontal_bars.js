@@ -61,6 +61,7 @@ class LargeHorizontalBars extends React.Component {
 		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
 		compartments_selected={this.props.compartments_selected}
 		globals={this.props.globals}
+		actions={this.props.actions}
 		dataScale={this.state.dataScale}
 		sortOrder={this.state.sortOrder}
 			    changeView={changeView}

@@ -102,9 +102,9 @@ class LinearLogBox extends React.Component {
 
 class ByExpTissueTissueMax extends React.Component {
     render(){
-	const a = "Experiment";
-	const b = "Tissue";
-	const c = "Tissue Max";
+	const a = "By Experiment";
+	const b = "By Tissue";
+	const c = "By Tissue Max";
 	return (
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
@@ -159,27 +159,40 @@ class ControlBar extends React.Component {
     }
     
     render(){
+	const buttons = [
+	    <div className="row" key="grouping">
+		<div className="col-md-12">
+		    {panelize("Group by",
+			      React.createElement(ByExpTissueTissueMax, 
+						  {defaultValue: this.sampleTisOrTisMax,
+						   setVal: (v) => {
+						       this.sampleTisOrTisMax = v;
+						       this.setView();}}))}
+		</div>
+	    </div>,
+	    <div className="row" key="datascale">
+		<div className="col-md-6">
+		    {panelize("TPM/FPKM",
+			      React.createElement(TmpFpkmBox,
+						  {defaultValue: this.isTpm,
+						   setVal: (v) => {
+						       this.isTpm = v;
+						       this.setView();}}))}
+		</div>
+		<div className="col-md-6">
+		    {panelize("Scale",
+			      React.createElement(LinearLogBox,
+						  {defaultValue: this.isLinear,
+						   setVal: (v) => {
+						       this.isLinear = v;
+						       this.setView();}}))}
+		</div>
+	    </div>];
+	    	    
 	return(
 	    <div className="row">
-		<div className="col-md-3">
-		    {React.createElement(ByExpTissueTissueMax, 
-					 {defaultValue: this.sampleTisOrTisMax,
-					  setVal: (v) => {
-					      this.sampleTisOrTisMax = v;
-					      this.setView();}})
-		    }
-		    {React.createElement(TmpFpkmBox,
-					 {defaultValue: this.isTpm,
-					  setVal: (v) => {
-					      this.isTpm = v;
-					      this.setView();}})
-		    }
-		    {React.createElement(LinearLogBox,
-					 {defaultValue: this.isLinear,
-					  setVal: (v) => {
-					      this.isLinear = v;
-					      this.setView();}})
-		    }
+		<div className="col-md-4">
+		    {buttons}
 		</div>
 		<div className="col-md-3">
 	 	    {React.createElement(BiosampleTypesBox, this.props)}
@@ -187,8 +200,7 @@ class ControlBar extends React.Component {
 		<div className="col-md-3">
 		    {React.createElement(CellCompartmentsBox, this.props)}
 		</div>
-	    </div>
-	);
+	    </div>);
     }
 }
 
