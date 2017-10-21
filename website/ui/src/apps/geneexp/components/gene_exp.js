@@ -76,7 +76,7 @@ class GeneExp extends React.Component{
 	ApiClient.getByPost(jq, "/gews/search",
 			    (r) => {
 				this.setState({[jq]: r,
-					       gene: r.gene,
+					       // gene: r.gene, FIXME!
 					       isFetching: false, isError: false});
 			    },
 			    (msg) => {
