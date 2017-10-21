@@ -12,13 +12,7 @@ from models.cre import CRE
 from models.cre_download import CREdownload
 from models.rampage import Rampage
 from models.minipeaks import MiniPeaks
-from models.tss_bar import TSSBarGraph
-from models.rank_heatmap import RankHeatmap
-from models.cytoband import Cytoband
-#from models.trees import Trees
-from models.tfenrichment import TFEnrichment
 from models.ortholog import Ortholog
-from models.tads import Tads
 
 from common.pg import PGsearch
 from common.get_set_mc import GetOrSetMemCache
@@ -63,9 +57,7 @@ class DataWebService(GetOrSetMemCache):
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
         self.pgGlobal = GlobalPG(assembly)
-        self.tfEnrichment = TFEnrichment(ps, assembly, cache)
         self.pgFantomCat = PGFantomCat(assembly)
-        self.tads = Tads(assembly, ps)
 
         self.actions = {"cre_table": self.cre_table,
                         "cre_tf_dcc": self.cre_tf_dcc,
@@ -73,26 +65,22 @@ class DataWebService(GetOrSetMemCache):
                         "re_detail": self.re_detail,
                         "bed_download": self.bed_download,
                         "json_download": self.json_download,
-                        "trees": self.trees,
-                        "tfenrichment": self.tfenrichment,
                         "global_object": self.global_object,
                         "global_fantomcat": self.global_fantomcat,
-                        "ctcfdistr": self.ctcf_distr,
                         "global_liftover": self.global_liftover,
                         "rampage": self.rampage
                         }
 
         self.reDetailActions = {
             "topTissues": self._re_detail_topTissues,
-            "targetGene": self._re_detail_targetGene,
             "nearbyGenomic": self._re_detail_nearbyGenomic,
+            "fantom_cat": self.fantom_cat,
+            "ortholog": self._ortholog,
             "tfIntersection": self._re_detail_tfIntersection,
             "cistromeIntersection": self._re_detail_cistromeIntersection,
-            "linkedGenes": self._re_detail_linkedGenes,
             "rampage": self._re_detail_rampage,
-            "similarREs": self._re_detail_similarREs,
-            "fantom_cat": self.fantom_cat,
-            "ortholog": self._ortholog}
+            "linkedGenes": self._re_detail_linkedGenes,
+            }
 
         self.session = Sessions(ps.DBCONN)
 
@@ -193,9 +181,6 @@ class DataWebService(GetOrSetMemCache):
             "fantom_cat_twokb": process("twokb_intersections")
         }}
 
-    def _re_detail_targetGene(self, j, accession):
-        return {accession: {}}
-
     def _re_detail_nearbyGenomic(self, j, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         coord = cre.coord()
@@ -244,21 +229,6 @@ class DataWebService(GetOrSetMemCache):
         gene = j["gene"]
         ret = rampage.getByGeneApprovedSymbol(gene)
         return {gene: ret}
-
-    def _re_detail_similarREs(self, j, accession):
-        nbins = Config.minipeaks_nbins
-        ver = Config.minipeaks_ver
-        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache, nbins, ver)
-        rows, accessions = mp.getMinipeaksForAssays(["dnase", "h3k27ac", "h3k4me3"],
-                                                    [accession])
-        return {accession: {"rows": rows,
-                            "accessions": accessions}}
-
-    def trees(self, j, args):
-        tree_rank_method = j["tree_rank_method"]
-        t = Trees(self.cache, self.ps, self.assembly, tree_rank_method)
-        ret = t.getTree()
-        return {tree_rank_method: ret}
 
     def bed_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
