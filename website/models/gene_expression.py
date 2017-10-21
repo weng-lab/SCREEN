@@ -93,38 +93,6 @@ class GeneExpression:
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM": self.sortByExpression(rows, "rawFPKM")}
 
-    def computeFoldChange(self, ct1, ct2):
-        ct1 = ct1.replace("_", " ")
-        ct2 = ct2.replace("_", " ")
-        exp = {ct1: {}, ct2: {}}
-        fc = {}
-        counts = {ct1: {}, ct2: {}}
-
-        with getcursor(self.ps.DBCONN, "ComputeGeneExpression::computeFoldChange") as curs:
-            curs.execute("""
-SELECT r.tpm, r.fpkm, r_rnas_{assembly}.cellType, r.gene_name
-FROM r_expression_{assembly} as r
-INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
-WHERE r_rnas_{assembly}.cellType = %(ct1)s OR r_rnas_{assembly}.cellType = %(ct2)s
-""".format(assembly=self.assembly),
-                {"ct1": ct1, "ct2": ct2})
-            rows = curs.fetchall()
-
-        for row in rows:
-            if row[3] not in exp[row[2]]:
-                exp[row[2]][row[3]] = 0.0
-            exp[row[2]][row[3]] += float(row[0])
-            if row[3] not in counts[row[2]]:
-                counts[row[2]][row[3]] = 0.0
-            counts[row[2]][row[3]] += 1.0
-        for ct in [ct1, ct2]:
-            for gene in exp[ct]:
-                exp[ct][gene] /= counts[ct][gene]
-        for gene in exp[ct1]:
-            if gene in exp[ct2]:
-                fc[gene] = math.log((exp[ct1][gene] + 0.01) / (exp[ct2][gene] + 0.01), 2)
-        return fc
-
     def computeHorBars(self, gene, compartments, biosample_types_selected):
         q = """
 SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
