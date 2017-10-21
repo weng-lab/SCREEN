@@ -6,7 +6,7 @@
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 3,
   "minipeaks_nbins": 20,
-  "ribbon":,
+  "ribbon": "",
   "googleAnalytics": true,
   "memache": false,
   "cassandra": "cassandra"
