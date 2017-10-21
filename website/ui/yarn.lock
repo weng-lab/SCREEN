@@ -4059,10 +4059,6 @@ jest@20.0.4:
   dependencies:
     jest-cli "^20.0.4"
 
-"jquery-ui@github:jquery/jquery-ui#1.12.1":
-  version "1.12.1"
-  resolved "https://codeload.github.com/jquery/jquery-ui/tar.gz/c6f1735249295bb37153861aa97e5b3e38d46b02"
-
 jquery@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
