@@ -102,9 +102,9 @@ class LinearLogBox extends React.Component {
 
 class ByExpTissueTissueMax extends React.Component {
     render(){
-	const a = "By Experiment";
-	const b = "By Tissue";
-	const c = "By Tissue Max";
+	const a = "Experiment";
+	const b = "Tissue";
+	const c = "Tissue Max";
 	return (
 	    <ButtonToolbar>
 		<ToggleButtonGroup type="radio" name="options" 
