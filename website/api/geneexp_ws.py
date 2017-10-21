@@ -56,6 +56,8 @@ class GeneExpWebService(object):
         compartments = j["compartments_selected"]
 
         biosample_types_selected = j["biosample_types_selected"]
+        if not biosample_types_selected:
+            return abort("no biosample type selected")
         if not set(biosample_types_selected).issubset(self.allBiosampleTypes):
             return abort("invalid biosample type")
         
