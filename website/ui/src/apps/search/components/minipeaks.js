@@ -52,7 +52,7 @@ class MiniPeaks extends React.Component {
             return;
         }
         this.setState({jq, isFetching: true});
-	ApiClient.getMinipeaks(jq, 
+	ApiClient.getMinipeaks(jq, this.key,
 			       (r) => {
 				   this.setState({...r,
 					       jq, isFetching: false, isError: false});

@@ -27,8 +27,8 @@ export const getByPost  = (jq, url, successF, errF) => {
 	.catch(errF);
 }
 
-export const getMinipeaks = (jq, successF, errF) => {
-    const url = "http://screen.encodeproject.org/api/dataws/re_detail/similarREs";
+export const getMinipeaks = (jq, baseUrl, successF, errF) => {
+    const url = "http://screen.encodeproject.org/api/dataws/re_detail/" + baseUrl;
     fetch(url,
 	  {
 	      headers: {
