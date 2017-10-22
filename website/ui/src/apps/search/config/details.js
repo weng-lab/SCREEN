@@ -279,7 +279,7 @@ const DetailsTabInfo = (assembly) => {
                   f: RampageTab},
         ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
-        similarREs: {title: Render.tabTitle(["Signal", "Profile"]),
+        miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},
 	linkedGenes: {title: Render.tabTitle(["Linked", "Genes"]),
 		      enabled: true, f: LinkedGenesTab}

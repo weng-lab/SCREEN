@@ -15,7 +15,7 @@ class MiniPeaks extends React.Component {
     constructor(props) {
 	super(props);
 	this.state = {jq: null, isFetching: true, isError: false };
-        this.key = "similarREs";
+        this.key = "miniPeaks";
 	this._colors = {
 	    "dnase": "#06DA93",
 	    "h3k4me3": "#FF0000",

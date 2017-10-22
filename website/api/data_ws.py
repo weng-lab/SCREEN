@@ -80,6 +80,7 @@ class DataWebService(GetOrSetMemCache):
             "cistromeIntersection": self._re_detail_cistromeIntersection,
             "rampage": self._re_detail_rampage,
             "linkedGenes": self._re_detail_linkedGenes,
+            "minipeaks": self._re_detail_minipeaks,
             }
 
         self.session = Sessions(ps.DBCONN)
@@ -255,3 +256,12 @@ class DataWebService(GetOrSetMemCache):
         if not target:
             raise Exception("invalid target")
         return {target: self.pgSearch.histoneTargetExps(accession, target, eset=j.get("eset", None))}
+
+    def _re_detail_minipeaks(self, j, accession):
+        nbins = Config.minipeaks_nbins
+        ver = Config.minipeaks_ver
+        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache, nbins, ver)
+        rows, accessions = mp.getMinipeaksForAssays(["dnase", "h3k27ac", "h3k4me3"],
+                                                    [accession])
+        return {accession: {"rows": rows,
+                            "accessions": accessions}}
