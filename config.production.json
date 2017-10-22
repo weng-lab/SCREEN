@@ -9,7 +9,7 @@
   "ribbon": "",
   "googleAnalytics": true,
   "memache": false,
-  "cassandra": "cassandra"
+  "cassandra": ["cassandra"]
  },
  "UI":
  {"apiServer": "http://screen.encodeproject.org/api",

@@ -10,6 +10,11 @@
   "ribbon": "experimental",
   "googleAnalytics": false,
   "memache": false,
-  "cassandra": "127.0.0.1"
+  "cassandra": ["127.0.0.1"]
+ },
+ "UI":
+ {"apiServer": "http://api.wenglab.org",
+  "staticServer": "http://screen.encodeproject.org/assets",
+  "overrides": {}
  }
 }

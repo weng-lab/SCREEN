@@ -9,6 +9,11 @@
   "ribbon": "beta",
   "googleAnalytics": false,
   "memache": false,
-  "cassandra": "cassandra"
+  "cassandra": ["cassandra"]
+ },
+ "UI":
+ {"apiServer": "http://api.wenglab.org",
+  "staticServer": "http://screen.encodeproject.org/assets",
+  "overrides": {}
  }
 }
