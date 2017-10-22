@@ -18,6 +18,8 @@ if os.path.exists(prodDir):
     t = os.path.getmtime(prodDir)
     mdt = datetime.datetime.fromtimestamp(t)
     dn = mdt.strftime('%Y-%m-%d-%H-%M-%S')
+    ndir = os.path.join(Dir, "prod.old")
+    Utils.mkdir_p(ndir)
     ndir = os.path.join(Dir, "prod.old", dn)
     shutil.move(prodDir, ndir)
     printt("moved", prodDir, "to", ndir)
