@@ -59,7 +59,8 @@ class ExtractRNAseq:
             for row in lines[1:]:
                 if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
                     continue
-                yield(expF.expID, expF.fileID, row[gene_id_idx],
+                yield(expF.expID, expF.fileID, row[gene_id_idx], 
+                      '_'.join([str(x) for x in expF.biological_replicates]),
                       row[TPM_idx], row[FPKM_idx])
             
     def _getFiles(self):
