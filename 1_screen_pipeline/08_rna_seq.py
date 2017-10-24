@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
-from utils import AddPath, Utils, Timer, printt, printWroteNumLines
+from utils import AddPath, Utils, Timer, printt, printWroteNumLines, eprint
 from cache_memcache import MemCacheWrapper
 from querydcc import QueryDCC
 from metadataws import MetadataWS
@@ -32,6 +32,8 @@ qd = QueryDCC(cache=mc)
 class ExtractRNAseq:
     def __init__(self, assembly):
         self.assembly = assembly
+        geneIdIdxs = {"hg19": 0, "mm10": 0}
+        self.gene_id_idx = geneIdIdxs[self.assembly]
 
     def run(self):
         today = arrow.now().format('YYYY-MM-DD')
@@ -47,22 +49,26 @@ class ExtractRNAseq:
         for exp, expF in self._getFiles():
             counter += 1
             printt(counter, exp.encodeID, expF.fileID, expF.biological_replicates, expF.output_type)
-            with open(expF.fnp()) as f:
-                lines = [x.strip().split('\t') for x in f]
-            header = lines[0]
-            transcript_id_idx = 0
-            gene_id_idx = 1
-            TPM_idx = 5 
-            FPKM_idx = 6
-            assert("TPM" == header[TPM_idx])
-            assert("FPKM" == header[FPKM_idx])
-            for row in lines[1:]:
-                if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
-                    continue
-                yield(expF.expID, expF.fileID, row[gene_id_idx], 
-                      '_'.join([str(x) for x in expF.biological_replicates]),
-                      row[TPM_idx], row[FPKM_idx])
-            
+            try:
+                with open(expF.fnp()) as f:
+                    lines = [x.strip().split('\t') for x in f]
+                header = lines[0]
+                gene_id_idx = self.gene_id_idx
+                TPM_idx = 5 
+                FPKM_idx = 6
+                assert("gene_id" == header[gene_id_idx])
+                assert("TPM" == header[TPM_idx])
+                assert("FPKM" == header[FPKM_idx])
+                for row in lines[1:]:
+                    if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
+                        continue
+                    yield(expF.expID, expF.fileID, row[gene_id_idx], 
+                          '_'.join([str(x) for x in expF.biological_replicates]),
+                          row[TPM_idx], row[FPKM_idx])
+            except:
+                eprint("error reading:", expF.fnp())
+                raise
+
     def _getFiles(self):
         url = "https://www.encodeproject.org/search/?"
         url += "searchTerm=rna-seq&type=Experiment&assay_title=total+RNA-seq"
