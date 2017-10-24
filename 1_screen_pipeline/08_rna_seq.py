@@ -9,7 +9,7 @@ import fileinput
 import StringIO
 import gzip
 import random
-
+import arrow
 from joblib import Parallel, delayed
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -34,22 +34,50 @@ class ExtractRNAseq:
         self.assembly = assembly
 
     def run(self):
+        today = arrow.now().format('YYYY-MM-DD')
+        fnp = paths.path(self.assembly, "geneExp", today + ".tsv.gz")
+        Utils.ensureDir(fnp)
+        with gzip.open(fnp, 'wb') as f:
+            for row in self._getRowsFromFiles():
+                f.write('\t'.join(row) + '\n')
+        printWroteNumLines(fnp)
+        
+    def _getRowsFromFiles(self):
+        counter = 0
+        for exp, expF in self._getFiles():
+            counter += 1
+            printt(counter, exp.encodeID, expF.fileID, expF.biological_replicates, expF.output_type)
+            with open(expF.fnp()) as f:
+                lines = [x.strip().split('\t') for x in f]
+            header = lines[0]
+            transcript_id_idx = 0
+            gene_id_idx = 1
+            TPM_idx = 5 
+            FPKM_idx = 6
+            assert("TPM" == header[TPM_idx])
+            assert("FPKM" == header[FPKM_idx])
+            for row in lines[1:]:
+                if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
+                    continue
+                yield(expF.expID, expF.fileID, row[gene_id_idx],
+                      row[TPM_idx], row[FPKM_idx])
+            
+    def _getFiles(self):
         url = "https://www.encodeproject.org/search/?"
         url += "searchTerm=rna-seq&type=Experiment&assay_title=total+RNA-seq"
         url += "&assembly=" + self.assembly + "&files.file_type=tsv"
         url += "&award.project=ENCODE&award.project=Roadmap"
         url += "&format=json&limit=all"
 
-        counter = 0
         for exp in qd.getExps(url):
-            for f in exp.files:
-                if not f.isTSV():
+            for expF in exp.files:
+                if not expF.isTSV():
                     continue
-                if f.assembly != self.assembly:
+                if expF.assembly != self.assembly:
                     continue
-                counter += 1
-                f.download()
-                print(counter, exp.encodeID, f.fileID, f.biological_replicates, f.output_type)
+                expF.download()
+                if expF.isGeneQuantifications():
+                    yield(exp, expF)
 
 def run(args):
     assemblies = Config.assemblies
