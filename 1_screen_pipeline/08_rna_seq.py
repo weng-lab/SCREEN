@@ -20,6 +20,7 @@ from querydcc import QueryDCC
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 from exp import Exp
+from get_tss import Genes
 
 AddPath(__file__, '../common/')
 from constants import paths, chroms
@@ -36,6 +37,8 @@ class ExtractRNAseq:
         self.gene_id_idx = geneIdIdxs[self.assembly]
 
     def run(self):
+        self.ensemblIDtoGeneName()
+        
         today = arrow.now().format('YYYY-MM-DD')
         fnp = paths.path(self.assembly, "geneExp", today + ".tsv.gz")
         Utils.ensureDir(fnp)
@@ -43,7 +46,15 @@ class ExtractRNAseq:
             for row in self._getRowsFromFiles():
                 f.write('\t'.join(row) + '\n')
         printWroteNumLines(fnp)
-        
+
+    def ensemblIDtoGeneName(self):
+        fnp, filetype = paths.gene_files[self.assembly]
+        printt("loading", fnp)
+        ggff = Genes(fnp, filetype)
+        self.ensemToGene = {}
+        for g in ggff.getGenes():
+            self.ensemToGene[g.geneid_] = g.genename_
+
     def _getRowsFromFiles(self):
         counter = 0
         for exp, expF in self._getFiles():
@@ -62,7 +73,9 @@ class ExtractRNAseq:
                 for row in lines[1:]:
                     if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
                         continue
-                    yield(expF.expID, expF.fileID, row[gene_id_idx], 
+                    geneID = row[gene_id_idx]
+                    yield(expF.expID, expF.fileID, geneID,
+                          self.ensemToGene.get(geneID, geneID),
                           '_'.join([str(x) for x in expF.biological_replicates]),
                           row[TPM_idx], row[FPKM_idx])
             except:
