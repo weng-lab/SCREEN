@@ -82,7 +82,10 @@ class LoadRNAseq:
                 life_stage = bs.get("life_stage", "")
                 age_units = bs.get("age_units", "")
                 age = bs.get("age", "")
-                ageTitle = '(%s %s %s)' % (life_stage, age, age_units)
+                toks = [x for x in [life_stage, age, age_units] if x and x != "unknown"]
+                ageTitle = ''
+                if toks:
+                    ageTitle = '(' + ' ' .join(toks) + ')'
                 #print(ageTitle)
         except:
             raise

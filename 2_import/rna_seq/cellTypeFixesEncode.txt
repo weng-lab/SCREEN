@@ -68,3 +68,10 @@ limb,limb
 neural tube,brain
 common myeloid progenitor,blood
 megakaryocyte-erythroid progenitor cell,blood
+IMR-90,lung
+mononuclear cell,blood
+erythroid progenitor cell,blood
+monocyte,blood
+megakaryocyte progenitor cell,blood
+neutrophil,blood
+erythroblast,blood
