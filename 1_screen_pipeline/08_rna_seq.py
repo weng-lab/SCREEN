@@ -26,7 +26,7 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
-mc = MemCacheWrapper()
+mc = MemCacheWrapper("127.0.0.1")
 qd = QueryDCC(cache=mc)
 
 class ExtractRNAseq:
