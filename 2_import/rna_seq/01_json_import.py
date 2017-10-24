@@ -35,6 +35,7 @@ CREATE TABLE {tableName} (
 ensembl_id VARCHAR(256) NOT NULL,
 gene_name VARCHAR(256) NOT NULL,
 dataset VARCHAR(256) NOT NULL,
+    fileID VARCHAR(256) NOT NULL,
 replicate INT NOT NULL,
 fpkm NUMERIC NOT NULL,
 tpm NUMERIC NOT NULL);
@@ -42,9 +43,9 @@ tpm NUMERIC NOT NULL);
 
     printt("importing", fnp)
     with gzip.open(fnp) as f:
-        cur.copy_from(f, tableName, ',',
-                      columns=("ensembl_id", "gene_name", "dataset",
-                               "replicate", "fpkm", "tpm"))
+        cur.copy_from(f, tableName, '\t',
+                      columns=("dataset", "fileID", "ensembl_id", "gene_name",
+                               "replicate", "tpm", "fpkm"))
 
 
 def doIndex(curs, assembly):
@@ -53,33 +54,19 @@ def doIndex(curs, assembly):
 
 
 def run(args, DBCONN):
-    d = os.path.join(Dirs.encyclopedia, "roderic/public_docs.crg.es/rguigo/encode/expressionMatrices/")
-    fnps = {}
-    fnps["hg19"] = os.path.join(d, "H.sapiens/hg19/2016_10/gene.human.V19.hg19.RNAseq.2016_10_08.json.gz")
-    fnps["mm10"] = os.path.join(d, "M.musculus/mm10/2016_10/gene.mouse.M4.mm10.RNAseq.2016_10_07.json.gz")
-
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        inFnp = fnps[assembly]
-        outFnp = inFnp + ".csv.gz"
-
-        if not os.path.exists(outFnp):
-            printt("missing", outFnp)
-            cmds = [os.path.join(os.path.dirname(__file__),
-                                 "json_parser/bin/read_json"),
-                    inFnp]
-            print("writing csv from", inFnp)
-            Utils.runCmds(cmds)
+        fnp = paths.path(assembly, "geneExp", "2017-10-24" + ".tsv.gz")
 
         with getcursor(DBCONN, "08_setup_log") as curs:
             if args.index:
                 doIndex(curs, assembly)
             else:
-                print("using", outFnp)
-                setupAndCopy(curs, assembly, outFnp)
+                print("using", fnp)
+                setupAndCopy(curs, assembly, fnp)
                 doIndex(curs, assembly)
 
 
