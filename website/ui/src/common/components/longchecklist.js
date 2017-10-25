@@ -65,13 +65,14 @@ class LongChecklist extends React.Component {
 		<Ztable cols={cols}
 			data={this.props.data}
 			order={this.props.order}
+			sortCol={this.props.sortCol}
 			buttonsOff={this.props.buttonsOff}
 			onTdClick={this._td_handler}
 			bFilter={true}
 			bLengthChange={false}
 			paging={paging}
 	                noSearchBox={this.props.noSearchBox}
-	    noTotal={this.props.noTotal}
+			noTotal={this.props.noTotal}
 		/>
 	    </div>);
     }

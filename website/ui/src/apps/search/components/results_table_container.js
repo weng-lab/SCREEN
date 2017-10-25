@@ -187,8 +187,8 @@ class ResultsTableContainer extends React.Component {
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
-      gb_cres={this.props.gb_cres}
-      chrom = {this.props.coord_chrom}
+		    gb_cres={this.props.gb_cres}
+		    chrom = {this.props.coord_chrom}
 		/>
 	    </div>);
     }
