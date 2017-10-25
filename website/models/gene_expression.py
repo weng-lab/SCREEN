@@ -26,8 +26,9 @@ class GeneExpression:
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
 
-    def groupByTissue(self, rows):
-        def sorter(x): return x["tissue"]
+    def groupByTissue(self, rows, skey):
+        def sorter(x):
+            return (x["tissue"], -1.0 * float(x[skey]))
         rows.sort(key=sorter)
 
         ret = {}
@@ -72,7 +73,8 @@ class GeneExpression:
         return ret
 
     def sortByExpression(self, rows, key):
-        def sorter(x): return float(x[key])
+        def sorter(x):
+            return float(x[key])
         rows.sort(key=sorter, reverse=True)
 
         ret = {}
@@ -87,7 +89,8 @@ class GeneExpression:
         return ret
 
     def process(self, rows):
-        return {"byTissue": self.groupByTissue(rows),
+        return {"byTissueTPM": self.groupByTissue(rows, "rawTPM"),
+                "byTissueFPKM": self.groupByTissue(rows, "rawFPKM"),
                 "byTissueMaxTPM": self.groupByTissueMax(rows, "rawTPM"),
                 "byTissueMaxFPKM": self.groupByTissueMax(rows, "rawFPKM"),
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
