@@ -23,6 +23,8 @@ class MiniPeaks extends React.Component {
 	};
 	this.fileIDmaxes = {}
 	this.updateFileMaxes = this.updateFileMaxes.bind(this);
+	this.renderPeaks = this.renderPeaks.bind(this);
+	this.sortByMax = this.sortByMax.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -85,51 +87,50 @@ class MiniPeaks extends React.Component {
 			    });
     }
     
-    doRender(accession){
-	let renderPeaks = (dr) => {
-	    if(!dr){
-		return "";
-	    }
-	    // let fileID = dataRaw.fileID; if needed....
-	    const mmax = (dr.assay === "dnase") ? 150 : 50;
-	    const mfactor = ROWHEIGHT / mmax;
-	    const data = dr.data.map((d) => ((d > mmax ? mmax : d) * mfactor));
-	    const color = this._colors[dr.assay];
-
-	    const fileID = dr.fileID;
-	    const dataMax = this.fileIDmaxes[fileID];
-		
-	    return (
-                <span className={"text-nowrap"}>
-                    <svg width={data.length} height={ROWHEIGHT} >
-	                <g>
-		            {data.map((v, i) => (<rect width="1" height={v}
-						       key={i}
-						       y={ROWHEIGHT - v} x={i}
-						       fill={color} />))}
-		        </g>
-		    </svg>
-		    {" "}{dataMax.toFixed(1)}
-		</span>);
+    renderPeaks(dr){
+	if(!dr){
+	    return "";
 	}
+	// let fileID = dataRaw.fileID; if needed....
+	const mmax = (dr.assay === "dnase") ? 150 : 50;
+	const mfactor = ROWHEIGHT / mmax;
+	const data = dr.data.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	const color = this._colors[dr.assay];
 
+	const fileID = dr.fileID;
+	const dataMax = this.fileIDmaxes[fileID];
+	
+	return (
+            <span className={"text-nowrap"}>
+                <svg width={data.length} height={ROWHEIGHT} >
+	            <g>
+		        {data.map((v, i) => (<rect width="1" height={v}
+						   key={i}
+						   y={ROWHEIGHT - v} x={i}
+						   fill={color} />))}
+		    </g>
+		</svg>
+		{" "}{dataMax.toFixed(1)}
+	    </span>);
+    }
+
+    sortByMax(d){
+	if(!d){
+	    return 0;
+	}
+	return this.fileIDmaxes[d.fileID];
+    }
+
+    doRender(accession){
 	let cols = [];
 	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac", h3k4me3 : "H3K4me3"}
-
-	const sortByMax = (d) => {
-	    if(!d){
-		return 0;
-	    }
-	    return this.fileIDmaxes[d.fileID];
-	}
-	
 	for(let acc of this.state[accession].accessions){
 	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
-		cols.push({title: Render.tabTitle([acc, assayToTitle[assay]]),
+		cols.push({title: assayToTitle[assay],
 			   data: acc+assay,
-			   className: "dt-right minipeak",
-			   sortDataF: sortByMax,			       
-			   render: renderPeaks});
+			   className: "minipeak",
+			   sortDataF: this.sortByMax,			       
+			   render: this.renderPeaks});
 	    }
 	}
 	cols = cols.concat([{title: "", data: "expIDs",
@@ -138,11 +139,11 @@ class MiniPeaks extends React.Component {
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);
 
-        let table = {title: "Minipeaks",
-	             cols,
-		     bFilter: true,
-		     sortCol: [accession+"dnase", false]
-		    };
+        const table = {title: "Minipeaks",
+	               cols,
+		       bFilter: true,
+		       sortCol: [accession+"dnase", false]
+	};
         return React.createElement(Ztable,
                                    {data: this.state[accession].rows,
                                     ...table});
