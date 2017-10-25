@@ -44,10 +44,12 @@ class MiniPeaks:
                                       "biosample_type": lu["biosample_type"],
                                       "cellTypeName": lu["cellTypeName"],
                                       "expIDs": []}
-                    if accession not in byCts[ctn]:
-                        byCts[ctn][accession] = {a: None for a in assays}
-                    byCts[ctn][accession][assay] = {"fileID": fileID,
-                                                    "data": data}
+                    for a in assays:
+                        k = accession + a
+                        if k not in byCts[ctn]:
+                            byCts[ctn][k] = None             
+                    k = accession + assay
+                    byCts[ctn][k] = {"fileID": fileID, "data": data, "assay": assay}
                     expID = self.cache.datasets.byFileID[fileID]["expID"]
                     byCts[ctn]["expIDs"].append(expID)
         return byCts.values(), accessions
@@ -73,13 +75,19 @@ def main():
     from dbconnect import db_connect
     from cached_objects import CachedObjects
 
-    DBCONN = db_connect(os.path.realpath(__file__), False)
+    DBCONN = db_connect(os.path.realpath(__file__))
     ps = PostgresWrapper(DBCONN)
 
-    for assembly in ["hg19", "mm10"]:
-        pgSearch = PGsearch(ps, assembly)
-        cache = CachedObjects(es, ps, assembly)
+    assembly = "hg19"
+    acc = "EH37E1055372"
+    
+    pgSearch = PGsearch(ps, assembly)
+    cache = CachedObjects(ps, assembly)
 
+    mp = MiniPeaks(assembly, pgSearch, cache, 0, 4)
+    ret = mp.getMinipeaksForAssays(["dnase"], [acc])
+
+    print(ret)
 
 if __name__ == "__main__":
     main()
