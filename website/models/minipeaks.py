@@ -58,7 +58,7 @@ class MiniPeaks:
         if assay != "dnase":
             sassay += "_dnase"
         cres = [accession] + self.pgSearch.creMostsimilar(accession, sassay)
-        regions = MiniPeaksCache(self.assembly, 20, 2).get(assay, cres)
+        regions = MiniPeaksCache(self.assembly, self.nbins, self.ver).get(assay, cres)
         return (regions, accs)
 
 
