@@ -23,7 +23,7 @@ class Links:
     def __init__(self, curs, assembly):
         self.curs = curs
         self.assembly = assembly
-        self.tableName = self.assembly + "_ontology"
+        self.tableName = "ontology"
 
     def run(self):
         self._import()
@@ -55,19 +55,29 @@ oid text,
 info jsonb
 );""".format(tableName=self.tableName))
 
-        printt('***********', "import links")
+        printt('***********', "import ontology info")
         downloadDate = '2017-10Oct-25'
         fnp = paths.path("ontology", downloadDate, "ontology.json.gz")
 
         outF = StringIO.StringIO()
         with gzip.open(fnp, "rb") as f:
             kv = json.load(f)
-        for k, v in kv.iteritems():
-            outF.write('\t'.join(k, json.dumps(v)) + '\n')
+        for oid, infos in kv.iteritems():
+            vals = {}
+            for k, v in infos.iteritems():
+                if isinstance(v, list):
+                    t = [x.strip() for x in v] # remove newlines
+                    vals[k] = filter(lambda x: " coup de sabre" not in x and '\\' not in x and '"' not in x, t)
+                else:
+                    if '{' in v or '"' in v:
+                        vals[k] = ''
+                    else:
+                        vals[k] = v
+            outF.write('\t'.join([oid, json.dumps(vals)]) + '\n')
         outF.seek(0)
         
         cols = ["oid", "info"]
-        self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount, "rows", self.tableName)
 
     def _doIndex(self):
