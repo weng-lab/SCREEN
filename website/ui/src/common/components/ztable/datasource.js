@@ -104,7 +104,10 @@ class DataSource {
 	
 	let sample = this.data[this.rowIDs[0]][sortCol];
 	const colInfo = this.colsByData[sortCol];
-
+	if(!colInfo){
+	    throw new Error("missing column " + sortCol + " in ztable");
+	}
+	
 	let sortDataF = null;
 	if("sortDataF" in colInfo){
 	    sortDataF = colInfo.sortDataF;

@@ -28,7 +28,7 @@ export const getByPost  = (jq, url, successF, errF) => {
 }
 
 export const getMinipeaks = (jq, baseUrl, successF, errF) => {
-    const url = "http://screen.encodeproject.org/api/dataws/re_detail/" + baseUrl;
+    const url = Config.UI.minipeakServer + baseUrl;
     fetch(url,
 	  {
 	      headers: {
