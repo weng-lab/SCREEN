@@ -52,6 +52,7 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 oid text,
+synonym text,
 info jsonb
 );""".format(tableName=self.tableName))
 
@@ -73,10 +74,12 @@ info jsonb
                         vals[k] = ''
                     else:
                         vals[k] = v
-            outF.write('\t'.join([oid, json.dumps(vals)]) + '\n')
+            nvals = {k:v for k,v in vals.iteritems() if v}
+            for s in vals["synonyms"]:
+                outF.write('\t'.join([oid, s, json.dumps(nvals)]) + '\n')
         outF.seek(0)
         
-        cols = ["oid", "info"]
+        cols = ["oid", "synonym", "info"]
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount, "rows", self.tableName)
 
