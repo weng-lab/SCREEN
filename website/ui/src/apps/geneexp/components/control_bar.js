@@ -161,10 +161,10 @@ class ControlBar extends React.Component {
 				false: ["byExpressionTPM", "logTPM"]},
 			 false: {true: ["byExpressionFPKM", "rawFPKM"],
 				 false: ["byExpressionFPKM", "logFPKM"]}};
-	const lookup2 = {true: {true: ["byTissue", "rawTPM"],
-				false: ["byTissue", "logTPM"]},
-			 false: {true: ["byTissue", "rawFPKM"],
-				 false: ["byTissue", "logFPKM"]}};
+	const lookup2 = {true: {true: ["byTissueTPM", "rawTPM"],
+				false: ["byTissueTPM", "logTPM"]},
+			 false: {true: ["byTissueFPKM", "rawFPKM"],
+				 false: ["byTissueFPKM", "logFPKM"]}};
 	const lookup3 = {true: {true: ["byTissueMaxTPM", "rawTPM"],
 				false: ["byTissueMaxTPM", "logTPM"]},
 			 false: {true: ["byTissueMaxFPKM", "rawFPKM"],

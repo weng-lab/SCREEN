@@ -24,7 +24,7 @@ class GeneExp extends React.Component{
         this.state = {jq: null, isFetching: true, isError: false,
 		      width: 0,
 		      isSingle: false,
-		      sortOrder: "byTissue",
+		      sortOrder: "byTissueTPM",
 		      dataScale: "logTPM",
 		      gene
 	};
