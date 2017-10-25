@@ -4,12 +4,6 @@ import loading from '../../../common/components/loading'
 import ScaledHorizontalBar from '../../../plots/components/scaledhorizontalbar';
 
 class LargeHorizontalBars extends React.Component {
-
-    constructor(props) {
-	super(props);
-	this.doRender = this.doRender.bind(this);
-    }
-
     render(){
         if(this.props.isFetching){
             return loading(this.props);
