@@ -28,6 +28,7 @@ class GeneExpression:
 
     def groupByTissue(self, rows, skey):
         def sorter(x):
+            # sort by tissue, then TPM/FPKM descending
             return (x["tissue"], -1.0 * float(x[skey]))
         rows.sort(key=sorter)
 
