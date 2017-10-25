@@ -311,16 +311,16 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-     {gb}
-
+		{gb}
+		
 		<Ztable data={data}
                         sortCol={table_order}
-			cols={TableColumns(this.props.globals, this.props.assembly, ctCol,
-					   this.props.rfacets)}
+			cols={TableColumns(this.props, ctCol)}
                         onTdClick={(td, rowdata) =>
                             this.table_click_handler(td, rowdata, actions)}
                         bFilter={true}
-                        bLengthChange={true} key={this.props.cellType}
+                        bLengthChange={true}
+			key={this.props.cellType}
                 />
 	    </div>);
     }

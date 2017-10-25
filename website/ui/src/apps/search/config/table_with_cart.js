@@ -2,7 +2,7 @@ import React from 'react';
 import {ZHelpTooltip} from '../../../common/components/help_icon'
 import * as ZRender from '../../../common/zrenders'
 
-const TableColumns = (globals, assembly, cts, rfacets) => {
+const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
     let accHelp = (
 	<span>
 	    accession
@@ -59,7 +59,7 @@ const TableColumns = (globals, assembly, cts, rfacets) => {
             render: ZRender.numWithCommas
 	}, {
             title: geneHelp, data: "genesallpc",
-	    className: "geneexp", render: ZRender.geneDeLinks(assembly),
+	    className: "geneexp", render: ZRender.geneDeLinks(assembly, uuid),
             orderable: false,
 	}, {
 	    title: "cart", data: "in_cart", className: "cart",

@@ -102,32 +102,32 @@ export const creLinkPop = (accession, type, full, meta) => (
     popup("Click for cRE details")
 )
 
-export const geLink = (assembly, gene) => ("/geApp/?assembly=" + assembly + "&gene=" + gene)
-export const deLink = (assembly, gene) => ("/deApp/?assembly=" + assembly + "&gene=" + gene)
+export const geLink = (assembly, gene, uuid) => ("/geApp/?" + toParams({assembly, gene, uuid}))
+export const deLink = (assembly, gene, uuid) => ("/deApp/?" + toParams({assembly, gene, uuid}))
 
-export const geDeButton = (assembly, accession) => (d) => {
+export const geDeButton = (assembly, accession, uuid) => (d) => {
     const _d = d.replace(/\./g, "%2e");
-    const ge = <a href={geLink(assembly, _d)} target={"_blank"}
+    const ge = <a href={geLink(assembly, _d, uuid)} target={"_blank"}
 	       key={[accession, d, "ge"]}>{d}</a>;
     if("mm10" !== assembly){
         return ge;
     }
-    const de = <a href={deLink(assembly, _d)} target={"_blank"}
+    const de = <a href={deLink(assembly, _d, uuid)} target={"_blank"}
 		  key={[accession, d, "de"]}
 		  style={{paddingLeft: "4px"}}>&Delta;</a>;
     return [ge, de];
 };
 
-export const openGeLink = (assembly, gene) => (
+export const openGeLink = (assembly, gene, uuid) => (
     <div>
-	This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(assembly, gene)} target={"_blank"}>click here</a>.
+	This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(assembly, gene, uuid)} target={"_blank"}>click here</a>.
     </div>
 )
 
-export const geneDeLinks = (assembly) => (genesallpc) => {
+export const geneDeLinks = (assembly, uuid) => (genesallpc) => {
     const accession = genesallpc.accession;
-    const all = commajoin(genesallpc.all.map(geDeButton(assembly, accession)));
-    const pc = commajoin(genesallpc.pc.map(geDeButton(assembly, accession)));
+    const all = commajoin(genesallpc.all.map(geDeButton(assembly, accession, uuid)));
+    const pc = commajoin(genesallpc.pc.map(geDeButton(assembly, accession, uuid)));
     return ["pc: ", pc,
 	    <br key={accession}/>,
 	    "all: ", all];

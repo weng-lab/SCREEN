@@ -172,7 +172,7 @@ class ResultsTableContainer extends React.Component {
 	    <div>
 	    {interpBox}
 		<TableWithCart
-	    uuid={this.props.uuid}
+		    uuid={this.props.uuid}
 		    assembly={this.props.assembly}
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
