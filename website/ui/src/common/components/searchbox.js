@@ -20,7 +20,6 @@ class SearchBox extends React.Component {
 				 assembly: this.props.assembly,
 				 uuid: this.props.uuid});
 	const url = "/search/?" + params;
-	console.log(url)
 	window.location.href = url;
 	return false;
     }
@@ -60,9 +59,9 @@ class SearchBox extends React.Component {
 	return (
 	    <div>
 		<AutocompleteBox 
-		shouldRenderSuggestions={shouldRenderSuggestions}
-		loadSugg={loadSugg}
-		defaultvalue={this.state.searchtext}
+		    shouldRenderSuggestions={shouldRenderSuggestions}
+		    loadSugg={loadSugg}
+		    defaultvalue={this.state.searchtext}
 		    id="acnav"
 		    name="q"
 		    style={{float: "left"}}
@@ -92,7 +91,7 @@ class SearchBox extends React.Component {
 		    }}
 
 
-		/>&nbsp;
+/>&nbsp;
 
 	    <Button onClick={this._search}>Search
 	    </Button>
