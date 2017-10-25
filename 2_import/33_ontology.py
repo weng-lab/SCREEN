@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath, printt
 
 AddPath(__file__, '../common/')
-from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
+from db_utils import getcursor, makeIndex, makeIndexGinTrgmOps, makeIndexTextPatternOps
 from dbconnect import db_connect
 from constants import paths
 from config import Config
@@ -84,6 +84,8 @@ info jsonb
         printt("imported", self.curs.rowcount, "rows", self.tableName)
 
     def _doIndex(self):
+        makeIndexTextPatternOps(self.curs, self.tableName, ["synonym"])
+        makeIndexGinTrgmOps(self.curs, self.tableName, ["synonym"])
         makeIndex(self.curs, self.tableName, ["oid"])
 
 
