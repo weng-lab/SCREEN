@@ -10,18 +10,20 @@ class LargeHorizontalBars extends React.Component {
 	this.doRender = this.doRender.bind(this);
     }
 
-    doRender({isFetching, width}){
-        if(isFetching){
+    render(){
+        if(this.props.isFetching){
             return loading(this.props);
         }
 
 	if("hasData" in this.props && !this.props.hasData){
+	    // TODO: does this really mean the gene was not found?
 	    return (
                 <div>
                     <br />
 		    <h4>No expression data available.</h4>
 		</div>);
 	}
+	
 	const ds = this.props.isSingle ? this.props.single : this.props.mean;
 	if(!ds.hasData){
 	    return (
@@ -31,8 +33,7 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
-	
-	let format = {
+	const format = {
 	    value: d => d[this.props.dataScale],
 	    label: d => {
 		if(d.ageTitle){
@@ -48,18 +49,12 @@ class LargeHorizontalBars extends React.Component {
             <div>
 		<span className="geTissueOfOrigin">Tissue of origin</span>
 		<ScaledHorizontalBar itemsets={items}
-				     width={width}
+				     width={this.props.width}
 				     barheight={this.props.barheight}
 				     format={format} />
 	    </div>
 	);
     }
-    
-
-    render() {
-	return this.doRender(this.props);
-    }
-
 }
 
 export default LargeHorizontalBars;

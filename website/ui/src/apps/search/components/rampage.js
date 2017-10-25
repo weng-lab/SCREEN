@@ -20,7 +20,7 @@ class Rampage extends React.Component {
     	this.handleKeyPress = this.handleKeyPress.bind(this);
     	this.transcriptUp = this.transcriptUp.bind(this);
     	this.transcriptDown = this.transcriptDown.bind(this);
-        this.d3Render = this.d3Render.bind(this);
+        this.svgRender = this.svgRender.bind(this);
     }
 
     componentWillMount() {
@@ -82,6 +82,33 @@ class Rampage extends React.Component {
 	} else if(event.key === 'm'){
             this.transcriptDown();
 	}
+    }
+
+    svgRender(){
+	if ("details" === this.props.maintabs_active
+	    && "rampage" !== this.props.re_details_tab_active ) {
+	    return;
+	}
+
+        const allData = this.props.keysAndData.tsss;
+        const transcript = allData[this.state.transcript];
+
+        const itemsByID = transcript.itemsByID;
+	const items = transcript.itemsGrouped[this.state.sortOrder];
+
+	const rank_f = rid => itemsByID[rid][this.state.datascale];
+
+	const format = {
+	    value: rank_f,
+	    label: d => itemsByID[d].biosample_term_name + " (" + itemsByID[d].strand + ") strand",
+	    grouplabel: d => d.tissue
+	};
+	
+	return <ScaledHorizontalBar
+		   itemsets={items}
+		   width={this.props.width}
+	           barheight={this.props.barheight}
+		   format={format} />;
     }
 
     render() {
@@ -172,36 +199,9 @@ class Rampage extends React.Component {
 
                 <span className="geTissueOfOrigin">Tissue of origin</span>
 		<div ref="container" style={{width: this.props.width + "px"}}>
-		    {this.d3Render()}
+		    {this.svgRender()}
                 </div>
 	    </div>);
-    }
-
-    d3Render(){
-	if ("details" === this.props.maintabs_active
-	    && "rampage" !== this.props.re_details_tab_active ) {
-	    return;
-	}
-
-        let allData = this.props.keysAndData.tsss;
-        let transcript = allData[this.state.transcript];
-
-        var itemsByID = transcript.itemsByID;
-	var items = transcript.itemsGrouped[this.state.sortOrder];
-
-	var rank_f = rid => itemsByID[rid][this.state.datascale];
-
-	let format = {
-	    value: rank_f,
-	    label: d => itemsByID[d].biosample_term_name + " (" + itemsByID[d].strand + ") strand",
-	    grouplabel: d => d.tissue
-	};
-	
-	return <ScaledHorizontalBar
-		   itemsets={items}
-		   width={this.props.width}
-	           barheight={this.props.barheight}
-		   format={format} />;
     }
 }
 
