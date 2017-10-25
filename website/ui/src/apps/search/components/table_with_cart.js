@@ -334,6 +334,7 @@ class TableWithCart extends React.Component {
                         bFilter={true}
                         bLengthChange={true}
 			key={this.props.cellType}
+			noTotal={true}
                 />
 	    </div>);
     }
