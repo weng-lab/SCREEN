@@ -30,7 +30,7 @@ class BuildOntology:
         mod = import_module("10_generate_ontology_actual")
         runF = getattr(mod, "run")
 
-        downloadDate = '2017-10Oct-10'
+        downloadDate = '2017-10Oct-25'
         if 1:
             uberon_url = "http://ontologies.berkeleybop.org/uberon/composite-metazoan.owl"
             efo_url = "http://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoinowl/InferredEFOOWLview/EFO_inferred.owl?format=raw"
@@ -44,10 +44,11 @@ class BuildOntology:
         terms = runF(uberon_url, efo_url, obi_url)
 
         fnp = paths.path("ontology", downloadDate, "ontology.json")
+        Utils.ensureDir(fnp)
         printt("done; about to write", fnp)
         with open(fnp, 'w') as f:
             json.dump(terms, f)
-        printt("done")
+        printWroteNumLines(fnp)
 
 
 def run(args, DBCONN):
