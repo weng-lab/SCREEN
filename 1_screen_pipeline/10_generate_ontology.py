@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import gzip
 import os
 import sys
 import json
@@ -43,10 +44,10 @@ class BuildOntology:
         printt("running ENCODE DCC generate ontology...")
         terms = runF(uberon_url, efo_url, obi_url)
 
-        fnp = paths.path("ontology", downloadDate, "ontology.json")
+        fnp = paths.path("ontology", downloadDate, "ontology.json.gz")
         Utils.ensureDir(fnp)
         printt("done; about to write", fnp)
-        with open(fnp, 'w') as f:
+        with gzip.open(fnp, 'wb') as f:
             json.dump(terms, f)
         printWroteNumLines(fnp)
 
