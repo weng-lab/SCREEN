@@ -4,7 +4,6 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
 import NavBarApp from '../../common/components/navbar_app'
-import SearchBox from '../../common/components/searchbox'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
@@ -32,8 +31,8 @@ class GeneExpPageInner extends React.Component {
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
                             <NavBarApp assembly={assembly}
-				       show_cartimage={false}
-                                       searchbox={SearchBox} />
+				       uuid={this.props.uuid}
+				       show_cartimage={false} />
                         </div>
 		    </nav>
 

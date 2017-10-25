@@ -8,7 +8,8 @@
 						"build": "react-scripts build",
 						"test": "react-scripts test --env=jsdom",
 			    "eject": "react-scripts eject",
-			    "postbuild": "python deploy.py"
+			    "flow": "flow",
+						"postbuild": "python deploy.py"
 			},
 			"homepage": "http://screen.encodeproject.org",
 			"devDependencies": {},
@@ -17,6 +18,7 @@
 						"d3": "^4.2.2",
 						"downloadjs": "^1.4.7",
 						"enumify": "^1.0.4",
+						"flow-bin": "^0.57.3",
 						"jquery": "^3.2.1",
 						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
