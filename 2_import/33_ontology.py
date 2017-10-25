@@ -75,8 +75,11 @@ info jsonb
                     else:
                         vals[k] = v
             nvals = {k:v for k,v in vals.iteritems() if v}
-            for s in vals["synonyms"]:
-                outF.write('\t'.join([oid, s, json.dumps(nvals)]) + '\n')
+            if vals["synonyms"]:
+                for s in vals["synonyms"]:
+                    outF.write('\t'.join([oid, s, json.dumps(nvals)]) + '\n')
+            else:
+                outF.write('\t'.join([oid, '', json.dumps(nvals)]) + '\n')
         outF.seek(0)
         
         cols = ["oid", "synonym", "info"]
