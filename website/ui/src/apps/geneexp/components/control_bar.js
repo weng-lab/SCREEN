@@ -17,8 +17,8 @@ class CellCompartmentsBox extends React.Component {
 			    cols={[{
 				    title: "", data: "key",
 				    className: "nopadding"
-			    }]}
-			    order={[]}
+				}]}
+			    order={["data"]}
 			    buttonsOff={true}
 			    noSearchBox={true}
 			    checkBoxClassName={"nopadding"}
@@ -45,7 +45,7 @@ class BiosampleTypesBox extends React.Component {
 		                    title: "", data: "key",
 		                    className: "nopadding"
 	                    }]}
-                            order={[]}
+                            order={["data"]}
 			    noSearchBox={true}
 			    checkBoxClassName={"nopadding"}
 			    noTotal={true}
