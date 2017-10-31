@@ -14,13 +14,8 @@ import ControlBar from './control_bar';
 class GeneExp extends React.Component{
     constructor(props) {
         super(props);
-	let gene = props.gene;
-	if("genes" in props){
-	    if(props.genes.length > 0){
-		gene = props.genes[0].approved_symbol;
-	    }
-	}
-	
+	const gene = props.gene;
+
         this.state = {jq: null, isFetching: true, isError: false,
 		      width: 0,
 		      isSingle: false,
@@ -76,7 +71,6 @@ class GeneExp extends React.Component{
 	ApiClient.getByPost(jq, "/gews/search",
 			    (r) => {
 				this.setState({[jq]: r,
-					       // gene: r.gene, FIXME!
 					       isFetching: false, isError: false});
 			    },
 			    (msg) => {
