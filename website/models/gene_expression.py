@@ -23,6 +23,8 @@ class GeneExpression:
         self.assembly = assembly
         self.tissueColors = TissueColors(cache)
 
+        self.itemsByID = {}
+        
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
 
@@ -99,7 +101,8 @@ class GeneExpression:
 
     def doComputeHorBars(self, q, gene, compartments, biosample_types_selected):
         a = """
-SELECT chrom, start, stop FROM {assembly}_gene_info
+SELECT chrom, start, stop 
+FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
 """.format(assembly=self.assembly)
 
@@ -129,7 +132,9 @@ WHERE approved_symbol = %(gene)s
                     "logFPKM": "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
                     "expID": row[3],
                     "rep": row[4],
-                    "ageTitle": row[6]}
+                    "ageTitle": row[6],
+                    "rid": row[7]
+            }
 
         rows = [makeEntry(x) for x in rows]
         ret = {"hasData": True,
@@ -143,7 +148,7 @@ WHERE approved_symbol = %(gene)s
     def computeHorBars(self, gene, compartments, biosample_types_selected):
         q = """
 SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle
+r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle, r.id
 FROM r_expression_{assembly} AS r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
 WHERE gene_name = %(gene)s
@@ -156,7 +161,8 @@ AND r_rnas_{assembly}.biosample_type IN %(bts)s
     def computeHorBarsMean(self, gene, compartments, biosample_types_selected):
         q = """
 SELECT avg(r.tpm), r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, 'mean' as replicate, avg(r.fpkm), r_rnas_{assembly}.ageTitle
+r.dataset, 'mean' as replicate, avg(r.fpkm), r_rnas_{assembly}.ageTitle, 
+array_to_string(array_agg(r.id), ',')
 FROM r_expression_{assembly} AS r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
 WHERE gene_name = %(gene)s

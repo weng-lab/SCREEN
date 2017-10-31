@@ -32,10 +32,11 @@ def setupAndCopy(cur, assembly, fnp):
 DROP TABLE IF EXISTS {tableName};
 
 CREATE TABLE {tableName} (
+id serial PRIMARY KEY,
 ensembl_id VARCHAR(256) NOT NULL,
 gene_name VARCHAR(256) NOT NULL,
 dataset VARCHAR(256) NOT NULL,
-    fileID VARCHAR(256) NOT NULL,
+fileID VARCHAR(256) NOT NULL,
 replicate INT NOT NULL,
 fpkm NUMERIC NOT NULL,
 tpm NUMERIC NOT NULL);
