@@ -23,7 +23,7 @@ class GeneExpression:
         self.assembly = assembly
         self.tissueColors = TissueColors(cache)
 
-        self.itemsByID = {}
+        self.itemsByRID = {}
         
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
@@ -36,6 +36,8 @@ class GeneExpression:
 
         ret = {}
         for row in rows:
+            if row["rID"] not in self.itemsByRID:
+                self.itemsByRID[row["rID"]] = row
             t = row["tissue"]
             if t not in ret:
                 c = self.getTissueColor(t)
@@ -43,7 +45,7 @@ class GeneExpression:
                           "displayName": t,
                           "color": c,
                           "items": []}
-            ret[t]["items"].append(row)
+            ret[t]["items"].append(row["rID"])
         return ret
 
     def groupByTissueMax(self, rows, skey):
@@ -52,13 +54,15 @@ class GeneExpression:
 
         ret = {}
         for row in rows:
+            if row["rID"] not in self.itemsByRID:
+                self.itemsByRID[row["rID"]] = row
             t = row["tissue"]
             if t not in ret:
                 c = self.getTissueColor(t)
                 ret[t] = {"name": t,
                           "displayName": t,
                           "color": c,
-                          "items": [row]}
+                          "items": [row["rID"]}
             else:
                 if ret[t]["items"][0][skey] < row[skey]:
                     ret[t]["items"][0] = row
@@ -72,7 +76,8 @@ class GeneExpression:
         for idx, row in enumerate(rows):
             t = row["name"]
             k = str(idx).zfill(3) + '_' + t
-            ret[k] = row
+            print("row:", row)
+            ret[k] = row["rID"]
         return ret
 
     def sortByExpression(self, rows, key):
@@ -82,13 +87,15 @@ class GeneExpression:
 
         ret = {}
         for idx, row in enumerate(rows):
+            if row["rID"] not in self.itemsByRID:
+                self.itemsByRID[row["rID"]] = row
             t = row["tissue"]
             c = self.getTissueColor(t)
             k = str(idx).zfill(3) + '_' + t
             ret[k] = {"name": k,
                       "displayName": t,
                       "color": c,
-                      "items": [row]}
+                      "items": [row["rID"]]}
         return ret
 
     def process(self, rows):
@@ -133,7 +140,7 @@ WHERE approved_symbol = %(gene)s
                     "expID": row[3],
                     "rep": row[4],
                     "ageTitle": row[6],
-                    "rid": row[7]
+                    "rID": row[7]
             }
 
         rows = [makeEntry(x) for x in rows]
