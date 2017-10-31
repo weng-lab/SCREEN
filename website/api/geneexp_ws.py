@@ -65,23 +65,13 @@ class GeneExpWebService(object):
         if not compartments:
             return abort("no compartments")
 
-        accession = j.get("accession", None)
-        if accession:
-            if not isaccession(accession):
-                return abort("invalid accession")
-            cre = CRE(self.pgSearch, accession, self.cache)
-            nearest = cre.nearbyPcGenes()[0] # nearest gene
-            gi = self.pgSearch.geneInfo(nearest["name"])
-        else:
-            gene = j["gene"]  # TODO: check for valid gene
-            gi = self.pgSearch.geneInfo(gene)
-
+        gene = j["gene"]  # TODO: check for valid gene
+        gi = self.pgSearch.geneInfo(gene)
         name = gi.approved_symbol
         strand = gi.strand
             
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        r = {"acccession": accession,
-             "assembly": self.assembly,
+        r = {"assembly": self.assembly,
              "gene": name,
              "genename": name,
              "ensemblid_ver": gi.ensemblid_ver,
