@@ -1,15 +1,13 @@
 import React from 'react';
 
-import ResultsTableContainer from '../components/results_table_container';
-import ResultsTree from '../components/tree';
-import DetailsContainer from '../components/details_container';
-import TFDisplay from '../components/tf_display';
 import ActivityProfile from '../components/activity_profile';
+import BedUpload from '../components/bed_upload';
+import ConfigureGenomeBrowser from '../components/configure_genome_browser';
+import DetailsContainer from '../components/details_container';
+import DetailsTabInfo from './details';
 import GeneExp from '../../geneexp/components/gene_exp';
 import RampagePlot from '../components/rampage_plot';
-import ConfigureGenomeBrowser from '../components/configure_genome_browser';
-import DetailsTabInfo from './details';
-import BedUpload from '../components/bed_upload';
+import ResultsTableContainer from '../components/results_table_container';
 
 import * as Render from '../../../common/zrenders';
 import {isCart} from '../../../common/utility';
@@ -38,10 +36,6 @@ class BedUploadTab extends React.Component{
         }
         return React.createElement(BedUpload, this.props);
     }
-}
-
-class TreeTab extends React.Component{
-    render() { return (<ResultsTree />); }
 }
 
 class DetailsTab extends React.Component{
@@ -89,10 +83,6 @@ class RampageBigTab extends React.Component{
     }
 }
 
-class TFTab extends React.Component {
-    render() { return (<TFDisplay />); }
-}
-
 class ActivityProfileTab extends React.Component {
     render() { return <ActivityProfile key="aprofile" />;}
 }
@@ -120,8 +110,6 @@ const MainTabInfo = (parsedQuery, globals) => {
 	    rampage: {title: rTitle,  visible: showRampage, f: RampageBigTab},
 	    aprofile: {title: "Activity Profile", visible: false,
 		       f: ActivityProfileTab},
-	    ct_tree: {title: "Cell Type Clustering", visible: false, f: TreeTab},
-	    tf_enrichment: {title: "TF Enrichment", visible: false, f: TFTab},
 	    details: {title: Render.tabTitle(["cRE", "Details"]), visible: false,
 		      f: DetailsTab}
     };
