@@ -127,17 +127,22 @@ WHERE approved_symbol = %(gene)s
             return {}
 
         def makeEntry(row):
-            base = 2
             tissue = row[1].strip()
 
+            def doLog(d):
+                base = 2
+                return float("{0:.2f}".format(math.log(float(d) + 0.01, base)))
+            
             if tissue == '{}':
                 tissue = fixedmap[row[2]] if row[2] in fixedmap else ""
+
+            # built-in JSON encoder missing Decimal type, so cast to float
             return {"tissue": tissue,
                     "cellType": row[2],
-                    "rawTPM": float(row[0]),  # built-in JSON encoder doesn't know Decimal type
-                    "logTPM": float("{0:.2f}".format(math.log(float(row[0]) + 0.01, base))),
+                    "rawTPM": float(row[0]),
+                    "logTPM": doLog(row[0]),
                     "rawFPKM": float(row[5]),
-                    "logFPKM": float("{0:.2f}".format(math.log(float(row[5]) + 0.01, base))),
+                    "logFPKM": doLog(row[5]),
                     "expID": row[3],
                     "rep": row[4],
                     "ageTitle": row[6],
