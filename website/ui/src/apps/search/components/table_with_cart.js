@@ -20,7 +20,6 @@ class TableWithCart extends React.Component {
 		      maxrange: 0, selectedaccession: {},
 		      chrom:'',
 		      cellType:''}
-        this.table_click_handler = this.table_click_handler.bind(this);
     }
 
     _get_missing(a) {
@@ -37,7 +36,7 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    table_click_handler(td, rowdata, actions){
+    table_click_handler = (td, rowdata, actions) => {
         if (td.indexOf("browser") !== -1){
     	    let cre = {...rowdata, ...rowdata.info};
     	    actions.showGenomeBrowser(cre, "");
