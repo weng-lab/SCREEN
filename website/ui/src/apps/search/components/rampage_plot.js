@@ -9,13 +9,10 @@ import * as ApiClient from '../../../common/api_client';
 import loading from '../../../common/components/loading';
 
 class RampagePlot extends React.Component {
-    constructor(props, key) {
-	super(props);
-        this.key = "rampage";
-        this.url = "/dataws/rampage"
-        this.state = { jq: null, isFetching: true, isError: false };
-    }
-
+    key = "rampage";
+    url = "/dataws/rampage"
+    state = { jq: null, isFetching: true, isError: false };
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if(this.key === nextProps.maintabs_active){
 	    return true;

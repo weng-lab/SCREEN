@@ -12,18 +12,15 @@ import loading from '../../../common/components/loading';
 const ROWHEIGHT = 30.0;
 
 class MiniPeaks extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = {jq: null, isFetching: true, isError: false };
-        this.key = "miniPeaks";
-	this._colors = {
-	    "dnase": "#06DA93",
-	    "h3k4me3": "#FF0000",
-	    "h3k27ac": "#FFCD00"
-	};
-	this.fileIDmaxes = {}
-    }
-
+    state = {jq: null, isFetching: true, isError: false };
+    key = "miniPeaks";
+    _colors = {
+	"dnase": "#06DA93",
+	"h3k4me3": "#FF0000",
+	"h3k27ac": "#FFCD00"
+    };
+    fileIDmaxes = {}
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){

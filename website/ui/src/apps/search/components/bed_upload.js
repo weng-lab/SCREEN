@@ -9,10 +9,7 @@ import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
 class BedUpload extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = { files: [] }
-    }
+    state = { files: [] };
     
     onDrop = (files) => {
 	this.setState({

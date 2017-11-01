@@ -13,12 +13,8 @@ import Ztable from '../../../common/components/ztable/ztable';
 import DraggableCtList from '../../../common/components/draggable';
 
 class ConfigureGenomeBrowser extends React.Component {
-    constructor(props) {
-	super(props);
-	this.key = "configgb";
-	this.state = {"showCombo" : false};
-    }
-
+    state = {"showCombo" : false};
+    
     gbclick = (cre, cts, gbrowser) => {
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
