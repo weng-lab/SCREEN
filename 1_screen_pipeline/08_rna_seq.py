@@ -71,8 +71,8 @@ class ExtractRNAseq:
                 assert("TPM" == header[TPM_idx])
                 assert("FPKM" == header[FPKM_idx])
                 for row in lines[1:]:
-                    if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
-                        continue
+                    #if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
+                    #    continue
                     geneID = row[gene_id_idx]
                     yield(expF.expID, expF.fileID, geneID,
                           self.ensemToGene.get(geneID, geneID),
