@@ -35,38 +35,38 @@ class BedUpload extends React.Component {
             };
             reader.onabort = () => console.log('file reading was aborted');
             reader.onerror = () => console.log('file reading has failed');
-		reader.onloadend  = (e) => {
-		    const j = {uuid: this.props.uuid, 
-			       assembly: this.props.assembly,
-			       allLines};
-		    const jq = JSON.stringify(j);
-		    ApiClient.getIntersect(jq,
-					   (r) => {
-					       let j = {assembly: this.props.assembly, 
-							accessions: r.accessions,
-							uuid: r.uuid};
-					       ApiClient.setByPost(JSON.stringify(j),
-								   "/cart/set",
-								   (response) => {
-								       let href = window.location.href;
-								       if(!href.includes("&cart")){
-									   href += "&cart";
-								       }
-								       window.location.assign(href);				    
-								   },
-								   (msg) => {
-								       console.log("error posting to cart/set", msg);
-								   });
-					       this.props.actions.setCart(r.accessions);
-					   },
-			    (msg) => {
-				console.log("error posting to cart/set", msg);
-			    });
-		};
+	    reader.onloadend  = (e) => {
+		const j = {uuid: this.props.uuid, 
+			   assembly: this.props.assembly,
+			   allLines};
+		const jq = JSON.stringify(j);
+		ApiClient.getIntersect(jq,
+				       (r) => {
+					   let j = {assembly: this.props.assembly, 
+						    accessions: r.accessions,
+						    uuid: r.uuid};
+					   ApiClient.setByPost(JSON.stringify(j),
+							       "/cart/set",
+							       (response) => {
+								   let href = window.location.href;
+								   if(!href.includes("&cart")){
+								       href += "&cart";
+								   }
+								   window.location.assign(href);				    
+							       },
+							       (msg) => {
+								   console.log("error posting to cart/set", msg);
+							       });
+					   this.props.actions.setCart(r.accessions);
+				       },
+				       (msg) => {
+					   console.log("error posting to cart/set", msg);
+				       });
+	    };
 	    reader.readAsText(f);
 	});
     }
-				
+    
 
     render() {
 	return (
@@ -90,7 +90,7 @@ class BedUpload extends React.Component {
 		</aside>
 
 		<Button onClick={this.submitFiles}>Intersect Files
-	    </Button>
+		</Button>
 	    </div>
 	);
     }
