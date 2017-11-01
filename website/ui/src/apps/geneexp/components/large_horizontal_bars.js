@@ -9,17 +9,8 @@ class LargeHorizontalBars extends React.Component {
             return loading(this.props);
         }
 
-	if("hasData" in this.props && !this.props.hasData){
-	    // TODO: does this really mean the gene was not found?
-	    return (
-                <div>
-                    <br />
-		    <h4>No expression data available.</h4>
-		</div>);
-	}
-	
 	const ds = this.props.isSingle ? this.props.single : this.props.mean;
-	if(!ds.hasData){
+	if(!ds){
 	    return (
                 <div>
                     <br />
@@ -27,9 +18,14 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
+	const itemsByRID = this.props.itemsByRID
+
 	const format = {
-	    value: d => d[this.props.dataScale],
-	    label: d => {
+	    value: rid => {
+		const d = itemsByRID[rid];
+		return d[this.props.dataScale]},
+	    label: rid => {
+		const d = itemsByRID[rid];
 		if(d.ageTitle){
 		    return d.cellType + ' ' + d.ageTitle;
 		}
@@ -37,7 +33,7 @@ class LargeHorizontalBars extends React.Component {
 	    grouplabel: d => d.displayName
 	};
 
-	const items = ds.items[this.props.sortOrder];
+	const items = ds[this.props.sortOrder];
 	
 	return (
             <div>

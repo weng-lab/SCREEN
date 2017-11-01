@@ -69,7 +69,8 @@ class GeneExpression:
 
         rows = ret.values()
 
-        def sorter(x): return float(x["items"][0][skey])
+        def sorter(x):
+            return float(x["items"][0][skey])
         rows.sort(key=sorter, reverse=True)
 
         ret = {}
