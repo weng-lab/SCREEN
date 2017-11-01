@@ -12,18 +12,12 @@ import HelpIcon from '../../../common/components/help_icon';
 import ControlBar from './control_bar';
 
 class GeneExp extends React.Component{
-    constructor(props) {
-        super(props);
-	const gene = props.gene;
-        this.state = {jq: null, isFetching: true, isError: false,
-		      width: 0,
-		      isSingle: false,
-		      sortOrder: "byTissueTPM",
-		      dataScale: "logTPM",
-		      gene
-	};
-    }
-
+    state = {jq: null, isFetching: true, isError: false,
+	     width: 0,
+	     isSingle: false,
+	     sortOrder: "byTissueTPM",
+	     dataScale: "logTPM"};
+    
     componentDidMount(){
 	this.updateWidth();
         this.loadGene(this.props);
@@ -43,12 +37,11 @@ class GeneExp extends React.Component{
     }
     
     makeKey(p){
-	const r = {assembly: p.assembly,
-		   accession: p.cre_accession_detail,
-		   gene: this.state.gene,
-		   compartments_selected: Array.from(p.compartments_selected),
-                   biosample_types_selected: Array.from(p.biosample_types_selected)};
-	return r;
+	return {assembly: p.assembly,
+		accession: p.cre_accession_detail,
+		gene: p.gene,
+		compartments_selected: Array.from(p.compartments_selected),
+                biosample_types_selected: Array.from(p.biosample_types_selected)};
     }
     
     loadGene = (p) => {
@@ -124,7 +117,7 @@ class GeneExp extends React.Component{
 	    <div ref="box" style={{"width": "100%"}} >
 		<div>
 		    <h4>
-			<em>{this.state.gene}</em>
+			<em>{this.props.gene}</em>
 			{" Gene Expression Profiles by RNA-seq"}
 			<HelpIcon globals={this.props.globals}
 				  helpkey={"GeneExpression"} />
