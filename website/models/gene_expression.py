@@ -135,9 +135,9 @@ WHERE approved_symbol = %(gene)s
             return {"tissue": tissue,
                     "cellType": row[2],
                     "rawTPM": float(row[0]),  # built-in JSON encoder doesn't know Decimal type
-                    "logTPM": "{0:.2f}".format(math.log(float(row[0]) + 0.01, base)),
+                    "logTPM": float("{0:.2f}".format(math.log(float(row[0]) + 0.01, base))),
                     "rawFPKM": float(row[5]),
-                    "logFPKM": "{0:.2f}".format(math.log(float(row[5]) + 0.01, base)),
+                    "logFPKM": float("{0:.2f}".format(math.log(float(row[5]) + 0.01, base))),
                     "expID": row[3],
                     "rep": row[4],
                     "ageTitle": row[6],
