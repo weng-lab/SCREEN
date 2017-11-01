@@ -11,18 +11,16 @@ import * as ApiClient from '../../../common/api_client';
 class BedUpload extends React.Component {
     constructor(props) {
 	super(props);
-	this.submitFiles = this.submitFiles.bind(this);
 	this.state = { files: [] }
     }
     
-    onDrop(files) {
-	console.log("files:", files);
+    onDrop = (files) => {
 	this.setState({
 	    files
 	});
     }
     
-    submitFiles(){
+    submitFiles = () => {
 	let allLines = [];
 	this.state.files.forEach(f => {
 	    const reader = new FileReader();
@@ -75,7 +73,7 @@ class BedUpload extends React.Component {
 		Upload bed files here to be automatically intersected with all available cREs.
 		<br />
 		<div className="dropzone">
-		    <Dropzone onDrop={this.onDrop.bind(this)}>
+		    <Dropzone onDrop={this.onDrop}>
 			<p>Drop bed files here, or click to select bed files to upload.</p>
 		    </Dropzone>
 		</div>

@@ -22,9 +22,6 @@ class MiniPeaks extends React.Component {
 	    "h3k27ac": "#FFCD00"
 	};
 	this.fileIDmaxes = {}
-	this.updateFileMaxes = this.updateFileMaxes.bind(this);
-	this.renderPeaks = this.renderPeaks.bind(this);
-	this.sortByMax = this.sortByMax.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -45,7 +42,7 @@ class MiniPeaks extends React.Component {
         }
     }
 
-    updateFileMaxes(D){
+    updateFileMaxes = (D) => {
 	for(const acc of D.accessions){
 	    for(const rData of D.rows){
 		for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
@@ -87,7 +84,7 @@ class MiniPeaks extends React.Component {
 			    });
     }
     
-    renderPeaks(dr){
+    renderPeaks = (dr) => {
 	if(!dr){
 	    return "";
 	}
@@ -114,7 +111,7 @@ class MiniPeaks extends React.Component {
 	    </span>);
     }
 
-    sortByMax(d){
+    sortByMax = (d) => {
 	if(!d){
 	    return 0;
 	}

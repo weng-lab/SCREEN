@@ -27,15 +27,14 @@ class Rampage extends React.Component {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
 
-    _bb(transcript) {
-	let gclick = this.gclick.bind(this);
+    _bb = (transcript) => {
 	return <button type="button"
 		       className="btn btn-default btn-xs"
-		       onClick={() => {gclick("UCSC", transcript);}}
+		       onClick={() => {this.gclick("UCSC", transcript);}}
 	       >UCSC</button>;
     }
 
-    gclick(name, transcript) {
+    gclick = (name, transcript) => {
 	this.props.actions.showGenomeBrowser({
 	    title: transcript.transcript,
 	    start: transcript.start,
