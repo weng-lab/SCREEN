@@ -29,6 +29,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
     for assembly in assemblies:
         printt('***********', assembly)
+        args.assembly = assembly
         rna1.run(args, DBCONN)
         rna2.run(args, DBCONN)
         rna3.run(args, DBCONN)
