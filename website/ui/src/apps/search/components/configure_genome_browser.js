@@ -13,16 +13,9 @@ import Ztable from '../../../common/components/ztable/ztable';
 import DraggableCtList from '../../../common/components/draggable';
 
 class ConfigureGenomeBrowser extends React.Component {
-    constructor(props) {
-	super(props);
-	this.key = "configgb";
-        this.openGenomeBrowser = this.openGenomeBrowser.bind(this);
-	this.gbclick = this.gbclick.bind(this);
-	this.state = {"showCombo" : false};
-	this.optionsChanged = this.optionsChanged.bind(this);
-    }
-
-    gbclick(cre, cts, gbrowser){
+    state = {"showCombo" : false};
+    
+    gbclick = (cre, cts, gbrowser) => {
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
 	var host = arr[0] + "//" + arr[2] + "/api";
@@ -66,7 +59,7 @@ class ConfigureGenomeBrowser extends React.Component {
     // 			    });
     // }
 
-    openGenomeBrowser(data, url){
+    openGenomeBrowser = (data, url) => {
         $.ajax({
 	    type: "POST",
 	    url: ApiClient.Servers(url),
@@ -89,7 +82,7 @@ class ConfigureGenomeBrowser extends React.Component {
         });
     }
 
-    optionsChanged(s){
+    optionsChanged = (s) => {
 	this.setState({showCombo: s});
     }
     

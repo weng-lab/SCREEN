@@ -12,21 +12,15 @@ import loading from '../../../common/components/loading';
 const ROWHEIGHT = 30.0;
 
 class MiniPeaks extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = {jq: null, isFetching: true, isError: false };
-        this.key = "miniPeaks";
-	this._colors = {
-	    "dnase": "#06DA93",
-	    "h3k4me3": "#FF0000",
-	    "h3k27ac": "#FFCD00"
-	};
-	this.fileIDmaxes = {}
-	this.updateFileMaxes = this.updateFileMaxes.bind(this);
-	this.renderPeaks = this.renderPeaks.bind(this);
-	this.sortByMax = this.sortByMax.bind(this);
-    }
-
+    state = {jq: null, isFetching: true, isError: false };
+    key = "miniPeaks";
+    _colors = {
+	"dnase": "#06DA93",
+	"h3k4me3": "#FF0000",
+	"h3k27ac": "#FFCD00"
+    };
+    fileIDmaxes = {}
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){
@@ -45,7 +39,7 @@ class MiniPeaks extends React.Component {
         }
     }
 
-    updateFileMaxes(D){
+    updateFileMaxes = (D) => {
 	for(const acc of D.accessions){
 	    for(const rData of D.rows){
 		for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
@@ -87,7 +81,7 @@ class MiniPeaks extends React.Component {
 			    });
     }
     
-    renderPeaks(dr){
+    renderPeaks = (dr) => {
 	if(!dr){
 	    return "";
 	}
@@ -114,7 +108,7 @@ class MiniPeaks extends React.Component {
 	    </span>);
     }
 
-    sortByMax(d){
+    sortByMax = (d) => {
 	if(!d){
 	    return 0;
 	}

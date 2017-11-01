@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Ztable from '../../../common/components/ztable/ztable';
-import BarGraphTable from '../components/bar_graph_table';
 import * as ApiClient from '../../../common/api_client';
 
 import GeneExp from '../../geneexp/components/gene_exp';
@@ -28,9 +27,6 @@ function chunkArr(arr, chunk){
 }
 
 function makeTable(data, key, table){
-    if(table.bar_graph){
-        return React.createElement(BarGraphTable, {data, ...table});
-    }
     return React.createElement(Ztable, {data, ...table});
 }
 

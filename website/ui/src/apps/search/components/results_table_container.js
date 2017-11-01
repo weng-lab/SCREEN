@@ -9,12 +9,9 @@ import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin, toParams} from '../../../common/utility';
 
 class ResultsTableContainer extends React.Component {
-    constructor(props) {
-	super(props);
-        this.state = { cres: [], rfacets: [], total: 0, cts: null,
-                       isFetching: true, isError: false,
-                       jq : null}
-    }
+    state = { cres: [], rfacets: [], total: 0, cts: null,
+              isFetching: true, isError: false,
+              jq : null}
 
     shouldComponentUpdate(nextProps, nextState) {
 	return "results" === nextProps.maintabs_active;

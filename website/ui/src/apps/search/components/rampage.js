@@ -17,10 +17,6 @@ class Rampage extends React.Component {
         this.state = {transcript: props.keysAndData.sortedTranscripts[0],
                       sortOrder: "byValue",
                       datascale: "counts"};
-    	this.handleKeyPress = this.handleKeyPress.bind(this);
-    	this.transcriptUp = this.transcriptUp.bind(this);
-    	this.transcriptDown = this.transcriptDown.bind(this);
-        this.svgRender = this.svgRender.bind(this);
     }
 
     componentWillMount() {
@@ -31,15 +27,14 @@ class Rampage extends React.Component {
         document.removeEventListener("keydown", this.handleKeyPress);
     }
 
-    _bb(transcript) {
-	let gclick = this.gclick.bind(this);
+    _bb = (transcript) => {
 	return <button type="button"
 		       className="btn btn-default btn-xs"
-		       onClick={() => {gclick("UCSC", transcript);}}
+		       onClick={() => {this.gclick("UCSC", transcript);}}
 	       >UCSC</button>;
     }
 
-    gclick(name, transcript) {
+    gclick = (name, transcript) => {
 	this.props.actions.showGenomeBrowser({
 	    title: transcript.transcript,
 	    start: transcript.start,
@@ -48,9 +43,9 @@ class Rampage extends React.Component {
 	}, name, "rampagetranscript");
     }
     
-    transcriptUp() {
-        let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
-        let curT = this.state.transcript;
+    transcriptUp = () => {
+        const sortedTranscripts = this.props.keysAndData.sortedTranscripts;
+        const curT = this.state.transcript;
         let idx = sortedTranscripts.indexOf(curT);
         idx -= 1;
         if(idx < 0){
@@ -59,9 +54,9 @@ class Rampage extends React.Component {
         this.setState({transcript: sortedTranscripts[idx]})
     }
 
-    transcriptDown() {
-        let sortedTranscripts = this.props.keysAndData.sortedTranscripts;
-        let curT = this.state.transcript;
+    transcriptDown = () => {
+        const sortedTranscripts = this.props.keysAndData.sortedTranscripts;
+        const curT = this.state.transcript;
         let idx = sortedTranscripts.indexOf(curT);
         idx += 1;
         if(idx >= sortedTranscripts.length){
@@ -84,7 +79,7 @@ class Rampage extends React.Component {
 	}
     }
 
-    svgRender(){
+    svgRender = () => {
 	if ("details" === this.props.maintabs_active
 	    && "rampage" !== this.props.re_details_tab_active ) {
 	    return;

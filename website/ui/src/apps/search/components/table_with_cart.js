@@ -14,15 +14,11 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 
 
 class TableWithCart extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = {minrange:0, 
-		      maxrange: 0, selectedaccession: {},
-		      chrom:'',
-		      cellType:''}
-        this.table_click_handler = this.table_click_handler.bind(this);
-    }
-
+    state = {minrange:0, 
+	     maxrange: 0, selectedaccession: {},
+	     chrom:'',
+	     cellType:''};
+    
     _get_missing(a) {
 	const assays = {"dnase": "DNase-seq",
 			"promoter": "H3K4me3 ChIP-seq",
@@ -37,7 +33,7 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    table_click_handler(td, rowdata, actions){
+    table_click_handler = (td, rowdata, actions) => {
         if (td.indexOf("browser") !== -1){
     	    let cre = {...rowdata, ...rowdata.info};
     	    actions.showGenomeBrowser(cre, "");

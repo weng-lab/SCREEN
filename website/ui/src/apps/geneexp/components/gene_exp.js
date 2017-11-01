@@ -15,7 +15,6 @@ class GeneExp extends React.Component{
     constructor(props) {
         super(props);
 	const gene = props.gene;
-
         this.state = {jq: null, isFetching: true, isError: false,
 		      width: 0,
 		      isSingle: false,
@@ -23,11 +22,6 @@ class GeneExp extends React.Component{
 		      dataScale: "logTPM",
 		      gene
 	};
-	
-        this.doRenderWrapper = this.doRenderWrapper.bind(this);
-        this.loadGene = this.loadGene.bind(this);
-	this.updateWidth = this.updateWidth.bind(this);
-	this.makeBrowserButton = this.makeBrowserButton.bind(this);
     }
 
     componentDidMount(){
@@ -40,7 +34,7 @@ class GeneExp extends React.Component{
         this.loadGene(nextProps);
     }
 
-    updateWidth(){
+    updateWidth = () => {
 	if(this.refs.box){
 	    const width = Math.max(1200, this.refs.box.clientWidth);
 	    this.setState({width});
@@ -57,7 +51,7 @@ class GeneExp extends React.Component{
 	return r;
     }
     
-    loadGene(p){
+    loadGene = (p) => {
 	const q = this.makeKey(p);
         const jq = JSON.stringify(q);
 	if(jq in this.state){
@@ -79,7 +73,7 @@ class GeneExp extends React.Component{
 			    });
     }
 
-    makeBrowserButton(gbName) {
+    makeBrowserButton = (gbName) => {
 	return <Button bsSize="small"
 		       onClick={() => {
 			       const q = this.makeKey(this.props);
@@ -89,23 +83,23 @@ class GeneExp extends React.Component{
 				   const gbq = {
 				       accession: [],
 				       title: d.gene,
-				       start: d.start,
-				       len: d.stop - d.start,
-				       chrom: d.chrom
+				       start: d.coords.start,
+				       len: d.coords.stop - d.coords.start,
+				       chrom: d.coords.chrom
 				   };
 				   this.props.actions.showGenomeBrowser(gbq, gbName, "gene");
 			       }
-		       }}>
-	    {gbName}
+			   }}
+	       >
+    {gbName}
 	</Button>;
     }
     
-    doRenderWrapper(){
+    doRenderWrapper = () => {
 	const barheight = "15";
 	const q = this.makeKey(this.props);
         const jq = JSON.stringify(q);
         if(jq in this.state){
-	    //console.log("jq in state");
 	    const data = this.state[jq];
             return (
 		<div style={{"width": "100%"}} ref="bargraph">
@@ -118,7 +112,6 @@ class GeneExp extends React.Component{
 					  barheight})}
 		</div>);
         }
-	//console.log("jq NOT in state", q, "state:", this.state);
         return loading(this.state);
     }
 
@@ -133,7 +126,8 @@ class GeneExp extends React.Component{
 		    <h4>
 			<em>{this.state.gene}</em>
 			{" Gene Expression Profiles by RNA-seq"}
-			<HelpIcon globals={this.props.globals} helpkey={"GeneExpression"} />
+			<HelpIcon globals={this.props.globals}
+				  helpkey={"GeneExpression"} />
 			<span style={{paddingLeft: "20px"}}>
 			    {this.makeBrowserButton("UCSC")}
 			</span>
@@ -141,14 +135,14 @@ class GeneExp extends React.Component{
 		    <em>{this.props.ensemblid_ver}</em>
 		</div>
 		<ControlBar biosample_types_selected={this.props.biosample_types_selected}
-		compartments_selected={this.props.compartments_selected}
-		globals={this.props.globals}
-		actions={this.props.actions}
-		dataScale={this.state.dataScale}
-		sortOrder={this.state.sortOrder}
+			    compartments_selected={this.props.compartments_selected}
+			    globals={this.props.globals}
+			    actions={this.props.actions}
+			    dataScale={this.state.dataScale}
+			    sortOrder={this.state.sortOrder}
 			    isSingle={this.props.isSingle}
 			    assembly={this.props.assembly}
-		changeView={changeView}
+			    changeView={changeView}
 		/>
 		{this.doRenderWrapper()}
 	    </div>);

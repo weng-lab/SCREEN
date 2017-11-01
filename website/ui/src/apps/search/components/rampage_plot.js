@@ -3,21 +3,16 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
 import Rampage from '../components/rampage';
+
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 import loading from '../../../common/components/loading';
 
 class RampagePlot extends React.Component {
-    constructor(props, key) {
-	//console.log(props);
-	super(props);
-        this.key = "rampage";
-        this.url = "/dataws/rampage"
-        this.state = { jq: null, isFetching: true, isError: false };
-        this.loadCRE = this.loadCRE.bind(this);
-        this.doRenderWrapper = this.doRenderWrapper.bind(this);
-    }
-
+    key = "rampage";
+    url = "/dataws/rampage"
+    state = { jq: null, isFetching: true, isError: false };
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if(this.key === nextProps.maintabs_active){
 	    return true;
@@ -37,12 +32,12 @@ class RampagePlot extends React.Component {
 	}
     }
 
-    loadCRE({assembly, gene}){
+    loadCRE = ({assembly, gene}) => {
         if(!gene || gene in this.state){
             return;
         }
-        var q = {assembly, gene}
-        var jq = JSON.stringify(q);
+        const q = {assembly, gene}
+        const jq = JSON.stringify(q);
 	if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
@@ -50,16 +45,18 @@ class RampagePlot extends React.Component {
         this.setState({jq, isFetching: true});
 	ApiClient.getByPost(jq, this.url,
 			    (r) => {
-				this.setState({...r, isFetching: false, isError: false});
+				this.setState({...r, isFetching: false,
+					       isError: false});
 			    },
 			    (msg) => {
 				console.log("err loading cre details");
 				console.log(msg);
-				this.setState({jq: null, isFetching: false, isError: true});
+				this.setState({jq: null, isFetching: false,
+					       isError: true});
 			    });
     }
 
-    doRenderWrapper(){
+    doRenderWrapper = () => {
         const doit = (globals, assembly, keysAndData) => {
             let data = keysAndData.tsss;
 	    
