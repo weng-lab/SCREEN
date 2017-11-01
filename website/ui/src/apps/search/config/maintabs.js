@@ -1,6 +1,5 @@
 import React from 'react';
 
-import ActivityProfile from '../components/activity_profile';
 import BedUpload from '../components/bed_upload';
 import ConfigureGenomeBrowser from '../components/configure_genome_browser';
 import DetailsContainer from '../components/details_container';
@@ -83,10 +82,6 @@ class RampageBigTab extends React.Component{
     }
 }
 
-class ActivityProfileTab extends React.Component {
-    render() { return <ActivityProfile key="aprofile" />;}
-}
-
 const MainTabInfo = (parsedQuery, globals) => {
     const assembly = parsedQuery.assembly;
 
@@ -108,8 +103,6 @@ const MainTabInfo = (parsedQuery, globals) => {
 		       visible: false, f: ConfigureGenomeBrowser},
 	    expression: {title: geTitle, visible: !!gene, f: GeBigTab},
 	    rampage: {title: rTitle,  visible: showRampage, f: RampageBigTab},
-	    aprofile: {title: "Activity Profile", visible: false,
-		       f: ActivityProfileTab},
 	    details: {title: Render.tabTitle(["cRE", "Details"]), visible: false,
 		      f: DetailsTab}
     };

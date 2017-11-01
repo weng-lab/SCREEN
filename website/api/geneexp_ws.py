@@ -76,7 +76,7 @@ class GeneExpWebService(object):
         itemsByRID = cge.itemsByRID
         r = {"assembly": self.assembly,
              "gene": name,
-             "genename": name,
+             "strand": strand,
              "ensemblid_ver": gi.ensemblid_ver,
              "coords": {"chrom": gi.chrom,
                         "start": gi.start,
