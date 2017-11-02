@@ -98,16 +98,6 @@ class GeneExp extends React.Component{
 	</Button>;
     }
 
-    makeWikiButton = () => {
-	return <Button bsSize="small"
-		       onClick={() => {
-			       const url = Urls.wikiLink(this.props.gene);
-			       window.open(url, "_blank");
-			   }}>
-	    Wikipedia
-	</Button>;
-    }
-
     doRenderWrapper = () => {
 	const barheight = "15";
 	const q = this.makeKey(this.props);
@@ -144,7 +134,6 @@ class GeneExp extends React.Component{
 			<span style={{paddingLeft: "20px"}}>
 			    {this.makeBrowserButton("UCSC")}
 			    {this.makeGeneCardButton()}
-			    {this.makeWikiButton()}
 			</span>
 		    </h4>
 		    <em>{this.props.ensemblid_ver}</em>
