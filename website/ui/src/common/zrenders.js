@@ -3,6 +3,7 @@ import {Button, ButtonGroup} from 'react-bootstrap';
 
 import {toParams, commajoin} from './utility';
 import * as ApiClient from './api_client';
+import * as Urls from './urls';
 
 export const relink = (assembly, uuid) => (v) => (
 	<a href={"/search?" + toParams({assembly, q: v, uuid})} target={'_blank'}>
@@ -118,12 +119,6 @@ export const geDeButton = (assembly, accession, uuid) => (d) => {
     return [ge, de];
 };
 
-export const openGeLink = (assembly, gene, uuid) => (
-    <div>
-	This plot is displaying cell-wide expression of <em>{gene}</em>. To view expression in different subcellular compartments or biosample types, <a href={geLink(assembly, gene, uuid)} target={"_blank"}>click here</a>.
-    </div>
-)
-
 export const geneDeLinks = (assembly, uuid) => (genesallpc) => {
     const accession = genesallpc.accession;
     const all = commajoin(genesallpc.all.map(geDeButton(assembly, accession, uuid)));
@@ -220,8 +215,8 @@ export const factorbook_link_histone = (d) => (
 );
 
 export const geneLink = (d) => (
-	<em key={d}>
-	<a href={"http://www.genecards.org/cgi-bin/carddisp.pl?gene=" + d}
+    <em key={d}>
+	<a href={Urls.geneCardLink(d)}
 	   target="_blank">{d}</a>
     </em>);
 

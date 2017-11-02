@@ -5,6 +5,7 @@ import { Button } from 'react-bootstrap';
 
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
+import * as Urls from '../../../common/urls';
 
 import LargeHorizontalBars from '../components/large_horizontal_bars'
 import loading from '../../../common/components/loading'
@@ -33,7 +34,6 @@ class GeneExp extends React.Component{
 	    const width = Math.max(1200, this.refs.box.clientWidth);
 	    this.setState({width});
 	}
-
     }
     
     makeKey(p){
@@ -87,7 +87,27 @@ class GeneExp extends React.Component{
     {gbName}
 	</Button>;
     }
-    
+
+    makeGeneCardButton = () => {
+	return <Button bsSize="small"
+		       onClick={() => {
+			       const url = Urls.geneCardLink(this.props.gene);
+			       window.open(url, "_blank");
+			   }}>
+	    GeneCards
+	</Button>;
+    }
+
+    makeWikiButton = () => {
+	return <Button bsSize="small"
+		       onClick={() => {
+			       const url = Urls.wikiLink(this.props.gene);
+			       window.open(url, "_blank");
+			   }}>
+	    Wikipedia
+	</Button>;
+    }
+
     doRenderWrapper = () => {
 	const barheight = "15";
 	const q = this.makeKey(this.props);
@@ -123,6 +143,8 @@ class GeneExp extends React.Component{
 				  helpkey={"GeneExpression"} />
 			<span style={{paddingLeft: "20px"}}>
 			    {this.makeBrowserButton("UCSC")}
+			    {this.makeGeneCardButton()}
+			    {this.makeWikiButton()}
 			</span>
 		    </h4>
 		    <em>{this.props.ensemblid_ver}</em>
