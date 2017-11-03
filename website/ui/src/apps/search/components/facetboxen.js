@@ -41,11 +41,10 @@ const accessionsBox = ({accessions, actions}) => {
     let box = (
 	<LongChecklistFacet
 	title={""}
-	cols={[{
-	    title: "Assay", data: "key",
-	    className: "dt-right",
-	    render: Render.upperCase
-	}]}
+	    cols={[{
+		    title: "Assay", data: "key",
+		    render: Render.upperCase
+		}]}
 	data={accessions.map((d) => {
 	    return {key: d, selected: true}})}
 	order={[]}
@@ -67,14 +66,13 @@ const biosamplesBox = ({cellType, actions, globals}) => {
 		{ title: "", data: "name",
 		  orderable: false,
 		  render: () => (<input type='radio' />)},
-		{ title: "cell type", data: "name",
-		  className: "dt-right"},
-		{ title: "tissue", data: "tissue",
-		  className: "dt-right" },
+		{ title: "cell type", data: "name"},
+		{ title: "tissue", data: "tissue"},
 		{ title: "", data: "cellTypeName",
-		  className: "dt-right dcc",
+		  className: "dcc",
 		  render: Render.assayIcon(globals),
-		  orderable: false }
+		  orderable: false },
+		{ title: "synonyms", data: "synonyms", visible: false }
 	    ]}
 	    order={[]}
 	    buttonsOff={true}
