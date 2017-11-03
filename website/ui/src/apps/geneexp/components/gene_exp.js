@@ -84,7 +84,8 @@ class GeneExp extends React.Component{
 			       }
 			   }}
 	       >
-    {gbName}
+	<img src={ApiClient.StaticUrl("/ucscHelixLogo.png")} alt="UCSC"
+	     style={{height: "30px"}}/>
 	</Button>;
     }
 
