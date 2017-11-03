@@ -67,6 +67,10 @@ class GeneExpWebService(object):
 
         gene = j["gene"]  # TODO: check for valid gene
         gi = self.pgSearch.geneInfo(gene)
+        if not gi:
+            return {"assembly": self.assembly,
+                    "gene": gene}
+        
         name = gi.approved_symbol
         strand = gi.strand
             
