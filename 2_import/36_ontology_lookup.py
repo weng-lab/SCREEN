@@ -31,7 +31,9 @@ class OntologyToCellTypes:
     def run(self):
         self._import()
         self._doIndex()
-
+        self._addOntology()
+        self._addOntologyDatasets()
+        
     def _import(self):
         lookup = []
 
@@ -62,7 +64,7 @@ class OntologyToCellTypes:
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-celltype text,
+cellTypeName text,
 biosample_term_id text,
 synonyms jsonb
 );""".format(tableName=self.tableName))
@@ -74,19 +76,41 @@ synonyms jsonb
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
 
-        cols = ["celltype", "biosample_term_id"]
+        cols = ["cellTypeName", "biosample_term_id"]
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         print("copied in", self.curs.rowcount)
 
     def _addOntology(self):
         self.curs.execute("""
-            UPDATE {tn}
-    SET synonyms 
+UPDATE {tn} AS oi
+SET synonyms = o.info->'synonyms'
+FROM ontology AS o
+WHERE o.oid = oi.biosample_term_id
     """.format(tn=self.tableName))
+        if 0 == self.curs.rowcount:
+            raise Exception("error: no cRE rows updated")
+        printt("updated ontology_info:", "{:,}".format(self.curs.rowcount))
 
-        
+    def _addOntologyDatasets(self):
+        printt("adding col...")
+        self.curs.execute("""
+        ALTER TABLE {tncres}
+        DROP COLUMN IF EXISTS synonyms;
+
+        ALTER TABLE {tncres}
+        ADD COLUMN synonyms jsonb;
+
+        UPDATE {tncres} as ds
+        SET synonyms = oi.synonyms
+        FROM {tn} as oi
+        where ds.cellTypeName = oi.cellTypeName
+    """.format(tn=self.tableName, tncres=self.assembly + "_datasets"))
+        if 0 == self.curs.rowcount:
+            raise Exception("error: no cRE rows updated")
+        printt("updated dataets:", "{:,}".format(self.curs.rowcount))
+       
     def _doIndex(self):
-        makeIndex(self.curs, self.tableName, ["celltype", "biosample_term_id"])
+        makeIndex(self.curs, self.tableName, ["cellTypeName"])
 
 
 def run(args, DBCONN):

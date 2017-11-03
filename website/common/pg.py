@@ -491,13 +491,14 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "cellTypeDesc": r[7],
                     "name": r[7],
                     "value": r[6],  # for datatables
-                    "isde": r[6] in dects
+                    "isde": r[6] in dects,
+                    "synonyms": r[8]
                     }
 
         tableName = self.assembly + "_datasets"
         cols = ["assay", "expID", "fileID", "tissue",
                 "biosample_summary", "biosample_type", "cellTypeName",
-                "cellTypeDesc"]
+                "cellTypeDesc", "synonyms"]
         with getcursor(self.pg.DBCONN, "datasets") as curs:
             curs.execute("""
 SELECT {cols} FROM {tn}
