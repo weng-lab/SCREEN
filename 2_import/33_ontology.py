@@ -52,7 +52,6 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 oid text,
-synonym text,
 info jsonb
 );""".format(tableName=self.tableName))
 
@@ -75,20 +74,16 @@ info jsonb
                     else:
                         vals[k] = v
             nvals = {k:v for k,v in vals.iteritems() if v}
-            if vals["synonyms"]:
-                for s in vals["synonyms"]:
-                    outF.write('\t'.join([oid, s, json.dumps(nvals)]) + '\n')
-            else:
-                outF.write('\t'.join([oid, '', json.dumps(nvals)]) + '\n')
+            outF.write('\t'.join([oid, json.dumps(nvals)]) + '\n')
         outF.seek(0)
         
-        cols = ["oid", "synonym", "info"]
+        cols = ["oid", "info"]
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount, "rows", self.tableName)
 
     def _doIndex(self):
-        makeIndexTextPatternOps(self.curs, self.tableName, ["synonym"])
-        makeIndexGinTrgmOps(self.curs, self.tableName, ["synonym"])
+        #makeIndexTextPatternOps(self.curs, self.tableName, ["synonym"])
+        #makeIndexGinTrgmOps(self.curs, self.tableName, ["synonym"])
         makeIndex(self.curs, self.tableName, ["oid"])
 
 

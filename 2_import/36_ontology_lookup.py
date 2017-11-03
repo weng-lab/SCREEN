@@ -63,7 +63,8 @@ DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
 celltype text,
-biosample_term_id text
+biosample_term_id text,
+synonyms jsonb
 );""".format(tableName=self.tableName))
 
         printt('***********', "import lookup")
@@ -77,6 +78,13 @@ biosample_term_id text
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         print("copied in", self.curs.rowcount)
 
+    def _addOntology(self):
+        self.curs.execute("""
+            UPDATE {tn}
+    SET synonyms 
+    """.format(tn=self.tableName))
+
+        
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["celltype", "biosample_term_id"])
 
