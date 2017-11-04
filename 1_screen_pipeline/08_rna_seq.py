@@ -84,7 +84,8 @@ class ExtractRNAseq:
 
     def _getFiles(self):
         url = "https://www.encodeproject.org/search/?"
-        url += "searchTerm=rna-seq&type=Experiment&assay_title=total+RNA-seq"
+        url += "searchTerm=rna-seq&type=Experiment"
+        url += "&assay_title=total+RNA-seq&assay_title=polyA+mRNA+RNA-seq"
         url += "&assembly=" + self.assembly + "&files.file_type=tsv"
         url += "&award.project=ENCODE&award.project=Roadmap"
         url += "&format=json&limit=all"
