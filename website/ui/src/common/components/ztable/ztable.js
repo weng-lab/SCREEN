@@ -42,12 +42,18 @@ class SearchBox extends React.Component {
 	return (
 	    <div style={{float: "right"}}>
 		<Form inline>
-		    <FormGroup controlId = "formBasicText">
+		    <FormGroup>
 			Search:
 			<FormControl bsSize = "small"
 				     size = "15"
 				     type = "text"
 				     value = {this.props.value}
+				     onKeyPress = {(event) => {
+					     if (event.which === 13 /* Enter */) {
+						 // prevent form submission, from
+						 // https://github.com/christianalfoni/formsy-react/issues/360
+						 event.preventDefault();
+					     }}}
 				     onChange = {this.props.onChange}/>
 			<FormControl.Feedback />
 		    </FormGroup>
