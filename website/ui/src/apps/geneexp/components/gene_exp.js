@@ -67,38 +67,53 @@ class GeneExp extends React.Component{
     }
 
     makeBrowserButton = (gbName) => {
-	return <Button bsSize="small"
-		       onClick={() => {
-			       const q = this.makeKey(this.props);
-			       const jq = JSON.stringify(q);
-			       if(jq in this.state){
-				   const d = this.state[jq];
-				   const gbq = {
-				       accession: [],
-				       title: d.gene,
-				       start: d.coords.start,
-				       len: d.coords.stop - d.coords.start,
-				       chrom: d.coords.chrom
-				   };
-				   this.props.actions.showGenomeBrowser(gbq, gbName, "gene");
-			       }
-			   }}
-	       >
-	<img src={ApiClient.StaticUrl("/ucscHelixLogo.png")} alt="UCSC"
-	     style={{height: "30px"}}/>
-	</Button>;
+	return (
+	    <Button bsSize="small"
+	    onClick={() => {
+		const q = this.makeKey(this.props);
+		const jq = JSON.stringify(q);
+		if(jq in this.state){
+		    const d = this.state[jq];
+		    const gbq = {
+			accession: [],
+			title: d.gene,
+			start: d.coords.start,
+			len: d.coords.stop - d.coords.start,
+			chrom: d.coords.chrom
+		    };
+		    this.props.actions.showGenomeBrowser(gbq, gbName, "gene");
+		}
+	    }}
+	    >
+	    <img src={ApiClient.StaticUrl("/ucscHelixLogo.png")} alt="UCSC"
+		 style={{height: "30px"}}/>
+	</Button>);
     }
 
     makeGeneCardButton = () => {
-	return <Button bsSize="small"
-		       onClick={() => {
-			       const url = Urls.geneCardLink(this.props.gene);
-			       window.open(url, "_blank");
-			   }}>
-	    GeneCards
-	</Button>;
+	return (
+	    <Button bsSize="small"
+		    onClick={() => {
+			    const url = Urls.geneCardLink(this.props.gene);
+			    window.open(url, "_blank");
+			}}>
+		<img src={ApiClient.StaticUrl("/logo_genecards.png")} alt="GeneCards"
+		     style={{height: "30px"}}/>
+	    </Button>);
     }
 
+    makeEnsemblButton = () => {
+	return (
+	    <Button bsSize="small"
+		    onClick={() => {
+			    const url = Urls.ensembleMouse(this.props.gene);
+			    window.open(url, "_blank");
+			}}>
+		<img src={ApiClient.StaticUrl("/e-ensembl.png")} alt="Ensembl"
+		     style={{height: "30px"}}/>
+	    </Button>);
+    }
+    
     doRenderWrapper = () => {
 	const barheight = "15";
 	const q = this.makeKey(this.props);
@@ -134,7 +149,8 @@ class GeneExp extends React.Component{
 				  helpkey={"GeneExpression"} />
 			<span style={{paddingLeft: "20px"}}>
 			    {this.makeBrowserButton("UCSC")}
-			    {this.makeGeneCardButton()}
+			    {"mm10" !== this.props.assembly && this.makeGeneCardButton()}
+			    {"mm10" === this.props.assembly && this.makeEnsemblButton()}
 			</span>
 		    </h4>
 		    <em>{this.props.ensemblid_ver}</em>

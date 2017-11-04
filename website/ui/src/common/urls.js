@@ -3,3 +3,6 @@ export const geneCardLink = (d) => (
 
 export const wikiLink = (d) => (
     "https://en.wikipedia.org/wiki/" + d);
+
+export const ensembleMouse = (d) => (
+    "http://www.ensembl.org/Mouse/Search/Results?q=" + d + ";site=ensembl;facet_feature_type=;facet_species=Mouse");
