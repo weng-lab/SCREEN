@@ -12,10 +12,9 @@ class SearchBox extends React.Component {
     constructor(props, key) {
 	super(props);
 	this.state = { jq: null, searchtext: this.makeVal(this.props) };
-	this._search = this._search.bind(this);
     }
 
-    _search() {
+    _search = () => {
 	const params = toParams({q: this.state.searchtext,
 				 assembly: this.props.assembly,
 				 uuid: this.props.uuid});
