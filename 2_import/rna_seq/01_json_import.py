@@ -60,7 +60,7 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        fnp = paths.path(assembly, "geneExp", "2017-10-31" + ".tsv.gz")
+        fnp = paths.geFnp(assembly)
 
         with getcursor(DBCONN, "08_setup_log") as curs:
             if args.index:
