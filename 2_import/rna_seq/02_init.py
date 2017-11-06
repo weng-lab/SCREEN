@@ -111,7 +111,7 @@ class LoadRNAseq:
             rows = f.readlines()
         lookup = {}
         for idx, r in enumerate(rows):
-            toks = r.rstrip().split(',')
+            toks = r.rstrip().split('%')
             if len(toks) != 2:
                 raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
                                 + r + "found " + str(len(toks)))
