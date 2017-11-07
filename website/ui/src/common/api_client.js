@@ -44,7 +44,7 @@ export const getMinipeaks = (jq, baseUrl, successF, errF) => {
 }
 
 export const getIntersect = (jq, successF, errF) => {
-    const url = "http://api.wenglab.org/postws/lines";
+    const url = "http://api.wenglab.org/screen/v10/postws/lines";
     fetch(url,
 	  {
 	      headers: {

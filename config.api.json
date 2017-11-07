@@ -12,7 +12,7 @@
   "cassandra": ["cassandra"]
  },
  "UI":
- {"apiServer": "http://api.wenglab.org",
+ {"apiServer": "http://api.wenglab.org/screen/v10",
   "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
   "staticServer": "http://screen.encodeproject.org/assets",
   "overrides": {}
