@@ -792,6 +792,10 @@ list-style: none;
 border: 1px solid black;
 }
 
+#mainTabs > ul > li > a {
+    cursor: pointer;
+}
+
 nav.navbar {
     height: 50px;
     margin-bottom: 0px;
