@@ -22,6 +22,7 @@ from utils import Utils, printWroteNumLines, printt
 
 rootDir = os.path.join(Dirs.projects_base, "cREs")
 
+
 class TADImporter:
     def __init__(self, curs, assembly):
         self.curs = curs

@@ -52,7 +52,7 @@ class GeneExpWebService(object):
     def search(self, j, args):
         def abort(err):
             return {"hasData": False, "items": {}, "err": err}
-            
+
         compartments = j["compartments_selected"]
 
         biosample_types_selected = j["biosample_types_selected"]
@@ -60,7 +60,7 @@ class GeneExpWebService(object):
             return abort("no biosample type selected")
         if not set(biosample_types_selected).issubset(self.allBiosampleTypes):
             return abort("invalid biosample type")
-        
+
         # TODO: check value of compartments
         if not compartments:
             return abort("no compartments")
@@ -70,10 +70,10 @@ class GeneExpWebService(object):
         if not gi:
             return {"assembly": self.assembly,
                     "gene": gene}
-        
+
         name = gi.approved_symbol
         strand = gi.strand
-            
+
         cge = GeneExpression(self.ps, self.cache, self.assembly)
         single = cge.computeHorBars(name, compartments, biosample_types_selected)
         mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected)

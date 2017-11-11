@@ -46,7 +46,7 @@ class Links:
         #                 "systems": [],
         #                 "types": []
         #             },
-        
+
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
@@ -66,17 +66,17 @@ info jsonb
             vals = {}
             for k, v in infos.iteritems():
                 if isinstance(v, list):
-                    t = [x.strip() for x in v] # remove newlines
+                    t = [x.strip() for x in v]  # remove newlines
                     vals[k] = filter(lambda x: " coup de sabre" not in x and '\\' not in x and '"' not in x, t)
                 else:
                     if '{' in v or '"' in v:
                         vals[k] = ''
                     else:
                         vals[k] = v
-            nvals = {k:v for k,v in vals.iteritems() if v}
+            nvals = {k: v for k, v in vals.iteritems() if v}
             outF.write('\t'.join([oid, json.dumps(nvals)]) + '\n')
         outF.seek(0)
-        
+
         cols = ["oid", "info"]
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount, "rows", self.tableName)

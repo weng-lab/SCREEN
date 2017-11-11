@@ -56,7 +56,7 @@ class PostWebService(object):
         uuid = j["uuid"]
         lines = j["allLines"]
         assembly = j["assembly"]
-                
+
         f, filename = tempfile.mkstemp(dir="/home/purcarom/intersect/incoming")
         for arr in lines:
             arr = arr.strip()
@@ -65,7 +65,7 @@ class PostWebService(object):
 
         cres = {"hg19": "/home/purcarom/intersect/hg19.sorted.bed",
                 "mm10": "/home/purcarom/intersect/mm10.sorted.bed"}
-        
+
         cmds = ["cat", filename,
                 '|', 'sort -k1,1 -k2,2n',
                 '|', 'bedtools intersect -a ', cres[assembly], ' -b stdin'
@@ -74,7 +74,7 @@ class PostWebService(object):
                 '|', "awk '{ print $5 }'"]
         accessions = Utils.runCmds(cmds)
         accessions = [x.strip() for x in accessions]
-        
+
         ret = {"uuid": uuid,
                "accessions": accessions}
         return ret

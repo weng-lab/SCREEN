@@ -30,6 +30,7 @@ from config import Config
 mc = MemCacheWrapper("127.0.0.1")
 qd = QueryDCC(cache=mc)
 
+
 class ExtractRNAseq:
     def __init__(self, assembly):
         self.assembly = assembly
@@ -38,7 +39,7 @@ class ExtractRNAseq:
 
     def run(self):
         self.ensemblIDtoGeneName()
-        
+
         today = arrow.now().format('YYYY-MM-DD')
         fnp = paths.path(self.assembly, "geneExp", today + ".tsv.gz")
         Utils.ensureDir(fnp)
@@ -65,13 +66,13 @@ class ExtractRNAseq:
                     lines = [x.strip().split('\t') for x in f]
                 header = lines[0]
                 gene_id_idx = self.gene_id_idx
-                TPM_idx = 5 
+                TPM_idx = 5
                 FPKM_idx = 6
                 assert("gene_id" == header[gene_id_idx])
                 assert("TPM" == header[TPM_idx])
                 assert("FPKM" == header[FPKM_idx])
                 for row in lines[1:]:
-                    #if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
+                    # if "0.00" == row[TPM_idx] and "0.00" == row[FPKM_idx]:
                     #    continue
                     geneID = row[gene_id_idx]
                     yield(expF.expID, expF.fileID, geneID,
@@ -100,6 +101,7 @@ class ExtractRNAseq:
                 if expF.isGeneQuantifications():
                     yield(exp, expF)
 
+
 def run(args):
     assemblies = Config.assemblies
     if args.assembly:
@@ -122,6 +124,7 @@ def main():
     args = parse_args()
 
     return run(args)
+
 
 if __name__ == '__main__':
     main()

@@ -15,7 +15,7 @@ class Config:
 
     with open(fnp) as f:
         c = json.load(f)
-        
+
     re = c["RE"]
     version = re["version"]
     db_host = re["db_host"]

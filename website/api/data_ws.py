@@ -81,7 +81,7 @@ class DataWebService(GetOrSetMemCache):
             "rampage": self._re_detail_rampage,
             "linkedGenes": self._re_detail_linkedGenes,
             "miniPeaks": self._re_detail_miniPeaks,
-            }
+        }
 
         self.session = Sessions(ps.DBCONN)
 

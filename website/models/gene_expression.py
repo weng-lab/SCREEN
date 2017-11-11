@@ -24,7 +24,7 @@ class GeneExpression:
         self.tissueColors = TissueColors(cache)
 
         self.itemsByRID = {}
-        
+
     def getTissueColor(self, t):
         return self.tissueColors.getTissueColor(t)
 
@@ -132,7 +132,7 @@ WHERE approved_symbol = %(gene)s
             def doLog(d):
                 base = 2
                 return float("{0:.2f}".format(math.log(float(d) + 0.01, base)))
-            
+
             if tissue == '{}':
                 tissue = fixedmap[row[2]] if row[2] in fixedmap else ""
 
@@ -147,12 +147,11 @@ WHERE approved_symbol = %(gene)s
                     "rep": row[4],
                     "ageTitle": row[6],
                     "rID": row[7]
-            }
+                    }
 
         rows = [makeEntry(x) for x in rows]
         ret = self.process(rows)
         return ret
-
 
     def computeHorBars(self, gene, compartments, biosample_types_selected):
         q = """
@@ -165,7 +164,7 @@ AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 """.format(assembly=self.assembly)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected)
-    
+
     def computeHorBarsMean(self, gene, compartments, biosample_types_selected):
         q = """
 SELECT avg(r.tpm), r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,

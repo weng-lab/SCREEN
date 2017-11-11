@@ -22,6 +22,7 @@ from constants import paths
 from config import Config
 from exp import Exp
 
+
 class OntologyToCellTypes:
     def __init__(self, curs, assembly):
         self.curs = curs
@@ -33,7 +34,7 @@ class OntologyToCellTypes:
         self._doIndex()
         self._addOntology()
         self._addOntologyDatasets()
-        
+
     def _import(self):
         lookup = []
 
@@ -47,7 +48,7 @@ class OntologyToCellTypes:
                 toks = line.strip().split('\t')
                 ct = toks[0]
                 for fileID in toks[2:]:
-                    fileID= fileID.strip()                    
+                    fileID = fileID.strip()
                     if not fileID or 'NA' == fileID:
                         continue
                     exp = qd.getExpFromFileID(fileID)
@@ -58,7 +59,7 @@ class OntologyToCellTypes:
                         bsi = [bsi]
                     for i in bsi:
                         lookup.append([ct, i])
-                    
+
         printt('***********', "drop and create", self.tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
@@ -108,7 +109,7 @@ WHERE o.oid = oi.biosample_term_id
         if 0 == self.curs.rowcount:
             raise Exception("error: no cRE rows updated")
         printt("updated dataets:", "{:,}".format(self.curs.rowcount))
-       
+
     def _doIndex(self):
         makeIndex(self.curs, self.tableName, ["cellTypeName"])
 

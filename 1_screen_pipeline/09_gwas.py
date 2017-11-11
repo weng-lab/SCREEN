@@ -25,7 +25,7 @@ class BuildGwas:
     def __init__(self, assembly):
         self.assembly = assembly
         self.version = GwasVersion
-        
+
     def processGwasBed(self, origBedFnp, bedFnp):
         printt("reading", origBedFnp)
         with open(origBedFnp) as f:

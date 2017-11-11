@@ -47,7 +47,7 @@ class MiniPeaks:
                     for a in assays:
                         k = accession + a
                         if k not in byCts[ctn]:
-                            byCts[ctn][k] = None             
+                            byCts[ctn][k] = None
                     k = accession + assay
                     byCts[ctn][k] = {"fileID": fileID, "data": data, "assay": assay}
                     expID = self.cache.datasets.byFileID[fileID]["expID"]
@@ -80,7 +80,7 @@ def main():
 
     assembly = "hg19"
     acc = "EH37E1055372"
-    
+
     pgSearch = PGsearch(ps, assembly)
     cache = CachedObjects(ps, assembly)
 
@@ -88,6 +88,7 @@ def main():
     ret = mp.getMinipeaksForAssays(["dnase"], [acc])
 
     print(ret)
+
 
 if __name__ == "__main__":
     main()

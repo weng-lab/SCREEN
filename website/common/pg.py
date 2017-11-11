@@ -155,9 +155,9 @@ WHERE approved_symbol = %s
 OR ensemblid = %s
 OR ensemblid_ver = %s
             """.format(gtn=self.assembly + "_gene_info"),
-                         (gene, gene, gene))
+                (gene, gene, gene))
             return curs.fetchone()
-        
+
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_snps"
@@ -634,12 +634,12 @@ FROM {tn}
 SELECT ensemblid_ver FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
         """.format(assembly=self.assembly)
-        
+
         with getcursor(self.pg.DBCONN, "_gene") as curs:
             curs.execute(q, {"gene": gene})
             rows = curs.fetchone()
             return rows[0]
-        
+
     def geBiosampleTypes(self):
         q = """
 SELECT DISTINCT(biosample_type)

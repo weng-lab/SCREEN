@@ -1110,6 +1110,7 @@ def run(uberon_url, efo_url, obi_url):
 
     return terms
 
+
 def main():
     ''' Downloads UBERON, EFO and OBI ontologies and create a JSON file '''
 

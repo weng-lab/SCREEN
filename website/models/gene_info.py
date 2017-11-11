@@ -21,4 +21,4 @@ class GeneInfo:
 
     def info(self, name):
 
-        return 
+        return
