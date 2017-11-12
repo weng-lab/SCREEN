@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+
+
+
 import cherrypy
 import os
 import sys
@@ -48,8 +51,6 @@ class WebServerConfig:
 
     def getRootConfig(self):
         redisHost = "127.0.0.1"
-        if self.production:
-            redisHost = "redis"
 
         return {
             '/': {
