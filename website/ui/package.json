@@ -7,7 +7,9 @@
 						"start": "react-scripts start",
 						"build": "react-scripts build",
 						"test": "react-scripts test --env=jsdom",
-						"eject": "react-scripts eject"
+			    "eject": "react-scripts eject",
+			    "flow": "flow",
+						"postbuild": "python deploy.py"
 			},
 			"homepage": "http://screen.encodeproject.org",
 			"devDependencies": {},
@@ -16,8 +18,8 @@
 						"d3": "^4.2.2",
 						"downloadjs": "^1.4.7",
 						"enumify": "^1.0.4",
+						"flow-bin": "^0.57.3",
 						"jquery": "^3.2.1",
-						"jquery-ui": "github:jquery/jquery-ui#1.12.1",
 						"jshashes": "^1.0.7",
 						"jszlib": "dasmoth/jszlib",
 						"react": "^16.0.0",

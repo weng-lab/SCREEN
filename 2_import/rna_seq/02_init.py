@@ -82,8 +82,11 @@ class LoadRNAseq:
                 life_stage = bs.get("life_stage", "")
                 age_units = bs.get("age_units", "")
                 age = bs.get("age", "")
-                ageTitle = '(%s %s %s)' % (life_stage, age, age_units)
-                print(ageTitle)
+                toks = [x for x in [life_stage, age, age_units] if x and x != "unknown"]
+                ageTitle = ''
+                if toks:
+                    ageTitle = '(' + ' ' .join(toks) + ')'
+                # print(ageTitle)
         except:
             raise
             ageTitle = ''
@@ -108,7 +111,7 @@ class LoadRNAseq:
             rows = f.readlines()
         lookup = {}
         for idx, r in enumerate(rows):
-            toks = r.rstrip().split(',')
+            toks = r.rstrip().split('%')
             if len(toks) != 2:
                 raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
                                 + r + "found " + str(len(toks)))

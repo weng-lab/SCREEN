@@ -6,13 +6,13 @@ import IntersectingAssayTf from '../components/intersecting_assay_tf';
 import IntersectingAssayHistone from '../components/intersecting_assay_histone';
 
 const fantomcat_link = (d) => (
-	<a href={"http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d}
-    target="_blank">{d}</a>
-);
+    <a href={"http://fantom.gsc.riken.jp/cat/v1/#/genes/" + d}
+       target="_blank">{d}</a>
+)
 
 const geneLink_list = (d) => (
     commajoin(d.split(", ").map(Render.geneLink))
-);
+)
 
 export const TopTissuesTables = (globals, assembly) => ({
     promoter: {
@@ -29,7 +29,6 @@ export const TopTissuesTables = (globals, assembly) => ({
 	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
-	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: false,
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
@@ -48,7 +47,6 @@ export const TopTissuesTables = (globals, assembly) => ({
 	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
-	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
@@ -68,7 +66,6 @@ export const TopTissuesTables = (globals, assembly) => ({
 	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
-	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
@@ -86,7 +83,6 @@ export const TopTissuesTables = (globals, assembly) => ({
 	sortCol: ["one", false],
 	pageLength: 5,
 	paging: true,
-	bar_graph: false, //GlobalAssembly != "hg19",
         bLengthChange: true,
 	bFilter: true,
 	rank_f: (d) => (Math.log(d["one"]))
@@ -146,7 +142,6 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
 	pagLength: 5,
 	paging: true,
-	bar_graph: false,
 	bLengthChange: true,
 	bFilter: true
     },
@@ -180,7 +175,6 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
 	pagLength: 5,
 	paging: true,
-	bar_graph: false,
 	bLengthChange: true,
 	bFilter: true
     }

@@ -57,7 +57,7 @@ class HorizontalBar extends ScaledPlot {
     }
 
     render() {
-	
+
 	// prepare formatting functions
 	const fontsize = this._barheight * 0.75;
 

@@ -3,11 +3,11 @@ import {Helmet} from "react-helmet";
 
 import HelpIcon from './components/help_icon'
 
-export const panelize = (title, facet, helpkey = null, globals = null) => {
+export const panelize = (title, facet, helpkey = null, globals = null, headerStyle={}) => {
     return (
         <div className="panel-group facet">
 	    <div className="panel panel-primary">
-	        <div className="panel-heading">
+	        <div className="panel-heading" style={headerStyle}>
 		    {title}
 		    {helpkey && <HelpIcon globals={globals}
 					  helpkey={helpkey}
@@ -119,14 +119,14 @@ export const toParams = (d) => (
     Object.keys(d).map((k) => (k + '=' + encodeURIComponent(d[k]))).join('&'))    
 
 export const PageTitle = (assembly = null) => {
-      const pageTitle = () => {
-	  if(assembly){
-              return "SCREEN " + assembly + ": Search Candidate Regulatory Elements by ENCODE";
-	  }
-	  return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
-      }
+    const pageTitle = () => {
+	if(assembly){
+            return "SCREEN " + assembly + ": Search Candidate Regulatory Elements by ENCODE";
+	}
+	return "SCREEN: Search Candidate Regulatory Elements by ENCODE"
+    }
     return (
-	    <Helmet>
+	<Helmet>
             <title>{pageTitle()}</title>
-	    </Helmet>);
+	</Helmet>);
 }

@@ -54,7 +54,8 @@ class CRE:
                                                                  coord.chrom)
         ret = []
         for g in self.genesPC:
-            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
+            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2],
+                        "chrom": g[3], "start": g[4], "stop": g[5]})
         return ret
 
     def genesInTad(self):

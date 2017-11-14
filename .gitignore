@@ -1,5 +1,4 @@
 *~
-config.custom.ini
 website/curl
 
 # Byte-compiled / optimized / DLL files
@@ -106,7 +105,7 @@ Rplots.pdf
 
 /googleapi/client_secret.json
 
-config.ini
+config.json
 
 big_tabs
 .client_secret.json

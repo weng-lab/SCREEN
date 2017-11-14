@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import gzip
 import os
 import sys
 import json
@@ -30,13 +31,12 @@ class BuildOntology:
         mod = import_module("10_generate_ontology_actual")
         runF = getattr(mod, "run")
 
+        downloadDate = '2017-10Oct-25'
         if 1:
-            downloadData
             uberon_url = "http://ontologies.berkeleybop.org/uberon/composite-metazoan.owl"
             efo_url = "http://sourceforge.net/p/efo/code/HEAD/tree/trunk/src/efoinowl/InferredEFOOWLview/EFO_inferred.owl?format=raw"
             obi_url = "http://purl.obolibrary.org/obo/obi.owl"
         else:
-            downloadDate = '2017-10Oct-10'
             uberon_url = paths.path("ontology", downloadDate, "composite-metazoan.owl")
             efo_url = paths.path("ontology", downloadDate, "EFO_inferred.owl")
             obi_url = paths.path("ontology", downloadDate, "obi.owl")
@@ -44,11 +44,12 @@ class BuildOntology:
         printt("running ENCODE DCC generate ontology...")
         terms = runF(uberon_url, efo_url, obi_url)
 
-        fnp = paths.path("ontology", downloadDate, "ontology.json")
+        fnp = paths.path("ontology", downloadDate, "ontology.json.gz")
+        Utils.ensureDir(fnp)
         printt("done; about to write", fnp)
-        with open(fnp, 'w') as f:
+        with gzip.open(fnp, 'wb') as f:
             json.dump(terms, f)
-        printt("done")
+        printWroteNumLines(fnp)
 
 
 def run(args, DBCONN):

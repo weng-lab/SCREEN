@@ -2,10 +2,13 @@ from __future__ import print_function
 import sys
 import os
 
+from models.cre import CRE
 from models.gene_expression import GeneExpression
+from common.pg import PGsearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
+from cre_utils import isaccession
 
 
 class GeneExpWebServiceWrapper:
@@ -30,6 +33,12 @@ class GeneExpWebService(object):
         self.cache = cache
         self.staticDir = staticDir
         self.assembly = assembly
+        self.pgSearch = PGsearch(ps, assembly)
+
+        self.allBiosampleTypes = set(["immortalized cell line",
+                                      "induced pluripotent stem cell line",
+                                      "in vitro differentiated cells", "primary cell",
+                                      "stem cell", "tissue"])
 
         self.actions = {"search": self.search}
 
@@ -41,23 +50,42 @@ class GeneExpWebService(object):
             raise
 
     def search(self, j, args):
+        def abort(err):
+            return {"hasData": False, "items": {}, "err": err}
+
+        compartments = j["compartments_selected"]
+
+        biosample_types_selected = j["biosample_types_selected"]
+        if not biosample_types_selected:
+            return abort("no biosample type selected")
+        if not set(biosample_types_selected).issubset(self.allBiosampleTypes):
+            return abort("invalid biosample type")
+
+        # TODO: check value of compartments
+        if not compartments:
+            return abort("no compartments")
+
         gene = j["gene"]  # TODO: check for valid gene
-        compartments = j.get("compartments_selected", ["cell"])
+        gi = self.pgSearch.geneInfo(gene)
+        if not gi:
+            return {"assembly": self.assembly,
+                    "gene": gene}
 
-        allBiosampleTypes = ["immortalized cell line",
-                             "induced pluripotent stem cell line",
-                             "in vitro differentiated cells", "primary cell",
-                             "stem cell", "tissue"]
-        biosample_types_selected = j.get("biosample_types_selected",
-                                         allBiosampleTypes)
-
-        # TODO: check value of compartments, biosample_types_selected
-
-        if not biosample_types_selected or not compartments:
-            return {"hasData": False, "items": {}}
+        name = gi.approved_symbol
+        strand = gi.strand
 
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        ret = cge.computeHorBars(gene, compartments, biosample_types_selected)
-        ret["assembly"] = self.assembly
-        ret["gene"] = gene
-        return ret
+        single = cge.computeHorBars(name, compartments, biosample_types_selected)
+        mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected)
+        itemsByRID = cge.itemsByRID
+        r = {"assembly": self.assembly,
+             "gene": name,
+             "strand": strand,
+             "ensemblid_ver": gi.ensemblid_ver,
+             "coords": {"chrom": gi.chrom,
+                        "start": gi.start,
+                        "stop": gi.stop},
+             "single": single,
+             "mean": mean,
+             "itemsByRID": itemsByRID}
+        return r

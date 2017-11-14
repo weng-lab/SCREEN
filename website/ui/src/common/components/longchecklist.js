@@ -4,7 +4,7 @@ import Ztable from './ztable/ztable';
 
 import {CHECKLIST_MATCH_ALL, CHECKLIST_MATCH_ANY} from './checklist'
 
-class LongChecklistFacet extends React.Component {
+class LongChecklist extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -52,7 +52,8 @@ class LongChecklistFacet extends React.Component {
 		title: "",
 		data: "selected",
 		render: this._render_checkbox,
-		orderable: false
+		orderable: false,
+		className: this.props.checkBoxClassName
 	    }, ...this.props.cols
 	];
 
@@ -64,14 +65,17 @@ class LongChecklistFacet extends React.Component {
 		<Ztable cols={cols}
 			data={this.props.data}
 			order={this.props.order}
+			sortCol={this.props.sortCol}
 			buttonsOff={this.props.buttonsOff}
 			onTdClick={this._td_handler}
 			bFilter={true}
 			bLengthChange={false}
 			paging={paging}
+	                noSearchBox={this.props.noSearchBox}
+			noTotal={this.props.noTotal}
 		/>
 	    </div>);
     }
 }
 
-export default LongChecklistFacet;
+export default LongChecklist;

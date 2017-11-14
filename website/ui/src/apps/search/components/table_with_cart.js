@@ -14,15 +14,11 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 
 
 class TableWithCart extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = {minrange:0, 
-		      maxrange: 0, selectedaccession: {},
-		      chrom:'',
-		      cellType:''}
-        this.table_click_handler = this.table_click_handler.bind(this);
-    }
-
+    state = {minrange:0, 
+	     maxrange: 0, selectedaccession: {},
+	     chrom:'',
+	     cellType:''};
+    
     _get_missing(a) {
 	const assays = {"dnase": "DNase-seq",
 			"promoter": "H3K4me3 ChIP-seq",
@@ -37,23 +33,20 @@ class TableWithCart extends React.Component {
 	return r;
     }
 
-    table_click_handler(td, rowdata, actions){
-        if (td.indexOf("browser") !== -1)
-        {
+    table_click_handler = (td, rowdata, actions) => {
+        if (td.indexOf("browser") !== -1){
     	    let cre = {...rowdata, ...rowdata.info};
     	    actions.showGenomeBrowser(cre, "");
     	    return;
-	      }
-        if (td.indexOf("geneexp") !== -1)
-        {
+	}
+        if (td.indexOf("geneexp") !== -1){
     	    return;
-	      }
-        if (td.indexOf("cart") !== -1)
-        {
-            let accession = rowdata.info.accession;
-            let accessions = doToggle(this.props.cart_accessions, accession);
-      	    let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
-		     uuid: this.props.uuid};
+	}
+        if (td.indexOf("cart") !== -1){
+	    const accession = rowdata.info.accession;
+	    const accessions = doToggle(this.props.cart_accessions, accession);
+      	    const j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+		       uuid: this.props.uuid};
 	    ApiClient.setByPost(JSON.stringify(j),
 				"/cart/set",
 				(r) => {},
@@ -61,20 +54,26 @@ class TableWithCart extends React.Component {
 				    console.log("error posting to cart/set", msg);
 				});
       	    actions.setCart(accessions);
-	          return;
+	    return;
         }
-        if(td.indexOf("selectcre")!==-1)
+        if(td.indexOf("selectcre")!==-1){
+	    let minrange =+(rowdata.start) - +(2000)
+	    let maxrange = +(rowdata.start) + +(rowdata.len) + +(2000)
+	    let accessiondetails = {accession: rowdata.info.accession,
+				    start: rowdata.start,
+				    len: rowdata.len,
+				    chrom: rowdata.chrom}
+	    this.setState({minrange: minrange,
+			   maxrange:maxrange,
+			   selectedaccession: accessiondetails,
+			   chrom: rowdata.chrom,
+			   cellType: this.props.cellType },
+			  ()=>{ actions.selectcre(accessiondetails)})
+        } else
         {
-          let minrange =+(rowdata.start) - +(2000)
-          let maxrange = +(rowdata.start) + +(rowdata.len) + +(2000)
-          let accessiondetails = {accession: rowdata.info.accession,start: rowdata.start,len: rowdata.len,chrom: rowdata.chrom}
-          this.setState({minrange: minrange,maxrange:maxrange,selectedaccession: accessiondetails,chrom: rowdata.chrom,cellType:this.props.cellType },()=>{ actions.selectcre(accessiondetails)})
-        }
-        else
-        {
-          let cre = {...rowdata, ...rowdata.info};
+		let cre = {...rowdata, ...rowdata.info};
                 actions.showReDetail(cre);
-        }
+            }
 
     }
 
@@ -83,8 +82,8 @@ class TableWithCart extends React.Component {
 	    return d.info.accession;
 	})
         accessions = new Set([...this.props.cart_accessions,
-					 ...accessions]);
-	let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+			      ...accessions]);
+	const j = {assembly: this.props.assembly, accessions: Array.from(accessions),
 		 uuid: this.props.uuid};
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
@@ -102,8 +101,8 @@ class TableWithCart extends React.Component {
     }
 
     clearCart() {
-	let accessions = new Set([]);
-	let j = {assembly: this.props.assembly, accessions: Array.from(accessions),
+	const accessions = new Set([]);
+	const j = {assembly: this.props.assembly, accessions: Array.from(accessions),
 		 uuid: this.props.uuid}
 	ApiClient.setByPost(JSON.stringify(j),
 			    "/cart/set",
@@ -159,14 +158,14 @@ class TableWithCart extends React.Component {
 
     totalText(data){
         if(data.length < this.props.total){
-		return "displaying top " + numberWithCommas(data.length) +
-                " results of " + numberWithCommas(this.props.total) + " total";
+	    return "displaying top " + numberWithCommas(data.length) +
+                   " results of " + numberWithCommas(this.props.total) + " total";
         }
         return "found " + this.props.total + " results";
     }
 
     tableFooter(data){
-	var total = this.totalText(data);
+	const total = this.totalText(data);
 	var addTitle = "Add all to cart";
 	if(this.props.data.length >= 1000){
 	    addTitle = "Add 1,000 to cart";
@@ -248,14 +247,14 @@ class TableWithCart extends React.Component {
     table(data, actions){
 	const missingAssays = this._get_missing(this.props.rfacets);
 
-	var tooMany = "";
+	let tooMany = "";
 	if(data.length < this.props.total){
 	    tooMany = (
 		<li className={"list-group-item"}>
 		    <em>For performance, SCREEN cannot display more than 1,000 candidate Regulatory Elements (cREs) in this table. You may download the entire set of search results in bed or JSON format, or use the facets at left to narrow your search.</em>
 		</li>);
 	}
-	var failMsg = "";
+	let failMsg = "";
 	if(missingAssays && missingAssays.length){
 	    failMsg = (
 		<li className={"list-group-item"}>
@@ -287,14 +286,24 @@ class TableWithCart extends React.Component {
 	if(this.props.cellType){
 	    ctCol = this.props.make_ct_friendly(this.props.cellType)
 	}
-  let gb = null;
-  let bigWigByCellType = this.props.globals["byCellType"][this.props.cellType]
-  let bigBedByCellType = this.props.globals["creBigBedsByCellType"][this.props.cellType]
-  if(Object.keys(this.props.gb_cres).length !== 0 && this.props.chrom === this.state.chrom && this.state.cellType === this.props.cellType )
-  {
-    gb= (<GenomeBrowser minrange={this.state.minrange} chrom={this.state.chrom} maxrange={this.state.maxrange} cellType={this.props.cellType} bigBedByCellType={bigBedByCellType} byCellType={bigWigByCellType} assembly={this.props.assembly} selectedaccession={this.state.selectedaccession}/>)
 
-  }
+	let bigWigByCellType = this.props.globals["byCellType"][this.props.cellType]
+	let bigBedByCellType = this.props.globals["creBigBedsByCellType"][this.props.cellType]
+	let gb = null;
+	if(Object.keys(this.props.gb_cres).length !== 0
+	   && this.props.chrom === this.state.chrom
+	   && this.state.cellType === this.props.cellType ){
+	    gb = (<GenomeBrowser minrange={this.state.minrange}
+				 chrom={this.state.chrom}
+				 maxrange={this.state.maxrange}
+				 cellType={this.props.cellType}
+				 bigBedByCellType={bigBedByCellType}
+				 byCellType={bigWigByCellType}
+				 assembly={this.props.assembly}
+				 selectedaccession={this.state.selectedaccession}/>)
+	    
+	}
+	
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -311,16 +320,17 @@ class TableWithCart extends React.Component {
 		    </ul>
 		</div>
 
-     {gb}
-
+		{gb}
+		
 		<Ztable data={data}
                         sortCol={table_order}
-			cols={TableColumns(this.props.globals, this.props.assembly, ctCol,
-					   this.props.rfacets)}
+			cols={TableColumns(this.props, ctCol)}
                         onTdClick={(td, rowdata) =>
                             this.table_click_handler(td, rowdata, actions)}
                         bFilter={true}
-                        bLengthChange={true} key={this.props.cellType}
+                        bLengthChange={true}
+			key={this.props.cellType}
+			noTotal={true}
                 />
 	    </div>);
     }

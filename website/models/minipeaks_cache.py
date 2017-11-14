@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import os
 import json
@@ -8,7 +9,7 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
 from cassandra import ConsistencyLevel
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from config import Config
 
 
@@ -45,16 +46,8 @@ SELECT * FROM {tn} WHERE accession IN ?
 
 
 if __name__ == "__main__":
-    mpc = MiniPeaksCache("mm10", 20, 2)
-    ret = mpc.get("DNase", ["EM10E0371084"])
-    for r in ret:
-        for k, v in r.iteritems():
-            print(r["accession"], r)
-
-    if 0:
-        j = mpc.get("EM10E0371084")
-        if j:
-            print(len(j))
-            if 0:
-                for ct, v in j.iteritems():
-                    print(ct, v)
+    mpc = MiniPeaksCache("hg19", 0, 4)
+    acc = "EH37E1055372"
+    ret = mpc.get("DNase", [acc])
+    for k, v in ret[acc].iteritems():
+        print(k, v)

@@ -2918,6 +2918,10 @@ flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
 
+flow-bin@^0.57.3:
+  version "0.57.3"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.57.3.tgz#843fb80a821b6d0c5847f7bb3f42365ffe53b27b"
+
 flux-standard-action@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/flux-standard-action/-/flux-standard-action-0.6.1.tgz#6f34211b94834ea1c3cc30f4e7afad3d0fbf71a2"
@@ -4058,10 +4062,6 @@ jest@20.0.4:
   resolved "https://registry.yarnpkg.com/jest/-/jest-20.0.4.tgz#3dd260c2989d6dad678b1e9cc4d91944f6d602ac"
   dependencies:
     jest-cli "^20.0.4"
-
-"jquery-ui@github:jquery/jquery-ui#1.12.1":
-  version "1.12.1"
-  resolved "https://codeload.github.com/jquery/jquery-ui/tar.gz/c6f1735249295bb37153861aa97e5b3e38d46b02"
 
 jquery@^3.2.1:
   version "3.2.1"

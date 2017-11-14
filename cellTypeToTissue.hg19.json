@@ -1,5 +1,7 @@
 {
-"A172 immortalized cell line" : "brain",
+    "myocyte": "muscle",
+    "GM23338": "brain",
+    "A172 immortalized cell line" : "brain",
 "A172" : "brain",
 "A172_immortalized_cell_line" : "brain",
 "A172_immortalized_cell_line" : "brain",
@@ -274,7 +276,8 @@
 "astrocyte_of_the_spinal_cord_primary_cell" : "spinal cord",
 "astrocyte_primary_cell" : "brain",
 "bipolar spindle neuron in vitro differentiated cells" : "brain",
-"bipolar spindle neuron" : "brain",
+    "bipolar spindle neuron" : "brain",
+    "bipolar neuron" : "brain",
 "bipolar_spindle_neuron_in_vitro_differentiated_cells" : "brain",
 "bladder microvascular endothelial cell primary cell" : "bladder",
 "bladder_microvascular_endothelial_cell_primary_cell" : "bladder",

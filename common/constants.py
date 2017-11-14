@@ -125,7 +125,11 @@ class paths(object):
     def gwasFnp(assembly, version, fnBase):
         return os.path.join(V4d, CreVerStr, assembly, "gwas", "h3k27ac",
                             "GWAS.v" + str(version) + fnBase)
-    
+
+    @staticmethod
+    def geFnp(assembly):
+        return paths.path(assembly, "geneExp", "2017-11-04" + ".tsv.gz")
+
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
         "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}

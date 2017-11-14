@@ -23,22 +23,42 @@ const klassName = (colInfo) => {
     return k;
 }
 
+class Footer extends React.Component {
+    render() {
+	if(this.props.noTotal){
+	    return false;
+	}
+
+	return <HelpBlock>Total: {this.props.ds.rowIDs.length}</HelpBlock>;
+    }
+}
+
 class SearchBox extends React.Component {
     render() {
+	if(this.props.noSearchBox){
+	    return false;
+	}
+
 	return (
-		<div style={{float: "right"}}>
-	    <Form inline>
-		<FormGroup controlId = "formBasicText">
-		    Search:
-		    <FormControl bsSize = "small"
-				 size = "15"
-				 type = "text"
-				 value = {this.props.value}
-				 onChange = {this.props.onChange}/>
-		    <FormControl.Feedback />
-		</FormGroup>
-	    </Form>
-		</div>
+	    <div style={{float: "right"}}>
+		<Form inline>
+		    <FormGroup>
+			Search:
+			<FormControl bsSize = "small"
+				     size = "15"
+				     type = "text"
+				     value = {this.props.value}
+				     onKeyPress = {(event) => {
+					     if (event.which === 13 /* Enter */) {
+						 // prevent form submission, from
+						 // https://github.com/christianalfoni/formsy-react/issues/360
+						 event.preventDefault();
+					     }}}
+				     onChange = {this.props.onChange}/>
+			<FormControl.Feedback />
+		    </FormGroup>
+		</Form>
+	    </div>
 	);
     }
 }
@@ -56,7 +76,7 @@ class PageBox extends React.Component {
 	    />);
     }
 }
-	    
+
 class Zheader extends React.Component {
     render(){
 	return (
@@ -111,7 +131,7 @@ class Zrow extends React.Component {
 			 >
 			     {r[0]}
 			 </td>);
-		})}
+		 })}
 	    </tr>);
     }
 }
@@ -157,7 +177,9 @@ class Ztable extends React.Component {
 	
 	return (
 	    <div style={{width: "100%"}}>
-		<SearchBox value={this.state.search} onChange={searchBoxChange} />
+		<SearchBox value={this.state.search}
+			   onChange={searchBoxChange} 
+	                   noSearchBox={this.props.noSearchBox}/>
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
@@ -178,7 +200,7 @@ class Ztable extends React.Component {
 		{ds.numPages > 1 && <PageBox pages={ds.numPages}
 					     curPage={this.state.pageNum}
 					     onSelect={pageClick} />}
-		<HelpBlock>Total: {ds.rowIDs.length}</HelpBlock>
+		<Footer ds={ds} noTotal={this.props.noTotal} />
 	    </div>);
     }
 }

@@ -12,17 +12,15 @@ import loading from '../../../common/components/loading';
 const ROWHEIGHT = 30.0;
 
 class MiniPeaks extends React.Component {
-    constructor(props) {
-	super(props);
-	this.state = {jq: null, isFetching: true, isError: false };
-        this.key = "similarREs";
-	this._colors = {
-	    "dnase": "#06DA93",
-	    "h3k4me3": "#FF0000",
-	    "h3k27ac": "#FFCD00"
-	};
-    }
-
+    state = {jq: null, isFetching: true, isError: false };
+    key = "miniPeaks";
+    _colors = {
+	"dnase": "#06DA93",
+	"h3k4me3": "#FF0000",
+	"h3k27ac": "#FFCD00"
+    };
+    fileIDmaxes = {}
+    
     shouldComponentUpdate(nextProps, nextState) {
 	if("details" === nextProps.maintabs_active){
             if(this.key === nextProps.re_details_tab_active){
@@ -41,70 +39,92 @@ class MiniPeaks extends React.Component {
         }
     }
 
+    updateFileMaxes = (D) => {
+	for(const acc of D.accessions){
+	    for(const rData of D.rows){
+		for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
+		    const dr = rData[acc + assay];
+		    if(!dr){
+			continue;
+		    }
+		    const fileID = dr.fileID;
+		    if(!(fileID in this.fileIDmaxes)){
+			this.fileIDmaxes[fileID] = Math.max(...dr.data);
+		    }
+		}
+	    }
+	}
+    }
+    
     loadPeaks({assembly, cre_accession_detail}){
-	if(cre_accession_detail in this.state){
+	const accession = cre_accession_detail;
+	if(accession in this.state){
 	    return;
 	}
-	var q = {assembly, accession: cre_accession_detail};
-        var jq = JSON.stringify(q);
+	const q = {assembly, accession};
+        const jq = JSON.stringify(q);
         if(this.state.jq === jq){
             // http://www.mattzeunert.com/2016/01/28/javascript-deep-equal.html
             return;
         }
         this.setState({jq, isFetching: true});
-	ApiClient.getMinipeaks(jq, 
+	ApiClient.getMinipeaks(jq, this.key,
 			       (r) => {
+				   this.updateFileMaxes(r[accession]);
 				   this.setState({...r,
 					       jq, isFetching: false, isError: false});
 			    },
 			    (msg) => {
 				console.log("err loading minipeaks");
+				console.log(msg);
 				this.setState({jq: null, isFetching: false, isError: true});
 			    });
     }
     
-    doRender(accession){
-	let renderPeaks = (assay) => (allData) => {
-	    if(!allData[assay]){
-		return "";
-	    }
-	    // let fileID = dataRaw.fileID; if needed....
-	    var mmax = (assay === "dnase") ? 150 : 50;
-	    var mfactor = ROWHEIGHT / mmax;
-	    let data = allData[assay].data.map((d) => ((d > mmax ? mmax : d) * mfactor));
-	    let color = this._colors[assay];
-	    let e = (
-                <span className={"text-nowrap"}>
-                    <svg width={data.length} height={ROWHEIGHT} >
-	                <g>
-		            {data.map((v, i) => (<rect width="1" height={v}
-						 key={i}
-					               y={ROWHEIGHT - v} x={i}
-					               fill={color} />))}
-		        </g>
-		    </svg>
-		    {" "}{Math.max(...allData[assay].data).toFixed(1)}
-		</span>);
-	    return e;
+    renderPeaks = (dr) => {
+	if(!dr){
+	    return "";
 	}
-	let renderMax = (assay) => (allData) => {
-	    if (!allData[assay]){
-		return "";
-	    }
-	    return Math.max(...allData[assay].data);
-	}
+	// let fileID = dataRaw.fileID; if needed....
+	const mmax = (dr.assay === "dnase") ? 150 : 50;
+	const mfactor = ROWHEIGHT / mmax;
+	const data = dr.data.map((d) => ((d > mmax ? mmax : d) * mfactor));
+	const color = this._colors[dr.assay];
 
+	const fileID = dr.fileID;
+	const dataMax = this.fileIDmaxes[fileID];
+	
+	return (
+            <span className={"text-nowrap"}>
+                <svg width={data.length} height={ROWHEIGHT} >
+	            <g>
+		        {data.map((v, i) => (<rect width="1" height={v}
+						   key={i}
+						   y={ROWHEIGHT - v} x={i}
+						   fill={color} />))}
+		    </g>
+		</svg>
+		{" "}{dataMax.toFixed(1)}
+	    </span>);
+    }
+
+    sortByMax = (d) => {
+	if(!d){
+	    return 0;
+	}
+	return this.fileIDmaxes[d.fileID];
+    }
+
+    doRender(accession){
 	let cols = [];
-	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac",
-			    h3k4me3 : "H3K4me3"}
+	let assayToTitle = {dnase : "DNase", h3k27ac : "H3K27ac", h3k4me3 : "H3K4me3"}
 	for(let acc of this.state[accession].accessions){
 	    for(let assay of ["dnase", "h3k27ac", "h3k4me3"]){
-		cols.push({title: assayToTitle[assay], 
-			   data: acc,
-			   //sortDataF: (d) => (renderMax(assay)(d)),
-			   orderable: false,
-			   className: "dt-right minipeak",
-			   render: renderPeaks(assay)});
+		cols.push({title: assayToTitle[assay],
+			   data: acc+assay,
+			   className: "minipeak",
+			   sortDataF: this.sortByMax,			       
+			   render: this.renderPeaks});
 	    }
 	}
 	cols = cols.concat([{title: "", data: "expIDs",
@@ -113,11 +133,11 @@ class MiniPeaks extends React.Component {
 			    {title: "Cell Type", data: "biosample_type"},
 			    {title: "Biosample", data: "biosample_summary"}]);
 
-        let table = {title: "Minipeaks",
-	             cols,
-		     bFilter: true,
-		     //sortCol: ["dnase", false]
-		    };
+        const table = {title: "Minipeaks",
+	               cols,
+		       bFilter: true,
+		       sortCol: [accession+"dnase", false]
+	};
         return React.createElement(Ztable,
                                    {data: this.state[accession].rows,
                                     ...table});

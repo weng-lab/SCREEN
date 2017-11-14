@@ -43,6 +43,9 @@ const initialState = (search, globals) => {
         maintabs_active: maintab,
         maintabs_visible: maintab_visible,
 
+	compartments_selected: new Set(["cell"]),
+	biosample_types_selected: new Set(globals.geBiosampleTypes),
+
       //  active_cre: null,
         cre_accession_detail: accession,
 

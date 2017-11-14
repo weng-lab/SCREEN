@@ -3,29 +3,28 @@
 from __future__ import print_function
 import sys
 import os
-from configparser import ConfigParser
 import json
 
 
 class Config:
-    fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.ini")
+    fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.json")
     if not os.path.exists(fnp):
         print("ERROR: file not found:", fnp)
-        print("\tfile should be symlink'd to a desired config.<blah>.ini file")
+        print("\tfile should be symlink'd to a desired config.<blah>.json file")
         sys.exit(1)
 
-    c = ConfigParser()
-    c.read(fnp)
+    with open(fnp) as f:
+        c = json.load(f)
 
-    version = c.get("RE", "version")
-    db_host = c.get("RE", "db_host")
-    db_usr = c.get("RE", "db_usr")
-    db = c.get("RE", "db")
-    assemblies = [a.strip() for a in c.get("RE", "assemblies").split(',')]
-    partial_assemblies = [a.strip() for a in c.get("RE", "partial_assemblies").split(',')]
-    minipeaks_ver = c.get("RE", "minipeaks_ver")
-    minipeaks_nbins = c.get("RE", "minipeaks_nbins")
-    ribbon = c.get("RE", "ribbon")
-    GoogleAnalytics = int(c.get("RE", "googleAnalytics"))
-    memcache = int(c.get("RE", "memache"))
-    cassandra = [a.strip() for a in c.get("RE", "cassandra").split(',')]
+    re = c["RE"]
+    version = re["version"]
+    db_host = re["db_host"]
+    db_usr = re["db_usr"]
+    db = re["db"]
+    assemblies = re["assemblies"]
+    minipeaks_ver = re["minipeaks_ver"]
+    minipeaks_nbins = re["minipeaks_nbins"]
+    ribbon = re["ribbon"]
+    GoogleAnalytics = re["googleAnalytics"]
+    memcache = re["memache"]
+    cassandra = re["cassandra"]

@@ -5,20 +5,13 @@ import Ztable from './ztable/ztable';
 import {ListItem} from './list';
 
 class LongListFacet extends React.Component {
-
-    constructor(props) {
-	super(props);
-	this._td_handler = this._td_handler.bind(this);
-	this._clear = this._clear.bind(this);
-    }
-
-    _td_handler(td, cellObj) {
+    _td_handler = (td, cellObj) => {
 	if (this.props.onTdClick) {
             this.props.onTdClick(cellObj.value, td, cellObj);
         }
     }
 
-    _clear() {
+    _clear = () => {
 	if (this.props.onTdClick) {
             this.props.onTdClick(null);
         }

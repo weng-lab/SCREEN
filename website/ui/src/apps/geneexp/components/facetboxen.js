@@ -18,11 +18,13 @@ const bts = ({biosample_types, biosample_types_selected, actions}) => {
                                         selected: biosample_types_selected.has(e)
                                 }})}
                         cols={[{
-		                title: "Assay", data: "key",
+		                title: "", data: "key",
 		                className: "dt-right"
 	                    }]}
                         order={[]}
 			buttonsOff={true}
+			noSearchBox={true}
+			noTotal={true}
         	        mode={CHECKLIST_MATCH_ANY}
                         onTdClick={(c) => { 
 			    actions.toggleBiosampleType(c) 
@@ -37,10 +39,12 @@ const cell_compartments = ({compartments, actions, compartments_selected}) => {
 			data={compartments.map((e) => {
 				return {key: e, selected: compartments_selected.has(e)}})}
 			cols={[{
-				title: "Assay", data: "key",
+				title: "", data: "key",
 				className: "dt-right"
 			    }]}
 			order={[]}
+			noSearchBox={true}
+			noTotal={true}
 			buttonsOff={true}
 			mode={CHECKLIST_MATCH_ANY}
 			onTdClick={(c) => { actions.toggleCompartment(c) } }

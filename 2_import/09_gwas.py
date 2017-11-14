@@ -32,7 +32,7 @@ class ImportGwas:
         self.tableNameStudies = assembly + "_gwas_studies"
         self.tableNameOverlap = assembly + "_gwas_overlap"
         self.version = GwasVersion
-        
+
     def setupGWAS(self):
         # chr1    62963737        62963737        rs1002687       rs11207995      0.85    25961943-2      Cholesterol     25961943        Surakka"""
         #                                         snpItself       taggedSNP       r2      unqiueLDblock(pubmed-num)       trait   pubmed  firstAuthor""

@@ -145,6 +145,19 @@ ON g.geneid = gi.geneid
             return (self._getGenes(accession, chrom, curs, "all"),
                     self._getGenes(accession, chrom, curs, "pc"))
 
+    def geneInfo(self, gene):
+        with getcursor(self.pg.DBCONN, "pg$geneInfo",
+                       cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute("""
+SELECT *
+FROM {gtn}
+WHERE approved_symbol = %s
+OR ensemblid = %s
+OR ensemblid_ver = %s
+            """.format(gtn=self.assembly + "_gene_info"),
+                (gene, gene, gene))
+            return curs.fetchone()
+
     def intersectingSnps(self, accession, coord, halfWindow):
         c = coord.expanded(halfWindow)
         tableName = self.assembly + "_snps"
@@ -478,13 +491,14 @@ C57BL/6_stomach_postnatal_0_days""".split('\n')
                     "cellTypeDesc": r[7],
                     "name": r[7],
                     "value": r[6],  # for datatables
-                    "isde": r[6] in dects
+                    "isde": r[6] in dects,
+                    "synonyms": r[8]
                     }
 
         tableName = self.assembly + "_datasets"
         cols = ["assay", "expID", "fileID", "tissue",
                 "biosample_summary", "biosample_type", "cellTypeName",
-                "cellTypeDesc"]
+                "cellTypeDesc", "synonyms"]
         with getcursor(self.pg.DBCONN, "datasets") as curs:
             curs.execute("""
 SELECT {cols} FROM {tn}
@@ -620,12 +634,12 @@ FROM {tn}
 SELECT ensemblid_ver FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
         """.format(assembly=self.assembly)
-        
+
         with getcursor(self.pg.DBCONN, "_gene") as curs:
             curs.execute(q, {"gene": gene})
             rows = curs.fetchone()
             return rows[0]
-        
+
     def geBiosampleTypes(self):
         q = """
 SELECT DISTINCT(biosample_type)

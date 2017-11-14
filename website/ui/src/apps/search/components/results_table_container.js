@@ -9,12 +9,9 @@ import TableWithCart from './table_with_cart';
 import {getCommonState, orjoin, toParams} from '../../../common/utility';
 
 class ResultsTableContainer extends React.Component {
-    constructor(props) {
-	super(props);
-        this.state = { cres: [], rfacets: [], total: 0, cts: null,
-                       isFetching: true, isError: false,
-                       jq : null}
-    }
+    state = { cres: [], rfacets: [], total: 0, cts: null,
+              isFetching: true, isError: false,
+              jq : null}
 
     shouldComponentUpdate(nextProps, nextState) {
 	return "results" === nextProps.maintabs_active;
@@ -172,7 +169,7 @@ class ResultsTableContainer extends React.Component {
 	    <div>
 	    {interpBox}
 		<TableWithCart
-	    uuid={this.props.uuid}
+		    uuid={this.props.uuid}
 		    assembly={this.props.assembly}
                     actions={this.props.actions}
 		    cellType={this.props.cellType}
@@ -187,8 +184,8 @@ class ResultsTableContainer extends React.Component {
 		    globals={this.props.globals}
 	            make_ct_friendly={ct =>
 			this.props.globals.byCellType[ct][0]["name"]}
-      gb_cres={this.props.gb_cres}
-      chrom = {this.props.coord_chrom}
+		    gb_cres={this.props.gb_cres}
+		    chrom = {this.props.coord_chrom}
 		/>
 	    </div>);
     }

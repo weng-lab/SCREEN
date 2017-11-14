@@ -9,20 +9,15 @@ import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
 class BedUpload extends React.Component {
-    constructor(props) {
-	super(props);
-	this.submitFiles = this.submitFiles.bind(this);
-	this.state = { files: [] }
-    }
+    state = { files: [] };
     
-    onDrop(files) {
-	console.log("files:", files);
+    onDrop = (files) => {
 	this.setState({
 	    files
 	});
     }
     
-    submitFiles(){
+    submitFiles = () => {
 	let allLines = [];
 	this.state.files.forEach(f => {
 	    const reader = new FileReader();
@@ -35,38 +30,38 @@ class BedUpload extends React.Component {
             };
             reader.onabort = () => console.log('file reading was aborted');
             reader.onerror = () => console.log('file reading has failed');
-		reader.onloadend  = (e) => {
-		    const j = {uuid: this.props.uuid, 
-			       assembly: this.props.assembly,
-			       allLines};
-		    const jq = JSON.stringify(j);
-		    ApiClient.getIntersect(jq,
-					   (r) => {
-					       let j = {assembly: this.props.assembly, 
-							accessions: r.accessions,
-							uuid: r.uuid};
-					       ApiClient.setByPost(JSON.stringify(j),
-								   "/cart/set",
-								   (response) => {
-								       let href = window.location.href;
-								       if(!href.includes("&cart")){
-									   href += "&cart";
-								       }
-								       window.location.assign(href);				    
-								   },
-								   (msg) => {
-								       console.log("error posting to cart/set", msg);
-								   });
-					       this.props.actions.setCart(r.accessions);
-					   },
-			    (msg) => {
-				console.log("error posting to cart/set", msg);
-			    });
-		};
+	    reader.onloadend  = (e) => {
+		const j = {uuid: this.props.uuid, 
+			   assembly: this.props.assembly,
+			   allLines};
+		const jq = JSON.stringify(j);
+		ApiClient.getIntersect(jq,
+				       (r) => {
+					   let j = {assembly: this.props.assembly, 
+						    accessions: r.accessions,
+						    uuid: r.uuid};
+					   ApiClient.setByPost(JSON.stringify(j),
+							       "/cart/set",
+							       (response) => {
+								   let href = window.location.href;
+								   if(!href.includes("&cart")){
+								       href += "&cart";
+								   }
+								   window.location.assign(href);				    
+							       },
+							       (msg) => {
+								   console.log("error posting to cart/set", msg);
+							       });
+					   this.props.actions.setCart(r.accessions);
+				       },
+				       (msg) => {
+					   console.log("error posting to cart/set", msg);
+				       });
+	    };
 	    reader.readAsText(f);
 	});
     }
-				
+    
 
     render() {
 	return (
@@ -75,7 +70,7 @@ class BedUpload extends React.Component {
 		Upload bed files here to be automatically intersected with all available cREs.
 		<br />
 		<div className="dropzone">
-		    <Dropzone onDrop={this.onDrop.bind(this)}>
+		    <Dropzone onDrop={this.onDrop}>
 			<p>Drop bed files here, or click to select bed files to upload.</p>
 		    </Dropzone>
 		</div>
@@ -90,7 +85,7 @@ class BedUpload extends React.Component {
 		</aside>
 
 		<Button onClick={this.submitFiles}>Intersect Files
-	    </Button>
+		</Button>
 	    </div>
 	);
     }

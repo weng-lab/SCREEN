@@ -4,8 +4,6 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk'
 
 import NavBarApp from '../../common/components/navbar_app'
-import SearchBox from '../../common/components/searchbox'
-import FacetBoxen from './components/facetboxen'
 import MainTabs from './components/maintabs'
 
 import main_reducers from './reducers/main_reducers'
@@ -27,27 +25,22 @@ class GeneExpPageInner extends React.Component {
         return (
             <Provider store={store}>
 	        <div>
-		  {PageTitle(assembly)}
+		    {PageTitle(assembly)}
 
 		    <nav id="mainNavBar"
                          className="navbar navbar-default navbar-inverse navbar-main">
 		        <div className="container-fluid" id="navbar-main">
                             <NavBarApp assembly={assembly}
-				       show_cartimage={false}
-                                       searchbox={SearchBox} />
+				       uuid={this.props.uuid}
+				       show_cartimage={false} />
                         </div>
 		    </nav>
 
 		    <div className="container" style={{width: "100%"}}>
-                        <div className="row" style={{width: "100%"}}>
-                            <div className="col-md-3 nopadding-right"
-                                 id="facets-container">
-                                <FacetBoxen assembly={assembly}
-					    globals={this.props.globals} />
-                            </div>
-                            <div className="col-md-9 nopadding-left"
-                                 id="tabs-container">
+                        <div className="row">
+                            <div className="col-md-12" id="tabs-container">
                                 <MainTabs assembly={assembly}
+				gene={this.props.search.gene}
 					  globals={this.props.globals}
 					  search={this.props.search}
 				/>
@@ -62,7 +55,16 @@ class GeneExpPageInner extends React.Component {
 
 class GeneExpPage  extends AppPageBase {
     constructor(props) {
-	super(props, "/gews/search", GeneExpPageInner);
+	super(props, "/gews/search", GeneExpPageInner,
+	      {compartments_selected: ["cell"],
+	       biosample_types_selected: [
+		   "immortalized cell line",
+		   "induced pluripotent stem cell line",
+		   "in vitro differentiated cells",
+		   "primary cell",
+		   "stem cell",
+		   "tissue"]}	      
+	);
     }
 }
 

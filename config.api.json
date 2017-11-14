@@ -1,0 +1,20 @@
+{"RE":
+ {"version": 10,
+  "db_host": "pg-prod.internal.ho.wenglab.org",
+  "db_usr": "regElmViz_usr",
+  "db": "screenv10",
+  "assemblies": ["hg19", "mm10"],
+  "minipeaks_ver": 4,
+  "minipeaks_nbins": 0,
+  "ribbon": "beta",
+  "googleAnalytics": false,
+  "memache": false,
+  "cassandra": ["cassandra"]
+ },
+ "UI":
+ {"apiServer": "http://api.wenglab.org/screen/v10",
+  "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
+  "staticServer": "http://screen.encodeproject.org/assets",
+  "overrides": {}
+ }
+}

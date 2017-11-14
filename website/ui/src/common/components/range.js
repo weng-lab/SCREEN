@@ -3,8 +3,6 @@ import React from 'react';
 import DualSlider from './dual_slider';
 import HistogramSlider from './histogram_slider';
 
-//import * as Render from '../zrenders';
-
 class RangeSlider extends React.Component {
     constructor(props) {
 	super(props);
@@ -22,31 +20,45 @@ class RangeSlider extends React.Component {
 	this.setState({lvalue, rvalue});
     }
 
-    // show transient changes, from left text box move
+    // show transient changes, from left text box change
     updateSelectionLeft(e){
-	const lvalue = e.target.value;
-	if(!isNaN(lvalue) && this.props.range[0] <= lvalue){
+	let lvalue = e.target.value;
+	if(!isNaN(lvalue)){
+	    if(this.props.range[0] > lvalue){
+		lvalue = this.props.range[0];
+	    }
 	    if('Enter' === e.key){
 		this.doChangeLeft(e);
 	    } else {
 		this.setState({lvalue});
 	    }
 	} else {
-	    this.setState({lvalue: ''});
+	    if('-' === lvalue){
+		this.setState({lvalue});
+	    } else {
+		this.setState({lvalue: ''});
+	    }
 	}
     }
 
-    // show transient changes, from right text box move
+    // show transient changes, from right text box change
     updateSelectionRight(e){
-	const rvalue = e.target.value;
-	if(!isNaN(rvalue) && this.props.range[1] >= rvalue){
+	let rvalue = e.target.value;
+	if(!isNaN(rvalue)){
+	    if(this.props.range[1] < rvalue){
+		rvalue = this.props.range[1];
+	    }
 	    if('Enter' === e.key){
 		this.doChangeRight(e);
 	    } else {
 		this.setState({rvalue});
 	    }
 	} else {
-	    this.setState({rvalue: ''});
+	    if('-' === rvalue){
+		this.setState({rvalue});
+	    } else {
+		this.setState({rvalue: ''});
+	    }
 	}
     }
     

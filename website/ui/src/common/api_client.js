@@ -1,13 +1,14 @@
-export const StaticServer = "http://screen.encodeproject.org/assets";
+import Config from '../config.json';
+
+export const StaticServer = Config.UI.staticServer;
 export const StaticUrl = (fn) => (StaticServer + fn)
-export const ApiServer = "http://screen.encodeproject.org/api"; // "/api/"
+export const ApiServer = Config.UI.apiServer;
 
 export const Servers = (b) => {
-  /*  let override = {"/gbws/geneTrack" : "http://localhost:9006/gbws/geneTrack",
-		    "/gbws/trackhub" : "http://localhost:9006/gbws/trackhub"};
-    if(b in override){
-	return override[b];
-}*/
+    const overrides = Config.UI.overrides;
+    if(b in overrides){
+	return overrides[b];
+    }
     return ApiServer + b;
 };
 
@@ -26,8 +27,8 @@ export const getByPost  = (jq, url, successF, errF) => {
 	.catch(errF);
 }
 
-export const getMinipeaks = (jq, successF, errF) => {
-    const url = "http://screen.encodeproject.org/api/dataws/re_detail/similarREs";
+export const getMinipeaks = (jq, baseUrl, successF, errF) => {
+    const url = Config.UI.minipeakServer + baseUrl;
     fetch(url,
 	  {
 	      headers: {
@@ -43,7 +44,7 @@ export const getMinipeaks = (jq, successF, errF) => {
 }
 
 export const getIntersect = (jq, successF, errF) => {
-    const url = "http://api.wenglab.org/postws/lines";
+    const url = "http://api.wenglab.org/screen/v10/postws/lines";
     fetch(url,
 	  {
 	      headers: {
