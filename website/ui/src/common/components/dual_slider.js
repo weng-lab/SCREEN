@@ -7,9 +7,6 @@ import {chain_functions} from '../common';
 class DualSlider extends React.Component {
     constructor(props){
 	super(props);
-	this.updateDimensions = this.updateDimensions.bind(this);
-	this.updateWithProps = this.updateWithProps.bind(this);
-	this.makeBars = this.makeBars.bind(this);
 	this.state = {width: 0, lvalue: 0, rvalue: 0,
 		      buttonWidth: 14};
 	window.onresize = chain_functions(window.onresize, this.updateDimensions);
@@ -23,7 +20,7 @@ class DualSlider extends React.Component {
 	this.updateWithProps(nextProps);
     }
 
-    updateDimensions(){
+    updateDimensions = () => {
 	// tighten width by button slider icon width, else button will overhang slider bar
 	if(this.refs.bar){
 	    const width = this.refs.bar.clientWidth - this.state.buttonWidth;
@@ -34,7 +31,7 @@ class DualSlider extends React.Component {
 	}
     }
 
-    updateWithProps(p){
+    updateWithProps = (p) => {
 	// tighten width by button slider icon width, else button will overhang slider bar
 	if(this.refs.bar){
 	    const width = this.refs.bar.clientWidth - this.state.buttonWidth;
@@ -45,7 +42,7 @@ class DualSlider extends React.Component {
 	}
     }
 
-    makeBars(){
+    makeBars = () => {
 	const onStart = () => {
 	    if(this.props.onStart){
 		this.props.onStart(this.state.lvalue, this.state.rvalue);

@@ -77,8 +77,6 @@ class ReTabBase extends React.Component{
 	this.loadData = true; // inner component will dynamically load its own data
         this.url = "/dataws/re_detail/" + key;
         this.state = { jq: null, isFetching: true, isError: false };
-        this.loadCRE = this.loadCRE.bind(this);
-        this.doRenderWrapper = this.doRenderWrapper.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -106,7 +104,7 @@ class ReTabBase extends React.Component{
 	}
     }
 
-    loadCRE({assembly, cre_accession_detail}){
+    loadCRE = ({assembly, cre_accession_detail}) => {
 	if(!this.loadData){
 	    return;
 	}
@@ -131,7 +129,7 @@ class ReTabBase extends React.Component{
 			    });
     }
 
-    doRenderWrapper(){
+    doRenderWrapper = () => {
         let accession = this.props.cre_accession_detail;
         if(!this.loadData || accession in this.state){
             return this.doRender(this.props.globals, this.props.assembly, 

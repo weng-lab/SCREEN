@@ -3,8 +3,6 @@ import React from 'react';
 import DualSlider from './dual_slider';
 import HistogramSlider from './histogram_slider';
 
-//import * as Render from '../zrenders';
-
 class RangeSlider extends React.Component {
     constructor(props) {
 	super(props);
