@@ -12,13 +12,14 @@ import re
 import argparse
 from collections import OrderedDict
 
-from trackinfo import TrackInfo
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+AddPath(__file__, '../website/models')
+from trackinfo import TrackInfo
+
+AddPath(__file__, '../website/common')
 from coord import Coord
 from pg import PGsearch
 from db_trackhub import DbTrackhub
@@ -26,7 +27,7 @@ from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTra
 
 from cre import CRE
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+AddPath(__file__, '../../common')
 from constants import paths
 from config import Config
 
