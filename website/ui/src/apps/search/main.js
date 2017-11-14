@@ -24,8 +24,6 @@ class SearchPageInner extends React.Component {
           thunkMiddleware,
         ));
 
-      console.log("globals:", this.props.globals);
-      
         const assembly = this.props.search.parsedQuery.assembly;
         let mainTabs = (<MainTabs
           globals={this.props.globals}
