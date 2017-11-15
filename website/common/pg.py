@@ -374,9 +374,9 @@ WHERE accession = %s
             r = curs.fetchone()
         if not r:
             return {"tfs": [], "histone": []}
-        tfs = [{"name": k, "n": len(set(v)), "total": totals.get(k, '')}
+        tfs = [{"name": k, "n": len(set(v)), "total": totals.get(k, -1)}
                for k, v in r[0].iteritems()]
-        histones = [{"name": k, "n": len(set(v)), "total": totals.get(k, '')}
+        histones = [{"name": k, "n": len(set(v)), "total": totals.get(k, -1)}
                     for k, v in r[1].iteritems()]
         return {"tf": tfs, "histone": histones}
 
