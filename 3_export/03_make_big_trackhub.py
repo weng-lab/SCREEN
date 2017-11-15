@@ -16,10 +16,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 
-AddPath(__file__, '../website/models')
+AddPath(__file__, '../api/models')
 from trackinfo import TrackInfo
 
-AddPath(__file__, '../website/common')
+AddPath(__file__, '../api/common')
 from coord import Coord
 from pg import PGsearch
 from db_trackhub import DbTrackhub
@@ -386,7 +386,7 @@ def main():
     from dbconnect import db_connect
     from postgres_wrapper import PostgresWrapper
 
-    AddPath(__file__, '../../website/common/')
+    AddPath(__file__, '../../api/common/')
     from pg import PGsearch
     from cached_objects import CachedObjects
     from pg_common import PGcommon

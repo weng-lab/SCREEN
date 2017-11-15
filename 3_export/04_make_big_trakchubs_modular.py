@@ -56,7 +56,7 @@ def main():
     from dbconnect import db_connect
     from postgres_wrapper import PostgresWrapper
 
-    AddPath(__file__, '../website/common/')
+    AddPath(__file__, '../api/common/')
     from pg import PGsearch
     from cached_objects import CachedObjects
     from pg_common import PGcommon
