@@ -47,7 +47,7 @@ bipolar spindle neuron%brain
 breast epithelium%breast
 cardiac muscle cell%heart
 cardiac myocyte%heart
-central nervous system%blood
+central nervous system%brain
 common myeloid progenitor, CD34-positive%blood
 common myeloid progenitor%blood
 duodenum%intestine
