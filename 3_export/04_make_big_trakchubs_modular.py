@@ -7,15 +7,22 @@ import json
 import os
 import re
 import argparse
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
+from metadataws import MetadataWS
+from querydcc import QueryDCC
+from cache_diskcache import DiskCacheWrapper
 
 AddPath(__file__, '../common')
 from constants import paths
 from config import Config
+
+mc = DiskCacheWrapper()
+qd = QueryDCC(auth=False, cache=mc)
+mw = MetadataWS(cache=mc, host="http://192.168.1.46:9008/metadata")
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "RNA-seq": ["0,170,0", "", "#00aa00"],
@@ -38,10 +45,17 @@ class TrackhubDb:
         self.assembly = assembly
         self.DBCONN = DBCONN
         self.cache = cache
-
+        self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
+        
     def run(self):
-        pass
-
+        printt("loading exps by biosample_type...")
+        byBiosampleTypeBiosample = MetadataWS.encodeByBiosampleType(self.assembly)
+        for r in byBiosampleTypeBiosample:
+            biosample_type = r[0]["biosample_type"]
+            biosample_term_name = r[0]["biosample_term_name"]
+            expIDs = r[0]["expIDs"]
+            self.byBiosampleTypeBiosample[biosample_type][biosample_term_name] = mw.exps(expIDs)
+        printt("done")
 
 def parse_args():
     parser = argparse.ArgumentParser()

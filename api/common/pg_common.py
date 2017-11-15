@@ -14,9 +14,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from utils import AddPath
 from db_utils import getcursor
 
-AddPath(__file__, "../..")
-from get_set_mc import GetOrSetMemCache
-
 AddPath(__file__, "../../common")
 from cre_utils import isaccession, isclose, checkChrom
 from config import Config
@@ -32,9 +29,8 @@ class PGcommonWrapper:
         return self.pgs[assembly]
 
 
-class PGcommon(GetOrSetMemCache):
+class PGcommon(object):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly, "PGcommon")
         self.pg = pg
         self.assembly = assembly
 
