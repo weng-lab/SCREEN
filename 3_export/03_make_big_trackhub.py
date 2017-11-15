@@ -305,31 +305,33 @@ parent {ctname}
 
     def makeAllTracks(self, assembly):
         self.priority = 1
-        self.lines = []
         self.assembly = assembly
 
         tracksByCt = self.makeTracksByCt(assembly)
         cache = self.cacheW[assembly]
 
         for biosample_type, tracks in tracksByCt.iteritems():
-            self.lines += self.makeSuperTrackFolder(biosample_type, True)
+            lines = []
+            lines += self.makeSuperTrackFolder(biosample_type, True)
 
             for ct, tracksByType in tracks.iteritems():
+                print(ct)
                 for fileID, tct, url in tracksByType["cts"]:
-                    if self.browser in [UCSC, ENSEMBL]:
-                        self.lines += self.makeCompostiteTracks(cache, fileID,
-                                                                biosample_type,
-                                                                tct, url,
-                                                                False,  # j["showCombo"],
-                                                                tracksByType["signal"],
-                                                                tracksByType["9state"],
-                                                                True, True,
-                                                                signalOnly=True)
-        fnp = '/home/mjp/public_html/ucsc/' + self.assembly + '/trackDb.txt'
-        with open(fnp, 'w') as f:
-            for line in self.lines:
-                f.write(line + '\n')
-        printWroteNumLines(fnp)
+                    lines += self.makeCompostiteTracks(cache, fileID,
+                                                       biosample_type,
+                                                       tct, url,
+                                                       False,  # j["showCombo"],
+                                                       tracksByType["signal"],
+                                                       tracksByType["9state"],
+                                                       True, True,
+                                                       signalOnly=True)
+            bt = biosample_type.replace(' ', '_')
+            fnp = os.path.join('/home/mjp/public_html/ucsc', self.assembly, bt, 'trackDb.txt')
+            Utils.ensureDir(fnp)
+            with open(fnp, 'w') as f:
+                for line in lines:
+                    f.write(line + '\n')
+            printWroteNumLines(fnp)
 
     def makeTracksByCt(self, assembly):
         cache = self.cacheW[self.assembly]
