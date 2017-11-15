@@ -9,7 +9,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
 from utils import AddPath
 
-AddPath(__file__, "..")
+AddPath(__file__, "../../common")
 from config import Config
 
 

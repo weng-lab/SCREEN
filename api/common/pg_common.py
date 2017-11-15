@@ -9,16 +9,18 @@ import psycopg2.extras
 
 from coord import Coord
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-from config import Config
-from get_set_mc import GetOrSetMemCache
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
-from cre_utils import isaccession, isclose, checkChrom
-
 sys.path.append(os.path.join(os.path.dirname(__file__),
                              '../../../metadata/utils/'))
+from utils import AddPath
 from db_utils import getcursor
+
+AddPath(__file__, "../..")
+from get_set_mc import GetOrSetMemCache
+
+AddPath(__file__, "../../common")
+from cre_utils import isaccession, isclose, checkChrom
+from config import Config
+
 
 
 class PGcommonWrapper:

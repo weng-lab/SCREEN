@@ -7,7 +7,7 @@ import json
 
 
 class Config:
-    fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "config.json")
+    fnp = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../config.json")
     if not os.path.exists(fnp):
         print("ERROR: file not found:", fnp)
         print("\tfile should be symlink'd to a desired config.<blah>.json file")
