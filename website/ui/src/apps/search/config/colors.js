@@ -29,7 +29,8 @@ export const TissueColors = {
     "prostate": "#00AA88",
     "skin": "#BBAA44",
     "stomach": "#9900FF",
-    "uterus": "#990033"
+    "uterus": "#990033",
+    "ureter": "#00AA88"
 };
 
 export const primary_cell_colors = {
