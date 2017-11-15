@@ -26,7 +26,7 @@ from utils import Utils, AddPath
 AddPath(__file__, "../common")
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
-
+from config import Config
 
 class WebServerConfig:
     def __init__(self, siteName, production):
@@ -50,7 +50,7 @@ class WebServerConfig:
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
-        redisHost = "127.0.0.1"
+        redisHost = Config.redisHost
 
         return {
             '/': {

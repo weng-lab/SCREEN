@@ -28,3 +28,4 @@ class Config:
     GoogleAnalytics = re["googleAnalytics"]
     memcache = re["memache"]
     cassandra = re["cassandra"]
+    redisHost = re["redisHost"]

@@ -9,7 +9,8 @@
   "ribbon": "beta",
   "googleAnalytics": false,
   "memache": false,
-  "cassandra": ["cassandra"]
+  "cassandra": ["cassandra"],
+  "redisHost": "127.0.0.1"
  },
  "UI":
  {"apiServer": "http://api.wenglab.org/screen/v10",
