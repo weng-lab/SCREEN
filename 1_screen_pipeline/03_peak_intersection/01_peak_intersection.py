@@ -111,9 +111,9 @@ class PeakIntersection:
 
         print("generated", len(jobs), "jobs")
 
-        with gzip.open(jobsFnp, 'w') as f:
+        with gzip.open(self.jobsFnp, 'w') as f:
             json.dump(jobs, f)
-        printt("wrote", jobsFnp)
+        printt("wrote", self.jobsFnp)
         
         return jobs
 
@@ -130,7 +130,7 @@ class PeakIntersection:
             Utils.sortFile(paths.path(self.assembly, "raw", "cREs.bed"),
                            bedFnp)
 
-        jobs = self.makeJobs(self.assembly)
+        jobs = self.makeJobs()
 
         results = Parallel(n_jobs=self.args.j)(
             delayed(runIntersectJob)(job, bedFnp)
@@ -193,7 +193,7 @@ def main():
             continue
 
         printt("intersecting TFs and Histones")
-        pi.computeIntersections(args, assembly)
+        pi.computeIntersections()
 
     return 0
 
