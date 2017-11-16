@@ -25,7 +25,7 @@ from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config
 
-AddPath(__file__, '../website/common/')
+AddPath(__file__, '../api/common/')
 from pg_common import PGcommon
 from pg import PGsearch
 from postgres_wrapper import PostgresWrapper
