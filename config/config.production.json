@@ -8,7 +8,7 @@
   "minipeaks_nbins": 20,
   "ribbon": "",
   "googleAnalytics": true,
-  "memache": false,
+  "memcache": false,
   "cassandra": ["cassandra"],
   "redisHost": "redis"	
  },
