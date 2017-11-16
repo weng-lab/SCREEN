@@ -10,7 +10,13 @@ const initialState = (search, globals) => {
             psubtab = search.subtab;
         }
     }
-
+    
+    /* globals.cellTypeInfoArr.forEach((e) => {
+       if(!e.name){
+       console.log(e)
+       }
+     * })*/
+    
     const parsedQuery = search.parsedQuery;
 
     let maintab = pmaintab || "results";
@@ -56,7 +62,7 @@ const initialState = (search, globals) => {
       	    checked: false
       	})),
 
-	      gb_cres: {}, // set of accessions to show in GB, and their metadata
+	gb_cres: {}, // set of accessions to show in GB, and their metadata
 
         re_details_tab_active: subtab,
         tree_rank_method: "H3K27ac",

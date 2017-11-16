@@ -67,26 +67,54 @@ class DataSource {
 	if(SortOrder.ASC === sortOrder){
 	    if(sortDataF){
 		//console.log("sorting", sortCol, "by text, asceding, with custom data");
-		this.rowIDs.sort((a,b) =>
-		    sortDataF(this.data[a][sortCol]).toLowerCase().localeCompare(
-			sortDataF(this.data[b][sortCol]).toLowerCase()));
+		this.rowIDs.sort((a,b) => {
+		    if (null === this.data[a][sortCol]) {
+			return 1;
+		    }
+		    if(null === this.data[b][sortCol]){
+			return 0;
+		    }
+		    return sortDataF(this.data[a][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[b][sortCol]).toLowerCase());
+		})
 	    } else {
 		//console.log("sorting", sortCol, "by text, asceding, without custom data");
-		this.rowIDs.sort((a,b) =>
-		    this.data[a][sortCol].toLowerCase().localeCompare(
-			this.data[b][sortCol].toLowerCase()));
+		this.rowIDs.sort((a,b) => {
+		    if (null === this.data[a][sortCol]) {
+			return 1;
+		    }
+		    if(null === this.data[b][sortCol]){
+			return 0;
+		    }
+		    return this.data[a][sortCol].toLowerCase().localeCompare(
+			this.data[b][sortCol].toLowerCase());
+		})
 	    }
 	} else {
 	    //console.log("sorting by", sortCol, "text, descending, with custom data");
 	    if(sortDataF){
-		this.rowIDs.sort((a,b) =>
-		    sortDataF(this.data[b][sortCol]).toLowerCase().localeCompare(
-			sortDataF(this.data[a][sortCol]).toLowerCase()));
+		this.rowIDs.sort((a,b) => {
+		    if (null === this.data[a][sortCol]) {
+			return 0;
+		    }
+		    if(null === this.data[b][sortCol]){
+			return 1;
+		    }
+		    return sortDataF(this.data[b][sortCol]).toLowerCase().localeCompare(
+			sortDataF(this.data[a][sortCol]).toLowerCase());
+		})
 	    } else {
 		//console.log("sorting", sortCol, "by text, descending, without custom data");
-		this.rowIDs.sort((a,b) =>
-		    this.data[b][sortCol].toLowerCase().localeCompare(
-			this.data[a][sortCol].toLowerCase()));
+		this.rowIDs.sort((a,b) => {
+		    if (null === this.data[a][sortCol]) {
+			return 0;
+		    }
+		    if(null === this.data[b][sortCol]){
+			return 1;
+		    }
+		    return this.data[b][sortCol].toLowerCase().localeCompare(
+			this.data[a][sortCol].toLowerCase());
+		})
 	    }
 	}
     }
@@ -113,7 +141,7 @@ class DataSource {
 	    sortDataF = colInfo.sortDataF;
 	    sample = sortDataF(sample);
 	}
-	
+
 	// https://stackoverflow.com/a/16655847
 	const isNumArray = Number(sample) === sample;
 	if(isNumArray){
