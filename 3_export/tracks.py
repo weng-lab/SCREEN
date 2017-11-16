@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import sys
 import os
+from collections import OrderedDict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
@@ -16,19 +17,19 @@ class BigWigTrack(object):
         self.p = self._init()
 
     def _init(self):
-        p = {"desc": self._desc(),
-             "bigDataUrl": self._url(),
-             "visibility": "dense",
-             "type": "bigWig",
-             "color": None,
-             "height": "maxHeightPixels 128:32:8",
-             "visibility": "full",
-             "shortLabel": Helpers.makeShortLabel(self._desc()),
-             "longLabel": Helpers.makeLongLabel(self._desc()),
-             "itemRgb": "On",
-             #"priority " + str(self.priority),
-             "darkerLabels": "on",
-        }
+        p = OrderedDict()
+        p["desc"] = self._desc()
+        p["bigDataUrl"] = self._url()
+        p["visibility"] = "dense"
+        p["type"] = "bigWig"
+        p["color"] = None
+        p["height"] = "maxHeightPixels 128:32:8"
+        p["visibility"] = "full"
+        p["shortLabel"] = Helpers.makeShortLabel(self._desc())
+        p["longLabel"] = Helpers.makeLongLabel(self._desc())
+        p["itemRgb"] = "On"
+        # p["priority"] = str(self.priority)
+        p["darkerLabels"] = "on"
         return p
     
     def _url(self):

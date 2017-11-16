@@ -70,7 +70,8 @@ assay text,
 label text,
 biosample_term_name text
 )""".format(tn=t))
-    jobs = peakIntersections.makeJobs(assembly)
+    pi = peakIntersections.PeakIntersection(args, assembly)
+    jobs = pi.loadJobs()
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write('\t'.join([r["bed"].expID,
