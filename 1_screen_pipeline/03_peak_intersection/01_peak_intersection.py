@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../../metadata/utils"))
-from utils import AddPath, Utils, Timer, printt, printWroteNumLines
+from utils import AddPath, Utils, Timer, printt, printWroteNumLines, eprint
 from metadataws import MetadataWS
 from files_and_paths import Datasets, Dirs
 from exp import Exp
