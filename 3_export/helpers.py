@@ -37,6 +37,7 @@ def bigWigFilters(assembly, files):
     def fils():
         for ot in ["fold change over control",
                    "signal of unique reads",
+                   "signal of all reads",
                    "plus strand signal of unique reads",
                    "plus strand signal of all reads",
                    "plus strand signal",
@@ -45,11 +46,12 @@ def bigWigFilters(assembly, files):
                    "minus strand signal",
                    "raw signal",
                    "wavelet-smoothed signal",
-                   "percentage normalized signal"
+                   "percentage normalized signal",
+                   "read-depth normalized signal"
                    ]:
             yield lambda x: x.output_type == ot and x.isPooled
             for rep in xrange(0, 5):
-                yield lambda x: x.output_type == ot and str(rep) in x.bio_rep
+                yield lambda x: x.output_type == ot and rep in x.bio_rep
             yield lambda x: x.output_type == ot and [] == x.bio_rep
             yield lambda x: x.output_type == ot and {} == x.bio_rep
                 
@@ -58,10 +60,10 @@ def bigWigFilters(assembly, files):
         if bigWigs:
             return bigWigs
 
-    bfs = [lambda bw: bw.isRawSignal() and bw.bio_rep == '1',
-           lambda bw: bw.isRawSignal() and bw.bio_rep == '2',
-           lambda bw: bw.isSignal() and bw.bio_rep == '1',
-           lambda bw: bw.isSignal() and bw.bio_rep == '2',
+    bfs = [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
+           lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
+           lambda bw: bw.isSignal() and bw.bio_rep == 1,
+           lambda bw: bw.isSignal() and bw.bio_rep == 2,
            lambda bw: bw.isSignal()
            ]
     
@@ -72,14 +74,18 @@ def bigWigFilters(assembly, files):
 
     eprint("error: no files found after filtering...")
     for f in files:
-        eprint(f, type(f.bio_rep))
+        eprint(f, f.bio_rep)
         
     return []
 
 
 def main():
-    mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
-    exp = mw.exps(['ENCSR966OVF'])[0]
+    expID = 'ENCSR966OVF'
+    if 0:
+        mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
+        exp = mw.exps([expID])[0]
+    else:
+        exp = Exp.fromJsonFile(expID)
     files = bigWigFilters("hg19", exp.files)
     print("found", len(files))
     for f in files:

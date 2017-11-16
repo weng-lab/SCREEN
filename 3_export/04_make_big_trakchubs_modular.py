@@ -50,7 +50,7 @@ class TrackhubDb:
     def _load(self):
         printt("loading exps by biosample_type...")
         byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
-        for r in byBiosampleTypeBiosample:
+        for r in reversed(byBiosampleTypeBiosample):
             biosample_type = r[0]["biosample_type"]
             biosample_term_name = r[0]["biosample_term_name"]
             expIDs = r[0]["expIDs"]
