@@ -11,7 +11,6 @@ import StringIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../1_screen_pipeline/03_peak_intersection'))
 peakIntersections = __import__('01_peak_intersection')
-cistromeIntersections = __import__('02_cistrome')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -70,7 +69,8 @@ assay text,
 label text,
 biosample_term_name text
 )""".format(tn=t))
-    jobs = peakIntersections.makeJobs(assembly)
+    pi = peakIntersections.PeakIntersection(args, assembly)
+    jobs = pi.loadJobs()
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write('\t'.join([r["bed"].expID,
@@ -81,29 +81,6 @@ biosample_term_name text
                               ]) + '\n')
     outF.seek(0)
     cols = "expID fileID assay label biosample_term_name".split(' ')
-    return (outF, cols)
-
-
-def cistrome_peak_metadata(assembly, t, curs):
-    printt("dropping and creating table", t)
-    curs.execute("""
-DROP TABLE IF EXISTS {tn};
-CREATE TABLE {tn}(
-id serial PRIMARY KEY,
-fileID text,
-assay text,
-label text,
-biosample_term_name text,
-tissue text
-)""".format(tn=t))
-    jobs = cistromeIntersections.makeJobs(assembly, paths.cistrome("data", "raw"))
-    outF = StringIO.StringIO()
-    for r in jobs:
-        outF.write("\t".join([r["bed"]["fileID"],
-                              r["etype"], r["label"],
-                              r["celltype"], r["tissue"]]) + "\n")
-    outF.seek(0)
-    cols = ["fileID", "assay", "label", "biosample_term_name", "tissue"]
     return (outF, cols)
 
 
@@ -128,7 +105,6 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     Encode = ["peakIntersections", encode_peak_metadata]
-    Cistrome = ["cistromeIntersections", cistrome_peak_metadata]
 
     def doRun(args, assembly, curs, tsuffix, jobgen):
         if args.metadata:
@@ -145,8 +121,6 @@ def run(args, DBCONN):
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
             doRun(args, assembly, curs, Encode[0], Encode[1])
-            if assembly in ["hg38", "mm10"]:
-                doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
 
 
 def parse_args():

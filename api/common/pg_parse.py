@@ -11,7 +11,6 @@ from coord import Coord
 from pg_common import PGcommon
 from gene_parse import GeneParse
 from config import Config
-from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../metadata/utils"))
 from utils import AddPath
@@ -30,9 +29,8 @@ class PGparseWrapper:
         return self.pgs[assembly]
 
 
-class PGparse(GetOrSetMemCache):
+class PGparse(object):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly, "PGparse")
         self.pg = pg
         checkAssembly(assembly)
         self.assembly = assembly

@@ -3,7 +3,7 @@
 from __future__ import print_function
 import os
 import sys
-import json  # import ujson as json
+import ujson as json
 import argparse
 import fileinput
 import StringIO
@@ -24,9 +24,6 @@ from constants import paths, chroms
 from common import printr, printt
 from config import Config
 
-from pcommon import doIntersection, runIntersectJob, processResults
-
-
 def getFileJson(exp, bed):
     return {"accession": bed.fileID,
             "dataset_accession": exp.encodeID,
@@ -36,74 +33,136 @@ def getFileJson(exp, bed):
             "label": exp.label}
 
 
-def makeJobs(assembly):
-    if "mm10" == assembly:
-        m = MetadataWS(Datasets.all_mouse)
-    else:
-        m = MetadataWS(Datasets.all_human)
+def doIntersection(bed, refnp):
+    cmds = ["bedtools", "intersect",
+            "-a", refnp,
+            "-b", bed.fnp(),
+            "-wa"]
+    try:
+        peaks = Utils.runCmds(cmds)
+    except:
+        print("failed to run", " ".join(cmds))
+        return None
 
-    allExps = [(m.chipseq_tfs_useful(assembly), "tf"),
-               (m.chipseq_histones_useful(assembly), "histone")]
-    allExpsIndiv = []
-    for exps, etype in allExps:
-        print("found", len(exps), etype)
-        exps = [Exp.fromJsonFile(e.encodeID) for e in exps]
-        exps = filter(lambda e: "ERROR" not in e.jsondata["audit"], exps)
-        print("found", len(exps), etype, "after removing ERROR audit exps")
-        for exp in exps:
-            allExpsIndiv.append((exp, etype))
-    random.shuffle(allExpsIndiv)
-    total = len(allExpsIndiv)
+    return [p.rstrip().split("\t")[4] for p in peaks]  # return cRE accessions
 
-    i = 0
-    jobs = []
-    for exp, etype in allExpsIndiv:
-        i += 1
-        try:
-            beds = exp.bedFilters(assembly)
-            if not beds:
-                print("missing", exp)
-            for bed in beds:
-                jobs.append({"exp": exp,  # this is an Exp
-                             "bed": bed,  # this is an ExpFile
-                             "i": i,
-                             "total": total,
-                             "assembly": assembly,
-                             "etype": etype})
-        except Exception, e:
-            print(str(e))
-            print("bad exp:", exp)
-
-    print("will run %d jobs" % len(jobs), file=sys.stderr)
-    return jobs
-
-
-def encodeIntersectJob(jobargs, bedfnp):
+def runIntersectJob(jobargs, bedfnp):
     exp = jobargs["exp"]
     bed = jobargs["bed"]
     fileJson = getFileJson(exp, bed)
     label = exp.label if jobargs["etype"] != "dnase" else "dnase"
-    jobargs.update({"bed": {"fnp": bed.fnp(), "fileID": bed.fileID},
-                    "label": label})
-    return (fileJson, runIntersectJob(jobargs, bedfnp))
+    if not os.path.exists(bed.fnp()):
+        print("warning: missing bed", bed.fnp(), "-- cannot intersect")
+        return (fileJson, None)
 
+    ret = []
+    printr("(exp %d of %d)" % (jobargs["i"], jobargs["total"]),
+           "intersecting", jobargs["etype"], label)
+    accessions = doIntersection(bed, bedfnp)
+    if accessions is None:
+        eprint("warning: unable to intersect REs with bed %s" % bed.fnp())
+    else:
+        ret.append((jobargs["etype"], label, bed.fileID, accessions))
+    return (fileJson, ret)
 
-def computeIntersections(args, assembly):
-    bedFnp = paths.path(assembly, "extras", "cREs.sorted.bed")
-    if not os.path.exists(bedFnp):
-        Utils.sortFile(paths.path(assembly, "raw", "cREs.bed"),
-                       bedFnp)
+class PeakIntersection:
+    def __init__(self, args, assembly):
+        self.args = args
+        self.assembly = assembly
+        self.jobsFnp = paths.path(self.assembly, "extras", "jobs.json.gz")
+    
+    def makeJobs(self):
+        if "mm10" == self.assembly:
+            m = MetadataWS(Datasets.all_mouse)
+        else:
+            m = MetadataWS(Datasets.all_human)
 
-    jobs = makeJobs(assembly)
+        allExps = [(m.chipseq_tfs_useful(self.assembly), "tf"),
+                   (m.chipseq_histones_useful(self.assembly), "histone")]
+        allExpsIndiv = []
+        for exps, etype in allExps:
+            print("found", len(exps), etype)
+            exps = [Exp.fromJsonFile(e.encodeID) for e in exps]
+            exps = filter(lambda e: "ERROR" not in e.jsondata["audit"], exps)
+            print("found", len(exps), etype, "after removing ERROR audit exps")
+            for exp in exps:
+                allExpsIndiv.append((exp, etype))
+        random.shuffle(allExpsIndiv)
+        total = len(allExpsIndiv)
 
-    results = Parallel(n_jobs=args.j)(
-        delayed(encodeIntersectJob)(job, bedFnp)
-        for job in jobs)
+        i = 0
+        jobs = []
+        for exp, etype in allExpsIndiv:
+            i += 1
+            try:
+                beds = exp.bedFilters(self.assembly)
+                if not beds:
+                    print("missing", exp)
+                for bed in beds:
+                    jobs.append({"exp": exp,  # this is an Exp
+                                 "bed": bed,  # this is an ExpFile
+                                 "i": i,
+                                 "total": total,
+                                 "assembly": self.assembly,
+                                 "etype": etype})
+            except Exception, e:
+                print(str(e))
+                print("bad exp:", exp)
 
-    print("\n")
-    printt("merging intersections into hash...")
+        print("generated", len(jobs), "jobs")
 
-    processResults(results, paths.path(assembly, "extras", "peakIntersections.json.gz"))
+        with gzip.open(jobsFnp, 'w') as f:
+            json.dump(jobs, f)
+        printt("wrote", jobsFnp)
+        
+        return jobs
+
+    def loadJobs(self):
+        printt("reading", self.jobsFnp)
+        with gzip.open(self.jobsFnp) as f:
+            jobs = json.load(f)
+        print("loaded", len(jobs))
+        return jobs
+    
+    def computeIntersections(self):
+        bedFnp = paths.path(self.assembly, "extras", "cREs.sorted.bed")
+        if not os.path.exists(bedFnp):
+            Utils.sortFile(paths.path(self.assembly, "raw", "cREs.bed"),
+                           bedFnp)
+
+        jobs = self.makeJobs(self.assembly)
+
+        results = Parallel(n_jobs=self.args.j)(
+            delayed(runIntersectJob)(job, bedFnp)
+            for job in jobs)
+
+        print("\n")
+        printt("merging intersections into hash...")
+
+        tfImap = {}
+        fileJsons = []
+        for fileJson, accessions in results:
+            if not accessions:
+                continue
+            for etype, label, fileID, accs in accessions:
+                for acc in accs:
+                    if acc not in tfImap:
+                        tfImap[acc] = {"tf": {}, "histone": {}}
+                    if label not in tfImap[acc][etype]:
+                        tfImap[acc][etype][label] = []
+                    tfImap[acc][etype][label].append(fileID)
+            fileJsons += fileJson
+
+        printt("completed hash merge")
+
+        outFnp = paths.path(self.assembly, "extras", "peakIntersections.json.gz")
+        with gzip.open(outFnp, 'w') as f:
+            for k, v in tfImap.iteritems():
+                f.write('\t'.join([k,
+                                   json.dumps(v["tf"]),
+                                   json.dumps(v["histone"])
+                                   ]) + '\n')
+        printt("wrote", outFnp)
 
 
 def parse_args():
@@ -124,15 +183,17 @@ def main():
 
     for assembly in assemblies:
         print("***********************", assembly)
+        pi = PeakIntersection(args, assembly)
+
         if args.list:
-            jobs = makeJobs(assembly)
+            jobs = pi.makeJobs(assembly)
             for j in jobs:
                 #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
                 print(j["bed"].fileID)
             continue
 
         printt("intersecting TFs and Histones")
-        computeIntersections(args, assembly)
+        pi.computeIntersections(args, assembly)
 
     return 0
 

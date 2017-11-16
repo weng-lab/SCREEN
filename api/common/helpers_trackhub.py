@@ -1,8 +1,28 @@
 import sys
 import os
+import re
 
 BIB5 = "http://bib5.umassmed.edu/~purcarom/annotations_demo/"
 
+def makeTrackName(n):
+    match = re.search("(.*) {.*}(.*)", n)
+    if match:
+	n = match.group(1) + match.group(2)
+    n = n.replace(" ", "_").replace('(','').replace(')','')
+    n = n[:102]
+    return n
+
+def makeLongLabel(n):
+    match = re.search("(.*) {.*}(.*)", n)
+    if match:
+	n = match.group(1) + match.group(2)
+    return n[:80]
+
+def makeShortLabel(n):
+    match = re.search("(.*) {.*}(.*)", n)
+    if match:
+	n = match.group(1) + match.group(2)
+    return n[:17]
 
 class TempWrap:
     def __init__(self, expID, fileID):
@@ -82,15 +102,18 @@ class Track(object):
         desc = " ".join(desc)
         return desc
 
-    def track(self, shortLabel=None):
+    def track(self, shortLabel=None, hideTrack = False):
         if not self.type:
             raise Exception("unknown type")
         if not shortLabel:
             shortLabel = self.desc
-        track = ["track " + self.desc.replace(" ", "_"),
+        t = "track " + makeTrackName(self.desc)
+        if hideTrack:
+            t = ''
+        track = [t,
                  "type " + self.type,
-                 "shortLabel " + shortLabel,
-                 "longLabel " + self.desc,
+                 "shortLabel " + makeShortLabel(shortLabel),
+                 "longLabel " + makeLongLabel(self.desc),
                  "itemRgb On",
                  "visibility " + self.visibility,
                  "priority " + str(self.priority),
@@ -106,8 +129,8 @@ class Track(object):
             track += ["parent " + self.superTrackName]
         if self.viewLimits:
             track += ["viewLimits " + self.viewLimits]
-        track += ["\n"]
-        return "\n".join(track)
+        #track += ["\n"]
+        return "\n".join([t for t in track if t])
 
     def track_washu(self):
         if not self.type:

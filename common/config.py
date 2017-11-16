@@ -26,6 +26,6 @@ class Config:
     minipeaks_nbins = re["minipeaks_nbins"]
     ribbon = re["ribbon"]
     GoogleAnalytics = re["googleAnalytics"]
-    memcache = re["memache"]
+    memcache = re["memcache"]
     cassandra = re["cassandra"]
     redisHost = re["redisHost"]

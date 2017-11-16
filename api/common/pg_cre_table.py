@@ -17,7 +17,6 @@ import psycopg2.extras
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
-from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -28,7 +27,7 @@ from db_utils import getcursor, timedQuery
 from utils import eprint
 
 
-class PGcreTable(GetOrSetMemCache):
+class PGcreTable(object):
 
     infoFields = {"accession": "cre.accession",
                   "isproximal": "cre.isproximal",
@@ -45,8 +44,6 @@ class PGcreTable(GetOrSetMemCache):
         return "json_build_object(" + ','.join(pairs) + ") as info"
 
     def __init__(self, pg, assembly, ctmap, ctsTable):
-        GetOrSetMemCache.__init__(self, assembly, "PGcreTable")
-
         self.pg = pg
         self.assembly = assembly
         self.ctmap = ctmap

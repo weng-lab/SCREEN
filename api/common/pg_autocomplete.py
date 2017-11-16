@@ -10,7 +10,6 @@ import gzip
 from coord import Coord
 from pg_common import PGcommon
 from config import Config
-from get_set_mc import GetOrSetMemCache
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom
@@ -20,9 +19,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from db_utils import getcursor
 
 
-class PGautocomplete(GetOrSetMemCache):
+class PGautocomplete(object):
     def __init__(self, pg, assembly):
-        GetOrSetMemCache.__init__(self, assembly, "PGautocomplete")
         self.pg = pg
         self.assembly = assembly
 
