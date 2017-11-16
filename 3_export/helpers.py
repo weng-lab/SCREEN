@@ -1,4 +1,14 @@
+#!/usr/bin/env python2
+
+from __future__ import print_function
+
+import sys
+import os
 import re
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+from exp import Exp
+from utils import eprint
 
 def makeTrackName(n):
     match = re.search("(.*) {.*}(.*)", n)
@@ -39,7 +49,8 @@ def bigWigFilters(assembly, files):
             yield lambda x: x.output_type == ot and x.isPooled
             for rep in xrange(0, 5):
                 yield lambda x: x.output_type == ot and str(rep) in x.bio_rep
-                            
+            yield lambda x: x.output_type == ot and not x.bio_rep
+                
     for bf in fils():
         bigWigs = filter(bf, files)
         if bigWigs:
@@ -57,6 +68,20 @@ def bigWigFilters(assembly, files):
         if bigWigs:
             return bigWigs
 
-    print(files)
+    eprint("error: no files found after filtering...")
+    for f in files:
+        eprint(f, not f.bio_rep, [] == f.bio_rep, {} == f.bio_rep)
         
     return None
+
+
+def main():
+    exp = Exp.fromJsonFile('ENCSR966OVF')
+    files = bigWigFilters("hg19", exp.files)
+    print("found", len(files))
+    for f in files:
+        print(f)
+
+if __name__ == '__main__':
+    main()
+

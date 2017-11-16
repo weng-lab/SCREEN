@@ -57,13 +57,13 @@ class Tracks(object):
         self.tracks = []
 
     def addExpBestBigWig(self, exp):
-        f = Helpers.bigWigFilters(self.assembly, exp.files)
-        if not f:
+        files = Helpers.bigWigFilters(self.assembly, exp.files)
+        if not files:
             eprint(exp.encodeID)
             raise Exception("expected a file...")
-        f = f[0]
-        t = BigWigTrack(self.assembly, exp, f)
-        self.tracks.append(t)
+        for f in files:
+            t = BigWigTrack(self.assembly, exp, f)
+            self.tracks.append(t)
 
     def lines(self):
         for t in self.tracks:
