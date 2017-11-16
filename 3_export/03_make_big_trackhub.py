@@ -260,7 +260,7 @@ parent {ctname}
                             self.fileIDs.add(bw)
                     if not signalOnly:
                         for fnTechRep in mt["beds"]:
-                            bw = fnTechRep["fileID"]
+                            bed = fnTechRep["fileID"]
                             techRep = fnTechRep["techRep"]
                             techRep = "reps " + ' and '.join(techRep)
                             ret.append(self.mtTrackBed(tct, mt, bed, ctname, techRep) + '\n')
