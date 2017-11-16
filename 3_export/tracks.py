@@ -49,8 +49,9 @@ class BigWigTrack(object):
     def lines(self):
         for k, v in self.p.iteritems():
             if v:
-                yield k + " " + v
-    
+                yield k + " " + v + '\n'
+        yield '\n'
+        
 class Tracks(object):
     def __init__(self, assembly):
         self.assembly = assembly

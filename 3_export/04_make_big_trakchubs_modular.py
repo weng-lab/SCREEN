@@ -47,29 +47,6 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "TF ChIP-seq": ["18,98,235", "#1262EB"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
-def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
-    mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
-    exps = mw.exps(expIDs)
-
-    #print(biosample_type, biosample_term_name, len(exps))
-
-    tracks = Tracks(assembly)
-    for exp in exps:
-        if exp.isHiC():
-            continue
-        tracks.addExpBestBigWig(exp)
-
-    bt = biosample_type.replace(' ', '_')
-    btid = re.sub('[^0-9a-zA-Z]+', '-', biosample_term_name)
-    fnp = os.path.join('/home/mjp/public_html/ucsc', assembly, bt, btid +'.txt')
-    Utils.ensureDir(fnp)
-    with open(fnp, 'w') as f:
-        for line in tracks.lines():
-            f.write(line + '\n')
-        f.write('\n')
-    printWroteNumLines(fnp, idx, 'of', total)
-    return (biosample_type, biosample_term_name, fnp)
-
 class TrackhubDb:
     def __init__(self, args, assembly):
         self.args = args
@@ -101,6 +78,28 @@ class TrackhubDb:
         for r in ret:
             self.byBiosampleTypeBiosample[r[0]][r[1]] = r[2]
         printt("done")
+
+def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
+    mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
+    exps = mw.exps(expIDs)
+
+    #print(biosample_type, biosample_term_name, len(exps))
+
+    tracks = Tracks(assembly)
+    for exp in exps:
+        if exp.isHiC():
+            continue
+        tracks.addExpBestBigWig(exp)
+
+    bt = biosample_type.replace(' ', '_')
+    btid = re.sub('[^0-9a-zA-Z]+', '-', biosample_term_name)
+    fnp = os.path.join('/home/mjp/public_html/ucsc', assembly, bt, btid +'.txt')
+    Utils.ensureDir(fnp)
+    with open(fnp, 'w') as f:
+        for line in tracks.lines():
+            f.write(line)
+    printWroteNumLines(fnp, idx, 'of', total)
+    return (biosample_type, biosample_term_name, fnp)
                 
 def parse_args():
     parser = argparse.ArgumentParser()
