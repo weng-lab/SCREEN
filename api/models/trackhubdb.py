@@ -363,20 +363,20 @@ parent {stname}
             mts = []
             if tct in cache.moreTracks:
                 mts = cache.moreTracks[tct]
-                for fnTechRep in mts:
-                    for bw in mt["bigWigs"]:
+                for mt in mts:
+                    for fnTechRep in mt["bigWigs"]:
                         bw = fnTechRep["fileID"]
                         techRep = fnTechRep["techRep"]
                         techRep = "reps " + ' and '.join(techRep)
                         if bw not in self.fileIDs:
-                            ret.append(self.mtTrackBigWig(tct, mt, bw, stname))
+                            ret.append(self.mtTrackBigWig(tct, mt, bw, stname) + '\n')
                             self.fileIDs.add(bw)
                     if not signalOnly:
                         for fnTechRep in mt["beds"]:
                             bed = fnTechRep["fileID"]
                             techRep = fnTechRep["techRep"]
                             techRep = "reps " + ' and '.join(techRep)
-                            ret.append(self.mtTrackBed(tct, mt, bed, stname))
+                            ret.append(self.mtTrackBed(tct, mt, bed, stname) + '\n')
         return ret
 
     def mtColor(self, assay, mt):
