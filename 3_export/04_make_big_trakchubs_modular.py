@@ -61,8 +61,10 @@ class TrackhubDb:
         for biosample_type, biosample_term_name, exps in self._load():
             print(biosample_type, biosample_term_name, len(exps))
 
-            tracks = Tracks()
+            tracks = Tracks(self.assembly)
             for exp in exps:
+                if exp.isHiC():
+                    continue
                 tracks.addExpBestBigWig(exp)
             
             bt = biosample_type.replace(' ', '_')
