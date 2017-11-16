@@ -10,14 +10,18 @@ from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 import helpers as Helpers
 
 class BigWigTrack(object):
-    def __init__(self, assembly, exp, f):
+    def __init__(self, assembly, exp, f, parent):
         self.assembly = assembly
         self.exp = exp
         self.f = f
+        self.parent = parent
         self.p = self._init()
 
     def _init(self):
         p = OrderedDict()
+        p["track"] = Helpers.makeTrackName(self._desc())
+        p["parent"] = self.parent
+        p["subGroups"] = 'btn=' + Helpers.sanitize(self.exp.biosample_term_name)
         p["desc"] = self._desc()
         p["bigDataUrl"] = self._url()
         p["visibility"] = "dense"
@@ -54,8 +58,9 @@ class BigWigTrack(object):
         yield '\n'
         
 class Tracks(object):
-    def __init__(self, assembly):
+    def __init__(self, assembly, parent):
         self.assembly = assembly
+        self.parent = parent
         self.tracks = []
 
     def addExpBestBigWig(self, exp):
@@ -64,7 +69,7 @@ class Tracks(object):
             eprint(exp.encodeID)
             raise Exception("expected a file...")
         for f in files:
-            t = BigWigTrack(self.assembly, exp, f)
+            t = BigWigTrack(self.assembly, exp, f, self.parent)
             self.tracks.append(t)
 
     def lines(self):

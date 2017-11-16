@@ -5,12 +5,12 @@ from __future__ import print_function
 import sys
 import json
 import os
-import re
 import argparse
 from collections import OrderedDict, defaultdict
 from joblib import Parallel, delayed
 
 from tracks import Tracks
+import helpers as Helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
@@ -55,7 +55,7 @@ class TrackhubDb:
         #self.cache = cache
         self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
 
-    def run(self):
+    def runJobs(self):
         printt("loading exps by biosample_type...")
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
         byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
@@ -77,23 +77,117 @@ class TrackhubDb:
 
         for r in ret:
             self.byBiosampleTypeBiosample[r[0]][r[1]] = r[2]
-        printt("done")
+
+    def run(self):
+        self.runJobs()
+        self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
+        self._makeFiles()
+        
+    def _makeFiles(self):
+        mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
+        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
+        for r in byBiosampleTypeBiosample:
+            biosample_type = r[0]["biosample_type"]
+            biosample_term_name = r[0]["biosample_term_name"]
+            expIDs = r[0]["expIDs"]
+            bt = Helpers.sanitize(biosample_type)
+            btid = Helpers.sanitize(biosample_term_name)
+            fnp = os.path.join(bt, btid +'.txt')
+            self.byBiosampleTypeBiosample[bt][btid]= fnp
+
+        mainTrackDb = """
+track super_tissue
+superTrack on
+shortLabel tissue
+longLabel tissue
+
+track super_immortalized_cell_line
+superTrack on
+shortLabel immortalized cell
+longLabel immortalized cell line
+
+track super_stem_cell
+superTrack on
+shortLabel stem cell
+longLabel stem cell
+
+track super_primary_cell
+superTrack on
+shortLabel primary cell
+longLabel primary cell
+
+track super_in_vitro_differentiated_cells
+superTrack on
+shortLabel in vitro differen
+longLabel in vitro differentiated cells
+
+track super_induced_pluripotent_stem_cell_line
+superTrack on
+shortLabel induced pluripote
+longLabel induced pluripotent stem cell line
+
+"""
+        for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
+            for btn, fnp in btnFnps.iteritems():
+                fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly,
+                                   bt + '_' + btn + '.txt')
+                mainTrackDb += 'include ' + bt + '_' + btn + '.txt' + '\n';
+                printt("makefiles: writing", fnp)
+                with open(fnp, 'w') as f:
+                    f.write("""
+track {bt}_{btn}
+parent super_{bt}
+compositeTrack on
+visibility full
+                    shortLabel {shortL}
+                    longLabel {longL}
+type bigWig 9 +
+maxHeightPixels 64:12:8
+autoScale on
+#showSubtrackColorOnUi on
+#subGroup4 subtrackColor _
+#subGroup1 tissue Tissue {btn}={btn}
+#sortOrder tissue=+ subtrackColor=+
+# dimensions dimX=tissue dimY=donor dimA=age
+# filterComposite dimA
+#dragAndDrop subTracks
+#hoverMetadata on
+darkerLabels on
+                """.format(bt=bt, btn=btid, shortL=bt[:18], longL=bt[:80]))
+        print("done", fnp)
+
+        fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly, 'subtracks.txt')
+        mainTrackDb += 'include ' + 'subtracks.txt'
+        printt("makefiles: writing", fnp)
+        with open(fnp, 'w') as f:
+            for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
+                for btn, fnp in btnFnps.iteritems():
+                        f.write('include ' + fnp + '\n')
+        print("done", fnp)
+
+        fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly, 'trackDb.txt')
+        printt("makefiles: writing", fnp)
+        with open(fnp, 'w') as f:
+            f.write(mainTrackDb)
+        print("done", fnp)
 
 def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
     mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
     exps = mw.exps(expIDs)
 
     #print(biosample_type, biosample_term_name, len(exps))
+    bt = Helpers.sanitize(biosample_type)
+    btid = Helpers.sanitize(biosample_term_name)
 
-    tracks = Tracks(assembly)
+    parent = bt + '_' + btid
+    
+    tracks = Tracks(assembly, parent)
     for exp in exps:
         if exp.isHiC():
             continue
         tracks.addExpBestBigWig(exp)
 
-    bt = biosample_type.replace(' ', '_')
-    btid = re.sub('[^0-9a-zA-Z]+', '-', biosample_term_name)
-    fnp = os.path.join('/home/mjp/public_html/ucsc', assembly, bt, btid +'.txt')
+    fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', assembly, bt, btid +'.txt')
     Utils.ensureDir(fnp)
     with open(fnp, 'w') as f:
         for line in tracks.lines():
@@ -129,7 +223,7 @@ def main():
     # ps = PostgresWrapper(DBCONN)
     # cacheW = CachedObjectsWrapper(ps)
 
-    for assembly in ["hg19", "mm10"]:
+    for assembly in ["mm10"]:
         printt("************************", assembly)
         tdb = TrackhubDb(args, assembly)
         tdb.run()

@@ -11,6 +11,9 @@ from exp import Exp
 from utils import eprint
 from metadataws import MetadataWS
 
+def sanitize(s):
+    return re.sub('[^0-9a-zA-Z]+', '', s)
+
 def makeTrackName(n):
     match = re.search("(.*) {.*}(.*)", n)
     if match:
