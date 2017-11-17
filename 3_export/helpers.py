@@ -27,7 +27,7 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
 def sanitize(s):
-    return re.sub('[^0-9a-zA-Z]+', '', s)
+    return re.sub('[^0-9a-zA-Z]+', '_', s)
 
 def unrollEquals(s):
     r = ''
@@ -48,8 +48,8 @@ def makeTrackName(n):
 def makeLongLabel(n):
     return n[:80]
 
-def makeShortLabel(n):
-    return n[:17]
+def makeShortLabel(*n):
+    return ' '.join([x for x in n if x])[:17]
 
 def bigWigFilters(assembly, files):
     files = filter(lambda x: x.isBigWig() and x.assembly == assembly, files)

@@ -23,15 +23,14 @@ class BigWigTrack(object):
         p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
         p["parent"] = self.parent + " off"
         p["subGroups"] = Helpers.unrollEquals(self._subgroups())
-        #p["desc"] = self._desc()
         p["bigDataUrl"] = self._url()
         p["visibility"] = "dense"
         p["type"] = "bigWig"
         p["color"] = Helpers.colorize(self.exp)
         p["height"] = "maxHeightPixels 64:12:8"
         p["visibility"] = "full"
-        p["shortLabel"] = Helpers.makeShortLabel(self._desc())
-        p["longLabel"] = Helpers.makeLongLabel(self.exp.description)
+        p["shortLabel"] = Helpers.makeShortLabel(self.exp.assay_term_name, self.exp.tf)
+        p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
         # p["priority"] = str(self.priority)
         p["darkerLabels"] = "on"
@@ -40,18 +39,20 @@ class BigWigTrack(object):
 
     def _metadata(self):
         s = {}
-        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
         s["age"] = Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
+        s["accession"] = self.exp.encodeID
+        s["description"] = Helpers.sanitize(self._desc())
         s["donor"] = self.exp.donor_id
         return s
     
     def _subgroups(self):
         s = {}
-        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
+        s["donor"] = Helpers.getOrUnknown(self.exp.donor_id)
         s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
         self.presentationAge = (s["age"],
                                 Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
-        self.presentationSex = (s["sex"], s["sex"])
+        self.presentationDonors = (s["donor"], s["donor"])
         return s
 
     def _url(self):
@@ -62,12 +63,14 @@ class BigWigTrack(object):
         return u
              
     def _desc(self):
-        return self.exp.biosample_term_name
+        exp = self.exp
+        desc = [self.exp.encodeID, exp.assay_term_name]
+        if exp.tf:
+            desc.append(exp.tf)
+        age = exp.age_display
         if age and "unknown" != age:
             desc += [age]
-        desc += [name]
-        desc = " ".join(desc)
-        return desc
+        return " ".join(desc)
 
     def lines(self):
         for k, v in self.p.iteritems():
@@ -100,5 +103,5 @@ class Tracks(object):
         r = defaultdict(set)
         for t in self.tracks:
             r["age"].add(t.presentationAge)
-            r["sex"].add(t.presentationSex)
+            r["donor"].add(t.presentationDonors)
         return r

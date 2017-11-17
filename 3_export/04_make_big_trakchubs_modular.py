@@ -109,7 +109,7 @@ longLabel {longL}
                 printt("makefiles: writing", fnp)
 
                 subGroups = self.subGroups[bt][btn]
-                sexes = {a[0]:a[1] for a in subGroups["sex"]}
+                donors = {a[0]:a[1] for a in subGroups["donor"]}
                 ages =  {a[0]:a[1] for a in subGroups["age"]}
                 
                 with open(fnp, 'w') as f:
@@ -122,10 +122,10 @@ longLabel {longL}
 type bigWig 9 +
 maxHeightPixels 64:12:8
 autoScale on
-subGroup1 sex Sex {sexes}
+subGroup1 donor Donor {donors}
 subGroup2 age Age {ages}
-sortOrder sex=+ age=+
-dimensions dimX=age dimY=sex
+sortOrder donor=+ age=+
+dimensions dimX=age dimY=donor
 dragAndDrop subTracks
 hoverMetadata on
 darkerLabels on
@@ -133,7 +133,7 @@ darkerLabels on
            btn=btn,
            shortL=Helpers.makeShortLabel(btnToNormal[btn]),
            longL=Helpers.makeLongLabel(btnToNormal[btn]),
-           sexes=Helpers.unrollEquals(sexes),
+           donors=Helpers.unrollEquals(donors),
            ages=Helpers.unrollEquals(ages)))
         print("done", fnp)
 
