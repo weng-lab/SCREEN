@@ -26,8 +26,8 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "TF ChIP-seq": ["18,98,235", "#1262EB"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
-def sanitize(s):
-    return re.sub('[^0-9a-zA-Z]+', '_', s)
+def sanitize(s, replChar='_'):
+    return re.sub('[^0-9a-zA-Z]+', replChar, s)
 
 def unrollEquals(s):
     r = ''

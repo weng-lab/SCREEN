@@ -65,7 +65,9 @@ class BigWigTrack(object):
     def _desc(self):
         exp = self.exp
         desc = [self.exp.encodeID]
-        if exp.description:
+        if exp.biosample_summary:
+            desc.append(Helpers.sanitize(exp.biosample_summary.strip()))
+        elif exp.description:
             desc.append(exp.description)
         else:
             desc.append(exp.assay_term_name)
@@ -74,7 +76,7 @@ class BigWigTrack(object):
             age = exp.age_display
             if age and "unknown" != age:
                 desc += [age]
-            desc.append(self.f.output_type)
+        desc.append('(%s)' % self.f.output_type)
         return " ".join(desc)
 
     def lines(self):
