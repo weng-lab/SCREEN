@@ -112,10 +112,19 @@ longLabel {longL}
                 printt("makefiles: writing", fnp)
 
                 subGroups = self.subGroups[bt][btn]
-                donors = {a[0]:a[1] for a in subGroups["donor"]}
-                ages =  {a[0]:a[1] for a in subGroups["age"]}
-
+                subGroupsDict = {}
+                for k in ["age", "donor", "label", "assay"]:
+                    subGroupsDict[k] = {a[0]:a[1] for a in subGroups[k]}
                 longLabel = btnToNormal[btn] + " (%s experiments)" % info["numExps"]
+
+                if "immortalized_cell_line" == bt:
+                    subGroup1key = "label"
+                    subGroup2key = "assay"
+                else:
+                    subGroup1key = "donor"
+                    subGroup2key = "age"
+                subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
+                subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
                 
                 with open(fnp, 'w') as f:
                     f.write("""
@@ -127,10 +136,10 @@ longLabel {longL}
 type bigWig 9 +
 maxHeightPixels 64:12:8
 autoScale on
-subGroup1 donor Donor {donors}
-subGroup2 age Age {ages}
-sortOrder donor=+ age=+
-dimensions dimX=age dimY=donor
+subGroup1 {subGroup1key} {subGroup1key} {subGroup1}
+subGroup2 {subGroup2key} {subGroup2key} {subGroup2}
+sortOrder {subGroup1key}=+ {subGroup2key}=+
+dimensions dimX={subGroup2key} dimY={subGroup1key}
 dragAndDrop subTracks
 hoverMetadata on
 darkerLabels on
@@ -138,8 +147,10 @@ darkerLabels on
            btn=btn,
            shortL=Helpers.makeShortLabel(btnToNormal[btn]),
            longL=Helpers.makeLongLabel(longLabel),
-           donors=Helpers.unrollEquals(donors),
-           ages=Helpers.unrollEquals(ages)))
+           subGroup1key=subGroup1key,
+           subGroup1=subGroup1,
+           subGroup2key=subGroup2key,
+           subGroup2=subGroup2))
         print("done", fnp)
 
         fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')

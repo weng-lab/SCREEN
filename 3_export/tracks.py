@@ -49,10 +49,16 @@ class BigWigTrack(object):
     def _subgroups(self):
         s = {}
         s["donor"] = Helpers.getOrUnknown(self.exp.donor_id)
+        s["assay"] = Helpers.getOrUnknown(self.exp.assay_term_name)
+        s["label"] = Helpers.getOrUnknown(self.exp.tf)
         s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
-        self.presentationAge = (s["age"],
-                                Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
-        self.presentationDonors = (s["donor"], s["donor"])
+        self.presentation = {}
+        self.presentation["label"] = (s["label"],
+                                   Helpers.html_escape(Helpers.getOrUnknown(self.exp.tf)))
+        self.presentation["assay"] = (s["assay"], s["assay"])        
+        self.presentation["donor"] = (s["donor"], s["donor"])
+        self.presentation["age"] = (s["age"],
+                                    Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
         return s
 
     def _url(self):
@@ -109,6 +115,6 @@ class Tracks(object):
     def subgroups(self):
         r = defaultdict(set)
         for t in self.tracks:
-            r["age"].add(t.presentationAge)
-            r["donor"].add(t.presentationDonors)
+            for k in ["age", "donor", "label", "assay"]:
+                r[k].add(t.presentation[k])
         return r
