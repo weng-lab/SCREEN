@@ -64,12 +64,17 @@ class BigWigTrack(object):
              
     def _desc(self):
         exp = self.exp
-        desc = [self.exp.encodeID, exp.assay_term_name]
-        if exp.tf:
-            desc.append(exp.tf)
-        age = exp.age_display
-        if age and "unknown" != age:
-            desc += [age]
+        desc = [self.exp.encodeID]
+        if exp.description:
+            desc.append(exp.description)
+        else:
+            desc.append(exp.assay_term_name)
+            if exp.tf:
+                desc.append(exp.tf)
+            age = exp.age_display
+            if age and "unknown" != age:
+                desc += [age]
+            desc.append(self.f.output_type)
         return " ".join(desc)
 
     def lines(self):

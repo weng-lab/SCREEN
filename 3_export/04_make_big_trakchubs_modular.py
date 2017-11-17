@@ -86,11 +86,14 @@ class TrackhubDb:
             btn = Helpers.sanitize(biosample_term_name)
             btnToNormal[btn] = biosample_term_name
             fnp = os.path.join("subtracks", bt, btn +'.txt')
-            self.byBiosampleTypeBiosample[bt][btn]= fnp
+            self.byBiosampleTypeBiosample[bt][btn]= {"fnp": fnp,
+                                                     "numExps": len(expIDs)}
 
         mainTrackDb = ''
 
         for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
+            totalExperiments = sum([info["numExps"] for info in btnFnps.values()])
+            longLabel = btToNormal[bt] + " (%s experiments)" % totalExperiments
             mainTrackDb += """
 track super_{bt}
 superTrack on
@@ -99,9 +102,9 @@ longLabel {longL}
 
 """.format(bt = bt,
            shortL=Helpers.makeShortLabel(btToNormal[bt]),
-           longL=Helpers.makeLongLabel(btToNormal[bt]))
+           longL=Helpers.makeLongLabel(longLabel))
             
-            for btn, fnp in btnFnps.iteritems():
+            for btn, info in btnFnps.iteritems():
                 fn = os.path.join("tracks", bt + '_' + btn + '.txt')
                 fnp = os.path.join(BaseDir, self.assembly, fn)
                 Utils.ensureDir(fnp)
@@ -111,6 +114,8 @@ longLabel {longL}
                 subGroups = self.subGroups[bt][btn]
                 donors = {a[0]:a[1] for a in subGroups["donor"]}
                 ages =  {a[0]:a[1] for a in subGroups["age"]}
+
+                longLabel = btnToNormal[btn] + " (%s experiments)" % info["numExps"]
                 
                 with open(fnp, 'w') as f:
                     f.write("""
@@ -132,7 +137,7 @@ darkerLabels on
 """.format(bt=bt,
            btn=btn,
            shortL=Helpers.makeShortLabel(btnToNormal[btn]),
-           longL=Helpers.makeLongLabel(btnToNormal[btn]),
+           longL=Helpers.makeLongLabel(longLabel),
            donors=Helpers.unrollEquals(donors),
            ages=Helpers.unrollEquals(ages)))
         print("done", fnp)
@@ -142,8 +147,8 @@ darkerLabels on
         printt("makefiles: writing", fnp)
         with open(fnp, 'w') as f:
             for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
-                for btn, fnp in btnFnps.iteritems():
-                        f.write('include ' + fnp + '\n')
+                for btn, info in btnFnps.iteritems():
+                        f.write('include ' + info["fnp"] + '\n')
         print("done", fnp)
 
         fnp = os.path.join(BaseDir, self.assembly, 'trackDb.txt')
