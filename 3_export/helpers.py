@@ -15,23 +15,14 @@ def sanitize(s):
     return re.sub('[^0-9a-zA-Z]+', '', s)
 
 def makeTrackName(n):
-    match = re.search("(.*) {.*}(.*)", n)
-    if match:
-	n = match.group(1) + match.group(2)
     n = n.replace(" ", "_").replace('(','').replace(')','')
     n = n[:102]
     return n
 
 def makeLongLabel(n):
-    match = re.search("(.*) {.*}(.*)", n)
-    if match:
-	n = match.group(1) + match.group(2)
     return n[:80]
 
 def makeShortLabel(n):
-    match = re.search("(.*) {.*}(.*)", n)
-    if match:
-	n = match.group(1) + match.group(2)
     return n[:17]
 
 def bigWigFilters(assembly, files):

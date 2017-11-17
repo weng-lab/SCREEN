@@ -87,6 +87,7 @@ class TrackhubDb:
         
     def _makeFiles(self):
         btToNormal = {}
+        btnToNormal = {}
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
         byBiosampleTypeBiosample = mw.encodeByBiosampleTypeCustom(self.assembly)
         for r in byBiosampleTypeBiosample:
@@ -96,6 +97,7 @@ class TrackhubDb:
             bt = Helpers.sanitize(biosample_type)
             btToNormal[bt] = biosample_type
             btn = Helpers.sanitize(biosample_term_name)
+            btnToNormal[btn] = biosample_term_name
             fnp = os.path.join("subtracks", bt, btn +'.txt')
             self.byBiosampleTypeBiosample[bt][btn]= fnp
 
@@ -140,8 +142,8 @@ autoScale on
 darkerLabels on
 """.format(bt=bt,
            btn=btn,
-           shortL=Helpers.makeShortLabel(btn),
-           longL=Helpers.makeLongLabel(btn)))
+           shortL=Helpers.makeShortLabel(btnToNormal[btn]),
+           longL=Helpers.makeLongLabel(btnToNormal[btn])))
         print("done", fnp)
 
         fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
