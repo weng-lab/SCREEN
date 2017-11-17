@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys
 import os
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
@@ -21,21 +21,36 @@ class BigWigTrack(object):
         p = OrderedDict()
         p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
         p["parent"] = self.parent
-        p["subGroups"] = 'btn=' + Helpers.sanitize(self.exp.biosample_term_name)
-        p["desc"] = self._desc()
+        p["subGroups"] = Helpers.unrollEquals(self._subgroups())
+        #p["desc"] = self._desc()
         p["bigDataUrl"] = self._url()
         p["visibility"] = "dense"
         p["type"] = "bigWig"
-        p["color"] = None
-        p["height"] = "maxHeightPixels 128:32:8"
+        p["color"] = Helpers.colorize(self.exp)
+        p["height"] = "maxHeightPixels 64:12:8"
         p["visibility"] = "full"
         p["shortLabel"] = Helpers.makeShortLabel(self._desc())
-        p["longLabel"] = Helpers.makeLongLabel(self._desc())
+        p["longLabel"] = Helpers.makeLongLabel(self.exp.description)
         p["itemRgb"] = "On"
         # p["priority"] = str(self.priority)
         p["darkerLabels"] = "on"
+        p["metadata"] = Helpers.unrollEquals(self._metadata())
         return p
+
+    def _metadata(self):
+        s = {}
+        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
+        s["age"] = Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["donor"] = self.exp.donor_id
+        return s
     
+    def _subgroups(self):
+        s = {}
+        s["sex"] = self.exp.donor_sex
+        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
+        s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        return s
+
     def _url(self):
         u = self.f.url
         if 'www.encodeproject.org' in u:
@@ -76,3 +91,10 @@ class Tracks(object):
         for t in self.tracks:
             for line in t.lines():
                 yield line
+
+    def subgroups(self):
+        r = defaultdict(set)
+        for t in self.tracks:
+            for k, v in t._subgroups().iteritems():
+                r[k].add(v)
+        return r

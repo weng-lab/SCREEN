@@ -11,12 +11,38 @@ from exp import Exp
 from utils import eprint
 from metadataws import MetadataWS
 
+AssayColors = {"DNase": ["6,218,147", "#06DA93"],
+               "RNA-seq": ["0,170,0", "", "#00aa00"],
+               "RAMPAGE": ["214,66,202", "#D642CA"],
+               "H3K4me1": ["255,223,0", "#FFDF00"],
+               "H3K4me2": ["255,255,128", "#FFFF80"],
+               "H3K4me3": ["255,0,0", "#FF0000"],
+               "H3K9ac": ["255,121,3", "#FF7903"],
+               "H3K27ac": ["255,205,0", "#FFCD00"],
+               "H3K27me3": ["174,175,174", "#AEAFAE"],
+               "H3K36me3": ["0,128,0", "#008000"],
+               "H3K9me3": ["180,221,228", "#B4DDE4"],
+               "Conservation": ["153,153,153", "#999999"],
+               "TF ChIP-seq": ["18,98,235", "#1262EB"],
+               "CTCF": ["0,176,240", "#00B0F0"]}
+
 def sanitize(s):
     return re.sub('[^0-9a-zA-Z]+', '', s)
 
+def unrollEquals(s):
+    r = ''
+    for k, v in s.iteritems():
+        r += k + '=' + v
+    return r
+
+def getOrUnknown(s):
+    if not s:
+        return "unknown"
+    return s
+
 def makeTrackName(n):
     n = n.replace(" ", "_").replace('(','').replace(')','')
-    n = n[:102]
+    n = n[:100]
     return n
 
 def makeLongLabel(n):
@@ -72,6 +98,17 @@ def bigWigFilters(assembly, files):
         
     return []
 
+def colorize(exp):
+    c = "227,184,136"
+    if exp.tf in AssayColors:
+        c = AssayColors[exp.tf][0]
+    if not c:
+        if exp.isChipSeqTF():
+            if "CTCF" == exp.tf:
+                c = AssayColors["CTCF"][0]
+            else:
+                c = AssayColors["TF ChIP-seq"][0]
+    return c
 
 def main():
     expID = 'ENCSR966OVF'

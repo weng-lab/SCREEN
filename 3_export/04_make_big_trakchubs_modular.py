@@ -34,21 +34,6 @@ mc = MemCacheWrapper(Config.memcache)
 
 BaseDir = '/home/mjp/public_html/ucsc'
 
-AssayColors = {"DNase": ["6,218,147", "#06DA93"],
-               "RNA-seq": ["0,170,0", "", "#00aa00"],
-               "RAMPAGE": ["214,66,202", "#D642CA"],
-               "H3K4me1": ["255,223,0", "#FFDF00"],
-               "H3K4me2": ["255,255,128", "#FFFF80"],
-               "H3K4me3": ["255,0,0", "#FF0000"],
-               "H3K9ac": ["255,121,3", "#FF7903"],
-               "H3K27ac": ["255,205,0", "#FFCD00"],
-               "H3K27me3": ["174,175,174", "#AEAFAE"],
-               "H3K36me3": ["0,128,0", "#008000"],
-               "H3K9me3": ["180,221,228", "#B4DDE4"],
-               "Conservation": ["153,153,153", "#999999"],
-               "TF ChIP-seq": ["18,98,235", "#1262EB"],
-               "CTCF": ["0,176,240", "#00B0F0"]}
-
 class TrackhubDb:
     def __init__(self, args, assembly):
         self.args = args
@@ -56,7 +41,8 @@ class TrackhubDb:
         #self.DBCONN = DBCONN
         #self.cache = cache
         self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
-
+        self.subGroups = defaultdict(set)
+        
     def runJobs(self):
         printt("loading exps by biosample_type...")
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
@@ -77,12 +63,12 @@ class TrackhubDb:
 
         ret = Parallel(n_jobs=self.args.j)(delayed(output)(**job) for job in jobs)
 
-        for r in ret:
-            self.byBiosampleTypeBiosample[r[0]][r[1]] = r[2]
+        for sgs in ret:
+            for k, v in sgs.iteritems():
+                self.subGroups[k].update(v)
 
     def run(self):
         self.runJobs()
-        self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
         self._makeFiles()
         
     def _makeFiles(self):
@@ -183,7 +169,7 @@ def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
         for line in tracks.lines():
             f.write(line)
     printWroteNumLines(fnp, idx, 'of', total)
-    return (biosample_type, biosample_term_name, fnp)
+    return tracks.subgroups()
                 
 def parse_args():
     parser = argparse.ArgumentParser()
