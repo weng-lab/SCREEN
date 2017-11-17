@@ -32,6 +32,8 @@ copy_reg.pickle(types.MethodType, _reduce_method)
 
 mc = MemCacheWrapper(Config.memcache)
 
+BaseDir = '/home/mjp/public_html/ucsc'
+
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "RNA-seq": ["0,170,0", "", "#00aa00"],
                "RAMPAGE": ["214,66,202", "#D642CA"],
@@ -58,7 +60,7 @@ class TrackhubDb:
     def runJobs(self):
         printt("loading exps by biosample_type...")
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
-        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
+        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeCustom(self.assembly)
 
         jobs = []
         for r in byBiosampleTypeBiosample:
@@ -84,54 +86,37 @@ class TrackhubDb:
         self._makeFiles()
         
     def _makeFiles(self):
+        btToNormal = {}
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
-        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
+        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeCustom(self.assembly)
         for r in byBiosampleTypeBiosample:
             biosample_type = r[0]["biosample_type"]
             biosample_term_name = r[0]["biosample_term_name"]
             expIDs = r[0]["expIDs"]
             bt = Helpers.sanitize(biosample_type)
-            btid = Helpers.sanitize(biosample_term_name)
-            fnp = os.path.join(bt, btid +'.txt')
-            self.byBiosampleTypeBiosample[bt][btid]= fnp
+            btToNormal[bt] = biosample_type
+            btn = Helpers.sanitize(biosample_term_name)
+            fnp = os.path.join("subtracks", bt, btn +'.txt')
+            self.byBiosampleTypeBiosample[bt][btn]= fnp
 
-        mainTrackDb = """
-track super_tissue
-superTrack on
-shortLabel tissue
-longLabel tissue
+        mainTrackDb = ''
 
-track super_immortalized_cell_line
-superTrack on
-shortLabel immortalized cell
-longLabel immortalized cell line
-
-track super_stem_cell
-superTrack on
-shortLabel stem cell
-longLabel stem cell
-
-track super_primary_cell
-superTrack on
-shortLabel primary cell
-longLabel primary cell
-
-track super_in_vitro_differentiated_cells
-superTrack on
-shortLabel in vitro differen
-longLabel in vitro differentiated cells
-
-track super_induced_pluripotent_stem_cell_line
-superTrack on
-shortLabel induced pluripote
-longLabel induced pluripotent stem cell line
-
-"""
         for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
+            mainTrackDb += """
+track super_{bt}
+superTrack on
+shortLabel {shortL}
+longLabel {longL}
+
+""".format(bt = bt,
+           shortL=Helpers.makeShortLabel(btToNormal[bt]),
+           longL=Helpers.makeLongLabel(btToNormal[bt]))
+            
             for btn, fnp in btnFnps.iteritems():
-                fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly,
-                                   bt + '_' + btn + '.txt')
-                mainTrackDb += 'include ' + bt + '_' + btn + '.txt' + '\n';
+                fn = os.path.join("tracks", bt + '_' + btn + '.txt')
+                fnp = os.path.join(BaseDir, self.assembly, fn)
+                Utils.ensureDir(fnp)
+                mainTrackDb += 'include ' + fn + '\n';
                 printt("makefiles: writing", fnp)
                 with open(fnp, 'w') as f:
                     f.write("""
@@ -139,8 +124,8 @@ track {bt}_{btn}
 parent super_{bt}
 compositeTrack on
 visibility full
-                    shortLabel {shortL}
-                    longLabel {longL}
+shortLabel {shortL}
+longLabel {longL}
 type bigWig 9 +
 maxHeightPixels 64:12:8
 autoScale on
@@ -153,10 +138,13 @@ autoScale on
 #dragAndDrop subTracks
 #hoverMetadata on
 darkerLabels on
-                """.format(bt=bt, btn=btid, shortL=bt[:18], longL=bt[:80]))
+""".format(bt=bt,
+           btn=btn,
+           shortL=Helpers.makeShortLabel(btn),
+           longL=Helpers.makeLongLabel(btn)))
         print("done", fnp)
 
-        fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly, 'subtracks.txt')
+        fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
         mainTrackDb += 'include ' + 'subtracks.txt'
         printt("makefiles: writing", fnp)
         with open(fnp, 'w') as f:
@@ -165,7 +153,7 @@ darkerLabels on
                         f.write('include ' + fnp + '\n')
         print("done", fnp)
 
-        fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', self.assembly, 'trackDb.txt')
+        fnp = os.path.join(BaseDir, self.assembly, 'trackDb.txt')
         printt("makefiles: writing", fnp)
         with open(fnp, 'w') as f:
             f.write(mainTrackDb)
@@ -177,9 +165,9 @@ def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
 
     #print(biosample_type, biosample_term_name, len(exps))
     bt = Helpers.sanitize(biosample_type)
-    btid = Helpers.sanitize(biosample_term_name)
+    btn = Helpers.sanitize(biosample_term_name)
 
-    parent = bt + '_' + btid
+    parent = bt + '_' + btn
     
     tracks = Tracks(assembly, parent)
     for exp in exps:
@@ -187,7 +175,7 @@ def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
             continue
         tracks.addExpBestBigWig(exp)
 
-    fnp = os.path.join('/home/mjp/megatux/public_html/ucsc', assembly, bt, btid +'.txt')
+    fnp = os.path.join(BaseDir, assembly, "subtracks", bt, btn +'.txt')
     Utils.ensureDir(fnp)
     with open(fnp, 'w') as f:
         for line in tracks.lines():

@@ -19,7 +19,7 @@ class BigWigTrack(object):
 
     def _init(self):
         p = OrderedDict()
-        p["track"] = Helpers.makeTrackName(self._desc())
+        p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
         p["parent"] = self.parent
         p["subGroups"] = 'btn=' + Helpers.sanitize(self.exp.biosample_term_name)
         p["desc"] = self._desc()
