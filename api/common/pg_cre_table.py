@@ -97,7 +97,6 @@ class PGcreTable(object):
         return fields, ret
 
     def geneTable(self, j, chrom, start, stop):
-        print(self.assembly + '_gene_details')
         with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
             curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
              WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
