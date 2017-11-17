@@ -32,7 +32,7 @@ def sanitize(s):
 def unrollEquals(s):
     r = ''
     for k, v in s.iteritems():
-        r += k + '=' + v
+        r += k + '=' + v + ' '
     return r
 
 def getOrUnknown(s):
@@ -78,7 +78,7 @@ def bigWigFilters(assembly, files):
     for bf in fils():
         bigWigs = filter(bf, files)
         if bigWigs:
-            return bigWigs
+            return [bigWigs[0]] # TODO: fixme!
 
     bfs = [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
            lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
@@ -90,13 +90,27 @@ def bigWigFilters(assembly, files):
     for bf in bfs:
         bigWigs = filter(bf, files)
         if bigWigs:
-            return bigWigs
+            return [bigWigs[0]] # TODO: fixme!
 
     eprint("error: no files found after filtering...")
     for f in files:
         eprint(f, f.bio_rep)
         
     return []
+
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+    ".": "&#46;",
+    ' ': "&#32;"
+}
+
+def html_escape(text):
+    """Produce entities within text."""
+    return "".join(html_escape_table.get(c,c) for c in text)
 
 def colorize(exp):
     c = "227,184,136"

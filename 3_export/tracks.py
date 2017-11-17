@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import sys
 import os
+import urllib
 from collections import OrderedDict, defaultdict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
@@ -16,11 +17,11 @@ class BigWigTrack(object):
         self.f = f
         self.parent = parent
         self.p = self._init()
-
+        
     def _init(self):
         p = OrderedDict()
         p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
-        p["parent"] = self.parent
+        p["parent"] = self.parent + " off"
         p["subGroups"] = Helpers.unrollEquals(self._subgroups())
         #p["desc"] = self._desc()
         p["bigDataUrl"] = self._url()
@@ -46,9 +47,11 @@ class BigWigTrack(object):
     
     def _subgroups(self):
         s = {}
-        s["sex"] = self.exp.donor_sex
         s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
         s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        self.presentationAge = (s["age"],
+                                Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
+        self.presentationSex = (s["sex"], s["sex"])
         return s
 
     def _url(self):
@@ -80,6 +83,7 @@ class Tracks(object):
 
     def addExpBestBigWig(self, exp):
         files = Helpers.bigWigFilters(self.assembly, exp.files)
+
         if not files:
             eprint(exp.encodeID)
             raise Exception("expected a file...")
@@ -95,6 +99,6 @@ class Tracks(object):
     def subgroups(self):
         r = defaultdict(set)
         for t in self.tracks:
-            for k, v in t._subgroups().iteritems():
-                r[k].add(v)
+            r["age"].add(t.presentationAge)
+            r["sex"].add(t.presentationSex)
         return r

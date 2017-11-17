@@ -41,7 +41,7 @@ class TrackhubDb:
         #self.DBCONN = DBCONN
         #self.cache = cache
         self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
-        self.subGroups = defaultdict(set)
+        self.subGroups = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
         
     def runJobs(self):
         printt("loading exps by biosample_type...")
@@ -63,9 +63,10 @@ class TrackhubDb:
 
         ret = Parallel(n_jobs=self.args.j)(delayed(output)(**job) for job in jobs)
 
-        for sgs in ret:
+        for bSgs in ret:
+            bt, btn, sgs = bSgs
             for k, v in sgs.iteritems():
-                self.subGroups[k].update(v)
+                self.subGroups[bt][btn][k].update(v)
 
     def run(self):
         self.runJobs()
@@ -106,30 +107,34 @@ longLabel {longL}
                 Utils.ensureDir(fnp)
                 mainTrackDb += 'include ' + fn + '\n';
                 printt("makefiles: writing", fnp)
+
+                subGroups = self.subGroups[bt][btn]
+                sexes = {a[0]:a[1] for a in subGroups["sex"]}
+                ages =  {a[0]:a[1] for a in subGroups["age"]}
+                
                 with open(fnp, 'w') as f:
                     f.write("""
 track {bt}_{btn}
 parent super_{bt}
 compositeTrack on
-visibility full
 shortLabel {shortL}
 longLabel {longL}
 type bigWig 9 +
 maxHeightPixels 64:12:8
 autoScale on
-#showSubtrackColorOnUi on
-#subGroup4 subtrackColor _
-#subGroup1 tissue Tissue {btn}={btn}
-#sortOrder tissue=+ subtrackColor=+
-# dimensions dimX=tissue dimY=donor dimA=age
-# filterComposite dimA
-#dragAndDrop subTracks
-#hoverMetadata on
+subGroup1 sex Sex {sexes}
+subGroup2 age Age {ages}
+sortOrder sex=+ age=+
+dimensions dimX=age dimY=sex
+dragAndDrop subTracks
+hoverMetadata on
 darkerLabels on
 """.format(bt=bt,
            btn=btn,
            shortL=Helpers.makeShortLabel(btnToNormal[btn]),
-           longL=Helpers.makeLongLabel(btnToNormal[btn])))
+           longL=Helpers.makeLongLabel(btnToNormal[btn]),
+           sexes=Helpers.unrollEquals(sexes),
+           ages=Helpers.unrollEquals(ages)))
         print("done", fnp)
 
         fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
@@ -159,8 +164,6 @@ def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
     
     tracks = Tracks(assembly, parent)
     for exp in exps:
-        if exp.isHiC():
-            continue
         tracks.addExpBestBigWig(exp)
 
     fnp = os.path.join(BaseDir, assembly, "subtracks", bt, btn +'.txt')
@@ -169,7 +172,7 @@ def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
         for line in tracks.lines():
             f.write(line)
     printWroteNumLines(fnp, idx, 'of', total)
-    return tracks.subgroups()
+    return [bt, btn, tracks.subgroups()]
                 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -199,7 +202,7 @@ def main():
     # ps = PostgresWrapper(DBCONN)
     # cacheW = CachedObjectsWrapper(ps)
 
-    for assembly in ["mm10"]:
+    for assembly in ["hg19", "mm10"]:
         printt("************************", assembly)
         tdb = TrackhubDb(args, assembly)
         tdb.run()
