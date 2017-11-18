@@ -30,6 +30,11 @@ def _reduce_method(meth):
     return (getattr, (meth.__self__, meth.__func__.__name__))
 copy_reg.pickle(types.MethodType, _reduce_method)
 
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with x's keys and values
+    z.update(y)    # modifies z with y's keys and values & returns None
+    return z
+
 mc = MemCacheWrapper(Config.memcache)
 Host = "http://192.168.1.46:9008/metadata"
 BaseDir = '/home/mjp/public_html/ucsc'
@@ -49,83 +54,117 @@ class TrackhubDb:
         jobs = []
         for bt, btnInfo in self.byBiosampleTypeBiosample.iteritems():
             for btn, info in btnInfo.iteritems():
-                jobs.append({"bt": bt,
-                             "btn": btn,
-                             "expIDs": info["expIDs"],
-                             "fnpBase": info["fnpBase"],
-                             "idx": len(jobs) + 1,
-                             "total": len(self.inputData),
-                             "assembly": self.assembly
-            })
-
-        ret = Parallel(n_jobs=self.args.j)(delayed(outputSubTrack)(**job) for job in jobs)
-
-        for bSgs in ret:
-            bt, btn, sgs = bSgs
-            for k, v in sgs.iteritems():
-                self.subGroups[bt][btn][k].update(v)
+                jobs.append(merge_two_dicts(info,
+                                            {
+                                                "idx": len(jobs) + 1,
+                                                "total": len(self.inputData)}))
+                
+        self.compositeTrack  = Parallel(n_jobs=self.args.j)(delayed(outputAllTracks)(job)
+                                                            for job in jobs)
 
     def run(self):
-        self.btToNormal = {}
-        self.btnToNormal = {}
+        btToNormal = {}
+        
         for r in self.inputData:
             biosample_type = r[0]["biosample_type"]
             bt = Helpers.sanitize(biosample_type)
-            self.btToNormal[bt] = biosample_type
-
+            btToNormal[bt] = biosample_type
+            
             biosample_term_name = r[0]["biosample_term_name"]
             btn = Helpers.sanitize(biosample_term_name)
-            self.btnToNormal[btn] = biosample_term_name
 
             expIDs = r[0]["expIDs"]
             fnpBase = os.path.join("subtracks", bt, btn +'.txt')
-            self.byBiosampleTypeBiosample[bt][btn]= {"fnpBase": fnpBase,
-                                                     "expIDs": expIDs,
-                                                     "numExps": len(expIDs)}
+            self.byBiosampleTypeBiosample[bt][btn]= {
+                "biosample_type": biosample_type,
+                "bt": bt,
+                "biosample_term_name": biosample_term_name,
+                "btn": btn,
+                "fnpBase": fnpBase,
+                "expIDs": expIDs,
+                "assembly": self.assembly
+            }
 
         self._makeSubTracks()
-        self._makeFiles()
+        self._makeFiles(btToNormal)
         self._makeHub()
         
-    def _makeFiles(self):
-        mainTrackDb = ''
+    def _makeFiles(self, btToNormal):
+        mainTrackDb = []
 
         for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
-            totalExperiments = sum([info["numExps"] for info in btnFnps.values()])
-            longLabel = self.btToNormal[bt] + " (%s experiments)" % totalExperiments
-            mainTrackDb += """
+            totalExperiments = sum([len(info["expIDs"]) for info in btnFnps.values()])
+            shortLabel = btToNormal[bt]
+            longLabel = btToNormal[bt] + " (%s experiments)" % totalExperiments
+            mainTrackDb.append("""
 track super_{bt}
 superTrack on
 shortLabel {shortL}
 longLabel {longL}
-
 """.format(bt = bt,
-           shortL=Helpers.makeShortLabel(self.btToNormal[bt]),
-           longL=Helpers.makeLongLabel(longLabel))
-            
-            for btn, info in btnFnps.iteritems():
-                fn = os.path.join("composite_tracks", bt, btn + '.txt')
-                fnp = os.path.join(BaseDir, self.assembly, fn)
-                Utils.ensureDir(fnp)
-                mainTrackDb += 'include ' + fn + '\n';
+           shortL=Helpers.makeShortLabel(shortLabel),
+           longL=Helpers.makeLongLabel(longLabel)))
 
-                subGroups = self.subGroups[bt][btn]
-                subGroupsDict = {}
-                for k in Helpers.SubGroupKeys:
-                    subGroupsDict[k] = {a[0]:a[1] for a in subGroups[k]}
-                longLabel = self.btnToNormal[btn] + " (%s experiments)" % info["numExps"]
-
-                if "immortalized_cell_line" == bt:
-                    subGroup1key = "label"
-                    subGroup2key = "assay"
-                else:
-                    subGroup1key = "donor"
-                    subGroup2key = "age"
-                subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
-                subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
+        fnp = os.path.join(BaseDir, self.assembly, 'composite_tracks.txt')
+        mainTrackDb.append('include composite_tracks.txt')
+        with open(fnp, 'w') as f:
+            for t in self.compositeTrack:
+                f.write(t)
+        printWroteNumLines(fnp)
                 
-                with open(fnp, 'w') as f:
-                    f.write("""
+        fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
+        mainTrackDb.append('include subtracks.txt')
+        with open(fnp, 'w') as f:
+            for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
+                for btn, info in btnFnps.iteritems():
+                        f.write('include ' + info["fnpBase"] + '\n')
+        printWroteNumLines(fnp)
+
+        fnp = os.path.join(BaseDir, self.assembly, 'trackDb.txt')
+        with open(fnp, 'w') as f:
+            f.write('\n'.join(mainTrackDb))
+        printWroteNumLines(fnp)
+        
+    def _makeHub(self):
+        fnp = os.path.join(BaseDir, 'hub.txt')
+        with open(fnp, 'w') as f:
+            f.write("""
+hub ENCODE
+shortLabel ENCODE Trackhub Test3
+longLabel ENCODE Trackhub Test3
+genomesFile genomes.txt
+email zhiping.weng@umassmed.edu
+descriptionUrl http://encodeproject.org/
+""")
+        printWroteNumLines(fnp)
+
+def outputAllTracks(info):
+    subGroups = outputSubTrack(**info)
+    info["subGroups"] = subGroups
+    return outputCompositeTrack(**info)
+
+def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGroups,
+                         biosample_type, biosample_term_name):
+    fn = os.path.join("composite_tracks", bt, btn + '.txt')
+    fnp = os.path.join(BaseDir, assembly, fn)
+    Utils.ensureDir(fnp)
+
+    subGroupsDict = {}
+    for k in Helpers.SubGroupKeys:
+        subGroupsDict[k] = {a[0]:a[1] for a in subGroups[k]}
+    longLabel = biosample_term_name + " (%s experiments)" % len(expIDs)
+
+    if "immortalized_cell_line" == bt:
+        subGroup1key = "label"
+        subGroup2key = "assay"
+    else:
+        subGroup1key = "donor"
+        subGroup2key = "age"
+    subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
+    subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
+
+    with open(fnp, 'w') as f:
+        f.write("""
 track {bt}_{btn}
 parent super_{bt}
 compositeTrack on
@@ -143,41 +182,17 @@ hoverMetadata on
 darkerLabels on
 """.format(bt=bt,
            btn=btn,
-           shortL=Helpers.makeShortLabel(self.btnToNormal[btn]),
+           shortL=Helpers.makeShortLabel(biosample_term_name),
            longL=Helpers.makeLongLabel(longLabel),
            subGroup1key=subGroup1key,
            subGroup1=subGroup1,
            subGroup2key=subGroup2key,
            subGroup2=subGroup2))
-        printWroteNumLines(fnp)
+    printWroteNumLines(fnp, idx, 'of', total)
+    return 'include ' + fn + '\n' # for listing in trackDb....
 
-        fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
-        mainTrackDb += 'include ' + 'subtracks.txt'
-        with open(fnp, 'w') as f:
-            for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
-                for btn, info in btnFnps.iteritems():
-                        f.write('include ' + info["fnpBase"] + '\n')
-        printWroteNumLines(fnp)
-
-        fnp = os.path.join(BaseDir, self.assembly, 'trackDb.txt')
-        with open(fnp, 'w') as f:
-            f.write(mainTrackDb)
-        printWroteNumLines(fnp)
-
-    def _makeHub(self):
-        fnp = os.path.join(BaseDir, 'hub.txt')
-        with open(fnp, 'w') as f:
-            f.write("""
-hub ENCODE
-shortLabel ENCODE Trackhub Test3
-longLabel ENCODE Trackhub Test3
-genomesFile genomes.txt
-email zhiping.weng@umassmed.edu
-descriptionUrl http://encodeproject.org/
-""")
-        printWroteNumLines(fnp)
-        
-def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total):
+def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
+                   biosample_type, biosample_term_name):
     mw = MetadataWS(host=Host)
     exps = mw.exps(expIDs)
 
@@ -193,7 +208,7 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total):
         for line in tracks.lines():
             f.write(line)
     printWroteNumLines(fnp, idx, 'of', total)
-    return [bt, btn, tracks.subgroups()]
+    return tracks.subgroups()
 
 def outputGenomes(assemblies):
     fnp = os.path.join(BaseDir, 'genomes.txt')

@@ -5,6 +5,7 @@ from __future__ import print_function
 import sys
 import os
 import re
+from collections import OrderedDict, defaultdict
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from exp import Exp
@@ -31,8 +32,9 @@ SubGroupKeys = ["age", "donor", "label", "assay"]
 def sanitize(s, replChar='_'):
     return re.sub('[^0-9a-zA-Z]+', replChar, s)
 
-def unrollEquals(s):
+def unrollEquals(sUnsorted):
     r = ''
+    s = OrderedDict(sorted(sUnsorted.items()))
     for k, v in s.iteritems():
         r += k + '=' + v + ' '
     return r
