@@ -10,6 +10,16 @@ from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 
 import helpers as Helpers
 
+class Parent:
+    def __init__(self, parent, on):
+        self.parent = parent
+        self.on = on
+
+    def param(self):
+        if self.on:
+            return self.parent + ' on'
+        return self.parent + ' off'
+    
 class BigWigTrack(object):
     def __init__(self, assembly, exp, f, parent):
         self.assembly = assembly
@@ -21,7 +31,7 @@ class BigWigTrack(object):
     def _init(self):
         p = OrderedDict()
         p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
-        p["parent"] = self.parent + " off"
+        p["parent"] = self.parent.param()
         p["subGroups"] = Helpers.unrollEquals(self._subgroups())
         p["bigDataUrl"] = self._url()
         p["visibility"] = "dense"

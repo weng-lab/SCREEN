@@ -9,7 +9,7 @@ import argparse
 from collections import OrderedDict, defaultdict
 from joblib import Parallel, delayed
 
-from tracks import Tracks
+from tracks import Tracks, Parent
 import helpers as Helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
@@ -195,7 +195,7 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
     mw = MetadataWS(host=Host)
     exps = mw.exps(expIDs)
 
-    parent = bt + '_' + btn
+    parent = Parent(bt + '_' + btn, False)
     
     tracks = Tracks(assembly, parent)
     for exp in exps:
