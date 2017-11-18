@@ -98,7 +98,7 @@ class Tracks(object):
         self.tracks = []
 
     def addExpBestBigWig(self, exp):
-        files = Helpers.bigWigFilters(self.assembly, exp.files)
+        files = Helpers.bigWigFilters(self.assembly, exp)
 
         if not files:
             eprint(exp.encodeID)

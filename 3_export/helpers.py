@@ -55,50 +55,86 @@ def makeLongLabel(n):
 def makeShortLabel(*n):
     return ' '.join([x for x in n if x])[:17]
 
-def bigWigFilters(assembly, files):
-    files = filter(lambda x: x.isBigWig() and x.assembly == assembly, files)
+def fileFilters():
+    for ot in ["fold change over control",
+               "signal of unique reads",
+               "signal of all reads",
+               "raw signal",
+               "wavelet-smoothed signal",
+               "percentage normalized signal",
+               "read-depth normalized signal"
+               ]:
+        yield lambda x: x.output_type == ot and x.isPooled
+        for rep in xrange(0, 5):
+            yield lambda x: x.output_type == ot and rep in x.bio_rep and len(x.tech_rep) > 1
+            yield lambda x: x.output_type == ot and rep in x.bio_rep
+        yield lambda x: x.output_type == ot and [] == x.bio_rep
+        yield lambda x: x.output_type == ot and {} == x.bio_rep
 
-    def fils():
-        for ot in ["fold change over control",
-                   "signal of unique reads",
-                   "signal of all reads",
-                   "plus strand signal of unique reads",
-                   "plus strand signal of all reads",
-                   "plus strand signal",
-                   "minus strand signal of unique reads",
-                   "minus strand signal of all reads",
-                   "minus strand signal",
-                   "raw signal",
-                   "wavelet-smoothed signal",
-                   "percentage normalized signal",
-                   "read-depth normalized signal"
-                   ]:
-            yield lambda x: x.output_type == ot and x.isPooled
-            for rep in xrange(0, 5):
-                yield lambda x: x.output_type == ot and rep in x.bio_rep
-            yield lambda x: x.output_type == ot and [] == x.bio_rep
-            yield lambda x: x.output_type == ot and {} == x.bio_rep
-                
-    for bf in fils():
-        bigWigs = filter(bf, files)
-        if bigWigs:
-            return [bigWigs[0]] # TODO: fixme!
+def rnaFilters():
+    for ot in ["plus strand signal of unique reads",
+               "minus strand signal of unique reads",
+               "plus strand signal of all reads",
+               "minus strand signal of all reads",
+               "plus strand signal",
+               "minus strand signal",
+               "signal of unique reads",
+               "signal of all reads",
+               ]:
+        yield lambda x: x.output_type == ot and x.isPooled and x.genome_annotation
+        for rep in xrange(0, 5): 
+            yield lambda x: x.output_type == ot and rep in x.bio_rep and x.genome_annotation
+        yield lambda x: x.output_type == ot and [] == x.bio_rep and x.genome_annotation
+        yield lambda x: x.output_type == ot and {} == x.bio_rep and x.genome_annotation
 
-    bfs = [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
-           lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
-           lambda bw: bw.isSignal() and bw.bio_rep == 1,
-           lambda bw: bw.isSignal() and bw.bio_rep == 2,
-           lambda bw: bw.isSignal()
-           ]
+        yield lambda x: x.output_type == ot and x.isPooled
+        for rep in xrange(0, 5):
+            yield lambda x: x.output_type == ot and rep in x.bio_rep
+        yield lambda x: x.output_type == ot and [] == x.bio_rep
+        yield lambda x: x.output_type == ot and {} == x.bio_rep
+
+def otherFilters():
+    return [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
+            lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
+            lambda bw: bw.isSignal() and bw.bio_rep == 1,
+            lambda bw: bw.isSignal() and bw.bio_rep == 2,
+            lambda bw: bw.isSignal()
+    ]
     
-    for bf in bfs:
+def bigWigFilters(assembly, exp):
+    files = filter(lambda x: x.isBigWig() and x.assembly == assembly and x.isReleased(),
+                   exp.files)
+
+    if exp.isRnaSeqLike():
+        for bf in rnaFilters():
+            bigWigs = filter(bf, files)
+            if 1 == len(bigWigs):
+                return bigWigs            
+            if len(bigWigs) > 1:
+                trybw = filter(lambda x: 'tophat' not in x.submitted_file_name, bigWigs)
+                if 1 == len(trybw):
+                    # was an RNA-seq experiment w/ both STAR and TOPHAT files...
+                    return trybw
+                return [bigWigs[0]] # just choose one...
+    else:
+        for bf in fileFilters():
+            bigWigs = filter(bf, files)
+            if bigWigs:
+                if len(bigWigs) > 1:
+                    for bw in bigWigs:
+                        print(bw.expID, bw)
+                    print(bigWigs[0].expID, "will return", bigWigs[0])
+                return bigWigs
+
+    for bf in otherFilters():
         bigWigs = filter(bf, files)
         if bigWigs:
             return [bigWigs[0]] # TODO: fixme!
 
     eprint("error: no files found after filtering...")
     for f in files:
-        eprint(f, f.bio_rep)
+        eprint(exp)
+        eprint(f)
         
     return []
 
@@ -129,16 +165,16 @@ def colorize(exp):
     return c
 
 def main():
-    expID = 'ENCSR966OVF'
-    if 0:
+    expID = 'ENCSR000BCA' #ENCSR000SKS' #ENCSR000BCE' #'ENCSR000AEC'
+    if 1:
         mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
         exp = mw.exps([expID])[0]
     else:
         exp = Exp.fromJsonFile(expID)
-    files = bigWigFilters("hg19", exp.files)
+    files = bigWigFilters("hg19", exp)
     print("found", len(files))
     for f in files:
-        print(f)
+        print(f, f.bio_rep)
 
 if __name__ == '__main__':
     main()

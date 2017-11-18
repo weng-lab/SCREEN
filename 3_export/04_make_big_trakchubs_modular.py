@@ -16,7 +16,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 from metadataws import MetadataWS
-from cache_memcache import MemCacheWrapper
 
 AddPath(__file__, '../common')
 from constants import paths
@@ -35,7 +34,6 @@ def merge_two_dicts(x, y):
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
 
-mc = MemCacheWrapper(Config.memcache)
 Host = "http://192.168.1.46:9008/metadata"
 BaseDir = '/home/mjp/public_html/ucsc'
 
@@ -63,8 +61,8 @@ class TrackhubDb:
                                                             for job in jobs)
 
     def run(self):
+        printt("building infos...")
         btToNormal = {}
-        
         for r in self.inputData:
             biosample_type = r[0]["biosample_type"]
             bt = Helpers.sanitize(biosample_type)
@@ -85,6 +83,7 @@ class TrackhubDb:
                 "assembly": self.assembly
             }
 
+        printt("making tracks and subtracks...")
         self._makeSubTracks()
         self._makeFiles(btToNormal)
         self._makeHub()
