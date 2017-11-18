@@ -115,6 +115,6 @@ class Tracks(object):
     def subgroups(self):
         r = defaultdict(set)
         for t in self.tracks:
-            for k in ["age", "donor", "label", "assay"]:
+            for k in Helpers.SubGroupKeys:
                 r[k].add(t.presentation[k])
         return r
