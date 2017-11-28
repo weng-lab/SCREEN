@@ -132,7 +132,7 @@ class TrackhubDb:
             longLabel = btToNormal[bt] + " (%s experiments)" % totalExperiments
             mainTrackDb.append("""
 track super_{bt}
-superTrack on
+superTrack on show
 shortLabel {shortL}
 longLabel {longL}
 """.format(bt = bt,
@@ -197,12 +197,24 @@ def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGrou
     subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
     subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
 
+    actives = []
+    for expID in expIDs:
+        if expID in lookupByExp:
+            actives.append(lookupByExp[expID].isActive())
+    isActive = any(t for t in actives)
+    if isActive:
+        print("active biosample (composite):", btn)
+    
     with open(fnp, 'w') as f:
         f.write("""
 track {bt}_{btn}
 parent super_{bt}
 compositeTrack on
-shortLabel {shortL}
+""".format(bt=bt,
+           btn=btn))
+        if isActive:
+            f.write("visibility full\n")
+        f.write("""shortLabel {shortL}
 longLabel {longL}
 type bigWig 9 +
 maxHeightPixels 64:12:8
@@ -214,14 +226,13 @@ dimensions dimX={subGroup2key} dimY={subGroup1key}
 dragAndDrop subTracks
 hoverMetadata on
 darkerLabels on
-""".format(bt=bt,
-           btn=btn,
-           shortL=Helpers.makeShortLabel(biosample_term_name),
+""".format(shortL=Helpers.makeShortLabel(biosample_term_name),
            longL=Helpers.makeLongLabel(longLabel),
            subGroup1key=subGroup1key,
            subGroup1=subGroup1,
            subGroup2key=subGroup2key,
            subGroup2=subGroup2))
+            
     printWroteNumLines(fnp, idx, 'of', total)
     return 'include ' + fn + '\n' # for listing in trackDb....
 
@@ -231,8 +242,7 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
     exps = mw.exps(expIDs)
 
     actives = []
-    for exp in exps:
-        expID = exp.encodeID
+    for expID in expIDs:
         if expID in lookupByExp:
             actives.append(lookupByExp[expID].isActive())
     isActive = any(t for t in actives)
