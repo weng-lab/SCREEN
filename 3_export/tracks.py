@@ -109,9 +109,10 @@ class Tracks(object):
 
     def addExpBestBigWig(self, exp):
         files = Helpers.bigWigFilters(self.assembly, exp)
-
+        expID = exp.encodeID
+        
         if not files:
-            eprint(exp.encodeID)
+            eprint(expID)
             raise Exception("expected a file...")
         for f in files:
             t = BigWigTrack(self.assembly, exp, f, self.parent)

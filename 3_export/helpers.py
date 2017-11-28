@@ -67,6 +67,7 @@ def fileFilters():
         yield lambda x: x.output_type == ot and x.isPooled
         for rep in xrange(0, 5):
             yield lambda x: x.output_type == ot and rep in x.bio_rep and len(x.tech_rep) > 1
+            yield lambda x: x.output_type == ot and rep in x.bio_rep and (str(rep) + '_' + str(rep)) in x.tech_rep
             yield lambda x: x.output_type == ot and rep in x.bio_rep
         yield lambda x: x.output_type == ot and [] == x.bio_rep
         yield lambda x: x.output_type == ot and {} == x.bio_rep
@@ -123,8 +124,7 @@ def bigWigFilters(assembly, exp):
                 if len(bigWigs) > 1:
                     for bw in bigWigs:
                         print(bw.expID, bw)
-                    print(bigWigs[0].expID, "will return", bigWigs[0])
-                return bigWigs
+                return sorted(bigWigs, key=lambda x: x.fileID)
 
     for bf in otherFilters():
         bigWigs = filter(bf, files)
