@@ -55,6 +55,8 @@ class CachedObjects:
 
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
+        self.rankMethodToIDxToCellTypeZeroBased = self.pgSearch.rankMethodToIDxToCellTypeZeroBased()
+        
         self.biosampleTypes = self.datasets.biosample_types
         self.assaymap = {"dnase": self.pgSearch.datasets("DNase"),
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),

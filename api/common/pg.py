@@ -251,6 +251,10 @@ WHERE accession = %s
         pg = PGcommon(self.pg, self.assembly)
         return pg.rankMethodToIDxToCellType()
 
+    def rankMethodToIDxToCellTypeZeroBased(self):
+        pg = PGcommon(self.pg, self.assembly)
+        return pg.rankMethodToIDxToCellTypeZeroBased()
+
     def rankMethodToCellTypes(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
