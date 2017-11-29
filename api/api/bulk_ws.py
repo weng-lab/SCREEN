@@ -33,7 +33,7 @@ from db_utils import getcursor
 class BulkWebServiceWrapper:
     def __init__(self, args, ps, cacheW, staticDir):
         def makeDWS(assembly):
-            return BulyWebService(args, ps, cacheW[assembly], staticDir, assembly)
+            return BulkWebService(args, ps, cacheW[assembly], staticDir, assembly)
         self.assemblies = Config.assemblies
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
@@ -45,7 +45,7 @@ class BulkWebServiceWrapper:
         return self.dwss[j["assembly"]].process(j, args, kwargs)
 
 
-class BulkWebService(object):
+class BulkWebService:
     def __init__(self, args, ps, cache, staticDir, assembly):
         self.args = args
         self.ps = ps
