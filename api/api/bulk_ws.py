@@ -37,12 +37,11 @@ class BulkWebServiceWrapper:
         self.assemblies = Config.assemblies
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
-    def process(self, j, args, kwargs):
-        if "assembly" not in j:
-            raise Exception("assembly not defined")
-        if j["assembly"] not in self.assemblies:
+    def process(self, args, kwargs):
+        assembly = args[0]
+        if assembly not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.dwss[j["assembly"]].process(j, args, kwargs)
+        return self.dwss[assembly].process(args[1:], kwargs)
 
 
 class BulkWebService:
@@ -82,7 +81,7 @@ class BulkWebService:
 
         self.session = Sessions(ps.DBCONN)
 
-    def process(self, j, args, kwargs):
+    def process(self, args, kwargs):
         action = args[0]
         try:
             return self.actions[action](j, args[1:])

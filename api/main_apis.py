@@ -114,12 +114,9 @@ class Apis():
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def bulkws(self, *args, **kwargs):
-        # print(cherrypy.request)
-        j = cherrypy.request.json
-        return self.bulkWS.process(j, args, kwargs)
+        return self.bulkWS.process(args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

@@ -9,9 +9,6 @@ import socket
 import psycopg2
 import psycopg2.pool
 
-import cherrys
-cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
-
 from main_apis import Apis
 from common.cached_objects import CachedObjectsWrapper
 
@@ -50,10 +47,10 @@ class WebServerConfig:
 
         return {
             '/': {
-                'tools.sessions.on': True,
-                'tools.sessions.storage_type': 'redis',
-                'tools.sessions.host': redisHost,
-                'tools.sessions.locking': 'explicit'
+                #'tools.sessions.on': True,
+                #'tools.sessions.storage_type': 'redis',
+                #'tools.sessions.host': redisHost,
+                #'tools.sessions.locking': 'explicit'
             },
             '/static': {
                 'tools.staticdir.on': True,
