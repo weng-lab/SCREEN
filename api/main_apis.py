@@ -3,13 +3,13 @@
 from __future__ import print_function
 
 import cherrypy
-import jinja2
 import os
 import sys
 
 from api.autocomplete_ws import AutocompleteWebService
 from api.cart_ws import CartWebServiceWrapper
 from api.data_ws import DataWebServiceWrapper
+from api.bulk_ws import BulkWebServiceWrapper
 from api.de_ws import DeWebServiceWrapper
 from api.gb_ws import GenomeBrowserWebServiceWrapper
 from api.geneexp_ws import GeneExpWebServiceWrapper
@@ -27,6 +27,7 @@ class Apis():
         self.autoWS = AutocompleteWebService(ps)
         self.cartWS = CartWebServiceWrapper(ps, cache)
         self.dataWS = DataWebServiceWrapper(args, ps, cache, staticDir)
+        self.bulkWS = BulkWebServiceWrapper(args, ps, cache, staticDir)
         self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.gbWS = GenomeBrowserWebServiceWrapper(args, ps, cache, staticDir)
@@ -110,6 +111,15 @@ class Apis():
         # print(cherrypy.request)
         j = cherrypy.request.json
         return self.dataWS.process(j, args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def bulkws(self, *args, **kwargs):
+        # print(cherrypy.request)
+        j = cherrypy.request.json
+        return self.bulkWS.process(j, args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

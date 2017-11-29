@@ -1,8 +1,5 @@
 #!/usr/bin/env python2
 
-
-
-
 import cherrypy
 import os
 import sys
@@ -20,7 +17,6 @@ from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
-from templates import Templates
 from utils import Utils, AddPath
 
 AddPath(__file__, "../common")
