@@ -76,7 +76,7 @@ def cors():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_false")
-    parser.add_argument('--debugger', action="store_false")
+    parser.add_argument('--debugger', action="store_false", default=False)
     parser.add_argument('--dump', action="store_true", default=False)
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--port', default=9006, type=int)
