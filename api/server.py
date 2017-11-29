@@ -106,14 +106,15 @@ def main():
                                 'server.socket_queue_size': 128,
                                 'server.thread_pool': 8,
         })
-        if args.debugger:
-            from wdb.ext import WdbMiddleware
-            cherrypy.config.update({'global':{'request.throw_errors': True}})
-            app.wsgiapp.pipeline.append(('debugger', WdbMiddleware))
-            # to use:
-            # import wdb
-            # wdb.set_trace()
-            
+
+    if args.debugger:
+        from wdb.ext import WdbMiddleware
+        cherrypy.config.update({'global':{'request.throw_errors': True}})
+        app.wsgiapp.pipeline.append(('debugger', WdbMiddleware))
+        # to use:
+        # import wdb
+        # wdb.set_trace()
+
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,
                                 'server.thread_pool': 30,
