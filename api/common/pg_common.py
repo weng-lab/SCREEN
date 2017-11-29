@@ -62,7 +62,6 @@ FROM {tn}
                     ret[rank_method] = {}
                 idx = int(r[0]) - 1
                 ret[rank_method][idx] = r[1]
-                ret[rank_method][r[1]] = idx
         return ret
 
     def makeCtMap(self):
