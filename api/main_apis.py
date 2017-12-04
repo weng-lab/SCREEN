@@ -13,7 +13,7 @@ from api.bulk_ws import BulkWebServiceWrapper
 from api.de_ws import DeWebServiceWrapper
 from api.gb_ws import GenomeBrowserWebServiceWrapper
 from api.geneexp_ws import GeneExpWebServiceWrapper
-from api.global_data_ws import GlobalDataController
+from api.global_data_ws import GlobalDataWebServiceWrapper
 from api.gwas_ws import GwasWebServiceWrapper
 from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
@@ -31,7 +31,7 @@ class Apis():
         self.deWS = DeWebServiceWrapper(args, ps, cache, staticDir)
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.gbWS = GenomeBrowserWebServiceWrapper(args, ps, cache, staticDir)
-        self.global_data = GlobalDataController(ps, cache)
+        self.globalWS = GlobalDataWebServiceWrapper(cache)
         self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.postWS = PostWebServiceWrapper(args, ps, cache, staticDir)
@@ -163,4 +163,11 @@ class Apis():
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
     def globalData(self, ver, assembly):
-        return self.global_data.static(assembly, ver)
+        # TODO: remove me
+        return self.globalWS.static(assembly, ver)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_out()
+    def globals(self, *args, **kwargs):
+        return self.globalWS.process(args, kwargs)

@@ -112,7 +112,7 @@ class CachedObjects:
             ret.append(d)
         return ret
 
-    def global_data(self, ver):
+    def global_data(self):
         datasets = self.datasets
         return {
             "tfs": self.tf_list,
