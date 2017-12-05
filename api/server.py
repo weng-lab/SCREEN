@@ -94,7 +94,7 @@ def main():
 
     wsconfig = WebServerConfig("main", args.production)
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
-    app = cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
+    app = cherrypy.tree.mount(main, '/screen10', wsconfig.getRootConfig())
 
     cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
 

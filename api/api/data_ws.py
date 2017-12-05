@@ -59,7 +59,6 @@ class DataWebService(object):
         self.actions = {"cre_table": self.cre_table,
                         "cre_tf_dcc": self.cre_tf_dcc,
                         "cre_histone_dcc": self.cre_histone_dcc,
-                        "re_detail": self.re_detail,
                         "bed_download": self.bed_download,
                         "json_download": self.json_download,
                         "global_object": self.global_object,
@@ -67,18 +66,6 @@ class DataWebService(object):
                         "global_liftover": self.global_liftover,
                         "rampage": self.rampage
                         }
-
-        self.reDetailActions = {
-            "topTissues": self._re_detail_topTissues,
-            "nearbyGenomic": self._re_detail_nearbyGenomic,
-            "fantom_cat": self.fantom_cat,
-            "ortholog": self._ortholog,
-            "tfIntersection": self._re_detail_tfIntersection,
-            "cistromeIntersection": self._re_detail_cistromeIntersection,
-            "rampage": self._re_detail_rampage,
-            "linkedGenes": self._re_detail_linkedGenes,
-            "miniPeaks": self._re_detail_miniPeaks,
-        }
 
         self.session = Sessions(ps.DBCONN)
 
@@ -88,10 +75,6 @@ class DataWebService(object):
             return self.actions[action](j, args[1:])
         except:
             raise
-
-    def _ortholog(self, j, accession):
-        orth = Ortholog(self.assembly, self.ps.DBCONN, accession)
-        return {accession: {"ortholog": orth.as_dict()}}
 
     def global_liftover(self, j, args):
         retval = {"saturation": {self.assembly: self.global_object({"name": "saturation"}, args),
@@ -147,81 +130,6 @@ class DataWebService(object):
         results["cts"] = self.pgSearch.haveSCT(j)
         return results
 
-    def re_detail(self, j, args):
-        action = args[0]
-        if action not in self.reDetailActions:
-            raise Exception("unknown action")
-        return self.reDetailActions[action](j, j["accession"])
-
-    def tfenrichment(self, j, args):
-        a = j["tree_nodes_compare"]
-        tree_rank_method = j["tree_rank_method"]
-        return self.tfEnrichment.findenrichment(tree_rank_method, a[0], a[1])
-
-    def _re_detail_topTissues(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        ranks = cre.topTissues()
-        return {accession: ranks}
-
-    def fantom_cat(self, j, accession):
-        def process(key):
-            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
-                results = self.pgFantomCat.select_cre_intersections(accession, curs, key)
-            for result in results:
-                result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
-                if result["aliases"] != "":
-                    if result["other_names"] != "":
-                        result["other_names"] += ", "
-                    result["other_names"] += ", ".join(result["aliases"].split("|"))
-            return results
-        return {accession: {
-            "fantom_cat": process("intersections"),
-            "fantom_cat_twokb": process("twokb_intersections")
-        }}
-
-    def _re_detail_nearbyGenomic(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        coord = cre.coord()
-
-        # with Timer("snps") as t:
-        snps = cre.intersectingSnps(10000)  # 10 KB
-        # with Timer("nearbyCREs") as t:
-        nearbyCREs = cre.distToNearbyCREs(1000000)  # 1 MB
-        # with Timer("nearbyGenes") as t:
-        nearbyGenes = cre.nearbyGenes()
-        # with Timer("genesInTad") as t:
-        genesInTad = cre.genesInTad()
-        # with Timer("re_cres") as t:
-        re_tads = cre.cresInTad()
-
-        return {accession: {"nearby_genes": nearbyGenes,
-                            "tads": genesInTad,
-                            "re_tads": re_tads,
-                            "nearby_res": nearbyCREs,
-                            "overlapping_snps": snps}}
-
-    def _re_detail_tfIntersection(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        peakIntersectCount = cre.peakIntersectCount()
-        return {accession: peakIntersectCount}
-
-    def _re_detail_cistromeIntersection(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        peakIntersectCount = cre.peakIntersectCount(eset="cistrome")
-        return {accession: peakIntersectCount}
-
-    def _re_detail_linkedGenes(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        return {accession: {"linked_genes": cre.linkedGenes()}}
-
-    def _re_detail_rampage(self, j, accession):
-        cre = CRE(self.pgSearch, accession, self.cache)
-        nearbyGenes = cre.nearbyPcGenes()
-        nearest = min(nearbyGenes, key=lambda x: x["distance"])
-        rampage = Rampage(self.assembly, self.pgSearch, self.cache)
-        ret = rampage.getByGene(nearest)
-        return {accession: ret}
-
     def rampage(self, j, args):
         rampage = Rampage(self.assembly, self.pgSearch, self.cache)
         gene = j["gene"]
@@ -253,12 +161,3 @@ class DataWebService(object):
         if not target:
             raise Exception("invalid target")
         return {target: self.pgSearch.histoneTargetExps(accession, target, eset=j.get("eset", None))}
-
-    def _re_detail_miniPeaks(self, j, accession):
-        nbins = Config.minipeaks_nbins
-        ver = Config.minipeaks_ver
-        mp = MiniPeaks(self.assembly, self.pgSearch, self.cache, nbins, ver)
-        rows, accessions = mp.getMinipeaksForAssays(["dnase", "h3k27ac", "h3k4me3"],
-                                                    [accession])
-        return {accession: {"rows": rows,
-                            "accessions": accessions}}

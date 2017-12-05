@@ -99,6 +99,10 @@ FROM {tn}
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTable(j, chrom, start, stop)
 
+    def cre(self, accession, chrom, start, stop):
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        return pct.cre(accession, chrom, start, stop)
+
     def geneTable(self, j, chrom, start, stop):
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.geneTable(j, chrom, start, stop)
