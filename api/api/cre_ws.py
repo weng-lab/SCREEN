@@ -63,6 +63,8 @@ class CreDetailsWebService(object):
             "cistromeIntersection": self._re_detail_cistromeIntersection,
             "rampage": self._re_detail_rampage,
             "linkedGenes": self._re_detail_linkedGenes,
+            "cre_tf_dcc": self.cre_tf_dcc,
+            "cre_histone_dcc": self.cre_histone_dcc,
             "miniPeaks": self._re_detail_miniPeaks,
         }
 
@@ -166,3 +168,21 @@ class CreDetailsWebService(object):
             ret["assembly"] = self.assembly
             return {accession: ret}
         return {accession: {}}
+
+    def cre_tf_dcc(self, j, args):
+        accession = j.get("accession", None)
+        if not accession:
+            raise Exception("invalid accession")
+        target = j.get("target", None)
+        if not target:
+            raise Exception("invalid target")
+        return {target: self.pgSearch.tfTargetExps(accession, target, eset=j.get("eset", None))}
+
+    def cre_histone_dcc(self, j, args):
+        accession = j.get("accession", None)
+        if not accession:
+            raise Exception("invalid accession")
+        target = j.get("target", None)
+        if not target:
+            raise Exception("invalid target")
+        return {target: self.pgSearch.histoneTargetExps(accession, target, eset=j.get("eset", None))}

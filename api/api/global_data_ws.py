@@ -11,6 +11,7 @@ class GlobalDataWebServiceWrapper:
     def __init__(self, cacheW):
         def makeDWS(assembly):
             return GlobalDataWebService(cacheW[assembly])
+        self.cacheW = cacheW
         self.assemblies = Config.assemblies
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
@@ -20,12 +21,17 @@ class GlobalDataWebServiceWrapper:
             raise Exception("invalid assembly")
         return self.dwss[assembly].process(args[1:], kwargs)
 
-
+    def creFiles(self):
+        files = []
+        for assembly in Config.assemblies:
+            files += self.cacheW[assembly].filesList
+        return files
+        
 class GlobalDataWebService(object):
     def __init__(self, cache):
         self.cache = cache
         self.globalData = cache.global_data()
-        
+
     def static(self, ver):
         # TODO: remove me
         g = self.globalData

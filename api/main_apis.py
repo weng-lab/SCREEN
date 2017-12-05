@@ -177,3 +177,9 @@ class Apis():
     @cherrypy.tools.json_out()
     def globals(self, *args, **kwargs):
         return self.globalWS.process(args, kwargs)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_out()
+    def creFiles(self, *args, **kwargs):
+        return self.globalWS.creFiles()
