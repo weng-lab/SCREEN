@@ -37,12 +37,11 @@ class CreDetailsWebServiceWrapper:
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
     def process(self, *args, **kwargs):
-        accession = args[0]
-        print("accession:", accession)
+        accession = kwargs["accession"]
         assembly = getAssemblyFromCre(accession)
         if assembly not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.dwss[assembly].process(accession, args[1:], **kwargs)
+        return self.dwss[assembly].process(*args, **kwargs)
 
 
 class CreDetailsWebService(object):
@@ -68,7 +67,6 @@ class CreDetailsWebService(object):
         }
 
     def process(self, accession, *args, **kwargs):
-        print("hi from process", args, kwargs)
         action = kwargs["data"]
         if action not in self.reDetailActions:
             raise Exception("unknown action")
@@ -154,7 +152,17 @@ class CreDetailsWebService(object):
     def _re_detail_info(self, accession):
         cre = CRE(self.pgSearch, accession, self.cache)
         coord = cre.coord()
-        r = self.pgSearch.cre(accession, coord.chrom, coord.start, coord.end)
-        if r["total"] > 0:
-            return {accession: r["cres"][0]}
+        ret = self.pgSearch.cre(accession, coord.chrom, coord.start, coord.end)
+
+        lookup = self.cache.geneIDsToApprovedSymbol
+        for r in ret["cres"]:
+            r["genesallpc"] = {"all": [lookup[gid] for gid in r["gene_all_id"][:3]],
+                               "pc": [lookup[gid] for gid in r["gene_pc_id"][:3]],
+                               "accession": r["info"]["accession"]}
+        if ret["total"] > 0:
+            ret = ret["cres"][0]
+            del ret["gene_all_id"]
+            del ret["gene_pc_id"]
+            ret["assembly"] = self.assembly
+            return {accession: ret}
         return {accession: {}}
