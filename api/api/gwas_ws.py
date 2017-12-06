@@ -42,11 +42,11 @@ class GwasWebService(object):
             raise Exception("gwas_ws: invalid action: " + action)
 
         try:
-            return self.actions[action](args[1:])
+            return self.actions[action](args[1:], **kwargs)
         except:
             raise
 
-    def _initialLoad(self, args):
+    def _initialLoad(self, *args, **kwargs):
         g = Gwas(self.assembly, self.ps, self.assembly)
         return {"gwas": {"studies": g.studies,
                          "byStudy": g.byStudy},
@@ -54,7 +54,7 @@ class GwasWebService(object):
                 "ct": "",
                 "assembly": self.assembly}
 
-    def _mainTable(self, args):
+    def _mainTable(self, *args, **kwargs):
         g = Gwas(self.assembly, self.ps, self.cache)
         self.gwas_study = kwargs["gwas_study"]
         if not g.checkStudy(self.gwas_study):
