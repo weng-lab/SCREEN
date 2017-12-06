@@ -62,13 +62,13 @@ class GwasWebService(object):
 
         return g.mainTable(self.gwas_study)
 
-    def _cres(self, args):
+    def _cres(self, *args, **kwargs):
         g = Gwas(self.assembly, self.ps, self.cache)
         self.gwas_study = kwargs["gwas_study"]
         if not g.checkStudy(self.gwas_study):
             raise Exception("invalid gwas study")
 
-        ct = j["cellType"]
         # TODO: check ct!
+        ct = kwargs["cellType"]
 
         return g.cres(self.gwas_study, ct)
