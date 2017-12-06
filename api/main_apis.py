@@ -162,9 +162,8 @@ class Apis():
     @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def gwasws(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.gwasWS.process(j, args, kwargs)
+    def gwas(self, *args, **kwargs):
+        return self.gwasWS.process(args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
