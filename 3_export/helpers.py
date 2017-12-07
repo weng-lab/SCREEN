@@ -27,7 +27,7 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "TF ChIP-seq": ["18,98,235", "#1262EB"],
                "CTCF": ["0,176,240", "#00B0F0"]}
 
-SubGroupKeys = ["age", "donor", "label", "assay"]
+SubGroupKeys = ["age", "donor", "label", "assay", "view"]
 
 def viz(state, active):
     if active:
@@ -108,8 +108,8 @@ def bigWigFilters(assembly, exp):
                 lambda bw: bw.isSignal()
         ]
 
-    files = filter(lambda x: x.isBigWig() and x.assembly == assembly and x.isReleased(),
-                   exp.files)
+    files = sorted(filter(lambda x: x.isBigWig() and x.assembly == assembly and x.isReleased(),
+                          exp.files), key=lambda f: f.fileID, reverse=True)
 
     if exp.isRnaSeqLike():
         for bf in rnaFilters():
@@ -144,8 +144,8 @@ def bigWigFilters(assembly, exp):
     return []
 
 def bigBedFilters(assembly, exp):
-    files = filter(lambda x: x.isBigBed() and x.assembly == assembly and x.isReleased(),
-                   exp.files)
+    files = sorted(filter(lambda x: x.isBigBed() and x.assembly == assembly and x.isReleased(),
+                          exp.files), key=lambda f: f.fileID, reverse=True)
 
     if exp.isRnaSeqLike():
         return []

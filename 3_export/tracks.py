@@ -10,6 +10,16 @@ from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 
 import helpers as Helpers
 
+def outputLines(d, indentLevel, extras = {}):
+    prefix = '\t' * indentLevel
+    for k, v in d.iteritems():
+        if v:
+            yield prefix + k + " " + str(v) + '\n'
+    for k, v in extras.iteritems():
+        if v:
+            yield prefix + k + " " + str(v) + '\n'
+    yield '\n'
+
 class Parent:
     def __init__(self, parent, on):
         self.parent = parent
@@ -27,6 +37,7 @@ class BigWigTrack(object):
         self.f = f
         self.parent = parent
         self.active = active
+        self.view = "bigWig"
         self.p = self._init()
 
     def _init(self):
@@ -42,9 +53,9 @@ class BigWigTrack(object):
         p["shortLabel"] = Helpers.makeShortLabel(self.exp.assay_term_name, self.exp.tf)
         p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
-        # p["priority"] = str(self.priority)
         p["darkerLabels"] = "on"
         p["metadata"] = Helpers.unrollEquals(self._metadata())
+        p["view"] = self.bigWig
         return p
 
     def _metadata(self):
@@ -54,6 +65,7 @@ class BigWigTrack(object):
         s["accession"] = self.exp.encodeID
         s["description"] = Helpers.sanitize(self._desc())
         s["donor"] = self.exp.donor_id
+        s["view"] = self.view
         return s
 
     def _subgroups(self):
@@ -62,6 +74,7 @@ class BigWigTrack(object):
         s["assay"] = Helpers.getOrUnknown(self.exp.assay_term_name)
         s["label"] = Helpers.getOrUnknown(self.exp.tf)
         s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["view"] = self.view
         self.presentation = {}
         self.presentation["label"] = (s["label"],
                                    Helpers.html_escape(Helpers.getOrUnknown(self.exp.tf)))
@@ -69,6 +82,7 @@ class BigWigTrack(object):
         self.presentation["donor"] = (s["donor"], s["donor"])
         self.presentation["age"] = (s["age"],
                                     Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
+        self.presentation["view"] = (s["view"], s["view"])
         return s
 
     def _url(self):
@@ -96,12 +110,10 @@ class BigWigTrack(object):
         return " ".join(desc)
 
     def lines(self, idx):
-        for k, v in self.p.iteritems():
-            if v:
-                yield k + " " + v + '\n'
+        extras = {}
         if self.active:
-            yield "priority " + str(idx) + '\n'
-        yield '\n'
+            extras["priority"] = idx
+        return outputLines(self.p, 1, extras)
 
 class BigBedTrack(object):
     def __init__(self, assembly, exp, f, parent, active):
@@ -115,18 +127,18 @@ class BigBedTrack(object):
     def _init(self):
         p = OrderedDict()
         p["track"] = Helpers.sanitize(self.f.expID + '_' + self.f.fileID)
-        p["parent"] = self.parent.param(self.active)
+        p["parent"] = self.parent.param(self.parent.on)
         p["subGroups"] = Helpers.unrollEquals(self._subgroups())
         p["bigDataUrl"] = self._url()
-        p["visibility"] = Helpers.viz("pack", self.active)
+        p["visibility"] = Helpers.viz("dense", self.active)
         p["type"] = "bigBed"
         p["shortLabel"] = Helpers.makeShortLabel(self.exp.assay_term_name, self.exp.tf)
         p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
         p["color"] = Helpers.colorize(self.exp)
-        # p["priority"] = str(self.priority)
         p["darkerLabels"] = "on"
         p["metadata"] = Helpers.unrollEquals(self._metadata())
+        p["view"] = self.exp.encodeID
         return p
 
     def _url(self):
@@ -160,6 +172,7 @@ class BigBedTrack(object):
         s["accession"] = self.exp.encodeID
         s["description"] = Helpers.sanitize(self._desc())
         s["donor"] = self.exp.donor_id
+        s["view"] = self.exp.encodeID
         return s
 
     def _subgroups(self):
@@ -168,6 +181,7 @@ class BigBedTrack(object):
         s["assay"] = Helpers.getOrUnknown(self.exp.assay_term_name)
         s["label"] = Helpers.getOrUnknown(self.exp.tf)
         s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["view"] = self.exp.encodeID
         self.presentation = {}
         self.presentation["label"] = (s["label"],
                                    Helpers.html_escape(Helpers.getOrUnknown(self.exp.tf)))
@@ -175,15 +189,86 @@ class BigBedTrack(object):
         self.presentation["donor"] = (s["donor"], s["donor"])
         self.presentation["age"] = (s["age"],
                                     Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
+        self.presentation["view"] = (s["view"], s["view"])
         return s
 
     def lines(self, idx):
-        for k, v in self.p.iteritems():
-            if v:
-                yield k + " " + v + '\n'
+        extras = {}
         if self.active:
-            yield "priority " + str(idx) + '\n'
-        yield '\n'
+            extras["priority"] = idx
+        return outputLines(self.p, 2, extras)
+
+class cRETrack(object):
+    def __init__(self, assembly, exp, stateType, cREaccession, parent, active):
+        self.assembly = assembly
+        self.exp = exp
+        self.stateType = stateType
+        self.cREaccession = cREaccession
+        self.parent = parent
+        a = False
+        if active and "5group" == stateType:
+            a = True
+        self.active = a
+        self.p = self._init()
+
+    def _init(self):
+        p = OrderedDict()
+        p["track"] = Helpers.sanitize(self.exp.encodeID + '_' + self.cREaccession)
+        p["parent"] = self.parent.param(self.parent.on)
+        p["subGroups"] = Helpers.unrollEquals(self._subgroups())
+        p["bigDataUrl"] = self._url()
+        p["visibility"] = Helpers.viz("dense", self.active)
+        p["type"] = "bigBed 9"
+        p["shortLabel"] = Helpers.makeShortLabel(self.exp.assay_term_name, self.exp.tf)
+        p["longLabel"] = Helpers.makeLongLabel(self._desc())
+        p["itemRgb"] = "On"
+        p["darkerLabels"] = "on"
+        p["metadata"] = Helpers.unrollEquals(self._metadata())
+        p["view"] = self.exp.encodeID
+        return p
+
+    def _url(self):
+        return os.path.join("https://www.encodeproject.org/files/",
+                            self.cREaccession,
+                            "@@download/",
+                            self.cREaccession + ".bigBed?proxy=true")
+
+    def _desc(self):
+        exp = self.exp
+        return self.cREaccession + " " + self.stateType + " " + exp.description
+
+    def _metadata(self):
+        s = {}
+        s["age"] = Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["sex"] = Helpers.getOrUnknown(self.exp.donor_sex)
+        s["accession"] = self.exp.encodeID
+        s["description"] = Helpers.sanitize(self._desc())
+        s["donor"] = self.exp.donor_id
+        s["view"] = self.exp.encodeID
+        return s
+
+    def _subgroups(self):
+        s = {}
+        s["donor"] = Helpers.getOrUnknown(self.exp.donor_id)
+        s["assay"] = Helpers.getOrUnknown(self.exp.assay_term_name)
+        s["label"] = Helpers.getOrUnknown(self.exp.tf)
+        s["age"] = 'a' + Helpers.sanitize(Helpers.getOrUnknown(self.exp.age_display))
+        s["view"] = self.exp.encodeID
+        self.presentation = {}
+        self.presentation["label"] = (s["label"],
+                                   Helpers.html_escape(Helpers.getOrUnknown(self.exp.tf)))
+        self.presentation["assay"] = (s["assay"], s["assay"])
+        self.presentation["donor"] = (s["donor"], s["donor"])
+        self.presentation["age"] = (s["age"],
+                                    Helpers.html_escape(Helpers.getOrUnknown(self.exp.age_display)))
+        self.presentation["view"] = (s["view"], s["view"])
+        return s
+
+    def lines(self, idx):
+        extras = {}
+        if self.active:
+            extras["priority"] = idx
+        return outputLines(self.p, 2, extras)
 
 class CompositeExpTrack(object):
     def __init__(self, assembly, parent, exp, active):
@@ -191,6 +276,7 @@ class CompositeExpTrack(object):
         self.parent = parent
         self.exp = exp
         self.active = active
+        self.bedParent = Parent(parent.parent + '_view_' + exp.encodeID, parent.on)
 
     def _addExpBestBigWig(self, exp, active):
         files = Helpers.bigWigFilters(self.assembly, exp)
@@ -215,19 +301,37 @@ class CompositeExpTrack(object):
             return []
         ret = []
         for f in files:
-            t = BigBedTrack(self.assembly, exp, f, self.parent, active)
+            t = BigBedTrack(self.assembly, exp, f, self.bedParent, active)
             ret.append(t)
-            break
+            break # TODO allow multiple bigBeds, if needed
         return ret
 
-    def addExp(self):
+    def _addcREs(self, exp, active, cREs):
+        ret = []
+        cREaccessions = set()
+        for stateType, accession in cREs.iteritems():
+            if accession not in cREaccessions:
+                t = cRETrack(self.assembly, exp, stateType, accession, self.bedParent, active)
+                ret.append(t)
+                cREaccessions.add(accession)
+        return ret
+
+    def addExp(self, cREs):
         self.beds = self._addExpBestBed(self.exp, self.active)
         self.bigWigs = self._addExpBestBigWig(self.exp, self.active)
+        self.cREs = self._addcREs(self.exp, self.active, cREs)
+
+    def view(self):
+        p = OrderedDict()
+        p["track"] = self.bedParent.parent
+        p["parent"] = self.parent.param(self.active)
+        p["view"] = self.exp.encodeID
+        p["visibility"] = "dense"
+        p["type"] = "bigBed"
+        return p
 
     def tracks(self):
-        for t in self.beds:
-            yield t
-        for t in self.bigWigs:
+        for t in self.beds + self.cREs + self.bigWigs:
             yield t
 
 class Tracks(object):
@@ -237,19 +341,27 @@ class Tracks(object):
         self.priorityStart = priorityStart
         self.tracks = []
 
-    def addExp(self, exp, active):
+    def addExp(self, exp, active, cREs):
         ct = CompositeExpTrack(self.assembly, self.parent, exp, active)
-        ct.addExp()
+        ct.addExp(cREs)
         self.tracks.append(ct)
 
     def lines(self):
         tracks = self._sortedTracks()
         counter = 0
-        for compositeTracks in tracks:
-            for t in compositeTracks.tracks():
+        for ct in tracks:
+            for t in ct.bigWigs:
                 counter += 1
                 for line in t.lines(self.priorityStart + counter):
                     yield line
+            if len(ct.beds + ct.cREs) > 0:
+                # empty view not allowed
+                for line in outputLines(ct.view(), 1):
+                    yield line
+                for t in ct.beds + ct.cREs:
+                    counter += 1
+                    for line in t.lines(self.priorityStart + counter):
+                        yield line
 
     def _sortedTracks(self):
         tracks = self.tracks
