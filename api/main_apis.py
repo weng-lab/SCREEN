@@ -152,11 +152,9 @@ class Apis():
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def dews(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.deWS.process(j, args, kwargs)
+    def de(self, *args, **kwargs):
+        return self.deWS.process(args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
