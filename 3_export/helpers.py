@@ -29,6 +29,11 @@ AssayColors = {"DNase": ["6,218,147", "#06DA93"],
 
 SubGroupKeys = ["age", "donor", "label", "assay"]
 
+def viz(state, active):
+    if active:
+        return state
+    return "hide"
+
 def sanitize(s, replChar='_'):
     return re.sub('[^0-9a-zA-Z]+', replChar, s)
 
@@ -83,7 +88,7 @@ def rnaFilters():
                "signal of all reads",
                ]:
         yield lambda x: x.output_type == ot and x.isPooled and x.genome_annotation
-        for rep in xrange(0, 5): 
+        for rep in xrange(0, 5):
             yield lambda x: x.output_type == ot and rep in x.bio_rep and x.genome_annotation
         yield lambda x: x.output_type == ot and [] == x.bio_rep and x.genome_annotation
         yield lambda x: x.output_type == ot and {} == x.bio_rep and x.genome_annotation
@@ -101,7 +106,7 @@ def otherFilters():
             lambda bw: bw.isSignal() and bw.bio_rep == 2,
             lambda bw: bw.isSignal()
     ]
-    
+
 def bigWigFilters(assembly, exp):
     files = filter(lambda x: x.isBigWig() and x.assembly == assembly and x.isReleased(),
                    exp.files)
@@ -110,7 +115,7 @@ def bigWigFilters(assembly, exp):
         for bf in rnaFilters():
             bigWigs = filter(bf, files)
             if 1 == len(bigWigs):
-                return bigWigs            
+                return bigWigs
             if len(bigWigs) > 1:
                 trybw = filter(lambda x: 'tophat' not in x.submitted_file_name, bigWigs)
                 if 1 == len(trybw):
@@ -135,7 +140,7 @@ def bigWigFilters(assembly, exp):
     for f in files:
         eprint(exp)
         eprint(f)
-        
+
     return []
 
 html_escape_table = {
@@ -178,4 +183,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -53,7 +53,7 @@ class Lookup:
         # if r:
         #    print("active biosample:", self.btid)
         return r
-        
+
 class TrackhubDb:
     def __init__(self, args, assembly, cache):
         self.args = args
@@ -75,7 +75,7 @@ class TrackhubDb:
                                             {"lookupByExp": self.lookupByExp,
                                              "idx": len(jobs) + 1,
                                              "total": len(self.inputData)}))
-                
+
         self.compositeTrack  = Parallel(n_jobs=self.args.j)(delayed(outputAllTracks)(job)
                                                             for job in jobs)
 
@@ -91,7 +91,7 @@ class TrackhubDb:
                 expID = info["expID"]
                 self.lookupByExp[expID] = Lookup(btid, btname, info)
         print(len(self.lookupByExp))
-        
+
     def run(self):
         printt("building lookup...")
         self._lookup()
@@ -102,7 +102,7 @@ class TrackhubDb:
             biosample_type = r[0]["biosample_type"]
             bt = Helpers.sanitize(biosample_type)
             btToNormal[bt] = biosample_type
-            
+
             biosample_term_name = r[0]["biosample_term_name"]
             btn = Helpers.sanitize(biosample_term_name)
 
@@ -122,7 +122,7 @@ class TrackhubDb:
         self._makeSubTracks()
         self._makeFiles(btToNormal)
         self._makeHub()
-        
+
     def _makeFiles(self, btToNormal):
         mainTrackDb = []
 
@@ -145,7 +145,7 @@ longLabel {longL}
             for t in self.compositeTrack:
                 f.write(t)
         printWroteNumLines(fnp)
-                
+
         fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
         mainTrackDb.append('include subtracks.txt')
         with open(fnp, 'w') as f:
@@ -158,7 +158,7 @@ longLabel {longL}
         with open(fnp, 'w') as f:
             f.write('\n'.join(mainTrackDb))
         printWroteNumLines(fnp)
-        
+
     def _makeHub(self):
         fnp = os.path.join(BaseDir, 'hub.txt')
         with open(fnp, 'w') as f:
@@ -204,7 +204,7 @@ def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGrou
     isActive = any(t for t in actives)
     if isActive:
         print("active biosample (composite):", btn)
-    
+
     with open(fnp, 'w') as f:
         f.write("""
 track {bt}_{btn}
@@ -232,7 +232,7 @@ darkerLabels on
            subGroup1=subGroup1,
            subGroup2key=subGroup2key,
            subGroup2=subGroup2))
-            
+
     printWroteNumLines(fnp, idx, 'of', total)
     return 'include ' + fn + '\n' # for listing in trackDb....
 
@@ -248,12 +248,16 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
     isActive = any(t for t in actives)
     if isActive:
         print("active biosample:", btn)
-        
+
     parent = Parent(bt + '_' + btn, isActive)
-    
-    tracks = Tracks(assembly, parent)
+
+    tracks = Tracks(assembly, parent, (1 + idx) * 1000)
     for exp in exps:
-        tracks.addExpBestBigWig(exp)
+        active = False
+        expID = exp.encodeID
+        if expID in lookupByExp:
+            active = lookupByExp[expID].isActive()
+        tracks.addExpBestBigWig(exp, active)
 
     fnp = os.path.join(BaseDir, assembly, fnpBase)
     Utils.ensureDir(fnp)
@@ -272,7 +276,7 @@ genome {assembly}
 trackDb {assembly}/trackDb.txt
 """.format(assembly = assembly))
     printWroteNumLines(fnp)
-    
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
