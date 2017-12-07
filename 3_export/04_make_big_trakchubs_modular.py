@@ -41,10 +41,11 @@ BaseDir = '/home/mjp/public_html/ucsc'
 
 
 class Lookup:
-    def __init__(self, btid, btname, info):
+    def __init__(self, btid, btname, info, cREs):
         self.btid = btid
         self.btname = btname
         self.info = info
+        self.cREs = cREs
 
     def isActive(self):
         r = self.btid in ["hepatocyte_derived_from_H9",
@@ -53,7 +54,7 @@ class Lookup:
         # if r:
         #    print("active biosample:", self.btid)
         return r
-        
+
 class TrackhubDb:
     def __init__(self, args, assembly, cache):
         self.args = args
@@ -75,13 +76,17 @@ class TrackhubDb:
                                             {"lookupByExp": self.lookupByExp,
                                              "idx": len(jobs) + 1,
                                              "total": len(self.inputData)}))
-                
-        self.compositeTrack  = Parallel(n_jobs=self.args.j)(delayed(outputAllTracks)(job)
-                                                            for job in jobs)
+
+        Parallel(n_jobs=self.args.j)(delayed(outputAllTracks)(job)
+                                     for job in jobs)
 
     def _lookup(self):
         fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")
         printt("parsing", fnp)
+
+        url = os.path.join("http://megatux.purcaro.com:9006/screen10/globals/",
+                           self.assembly, "creBigBedsByCellType")
+        creBigBeds = requests.get(url).json()["creBigBedsByCellType"]
 
         self.lookupByExp = {}
         for ct, assays in self.cache["byCellType"].iteritems():
@@ -89,9 +94,12 @@ class TrackhubDb:
                 btid = info["cellTypeName"]
                 btname = info["cellTypeDesc"]
                 expID = info["expID"]
-                self.lookupByExp[expID] = Lookup(btid, btname, info)
+                cREs = creBigBeds.get(btid, {})
+                if not cREs:
+                    print("missing cREs for", btid)
+                self.lookupByExp[expID] = Lookup(btid, btname, info, cREs)
         print(len(self.lookupByExp))
-        
+
     def run(self):
         printt("building lookup...")
         self._lookup()
@@ -102,7 +110,7 @@ class TrackhubDb:
             biosample_type = r[0]["biosample_type"]
             bt = Helpers.sanitize(biosample_type)
             btToNormal[bt] = biosample_type
-            
+
             biosample_term_name = r[0]["biosample_term_name"]
             btn = Helpers.sanitize(biosample_term_name)
 
@@ -122,7 +130,7 @@ class TrackhubDb:
         self._makeSubTracks()
         self._makeFiles(btToNormal)
         self._makeHub()
-        
+
     def _makeFiles(self, btToNormal):
         mainTrackDb = []
 
@@ -139,13 +147,6 @@ longLabel {longL}
            shortL=Helpers.makeShortLabel(shortLabel),
            longL=Helpers.makeLongLabel(longLabel)))
 
-        fnp = os.path.join(BaseDir, self.assembly, 'composite_tracks.txt')
-        mainTrackDb.append('include composite_tracks.txt')
-        with open(fnp, 'w') as f:
-            for t in self.compositeTrack:
-                f.write(t)
-        printWroteNumLines(fnp)
-                
         fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
         mainTrackDb.append('include subtracks.txt')
         with open(fnp, 'w') as f:
@@ -158,7 +159,7 @@ longLabel {longL}
         with open(fnp, 'w') as f:
             f.write('\n'.join(mainTrackDb))
         printWroteNumLines(fnp)
-        
+
     def _makeHub(self):
         fnp = os.path.join(BaseDir, 'hub.txt')
         with open(fnp, 'w') as f:
@@ -175,13 +176,13 @@ descriptionUrl http://encodeproject.org/
 def outputAllTracks(info):
     subGroups = outputSubTrack(**info)
     info["subGroups"] = subGroups
-    return outputCompositeTrack(**info)
+    outputCompositeTrack(**info)
 
 def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGroups,
                          biosample_type, biosample_term_name, lookupByExp):
-    fn = os.path.join("composite_tracks", bt, btn + '.txt')
-    fnp = os.path.join(BaseDir, assembly, fn)
-    Utils.ensureDir(fnp)
+    fnp = os.path.join(BaseDir, assembly, fnpBase)
+    if not os.path.exists(fnp):
+        raise Exception("missing " + fnp)
 
     subGroupsDict = {}
     for k in Helpers.SubGroupKeys:
@@ -194,8 +195,10 @@ def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGrou
     else:
         subGroup1key = "donor"
         subGroup2key = "age"
+    subGroup3key = "view"
     subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
     subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
+    subGroup3 = Helpers.unrollEquals(subGroupsDict[subGroup3key])
 
     actives = []
     for expID in expIDs:
@@ -204,7 +207,10 @@ def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGrou
     isActive = any(t for t in actives)
     if isActive:
         print("active biosample (composite):", btn)
-    
+
+    with open(fnp) as f:
+        subtracks = f.read()
+
     with open(fnp, 'w') as f:
         f.write("""
 track {bt}_{btn}
@@ -221,7 +227,8 @@ maxHeightPixels 64:12:8
 autoScale on
 subGroup1 {subGroup1key} {subGroup1key} {subGroup1}
 subGroup2 {subGroup2key} {subGroup2key} {subGroup2}
-sortOrder {subGroup1key}=+ {subGroup2key}=+
+subGroup3 {subGroup3key} {subGroup3key} {subGroup3}
+sortOrder {subGroup1key}=+ {subGroup2key}=+ {subGroup3key}=+
 dimensions dimX={subGroup2key} dimY={subGroup1key}
 dragAndDrop subTracks
 hoverMetadata on
@@ -231,10 +238,13 @@ darkerLabels on
            subGroup1key=subGroup1key,
            subGroup1=subGroup1,
            subGroup2key=subGroup2key,
-           subGroup2=subGroup2))
-            
+           subGroup2=subGroup2,
+           subGroup3key=subGroup3key,
+           subGroup3=subGroup3
+))
+        f.write('\n' + subtracks)
+
     printWroteNumLines(fnp, idx, 'of', total)
-    return 'include ' + fn + '\n' # for listing in trackDb....
 
 def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
                    biosample_type, biosample_term_name, lookupByExp):
@@ -248,12 +258,18 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
     isActive = any(t for t in actives)
     if isActive:
         print("active biosample:", btn)
-        
+
     parent = Parent(bt + '_' + btn, isActive)
-    
-    tracks = Tracks(assembly, parent)
+
+    tracks = Tracks(assembly, parent, (1 + idx) * 1000)
     for exp in exps:
-        tracks.addExpBestBigWig(exp)
+        active = False
+        expID = exp.encodeID
+        cREs = {}
+        if expID in lookupByExp:
+            active = lookupByExp[expID].isActive()
+            cREs = lookupByExp[expID].cREs
+        tracks.addExp(exp, active, cREs)
 
     fnp = os.path.join(BaseDir, assembly, fnpBase)
     Utils.ensureDir(fnp)
@@ -272,7 +288,7 @@ genome {assembly}
 trackDb {assembly}/trackDb.txt
 """.format(assembly = assembly))
     printWroteNumLines(fnp)
-    
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
