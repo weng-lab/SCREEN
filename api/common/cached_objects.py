@@ -49,7 +49,7 @@ class CachedObjects:
         self.chromCounts = self.pgSearch.chromCounts()
         self.creHist = self.pgSearch.creHist()
 
-        self.tf_list = self.pgSearch.tfHistoneDnaseList()
+        self.tf_list = self.pgSearch.tfHistoneDnaseList("encode")
 
         self.datasets = Datasets(self.assembly, self.pgSearch)
 

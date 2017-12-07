@@ -173,12 +173,10 @@ class CreDetailsWebService(object):
         target = kwargs.get("target", None)
         if not target:
             raise Exception("invalid target")
-        return {target: self.pgSearch.tfTargetExps(accession, target,
-                                                   eset=kwargs.get("eset", None))}
+        return {target: self.pgSearch.tfTargetExps(accession, target, eset=kwargs["eset"])}
 
     def cre_histone_dcc(self, accession, **kwargs):
         target = kwargs.get("target", None)
         if not target:
             raise Exception("invalid target")
-        return {target: self.pgSearch.histoneTargetExps(accession, target,
-                                                        eset=kwargs.get("eset", None))}
+        return {target: self.pgSearch.histoneTargetExps(accession, target, kwargs["eset"])}
