@@ -257,7 +257,7 @@ def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
         expID = exp.encodeID
         if expID in lookupByExp:
             active = lookupByExp[expID].isActive()
-        tracks.addExpBestBigWig(exp, active)
+        tracks.addExp(exp, active)
 
     fnp = os.path.join(BaseDir, assembly, fnpBase)
     Utils.ensureDir(fnp)

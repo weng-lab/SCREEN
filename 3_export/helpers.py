@@ -60,54 +60,54 @@ def makeLongLabel(n):
 def makeShortLabel(*n):
     return ' '.join([x for x in n if x])[:17]
 
-def fileFilters():
-    for ot in ["fold change over control",
-               "signal of unique reads",
-               "signal of all reads",
-               "raw signal",
-               "wavelet-smoothed signal",
-               "percentage normalized signal",
-               "read-depth normalized signal"
-               ]:
-        yield lambda x: x.output_type == ot and x.isPooled
-        for rep in xrange(0, 5):
-            yield lambda x: x.output_type == ot and rep in x.bio_rep and len(x.tech_rep) > 1
-            yield lambda x: x.output_type == ot and rep in x.bio_rep and (str(rep) + '_' + str(rep)) in x.tech_rep
-            yield lambda x: x.output_type == ot and rep in x.bio_rep
-        yield lambda x: x.output_type == ot and [] == x.bio_rep
-        yield lambda x: x.output_type == ot and {} == x.bio_rep
-
-def rnaFilters():
-    for ot in ["plus strand signal of unique reads",
-               "minus strand signal of unique reads",
-               "plus strand signal of all reads",
-               "minus strand signal of all reads",
-               "plus strand signal",
-               "minus strand signal",
-               "signal of unique reads",
-               "signal of all reads",
-               ]:
-        yield lambda x: x.output_type == ot and x.isPooled and x.genome_annotation
-        for rep in xrange(0, 5):
-            yield lambda x: x.output_type == ot and rep in x.bio_rep and x.genome_annotation
-        yield lambda x: x.output_type == ot and [] == x.bio_rep and x.genome_annotation
-        yield lambda x: x.output_type == ot and {} == x.bio_rep and x.genome_annotation
-
-        yield lambda x: x.output_type == ot and x.isPooled
-        for rep in xrange(0, 5):
-            yield lambda x: x.output_type == ot and rep in x.bio_rep
-        yield lambda x: x.output_type == ot and [] == x.bio_rep
-        yield lambda x: x.output_type == ot and {} == x.bio_rep
-
-def otherFilters():
-    return [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
-            lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
-            lambda bw: bw.isSignal() and bw.bio_rep == 1,
-            lambda bw: bw.isSignal() and bw.bio_rep == 2,
-            lambda bw: bw.isSignal()
-    ]
-
 def bigWigFilters(assembly, exp):
+    def fileFilters():
+        for ot in ["fold change over control",
+                   "signal of unique reads",
+                   "signal of all reads",
+                   "raw signal",
+                   "wavelet-smoothed signal",
+                   "percentage normalized signal",
+                   "read-depth normalized signal"
+                   ]:
+            yield lambda x: x.output_type == ot and x.isPooled
+            for rep in xrange(0, 5):
+                yield lambda x: x.output_type == ot and rep in x.bio_rep and len(x.tech_rep) > 1
+                yield lambda x: x.output_type == ot and rep in x.bio_rep and (str(rep) + '_' + str(rep)) in x.tech_rep
+                yield lambda x: x.output_type == ot and rep in x.bio_rep
+            yield lambda x: x.output_type == ot and [] == x.bio_rep
+            yield lambda x: x.output_type == ot and {} == x.bio_rep
+
+    def rnaFilters():
+        for ot in ["plus strand signal of unique reads",
+                   "minus strand signal of unique reads",
+                   "plus strand signal of all reads",
+                   "minus strand signal of all reads",
+                   "plus strand signal",
+                   "minus strand signal",
+                   "signal of unique reads",
+                   "signal of all reads",
+                   ]:
+            yield lambda x: x.output_type == ot and x.isPooled and x.genome_annotation
+            for rep in xrange(0, 5):
+                yield lambda x: x.output_type == ot and rep in x.bio_rep and x.genome_annotation
+            yield lambda x: x.output_type == ot and [] == x.bio_rep and x.genome_annotation
+            yield lambda x: x.output_type == ot and {} == x.bio_rep and x.genome_annotation
+
+            yield lambda x: x.output_type == ot and x.isPooled
+            for rep in xrange(0, 5):
+                yield lambda x: x.output_type == ot and rep in x.bio_rep
+            yield lambda x: x.output_type == ot and [] == x.bio_rep
+            yield lambda x: x.output_type == ot and {} == x.bio_rep
+
+    def otherFilters():
+        return [lambda bw: bw.isRawSignal() and bw.bio_rep == 1,
+                lambda bw: bw.isRawSignal() and bw.bio_rep == 2,
+                lambda bw: bw.isSignal() and bw.bio_rep == 1,
+                lambda bw: bw.isSignal() and bw.bio_rep == 2,
+                lambda bw: bw.isSignal()
+        ]
+
     files = filter(lambda x: x.isBigWig() and x.assembly == assembly and x.isReleased(),
                    exp.files)
 
@@ -141,6 +141,31 @@ def bigWigFilters(assembly, exp):
         eprint(exp)
         eprint(f)
 
+    return []
+
+def bigBedFilters(assembly, exp):
+    files = filter(lambda x: x.isBigBed() and x.assembly == assembly and x.isReleased(),
+                   exp.files)
+
+    if exp.isRnaSeqLike():
+        return []
+
+    def fileFilters():
+        yield lambda x: x.isReplicatedPeaks()
+        yield lambda x: x.isBigBedNarrowPeak() and x.isIDRoptimal()
+        yield lambda x: x.isBigBedNarrowPeak() and x.isIDR()
+        yield lambda x: x.isBigBedNarrowPeak() and x.isReplicatedPeaks()
+        for rep in xrange(0, 5):
+            yield lambda x: x.isBigBedNarrowPeak() and rep in x.bio_rep
+        yield lambda x: x.isBigBedNarrowPeak()
+        yield lambda x: x.isBigBedBroadPeak()
+        yield lambda x: x.isPeaks()
+
+    for bf in fileFilters():
+        beds = filter(bf, files)
+        beds = filter(lambda x: x.assembly == assembly, beds)
+        if beds:
+            return beds
     return []
 
 html_escape_table = {
