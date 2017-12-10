@@ -22,6 +22,10 @@ class CelltypeView extends React.Component {
 	const cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
 	if(name.indexOf("browser") !== -1){
 	    actions.showGenomeBrowser(cre, name);
+	} else if(name.indexOf("gene") !== -1){
+
+	} else if(name.indexOf("snps") !== -1){
+	    
 	} else {
             actions.showReDetail(cre);
 	}
@@ -84,9 +88,11 @@ class CelltypeView extends React.Component {
              visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
-            {title: "SNPs", data: "snps", 
+            {title: "SNPs", data: "snps",
+	     className: "snps",
 	     render: Render.snpLinks(this.props.assembly)},
-            {title: "gene", data: "geneid", 
+            {title: "gene", data: "geneid",
+	     className: "gene",
 	     render: Render.geneLink},
 	    {
 		title: "genome browsers", data: null,
