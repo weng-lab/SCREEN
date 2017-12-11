@@ -35,7 +35,12 @@ class GeneParse:
                 "start": self.coord.start,
                 "stop": self.coord.end,
                 "strand": self.strand,
-                "sm": self.sm
+                "sm": self.sm,
+                "searchLink": {
+                    "approved_symbol": self.approved_symbol,
+                    "coord_chrom": self.coord.chrom,
+                    "coord_start": self.coord.start,
+                    "coord_end": self.coord.end}
                 }
 
     def get_genetext(self):
