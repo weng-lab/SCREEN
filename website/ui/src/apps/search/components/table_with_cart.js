@@ -14,11 +14,11 @@ import GenomeBrowser from '../../../common/components/genomebrowser/components/g
 
 
 class TableWithCart extends React.Component {
-    state = {minrange:0, 
+    state = {minrange:0,
 	     maxrange: 0, selectedaccession: {},
 	     chrom:'',
 	     cellType:''};
-    
+
     _get_missing(a) {
 	const assays = {"dnase": "DNase-seq",
 			"promoter": "H3K4me3 ChIP-seq",
@@ -92,7 +92,7 @@ class TableWithCart extends React.Component {
 				if(!href.includes("&cart")){
 				    href += "&cart";
 				}
-				window.location.assign(href);				    
+				window.location.assign(href);
 			    },
 			    (msg) => {
 				console.log("error posting to cart/set", msg);
@@ -112,7 +112,7 @@ class TableWithCart extends React.Component {
 				    // go back to search page
 				    href = href.replace("&cart", "");
 				}
-				window.location.assign(href);				    
+				window.location.assign(href);
 			    },
 			    (msg) => {
 				console.log("error posting to cart/set", msg);
@@ -131,6 +131,7 @@ class TableWithCart extends React.Component {
 				    //$("#errBox").show()
 				    return true;
 				}
+                                console.log(got);
 				downloadjs(got["url"]);
 			    },
 			    (msg) => {
@@ -301,9 +302,9 @@ class TableWithCart extends React.Component {
 				 byCellType={bigWigByCellType}
 				 assembly={this.props.assembly}
 				 selectedaccession={this.state.selectedaccession}/>)
-	    
+
 	}
-	
+
 	return (
             <div ref={"searchTable"}
                  style={{display: (this.props.isFetching ? "none" : "block")}}>
@@ -321,7 +322,7 @@ class TableWithCart extends React.Component {
 		</div>
 
 		{gb}
-		
+
 		<Ztable data={data}
                         sortCol={table_order}
 			cols={TableColumns(this.props, ctCol)}

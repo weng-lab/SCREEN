@@ -34,7 +34,7 @@ class CREdownload:
     def downloadAsBed(self, j, uid):
         outFn, outFnp = self._downloadFileName(uid, "bed")
         self.pgSearch.creTableDownloadBed(j, outFnp)
-        url = os.path.join('/', "static", "downloads", uid, outFn)
+        url = os.path.join('/', "assets", "downloads", uid, outFn)
         return {"url": url}
 
     def _downloadFileName(self, uid, formt):
@@ -47,5 +47,5 @@ class CREdownload:
     def downloadAsJson(self, j, uid):
         outFn, outFnp = self._downloadFileName(uid, "json")
         self.pgSearch.creTableDownloadJson(j, outFnp)
-        url = os.path.join('/', "static", "downloads", uid, outFn)
+        url = os.path.join('/', "assets", "downloads", uid, outFn)
         return {"url": url}
