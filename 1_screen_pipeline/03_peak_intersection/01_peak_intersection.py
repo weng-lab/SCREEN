@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from __future__ import print_function
+import arrow
 import os
 import sys
 import ujson as json
@@ -154,7 +155,8 @@ class PeakIntersection:
 
         printt("completed hash merge")
 
-        runDate = "2017-12-10"
+        runDate = arrow.now().format('YYYY-MM-DD')
+        printt("runDate:", runDate)
         outFnp = paths.path(self.assembly, "extras", runDate, "peakIntersections.json.gz")
         Utils.ensureDir(outFnp)
         with gzip.open(outFnp, 'w') as f:
