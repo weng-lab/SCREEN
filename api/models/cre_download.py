@@ -39,7 +39,7 @@ class CREdownload:
 
     def _downloadFileName(self, uid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = '-'.join([timestr, "v4", formt]) + ".gz"
+        outFn = '-'.join([timestr, "v4", formt])
         outFnp = os.path.join(self.staticDir, "downloads", uid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp

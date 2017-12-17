@@ -11,7 +11,6 @@ import sys
 import os
 from natsort import natsorted
 from collections import namedtuple
-import gzip
 import psycopg2.extras
 
 from coord import Coord
@@ -290,7 +289,7 @@ with DELIMITER E'\t'
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_bed") as curs:
-            with gzip.open(fnp, 'w') as f:
+            with open(fnp, 'w') as f:
                 curs.copy_expert(q, f)
 
     def creTableDownloadJson(self, j, fnp):
@@ -313,5 +312,5 @@ with DELIMITER E'\t'
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
-            with gzip.open(fnp, 'w') as f:
+            with open(fnp, 'w') as f:
                 curs.copy_expert(q, f)
