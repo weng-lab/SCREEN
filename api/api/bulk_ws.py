@@ -55,7 +55,8 @@ class BulkWebService:
         self.pgGlobal = GlobalPG(assembly)
         self.pgFantomCat = PGFantomCat(assembly)
 
-        self.actions = {"cres": self.cres}
+        self.actions = {"cres": self.cres,
+                        "cts": self.cts}
 
     def process(self, args, kwargs):
         action = args[0]
@@ -92,5 +93,6 @@ FROM {tn}
         lookup = self.cache.rankMethodToIDxToCellTypeZeroBased["H3K27ac"]
         return {"indexToCellType": lookup,
                 "cREs": self._wrapQuery2(q)[0][0]}
-        
-            
+
+    def cts(self, args):
+        return self.cache.rankMethodToIDxToCellTypeZeroBased
