@@ -312,5 +312,8 @@ with DELIMITER E'\t'
            whereClause=whereClause)
 
         with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
-            with open(fnp, 'w') as f:
-                curs.copy_expert(q, f)
+            sf = cStringIO.StringIO()
+            curs.copy_expert(q, sf)
+        sf.seek(0)
+        with open(fnp, 'w') as f:
+            sf.read_all().replace(b'\\n', b'')
