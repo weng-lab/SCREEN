@@ -268,8 +268,8 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         if show5group:
             cREaccession = cREs["5group"]
             url = EncodeUrlBigBed(cREaccession)
-            desc = ct + "5-group cREs"
-            stateType = "5-group "
+            desc = ct + " 5-group cREs"
+            stateType = "5-group"
             t = cRETrack(self.assembly, stateType, cREaccession, superTrackName,
                          True, desc).lines(self.priority)
             self.priority += 1
