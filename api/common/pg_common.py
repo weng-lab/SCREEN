@@ -49,6 +49,21 @@ FROM {tn}
                 ret[rank_method][r[1]] = r[0]
         return ret
 
+    def rankMethodToIDxToCellTypeZeroBased(self):
+        with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
+            curs.execute("""
+SELECT idx, celltype, rankmethod
+FROM {tn}
+""".format(tn=self.assembly + "_rankcelltypeindexex"))
+            ret = {}
+            for r in curs.fetchall():
+                rank_method = r[2]
+                if rank_method not in ret:
+                    ret[rank_method] = {}
+                idx = int(r[0]) - 1
+                ret[rank_method][idx] = r[1]
+        return ret
+
     def makeCtMap(self):
         amap = {"DNase": "dnase",
                 "H3K4me3": "promoter",  # FIXME: this could be misleading

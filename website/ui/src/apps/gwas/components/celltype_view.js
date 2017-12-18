@@ -22,6 +22,10 @@ class CelltypeView extends React.Component {
 	const cre = {...rowdata, ...rowdata.info, len: rowdata.stop - rowdata.start};
 	if(name.indexOf("browser") !== -1){
 	    actions.showGenomeBrowser(cre, name);
+	} else if(name.indexOf("gene") !== -1){
+
+	} else if(name.indexOf("snps") !== -1){
+	    
 	} else {
             actions.showReDetail(cre);
 	}
@@ -84,9 +88,11 @@ class CelltypeView extends React.Component {
              visible: vcols["enhancer zscore"]},
             {title: "DNase Z", data: "dnase zscore",
              visible: vcols["dnase zscore"]},
-            {title: "SNPs", data: "snps", 
+            {title: "SNPs", data: "snps",
+	     className: "snps",
 	     render: Render.snpLinks(this.props.assembly)},
-            {title: "gene", data: "geneid", 
+            {title: "gene", data: "geneid",
+	     className: "gene",
 	     render: Render.geneLink},
 	    {
 		title: "genome browsers", data: null,
@@ -100,6 +106,15 @@ class CelltypeView extends React.Component {
 
 	const columnDefs = [{ "orderData": 2, "targets": 1 }];
 	const actions = this.props.actions;
+
+	let table_order = "";
+	if(vcols["promoter zscore"]){
+	    table_order = ["promoter zscore", false];
+	} else if(vcols["enhancer zscore"]){
+	    table_order = ["enhancer zscore", false];
+	} else {
+	    table_order = ["dnase zscore", false];
+	}
 	
         const creTable = (
 	    <Ztable
@@ -111,7 +126,7 @@ class CelltypeView extends React.Component {
 		cols={cols}
 		bFilter={true}
 		cvisible={vcols}
-		order={[[2, "desc"], [0, "asc"]]}
+		sortCol={table_order}
             />);
 	const pct = Math.round(100.0 * cres.length / +this.props.rdata.numCresOverlap);
 	const numCresOverlap = this.props.rdata.numCresOverlap;

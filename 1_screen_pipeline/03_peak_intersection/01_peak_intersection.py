@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from __future__ import print_function
+import arrow
 import os
 import sys
 import ujson as json
@@ -72,10 +73,7 @@ class PeakIntersection:
         self.jobsFnp = paths.path(self.assembly, "extras", "jobs.json.gz")
     
     def makeJobs(self):
-        if "mm10" == self.assembly:
-            m = MetadataWS(Datasets.all_mouse)
-        else:
-            m = MetadataWS(Datasets.all_human)
+        m = MetadataWS(Datasets.byAssembly(self.assembly))
 
         allExps = [(m.chipseq_tfs_useful(self.assembly), "tf"),
                    (m.chipseq_histones_useful(self.assembly), "histone")]
@@ -141,10 +139,12 @@ class PeakIntersection:
 
         tfImap = {}
         fileJsons = []
+        filesToAccessions = {}
         for fileJson, accessions in results:
             if not accessions:
                 continue
             for etype, label, fileID, accs in accessions:
+                filesToAccessions[fileID] = accs
                 for acc in accs:
                     if acc not in tfImap:
                         tfImap[acc] = {"tf": {}, "histone": {}}
@@ -155,13 +155,24 @@ class PeakIntersection:
 
         printt("completed hash merge")
 
-        outFnp = paths.path(self.assembly, "extras", "peakIntersections.json.gz")
+        runDate = arrow.now().format('YYYY-MM-DD')
+        printt("runDate:", runDate)
+        outFnp = paths.path(self.assembly, "extras", runDate, "peakIntersections.json.gz")
+        Utils.ensureDir(outFnp)
         with gzip.open(outFnp, 'w') as f:
             for k, v in tfImap.iteritems():
                 f.write('\t'.join([k,
                                    json.dumps(v["tf"]),
                                    json.dumps(v["histone"])
                                    ]) + '\n')
+        printt("wrote", outFnp)
+
+        outFnp = paths.path(self.assembly, "extras", runDate, "chipseqIntersectionsWithCres.json.gz")
+        Utils.ensureDir(outFnp)
+        with gzip.open(outFnp, 'w') as f:
+            for k, v in filesToAccessions.iteritems():
+                f.write('\t'.join([k,
+                                   json.dumps(v)]) + '\n')
         printt("wrote", outFnp)
 
 
