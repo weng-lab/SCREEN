@@ -10,11 +10,11 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement
 from cassandra import ConsistencyLevel
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from constants import paths
 from config import Config
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils/'))
 from utils import Utils, printt, printWroteNumLines
 from files_and_paths import Dirs
 from get_yes_no import GetYesNoToQuestion
