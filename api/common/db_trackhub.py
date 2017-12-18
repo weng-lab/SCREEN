@@ -21,19 +21,6 @@ class DbTrackhub:
         self.DBCONN = DBCONN
         self.tableSearch = "search"
 
-    def setupDB(self):
-        with getcursor(self.DBCONN, "setupDB") as curs:
-            curs.execute("""
-DROP TABLE IF EXISTS {search};
-CREATE TABLE {search}
-(id serial PRIMARY KEY,
-reAccession text,
-assembly text,
-uid text NOT NULL,
-hubNum integer NOT NULL,
-j jsonb
-) """.format(search=self.tableSearch))
-
     def get(self, uid):
         with getcursor(self.DBCONN, "get") as curs:
             curs.execute("""
@@ -90,22 +77,3 @@ VALUES (
       })
                 hubNum = curs.fetchone()[0]
         return hubNum
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    args = parser.parse_args()
-    return args
-
-
-def main():
-    args = parse_args()
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
-    adb = DbTrackhub(DBCONN)
-    adb.setupDB()
-
-
-if __name__ == '__main__':
-    main()

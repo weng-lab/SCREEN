@@ -15,7 +15,6 @@ from models.minipeaks import MiniPeaks
 from models.ortholog import Ortholog
 
 from common.pg import PGsearch
-from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -64,8 +63,6 @@ class DataWebService(object):
                         "global_liftover": self.global_liftover,
                         "rampage": self.rampage
                         }
-
-        self.session = Sessions(ps.DBCONN)
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -136,8 +133,9 @@ class DataWebService(object):
 
     def bed_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.bed(j, self.session.userUid())
+        return cd.bed(j)
 
     def json_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.json(j, self.session.userUid())
+        return cd.json(j)
+      

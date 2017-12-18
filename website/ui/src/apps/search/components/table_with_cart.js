@@ -129,7 +129,9 @@ class TableWithCart extends React.Component {
 				    //$("#errBox").show()
 				    return true;
 				}
-				downloadjs(got["url"]);
+                                const urlBase = got["url"];
+                                const url = ApiClient.Servers(urlBase);
+			        return downloadjs(url);
 			    },
 			    (msg) => {
 				console.log("error getting bed download", msg);
@@ -147,7 +149,9 @@ class TableWithCart extends React.Component {
 				    //$("#errBox").show()
 				    return true;
 				}
-				return downloadjs(got["url"]);
+                                const urlBase = got["url"];
+                                const url = ApiClient.Servers(urlBase);
+			        return downloadjs(url);
 			    },
 			    (msg) => {
 				console.log("error getting bed download", msg);

@@ -43,18 +43,13 @@ class WebServerConfig:
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
-        redisHost = Config.redisHost
-
         return {
             '/': {
-                #'tools.sessions.on': True,
-                #'tools.sessions.storage_type': 'redis',
-                #'tools.sessions.host': redisHost,
-                #'tools.sessions.locking': 'explicit'
             },
-            '/static': {
+            '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir
+                'tools.staticdir.dir': self.staticDir,
+                'tools.cors.on' : True,
             }
         }
 

@@ -16,21 +16,27 @@ from dbconnect import db_connect
 from config import Config
 
 
-def setupDB(DBCONN):
-    tableName = "sessions"
-    printt("drop and create", tableName)
-    with getcursor(DBCONN, "get") as curs:
-        curs.execute("""
-DROP TABLE IF EXISTS {tn};
-CREATE TABLE {tn}
-(id serial PRIMARY KEY,
-uid text,
-session_id text
-) """.format(tn=tableName))
+class DbTrackhub:
+    def __init__(self, DBCONN):
+        self.DBCONN = DBCONN
+        self.tableSearch = "search"
 
+    def setupDB(self):
+        with getcursor(self.DBCONN, "setupDB") as curs:
+            curs.execute("""
+DROP TABLE IF EXISTS {search};
+CREATE TABLE {search}
+(id serial PRIMARY KEY,
+reAccession text,
+assembly text,
+uid text NOT NULL,
+hubNum integer NOT NULL,
+j jsonb
+) """.format(search=self.tableSearch))
 
 def run(args, DBCONN):
-    setupDB(DBCONN)
+    d = DbTrackhub(DBCONN)
+    d.setupDB()
 
 
 def parse_args():
