@@ -95,14 +95,13 @@ class ConfigureGenomeBrowser extends React.Component {
 	let cols = [
 	    { title: "", data: "checked",
 	      render: Render.checkCt},
-	    { title: "cell type", data: "name",
-	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
-	      className: "dt-right" },
+	    { title: "cell type", data: "name"},
+	    { title: "tissue", data: "tissue"},
 	    { title: "", data: "cellTypeName",
-	      className: "dt-right dcc",
+	      className: "dcc",
 	      render: Render.assayIcon(this.props.globals),
-	      orderable: false }
+	      orderable: false },
+	    { title: "synonyms", data: "synonyms", visible: false }
 	]
 
 	let ctBox = (
