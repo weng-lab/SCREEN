@@ -32,14 +32,14 @@ class CREdownload:
             return {"error": "error running action"}
 
     def downloadAsBed(self, j, uuid):
-        outFn, outFnp = self._downloadFileName(uuid, ".bed")
+        outFn, outFnp = self._downloadFileName(uuid, ".bed.txt")
         self.pgSearch.creTableDownloadBed(j, outFnp)
         url = os.path.join('/', "assets", "downloads", uuid, outFn)
         return {"url": url}
 
     def _downloadFileName(self, uuid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        outFn = '-'.join([timestr, "v4", formt])
+        outFn = '-'.join([timestr, "v4"]) + formt
         outFnp = os.path.join(self.staticDir, "downloads", uuid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp
