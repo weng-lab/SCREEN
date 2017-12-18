@@ -42,14 +42,6 @@ class Apis():
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
 
     @cherrypy.expose
-    def ensembl_trackhub(self, *args, **kwargs):
-        return self.trackhub.ensembl_trackhub(*args, **kwargs)
-
-    @cherrypy.expose
-    def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(*args, **kwargs)
-
-    @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
@@ -63,20 +55,6 @@ class Apis():
     def ucsc_trackhub_url_snp(self, *args, **kwargs):
         j = cherrypy.request.json
         return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"])
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def ensembl_trackhub_url(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.trackhub.ensembl_trackhub_url(j, j["uuid"])
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def washu_trackhub_url(self, *args, **kwargs):
-        j = cherrypy.request.json
-        return self.trackhub.washu_trackhub_url(j, j["uuid"])
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

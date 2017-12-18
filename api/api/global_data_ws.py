@@ -15,6 +15,11 @@ class GlobalDataWebServiceWrapper:
         self.assemblies = Config.assemblies
         self.dwss = {a: makeDWS(a) for a in self.assemblies}
 
+    def static(self, assembly, ver):
+        if assembly not in self.assemblies:
+            raise Exception("invalid assembly")
+        return self.dwss[assembly].static(ver)
+        
     def process(self, args, kwargs):
         assembly = args[0]
         if assembly not in self.assemblies:
