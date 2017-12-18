@@ -54,8 +54,8 @@ def makeTrackName(n):
     n = n[:100]
     return n
 
-def makeLongLabel(n):
-    return n[:80]
+def makeLongLabel(*n):
+    return ' '.join([x for x in n if x])[:80]
 
 def makeShortLabel(*n):
     return ' '.join([x for x in n if x])[:17]

@@ -21,8 +21,6 @@ from db_trackhub import DbTrackhub
 
 import trackhub_helpers as Helpers
 
-from helpers_trackhub import PredictionTrack
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from constants import paths
 from config import Config
@@ -87,13 +85,14 @@ def colorize(assay):
     return c
 
 class cRETrack(object):
-    def __init__(self, assembly, stateType, cREaccession, parent, active, desc):
+    def __init__(self, assembly, assay, show5group, cREaccession, parent, active, ct):
         self.assembly = assembly
-        self.stateType = stateType
+        self.assay = assay
+        self.show5group = show5group
         self.cREaccession = cREaccession
         self.parent = parent
         self.active = active
-        self.desc = desc
+        self.ct = ct
         self.p = self._init()
 
     def _init(self):
@@ -103,8 +102,24 @@ class cRETrack(object):
         p["bigDataUrl"] = self._url()
         p["visibility"] = Helpers.viz("dense", self.active)
         p["type"] = "bigBed 9"
-        p["shortLabel"] = Helpers.makeShortLabel(self.desc)
-        p["longLabel"] = Helpers.makeLongLabel(self.desc)
+
+        if 'general' == self.ct:
+            if self.show5group:
+                shortLabel = ["general 5g cREs"]
+                longLabel = ["general 5-group cREs"]
+            else:
+                shortLabel = [self.ct, "9s", self.assay, "cREs"]
+                longLabel =  ["general cREs", "with high", self.assay, '(9 state)']
+        else:
+            if self.show5group:
+                shortLabel = [self.ct, "5g cREs"]
+                longLabel = ["cREs in", self.ct, '(5 group)']
+            else:
+                shortLabel = [self.ct, "9s", self.assay, "cREs"]
+                longLabel =  ["cREs in", self.ct, "with high", self.assay, '(9 state)']
+            
+        p["shortLabel"] = Helpers.makeShortLabel(*shortLabel)
+        p["longLabel"] = Helpers.makeLongLabel(*longLabel)
         p["itemRgb"] = "On"
         p["darkerLabels"] = "on"
         return p
@@ -117,14 +132,13 @@ class cRETrack(object):
         
 
 class BigWigTrack(object):
-    def __init__(self, assembly, expID, fileID, assay, parent, active, desc, ct):
+    def __init__(self, assembly, expID, fileID, assay, parent, active, ct):
         self.assembly = assembly
         self.expID = expID
         self.fileID = fileID
         self.assay = assay
         self.parent = parent
         self.active = active
-        self.desc = desc
         self.ct = ct
         self.p = self._init()
 
@@ -138,13 +152,16 @@ class BigWigTrack(object):
         p["color"] = colorize(self.assay)
         p["maxHeightPixels"] = "128:32:8"
         p["shortLabel"] = Helpers.makeShortLabel(self.assay, self.ct)
-        p["longLabel"] = Helpers.makeLongLabel(self.desc)
+        p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
         p["darkerLabels"] = "on"
         p["autoScale"] = "off"
         p["viewLimits"] = self._signalMax()
         return p
 
+    def _desc(self):
+        return ' '.join([self.assay, "Signal in", self.ct, self.expID])
+    
     def _signalMax(self):
         if "DNase" == self.assay:
             return "0:150"
@@ -231,29 +248,32 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         self.priority = 1
 
         show5group = j["showCombo"]
-        self.lines = [self.generalCREs(show5group)]
+        self.lines = self.generalCREs(show5group)
 
         for ct in j["cellTypes"]:
             self.lines += self._add_ct(ct, show5group)
 
         return filter(lambda x: x, self.lines)
 
-    def generalCREs(self, fiveGroup):
-        if fiveGroup:
-            url = EncodeUrlBigBed(AgnosticCres["5-group"][self.assembly])
-            desc = "general cREs (5 group)"
-            t = PredictionTrack(desc, self.priority, url, True).track(desc)
+    def generalCREs(self, show5group):
+        superTrackName = Helpers.sanitize("super_" + 'general cREs')
+        ret = self.makeSuperTrack('general cREs', superTrackName)
+        
+        cREaccession = AgnosticCres["5-group"][self.assembly]
+        t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
+                     True == show5group, 'general').lines(self.priority)
+        print(show5group, t)
+        self.priority += 1
+        ret += [t]
+        
+        for assay in ["H3K4me3", "H3K27ac", "CTCF"]:
+            cREaccession = AgnosticCres["9-state"][assay][self.assembly]
+            t = cRETrack(self.assembly, assay, False, cREaccession, superTrackName,
+                         False == show5group, 'general').lines(self.priority)
             self.priority += 1
-        else:
-            t = ""
-            for stateType in ["H3K4me3", "H3K27ac", "CTCF"]:
-                cREaccession = AgnosticCres["9-state"][stateType][self.assembly]
-                url = EncodeUrlBigBed(cREaccession)
-                desc = stateType + " 9-state cREs"
-                t += PredictionTrack(desc, self.priority, url, True).track(desc)
-                t += "\n\n"
-                self.priority += 1
-        return t
+            ret += [t]
+
+        return ret
 
     def _add_ct(self, ct, show5group):
         cache = self.cacheW[self.assembly]
@@ -263,39 +283,29 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         ret = self.makeSuperTrack(ct, superTrackName)
 
         #cRE biosample-specific tracks
-
         cREs = cache.creBigBeds[ct]
         if show5group:
             cREaccession = cREs["5group"]
             url = EncodeUrlBigBed(cREaccession)
-            desc = ct + " 5-group cREs"
-            stateType = "5-group"
-            t = cRETrack(self.assembly, stateType, cREaccession, superTrackName,
-                         True, desc).lines(self.priority)
+            t = cRETrack(self.assembly, '', show5group, cREaccession, superTrackName,
+                         True, ct).lines(self.priority)
             self.priority += 1
             ret += [t]
         else:
-            for stateType in ["H3K4me3", "H3K27ac", "CTCF"]:
-                key = "9state-" + stateType
+            for assay in ["DNase", "H3K4me3", "H3K27ac", "CTCF"]:
+                key = "9state-" + assay
                 if key not in cREs:
                     continue
                 cREaccession = cREs[key]
-                desc = ct + " 9-group " + stateType + " cREs"
-                t = cRETrack(self.assembly, stateType, cREaccession, superTrackName,
-                              True, desc).lines(self.priority)
+                t = cRETrack(self.assembly, assay, show5group, cREaccession, superTrackName,
+                              True, ct).lines(self.priority)
                 self.priority += 1
                 ret += [t]
 
         # bigWig signal tracks
         for expInfo in cache.datasets.byCellType[ct]:
-            desc = ' '.join([
-                expInfo["assay"],
-                "Signal in",
-                ct,
-                expInfo["expID"]
-            ])
             t = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
-                            expInfo["assay"], superTrackName, True, desc, ct).lines(self.priority)
+                            expInfo["assay"], superTrackName, True, ct).lines(self.priority)
             self.priority += 1
             ret += [t]
         
@@ -313,10 +323,6 @@ longLabel {tct_long}
                    supershow=supershow,
                    tct_short = Helpers.makeShortLabel(ct),
                    tct_long = Helpers.makeLongLabel(ct))]
-
-
-        #title = ' '.join(["cREs in", tct, "with high", a, '(9 state)'])
-        #desc = ' '.join([bw, "Peaks", mt["assay_term_name"], mt["target"],
 
 
 def parse_args():
