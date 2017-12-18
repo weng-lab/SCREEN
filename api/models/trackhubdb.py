@@ -10,8 +10,6 @@ import re
 import argparse
 from collections import OrderedDict
 
-from trackinfo import TrackInfo
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath
@@ -20,11 +18,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from coord import Coord
 from pg import PGsearch
 from db_trackhub import DbTrackhub
-from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 import trackhub_helpers as Helpers
 
-from cre import CRE
+from helpers_trackhub import PredictionTrack
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from constants import paths
@@ -279,7 +276,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
             ret += [t]
         else:
             for stateType in ["H3K4me3", "H3K27ac", "CTCF"]:
-                cREaccession = cREs["9state-" + stateType]
+                key = "9state-" + stateType
+                if key not in cREs:
+                    continue
+                cREaccession = cREs[key]
                 desc = ct + " 9-group " + stateType + " cREs"
                 t = cRETrack(self.assembly, stateType, cREaccession, superTrackName,
                               True, desc).lines(self.priority)
