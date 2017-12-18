@@ -26,7 +26,7 @@ class GlobalDataWebServiceWrapper:
         for assembly in Config.assemblies:
             files += self.cacheW[assembly].filesList
         return files
-        
+
 class GlobalDataWebService(object):
     def __init__(self, cache):
         self.cache = cache
@@ -44,7 +44,6 @@ class GlobalDataWebService(object):
         r = {}
         g = self.globalData
         for key in args:
-            print("key was", key)
             if key not in g:
                 return {"error": "key not found", "key": key}
             r[key] = g[key]
