@@ -90,14 +90,14 @@ class cRETrack(object):
                 shortLabel = ["general 5g cREs"]
                 longLabel = ["general 5-group cREs"]
             else:
-                shortLabel = [self.ct, "9s", self.assay, "cREs"]
+                shortLabel = ["9s", self.ct]
                 longLabel =  ["general cREs", "with high", self.assay, '(9 state)']
         else:
             if self.show5group:
-                shortLabel = [self.ct, "5g cREs"]
+                shortLabel = ["5g", self.ct]
                 longLabel = ["cREs in", self.ct, '(5 group)']
             else:
-                shortLabel = [self.ct, "9s", self.assay, "cREs"]
+                shortLabel = ["9s", self.assay, self.ct]
                 longLabel =  ["cREs in", self.ct, "with high", self.assay, '(9 state)']
             
         p["shortLabel"] = Helpers.makeShortLabel(*shortLabel)
