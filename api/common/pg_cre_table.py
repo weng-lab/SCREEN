@@ -97,6 +97,7 @@ class PGcreTable(object):
         return fields, ret
 
     def geneTable(self, j, chrom, start, stop):
+        print(self.assembly + '_gene_details')
         with getcursor(self.pg.DBCONN, "select_gene_table") as curs:
             curs.execute("""SELECT  * from {tableName} WHERE transcript_id IN (SELECT transcript_id from {tableName}
              WHERE feature='transcript' AND seqname='{seqname}' AND (int4range({startpos}, {endpos}) &&
@@ -267,37 +268,6 @@ FROM {tn} AS cre
                 elif not isclose(_range[1], maxDefault):
                     self.whereClauses.append("(%s)" %
                                              "cre.%s_zscores[%d] <= %f" % (exp, cti, _range[1]))
-
-    def cre(self, accession, chrom, start, stop):
-        j = {}
-        j["accessions"] = [accession]
-
-        fields, whereClause = self._buildWhereStatement(j, chrom, start, stop)
-
-        with getcursor(self.pg.DBCONN, "_cre_table") as curs:
-            q = """
-SELECT JSON_AGG(r) from(
-SELECT {fields}
-FROM {tn} AS cre
-{whereClause}
-ORDER BY maxz DESC
-LIMIT 1000) r
-""".format(fields=fields, tn=self.tableName,
-                whereClause=whereClause)
-
-            #print("\n", q, "\n")
-            if 0:
-                timedQuery(curs, q)
-            else:
-                curs.execute(q)
-            rows = curs.fetchall()[0][0]
-            if not rows:
-                rows = []
-
-            total = len(rows)
-            if total >= 1000:  # reached query limit
-                total = self._creTableEstimate(curs, whereClause)
-        return {"cres": rows, "total": total}
 
     def creTableDownloadBed(self, j, fnp):
         chrom = checkChrom(self.assembly, j)

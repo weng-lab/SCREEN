@@ -7,17 +7,16 @@ import json
 import os
 import re
 import argparse
-import requests
 from collections import OrderedDict, defaultdict
 from joblib import Parallel, delayed
 
-from tracks import Tracks, Parent
-import helpers as Helpers
+from tracks import Tracks
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 from metadataws import MetadataWS
+from cache_memcache import MemCacheWrapper
 
 AddPath(__file__, '../common')
 from constants import paths
@@ -31,265 +30,77 @@ def _reduce_method(meth):
     return (getattr, (meth.__self__, meth.__func__.__name__))
 copy_reg.pickle(types.MethodType, _reduce_method)
 
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
+mc = MemCacheWrapper(Config.memcache)
 
-Host = "http://192.168.1.46:9008/metadata"
-BaseDir = '/home/mjp/public_html/ucsc'
-
-
-class Lookup:
-    def __init__(self, btid, btname, info, cREs):
-        self.btid = btid
-        self.btname = btname
-        self.info = info
-        self.cREs = cREs
-
-    def isActive(self):
-        r = self.btid in ["hepatocyte_derived_from_H9",
-                          "bipolar_spindle_neuron_derived_from_induced_pluripotent_stem_cell",
-                          "B_cell_adult"]
-        # if r:
-        #    print("active biosample:", self.btid)
-        return r
+AssayColors = {"DNase": ["6,218,147", "#06DA93"],
+               "RNA-seq": ["0,170,0", "", "#00aa00"],
+               "RAMPAGE": ["214,66,202", "#D642CA"],
+               "H3K4me1": ["255,223,0", "#FFDF00"],
+               "H3K4me2": ["255,255,128", "#FFFF80"],
+               "H3K4me3": ["255,0,0", "#FF0000"],
+               "H3K9ac": ["255,121,3", "#FF7903"],
+               "H3K27ac": ["255,205,0", "#FFCD00"],
+               "H3K27me3": ["174,175,174", "#AEAFAE"],
+               "H3K36me3": ["0,128,0", "#008000"],
+               "H3K9me3": ["180,221,228", "#B4DDE4"],
+               "Conservation": ["153,153,153", "#999999"],
+               "TF ChIP-seq": ["18,98,235", "#1262EB"],
+               "CTCF": ["0,176,240", "#00B0F0"]}
 
 class TrackhubDb:
-    def __init__(self, args, assembly, cache):
+    def __init__(self, args, assembly):
         self.args = args
         self.assembly = assembly
-        self.cache = cache
+        #self.DBCONN = DBCONN
+        #self.cache = cache
         self.byBiosampleTypeBiosample = defaultdict(lambda: defaultdict(dict))
-        self.subGroups = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
-
-        printt("loading exps by biosample_type...")
-        self.mw = MetadataWS(host=Host)
-        self.inputData = self.mw.encodeByBiosampleTypeCustom(self.assembly)
-        self.lookupByExp = {}
-
-    def _makeSubTracks(self):
-        jobs = []
-        for bt, btnInfo in self.byBiosampleTypeBiosample.iteritems():
-            for btn, info in btnInfo.iteritems():
-                jobs.append(merge_two_dicts(info,
-                                            {"lookupByExp": self.lookupByExp,
-                                             "idx": len(jobs) + 1,
-                                             "total": len(self.inputData)}))
-
-        Parallel(n_jobs=self.args.j)(delayed(outputAllTracks)(job)
-                                     for job in jobs)
-
-    def _lookup(self):
-        fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")
-        printt("parsing", fnp)
-
-        url = os.path.join("http://megatux.purcaro.com:9006/screen10/globals/",
-                           self.assembly, "creBigBedsByCellType")
-        creBigBeds = requests.get(url).json()["creBigBedsByCellType"]
-
-        self.lookupByExp = {}
-        for ct, assays in self.cache["byCellType"].iteritems():
-            for info in assays:
-                btid = info["cellTypeName"]
-                btname = info["cellTypeDesc"]
-                expID = info["expID"]
-                cREs = creBigBeds.get(btid, {})
-                if not cREs:
-                    print("missing cREs for", btid)
-                self.lookupByExp[expID] = Lookup(btid, btname, info, cREs)
-        print(len(self.lookupByExp))
 
     def run(self):
-        printt("building lookup...")
-        self._lookup()
+        printt("loading exps by biosample_type...")
+        mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
+        byBiosampleTypeBiosample = mw.encodeByBiosampleTypeWithBigWig(self.assembly)
 
-        printt("building infos...")
-        btToNormal = {}
-        for r in self.inputData:
+        jobs = []
+        for r in byBiosampleTypeBiosample:
             biosample_type = r[0]["biosample_type"]
-            bt = Helpers.sanitize(biosample_type)
-            btToNormal[bt] = biosample_type
-
             biosample_term_name = r[0]["biosample_term_name"]
-            btn = Helpers.sanitize(biosample_term_name)
-
             expIDs = r[0]["expIDs"]
-            fnpBase = os.path.join("subtracks", bt, btn +'.txt')
-            self.byBiosampleTypeBiosample[bt][btn]= {
-                "biosample_type": biosample_type,
-                "bt": bt,
-                "biosample_term_name": biosample_term_name,
-                "btn": btn,
-                "fnpBase": fnpBase,
-                "expIDs": expIDs,
-                "assembly": self.assembly
-            }
+            jobs.append({"biosample_type": biosample_type,
+                         "biosample_term_name": biosample_term_name,
+                         "expIDs": expIDs,
+                         "idx": len(jobs) + 1,
+                         "total": len(byBiosampleTypeBiosample),
+                         "assembly": self.assembly
+            })
 
-        printt("making tracks and subtracks...")
-        self._makeSubTracks()
-        self._makeFiles(btToNormal)
-        self._makeHub()
+        ret = Parallel(n_jobs=self.args.j)(delayed(output)(**job) for job in jobs)
 
-    def _makeFiles(self, btToNormal):
-        mainTrackDb = []
+        for r in ret:
+            self.byBiosampleTypeBiosample[r[0]][r[1]] = r[2]
+        printt("done")
 
-        for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
-            totalExperiments = sum([len(info["expIDs"]) for info in btnFnps.values()])
-            shortLabel = btToNormal[bt]
-            longLabel = btToNormal[bt] + " (%s experiments)" % totalExperiments
-            mainTrackDb.append("""
-track super_{bt}
-superTrack on show
-shortLabel {shortL}
-longLabel {longL}
-""".format(bt = bt,
-           shortL=Helpers.makeShortLabel(shortLabel),
-           longL=Helpers.makeLongLabel(longLabel)))
-
-        fnp = os.path.join(BaseDir, self.assembly, 'subtracks.txt')
-        mainTrackDb.append('include subtracks.txt')
-        with open(fnp, 'w') as f:
-            for bt, btnFnps in self.byBiosampleTypeBiosample.iteritems():
-                for btn, info in btnFnps.iteritems():
-                        f.write('include ' + info["fnpBase"] + '\n')
-        printWroteNumLines(fnp)
-
-        fnp = os.path.join(BaseDir, self.assembly, 'trackDb.txt')
-        with open(fnp, 'w') as f:
-            f.write('\n'.join(mainTrackDb))
-        printWroteNumLines(fnp)
-
-    def _makeHub(self):
-        fnp = os.path.join(BaseDir, 'hub.txt')
-        with open(fnp, 'w') as f:
-            f.write("""
-hub ENCODE
-shortLabel ENCODE Trackhub Test3
-longLabel ENCODE Trackhub Test3
-genomesFile genomes.txt
-email zhiping.weng@umassmed.edu
-descriptionUrl http://encodeproject.org/
-""")
-        printWroteNumLines(fnp)
-
-def outputAllTracks(info):
-    subGroups = outputSubTrack(**info)
-    info["subGroups"] = subGroups
-    outputCompositeTrack(**info)
-
-def outputCompositeTrack(assembly, bt, btn, expIDs, fnpBase, idx, total, subGroups,
-                         biosample_type, biosample_term_name, lookupByExp):
-    fnp = os.path.join(BaseDir, assembly, fnpBase)
-    if not os.path.exists(fnp):
-        raise Exception("missing " + fnp)
-
-    subGroupsDict = {}
-    for k in Helpers.SubGroupKeys:
-        subGroupsDict[k] = {a[0]:a[1] for a in subGroups[k]}
-    longLabel = biosample_term_name + " (%s experiments)" % len(expIDs)
-
-    if "immortalized_cell_line" == bt:
-        subGroup1key = "label"
-        subGroup2key = "assay"
-    else:
-        subGroup1key = "donor"
-        subGroup2key = "age"
-    subGroup3key = "view"
-    subGroup1 = Helpers.unrollEquals(subGroupsDict[subGroup1key])
-    subGroup2 = Helpers.unrollEquals(subGroupsDict[subGroup2key])
-    subGroup3 = Helpers.unrollEquals(subGroupsDict[subGroup3key])
-
-    actives = []
-    for expID in expIDs:
-        if expID in lookupByExp:
-            actives.append(lookupByExp[expID].isActive())
-    isActive = any(t for t in actives)
-    if isActive:
-        print("active biosample (composite):", btn)
-
-    with open(fnp) as f:
-        subtracks = f.read()
-
-    with open(fnp, 'w') as f:
-        f.write("""
-track {bt}_{btn}
-parent super_{bt}
-compositeTrack on
-""".format(bt=bt,
-           btn=btn))
-        if isActive:
-            f.write("visibility full\n")
-        f.write("""shortLabel {shortL}
-longLabel {longL}
-type bigWig 9 +
-maxHeightPixels 64:12:8
-autoScale on
-subGroup1 {subGroup1key} {subGroup1key} {subGroup1}
-subGroup2 {subGroup2key} {subGroup2key} {subGroup2}
-subGroup3 {subGroup3key} {subGroup3key} {subGroup3}
-sortOrder {subGroup1key}=+ {subGroup2key}=+ {subGroup3key}=+
-dimensions dimX={subGroup2key} dimY={subGroup1key}
-dragAndDrop subTracks
-hoverMetadata on
-darkerLabels on
-""".format(shortL=Helpers.makeShortLabel(biosample_term_name),
-           longL=Helpers.makeLongLabel(longLabel),
-           subGroup1key=subGroup1key,
-           subGroup1=subGroup1,
-           subGroup2key=subGroup2key,
-           subGroup2=subGroup2,
-           subGroup3key=subGroup3key,
-           subGroup3=subGroup3
-))
-        f.write('\n' + subtracks)
-
-    printWroteNumLines(fnp, idx, 'of', total)
-
-def outputSubTrack(assembly, bt, btn, expIDs, fnpBase, idx, total,
-                   biosample_type, biosample_term_name, lookupByExp):
-    mw = MetadataWS(host=Host)
+def output(assembly, biosample_type, biosample_term_name, expIDs, idx, total):
+    mw = MetadataWS(host="http://192.168.1.46:9008/metadata")
     exps = mw.exps(expIDs)
 
-    actives = []
-    for expID in expIDs:
-        if expID in lookupByExp:
-            actives.append(lookupByExp[expID].isActive())
-    isActive = any(t for t in actives)
-    if isActive:
-        print("active biosample:", btn)
+    #print(biosample_type, biosample_term_name, len(exps))
 
-    parent = Parent(bt + '_' + btn, isActive)
-
-    tracks = Tracks(assembly, parent, (1 + idx) * 1000)
+    tracks = Tracks(assembly)
     for exp in exps:
-        active = False
-        expID = exp.encodeID
-        cREs = {}
-        if expID in lookupByExp:
-            active = lookupByExp[expID].isActive()
-            cREs = lookupByExp[expID].cREs
-        tracks.addExp(exp, active, cREs)
+        if exp.isHiC():
+            continue
+        tracks.addExpBestBigWig(exp)
 
-    fnp = os.path.join(BaseDir, assembly, fnpBase)
+    bt = biosample_type.replace(' ', '_')
+    btid = re.sub('[^0-9a-zA-Z]+', '-', biosample_term_name)
+    fnp = os.path.join('/home/mjp/public_html/ucsc', assembly, bt, btid +'.txt')
     Utils.ensureDir(fnp)
     with open(fnp, 'w') as f:
         for line in tracks.lines():
             f.write(line)
     printWroteNumLines(fnp, idx, 'of', total)
-    return tracks.subgroups()
-
-def outputGenomes(assemblies):
-    fnp = os.path.join(BaseDir, 'genomes.txt')
-    with open(fnp, 'w') as f:
-        for assembly in assemblies:
-            f.write("""
-genome {assembly}
-trackDb {assembly}/trackDb.txt
-""".format(assembly = assembly))
-    printWroteNumLines(fnp)
-
-
+    return (biosample_type, biosample_term_name, fnp)
+                
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', type=int, default=4)
@@ -300,19 +111,29 @@ def parse_args():
 def main():
     args = parse_args()
 
-    assemblies = ["hg19", "mm10"]
-    for assembly in assemblies:
+    # AddPath(__file__, '../common/')
+    # from dbconnect import db_connect
+    # from postgres_wrapper import PostgresWrapper
+
+    # AddPath(__file__, '../api/common/')
+    # from pg import PGsearch
+    # from cached_objects import CachedObjects
+    # from pg_common import PGcommon
+    # from db_trackhub import DbTrackhub
+    # from cached_objects import CachedObjectsWrapper
+
+    # printt("connecting to DB...")
+    # DBCONN = db_connect(os.path.realpath(__file__))
+
+    # printt("loading cache...")        
+    # ps = PostgresWrapper(DBCONN)
+    # cacheW = CachedObjectsWrapper(ps)
+
+    for assembly in ["hg19", "mm10"]:
         printt("************************", assembly)
-
-        printt("loading cache from API...")
-        cacheUrl = "http://api.wenglab.org/screen/v10/globalData/0/" + assembly
-        ws = requests.get(cacheUrl)
-        cache = ws.json()
-        printt("done")
-
-        tdb = TrackhubDb(args, assembly, cache)
+        tdb = TrackhubDb(args, assembly)
         tdb.run()
-    outputGenomes(assemblies)
+
 
 if __name__ == '__main__':
     main()

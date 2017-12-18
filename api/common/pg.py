@@ -99,10 +99,6 @@ FROM {tn}
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTable(j, chrom, start, stop)
 
-    def cre(self, accession, chrom, start, stop):
-        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
-        return pct.cre(accession, chrom, start, stop)
-
     def geneTable(self, j, chrom, start, stop):
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.geneTable(j, chrom, start, stop)
@@ -255,10 +251,6 @@ WHERE accession = %s
         pg = PGcommon(self.pg, self.assembly)
         return pg.rankMethodToIDxToCellType()
 
-    def rankMethodToIDxToCellTypeZeroBased(self):
-        pg = PGcommon(self.pg, self.assembly)
-        return pg.rankMethodToIDxToCellTypeZeroBased()
-
     def rankMethodToCellTypes(self):
         with getcursor(self.pg.DBCONN, "pg$getRanIdxToCellType") as curs:
             curs.execute("""
@@ -362,10 +354,10 @@ ORDER BY similarity DESC LIMIT 10
         return [{"accession": r[0], "chrom": r[2], "start": r[3], "end": r[4]}
                 for r in rr]
 
-    def _intersections_tablename(self, eset, metadata=False):
-        if eset not in ["encode", "cistrome", "peak"]:
+    def _intersections_tablename(self, metadata=False, eset=None):
+        if eset not in [None, "cistrome", "peak"]:
             raise Exception("pg$PGSearch::_intersections_tablename: invalid dataset %s" % eset)
-        if "encode" == eset:
+        if eset is None:
             eset = "peak"
         return eset + "Intersections" + ("" if not metadata else "Metadata")
 
@@ -386,8 +378,8 @@ WHERE accession = %s
                     for k, v in r[1].iteritems()]
         return {"tf": tfs, "histone": histones}
 
-    def tfHistoneDnaseList(self, eset):
-        tableName = self.assembly + "_" + self._intersections_tablename(eset, metadata=True)
+    def tfHistoneDnaseList(self, eset=None):
+        tableName = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
         with getcursor(self.pg.DBCONN, "peakIntersectCount") as curs:
             curs.execute("""
 SELECT distinct label
@@ -551,9 +543,9 @@ ORDER BY start
         fields = ["gene", "start", "stop", "strand"]
         return [dict(zip(fields, r)) for r in rows]
 
-    def histoneTargetExps(self, accession, target, eset):
-        peakTn = self.assembly + "_" + self._intersections_tablename(eset)
-        peakMetadataTn = self.assembly + "_" + self._intersections_tablename(eset, metadata=True)
+    def histoneTargetExps(self, accession, target, eset=None):
+        peakTn = self.assembly + "_" + self._intersections_tablename(eset=eset)
+        peakMetadataTn = self.assembly + "_" + self._intersections_tablename(metadata=True, eset=eset)
 
         q = """
 SELECT {eid}fileID, biosample_term_name{tissue}
@@ -564,10 +556,8 @@ FROM {peakTn}
 WHERE accession = %s
 )
 ORDER BY biosample_term_name
-""".format(eid=("" if eset == "cistrome" else "expID, "),
-           tissue=(", tissue" if eset == "cistrome" else ""),
-           peakTn=peakTn,
-           peakMetadataTn=peakMetadataTn)
+""".format(eid=("" if eset == "cistrome" else "expID, "), tissue=(", tissue" if eset == "cistrome" else ""),
+           peakTn=peakTn, peakMetadataTn=peakMetadataTn)
 
         with getcursor(self.pg.DBCONN, "pg::genesInRegion") as curs:
             curs.execute(q, (target, accession))

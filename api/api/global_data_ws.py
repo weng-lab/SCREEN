@@ -19,37 +19,29 @@ class GlobalDataWebServiceWrapper:
         if assembly not in self.assemblies:
             raise Exception("invalid assembly")
         return self.dwss[assembly].static(ver)
-        
+
     def process(self, args, kwargs):
         assembly = args[0]
         if assembly not in self.assemblies:
             raise Exception("invalid assembly")
         return self.dwss[assembly].process(args[1:], kwargs)
 
-    def creFiles(self):
-        files = []
-        for assembly in Config.assemblies:
-            files += self.cacheW[assembly].filesList
-        return files
+class GlobalDataController:
+    def __init__(self, ps, cacheW):
+        self.ps = ps
+        self.cacheW = cacheW
 
-class GlobalDataWebService(object):
-    def __init__(self, cache):
-        self.cache = cache
-        self.globalData = cache.global_data()
+    def static(self, assembly, ver):
+        if "index" == assembly:
+            files = []
+            for assembly in Config.assemblies:
+                files += self.cacheW[assembly].filesList
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            return json.dumps(files)
 
-    def static(self, ver):
-        # TODO: remove me
-        g = self.globalData
+        cache = self.cacheW[assembly]
+        g = cache.global_data(ver)
         if "0" == ver:
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(g)
         return "var Globals = " + json.dumps(g)
-
-    def process(self, args, kwargs):
-        r = {}
-        g = self.globalData
-        for key in args:
-            if key not in g:
-                return {"error": "key not found", "key": key}
-            r[key] = g[key]
-        return r

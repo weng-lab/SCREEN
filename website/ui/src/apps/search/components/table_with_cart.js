@@ -59,20 +59,22 @@ class TableWithCart extends React.Component {
         if(td.indexOf("selectcre")!==-1){
 	    let minrange =+(rowdata.start) - +(2000)
 	    let maxrange = +(rowdata.start) + +(rowdata.len) + +(2000)
-            let accessiondetails = {accession: rowdata.info.accession,
+	    let accessiondetails = {accession: rowdata.info.accession,
 				    start: rowdata.start,
 				    len: rowdata.len,
-				    chrom: rowdata.chrom};
+				    chrom: rowdata.chrom}
 	    this.setState({minrange: minrange,
 			   maxrange:maxrange,
 			   selectedaccession: accessiondetails,
 			   chrom: rowdata.chrom,
 			   cellType: this.props.cellType },
 			  ()=>{ actions.selectcre(accessiondetails)})
-        } else {
+        } else
+        {
 		let cre = {...rowdata, ...rowdata.info};
                 actions.showReDetail(cre);
-        }
+            }
+
     }
 
     addAllToCart() {

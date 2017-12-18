@@ -17,13 +17,14 @@ class DeWebServiceWrapper:
         self.assemblies = Config.assemblies
         self.wss = {a: makeWS(a) for a in self.assemblies}
 
-    def process(self, args, kwargs):
-        assembly = kwargs["assembly"]
-        if assembly not in self.assemblies:
+    def process(self, j, args, kwargs):
+        if "assembly" not in j:
+            raise Exception("assembly not defined")
+        if j["assembly"] not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.wss[assembly].process(*args, **kwargs)
+        return self.wss[j["assembly"]].process(j, args, kwargs)
 
-    
+
 class DeWebService(object):
     def __init__(self, args, ps, cache, staticDir, assembly):
         self.args = args
@@ -34,21 +35,18 @@ class DeWebService(object):
 
         self.actions = {"search": self.search}
 
-    def process(self, *args, **kwargs):
-        action = kwargs["data"]
-        if action not in self.actions:
-            raise Exception("gwas_ws: invalid action: " + action)
-
+    def process(self, j, args, kwargs):
+        action = args[0]
         try:
-            return self.actions[action](args[1:], **kwargs)
+            return self.actions[action](j, args[1:])
         except:
             raise
 
-    def search(self, *args, **kwargs):
-        gene = kwargs["gene"]  # TODO: check for valid gene
+    def search(self, j, args):
+        gene = j["gene"]  # TODO: check for valid gene
 
-        ct1 = kwargs["ct1"]
-        ct2 = kwargs["ct2"]
+        ct1 = j["ct1"]
+        ct2 = j["ct2"]
         if not ct1 or not ct2:
             raise Exception("ct1 and/or ct2 empty!")
 
