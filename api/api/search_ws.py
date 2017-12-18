@@ -57,7 +57,6 @@ class SearchWebService(object):
                 ret["failed"] = j["q"]
 
         uuid = j["uuid"]
-        print("uuid", uuid, "\n")
 
         cart = PGcart(self.ps, self.assembly)
         accessions = cart.get(uuid)
