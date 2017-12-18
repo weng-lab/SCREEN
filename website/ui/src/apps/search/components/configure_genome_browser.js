@@ -14,7 +14,7 @@ import DraggableCtList from '../../../common/components/draggable';
 
 class ConfigureGenomeBrowser extends React.Component {
     state = {"showCombo" : false};
-    
+
     gbclick = (cre, cts, gbrowser) => {
 	var half_window = 7500;
 	var arr = window.location.href.split("/");
@@ -27,6 +27,7 @@ class ConfigureGenomeBrowser extends React.Component {
 		    "version" : 2,
 		    "cellTypes" : cts,
 		    "showCombo" : this.state.showCombo,
+                    uuid: this.props.uuid,
 		    host,
 		    "assembly": this.props.assembly};
 	let jdata = JSON.stringify(data);
@@ -85,7 +86,7 @@ class ConfigureGenomeBrowser extends React.Component {
     optionsChanged = (s) => {
 	this.setState({showCombo: s});
     }
-    
+
     render() {
         let cre = this.props.configuregb_cre;
 	let cols = [
@@ -100,7 +101,7 @@ class ConfigureGenomeBrowser extends React.Component {
 	      render: Render.assayIcon(this.props.globals),
 	      orderable: false }
 	]
-	
+
 	let ctBox = (
 	    <Ztable
 		cols={cols}
@@ -149,8 +150,8 @@ class ConfigureGenomeBrowser extends React.Component {
 		<div className="panel-body">
 		    {ctBox}
 		</div>
-	    </div>);	    
-	
+	    </div>);
+
 	let combo = "5 group";
 	let notCombo = "9 state";
 	let options = (
@@ -196,14 +197,14 @@ class ConfigureGenomeBrowser extends React.Component {
 		</div>
 
 		<br />
-		
+
 		<div className="row">
                     <div className="col-md-6">
                     </div>
                     <div className="col-md-6">
                     </div>
 		</div>
-		
+
 		<div className="row">
                     <div className="col-md-6">
 			{selectedBiosamples}

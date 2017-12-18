@@ -19,8 +19,6 @@ from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
 from api.post_ws import PostWebServiceWrapper
 
-from common.session import Sessions
-
 
 class Apis():
     def __init__(self, args, viewDir, staticDir, ps, cache):
@@ -34,7 +32,6 @@ class Apis():
         self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.postWS = PostWebServiceWrapper(args, ps, cache, staticDir)
-        self.sessions = Sessions(ps.DBCONN)
         self.trackhub = TrackhubController(ps, cache)
 
     @cherrypy.expose
@@ -55,28 +52,28 @@ class Apis():
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ucsc_trackhub_url(j, self.sessions.userUid())
+        return self.trackhub.ucsc_trackhub_url(j, j["uuid"])
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ucsc_trackhub_url_snp(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ucsc_trackhub_url_snp(j, self.sessions.userUid())
+        return self.trackhub.ucsc_trackhub_url_snp(j, j["uuid"])
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def ensembl_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.ensembl_trackhub_url(j, self.sessions.userUid())
+        return self.trackhub.ensembl_trackhub_url(j, j["uuid"])
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def washu_trackhub_url(self, *args, **kwargs):
         j = cherrypy.request.json
-        return self.trackhub.washu_trackhub_url(j, self.sessions.userUid())
+        return self.trackhub.washu_trackhub_url(j, j["uuid"])
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

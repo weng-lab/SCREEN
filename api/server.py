@@ -12,9 +12,6 @@ import socket
 import psycopg2
 import psycopg2.pool
 
-import cherrys
-cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
-
 from main_apis import Apis
 from common.cached_objects import CachedObjectsWrapper
 
@@ -50,16 +47,10 @@ class WebServerConfig:
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
-        redisHost = Config.redisHost
-
         return {
             '/': {
-                'tools.sessions.on': True,
-                'tools.sessions.storage_type': 'redis',
-                'tools.sessions.host': redisHost,
-                'tools.sessions.locking': 'explicit'
             },
-            '/static': {
+            '/assets': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': self.staticDir
             }
@@ -112,7 +103,7 @@ def main():
                                 'server.socket_queue_size': 128,
                                 'server.thread_pool': 8,
         })
-    
+
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,
                                 'server.thread_pool': 30,

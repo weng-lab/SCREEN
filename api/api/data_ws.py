@@ -15,8 +15,6 @@ from models.minipeaks import MiniPeaks
 from models.ortholog import Ortholog
 
 from common.pg import PGsearch
-from common.get_set_mc import GetOrSetMemCache
-from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -46,10 +44,8 @@ class DataWebServiceWrapper:
         return self.dwss[j["assembly"]].process(j, args, kwargs)
 
 
-class DataWebService(GetOrSetMemCache):
+class DataWebService():
     def __init__(self, args, ps, cache, staticDir, assembly):
-        GetOrSetMemCache.__init__(self, assembly, "DataWebService")
-
         self.args = args
         self.ps = ps
         self.cache = cache
@@ -82,8 +78,6 @@ class DataWebService(GetOrSetMemCache):
             "linkedGenes": self._re_detail_linkedGenes,
             "miniPeaks": self._re_detail_miniPeaks,
         }
-
-        self.session = Sessions(ps.DBCONN)
 
     def process(self, j, args, kwargs):
         action = args[0]
@@ -233,11 +227,11 @@ class DataWebService(GetOrSetMemCache):
 
     def bed_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.bed(j, self.session.userUid())
+        return cd.bed(j)
 
     def json_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
-        return cd.json(j, self.session.userUid())
+        return cd.json(j)
 
     def cre_tf_dcc(self, j, args):
         accession = j.get("accession", None)

@@ -5,6 +5,7 @@ import psycopg2
 import json
 import itertools
 from io import StringIO
+import cStringIO
 from operator import itemgetter
 
 import sys
@@ -316,4 +317,5 @@ with DELIMITER E'\t'
             curs.copy_expert(q, sf)
         sf.seek(0)
         with open(fnp, 'w') as f:
-            sf.read_all().replace(b'\\n', b'')
+            for line in sf.readlines():
+                f.write(line.replace(b'\\n', b''))
