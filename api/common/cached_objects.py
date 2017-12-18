@@ -49,14 +49,12 @@ class CachedObjects:
         self.chromCounts = self.pgSearch.chromCounts()
         self.creHist = self.pgSearch.creHist()
 
-        self.tf_list = self.pgSearch.tfHistoneDnaseList("encode")
+        self.tf_list = self.pgSearch.tfHistoneDnaseList()
 
         self.datasets = Datasets(self.assembly, self.pgSearch)
 
         self.rankMethodToCellTypes = self.pgSearch.rankMethodToCellTypes()
         self.rankMethodToIDxToCellType = self.pgSearch.rankMethodToIDxToCellType()
-        self.rankMethodToIDxToCellTypeZeroBased = self.pgSearch.rankMethodToIDxToCellTypeZeroBased()
-        
         self.biosampleTypes = self.datasets.biosample_types
         self.assaymap = {"dnase": self.pgSearch.datasets("DNase"),
                          "h3k27ac": self.pgSearch.datasets("H3K27ac"),
@@ -112,7 +110,7 @@ class CachedObjects:
             ret.append(d)
         return ret
 
-    def global_data(self):
+    def global_data(self, ver):
         datasets = self.datasets
         return {
             "tfs": self.tf_list,

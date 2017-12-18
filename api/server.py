@@ -1,5 +1,8 @@
 #!/usr/bin/env python2
 
+
+
+
 import cherrypy
 import os
 import sys
@@ -14,6 +17,7 @@ from common.cached_objects import CachedObjectsWrapper
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
+from templates import Templates
 from utils import Utils, AddPath
 
 AddPath(__file__, "../common")
@@ -71,7 +75,6 @@ def cors():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dev', action="store_false")
-    parser.add_argument('--debugger', action="store_false", default=False)
     parser.add_argument('--dump', action="store_true", default=False)
     parser.add_argument('--production', action="store_true")
     parser.add_argument('--port', default=9006, type=int)
@@ -89,7 +92,7 @@ def main():
 
     wsconfig = WebServerConfig("main", args.production)
     main = Apis(args, wsconfig.viewDir, wsconfig.staticDir, ps, cow)
-    app = cherrypy.tree.mount(main, '/screen10', wsconfig.getRootConfig())
+    cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     cherrypy.tools.cors = cherrypy._cptools.HandlerTool(cors)
 
@@ -101,14 +104,6 @@ def main():
                                 'server.socket_queue_size': 128,
                                 'server.thread_pool': 8,
         })
-
-    if args.debugger:
-        from wdb.ext import WdbMiddleware
-        cherrypy.config.update({'global':{'request.throw_errors': True}})
-        app.wsgiapp.pipeline.append(('debugger', WdbMiddleware))
-        # to use:
-        # import wdb
-        # wdb.set_trace()
 
     if args.production:
         cherrypy.config.update({'server.socket_queue_size': 512,

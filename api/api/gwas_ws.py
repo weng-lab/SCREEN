@@ -17,11 +17,12 @@ class GwasWebServiceWrapper:
         self.assemblies = Config.assemblies
         self.wss = {a: makeWS(a) for a in self.assemblies}
 
-    def process(self, args, kwargs):
-        assembly = kwargs["assembly"]
-        if assembly not in self.assemblies:
+    def process(self, j, args, kwargs):
+        if "assembly" not in j:
+            raise Exception("assembly not defined")
+        if j["assembly"] not in self.assemblies:
             raise Exception("invalid assembly")
-        return self.wss[assembly].process(*args, **kwargs)
+        return self.wss[j["assembly"]].process(j, args, kwargs)
 
 
 class GwasWebService(object):
@@ -36,17 +37,17 @@ class GwasWebService(object):
                         "main": self._mainTable,
                         "cres": self._cres}
 
-    def process(self, *args, **kwargs):
-        action = kwargs["data"]
+    def process(self, j, args, kwargs):
+        action = args[0]
         if action not in self.actions:
             raise Exception("gwas_ws: invalid action: " + action)
 
         try:
-            return self.actions[action](args[1:], **kwargs)
+            return self.actions[action](j, args[1:])
         except:
             raise
 
-    def _initialLoad(self, *args, **kwargs):
+    def _initialLoad(self, j, args):
         g = Gwas(self.assembly, self.ps, self.assembly)
         return {"gwas": {"studies": g.studies,
                          "byStudy": g.byStudy},
@@ -54,21 +55,21 @@ class GwasWebService(object):
                 "ct": "",
                 "assembly": self.assembly}
 
-    def _mainTable(self, *args, **kwargs):
+    def _mainTable(self, j, args):
         g = Gwas(self.assembly, self.ps, self.cache)
-        self.gwas_study = kwargs["gwas_study"]
+        self.gwas_study = j["gwas_study"]
         if not g.checkStudy(self.gwas_study):
             raise Exception("invalid gwas study")
 
         return g.mainTable(self.gwas_study)
 
-    def _cres(self, *args, **kwargs):
+    def _cres(self, j, args):
         g = Gwas(self.assembly, self.ps, self.cache)
-        self.gwas_study = kwargs["gwas_study"]
+        self.gwas_study = j["gwas_study"]
         if not g.checkStudy(self.gwas_study):
             raise Exception("invalid gwas study")
 
+        ct = j["cellType"]
         # TODO: check ct!
-        ct = kwargs["cellType"]
 
         return g.cres(self.gwas_study, ct)
