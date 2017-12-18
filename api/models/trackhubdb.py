@@ -1,36 +1,18 @@
 #!/usr/bin/python
 
 import sys
-import StringIO
 import cherrypy
-import json
 import os
-import heapq
-import re
-import argparse
+import StringIO
 from collections import OrderedDict
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from files_and_paths import Dirs
-from utils import Utils, eprint, AddPath
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
-from coord import Coord
-from pg import PGsearch
-from db_trackhub import DbTrackhub
 
 import trackhub_helpers as Helpers
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
+from utils import AddPath
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from constants import paths
 from config import Config
-
-UCSC = 1
-WASHU = 2
-ENSEMBL = 3
-
-#WWW = "http://users.wenglab.org/moorej3/cREs"
-WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "RNA-seq": ["0,170,0", "", "#00aa00"],
@@ -175,15 +157,12 @@ class BigWigTrack(object):
 
 
 class TrackhubDb:
-    def __init__(self, ps, cacheW, db, browser):
+    def __init__(self, ps, cacheW, db):
         self.ps = ps
         self.cacheW = cacheW
         self.db = db
-        self.browser = browser
-        self.fileIDs = set()
 
     def ucsc_trackhub(self, *args, **kwargs):
-        #print("ucsc **************** args:", args)
         uuid = args[0]
 
         try:
@@ -262,7 +241,6 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         cREaccession = AgnosticCres["5-group"][self.assembly]
         t = cRETrack(self.assembly, '', True, cREaccession, superTrackName,
                      True == show5group, 'general').lines(self.priority)
-        print(show5group, t)
         self.priority += 1
         ret += [t]
         
@@ -276,13 +254,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         return ret
 
     def _add_ct(self, ct, show5group):
-        cache = self.cacheW[self.assembly]
-
         superTrackName = Helpers.sanitize("super_" + ct)
 
         ret = self.makeSuperTrack(ct, superTrackName)
+        ret += self._add_ct_cREs(ct, show5group, superTrackName)
+        ret += self._add_ct_bigWigs(ct, show5group, superTrackName)
+        return ret
 
+    def _add_ct_cREs(self, ct, show5group, superTrackName):
         #cRE biosample-specific tracks
+        ret = []
+
+        cache = self.cacheW[self.assembly]
         cREs = cache.creBigBeds[ct]
         if show5group:
             cREaccession = cREs["5group"]
@@ -301,14 +284,18 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                               True, ct).lines(self.priority)
                 self.priority += 1
                 ret += [t]
+        return ret
 
+    def _add_ct_bigWigs(self, ct, show5group, superTrackName):
         # bigWig signal tracks
+        ret = []
+
+        cache = self.cacheW[self.assembly]
         for expInfo in cache.datasets.byCellType[ct]:
             t = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
                             expInfo["assay"], superTrackName, True, ct).lines(self.priority)
             self.priority += 1
             ret += [t]
-        
         return ret
 
     def makeSuperTrack(self, ct, tn):
@@ -323,38 +310,3 @@ longLabel {tct_long}
                    supershow=supershow,
                    tct_short = Helpers.makeShortLabel(ct),
                    tct_long = Helpers.makeLongLabel(ct))]
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="hg19")
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-
-    AddPath(__file__, '../../common/')
-    from dbconnect import db_connect
-    from postgres_wrapper import PostgresWrapper
-
-    AddPath(__file__, '../../website/common/')
-    from pg import PGsearch
-    from cached_objects import CachedObjects
-    from pg_common import PGcommon
-    from db_trackhub import DbTrackhub
-    from cached_objects import CachedObjectsWrapper
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
-    ps = PostgresWrapper(DBCONN)
-    cacheW = CachedObjectsWrapper(ps)
-    db = DbTrackhub(DBCONN)
-
-    tdb = TrackhubDb(ps, cacheW, db, UCSC)
-    for assembly in [args.assembly]:
-        tdb.makeAllTracks(assembly)
-
-
-if __name__ == '__main__':
-    main()

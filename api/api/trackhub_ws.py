@@ -5,11 +5,9 @@ import StringIO
 import cherrypy
 import json
 import os
-import heapq
-import re
 
 from models.cre import CRE
-from models.trackhubdb import TrackhubDb, UCSC, WASHU, ENSEMBL
+from models.trackhubdb import TrackhubDb
 from common.pg import PGsearch
 from common.db_trackhub import DbTrackhub
 from common.coord import Coord
@@ -22,7 +20,7 @@ class TrackhubController:
         self.db = DbTrackhub(self.ps.DBCONN)
 
     def ucsc_trackhub(self, *args, **kwargs):
-        tdb = TrackhubDb(self.ps, self.cacheW, self.db, UCSC)
+        tdb = TrackhubDb(self.ps, self.cacheW, self.db)
         return tdb.ucsc_trackhub(*args, **kwargs)
 
     def _trackhub_url_info(self, j):
