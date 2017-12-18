@@ -52,7 +52,8 @@ class WebServerConfig:
             },
             '/assets': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': self.staticDir
+                'tools.staticdir.dir': self.staticDir,
+                'tools.cors.on' : True,
             }
         }
 
