@@ -28,6 +28,7 @@ class HelpTextImport:
 
     def _import(self):
         fnp = paths.path('', "extras", "google-help-text.json")
+        printt("reading", fnp)
         with open(fnp) as f:
             j = json.load(f)
         records_list_template = j["records_list_template"]
