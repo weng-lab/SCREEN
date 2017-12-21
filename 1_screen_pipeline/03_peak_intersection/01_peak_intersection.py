@@ -70,8 +70,11 @@ class PeakIntersection:
     def __init__(self, args, assembly):
         self.args = args
         self.assembly = assembly
-        self.jobsFnp = paths.path(self.assembly, "extras", "jobs.json.gz")
-    
+        self.runDate = arrow.now().format('YYYY-MM-DD')
+        self.jobsFnp = paths.path(self.assembly, "extras", self.runDate,
+                                  "jobs.json.gz")
+        Utils.ensureDir(self.jobsFnp)
+        
     def makeJobs(self):
         m = MetadataWS(Datasets.byAssembly(self.assembly))
 
@@ -109,8 +112,17 @@ class PeakIntersection:
 
         print("generated", len(jobs), "jobs")
 
+        jobsOut = []
+        for job in jobs:
+            j = {"bed": {"expID": job["bed"].expID,
+                         "fileID": job["bed"].fileID},
+                 "etype": job["etype"],
+                 "exp": {"label": job["exp"].label,
+                         "biosample_term_name": job["exp"].biosample_term_name
+                         }}            
+            jobsOut.append(j)
         with gzip.open(self.jobsFnp, 'w') as f:
-            json.dump(jobs, f)
+            json.dump(jobsOut, f)
         printt("wrote", self.jobsFnp)
         
         return jobs
@@ -155,9 +167,9 @@ class PeakIntersection:
 
         printt("completed hash merge")
 
-        runDate = arrow.now().format('YYYY-MM-DD')
-        printt("runDate:", runDate)
-        outFnp = paths.path(self.assembly, "extras", runDate, "peakIntersections.json.gz")
+        printt("runDate:", self.runDate)
+        outFnp = paths.path(self.assembly, "extras", self.runDate,
+                            "peakIntersections.json.gz")
         Utils.ensureDir(outFnp)
         with gzip.open(outFnp, 'w') as f:
             for k, v in tfImap.iteritems():
@@ -167,7 +179,8 @@ class PeakIntersection:
                                    ]) + '\n')
         printt("wrote", outFnp)
 
-        outFnp = paths.path(self.assembly, "extras", runDate, "chipseqIntersectionsWithCres.json.gz")
+        outFnp = paths.path(self.assembly, "extras", self.runDate,
+                            "chipseqIntersectionsWithCres.json.gz")
         Utils.ensureDir(outFnp)
         with gzip.open(outFnp, 'w') as f:
             for k, v in filesToAccessions.iteritems():
@@ -197,10 +210,10 @@ def main():
         pi = PeakIntersection(args, assembly)
 
         if args.list:
-            jobs = pi.makeJobs(assembly)
-            for j in jobs:
-                #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
-                print(j["bed"].fileID)
+            jobs = pi.makeJobs()
+            # for j in jobs:
+            #     #print('\t'.join(["list", j["bed"].expID, j["bed"].fileID]))
+            #     print(j["bed"].fileID)
             continue
 
         printt("intersecting TFs and Histones")

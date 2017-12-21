@@ -3,6 +3,7 @@
   "db_host": "pg-prod.internal.ho.wenglab.org",
   "db_usr": "regElmViz_usr",
   "db": "screenv10",
+  "db_port": 5432,
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 4,
   "minipeaks_nbins": 0,

@@ -17,7 +17,7 @@ from db_utils import getcursor, vacumnAnalyze, makeIndex, makeIndexIntRange
 from files_and_paths import Dirs, Tools, Genome, Datasets
 from exp import Exp
 
-AddPath(__file__, '../common/')
+AddPath(__file__, '../api/common/')
 from dbconnect import db_connect, db_connect_single
 from constants import chroms, paths, DB_COLS
 from config import Config

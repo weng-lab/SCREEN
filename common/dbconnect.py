@@ -16,6 +16,7 @@ from config import Config
 def getDbs(script):
     return {"host": Config.db_host,
             "user": Config.db_usr,
+            "port": Config.db_port,
             "dbname": Config.db,
             "application_name": script}
 

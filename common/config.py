@@ -20,6 +20,7 @@ class Config:
     version = re["version"]
     db_host = re["db_host"]
     db_usr = re["db_usr"]
+    db_port = re["db_port"]
     db = re["db"]
     assemblies = re["assemblies"]
     minipeaks_ver = re["minipeaks_ver"]

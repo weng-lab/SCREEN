@@ -69,15 +69,15 @@ assay text,
 label text,
 biosample_term_name text
 )""".format(tn=t))
-    pi = peakIntersections.PeakIntersection(args, assembly)
+    pi = peakIntersections.PeakIntersection({}, assembly)
     jobs = pi.loadJobs()
     outF = StringIO.StringIO()
     for r in jobs:
-        outF.write('\t'.join([r["bed"].expID,
-                              r["bed"].fileID,
+        outF.write('\t'.join([r["bed"]["expID"],
+                              r["bed"]["fileID"],
                               r["etype"],
-                              r["exp"].label,
-                              r["exp"].biosample_term_name
+                              r["exp"]["label"],
+                              r["exp"]["biosample_term_name"]
                               ]) + '\n')
     outF.seek(0)
     cols = "expID fileID assay label biosample_term_name".split(' ')
