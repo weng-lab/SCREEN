@@ -13,11 +13,14 @@ import {
 import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
 import SearchResponse from './SearchResponse';
+import * as SearchResponseTypes from './SearchResponse';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
 
 const resolve_data = require('../resolvers/cretable').resolve_data;
+const resolve_search = require('../resolvers/search').resolve_search;
+
 
 const BaseType = new GraphQLObjectType({
     name: 'BaseType',
@@ -37,12 +40,21 @@ const BaseType = new GraphQLObjectType({
             args: {
                 search: { type: CommonTypes.SearchParameters },
             },
-            resolve: (root, args) => search_json
+            resolve: resolve_search
         }
     })
 });
 
 const schema = new GraphQLSchema({
+    types: [
+        SearchResponseTypes.AccessionsResponse,
+        SearchResponseTypes.CellTypeResponse,
+        SearchResponseTypes.MultiGeneResponse,
+        SearchResponseTypes.SingleGeneResponse,
+        SearchResponseTypes.SNPsResponse,
+        SearchResponseTypes.RangeResponse,
+        SearchResponseTypes.FailedResponse
+    ],
     query: BaseType
 });
 

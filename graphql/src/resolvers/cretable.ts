@@ -1,26 +1,6 @@
-import { chroms } from '../constants';
+import { checkChrom } from '../utils';
 import { getCreTable, rfacets_active } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
-
-const assemblies = ['hg19', 'mm10'];
-const checkAssembly = (j) => {
-    const assembly = j['assembly'];
-    if (!assembly) {
-      throw new Error('assembly not defined');
-    }
-    if (!(assembly in assemblies)) {
-        throw new Error('invalid assembly ' + assembly);
-    }
-    return assembly;
-};
-
-const checkChrom = (assembly, chrom) => {
-    const achroms = chroms[assembly];
-    if (!achroms.includes(chrom)) {
-        throw new Error('unknown chrom ' + chrom);
-    }
-    return chrom;
-};
 
 const cache = require('../db/db_cache').cache;
 async function cre_table(data, assembly, chrom, start, end) {

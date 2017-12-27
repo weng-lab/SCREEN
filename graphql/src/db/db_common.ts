@@ -1,16 +1,6 @@
 import { natsort } from '../utils';
 
-const pool = require('./db').pool;
-export async function executeQuery(query) {
-    const client = await pool.connect();
-    try {
-        const res = await client.query(query);
-        return res;
-    } catch (e) {
-        console.error('Error when executing query: ', query);
-        return {};
-    }
-}
+const executeQuery = require('./db').executeQuery;
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';

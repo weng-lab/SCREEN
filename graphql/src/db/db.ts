@@ -12,3 +12,15 @@ pool.on('error', (err, client) => {
 require('./db_cache');
 
 module.exports.pool = pool;
+
+async function executeQuery(query) {
+    try {
+        const res = await pool.query(query);
+        return res;
+    } catch (e) {
+        console.error('Error when executing query: ', query);
+        return {rows: []};
+    }
+}
+
+module.exports.executeQuery = executeQuery;

@@ -15,6 +15,33 @@ import {
 import * as CommonTypes from './CommonSchema';
 import * as DataResponseTypes from './DataResponse';
 
+const resolveSearchResponse = d => {
+    const gene = d.gene;
+    const genes = d.genes;
+    const accessions = d.accessions;
+    const snps = d.snps;
+    const cellType = d.cellType;
+    const range = d.range;
+    if (gene) {
+        return SingleGeneResponse;
+    }
+    if (genes) {
+        return MultiGeneResponse;
+    }
+    if (accessions && accessions.length > 0) {
+        return AccessionsResponse;
+    }
+    if (snps && snps.length > 0) {
+        return SNPsResponse;
+    }
+    if (cellType) {
+        return CellTypeResponse;
+    }
+    if (range) {
+        return RangeResponse;
+    }
+    return FailedResponse;
+}
 
 export const SearchResponse = new GraphQLInterfaceType({
     name: 'SearchResponse',
@@ -28,6 +55,7 @@ export const SearchResponse = new GraphQLInterfaceType({
             type: new GraphQLNonNull(CommonTypes.Assembly)
         },
     }),
+    resolveType: resolveSearchResponse
 });
 
 export default SearchResponse;
@@ -49,7 +77,6 @@ export const SingleGeneResponse = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         gene: { type: Gene },
     }),
-    isTypeOf: d => !!d.gene
 });
 
 export const MultiGeneResponse = new GraphQLObjectType({
@@ -60,18 +87,16 @@ export const MultiGeneResponse = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         genes: { type: new GraphQLList(Gene) },
     }),
-    isTypeOf: d => !!d.genes
 });
 
 export const AccessionsResponse = new GraphQLObjectType({
-    name: 'AccessionsReponse',
+    name: 'AccessionsResponse',
     interfaces: [SearchResponse],
     fields: () => ({
         uuid: { type: new GraphQLNonNull(GraphQLString) },
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         accessions: { type: new GraphQLList(GraphQLString) },
     }),
-    isTypeOf: d => !!d.accessions
 });
 
 export const SNPsResponse = new GraphQLObjectType({
@@ -82,7 +107,6 @@ export const SNPsResponse = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         snps: { type: new GraphQLList(GraphQLString) },
     }),
-    isTypeOf: d => !!d.snps
 });
 
 export const CellTypeResponse = new GraphQLObjectType({
@@ -93,5 +117,23 @@ export const CellTypeResponse = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         celltype: { type: GraphQLString },
     }),
-    isTypeOf: d => !!d.cellType
+});
+
+export const RangeResponse = new GraphQLObjectType({
+    name: 'RangeResponse',
+    interfaces: [SearchResponse],
+    fields: () => ({
+        uuid: { type: new GraphQLNonNull(GraphQLString) },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        range: { type:  CommonTypes.ChromRange },
+    }),
+});
+
+export const FailedResponse = new GraphQLObjectType({
+    name: 'FailedResponse',
+    interfaces: [SearchResponse],
+    fields: () => ({
+        uuid: { type: new GraphQLNonNull(GraphQLString) },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+    }),
 });

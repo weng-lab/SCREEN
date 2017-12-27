@@ -1,13 +1,13 @@
 import { Client } from 'pg';
 import { isaccession, isclose } from '../utils';
 
-const accessions = (j: {accessions?: String[]}) => {
-    const accs: Array<String> = j['accessions'] || [];
+const accessions = (j: {accessions?: string[]}) => {
+    const accs: Array<string> = j['accessions'] || [];
     if (0 == accs.length) {
         return false;
     }
 
-    const accsList: String = accs.filter(isaccession).map(a => a.toUpperCase).join(',');
+    const accsList: string = accs.filter(isaccession).map(a => a.toUpperCase).join(',');
     const accsQuery = `accession IN (${accsList})`;
     return `(${accsQuery})`;
 };
@@ -76,13 +76,15 @@ const ctSpecific = (wheres, fields, ctSpecific, ct, j, ctmap) => {
 };
 
 const where = (wheres, chrom, start, stop) => {
-    if (chrom && start && stop) {
+    if (chrom) {
         wheres.push(`cre.chrom = '${chrom}'`);
+    }
+    if (start && stop) {
         wheres.push(`int4range(cre.start, cre.stop) && int4range(${start}, ${stop})`);
     }
 };
 
-const buildWhereStatement = (ctmap, j: Object, chrom: String | null, start: String | null, stop: String | null) => {
+const buildWhereStatement = (ctmap, j: Object, chrom: string | null, start: string | null, stop: string | null) => {
     const useAccs = accessions(j);
     const ct = j['cellType'];
     const wheres = [];
@@ -102,7 +104,7 @@ const buildWhereStatement = (ctmap, j: Object, chrom: String | null, start: Stri
     }
     where(wheres, chrom, start, stop);
 
-    const ctspecificpairs: Array<String> = [];
+    const ctspecificpairs: Array<string> = [];
     for (const k of Object.keys(ctSpecific)) {
         ctspecificpairs.push(`'${k}', ${ctSpecific[k]}`);
     }
@@ -117,7 +119,7 @@ const buildWhereStatement = (ctmap, j: Object, chrom: String | null, start: Stri
         'concordant': 'cre.concordant'
     };
 
-    const infopairs: Array<String> = [];
+    const infopairs: Array<string> = [];
     for (const k of Object.keys(infoFields)) {
         infopairs.push(`'${k}', ${infoFields[k]}`);
     }
@@ -146,7 +148,7 @@ async function creTableEstimate(pool, table, where) {
     return rows[0]['count'];
 }
 
-export async function getCreTable(assembly: String, ctmap: Object, j, chrom, start, stop) {
+export async function getCreTable(assembly: string, ctmap: Object, j, chrom, start, stop) {
     const table = assembly + '_cre_all';
     const { fields, where } = buildWhereStatement(ctmap, j, chrom, start, stop);
     const query = `
@@ -169,7 +171,7 @@ export async function getCreTable(assembly: String, ctmap: Object, j, chrom, sta
 }
 
 export async function rfacets_active(ctmap, j) {
-    const present: Array<String> = [];
+    const present: Array<string> = [];
     const ct = j['cellType'];
     if (!ct) {
         return present;
