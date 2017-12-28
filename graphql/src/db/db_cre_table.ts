@@ -1,15 +1,17 @@
 import { Client } from 'pg';
 import { isaccession, isclose } from '../utils';
+const executeQuery = require('./db').executeQuery;
 
-const accessions = (j: {accessions?: string[]}) => {
+const accessions = (wheres, j: {accessions?: string[]}) => {
     const accs: Array<string> = j['accessions'] || [];
     if (0 == accs.length) {
         return false;
     }
 
-    const accsList: string = accs.filter(isaccession).map(a => a.toUpperCase).join(',');
+    const accsList: string = accs.filter(isaccession).map(a => `'` + a.toUpperCase() + `'`).join(`,`);
     const accsQuery = `accession IN (${accsList})`;
-    return `(${accsQuery})`;
+    wheres.push(`(${accsQuery})`);
+    return true;
 };
 
 const notCtSpecific = (wheres, fields, j) => {
@@ -85,8 +87,6 @@ const where = (wheres, chrom, start, stop) => {
 };
 
 const buildWhereStatement = (ctmap, j: Object, chrom: string | null, start: string | null, stop: string | null) => {
-    const useAccs = accessions(j);
-    const ct = j['cellType'];
     const wheres = [];
     const fields = [
         'maxZ',
@@ -96,6 +96,9 @@ const buildWhereStatement = (ctmap, j: Object, chrom: string | null, start: stri
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
+    const useAccs = accessions(wheres, j);
+    const ct = j['cellType'];
+
     const ctspecific = {};
     if (useAccs || !ct) {
         notCtSpecific(wheres, fields, j);
@@ -134,7 +137,7 @@ const buildWhereStatement = (ctmap, j: Object, chrom: string | null, start: stri
 };
 
 
-async function creTableEstimate(pool, table, where) {
+async function creTableEstimate(table, where) {
     // estimate count
     // from https://wiki.postgresql.org/wiki/Count_estimate
     const q = `
@@ -144,7 +147,7 @@ async function creTableEstimate(pool, table, where) {
         LIMIT 1
     `;
 
-    const { rows } = await pool.query(q);
+    const { rows } = await executeQuery(q);
     return rows[0]['count'];
 }
 
@@ -160,12 +163,11 @@ export async function getCreTable(assembly: string, ctmap: Object, j, chrom, sta
         LIMIT 1000) r
     `;
 
-    const pool = require('./db').pool;
-    const res = await pool.query(query);
-    const rows = res.rows[0]['json_agg'] || [];
+    const res = await executeQuery(query);
+    const rows = (res.rows.length > 0 && res.rows[0]['json_agg']) || [];
     let total = rows.length;
     if (1000 <= total) {// reached query limit
-        total = await creTableEstimate(pool, table, where);
+        total = await creTableEstimate(table, where);
     }
     return {'cres': rows, 'total': total};
 }

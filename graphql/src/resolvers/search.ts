@@ -48,7 +48,7 @@ function sanitize(q: string) {
     return q.substr(0, 2048);
 }
 
-async function parse(assembly, args) {
+export async function parse(assembly, args) {
     const q = args.q || '';
     const s1 = sanitize(q).trim();
 
@@ -138,9 +138,6 @@ async function parse(assembly, args) {
         interpretation = undefined;
     }
 
-    ret['assembly'] = assembly;
-    ret['uuid'] = args.uuid;
-
     if (cellType) {
         ret['cellType'] = cellType;
     }
@@ -169,7 +166,7 @@ async function parse(assembly, args) {
 }
 
 export const resolve_search: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.search.assembly;
+    const assembly = args.assembly;
     const results = parse(assembly, args.search);
     return results;
 };

@@ -10,6 +10,7 @@ import {
     GraphQLID,
     GraphQLNonNull
 } from 'graphql';
+import { UUID } from './uuid';
 import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
 import SearchResponse from './SearchResponse';
@@ -29,8 +30,10 @@ const BaseType = new GraphQLObjectType({
             description: 'Get cRE data',
             type: DataResponse,
             args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                uuid: { type: new GraphQLNonNull(UUID) },
                 search: { type: new GraphQLNonNull(CommonTypes.SearchParameters) },
-                data: { type: new GraphQLNonNull(CommonTypes.DataParameters) }
+                data: { type: CommonTypes.DataParameters }
             },
             resolve: resolve_data
         },
@@ -38,6 +41,8 @@ const BaseType = new GraphQLObjectType({
             description: 'Perform a search',
             type: SearchResponse,
             args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                uuid: { type: new GraphQLNonNull(UUID) },
                 search: { type: CommonTypes.SearchParameters },
             },
             resolve: resolve_search
@@ -47,6 +52,8 @@ const BaseType = new GraphQLObjectType({
 
 const schema = new GraphQLSchema({
     types: [
+        CommonTypes.Assembly,
+        UUID,
         SearchResponseTypes.AccessionsResponse,
         SearchResponseTypes.CellTypeResponse,
         SearchResponseTypes.MultiGeneResponse,

@@ -88,13 +88,7 @@ export const SearchParameters = new GraphQLInputObjectType({
     name: 'SearchParameters',
     fields: () => ({
         q: {
-            type: GraphQLString
-        },
-        assembly: {
-            type: new GraphQLNonNull(Assembly)
-        },
-        uuid: {
             type: new GraphQLNonNull(GraphQLString)
-        }
+        },
     })
 });

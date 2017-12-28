@@ -9,8 +9,9 @@ const {formatError} = require('graphql');
 const logErrors = error => {
   const data = formatError(error);
   const {originalError} = error;
-  console.log(originalError);
-  data.field = originalError && originalError.field;
+  if (originalError) {
+    console.log(originalError);
+  }
   return data;
 };
 

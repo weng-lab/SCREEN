@@ -1,6 +1,7 @@
 import { checkChrom } from '../utils';
 import { getCreTable, rfacets_active } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
+import { parse } from './search';
 
 const cache = require('../db/db_cache').cache;
 async function cre_table(data, assembly, chrom, start, end) {
@@ -41,12 +42,13 @@ async function cre_table(data, assembly, chrom, start, end) {
     return results;
 }
 
-export const resolve_data: GraphQLFieldResolver<any, any> = (source, args, context) => {
-    const assembly = args.search.assembly;
-    // TODO: first do search if q
-    const chrom = args.data.range && checkChrom(assembly, args.data.range.chrom);
-    const start = args.data.range && args.data.range.start;
-    const end = args.data.range && args.data.range.end;
-    const results = cre_table(args.data, assembly, chrom, start, end);
+export async function resolve_data(source, inargs, context) {
+    const assembly = inargs.assembly;
+    const searchResponse = inargs.search ? await parse(assembly, inargs.search) : {};
+    const args = { ...searchResponse, ...inargs.data };
+    const chrom = args.range && checkChrom(assembly, args.range.chrom);
+    const start = args.range && args.range.start;
+    const end = args.range && args.range.end;
+    const results = cre_table(args, assembly, chrom, start, end);
     return results;
-};
+}

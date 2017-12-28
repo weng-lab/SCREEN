@@ -9,8 +9,6 @@ pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err);
 });
 
-require('./db_cache');
-
 module.exports.pool = pool;
 
 async function executeQuery(query) {
@@ -24,3 +22,6 @@ async function executeQuery(query) {
 }
 
 module.exports.executeQuery = executeQuery;
+
+require('./db_cache');
+
