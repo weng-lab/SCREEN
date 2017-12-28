@@ -45,7 +45,8 @@ async function cre_table(data, assembly, chrom, start, end) {
 export async function resolve_data(source, inargs, context) {
     const assembly = inargs.assembly;
     const searchResponse = inargs.search ? await parse(assembly, inargs.search) : {};
-    const args = { ...searchResponse, ...inargs.data };
+    const data = inargs.data ? inargs.data : {};
+    const args = { ...searchResponse, ...data };
     const chrom = args.range && checkChrom(assembly, args.range.chrom);
     const start = args.range && args.range.start;
     const end = args.range && args.range.end;
