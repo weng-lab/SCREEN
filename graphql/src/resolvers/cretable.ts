@@ -1,12 +1,11 @@
-import { checkChrom } from '../utils';
 import { getCreTable, rfacets_active } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 
 const cache = require('../db/db_cache').cache;
-async function cre_table(data, assembly, chrom, start, end) {
+async function cre_table(data, assembly, pagination) {
     const c = cache(assembly);
-    const results = await getCreTable(assembly, c.ctmap, data, chrom, start, end);
+    const results = await getCreTable(assembly, c.ctmap, data, pagination);
     const lookup = c.geneIDsToApprovedSymbol;
 
     results.cres = results.cres.map(r => {
@@ -47,9 +46,6 @@ export async function resolve_data(source, inargs, context) {
     const searchResponse = inargs.search ? await parse(assembly, inargs.search) : {};
     const data = inargs.data ? inargs.data : {};
     const args = { ...searchResponse, ...data };
-    const chrom = args.range && checkChrom(assembly, args.range.chrom);
-    const start = args.range && args.range.start;
-    const end = args.range && args.range.end;
-    const results = cre_table(args, assembly, chrom, start, end);
+    const results = cre_table(args, assembly, inargs.pagination || {});
     return results;
 }

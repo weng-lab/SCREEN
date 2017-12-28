@@ -33,7 +33,8 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 uuid: { type: new GraphQLNonNull(UUID) },
                 search: { type: CommonTypes.SearchParameters },
-                data: { type: CommonTypes.DataParameters }
+                data: { type: CommonTypes.DataParameters },
+                pagination: { type: CommonTypes.PaginationParameters }
             },
             resolve: resolve_data
         },

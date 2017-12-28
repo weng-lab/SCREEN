@@ -1,6 +1,7 @@
 import { Client } from 'pg';
-import { isaccession, isclose } from '../utils';
+import { checkChrom, isaccession, isclose } from '../utils';
 const executeQuery = require('./db').executeQuery;
+const { UserError } = require('graphql-errors');
 
 const accessions = (wheres, j: {accessions?: string[]}) => {
     const accs: Array<string> = j['accessions'] || [];
@@ -151,22 +152,34 @@ async function creTableEstimate(table, where) {
     return rows[0]['count'];
 }
 
-export async function getCreTable(assembly: string, ctmap: Object, j, chrom, start, stop) {
+export async function getCreTable(assembly: string, ctmap: Object, j, pagination) {
+    const chrom = j.range && checkChrom(assembly, j.range.chrom);
+    const start = j.range && j.range.start;
+    const end = j.range && j.range.end;
     const table = assembly + '_cre_all';
-    const { fields, where } = buildWhereStatement(ctmap, j, chrom, start, stop);
+    const { fields, where } = buildWhereStatement(ctmap, j, chrom, start, end);
+    const offset = pagination.offset || 0;
+    const limit = pagination.limit || 1000;
+    if (limit > 1000) {
+        throw new UserError('Cannot have a limit greater than 1000 in pagination parameters.');
+    }
+    if (offset + limit > 10000) {
+        throw new UserError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
+    }
     const query = `
         SELECT JSON_AGG(r) from(
         SELECT ${fields}
         FROM ${table} AS cre
         ${where}
         ORDER BY maxz DESC
-        LIMIT 1000) r
+        ${offset !== 0 ? `OFFSET ${offset}` : ''}
+        LIMIT ${limit}) r
     `;
 
     const res = await executeQuery(query);
     const rows = (res.rows.length > 0 && res.rows[0]['json_agg']) || [];
     let total = rows.length;
-    if (1000 <= total) {// reached query limit
+    if (limit <= total || offset !== 0) {// reached query limit
         total = await creTableEstimate(table, where);
     }
     return {'cres': rows, 'total': total};

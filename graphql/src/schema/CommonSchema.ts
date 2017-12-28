@@ -92,3 +92,16 @@ export const SearchParameters = new GraphQLInputObjectType({
         },
     })
 });
+
+export const PaginationParameters = new GraphQLInputObjectType({
+    name: 'PaginationParameters',
+    description: 'offset + limit <= 10000; limit <= 1000; to access more data, refine your search',
+    fields: () => ({
+        offset: {
+            type: GraphQLInt
+        },
+        limit: {
+            type: GraphQLInt
+        },
+    })
+});
