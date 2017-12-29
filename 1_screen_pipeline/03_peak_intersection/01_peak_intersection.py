@@ -132,7 +132,7 @@ class PeakIntersection:
         with gzip.open(self.jobsFnp) as f:
             jobs = json.load(f)
         print("loaded", len(jobs))
-        return jobs
+        return jobs, self.runDate
     
     def computeIntersections(self):
         bedFnp = paths.path(self.assembly, "extras", "cREs.sorted.bed")

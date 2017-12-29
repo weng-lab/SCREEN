@@ -6,6 +6,7 @@ import json
 import time
 import numpy as np
 import cherrypy
+import uuid as Uuid
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -15,7 +16,6 @@ from models.minipeaks import MiniPeaks
 from models.ortholog import Ortholog
 
 from common.pg import PGsearch
-from common.session import Sessions
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, chroms
@@ -86,13 +86,22 @@ class BulkWebService:
         return self._runQuery(q, args)
 
     def _cres_h3k27ac_zscores(self):
-        q = """
-SELECT accession, h3k27ac_zscores
-FROM {tn}
-""".format(tn = self.assembly + "_cre_all")
+        uuid = str(Uuid.uuid4())
+        outFn, outFnp = self._downloadFileName(uuid, ".json")
+        self.pgSearch.cres_h3k27ac_zscores(outFnp)
+        url = os.path.join('/', "assets", "downloads", uuid, outFn)
+
         lookup = self.cache.rankMethodToIDxToCellTypeZeroBased["H3K27ac"]
+         
         return {"indexToCellType": lookup,
-                "cREs": self._wrapQuery2(q)[0][0]}
+                "cREsUrl": url}
 
     def cts(self, args):
         return self.cache.rankMethodToIDxToCellTypeZeroBased
+
+    def _downloadFileName(self, uuid, formt):
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        outFn = '-'.join([timestr, "v4"]) + formt
+        outFnp = os.path.join(self.staticDir, "downloads", uuid, outFn)
+        Utils.ensureDir(outFnp)
+        return outFn, outFnp

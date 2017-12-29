@@ -349,3 +349,22 @@ with DELIMITER E'\t'
         with open(fnp, 'w') as f:
             for line in sf.readlines():
                 f.write(line.replace(b'\\n', b''))
+
+    def cres_h3k27ac_zscores(self, fnp):
+        q = """
+copy (
+SELECT JSON_AGG(r) from (
+SELECT accession, h3k27ac_zscores
+FROM {tn}
+) r
+) to STDOUT
+with DELIMITER E'\t'
+""".format(tn = self.assembly + "_cre_all")
+
+        with getcursor(self.pg.DBCONN, "_cre_table_json") as curs:
+            sf = cStringIO.StringIO()
+            curs.copy_expert(q, sf)
+        sf.seek(0)
+        with open(fnp, 'w') as f:
+            for line in sf.readlines():
+                f.write(line.replace(b'\\n', b''))

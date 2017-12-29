@@ -115,6 +115,10 @@ FROM {tn}
         pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
         return pct.creTableDownloadJson(j, fnp)
 
+    def cres_h3k27ac_zscores(self, fnp):
+        pct = PGcreTable(self.pg, self.assembly, self.ctmap, self.ctsTable)
+        return pct.cres_h3k27ac_zscores(fnp)
+    
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""

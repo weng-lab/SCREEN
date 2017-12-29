@@ -65,9 +65,9 @@ class TADImporter:
 
 
 def run(args, DBCONN):
-    assemblies = ["hg19"]  # Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
+    assemblies = ["hg19"]  # Config.assemblies
 
     for assembly in assemblies:
         printt('***********', assembly)
