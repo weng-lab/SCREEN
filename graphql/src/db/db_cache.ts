@@ -4,7 +4,12 @@ async function load(assembly) {
     const colors = require('./colors');
     const chromCounts = await Common.chromCounts(assembly);
     const creHist = await Common.creHist(assembly);
+    const tf_list = await Common.tfHistoneDnaseList(assembly, 'encode');
+    const datasets = await Common.datasets(assembly);
+    const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
+    const help_keys = await Common.getHelpKeys();
+    const creBigBeds = await Common.creBigBeds(assembly);
     const ctmap = await Common.makeCtMap(assembly);
 
     const cache = {
@@ -13,9 +18,9 @@ async function load(assembly) {
         chromCounts: chromCounts,
         creHist: creHist,
 
-        tf_list: undefined,
+        tf_list: tf_list,
 
-        datasets: undefined,
+        datasets: datasets,
 
         rankMethodToCellTypes: undefined,
         rankMethodToIDxToCellType: undefined,
@@ -31,15 +36,15 @@ async function load(assembly) {
 
         moreTracks: undefined,
 
-        geBiosampleTypes: undefined,
+        geBiosampleTypes: geBiosampleTypes,
 
         geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
 
-        help_keys: undefined,
+        help_keys: help_keys,
 
         tfHistCounts: undefined,
 
-        creBigBeds: undefined,
+        creBigBeds: creBigBeds,
 
         ctmap: ctmap
     };
@@ -69,5 +74,31 @@ function cache(assembly) {
 
 exports.loadCaches = loadCaches;
 exports.cache = cache;
+
+
+const Compartments = [
+    'cell', 'nucleoplasm', 'cytosol',
+    'nucleus', 'membrane', 'chromatin',
+    'nucleolus'];
+
+const chrom_lengths = require('../constants').chrom_lengths;
+function global_data(assembly) {
+    const c = cache(assembly);
+    const datasets = c.datasets;
+    return {
+        'tfs': c.tf_list,
+        'cellCompartments': Compartments,
+        'cellTypeInfoArr': datasets.globalCellTypeInfoArr,
+        'chromCounts': c.chromCounts,
+        'chromLens': chrom_lengths[assembly],
+        'creHistBins': c.creHist,
+        'byCellType': datasets.byCellType,
+        'geBiosampleTypes': c.geBiosampleTypes,
+        'helpKeys': c.help_keys,
+        'colors': c.colors,
+        'creBigBedsByCellType': c.creBigBeds
+    };
+}
+exports.global_data = global_data;
 
 loadCaches();

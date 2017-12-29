@@ -14,6 +14,7 @@ import { UUID } from './uuid';
 import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
 import SearchResponse from './SearchResponse';
+import GlobalsResponse from './GlobalsResponse';
 import * as SearchResponseTypes from './SearchResponse';
 
 const json = require('../../data.json');
@@ -21,6 +22,7 @@ const search_json = require('../../search.json');
 
 const resolve_data = require('../resolvers/cretable').resolve_data;
 const resolve_search = require('../resolvers/search').resolve_search;
+const resolve_globals = require('../resolvers/globals').resolve_globals;
 
 
 const BaseType = new GraphQLObjectType({
@@ -47,6 +49,13 @@ const BaseType = new GraphQLObjectType({
                 search: { type: CommonTypes.SearchParameters },
             },
             resolve: resolve_search
+        },
+        globals: {
+            type: GlobalsResponse,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+            },
+            resolve: resolve_globals
         }
     })
 });
