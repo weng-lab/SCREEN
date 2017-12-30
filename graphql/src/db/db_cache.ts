@@ -6,6 +6,8 @@ async function load(assembly) {
     const creHist = await Common.creHist(assembly);
     const tf_list = await Common.tfHistoneDnaseList(assembly, 'encode');
     const datasets = await Common.datasets(assembly);
+    const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
+    const { toSymbol, toStrand } = await Common.genemap(assembly);
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
     const help_keys = await Common.getHelpKeys();
@@ -23,13 +25,13 @@ async function load(assembly) {
         datasets: datasets,
 
         rankMethodToCellTypes: undefined,
-        rankMethodToIDxToCellType: undefined,
+        rankMethodToIDxToCellType: rankMethodToIDxToCellType,
         rankMethodToIDxToCellTypeZeroBased: undefined,
 
         biosampleTypes: undefined,
         assaymap: undefined,
-        ensemblToSymbol: undefined,
-        ensemblToStrand: undefined,
+        ensemblToSymbol: toSymbol,
+        ensemblToStrand: toStrand,
 
         nineState: undefined,
         filesList: undefined,
@@ -65,7 +67,7 @@ async function loadCaches() {
     };
     caches = cachesawait;
     loaded = true;
-    console.log('Cache loaded.');
+    console.log('Cache loaded: ', Object.keys(caches));
 }
 
 function cache(assembly) {
@@ -100,5 +102,26 @@ function global_data(assembly) {
     };
 }
 exports.global_data = global_data;
+
+function lookupEnsembleGene(assembly, s) {
+    const c = cache(assembly);
+    let symbol = c.ensemblToSymbol[s];
+    let strand = c.ensemblToStrand[s];
+    if (strand) {
+        return { symbol, strand };
+    }
+    const d = s.split('.')[0];
+    symbol = c.ensemblToSymbol[d];
+    strand = c.ensemblToStrand[d];
+    if (strand) {
+        return { symbol, strand };
+    }
+
+    if (symbol) {
+        return { symbol, name: '' };
+    }
+    return { symbol: s, strand: '' };
+}
+exports.lookupEnsembleGene = lookupEnsembleGene;
 
 loadCaches();

@@ -1,4 +1,5 @@
 import { natsort } from '../utils';
+import * as CoordUtils from '../coord_utils';
 
 const executeQuery = require('./db').executeQuery;
 
@@ -94,12 +95,12 @@ export async function rankMethodToIDxToCellType(assembly) {
     const ret = {};
     const rows = res.rows;
     for (const r of rows) {
-        const rank_method = r[2];
+        const rank_method = r['rankmethod'];
         if (!(rank_method in ret)) {
             ret[rank_method] = {};
         }
-        ret[rank_method][r[0]] = r[1];
-        ret[rank_method][r[1]] = r[0];
+        ret[rank_method][r['idx']] = r['celltype'];
+        ret[rank_method][r['celltype']] = r['idx'];
     }
     return ret;
 }
@@ -119,6 +120,32 @@ export async function makeCtMap(assembly) {
         obj = { ...obj, [amap[k]]: rmInfo[k] };
         return obj;
     }, {});
+}
+
+export async function genePos(assembly, gene) {
+    let ensemblid = gene;
+    if (gene.startsWith('ENS') && gene.indexOf('.') !== -1) {
+        ensemblid = gene.split('.')[0];
+    }
+    const tableName = assembly + '_gene_info';
+    const q = `
+        SELECT chrom, start, stop, approved_symbol, ensemblid_ver
+        FROM ${tableName}
+        WHERE chrom != ''
+        AND (approved_symbol = '${gene}'
+        OR ensemblid = '${ensemblid}'
+        OR ensemblid_ver = '${gene}')
+    `;
+    const res = await executeQuery(q);
+    if (res.rows.length === 0) {
+        console.log('ERROR: missing', gene);
+        return { pos: undefined, names: undefined };
+    }
+    const r = res.rows[0];
+    return {
+        pos: { chrom: r['chrom'], start: r['start'], end: r['stop'] },
+        names: [r['approved_symbol'], r['ensemblid_ver']]
+    };
 }
 
 async function allDatasets(assembly) {
@@ -283,4 +310,62 @@ export async function creBigBeds(assembly) {
         ret[ct][typ] = acc;
     }
     return ret;
+}
+
+export async function genesInRegion(assembly, chrom, start, stop) {
+    const tableName = assembly + '_gene_info';
+    const q = `
+        SELECT approved_symbol,start,stop,strand
+        FROM ${tableName}
+        WHERE chrom = '${chrom}'
+        AND int4range(start, stop) && int4range(${start}, ${stop})
+        ORDER BY start
+    `;
+
+    const res = await executeQuery(q);
+    return res.rows.map(r => ({
+        gene: r['approved_symbol'],
+        start: r['start'],
+        stop: r['stop'],
+        strand: r['strand']
+    }));
+}
+
+export async function nearbyCREs(assembly, coord, halfWindow, cols, isProximalOrDistal) {
+    const c = CoordUtils.expanded(coord, halfWindow);
+    const tableName = assembly + '_cre_all';
+    let q = `
+        SELECT ${cols.join(',')}
+        FROM ${tableName}
+        WHERE chrom = '${c.chrom}'
+        AND int4range(start, stop) && int4range(${c.start}, ${c.end})
+    `;
+
+    if (typeof isProximalOrDistal != 'undefined') {
+        q += `
+        AND isProximal is ${isProximalOrDistal}
+        `;
+    }
+    const res = await executeQuery(q);
+    return res.rows;
+}
+
+export async function genemap(assembly) {
+    const tableName = assembly + '_gene_info';
+    const q = `
+        SELECT ensemblid, ensemblid_ver, approved_symbol, strand
+        FROM ${tableName}
+        WHERE strand != ''
+    `;
+    const res = await executeQuery(q);
+    const toSymbol = {};
+    const toStrand = {};
+    res.rows.forEach(r => {
+        toSymbol[r['ensemblid']] = r['approved_symbol'];
+        toStrand[r['ensemblid']] = r['strand'];
+
+        toSymbol[r['ensemblid_ver']] = r['approved_symbol'];
+        toStrand[r['ensemblid_ver']] = r['strand'];
+    });
+    return { toSymbol, toStrand };
 }

@@ -15,6 +15,7 @@ import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
 import SearchResponse from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
+import DeResponse from './DeResponse';
 import * as SearchResponseTypes from './SearchResponse';
 
 const json = require('../../data.json');
@@ -23,6 +24,7 @@ const search_json = require('../../search.json');
 const resolve_data = require('../resolvers/cretable').resolve_data;
 const resolve_search = require('../resolvers/search').resolve_search;
 const resolve_globals = require('../resolvers/globals').resolve_globals;
+const resolve_de = require('../resolvers/de').resolve_de;
 
 
 const BaseType = new GraphQLObjectType({
@@ -56,6 +58,16 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
             },
             resolve: resolve_globals
+        },
+        de_search: {
+            type: DeResponse,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                gene: { type: new GraphQLNonNull(GraphQLString) },
+                ct1: { type: new GraphQLNonNull(GraphQLString) },
+                ct2: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve: resolve_de
         }
     })
 });
