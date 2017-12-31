@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
-const config = require('../config.json') || {};
-const pool = new Pool(config);
+const config = require('../config.json');
+const pool = new Pool(config.DB);
 
 // the pool with emit an error on behalf of any idle clients
 // it contains if a backend error or network partition happens

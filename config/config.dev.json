@@ -13,6 +13,12 @@
   "cassandra": ["127.0.0.1"],
   "redisHost": "127.0.0.1"
  },
+ "DB":
+ {"database": "screenv11",
+  "host": "localhost",
+  "user": "regElmViz_usr",
+  "port": 5432
+ },
  "UI":
  {"_apiServer": "http://megatux.purcaro.com:9006",
   "apiServer": "http://api.wenglab.org/screen/v10",
