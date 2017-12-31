@@ -369,3 +369,16 @@ export async function genemap(assembly) {
     });
     return { toSymbol, toStrand };
 }
+
+export async function geneInfo(assembly, gene) {
+    const tableName = assembly + '_gene_info';
+    const q = `
+        SELECT *
+        FROM ${tableName}
+        WHERE approved_symbol = $1
+        OR ensemblid = $2
+        OR ensemblid_ver = $3
+    `;
+    const res = await executeQuery(q, [gene, gene, gene]);
+    return res.rows;
+}

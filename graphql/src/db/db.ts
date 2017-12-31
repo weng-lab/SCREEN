@@ -11,13 +11,14 @@ pool.on('error', (err, client) => {
 
 module.exports.pool = pool;
 
-async function executeQuery(query) {
+async function executeQuery(query, values) {
     try {
-        const res = await pool.query(query);
+        const res = await pool.query(query, values);
         return res;
     } catch (e) {
-        console.error('Error when executing query: ', query);
-        return {rows: []};
+        console.error('Error when executing query: ', query, values ? ' with values: ' : '', values ? values : '');
+        console.error(e);
+        throw e;
     }
 }
 

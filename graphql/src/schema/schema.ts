@@ -16,15 +16,17 @@ import DataResponse from './DataResponse';
 import SearchResponse from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
 import DeResponse from './DeResponse';
+import GeneExpResponse from './GeneExpResponse';
 import * as SearchResponseTypes from './SearchResponse';
+
+import { resolve_data } from '../resolvers/cretable';
+import { resolve_search } from '../resolvers/search';
+import { resolve_globals } from '../resolvers/globals';
+import { resolve_de } from '../resolvers/de';
+import { resolve_geneexp } from '../resolvers/geneexp';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
-
-const resolve_data = require('../resolvers/cretable').resolve_data;
-const resolve_search = require('../resolvers/search').resolve_search;
-const resolve_globals = require('../resolvers/globals').resolve_globals;
-const resolve_de = require('../resolvers/de').resolve_de;
 
 
 const BaseType = new GraphQLObjectType({
@@ -68,6 +70,16 @@ const BaseType = new GraphQLObjectType({
                 ct2: { type: new GraphQLNonNull(GraphQLString) },
             },
             resolve: resolve_de
+        },
+        geneexp_search: {
+            type: GeneExpResponse,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                gene: { type: new GraphQLNonNull(GraphQLString) },
+                biosample_types: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+                compartments: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+            },
+            resolve: resolve_geneexp
         }
     })
 });
