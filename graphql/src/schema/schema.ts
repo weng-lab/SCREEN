@@ -19,6 +19,7 @@ import DeResponse from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
 import SuggestionsResponse from './SuggestionsResponse';
 import GwasResponse from './GwasResponse';
+import CartResponse from './CartResponse';
 import * as SearchResponseTypes from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
@@ -28,6 +29,7 @@ import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_suggestions } from '../resolvers/suggestions';
 import { resolve_gwas } from '../resolvers/gwas';
+import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -99,6 +101,27 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) }
             },
             resolve: resolve_gwas
+        },
+        get_cart: {
+            type: CartResponse,
+            args: {
+                uuid: { type: new GraphQLNonNull(UUID) },
+            },
+            resolve: resolve_cart_get
+        }
+    })
+});
+
+const BaseMutation = new GraphQLObjectType({
+    name: 'BaseMutation',
+    fields: () => ({
+        set_cart: {
+            type: CartResponse,
+            args: {
+                uuid: { type: new GraphQLNonNull(UUID) },
+                accessions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+            },
+            resolve: resolve_cart_set
         }
     })
 });
@@ -115,7 +138,8 @@ const schema = new GraphQLSchema({
         SearchResponseTypes.RangeResponse,
         SearchResponseTypes.FailedResponse
     ],
-    query: BaseType
+    query: BaseType,
+    mutation: BaseMutation
 });
 
 export default schema;
