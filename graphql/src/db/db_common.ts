@@ -122,6 +122,16 @@ export async function makeCtMap(assembly) {
     }, {});
 }
 
+export async function makeCTStable(assembly) {
+    const tableName = assembly + '_cre_groups_cts';
+    const q = `
+        SELECT cellTypeName, pgidx
+        FROM ${tableName}
+    `;
+    const res = await executeQuery(q);
+    return res.rows.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}));
+}
+
 export async function genePos(assembly, gene) {
     let ensemblid = gene;
     if (gene.startsWith('ENS') && gene.indexOf('.') !== -1) {

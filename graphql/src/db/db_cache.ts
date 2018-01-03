@@ -13,6 +13,7 @@ async function load(assembly) {
     const help_keys = await Common.getHelpKeys();
     const creBigBeds = await Common.creBigBeds(assembly);
     const ctmap = await Common.makeCtMap(assembly);
+    const ctsTable = await Common.makeCTStable(assembly);
 
     const cache = {
         colors: colors,
@@ -48,7 +49,8 @@ async function load(assembly) {
 
         creBigBeds: creBigBeds,
 
-        ctmap: ctmap
+        ctmap: ctmap,
+        ctsTable: ctsTable
     };
     return cache;
 }

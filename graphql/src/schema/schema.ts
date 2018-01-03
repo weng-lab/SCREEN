@@ -18,6 +18,7 @@ import GlobalsResponse from './GlobalsResponse';
 import DeResponse from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
 import SuggestionsResponse from './SuggestionsResponse';
+import GwasResponse from './GwasResponse';
 import * as SearchResponseTypes from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
@@ -26,6 +27,7 @@ import { resolve_globals } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_suggestions } from '../resolvers/suggestions';
+import { resolve_gwas } from '../resolvers/gwas';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -90,6 +92,13 @@ const BaseType = new GraphQLObjectType({
                 assemblies: { type: new GraphQLList(CommonTypes.Assembly) }
             },
             resolve: resolve_suggestions
+        },
+        gwas: {
+            type: GwasResponse,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) }
+            },
+            resolve: resolve_gwas
         }
     })
 });
