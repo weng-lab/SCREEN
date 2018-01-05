@@ -13,18 +13,19 @@ from db_utils import getcursor
 
 
 class SnpApp():
-    def __init__(self, args, viewDir, staticDir, pg):
+    def __init__(self, args, viewDir, staticDir, pg, pop = "EUR"):
         self.templates = Templates(viewDir, staticDir)
         self.pg = pg
+        self.pop = pop
 
     @cherrypy.expose
     def snp_ld(self, *args, **kwargs):
         snps = args[0].split(',')
         q = """
 SELECT snp, info
-FROM ld_eur
+FROM ld_{pop}
 WHERE snp IN %s
-"""
+""".format(pop = self.pop.lower())
         with getcursor(self.pg.DBCONN, "pg") as curs:
             curs.execute(q, (tuple(snps),))
             rows = curs.fetchall()

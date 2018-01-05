@@ -21,12 +21,13 @@ from utils import Utils, printWroteNumLines, printt
 
 
 class GWASld:
-    def __init__(self, curs):
+    def __init__(self, curs, pop = "EUR"):
         self.curs = curs
-        self.fnp = os.path.join(paths.v4d, "GWAS/LD_EUR.tsv.gz")
+        self.fnp = "/home/pratth" + os.path.join(paths.v4d, "GWAS/LD_%s.tsv.gz" % pop)
+        self.tableName = "ld_%s" % pop.lower()
 
     def run(self):
-        tableName = "ld_eur"
+        tableName = self.tableName
         printt("dropping and creating", tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
@@ -48,6 +49,7 @@ info text
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--population', default="EUR", type=str)
     args = parser.parse_args()
     return args
 
@@ -57,7 +59,7 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
     with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-        g = GWASld(curs)
+        g = GWASld(curs, args.population)
         g.run()
 
     return 0

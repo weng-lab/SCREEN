@@ -51,6 +51,7 @@ class WebServerConfig:
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', default=9005, type=int)
+    parser.add_argument('--population', default="EUR", type=str)
     return parser.parse_args()
 
 
@@ -61,7 +62,7 @@ def main():
     ps = PostgresWrapper(DBCONN)
 
     wsconfig = WebServerConfig("snp")
-    main = SnpApp(args, wsconfig.viewDir, wsconfig.staticDir, ps)
+    main = SnpApp(args, wsconfig.viewDir, wsconfig.staticDir, ps, args.population)
     cherrypy.tree.mount(main, '/', wsconfig.getRootConfig())
 
     cherrypy.config.update({'server.socket_host': '0.0.0.0',
