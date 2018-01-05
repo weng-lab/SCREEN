@@ -23,7 +23,7 @@ from utils import Utils, printWroteNumLines, printt
 class GWASld:
     def __init__(self, curs, pop = "EUR"):
         self.curs = curs
-        self.fnp = "/home/pratth" + os.path.join(paths.v4d, "GWAS/LD_%s.tsv.gz" % pop)
+        self.fnp = os.path.join(paths.v4d, "GWAS/LD_%s.tsv.gz" % pop)
         self.tableName = "ld_%s" % pop.lower()
 
     def run(self):
