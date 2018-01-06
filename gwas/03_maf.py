@@ -20,11 +20,22 @@ from files_and_paths import Dirs, Tools, Genome, Datasets
 from utils import Utils, printWroteNumLines, printt
 
 
-class GWASld:
-    def __init__(self, curs, pop = "EUR"):
+class GWASmaf:
+    def __init__(self, curs, fnp = "/home/pratth/data/zusers/moorej3/haploreg_v4.0.MAF.bed", tn = "eur_maf"):
         self.curs = curs
-        self.fnp = "LD_AMR.tsv.gz" # os.path.join(paths.v4d, "GWAS/LD_%s.tsv.gz" % pop)
-        self.tableName = "ld_%s" % pop.lower()
+        self.tableName = tn
+        with open(fnp, 'r') as f:
+            with open("/tmp/" + os.path.basename(fnp), 'wb') as o:
+                for line in f:
+                    line = line.strip().split('\t')
+                    if ';' in line[4]:
+                        for snpid in line[4].split(';'):
+                            p = [line[0], line[1], line[2], snpid, line[5], line[6], line[7]]
+                            o.write('\t'.join(p) + '\n')
+                    else:
+                        p = [line[0], line[1], line[2], line[4], line[5], line[6], line[7]]
+                        o.write('\t'.join(p) + '\n')
+        self.fnp = "/tmp/" + os.path.basename(fnp)
 
     def run(self):
         tableName = self.tableName
@@ -33,14 +44,19 @@ class GWASld:
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-        snp VARCHAR(30),
-info text
+        chr VARCHAR(10),
+        startpos INT,
+        stoppos INT,
+        snp VARCHAR(15),
+        refallele VARCHAR(100000),
+        altallele VARCHAR(100000),
+        frequency VARCHAR(20)
 );
 """.format(tableName=tableName))
 
         printt("importing", self.fnp)
-        with gzip.open(self.fnp) as f:
-            cols = ["snp", "info"]
+        with open(self.fnp) as f:
+            cols = ["chr", "startpos", "stoppos", "snp", "refallele", "altallele", "frequency"]
             self.curs.copy_from(f, tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
 
@@ -49,7 +65,8 @@ info text
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--population', default="EUR", type=str)
+    parser.add_argument('--fnp', default="", type=str)
+    parser.add_argument('--pop', default="eur", type=str)
     args = parser.parse_args()
     return args
 
@@ -59,7 +76,10 @@ def main():
 
     DBCONN = db_connect(os.path.realpath(__file__))
     with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-        g = GWASld(curs, args.population)
+        if args.fnp != "":
+            g = GWASmaf(curs, args.fnp, args.pop + "_maf")
+        else:
+            g = GWASmaf(curs, tn = args.pop + "_maf")
         g.run()
 
     return 0
