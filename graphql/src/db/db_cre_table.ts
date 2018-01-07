@@ -87,7 +87,7 @@ const where = (wheres, chrom, start, stop) => {
     }
 };
 
-const buildWhereStatement = (ctmap, j: Object, chrom: string | null, start: string | null, stop: string | null) => {
+const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: string | null, stop: string | null) => {
     const wheres = [];
     const fields = [
         'maxZ',
@@ -152,7 +152,7 @@ async function creTableEstimate(table, where) {
     return rows[0]['count'];
 }
 
-export async function getCreTable(assembly: string, ctmap: Object, j, pagination) {
+export async function getCreTable(assembly: string, ctmap: object, j, pagination) {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;

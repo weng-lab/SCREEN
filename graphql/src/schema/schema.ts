@@ -20,6 +20,7 @@ import GeneExpResponse from './GeneExpResponse';
 import SuggestionsResponse from './SuggestionsResponse';
 import GwasResponse from './GwasResponse';
 import CartResponse from './CartResponse';
+import GbResponse from './GbResponse';
 import * as SearchResponseTypes from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
@@ -30,6 +31,7 @@ import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_suggestions } from '../resolvers/suggestions';
 import { resolve_gwas } from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
+import { resolve_gb } from '../resolvers/gb';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -108,6 +110,13 @@ const BaseType = new GraphQLObjectType({
                 uuid: { type: new GraphQLNonNull(UUID) },
             },
             resolve: resolve_cart_get
+        },
+        gb: {
+            type: GbResponse,
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+            },
+            resolve: resolve_gb
         }
     })
 });

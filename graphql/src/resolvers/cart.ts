@@ -1,7 +1,7 @@
 import * as Cart from '../db/db_cart';
 import * as Utils from '../utils';
 
-const { UserError } = require('graphql-errors')
+const { UserError } = require('graphql-errors');
 
 export async function resolve_cart_set(source, args, context) {
     const uuid = args.uuid;

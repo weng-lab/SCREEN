@@ -9,7 +9,7 @@ export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
         SELECT id, deCtName FROM ${tableName}
     `;
     let res = await executeQuery(q);
-    const ctsToId = (res.rows as Array<Object>).reduce((obj, r) => ({ ...obj, [r['dectname']]: r['id'] }), {});
+    const ctsToId = (res.rows as Array<object>).reduce((obj, r) => ({ ...obj, [r['dectname']]: r['id'] }), {});
 
     const ct1id = ctsToId[ct1];
     const ct2id = ctsToId[ct2];

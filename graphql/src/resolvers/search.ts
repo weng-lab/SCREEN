@@ -59,9 +59,9 @@ export async function parse(assembly, args) {
     if ('tssDist' in args) {
         tssDist = args['tssDist'];
     }
-    let interpretation: Object | undefined = {};
+    let interpretation: object | undefined = {};
 
-    const ret: Object = {
+    const ret: object = {
     };
     if ('promoter' in toks || useTss) {
         ret['element_type'] = 'promoter-like';
