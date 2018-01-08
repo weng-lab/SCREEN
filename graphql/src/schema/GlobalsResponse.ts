@@ -18,6 +18,7 @@ export const GlobalsResponse = new GraphQLObjectType({
         helpKeys: { type: GraphQLJSON },
         colors: { type: GraphQLJSON },
         creBigBedsByCellType: { type: GraphQLJSON },
+        creFiles: { type: GraphQLJSON }
     })
 });
 

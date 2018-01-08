@@ -392,3 +392,28 @@ export async function geneInfo(assembly, gene) {
     const res = await executeQuery(q, [gene, gene, gene]);
     return res.rows;
 }
+
+export async function loadNineStateGenomeBrowser(assembly) {
+    const tableName = assembly + '_nine_state';
+    const q = `
+        SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
+        FROM ${tableName}
+    `;
+    const res = await executeQuery(q);
+    const ret: any = {};
+
+    for (const r of res.rows) {
+        for (const k of ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf']) {
+            const fileID = r[k];
+            let url = '';
+            if ('NA' !== fileID) {
+                const fn = fileID + '.bigBed.bed.gz';
+                url = 'http://bib7.umassmed.edu/~purcarom/screen/ver4/v10/9-State/' + fn;
+            }
+            r[k + '_url'] = url;
+        }
+        ret[r['celltypename']] = r;
+    }
+
+    return ret;
+}

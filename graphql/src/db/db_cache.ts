@@ -1,4 +1,19 @@
+import * as Path from 'path';
 import * as Common from './db_common';
+
+
+function indexFilesTab(rows) {
+    const ret: any = [];
+    const WWW = 'http://bib7.umassmed.edu/~purcarom/screen/ver4/v10';
+    for (const r of rows) {
+        const d = { ...r };
+        const accs = [r['dnase'], r['h3k4me3'], r['h3k27ac'], r['ctcf']].filter(a => a !== 'NA');
+        const fn = accs.join('_') + '.cREs.bigBed.bed.gz';
+        d['fiveGroup'] = [Path.join(WWW, fn), fn];
+        ret.push(d);
+    }
+    return ret;
+}
 
 async function load(assembly) {
     const colors = require('./colors');
@@ -8,6 +23,8 @@ async function load(assembly) {
     const datasets = await Common.datasets(assembly);
     const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
     const { toSymbol, toStrand } = await Common.genemap(assembly);
+    const nineState = await Common.loadNineStateGenomeBrowser(assembly);
+    const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
     const help_keys = await Common.getHelpKeys();
@@ -34,8 +51,8 @@ async function load(assembly) {
         ensemblToSymbol: toSymbol,
         ensemblToStrand: toStrand,
 
-        nineState: undefined,
-        filesList: undefined,
+        nineState: nineState,
+        filesList: filesList,
 
         moreTracks: undefined,
 
@@ -100,7 +117,8 @@ function global_data(assembly) {
         'geBiosampleTypes': c.geBiosampleTypes,
         'helpKeys': c.help_keys,
         'colors': c.colors,
-        'creBigBedsByCellType': c.creBigBeds
+        'creBigBedsByCellType': c.creBigBeds,
+        'creFiles': c.filesList,
     };
 }
 exports.global_data = global_data;
