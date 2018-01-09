@@ -1,6 +1,5 @@
-import { sqlarrayify } from '../utils';
+import { db } from './db';
 
-const executeQuery = require('./db').executeQuery;
 const cache = require('../db/db_cache').cache;
 
 const fixedmap = {
@@ -200,11 +199,11 @@ export class GeneExpression {
             FROM ${tableName} as r
             INNER JOIN r_rnas_${assembly} ON r_rnas_${assembly}.encode_id = r.dataset
             WHERE gene_name = '${gene}'
-            AND r_rnas_${assembly}.cellCompartment IN (${sqlarrayify(compartments)})
-            AND r_rnas_${assembly}.biosample_type IN (${sqlarrayify(biosample_types)})
+            AND r_rnas_${assembly}.cellCompartment = ANY ($1)
+            AND r_rnas_${assembly}.biosample_type = ANY ($2)
         `;
-        const res = await executeQuery(q);
-        return this.doComputeHorBars(res.rows, gene);
+        const res = await db.any(q, [compartments, biosample_types]);
+        return this.doComputeHorBars(res, gene);
     }
 
     async computeHorBarsMean(gene, compartments, biosample_types) {
@@ -212,16 +211,16 @@ export class GeneExpression {
         const tableName = 'r_expression_' + assembly;
         const q = `
             SELECT avg(r.tpm) as tpm, r_rnas_${assembly}.organ, r_rnas_${assembly}.cellType,
-            r.dataset, 'mean' as replicate, avg(r.fpkm) as fpkm, r_rnas_${assembly}.ageTitle,
+            r.dataset, 'mean' as replicate, avg(r.fpkm) as fpkm, r_rnas_${assembly}.    ageTitle,
             array_to_string(array_agg(r.id), ',') as id
             FROM r_expression_${assembly} AS r
             INNER JOIN r_rnas_${assembly} ON r_rnas_${assembly}.encode_id = r.dataset
             WHERE gene_name = '${gene}'
-            AND r_rnas_${assembly}.cellCompartment IN (${sqlarrayify(compartments)})
-            AND r_rnas_${assembly}.biosample_type IN (${sqlarrayify(biosample_types)})
+            AND r_rnas_${assembly}.cellCompartment = ANY ($1)
+            AND r_rnas_${assembly}.biosample_type = ANY ($2)
             GROUP BY r_rnas_${assembly}.organ, r_rnas_${assembly}.cellType, r.dataset, r_rnas_${assembly}.ageTitle
         `;
-        const res = await executeQuery(q);
-        return this.doComputeHorBars(res.rows, gene);
+        const res = await db.any(q, [compartments, biosample_types]);
+        return this.doComputeHorBars(res, gene);
     }
 }

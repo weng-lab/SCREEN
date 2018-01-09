@@ -46,8 +46,6 @@ export const checkChrom = (assembly, chrom) => {
     return chrom;
 };
 
-export const sqlarrayify = (array) => array.map(e => `'${e}'`).join(',');
-
 // from https://github.com/substack/deep-freeze
 export const deepFreeze = (o) => {
     Object.freeze(o);

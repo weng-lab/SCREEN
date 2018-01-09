@@ -159,7 +159,7 @@ class DE {
     async diffCREs(xdomain) {
         const xstart = xdomain[0];
         const xstop = xdomain[1];
-        let ret = [].concat(...await this.nearbyPromoters(), ...await this.nearbyEnhancers());
+        let ret = ([] as Array<any>).concat(await this.nearbyPromoters()).concat(await this.nearbyEnhancers());
         ret = ret.filter(x => x['start'] >= xstart && x['stop'] <= xstop);
         return { 'data': ret };
     }

@@ -8,6 +8,7 @@ async function suggestions(query, assemblies) {
     for (let i = 0; i <= p.length; i++) {
         const prefix = p.slice(0, i).join(' ');
         const suffix = p.slice(i, p.length).join(' ');
+        if (suffix === '') continue;
         for (const assembly of assemblies) {
             results.push(...await Suggestions.get_suggestions(assembly, suffix));
         }
@@ -16,6 +17,7 @@ async function suggestions(query, assemblies) {
             return { suggestions: results.map(r => pre + r).sort() };
         }
     }
+    return [];
 }
 
 export const resolve_suggestions: GraphQLFieldResolver<any, any> = (source, args, context) => {

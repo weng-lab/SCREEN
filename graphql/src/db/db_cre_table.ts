@@ -1,21 +1,21 @@
 import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
+
 const { UserError } = require('graphql-errors');
 
-const accessions = (wheres, j: {accessions?: string[]}) => {
+const accessions = (wheres, params, j: {accessions?: string[]}) => {
     const accs: Array<string> = j['accessions'] || [];
     if (0 == accs.length) {
         return false;
     }
-
-    const accsList: string = accs.filter(isaccession).map(a => `'` + a.toUpperCase() + `'`).join(`,`);
-    const accsQuery = `accession IN (${accsList})`;
+    params.accsList = accs.filter(isaccession).map(a => a.toUpperCase());
+    const accsQuery = 'accession IN (${accsList})';
     wheres.push(`(${accsQuery})`);
     return true;
 };
 
-const notCtSpecific = (wheres, fields, j) => {
+const notCtSpecific = (wheres, fields, params, j) => {
     // use max zscores
     const allmap = {
         'dnase': 'dnase_max',
@@ -25,11 +25,11 @@ const notCtSpecific = (wheres, fields, j) => {
     };
     for (const x of ['dnase', 'promoter', 'enhancer', 'ctcf']) {
         if (`rank_${x}_start` in j && `rank_${x}_end` in j) {
-            const start = j[`rank_${x}_start`];
-            const end = j[`rank_${x}end`];
             const statement = [
-                `cre.${allmap[x]} >= ${start}`,
-                `cre.${allmap[x]} <= ${end}`].join(' and ');
+                `cre.${allmap[x]} >= $<rank_${x}_start>`,
+                `cre.${allmap[x]} <= $<rank_${x}_end>`].join(' and ');
+            params[`rank_${x}_start`] = j[`rank_${x}_start`];
+            params[`rank_${x}_end`] = j[`rank_${x}_end`];
             wheres.push(`(${statement})`);
         }
         fields.push(`cre.${allmap[x]} AS ${x}_zscore`);
@@ -37,7 +37,7 @@ const notCtSpecific = (wheres, fields, j) => {
     return { wheres, fields };
 };
 
-const ctSpecific = (wheres, fields, ctSpecific, ct, j, ctmap) => {
+const ctSpecific = (wheres, fields, params, ctSpecific, ct, j, ctmap) => {
     ctSpecific['ct'] = "'" + ct + "'";
     const exps = [['dnase', 'dnase'],
     ['promoter', 'h3k4me3'],
@@ -62,10 +62,12 @@ const ctSpecific = (wheres, fields, ctSpecific, ct, j, ctmap) => {
             let startWhere;
             let endWhere;
             if (!isclose(start, minDefault)) {
-                startWhere = `cre.${exp}_zscores[${ctindex}] >= ${start}`;
+                startWhere = `cre.${exp}_zscores[${ctindex}] >= $<${exp}_zscores_${ctindex}_start>`;
+                params[`${exp}_zscores_${ctindex}_start`] = start;
             }
             if (!isclose(end, maxDefault)) {
-                endWhere = `cre.${exp}_zscores[${ctindex}] <= ${end}`;
+                endWhere = `cre.${exp}_zscores[${ctindex}] <= $<${exp}_zscores_${ctindex}_end>`;
+                params[`${exp}_zscores_${ctindex}_end`] = end;
             }
             if (startWhere && endWhere) {
                 wheres.push(`(${startWhere} and ${endWhere}`);
@@ -78,12 +80,15 @@ const ctSpecific = (wheres, fields, ctSpecific, ct, j, ctmap) => {
     }
 };
 
-const where = (wheres, chrom, start, stop) => {
+const where = (wheres, params, chrom, start, stop) => {
     if (chrom) {
-        wheres.push(`cre.chrom = '${chrom}'`);
+        wheres.push(`cre.chrom = $<chrom>`);
+        params.chrom = chrom;
     }
     if (start && stop) {
-        wheres.push(`int4range(cre.start, cre.stop) && int4range(${start}, ${stop})`);
+        wheres.push(`int4range(cre.start, cre.stop) && int4range($<start>, $<stop>)`);
+        params.start = start;
+        params.stop = stop;
     }
 };
 
@@ -97,16 +102,17 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
-    const useAccs = accessions(wheres, j);
+    const params: any = {};
+    const useAccs = accessions(wheres, params, j);
     const ct = j['cellType'];
 
     const ctspecific = {};
     if (useAccs || !ct) {
-        notCtSpecific(wheres, fields, j);
+        notCtSpecific(wheres, fields, params, j);
     } else {
-        ctSpecific(wheres, fields, ctspecific, ct, j, ctmap);
+        ctSpecific(wheres, fields, params, ctspecific, ct, j, ctmap);
     }
-    where(wheres, chrom, start, stop);
+    where(wheres, params, chrom, start, stop);
 
     const ctspecificpairs: Array<string> = [];
     for (const k of Object.keys(ctSpecific)) {
@@ -134,11 +140,11 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     if (0 < wheres.length) {
         retwhere = 'WHERE ' + wheres.join(' and ');
     }
-    return { fields: retfields, where: retwhere };
+    return { fields: retfields, where: retwhere, params };
 };
 
 
-async function creTableEstimate(table, where) {
+async function creTableEstimate(table, where, params) {
     // estimate count
     // from https://wiki.postgresql.org/wiki/Count_estimate
     const q = `
@@ -148,8 +154,7 @@ async function creTableEstimate(table, where) {
         LIMIT 1
     `;
 
-    const { rows } = await executeQuery(q);
-    return rows[0]['count'];
+    return db.one(q, params, r => r.count);
 }
 
 export async function getCreTable(assembly: string, ctmap: object, j, pagination) {
@@ -157,7 +162,7 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
     const table = assembly + '_cre_all';
-    const { fields, where } = buildWhereStatement(ctmap, j, chrom, start, end);
+    const { fields, where, params } = buildWhereStatement(ctmap, j, chrom, start, end);
     const offset = pagination.offset || 0;
     const limit = pagination.limit || 1000;
     if (limit > 1000) {
@@ -167,22 +172,20 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
         throw new UserError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
     }
     const query = `
-        SELECT JSON_AGG(r) from(
         SELECT ${fields}
         FROM ${table} AS cre
         ${where}
         ORDER BY maxz DESC
         ${offset !== 0 ? `OFFSET ${offset}` : ''}
-        LIMIT ${limit}) r
+        LIMIT ${limit}
     `;
 
-    const res = await executeQuery(query);
-    const rows = (res.rows.length > 0 && res.rows[0]['json_agg']) || [];
-    let total = rows.length;
+    const res = await db.any(query, params);
+    let total = res.length;
     if (limit <= total || offset !== 0) {// reached query limit
-        total = await creTableEstimate(table, where);
+        total = await creTableEstimate(table, where, params);
     }
-    return {'cres': rows, 'total': total};
+    return {'cres': res, 'total': total};
 }
 
 export async function rfacets_active(ctmap, j) {

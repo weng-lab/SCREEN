@@ -144,4 +144,6 @@ function lookupEnsembleGene(assembly, s) {
 }
 exports.lookupEnsembleGene = lookupEnsembleGene;
 
-loadCaches();
+loadCaches().catch(e => {
+    console.log(e);
+});

@@ -1,6 +1,5 @@
-import * as Common from '../db/db_common';
-
-const executeQuery = require('./db').executeQuery;
+import * as Common from './db_common';
+import { db } from './db';
 
 export async function gwasStudies(assembly) {
     const tableName = assembly + '_gwas_studies';
@@ -8,10 +7,10 @@ export async function gwasStudies(assembly) {
         SELECT authorpubmedtrait as value, author, pubmed, trait, numLDblocks as total_ldblocks
         FROM ${tableName}
         ORDER BY trait
-        `;
-    const res = await executeQuery(q);
+    `;
+    const res = await db.any(q);
     const keys = ['value', 'author', 'pubmed', 'trait', 'total_ldblocks'];
-    return res.rows.map(r => keys.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    return res.map(r => keys.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
 }
 
 export async function numLdBlocksOverlap(assembly, gwas_study) {
@@ -23,10 +22,9 @@ export async function numLdBlocksOverlap(assembly, gwas_study) {
         WHERE gwas.authorPubmedTrait = over.authorPubmedTrait
         AND cre.accession = over.accession
         AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
-        AND gwas.authorPubmedTrait = '${gwas_study}'
+        AND gwas.authorPubmedTrait = $1
     `;
-    const res = await executeQuery(q);
-    return res.rows[0]['count'];
+    return await db.oneOrNone(q, [gwas_study], r => r ? +r.count : 0);
 }
 
 export async function numCresOverlap(assembly, gwas_study) {
@@ -34,10 +32,9 @@ export async function numCresOverlap(assembly, gwas_study) {
     const q = `
         SELECT count(0)
         FROM ${tableName}
-        where authorPubmedTrait = '${gwas_study}'
+        where authorPubmedTrait = $1
     `;
-    const res = await executeQuery(q);
-    return res.rows.map(r => r['count']);
+    return await db.oneOrNone(q, [gwas_study], r => r ? +r.count : 0);
 }
 
 export async function gwasEnrichment(assembly, gwas_study) {
@@ -52,9 +49,9 @@ export async function gwasEnrichment(assembly, gwas_study) {
         ON fdr.expid = pval.expid
         ORDER BY fdr DESC, pval
     `;
-    const res = await executeQuery(q);
+    const res = await db.any(q);
     const cols = ['expID', 'cellTypeName', 'biosample_summary', 'fdr', 'pval'];
-    return res.rows.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
 }
 
 const infoFields = {
@@ -123,11 +120,11 @@ export async function gwasPercentActive(assembly, gwas_study, ct, ctmap, ctsTabl
         ${assembly}_gene_info as infoAll
         WHERE cre.gene_all_id[1] = infoAll.geneid
         AND cre.accession = over.accession
-        AND over.authorPubmedTrait = '${gwas_study}'
+        AND over.authorPubmedTrait = $1
         GROUP BY ${groupBy.join(', ')}
     `;
-    const res = await executeQuery(q);
-    const ret = res.rows.map(r => fieldsOut.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    const res = await db.any(q, [gwas_study]);
+    const ret = res.map(r => fieldsOut.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
     for (const k of Object.keys(ret)) {
         const newObj = ret[k];
         newObj['ctspecific'] = newObj['ctspecific'] || {};

@@ -19,7 +19,6 @@ export async function insertOrUpdate(assembly, reAccession, uid, j) {
             RETURNING hubNum;
         `;
         const updateres = await executeQuery(updateq, [JSON.stringify(j)]);
-        console.log(updateres.rows);
         return updateres.rows[0]['hubnum'];
     } else {
         const insertq = `

@@ -1,6 +1,5 @@
 import * as CoordUtils  from '../coord_utils';
-
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
     const c = CoordUtils.expanded(coord, halfWindow);
@@ -8,8 +7,8 @@ export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
     let q = `
         SELECT id, deCtName FROM ${tableName}
     `;
-    let res = await executeQuery(q);
-    const ctsToId = (res.rows as Array<object>).reduce((obj, r) => ({ ...obj, [r['dectname']]: r['id'] }), {});
+    let res = await db.many(q);
+    const ctsToId = res.reduce((obj, r) => ({ ...obj, [r['dectname']]: r['id'] }), {});
 
     const ct1id = ctsToId[ct1];
     const ct2id = ctsToId[ct2];
@@ -21,26 +20,15 @@ export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
         from ${deTableName} as de
         inner join ${giTableName} as gi
         on de.ensembl = gi.ensemblid
-        where gi.chrom = '${c.chrom}'
-        AND de.padj <= ${pval}
-        AND int4range(gi.start, gi.stop) && int4range(${c.start}, ${c.end})
-        and de.leftCtId = ${ct2id} and de.rightCtId = ${ct1id}
+        where gi.chrom = $1
+        AND de.padj <= $2
+        AND int4range(gi.start, gi.stop) && int4range($3, $4)
+        and de.leftCtId = $5 and de.rightCtId = $5
     `;
-    res = await executeQuery(q);
-    let ret = res.rows;
-    if (res.rows.length === 0) {
-        q = `
-            SELECT start, stop, log2FoldChange, ensembl
-            from ${deTableName} as de
-            inner join ${giTableName} as gi
-            on de.ensembl = gi.ensemblid
-            where gi.chrom = '${c.chrom}'
-            AND de.padj <= ${pval}
-            AND int4range(gi.start, gi.stop) && int4range(${c.start}, ${c.end})
-            and de.leftCtId = ${ct1id} and de.rightCtId = ${ct2id}
-        `;
-        const res = await executeQuery(q);
-        ret = res.rows.map(d => ({...d, log2FoldChange: -1.0 * d['log2FoldChange']}));
+    res = await db.any(q, [c.chrom, pval, c.start, c.end, ct2id, ct1id]);
+    if (res.length === 0) {
+        res = await db.any(q, [c.chrom, pval, c.start, c.end, ct1id, ct2id]);
+        res = res.map(d => ({...d, log2FoldChange: -1.0 * d['log2FoldChange']}));
     }
-    return ret;
+    return res;
 }

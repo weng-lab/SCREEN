@@ -1,40 +1,31 @@
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function get(uuid) {
     const tableName = 'hg19_cart';
     const q = `
         SELECT accessions
         FROM ${tableName}
-        WHERE uuid = '${uuid}'
+        WHERE uuid = $1
     `;
-    const res = await executeQuery(q);
-    if (res.rows.length === 0) {
-        return [];
-    }
-    return res.rows[0]['accessions'];
+    return db.oneOrNone(q, [uuid], r => r ? r.accessions : []);
 }
 
 export async function set(uuid, accessions) {
     const tableName = 'hg19_cart';
-    const selectq = `
-        SELECT accessions
-        FROM ${tableName}
-        WHERE uuid = '${uuid}'
-    `;
-    const selectres = await executeQuery(selectq);
+    const existing = await get(uuid);
     let q;
-    if (selectres.rows.length > 0) {
+    if (existing) {
         q = `
             UPDATE ${tableName}
-            SET accessions = '${JSON.stringify(accessions)}'
-            WHERE uuid = '${uuid}'
+            SET accessions = $2:json
+            WHERE uuid = $1
         `;
     } else {
         q = `
             INSERT into ${tableName} (uuid, accessions)
-            VALUES ('${uuid}', '${JSON.stringify(accessions)}')
+            VALUES ($1, $2:json)
         `;
     }
-    const res = await executeQuery(q);
+    db.query(q, [uuid, accessions]);
     return accessions;
 }

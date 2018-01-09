@@ -1,23 +1,18 @@
 import { isclose } from '../utils';
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function get_snpcoord(assembly, s) {
     const tableName = assembly + '_snps';
     const q = `
         SELECT chrom, start, stop
         FROM ${tableName}
-        WHERE snp = ${s}
+        WHERE snp = $1
     `;
-    const res = await executeQuery(q);
-    if (res.rows.length > 0) {
-        const r = res.rows[0];
-        return {
-            chrom: r[0],
-            start: r[1],
-            end: r[2]
-        };
-    }
-    return undefined;
+    return await db.oneOrNone(q, [s], r => r && {
+        chrom: r[0],
+        start: r[1],
+        end: r[2]
+    });
 }
 
 export async function has_overlap(assembly, coord) {
@@ -26,11 +21,11 @@ export async function has_overlap(assembly, coord) {
         SELECT accession
         FROM ${tableName}
         WHERE maxZ >= 1.64
-        AND chrom = ${coord.chrom}
-        AND int4range(start, stop) && int4range(${coord.start}, ${coord.end})
+        AND chrom = $1
+        AND int4range(start, stop) && int4range($2, $3)
     `;
-    const res = await executeQuery(q);
-    return res.rows.length > 0;
+    const res = await db.result(q, [coord.chrom, coord.start, coord.stop]);
+    return res.rowCount > 0;
 }
 
 export class GeneParse {
@@ -93,17 +88,16 @@ async function exactGeneMatch(assembly, s, usetss, tssDist) {
         SELECT ac.oname,
         ac.chrom, ac.start, ac.stop,
         ac.altchrom, ac.altstart, ac.altstop,
-        similarity(ac.name, ${slo}) AS sm, ac.pointer,
+        similarity(ac.name, $1) AS sm, ac.pointer,
         gi.approved_symbol, gi.strand
         FROM ${searchTableName} ac
         INNER JOIN ${infoTableName} gi
         ON gi.id = ac.pointer
-        WHERE gi.approved_symbol = ${s}
+        WHERE gi.approved_symbol = $2
         ORDER BY sm DESC
         LIMIT 50
     `;
-    const res = await executeQuery(q);
-    const rows = res.rows;
+    const rows = await db.any(q, [slo, s]);
 
     if (rows.length > 0 && isclose(1, rows[0][7])) {
         return [new GeneParse(assembly, rows[0], s, usetss, tssDist)];
@@ -119,17 +113,16 @@ async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
         SELECT ac.oname,
         ac.chrom, ac.start, ac.stop,
         ac.altchrom, ac.altstart, ac.altstop,
-        similarity(ac.name, ${slo}) AS sm, ac.pointer,
+        similarity(ac.name, $1) AS sm, ac.pointer,
         gi.approved_symbol, gi.strand
         FROM ${searchTableName} ac
         INNER JOIN ${infoTableName} gi
         ON gi.id = ac.pointer
-        WHERE gi.approved_symbol = ${slo}
+        WHERE gi.approved_symbol = $2
         ORDER BY sm DESC
         LIMIT 50
     `;
-    const res = await executeQuery(q);
-    const rows = res.rows;
+    const rows = await db.any(q, [slo, slo]);
     return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
 }
 
@@ -154,21 +147,20 @@ export async function find_celltype(assembly, q, rev = false) {
         let query = `
             SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
             FROM ${tableName}
-            WHERE LOWER(cellType) % '${s}'
+            WHERE LOWER(cellType) % $1
             ORDER BY sm DESC
             LIMIT 1
         `;
-        let res = await executeQuery(query);
-        if (res.rows.length === 0) {
+        let r = await db.any(query, [s]);
+        if (r.length === 0) {
             query = `
                 SELECT cellType
                 FROM ${tableName}
-                WHERE LOWER(cellType) LIKE '${s}'
+                WHERE LOWER(cellType) LIKE $1
                 LIMIT 1
             `;
-            res = await executeQuery(query);
+            r = await db.any(query, [s]);
         }
-        const r = res.rows;
         if (r.length === 0) {
             continue;
         }

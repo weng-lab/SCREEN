@@ -1,4 +1,4 @@
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function genetable(assembly, chrom, start, end) {
     const tableName = assembly + '_gene_details';
@@ -8,12 +8,12 @@ export async function genetable(assembly, chrom, start, end) {
         WHERE transcript_id IN (
             SELECT transcript_id from ${tableName}
             WHERE feature='transcript'
-            AND seqname='${chrom}'
-            AND ( int4range(${start}, ${end}) && int4range(startpos, endpos) )
+            AND seqname=$1
+            AND ( int4range($2, $3) && int4range(startpos, endpos) )
         )
     `;
-    const res = await executeQuery(q);
-    const response: Array<object> = res.rows.map(row => ({
+    const res = await db.any(q, [chrom , start, end]);
+    const response = res.map(row => ({
         'transcript_id': row['transcript_id'],
         'seqid': row['seqname'].trim(),
         'type': row['feature'],

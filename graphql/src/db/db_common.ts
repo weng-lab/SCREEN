@@ -1,13 +1,12 @@
 import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
-
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
     const q = `SELECT chrom, count from ${tableName}`;
-    const res = await executeQuery(q);
-    const ret = res.rows.reduce((obj, e) => {
+    const res = await db.many(q);
+    const ret = res.reduce((obj, e) => {
         return {...obj, [e['chrom']]: e['count'] };
     }, {});
     return ret;
@@ -16,14 +15,15 @@ export async function chromCounts(assembly) {
 export async function creHist(assembly) {
     const tableName = assembly + '_cre_bins';
     const q = `SELECT chrom, buckets, numBins, binMax from ${tableName}`;
-    const res = await executeQuery(q);
-    return res.rows.map(e => ({
+    const res = await db.many(q);
+    return res.reduce((obj, e) => ({
+        ...obj,
         [e['chrom']]: {
             'bins': e['buckets'],
-            'numBins': e['numBins'],
-            'binMax': e['binMax']
+            'numBins': e['numbins'],
+            'binMax': e['binmax']
         }
-    }));
+    }), {});
 }
 
 function _intersections_tablename(eset, metadata = false) {
@@ -43,8 +43,8 @@ export async function tfHistoneDnaseList(assembly, eset) {
         SELECT distinct label
         FROM ${tableName}
     `;
-    const res = await executeQuery(q);
-    return res.rows.map(r => r['label']).slice().sort();
+    const res = await db.many(q);
+    return res.map(r => r['label']).slice().sort();
 }
 
 export async function geBiosampleTypes(assembly) {
@@ -54,8 +54,8 @@ export async function geBiosampleTypes(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await executeQuery(q);
-    return res.rows.map(r => r['biosample_type']);
+    const res = await db.many(q);
+    return res.map(r => r['biosample_type']);
 }
 
 export async function geneIDsToApprovedSymbol(assembly) {
@@ -65,8 +65,8 @@ export async function geneIDsToApprovedSymbol(assembly) {
         FROM ${tableName}
         ORDER BY 1
     `;
-    const res = await executeQuery(q);
-    return res.rows.map(r => ({[r[0]]: r[1]}));
+    const res = await db.many(q);
+    return res.map(r => ({[r['geneid']]: r['approved_symbol']}));
 }
 
 export async function getHelpKeys() {
@@ -74,8 +74,8 @@ export async function getHelpKeys() {
         SELECT key, title, summary
         FROM helpkeys
     `;
-    const res = await executeQuery(q);
-    return (res.rows as Array<any>).reduce((obj, r) => ({
+    const res = await db.many(q);
+    return res.reduce((obj, r) => ({
             ...obj,
             [r['key']]: {
                 'title': r['title'],
@@ -91,10 +91,9 @@ export async function rankMethodToIDxToCellType(assembly) {
             FROM ${table}
         `;
 
-    const res = await executeQuery(q);
+    const res = await db.many(q);
     const ret = {};
-    const rows = res.rows;
-    for (const r of rows) {
+    for (const r of res) {
         const rank_method = r['rankmethod'];
         if (!(rank_method in ret)) {
             ret[rank_method] = {};
@@ -116,10 +115,10 @@ export async function makeCtMap(assembly) {
         'Insulator': 'Insulator'
     };
     const rmInfo = await rankMethodToIDxToCellType(assembly);
-    return Object.keys(rmInfo).filter(k => k in amap).reduce((obj, k) => {
-        obj = { ...obj, [amap[k]]: rmInfo[k] };
-        return obj;
-    }, {});
+    return Object.keys(rmInfo).filter(k => k in amap).reduce((obj, k) => ({
+        ...obj,
+        [amap[k]]: rmInfo[k]
+    }), {});
 }
 
 export async function makeCTStable(assembly) {
@@ -128,8 +127,8 @@ export async function makeCTStable(assembly) {
         SELECT cellTypeName, pgidx
         FROM ${tableName}
     `;
-    const res = await executeQuery(q);
-    return res.rows.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}));
+    const res = await db.many(q);
+    return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}));
 }
 
 export async function genePos(assembly, gene) {
@@ -142,16 +141,16 @@ export async function genePos(assembly, gene) {
         SELECT chrom, start, stop, approved_symbol, ensemblid_ver
         FROM ${tableName}
         WHERE chrom != ''
-        AND (approved_symbol = '${gene}'
-        OR ensemblid = '${ensemblid}'
-        OR ensemblid_ver = '${gene}')
+        AND (approved_symbol = $1
+        OR ensemblid = $2
+        OR ensemblid_ver = $1)
     `;
-    const res = await executeQuery(q);
-    if (res.rows.length === 0) {
+    const res = await db.oneOrNone(q, [gene, ensemblid]);
+    if (res.length === 0) {
         console.log('ERROR: missing', gene);
         return { pos: undefined, names: undefined };
     }
-    const r = res.rows[0];
+    const r = res[0];
     return {
         pos: { chrom: r['chrom'], start: r['start'], end: r['stop'] },
         names: [r['approved_symbol'], r['ensemblid_ver']]
@@ -227,7 +226,6 @@ async function allDatasets(assembly) {
     C57BL/6_stomach_embryo_15.5_days
     C57BL/6_stomach_embryo_16.5_days
     C57BL/6_stomach_postnatal_0_days`.split('\n');
-    const setdects = new Set(dects);
 
     const makeDataset = (r) => {
         // TODO: clean this
@@ -248,14 +246,16 @@ async function allDatasets(assembly) {
     };
 
     const tableName = assembly + '_datasets';
-    const cols = ['assay', 'expID', 'fileID', 'tissue',
-            'biosample_summary', 'biosample_type', 'cellTypeName',
-            'cellTypeDesc', 'synonyms'];
+    const cols = [
+        'assay', 'expID', 'fileID', 'tissue',
+        'biosample_summary', 'biosample_type', 'cellTypeName',
+        'cellTypeDesc', 'synonyms'
+    ];
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
     `;
-    const res = await executeQuery(q);
-    return res.rows.map(makeDataset);
+    const res = await db.many(q);
+    return res.map(makeDataset);
 }
 
 export async function datasets(assembly) {
@@ -311,13 +311,10 @@ export async function creBigBeds(assembly) {
         SELECT celltype, dcc_accession, typ
         FROM ${tableName}
     `;
-    const res = await executeQuery(q);
+    const res = await db.many(q);
     const ret: any = {};
-    for (const {celltype: ct, dcc_accession: acc, typ: typ} of res.rows) {
-        if (!(ct in ret)) {
-            ret[ct] = {};
-        }
-        ret[ct][typ] = acc;
+    for (const {celltype: ct, dcc_accession: acc, typ: typ} of res) {
+        (ret[ct] = ret[ct] || {})[typ] = acc;
     }
     return ret;
 }
@@ -327,13 +324,13 @@ export async function genesInRegion(assembly, chrom, start, stop) {
     const q = `
         SELECT approved_symbol,start,stop,strand
         FROM ${tableName}
-        WHERE chrom = '${chrom}'
-        AND int4range(start, stop) && int4range(${start}, ${stop})
+        WHERE chrom = $1
+        AND int4range(start, stop) && int4range($2, $3)
         ORDER BY start
     `;
 
-    const res = await executeQuery(q);
-    return res.rows.map(r => ({
+    const res = await db.many(q, [chrom, start, stop]);
+    return res.map(r => ({
         gene: r['approved_symbol'],
         start: r['start'],
         stop: r['stop'],
@@ -347,8 +344,8 @@ export async function nearbyCREs(assembly, coord, halfWindow, cols, isProximalOr
     let q = `
         SELECT ${cols.join(',')}
         FROM ${tableName}
-        WHERE chrom = '${c.chrom}'
-        AND int4range(start, stop) && int4range(${c.start}, ${c.end})
+        WHERE chrom = $1
+        AND int4range(start, stop) && int4range($2, $3)
     `;
 
     if (typeof isProximalOrDistal != 'undefined') {
@@ -356,8 +353,8 @@ export async function nearbyCREs(assembly, coord, halfWindow, cols, isProximalOr
         AND isProximal is ${isProximalOrDistal}
         `;
     }
-    const res = await executeQuery(q);
-    return res.rows;
+    const res = await db.many(q, [c.chrom, c.start, c.end]);
+    return res;
 }
 
 export async function genemap(assembly) {
@@ -367,10 +364,10 @@ export async function genemap(assembly) {
         FROM ${tableName}
         WHERE strand != ''
     `;
-    const res = await executeQuery(q);
+    const res = await db.many(q);
     const toSymbol = {};
     const toStrand = {};
-    res.rows.forEach(r => {
+    res.forEach(r => {
         toSymbol[r['ensemblid']] = r['approved_symbol'];
         toStrand[r['ensemblid']] = r['strand'];
 
@@ -386,11 +383,11 @@ export async function geneInfo(assembly, gene) {
         SELECT *
         FROM ${tableName}
         WHERE approved_symbol = $1
-        OR ensemblid = $2
-        OR ensemblid_ver = $3
+        OR ensemblid = $1
+        OR ensemblid_ver = $1
     `;
-    const res = await executeQuery(q, [gene, gene, gene]);
-    return res.rows;
+    const res = await db.many(q, [gene]);
+    return res;
 }
 
 export async function loadNineStateGenomeBrowser(assembly) {
@@ -399,10 +396,10 @@ export async function loadNineStateGenomeBrowser(assembly) {
         SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
         FROM ${tableName}
     `;
-    const res = await executeQuery(q);
+    const res = await db.many(q);
     const ret: any = {};
 
-    for (const r of res.rows) {
+    for (const r of res) {
         for (const k of ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf']) {
             const fileID = r[k];
             let url = '';
@@ -423,10 +420,10 @@ export async function crePos(assembly, accession) {
     const q = `
         SELECT chrom, start, stop
         FROM ${tableName}
-        WHERE accession = ${accession}
+        WHERE accession = $1
     `;
-    const res = await executeQuery(q);
-    if (res.rows.length === 0) {
+    const res = await db.oneOrNone(q, [accession]);
+    if (res.length === 0) {
         console.log('ERROR: missing', accession);
         return undefined;
     }
