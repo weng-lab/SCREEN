@@ -417,3 +417,18 @@ export async function loadNineStateGenomeBrowser(assembly) {
 
     return ret;
 }
+
+export async function crePos(assembly, accession) {
+    const tableName = assembly + '_cre_all';
+    const q = `
+        SELECT chrom, start, stop
+        FROM ${tableName}
+        WHERE accession = ${accession}
+    `;
+    const res = await executeQuery(q);
+    if (res.rows.length === 0) {
+        console.log('ERROR: missing', accession);
+        return undefined;
+    }
+    return { chrom: res.rows[0]['chrom'], start: res.rows[0]['start'], end: res.rows[0]['stop']};
+}

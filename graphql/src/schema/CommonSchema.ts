@@ -59,6 +59,15 @@ export const InputChromRange = new GraphQLInputObjectType({
     })
 });
 
+export const RequiredInputChromRange = new GraphQLInputObjectType({
+    name: 'RequiredInputChromRange',
+    fields: () => ({
+        chrom: { type: new GraphQLNonNull(GraphQLString) },
+        start: { type: new GraphQLNonNull(GraphQLInt) },
+        end: { type: new GraphQLNonNull(GraphQLInt) },
+    })
+});
+
 export const InputExpMax = new GraphQLInputObjectType({
     name: 'InputExpMax',
     fields: () => ({

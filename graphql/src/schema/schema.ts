@@ -21,7 +21,9 @@ import SuggestionsResponse from './SuggestionsResponse';
 import GwasResponse from './GwasResponse';
 import CartResponse from './CartResponse';
 import GbResponse from './GbResponse';
+import UCSCTrackhubResponse from './UCSCTrackhubSchema';
 import * as SearchResponseTypes from './SearchResponse';
+import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -32,6 +34,7 @@ import { resolve_suggestions } from '../resolvers/suggestions';
 import { resolve_gwas } from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 import { resolve_gb } from '../resolvers/gb';
+import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -117,6 +120,13 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
             },
             resolve: resolve_gb
+        },
+        ucsc_trackhub_url: {
+            type: UCSCTrackhubResponse,
+            args: {
+                info: { type: new GraphQLNonNull(UCSCTrackhub.UCSCTrackhubInfo) }
+            },
+            resolve: resolve_ucsc_trackhub_url
         }
     })
 });
@@ -145,7 +155,8 @@ const schema = new GraphQLSchema({
         SearchResponseTypes.SingleGeneResponse,
         SearchResponseTypes.SNPsResponse,
         SearchResponseTypes.RangeResponse,
-        SearchResponseTypes.FailedResponse
+        SearchResponseTypes.FailedResponse,
+        UCSCTrackhub.UCSCTrackhubInfo,
     ],
     query: BaseType,
     mutation: BaseMutation
