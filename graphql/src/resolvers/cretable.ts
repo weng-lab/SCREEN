@@ -25,7 +25,7 @@ async function cre_table(data, assembly, pagination) {
                 } : undefined,
                 maxz: r.maxz,
                 ctcf_zscore: r.ctcf_zscore,
-                ctspecifc: r.ctspecifc,
+                ctspecific: r.ctspecific,
                 enhancer_zscore: r.enhancer_zscore,
                 promoter_zscore: r.promoter_zscore,
                 genesallpc: genesallpc,

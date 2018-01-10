@@ -56,13 +56,39 @@ export const genes = new GraphQLObjectType({
     },
 });
 
+export const ctSpecific = new GraphQLObjectType({
+    name: 'ctSpecific',
+    fields: {
+        ct: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        dnase_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        promoter_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        enhancer_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        ctcf_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+    }
+})
+
 export const cREData = new GraphQLObjectType({
     name: 'creData',
     fields: () => ({
         range: { type: CommonTypes.ChromRange },
         maxz: { type: new GraphQLNonNull(GraphQLFloat) },
         ctcf_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
-        ctspecifc: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        ctspecific: { type: ctSpecific },
         enhancer_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
         promoter_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
         genesallpc: { type: new GraphQLNonNull(genes) },

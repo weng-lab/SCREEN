@@ -37,8 +37,8 @@ const notCtSpecific = (wheres, fields, params, j) => {
     return { wheres, fields };
 };
 
-const ctSpecific = (wheres, fields, params, ctSpecific, ct, j, ctmap) => {
-    ctSpecific['ct'] = "'" + ct + "'";
+const ctSpecific = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
+    ctSpecificObj['ct'] = "'" + ct + "'";
     const exps = [['dnase', 'dnase'],
     ['promoter', 'h3k4me3'],
     ['enhancer', 'h3k27ac'],
@@ -47,12 +47,12 @@ const ctSpecific = (wheres, fields, params, ctSpecific, ct, j, ctmap) => {
         const [name, exp] = v;
         if (!(ct in ctmap[name])) {
             fields.push(`'' AS ${name}_zscore`);
-            ctSpecific[name + '_zscore'] = 'null';
+            ctSpecificObj[name + '_zscore'] = 'null';
             continue;
         }
         const ctindex = ctmap[name][ct];
         fields.push(`cre.${exp}_zscores[${ctindex}] AS ${name}_zscore`);
-        ctSpecific[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
+        ctSpecificObj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
 
         if (`rank_${name}_start` in j && `rank_${name}_end` in j) {
             const start = j[`rank_${name}_start`];
@@ -106,19 +106,19 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     const useAccs = accessions(wheres, params, j);
     const ct = j['cellType'];
 
-    const ctspecific = {};
+    const ctspecificobj = {};
     if (useAccs || !ct) {
         notCtSpecific(wheres, fields, params, j);
     } else {
-        ctSpecific(wheres, fields, params, ctspecific, ct, j, ctmap);
+        ctSpecific(wheres, fields, params, ctspecificobj, ct, j, ctmap);
     }
     where(wheres, params, chrom, start, stop);
 
     const ctspecificpairs: Array<string> = [];
-    for (const k of Object.keys(ctSpecific)) {
-        ctspecificpairs.push(`'${k}', ${ctSpecific[k]}`);
+    for (const k of Object.keys(ctspecificobj)) {
+        ctspecificpairs.push(`'${k}', ${ctspecificobj[k]}`);
     }
-    const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctSpecifc';
+    const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctspecific';
 
     const infoFields = {
         'accession': 'cre.accession',
