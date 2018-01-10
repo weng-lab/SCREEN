@@ -124,6 +124,7 @@ const BaseType = new GraphQLObjectType({
         ucsc_trackhub_url: {
             type: UCSCTrackhubResponse,
             args: {
+                uuid: { type: new GraphQLNonNull(UUID) },
                 info: { type: new GraphQLNonNull(UCSCTrackhub.UCSCTrackhubInfo) }
             },
             resolve: resolve_ucsc_trackhub_url

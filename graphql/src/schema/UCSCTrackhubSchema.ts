@@ -29,6 +29,5 @@ export const UCSCTrackhubInfo = new GraphQLInputObjectType({
         range: { type: CommonTypes.RequiredInputChromRange },
         halfWindow: { type: new GraphQLNonNull(GraphQLInt) },
         showCombo: { type: new GraphQLNonNull(GraphQLBoolean) },
-        uuid: { type: new GraphQLNonNull(UUID) },
     })
 });

@@ -15,15 +15,15 @@ async function trackhub_url_info(info) {
     return { assembly, accession: info['accession'], highlighted: coord, coord: resizedcoord };
 }
 
-async function ucsc_trackhub_url(info) {
+async function ucsc_trackhub_url(uuid, info) {
     const { assembly, accession, coord, highlighted } = await trackhub_url_info(info);
-    const j = { ...info, version: 2 };
-    const hubNum = await TrackhubsDb.insertOrUpdate(assembly, accession, info['uuid'], j);
+    const j = { ...info, version: 2, uuid };
+    const hubNum = await TrackhubsDb.insertOrUpdate(assembly, accession, uuid, j);
 
     const trackhubUrl = [
         host,
         'ucsc_trackhub',
-        info['uuid'],
+        uuid,
         'hub_' + hubNum + '.txt'
     ].join('/');
 
@@ -45,6 +45,7 @@ async function ucsc_trackhub_url(info) {
 }
 
 export const resolve_ucsc_trackhub_url: GraphQLFieldResolver<any, any> = (source, args, context) => {
+    const uuid = args.uuid;
     const info = args.info;
-    return ucsc_trackhub_url(info);
+    return ucsc_trackhub_url(uuid, info);
 };

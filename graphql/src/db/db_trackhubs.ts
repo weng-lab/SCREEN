@@ -6,23 +6,23 @@ export async function insertOrUpdate(assembly, reAccession, uid, j) {
         FROM search
         WHERE uid = '${uid}'
     `;
-    const getres = db.oneOrNone(getq);
+    const getres = await db.oneOrNone(getq);
     if (getres) {
         const updateq = `
             UPDATE search
             SET
                 reAccession = '${reAccession}',
                 assembly = '${assembly}',
-                hubNum = hubNum + 1,
+                hubnum = hubnum + 1,
                 j = $1:json
             WHERE uid = '${uid}'
-            RETURNING hubNum;
+            RETURNING hubnum;
         `;
         return db.oneOrNone(updateq, [j], r => r && r['hubnum']);
     } else {
         const insertq = `
             INSERT INTO search
-            (reAccession, assembly, uid, hubNum, j)
+            (reaccession, assembly, uid, hubnum, j)
             VALUES (
                 '${reAccession}',
                 '${assembly}',
@@ -30,7 +30,7 @@ export async function insertOrUpdate(assembly, reAccession, uid, j) {
                 0,
                 $1:json
             )
-            RETURNING hubNum;
+            RETURNING hubnum;
         `;
         return db.oneOrNone(insertq, [j], r => r && r['hubnum']);
     }

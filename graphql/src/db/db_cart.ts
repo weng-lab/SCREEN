@@ -12,7 +12,12 @@ export async function get(uuid) {
 
 export async function set(uuid, accessions) {
     const tableName = 'hg19_cart';
-    const existing = await get(uuid);
+    const getq = `
+        SELECT accessions
+        FROM ${tableName}
+        WHERE uuid = $1
+    `;
+    const existing = await db.oneOrNone(getq, [uuid], r => r && r.accessions);
     let q;
     if (existing) {
         q = `
