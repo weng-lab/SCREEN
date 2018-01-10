@@ -1,4 +1,4 @@
-const executeQuery = require('./db').executeQuery;
+import { db } from './db';
 
 export async function insertOrUpdate(assembly, reAccession, uid, j) {
     const getq = `
@@ -6,20 +6,19 @@ export async function insertOrUpdate(assembly, reAccession, uid, j) {
         FROM search
         WHERE uid = '${uid}'
     `;
-    const getres = await executeQuery(getq);
-    if (getres.rows.length > 0) {
+    const getres = db.oneOrNone(getq);
+    if (getres) {
         const updateq = `
             UPDATE search
             SET
                 reAccession = '${reAccession}',
                 assembly = '${assembly}',
                 hubNum = hubNum + 1,
-                j = $1
+                j = $1:json
             WHERE uid = '${uid}'
             RETURNING hubNum;
         `;
-        const updateres = await executeQuery(updateq, [JSON.stringify(j)]);
-        return updateres.rows[0]['hubnum'];
+        return db.oneOrNone(updateq, [j], r => r && r['hubnum']);
     } else {
         const insertq = `
             INSERT INTO search
@@ -29,11 +28,10 @@ export async function insertOrUpdate(assembly, reAccession, uid, j) {
                 '${assembly}',
                 '${uid}',
                 0,
-                $1
+                $1:json
             )
             RETURNING hubNum;
         `;
-        const insertres = await executeQuery(insertq, [JSON.stringify(j)]);
-        return insertres.rows[0]['hubnum'];
+        return db.oneOrNone(insertq, [j], r => r && r['hubnum']);
     }
 }
