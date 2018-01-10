@@ -80,7 +80,7 @@ export const ctSpecific = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLFloat)
         },
     }
-})
+});
 
 export const cREData = new GraphQLObjectType({
     name: 'creData',

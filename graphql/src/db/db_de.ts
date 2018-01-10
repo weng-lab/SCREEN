@@ -23,7 +23,7 @@ export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
         where gi.chrom = $1
         AND de.padj <= $2
         AND int4range(gi.start, gi.stop) && int4range($3, $4)
-        and de.leftCtId = $5 and de.rightCtId = $5
+        and de.leftCtId = $5 and de.rightCtId = $6
     `;
     res = await db.any(q, [c.chrom, pval, c.start, c.end, ct2id, ct1id]);
     if (res.length === 0) {

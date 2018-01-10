@@ -145,12 +145,11 @@ export async function genePos(assembly, gene) {
         OR ensemblid = $2
         OR ensemblid_ver = $1)
     `;
-    const res = await db.oneOrNone(q, [gene, ensemblid]);
-    if (res.length === 0) {
+    const r = await db.oneOrNone(q, [gene, ensemblid]);
+    if (!r) {
         console.log('ERROR: missing', gene);
         return { pos: undefined, names: undefined };
     }
-    const r = res[0];
     return {
         pos: { chrom: r['chrom'], start: r['start'], end: r['stop'] },
         names: [r['approved_symbol'], r['ensemblid_ver']]
@@ -422,10 +421,10 @@ export async function crePos(assembly, accession) {
         FROM ${tableName}
         WHERE accession = $1
     `;
-    const res = await db.oneOrNone(q, [accession]);
-    if (res.length === 0) {
+    const r = await db.oneOrNone(q, [accession]);
+    if (!r) {
         console.log('ERROR: missing', accession);
         return undefined;
     }
-    return { chrom: res.rows[0]['chrom'], start: res.rows[0]['start'], end: res.rows[0]['stop']};
+    return { chrom: r['chrom'], start: r['start'], end: r['stop']};
 }
