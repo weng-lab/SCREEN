@@ -39,21 +39,21 @@ export class GeneParse {
         this.useTss = useTss;
         this.tssDist = tssDist;
 
-        this.oname = r[0];
-        this.strand = r[10];
+        this.oname = r['oname'];
+        this.strand = r['strand'];
 
         if (useTss) {
             if ('+' == this.strand) {
-                this.coord = {chrom: r[4], start: Math.max(0, parseInt(r[5]) - tssDist), end: r[6]};
+                this.coord = {chrom: r['altchrom'], start: Math.max(0, parseInt(r['altstart']) - tssDist), end: r['altstop']};
             } else {
-                this.coord = {chrom: r[4], start: r[5], end: parseInt(r[6]) + tssDist};
+                this.coord = {chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) + tssDist};
             }
         } else {
-            this.coord = {chrom: r[1], start: r[2], end: r[3]};
+            this.coord = {chrom: r['chrom'], start: r['start'], end: r['stop']};
         }
 
-        this.approved_symbol = r[9];
-        this.sm = r[7];
+        this.approved_symbol = r['approved_symbol'];
+        this.sm = r['sm'];
     }
 
     toJson() {
@@ -83,7 +83,7 @@ export class GeneParse {
 async function exactGeneMatch(assembly, s, usetss, tssDist) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
-    const infoTableName = assembly + '_gene_search';
+    const infoTableName = assembly + '_gene_info';
     const q = `
         SELECT ac.oname,
         ac.chrom, ac.start, ac.stop,
@@ -98,8 +98,7 @@ async function exactGeneMatch(assembly, s, usetss, tssDist) {
         LIMIT 50
     `;
     const rows = await db.any(q, [slo, s]);
-
-    if (rows.length > 0 && isclose(1, rows[0][7])) {
+    if (rows.length > 0 && isclose(1, rows[0]['sm'])) {
         return [new GeneParse(assembly, rows[0], s, usetss, tssDist)];
     }
     return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
@@ -108,7 +107,7 @@ async function exactGeneMatch(assembly, s, usetss, tssDist) {
 async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
-    const infoTableName = assembly + '_gene_search';
+    const infoTableName = assembly + '_gene_info';
     const q = `
         SELECT ac.oname,
         ac.chrom, ac.start, ac.stop,

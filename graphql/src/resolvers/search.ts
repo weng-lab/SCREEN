@@ -110,9 +110,9 @@ export async function parse(assembly, args) {
     }
 
     let genes: Array<GeneParse> = [];
-    if (!coord && !accessions) {
+    if (!coord && accessions.length === 0) {
         genes = await Parse.try_find_gene(assembly, s, useTss, tssDist);
-        if (genes) {
+        if (genes.length > 0) {
             const g = genes[0];
             interpretation['gene'] = g.get_genetext();
             coord = g.coord;

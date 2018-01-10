@@ -19,7 +19,6 @@ export const Gene = new GraphQLObjectType({
     name: 'Gene',
     fields: () => ({
         approved_symbol: { type: new GraphQLNonNull(GraphQLString) },
-        range: { type: CommonTypes.ChromRange },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
     })
 });
@@ -28,6 +27,7 @@ export const SingleGeneResponse = new GraphQLObjectType({
     name: 'SingleGeneResponse',
     fields: () => ({
         gene: { type: Gene },
+        range: { type: CommonTypes.ChromRange },
     }),
 });
 
