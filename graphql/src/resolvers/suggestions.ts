@@ -17,7 +17,7 @@ async function suggestions(query, assemblies) {
             return { suggestions: results.map(r => pre + r).sort() };
         }
     }
-    return [];
+    return { suggestions: [] };
 }
 
 export const resolve_suggestions: GraphQLFieldResolver<any, any> = (source, args, context) => {

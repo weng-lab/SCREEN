@@ -1,13 +1,14 @@
 import {
     GraphQLObjectType,
     GraphQLList,
-    GraphQLString
+    GraphQLString,
+    GraphQLNonNull
 } from 'graphql';
 
 export const SuggestionsResponse = new GraphQLObjectType({
     name: 'Suggestions',
     fields: () => ({
-        suggestions: { type: new GraphQLList(GraphQLString) },
+        suggestions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
     })
 });
 
