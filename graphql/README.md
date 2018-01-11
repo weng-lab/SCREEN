@@ -159,8 +159,8 @@ query desearch {
   }
 }
 
-query suggestions{
-  suggestions(query: "gapdh") {
+query suggestions($suggestionSearch: String!, $assemblies: [Assembly]){
+  suggestions(query: $suggestionSearch, assemblies: $assemblies) {
     suggestions
   }
 }
@@ -257,6 +257,7 @@ Query Variables (below Document):
     },
     "halfWindow": 7500,
     "showCombo": true
-  }
+  },
+  "suggestionSearch": "gapdh"
 }
 ```
