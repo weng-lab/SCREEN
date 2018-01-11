@@ -215,6 +215,12 @@ mutation SetCart($uuid: UUID!) {
   }
 }
 
+query globals($assembly: Assembly!) {
+  globals(assembly: $assembly) {
+  	helpKeys
+	}
+}
+
 ```
 
 Query Variables (below Document):
