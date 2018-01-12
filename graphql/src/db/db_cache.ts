@@ -16,7 +16,6 @@ function indexFilesTab(rows) {
 }
 
 async function load(assembly) {
-    const colors = require('./colors');
     const chromCounts = await Common.chromCounts(assembly);
     const creHist = await Common.creHist(assembly);
     const tf_list = await Common.tfHistoneDnaseList(assembly, 'encode');
@@ -27,14 +26,11 @@ async function load(assembly) {
     const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
-    const help_keys = await Common.getHelpKeys();
     const creBigBeds = await Common.creBigBeds(assembly);
     const ctmap = await Common.makeCtMap(assembly);
     const ctsTable = await Common.makeCTStable(assembly);
 
     const cache = {
-        colors: colors,
-
         chromCounts: chromCounts,
         creHist: creHist,
 
@@ -60,8 +56,6 @@ async function load(assembly) {
 
         geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
 
-        help_keys: help_keys,
-
         tfHistCounts: undefined,
 
         creBigBeds: creBigBeds,
@@ -72,7 +66,19 @@ async function load(assembly) {
     return cache;
 }
 
-let caches = {};
+async function loadGlobal() {
+    const colors = require('./colors');
+    const help_keys = await Common.getHelpKeys();
+
+    const cache = {
+        colors: colors,
+        help_keys: help_keys,
+    };
+    return cache;
+}
+
+let caches: any = {};
+let globalcache: any = {};
 let loaded = false;
 async function loadCaches() {
     if (loaded) {
@@ -80,11 +86,11 @@ async function loadCaches() {
     }
     const hg19 = await load('hg19');
     const mm10 = await load('mm10');
-    const cachesawait = {
+    caches = {
         'hg19': hg19,
         'mm10': mm10,
     };
-    caches = cachesawait;
+    globalcache = await loadGlobal();
     loaded = true;
     console.log('Cache loaded: ', Object.keys(caches));
 }
@@ -115,13 +121,19 @@ function global_data(assembly) {
         'creHistBins': c.creHist,
         'byCellType': datasets.byCellType,
         'geBiosampleTypes': c.geBiosampleTypes,
-        'helpKeys': c.help_keys,
-        'colors': c.colors,
         'creBigBedsByCellType': c.creBigBeds,
         'creFiles': c.filesList,
     };
 }
 exports.global_data = global_data;
+
+function global_data_global() {
+    return {
+        'helpKeys': globalcache.help_keys,
+        'colors': globalcache.colors,
+    };
+}
+exports.global_data_global = global_data_global;
 
 function lookupEnsembleGene(assembly, s) {
     const c = cache(assembly);

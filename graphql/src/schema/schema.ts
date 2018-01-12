@@ -67,9 +67,6 @@ const BaseType = new GraphQLObjectType({
         },
         globals: {
             type: GlobalsResponse,
-            args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-            },
             resolve: resolve_globals
         },
         de_search: {
