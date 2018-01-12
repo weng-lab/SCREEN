@@ -159,72 +159,72 @@ export async function genePos(assembly, gene) {
 async function allDatasets(assembly) {
     // TODO: fixme!!
     const dects = `
-    C57BL/6_embryonic_facial_prominence_embryo_11.5_days
-    C57BL/6_embryonic_facial_prominence_embryo_12.5_days
-    C57BL/6_embryonic_facial_prominence_embryo_13.5_days
-    C57BL/6_embryonic_facial_prominence_embryo_14.5_days
-    C57BL/6_embryonic_facial_prominence_embryo_15.5_days
-    C57BL/6_forebrain_embryo_11.5_days
-    C57BL/6_forebrain_embryo_12.5_days
-    C57BL/6_forebrain_embryo_13.5_days
-    C57BL/6_forebrain_embryo_14.5_days
-    C57BL/6_forebrain_embryo_15.5_days
-    C57BL/6_forebrain_embryo_16.5_days
-    C57BL/6_forebrain_postnatal_0_days
-    C57BL/6_heart_embryo_11.5_days
-    C57BL/6_heart_embryo_12.5_days
-    C57BL/6_heart_embryo_13.5_days
-    C57BL/6_heart_embryo_14.5_days
-    C57BL/6_heart_embryo_15.5_days
-    C57BL/6_heart_embryo_16.5_days
-    C57BL/6_heart_postnatal_0_days
-    C57BL/6_hindbrain_embryo_11.5_days
-    C57BL/6_hindbrain_embryo_12.5_days
-    C57BL/6_hindbrain_embryo_13.5_days
-    C57BL/6_hindbrain_embryo_14.5_days
-    C57BL/6_hindbrain_embryo_15.5_days
-    C57BL/6_hindbrain_embryo_16.5_days
-    C57BL/6_hindbrain_postnatal_0_days
-    C57BL/6_intestine_embryo_14.5_days
-    C57BL/6_intestine_embryo_15.5_days
-    C57BL/6_intestine_embryo_16.5_days
-    C57BL/6_intestine_postnatal_0_days
-    C57BL/6_kidney_embryo_14.5_days
-    C57BL/6_kidney_embryo_15.5_days
-    C57BL/6_kidney_embryo_16.5_days
-    C57BL/6_kidney_postnatal_0_days
-    C57BL/6_limb_embryo_11.5_days
-    C57BL/6_limb_embryo_12.5_days
-    C57BL/6_limb_embryo_13.5_days
-    C57BL/6_limb_embryo_14.5_days
-    C57BL/6_limb_embryo_15.5_days
-    C57BL/6_liver_embryo_11.5_days
-    C57BL/6_liver_embryo_12.5_days
-    C57BL/6_liver_embryo_13.5_days
-    C57BL/6_liver_embryo_14.5_days
-    C57BL/6_liver_embryo_15.5_days
-    C57BL/6_liver_embryo_16.5_days
-    C57BL/6_liver_postnatal_0_days
-    C57BL/6_lung_embryo_14.5_days
-    C57BL/6_lung_embryo_15.5_days
-    C57BL/6_lung_embryo_16.5_days
-    C57BL/6_lung_postnatal_0_days
-    C57BL/6_midbrain_embryo_11.5_days
-    C57BL/6_midbrain_embryo_12.5_days
-    C57BL/6_midbrain_embryo_13.5_days
-    C57BL/6_midbrain_embryo_14.5_days
-    C57BL/6_midbrain_embryo_15.5_days
-    C57BL/6_midbrain_embryo_16.5_days
-    C57BL/6_midbrain_postnatal_0_days
-    C57BL/6_neural_tube_embryo_11.5_days
-    C57BL/6_neural_tube_embryo_12.5_days
-    C57BL/6_neural_tube_embryo_13.5_days
-    C57BL/6_neural_tube_embryo_14.5_days
-    C57BL/6_neural_tube_embryo_15.5_days
-    C57BL/6_stomach_embryo_14.5_days
-    C57BL/6_stomach_embryo_15.5_days
-    C57BL/6_stomach_embryo_16.5_days
-    C57BL/6_stomach_postnatal_0_days`.split('\n');
+C57BL/6_embryonic_facial_prominence_embryo_11.5_days
+C57BL/6_embryonic_facial_prominence_embryo_12.5_days
+C57BL/6_embryonic_facial_prominence_embryo_13.5_days
+C57BL/6_embryonic_facial_prominence_embryo_14.5_days
+C57BL/6_embryonic_facial_prominence_embryo_15.5_days
+C57BL/6_forebrain_embryo_11.5_days
+C57BL/6_forebrain_embryo_12.5_days
+C57BL/6_forebrain_embryo_13.5_days
+C57BL/6_forebrain_embryo_14.5_days
+C57BL/6_forebrain_embryo_15.5_days
+C57BL/6_forebrain_embryo_16.5_days
+C57BL/6_forebrain_postnatal_0_days
+C57BL/6_heart_embryo_11.5_days
+C57BL/6_heart_embryo_12.5_days
+C57BL/6_heart_embryo_13.5_days
+C57BL/6_heart_embryo_14.5_days
+C57BL/6_heart_embryo_15.5_days
+C57BL/6_heart_embryo_16.5_days
+C57BL/6_heart_postnatal_0_days
+C57BL/6_hindbrain_embryo_11.5_days
+C57BL/6_hindbrain_embryo_12.5_days
+C57BL/6_hindbrain_embryo_13.5_days
+C57BL/6_hindbrain_embryo_14.5_days
+C57BL/6_hindbrain_embryo_15.5_days
+C57BL/6_hindbrain_embryo_16.5_days
+C57BL/6_hindbrain_postnatal_0_days
+C57BL/6_intestine_embryo_14.5_days
+C57BL/6_intestine_embryo_15.5_days
+C57BL/6_intestine_embryo_16.5_days
+C57BL/6_intestine_postnatal_0_days
+C57BL/6_kidney_embryo_14.5_days
+C57BL/6_kidney_embryo_15.5_days
+C57BL/6_kidney_embryo_16.5_days
+C57BL/6_kidney_postnatal_0_days
+C57BL/6_limb_embryo_11.5_days
+C57BL/6_limb_embryo_12.5_days
+C57BL/6_limb_embryo_13.5_days
+C57BL/6_limb_embryo_14.5_days
+C57BL/6_limb_embryo_15.5_days
+C57BL/6_liver_embryo_11.5_days
+C57BL/6_liver_embryo_12.5_days
+C57BL/6_liver_embryo_13.5_days
+C57BL/6_liver_embryo_14.5_days
+C57BL/6_liver_embryo_15.5_days
+C57BL/6_liver_embryo_16.5_days
+C57BL/6_liver_postnatal_0_days
+C57BL/6_lung_embryo_14.5_days
+C57BL/6_lung_embryo_15.5_days
+C57BL/6_lung_embryo_16.5_days
+C57BL/6_lung_postnatal_0_days
+C57BL/6_midbrain_embryo_11.5_days
+C57BL/6_midbrain_embryo_12.5_days
+C57BL/6_midbrain_embryo_13.5_days
+C57BL/6_midbrain_embryo_14.5_days
+C57BL/6_midbrain_embryo_15.5_days
+C57BL/6_midbrain_embryo_16.5_days
+C57BL/6_midbrain_postnatal_0_days
+C57BL/6_neural_tube_embryo_11.5_days
+C57BL/6_neural_tube_embryo_12.5_days
+C57BL/6_neural_tube_embryo_13.5_days
+C57BL/6_neural_tube_embryo_14.5_days
+C57BL/6_neural_tube_embryo_15.5_days
+C57BL/6_stomach_embryo_14.5_days
+C57BL/6_stomach_embryo_15.5_days
+C57BL/6_stomach_embryo_16.5_days
+C57BL/6_stomach_postnatal_0_days`.split('\n');
 
     const makeDataset = (r) => {
         // TODO: clean this
@@ -234,7 +234,7 @@ async function allDatasets(assembly) {
             'cellTypeDesc': r['celltypedesc'],
             'name': r['celltypename'],
             'value': r['celltypedesc'],  // for datatables
-            'isde': r['celltypename'] in dects,
+            'isde': (dects as any).includes(r['celltypename']),
         };
         return Object.keys(ret)
         .filter(key => !(['celltypename', 'celltypedesc'] as any).includes(key))
