@@ -232,8 +232,8 @@ C57BL/6_stomach_postnatal_0_days`.split('\n');
             ...r,
             'cellTypeName': r['celltypename'],
             'cellTypeDesc': r['celltypedesc'],
-            'name': r['celltypename'],
-            'value': r['celltypedesc'],  // for datatables
+            'name': r['celltypedesc'],
+            'value': r['celltypename'],  // for datatables
             'isde': (dects as any).includes(r['celltypename']),
         };
         return Object.keys(ret)
@@ -271,7 +271,7 @@ export async function datasets(assembly) {
     ret.byFileID = rows.map(r => r['fileID']);
     ret.byCellType = {};
     for (const r of rows) {
-        const ctn = r['name'];
+        const ctn = r['value'];
         if (!(ctn in ret.byCellType)) {
             ret.byCellType[ctn] = [];
         }
@@ -297,7 +297,7 @@ export async function datasets(assembly) {
         ret.globalCellTypeInfoArr.push(v);
     }
 
-    ret.globalCellTypeInfoArr.sort((a, b) => a['name'].localeCompare(b['name'], 'en', {'sensitivity': 'base'}));
+    ret.globalCellTypeInfoArr.sort((a, b) => a['value'].localeCompare(b['value'], 'en', {'sensitivity': 'base'}));
 
     ret.biosample_types = Array.from(new Set(rows.map(b => b['biosample_type']))).sort();
 
