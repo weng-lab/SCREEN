@@ -97,6 +97,9 @@ class BulkWebService:
                 "cREsUrl": url}
 
     def cts(self, args):
+        print(args)
+        if args:
+            return self.cache.rankMethodToIDxToCellTypeZeroBased[args[0]]
         return self.cache.rankMethodToIDxToCellTypeZeroBased
 
     def _downloadFileName(self, uuid, formt):
