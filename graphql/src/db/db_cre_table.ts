@@ -10,7 +10,7 @@ const accessions = (wheres, params, j: {accessions?: string[]}) => {
         return false;
     }
     params.accsList = accs.filter(isaccession).map(a => a.toUpperCase());
-    const accsQuery = 'accession IN (${accsList})';
+    const accsQuery = 'accession = ANY (${accsList})';
     wheres.push(`(${accsQuery})`);
     return true;
 };

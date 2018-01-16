@@ -19,7 +19,8 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         creBigBedsByCellType: { type: GraphQLJSON },
         creFiles: { type: GraphQLJSON }
     })
-})
+});
+
 export const GlobalsResponse = new GraphQLObjectType({
     name: 'Globals',
     fields: () => ({

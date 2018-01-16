@@ -1,6 +1,5 @@
 import { db } from './db';
-
-const cache = require('../db/db_cache').cache;
+import TissueColors from '../tissuecolors';
 
 const fixedmap = {
     'limb': 'limb',
@@ -18,38 +17,11 @@ const fixedmap = {
 const tissueSort = (a, b) => a['tissue'].localeCompare(b['tissue']);
 const tpmSort = (skey) => (a, b) => b[skey] - a[skey];
 
-class TissueColors {
-    tissueToColor; randColorGen;
-
-    constructor(assembly) {
-        this.tissueToColor = cache(assembly).colors['tissues'];
-    }
-
-    static pad = (n) => ('00' + n).substr(-2);
-    static rand = () => Math.floor(Math.random() * 256);
-    static randColorGen = () => TissueColors.pad(TissueColors.rand().toString(16));
-    static randColor = () =>
-        `#${TissueColors.randColorGen()}${TissueColors.randColorGen()}${TissueColors.randColorGen()}`;
-
-    getTissueColor(t) {
-        if (!(t in this.tissueToColor)) {
-            console.log('missing tissue color for', t);
-            return TissueColors.randColor();
-        }
-        const c = this.tissueToColor[t];
-        if (!c.startsWith('#')) {
-            return '#' + c;
-        }
-        return c;
-    }
-}
-
 export class GeneExpression {
-    assembly; tissueColors; itemsByRID;
+    assembly; itemsByRID;
 
     constructor(assembly) {
         this.assembly = assembly;
-        this.tissueColors = new TissueColors(assembly);
         this.itemsByRID = {};
     }
 
@@ -69,7 +41,7 @@ export class GeneExpression {
             }
             const t = row['tissue'];
             if (!(t in ret)) {
-                const c = this.tissueColors.getTissueColor(t);
+                const c = TissueColors.getTissueColor(t);
                 ret[t] = {
                     'name': t,
                     'displayName': t,
@@ -92,7 +64,7 @@ export class GeneExpression {
             }
             const t = row['tissue'];
             if (!(t in ret)) {
-                const c = this.tissueColors.getTissueColor(t);
+                const c = TissueColors.getTissueColor(t);
                 ret[t] = {
                     'name': t,
                     'displayName': t,
@@ -130,7 +102,7 @@ export class GeneExpression {
                 this.itemsByRID[row['rID']] = row;
             }
             const t = row['tissue'];
-            const c = this.tissueColors.getTissueColor(t);
+            const c = TissueColors.getTissueColor(t);
             const k = idx.toLocaleString('en', {minimumIntegerDigits: 3}) + '_' + t;
             ret[k] = {
                 'name': k,

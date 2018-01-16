@@ -11,9 +11,11 @@ export const isaccession = (s: string)  => {
 
 export const isclose = (a, b) => Math.abs(a - b) < Number.EPSILON;
 
+const natsortcollator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+export const natsorter = natsortcollator.compare;
+
 export const natsort = (array) => {
-    const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-    return array.slice().sort(collator.compare);
+    return array.slice().sort(natsorter);
 };
 
 const assemblies = ['hg19', 'mm10'];

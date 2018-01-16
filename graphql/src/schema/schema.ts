@@ -24,6 +24,7 @@ import GbResponse from './GbResponse';
 import UCSCTrackhubResponse from './UCSCTrackhubSchema';
 import * as SearchResponseTypes from './SearchResponse';
 import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
+import CreDetailsResponse from './CreDetailsResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -35,6 +36,7 @@ import { resolve_gwas } from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 import { resolve_gb } from '../resolvers/gb';
 import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
+import { resolve_credetails } from '../resolvers/credetails';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -125,6 +127,14 @@ const BaseType = new GraphQLObjectType({
                 info: { type: new GraphQLNonNull(UCSCTrackhub.UCSCTrackhubInfo) }
             },
             resolve: resolve_ucsc_trackhub_url
+        },
+        credetails: {
+            type: new GraphQLList(CreDetailsResponse),
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                accessions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+            },
+            resolve: resolve_credetails
         }
     })
 });

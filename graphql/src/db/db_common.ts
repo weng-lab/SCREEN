@@ -66,7 +66,7 @@ export async function geneIDsToApprovedSymbol(assembly) {
         ORDER BY 1
     `;
     const res = await db.many(q);
-    return res.map(r => ({[r['geneid']]: r['approved_symbol']}));
+    return res.filter(o => o.geneid !== -1).reduce((obj, r) => { obj[r['geneid']] = r['approved_symbol']; return obj; }, {});
 }
 
 export async function getHelpKeys() {
@@ -82,6 +82,27 @@ export async function getHelpKeys() {
                 'summary': r['summary']
             }
         }), {});
+}
+
+export async function rankMethodToCellTypes(assembly) {
+    const tableName = assembly + '_rankcelltypeindexex';
+    const q = `
+        SELECT idx, celltype, rankmethod
+        FROM ${tableName}
+    `;
+    const res = await db.any(q);
+    const _map = res.reduce((obj, r) => {
+        const rankmethod = r['rankmethod'];
+        (obj[rankmethod] = obj[rankmethod] || []).push([r['id'], r['celltype']]);
+        return obj;
+    }, {});
+    const ret: any = {};
+    for (const k of Object.keys(_map)) {
+        const v: Array<any> = _map[k];
+        ret[k] = v.sort((a, b) => a[0] - b[0]).map(x => x[1]);
+    }
+    // ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
+    return ret;
 }
 
 export async function rankMethodToIDxToCellType(assembly) {
@@ -427,4 +448,249 @@ export async function crePos(assembly, accession) {
         return undefined;
     }
     return { chrom: r['chrom'], start: r['start'], end: r['stop']};
+}
+
+async function getColsForAccession(assembly, accession, cols) {
+    const tableName = assembly + '_cre_all';
+    const q = `
+        SELECT ${cols.join(',')}
+        FROM ${tableName}
+        WHERE accession = $1
+    `;
+    return db.oneOrNone(q, [accession]);
+}
+
+export async function creRanksPromoter(assembly, accession) {
+    const cols = ['promoter_zscores'];
+    const r = await getColsForAccession(assembly, accession, cols);
+    return {'zscores': {'Promoter': r['promoter_zscores']}};
+}
+
+export async function creRanksEnhancer(assembly, accession) {
+    const cols = ['enhancer_zscores'];
+    const r = await getColsForAccession(assembly, accession, cols);
+    return {'zscores': {'Enhancer': r['enhancer_zscores']}};
+}
+
+export async function creRanks(assembly, accession) {
+    const cols = `
+dnase_zscores
+ctcf_zscores
+enhancer_zscores
+h3k27ac_zscores
+h3k4me3_zscores
+insulator_zscores
+promoter_zscores`.trim().split('\n');
+
+    const r = await getColsForAccession(assembly, accession, cols);
+    return cols.reduce((obj, k) => ({ ...obj, [k.split('_')[0]]: r[k]}), {});
+}
+
+async function getGenes(assembly, accession, allOrPc) {
+    const tableall = assembly + '_cre_all';
+    const tableinfo = assembly + '_gene_info';
+    const q = `
+        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
+        FROM
+        (SELECT UNNEST(gene_${allOrPc}_id) geneid,
+        UNNEST(gene_${allOrPc}_distance) distance
+        FROM ${tableall} WHERE accession = $1) AS g
+        INNER JOIN ${tableinfo} AS gi
+        ON g.geneid = gi.geneid
+    `;
+    return db.any(q, [accession]);
+}
+
+export async function creGenes(assembly, accession, chrom) {
+    return {
+        genesAll: await getGenes(assembly, accession, 'all'),
+        genesPC: await getGenes(assembly, accession, 'pc')
+    };
+}
+
+export async function cresInTad(assembly, accession, chrom, start) {
+    const tablecre = assembly + '_cre_all';
+    const tableinfo = assembly + '_tads_info';
+    const tabletads = assembly + '_tads';
+    const q = `
+        SELECT accession, abs($1 - start) AS distance
+        FROM ${tablecre}
+        WHERE chrom = $2
+        AND int4range(start, stop) && int4range(
+        (SELECT int4range(min(start), max(stop))
+        FROM ${tableinfo} ti
+        inner join ${tabletads} tads
+        on ti.tadname = tads.tadname
+        WHERE accession = $3))
+        AND abs($1 - start) < 100000
+        ORDER BY 2
+    `;
+    const res = await db.any(q, [start, chrom, accession]);
+    return res.filter(x => x['accession'] != accession);
+}
+
+export async function genesInTad(assembly, accession, chrom) {
+    const tableName = assembly + '_tads';
+    const q = `
+        SELECT geneIDs
+        FROM ${tableName}
+        WHERE accession = $1
+    `;
+    return db.any(q, [accession]);
+}
+
+export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
+    const cols = ['start', 'stop', 'accession'];
+    const cres = await nearbyCREs(assembly, coord, halfWindow, cols, undefined);
+    return cres
+        .filter(c => c.accession !== accession)
+        .map(c => ({
+            'name': c.accession,
+            'distance': Math.min(Math.abs(coord.end - c.stop), Math.abs(coord.start - c.start))
+        }));
+}
+
+export async function intersectingSnps(assembly, accession, coord, halfWindow) {
+    const c = CoordUtils.expanded(coord, halfWindow);
+    const tableName = assembly + '_snps';
+    const q = `
+        SELECT start, stop, snp
+        FROM ${tableName}
+        WHERE chrom = $1
+        AND int4range(start, stop) && int4range($2, $3)
+    `;
+    const snps = await db.any(q, [c.chrom, c.start, c.end]);
+    return snps.map(snp => ({
+        'chrom': c.chrom,
+        'cre_start': coord.start,
+        'cre_end': coord.end,
+        'accession': accession,
+        'snp_start': snp.start,
+        'snp_end': snp.stop,
+        'name': snp.snp,
+        'distance': Math.min(Math.abs(coord.end - snp.stop), Math.abs(coord.start - snp.start))
+    }));
+}
+
+export async function peakIntersectCount(assembly, accession, totals, eset) {
+const tableName = assembly + '_' + _intersections_tablename(eset);
+    const q = `
+        SELECT tf, histone
+        FROM ${tableName}
+        WHERE accession = $1
+    `;
+    const res = await db.oneOrNone(q, [accession]);
+    if (!res) {
+        return {'tfs': [], 'histone': []};
+    }
+    const tfs = Object
+        .keys(res['tf'])
+        .map(k => ({'name': k, 'n': Array.from(new Set(res['tf'][k])).length, 'total': totals[k] || -1}));
+    const histones = Object
+        .keys(res['histone'])
+        .map(k => ({'name': k, 'n': Array.from(new Set(res['histone'][k])).length, 'total': totals[k] || -1}));
+    return { 'tf': tfs, 'histone': histones };
+}
+
+export async function rampageByGene(assembly, ensemblid_ver) {
+    const tableName = assembly + '_rampage';
+    const q = `
+        SELECT *
+        FROM ${tableName}
+        WHERE ensemblid_ver = $1
+    `;
+    const rows = await db.any(q, [ensemblid_ver]);
+
+    const ret: Array<any> = [];
+    for (const dr of rows) {
+        const nr = {'data': {}};
+        for (const k of Object.keys(dr)) {
+            const v = dr[k];
+            if (k.startsWith('encff')) {
+                nr['data'][k] = v;
+                continue;
+            }
+            nr[k] = v;
+        }
+        if (!nr['data']) {
+            continue;
+        }
+        ret.push(nr);
+    }
+    return ret;
+}
+
+export async function rampage_info(assembly) {
+    const tableName = assembly + '_rampage_info';
+    const q = `
+        SELECT *
+        FROM ${tableName}
+    `;
+    const rows = await db.any(q);
+    const ret: any = {};
+    for (const r of rows) {
+        ret[r['fileid']] = r;
+    }
+    return ret;
+}
+
+export async function linkedGenes(assembly, accession) {
+    const tableName = assembly + '_linked_genes';
+    const q = `
+        SELECT gene, celltype, method, dccaccession
+        FROM ${tableName}
+        WHERE cre = $1
+    `;
+    return db.any(q, [accession]);
+}
+
+export async function histoneTargetExps(assembly, accession, target, eset) {
+    const peakTn = assembly + '_' + _intersections_tablename(eset);
+    const peakMetadataTn = assembly + '_' + _intersections_tablename(eset, true);
+    const q = `
+        SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name${eset === 'cistrome' ? ', tissue' : ''}
+        FROM ${peakMetadataTn}
+        WHERE fileID IN (
+        SELECT distinct(jsonb_array_elements_text(histone->$1))
+        FROM ${peakTn}
+        WHERE accession = $2
+        )
+        ORDER BY biosample_term_name
+    `;
+    const rows = await db.any(q, [target, accession]);
+    return rows.map(r => ({
+        'expID': eset === 'cistrome' ? r['fileid'] : (r['expid'] + ' / ' + r['fileid']),
+        'biosample_term_name': r['biosample_term_name']
+    }));
+}
+
+export async function tfTargetExps(assembly, accession, target, eset) {
+    const peakTn = assembly + '_' + _intersections_tablename(eset, false);
+    const peakMetadataTn = assembly + '_' + _intersections_tablename(eset, true);
+    const q = `
+        SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name
+        FROM ${peakMetadataTn}
+        WHERE fileID IN (
+        SELECT distinct(jsonb_array_elements_text(tf->$1))
+        FROM ${peakTn}
+        WHERE accession = $2
+        )
+        ORDER BY biosample_term_name
+    `;
+    const rows = await db.any(q, [target, accession]);
+    return rows.map(r => ({
+        'expID': eset === 'cistrome' ? r['fileid'] : (r['expid'] + ' / ' + r['fileid']),
+        'biosample_term_name': r['biosample_term_name']
+    }));
+}
+
+export async function tfHistCounts(assembly, eset) {
+    const tableName = assembly + '_' + eset + 'intersectionsmetadata';
+    const q = `
+        SELECT COUNT(label), label
+        FROM ${tableName}
+        GROUP BY label
+    `;
+    const rows = await db.any(q);
+    return rows.reduce((obj, r) => ({ ...obj, [r['label']]: r['count']}));
 }

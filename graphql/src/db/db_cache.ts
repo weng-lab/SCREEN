@@ -20,12 +20,18 @@ async function load(assembly) {
     const creHist = await Common.creHist(assembly);
     const tf_list = await Common.tfHistoneDnaseList(assembly, 'encode');
     const datasets = await Common.datasets(assembly);
+    const rankMethodToCellTypes = await Common.rankMethodToCellTypes(assembly);
     const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
     const { toSymbol, toStrand } = await Common.genemap(assembly);
     const nineState = await Common.loadNineStateGenomeBrowser(assembly);
     const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
+    const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
+    const tfHistCounts = {
+        peak: peak_tfHistCounts,
+        cistrome: {}
+    };
     const creBigBeds = await Common.creBigBeds(assembly);
     const ctmap = await Common.makeCtMap(assembly);
     const ctsTable = await Common.makeCTStable(assembly);
@@ -38,7 +44,7 @@ async function load(assembly) {
 
         datasets: datasets,
 
-        rankMethodToCellTypes: undefined,
+        rankMethodToCellTypes: rankMethodToCellTypes,
         rankMethodToIDxToCellType: rankMethodToIDxToCellType,
         rankMethodToIDxToCellTypeZeroBased: undefined,
 
@@ -56,7 +62,7 @@ async function load(assembly) {
 
         geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
 
-        tfHistCounts: undefined,
+        tfHistCounts: tfHistCounts,
 
         creBigBeds: creBigBeds,
 

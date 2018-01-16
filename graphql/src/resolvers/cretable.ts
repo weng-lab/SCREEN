@@ -2,37 +2,39 @@ import { getCreTable, rfacets_active } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 
+export function mapcre(r, geneIDsToApprovedSymbol) {
+    const all = r['gene_all_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
+    const pc = r['gene_pc_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
+    const genesallpc = {
+        'all': all,
+        'pc': pc,
+    };
+    return {
+        info: r.info,
+        data: {
+            range: r.chrom ? {
+                chrom: r.chrom,
+                start: r.start,
+                end: r.stop,
+            } : undefined,
+            maxz: r.maxz,
+            ctcf_zscore: r.ctcf_zscore,
+            ctspecific: r.ctspecific,
+            enhancer_zscore: r.enhancer_zscore,
+            promoter_zscore: r.promoter_zscore,
+            genesallpc: genesallpc,
+            dnase_zscore: r.dnase_zscore,
+        }
+    };
+}
+
 const cache = require('../db/db_cache').cache;
 async function cre_table(data, assembly, pagination) {
     const c = cache(assembly);
     const results = await getCreTable(assembly, c.ctmap, data, pagination);
     const lookup = c.geneIDsToApprovedSymbol;
 
-    results.cres = results.cres.map(r => {
-        const all = r['gene_all_id'].slice(0, 2).map(gid => lookup[gid]);
-        const pc = r['gene_pc_id'].slice(0, 2).map(gid => lookup[gid]);
-        const genesallpc = {
-            'all': all,
-            'pc': pc,
-        };
-        return {
-            info: r.info,
-            data: {
-                range: r.chrom ? {
-                    chrom: r.chrom,
-                    start: r.start,
-                    end: r.stop,
-                } : undefined,
-                maxz: r.maxz,
-                ctcf_zscore: r.ctcf_zscore,
-                ctspecific: r.ctspecific,
-                enhancer_zscore: r.enhancer_zscore,
-                promoter_zscore: r.promoter_zscore,
-                genesallpc: genesallpc,
-                dnase_zscore: r.dnase_zscore,
-            }
-        };
-    });
+    results.cres = results.cres.map(r => mapcre(r, lookup));
     if ('cellType' in data && data['cellType']) {
         results['rfacets'] = rfacets_active(c.ctmap, data);
     } else {

@@ -11,6 +11,7 @@ import {
     GraphQLInputObjectType,
     GraphQLEnumType
 } from 'graphql';
+import * as CommonTypes from './CommonSchema';
 
 
 export const Assembly = new GraphQLEnumType({
@@ -111,6 +112,104 @@ export const PaginationParameters = new GraphQLInputObjectType({
         },
         limit: {
             type: GraphQLInt
+        },
+    })
+});
+
+export const cREInfo = new GraphQLObjectType({
+    name: 'info',
+    fields: {
+        ctcfmax: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        accession: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        k27acmax: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        k4me3max: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        concordant: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLBoolean),
+        },
+        isproximal: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLBoolean),
+        }
+    },
+});
+
+export const genes = new GraphQLObjectType({
+    name: 'genesallpc',
+    fields: {
+        pc: {
+            description: 'TODO',
+            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+        },
+        all: {
+            description: 'TODO',
+            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+        },
+    },
+});
+
+export const ctSpecific = new GraphQLObjectType({
+    name: 'ctSpecific',
+    fields: {
+        ct: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        dnase_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        promoter_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        enhancer_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        ctcf_zscore: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+    }
+});
+
+export const cREData = new GraphQLObjectType({
+    name: 'creData',
+    fields: () => ({
+        range: { type: CommonTypes.ChromRange },
+        maxz: { type: new GraphQLNonNull(GraphQLFloat) },
+        ctcf_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        ctspecific: { type: ctSpecific },
+        enhancer_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        promoter_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        genesallpc: { type: new GraphQLNonNull(genes) },
+        dnase_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+    })
+});
+
+export const cRE = new GraphQLObjectType({
+    name: 'cRE',
+    fields: () => ({
+        info: {
+            description: 'TODO',
+            type: new GraphQLNonNull(cREInfo),
+        },
+        data: {
+            description: 'TODO',
+            type: new GraphQLNonNull(cREData),
         },
     })
 });
