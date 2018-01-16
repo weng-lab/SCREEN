@@ -52,6 +52,7 @@ class CreDetailsWebService(object):
         self.staticDir = staticDir
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
+        self.pgFantomCat = PGFantomCat(assembly)
 
         self.reDetailActions = {
             "info": self._re_detail_info,
