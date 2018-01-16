@@ -119,6 +119,10 @@ export const PaginationParameters = new GraphQLInputObjectType({
 export const cREInfo = new GraphQLObjectType({
     name: 'info',
     fields: {
+        assembly: {
+            description: 'TODO',
+            type: new GraphQLNonNull(Assembly)
+        },
         ctcfmax: {
             description: 'TODO',
             type: new GraphQLNonNull(GraphQLFloat),

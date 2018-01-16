@@ -2,7 +2,7 @@ import { getCreTable, rfacets_active } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 
-export function mapcre(r, geneIDsToApprovedSymbol) {
+export function mapcre(assembly, r, geneIDsToApprovedSymbol) {
     const all = r['gene_all_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
     const pc = r['gene_pc_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
     const genesallpc = {
@@ -10,7 +10,7 @@ export function mapcre(r, geneIDsToApprovedSymbol) {
         'pc': pc,
     };
     return {
-        info: r.info,
+        info: { ...r.info, assembly },
         data: {
             range: r.chrom ? {
                 chrom: r.chrom,
@@ -19,7 +19,7 @@ export function mapcre(r, geneIDsToApprovedSymbol) {
             } : undefined,
             maxz: r.maxz,
             ctcf_zscore: r.ctcf_zscore,
-            ctspecific: r.ctspecific,
+            ctspecific: Object.keys(r.ctspecific).length > 0 ? r.ctspecific : undefined,
             enhancer_zscore: r.enhancer_zscore,
             promoter_zscore: r.promoter_zscore,
             genesallpc: genesallpc,
@@ -34,7 +34,7 @@ async function cre_table(data, assembly, pagination) {
     const results = await getCreTable(assembly, c.ctmap, data, pagination);
     const lookup = c.geneIDsToApprovedSymbol;
 
-    results.cres = results.cres.map(r => mapcre(r, lookup));
+    results.cres = results.cres.map(r => mapcre(assembly, r, lookup));
     if ('cellType' in data && data['cellType']) {
         results['rfacets'] = rfacets_active(c.ctmap, data);
     } else {

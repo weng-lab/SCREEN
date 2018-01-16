@@ -39,6 +39,17 @@ export const checkCreAssembly = (assembly, accession) => {
     return accession.startsWith(starts[assembly]);
 };
 
+export const getAssemblyFromCre = (accession) => {
+    const cre = accession.toLowerCase();
+    if (cre.startsWith('eh37e')) {
+        return 'hg19';
+    } else if (cre.startsWith('em10e')) {
+        return 'mm10';
+    } else if (cre.startsWith('eh38e')) {
+        return 'hg38';
+    }
+    return undefined;
+};
 
 export const checkChrom = (assembly, chrom) => {
     const achroms = chroms[assembly];

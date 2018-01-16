@@ -2,7 +2,7 @@ import * as DbCommon from '../db/db_common';
 import * as DbCreTable from '../db/db_cre_table';
 import * as DbCreDetails from '../db/db_credetails';
 import { mapcre } from './cretable';
-import { natsort } from '../utils';
+import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 
 const request = require('request-promise-native');
@@ -195,8 +195,11 @@ class CRE {
 
 export async function resolve_credetails(source, args, context, info) {
     const accessions: string[] = args.accessions;
-    const assembly = args.assembly;
     return accessions.map(async (accession) => {
+        const assembly = getAssemblyFromCre(accession);
+        if (!assembly) {
+            throw new UserError('Invalid accession: ' + accession);
+        }
         const cre = new CRE(assembly, accession);
         const coord = await cre.coord();
         if (!coord) {
@@ -211,10 +214,9 @@ export async function resolve_cre_info(source, args, context, info) {
     const coord = await cre.coord();
     const c = cache(cre.assembly);
     const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession], range: coord}, {});
-
     const lookup = c.geneIDsToApprovedSymbol;
     if (res['total'] > 0) {
-        return mapcre(res['cres'][0], lookup);
+        return mapcre(cre.assembly, res['cres'][0], lookup);
     }
     return {};
 }

@@ -131,7 +131,6 @@ const BaseType = new GraphQLObjectType({
         credetails: {
             type: new GraphQLList(CreDetailsResponse),
             args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 accessions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
             },
             resolve: resolve_credetails
