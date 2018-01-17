@@ -84,7 +84,7 @@ class TrackhubDb:
         fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")
         printt("parsing", fnp)
 
-        url = os.path.join("http://megatux.purcaro.com:9006/screen10/globals/",
+        url = os.path.join("http://api.wenglab.org/screenbook/screen10/globals/",
                            self.assembly, "creBigBedsByCellType")
         creBigBeds = requests.get(url).json()["creBigBedsByCellType"]
 
