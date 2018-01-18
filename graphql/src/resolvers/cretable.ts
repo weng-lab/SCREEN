@@ -45,9 +45,7 @@ async function cre_table(data, assembly, pagination) {
 
 export async function resolve_data(source, inargs, context) {
     const assembly = inargs.assembly;
-    const searchResponse = inargs.search ? await parse(assembly, inargs.search) : {};
     const data = inargs.data ? inargs.data : {};
-    const args = { ...searchResponse, ...data };
-    const results = cre_table(args, assembly, inargs.pagination || {});
+    const results = cre_table(data, assembly, inargs.pagination || {});
     return results;
 }

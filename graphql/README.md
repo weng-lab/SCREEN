@@ -36,7 +36,7 @@ query rangeSearchAndData(
   $assembly: Assembly!,
   $uuid: UUID!,
   $rangeSearch: SearchParameters!,
-  $dataEmpty: DataParameters!,
+  $dataRange: DataParameters!,
   $dataCellType: DataParameters!
 ) {
   search(assembly: $assembly, uuid: $uuid, search: $rangeSearch) {
@@ -53,8 +53,8 @@ query rangeSearchAndData(
       accessions
     }
   }
-  # If we want cRE data, we can get data based on only the search
-  dataSearch: data(assembly: $assembly, uuid: $uuid, search: $rangeSearch, data: $dataEmpty) {
+  # We can search by a range
+  dataSearch: data(assembly: $assembly, uuid: $uuid, data: $dataRange) {
     total,
     rfacets,
     cres{
@@ -64,7 +64,7 @@ query rangeSearchAndData(
     }
   }
   # Or, we can refine our search. In this case, by cell type "K562"
-  dataSearchRefined: data(assembly: $assembly, uuid: $uuid, search: $rangeSearch, data: $dataCellType) {
+  dataSearchRefined: data(assembly: $assembly, uuid: $uuid, data: $dataCellType) {
     total
     cres {
       info {
@@ -108,21 +108,11 @@ query geneSearchAndData(
       gene {
         approved_symbol,
         sm
-      }
-      range {
-        chrom
-        start
-        end
-      }
-    }
-  }
-  # By default, try to get cREs overlapping the gene. In this case, there are none.
-  dataSearch: data(assembly: $assembly, uuid: $uuid, search: $geneSearch, data: $dataEmpty) {
-    total,
-    rfacets,
-    cres{
-      info{
-        accession
+        range {
+          chrom
+          start
+          end
+        }
       }
     }
   }
@@ -131,12 +121,11 @@ query geneSearchAndData(
 query dataWithPagination(
   $assembly: Assembly!,
   $uuid: UUID!,
-  $chromRangeSearch: SearchParameters!,
-  $dataEmpty: DataParameters!,
+  $dataRangeChr: DataParameters!,
   $pagination: PaginationParameters
 ) {
   # We can also paginate. We can return up to 1000 cREs for the first 10000
-	dataPagination: data(assembly: $assembly, uuid: $uuid, , search: $chromRangeSearch, data: $dataEmpty, pagination: $pagination) {
+	dataPagination: data(assembly: $assembly, uuid: $uuid, , data: $dataRangeChr, pagination: $pagination) {
     total,
     cres {
       info {
@@ -231,8 +220,24 @@ Query Variables (below Document):
 {
   "assembly": "hg19",
   "uuid": "59060ce0-6462-4498-990a-4e0e48844163",
-  "dataEmpty": {},
+  "dataRange": {
+    "range": {
+      "chrom": "chr1",
+      "start": 5,
+      "end": 5000000
+    }
+  },
+  "dataRangeChr": {
+    "range": {
+      "chrom": "chr1"
+    }
+  },
   "dataCellType": {
+    "range": {
+      "chrom": "chr1",
+      "start": 5,
+      "end": 5000000
+    }
     "cellType": "K562"
   },
   "rangeSearch": {
@@ -240,9 +245,6 @@ Query Variables (below Document):
   },
   "geneSearch": {
     "q": "GAPDH"
-  },
-  "chromRangeSearch": {
-    "q": "chr1"
   },
   "pagination": {
     "offset": 500,

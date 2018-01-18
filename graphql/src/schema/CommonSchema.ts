@@ -98,8 +98,18 @@ export const SearchParameters = new GraphQLInputObjectType({
     name: 'SearchParameters',
     fields: () => ({
         q: {
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLString),
         },
+        tss: {
+            description: 'Get coords between first and last transcription start sites',
+            type: GraphQLBoolean,
+        },
+        promoter: {
+            type: GraphQLBoolean,
+        },
+        tssDist: {
+            type: GraphQLInt
+        }
     })
 });
 
@@ -173,19 +183,19 @@ export const ctSpecific = new GraphQLObjectType({
         },
         dnase_zscore: {
             description: 'TODO',
-            type: new GraphQLNonNull(GraphQLFloat)
+            type: GraphQLFloat
         },
         promoter_zscore: {
             description: 'TODO',
-            type: new GraphQLNonNull(GraphQLFloat)
+            type: GraphQLFloat
         },
         enhancer_zscore: {
             description: 'TODO',
-            type: new GraphQLNonNull(GraphQLFloat)
+            type: GraphQLFloat
         },
         ctcf_zscore: {
             description: 'TODO',
-            type: new GraphQLNonNull(GraphQLFloat)
+            type: GraphQLFloat
         },
     }
 });
@@ -195,12 +205,12 @@ export const cREData = new GraphQLObjectType({
     fields: () => ({
         range: { type: CommonTypes.ChromRange },
         maxz: { type: new GraphQLNonNull(GraphQLFloat) },
-        ctcf_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        ctcf_zscore: { type: GraphQLFloat },
         ctspecific: { type: ctSpecific },
-        enhancer_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
-        promoter_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        enhancer_zscore: { type: GraphQLFloat },
+        promoter_zscore: { type: GraphQLFloat },
         genesallpc: { type: new GraphQLNonNull(genes) },
-        dnase_zscore: { type: new GraphQLNonNull(GraphQLFloat) },
+        dnase_zscore: { type: GraphQLFloat },
     })
 });
 

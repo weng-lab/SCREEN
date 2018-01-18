@@ -46,8 +46,6 @@ const ctSpecific = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
     for (const v of exps) {
         const [name, exp] = v;
         if (!(ct in ctmap[name])) {
-            fields.push(`'' AS ${name}_zscore`);
-            ctSpecificObj[name + '_zscore'] = 'null';
             continue;
         }
         const ctindex = ctmap[name][ct];
@@ -199,4 +197,5 @@ export async function rfacets_active(ctmap, j) {
             present.push(assay);
         }
     }
+    return present;
 }

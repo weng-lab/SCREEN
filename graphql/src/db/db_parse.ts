@@ -9,9 +9,9 @@ export async function get_snpcoord(assembly, s) {
         WHERE snp = $1
     `;
     return await db.oneOrNone(q, [s], r => r && {
-        chrom: r[0],
-        start: r[1],
-        end: r[2]
+        chrom: r['chrom'],
+        start: r['start'],
+        end: r['stop']
     });
 }
 
@@ -60,10 +60,12 @@ export class GeneParse {
         return {
             'oname': this.oname,
             'approved_symbol': this.approved_symbol,
-            'chrom': this.coord.chrom,
-            'start': this.coord.start,
-            'stop': this.coord.end,
-            'strand': this.strand,
+            'range': {
+                'chrom': this.coord.chrom,
+                'start': this.coord.start,
+                'end': this.coord.end,
+                'strand': this.strand,
+            },
             'sm': this.sm,
         };
     }
@@ -117,7 +119,7 @@ async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
         FROM ${searchTableName} ac
         INNER JOIN ${infoTableName} gi
         ON gi.id = ac.pointer
-        WHERE gi.approved_symbol = $2
+        WHERE gi.approved_symbol ~* $2
         ORDER BY sm DESC
         LIMIT 50
     `;

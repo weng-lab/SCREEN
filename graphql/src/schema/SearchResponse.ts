@@ -19,7 +19,9 @@ export const Gene = new GraphQLObjectType({
     name: 'Gene',
     fields: () => ({
         approved_symbol: { type: new GraphQLNonNull(GraphQLString) },
+        oname: { type: new GraphQLNonNull(GraphQLString) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
+        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
     })
 });
 
@@ -27,7 +29,6 @@ export const SingleGeneResponse = new GraphQLObjectType({
     name: 'SingleGeneResponse',
     fields: () => ({
         gene: { type: Gene },
-        range: { type: CommonTypes.ChromRange },
     }),
 });
 
@@ -45,10 +46,18 @@ export const AccessionsResponse = new GraphQLObjectType({
     }),
 });
 
+export const SNP = new GraphQLObjectType({
+    name: 'SNP',
+    fields: () => ({
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) }
+    })
+});
+
 export const SNPsResponse = new GraphQLObjectType({
     name: 'SNPsResponse',
     fields: () => ({
-        snps: { type: new GraphQLList(GraphQLString) },
+        snps: { type: new GraphQLList(SNP) },
     }),
 });
 

@@ -80,7 +80,7 @@ export async function parse(assembly, args) {
     }
 
     const accessions: Array<string> = [];
-    const snps: Array<string> = [];
+    const snps: Array<object> = [];
     try {
         for (const t of toks) {
             if (isaccession(t)) {
@@ -93,16 +93,17 @@ export async function parse(assembly, args) {
                 continue;
             } else if (t.startsWith('rs')) {
                 coord = await Parse.get_snpcoord(assembly, t);
-                accessions.push(t);
                 s = s.replace(t, '');
-                if (coord && !(await Parse.has_overlap(assembly, coord))) {
-                    interpretation['msg'] = `NOTICE: ${t} does not overlap any cREs; displaying any cREs within 2kb`;
-                    coord = {
-                        chrom: coord.chrom,
-                        start: Math.max(0, coord.start - 2000),
-                        end: coord.end + 2000
-                    };
-                }
+                // TODO: add this back in
+                // if (coord && !(await Parse.has_overlap(assembly, coord))) {
+                //     interpretation['msg'] = `NOTICE: ${t} does not overlap any cREs; displaying any cREs within 2kb`;
+                //     coord = {
+                //         chrom: coord.chrom,
+                //         start: Math.max(0, coord.start - 2000),
+                //         end: coord.end + 2000
+                //     };
+                // }
+                snps.push({ id: t, range: coord });
             }
         }
     } catch (e) {
@@ -156,6 +157,7 @@ export async function parse(assembly, args) {
         ret['accessions'] = accessions;
     }
     if (snps.length > 0) {
+        ret['snps'] = snps;
     }
     if (genes.length > 1) {
         ret['genes'] = genes.map(g => g.toJson());
