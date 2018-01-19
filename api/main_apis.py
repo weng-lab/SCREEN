@@ -16,6 +16,7 @@ from api.gb_ws import GenomeBrowserWebServiceWrapper
 from api.geneexp_ws import GeneExpWebServiceWrapper
 from api.global_data_ws import GlobalDataWebServiceWrapper
 from api.gwas_ws import GwasWebServiceWrapper
+from api.input_data_ws import InputDataWebServiceWrapper
 from api.search_ws import SearchWebServiceWrapper
 from api.trackhub_ws import TrackhubController
 from api.post_ws import PostWebServiceWrapper
@@ -32,7 +33,7 @@ class Apis():
         self.geWS = GeneExpWebServiceWrapper(args, ps, cache, staticDir)
         self.gbWS = GenomeBrowserWebServiceWrapper(args, ps, cache, staticDir)
         self.globalWS = GlobalDataWebServiceWrapper(cache)
-        self.gwasWS = GwasWebServiceWrapper(args, ps, cache, staticDir)
+        self.inputDataWS = InputDataWebServiceWrapper(ps)
         self.searchWS = SearchWebServiceWrapper(args, ps, cache, staticDir)
         self.postWS = PostWebServiceWrapper(args, ps, cache, staticDir)
         self.trackhub = TrackhubController(ps, cache)
@@ -165,6 +166,12 @@ class Apis():
     def globalData(self, ver, assembly):
         # TODO: remove me
         return self.globalWS.static(assembly, ver)
+
+    @cherrypy.expose
+    @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.tools.json_out()
+    def inputData(self, *args, **kwargs):
+        return self.inputDataWS.process(args, kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
