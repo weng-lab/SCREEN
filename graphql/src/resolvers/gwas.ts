@@ -30,7 +30,7 @@ class Gwas {
         return [{'totalLDblocks': total,
              'numLdBlocksOverlap': overlap,
              'numLdBlocksOverlapFormat': overlapStr,
-             'numCresOverlap': this.numCresOverlap(gwas_study)}];
+             'numCresOverlap': await this.numCresOverlap(gwas_study)}];
     }
 
     async mainTable(study) {
@@ -55,22 +55,22 @@ class Gwas {
         const any_lambda = (f, i) => i.some(f);
 
         for (const a of cres) {
-            if ((a['promoter zscore'] || 0) > 1.64 || (a['enhancer zscore'] || 0) > 1.64 || (a['dnase zscore'] || 0) > 1.64) {
+            if ((a['promoter_zscore'] || 0) > 1.64 || (a['enhancer_zscore'] || 0) > 1.64 || (a['dnase_zscore'] || 0) > 1.64) {
                 totalActive += 1;
                 activeCres.push(a);
             }
         }
 
-        const hiddenFields: any = ['promoter zscore', 'enhancer zscore', 'dnase zscore'].filter(e => !(fieldsOut as any).includes(e));
+        const hiddenFields: any = ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore'].filter(e => !(fieldsOut as any).includes(e));
 
         for (const f of hiddenFields) {
             for (const r of cres) {
-                r[f] = '';
+                r[f] = undefined;
             }
         }
 
         const vcols = {};
-        for (const f of ['promoter zscore', 'enhancer zscore', 'dnase zscore']) {
+        for (const f of ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore']) {
             vcols[f] = !hiddenFields.includes(f);
         }
 

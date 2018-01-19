@@ -51,7 +51,7 @@ export async function gwasEnrichment(assembly, gwas_study) {
     `;
     const res = await db.any(q);
     const cols = ['expID', 'cellTypeName', 'biosample_summary', 'fdr', 'pval'];
-    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {}));
 }
 
 const infoFields = {
@@ -75,7 +75,7 @@ function getInfo() {
 export async function gwasPercentActive(assembly, gwas_study, ct, ctmap, ctsTable) {
     const fields = [
         'cre.accession',
-        'array_agg(snp)',
+        'array_agg(snp) as snps',
         getInfo(),
         'infoAll.approved_symbol AS geneid',
         'cre.start',
@@ -97,18 +97,18 @@ export async function gwasPercentActive(assembly, gwas_study, ct, ctmap, ctsTabl
         fields.push('0::int AS cts');
     }
 
-    const fieldsOut = ['accession', 'snps', 'info', 'geneid', 'start', 'stop', 'chrom', 'cts'];
+    const fieldsOut: any = ['accession', 'snps', 'info', 'geneid', 'start', 'stop', 'chrom', 'cts'];
     for (const assay of [
             ['dnase', 'dnase'],
             ['promoter', 'h3k4me3'],
             ['enhancer', 'h3k27ac'],
             ['ctcf', 'ctcf']
-        ]) {
+    ]) {
         if (!(ct in ctmap[assay[0]])) {
             continue;
         }
         const cti = ctmap[assay[0]][ct];
-        fieldsOut.push(assay[0] + ' zscore');
+        fieldsOut.push(assay[0] + '_zscore');
         fields.push(`cre.${assay[1]}_zscores[${cti}] AS ${assay[0]}_zscore`);
         groupBy.push(`cre.${assay[1]}_zscores[${cti}]`);
     }
@@ -124,7 +124,16 @@ export async function gwasPercentActive(assembly, gwas_study, ct, ctmap, ctsTabl
         GROUP BY ${groupBy.join(', ')}
     `;
     const res = await db.any(q, [gwas_study]);
-    const ret = res.map(r => fieldsOut.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    const ret = res.map(r => fieldsOut.reduce((obj, key) => {
+        let fieldKey = key;
+        let outKey = key;
+        if (Array.isArray(key)) {
+            fieldKey = key[1];
+            outKey = key[0];
+            console.log(r[fieldKey]);
+        }
+        return ({ ...obj, [outKey]: r[fieldKey] });
+    }, {}));
     for (const k of Object.keys(ret)) {
         const newObj = ret[k];
         newObj['ctspecific'] = newObj['ctspecific'] || {};
