@@ -26,6 +26,7 @@ export const GlobalsResponse = new GraphQLObjectType({
     fields: () => ({
         helpKeys: { type: GraphQLJSON },
         colors: { type: GraphQLJSON },
+        files: { type: GraphQLJSON },
         byAssembly: {
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },

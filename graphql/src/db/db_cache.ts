@@ -75,12 +75,14 @@ async function load(assembly) {
 async function loadGlobal() {
     const colors = require('./colors');
     const help_keys = await Common.getHelpKeys();
+    const files = [].concat(cache('hg19').filesList).concat(cache('mm10').filesList);
 
-    const cache = {
+    const global_cache = {
         colors: colors,
         help_keys: help_keys,
+        files: files,
     };
-    return cache;
+    return global_cache;
 }
 
 let caches: any = {};
@@ -134,10 +136,7 @@ function global_data(assembly) {
 exports.global_data = global_data;
 
 function global_data_global() {
-    return {
-        'helpKeys': globalcache.help_keys,
-        'colors': globalcache.colors,
-    };
+    return { ...globalcache };
 }
 exports.global_data_global = global_data_global;
 
