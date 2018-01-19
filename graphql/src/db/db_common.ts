@@ -7,7 +7,7 @@ export async function chromCounts(assembly) {
     const q = `SELECT chrom, count from ${tableName}`;
     const res = await db.many(q);
     const ret = res.reduce((obj, e) => {
-        return {...obj, [e['chrom']]: e['count'] };
+        return {...obj, [e['chrom']]: +(e['count']) };
     }, {});
     return ret;
 }
@@ -149,7 +149,7 @@ export async function makeCTStable(assembly) {
         FROM ${tableName}
     `;
     const res = await db.many(q);
-    return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}));
+    return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}), {});
 }
 
 export async function genePos(assembly, gene) {
@@ -692,5 +692,5 @@ export async function tfHistCounts(assembly, eset) {
         GROUP BY label
     `;
     const rows = await db.any(q);
-    return rows.reduce((obj, r) => ({ ...obj, [r['label']]: r['count']}));
+    return rows.reduce((obj, r) => ({ ...obj, [r['label']]: +(r['count'])}), {});
 }

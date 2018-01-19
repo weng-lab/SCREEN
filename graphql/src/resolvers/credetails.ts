@@ -35,7 +35,7 @@ class CRE {
         const coord = await this.coord();
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
 
-        const get_rank = (ct, d) => ct in d ? -11.0 : d[ct];
+        const get_rank = (ct, d) => ct in d ? d[ct] : -11.0;
 
         const arrToCtDict = (arr, cts) => {
             if (arr.length != cts.length) {
@@ -341,7 +341,9 @@ export async function resolve_cre_linkedGenes(source, args, context, info) {
     if ('mm10' === cre.assembly) {
         return [];
     }
-    return await DbCommon.linkedGenes(cre.assembly, cre.accession);
+    return {
+        'linkedGenes': await DbCommon.linkedGenes(cre.assembly, cre.accession)
+    };
 }
 
 export async function resolve_cre_tf_dcc(source, args, context, info) {

@@ -152,7 +152,7 @@ async function creTableEstimate(table, where, params) {
         LIMIT 1
     `;
 
-    return db.one(q, params, r => r.count);
+    return db.one(q, params, r => +(r.count));
 }
 
 export async function getCreTable(assembly: string, ctmap: object, j, pagination) {
