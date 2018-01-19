@@ -2,6 +2,9 @@ import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import { GeneExpression } from '../db/db_geneexp';
 
+const { UserError } = require('graphql-errors');
+
+
 const allBiosampleTypes = [
     'immortalized cell line', 'induced pluripotent stem cell line',
     'in vitro differentiated cells', 'primary cell',
@@ -10,15 +13,15 @@ const allBiosampleTypes = [
 async function geneexp(assembly, gene, biosample_types, compartments) {
     // TODO: check for valid gene
     if (biosample_types.length === 0) {
-        throw new Error('no biosample type selected');
+        throw new UserError('no biosample type selected');
     }
     if (biosample_types.some(b => allBiosampleTypes.indexOf(b) === -1)) {
-        throw new Error('invalid biosample type');
+        throw new UserError('invalid biosample type');
     }
 
     // TODO: check value of compartments
     if (compartments.length === 0) {
-        throw new Error('no compartments');
+        throw new UserError('no compartments');
     }
 
     const rows = await Common.geneInfo(assembly, gene);

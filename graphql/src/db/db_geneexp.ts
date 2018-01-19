@@ -146,7 +146,7 @@ export class GeneExpression {
             // built-in JSON encoder missing Decimal type, so cast to float
             return {
                 'tissue': tissue,
-                'cellType': row['cellType'],
+                'cellType': row['celltype'],
                 'rawTPM': parseFloat(row['tpm']),
                 'logTPM': doLog(row['tpm']),
                 'rawFPKM': parseFloat(row['fpkm']),

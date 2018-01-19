@@ -67,13 +67,16 @@ class DE {
 
         const ret = this.DEsForDisplay(nearbyDEs);
 
+        const ymin = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr < prev ? curr : prev));
+        const ymax = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr > prev ? curr : prev));
+
         return {
             'names': this.names,
             'data': ret,
             'xdomain': xdomain,
             'genes': genes,
-            'ymin': Math.min(ret.map(d => d['fc'])),
-            'ymax': Math.max(ret.map(d => d['fc'])),
+            'ymin': ymin,
+            'ymax': ymax,
         };
     }
 
