@@ -707,15 +707,10 @@ export async function tfHistCounts(assembly, eset) {
 export async function inputData(assembly) {
     const tableName = assembly + '_peakintersectionsmetadata';
     const q = `
-        SELECT $1 as assembly, biosample_term_name, array_agg(fileid) AS fileIDs
+        SELECT $1 as assembly, biosample_term_name, array_agg(fileid) AS fileids
         FROM ${tableName}
         GROUP BY biosample_term_name
         ORDER BY biosample_term_name
     `;
-    const res = await db.any(q, [assembly]);
-    return res.map(r => ({
-        assembly: r.assembly,
-        biosample_term_name: r.biosample_term_name,
-        fileIDs: r.fileids,
-    }));
+    return await db.any(q, [assembly]);
 }
