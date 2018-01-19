@@ -4,6 +4,7 @@ import * as DbCreDetails from '../db/db_credetails';
 import { mapcre } from './cretable';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
+import { getByGene } from './rampage';
 
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
@@ -287,53 +288,7 @@ export async function resolve_cre_rampage(source, args, context, info) {
     const cre: CRE = source.cre;
     const nearbyGenes = await cre.nearbyPcGenes();
     const nearest = nearbyGenes.reduce((prev, curr) => !prev ? curr : (curr.distance < prev.distance ? curr : prev));
-
-    const ensemblid_ver = nearest['ensemblid_ver'];
-    const transcripts = await DbCommon.rampageByGene(cre.assembly, ensemblid_ver);
-    if (!transcripts) {
-        return {
-            'sortedTranscripts': [],
-            'tsss': [],
-            'gene': ''
-        };
-    }
-
-    const _process = (transcript, ri) => {
-        const ret: any = {};
-        ret['transcript'] = transcript['transcript'];
-        ret['chrom'] = transcript['chrom'];
-        ret['start'] = transcript['start'];
-        ret['stop'] = transcript['stop'];
-        ret['strand'] = transcript['strand'];
-        ret['geneinfo'] = transcript['geneinfo'];
-
-        // fold actual data val into each "row"
-        const items: Array<any> = [];
-        for (let fileID of Object.keys(transcript['data'])) {
-            const val = transcript['data'][fileID];
-            fileID = fileID.toUpperCase();
-            info = ri[fileID];
-            info['counts'] = +(Math.round(+(val + 'e+4'))  + 'e-4');
-            items.push(info);
-        }
-
-        const hg = new HelperGrouper(transcript, items);
-        ret['itemsByID'] = hg.byID;
-        ret['itemsGrouped'] = hg.getGroupedItems('counts');
-        return ret;
-    };
-    const ri = await DbCommon.rampage_info(cre.assembly);
-    const byTranscript: any = {};
-    for (const transcript of transcripts) {
-        const info = _process(transcript, ri);
-        byTranscript[transcript['transcript']] = info;
-    }
-
-    return {
-        'sortedTranscripts': natsort(Object.keys(byTranscript)),
-        'tsss': byTranscript,
-        'gene': nearest
-    };
+    return getByGene(cre.assembly, nearest);
 }
 
 export async function resolve_cre_linkedGenes(source, args, context, info) {

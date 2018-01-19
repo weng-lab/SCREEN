@@ -634,6 +634,15 @@ export async function rampage_info(assembly) {
     return ret;
 }
 
+export async function rampageEnsemblID(assembly, gene) {
+    const tableName = assembly + '_gene_info';
+    const q = `
+        SELECT ensemblid_ver FROM ${tableName}
+        WHERE approved_symbol = $1
+    `;
+    return await db.oneOrNone(q, [gene], r => r && r.ensemblid_ver);
+}
+
 export async function linkedGenes(assembly, accession) {
     const tableName = assembly + '_linked_genes';
     const q = `
