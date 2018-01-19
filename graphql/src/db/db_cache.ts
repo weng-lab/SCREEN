@@ -25,6 +25,7 @@ async function load(assembly) {
     const { toSymbol, toStrand } = await Common.genemap(assembly);
     const nineState = await Common.loadNineStateGenomeBrowser(assembly);
     const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
+    const inputData = await Common.inputData(assembly);
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
     const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
@@ -55,6 +56,7 @@ async function load(assembly) {
 
         nineState: nineState,
         filesList: filesList,
+        inputData: inputData,
 
         moreTracks: undefined,
 
@@ -76,11 +78,13 @@ async function loadGlobal() {
     const colors = require('./colors');
     const helpKeys = await Common.getHelpKeys();
     const files = [].concat(cache('hg19').filesList).concat(cache('mm10').filesList);
+    const inputData = [].concat(cache('hg19').inputData).concat(cache('mm10').inputData);
 
     const global_cache = {
         colors: colors,
         helpKeys: helpKeys,
         files: files,
+        inputData: inputData,
     };
     return global_cache;
 }

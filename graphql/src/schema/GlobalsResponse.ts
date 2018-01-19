@@ -17,7 +17,8 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         byCellType: { type: GraphQLJSON },
         geBiosampleTypes: { type: GraphQLJSON },
         creBigBedsByCellType: { type: GraphQLJSON },
-        creFiles: { type: GraphQLJSON }
+        creFiles: { type: GraphQLJSON },
+        inputData: { type: GraphQLJSON },
     })
 });
 
@@ -27,6 +28,7 @@ export const GlobalsResponse = new GraphQLObjectType({
         helpKeys: { type: GraphQLJSON },
         colors: { type: GraphQLJSON },
         files: { type: GraphQLJSON },
+        inputData: { type: GraphQLJSON },
         byAssembly: {
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
