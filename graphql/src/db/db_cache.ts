@@ -74,12 +74,12 @@ async function load(assembly) {
 
 async function loadGlobal() {
     const colors = require('./colors');
-    const help_keys = await Common.getHelpKeys();
+    const helpKeys = await Common.getHelpKeys();
     const files = [].concat(cache('hg19').filesList).concat(cache('mm10').filesList);
 
     const global_cache = {
         colors: colors,
-        help_keys: help_keys,
+        helpKeys: helpKeys,
         files: files,
     };
     return global_cache;
