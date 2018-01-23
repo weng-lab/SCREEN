@@ -32,6 +32,59 @@ You can copy these into the graphiql window to check out example queries for dif
 
 Document (on left):
 ```
+query credetails {
+  credetails(accessions: ["EH37E0321285"]) {
+    info {
+      info {
+        assembly
+        accession
+        concordant
+        isproximal
+        k4me3max
+        k27acmax
+        ctcfmax
+      }
+      data {
+        range {
+          chrom
+          start
+          end
+        }
+        ctspecific {
+          ct
+          dnase_zscore
+          promoter_zscore
+          enhancer_zscore
+          ctcf_zscore
+        }
+      }
+    }
+    miniPeaks
+  }
+}
+
+query snpSearch(
+  $assembly: Assembly!,
+  $uuid: UUID!
+) {
+  search(assembly: $assembly, uuid: $uuid, search: {q:"rs146546272 rs111996173"}) {
+    __typename
+    ... on SNPsResponse {
+      snps {
+        id
+        range {
+          chrom
+          start
+          end
+        }
+      }
+    }
+  }
+}
+
+
+
+
 query rangeSearchAndData(
   $assembly: Assembly!,
   $uuid: UUID!,
@@ -88,11 +141,10 @@ query rangeSearchAndData(
   },
 }
 
-query geneSearchAndData(
+query geneSearch(
   $assembly: Assembly!,
   $uuid: UUID!,
   $geneSearch: SearchParameters!,
-  $dataEmpty: DataParameters!
 ) {
   search(assembly: $assembly, uuid: $uuid, search: $geneSearch) {
     __typename
@@ -184,6 +236,56 @@ query getCart($uuid: UUID!) {
   }
 }
 
+query carttable(
+    $assembly: Assembly!,
+    $uuid: UUID!,
+    $dataquery: DataParameters!
+)
+{
+    data(assembly: $assembly, uuid: $uuid, data: $dataquery) {
+  		...allcredata
+    }
+}
+
+fragment allcredata on Data {
+  total,
+	rfacets,
+  cres {
+    info {
+      assembly
+      accession
+      ctcfmax
+      k27acmax
+      k4me3max
+      concordant
+      isproximal
+    }
+    data {
+      range {
+          chrom
+          start
+          end
+      }
+      maxz
+      ctcf_zscore
+      ctspecific {
+          ct
+          dnase_zscore
+          promoter_zscore
+          enhancer_zscore
+          ctcf_zscore
+      }
+      enhancer_zscore
+      promoter_zscore
+      genesallpc {
+          pc
+          all
+      }
+      dnase_zscore
+    }
+  }
+}
+    
 query gb($gbrange: InputChromRange!) {
   gb(assembly: hg19) {
     trackhubs,
@@ -237,7 +339,7 @@ Query Variables (below Document):
       "chrom": "chr1",
       "start": 5,
       "end": 5000000
-    }
+    },
     "cellType": "K562"
   },
   "rangeSearch": {
@@ -269,6 +371,6 @@ Query Variables (below Document):
     "halfWindow": 7500,
     "showCombo": true
   },
-  "suggestionSearch": "gapdh"
+  "suggestionSearch": "ga"
 }
 ```
