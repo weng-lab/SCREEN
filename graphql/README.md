@@ -35,28 +35,17 @@ Document (on left):
 query credetails {
   credetails(accessions: ["EH37E0321285"]) {
     info {
-      info {
-        assembly
-        accession
-        concordant
-        isproximal
-        k4me3max
-        k27acmax
-        ctcfmax
+      range {
+        chrom
+        start
+        end
       }
-      data {
-        range {
-          chrom
-          start
-          end
-        }
-        ctspecific {
-          ct
-          dnase_zscore
-          promoter_zscore
-          enhancer_zscore
-          ctcf_zscore
-        }
+      ctspecific {
+        ct
+        dnase_zscore
+        promoter_zscore
+        enhancer_zscore
+        ctcf_zscore
       }
     }
     miniPeaks
@@ -111,31 +100,25 @@ query rangeSearchAndData(
     total,
     rfacets,
     cres{
-      info{
-        accession
-      }
+      accession
     }
   }
   # Or, we can refine our search. In this case, by cell type "K562"
   dataSearchRefined: data(assembly: $assembly, uuid: $uuid, data: $dataCellType) {
     total
     cres {
-      info {
-        k4me3max
+      k4me3max
+      range {
+        chrom,
+        start,
+        end
       }
-      data {
-        range {
-          chrom,
-          start,
-          end
-        }
-        ctspecific {
-          ct
-          dnase_zscore
-          promoter_zscore
-          enhancer_zscore
-          ctcf_zscore
-        }
+      ctspecific {
+        ct
+        dnase_zscore
+        promoter_zscore
+        enhancer_zscore
+        ctcf_zscore
       }
     }
   },
@@ -180,9 +163,7 @@ query dataWithPagination(
 	dataPagination: data(assembly: $assembly, uuid: $uuid, , data: $dataRangeChr, pagination: $pagination) {
     total,
     cres {
-      info {
-        accession
-      }
+      accession
     }
   }
 }
@@ -251,37 +232,31 @@ fragment allcredata on Data {
   total,
 	rfacets,
   cres {
-    info {
-      assembly
-      accession
-      ctcfmax
-      k27acmax
-      k4me3max
-      concordant
-      isproximal
+    assembly
+    accession
+    dnasemax
+    ctcfmax
+    k27acmax
+    k4me3max
+    concordant
+    isproximal
+    range {
+        chrom
+        start
+        end
     }
-    data {
-      range {
-          chrom
-          start
-          end
-      }
-      maxz
-      ctcf_zscore
-      ctspecific {
-          ct
-          dnase_zscore
-          promoter_zscore
-          enhancer_zscore
-          ctcf_zscore
-      }
-      enhancer_zscore
-      promoter_zscore
-      genesallpc {
-          pc
-          all
-      }
-      dnase_zscore
+    maxz
+    ctspecific {
+        ct
+        dnase_zscore
+        promoter_zscore
+        enhancer_zscore
+        ctcf_zscore
+    }
+
+    nearbygenes {
+        pc
+        all
     }
   }
 }
