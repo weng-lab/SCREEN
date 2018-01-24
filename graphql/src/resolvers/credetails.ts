@@ -322,6 +322,7 @@ export async function resolve_cre_histone_dcc(source, args, context, info) {
 }
 
 const minipeaks_host = 'http://screen.encodeproject.org/api/dataws/re_detail/miniPeaks';
+// const minipeaks_host = 'http://screen.encodeproject.org/api/crews/re_detail/miniPeaks';
 export async function resolve_cre_miniPeaks(source, args, context, info) {
     const cre: CRE = source.cre;
     const accession = cre.accession;
