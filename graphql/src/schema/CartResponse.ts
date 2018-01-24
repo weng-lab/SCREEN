@@ -8,7 +8,10 @@ import {
 export const CartResponse = new GraphQLObjectType({
     name: 'Cart',
     fields: () => ({
-        accessions: { type: new GraphQLList(GraphQLString) }
+        accessions: {
+            description: 'A list of accessions in the cart',
+            type: new GraphQLList(GraphQLString)
+        }
     })
 });
 

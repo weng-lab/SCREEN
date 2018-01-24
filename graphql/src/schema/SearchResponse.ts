@@ -17,16 +17,30 @@ import * as DataResponseTypes from './DataResponse';
 
 export const Gene = new GraphQLObjectType({
     name: 'Gene',
+    description: 'Information pertaining to a gene',
     fields: () => ({
-        approved_symbol: { type: new GraphQLNonNull(GraphQLString) },
-        oname: { type: new GraphQLNonNull(GraphQLString) },
-        sm: { type: new GraphQLNonNull(GraphQLFloat) },
-        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
+        approved_symbol: {
+            description: 'The approved_symbol for the gene',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        oname: {
+            description: 'TODO',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        sm: {
+            description: 'The similarity of this gene to the searched query',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        range: {
+            description: 'The range of this gene',
+            type: new GraphQLNonNull(CommonTypes.ChromRange)
+        },
     })
 });
 
 export const SingleGeneResponse = new GraphQLObjectType({
     name: 'SingleGeneResponse',
+    description: 'Will be returned when the query exactly matches a single gene',
     fields: () => ({
         gene: { type: Gene },
     }),
@@ -34,6 +48,7 @@ export const SingleGeneResponse = new GraphQLObjectType({
 
 export const MultiGeneResponse = new GraphQLObjectType({
     name: 'MultiGeneResponse',
+    description: 'Will be returned when the query ambiguously matches multiple genes',
     fields: () => ({
         genes: { type: new GraphQLList(Gene) },
     }),
@@ -41,6 +56,7 @@ export const MultiGeneResponse = new GraphQLObjectType({
 
 export const AccessionsResponse = new GraphQLObjectType({
     name: 'AccessionsResponse',
+    description: 'Will be returned when the query matches one of more ccRE accessions',
     fields: () => ({
         accessions: { type: new GraphQLList(GraphQLString) },
     }),
@@ -48,14 +64,22 @@ export const AccessionsResponse = new GraphQLObjectType({
 
 export const SNP = new GraphQLObjectType({
     name: 'SNP',
+    description: 'A SNP',
     fields: () => ({
-        id: { type: new GraphQLNonNull(GraphQLString) },
-        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) }
+        id: {
+            description: 'The SNP id',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        range: {
+            description: 'The range of this SNP',
+            type: new GraphQLNonNull(CommonTypes.ChromRange)
+        }
     })
 });
 
 export const SNPsResponse = new GraphQLObjectType({
     name: 'SNPsResponse',
+    description: 'Will be returned when the query matches one or more SNPs',
     fields: () => ({
         snps: { type: new GraphQLList(SNP) },
     }),
@@ -63,6 +87,7 @@ export const SNPsResponse = new GraphQLObjectType({
 
 export const CellTypeResponse = new GraphQLObjectType({
     name: 'CellTypeResponse',
+    description: 'Will be returned when the query matches a celltype',
     fields: () => ({
         celltype: { type: GraphQLString },
     }),
@@ -70,6 +95,7 @@ export const CellTypeResponse = new GraphQLObjectType({
 
 export const RangeResponse = new GraphQLObjectType({
     name: 'RangeResponse',
+    description: 'Will be returned when the query matches a range',
     fields: () => ({
         range: { type:  CommonTypes.ChromRange },
     }),
@@ -77,6 +103,7 @@ export const RangeResponse = new GraphQLObjectType({
 
 export const FailedResponse = new GraphQLObjectType({
     name: 'FailedResponse',
+    description: 'Will be returned if the query does not match anything',
     fields: () => ({
         failed: { type: GraphQLBoolean }
     }),
@@ -112,6 +139,7 @@ const resolveSearchResponse = d => {
 
 export const SearchResponse = new GraphQLUnionType({
     name: 'SearchResponse',
+    description: 'A response to a search query',
     types: [
         SingleGeneResponse,
         MultiGeneResponse,

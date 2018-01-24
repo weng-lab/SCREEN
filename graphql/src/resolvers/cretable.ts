@@ -12,11 +12,11 @@ export function mapcre(assembly, r, geneIDsToApprovedSymbol) {
     return {
         info: { ...r.info, assembly },
         data: {
-            range: r.chrom ? {
+            range: {
                 chrom: r.chrom,
                 start: r.start,
                 end: r.stop,
-            } : undefined,
+            },
             maxz: r.maxz,
             ctcf_zscore: r.ctcf_zscore,
             ctspecific: Object.keys(r.ctspecific).length > 0 ? r.ctspecific : undefined,

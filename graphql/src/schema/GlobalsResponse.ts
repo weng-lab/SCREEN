@@ -7,6 +7,7 @@ const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
+    description: 'Assembly-specific global data',
     fields: () => ({
         tfs: { type: GraphQLJSON },
         cellCompartments: { type: GraphQLJSON },
@@ -24,6 +25,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
 
 export const GlobalsResponse = new GraphQLObjectType({
     name: 'Globals',
+    description: 'Global data',
     fields: () => ({
         helpKeys: { type: GraphQLJSON },
         colors: { type: GraphQLJSON },

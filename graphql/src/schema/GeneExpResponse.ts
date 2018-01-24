@@ -7,6 +7,7 @@ const GraphQLJSON = require('graphql-type-json');
 
 export const GeneExpResponse = new GraphQLObjectType({
     name: 'GeneExp',
+    description: 'Gene expression data',
     fields: () => ({
         coords: { type: CommonTypes.ChromRange },
         gene: { type: GraphQLString },

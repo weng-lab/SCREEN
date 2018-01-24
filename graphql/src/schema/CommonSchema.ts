@@ -43,71 +43,145 @@ export const ElementType = new GraphQLEnumType({
 
 export const ChromRange = new GraphQLObjectType({
     name: 'ChromRange',
+    description: 'Represents a range on a chromomsome. May optionally specify a strand.',
     fields: () => ({
-        chrom: { type: new GraphQLNonNull(GraphQLString) },
-        start: { type: GraphQLInt },
-        end: { type: GraphQLInt },
-        strand: { type: GraphQLString } // TODO: enum
+        chrom: {
+            description: 'Chromosome',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        start: {
+            description: 'Start position or null if full chromosome',
+            type: GraphQLInt
+        },
+        end: {
+            description: 'End position or null if full chromosome',
+            type: GraphQLInt
+        },
+        strand: {
+            description: 'Strand of this range or null if not defined',
+            type: GraphQLString
+        }
     })
 });
 
 export const InputChromRange = new GraphQLInputObjectType({
     name: 'InputChromRange',
+    description: 'Represents a range on a chromomsome.',
     fields: () => ({
-        chrom: { type: new GraphQLNonNull(GraphQLString) },
-        start: { type: GraphQLInt },
-        end: { type: GraphQLInt },
+        chrom: {
+            description: 'Chromosome',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        start: {
+            description: 'Start position or null if full chromosome',
+            type: GraphQLInt
+        },
+        end: {
+            description: 'End position or null if full chromosome',
+            type: GraphQLInt
+        }
     })
 });
 
 export const RequiredInputChromRange = new GraphQLInputObjectType({
     name: 'RequiredInputChromRange',
+    description: 'Represents a range on a chromomsome.',
     fields: () => ({
-        chrom: { type: new GraphQLNonNull(GraphQLString) },
-        start: { type: new GraphQLNonNull(GraphQLInt) },
-        end: { type: new GraphQLNonNull(GraphQLInt) },
+        chrom: {
+            description: 'Chromosome',
+            type: new GraphQLNonNull(GraphQLString)
+        },
+        start: {
+            description: 'Start position',
+            type: GraphQLInt
+        },
+        end: {
+            description: 'End position',
+            type: GraphQLInt
+        }
     })
 });
 
 export const InputExpMax = new GraphQLInputObjectType({
     name: 'InputExpMax',
+    description: 'Defines information related to experimental zscore ranges',
     fields: () => ({
-        rank_ctcf_end: { type: GraphQLFloat },
-        rank_ctcf_start: { type: GraphQLFloat },
-        rank_dnase_end: { type: GraphQLFloat },
-        rank_dnase_start: { type: GraphQLFloat },
-        rank_enhancer_end: { type: GraphQLFloat },
-        rank_enhancer_start: { type: GraphQLFloat },
-        rank_promoter_end: { type: GraphQLFloat },
-        rank_promoter_start: { type: GraphQLFloat },
+        rank_ctcf_end: {
+            description: 'End of ctcf zscore range',
+            type: GraphQLFloat
+        },
+        rank_ctcf_start: {
+            description: 'Start of ctcf zscore range',
+            type: GraphQLFloat
+        },
+        rank_dnase_end: {
+            description: 'End of dnase zscore range',
+            type: GraphQLFloat
+        },
+        rank_dnase_start: {
+            description: 'Start of dnase zscore range',
+            type: GraphQLFloat
+        },
+        rank_enhancer_end: {
+            description: 'End of enhancer zscore range',
+            type: GraphQLFloat
+        },
+        rank_enhancer_start: {
+            description: 'Start of enhancer zscore range',
+            type: GraphQLFloat
+        },
+        rank_promoter_end: {
+            description: 'End of promoter zscore range',
+            type: GraphQLFloat
+        },
+        rank_promoter_start: {
+            description: 'Start of promoter zscore range',
+            type: GraphQLFloat
+        },
     })
 });
 
 export const DataParameters = new GraphQLInputObjectType({
     name: 'DataParameters',
+    description: 'Parameters to define what ccREs should be returned from a DataResponse',
     fields: () => ({
-        accessions: { type: new GraphQLList(GraphQLString) }, // TODO: special type
-        cellType: { type: GraphQLString },
-        range: { type: InputChromRange },
-        expmaxs: { type: InputExpMax },
-        element_type: { type: ElementType },
+        cellType: {
+            description: 'If defined, will return celltype-specific information for ccREs returned',
+            type: GraphQLString
+        },
+        accessions: {
+            description: 'A list of accessions to return',
+            type: new GraphQLList(GraphQLString)
+        }, // TODO: special type
+        range: {
+            description: 'Only return ccREs that are within a range',
+            type: InputChromRange
+        },
+        expmaxs: {
+            description: 'Only return ccREs with max zscores for all available experiments that fall within specific ranges',
+            type: InputExpMax
+        },
+        element_type: {
+            description: 'Only return ccREs of a specific ElementType - UNIMPLEMENTED',
+            type: ElementType
+        }, // TODO: implemented
     })
 });
 
 export const SearchParameters = new GraphQLInputObjectType({
     name: 'SearchParameters',
+    description: 'Parameters to define a search',
     fields: () => ({
         q: {
+            description: 'Search query. Valid queries include (but may not be limited to): ranges, genes, snps, ccRE accessions, cell types',
             type: new GraphQLNonNull(GraphQLString),
         },
         tss: {
-            description: 'Get coords between first and last transcription start sites',
-            type: GraphQLBoolean,
-        },
-        promoter: {
+            description: 'Get coords between first and last transcription start sites, if response is a gene',
             type: GraphQLBoolean,
         },
         tssDist: {
+            description: 'Extend coords this many bp upstream of the tss, if response is a gene',
             type: GraphQLInt
         }
     })
@@ -115,12 +189,14 @@ export const SearchParameters = new GraphQLInputObjectType({
 
 export const PaginationParameters = new GraphQLInputObjectType({
     name: 'PaginationParameters',
-    description: 'offset + limit <= 10000; limit <= 1000; to access more data, refine your search',
+    description: 'ADVANCED - you probably do not need this. offset + limit <= 10000; limit <= 1000; to access more data, refine your search',
     fields: () => ({
         offset: {
+            description: 'Default 0. Instead of starting at the first ccRE, return ccREs offsetted.',
             type: GraphQLInt
         },
         limit: {
+            description: 'Default 1000. Change the limit to the number of ccREs returned.',
             type: GraphQLInt
         },
     })
@@ -128,47 +204,49 @@ export const PaginationParameters = new GraphQLInputObjectType({
 
 export const cREInfo = new GraphQLObjectType({
     name: 'info',
+    description: 'Includes common ccRE info.',
     fields: {
         assembly: {
-            description: 'TODO',
+            description: 'Assembly the ccRE is defined of',
             type: new GraphQLNonNull(Assembly)
         },
-        ctcfmax: {
-            description: 'TODO',
-            type: new GraphQLNonNull(GraphQLFloat),
-        },
         accession: {
-            description: 'TODO',
+            description: 'Accession of this ccRE',
             type: new GraphQLNonNull(GraphQLString),
         },
+        ctcfmax: {
+            description: 'Max ctcf value of all experiments',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
         k27acmax: {
-            description: 'TODO',
+            description: 'Max k27ac value of all experiments',
             type: new GraphQLNonNull(GraphQLFloat),
         },
         k4me3max: {
-            description: 'TODO',
+            description: 'Max k4me3 value of all experiments',
             type: new GraphQLNonNull(GraphQLFloat),
         },
         concordant: {
-            description: 'TODO',
+            description: 'Does this ccRE have an ortholog in other assemblies',
             type: new GraphQLNonNull(GraphQLBoolean),
         },
         isproximal: {
-            description: 'TODO',
+            description: 'Is ccRE +/- 2kb of TSS',
             type: new GraphQLNonNull(GraphQLBoolean),
         }
     },
 });
 
 export const genes = new GraphQLObjectType({
-    name: 'genesallpc',
+    name: 'genes',
+    description: 'Nearby genes',
     fields: {
         pc: {
-            description: 'TODO',
+            description: 'Nearby protein-coding genes',
             type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         },
         all: {
-            description: 'TODO',
+            description: 'All nearby genes, including protein-coding and non-protein-coding',
             type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         },
     },
@@ -176,53 +254,80 @@ export const genes = new GraphQLObjectType({
 
 export const ctSpecific = new GraphQLObjectType({
     name: 'ctSpecific',
+    description: 'If a celltype was specific, provide celltype-specific data',
     fields: {
         ct: {
-            description: 'TODO',
+            description: 'Current celltype',
             type: new GraphQLNonNull(GraphQLString)
         },
         dnase_zscore: {
-            description: 'TODO',
+            description: 'Dnase zscore in the celltype, or null if not available',
             type: GraphQLFloat
         },
         promoter_zscore: {
-            description: 'TODO',
+            description: 'Promoter zscore in the celltype, or null if not available',
             type: GraphQLFloat
         },
         enhancer_zscore: {
-            description: 'TODO',
+            description: 'Enhancer zscore in the celltype, or null if not available',
             type: GraphQLFloat
         },
         ctcf_zscore: {
-            description: 'TODO',
+            description: 'Ctcf zscore in the celltype, or null if not available',
             type: GraphQLFloat
         },
     }
 });
 
 export const cREData = new GraphQLObjectType({
-    name: 'creData',
+    name: 'ccREData',
+    description: 'Data related to this ccRE',
     fields: () => ({
-        range: { type: CommonTypes.ChromRange },
-        maxz: { type: new GraphQLNonNull(GraphQLFloat) },
-        ctcf_zscore: { type: GraphQLFloat },
-        ctspecific: { type: ctSpecific },
-        enhancer_zscore: { type: GraphQLFloat },
-        promoter_zscore: { type: GraphQLFloat },
-        genesallpc: { type: new GraphQLNonNull(genes) },
-        dnase_zscore: { type: GraphQLFloat },
+        range: {
+            description: 'The range of the ccRE',
+            type: CommonTypes.ChromRange
+        },
+        ctspecific: {
+            description: 'celltype-specific zscores, if celltype was specified',
+            type: ctSpecific
+        },
+        maxz: {
+            description: 'The max zscore from any experiment in any celltype',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        ctcf_zscore: {
+            description: 'Ctcf zscore in the celltype, if specified, or max of all celltypes',
+            type: GraphQLFloat
+        },
+        enhancer_zscore: {
+            description: 'Enhancer zscore in the celltype, if specified, or max of all celltypes',
+            type: GraphQLFloat
+        },
+        promoter_zscore: {
+            description: 'Promoter zscore in the celltype, if specified, or max of all celltypes',
+            type: GraphQLFloat
+        },
+        dnase_zscore: {
+            description: 'DNase zscore in the celltype, if specified, or max of all celltypes',
+            type: GraphQLFloat
+        },
+        genesallpc: {
+            description: 'Nearby genes',
+            type: new GraphQLNonNull(genes)
+        },
     })
 });
 
 export const cRE = new GraphQLObjectType({
     name: 'cRE',
+    description: 'All data related to ccRE.',
     fields: () => ({
         info: {
-            description: 'TODO',
+            description: 'Common ccRE info.',
             type: new GraphQLNonNull(cREInfo),
         },
         data: {
-            description: 'TODO',
+            description: 'ccRE data',
             type: new GraphQLNonNull(cREData),
         },
     })

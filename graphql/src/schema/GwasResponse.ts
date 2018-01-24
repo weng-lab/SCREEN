@@ -9,6 +9,7 @@ const GraphQLJSON = require('graphql-type-json');
 
 export const GwasResponse = new GraphQLObjectType({
     name: 'Gwas',
+    description: 'GWAS data',
     fields: () => ({
         gwas: {
             type: GraphQLJSON,

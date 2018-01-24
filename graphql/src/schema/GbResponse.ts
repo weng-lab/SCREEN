@@ -10,6 +10,7 @@ const GraphQLJSON = require('graphql-type-json');
 
 export const GbResponse = new GraphQLObjectType({
     name: 'Gb',
+    description: 'Genome browser data',
     fields: () => ({
         genetable: {
             type: GraphQLJSON,

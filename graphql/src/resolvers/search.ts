@@ -61,8 +61,8 @@ export async function parse(assembly, args) {
     }
     let interpretation: object | undefined = {};
 
-    const ret: object = {
-    };
+    const ret: object = {};
+    // TODO: implement this client-side
     if ('promoter' in toks || useTss) {
         ret['element_type'] = 'promoter-like';
         ret['rank_promoter_start'] = 1.64;
