@@ -206,34 +206,7 @@ export const cREInfo = new GraphQLObjectType({
     name: 'info',
     description: 'Includes common ccRE info.',
     fields: {
-        assembly: {
-            description: 'Assembly the ccRE is defined of',
-            type: new GraphQLNonNull(Assembly)
-        },
-        accession: {
-            description: 'Accession of this ccRE',
-            type: new GraphQLNonNull(GraphQLString),
-        },
-        ctcfmax: {
-            description: 'Max ctcf value of all experiments',
-            type: new GraphQLNonNull(GraphQLFloat),
-        },
-        k27acmax: {
-            description: 'Max k27ac value of all experiments',
-            type: new GraphQLNonNull(GraphQLFloat),
-        },
-        k4me3max: {
-            description: 'Max k4me3 value of all experiments',
-            type: new GraphQLNonNull(GraphQLFloat),
-        },
-        concordant: {
-            description: 'Does this ccRE have an ortholog in other assemblies',
-            type: new GraphQLNonNull(GraphQLBoolean),
-        },
-        isproximal: {
-            description: 'Is ccRE +/- 2kb of TSS',
-            type: new GraphQLNonNull(GraphQLBoolean),
-        }
+
     },
 });
 
@@ -283,38 +256,7 @@ export const cREData = new GraphQLObjectType({
     name: 'ccREData',
     description: 'Data related to this ccRE',
     fields: () => ({
-        range: {
-            description: 'The range of the ccRE',
-            type: CommonTypes.ChromRange
-        },
-        ctspecific: {
-            description: 'celltype-specific zscores, if celltype was specified',
-            type: ctSpecific
-        },
-        maxz: {
-            description: 'The max zscore from any experiment in any celltype',
-            type: new GraphQLNonNull(GraphQLFloat)
-        },
-        ctcf_zscore: {
-            description: 'Ctcf zscore in the celltype, if specified, or max of all celltypes',
-            type: GraphQLFloat
-        },
-        enhancer_zscore: {
-            description: 'Enhancer zscore in the celltype, if specified, or max of all celltypes',
-            type: GraphQLFloat
-        },
-        promoter_zscore: {
-            description: 'Promoter zscore in the celltype, if specified, or max of all celltypes',
-            type: GraphQLFloat
-        },
-        dnase_zscore: {
-            description: 'DNase zscore in the celltype, if specified, or max of all celltypes',
-            type: GraphQLFloat
-        },
-        genesallpc: {
-            description: 'Nearby genes',
-            type: new GraphQLNonNull(genes)
-        },
+
     })
 });
 
@@ -322,13 +264,54 @@ export const cRE = new GraphQLObjectType({
     name: 'cRE',
     description: 'All data related to ccRE.',
     fields: () => ({
-        info: {
-            description: 'Common ccRE info.',
-            type: new GraphQLNonNull(cREInfo),
+        assembly: {
+            description: 'Assembly the ccRE is defined of',
+            type: new GraphQLNonNull(Assembly)
         },
-        data: {
-            description: 'ccRE data',
-            type: new GraphQLNonNull(cREData),
+        accession: {
+            description: 'Accession of this ccRE',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        range: {
+            description: 'The range of the ccRE',
+            type: CommonTypes.ChromRange
+        },
+        maxz: {
+            description: 'The max zscore from any experiment in any celltype',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        dnasemax: {
+            description: 'Max dnase zscore of all experiments',
+            type: new GraphQLNonNull(GraphQLFloat)
+        },
+        ctcfmax: {
+            description: 'Max ctcf zscore of all experiments',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        k27acmax: {
+            description: 'Max k27ac zscore of all experiments',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        k4me3max: {
+            description: 'Max k4me3 zscore of all experiments',
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        concordant: {
+            description: 'Does this ccRE have an ortholog in other assemblies',
+            type: new GraphQLNonNull(GraphQLBoolean),
+        },
+        isproximal: {
+            description: 'Is ccRE +/- 2kb of TSS',
+            type: new GraphQLNonNull(GraphQLBoolean),
+        },
+        ctspecific: {
+            description: 'celltype-specific zscores, if celltype was specified',
+            type: ctSpecific
+        },
+
+        nearbygenes: {
+            description: 'Nearby genes',
+            type: new GraphQLNonNull(genes)
         },
     })
 });

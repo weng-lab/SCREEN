@@ -32,7 +32,6 @@ const notCtSpecific = (wheres, fields, params, j) => {
             params[`rank_${x}_end`] = j[`rank_${x}_end`];
             wheres.push(`(${statement})`);
         }
-        fields.push(`cre.${allmap[x]} AS ${x}_zscore`);
     }
     return { wheres, fields };
 };
@@ -49,7 +48,6 @@ const ctSpecific = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
             continue;
         }
         const ctindex = ctmap[name][ct];
-        fields.push(`cre.${exp}_zscores[${ctindex}] AS ${name}_zscore`);
         ctSpecificObj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
 
         if (`rank_${name}_start` in j && `rank_${name}_end` in j) {
@@ -94,9 +92,7 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     const wheres = [];
     const fields = [
         'maxZ',
-        'cre.chrom',
-        'cre.start',
-        'cre.stop',
+        `json_build_object('chrom', cre.chrom, 'start', cre.start, 'end', cre.stop) as range`,
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
@@ -121,19 +117,17 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     const infoFields = {
         'accession': 'cre.accession',
         'isproximal': 'cre.isproximal',
+        'dnasemax': 'cre.dnase_max',
         'k4me3max': 'cre.h3k4me3_max',
         'k27acmax': 'cre.h3k27ac_max',
         'ctcfmax': 'cre.ctcf_max',
         'concordant': 'cre.concordant'
     };
-
-    const infopairs: Array<string> = [];
     for (const k of Object.keys(infoFields)) {
-        infopairs.push(`'${k}', ${infoFields[k]}`);
+        fields.push(`${infoFields[k]} as ${k}`);
     }
-    const infofield = 'json_build_object(' + infopairs.join(',') + ') as info';
 
-    const retfields = [infofield, ctspecificfield, ...fields].join(', ');
+    const retfields = [ctspecificfield, ...fields].join(', ');
     let retwhere = '';
     if (0 < wheres.length) {
         retwhere = 'WHERE ' + wheres.join(' and ');

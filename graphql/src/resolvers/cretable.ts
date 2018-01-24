@@ -3,28 +3,19 @@ import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 
 export function mapcre(assembly, r, geneIDsToApprovedSymbol) {
-    const all = r['gene_all_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
-    const pc = r['gene_pc_id'].slice(0, 2).map(gid => geneIDsToApprovedSymbol[gid]);
-    const genesallpc = {
+    const all = r['gene_all_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
+    const pc = r['gene_pc_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
+    const nearbygenes = {
         'all': all,
         'pc': pc,
     };
     return {
-        info: { ...r.info, assembly },
-        data: {
-            range: {
-                chrom: r.chrom,
-                start: r.start,
-                end: r.stop,
-            },
-            maxz: r.maxz,
-            ctcf_zscore: r.ctcf_zscore,
-            ctspecific: Object.keys(r.ctspecific).length > 0 ? r.ctspecific : undefined,
-            enhancer_zscore: r.enhancer_zscore,
-            promoter_zscore: r.promoter_zscore,
-            genesallpc: genesallpc,
-            dnase_zscore: r.dnase_zscore,
-        }
+        assembly,
+        ...r,
+        ctspecific: Object.keys(r.ctspecific).length > 0 ? r.ctspecific : undefined,
+        gene_all_id: undefined,
+        gene_pc_id: undefined,
+        nearbygenes,
     };
 }
 
