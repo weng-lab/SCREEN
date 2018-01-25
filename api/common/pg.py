@@ -11,7 +11,7 @@ import psycopg2.extras
 
 from coord import Coord
 from config import Config
-
+from pg_common import PGcommon
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import checkAssembly
 
@@ -35,7 +35,8 @@ class PGsearch(object):
         checkAssembly(assembly)
         self.assembly = assembly
 
-
+        self.pgc = PGcommon(self.pg, self.assembly)
+        
     def crePos(self, accession):
         with getcursor(self.pg.DBCONN, "cre_pos") as curs:
             curs.execute("""

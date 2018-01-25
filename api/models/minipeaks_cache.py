@@ -9,7 +9,7 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, dict_factory
 from cassandra import ConsistencyLevel
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from config import Config
 
 
