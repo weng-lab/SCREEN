@@ -13,6 +13,12 @@
   "cassandra": ["cassandra"],
   "redisHost": "127.0.0.1"
  },
+ "DB":
+ {"database": "screenv11",
+  "host": "postgresql",
+  "user": "regElmViz_usr",
+  "port": 5432
+ },
  "UI":
  {"apiServer": "http://api.wenglab.org/screen/v10",
   "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",

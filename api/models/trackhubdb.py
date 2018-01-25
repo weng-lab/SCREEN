@@ -13,19 +13,15 @@ from collections import OrderedDict
 from trackinfo import TrackInfo
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from files_and_paths import Dirs
-from utils import Utils, eprint, AddPath
+from utils import AddPath
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
-from coord import Coord
 from pg import PGsearch
-from db_trackhub import DbTrackhub
 from helpers_trackhub import Track, PredictionTrack, BigGenePredTrack, BigWigTrack, officialVistaTrack, bigWigFilters, BIB5, TempWrap, BigBedTrack
 
 from cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from constants import paths
 from config import Config
 
 UCSC = 1
@@ -494,37 +490,3 @@ parent {stname}
                 ret[ct]["cts"].append((fileID, displayCT, url))
         return ret
 
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="hg19")
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-
-    AddPath(__file__, '../../common/')
-    from dbconnect import db_connect
-    from postgres_wrapper import PostgresWrapper
-
-    AddPath(__file__, '../../website/common/')
-    from pg import PGsearch
-    from cached_objects import CachedObjects
-    from pg_common import PGcommon
-    from db_trackhub import DbTrackhub
-    from cached_objects import CachedObjectsWrapper
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
-    ps = PostgresWrapper(DBCONN)
-    cacheW = CachedObjectsWrapper(ps)
-    db = DbTrackhub(DBCONN)
-
-    tdb = TrackhubDb(ps, cacheW, db, UCSC)
-    for assembly in [args.assembly]:
-        tdb.makeAllTracks(assembly)
-
-
-if __name__ == '__main__':
-    main()

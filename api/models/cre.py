@@ -10,11 +10,7 @@ class CRE:
         self.pgSearch = pgSearch
         self.accession = accession
         self.cache = cache
-        self.assembly = cache.assembly
         self.pos = None
-        self.genesAll = None
-        self.genesPC = None
-        self.tad = None
         self.ranks = None
         self.intersectCounts = None
 
@@ -22,67 +18,6 @@ class CRE:
         if not self.pos:
             self.pos = self.pgSearch.crePos(self.accession)
         return self.pos
-
-    def intersectingSnps(self, halfWindow):
-        return self.pgSearch.intersectingSnps(self.accession, self.coord(),
-                                              halfWindow)
-
-    def distToNearbyCREs(self, halfWindow):
-        return self.pgSearch.distToNearbyCREs(self.accession, self.coord(),
-                                              halfWindow)
-
-    def nearbyGenes(self):
-        coord = self.coord()
-        if not self.genesAll or not self.genesPC:
-            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
-                                                                 coord.chrom)
-        pcGenes = set([g[0] for g in self.genesPC])
-        ret = []
-        for g in self.genesPC:
-            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
-        for g in self.genesAll:
-            if g[0] not in pcGenes:
-                ret.append({"name": g[0], "distance": g[1],
-                            "ensemblid_ver": g[2], "chrom": g[3], "start": g[4], "stop": g[5]})
-        ret.sort(key=lambda g: g["distance"])
-        return ret
-
-    def nearbyPcGenes(self):
-        coord = self.coord()
-        if not self.genesAll or not self.genesPC:
-            self.genesAll, self.genesPC = self.pgSearch.creGenes(self.accession,
-                                                                 coord.chrom)
-        ret = []
-        for g in self.genesPC:
-            ret.append({"name": g[0], "distance": g[1], "ensemblid_ver": g[2],
-                        "chrom": g[3], "start": g[4], "stop": g[5]})
-        return ret
-
-    def genesInTad(self):
-        if "mm10" == self.assembly:
-            return []
-        coord = self.coord()
-        rows = self.pgSearch.genesInTad(self.accession, coord.chrom)
-        lookup = self.cache.geneIDsToApprovedSymbol
-        ret = []
-        for r in rows:
-            for g in r[0]:
-                ret.append({"name": lookup[g]})
-        return ret
-
-    def cresInTad(self):
-        if "mm10" == self.assembly:
-            return []
-        coord = self.coord()
-        return self.pgSearch.cresInTad(self.accession, coord.chrom, coord.start)
-
-    def promoterRanks(self):
-        coord = self.coord()
-        return self.pgSearch.creRanksPromoter(self.accession, coord.chrom)
-
-    def enhancerRanks(self):
-        coord = self.coord()
-        return self.pgSearch.creRanksPromoter(self.accession, coord.chrom)
 
     def allRanks(self):
         if not self.ranks:
@@ -141,16 +76,3 @@ class CRE:
                 "promoter": makeArrMulti("H3K4me3", "Promoter"),
                 "enhancer": makeArrMulti("H3K27ac", "Enhancer"),
                 "ctcf": makeArrMulti("CTCF", "Insulator")}
-
-    def peakIntersectCount(self, eset=None):
-        coord = self.coord()
-        if eset is None:
-            eset = "peak"
-        if not self.intersectCounts:
-            self.intersectCounts = self.pgSearch.peakIntersectCount(self.accession, coord.chrom, self.cache.tfHistCounts[eset], eset=eset)
-        return self.intersectCounts
-
-    def linkedGenes(self):
-        if "mm10" == self.assembly:
-            return []
-        return self.pgSearch.linkedGenes(self.accession)
