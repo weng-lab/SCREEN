@@ -26,6 +26,7 @@ import * as SearchResponseTypes from './SearchResponse';
 import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
 import CreDetailsResponse from './CreDetailsResponse';
 import RampageResponse from './RampageResponse';
+import BedUploadResponse from './BedUploadResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -39,6 +40,7 @@ import { resolve_gb } from '../resolvers/gb';
 import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
 import { resolve_credetails } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
+import { resolve_bedupload } from '../resolvers/bedupload';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -154,6 +156,19 @@ const BaseType = new GraphQLObjectType({
                 gene: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve: resolve_rampage
+        },
+        bedupload: {
+            description: 'Intersect a bed file with ccREs',
+            type: BedUploadResponse,
+            args: {
+                uuid: { type: new GraphQLNonNull(UUID) },
+                lines: {
+                    description: 'The lines of a bed file',
+                    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
+                },
+                assemblies: { type: new GraphQLList(CommonTypes.Assembly) }
+            },
+            resolve: resolve_bedupload
         }
     })
 });
