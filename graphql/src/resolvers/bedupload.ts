@@ -35,22 +35,17 @@ async function intersect(uuid: string, assembly: string, lines: [string]) {
     ];
 
     const { stdout, stderr } = await exec(cmds.join(' '));
+    if (stderr) {
+        throw new Error(stderr);
+    }
     fs.unlink(tempfile, () => {});
     const accessions = stdout.trim().split('\n').map(a => a.trim());
-    return { assembly, accessions };
-}
-
-export async function resolve_beduploadassembly(source, args, context, info) {
-    const uuid: string = source.uuid;
-    const lines: [string] = source.lines;
-    const assemblies: [string] = source.assemblies;
-    const intersections = await Promise.all(assemblies.map(assembly => intersect(uuid, assembly, lines)));
-    return intersections;
+    return accessions;
 }
 
 export function resolve_bedupload(source, args, context, info) {
     const uuid: string = args.uuid;
-    const assemblies: [string] = args.assemblies || ['hg19', 'mm10'];
+    const assembly: string = args.assembly;
     const lines: [string] = args.lines;
-    return { uuid, lines, assemblies };
+    return { assembly, accessions: intersect(uuid, assembly, lines) };
 }

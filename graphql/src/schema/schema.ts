@@ -166,7 +166,7 @@ const BaseType = new GraphQLObjectType({
                     description: 'The lines of a bed file',
                     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
                 },
-                assemblies: { type: new GraphQLList(CommonTypes.Assembly) }
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) }
             },
             resolve: resolve_bedupload
         }
