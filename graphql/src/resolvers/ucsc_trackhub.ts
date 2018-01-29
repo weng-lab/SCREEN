@@ -3,8 +3,8 @@ import * as CommonDb from '../db/db_common';
 import * as TrackhubsDb from '../db/db_trackhubs';
 import * as CoordUtils from '../coord_utils';
 
-// TODO: change to config
-const host = 'http://screen.encodeproject.org/api';
+const config = require('../config.json');
+const host = config.trackhubs.host;
 
 async function trackhub_url_info(info) {
     const assembly = info['assembly'];
