@@ -248,28 +248,18 @@ C57BL/6_stomach_embryo_16.5_days
 C57BL/6_stomach_postnatal_0_days`.split('\n');
 
     const makeDataset = (r) => {
-        // TODO: clean this
-        const ret = {
+        return {
             ...r,
-            'cellTypeName': r['celltypename'],
-            'cellTypeDesc': r['celltypedesc'],
-            'name': r['celltypedesc'],
-            'value': r['celltypename'],  // for datatables
-            'isde': (dects as any).includes(r['celltypename']),
+            synonyms: r.synonyms || [],
+            'isde': (dects as any).includes(r['value']),
         };
-        return Object.keys(ret)
-        .filter(key => !(['celltypename', 'celltypedesc'] as any).includes(key))
-        .reduce((obj, key) => {
-          obj[key] = ret[key];
-          return obj;
-        }, {});
     };
 
     const tableName = assembly + '_datasets';
     const cols = [
-        'assay', 'expID', 'fileID', 'tissue',
-        'biosample_summary', 'biosample_type', 'cellTypeName',
-        'cellTypeDesc', 'synonyms'
+        'assay', 'expid', 'fileid', 'tissue',
+        'biosample_summary', 'biosample_type', 'celltypename as value',
+        'celltypedesc as name', 'synonyms'
     ];
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
@@ -288,8 +278,7 @@ export async function datasets(assembly) {
     for (const r of rows) {
         ret.globalCellTypeInfo[r['name']] = r;
     }
-
-    ret.byFileID = rows.map(r => r['fileID']);
+    ret.byFileID = rows.map(r => r['fileid']);
     ret.byCellType = {};
     for (const r of rows) {
         const ctn = r['value'];
@@ -299,7 +288,6 @@ export async function datasets(assembly) {
         ret.byCellType[ctn].push(r);
     }
 
-    const testobj = { test: 'test' };
     // used by trees
     ret.biosampleTypeToCellTypes = {};
     for (const ctn of Object.keys(ret.globalCellTypeInfo)) {
