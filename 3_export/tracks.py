@@ -55,7 +55,7 @@ class BigWigTrack(object):
         p["itemRgb"] = "On"
         p["darkerLabels"] = "on"
         p["metadata"] = Helpers.unrollEquals(self._metadata())
-        p["view"] = self.bigWig
+        p["view"] = self.view
         return p
 
     def _metadata(self):
