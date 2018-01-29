@@ -1,0 +1,17 @@
+{
+"DB": {
+    "user": "regElmViz_usr",
+    "password": "<password>",
+    "database": "screenv11",
+    "host": "localhost",
+    "port": 5432
+},
+"bedupload": {
+    "incomingDir": "/home/<user>/intersect/incoming",
+    "hg19bed": "/home/<user>/intersect/hg19.sorted.bed",
+    "mm10bed": "/home/<user>/intersect/mm10.sorted.bed"
+},
+"trackhubs": {
+    "host": "http://api.wenglab.org"
+}
+}
