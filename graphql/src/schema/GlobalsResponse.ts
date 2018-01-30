@@ -9,9 +9,9 @@ import * as CommonTypes from './CommonSchema';
 import { resolve_globals_assembly } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
-export const CellTypeInfo = new GraphQLObjectType({
-    name: 'CellTypeInfo',
-    description: 'Info on every cell type used in SCREEN and in ccREs',
+export const CellTypeAssay = new GraphQLObjectType({
+    name: 'CellTypeAssay',
+    description: 'Info on a single assay from a cell type',
     fields: () => ({
         assay: { type: GraphQLString },
         expid: { type: GraphQLString },
@@ -19,10 +19,18 @@ export const CellTypeInfo = new GraphQLObjectType({
         tissue: { type: GraphQLString },
         biosample_summary: { type: GraphQLString },
         biosample_type: { type: GraphQLString },
+    })
+});
+
+export const CellTypeInfo = new GraphQLObjectType({
+    name: 'CellTypeInfo',
+    description: 'Info on every cell type used in SCREEN and in ccREs',
+    fields: () => ({
         name: { type: GraphQLString },
         value: { type: GraphQLString },
+        isde: { type: GraphQLBoolean },
         synonyms: { type: new GraphQLList(GraphQLString) },
-        isde: { type: GraphQLBoolean }
+        assays: { type: new GraphQLList(CellTypeAssay) },
     })
 });
 
@@ -36,7 +44,6 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         chromCounts: { type: GraphQLJSON },
         chromLens: { type: GraphQLJSON },
         creHistBins: { type: GraphQLJSON },
-        byCellType: { type: GraphQLJSON },
         geBiosampleTypes: { type: GraphQLJSON },
         creBigBedsByCellType: { type: GraphQLJSON },
         creFiles: { type: GraphQLJSON },
