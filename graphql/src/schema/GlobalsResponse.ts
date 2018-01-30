@@ -38,16 +38,46 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
     description: 'Assembly-specific global data',
     fields: () => ({
-        tfs: { type: GraphQLJSON },
-        cellCompartments: { type: GraphQLJSON },
-        cellTypeInfoArr: { type: new GraphQLList(CellTypeInfo) },
-        chromCounts: { type: GraphQLJSON },
-        chromLens: { type: GraphQLJSON },
-        creHistBins: { type: GraphQLJSON },
-        geBiosampleTypes: { type: GraphQLJSON },
-        creBigBedsByCellType: { type: GraphQLJSON },
-        creFiles: { type: GraphQLJSON },
-        inputData: { type: GraphQLJSON },
+        tfs: {
+            description: 'A list of all transcription factors used',
+            type: new GraphQLList(GraphQLString)
+        },
+        cellCompartments: {
+            description: 'A list of cell compartments',
+            type: new GraphQLList(GraphQLString)
+        },
+        cellTypeInfoArr: {
+            description: 'Get info on all cell types used and assays used for ccRE data',
+            type: new GraphQLList(CellTypeInfo)
+        },
+        chromCounts: {
+            description: 'Returns the numbers of ccREs keyed by chromosome',
+            type: GraphQLJSON
+        },
+        chromLens: {
+            description: 'Returns the length of each chromosome',
+            type: GraphQLJSON
+        },
+        creHistBins: {
+            description: 'Returns the numbers of ccREs in each bin of a chromosome',
+            type: GraphQLJSON
+        },
+        geBiosampleTypes: {
+            description: 'Returns biosamples available in gene expression',
+            type: GraphQLJSON
+        },
+        creBigBedsByCellType: {
+            description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
+            type: GraphQLJSON
+        },
+        creFiles: {
+            description: 'Returns info on the data used to create ccREs',
+            type: GraphQLJSON
+        },
+        inputData: {
+            description: 'Returns info on the data used for SCREEN',
+            type: GraphQLJSON
+        },
     })
 });
 

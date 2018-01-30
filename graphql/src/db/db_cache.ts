@@ -134,6 +134,7 @@ function global_data(assembly) {
         'geBiosampleTypes': c.geBiosampleTypes,
         'creBigBedsByCellType': c.creBigBeds,
         'creFiles': c.filesList,
+        'inputData': c.inputData,
     };
 }
 exports.global_data = global_data;
