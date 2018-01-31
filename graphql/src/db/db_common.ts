@@ -248,28 +248,18 @@ C57BL/6_stomach_embryo_16.5_days
 C57BL/6_stomach_postnatal_0_days`.split('\n');
 
     const makeDataset = (r) => {
-        // TODO: clean this
-        const ret = {
+        return {
             ...r,
-            'cellTypeName': r['celltypename'],
-            'cellTypeDesc': r['celltypedesc'],
-            'name': r['celltypedesc'],
-            'value': r['celltypename'],  // for datatables
-            'isde': (dects as any).includes(r['celltypename']),
+            synonyms: r.synonyms || [],
+            'isde': (dects as any).includes(r['value']),
         };
-        return Object.keys(ret)
-        .filter(key => !(['celltypename', 'celltypedesc'] as any).includes(key))
-        .reduce((obj, key) => {
-          obj[key] = ret[key];
-          return obj;
-        }, {});
     };
 
     const tableName = assembly + '_datasets';
     const cols = [
-        'assay', 'expID', 'fileID', 'tissue',
-        'biosample_summary', 'biosample_type', 'cellTypeName',
-        'cellTypeDesc', 'synonyms'
+        'assay', 'expid', 'fileid', 'tissue',
+        'biosample_summary', 'biosample_type', 'celltypename as value',
+        'celltypedesc as name', 'synonyms'
     ];
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
@@ -282,42 +272,47 @@ export async function datasets(assembly) {
     const rows = await allDatasets(assembly);
     const ret: any = {};
 
-    ret.globalCellTypeInfo = {};
-
-    // FIXME: cell types will overwrite...
+    const byCellType = {};
     for (const r of rows) {
-        ret.globalCellTypeInfo[r['name']] = r;
-    }
-
-    ret.byFileID = rows.map(r => r['fileID']);
-    ret.byCellType = {};
-    for (const r of rows) {
-        const ctn = r['value'];
-        if (!(ctn in ret.byCellType)) {
-            ret.byCellType[ctn] = [];
+        const ctn = r.value;
+        if (!(ctn in byCellType)) {
+            byCellType[ctn] = {
+                name: r.name,
+                value: r.value,
+                isde: r.isde,
+                synonyms: r.synonyms,
+                assays: [],
+            };
         }
-        ret.byCellType[ctn].push(r);
+        const ct = byCellType[ctn];
+        console.assert(ct.name === r.name, 'Cell type name does not match!');
+        console.assert(ct.isde === r.isde, 'Isde does not match!');
+        // We aren't going to check every element, but we can at least check length
+        console.assert(ct.synonyms.length === r.synonyms.length, 'Synonyms length does not match!');
+        byCellType[ctn].assays.push({
+            assay: r.assay,
+            expid: r.expid,
+            fileid: r.fileid,
+            tissue: r.tissue,
+            biosample_summary: r.biosample_summary,
+            biosample_type: r.biosample_type,
+        });
     }
 
-    const testobj = { test: 'test' };
+    ret.byFileID = rows.map(r => r['fileid']);
+
     // used by trees
     ret.biosampleTypeToCellTypes = {};
-    for (const ctn of Object.keys(ret.globalCellTypeInfo)) {
-        const r = ret.globalCellTypeInfo[ctn];
+    for (const r of (Object as any).values(byCellType)) {
         const bt = r['biosample_type'];
         if (!(bt in ret.biosampleTypeToCellTypes)) {
             ret.biosampleTypeToCellTypes[bt] = [];
         }
-        ret.biosampleTypeToCellTypes[bt].push(ctn);
+        ret.biosampleTypeToCellTypes[bt].push(r.name);
     }
 
     // used by CellTypes facet
-    ret.globalCellTypeInfoArr = [];
-    for (const k of Object.keys(ret.globalCellTypeInfo)) {
-        const v = ret.globalCellTypeInfo[k];
-        ret.globalCellTypeInfoArr.push(v);
-    }
-
+    ret.globalCellTypeInfoArr = (Object as any).values(byCellType).slice();
     ret.globalCellTypeInfoArr.sort((a, b) => a['value'].localeCompare(b['value'], 'en', {'sensitivity': 'base'}));
 
     ret.biosample_types = Array.from(new Set(rows.map(b => b['biosample_type']))).sort();

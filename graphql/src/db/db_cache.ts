@@ -131,10 +131,10 @@ function global_data(assembly) {
         'chromCounts': c.chromCounts,
         'chromLens': chrom_lengths[assembly],
         'creHistBins': c.creHist,
-        'byCellType': datasets.byCellType,
         'geBiosampleTypes': c.geBiosampleTypes,
         'creBigBedsByCellType': c.creBigBeds,
         'creFiles': c.filesList,
+        'inputData': c.inputData,
     };
 }
 exports.global_data = global_data;
