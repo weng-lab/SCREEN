@@ -152,24 +152,24 @@ export async function find_celltype(assembly, q, rev = false) {
             ORDER BY sm DESC
             LIMIT 1
         `;
-        let r = await db.any(query, [s]);
-        if (r.length === 0) {
+        let r = await db.one(query, [s]);
+        if (!r) {
             query = `
                 SELECT cellType
                 FROM ${tableName}
                 WHERE LOWER(cellType) LIKE $1
                 LIMIT 1
             `;
-            r = await db.any(query, [s]);
+            r = await db.one(query, [s]);
         }
-        if (r.length === 0) {
+        if (!r) {
             continue;
         }
-        if (!(r[0][0].toLowerCase().trim() in s.toLowerCase().trim()) || !(s.toLowerCase().trim() in r[0][0].toLowerCase().trim())) {
-            const k = r[0][0].replace('_', ' ');
+        if (!(r['celltype'].toLowerCase().trim().includes(s.toLowerCase().trim())) || !(s.toLowerCase().trim().includes(r['celltype'].toLowerCase().trim()))) {
+            const k = r['celltype'].replace('_', ' ');
             interpretation = `Showing results for "${!interpretation ? k : interpretation + ' ' + k}"`;
         }
-        return {s: !rev ? p.slice(p.length - i, p.length).join(' ') : p.slice(i, p.length).join(' '), cellType: r[0][0], interpretation};
+        return {s: !rev ? p.slice(p.length - i, p.length).join(' ') : p.slice(i, p.length).join(' '), cellType: r['celltype'], interpretation};
     }
     return {s: q, cellType: undefined, interpretation: undefined};
 }

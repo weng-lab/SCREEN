@@ -81,7 +81,7 @@ export const SNPsResponse = new GraphQLObjectType({
     name: 'SNPsResponse',
     description: 'Will be returned when the query matches one or more SNPs',
     fields: () => ({
-        snps: { type: new GraphQLList(SNP) },
+        snps: { type: new GraphQLNonNull(new GraphQLList(SNP)) },
     }),
 });
 
@@ -89,7 +89,7 @@ export const CellTypeResponse = new GraphQLObjectType({
     name: 'CellTypeResponse',
     description: 'Will be returned when the query matches a celltype',
     fields: () => ({
-        celltype: { type: GraphQLString },
+        celltype: { type: new GraphQLNonNull(GraphQLString) },
     }),
 });
 
@@ -97,7 +97,7 @@ export const RangeResponse = new GraphQLObjectType({
     name: 'RangeResponse',
     description: 'Will be returned when the query matches a range',
     fields: () => ({
-        range: { type:  CommonTypes.ChromRange },
+        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
     }),
 });
 
@@ -105,7 +105,7 @@ export const FailedResponse = new GraphQLObjectType({
     name: 'FailedResponse',
     description: 'Will be returned if the query does not match anything',
     fields: () => ({
-        failed: { type: GraphQLBoolean }
+        failed: { type: new GraphQLNonNull(GraphQLBoolean) }
     }),
 });
 
@@ -114,7 +114,7 @@ const resolveSearchResponse = d => {
     const genes = d.genes;
     const accessions = d.accessions;
     const snps = d.snps;
-    const cellType = d.cellType;
+    const celltype = d.celltype;
     const range = d.range;
     if (gene) {
         return SingleGeneResponse;
@@ -128,7 +128,7 @@ const resolveSearchResponse = d => {
     if (snps && snps.length > 0) {
         return SNPsResponse;
     }
-    if (cellType) {
+    if (celltype) {
         return CellTypeResponse;
     }
     if (range) {

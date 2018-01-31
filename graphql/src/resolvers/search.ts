@@ -140,7 +140,7 @@ export async function parse(assembly, args) {
     }
 
     if (cellType) {
-        ret['cellType'] = cellType;
+        ret['celltype'] = cellType;
     }
     if (interpretation) {
         ret['interpretation'] = interpretation;
