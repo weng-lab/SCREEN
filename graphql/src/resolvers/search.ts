@@ -93,17 +93,19 @@ export async function parse(assembly, args) {
                     throw new Error('mismatch assembly for accession ' + t);
                 }
                 rettoks.push({ input: t, accession: t });
-                s = s.replace(t, '');
+                s = s.replace(t, '').trim();
             } else if (lowert.startsWith('rs')) {
                 const coord = await Parse.get_snpcoord(assembly, lowert);
                 rettoks.push({ input: t, snp: { id: lowert, range: coord } });
-                s = s.replace(t, '');
+                s = s.replace(t, '').trim();
             } else {
-                const genes = await Parse.try_find_gene(assembly, s, useTss, tssDist);
+                const genes = await Parse.try_find_gene(assembly, t, useTss, tssDist);
                 if (genes.length > 1) {
                     rettoks.push({ input: t, genes: genes.map(g => g.toJson()) });
+                    s = s.replace(t, '').trim();
                 } else if (genes.length === 1) {
                     rettoks.push({ input: t, gene: genes[0].toJson() });
+                    s = s.replace(t, '').trim();
                 }
             }
         } catch (e) {

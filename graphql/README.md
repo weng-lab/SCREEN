@@ -76,7 +76,7 @@ query complicatedsearch(
   $uuid: UUID!,
 ) {
   # Search will try to parse tokens as best as possible
-  search(assembly: $assembly, uuid: $uuid, search: {q: "chr1 K562 1 rs10742583 100 chr2 2-101 chr3 1 A549 ethanol chr4:1 50 EH37E1090133 "}) {
+  search(assembly: $assembly, uuid: $uuid, search: {q: "GAPDH chr1 K562 1 rs10742583 100 chr2 2-101 chr3 1 A549 ethanol chr4:1 50 EH37E1090133 "}) {
     __typename
     input
     ... on RangeToken {
