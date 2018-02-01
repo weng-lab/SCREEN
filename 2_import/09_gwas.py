@@ -47,7 +47,7 @@ class ImportGwas:
         stop integer,
         snp text,
         taggedSNP text,
-        r2 real,
+        r2 real[],
         ldblock text,
         trait text,
         pubmed text,
@@ -69,18 +69,14 @@ class ImportGwas:
         for r in rows:
             if 'Lead' == r[4]:
                 r[4] = r[3]
-            if '*' == r[5]:
-                r[5] = "-1"
+            r[5] = "{%s}" % r[5].replace('*', "-1")
             r[2] = str(int(r[2]) + 1)
-            if '*' in '\t'.join(r):
-                print(r)
-                raise Exception("invalid line")
             r[-1] = r[-1].replace('-', '_')
             outF.write('\t'.join(r) + '\n')
         print("example", '\t'.join(r))
         outF.seek(0)
 
-        cols = "chrom start stop snp taggedSNP r2 ldblock trait pubmed author authorPubmedTrait".split(' ')
+        cols = "chrom start stop snp taggedSNP r2 ldblock trait author pubmed authorPubmedTrait".split(' ')
         self.curs.copy_from(outF, self.tableNameGwas, '\t', columns=cols)
         print("copied in", self.curs.rowcount)
 
@@ -104,12 +100,12 @@ class ImportGwas:
                    fields=','.join([r + " real" for r in fields])))
 
     def _enrichment(self):
-        files = ((".Matrix.pvalue.txt", self.tableNameEnrichmentPval, False),
-                 (".Matrix.FDR.txt", self.tableNameEnrichmentFdr, True))
+        files = ((".Matrix.pvalue.txt", self.tableNameEnrichmentPval, False, [116, 172]),
+                 (".Matrix.FDR.txt", self.tableNameEnrichmentFdr, True, [116, 172]))
         headers = []
-        for fn, tableName, takeLog in files:
+        for fn, tableName, takeLog, skip in files:
             printt("******************* GWAS enrichment", fn)
-            header = self._do_enrichment(fn, tableName, takeLog)
+            header = self._do_enrichment(fn, tableName, takeLog, skip)
             headers.append(header)
         if headers[0] != headers[1]:
             print(headers[0])
@@ -117,14 +113,15 @@ class ImportGwas:
             raise Exception("different headers?")
         return headers[0]
 
-    def _do_enrichment(self, fnBase, tableName, takeLog):
+    def _do_enrichment(self, fnBase, tableName, takeLog, skip = []):
         fnp = paths.gwasFnp(self.assembly, self.version, fnBase)
         printt("reading", fnp)
         with open(fnp) as f:
             header = f.readline().rstrip('\n').split('\t')
             rows = [r.rstrip('\n').split('\t') for r in f if r]
 
-        fields = [f.replace('-', '_') for f in header[2:]]
+        fields = [f.replace('-', '_').replace("'", '_') for f in header[2:]]
+        fields = [fields[i] for i in xrange(len(fields)) if i + 2 not in skip]
         self._setupEnrichment(fields, tableName)
 
         printt("rewrite rows")
@@ -132,6 +129,7 @@ class ImportGwas:
         for r in rows:
             for idx in xrange(2, len(r)):
                 r[idx] = str(float(r[idx]))
+            r = [r[i] for i in xrange(len(r)) if i + 2 not in skip]
             outF.write('\t'.join(r) + '\n')
         outF.seek(0)
         cols = ["expID", "cellTypeName"] + fields
@@ -215,13 +213,13 @@ class ImportGwas:
                 '|', "bedtools intersect",
                 "-a", "-",
                 "-b", cresFnp,
-                "-wo",
-                "-sorted"]
+                "-wo" ]
         snpsIntersecting = Utils.runCmds(cmds)
         print("example", snpsIntersecting[0].rstrip('\n').split('\t'))
 
         printt("rewriting...")
         outF = StringIO.StringIO()
+        count = {}
         for r in snpsIntersecting:
             toks = r.rstrip('\n').split('\t')
             snp = toks[3]
@@ -241,7 +239,11 @@ class ImportGwas:
                 print(toks)
                 raise Exception("bad line?")
             outF.write('\t'.join([authorPubmedTrait, accession, snp]) + '\n')
+            if authorPubmedTrait not in count: count[authorPubmedTrait] = 0
+            count[authorPubmedTrait] += 1
         print("example", '\t'.join([authorPubmedTrait, accession, snp]))
+        for k, v in count.iteritems():
+            print("%s: %d" % (k, v))
         outF.seek(0)
 
         printt("copying into DB...")
