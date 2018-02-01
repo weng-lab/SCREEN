@@ -13,7 +13,7 @@ import {
 import { UUID } from './uuid';
 import * as CommonTypes from './CommonSchema';
 import DataResponse from './DataResponse';
-import SearchResponse from './SearchResponse';
+import SearchToken from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
 import DeResponse from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
@@ -62,8 +62,8 @@ const BaseType = new GraphQLObjectType({
             resolve: resolve_data
         },
         search: {
-            description: 'Perform a search',
-            type: SearchResponse,
+            description: 'Perform a search. Returns a list of search tokens and their interpreted meaning.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SearchToken))),
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 uuid: { type: new GraphQLNonNull(UUID) },
@@ -192,13 +192,13 @@ const schema = new GraphQLSchema({
     types: [
         CommonTypes.Assembly,
         UUID,
-        SearchResponseTypes.AccessionsResponse,
-        SearchResponseTypes.CellTypeResponse,
-        SearchResponseTypes.MultiGeneResponse,
-        SearchResponseTypes.SingleGeneResponse,
-        SearchResponseTypes.SNPsResponse,
-        SearchResponseTypes.RangeResponse,
-        SearchResponseTypes.FailedResponse,
+        SearchResponseTypes.AccessionToken,
+        SearchResponseTypes.CellTypeToken,
+        SearchResponseTypes.MultiGeneToken,
+        SearchResponseTypes.SingleGeneToken,
+        SearchResponseTypes.SNPToken,
+        SearchResponseTypes.RangeToken,
+        SearchResponseTypes.UnknownToken,
         UCSCTrackhub.UCSCTrackhubInfo,
     ],
     query: BaseType,
