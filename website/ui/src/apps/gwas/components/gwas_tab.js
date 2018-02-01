@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as Actions from '../actions/main_actions';
 import * as ApiClient from '../../../common/api_client';
 
-import CelltypeView from '../components/celltype_view';
+import CelltypeView, {ConnAllCTView} from '../components/celltype_view';
 
 import loading from '../../../common/components/loading';
 import {arrowNote} from '../../../common/utility';
@@ -57,10 +57,15 @@ class GwasTab extends React.Component{
 
     doRenderWrapper({gwas_study, cellType, actions}){
 	var data = this.state[gwas_study];
-        var ctView = (cellType ? <CelltypeView globals={this.props.globals}
-					       rdata={data.mainTable[0]} /> :
+	var ctView;
+	if (data.topCellTypes.length === 0) {
+	    ctView = <ConnAllCTView globals={this.props.globals} rdata={data.mainTable[0]} data={data.cres._all} />;
+	} else {						   
+            ctView = (cellType || data.topCellTypes.length === 0 ? <CelltypeView globals={this.props.globals}
+		      rdata={data.mainTable[0]} forcect={data.topCellTypes.length === 0 ? data.cres._all : false} /> :
                       arrowNote("Please choose a cell type.")
-        );
+		     );
+	}
         let mainTable = (<Ztable
                              data={data.mainTable}
                              cols={[

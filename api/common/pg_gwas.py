@@ -65,9 +65,13 @@ ORDER BY fdr DESC, pval
 """.format(tnfdr=self.assembly + "_gwas_enrichment_fdr",
                 tnpval=self.assembly + "_gwas_enrichment_pval",
                 col=gwas_study)
-            curs.execute(q)
-            rows = curs.fetchall()
+            try:
+                curs.execute(q)
+                rows = curs.fetchall()
+            except:
+                return []
         cols = ["expID", "cellTypeName", "biosample_summary", "fdr", "pval"]
+        print("!", file = sys.stderr)
         return [dict(zip(cols, r)) for r in rows]
 
     def numLdBlocksOverlap(self, gwas_study):

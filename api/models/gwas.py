@@ -49,7 +49,7 @@ class Gwas:
             return any(function(i) for i in iterable)
 
         for a in cres:
-            if a.get("promoter zscore", 0) > 1.64 or a.get("enhancer zscore", 0) > 1.64 or a.get("dnase zscore", 0) > 1.64:
+            if ct is None or (a.get("promoter zscore", 0) > 1.64 or a.get("enhancer zscore", 0) > 1.64 or a.get("dnase zscore", 0) > 1.64):
                 totalActive += 1
                 activeCres.append(a)
 
@@ -62,13 +62,17 @@ class Gwas:
         vcols = {}
         for f in ["promoter zscore", "enhancer zscore", "dnase zscore"]:
             vcols[f] = f not in hiddenFields
+        if ct is None: ct = "_all"
         return {ct: {"accessions": activeCres,
                      "vcols": vcols}}
 
     def mainTable(self, gwas_study):
-        return {gwas_study: {"gwas_study": self.byStudy[gwas_study],
-                             "mainTable": self._mainTableInfo(gwas_study),
-                             "topCellTypes": self.allCellTypes(gwas_study)}}
+        ret = {gwas_study: {"gwas_study": self.byStudy[gwas_study],
+                            "mainTable": self._mainTableInfo(gwas_study),
+                            "topCellTypes": self.allCellTypes(gwas_study)}}
+        if len(ret[gwas_study]["topCellTypes"]) == 0:
+            ret[gwas_study]["cres"] = self.cres(gwas_study, None)
+        return ret
 
     def _mainTableInfo(self, gwas_study):
         total = self.totalLDblocks(gwas_study)
