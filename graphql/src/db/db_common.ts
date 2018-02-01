@@ -304,7 +304,8 @@ export async function datasets(assembly) {
     // used by trees
     ret.biosampleTypeToCellTypes = {};
     for (const r of (Object as any).values(byCellType)) {
-        const bt = r['biosample_type'];
+        // Is biosample_type guaranteed to be consistent for the same name, if so change schema
+        const bt = r.assays[0]['biosample_type'];
         if (!(bt in ret.biosampleTypeToCellTypes)) {
             ret.biosampleTypeToCellTypes[bt] = [];
         }

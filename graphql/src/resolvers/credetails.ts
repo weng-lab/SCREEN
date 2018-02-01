@@ -55,7 +55,7 @@ class CRE {
         };
 
         const ctToTissue = (ct) => {
-            const ctinfo = c.datasets.globalCellTypeInfo[ct];
+            const ctinfo = c.datasets.globalCellTypeInfoArr.filter(c => c.name === ct)[0];
             return ctinfo ? ctinfo['tissue'] : '';
         };
 
