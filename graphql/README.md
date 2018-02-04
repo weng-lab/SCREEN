@@ -58,8 +58,8 @@ query snpSearch(
 ) {
   search(assembly: $assembly, uuid: $uuid, search: {q:"rs146546272 rs111996173"}) {
     __typename
-    ... on SNPsResponse {
-      snps {
+    ... on SNPToken {
+      snp {
         id
         range {
           chrom
@@ -71,8 +71,53 @@ query snpSearch(
   }
 }
 
+query complicatedsearch(
+  $assembly: Assembly!,
+  $uuid: UUID!,
+) {
+  # Search will try to parse tokens as best as possible
+  search(assembly: $assembly, uuid: $uuid, search: {q: "GAPDH chr1 K562 1 rs10742583 100 chr2 2-101 chr3 1 A549 ethanol chr4:1 50 EH37E1090133 "}) {
+    __typename
+    input
+    ... on RangeToken {
+      range {
+        chrom
+        start
+        end
+      }
+    }
+    # Since we searched a range, we won't get back an AccessionsResponse
+    ... on AccessionToken {
+      accession
+    }
 
+    ... on CellTypeToken {
+      celltype
+    }
 
+    ... on MultiGeneToken {
+      genes {
+        approved_symbol
+      }
+    }
+
+    ... on SingleGeneToken {
+      gene {
+         approved_symbol
+      }
+    }
+
+    ... on SNPToken {
+      snp {
+        id
+      }
+    }
+
+    ... on UnknownToken {
+      failed
+    }
+  }
+}
 
 query rangeSearchAndData(
   $assembly: Assembly!,
@@ -83,7 +128,7 @@ query rangeSearchAndData(
 ) {
   search(assembly: $assembly, uuid: $uuid, search: $rangeSearch) {
     __typename
-    ... on RangeResponse {
+    ... on RangeToken {
       range {
         chrom
         start
@@ -91,8 +136,8 @@ query rangeSearchAndData(
       }
     }
     # Since we searched a range, we won't get back an AccessionsResponse
-    ... on AccessionsResponse {
-      accessions
+    ... on AccessionToken {
+      accession
     }
   }
   # We can search by a range
@@ -132,14 +177,14 @@ query geneSearch(
   search(assembly: $assembly, uuid: $uuid, search: $geneSearch) {
     __typename
     # We searched for a gene, so this should be empty
-    ... on RangeResponse {
+    ... on RangeToken {
       range {
         chrom
         start
         end
       }
     }
-    ... on SingleGeneResponse {
+    ... on SingleGeneToken {
       gene {
         approved_symbol,
         sm

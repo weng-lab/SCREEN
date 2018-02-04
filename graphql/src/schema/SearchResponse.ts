@@ -15,6 +15,46 @@ import {
 import * as CommonTypes from './CommonSchema';
 import * as DataResponseTypes from './DataResponse';
 
+const resolveSearchToken = d => {
+    const gene = d.gene;
+    const genes = d.genes;
+    const accession = d.accession;
+    const snp = d.snp;
+    const celltype = d.celltype;
+    const range = d.range;
+    if (gene) {
+        return SingleGeneToken;
+    }
+    if (genes) {
+        return MultiGeneToken;
+    }
+    if (accession) {
+        return AccessionToken;
+    }
+    if (snp) {
+        return SNPToken;
+    }
+    if (celltype) {
+        return CellTypeToken;
+    }
+    if (range) {
+        return RangeToken;
+    }
+    return UnknownToken;
+};
+
+export const SearchToken = new GraphQLInterfaceType({
+    name: 'SearchToken',
+    description: 'Describes a specific token and the intepreted result',
+    fields: () => ({
+        input: {
+            description: 'The input string that was interpreted',
+            type: new GraphQLNonNull(GraphQLString),
+        }
+    }),
+    resolveType: resolveSearchToken,
+});
+
 export const Gene = new GraphQLObjectType({
     name: 'Gene',
     description: 'Information pertaining to a gene',
@@ -38,27 +78,41 @@ export const Gene = new GraphQLObjectType({
     })
 });
 
-export const SingleGeneResponse = new GraphQLObjectType({
-    name: 'SingleGeneResponse',
-    description: 'Will be returned when the query exactly matches a single gene',
+export const SingleGeneToken = new GraphQLObjectType({
+    name: 'SingleGeneToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token exactly matches a single gene. ' +
+        'Note that this does not necessarily mean that there are not other gene search tokens. These are usually separated with a separate space.',
     fields: () => ({
-        gene: { type: Gene },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        gene: { type: new GraphQLNonNull(Gene) },
     }),
 });
 
-export const MultiGeneResponse = new GraphQLObjectType({
-    name: 'MultiGeneResponse',
-    description: 'Will be returned when the query ambiguously matches multiple genes',
+export const MultiGeneToken = new GraphQLObjectType({
+    name: 'MultiGeneToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token ambiguously matches multiple genes. ' +
+        'Note that this does not necessarily mean that there are multiple different gene searches.',
     fields: () => ({
-        genes: { type: new GraphQLList(Gene) },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        genes: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Gene))) },
     }),
 });
 
-export const AccessionsResponse = new GraphQLObjectType({
-    name: 'AccessionsResponse',
-    description: 'Will be returned when the query matches one of more ccRE accessions',
+export const AccessionToken = new GraphQLObjectType({
+    name: 'AccessionToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token matches a ccRE accession',
     fields: () => ({
-        accessions: { type: new GraphQLList(GraphQLString) },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        accession: { type: new GraphQLNonNull(GraphQLString) },
     }),
 });
 
@@ -77,79 +131,52 @@ export const SNP = new GraphQLObjectType({
     })
 });
 
-export const SNPsResponse = new GraphQLObjectType({
-    name: 'SNPsResponse',
-    description: 'Will be returned when the query matches one or more SNPs',
+export const SNPToken = new GraphQLObjectType({
+    name: 'SNPToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token matches a SNP',
     fields: () => ({
-        snps: { type: new GraphQLList(SNP) },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        snp: { type: new GraphQLNonNull(SNP) },
     }),
 });
 
-export const CellTypeResponse = new GraphQLObjectType({
-    name: 'CellTypeResponse',
-    description: 'Will be returned when the query matches a celltype',
+export const CellTypeToken = new GraphQLObjectType({
+    name: 'CellTypeToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token matches a celltype',
     fields: () => ({
-        celltype: { type: GraphQLString },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        celltype: { type: new GraphQLNonNull(GraphQLString) },
     }),
 });
 
-export const RangeResponse = new GraphQLObjectType({
-    name: 'RangeResponse',
-    description: 'Will be returned when the query matches a range',
+export const RangeToken = new GraphQLObjectType({
+    name: 'RangeToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token matches a range',
     fields: () => ({
-        range: { type:  CommonTypes.ChromRange },
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        range: { type: new GraphQLNonNull(CommonTypes.ChromRange) },
     }),
 });
 
-export const FailedResponse = new GraphQLObjectType({
-    name: 'FailedResponse',
-    description: 'Will be returned if the query does not match anything',
+export const UnknownToken = new GraphQLObjectType({
+    name: 'UnknownToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned if the token does not match anything',
     fields: () => ({
-        failed: { type: GraphQLBoolean }
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        failed: { type: new GraphQLNonNull(GraphQLBoolean) }
     }),
 });
 
-const resolveSearchResponse = d => {
-    const gene = d.gene;
-    const genes = d.genes;
-    const accessions = d.accessions;
-    const snps = d.snps;
-    const cellType = d.cellType;
-    const range = d.range;
-    if (gene) {
-        return SingleGeneResponse;
-    }
-    if (genes) {
-        return MultiGeneResponse;
-    }
-    if (accessions && accessions.length > 0) {
-        return AccessionsResponse;
-    }
-    if (snps && snps.length > 0) {
-        return SNPsResponse;
-    }
-    if (cellType) {
-        return CellTypeResponse;
-    }
-    if (range) {
-        return RangeResponse;
-    }
-    return FailedResponse;
-};
-
-export const SearchResponse = new GraphQLUnionType({
-    name: 'SearchResponse',
-    description: 'A response to a search query',
-    types: [
-        SingleGeneResponse,
-        MultiGeneResponse,
-        AccessionsResponse,
-        SNPsResponse,
-        CellTypeResponse,
-        RangeResponse,
-        FailedResponse
-    ],
-    resolveType: resolveSearchResponse
-});
-
-export default SearchResponse;
+export default SearchToken;

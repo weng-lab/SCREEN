@@ -136,40 +136,75 @@ export async function try_find_gene(assembly, s, usetss, tssDist) {
 }
 
 export async function find_celltype(assembly, q, rev = false) {
+    q = q.trim();
     if (q.length === 0) {
-        return {s: q, cellType: undefined, interpretation: undefined};
+        return {s: q, celltypes: {}};
     }
-    const p = q.trim().split(' ');
-    let interpretation: string | undefined = undefined;
     const tableName = assembly + '_rankCellTypeIndexex';
 
-    for (const i of Array(p.length).keys()) {
-        const s = !rev ? p.slice(0, p.length - i).join(' ') : p.slice(i, p.length).join(' ');
-        let query = `
-            SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
-            FROM ${tableName}
-            WHERE LOWER(cellType) % $1
-            ORDER BY sm DESC
-            LIMIT 1
-        `;
-        let r = await db.any(query, [s]);
-        if (r.length === 0) {
-            query = `
-                SELECT cellType
+    const unused_toks: Array<any> = [];
+    const ret_celltypes = {};
+    let possible: Array<any> = [];
+    outer:
+    while (true) {
+        if (q.length == 0) {
+            break;
+        }
+        const p = q.trim().split(' ');
+        for (const i of Array(p.length).keys()) {
+            const s = p.slice(-1 * (i + 1)).join(' ');
+            const query = `
+                SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
                 FROM ${tableName}
-                WHERE LOWER(cellType) LIKE $1
-                LIMIT 1
+                WHERE LOWER(cellType) % $1
+                ORDER BY sm DESC
+                LIMIT 10
             `;
-            r = await db.any(query, [s]);
+            const r = await db.any(query, [s]);
+            if (r.length === 0) {
+                if (possible.length === 0) {
+                    console.assert(i === 0);
+                    unused_toks.unshift(s);
+                    q = p.slice(0, -1 * (i + 1)).join(' ').trim();
+                } else {
+                    ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                    possible = [];
+                    q = p.slice(0, -1 * i).join(' ').trim();
+                }
+                continue outer;
+            }
+            if (possible.length === 0) {
+                // Remove duplicates
+                r.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+            } else {
+                const newcelltypes = r.map(c => c.celltype);
+                // Only keep results in which the celltype was not previously there, or was there and similarity increased
+                const moresimilar = r.filter(res => {
+                    const oldres = possible.filter(old => res.celltype == old.celltype);
+                    if (oldres.length !== 0) {
+                        // The old results contained this celltype, must make sure prob increased
+                        return res.sm >= oldres[0].sm;
+                    } else {
+                        // The old results did not contain this cell type, is it a better similarity than the best previously
+                        return res.sm > possible[0].sm;
+                    }
+                });
+                if (moresimilar.length === 0) {
+                    // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
+                    ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                    q = p.slice(0, -1 * i).join(' ').trim();
+                    possible = [];
+                    continue outer;
+                } else {
+                    possible = [];
+                    moresimilar.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+                }
+            }
         }
-        if (r.length === 0) {
-            continue;
-        }
-        if (!(r[0][0].toLowerCase().trim() in s.toLowerCase().trim()) || !(s.toLowerCase().trim() in r[0][0].toLowerCase().trim())) {
-            const k = r[0][0].replace('_', ' ');
-            interpretation = `Showing results for "${!interpretation ? k : interpretation + ' ' + k}"`;
-        }
-        return {s: !rev ? p.slice(p.length - i, p.length).join(' ') : p.slice(i, p.length).join(' '), cellType: r[0][0], interpretation};
+        // We fell off the end, but know we have possibles
+        ret_celltypes[p.join(' ')] = possible[0];
+        break;
     }
-    return {s: q, cellType: undefined, interpretation: undefined};
+
+    return {s: unused_toks.join(' '), celltypes: ret_celltypes};
 }
