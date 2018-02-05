@@ -19,6 +19,14 @@
   "user": "regElmViz_usr",
   "port": 5432
  },
+"bedupload": {
+    "incomingDir": "/home/<user>/intersect/incoming",
+    "hg19bed": "/home/<user>/intersect/hg19.sorted.bed",
+    "mm10bed": "/home/<user>/intersect/mm10.sorted.bed"
+},
+"trackhubs": {
+    "host": "http://api.wenglab.org"
+},
  "UI":
  {"_apiServer": "http://megatux.purcaro.com:9006",
   "apiServer": "http://api.wenglab.org/screen/v10",
