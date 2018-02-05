@@ -47,7 +47,6 @@ async function load(assembly) {
 
         rankMethodToCellTypes: rankMethodToCellTypes,
         rankMethodToIDxToCellType: rankMethodToIDxToCellType,
-        rankMethodToIDxToCellTypeZeroBased: undefined,
 
         biosampleTypes: undefined,
         assaymap: undefined,

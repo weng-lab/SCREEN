@@ -1,6 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 
+const { UserError } = require('graphql-errors');
 const cache = require('../db/db_cache').cache;
 
 class Gwas {
@@ -37,41 +38,33 @@ class Gwas {
         return {
             'gwas_study': this.byStudy[study],
             'mainTable': await this.mainTableInfo(study),
-            'topCellTypes': await this.allCellTypes(study)
+            'topCellTypes': undefined /*await this.allCellTypes(study)*/
         };
     }
 
-    async cres(gwas_study, ct) {
+    async cres(gwas_study: string, ct: string | undefined) {
         const c = cache(this.assembly);
         const ctmap = c.ctmap;
         const ctsTable = c.ctsTable;
         const { cres, fieldsOut } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
 
         // accession, snp, geneid, zscores
-        let totalActive = 0;
         const total = cres.length;
-        const activeCres: Array<any> = [];
-
-        const any_lambda = (f, i) => i.some(f);
-
-        for (const a of cres) {
-            if ((a['promoter_zscore'] || 0) > 1.64 || (a['enhancer_zscore'] || 0) > 1.64 || (a['dnase_zscore'] || 0) > 1.64) {
-                totalActive += 1;
-                activeCres.push(a);
-            }
-        }
-
-        const hiddenFields: any = ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore'].filter(e => !(fieldsOut as any).includes(e));
-
-        for (const f of hiddenFields) {
-            for (const r of cres) {
-                r[f] = undefined;
-            }
-        }
+        const activeCres: Array<any> = cres.filter(a =>
+            !ct ||
+            (a.ctspecific['promoter_zscore'] || 0) > 1.64 ||
+            (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
+            (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
         const vcols = {};
-        for (const f of ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore']) {
-            vcols[f] = !hiddenFields.includes(f);
+        if (ct) {
+            for (const f of ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore']) {
+                vcols[f] = activeCres.length > 0 && f in activeCres[0].ctspecific;
+            }
+        } else {
+            for (const f of ['k4me3max', 'k27acmax', 'dnasemax']) {
+                vcols[f] = true;
+            }
         }
 
         return {
@@ -88,16 +81,16 @@ async function gwas(g) {
     };
 }
 
-async function study(g, study) {
+async function study(g: Gwas, study) {
     if (!g.checkStudy(study)) {
-        throw new Error('invalid gwas study');
+        throw new UserError('invalid gwas study');
     }
     return g.mainTable(study);
 }
 
-async function cres(g, study, cellType) {
+async function cres(g: Gwas, study, cellType) {
     if (!g.checkStudy(study)) {
-        throw new Error('invalid gwas study');
+        throw new UserError('invalid gwas study');
     }
     // TODO: check ct!
     return g.cres(study, cellType);

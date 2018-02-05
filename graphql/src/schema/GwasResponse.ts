@@ -25,7 +25,10 @@ export const GwasResponse = new GraphQLObjectType({
         cres: {
             args: {
                 study: { type: new GraphQLNonNull(GraphQLString) },
-                cellType: { type: new GraphQLNonNull(GraphQLString) }
+                cellType: {
+                    description: 'The cell type to get cres for. If null, will get cres for all cell types',
+                    type: GraphQLString
+                }
             },
             type: GraphQLJSON,
             resolve: resolve_gwas_cres

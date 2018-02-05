@@ -45,6 +45,7 @@ const ctSpecific = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
     for (const v of exps) {
         const [name, exp] = v;
         if (!(ct in ctmap[name])) {
+            console.log(ct, 'not in ctmap ', name);
             continue;
         }
         const ctindex = ctmap[name][ct];
@@ -88,11 +89,19 @@ const where = (wheres, params, chrom, start, stop) => {
     }
 };
 
-const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: string | null, stop: string | null) => {
+export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined, start: string | undefined, stop: string | undefined) => {
     const wheres = [];
     const fields = [
-        'maxZ',
         `json_build_object('chrom', cre.chrom, 'start', cre.start, 'end', cre.stop) as range`,
+        'cre.maxZ',
+        'cre.gene_all_id',
+        'cre.gene_pc_id'
+    ];
+    const groupBy = [
+        'cre.chrom',
+        'cre.start',
+        'cre.stop',
+        'cre.maxZ',
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
@@ -111,6 +120,9 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     const ctspecificpairs: Array<string> = [];
     for (const k of Object.keys(ctspecificobj)) {
         ctspecificpairs.push(`'${k}', ${ctspecificobj[k]}`);
+        if (k !== 'ct') {
+            groupBy.push(ctspecificobj[k]);
+        }
     }
     const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctspecific';
 
@@ -125,6 +137,7 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     };
     for (const k of Object.keys(infoFields)) {
         fields.push(`${infoFields[k]} as ${k}`);
+        groupBy.push(infoFields[k]);
     }
 
     const retfields = [ctspecificfield, ...fields].join(', ');
@@ -132,7 +145,7 @@ const buildWhereStatement = (ctmap, j: object, chrom: string | null, start: stri
     if (0 < wheres.length) {
         retwhere = 'WHERE ' + wheres.join(' and ');
     }
-    return { fields: retfields, where: retwhere, params };
+    return { fields: retfields, groupBy: groupBy.join(', '), where: retwhere, params };
 };
 
 
