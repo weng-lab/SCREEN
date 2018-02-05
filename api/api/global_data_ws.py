@@ -39,6 +39,15 @@ class GlobalDataController:
             cherrypy.response.headers['Content-Type'] = 'application/json'
             return json.dumps(files)
 
+        if "index2" == assembly:
+            ret = {"agnostic": [],
+                   "specific": []}
+            for assembly in Config.assemblies:
+                ret["agnostic"] += self.cacheW[assembly].filesList2["agnostic"]
+                ret["specific"] += self.cacheW[assembly].filesList2["specific"]
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            return json.dumps(ret)
+
         cache = self.cacheW[assembly]
         g = cache.global_data(ver)
         if "0" == ver:

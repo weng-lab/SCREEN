@@ -81,6 +81,8 @@ class CachedObjects:
             self.tfHistCounts["cistrome"] = self.pgSearch.tfHistCounts(eset="cistrome")
 
         self.creBigBeds = self.pgSearch.creBigBeds()
+        self.creBeds = self.pgSearch.creBeds()
+        self.filesList2 = self.indexFilesTab2(self.creBeds)
 
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
@@ -110,6 +112,33 @@ class CachedObjects:
             ret.append(d)
         return ret
 
+    def indexFilesTab2(self, rows):
+        ret = {"agnostic": [],
+               "specific": []}
+        for biosample, typAcc in rows.iteritems():
+            celltypedesc = ''
+            tissue = ''
+            if "_agnostic" != biosample:
+                celltypedesc = self.datasets.byCellType[biosample][0]["cellTypeDesc"]
+                tissue = self.datasets.byCellType[biosample][0]["tissue"]
+            row = {"celltypename": biosample,
+                   "celltypedesc": celltypedesc,
+                   "tissue": tissue,
+                   "assembly": self.assembly,
+                   "5group": "NA",
+                   "9state-H3K27ac": "NA",
+                   "9state-H3K4me3": "NA",
+                   "9state-CTCF": "NA",
+                   "9state-DNase": "NA"
+            }
+            for typ, acc in typAcc.iteritems():
+                row[typ] = acc
+            if "_agnostic" == biosample:
+                ret["agnostic"].append(row)
+            else:
+                ret["specific"].append(row)
+        return ret
+
     def global_data(self, ver):
         datasets = self.datasets
         return {
@@ -123,7 +152,8 @@ class CachedObjects:
             "geBiosampleTypes": self.geBiosampleTypes,
             "helpKeys": self.help_keys,
             "colors": self.colors,
-            "creBigBedsByCellType": self.creBigBeds
+            "creBigBedsByCellType": self.creBigBeds,
+            "creBedsByCellType": self.creBeds
         }
 
 
