@@ -1,5 +1,6 @@
 import * as Common from './db_common';
 import { db } from './db';
+import { buildWhereStatement } from './db_cre_table';
 
 export async function gwasStudies(assembly) {
     const tableName = assembly + '_gwas_studies';
@@ -40,8 +41,22 @@ export async function numCresOverlap(assembly, gwas_study) {
 export async function gwasEnrichment(assembly, gwas_study) {
     const tableNamefdr = assembly + '_gwas_enrichment_fdr';
     const tableNamepval = assembly + '_gwas_enrichment_pval';
+    const column_check = `
+        SELECT EXISTS (SELECT 1
+        FROM information_schema.columns
+        WHERE table_name='${tableNamefdr}' and column_name='${gwas_study.toLowerCase()}')
+        UNION ALL
+        SELECT EXISTS (SELECT 1
+        FROM information_schema.columns
+        WHERE table_name='${tableNamepval}' and column_name='${gwas_study.toLowerCase()}');
+    `;
+    const colcheck = await db.any(column_check);
+    if (colcheck.some(r => !r.exists)) {
+        console.log('Not exists.', gwas_study);
+        return undefined;
+    }
     const q = `
-        SELECT fdr.expID, fdr.cellTypeName, fdr.biosample_summary,
+        SELECT fdr.expID, fdr.cellTypeName as value, fdr.biosample_summary,
         fdr.${gwas_study} as fdr,
         pval.${gwas_study} as pval
         FROM ${tableNamefdr} fdr
@@ -50,97 +65,39 @@ export async function gwasEnrichment(assembly, gwas_study) {
         ORDER BY fdr DESC, pval
     `;
     const res = await db.any(q);
-    const cols = ['expID', 'cellTypeName', 'biosample_summary', 'fdr', 'pval'];
+    const cols = ['expID', 'value', 'biosample_summary', 'fdr', 'pval'];
     return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {}));
 }
 
 const infoFields = {
     'accession': 'cre.accession',
     'isproximal': 'cre.isproximal',
+    'dnasemax': 'cre.dnase_max',
     'k4me3max': 'cre.h3k4me3_max',
     'k27acmax': 'cre.h3k27ac_max',
     'ctcfmax': 'cre.ctcf_max',
     'concordant': 'cre.concordant'
 };
 
-function getInfo() {
-    const infopairs: Array<string> = [];
+function getInfo(fields) {
     for (const k of Object.keys(infoFields)) {
-        infopairs.push(`'${k}', ${infoFields[k]}`);
+        fields.push(`${infoFields[k]} as ${k}`);
     }
-    const infofield = 'json_build_object(' + infopairs.join(',') + ') as info';
-    return infofield;
 }
 
-export async function gwasPercentActive(assembly, gwas_study, ct, ctmap, ctsTable) {
-    const fields = [
-        'cre.accession',
-        'array_agg(snp) as snps',
-        getInfo(),
-        'infoAll.approved_symbol AS geneid',
-        'cre.start',
-        'cre.stop',
-        'cre.chrom'
-    ];
-    const groupBy = [
-        'cre.accession',
-        'cre.start',
-        'cre.stop',
-        'cre.chrom',
-        'infoAll.approved_symbol'
-    ].concat(Object.keys(infoFields).map(k => infoFields[k]));
-
-    if (ct in ctsTable) {
-        fields.push(`cre.creGroupsSpecific[${ctsTable[ct]}] AS cts`);
-        groupBy.push(`cre.creGroupsSpecific[${ctsTable[ct]}]`);
-    } else {
-        fields.push('0::int AS cts');
-    }
-
-    const fieldsOut: any = ['accession', 'snps', 'info', 'geneid', 'start', 'stop', 'chrom', 'cts'];
-    for (const assay of [
-            ['dnase', 'dnase'],
-            ['promoter', 'h3k4me3'],
-            ['enhancer', 'h3k27ac'],
-            ['ctcf', 'ctcf']
-    ]) {
-        if (!(ct in ctmap[assay[0]])) {
-            continue;
-        }
-        const cti = ctmap[assay[0]][ct];
-        fieldsOut.push(assay[0] + '_zscore');
-        fields.push(`cre.${assay[1]}_zscores[${cti}] AS ${assay[0]}_zscore`);
-        groupBy.push(`cre.${assay[1]}_zscores[${cti}]`);
-    }
-
+export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, ctmap, ctsTable) {
+    const { fields, groupBy, where, params } = buildWhereStatement(ctmap, { cellType: ct }, undefined, undefined, undefined);
     const q = `
-        SELECT ${fields.join(', ')}
+        SELECT ${fields}, array_agg(snp) as snps, infoAll.approved_symbol AS geneid
         FROM ${assembly}_cre_all as cre,
         ${assembly}_gwas_overlap as over,
         ${assembly}_gene_info as infoAll
         WHERE cre.gene_all_id[1] = infoAll.geneid
         AND cre.accession = over.accession
         AND over.authorPubmedTrait = $1
-        GROUP BY ${groupBy.join(', ')}
+        GROUP BY ${groupBy}, infoAll.approved_symbol
     `;
+
     const res = await db.any(q, [gwas_study]);
-    const ret = res.map(r => fieldsOut.reduce((obj, key) => {
-        let fieldKey = key;
-        let outKey = key;
-        if (Array.isArray(key)) {
-            fieldKey = key[1];
-            outKey = key[0];
-            console.log(r[fieldKey]);
-        }
-        return ({ ...obj, [outKey]: r[fieldKey] });
-    }, {}));
-    for (const k of Object.keys(ret)) {
-        const newObj = ret[k];
-        newObj['ctspecific'] = newObj['ctspecific'] || {};
-        for (const x of ['dnase', 'promoter', 'enhancer', 'ctcf']) {
-            newObj['ctspecific'][`${x}_zscore`] = ret[k][`${x}_zscore`];
-        }
-        ret[k] = newObj;
-    }
-    return { cres: ret, fieldsOut };
+    return { cres: res.map(r => ({ ...r, assembly })) , fieldsOut: [] };
 }
