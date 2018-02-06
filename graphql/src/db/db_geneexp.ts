@@ -26,6 +26,7 @@ export class GeneExpression {
         this.itemsByRID = {};
     }
 
+    // TODO: use HelperGrouper
     groupByTissue(rowsin, skey) {
         const sorter = (a, b) => {
             // sort by tissue, then TPM/FPKM descending

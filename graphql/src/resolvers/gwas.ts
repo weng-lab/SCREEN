@@ -38,7 +38,7 @@ class Gwas {
         return {
             'gwas_study': this.byStudy[study],
             'mainTable': await this.mainTableInfo(study),
-            'topCellTypes': undefined /*await this.allCellTypes(study)*/
+            'topCellTypes': await this.allCellTypes(study)
         };
     }
 
