@@ -1,5 +1,6 @@
 import { db } from './db';
 import TissueColors from '../tissuecolors';
+import { natsorter } from '../utils';
 
 const fixedmap = {
     'limb': 'limb',
@@ -51,13 +52,14 @@ export class GeneExpression {
             }
             ret[t]['items'].push(row['rID']);
         }
-        return ret;
+        const sortedkeys = Object.keys(ret).sort(natsorter);
+        return sortedkeys.map(tissue => ret[tissue]);
     }
 
     groupByTissueMax(rowsin, skey) {
         let rows = rowsin.slice().sort(tissueSort);
 
-        let ret = {};
+        const ret = {};
         for (const row of rows) {
             if (!(row['rID'] in this.itemsByRID)) {
                 this.itemsByRID[row['rID']] = row;
@@ -82,36 +84,23 @@ export class GeneExpression {
 
         const sorter = (a, b) => b['items'][0][skey] - a['items'][0][skey];
         rows.sort(sorter);
-
-        ret = {};
-        rows.forEach((row, idx) => {
-            const t = row['name'];
-            const k = idx.toLocaleString('en', {minimumIntegerDigits: 3}) + '_' + t;
-            ret[k] = row;
-            ret[k]['items'] = row['items'].map(x => x['rID']);
-        });
-        return ret;
+        return rows.map(row => ({ ...row, items: row.items.map(x => x['rID']) }));
     }
 
     sortByExpression(rowsin, skey) {
-        const rows = rowsin.slice().sort(tpmSort(skey));
-
-        const ret = {};
-        rows.forEach((row, idx) => {
+        return rowsin.slice().sort(tpmSort(skey)).map((row, idx) => {
             if (!(row['rID'] in this.itemsByRID)) {
                 this.itemsByRID[row['rID']] = row;
             }
             const t = row['tissue'];
             const c = TissueColors.getTissueColor(t);
-            const k = idx.toLocaleString('en', {minimumIntegerDigits: 3}) + '_' + t;
-            ret[k] = {
-                'name': k,
+            return {
+                'name': t + idx,
                 'displayName': t,
                 'color': c,
                 'items': [row['rID']]
             };
         });
-        return ret;
     }
 
     process(rows) {
