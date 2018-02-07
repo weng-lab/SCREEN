@@ -22,7 +22,12 @@ class Gwas {
 
     numLdBlocksOverlap = (gwas_study) => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = (gwas_study) => DbGwas.numCresOverlap(this.assembly, gwas_study);
-    allCellTypes = (gwas_study) => DbGwas.gwasEnrichment(this.assembly, gwas_study);
+    allCellTypes = async (gwas_study) => {
+        const c = cache(this.assembly);
+        const cts = await DbGwas.gwasEnrichment(this.assembly, gwas_study);
+        const ret = cts ? cts.map(ct => ({ ...ct, ct: c.datasets.byCellTypeValue[ct.ct] })) : undefined;
+        return ret;
+    }
 
     async mainTableInfo(gwas_study) {
         const total = await this.totalLDblocks(gwas_study);
