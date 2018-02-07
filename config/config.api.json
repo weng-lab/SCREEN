@@ -9,7 +9,7 @@
   "ribbon": "beta",
   "googleAnalytics": false,
   "memcache": false,
-  "cassandra": ["localhost"],
+  "cassandra": ["pgs_cassandra"],
   "redisHost": "127.0.0.1"
  },
  "UI":
