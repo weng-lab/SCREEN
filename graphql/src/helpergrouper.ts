@@ -36,6 +36,7 @@ export default class HelperGrouper {
             const t = row['tissue'];
             if (!(t in ret)) {
                 ret[t] = {
+                    'name': t,
                     'tissue': t,
                     'color': row['color'],
                     'items': []
@@ -44,11 +45,11 @@ export default class HelperGrouper {
             ret[t]['items'].push(row['id']);
         }
 
-
         for (const k of Object.keys(ret)) {
             ret[k]['items'].sort(HelperGrouper.sortByKeyThenTissue(skey)).reverse();
         }
-        return ret;
+        const sortedkeys = Object.keys(ret).sort(natsorter);
+        return sortedkeys.map(tissue => ret[tissue]);
     }
 
     static pad = (n, width) => {
@@ -59,11 +60,12 @@ export default class HelperGrouper {
     groupByTissueMax(skey) {
         this.rows.sort(HelperGrouper.sortByTissue);
 
-        let ret: any = {};
+        const ret: any = {};
         for (const row of this.rows) {
             const t = row['tissue'];
             if (!(t in ret)) {
                 ret[t] = {
+                    'name': t,
                     'tissue': t,
                     'color': row['color'],
                     'items': [row['id']]
@@ -78,28 +80,17 @@ export default class HelperGrouper {
         const sorter = (a, b) => natsorter(this.byID[a['items'][0]][skey], this.byID[b['items'][0]][skey]);
         rows.sort(sorter).reverse();
 
-        ret = {};
-        rows.forEach((row, idx) => {
-            const t = row['tissue'];
-            const k = HelperGrouper.pad(idx, 3) + '_' + t;
-            ret[k] = row;
-        });
-        return ret;
+        return rows;
     }
 
     sortByValue(skey) {
         this.rows.sort(HelperGrouper.sortByKey(skey)).reverse();
 
-        const ret = new Map();
-        this.rows.forEach((row, idx) => {
-            const t = row['tissue'];
-            const k = HelperGrouper.pad(idx, 3) + '_' + t;
-            ret[k] = {
-                'tissue': t,
-                'color': row['color'],
-                'items': [row['id']]
-            };
-        });
-        return ret;
+        return this.rows.map((row, idx) => ({
+            'name': idx + '_' + row['tissue'],
+            'tissue': row['tissue'],
+            'color': row['color'],
+            'items': [row['id']]
+        }));
     }
 }
