@@ -68,9 +68,8 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
             raise Exception("missing file: " + mergedFnp)
 
         cols = ["accession", "chrom"] + fileIDs
-        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t' AND NUMPROCESSES = {cores} AND MAXBATCHSIZE = 1;""".format(
+        q = """COPY {tn} ({fields}) from '{fn}' WITH DELIMITER = '\\t';""".format(
             tn=tableName,
-            cores=self.cores,
             fields=",".join(cols),
             fn=mergedFnp)
         outF.write(q + '\n\n')
