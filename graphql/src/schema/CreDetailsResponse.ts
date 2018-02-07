@@ -6,8 +6,48 @@ import {
 } from 'graphql';
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
+import { GraphQLFloat } from 'graphql/type/scalars';
 const GraphQLJSON = require('graphql-type-json');
 
+
+export const AssayValues = new GraphQLObjectType({
+    name: 'AssayValues',
+    description: 'Gets specific values for an assay',
+    fields: () => ({
+        ct: {
+            type: CommonTypes.CellTypeInfo
+        },
+        one: {
+            type: GraphQLFloat
+        },
+        two: {
+            type: GraphQLFloat
+        }
+    })
+});
+
+export const TopTissuesResponse = new GraphQLObjectType({
+    name: 'TopTissuesResponse',
+    description: 'Gets all celltype-specific data for this ccRE',
+    fields: () => ({
+        ctcf: {
+            description: 'CTCF ChIP-seq data',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        },
+        dnase: {
+            description: 'DNase data',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        },
+        promoter: {
+            description: 'H3K4me3 ChIP-seq data',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        },
+        enhancer: {
+            description: 'H3K27ac ChIP-seq data',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        },
+    })
+});
 
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
@@ -20,7 +60,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         topTissues: {
             description: 'Returns celltype-specific experiment data',
-            type: GraphQLJSON,
+            type: TopTissuesResponse,
             resolve: CreDetailsResolver.resolve_cre_topTissues
         },
         nearbyGenomic: {

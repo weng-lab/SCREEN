@@ -279,6 +279,8 @@ export async function datasets(assembly) {
             byCellType[ctn] = {
                 name: r.name,
                 value: r.value,
+                // Sometimes name is null, so fallback to value
+                displayName: r.name || r.value,
                 isde: r.isde,
                 synonyms: r.synonyms,
                 assays: [],
@@ -286,6 +288,7 @@ export async function datasets(assembly) {
         }
         const ct = byCellType[ctn];
         console.assert(ct.name === r.name, 'Cell type name does not match!');
+        console.assert(ct.value === r.value, 'Cell type value does not match!', ct.value, r.value);
         console.assert(ct.isde === r.isde, 'Isde does not match!');
         // We aren't going to check every element, but we can at least check length
         console.assert(ct.synonyms.length === r.synonyms.length, 'Synonyms length does not match!');
@@ -298,6 +301,7 @@ export async function datasets(assembly) {
             biosample_type: r.biosample_type,
         });
     }
+    ret.byCellTypeValue = byCellType;
 
     ret.byFileID = rows.map(r => r['fileid']);
 

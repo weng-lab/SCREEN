@@ -91,7 +91,7 @@ async function loadGlobal() {
 let caches: any = {};
 let globalcache: any = {};
 let loaded = false;
-async function loadCaches() {
+export async function loadCaches() {
     if (loaded) {
         return;
     }
@@ -106,13 +106,9 @@ async function loadCaches() {
     console.log('Cache loaded: ', Object.keys(caches));
 }
 
-function cache(assembly) {
+export function cache(assembly) {
     return caches[assembly] || {};
 }
-
-exports.loadCaches = loadCaches;
-exports.cache = cache;
-
 
 const Compartments = [
     'cell', 'nucleoplasm', 'cytosol',
@@ -120,7 +116,7 @@ const Compartments = [
     'nucleolus'];
 
 const chrom_lengths = require('../constants').chrom_lengths;
-function global_data(assembly) {
+export function global_data(assembly) {
     const c = cache(assembly);
     const datasets = c.datasets;
     return {
@@ -136,14 +132,12 @@ function global_data(assembly) {
         'inputData': c.inputData,
     };
 }
-exports.global_data = global_data;
 
-function global_data_global() {
+export function global_data_global() {
     return { ...globalcache };
 }
-exports.global_data_global = global_data_global;
 
-function lookupEnsembleGene(assembly, s) {
+export function lookupEnsembleGene(assembly, s) {
     const c = cache(assembly);
     let symbol = c.ensemblToSymbol[s];
     let strand = c.ensemblToStrand[s];
@@ -162,7 +156,6 @@ function lookupEnsembleGene(assembly, s) {
     }
     return { symbol: s, strand: '' };
 }
-exports.lookupEnsembleGene = lookupEnsembleGene;
 
 loadCaches().catch(e => {
     console.log(e);

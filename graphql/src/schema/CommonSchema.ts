@@ -315,3 +315,29 @@ export const cRE = new GraphQLObjectType({
         },
     })
 });
+
+export const CellTypeAssay = new GraphQLObjectType({
+    name: 'CellTypeAssay',
+    description: 'Info on a single assay from a cell type',
+    fields: () => ({
+        assay: { type: GraphQLString },
+        expid: { type: GraphQLString },
+        fileid: { type: GraphQLString },
+        tissue: { type: GraphQLString },
+        biosample_summary: { type: GraphQLString },
+        biosample_type: { type: GraphQLString },
+    })
+});
+
+export const CellTypeInfo = new GraphQLObjectType({
+    name: 'CellTypeInfo',
+    description: 'Info on a cell type used in SCREEN and in ccREs',
+    fields: () => ({
+        name: { type: GraphQLString },
+        value: { type: new GraphQLNonNull(GraphQLString) },
+        displayName: { type: new GraphQLNonNull(GraphQLString) },
+        isde: { type: new GraphQLNonNull(GraphQLBoolean) },
+        synonyms: { type: new GraphQLList(GraphQLString) },
+        assays: { type: new GraphQLList(CellTypeAssay) },
+    })
+});

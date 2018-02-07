@@ -9,31 +9,6 @@ import * as CommonTypes from './CommonSchema';
 import { resolve_globals_assembly } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
-export const CellTypeAssay = new GraphQLObjectType({
-    name: 'CellTypeAssay',
-    description: 'Info on a single assay from a cell type',
-    fields: () => ({
-        assay: { type: GraphQLString },
-        expid: { type: GraphQLString },
-        fileid: { type: GraphQLString },
-        tissue: { type: GraphQLString },
-        biosample_summary: { type: GraphQLString },
-        biosample_type: { type: GraphQLString },
-    })
-});
-
-export const CellTypeInfo = new GraphQLObjectType({
-    name: 'CellTypeInfo',
-    description: 'Info on every cell type used in SCREEN and in ccREs',
-    fields: () => ({
-        name: { type: GraphQLString },
-        value: { type: GraphQLString },
-        isde: { type: GraphQLBoolean },
-        synonyms: { type: new GraphQLList(GraphQLString) },
-        assays: { type: new GraphQLList(CellTypeAssay) },
-    })
-});
-
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
     description: 'Assembly-specific global data',
@@ -48,7 +23,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         },
         cellTypeInfoArr: {
             description: 'Get info on all cell types used and assays used for ccRE data',
-            type: new GraphQLList(CellTypeInfo)
+            type: new GraphQLList(CommonTypes.CellTypeInfo)
         },
         chromCounts: {
             description: 'Returns the numbers of ccREs keyed by chromosome',

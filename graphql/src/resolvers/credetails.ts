@@ -32,8 +32,8 @@ class CRE {
         // ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         const rmToCts = c.rankMethodToCellTypes;
 
-        // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
         const coord = await this.coord();
+        // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
 
         const get_rank = (ct, d) => ct in d ? d[ct] : -11.0;
@@ -55,7 +55,7 @@ class CRE {
         };
 
         const ctToTissue = (ct) => {
-            const ctinfo = c.datasets.globalCellTypeInfoArr.filter(c => c.name === ct)[0];
+            const ctinfo = c.datasets.byCellTypeValue[ct];
             return ctinfo ? ctinfo['tissue'] : '';
         };
 
@@ -64,7 +64,7 @@ class CRE {
             const oneAssay = arrToCtDict(ranks[rm1.toLowerCase()], rmToCts[rm1]);
             for (const ct of Object.keys(oneAssay)) {
                 const v = oneAssay[ct];
-                const r = {'tissue': ctToTissue(ct), 'ct': ct, 'one': v};
+                const r = {'tissue': ctToTissue(ct), 'ct': c.datasets.byCellTypeValue[ct], 'one': v};
                 ret.push(r);
             }
             return ret;
@@ -78,7 +78,7 @@ class CRE {
                 const v = oneAssay[ct];
                 const r = {
                     'tissue': ctToTissue(ct),
-                    'ct': ct,
+                    'ct': c.datasets.byCellTypeValue[ct],
                     'one': v,
                     'two': get_rank(ct, multiAssay)
                 };
