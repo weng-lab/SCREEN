@@ -81,7 +81,7 @@ async function loadGlobal() {
 
     const global_cache = {
         colors: colors,
-        helpKeys: helpKeys,
+        helpKeys: { all: helpKeys },
         files: files,
         inputData: inputData,
     };

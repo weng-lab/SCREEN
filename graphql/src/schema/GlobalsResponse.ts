@@ -6,7 +6,7 @@ import {
     GraphQLNonNull,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { resolve_globals_assembly } from '../resolvers/globals';
+import { resolve_globals_assembly, resolve_help_key } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
@@ -56,11 +56,35 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     })
 });
 
+export const HelpKeys = new GraphQLObjectType({
+    name: 'HelpKeys',
+    fields: () => ({
+        all: { type: GraphQLJSON },
+        helpKey: {
+            description: 'Provides the help text for a single helpKey',
+            args: {
+                key: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            type: new GraphQLNonNull(HelpKey),
+            resolve: resolve_help_key,
+        },
+    })
+});
+
+export const HelpKey = new GraphQLObjectType({
+    name: 'HelpKey',
+    description: 'Describes a response to a single helpkey',
+    fields: () => ({
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        summary: { type: new GraphQLNonNull(GraphQLString) },
+    })
+});
+
 export const GlobalsResponse = new GraphQLObjectType({
     name: 'Globals',
     description: 'Global data',
     fields: () => ({
-        helpKeys: { type: GraphQLJSON },
+        helpKeys: { type: HelpKeys },
         colors: { type: GraphQLJSON },
         files: { type: GraphQLJSON },
         inputData: { type: GraphQLJSON },
