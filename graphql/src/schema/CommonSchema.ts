@@ -323,7 +323,6 @@ export const CellTypeAssay = new GraphQLObjectType({
         assay: { type: GraphQLString },
         expid: { type: GraphQLString },
         fileid: { type: GraphQLString },
-        tissue: { type: GraphQLString },
         biosample_summary: { type: GraphQLString },
         biosample_type: { type: GraphQLString },
     })
@@ -335,6 +334,7 @@ export const CellTypeInfo = new GraphQLObjectType({
     fields: () => ({
         name: { type: GraphQLString },
         value: { type: new GraphQLNonNull(GraphQLString) },
+        tissue: { type: GraphQLString },
         displayName: { type: new GraphQLNonNull(GraphQLString) },
         isde: { type: new GraphQLNonNull(GraphQLBoolean) },
         synonyms: { type: new GraphQLList(GraphQLString) },
