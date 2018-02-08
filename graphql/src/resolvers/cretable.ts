@@ -28,6 +28,7 @@ async function cre_table(data, assembly, pagination) {
     results.cres = results.cres.map(r => mapcre(assembly, r, lookup));
     if ('cellType' in data && data['cellType']) {
         results['rfacets'] = rfacets_active(c.ctmap, data);
+        results['ct'] = c.datasets.byCellTypeValue[data.cellType];
     } else {
         results['rfacets'] = ['dnase', 'promoter', 'enhancer', 'ctcf'];
     }

@@ -28,6 +28,10 @@ export const DataResponse = new GraphQLObjectType({
             description: 'Returns the experiments that are available in this celltype, if defined, or all experiments',
             type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         },
+        ct: {
+            description: 'The celltype that this data is related to, or null if not applicable',
+            type: CommonTypes.CellTypeInfo
+        }
     })
 });
 
