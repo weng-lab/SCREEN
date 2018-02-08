@@ -112,6 +112,7 @@ def run(args, DBCONN):
         cmds = ['CQLSH_HOST="{hosts}"'.format(hosts=Config.cassandra[0]),
                 "cqlsh",
                 "-f", queryFnp]
+        print(' '.join(cmds))
         if args.yes or GetYesNoToQuestion.immediate("import data?"):
             print(Utils.runCmds(cmds))
 
