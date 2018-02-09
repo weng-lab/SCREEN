@@ -282,13 +282,13 @@ class CompositeExpTrack(object):
         files = Helpers.bigWigFilters(self.assembly, exp)
         expID = exp.encodeID
 
+        ret = []
         if not files:
             eprint(expID)
-            raise Exception("expected a file...")
-        ret = []
-        for f in files:
-            t = BigWigTrack(self.assembly, exp, f, self.parent, active)
-            ret.append(t)
+        else:
+            for f in files:
+                t = BigWigTrack(self.assembly, exp, f, self.parent, active)
+                ret.append(t)
         return ret
 
     def _addExpBestBed(self, exp, active):

@@ -85,9 +85,7 @@ class TrackhubDb:
         fnp = paths.path(self.assembly, self.assembly + "-Look-Up-Matrix.txt")
         printt("parsing", fnp)
 
-        url = os.path.join("http://api.wenglab.org/screenbook/screen10/globals/",
-                           self.assembly, "creBigBedsByCellType")
-        creBigBeds = requests.get(url).json()["creBigBedsByCellType"]
+        creBigBeds = self.cache["creBigBedsByCellType"]
 
         self.lookupByExp = {}
         for ct, assays in self.cache["byCellType"].iteritems():
@@ -306,7 +304,7 @@ def main():
         printt("************************", assembly)
 
         printt("loading cache from API...")
-        cacheUrl = "http://api.wenglab.org/screen/v10/globalData/0/" + assembly
+        cacheUrl = "http://api.wenglab.org/screenv10_python/globalData/0/" + assembly
         ws = requests.get(cacheUrl)
         cache = ws.json()
         printt("done")
