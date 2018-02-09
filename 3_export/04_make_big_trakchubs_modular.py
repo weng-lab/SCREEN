@@ -18,6 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
 from files_and_paths import Dirs
 from utils import Utils, eprint, AddPath, printt, printWroteNumLines
 from metadataws import MetadataWS
+from files_and_paths import Urls
 
 AddPath(__file__, '../common')
 from constants import paths
@@ -36,7 +37,7 @@ def merge_two_dicts(x, y):
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
 
-Host = "http://192.168.1.46:9008/metadata"
+Host = Urls.metadataWebService #"http://192.168.1.46:9008/metadata"
 BaseDir = '/home/mjp/public_html/ucsc'
 
 
