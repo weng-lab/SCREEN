@@ -37,8 +37,8 @@ def merge_two_dicts(x, y):
     z.update(y)    # modifies z with y's keys and values & returns None
     return z
 
-Host = Urls.metadataWebService #"http://192.168.1.46:9008/metadata"
-BaseDir = '/home/mjp/public_html/ucsc'
+Host = Urls.metadataWebService
+BaseDir = '/home/mjp/encode_big_trackhub/'
 
 
 class Lookup:
@@ -52,8 +52,6 @@ class Lookup:
         r = self.btid in ["hepatocyte_derived_from_H9",
                           "bipolar_spindle_neuron_derived_from_induced_pluripotent_stem_cell",
                           "B_cell_adult"]
-        # if r:
-        #    print("active biosample:", self.btid)
         return r
 
 class TrackhubDb:
