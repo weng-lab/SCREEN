@@ -61,7 +61,8 @@ class Gwas {
             (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
             (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
-        return activeCres;
+        // TODO: this isn't actually a full cRE, so things like nearbygenes won't resolve
+        return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
     }
 }
 
@@ -92,15 +93,15 @@ export const resolve_gwas_gwas: GraphQLFieldResolver<any, any> = (source, args, 
     return gwas(g);
 };
 
-export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
+export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const g = source.gwas_obj;
     const studyarg = args.study;
-    return study(g, studyarg);
+    return { ...await study(g, studyarg), study: studyarg, gwas_obj: g };
 };
 
 export const resolve_gwas_cres: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
     const g = source.gwas_obj;
-    const study = args.study;
+    const study = source.study;
     const cellType = args.cellType;
     return cres(g, study, cellType);
 };

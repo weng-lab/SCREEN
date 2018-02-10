@@ -31,6 +31,22 @@ export const GwasCellType = new GraphQLObjectType({
     })
 });
 
+export const GwasCRE = new GraphQLObjectType({
+    name: 'GwasCRE',
+    description: 'Contains a cRE for Gwas and associated data',
+    fields: () => ({
+        cRE: {
+            type: CommonTypes.cRE
+        },
+        geneid: {
+            type: GraphQLString
+        },
+        snps: {
+            type: new GraphQLList(GraphQLString)
+        },
+    })
+});
+
 export const GwasStudyResponse = new GraphQLObjectType({
     name: 'GwasStudy',
     description: 'GWAS study data',
@@ -44,6 +60,16 @@ export const GwasStudyResponse = new GraphQLObjectType({
         topCellTypes: {
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCellType)))
         },
+        cres: {
+            args: {
+                cellType: {
+                    description: 'The cell type to get cres for. If null, will get cres for all cell types',
+                    type: GraphQLString
+                }
+            },
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCRE))),
+            resolve: resolve_gwas_cres
+        }
     })
 });
 
@@ -62,17 +88,6 @@ export const GwasResponse = new GraphQLObjectType({
             type: GwasStudyResponse,
             resolve: resolve_gwas_study
         },
-        cres: {
-            args: {
-                study: { type: new GraphQLNonNull(GraphQLString) },
-                cellType: {
-                    description: 'The cell type to get cres for. If null, will get cres for all cell types',
-                    type: GraphQLString
-                }
-            },
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
-            resolve: resolve_gwas_cres
-        }
     }),
 });
 
