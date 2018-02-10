@@ -70,7 +70,7 @@ export const GwasResponse = new GraphQLObjectType({
                     type: GraphQLString
                 }
             },
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
             resolve: resolve_gwas_cres
         }
     }),

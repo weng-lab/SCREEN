@@ -1,4 +1,4 @@
-import { getCreTable, rfacets_active } from '../db/db_cre_table';
+import { getCreTable } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
 
@@ -27,10 +27,7 @@ async function cre_table(data, assembly, pagination) {
 
     results.cres = results.cres.map(r => mapcre(assembly, r, lookup));
     if ('cellType' in data && data['cellType']) {
-        results['rfacets'] = rfacets_active(c.ctmap, data);
         results['ct'] = c.datasets.byCellTypeValue[data.cellType];
-    } else {
-        results['rfacets'] = ['dnase', 'promoter', 'enhancer', 'ctcf'];
     }
     return results;
 }

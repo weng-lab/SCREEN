@@ -202,14 +202,6 @@ export const PaginationParameters = new GraphQLInputObjectType({
     })
 });
 
-export const cREInfo = new GraphQLObjectType({
-    name: 'info',
-    description: 'Includes common ccRE info.',
-    fields: {
-
-    },
-});
-
 export const genes = new GraphQLObjectType({
     name: 'genes',
     description: 'Nearby genes',
@@ -250,14 +242,6 @@ export const ctSpecific = new GraphQLObjectType({
             type: GraphQLFloat
         },
     }
-});
-
-export const cREData = new GraphQLObjectType({
-    name: 'ccREData',
-    description: 'Data related to this ccRE',
-    fields: () => ({
-
-    })
 });
 
 export const cRE = new GraphQLObjectType({

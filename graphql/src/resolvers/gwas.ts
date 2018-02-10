@@ -61,21 +61,7 @@ class Gwas {
             (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
             (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
-        const vcols = {};
-        if (ct) {
-            for (const f of ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore']) {
-                vcols[f] = activeCres.length > 0 && f in activeCres[0].ctspecific;
-            }
-        } else {
-            for (const f of ['k4me3max', 'k27acmax', 'dnasemax']) {
-                vcols[f] = true;
-            }
-        }
-
-        return {
-            'accessions': activeCres,
-            'vcols': vcols
-        };
+        return activeCres;
     }
 }
 
