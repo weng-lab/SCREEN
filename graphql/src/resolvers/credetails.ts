@@ -212,12 +212,10 @@ export async function resolve_credetails(source, args, context, info) {
 
 export async function resolve_cre_info(source, args, context, info) {
     const cre: CRE = source.cre;
-    const coord = await cre.coord();
     const c = cache(cre.assembly);
-    const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession], range: coord}, {});
-    const lookup = c.geneIDsToApprovedSymbol;
+    const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession]}, {});
     if (res['total'] > 0) {
-        return mapcre(cre.assembly, res['cres'][0], lookup);
+        return mapcre(cre.assembly, res['cres'][0]);
     }
     return {};
 }

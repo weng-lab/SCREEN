@@ -1,5 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
+import { mapcre } from './cretable';
 
 const { UserError } = require('graphql-errors');
 const cache = require('../db/db_cache').cache;
@@ -51,7 +52,7 @@ class Gwas {
         const c = cache(this.assembly);
         const ctmap = c.ctmap;
         const ctsTable = c.ctsTable;
-        const { cres, fieldsOut } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
+        const { cres } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
 
         // accession, snp, geneid, zscores
         const total = cres.length;
@@ -61,8 +62,7 @@ class Gwas {
             (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
             (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
-        // TODO: this isn't actually a full cRE, so things like nearbygenes won't resolve
-        return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
+        return activeCres.map(c => ({ cRE: mapcre(this.assembly, c), geneid: c.geneid, snps: c.snps }));
     }
 }
 

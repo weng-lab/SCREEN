@@ -99,5 +99,5 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     `;
 
     const res = await db.any(q, [gwas_study]);
-    return { cres: res.map(r => ({ ...r, assembly })) , fieldsOut: [] };
+    return { cres: res.map(r => ({ ...r, assembly })) };
 }
