@@ -2,7 +2,7 @@
  {"version": 10,
   "db_host": "pg_gwasws",
   "db_usr": "postgres",
-  "db": "screenv10",
+  "db": "gwasws",
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 4,
   "minipeaks_nbins": 0,
