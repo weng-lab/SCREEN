@@ -21,11 +21,23 @@ from utils import Utils, printWroteNumLines, printt
 
 
 class GWASmaf:
-    def __init__(self, curs, fnp = "/home/pratth/data/zusers/moorej3/haploreg_v4.0.MAF.bed", tn = "eur_maf"):
+    def __init__(self, curs, fnp, tn):
         self.curs = curs
         self.tableName = tn
-        with open(fnp, 'r') as f:
-            with open("/tmp/" + os.path.basename(fnp), 'wb') as o:
+        self.origFnp = fnp
+
+    def run(self):
+        tf = tempfile.NamedTemporaryFile(delete=False)
+        fnp = tf.name
+
+        self._process(fnp)
+        self._import(fnp)
+        
+        os.remove(fnp)
+
+    def _process(self, fnp)
+        with open(self.origFnp, 'r') as f:
+            with open(fnp, 'w') as o:
                 for line in f:
                     line = line.strip().split('\t')
                     if ';' in line[4]:
@@ -35,38 +47,34 @@ class GWASmaf:
                     else:
                         p = [line[0], line[1], line[2], line[4], line[5], line[6], line[7]]
                         o.write('\t'.join(p) + '\n')
-        self.fnp = "/tmp/" + os.path.basename(fnp)
 
-    def run(self):
-        tableName = self.tableName
-        printt("dropping and creating", tableName)
+    def _import(self, fnp):
+        printt("dropping and creating", self.tableName)
         self.curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 CREATE TABLE {tableName}
 (id serial PRIMARY KEY,
-        chr VARCHAR(10),
+        chr text,
         startpos INT,
         stoppos INT,
-        snp VARCHAR(15),
-        refallele VARCHAR(100000),
-        altallele VARCHAR(100000),
-        frequency VARCHAR(20)
+        snp text,
+        refallele text,
+        altallele text,
+        frequency text
 );
-""".format(tableName=tableName))
+""".format(tableName = self.tableName))
 
-        printt("importing", self.fnp)
-        with open(self.fnp) as f:
+        printt("importing", fnp)
+        with open(fnp) as f:
             cols = ["chr", "startpos", "stoppos", "snp", "refallele", "altallele", "frequency"]
-            self.curs.copy_from(f, tableName, '\t', columns=cols)
+            self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
 
-        makeIndex(self.curs, tableName, ["snp"])
+        makeIndex(self.curs, self.tableName, ["snp"])
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--fnp', default="", type=str)
-    parser.add_argument('--pop', default="eur", type=str)
     args = parser.parse_args()
     return args
 
@@ -75,11 +83,11 @@ def main():
     args = parse_args()
 
     DBCONN = db_connect(os.path.realpath(__file__))
+    
     with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-        if args.fnp != "":
-            g = GWASmaf(curs, args.fnp, args.pop + "_maf")
-        else:
-            g = GWASmaf(curs, tn = args.pop + "_maf")
+        fnp = "/data/zusers/moorej3/haploreg_v4.0.MAF.bed"
+        tn = "eur_maf"
+        g = GWASmaf(curs, fnp, tn)
         g.run()
 
     return 0
