@@ -187,9 +187,6 @@ class CRE {
 
     async peakIntersectCount(eset) {
         const c = cache(this.assembly);
-        if (eset === 'cistrome') {
-            throw new UserError('Cistrome intersections not available yet.');
-        }
         return DbCommon.peakIntersectCount(this.assembly, this.accession, c.tfHistCounts[eset], eset);
     }
 }
@@ -303,9 +300,6 @@ export async function resolve_cre_tf_dcc(source, args, context, info) {
     const cre: CRE = source.cre;
     const target = args.target;
     const eset = args.eset;
-    if (eset === 'cistrome') {
-        throw new UserError('Cistrome intersections not available yet.');
-    }
     return await DbCommon.tfTargetExps(cre.assembly, cre.accession, target, eset);
 }
 
@@ -313,9 +307,6 @@ export async function resolve_cre_histone_dcc(source, args, context, info) {
     const cre: CRE = source.cre;
     const target = args.target;
     const eset = args.eset;
-    if (eset === 'cistrome') {
-        throw new UserError('Cistrome intersections not available yet.');
-    }
     return await DbCommon.histoneTargetExps(cre.assembly, cre.accession, target, eset);
 }
 
