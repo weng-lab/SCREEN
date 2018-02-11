@@ -37,6 +37,7 @@ class GWASmaf:
         os.remove(fnp)
 
     def _process(self, fnp):
+        print("reading", self.origFnp)
         with open(self.origFnp, 'r') as f:
             with open(fnp, 'w') as o:
                 for line in f:
@@ -48,7 +49,8 @@ class GWASmaf:
                     else:
                         p = [line[0], line[1], line[2], line[4], line[5], line[6], line[7]]
                         o.write('\t'.join(p) + '\n')
-
+        printWroteNumLines(fnp)
+        
     def _import(self, fnp):
         printt("dropping and creating", self.tableName)
         self.curs.execute("""
