@@ -8,6 +8,7 @@ import psycopg2
 import re
 import argparse
 import gzip
+import tempfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common/'))
 from dbconnect import db_connect
@@ -35,7 +36,7 @@ class GWASmaf:
         
         os.remove(fnp)
 
-    def _process(self, fnp)
+    def _process(self, fnp):
         with open(self.origFnp, 'r') as f:
             with open(fnp, 'w') as o:
                 for line in f:
