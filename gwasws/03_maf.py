@@ -86,7 +86,7 @@ def main():
     DBCONN = db_connect(os.path.realpath(__file__))
     
     with getcursor(DBCONN, "04_cellTypeInfo") as curs:
-        fnp = "/data/zusers/moorej3/haploreg_v4.0.MAF.bed"
+        fnp = os.path.join(paths.v4d, "GWAS", "haploreg_v4.0.MAF.bed")
         tn = "eur_maf"
         g = GWASmaf(curs, fnp, tn)
         g.run()
