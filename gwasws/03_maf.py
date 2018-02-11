@@ -39,7 +39,7 @@ class GWASmaf:
     def _process(self, fnp):
         print("reading", self.origFnp)
         with open(self.origFnp, 'r') as f:
-            with open(fnp, 'w') as o:
+            with gzip.open(fnp, 'w') as o:
                 for line in f:
                     line = line.strip().split('\t')
                     if ';' in line[4]:
@@ -68,7 +68,7 @@ CREATE TABLE {tableName}
 """.format(tableName = self.tableName))
 
         printt("importing", fnp)
-        with open(fnp) as f:
+        with gzip.open(fnp) as f:
             cols = ["chr", "startpos", "stoppos", "snp", "refallele", "altallele", "frequency"]
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
         printt("imported", self.curs.rowcount)
