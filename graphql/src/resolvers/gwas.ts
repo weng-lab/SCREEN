@@ -1,5 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
+import { mapcre } from './cretable';
 
 const { UserError } = require('graphql-errors');
 const cache = require('../db/db_cache').cache;
@@ -22,7 +23,12 @@ class Gwas {
 
     numLdBlocksOverlap = (gwas_study) => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = (gwas_study) => DbGwas.numCresOverlap(this.assembly, gwas_study);
-    allCellTypes = (gwas_study) => DbGwas.gwasEnrichment(this.assembly, gwas_study);
+    allCellTypes = async (gwas_study) => {
+        const c = cache(this.assembly);
+        const cts = await DbGwas.gwasEnrichment(this.assembly, gwas_study);
+        const ret = cts ? cts.map(ct => ({ ...ct, ct: c.datasets.byCellTypeValue[ct.ct] })) : undefined;
+        return ret;
+    }
 
     async mainTableInfo(gwas_study) {
         const total = await this.totalLDblocks(gwas_study);
@@ -46,7 +52,7 @@ class Gwas {
         const c = cache(this.assembly);
         const ctmap = c.ctmap;
         const ctsTable = c.ctsTable;
-        const { cres, fieldsOut } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
+        const { cres } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
 
         // accession, snp, geneid, zscores
         const total = cres.length;
@@ -56,21 +62,7 @@ class Gwas {
             (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
             (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
-        const vcols = {};
-        if (ct) {
-            for (const f of ['promoter_zscore', 'enhancer_zscore', 'dnase_zscore']) {
-                vcols[f] = activeCres.length > 0 && f in activeCres[0].ctspecific;
-            }
-        } else {
-            for (const f of ['k4me3max', 'k27acmax', 'dnasemax']) {
-                vcols[f] = true;
-            }
-        }
-
-        return {
-            'accessions': activeCres,
-            'vcols': vcols
-        };
+        return activeCres.map(c => ({ cRE: mapcre(this.assembly, c), geneid: c.geneid, snps: c.snps }));
     }
 }
 
@@ -101,15 +93,15 @@ export const resolve_gwas_gwas: GraphQLFieldResolver<any, any> = (source, args, 
     return gwas(g);
 };
 
-export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
+export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const g = source.gwas_obj;
     const studyarg = args.study;
-    return study(g, studyarg);
+    return { ...await study(g, studyarg), study: studyarg, gwas_obj: g };
 };
 
 export const resolve_gwas_cres: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
     const g = source.gwas_obj;
-    const study = args.study;
+    const study = source.study;
     const cellType = args.cellType;
     return cres(g, study, cellType);
 };

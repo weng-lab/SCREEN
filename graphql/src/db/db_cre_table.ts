@@ -192,17 +192,3 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
     }
     return {'cres': res, 'total': total};
 }
-
-export async function rfacets_active(ctmap, j) {
-    const present: Array<string> = [];
-    const ct = j['cellType'];
-    if (!ct) {
-        return present;
-    }
-    for (const assay of ['dnase', 'promoter', 'enhancer', 'ctcf']) {
-        if (ct in ctmap[assay]) {
-            present.push(assay);
-        }
-    }
-    return present;
-}

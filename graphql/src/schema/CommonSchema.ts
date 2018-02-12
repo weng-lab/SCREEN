@@ -202,14 +202,6 @@ export const PaginationParameters = new GraphQLInputObjectType({
     })
 });
 
-export const cREInfo = new GraphQLObjectType({
-    name: 'info',
-    description: 'Includes common ccRE info.',
-    fields: {
-
-    },
-});
-
 export const genes = new GraphQLObjectType({
     name: 'genes',
     description: 'Nearby genes',
@@ -250,14 +242,6 @@ export const ctSpecific = new GraphQLObjectType({
             type: GraphQLFloat
         },
     }
-});
-
-export const cREData = new GraphQLObjectType({
-    name: 'ccREData',
-    description: 'Data related to this ccRE',
-    fields: () => ({
-
-    })
 });
 
 export const cRE = new GraphQLObjectType({
@@ -313,5 +297,31 @@ export const cRE = new GraphQLObjectType({
             description: 'Nearby genes',
             type: new GraphQLNonNull(genes)
         },
+    })
+});
+
+export const CellTypeAssay = new GraphQLObjectType({
+    name: 'CellTypeAssay',
+    description: 'Info on a single assay from a cell type',
+    fields: () => ({
+        assay: { type: GraphQLString },
+        expid: { type: GraphQLString },
+        fileid: { type: GraphQLString },
+        biosample_summary: { type: GraphQLString },
+        biosample_type: { type: GraphQLString },
+    })
+});
+
+export const CellTypeInfo = new GraphQLObjectType({
+    name: 'CellTypeInfo',
+    description: 'Info on a cell type used in SCREEN and in ccREs',
+    fields: () => ({
+        name: { type: GraphQLString },
+        value: { type: new GraphQLNonNull(GraphQLString) },
+        tissue: { type: GraphQLString },
+        displayName: { type: new GraphQLNonNull(GraphQLString) },
+        isde: { type: new GraphQLNonNull(GraphQLBoolean) },
+        synonyms: { type: new GraphQLList(GraphQLString) },
+        assays: { type: new GraphQLList(CellTypeAssay) },
     })
 });

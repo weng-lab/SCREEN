@@ -55,7 +55,6 @@ const BaseType = new GraphQLObjectType({
             type: DataResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                uuid: { type: new GraphQLNonNull(UUID) },
                 data: { type: CommonTypes.DataParameters },
                 pagination: { type: CommonTypes.PaginationParameters }
             },
@@ -66,7 +65,6 @@ const BaseType = new GraphQLObjectType({
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SearchToken))),
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                uuid: { type: new GraphQLNonNull(UUID) },
                 search: { type: CommonTypes.SearchParameters },
             },
             resolve: resolve_search
