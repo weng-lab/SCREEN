@@ -36,13 +36,13 @@ export const GwasCRE = new GraphQLObjectType({
     description: 'Contains a cRE for Gwas and associated data',
     fields: () => ({
         cRE: {
-            type: CommonTypes.cRE
+            type: new GraphQLNonNull(CommonTypes.cRE)
         },
         geneid: {
-            type: GraphQLString
+            type: new GraphQLNonNull(GraphQLString)
         },
         snps: {
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         },
     })
 });
@@ -78,14 +78,14 @@ export const GwasResponse = new GraphQLObjectType({
     description: 'GWAS data',
     fields: () => ({
         gwas: {
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(GraphQLJSON),
             resolve: resolve_gwas_gwas
         },
         study: {
             args: {
                 study: { type: new GraphQLNonNull(GraphQLString) },
             },
-            type: GwasStudyResponse,
+            type: new GraphQLNonNull(GwasStudyResponse),
             resolve: resolve_gwas_study
         },
     }),
