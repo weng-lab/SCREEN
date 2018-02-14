@@ -84,8 +84,8 @@ export const GlobalsResponse = new GraphQLObjectType({
     name: 'Globals',
     description: 'Global data',
     fields: () => ({
-        helpKeys: { type: HelpKeys },
-        colors: { type: GraphQLJSON },
+        helpKeys: { type: new GraphQLNonNull(HelpKeys) },
+        colors: { type: new GraphQLNonNull(GraphQLJSON) },
         files: { type: GraphQLJSON },
         inputData: { type: GraphQLJSON },
         byAssembly: {

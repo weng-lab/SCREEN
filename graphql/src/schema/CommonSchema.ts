@@ -258,7 +258,7 @@ export const cRE = new GraphQLObjectType({
         },
         range: {
             description: 'The range of the ccRE',
-            type: CommonTypes.ChromRange
+            type: new GraphQLNonNull(CommonTypes.ChromRange)
         },
         maxz: {
             description: 'The max zscore from any experiment in any celltype',
