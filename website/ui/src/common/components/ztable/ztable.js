@@ -1,8 +1,10 @@
 import React from 'react';
-import {Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
 import SortOrder from './sort_order';
 import SortCols from './sort_cols';
 import DataSource from './datasource';
+import ReactDOM from 'react-dom';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 //const firstBy = require('thenby');
 
@@ -98,30 +100,9 @@ class Zheader extends React.Component {
 
 class Zrow extends React.Component {
     render(){
-	let rowData = this.props.colInfos.map((colInfo) => {
-	    let k = klassName(colInfo);
-	    if("defaultContent" in colInfo){
-		return [colInfo.defaultContent, k];
-	    }
-	    let rd =  this.props.row[colInfo.data];	    
-	    if("render" in colInfo){
-		try {
-		    const rend = colInfo.render(rd);
-		    return [rend, k]
-		} catch(err){
-		    console.log("Zrow: error when rendering: row col data was:", rd);
-		    console.log("Zrow: error when rendering: row data was:", this.props.row);
-		    console.log("Zrow: error when rendering: row klass was:", k);
-		    console.log("Zrow: error when rendering: colInfo was:", colInfo);
-		    throw err;
-		}
-	    }
-	    return [rd, k];
-	});
-
 	return (
 	    <tr>
-		{rowData.map((r, idx) => {
+		{this.props.rowData.map((r, idx) => {
 		     const k = "text-center " + r[1];
 		     return (
 			 <td className={k}
@@ -174,12 +155,51 @@ class Ztable extends React.Component {
 
 	let tableKlass = "table table-bordered-bottom table-condensed table-hover";
 	let visibleCols = filterVisibleCols(this.props.cols);
-	
+
+	let rowData = this.props.data.map( (row, i) => (visibleCols.map((colInfo) => {
+	    let k = klassName(colInfo);
+	    if("defaultContent" in colInfo){
+		return [colInfo.defaultContent, k];
+	    }
+	    let rd =  row[colInfo.data];	    
+	    if("render" in colInfo){
+		try {
+		    const rend = colInfo.render(rd);
+		    return [rend, k]
+		} catch(err){
+		    console.log("Zrow: error when rendering: row col data was:", rd);
+		    console.log("Zrow: error when rendering: row data was:", row);
+		    console.log("Zrow: error when rendering: row klass was:", k);
+		    console.log("Zrow: error when rendering: colInfo was:", colInfo);
+		    throw err;
+		}
+	    }
+	    return [rd, k];
+	})) );
+
+	let visiblenonempty = visibleCols.filter(colInfo => colInfo.title !== "");
+	let hasobj = false;
+	let rawData = this.props.data.map( (row, i) => (visiblenonempty.map((colInfo) => {
+	    let ret = '';
+	    if ("render" in colInfo) {
+		let app = colInfo.render(row[colInfo.data]);
+		if (app && typeof(app) === 'object') {
+		    hasobj = true;
+		    return;
+		}
+		ret += app;
+	    } else {
+		ret += row[colInfo.data] || "";
+	    }
+	    return ret.replace(/,/g, ";");
+	})));
+
 	return (
 	    <div style={{width: "100%"}}>
 		<SearchBox value={this.state.search}
 			   onChange={searchBoxChange} 
 	                   noSearchBox={this.props.noSearchBox}/>
+		{hasobj ? <span/> : <CSVLink data={rawData} >CSV</CSVLink>}
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
@@ -189,7 +209,7 @@ class Ztable extends React.Component {
 		    </thead>
 		    <tbody>
 			{ds.rowIDs.slice(ds.rowStart, ds.rowEnd).map((idx) => (
-			     <Zrow row={this.props.data[idx]}
+			     <Zrow rowData={rowData[idx]}
 				   key={idx}
 				   dataIdx={idx}
 				   onRowClick={rowClick}
