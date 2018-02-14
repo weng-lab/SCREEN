@@ -52,10 +52,10 @@ export const GwasStudyResponse = new GraphQLObjectType({
     description: 'GWAS study data',
     fields: () => ({
         gwas_study: {
-            type: GraphQLJSON
+            type: new GraphQLNonNull(GraphQLJSON)
         },
         mainTable: {
-            type: GraphQLJSON
+            type: new GraphQLNonNull(GraphQLJSON)
         },
         topCellTypes: {
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCellType)))
