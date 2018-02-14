@@ -99,3 +99,10 @@ export const globalTabFiles = (successF, errF) => {
 	.then(successF)
 	.catch(errF);
 }
+
+export const globalTabFiles2 = (successF, errF) => {
+    fetch(Servers("/globalData/index/index2"))
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}

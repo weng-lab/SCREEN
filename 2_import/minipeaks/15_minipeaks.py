@@ -110,9 +110,9 @@ def run(args, DBCONN):
 
         printWroteNumLines(queryFnp)
         cmds = ['CQLSH_HOST="{hosts}"'.format(hosts=Config.cassandra[0]),
-                os.path.join(Dirs.tools, "apache-cassandra-3.0.9/bin/cqlsh"),
-                "--cqlversion=3.4.2",
+                "cqlsh",
                 "-f", queryFnp]
+        print(' '.join(cmds))
         if args.yes or GetYesNoToQuestion.immediate("import data?"):
             print(Utils.runCmds(cmds))
 

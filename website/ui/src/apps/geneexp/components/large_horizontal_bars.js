@@ -29,7 +29,7 @@ class LargeHorizontalBars extends React.Component {
 		if(d.ageTitle){
 		    return d.cellType + ' ' + d.ageTitle;
 		}
-		return d.cellType},
+		return d.expID + ' ' + d.cellType},
 	    grouplabel: d => d.displayName
 	};
 

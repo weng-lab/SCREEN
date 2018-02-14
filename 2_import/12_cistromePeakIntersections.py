@@ -61,14 +61,14 @@ def run(args, DBCONN):
             PI.ImportPeakIntersections(curs, assembly, tsuffix).index()
         else:
             PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
-            ipi = ImportPeakIntersections(curs, assembly, tsuffix)
+            ipi = PI.ImportPeakIntersections(curs, assembly, tsuffix)
             ipi.run()
             ipi.index()
 
     for assembly in assemblies:
         printt('***********', assembly)
         with getcursor(DBCONN, "main") as curs:
-            doRun(args, assembly, curs, Encode[0], Encode[1])
+            doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
             if assembly in ["hg38", "mm10"]:
                 doRun(args, assembly, curs, Cistrome[0], Cistrome[1])
 

@@ -5,7 +5,6 @@ import os
 import json
 
 from itertools import groupby
-from scipy.stats.mstats import mquantiles
 import numpy as np
 import math
 

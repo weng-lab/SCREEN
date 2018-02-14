@@ -755,3 +755,18 @@ FROM {tn}
                 ret[ct] = {}
             ret[ct][typ] = acc
         return ret
+
+    def creBeds(self):
+        tableName = self.assembly + "_dcc_cres_beds"
+        with getcursor(self.pg.DBCONN, "pg$creBeds") as curs:
+            curs.execute("""
+            SELECT celltype, dcc_accession, typ
+FROM {tn}
+            """.format(tn=tableName))
+            rows = curs.fetchall()
+        ret = {}
+        for ct, acc, typ in rows:
+            if ct not in ret:
+                ret[ct] = {}
+            ret[ct][typ] = acc
+        return ret

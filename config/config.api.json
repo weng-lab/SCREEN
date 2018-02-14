@@ -1,7 +1,7 @@
 {"RE":
  {"version": 10,
-  "db_host": "pg-prod.internal.ho.wenglab.org",
-  "db_usr": "regElmViz_usr",
+  "db_host": "pg_screen_v10",
+  "db_usr": "postgres",
   "db": "screenv10",
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 4,
@@ -9,11 +9,11 @@
   "ribbon": "beta",
   "googleAnalytics": false,
   "memcache": false,
-  "cassandra": ["localhost"],
+  "cassandra": ["pgs_cassandra"],
   "redisHost": "127.0.0.1"
  },
  "UI":
- {"apiServer": "http://api.wenglab.org/screen/v10",
+ {"apiServer": "http://api.wenglab.org/screenv10_python",
   "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
   "staticServer": "http://screen.encodeproject.org/assets",
   "overrides": {}

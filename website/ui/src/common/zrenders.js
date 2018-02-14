@@ -138,6 +138,12 @@ export const dccLink = (expID) => {
     return <a target="_blank" href={url}>{img}</a>;
 }
 
+export const dccLinkFile = (fileID) => {
+    const url = 'https://www.encodeproject.org/' + fileID;
+    const img = dccImg();
+    return <a target="_blank" href={url}>{img}</a>;
+}
+
 export const gwasLink = (ref) => {
     if(ref.startsWith("ENCFF")){
 	return dccLink(ref);
