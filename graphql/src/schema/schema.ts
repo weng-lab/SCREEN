@@ -91,8 +91,8 @@ const BaseType = new GraphQLObjectType({
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
-                biosample_types: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
-                compartments: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+                biosample_types: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
+                compartments: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
             },
             resolve: resolve_geneexp
         },
