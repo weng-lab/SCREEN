@@ -20,7 +20,7 @@ export const GbResponse = new GraphQLObjectType({
             resolve: resolve_gb_genetable
         },
         trackhubs: {
-            type: new GraphQLList(GraphQLJSON),
+            type: new GraphQLList(new GraphQLNonNull(GraphQLJSON)),
             resolve: resolve_gb_trackhubs
         }
     }),

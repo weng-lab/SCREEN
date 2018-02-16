@@ -16,11 +16,11 @@ export const UCSCTrackhubResponse = new GraphQLObjectType({
     fields: () => ({
         trackhuburl: {
             description: 'The trackhub url to provide to the UCSC genome browser',
-            type: GraphQLString
+            type: new GraphQLNonNull(GraphQLString)
         },
         url: {
             description: 'The url to directly view the trackhub in the browser',
-            type: GraphQLString
+            type: new GraphQLNonNull(GraphQLString)
         },
     })
 });
@@ -45,7 +45,7 @@ export const UCSCTrackhubInfo = new GraphQLInputObjectType({
         },
         range: {
             description: 'Range to display',
-            type: CommonTypes.RequiredInputChromRange
+            type: new GraphQLNonNull(CommonTypes.RequiredInputChromRange)
         },
         halfWindow: {
             description: 'TODO',

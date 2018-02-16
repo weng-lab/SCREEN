@@ -15,7 +15,7 @@ export const AssayValues = new GraphQLObjectType({
     description: 'Gets specific values for an assay',
     fields: () => ({
         ct: {
-            type: CommonTypes.CellTypeInfo
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo)
         },
         one: {
             type: GraphQLFloat
@@ -55,12 +55,12 @@ export const CreDetailsResponse = new GraphQLObjectType({
     fields: () => ({
         info: {
             description: 'Gets the current ccRE data',
-            type: CommonTypes.cRE,
+            type: new GraphQLNonNull(CommonTypes.cRE),
             resolve: CreDetailsResolver.resolve_cre_info
         },
         topTissues: {
             description: 'Returns celltype-specific experiment data',
-            type: TopTissuesResponse,
+            type: new GraphQLNonNull(TopTissuesResponse),
             resolve: CreDetailsResolver.resolve_cre_topTissues
         },
         nearbyGenomic: {

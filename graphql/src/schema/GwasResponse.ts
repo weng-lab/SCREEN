@@ -14,16 +14,16 @@ export const GwasCellType = new GraphQLObjectType({
     description: 'Data about a specific cell type in a GWAS study',
     fields: () => ({
         biosample_summary: {
-            type: GraphQLString
+            type: new GraphQLNonNull(GraphQLString)
         },
         expID: {
-            type: GraphQLString
+            type: new GraphQLNonNull(GraphQLString)
         },
         fdr: {
-            type: GraphQLFloat
+            type: new GraphQLNonNull(GraphQLFloat)
         },
         pval: {
-            type: GraphQLFloat
+            type: new GraphQLNonNull(GraphQLFloat)
         },
         ct: {
             type: new GraphQLNonNull(CommonTypes.CellTypeInfo)
@@ -58,7 +58,7 @@ export const GwasStudyResponse = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLJSON)
         },
         topCellTypes: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCellType)))
+            type: new GraphQLList(new GraphQLNonNull(GwasCellType))
         },
         cres: {
             args: {

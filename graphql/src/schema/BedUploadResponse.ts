@@ -13,7 +13,7 @@ export const BedUploadResponse = new GraphQLObjectType({
     description: 'Bed intersections',
     fields: () => ({
         'assembly': { type: new GraphQLNonNull(Assembly)},
-        'accessions': { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        'accessions': { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
     })
 });
 
