@@ -93,11 +93,11 @@ export const RequiredInputChromRange = new GraphQLInputObjectType({
         },
         start: {
             description: 'Start position',
-            type: GraphQLInt
+            type: new GraphQLNonNull(GraphQLInt)
         },
         end: {
             description: 'End position',
-            type: GraphQLInt
+            type: new GraphQLNonNull(GraphQLInt)
         }
     })
 });
@@ -164,7 +164,7 @@ export const DataParameters = new GraphQLInputObjectType({
         element_type: {
             description: 'Only return ccREs of a specific ElementType - UNIMPLEMENTED',
             type: ElementType
-        }, // TODO: implemented
+        }, // TODO: implement
     })
 });
 
@@ -208,11 +208,11 @@ export const genes = new GraphQLObjectType({
     fields: {
         pc: {
             description: 'Nearby protein-coding genes',
-            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
         },
         all: {
             description: 'All nearby genes, including protein-coding and non-protein-coding',
-            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
         },
     },
 });
@@ -304,11 +304,11 @@ export const CellTypeAssay = new GraphQLObjectType({
     name: 'CellTypeAssay',
     description: 'Info on a single assay from a cell type',
     fields: () => ({
-        assay: { type: GraphQLString },
-        expid: { type: GraphQLString },
-        fileid: { type: GraphQLString },
-        biosample_summary: { type: GraphQLString },
-        biosample_type: { type: GraphQLString },
+        assay: { type: new GraphQLNonNull(GraphQLString) },
+        expid: { type: new GraphQLNonNull(GraphQLString) },
+        fileid: { type: new GraphQLNonNull(GraphQLString) },
+        biosample_summary: { type: new GraphQLNonNull(GraphQLString) },
+        biosample_type: { type: new GraphQLNonNull(GraphQLString) },
     })
 });
 
@@ -318,10 +318,10 @@ export const CellTypeInfo = new GraphQLObjectType({
     fields: () => ({
         name: { type: GraphQLString },
         value: { type: new GraphQLNonNull(GraphQLString) },
-        tissue: { type: GraphQLString },
+        tissue: { type: new GraphQLNonNull(GraphQLString) },
         displayName: { type: new GraphQLNonNull(GraphQLString) },
         isde: { type: new GraphQLNonNull(GraphQLBoolean) },
-        synonyms: { type: new GraphQLList(GraphQLString) },
-        assays: { type: new GraphQLList(CellTypeAssay) },
+        synonyms: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+        assays: { type: new GraphQLList(new GraphQLNonNull(CellTypeAssay)) },
     })
 });

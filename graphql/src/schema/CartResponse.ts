@@ -1,5 +1,6 @@
 import {
     GraphQLObjectType,
+    GraphQLNonNull,
     GraphQLList,
     GraphQLString
 } from 'graphql';
@@ -10,7 +11,7 @@ export const CartResponse = new GraphQLObjectType({
     fields: () => ({
         accessions: {
             description: 'A list of accessions in the cart',
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         }
     })
 });

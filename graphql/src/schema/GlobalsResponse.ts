@@ -15,15 +15,15 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     fields: () => ({
         tfs: {
             description: 'A list of all transcription factors used',
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
         },
         cellCompartments: {
             description: 'A list of cell compartments',
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
         },
         cellTypeInfoArr: {
             description: 'Get info on all cell types used and assays used for ccRE data',
-            type: new GraphQLList(CommonTypes.CellTypeInfo)
+            type: new GraphQLList(new GraphQLNonNull(CommonTypes.CellTypeInfo))
         },
         chromCounts: {
             description: 'Returns the numbers of ccREs keyed by chromosome',
