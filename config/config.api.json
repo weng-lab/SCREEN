@@ -10,7 +10,8 @@
   "ribbon": "",
   "googleAnalytics": false,
   "memcache": false,
-  "cassandra": ["localhost"]
+  "cassandra": ["localhost"],
+  "redisHost": "127.0.0.1"
  },
  "DB":
  {"database": "screenv10",
@@ -18,14 +19,14 @@
   "user": "postgres",
   "port": 5432
  },
-"bedupload": {
-    "incomingDir": "/home/<user>/intersect/incoming",
-    "hg19bed": "/home/<user>/intersect/hg19.sorted.bed",
-    "mm10bed": "/home/<user>/intersect/mm10.sorted.bed"
-},
-"trackhubs": {
-    "host": "http://api.wenglab.org"
-},
+ "bedupload": {
+     "incomingDir": "/ccREs/intersect/incoming",
+     "hg19bed": "/ccREs/hg19.sorted.bed",
+     "mm10bed": "/ccREs/mm10.sorted.bed"
+ },
+ "trackhubs": {
+     "host": "http://api.wenglab.org"
+ },
  "UI":
  {"apiServer": "http://api.wenglab.org/screen/v10",
   "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
