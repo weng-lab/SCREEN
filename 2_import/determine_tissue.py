@@ -30,7 +30,7 @@ class DetermineTissue:
     def TranslateTissue(assembly, exp):
         t = exp.jsondata.get("organ_slims", "")
         if t:
-            t = t[0]
+            t = sorted(t)[0]
         else:
             t = ""
         lookup = DetermineTissue.lookupTissue[assembly]
@@ -49,5 +49,5 @@ class DetermineTissue:
             return "brain"
         if "ENCSR820WLP" == exp.encodeID:
             return "stem cells"
-        eprint(assembly, "missing tissiue assignemnt for", '"' + exp.encodeID + '"' + exp.biosample_term_name)
+        eprint(assembly, "missing tissiue assignemnt for", exp.encodeID, exp.biosample_term_name)
         return ""
