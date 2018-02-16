@@ -49,5 +49,5 @@ class DetermineTissue:
             return "brain"
         if "ENCSR820WLP" == exp.encodeID:
             return "stem cells"
-        eprint(assembly, "missing tissiue assignemnt for", '"' + exp.encodeID + '"')
+        eprint(assembly, "missing tissiue assignemnt for", '"' + exp.encodeID + '"' + exp.biosample_term_name)
         return ""
