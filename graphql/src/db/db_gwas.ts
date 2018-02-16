@@ -38,7 +38,7 @@ export async function numCresOverlap(assembly, gwas_study) {
     return await db.oneOrNone(q, [gwas_study], r => r ? +r.count : 0);
 }
 
-export async function gwasEnrichment(assembly, gwas_study) {
+export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: string]: any } | undefined> {
     const tableNamefdr = assembly + '_gwas_enrichment_fdr';
     const tableNamepval = assembly + '_gwas_enrichment_pval';
     const column_check = `
@@ -56,7 +56,7 @@ export async function gwasEnrichment(assembly, gwas_study) {
         return undefined;
     }
     const q = `
-        SELECT fdr.expID, fdr.cellTypeName as value, fdr.biosample_summary,
+        SELECT fdr.expID, fdr.cellTypeName as ct, fdr.biosample_summary,
         fdr.${gwas_study} as fdr,
         pval.${gwas_study} as pval
         FROM ${tableNamefdr} fdr
@@ -65,7 +65,7 @@ export async function gwasEnrichment(assembly, gwas_study) {
         ORDER BY fdr DESC, pval
     `;
     const res = await db.any(q);
-    const cols = ['expID', 'value', 'biosample_summary', 'fdr', 'pval'];
+    const cols = ['expID', 'ct', 'biosample_summary', 'fdr', 'pval'];
     return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {}));
 }
 
@@ -99,5 +99,5 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     `;
 
     const res = await db.any(q, [gwas_study]);
-    return { cres: res.map(r => ({ ...r, assembly })) , fieldsOut: [] };
+    return { cres: res.map(r => ({ ...r, assembly })) };
 }

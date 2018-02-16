@@ -22,12 +22,12 @@ export const DataResponse = new GraphQLObjectType({
         },
         cres: {
             description: 'Returns the ccREs that match the parameters',
-            type: new GraphQLNonNull(new GraphQLList(CommonTypes.cRE)),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
         },
-        rfacets: {
-            description: 'Returns the experiments that are available in this celltype, if defined, or all experiments',
-            type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-        },
+        ct: {
+            description: 'The celltype that this data is related to, or null if not applicable',
+            type: CommonTypes.CellTypeInfo
+        }
     })
 });
 

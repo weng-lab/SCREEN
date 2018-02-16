@@ -135,6 +135,60 @@ export async function try_find_gene(assembly, s, usetss, tssDist) {
     return genes;
 }
 
+async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible) {
+    for (const i of Array(p.length).keys()) {
+        const s = p.slice(-1 * (i + 1)).join(' ');
+        const query = `
+            SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
+            FROM ${tableName}
+            WHERE LOWER(cellType) % $1
+            ORDER BY sm DESC
+            LIMIT 10
+        `;
+        const r = await db.any(query, [s]);
+        if (r.length === 0) {
+            if (possible.length === 0) {
+                console.assert(i === 0);
+                unused_toks.unshift(s);
+                q = p.slice(0, -1 * (i + 1)).join(' ').trim();
+            } else {
+                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                possible.length = 0;
+                q = p.slice(0, -1 * i).join(' ').trim();
+            }
+            return q;
+        }
+        if (possible.length === 0) {
+            // Remove duplicates
+            r.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+        } else {
+            const newcelltypes = r.map(c => c.celltype);
+            // Only keep results in which the celltype was not previously there, or was there and similarity increased
+            const moresimilar = r.filter(res => {
+                const oldres = possible.filter(old => res.celltype == old.celltype);
+                if (oldres.length !== 0) {
+                    // The old results contained this celltype, must make sure prob increased
+                    return res.sm >= oldres[0].sm;
+                } else {
+                    // The old results did not contain this cell type, is it a better similarity than the best previously
+                    return res.sm > possible[0].sm;
+                }
+            });
+            if (moresimilar.length === 0) {
+                // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
+                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                q = p.slice(0, -1 * i).join(' ').trim();
+                possible.length = 0;
+                return q;
+            } else {
+                possible.length = 0;
+                moresimilar.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+            }
+        }
+    }
+    return false;
+}
+
 export async function find_celltype(assembly, q, rev = false) {
     q = q.trim();
     if (q.length === 0) {
@@ -144,66 +198,19 @@ export async function find_celltype(assembly, q, rev = false) {
 
     const unused_toks: Array<any> = [];
     const ret_celltypes = {};
-    let possible: Array<any> = [];
-    outer:
+    const possible: Array<any> = [];
     while (true) {
         if (q.length == 0) {
             break;
         }
         const p = q.trim().split(' ');
-        for (const i of Array(p.length).keys()) {
-            const s = p.slice(-1 * (i + 1)).join(' ');
-            const query = `
-                SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
-                FROM ${tableName}
-                WHERE LOWER(cellType) % $1
-                ORDER BY sm DESC
-                LIMIT 10
-            `;
-            const r = await db.any(query, [s]);
-            if (r.length === 0) {
-                if (possible.length === 0) {
-                    console.assert(i === 0);
-                    unused_toks.unshift(s);
-                    q = p.slice(0, -1 * (i + 1)).join(' ').trim();
-                } else {
-                    ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
-                    possible = [];
-                    q = p.slice(0, -1 * i).join(' ').trim();
-                }
-                continue outer;
-            }
-            if (possible.length === 0) {
-                // Remove duplicates
-                r.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
-            } else {
-                const newcelltypes = r.map(c => c.celltype);
-                // Only keep results in which the celltype was not previously there, or was there and similarity increased
-                const moresimilar = r.filter(res => {
-                    const oldres = possible.filter(old => res.celltype == old.celltype);
-                    if (oldres.length !== 0) {
-                        // The old results contained this celltype, must make sure prob increased
-                        return res.sm >= oldres[0].sm;
-                    } else {
-                        // The old results did not contain this cell type, is it a better similarity than the best previously
-                        return res.sm > possible[0].sm;
-                    }
-                });
-                if (moresimilar.length === 0) {
-                    // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
-                    ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
-                    q = p.slice(0, -1 * i).join(' ').trim();
-                    possible = [];
-                    continue outer;
-                } else {
-                    possible = [];
-                    moresimilar.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
-                }
-            }
+        q = await do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible);
+
+        if (!q) {
+            // We fell off the end, but know we have possibles
+            ret_celltypes[p.join(' ')] = possible[0];
+            break;
         }
-        // We fell off the end, but know we have possibles
-        ret_celltypes[p.join(' ')] = possible[0];
-        break;
     }
 
     return {s: unused_toks.join(' '), celltypes: ret_celltypes};

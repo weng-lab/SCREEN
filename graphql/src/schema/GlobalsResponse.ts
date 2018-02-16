@@ -6,33 +6,8 @@ import {
     GraphQLNonNull,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { resolve_globals_assembly } from '../resolvers/globals';
+import { resolve_globals_assembly, resolve_help_key } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
-
-export const CellTypeAssay = new GraphQLObjectType({
-    name: 'CellTypeAssay',
-    description: 'Info on a single assay from a cell type',
-    fields: () => ({
-        assay: { type: GraphQLString },
-        expid: { type: GraphQLString },
-        fileid: { type: GraphQLString },
-        tissue: { type: GraphQLString },
-        biosample_summary: { type: GraphQLString },
-        biosample_type: { type: GraphQLString },
-    })
-});
-
-export const CellTypeInfo = new GraphQLObjectType({
-    name: 'CellTypeInfo',
-    description: 'Info on every cell type used in SCREEN and in ccREs',
-    fields: () => ({
-        name: { type: GraphQLString },
-        value: { type: GraphQLString },
-        isde: { type: GraphQLBoolean },
-        synonyms: { type: new GraphQLList(GraphQLString) },
-        assays: { type: new GraphQLList(CellTypeAssay) },
-    })
-});
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     name: 'AssemblySpecificGlobals',
@@ -48,7 +23,7 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         },
         cellTypeInfoArr: {
             description: 'Get info on all cell types used and assays used for ccRE data',
-            type: new GraphQLList(CellTypeInfo)
+            type: new GraphQLList(CommonTypes.CellTypeInfo)
         },
         chromCounts: {
             description: 'Returns the numbers of ccREs keyed by chromosome',
@@ -81,12 +56,36 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     })
 });
 
+export const HelpKeys = new GraphQLObjectType({
+    name: 'HelpKeys',
+    fields: () => ({
+        all: { type: GraphQLJSON },
+        helpKey: {
+            description: 'Provides the help text for a single helpKey',
+            args: {
+                key: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            type: new GraphQLNonNull(HelpKey),
+            resolve: resolve_help_key,
+        },
+    })
+});
+
+export const HelpKey = new GraphQLObjectType({
+    name: 'HelpKey',
+    description: 'Describes a response to a single helpkey',
+    fields: () => ({
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        summary: { type: new GraphQLNonNull(GraphQLString) },
+    })
+});
+
 export const GlobalsResponse = new GraphQLObjectType({
     name: 'Globals',
     description: 'Global data',
     fields: () => ({
-        helpKeys: { type: GraphQLJSON },
-        colors: { type: GraphQLJSON },
+        helpKeys: { type: new GraphQLNonNull(HelpKeys) },
+        colors: { type: new GraphQLNonNull(GraphQLJSON) },
         files: { type: GraphQLJSON },
         inputData: { type: GraphQLJSON },
         byAssembly: {

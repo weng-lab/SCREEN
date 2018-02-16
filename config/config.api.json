@@ -7,16 +7,25 @@
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 4,
   "minipeaks_nbins": 0,
-  "ribbon": "beta",
+  "ribbon": "",
   "googleAnalytics": false,
   "memcache": false,
-  "cassandra": ["localhost"]
+  "cassandra": ["localhost"],
+  "redisHost": "127.0.0.1"
  },
  "DB":
  {"database": "screenv10",
   "host": "pg_screen_v10",
   "user": "postgres",
   "port": 5432
+ },
+ "bedupload": {
+     "incomingDir": "/ccREs/intersect/incoming",
+     "hg19bed": "/ccREs/hg19.sorted.bed",
+     "mm10bed": "/ccREs/mm10.sorted.bed"
+ },
+ "trackhubs": {
+     "host": "http://api.wenglab.org"
  },
  "UI":
  {"apiServer": "http://api.wenglab.org/screen/v10",
