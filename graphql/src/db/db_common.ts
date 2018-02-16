@@ -58,6 +58,17 @@ export async function geBiosampleTypes(assembly) {
     return res.map(r => r['biosample_type']);
 }
 
+export async function geBiosamples(assembly) {
+    const tableName = 'r_rnas_' + assembly;
+    const q = `
+        SELECT DISTINCT(celltype) as biosample
+        FROM ${tableName}
+        ORDER BY celltype
+    `;
+    const res = await db.many(q);
+    return res.map(r => r['biosample']);
+}
+
 export async function geneIDsToApprovedSymbol(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `

@@ -27,6 +27,7 @@ async function load(assembly) {
     const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
     const inputData = await Common.inputData(assembly);
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
+    const geBiosamples = await Common.geBiosamples(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
     const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
     const tfHistCounts = {
@@ -60,6 +61,7 @@ async function load(assembly) {
         moreTracks: undefined,
 
         geBiosampleTypes: geBiosampleTypes,
+        geBiosamples: geBiosamples,
 
         geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
 
@@ -127,6 +129,7 @@ export function global_data(assembly) {
         'chromLens': chrom_lengths[assembly],
         'creHistBins': c.creHist,
         'geBiosampleTypes': c.geBiosampleTypes,
+        'geBiosamples': c.geBiosamples,
         'creBigBedsByCellType': c.creBigBeds,
         'creFiles': c.filesList,
         'inputData': c.inputData,

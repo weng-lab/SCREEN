@@ -38,6 +38,10 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
             type: GraphQLJSON
         },
         geBiosampleTypes: {
+            description: 'Returns biosample types available in gene expression',
+            type: GraphQLJSON
+        },
+        geBiosamples: {
             description: 'Returns biosamples available in gene expression',
             type: GraphQLJSON
         },
