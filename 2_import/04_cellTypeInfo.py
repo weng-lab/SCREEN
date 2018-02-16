@@ -487,11 +487,11 @@ def run(args, DBCONN):
         printt('***********', assembly)
         with getcursor(DBCONN, "04_cellTypeInfo") as curs:
             pd = ImportCellTypeInfo(curs, assembly, args)
-            #pd.run()
+            pd.run()
             icg = NineState(curs, assembly, args)
-            #icg.run()
+            icg.run()
             c = Ontology(curs, assembly, args)
-            #c.run()
+            c.run()
             c = OntologyToCellTypes(curs, assembly, args)
             c.run()
 
