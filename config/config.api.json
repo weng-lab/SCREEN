@@ -7,7 +7,7 @@
   "assemblies": ["hg19", "mm10"],
   "minipeaks_ver": 4,
   "minipeaks_nbins": 0,
-  "ribbon": "beta",
+  "ribbon": "",
   "googleAnalytics": false,
   "memcache": false,
   "cassandra": ["localhost"]
@@ -18,6 +18,14 @@
   "user": "postgres",
   "port": 5432
  },
+"bedupload": {
+    "incomingDir": "/home/<user>/intersect/incoming",
+    "hg19bed": "/home/<user>/intersect/hg19.sorted.bed",
+    "mm10bed": "/home/<user>/intersect/mm10.sorted.bed"
+},
+"trackhubs": {
+    "host": "http://api.wenglab.org"
+},
  "UI":
  {"apiServer": "http://api.wenglab.org/screen/v10",
   "minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
