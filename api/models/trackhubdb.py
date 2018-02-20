@@ -268,12 +268,15 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         cache = self.cacheW[self.assembly]
         cREs = cache.creBigBeds[ct]
         if show5group:
-            cREaccession = cREs["5group"]
-            url = EncodeUrlBigBed(cREaccession)
-            t = cRETrack(self.assembly, '', show5group, cREaccession, superTrackName,
-                         True, ct).lines(self.priority)
-            self.priority += 1
-            ret += [t]
+	    if "5group" not in cREs:
+		print("missing 5group for ", cREs)
+	    else:
+            	cREaccession = cREs["5group"]
+            	url = EncodeUrlBigBed(cREaccession)
+            	t = cRETrack(self.assembly, '', show5group, cREaccession, superTrackName,
+                	         True, ct).lines(self.priority)
+            	self.priority += 1
+            	ret += [t]
         else:
             for assay in ["DNase", "H3K4me3", "H3K27ac", "CTCF"]:
                 key = "9state-" + assay
