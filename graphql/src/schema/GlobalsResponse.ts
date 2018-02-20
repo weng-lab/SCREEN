@@ -69,7 +69,7 @@ export const HelpKeys = new GraphQLObjectType({
             args: {
                 key: { type: new GraphQLNonNull(GraphQLString) },
             },
-            type: new GraphQLNonNull(HelpKey),
+            type: HelpKey,
             resolve: resolve_help_key,
         },
     })
