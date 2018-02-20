@@ -1,17 +1,17 @@
 {
-    "RE":{
+    "RE": {
 	"version": 10,
-	"db_host": "postgresql",
-	"db_usr": "regElmViz_usr",
+	"db_host": "pg_screen_v10",
+	"db_usr": "postgres",
 	"db": "screenv10",
 	"assemblies": ["hg19", "mm10"],
-	"minipeaks_ver": 3,
-	"minipeaks_nbins": 20,
-	"ribbon": "",
-	"googleAnalytics": true,
+	"minipeaks_ver": 4,
+	"minipeaks_nbins": 0,
+	"ribbon": "beta",
+	"googleAnalytics": false,
 	"memcache": false,
-	"cassandra": ["cassandra"],
-	"redisHost": "redis"
+	"cassandra": ["pgs_cassandra"],
+	"redisHost": "127.0.0.1"
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
