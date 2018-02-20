@@ -13,9 +13,15 @@
 	"cassandra": ["cassandra"],
 	"redisHost": "redis"
     },
+    "bedupload": {
+	"incomingDir": "/bed_intersect/incoming",
+	"hg19bed": "/bed_intersect/hg19.sorted.bed",
+	"mm10bed": "/bed_intersect/mm10.sorted.bed"
+    },
     "UI": {
 	"apiServer": "http://api.wenglab.org/screenv10_python",
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
+	"bed_intersect": "http://api.wenglab.org/screenv10_python/postws/lines",
 	"staticServer": "/assets",
 	"overrides": {}
     }
