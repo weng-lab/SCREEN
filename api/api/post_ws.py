@@ -57,14 +57,14 @@ class PostWebService(object):
         lines = j["allLines"]
         assembly = j["assembly"]
 
-        f, filename = tempfile.mkstemp(dir="/home/purcarom/intersect/incoming")
+        f, filename = tempfile.mkstemp(dir=Config.bedupload["incomingDir"])
         for arr in lines:
             arr = arr.strip()
             os.write(f, arr + '\n')
         os.close(f)
 
-        cres = {"hg19": "/home/purcarom/intersect/hg19.sorted.bed",
-                "mm10": "/home/purcarom/intersect/mm10.sorted.bed"}
+        cres = {"hg19": Config.bedupload["hg19bed"],
+                "mm10": Config.bedupload["mm10bed"]}
 
         cmds = ["cat", filename,
                 '|', 'sort -k1,1 -k2,2n',
