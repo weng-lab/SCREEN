@@ -19,7 +19,7 @@
 	"mm10bed": "/bed_intersect/mm10.sorted.bed"
     },
     "UI": {
-	"apiServer": "http://api.wenglab.org/screenv10_python",
+	"apiServer": "http://api.wenglab.org/screenv10_python_beta",
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
 	"bed_intersect": "http://api.wenglab.org/screenv10_python/postws/lines",
 	"staticServer": "/assets",
