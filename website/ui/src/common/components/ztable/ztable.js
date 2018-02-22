@@ -3,8 +3,7 @@ import { Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-boots
 import SortOrder from './sort_order';
 import SortCols from './sort_cols';
 import DataSource from './datasource';
-import ReactDOM from 'react-dom';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 
 //const firstBy = require('thenby');
 

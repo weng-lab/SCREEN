@@ -34,11 +34,11 @@ WITH replication = {'class':'SimpleStrategy', 'replication_factor':1};""")
         self.session.set_keyspace("minipeaks")
         self.minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
-    def importAll(self, outF, sample):
+    def prepImportAndWriteScript(self, outF, sample):
         for assay in ["dnase", "h3k27ac", "h3k4me3"]:
-            self._doImport(assay, outF, sample)
+            self._prepImportAndWriteScript(assay, outF, sample)
 
-    def _doImport(self, assay, outF, sample):
+    def _prepImportAndWriteScript(self, assay, outF, sample):
         tableName = '_'.join([self.assembly, assay,
                               str(self.ver), str(self.nbins)])
 
@@ -77,48 +77,39 @@ WITH compression = {{ 'sstable_compression' : 'LZ4Compressor' }};
 
 
 def run(args, DBCONN):
+    fnp = os.path.join(os.path.dirname(__file__), '../../../minipeak_import.txt')
+
     assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
-    nbins = Config.minipeaks_nbins
-    if args.nbins > -1:
-        nbins = args.nbins
-    ver = Config.minipeaks_ver
-    if args.ver > -1:
-        ver = args.ver
     cores = args.j
     if args.sample:
         cores = 1
 
-    for assembly in assemblies:
-        printt('***********', assembly, ver, nbins)
+    with open(fnp, 'w') as outF:
+        for assembly in assemblies:
+            for ver, nbins in [(3,20), (4,30), (4,0)]:
+                if not args.yes:
+                    s = "(Re)import %s, version %s, %s nbins?" % (assembly, ver, nbins)
+                    if not GetYesNoToQuestion.immediate(s):
+                        print("skipping", assembly, ver, nbins)
+                        continue
 
-        if not args.yes:
-            s = "OK remove old tables for version %s, %s nbins?" % (ver, nbins)
-            if not GetYesNoToQuestion.immediate(s):
-                printt("skipping", assembly)
-                continue
+                minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
 
-        minipeaks = paths.path(assembly, "minipeaks", str(ver), str(nbins))
-        tf = tempfile.NamedTemporaryFile(delete=False)
-        queryFnp = tf.name
-        with open(queryFnp, 'w') as outF:
-            outF.write("use minipeaks;\n")
-            im = ImportMinipeaks(assembly, nbins, ver, cores)
-            im.importAll(outF, args.sample)
+                outF.write("use minipeaks;\n")
+                im = ImportMinipeaks(assembly, nbins, ver, cores)
+                im.prepImportAndWriteScript(outF, args.sample)
 
-        printWroteNumLines(queryFnp)
-        cmds = ['CQLSH_HOST="{hosts}"'.format(hosts=Config.cassandra[0]),
-                "cqlsh",
-                "-f", queryFnp]
-        print(' '.join(cmds))
-        if args.yes or GetYesNoToQuestion.immediate("import data?"):
-            print(Utils.runCmds(cmds))
+    printWroteNumLines(fnp)
+    cmds = ['CQLSH_HOST="{hosts}"'.format(hosts=Config.cassandra[0]),
+            "cqlsh",
+            "-f", fnp]
+    print("please run this command:")
+    print(' '.join(cmds))
 
-        os.remove(queryFnp)
-
-
+    
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--assembly", type=str, default="")
