@@ -6,6 +6,7 @@ import json
 import time
 import numpy as np
 import cherrypy
+import uuid
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from models.cre import CRE
@@ -64,7 +65,8 @@ class DataWebService():
                         "global_object": self.global_object,
                         "global_fantomcat": self.global_fantomcat,
                         "global_liftover": self.global_liftover,
-                        "rampage": self.rampage
+                        "rampage": self.rampage,
+                        "gwas_json_download": self.gwas_json_download
                         }
 
         self.reDetailActions = {
@@ -229,6 +231,11 @@ class DataWebService():
         cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.bed(j)
 
+    def gwas_json_download(self, j, args):
+        j["uuid"] = str(uuid.uuid4())
+        cd = CREdownload(self.pgSearch, self.staticDir)
+        return cd.gwas(j, j["uuid"])
+    
     def json_download(self, j, args):
         cd = CREdownload(self.pgSearch, self.staticDir)
         return cd.json(j)

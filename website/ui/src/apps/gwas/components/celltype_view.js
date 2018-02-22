@@ -26,6 +26,43 @@ class AllCTView extends React.Component {
             actions.showReDetail(cre);
 	}
     }
+
+    tableFooter(data){
+        return (
+            <div style={{display: (this.props.isFetching ? "none" : "block")}}>
+                <span className="tableInfo">
+
+                    <div className={"btn-group"} role={"group"}>
+		        <button type={"button"}
+                                className={"btn btn-default btn-xs"}
+                                onClick={() => {
+                                        this.downloadJSON()}}>
+                            Download JSON
+                        </button>
+		    </div>
+		</span>
+            </div>);
+    }
+    
+    downloadJSON() {
+	const jq = JSON.stringify({ cellType: null, gwas_study: this.props.gwas_study, assembly: this.props.assembly });
+	ApiClient.getByPost(jq,
+			    "/dataws/gwas_json_download",
+			    (got) => {
+				if("error" in got){
+				    console.log(got["error"]);
+				    //$("#errMsg").text(got["err"]);
+				    //$("#errBox").show()
+				    return true;
+				}
+                                const urlBase = got["url"];
+                                const url = ApiClient.Servers(urlBase);
+			        return downloadjs(url);
+			    },
+			    (msg) => {
+				console.log("error getting bed download", msg);
+			    });
+    }
     
     render() {
         let data = this.props.data;
@@ -84,6 +121,7 @@ class AllCTView extends React.Component {
 		<br />
 		<br />
                 {creTable}
+	        {this.tableFooter(data)}
 	    </div>);
     }
     
@@ -165,9 +203,9 @@ class CelltypeView extends React.Component {
     }
     
     downloadJSON() {
-	const jq = this.props.jq;
+	const jq = this.state.jq;
 	ApiClient.getByPost(jq,
-			    "/dataws/json_download",
+			    "/dataws/gwas_json_download",
 			    (got) => {
 				if("error" in got){
 				    console.log(got["error"]);

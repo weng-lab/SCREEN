@@ -7,6 +7,7 @@ import os
 from natsort import natsorted
 from collections import namedtuple
 import gzip
+import cStringIO
 
 from coord import Coord
 from pg_common import PGcommon
@@ -109,7 +110,7 @@ where authorPubmedTrait = %s
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
 
-    def gwasPercentActive(self, gwas_study, ct):
+    def gwasPercentActive(self, gwas_study, ct, json = None):
         fields = ["cre.accession", "array_agg(snp)", PGcreTable._getInfo(),
                   "infoAll.approved_symbol AS geneid", "cre.start", "cre.stop", "cre.chrom"]
         groupBy = ["cre.accession", "cre.start", "cre.stop", "cre.chrom",
@@ -138,6 +139,58 @@ where authorPubmedTrait = %s
                            (assay[1], cti))
 
         with getcursor(self.pg.DBCONN, "gwas") as curs:
+            if not json:
+                q = """
+SELECT {fields}
+FROM {assembly}_cre_all as cre,
+{assembly}_gwas_overlap as over,
+{assembly}_gene_info as infoAll
+WHERE cre.gene_all_id[1] = infoAll.geneid
+AND cre.accession = over.accession
+AND over.authorPubmedTrait = %s
+GROUP BY {groupBy}
+                """.format(assembly=self.assembly,
+                           fields=', '.join(fields),
+                           groupBy=', '.join(groupBy))
+                curs.execute(q, (gwas_study, ))
+                rows = curs.fetchall()
+                ret = [dict(zip(fieldsOut, r)) for r in rows]
+                for r in range(len(ret)):
+                    ret[r].update({
+                        "ctspecifc": {
+                            "%s_zscore" % x: ret[r]["%s zscore" % x] if "%s zscore" % x in ret[r] else None
+                            for x in ["dnase", "promoter", "enhancer", "ctcf"]
+                        }
+                    })
+                return ret, fieldsOut
+            else:
+                q = """
+                copy (
+                SELECT JSON_AGG(r) from (
+                SELECT {fields}
+                FROM {assembly}_cre_all as cre,
+                {assembly}_gwas_overlap as over,
+                {assembly}_gene_info as infoAll
+                WHERE cre.gene_all_id[1] = infoAll.geneid
+                AND cre.accession = over.accession
+                AND over.authorPubmedTrait = %s
+                GROUP BY {groupBy}
+                ) r
+                ) to STDOUT
+                with DELIMITER E'\t' """.format(assembly = self.assembly,
+                                                fields = ', '.join(fields),
+                                                groupBy = ', '.join(groupBy))
+                q = curs.mogrify(q, (gwas_study,))
+                sf = cStringIO.StringIO()
+                curs.copy_expert(q, sf)
+                sf.seek(0)
+                with open(json, 'w') as f:
+                    for line in sf.readlines():
+                        f.write(line.replace(b'\\n', b''))
+                        
+
+'''
+
             q = """
 SELECT {fields}
 FROM {assembly}_cre_all as cre,
@@ -161,3 +214,4 @@ GROUP BY {groupBy}
                 }
             })
         return ret, fieldsOut
+'''

@@ -49,3 +49,9 @@ class CREdownload:
         self.pgSearch.creTableDownloadJson(j, outFnp)
         url = os.path.join('/', "assets", "downloads", uuid, outFn)
         return {"url": url}
+
+    def gwas(self, j, uuid):
+        outFn, outFnp = self._downloadFileName(uuid, ".gwas.json")
+        self.pgSearch.gwasJson(j, outFnp)
+        url = os.path.join('/', "assets", "downloads", uuid, outFn)
+        return {"url": url}

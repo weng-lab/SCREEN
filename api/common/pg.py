@@ -13,6 +13,7 @@ from coord import Coord
 from pg_common import PGcommon
 from config import Config
 from pg_cre_table import PGcreTable
+from pg_gwas import PGgwas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from cre_utils import isaccession, isclose, checkChrom, checkAssembly
@@ -39,9 +40,13 @@ class PGsearch(object):
         self.assembly = assembly
 
         self.pgc = PGcommon(self.pg, self.assembly)
+        self.pgg = PGgwas(self.pg, self.assembly)
         self.ctmap = self.pgc.makeCtMap()
         self.ctsTable = self.pgc.makeCTStable()
 
+    def gwasJson(self, j, json):
+        self.pgg.gwasPercentActive(j["gwas_study"], j["cellType"], json)
+        
     def allCREs(self):
         tableName = self.assembly + "_cre_all"
         q = """
