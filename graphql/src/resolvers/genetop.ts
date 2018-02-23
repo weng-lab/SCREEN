@@ -6,7 +6,7 @@ class GeneTop {
     colors; itemsByRID;
 
     constructor(assembly) {
-        this.assembly = assembly
+        this.assembly = assembly;
         this.itemsByRID = {};
     }
 
@@ -16,7 +16,7 @@ class GeneTop {
         if (s.length == 0) {
             return hash;
         }
-        for (var i = 0; i < s.length; i++) {
+        for (let i = 0; i < s.length; i++) {
             const char = s.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convert to 32bit integer
@@ -24,7 +24,7 @@ class GeneTop {
         return hash;
     }
 
-    getColor = g => ('#' + this.hash(g).toString().slice(0,6)).padEnd(7, '0');
+    getColor = g => ('#' + this.hash(g).toString().slice(0, 6)).padEnd(7, '0');
 
     keySort = (skey) => (a, b) => b[skey] - a[skey];
     sortByExpression(rowsin, skey) {
@@ -33,7 +33,7 @@ class GeneTop {
                 this.itemsByRID[row['rID']] = row;
             }
             const g = row['gene_name'];
-            const c = this.getColor(g)
+            const c = this.getColor(g);
             return {
                 'name': g + idx,
                 'displayName': g,
@@ -45,9 +45,9 @@ class GeneTop {
 
     process = (rows) => {
         return {
-            'byExpressionTPM': this.sortByExpression(rows, "rawTPM"),
-            'byExpressionFPKM"': this.sortByExpression(rows, "rawFPKM")
-        }
+            'byExpressionTPM': this.sortByExpression(rows, 'rawTPM'),
+            'byExpressionFPKM"': this.sortByExpression(rows, 'rawFPKM')
+        };
     }
 
     // Mostly copied form db_geneexp
@@ -73,8 +73,8 @@ class GeneTop {
                 'expID': row['dataset'],
                 'rep': row['replicate'],
                 'ageTitle': row['agetitle'],
-                'rID': row['id'],                
-                "gene_name": row['gene_name']
+                'rID': row['id'],
+                'gene_name': row['gene_name']
             };
         };
 
@@ -97,11 +97,11 @@ async function genetop(assembly, biosample) {
     const r = {
         biosample: biosample,
         ensemblid_ver: '',
-        coords: null,
+        coords: undefined,
         single: single,
         mean: mean,
         itemsByRID: itemsByRID
-    }
+    };
     return r;
 }
 

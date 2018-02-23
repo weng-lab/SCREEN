@@ -6,31 +6,31 @@ function indexFilesTab(datasets, rows, assembly) {
         agnostic: [],
         specific: [],
     };
-    for (let [biosample, typAcc] of rows.entries()) {
+    for (const [biosample, typAcc] of Object.entries(rows)) {
         let celltypedesc = '';
         let tissue = '';
         if ('_agnostic' != biosample) {
-            celltypedesc = datasets.byCellType[biosample][0]["cellTypeDesc"]
-            tissue = datasets.byCellType[biosample][0]["tissue"]
+            celltypedesc = datasets.byCellTypeValue[biosample].name;
+            tissue = datasets.byCellTypeValue[biosample].tissue;
         }
         const row = {
-            "celltypename": biosample,
-            "celltypedesc": celltypedesc,
-            "tissue": tissue,
-            "assembly": assembly,
-            "5group": "NA",
-            "9state-H3K27ac": "NA",
-            "9state-H3K4me3": "NA",
-            "9state-CTCF": "NA",
-            "9state-DNase": "NA"
-        }
-        for (let [typ, acc] of typAcc.entries()) {
+            celltypename: biosample,
+            celltypedesc: celltypedesc,
+            tissue: tissue,
+            assembly: assembly,
+            '5group': 'NA',
+            '9state-H3K27ac': 'NA',
+            '9state-H3K4me3': 'NA',
+            '9state-CTCF': 'NA',
+            '9state-DNase': 'NA'
+        };
+        for (const [typ, acc] of Object.entries(typAcc)) {
             row[typ] = acc;
         }
         if ('_agnostic' === biosample) {
-            ret["agnostic"].push(row);
+            ret['agnostic'].push(row);
         } else {
-            ret["specific"].push(row);
+            ret['specific'].push(row);
         }
     }
     return ret;
@@ -103,7 +103,7 @@ async function loadGlobal() {
     const files = {
         agnostic: [].concat(cache('hg19').filesList.agnostic).concat(cache('mm10').filesList.agnostic),
         specific: [].concat(cache('hg19').filesList.specific).concat(cache('mm10').filesList.specific),
-    }
+    };
     const inputData = [].concat(cache('hg19').inputData).concat(cache('mm10').inputData);
 
     const global_cache = {

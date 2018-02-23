@@ -351,7 +351,7 @@ async function beds(assembly, tableName) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
     }
     return ret;
-};
+}
 
 export async function creBigBeds(assembly) {
     const tableName = assembly + '_dcc_cres';
