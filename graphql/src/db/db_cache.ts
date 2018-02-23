@@ -1,16 +1,37 @@
 import * as Path from 'path';
 import * as Common from './db_common';
 
-
-function indexFilesTab(rows) {
-    const ret: any = [];
-    const WWW = 'http://bib7.umassmed.edu/~purcarom/screen/ver4/v10';
-    for (const r of rows) {
-        const d = { ...r };
-        const accs = [r['dnase'], r['h3k4me3'], r['h3k27ac'], r['ctcf']].filter(a => a !== 'NA');
-        const fn = accs.join('_') + '.cREs.bigBed.bed.gz';
-        d['fiveGroup'] = [Path.join(WWW, fn), fn];
-        ret.push(d);
+function indexFilesTab(datasets, rows, assembly) {
+    const ret: any = {
+        agnostic: [],
+        specific: [],
+    };
+    for (const [biosample, typAcc] of Object.entries(rows)) {
+        let celltypedesc = '';
+        let tissue = '';
+        if ('_agnostic' != biosample) {
+            celltypedesc = datasets.byCellTypeValue[biosample].name;
+            tissue = datasets.byCellTypeValue[biosample].tissue;
+        }
+        const row = {
+            celltypename: biosample,
+            celltypedesc: celltypedesc,
+            tissue: tissue,
+            assembly: assembly,
+            '5group': 'NA',
+            '9state-H3K27ac': 'NA',
+            '9state-H3K4me3': 'NA',
+            '9state-CTCF': 'NA',
+            '9state-DNase': 'NA'
+        };
+        for (const [typ, acc] of Object.entries(typAcc)) {
+            row[typ] = acc;
+        }
+        if ('_agnostic' === biosample) {
+            ret['agnostic'].push(row);
+        } else {
+            ret['specific'].push(row);
+        }
     }
     return ret;
 }
@@ -24,9 +45,11 @@ async function load(assembly) {
     const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
     const { toSymbol, toStrand } = await Common.genemap(assembly);
     const nineState = await Common.loadNineStateGenomeBrowser(assembly);
-    const filesList = indexFilesTab(Object.keys(nineState).map(k => nineState[k]));
+    const creBeds = await Common.creBeds(assembly);
+    const filesList = indexFilesTab(datasets, creBeds, assembly);
     const inputData = await Common.inputData(assembly);
     const geBiosampleTypes = await Common.geBiosampleTypes(assembly);
+    const geBiosamples = await Common.geBiosamples(assembly);
     const geneIDsToApprovedSymbol = await Common.geneIDsToApprovedSymbol(assembly);
     const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
     const tfHistCounts = {
@@ -60,6 +83,7 @@ async function load(assembly) {
         moreTracks: undefined,
 
         geBiosampleTypes: geBiosampleTypes,
+        geBiosamples: geBiosamples,
 
         geneIDsToApprovedSymbol: geneIDsToApprovedSymbol,
 
@@ -76,7 +100,10 @@ async function load(assembly) {
 async function loadGlobal() {
     const colors = require('./colors');
     const helpKeys = await Common.getHelpKeys();
-    const files = [].concat(cache('hg19').filesList).concat(cache('mm10').filesList);
+    const files = {
+        agnostic: [].concat(cache('hg19').filesList.agnostic).concat(cache('mm10').filesList.agnostic),
+        specific: [].concat(cache('hg19').filesList.specific).concat(cache('mm10').filesList.specific),
+    };
     const inputData = [].concat(cache('hg19').inputData).concat(cache('mm10').inputData);
 
     const global_cache = {
@@ -127,6 +154,7 @@ export function global_data(assembly) {
         'chromLens': chrom_lengths[assembly],
         'creHistBins': c.creHist,
         'geBiosampleTypes': c.geBiosampleTypes,
+        'geBiosamples': c.geBiosamples,
         'creBigBedsByCellType': c.creBigBeds,
         'creFiles': c.filesList,
         'inputData': c.inputData,

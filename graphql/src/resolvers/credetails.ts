@@ -258,6 +258,9 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
         }
         return results;
     };
+    if (cre.assembly === 'mm10') {
+        throw new UserError('mm10 does not have FANTOM CAT data available.');
+    }
     return {
         'fantom_cat': await process('intersection'),
         'fantom_cat_twokb': await process('twokbintersection')

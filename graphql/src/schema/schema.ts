@@ -27,6 +27,7 @@ import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
 import CreDetailsResponse from './CreDetailsResponse';
 import RampageResponse from './RampageResponse';
 import BedUploadResponse from './BedUploadResponse';
+import GeneTopResponse from './GeneTopResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -41,6 +42,7 @@ import { resolve_ucsc_trackhub_url } from '../resolvers/ucsc_trackhub';
 import { resolve_credetails } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
+import { resolve_genetop } from '../resolvers/genetop';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -167,7 +169,16 @@ const BaseType = new GraphQLObjectType({
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) }
             },
             resolve: resolve_bedupload
-        }
+        },
+        genetop: {
+            description: 'Get gene expression by biosample',
+            type: new GraphQLNonNull(GeneTopResponse),
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                biosample: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve: resolve_genetop
+        },
     })
 });
 

@@ -58,6 +58,17 @@ export async function geBiosampleTypes(assembly) {
     return res.map(r => r['biosample_type']);
 }
 
+export async function geBiosamples(assembly) {
+    const tableName = 'r_rnas_' + assembly;
+    const q = `
+        SELECT DISTINCT(celltype) as biosample
+        FROM ${tableName}
+        ORDER BY celltype
+    `;
+    const res = await db.many(q);
+    return res.map(r => r['biosample']);
+}
+
 export async function geneIDsToApprovedSymbol(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `
@@ -329,8 +340,7 @@ export async function datasets(assembly) {
     return ret;
 }
 
-export async function creBigBeds(assembly) {
-    const tableName = assembly + '_dcc_cres';
+async function beds(assembly, tableName) {
     const q = `
         SELECT celltype, dcc_accession, typ
         FROM ${tableName}
@@ -341,6 +351,16 @@ export async function creBigBeds(assembly) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
     }
     return ret;
+}
+
+export async function creBigBeds(assembly) {
+    const tableName = assembly + '_dcc_cres';
+    return beds(assembly, tableName);
+}
+
+export async function creBeds(assembly) {
+    const tableName = assembly + '_dcc_cres_beds';
+    return beds(assembly, tableName);
 }
 
 export async function genesInRegion(assembly, chrom, start, stop) {
