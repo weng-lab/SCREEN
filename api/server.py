@@ -1,8 +1,5 @@
 #!/usr/bin/env python2
 
-
-
-
 import cherrypy
 import os
 import sys
@@ -44,6 +41,7 @@ class WebServerConfig:
                                      "error-" + ts + ".log")
 
         self.staticDir = os.path.join(self.root, "assets")
+        self.downloadDir = os.path.join(Config.downloadDir)
         self.viewDir = os.path.join(self.root, "views")
 
     def getRootConfig(self):
@@ -53,6 +51,11 @@ class WebServerConfig:
             '/assets': {
                 'tools.staticdir.on': True,
                 'tools.staticdir.dir': self.staticDir,
+                'tools.cors.on' : True,
+            },
+            '/downloads': {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': self.downloadDir,
                 'tools.cors.on' : True,
             }
         }

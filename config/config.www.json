@@ -11,7 +11,8 @@
 	"googleAnalytics": false,
 	"memcache": false,
 	"cassandra": ["pgs_cassandra"],
-	"redisHost": "127.0.0.1"
+	"redisHost": "127.0.0.1",
+	"downloadDir": "/app/downloads/"
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
