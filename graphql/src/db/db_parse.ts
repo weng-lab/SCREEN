@@ -207,8 +207,10 @@ export async function find_celltype(assembly, q, rev = false) {
         q = await do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible);
 
         if (!q) {
-            // We fell off the end, but know we have possibles
-            ret_celltypes[p.join(' ')] = possible[0];
+            if (possible[0]) {
+                // We fell off the end, but know we have possibles
+                ret_celltypes[p.join(' ')] = possible[0];
+            }
             break;
         }
     }
