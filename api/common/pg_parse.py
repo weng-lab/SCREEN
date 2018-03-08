@@ -80,7 +80,7 @@ LIMIT 50
             r = rows[0]
             if isclose(1, r[7]):  # similarity
                 return [GeneParse(self.assembly, r, s, usetss, tssDist)]
-        return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
+        return [] # [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def _fuzzyGeneMatch(self, s, usetss, tssDist):
         with getcursor(self.pg.DBCONN, "PGparse$parse") as curs:
@@ -100,12 +100,12 @@ LIMIT 50
                 """.format(assembly=self.assembly),
                          (slo, slo))
             rows = curs.fetchall()
-        return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
+            return [GeneParse(self.assembly, r, s, usetss, tssDist) for r in rows]
 
     def try_find_gene(self, s, usetss, tssDist):
         genes = self._exactGeneMatch(s, usetss, tssDist)
         if not genes:
-            genes = self._fuzzyGeneMatch(s, usetss, tssDist)
+            return self._fuzzyGeneMatch(s, usetss, tssDist)
         return genes
 
     def has_overlap(self, coord):

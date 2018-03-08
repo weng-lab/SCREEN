@@ -70,7 +70,7 @@ class AllCTView extends React.Component {
         let vcols = data.vcols;
 
         let cols = [
-            {title: "cRE", data: "info", 
+            {title: "ccRE", data: "info", 
              render: Render.creTableAccession(this.props.globals),
 	     sortDataF: (info) => (info.accession)
 	    },
@@ -116,7 +116,7 @@ class AllCTView extends React.Component {
                     <HelpIcon globals={this.props.globals}
 			      helpkey={"GWAS_Results_Table"} />
                 </h3>{" "}
-		<em>No cell type-specific information is available for this study. All {numCresOverlap} overlapping cREs are shown.
+		<em>No cell type-specific information is available for this study. All {numCresOverlap} overlapping ccREs are shown.
 		</em>
 		<br />
 		<br />
@@ -233,7 +233,7 @@ class CelltypeView extends React.Component {
         let vcols = data.vcols;
 
         let cols = [
-            {title: "cRE", data: "info", 
+            {title: "ccRE", data: "info", 
              render: Render.creTableAccession(this.props.globals),
 	     sortDataF: (info) => (info.accession)
 	    },
@@ -284,7 +284,7 @@ class CelltypeView extends React.Component {
                     <HelpIcon globals={this.props.globals}
 			      helpkey={"GWAS_Results_Table"} />
                 </h3>{" "}
-		<em>{cres.length} / {numCresOverlap} cREs ({pct}%) active in this cell type
+		<em>{cres.length} / {numCresOverlap} ccREs ({pct}%) active in this cell type
 		</em>
 		<br />
 		<br />

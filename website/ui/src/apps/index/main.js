@@ -25,7 +25,7 @@ class IndexPage extends React.Component {
           <div className={"row"}>
             <div className={"col-md-12"}>
               <div id={"mainTitle"}>
-                {"SCREEN: Search Candidate Regulatory Elements by ENCODE"}
+                {"SCREEN: Search Candidate cis-Regulatory Elements by ENCODE"}
               </div>
             </div>
           </div>

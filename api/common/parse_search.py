@@ -50,7 +50,7 @@ class ParseSearch:
 
     def haveresults(self, parsed):
         return parsed["coord_chrom"] or parsed["cellType"] or (
-            parsed["accessions"] and len(parsed["accessions"]))
+            parsed["accessions"] and len(parsed["accessions"])) or parsed["gene"]
 
     def _find_coord(self, s):
         _p = s.split()
@@ -131,7 +131,7 @@ class ParseSearch:
                                       max(0, coord.start - 2000),
                                       coord.end + 2000)
         except:
-            print("could not parse " + s)
+            print("could not parse " + s, file = sys.stderr)
 
         genes = []
         if coord is None and not accessions:
@@ -143,7 +143,7 @@ class ParseSearch:
                 s = g.s
 
         s, cellType, _interpretation = self.pgParse._find_celltype(s)
-
+            
         if cellType is None:
             s, cellType, _interpretation = self.pgParse._find_celltype(s, True)
 

@@ -10,7 +10,8 @@ from coord import Coord
 class GeneParse:
     def __init__(self, assembly, r, s, useTss, tssDist):
         self.assembly = assembly
-        self.s = s
+        self.approved_symbol = r[9]
+        self.s = s.replace(self.approved_symbol, "")
         self.useTss = useTss
         self.tssDist = tssDist
 
@@ -25,7 +26,6 @@ class GeneParse:
         else:
             self.coord = Coord(r[1], r[2], r[3])
 
-        self.approved_symbol = r[9]
         self.sm = r[7]
 
     def toJson(self):

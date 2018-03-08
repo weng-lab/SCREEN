@@ -43,7 +43,7 @@ class DeExp extends React.Component{
 	ApiClient.getByPost(jq, "/dews/search",
 			    (r) => {
 				this.setState({...r, isFetching: false, isError: false});
-				p.actions.setDes(r[p.gene]);
+				p.actions.setDes(r["des"]);
 			    },
 			    (msg) => {
 				console.log("err during load");
@@ -56,8 +56,7 @@ class DeExp extends React.Component{
             return arrowNote("Please choose 2 cell types.");
         }
         if(this.state.isError){
-            return (
-		<div>
+            return (		<div>
                     <h2>{"Error during load; please refresh the page"}
                     </h2>
                 </div>);
@@ -80,9 +79,23 @@ class DeExp extends React.Component{
         return loading(this.state);
     }
 
+    setxdomain() {
+	let gene = this.props.gene;
+	let state = {...this.state};
+	state[gene] = {...this.state[gene],
+		       xdomain: [+this.refs.x1.value, +this.refs.x2.value]};
+	this.setState(state);
+    }
+    
     render(){
+	let data = {xdomain: [0, 0]};
+	if (this.props.gene in this.state) { data = this.state[this.props.gene]; }
+	console.log(this.state);
+	let inputs = ("xdomain" in data && data.xdomain ?
+		      <span><input type="text" value={data.xdomain[0]} ref="x1" onChange={this.setxdomain.bind(this)} /> - <input type="text" value={data.xdomain[1]} onChange={this.setxdomain.bind(this)} ref="x2" /> </span>: <span/>);
         return (
-	    <div style={{"width": "100%"}} >
+		<div style={{"width": "100%"}} >
+		{inputs}
                 {this.doRenderWrapper()}
             </div>);
     }

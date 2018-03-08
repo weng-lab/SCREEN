@@ -187,7 +187,7 @@ class OrthologTab extends ReTabBase {
 	        return tabEles(globals, data, OrthologTable(globals, assembly,
 							    this.props.uuid), 1);
 	    }
-            return <div><br />{"No orthologous cRE identified."}</div>;
+            return <div><br />{"No orthologous ccRE identified."}</div>;
 	}
     }
 }
@@ -230,7 +230,7 @@ export class RampageTab extends ReTabBase{
             let data = keysAndData.tsss;
 
 	    if(0 === data.length) {
-		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
+		return <div><br />{"No RAMPAGE data found for this ccRE"}</div>;
 	    }
 
             return (
@@ -272,7 +272,7 @@ const DetailsTabInfo = (assembly) => {
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
                   f: RampageTab},
-        ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
+        ortholog: {title: Render.tabTitle(["Orthologous ccREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},

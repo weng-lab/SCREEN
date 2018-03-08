@@ -1,8 +1,10 @@
 import React from 'react'
 
+import {Tabs, Tab} from 'react-bootstrap'
 import {tabPanelize} from '../../../common/utility'
+import ASHG from './tab_ashg_2017'
 
-class TabTutorial extends React.Component {
+class UTabTutorial extends React.Component {
     constructor(props) {
 	super(props);
         this.key = "tutorial"
@@ -32,7 +34,7 @@ class TabTutorial extends React.Component {
 	        <h3>Search Results Table</h3>
 		{Iframe("https://www.youtube.com/embed/tOUJJ1L1E20")}
 
-		<h3>cRE Details</h3>
+		<h3>ccRE Details</h3>
                 {Iframe("https://www.youtube.com/embed/58U6k86vz2U")}
 
                 <h3>Gene Expression</h3>
@@ -48,4 +50,25 @@ class TabTutorial extends React.Component {
     }
 }
 
+class TabTutorial extends React.Component {
+
+    constructor(props) {
+	super(props);
+	this.key = "tutorial";
+    }
+
+    render() {
+	return (
+		<Tabs defaultActiveKey={1} id="tabset">
+		  <Tab eventKey={1} title="Videos">
+		    <UTabTutorial {...this.props} />
+                  </Tab>
+	          <Tab eventKey={2} title="ASHG 2017">
+		    <ASHG {...this.props} />
+		  </Tab>
+		</Tabs>
+	);
+    }
+    
+}
 export default TabTutorial;

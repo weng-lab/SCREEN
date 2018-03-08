@@ -89,7 +89,7 @@ export const cart_img = (rmv, src_only) => {
     if(src_only){
         return src;
     }
-    const title = (rmv ? "remove cRE from cart" : "add cRE to cart");
+    const title = (rmv ? "remove ccRE from cart" : "add ccRE to cart");
     return <img className="rowCart" src={src} title={title} alt="cart" />;
 }
 
@@ -100,7 +100,7 @@ export const popup = (p, c) => (
 )
 
 export const creLinkPop = (accession, type, full, meta) => (
-    popup("Click for cRE details")
+    popup("Click for ccRE details")
 )
 
 export const geLink = (assembly, gene, uuid) => ("/geApp/?" + toParams({assembly, gene, uuid}))
@@ -423,7 +423,7 @@ export const creTableAccessionProx = (cre) => {
 export const creTableAccession = (globals) => (cre, type, full, meta) => {
     return (
 	<div>
-	    {popup("Click for cRE details", cre.accession)}
+	    {popup("Click for ccRE details", cre.accession)}
 	    <br />
 	    {popup("Concordant", concordantStar(cre.concordant))}&nbsp;
 	    {creTableAccessionProx(cre)}&nbsp;

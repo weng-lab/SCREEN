@@ -29,4 +29,4 @@ class Config:
     memcache = re["memcache"]
     cassandra = re["cassandra"]
     redisHost = re["redisHost"]
-    bedupload = c["bedupload"]
+    #bedupload = c["bedupload"]

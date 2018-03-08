@@ -53,8 +53,8 @@ class SearchBox extends React.Component {
 					     if (event.which === 13 /* Enter */) {
 						 // prevent form submission, from
 						 // https://github.com/christianalfoni/formsy-react/issues/360
-						 event.preventDefault();
-					     }}}
+						 return event.preventDefault();
+					     } return null; }}
 				     onChange = {this.props.onChange}/>
 			<FormControl.Feedback />
 		    </FormGroup>
@@ -183,8 +183,7 @@ class Ztable extends React.Component {
 	    if ("render" in colInfo) {
 		let app = colInfo.render(row[colInfo.data]);
 		if (app && typeof(app) === 'object') {
-		    hasobj = true;
-		    return;
+		    return hasobj = true; // return assignment to avoid warning
 		}
 		ret += app;
 	    } else {

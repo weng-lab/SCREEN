@@ -12,13 +12,7 @@ const MainTabsConfig = () => {
             about : {title: "About", visible: true, f: TabAbout},
             tutorial : {title: "Tutorial", visible: true, f: TabTutorial},
             query: {title: "Query Results", visible: false, f: TabQuery},
-	    files: {title: "Files", visible: true, f: TabFiles},
-	    ashg2017: {title: (
-		<span className="btn btn-warning" style={{display: "inline"}}>
-		    <span className="glyphicon glyphicon-star" aria-hidden="true"></span>
-		    ASHG 2017
-		</span>),
-		       visible: true, f: TabAshg2017}
+	    files: {title: "Files", visible: true, f: TabFiles}
     };
 }
 

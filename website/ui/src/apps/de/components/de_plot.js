@@ -180,7 +180,7 @@ class DePlot extends React.Component {
 	   .attr("x", 0)
            .attr("dy", ".71em")
            .style("text-anchor", "end")
-           .text("change in cRE Z-score")
+           .text("change in ccRE Z-score")
         svg.selectAll(".dot")
            .data(creData)
            .enter().append("circle")

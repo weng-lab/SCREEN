@@ -63,7 +63,7 @@ const creBox = ({globals, assembly, des, ct1, ct2, actions}) => {
 	    bFilter={true}
         sortCol={["value", false]}
         />);
-    return panelize("candidate Regulatory Elements", box,
+    return panelize("candidate cis-Regulatory Elements", box,
 		    "DE_cRE_Table", globals);
 }
 
