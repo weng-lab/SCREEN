@@ -220,6 +220,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    info: false,
 	    bFilter: true,
             bLengthChange: true,
+	    csv: true,
 	    emptyText: "No SNPs within 10Kb",
 	    cols: [
 	        {title: "accession", data: "name",

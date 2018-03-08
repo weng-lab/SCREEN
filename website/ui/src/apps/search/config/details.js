@@ -7,6 +7,8 @@ import GeneExp from '../../geneexp/components/gene_exp';
 import Rampage from '../components/rampage';
 import MiniPeaks from '../components/minipeaks';
 
+import { CSVLink } from 'react-csv';
+
 import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
@@ -45,8 +47,9 @@ function tabEle(globals, data, key, table, numCols) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
     }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
-	<h4>{table.title} {helpicon}</h4>
-	{makeTable(data, key, table)}<br/>
+	    <h4>{table.title} {helpicon}</h4>
+	    {table.csv ? <CSVLink data={data}>CSV</CSVLink> : null}
+	    {makeTable(data, key, table)}<br/>
     </div>);
 }
 
