@@ -228,16 +228,16 @@ class DataWebService():
         return {gene: ret}
 
     def bed_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.staticDir)
+        cd = CREdownload(self.pgSearch, Config.downloadDir)
         return cd.bed(j)
 
     def gwas_json_download(self, j, args):
         j["uuid"] = str(uuid.uuid4())
-        cd = CREdownload(self.pgSearch, self.staticDir)
+        cd = CREdownload(self.pgSearch, Config.downloadDir)
         return cd.gwas(j, j["uuid"])
     
     def json_download(self, j, args):
-        cd = CREdownload(self.pgSearch, self.staticDir)
+        cd = CREdownload(self.pgSearch, Config.downloadDir)
         return cd.json(j)
 
     def cre_tf_dcc(self, j, args):

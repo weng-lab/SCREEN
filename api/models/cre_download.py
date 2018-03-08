@@ -11,9 +11,9 @@ from utils import Utils, Timer
 
 
 class CREdownload:
-    def __init__(self, pgSearch, staticDir):
+    def __init__(self, pgSearch, downloadDir):
         self.pgSearch = pgSearch
-        self.staticDir = staticDir
+        self.downloadDir = downloadDir
 
     def bed(self, j):
         try:
@@ -34,24 +34,24 @@ class CREdownload:
     def downloadAsBed(self, j, uuid):
         outFn, outFnp = self._downloadFileName(uuid, ".bed.txt")
         self.pgSearch.creTableDownloadBed(j, outFnp)
-        url = os.path.join('/', "assets", "downloads", uuid, outFn)
+        url = os.path.join('/', "downloads", uuid, outFn)
         return {"url": url}
 
     def _downloadFileName(self, uuid, formt):
         timestr = time.strftime("%Y%m%d-%H%M%S")
         outFn = '-'.join([timestr, "v4"]) + formt
-        outFnp = os.path.join(self.staticDir, "downloads", uuid, outFn)
+        outFnp = os.path.join(self.downloadDir, uuid, outFn)
         Utils.ensureDir(outFnp)
         return outFn, outFnp
 
     def downloadAsJson(self, j, uuid):
         outFn, outFnp = self._downloadFileName(uuid, ".json")
         self.pgSearch.creTableDownloadJson(j, outFnp)
-        url = os.path.join('/', "assets", "downloads", uuid, outFn)
+        url = os.path.join('/', "downloads", uuid, outFn)
         return {"url": url}
 
     def gwas(self, j, uuid):
         outFn, outFnp = self._downloadFileName(uuid, ".gwas.json")
         self.pgSearch.gwasJson(j, outFnp)
-        url = os.path.join('/', "assets", "downloads", uuid, outFn)
+        url = os.path.join('/', "downloads", uuid, outFn)
         return {"url": url}
