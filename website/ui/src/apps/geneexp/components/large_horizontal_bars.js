@@ -8,6 +8,7 @@ class LargeHorizontalBars extends React.Component {
         if(this.props.isFetching){
             return loading(this.props);
         }
+	console.log(this.props);
 
 	const ds = this.props.isSingle ? this.props.single : this.props.mean;
 	if(!ds){
@@ -40,7 +41,8 @@ class LargeHorizontalBars extends React.Component {
 		<span className="geTissueOfOrigin">Tissue of origin</span>
 		<ScaledHorizontalBar itemsets={items}
 				     width={this.props.width}
-				     barheight={this.props.barheight}
+	                             barheight={this.props.barheight}
+	                             downloadfilename={this.props.gene + "_expression.svg"}
 				     format={format} />
 	    </div>
 	);
