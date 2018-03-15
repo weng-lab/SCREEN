@@ -112,7 +112,8 @@ class Autocompleter extends React.Component {
  		        {input}
  		    </span>
  	        </div>
-
+		<em>{this.props.instructions}</em><br/>
+ 		    <em>{this.props.examples}</em><br/><br/>
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                        onClick={this.searchHg19} role={"button"}>
@@ -124,8 +125,6 @@ class Autocompleter extends React.Component {
 			Search Mouse<br /><small>(mm10)</small>
 		    </a>
  		    <br />
- 		    <br />
- 		    <i>{this.props.examples}</i>
  		</div>
  	</div>);
     }
