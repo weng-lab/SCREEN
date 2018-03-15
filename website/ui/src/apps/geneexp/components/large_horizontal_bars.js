@@ -8,7 +8,6 @@ class LargeHorizontalBars extends React.Component {
         if(this.props.isFetching){
             return loading(this.props);
         }
-	console.log(this.props);
 
 	const ds = this.props.isSingle ? this.props.single : this.props.mean;
 	if(!ds){
