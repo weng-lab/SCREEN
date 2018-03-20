@@ -53,8 +53,8 @@ class DE {
             Math.max(0, Math.min(...nearbyDEs.map(d => d['start']))),
             Math.max(...nearbyDEs.map(d => d['stop']))
         ];
-        const center = (cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0];
-        const halfWindow = Math.max(this.halfWindow, (cxdomain[1] - cxdomain[0]) / 2.0);
+        const center = Math.floor((cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0]);
+        const halfWindow = Math.floor(Math.max(this.halfWindow, (cxdomain[1] - cxdomain[0]) / 2));
 
         // widen each side
         const xdomain = [
