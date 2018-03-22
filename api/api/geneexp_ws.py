@@ -52,15 +52,20 @@ class GeneExpWebService(object):
     def search(self, j, args):
         def abort(err):
             return {"hasData": False, "items": {}, "err": err}
-
+        
         compartments = j["compartments_selected"]
-
+        assay_name = j["assay_name"] if "assay_name" in j else None
         biosample_types_selected = j["biosample_types_selected"]
+
+        print(self.allBiosampleTypes, file = sys.stderr)
+        print(biosample_types_selected, file = sys.stderr)
+        biosample_types_selected = [ "immortalized cell line" if x == "cell line" else x for x in biosample_types_selected]
+        
         if not biosample_types_selected:
             return abort("no biosample type selected")
         if not set(biosample_types_selected).issubset(self.allBiosampleTypes):
             return abort("invalid biosample type")
-
+        
         # TODO: check value of compartments
         if not compartments:
             return abort("no compartments")
@@ -73,19 +78,21 @@ class GeneExpWebService(object):
 
         name = gi.approved_symbol
         strand = gi.strand
-
+        
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        single = cge.computeHorBars(name, compartments, biosample_types_selected)
-        mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected)
-        itemsByRID = cge.itemsByRID
-        r = {"assembly": self.assembly,
-             "gene": name,
-             "strand": strand,
-             "ensemblid_ver": gi.ensemblid_ver,
-             "coords": {"chrom": gi.chrom,
-                        "start": gi.start,
-                        "stop": gi.stop},
-             "single": single,
-             "mean": mean,
-             "itemsByRID": itemsByRID}
+        r = {}
+        for assay_name in ["total RNA-seq", "polyA RNA-seq", "all"]:
+            single = cge.computeHorBars(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
+            mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
+            itemsByRID = cge.itemsByRID
+            r[assay_name] = {"assembly": self.assembly,
+                             "gene": name,
+                             "strand": strand,
+                             "ensemblid_ver": gi.ensemblid_ver,
+                             "coords": {"chrom": gi.chrom,
+                                        "start": gi.start,
+                                        "stop": gi.stop},
+                             "single": single,
+                             "mean": mean,
+                             "itemsByRID": itemsByRID}
         return r

@@ -42,7 +42,8 @@ class LoadRNAseq:
     lab text,
     assay_term_name text,
     biosample_type text,
-    ageTitle text
+        ageTitle text,
+        assay_title text
     )""".format(tn=tableName))
 
     def processRow(self, row, outF, lookup):
@@ -89,7 +90,8 @@ class LoadRNAseq:
              exp.lab,
              exp.assay_term_name,
              exp.biosample_type,
-             ageTitle]
+             ageTitle,
+             exp.jsondata["assay_title"]]
         # print(a)
         outF.write('\t'.join(a) + '\n')
 
@@ -107,7 +109,7 @@ class LoadRNAseq:
 
         cols = ["encode_id", "cellType", "organ",
                 "cellCompartment", "target", "lab",
-                "assay_term_name", "biosample_type", "ageTitle"]
+                "assay_term_name", "biosample_type", "ageTitle", "assay_title"]
 
         tableName = "r_rnas_" + self.assembly
         self.curs.copy_from(outF, tableName, '\t', columns=cols)

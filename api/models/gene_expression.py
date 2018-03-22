@@ -106,7 +106,7 @@ class GeneExpression:
                 "byExpressionTPM": self.sortByExpression(rows, "rawTPM"),
                 "byExpressionFPKM": self.sortByExpression(rows, "rawFPKM")}
 
-    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected):
+    def doComputeHorBars(self, q, gene, compartments, biosample_types_selected, assay_name = None):
         a = """
 SELECT chrom, start, stop 
 FROM {assembly}_gene_info
@@ -115,9 +115,11 @@ WHERE approved_symbol = %(gene)s
 
         #print(q, gene)
         with getcursor(self.ps.DBCONN, "_gene") as curs:
-            curs.execute(q, {"gene": gene,
-                             "compartments": tuple(compartments),
-                             "bts": tuple(biosample_types_selected)})
+            args = {"gene": gene,
+                    "compartments": tuple(compartments),
+                    "bts": tuple(biosample_types_selected)}
+            if assay_name is not None: args["an"] = assay_name
+            curs.execute(q, args)
             rows = curs.fetchall()
             curs.execute(a, {"gene": gene})
             grows = curs.fetchall()
@@ -152,28 +154,36 @@ WHERE approved_symbol = %(gene)s
         ret = self.process(rows)
         return ret
 
-    def computeHorBars(self, gene, compartments, biosample_types_selected):
+    def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
+        assayname = ""
+        if assay_name is not None:
+            assayname = "AND r_rnas_{assembly}.assay_title = %(an)s".format(assembly = self.assembly)
         q = """
 SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
 r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle, r.id
 FROM r_expression_{assembly} AS r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+{assayname}
 WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
-""".format(assembly=self.assembly)
-        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected)
+""".format(assembly=self.assembly, assayname = assayname)
+        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
 
-    def computeHorBarsMean(self, gene, compartments, biosample_types_selected):
+    def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
+        assayname = ""
+        if assay_name is not None:
+            assayname = "AND r_rnas_{assembly}.assay_title = %(an)s".format(assembly = self.assembly)
         q = """
 SELECT avg(r.tpm), r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
 r.dataset, 'mean' as replicate, avg(r.fpkm), r_rnas_{assembly}.ageTitle, 
 array_to_string(array_agg(r.id), ',')
 FROM r_expression_{assembly} AS r
 INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+{assayname}
 WHERE gene_name = %(gene)s
 AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
 AND r_rnas_{assembly}.biosample_type IN %(bts)s
 GROUP BY r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r_rnas_{assembly}.ageTitle
-""".format(assembly=self.assembly)
-        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected)
+""".format(assembly=self.assembly, assayname = assayname)
+        return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)

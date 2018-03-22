@@ -17,7 +17,8 @@ class GeneExp extends React.Component{
 	     width: 0,
 	     isSingle: false,
 	     sortOrder: "byTissueTPM",
-	     dataScale: "logTPM"};
+	     dataScale: "logTPM",
+	     polyA: "polyA RNA-seq"};
     
     componentDidMount(){
 	this.updateWidth();
@@ -119,7 +120,7 @@ class GeneExp extends React.Component{
 	const q = this.makeKey(this.props);
         const jq = JSON.stringify(q);
         if(jq in this.state){
-	    const data = this.state[jq];
+	    const data = this.state[jq][this.state.polyA];
             return (
 		<div style={{"width": "100%"}} ref="bargraph">
 		    {this.state.width > 0 &&
@@ -135,8 +136,8 @@ class GeneExp extends React.Component{
     }
 
     render(){
-	const changeView = (isSingle, sortOrder, dataScale) => {
-	    this.setState({isSingle, sortOrder, dataScale});
+	const changeView = (isSingle, polyA, sortOrder, dataScale) => {
+	    this.setState({isSingle, polyA, sortOrder, dataScale});
 	}
 	
         return (

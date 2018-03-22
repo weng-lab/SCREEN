@@ -121,6 +121,29 @@ class RepBox extends React.Component {
     }
 }
 
+class PolyATotalBox extends React.Component {
+    render() {
+	return (
+		<ButtonToolbar style={{display: "flex", justifyContent: "center"}}>
+		<ToggleButtonGroup type="radio" name="options"
+				   defaultValue={this.props.defaultValue}>
+		    <ToggleButton value="total RNA-seq" bsSize="xsmall"
+				  onClick={() => {this.props.setVal("total RNA-seq");}}>
+			Total RNA-seq
+		    </ToggleButton>
+		    <ToggleButton value="polyA RNA-seq" bsSize="xsmall"
+				  onClick={() => {this.props.setVal("polyA RNA-seq");}}>
+			PolyA RNA-seq
+	    </ToggleButton>
+		<ToggleButton value="all" bsSize="xsmall"
+				  onClick={() => {this.props.setVal("all");}}>
+			any
+		    </ToggleButton>
+		</ToggleButtonGroup>
+		</ButtonToolbar>);
+    }
+}
+
 class ByExpTissueTissueMax extends React.Component {
     render(){
 	const a = "Experiment";
@@ -154,6 +177,7 @@ class ControlBar extends React.Component {
 	this.isLinear = false;
 	this.isSingle = false;
 	this.sampleTisOrTisMax = 2;
+	this.polyA = "polyA RNA-seq";
     }
 
     setView(){
@@ -177,7 +201,7 @@ class ControlBar extends React.Component {
 	} else if(3 === this.sampleTisOrTisMax){
 	    r = lookup3[this.isTpm][this.isLinear];
 	}
-	this.props.changeView(this.isSingle, r[0], r[1]);
+	this.props.changeView(this.isSingle, this.polyA, r[0], r[1]);
     }
     
     render(){
@@ -192,7 +216,18 @@ class ControlBar extends React.Component {
 						       this.setView();}}
 			      ), null, null, {display: "flex", justifyContent: "center"})}
 		</div>
-	    </div>,
+		</div>,
+	    	    <div className="row" key="polya">
+		<div className="col-md-12">
+		    {panelize("RNA type",
+			      React.createElement(PolyATotalBox, 
+						  {defaultValue: this.polyA,
+						   setVal: (v) => {
+						       this.polyA = v;
+						       this.setView();}}
+			      ), null, null, {display: "flex", justifyContent: "center"})}
+		</div>
+		</div>,
 	    <div className="row" key="datascale">
 		<div className="col-md-4" style={{paddingRight: "0px"}}>
 		    {panelize("TPM/FPKM", 
