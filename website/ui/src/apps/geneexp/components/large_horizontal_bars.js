@@ -18,7 +18,7 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
-	const itemsByRID = this.props.itemsByRID
+	const itemsByRID = this.props.itemsByRID;
 
 	const format = {
 	    value: rid => {
@@ -27,7 +27,7 @@ class LargeHorizontalBars extends React.Component {
 	    label: rid => {
 		const d = itemsByRID[rid];
 		if(d.ageTitle){
-		    return d.cellType + ' ' + d.ageTitle;
+		    return d.expID + ' ' + d.cellType + ' ' + d.ageTitle;
 		}
 		return d.expID + ' ' + d.cellType},
 	    grouplabel: d => d.displayName
