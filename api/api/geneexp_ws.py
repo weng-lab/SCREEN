@@ -56,9 +56,6 @@ class GeneExpWebService(object):
         compartments = j["compartments_selected"]
         assay_name = j["assay_name"] if "assay_name" in j else None
         biosample_types_selected = j["biosample_types_selected"]
-
-        print(self.allBiosampleTypes, file = sys.stderr)
-        print(biosample_types_selected, file = sys.stderr)
         biosample_types_selected = [ "immortalized cell line" if x == "cell line" else x for x in biosample_types_selected]
         
         if not biosample_types_selected:
