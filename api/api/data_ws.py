@@ -176,10 +176,14 @@ class DataWebService():
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat enhancers") as curs:
             enhancers = [{"chr": a, "start": int(b), "stop": int(c)}
                          for a, b, c in self.pgFantomCat.select_enhancers(accession, curs)]
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat CAGE") as curs:
+            cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d}
+                    for a, b, c, d in self.pgFantomCat.select_cage(accession, curs)]
         return {accession: {
             "fantom_cat": process("intersections"),
             "fantom_cat_twokb": process("twokb_intersections"),
-            "enhancers": enhancers
+            "enhancers": enhancers,
+            "cage": cage
         }}
 
     def _re_detail_nearbyGenomic(self, j, accession):

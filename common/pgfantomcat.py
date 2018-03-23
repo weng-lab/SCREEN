@@ -25,13 +25,21 @@ class PGFantomCat:
         ("ccRE_acc", "TEXT")
     ]
     ENHANCERFIELDS = [x for x, _ in ENHANCERCOLUMNS]
+
+    CAGECOLUMNS = [
+        ("id", "serial PRIMARY KEY"),
+        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"), ("strand", "TEXT"),
+        ("ccRE_acc", "TEXT")
+    ]
+    CAGEFIELDS = [x for x, _ in CAGECOLUMNS]
     
     def __init__(self, assembly, tableprefix="fantomcat"):
         self._tables = {
             "genes": "_".join((assembly, tableprefix, "genes")),
             "intersections": "_".join((assembly, tableprefix, "intersection")),
             "twokb_intersections": "_".join((assembly, tableprefix, "twokbintersection")),
-            "enhancers": "_".join((assembly, tableprefix, "enhancers"))
+            "enhancers": "_".join((assembly, tableprefix, "enhancers")),
+            "cage": "_".join((assembly, tableprefix, "cage"))
         }
 
     def drop_and_recreate(self, curs):
@@ -51,10 +59,18 @@ CREATE TABLE {intersections} (id serial PRIMARY KEY, geneid TEXT, cre TEXT)"""
 DROP TABLE IF EXISTS {enhancers};
 CREATE TABLE {enhancers} ({fields})"""
                      .format(enhancers = self._tables["enhancers"], fields = ",".join(" ".join(x) for x in PGFantomCat.ENHANCERCOLUMNS)))
+        curs.execute("""
+        DROP TABLE IF EXISTS {cage};
+        CREATE TABLE {cage} ({fields})"""
+                     .format(cage = self._tables["cage"], fields = ",".join(" ".join(x) for x in PGFantomCat.CAGECOLUMNS)))
 
     def import_enhancers_fromfile(self, fnp, curs):
         with open(fnp, 'r') as f:
             curs.copy_from(f, self._tables["enhancers"], columns = [x for x in PGFantomCat.ENHANCERFIELDS[1:]])
+
+    def import_cage_fromfile(self, fnp, curs):
+        with open(fnp, 'r') as f:
+            curs.copy_from(f, self._tables["cage"], columns = [x for x in PGFantomCat.CAGEFIELDS[1:]])
         
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
@@ -66,6 +82,11 @@ CREATE TABLE {enhancers} ({fields})"""
 
     def select_enhancers(self, ccREacc, curs):
         curs.execute("SELECT chrom, start, stop FROM {enhancers} WHERE ccRE_acc = %(acc)s".format(enhancers = self._tables["enhancers"]),
+                     {"acc": ccREacc})
+        return curs.fetchall()
+
+    def select_cage(self, ccREacc, curs):
+        curs.execute("SELECT chrom, start, stop, strand FROM {cage} WHERE ccRE_acc = %(acc)s".format(cage = self._tables["cage"]),
                      {"acc": ccREacc})
         return curs.fetchall()
 
