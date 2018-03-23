@@ -164,7 +164,7 @@ class DataWebService():
 
     def fantom_cat(self, j, accession):
         def process(key):
-            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat") as curs:
+            with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat::process %s" % key) as curs:
                 results = self.pgFantomCat.select_cre_intersections(accession, curs, key)
             for result in results:
                 result["other_names"] = result["genename"] if result["genename"] != result["geneid"] else ""
@@ -173,9 +173,13 @@ class DataWebService():
                         result["other_names"] += ", "
                     result["other_names"] += ", ".join(result["aliases"].split("|"))
             return results
+        with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat enhancers") as curs:
+            enhancers = [{"chr": a, "start": int(b), "stop": int(c)}
+                         for a, b, c in self.pgFantomCat.select_enhancers(accession, curs)]
         return {accession: {
             "fantom_cat": process("intersections"),
-            "fantom_cat_twokb": process("twokb_intersections")
+            "fantom_cat_twokb": process("twokb_intersections"),
+            "enhancers": enhancers
         }}
 
     def _re_detail_nearbyGenomic(self, j, accession):

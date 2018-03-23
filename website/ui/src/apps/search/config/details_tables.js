@@ -177,6 +177,33 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	paging: true,
 	bLengthChange: true,
 	bFilter: true
+    },
+    enhancers: {
+	"title": "Intersecting FANTOM enhancers (permissive, FANTOM5 Phases 1 and 2)",
+	cols: [
+	    {title: "chr", data: "chr", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer},
+	    {title: "", data: null,
+	     className: "browser",
+	     targets: -1, orderable: false,
+	     defaultContent: Render.browser_buttons(["UCSC"]) }
+	],
+	onTdClick: (td, rowdata) => {
+            if (td.indexOf("browser") !== -1){
+		const args = {
+		    title: rowdata.chr + ":" + rowdata.start + "-" + rowdata.stop,
+		    start: rowdata.start,
+		    len: rowdata.stop - rowdata.start,
+		    chrom: rowdata.chr
+		};
+		actions.showGenomeBrowser(args, "UCSC", "FantomCAT");
+	    }},
+	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
+	pageLength: 5,
+	paging: true,
+	bFilter: true,
+	bLengthChange: true
     }
 });
 
