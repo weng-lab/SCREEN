@@ -15,11 +15,11 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
     fields: () => ({
         tfs: {
             description: 'A list of all transcription factors used',
-            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         },
         cellCompartments: {
             description: 'A list of cell compartments',
-            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         },
         cellTypeInfoArr: {
             description: 'Get info on all cell types used and assays used for ccRE data',
@@ -39,11 +39,11 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         },
         geBiosampleTypes: {
             description: 'Returns biosample types available in gene expression',
-            type: GraphQLJSON
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         },
         geBiosamples: {
             description: 'Returns biosamples available in gene expression',
-            type: GraphQLJSON
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
         },
         creBigBedsByCellType: {
             description: 'Returns the accessions of the celltype-specific bigBed files for ccREs on ENCODE',
