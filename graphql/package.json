@@ -42,6 +42,7 @@
     "graphql-errors": "^2.1.0",
     "graphql-type-json": "^0.1.4",
     "pg-promise": "^7.3.3",
+    "raven": "^2.4.2",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "uuid-validate": "^0.0.2"

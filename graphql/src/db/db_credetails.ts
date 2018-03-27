@@ -17,9 +17,9 @@ export async function orthologs(assembly, accession) {
     const otherspecies = assembly != 'mm10' ? 'mouse' : 'human';
     const tablename = 'mm10_liftover';
     const q = `
-        SELECT chrom, start, stop, ${currentspecies}Accession as accession, overlap
+        SELECT chrom, start, stop, ${otherspecies}Accession as accession, overlap
         FROM ${tablename}
-        WHERE ${otherspecies}Accession = $1
+        WHERE ${currentspecies}Accession = $1
     `;
     return db.any(q, [accession]);
 }

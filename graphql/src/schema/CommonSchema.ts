@@ -300,6 +300,7 @@ export const cRE = new GraphQLObjectType({
     })
 });
 
+// TODO: document these
 export const CellTypeAssay = new GraphQLObjectType({
     name: 'CellTypeAssay',
     description: 'Info on a single assay from a cell type',
@@ -312,6 +313,7 @@ export const CellTypeAssay = new GraphQLObjectType({
     })
 });
 
+// TODO: document these
 export const CellTypeInfo = new GraphQLObjectType({
     name: 'CellTypeInfo',
     description: 'Info on a cell type used in SCREEN and in ccREs',

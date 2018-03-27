@@ -1,19 +1,33 @@
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 import schema from './schema/schema';
-import { maskErrors, IsUserError } from 'graphql-errors';
+import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
 
+const Raven = require('raven');
 const {formatError} = require('graphql');
 
-const logErrors = error => {
+const useRaven = process.env.NODE_ENV === "production";
+
+useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
+
+const logErrors = req => error => {
   const data = formatError(error);
   const {originalError} = error;
   if (originalError && !originalError[IsUserError] ) {
-    console.log(originalError);
+    useRaven && Raven.captureException(originalError, { req, extra: { source: error.source } });
+  } else {
+    useRaven && Raven.captureException(error, { req, extra: { source: error.source, originalMessage: error.originalMessage } });
   }
   return data;
 };
 
+const oldDefault = defaultHandler;
+setDefaultHandler(err => {
+  if (!err[IsUserError]) {
+    err.originalMessage = err.message;
+  }
+  return oldDefault(err);
+});
 maskErrors(schema);
 
 const app = express();
@@ -29,11 +43,13 @@ const cors = function (req, res, next) {
   }
 };
 
+useRaven && app.use(Raven.requestHandler());
 app.use('/graphql', cors);
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', graphqlHTTP(req => ({
   schema: schema,
-  formatError: logErrors,
+  formatError: logErrors(req),
   graphiql: true
-}));
+})));
+useRaven && app.use(Raven.errorHandler());
 
 app.listen(4000);
