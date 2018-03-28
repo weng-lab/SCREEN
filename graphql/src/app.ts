@@ -6,7 +6,7 @@ import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'grap
 const Raven = require('raven');
 const {formatError} = require('graphql');
 
-const useRaven = process.env.NODE_ENV === "production";
+const useRaven = process.env.NODE_ENV === 'production';
 
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
