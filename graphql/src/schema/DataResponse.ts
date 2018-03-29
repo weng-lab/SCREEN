@@ -24,10 +24,6 @@ export const DataResponse = new GraphQLObjectType({
             description: 'Returns the ccREs that match the parameters',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE))),
         },
-        ct: {
-            description: 'The celltype that this data is related to, or null if not applicable',
-            type: CommonTypes.CellTypeInfo
-        }
     })
 });
 

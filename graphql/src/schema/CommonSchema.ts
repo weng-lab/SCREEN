@@ -12,6 +12,7 @@ import {
     GraphQLEnumType
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
+import { resolve_ctspecific } from '../resolvers/cretable';
 
 
 export const Assembly = new GraphQLEnumType({
@@ -22,21 +23,6 @@ export const Assembly = new GraphQLEnumType({
         },
         hg19: {
             value: 'hg19'
-        }
-    }
-});
-
-export const ElementType = new GraphQLEnumType({
-    name: 'ElementType',
-    values: {
-        promoterLike: {
-            value: 'promoter-like'
-        },
-        enhancerLike: {
-            value: 'enhancer-like'
-        },
-        insulatorLike: {
-            value: 'insulator-like'
         }
     }
 });
@@ -141,14 +127,54 @@ export const InputExpMax = new GraphQLInputObjectType({
     })
 });
 
+export const InputCtExps = new GraphQLInputObjectType({
+    name: 'InputCtExps',
+    description: 'Defines acceptable zscore ranges for a single celltype. ' +
+        'If a particular celltype does not have a particular experiment, then the range will not be applicable',
+    fields: () => ({
+        cellType: {
+            description: 'The celltype that the ranges apply to',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        rank_ctcf_end: {
+            description: 'End of ctcf zscore range',
+            type: GraphQLFloat
+        },
+        rank_ctcf_start: {
+            description: 'Start of ctcf zscore range',
+            type: GraphQLFloat
+        },
+        rank_dnase_end: {
+            description: 'End of dnase zscore range',
+            type: GraphQLFloat
+        },
+        rank_dnase_start: {
+            description: 'Start of dnase zscore range',
+            type: GraphQLFloat
+        },
+        rank_enhancer_end: {
+            description: 'End of enhancer zscore range',
+            type: GraphQLFloat
+        },
+        rank_enhancer_start: {
+            description: 'Start of enhancer zscore range',
+            type: GraphQLFloat
+        },
+        rank_promoter_end: {
+            description: 'End of promoter zscore range',
+            type: GraphQLFloat
+        },
+        rank_promoter_start: {
+            description: 'Start of promoter zscore range',
+            type: GraphQLFloat
+        },
+    })
+});
+
 export const DataParameters = new GraphQLInputObjectType({
     name: 'DataParameters',
     description: 'Parameters to define what ccREs should be returned from a DataResponse',
     fields: () => ({
-        cellType: {
-            description: 'If defined, will return celltype-specific information for ccREs returned',
-            type: GraphQLString
-        },
         accessions: {
             description: 'A list of accessions to return',
             type: new GraphQLList(GraphQLString)
@@ -161,10 +187,10 @@ export const DataParameters = new GraphQLInputObjectType({
             description: 'Only return ccREs with max zscores for all available experiments that fall within specific ranges',
             type: InputExpMax
         },
-        element_type: {
-            description: 'Only return ccREs of a specific ElementType - UNIMPLEMENTED',
-            type: ElementType
-        }, // TODO: implement
+        ctexps: {
+            description: 'Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type',
+            type: InputCtExps
+        },
     })
 });
 
@@ -187,6 +213,44 @@ export const SearchParameters = new GraphQLInputObjectType({
     })
 });
 
+export const OrderBy = new GraphQLEnumType({
+    name: 'OrderBy',
+    values: {
+        maxz: {
+            description: '(DEFAULT)',
+            value: 'maxz'
+        },
+        dnasemax: {
+            value: 'dnasemax'
+        },
+        k27acmax: {
+            value: 'k27acmax'
+        },
+        k4me3max: {
+            value: 'k4me3max'
+        },
+        ctcfmax: {
+            value: 'ctcfmax'
+        },
+        dnase_zscore: {
+            description: '(Only available if celltype-specific)',
+            value: 'dnase_zscore'
+        },
+        promoter_zscore: {
+            description: '(Only available if celltype-specific)',
+            value: 'promoter_zscore'
+        },
+        enhancer_zscore: {
+            description: '(Only available if celltype-specific)',
+            value: 'enhancer_zscore'
+        },
+        ctcf_zscore: {
+            description: '(Only available if celltype-specific)',
+            value: 'ctcf_zscore'
+        },
+    }
+});
+
 export const PaginationParameters = new GraphQLInputObjectType({
     name: 'PaginationParameters',
     description: 'ADVANCED - you probably do not need this. offset + limit <= 10000; limit <= 1000; to access more data, refine your search',
@@ -198,6 +262,10 @@ export const PaginationParameters = new GraphQLInputObjectType({
         limit: {
             description: 'Default 1000. Change the limit to the number of ccREs returned.',
             type: GraphQLInt
+        },
+        orderBy: {
+            description: 'The field to order by.',
+            type: OrderBy
         },
     })
 });
@@ -288,11 +356,21 @@ export const cRE = new GraphQLObjectType({
             description: 'Is ccRE +/- 2kb of TSS',
             type: new GraphQLNonNull(GraphQLBoolean),
         },
-        ctspecific: {
-            description: 'celltype-specific zscores, if celltype was specified',
-            type: ctSpecific
+        allct: {
+            description: 'All celltype-specific zscores. This should be used very sparingly.',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ctSpecific))),
         },
-
+        ctspecific: {
+            description: 'celltype-specific zscores',
+            type: ctSpecific,
+            args: {
+                cellType: {
+                    description: 'The celltype to request zscores of. Can also be "none".',
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
+            resolve: resolve_ctspecific,
+        },
         nearbygenes: {
             description: 'Nearby genes',
             type: new GraphQLNonNull(genes)

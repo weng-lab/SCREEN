@@ -212,7 +212,7 @@ export async function resolve_cre_info(source, args, context, info) {
     const c = cache(cre.assembly);
     const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession]}, {});
     if (res['total'] > 0) {
-        return mapcre(cre.assembly, res['cres'][0]);
+        return mapcre(cre.assembly, res['cres'][0], c.datasets.globalCellTypeInfoArr, c.ctmap);
     }
     return {};
 }
