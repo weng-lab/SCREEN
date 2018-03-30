@@ -1,6 +1,6 @@
 import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
-import { db } from './db';
+import { db, pgp } from './db';
 
 const { UserError } = require('graphql-errors');
 
@@ -64,9 +64,8 @@ const ctexps = {
     'enhancer': 'h3k27ac',
     'ctcf': 'ctcf',
 };
-const ctSpecificRanks = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
+const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
     j = j.ctexps || {};
-    ctSpecificObj['ct'] = "'" + ct + "'";
     for (const name of Object.keys(ctexps)) {
         const exp = ctexps[name];
         if (!(ct in ctmap[name])) {
@@ -74,7 +73,6 @@ const ctSpecificRanks = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) =>
             continue;
         }
         const ctindex = ctmap[name][ct];
-        ctSpecificObj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
         fields.push(getCtSpecificOrderBy(exp, ctindex));
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
@@ -118,7 +116,9 @@ const where = (wheres, params, chrom, start, stop) => {
 export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined, start: string | undefined, stop: string | undefined, pagination: any) => {
     const wheres = [];
     const fields = [
-        `json_build_object('chrom', cre.chrom, 'start', cre.start, 'end', cre.stop) as range`,
+        `cre.chrom as chrom`,
+        `cre.start as start`,
+        `cre.stop as end`,
         'cre.maxZ',
         'cre.gene_all_id',
         'cre.gene_pc_id'
@@ -152,7 +152,7 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
         }
     } else {
         orderBy = pagination.orderBy || 'dnase_zscore';
-        ctSpecificRanks(wheres, fields, params, ctspecificobj, ct, j, ctmap);
+        ctSpecificRanks(wheres, fields, params, ct, j, ctmap);
     }
     for (const name of Object.keys(ctexps)) {
         const exp = ctexps[name];
@@ -162,12 +162,9 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
 
     const ctspecificpairs: Array<string> = [];
     for (const k of Object.keys(ctspecificobj)) {
-        ctspecificpairs.push(`'${k}', ${ctspecificobj[k]}`);
-        if (k !== 'ct') {
-            groupBy.push(ctspecificobj[k]);
-        }
+        fields.push(`${ctspecificobj[k]} as ${k}`);
+        groupBy.push(ctspecificobj[k]);
     }
-    const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctspecificraw';
 
     const infoFields = {
         'accession': 'cre.accession',
@@ -183,7 +180,7 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
         groupBy.push(infoFields[k]);
     }
 
-    const retfields = [ctspecificfield, ...fields].join(', ');
+    const retfields = fields.join(', ');
     let retwhere = '';
     if (0 < wheres.length) {
         retwhere = 'WHERE ' + wheres.join(' and ');
@@ -228,7 +225,10 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
         LIMIT ${limit}
     `;
 
+    // The default arrayparser for pg-types is slow comparatively
+    pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(parseFloat));
     const res = await db.any(query, params);
+    pgp.pg.types.setTypeParser(1021, 'text', undefined);
     let total = res.length;
     if (limit <= total || offset !== 0) {// reached query limit
         total = await creTableEstimate(table, where, params);
