@@ -12,17 +12,28 @@ export function mapcre(assembly, r, ctinfo, ctmap) {
         'all': all,
         'pc': pc,
     };
-    const allct = ctinfo.map(ct => ct.value).map(ct => ({
-        ct,
-        dnase_zscore: ct in ctmap.dnase ? r.ctspecificraw.dnase_zscore[ctmap.dnase[ct] - 1] : undefined,
-        promoter_zscore: ct in ctmap.promoter ? r.ctspecificraw.promoter_zscore[ctmap.promoter[ct] - 1] : undefined,
-        enhancer_zscore: ct in ctmap.enhancer ? r.ctspecificraw.enhancer_zscore[ctmap.enhancer[ct] - 1] : undefined,
-        ctcf_zscore: ct in ctmap.ctcf ? r.ctspecificraw.ctcf_zscore[ctmap.ctcf[ct] - 1] : undefined,
+    const allct = ctinfo.map(ct => ({
+        ct: ct.value,
+        dnase_zscore: ct.value in ctmap.dnase ? r.dnase_zscore[ctmap.dnase[ct.value] - 1] : undefined,
+        promoter_zscore: ct.value in ctmap.promoter ? r.promoter_zscore[ctmap.promoter[ct.value] - 1] : undefined,
+        enhancer_zscore: ct.value in ctmap.enhancer ? r.enhancer_zscore[ctmap.enhancer[ct.value] - 1] : undefined,
+        ctcf_zscore: ct.value in ctmap.ctcf ? r.ctcf_zscore[ctmap.ctcf[ct.value] - 1] : undefined,
     }));
     return {
         assembly,
         ...r,
-        ctspecificraw: undefined,
+        chrom: undefined,
+        start: undefined,
+        end: undefined,
+        range: {
+            chrom: r.chrom,
+            start: r.start,
+            end: r.end,
+        },
+        dnase_zscore: undefined,
+        promoter_zscore: undefined,
+        enhancer_zscore: undefined,
+        ctcf_zscore: undefined,
         allct,
         gene_all_id: undefined,
         gene_pc_id: undefined,
