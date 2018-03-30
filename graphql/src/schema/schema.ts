@@ -142,9 +142,9 @@ const BaseType = new GraphQLObjectType({
         },
         credetails: {
             description: 'Get details for specific ccREs',
-            type: new GraphQLNonNull(new GraphQLList(CreDetailsResponse)),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CreDetailsResponse))),
             args: {
-                accessions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+                accessions: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
             },
             resolve: resolve_credetails
         },
