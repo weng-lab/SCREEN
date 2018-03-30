@@ -6,7 +6,7 @@ import {
     GraphQLNonNull,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { resolve_globals_assembly, resolve_help_key } from '../resolvers/globals';
+import { resolve_globals_assembly, resolve_help_key, resolve_ctinfo } from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
@@ -24,6 +24,17 @@ export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
         cellTypeInfoArr: {
             description: 'Get info on all cell types used and assays used for ccRE data',
             type: new GraphQLList(new GraphQLNonNull(CommonTypes.CellTypeInfo))
+        },
+        ctinfo: {
+            description: 'Gets the info for a specific cell type. Can use "none" to return nothing.',
+            type: CommonTypes.CellTypeInfo,
+            args: {
+                cellType: {
+                    description: 'The cellType to get info for',
+                    type: new GraphQLNonNull(GraphQLString),
+                }
+            },
+            resolve: resolve_ctinfo,
         },
         chromCounts: {
             description: 'Returns the numbers of ccREs keyed by chromosome',

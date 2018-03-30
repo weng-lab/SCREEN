@@ -21,3 +21,13 @@ export const resolve_help_key: GraphQLFieldResolver<any, any> = (source, args, c
     }
     return helpText;
 };
+
+export const resolve_ctinfo: GraphQLFieldResolver<any, any> = (source, args) => {
+    const cellType = args.cellType;
+    if (cellType === 'none') return undefined;
+    const result = source.cellTypeInfoArr.filter(ct => ct.value === cellType);
+    if (result.length == 0) {
+        throw new UserError(cellType, ' does not exist!');
+    }
+    return result[0];
+};

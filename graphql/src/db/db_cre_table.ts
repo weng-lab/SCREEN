@@ -15,47 +15,73 @@ const accessions = (wheres, params, j: {accessions?: string[]}) => {
     return true;
 };
 
-const notCtSpecific = (wheres, fields, params, j) => {
+const notCtSpecificRanks = (wheres, params, j) => {
+    j = j.ctexps || {};
     // use max zscores
-    const allmap = {
+    const map = {
         'dnase': 'dnase_max',
         'promoter': 'h3k4me3_max',
         'enhancer': 'h3k27ac_max',
         'ctcf': 'ctcf_max'
     };
-    for (const x of ['dnase', 'promoter', 'enhancer', 'ctcf']) {
-        if (`rank_${x}_start` in j && `rank_${x}_end` in j) {
-            const statement = [
-                `cre.${allmap[x]} >= $<rank_${x}_start>`,
-                `cre.${allmap[x]} <= $<rank_${x}_end>`].join(' and ');
-            params[`rank_${x}_start`] = j[`rank_${x}_start`];
-            params[`rank_${x}_end`] = j[`rank_${x}_end`];
-            wheres.push(`(${statement})`);
+    for (const name of Object.keys(map)) {
+        const exp = map[name];
+        if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
+            const minDefault = -10.0; // must match slider default
+            const maxDefault = 10.0;  // must match slider default
+            const start = j[`rank_${name}_start`] || minDefault;
+            const end = j[`rank_${name}_end`] || maxDefault;
+            let startWhere;
+            let endWhere;
+            if (!isclose(start, minDefault)) {
+                startWhere = `cre.${map[name]} >= $<rank_${name}_start>`;
+                params[`rank_${name}_start`] = start;
+            }
+            if (!isclose(end, maxDefault)) {
+                endWhere = `cre.${map[name]} <= $<rank_${name}_end>`;
+                params[`rank_${name}_end`] = end;
+            }
+            if (startWhere && endWhere) {
+                wheres.push(`(${startWhere} and ${endWhere}`);
+            } else if (startWhere) {
+                wheres.push(`(${startWhere})`);
+            } else if (endWhere) {
+                wheres.push(`(${endWhere})`);
+            }
         }
     }
-    return { wheres, fields };
 };
 
-const ctSpecific = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
+const getCtSpecificOrderBy = (exp, ctindex) => ({
+    dnase: `cre.${exp}_zscores[${ctindex}] as dnase_zscore`,
+    h3k4me3: `cre.${exp}_zscores[${ctindex}] as promoter_zscore`,
+    h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
+    ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
+}[exp]);
+const ctexps = {
+    'dnase': 'dnase',
+    'promoter': 'h3k4me3',
+    'enhancer': 'h3k27ac',
+    'ctcf': 'ctcf',
+};
+const ctSpecificRanks = (wheres, fields, params, ctSpecificObj, ct, j, ctmap) => {
+    j = j.ctexps || {};
     ctSpecificObj['ct'] = "'" + ct + "'";
-    const exps = [['dnase', 'dnase'],
-    ['promoter', 'h3k4me3'],
-    ['enhancer', 'h3k27ac'],
-    ['ctcf', 'ctcf']];
-    for (const v of exps) {
-        const [name, exp] = v;
+    for (const name of Object.keys(ctexps)) {
+        const exp = ctexps[name];
         if (!(ct in ctmap[name])) {
             console.log(ct, 'not in ctmap ', name);
             continue;
         }
         const ctindex = ctmap[name][ct];
         ctSpecificObj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
+        fields.push(getCtSpecificOrderBy(exp, ctindex));
 
-        if (`rank_${name}_start` in j && `rank_${name}_end` in j) {
-            const start = j[`rank_${name}_start`];
-            const end = j[`rank_${name}_end`];
+        if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
             const maxDefault = 10.0;  // must match slider default
+            const start = j[`rank_${name}_start`] || minDefault;
+            const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
             let endWhere;
             if (!isclose(start, minDefault)) {
@@ -89,7 +115,7 @@ const where = (wheres, params, chrom, start, stop) => {
     }
 };
 
-export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined, start: string | undefined, stop: string | undefined) => {
+export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined, start: string | undefined, stop: string | undefined, pagination: any) => {
     const wheres = [];
     const fields = [
         `json_build_object('chrom', cre.chrom, 'start', cre.start, 'end', cre.stop) as range`,
@@ -110,10 +136,27 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
     const ct = j['cellType'];
 
     const ctspecificobj = {};
+    let orderBy;
+    notCtSpecificRanks(wheres, params, j);
     if (useAccs || !ct) {
-        notCtSpecific(wheres, fields, params, j);
+        switch (pagination.orderBy || 'maxz') {
+            case 'dnase_zscore':
+            case 'promoter_zscore':
+            case 'enhancer_zscore':
+            case 'ctcf_zscore':
+                orderBy = 'maxz';
+                break;
+            default:
+                orderBy = pagination.orderBy || 'maxz';
+                break;
+        }
     } else {
-        ctSpecific(wheres, fields, params, ctspecificobj, ct, j, ctmap);
+        orderBy = pagination.orderBy || 'dnase_zscore';
+        ctSpecificRanks(wheres, fields, params, ctspecificobj, ct, j, ctmap);
+    }
+    for (const name of Object.keys(ctexps)) {
+        const exp = ctexps[name];
+        ctspecificobj[name + '_zscore'] = `cre.${exp}_zscores`;
     }
     where(wheres, params, chrom, start, stop);
 
@@ -124,7 +167,7 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
             groupBy.push(ctspecificobj[k]);
         }
     }
-    const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctspecific';
+    const ctspecificfield = 'json_build_object(' + ctspecificpairs.join(',') + ') as ctspecificraw';
 
     const infoFields = {
         'accession': 'cre.accession',
@@ -145,7 +188,7 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
     if (0 < wheres.length) {
         retwhere = 'WHERE ' + wheres.join(' and ');
     }
-    return { fields: retfields, groupBy: groupBy.join(', '), where: retwhere, params };
+    return { fields: retfields, groupBy: groupBy.join(', '), where: retwhere, params, orderBy };
 };
 
 
@@ -167,7 +210,7 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
     const table = assembly + '_cre_all';
-    const { fields, where, params } = buildWhereStatement(ctmap, j, chrom, start, end);
+    const { fields, where, params, orderBy } = buildWhereStatement(ctmap, j, chrom, start, end, pagination);
     const offset = pagination.offset || 0;
     const limit = pagination.limit || 1000;
     if (limit > 1000) {
@@ -180,7 +223,7 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
         SELECT ${fields}
         FROM ${table} AS cre
         ${where}
-        ORDER BY maxz DESC
+        ORDER BY ${orderBy} DESC
         ${offset !== 0 ? `OFFSET ${offset}` : ''}
         LIMIT ${limit}
     `;

@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
-import { mapcre } from './cretable';
+import { mapcre, resolve_ctspecific } from './cretable';
 
 const { UserError } = require('graphql-errors');
 const cache = require('../db/db_cache').cache;
@@ -49,20 +49,22 @@ class Gwas {
     }
 
     async cres(gwas_study: string, ct: string | undefined) {
-        const c = cache(this.assembly);
-        const ctmap = c.ctmap;
-        const ctsTable = c.ctsTable;
+        const acache = cache(this.assembly);
+        const ctmap = acache.ctmap;
+        const ctsTable = acache.ctsTable;
         const { cres } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
 
-        // accession, snp, geneid, zscores
-        const total = cres.length;
-        const activeCres: Array<any> = cres.filter(a =>
-            !ct ||
-            (a.ctspecific['promoter_zscore'] || 0) > 1.64 ||
-            (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
-            (a.ctspecific['dnase_zscore'] || 0) > 1.64);
+        const activeCres = cres
+            .map(c => mapcre(this.assembly, c, acache.datasets.globalCellTypeInfoArr, acache.ctmap))
+            .map(c => ({ ...c, ctspecific: resolve_ctspecific(c, { cellType: ct || 'none' }) }))
+            .filter(a =>
+                !ct ||
+                (a.ctspecific['promoter_zscore'] || 0) > 1.64 ||
+                (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
+                (a.ctspecific['dnase_zscore'] || 0) > 1.64);
 
-        return activeCres.map(c => ({ cRE: mapcre(this.assembly, c), geneid: c.geneid, snps: c.snps }));
+        // accession, snp, geneid, zscores
+        return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
     }
 }
 

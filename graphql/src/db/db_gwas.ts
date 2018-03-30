@@ -86,7 +86,7 @@ function getInfo(fields) {
 }
 
 export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, ctmap, ctsTable) {
-    const { fields, groupBy, where, params } = buildWhereStatement(ctmap, { cellType: ct }, undefined, undefined, undefined);
+    const { fields, groupBy, where, params } = buildWhereStatement(ctmap, { cellType: ct }, undefined, undefined, undefined, {});
     const q = `
         SELECT ${fields}, array_agg(snp) as snps, infoAll.approved_symbol AS geneid
         FROM ${assembly}_cre_all as cre,

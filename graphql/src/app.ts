@@ -14,9 +14,9 @@ const logErrors = req => error => {
   const data = formatError(error);
   const {originalError} = error;
   if (originalError && !originalError[IsUserError] ) {
-    useRaven && Raven.captureException(originalError, { req, extra: { source: error.source } });
-  } else {
-    useRaven && Raven.captureException(error, { req, extra: { source: error.source, originalMessage: error.originalMessage } });
+    useRaven && Raven.captureException(originalError, { req, extra: { source: error.source, originalMessage: error.originalMessage } });
+  } else if (!originalError) {
+    useRaven && Raven.captureException(error, { req, extra: { source: error.source} });
   }
   return data;
 };
