@@ -4,7 +4,7 @@ import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
 
 const re_range = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+/;
-const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+/;
+const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:\s][\s]*[0-9,\.]+/;
 const re_chrom = /^[cC][hH][rR][0-9XxYy][0-9]?/;
 
 const chrom_lengths = require('../constants').chrom_lengths;
@@ -16,18 +16,6 @@ export function find_coords(assembly, s: string) {
             break;
         }
         const _p = s.split(' ');
-
-        const chrom = re_chrom.exec(s);
-        if (chrom) {
-            const coord = {
-                chrom: chrom[0],
-                start: 1,
-                end: chrom_lengths[assembly][chrom[0]]
-            };
-            coords[chrom[0]] = coord;
-            s = s.replace(chrom[0], '').trim();
-            continue;
-        }
 
         const range = re_range.exec(s);
         if (range) {
@@ -52,6 +40,18 @@ export function find_coords(assembly, s: string) {
             };
             coords[base[0]] = coord;
             s = s.replace(base[0], '').trim();
+            continue;
+        }
+
+        const chrom = re_chrom.exec(s);
+        if (chrom) {
+            const coord = {
+                chrom: chrom[0],
+                start: 1,
+                end: chrom_lengths[assembly][chrom[0]]
+            };
+            coords[chrom[0]] = coord;
+            s = s.replace(chrom[0], '').trim();
             continue;
         }
 
