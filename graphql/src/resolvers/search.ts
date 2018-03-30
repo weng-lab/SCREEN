@@ -16,7 +16,19 @@ export function find_coords(assembly, s: string) {
             break;
         }
         const _p = s.split(' ');
-        const used = false;
+
+        const chrom = re_chrom.exec(s);
+        if (chrom) {
+            const coord = {
+                chrom: chrom[0],
+                start: 1,
+                end: chrom_lengths[assembly][chrom[0]]
+            };
+            coords[chrom[0]] = coord;
+            s = s.replace(chrom[0], '').trim();
+            continue;
+        }
+
         const range = re_range.exec(s);
         if (range) {
             const p = range[0].replace('-', ' ').replace(':', ' ').replace(',', '').replace('.', '').split(' ');
@@ -40,18 +52,6 @@ export function find_coords(assembly, s: string) {
             };
             coords[base[0]] = coord;
             s = s.replace(base[0], '').trim();
-            continue;
-        }
-
-        const chrom = re_chrom.exec(s);
-        if (chrom) {
-            const coord = {
-                chrom: chrom[0],
-                start: 1,
-                end: chrom_lengths[assembly][chrom[0]]
-            };
-            coords[chrom[0]] = coord;
-            s = s.replace(chrom[0], '').trim();
             continue;
         }
 
