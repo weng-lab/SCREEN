@@ -9,7 +9,7 @@ const initOptions = {
         console.error('Error when executing query: ', e.query, e.params ? ' with params: ' : '', e.params ? e.params : '');
     },
     query(e) {
-        //console.log('QUERY:', e.query);
+        // console.log('QUERY:', e.query);
     }
 };
 
