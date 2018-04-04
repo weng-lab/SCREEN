@@ -4,7 +4,7 @@ import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
 
 const re_range = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+/;
-const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+/;
+const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:\s][\s]*[0-9,\.]+/;
 const re_chrom = /^[cC][hH][rR][0-9XxYy][0-9]?/;
 
 const chrom_lengths = require('../constants').chrom_lengths;
@@ -16,7 +16,7 @@ export function find_coords(assembly, s: string) {
             break;
         }
         const _p = s.split(' ');
-        const used = false;
+
         const range = re_range.exec(s);
         if (range) {
             const p = range[0].replace('-', ' ').replace(':', ' ').replace(',', '').replace('.', '').split(' ');
