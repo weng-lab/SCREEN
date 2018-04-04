@@ -227,6 +227,7 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
 
     // 1021 is the oid for _float4 which is a float array
     pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
+    pgp.pg.types.setTypeParser(1022, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
     const res = await db.any(query, params);
     let total = res.length;
     if (limit <= total || offset !== 0) {// reached query limit

@@ -1,5 +1,6 @@
 import { checkChrom, isaccession, checkCreAssembly } from '../utils';
 import { GraphQLFieldResolver } from 'graphql';
+import { UserError } from 'graphql-errors';
 import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
 
@@ -8,6 +9,21 @@ const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:\s][\s]*[0-9,\.]+/;
 const re_chrom = /^[cC][hH][rR][0-9XxYy][0-9]?/;
 
 const chrom_lengths = require('../constants').chrom_lengths;
+
+function checkCoords(assembly, coord) {
+    if (!(coord.chrom in chrom_lengths[assembly])) {
+        throw new UserError('Invalid chromosome ' + coord.chrom);
+    }
+    if (coord.start < 1) {
+        // This won't happen currently because of the regex
+        throw new UserError('Invalid start position. Should be >=1.');
+    }
+    const chrom_end = chrom_lengths[assembly][coord.chrom];
+    if (coord.end > chrom_end) {
+        throw new UserError('Invalid end position (' + coord.end + '). End of chromosome (' + coord.chrom + ') is ' + chrom_end);
+    }
+}
+
 export function find_coords(assembly, s: string) {
     const coords = {};
     const unusedtoks: Array<any> = [];
@@ -27,6 +43,7 @@ export function find_coords(assembly, s: string) {
             };
             coords[range[0]] = coord;
             s = s.replace(range[0], '').trim();
+            checkCoords(assembly, coord);
             continue;
         }
 
@@ -40,6 +57,7 @@ export function find_coords(assembly, s: string) {
             };
             coords[base[0]] = coord;
             s = s.replace(base[0], '').trim();
+            checkCoords(assembly, coord);
             continue;
         }
 
@@ -52,6 +70,7 @@ export function find_coords(assembly, s: string) {
             };
             coords[chrom[0]] = coord;
             s = s.replace(chrom[0], '').trim();
+            checkCoords(assembly, coord);
             continue;
         }
 
