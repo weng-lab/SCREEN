@@ -20,10 +20,10 @@ class TabMain extends React.Component {
                 <div className="row">
                     <div className="col-md-12">
 		        SCREEN is a web interface for searching and visualizing the Registry of
-			candidate Regulatory Elements (cREs) derived from <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
-		        The Registry contains 1.31M human cREs in hg19 and 0.52M mouse cREs in mm10,
-			with orthologous cREs cross-referenced.  SCREEN presents the data that support
-			biochemical activities of the cREs and the expression of nearby genes in
+			candidate cis-Regulatory Elements (ccREs) derived from <a href={"https://encodeproject.org/"} target={"_blank"}>ENCODE data</a>.
+		        The Registry contains 1.31M human ccREs in hg19 and 0.43M mouse ccREs in mm10,
+			with orthologous ccREs cross-referenced.  SCREEN presents the data that support
+			biochemical activities of the ccREs and the expression of nearby genes in
 			specific cell and tissue types.
                     </div>
                 </div>
@@ -34,7 +34,7 @@ class TabMain extends React.Component {
                 <div className="row">
                     <div className="col-md-8">
                         You may launch SCREEN using the search box below or browse a curated list of
-			SNPs from the NHGRI-EBI Genome Wide Association Study (GWAS) catalog to annotate genetic variants using cREs.
+			SNPs from the NHGRI-EBI Genome Wide Association Study (GWAS) catalog to annotate genetic variants using ccREs.
                     </div>
                     <div className="col-md-4">
 		        <a className={"btn btn-primary mainButtonGwas"}
@@ -58,14 +58,15 @@ class TabMain extends React.Component {
     }
 
     searchBox() {
-	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4 TSS", "rs4846913"';
+	let instructions = "Enter a gene name or alias, a SNP rsID, a ccRE accession, or a genomic region in the form chr:start-end. You may also enter a cell type name to filter results."
+	let examples = 'Examples: "K562 chr11:5226493-5403124", "SOX4", "rs4846913", "EH37E0204974"';
 	let dv = "chr11:5226493-5403124";
 	return (
 	    <Autocompleter defaultvalue={dv}
 	    uuid={this.props.uuid}
 	    actions={this.props.actions}
 		           id="mainSearchbox"
-			   examples={examples} />);
+	    examples={examples} instructions={instructions} />);
     }
     
     render() {

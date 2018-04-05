@@ -19,7 +19,7 @@ const gwas_studies = ({globals, gwas_study}) => {
     return panelize("GWAS Studies", box, "GWAS_Studies_Facet", globals);
 }
 const cellTypesBox = ({globals, gwas_study, gwas_cell_types, actions}) => {
-    if(!gwas_study || !gwas_cell_types){
+    if(!gwas_study || !gwas_cell_types || gwas_cell_types.length === 0){
         return (<div />);
     }
     let box = (

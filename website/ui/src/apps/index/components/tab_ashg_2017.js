@@ -13,9 +13,6 @@ class TabAshg2017 extends React.Component {
     }
 
     render() {
-        if(this.key !== this.props.maintabs_active){
-	    return false;
-	}
 	    
 	return (tabPanelize(
             <div>

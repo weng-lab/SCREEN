@@ -40,13 +40,3 @@ def checkCreAssembly(assembly, accession):
               "hg19": "eh37e",
               "hg38": "eh38e"}
     return accession.startswith(starts[assembly])
-
-def getAssemblyFromCre(accession):
-    cre = accession.lower()
-    if cre.startswith("eh37e"):
-        return "hg19"
-    if cre.startswith("em10e"):
-        return "mm10"
-    if cre.startswith("eh38e"):
-        return "hg38"
-    return None

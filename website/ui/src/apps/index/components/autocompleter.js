@@ -23,7 +23,7 @@ class Autocompleter extends React.Component {
     loadSearch(assembly) {
 	const userQuery = this.state.value;
 	const uuid = this.state.uuid;
- 	this.setState({userQueryErr : (<img src={ApiClient.StaticUrl("spinner.gif")}
+ 	this.setState({userQueryErr : (<img src={ApiClient.StaticUrl("/spinner.gif")}
 				       alt={"loading"} />)});
  	const q = {assembly, userQuery, uuid};
  	const userQueryErr = (
@@ -112,7 +112,8 @@ class Autocompleter extends React.Component {
  		        {input}
  		    </span>
  	        </div>
-
+		<em>{this.props.instructions}</em><br/>
+ 		    <em>{this.props.examples}</em><br/><br/>
  		<div id={"mainButtonGroup"}>
  		    <a className={"btn btn-primary btn-lg mainButtonHg19"}
                        onClick={this.searchHg19} role={"button"}>
@@ -124,8 +125,6 @@ class Autocompleter extends React.Component {
 			Search Mouse<br /><small>(mm10)</small>
 		    </a>
  		    <br />
- 		    <br />
- 		    <i>{this.props.examples}</i>
  		</div>
  	</div>);
     }

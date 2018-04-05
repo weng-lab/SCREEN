@@ -94,14 +94,14 @@ const MainTabInfo = (parsedQuery, globals) => {
 
     const showRampage = ("mm10" !== assembly) && (!!gene);
 
-    let resultsTitle = isCart() ? "cREs in Cart" : Render.tabTitle(["cRE", "Search Results"]);
+    let resultsTitle = isCart() ? "ccREs in Cart" : Render.tabTitle(["ccRE", "Search Results"]);
 
     return {results : {title: resultsTitle, visible: true, f: ResultsTab},
 	    bedupload : {title: Render.tabTitle(["Bed", "Upload"]),
 			 visible: true, f: BedUploadTab},
 	    expression: {title: geTitle, visible: !!gene, f: GeBigTab},
 	    rampage: {title: rTitle,  visible: showRampage, f: RampageBigTab},
-	    details: {title: Render.tabTitle(["cRE", "Details"]), visible: false,
+	    details: {title: Render.tabTitle(["ccRE", "Details"]), visible: false,
 		      f: DetailsTab},
 	    configgb: {title: Render.tabTitle(["Configure", "Genome Browser"]), 
 		       visible: false, f: ConfigureGenomeBrowser}

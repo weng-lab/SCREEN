@@ -30,7 +30,7 @@ class Gwas extends React.Component{
 
 const MainTabInfo = () => ({
     gwas: {title: "GWAS", visible: true, f: Gwas},
-    details: {title: "cRE Details", visible: false, f: DetailsTab},
+    details: {title: "ccRE Details", visible: false, f: DetailsTab},
     configgb: {title: "Configure Genome Browser", visible: false,
 	       f: ConfigureGenomeBrowser}
 });

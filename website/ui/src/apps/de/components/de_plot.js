@@ -61,6 +61,9 @@ class DePlot extends React.Component {
         let chart = this.refs.chart;
 	$(chart).empty();
 
+        let ct1 = this.props.globals.byCellType[this.props.ct1][0]["name"];
+        let ct2 = this.props.globals.byCellType[this.props.ct2][0]["name"];
+	
         let creData = this.props.data.diffCREs.data;
         let deData = this.props.data.nearbyDEs.data;
         let genes = this.props.data.nearbyDEs.genes;
@@ -118,6 +121,44 @@ class DePlot extends React.Component {
 	    .attr("x1", 0)
 	    .attr("x2", width)
 	    .style("stroke", "#ff0000");
+	svg.append("g")
+	    .append("line")
+	    .style("stroke-dasharray", ("3,3"))
+	    .attr("y1", y(0))
+	    .attr("y2", y(0))
+	    .attr("x1", -45)
+	    .attr("x2", -15)
+	    .style("stroke", "#ff0000");
+	svg.append("g")
+	    .append("line")
+	    .style("stroke-dasharray", ("3,3"))
+	    .attr("y1", y(0))
+	    .attr("y2", y(0))
+	    .attr("x1", width + 20)
+	    .attr("x2", width + 40)
+	    .style("stroke", "#ff0000");
+	svg.append("g")
+	    .attr("transform", "translate(-30," + y(-0.2) + ") rotate(-90)")
+	    .append("text")
+	    .attr("class", "label")
+	    .style("text-anchor", "end")
+	    .text('\u25c4' + ct1);
+	svg.append("g")
+	    .attr("transform", "translate(-30," + y(0.2) + ") rotate(-90)")
+	    .append("text")
+	    .attr("class", "label")
+	    .text(ct2 + '\u25ba');
+	svg.append("g")
+	    .attr("transform", "translate(" + (width + 33) + "," + y(-0.2) + ") rotate(-90)")
+	    .append("text")
+	    .attr("class", "label")
+	    .style("text-anchor", "end")
+	    .text('\u25c4' + ct1);
+	svg.append("g")
+	    .attr("transform", "translate(" + (width + 33) + "," + y(0.2) + ") rotate(-90)")
+	    .append("text")
+	    .attr("class", "label")
+	    .text(ct2 + '\u25ba');
         svg.append("g")
            .attr("class", "y axis")
            .attr("transform", "translate(" + width + " ,0)")
@@ -129,7 +170,17 @@ class DePlot extends React.Component {
 	   .attr("x", 0)
            .attr("dy", ".71em")
            .style("text-anchor", "end")
-           .text("change in cRE Z-score")
+	svg.append("g")
+           .attr("class", "y axis")
+           .attr("transform", "translate(" + width + " ,0)")
+           .append("text")
+           .attr("class", "ylabel")
+           .attr("transform", "rotate(-90)")
+           .attr("y", -20)
+	   .attr("x", 0)
+           .attr("dy", ".71em")
+           .style("text-anchor", "end")
+           .text("change in ccRE Z-score")
         svg.selectAll(".dot")
            .data(creData)
            .enter().append("circle")

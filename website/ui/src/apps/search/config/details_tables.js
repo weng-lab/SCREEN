@@ -96,7 +96,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 	info: false,
 	bFilter: true,
 	bLengthChange: false,
-	emptyText: "No orthologous cRE identified",
+	emptyText: "No orthologous ccRE identified",
 	cols: [
 	    {title: "accession", data: "accession", className: "dt-right",
              render: Render.relink(assembly === "mm10" ? "hg19" : "mm10", uuid)},
@@ -111,7 +111,7 @@ export const OrthologTable = (globals, assembly, uuid) => ({
 
 export const FantomCatTable = (globals, assembly, actions) => ({
     fantom_cat_twokb: {
-	title: "Intersecting FANTOM CAT RNAs (cRE within 2kb of RNA TSS)",
+	title: "Intersecting FANTOM CAT RNAs (ccRE within 2kb of RNA TSS)",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -146,7 +146,7 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	bFilter: true
     },
     fantom_cat: {
-	title: "Intersecting FANTOM CAT RNAs (cRE within entire RNA body)",
+	title: "Intersecting FANTOM CAT RNAs (ccRE within entire RNA body)",
 	cols: [
 	    {title: "FANTOM CAT RNA accession", data: "geneid", 
 	     render: fantomcat_link},
@@ -177,6 +177,61 @@ export const FantomCatTable = (globals, assembly, actions) => ({
 	paging: true,
 	bLengthChange: true,
 	bFilter: true
+    },
+    enhancers: {
+	"title": "Intersecting FANTOM enhancers (permissive, FANTOM5 Phases 1 and 2)",
+	cols: [
+	    {title: "chr", data: "chr", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer},
+	    {title: "", data: null,
+	     className: "browser",
+	     targets: -1, orderable: false,
+	     defaultContent: Render.browser_buttons(["UCSC"]) }
+	],
+	onTdClick: (td, rowdata) => {
+            if (td.indexOf("browser") !== -1){
+		const args = {
+		    title: rowdata.chr + ":" + rowdata.start + "-" + rowdata.stop,
+		    start: rowdata.start,
+		    len: rowdata.stop - rowdata.start,
+		    chrom: rowdata.chr
+		};
+		actions.showGenomeBrowser(args, "UCSC", "FantomCAT");
+	    }},
+	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
+	pageLength: 5,
+	paging: true,
+	bFilter: true,
+	bLengthChange: true
+    },
+    cage: {
+	"title": "Intersecting FANTOM CAGE peaks (robust, FANTOM5 Phases 1 and 2)",
+	cols: [
+	    {title: "chr", data: "chr", className: "dt-right"},
+	    {title: "start", data: "start", render: Render.integer},
+	    {title: "end", data: "stop", render: Render.integer},
+	    {title: "strand", data: "strand", className: "dt-right"},
+	    {title: "", data: null,
+	     className: "browser",
+	     targets: -1, orderable: false,
+	     defaultContent: Render.browser_buttons(["UCSC"]) }
+	],
+	onTdClick: (td, rowdata) => {
+            if (td.indexOf("browser") !== -1){
+		const args = {
+		    title: rowdata.chr + ":" + rowdata.start + "-" + rowdata.stop,
+		    start: rowdata.start,
+		    len: rowdata.stop - rowdata.start,
+		    chrom: rowdata.chr
+		};
+		actions.showGenomeBrowser(args, "UCSC", "FantomCAT");
+	    }},
+	order: [[3, "asc"], [4, "asc"], [5, "asc"]],
+	pageLength: 5,
+	paging: true,
+	bFilter: true,
+	bLengthChange: true
     }
 });
 
@@ -199,7 +254,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    sortCol: ["distance", true]
         },
         nearby_res: {
-	    title: "Nearby cREs",
+	    title: "Nearby ccREs",
 	    helpkey: "Nearby_cREs",
 	    paging: true,
 	    info: false,
@@ -220,6 +275,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 	    info: false,
 	    bFilter: true,
             bLengthChange: true,
+	    csv: true,
 	    emptyText: "No SNPs within 10Kb",
 	    cols: [
 	        {title: "accession", data: "name",
@@ -250,13 +306,13 @@ export const NearbyGenomicTable = (globals, assembly) => {
 		   sortCol: ["name", true]
                },
                re_tads: {
-	           title: "Other cREs within TAD and <100 kb",
+	           title: "Other ccREs within TAD and <100 kb",
 		   helpkey: "cREsWithinTAD",
 	           paging: true,
 	           info: false,
 	           bFilter: true,
                    bLengthChange: true,
-	           emptyText: "No cREs within TAD with 100 Kb",
+	           emptyText: "No ccREs within TAD with 100 Kb",
 	           cols: [
 	               {title: "accession", data: "accession",
 	                render: Render.relink(assembly) },
@@ -272,7 +328,7 @@ export const NearbyGenomicTable = (globals, assembly) => {
 
 export const TfIntersectionTable = (globals, assembly) => ({
     "tf": {
-	title: "TFs that bind this cRE",
+	title: "TFs that bind this ccRE",
         typ: IntersectingAssayTf,
 	helpkey: "Intersecting_transcription_factors",
 	cols: [
@@ -286,7 +342,7 @@ export const TfIntersectionTable = (globals, assembly) => ({
 	sortCol: ["n", false]
     },
     "histone": {
-	title: "Histone Marks at this cRE",
+	title: "Histone Marks at this ccRE",
 	helpkey: "IntersectingHistoneMarks",
         typ: IntersectingAssayHistone,
 	cols: [

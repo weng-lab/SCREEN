@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import cherrypy
+import jinja2
 import os
 import sys
 
@@ -17,14 +18,6 @@ class Apis():
     @cherrypy.expose
     def ucsc_trackhub(self, *args, **kwargs):
         return self.trackhub.ucsc_trackhub(*args, **kwargs)
-
-    @cherrypy.expose
-    def ensembl_trackhub(self, *args, **kwargs):
-        return self.trackhub.ensembl_trackhub(*args, **kwargs)
-
-    @cherrypy.expose
-    def washu_trackhub(self, *args, **kwargs):
-        return self.trackhub.washu_trackhub(*args, **kwargs)
 
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})

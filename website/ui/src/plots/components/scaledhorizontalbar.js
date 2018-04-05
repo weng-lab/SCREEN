@@ -17,7 +17,8 @@ class ScaledHorizontalBar extends React.Component {
 		<HorizontalBar format={this.props.format}
 			       viewBox={viewBox}
 			       itemsets={this.props.itemsets}
-			       axis_offsets={[viewBox.width * 0.5, 0]} />
+	                       axis_offsets={[viewBox.width * 0.5, 0]}
+	                       downloadfilename={this.props.downloadfilename} />
 	    </div>
 	);
     }

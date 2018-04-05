@@ -44,7 +44,7 @@ export const getMinipeaks = (jq, baseUrl, successF, errF) => {
 }
 
 export const getIntersect = (jq, successF, errF) => {
-    const url = "http://api.wenglab.org/screen/v10/postws/lines";
+    const url = Config.UI.bed_intersect;
     fetch(url,
 	  {
 	      headers: {
@@ -95,6 +95,13 @@ export const globals = (assembly, successF, errF) => {
 
 export const globalTabFiles = (successF, errF) => {
     fetch(Servers("/globalData/index/index"))
+	.then((response) => (response.json()))
+	.then(successF)
+	.catch(errF);
+}
+
+export const globalTabFiles2 = (successF, errF) => {
+    fetch(Servers("/globalData/index/index2"))
 	.then((response) => (response.json()))
 	.then(successF)
 	.catch(errF);

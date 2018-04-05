@@ -16,10 +16,13 @@ class ConfigureGenomeBrowser extends React.Component {
     state = {"showCombo" : false};
 
     gbclick = (cre, cts, gbrowser) => {
-	var half_window = 7500;
-	var arr = window.location.href.split("/");
-	var host = arr[0] + "//" + arr[2] + "/api";
-	var data = {"accession" : cre.accession ? cre.accession : cre.title,
+	const half_window = 7500;
+	let host = ApiClient.ApiServer;
+	if(host.startsWith('/')){
+	    const arr = window.location.href.split("/");
+	    host = arr[0] + "//" + arr[2] + host;
+	}
+	const data = {"accession" : cre.accession ? cre.accession : cre.title,
 		    "coord_chrom" : cre.chrom,
 		    "coord_start" : cre.start,
 		    "coord_end" : cre.start + cre.len,
@@ -92,14 +95,13 @@ class ConfigureGenomeBrowser extends React.Component {
 	let cols = [
 	    { title: "", data: "checked",
 	      render: Render.checkCt},
-	    { title: "cell type", data: "name",
-	      className: "dt-right"},
-	    { title: "tissue", data: "tissue",
-	      className: "dt-right" },
+	    { title: "cell type", data: "name"},
+	    { title: "tissue", data: "tissue"},
 	    { title: "", data: "cellTypeName",
-	      className: "dt-right dcc",
+	      className: "dcc",
 	      render: Render.assayIcon(this.props.globals),
-	      orderable: false }
+	      orderable: false },
+	    { title: "synonyms", data: "synonyms", visible: false }
 	]
 
 	let ctBox = (

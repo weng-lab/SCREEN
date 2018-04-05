@@ -9,6 +9,8 @@ from constants import paths
 
 class FCPaths:
     base = paths.fantomcat
+    enhancer_intersected = os.path.join(base, "cREs.enhancers.intersected.bed")
+    CAGE_intersected = os.path.join(base, "cREs.CAGE.intersected.bed")
     genetsv = os.path.join(base, "gene.info.tsv")
     genesdir = os.path.join(base, "genes")
     genebed = os.path.join(base, "gene.info.bed")
@@ -18,6 +20,8 @@ class FCPaths:
     twokb = os.path.join(base, "gene.2kbtss.bed")
     twokb_intersected = os.path.join(base, "gene.2kbtss.intersected.bed")
     twokb_statistics = os.path.join(base, "twokb_statistics.json")
+    permissive_enhancers = os.path.join(base, "permissive_enhancers.bed.gz")
+    robust_CAGE = os.path.join(base, "robust.cage.bed.gz")    
     forimport = {
         "genes": os.path.join(base, "gene.import.tsv"),
         "intersections": os.path.join(base, "intersections.tsv"),

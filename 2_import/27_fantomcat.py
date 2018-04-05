@@ -34,7 +34,8 @@ class FantomCatImport:
         self._db.import_genes_fromfile(FCPaths.forimport["genes"], curs)
         self._db.import_intersections_fromfile(FCPaths.forimport["intersections"], curs)
         self._db.import_intersections_fromfile(FCPaths.forimport["twokb_intersections"], curs, "twokb_intersections")
-
+        self._db.import_enhancers_fromfile(FCPaths.enhancer_intersected, curs)
+        self._db.import_cage_fromfile(FCPaths.CAGE_intersected, curs)
 
 def run(args, DBCONN):
     assemblies = ["hg19"]

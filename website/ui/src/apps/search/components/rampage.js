@@ -120,7 +120,7 @@ class Rampage extends React.Component {
 
 	let distance = ""
 	if("distance" in gene){
-	    distance = "   (" + Render.numWithCommas(gene.distance) + " bases from cRE)";
+	    distance = "   (" + Render.numWithCommas(gene.distance) + " bases from ccRE)";
 	}
 
         const title = (

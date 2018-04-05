@@ -1,20 +1,15 @@
 #!/usr/bin/python
 
 import sys
-import StringIO
 import cherrypy
-import json
 import os
-import heapq
-import re
-import argparse
+import StringIO
 from collections import OrderedDict
 
-from trackinfo import TrackInfo
+import trackhub_helpers as Helpers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
-from files_and_paths import Dirs
-from utils import Utils, eprint, AddPath
+from utils import AddPath
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
 from coord import Coord
@@ -27,15 +22,7 @@ import trackhub_helpers as Helpers
 from cre import CRE
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from constants import paths
 from config import Config
-
-UCSC = 1
-WASHU = 2
-ENSEMBL = 3
-
-#WWW = "http://users.wenglab.org/moorej3/cREs"
-WWW = "http://bib7.umassmed.edu/~purcarom/screen/ver4/v10"
 
 AssayColors = {"DNase": ["6,218,147", "#06DA93"],
                "RNA-seq": ["0,170,0", "", "#00aa00"],
@@ -95,15 +82,12 @@ class cRETrack(object):
 
 
 class TrackhubDb:
-    def __init__(self, ps, cacheW, db, browser):
+    def __init__(self, ps, cacheW, db):
         self.ps = ps
         self.cacheW = cacheW
         self.db = db
-        self.browser = browser
-        self.fileIDs = set()
 
     def ucsc_trackhub(self, *args, **kwargs):
-        #print("ucsc **************** args:", args)
         uuid = args[0]
 
         try:
@@ -183,13 +167,10 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
                 self.priority += 1
         return t
 
-    def trackhubExp(self, trackInfo, stname, hideAll=False):
-        self.fileIDs.add(trackInfo.fileID)
+        f = StringIO.StringIO()
+        map(lambda line: f.write(line + "\n"), lines)
 
-        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=trackInfo.fileID)
-        if self.browser in [WASHU, ENSEMBL]:
-            url = os.path.join("http://bib7.umassmed.edu/~purcarom/bib5/annotations_demo/data/",
-                               trackInfo.expID, trackInfo.fileID + ".bigWig")
+        return f.getvalue()
 
         desc = trackInfo.desc()
         shortLabel = trackInfo.shortLabel()
@@ -300,56 +281,31 @@ longLabel {tct_long}
         title = ' '.join(["cREs in", tct, '(5 group)'])
         t = PredictionTrack(title, self.priority, url, showCombo).track()
         self.priority += 1
-        ret.append("""
-track {tn}
-parent {stname}
-""".format(tn="fivegroup_" + tn, stname=stname) + t)
-
-        assays = {"dnase": "DNase",
-                  "h3k27ac": "H3k27ac",
-                  "h3k4me3": "H3K4me3",
-                  "ctcf": "CTCF"}
-
-        for assay, displayCT, turl in nineState:
-            a = assay
-            if a in assays:
-                a = assays[a]
-            shortLabel = ' '.join([tct, "cREs", a])
-            title = ' '.join(["cREs in", tct, "with high", a, '(9 state)'])
-            show = not showCombo
-            if hideAll:
-                show = False
-            t = PredictionTrack(title, self.priority, turl,
-                                show).track(shortLabel)
+        ret += [t]
+        
+        for assay in ["H3K4me3", "H3K27ac", "CTCF"]:
+            cREaccession = AgnosticCres["9-state"][assay][self.assembly]
+            t = cRETrack(self.assembly, assay, False, cREaccession, superTrackName,
+                         False == show5group, 'general').lines(self.priority)
             self.priority += 1
-            ret.append("""
-track {tn}
-parent {stname}
-""".format(tn="ninegroup_" + tn, stname=stname) + t)
+            ret += [t]
 
         for ti in signals:
             ret.append(self.trackhubExp(ti, stname, hideAll))
 
         return ret
 
-    def mtColor(self, assay, mt):
-        c = None
-        if mt["tf"] in AssayColors:
-            c = AssayColors[mt["tf"]][0]
-        if not c:
-            if "ChIP-seq" == assay and "transcription" in mt["target"]:
-                if "CTCF" == mt["tf"]:
-                    c = AssayColors["CTCF"][0]
-                else:
-                    c = AssayColors["TF ChIP-seq"][0]
-        return c
+    def _add_ct(self, ct, show5group):
+        superTrackName = Helpers.sanitize("super_" + ct)
 
-    def mtTrackBigWig(self, tct, mt, bw, stname):
-        url = "https://www.encodeproject.org/files/{e}/@@download/{e}.bigWig?proxy=true".format(e=bw)
+        ret = self.makeSuperTrack(ct, superTrackName)
+        ret += self._add_ct_cREs(ct, show5group, superTrackName)
+        ret += self._add_ct_bigWigs(ct, show5group, superTrackName)
+        return ret
 
-        assay = mt["assay_term_name"]
-        desc = ' '.join([bw, "Signal", assay, mt["target"], mt["tf"], tct])
-        shortLabel = desc[:17]
+    def _add_ct_cREs(self, ct, show5group, superTrackName):
+        #cRE biosample-specific tracks
+        ret = []
 
         track = BigWigTrack(desc, self.priority, url, self.mtColor(assay, mt),
                             stname, "0:50", True).track(shortLabel)

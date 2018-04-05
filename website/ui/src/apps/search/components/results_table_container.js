@@ -102,25 +102,25 @@ class ResultsTableContainer extends React.Component {
     }
 
     firstLine(useTss, tssDist, geneTitle){
-	const click = " Click to see candidate Regulatory Elements:";
+	const click = " Click to see candidate cis-Regulatory Elements:";
 	if(useTss){
 	    if(tssDist){
 		return (
 		    <span>
-			{"This search is showing candidate Regulatory Elements located between the first and last Transcription Start Sites (TSSs) of "}
+			{"This search is showing candidate cis-Regulatory Elements located between the first and last Transcription Start Sites (TSSs) of "}
 			{geneTitle}{" and up to " + tssDist / 1000  + "kb upstream."}{click}
 		    </span>);
 	    } else {
 		return (
 		    <span>
-			{"This search is showing candidate promoters located between the first and last Transcription Start Sites (TSSs) of "}
+			{"This search is showing ccREs with promoter-like signatures located between the first and last Transcription Start Sites (TSSs) of "}
 			{geneTitle}{"."}{click}
 		    </span>);
 	    }
 	}
 	return (
 	    <span>
-		{"This search is showing cREs overlapping the gene body of "}
+		{"This search is showing ccREs overlapping the gene body of "}
 		{geneTitle}{"."}{click}
 	    </span>);
     }

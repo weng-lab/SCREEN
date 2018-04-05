@@ -48,9 +48,7 @@ class MiniPeaks extends React.Component {
 			continue;
 		    }
 		    const fileID = dr.fileID;
-		    if(!(fileID in this.fileIDmaxes)){
-			this.fileIDmaxes[fileID] = Math.max(...dr.data);
-		    }
+		    this.fileIDmaxes[fileID] = Math.max(...dr.data);
 		}
 	    }
 	}

@@ -7,6 +7,8 @@ import GeneExp from '../../geneexp/components/gene_exp';
 import Rampage from '../components/rampage';
 import MiniPeaks from '../components/minipeaks';
 
+import { CSVLink } from 'react-csv';
+
 import HelpIcon from '../../../common/components/help_icon';
 
 import {TopTissuesTables, NearbyGenomicTable, LinkedGenesTable,
@@ -45,8 +47,9 @@ function tabEle(globals, data, key, table, numCols) {
 	return (<div className={"col-md-" + (12/numCols)} key={key} />);
     }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
-	<h4>{table.title} {helpicon}</h4>
-	{makeTable(data, key, table)}<br/>
+	    <h4>{table.title} {helpicon}</h4>
+	    {table.csv ? <CSVLink data={data}>CSV</CSVLink> : null}
+	    {makeTable(data, key, table)}<br/>
     </div>);
 }
 
@@ -187,7 +190,7 @@ class OrthologTab extends ReTabBase {
 	        return tabEles(globals, data, OrthologTable(globals, assembly,
 							    this.props.uuid), 1);
 	    }
-            return <div><br />{"No orthologous cRE identified."}</div>;
+            return <div><br />{"No orthologous ccRE identified."}</div>;
 	}
     }
 }
@@ -230,7 +233,7 @@ export class RampageTab extends ReTabBase{
             let data = keysAndData.tsss;
 
 	    if(0 === data.length) {
-		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
+		return <div><br />{"No RAMPAGE data found for this ccRE"}</div>;
 	    }
 
             return (
@@ -265,14 +268,14 @@ const DetailsTabInfo = (assembly) => {
                          enabled: true, f: TfIntersectionTab},
 	cistromeIntersection: {title: Render.tabTitle(["Cistrome", "Intersection"]),
                                enabled: assembly === "mm10" || assembly === "hg38", f: CistromeIntersectionTab},
-	fantom_cat: {title: Render.tabTitle(["FANTOM CAT", "Intersection"]),
+	fantom_cat: {title: Render.tabTitle(["FANTOM", "Intersection"]),
 		     enabled: assembly === "hg19", f: FantomCatTab},
         ge: {title: Render.tabTitle(["Associated", "Gene Expression"]),
              enabled: true, f: GeTab},
         rampage: {title: Render.tabTitle(["Associated", "RAMPAGE Signal"]),
                   enabled: "mm10" !== assembly,
                   f: RampageTab},
-        ortholog: {title: Render.tabTitle(["Orthologous cREs", "in " + otherAssembly]),
+        ortholog: {title: Render.tabTitle(["Orthologous ccREs", "in " + otherAssembly]),
 	           enabled: true, f: OrthologTab},
         miniPeaks: {title: Render.tabTitle(["Signal", "Profile"]),
                      enabled: true, f: MiniPeaks},

@@ -5,8 +5,6 @@ import StringIO
 import cherrypy
 import json
 import os
-import heapq
-import re
 
 from models.trackhubdb import TrackhubDb
 from common.db_trackhub import DbTrackhub

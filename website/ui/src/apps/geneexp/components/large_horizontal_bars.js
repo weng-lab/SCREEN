@@ -18,7 +18,7 @@ class LargeHorizontalBars extends React.Component {
 		</div>);
 	}
 
-	const itemsByRID = this.props.itemsByRID
+	const itemsByRID = this.props.itemsByRID;
 
 	const format = {
 	    value: rid => {
@@ -27,9 +27,9 @@ class LargeHorizontalBars extends React.Component {
 	    label: rid => {
 		const d = itemsByRID[rid];
 		if(d.ageTitle){
-		    return d.cellType + ' ' + d.ageTitle;
+		    return d.expID + ' ' + d.cellType + ' ' + d.ageTitle;
 		}
-		return d.cellType},
+		return d.expID + ' ' + d.cellType},
 	    grouplabel: d => d.displayName
 	};
 
@@ -40,7 +40,8 @@ class LargeHorizontalBars extends React.Component {
 		<span className="geTissueOfOrigin">Tissue of origin</span>
 		<ScaledHorizontalBar itemsets={items}
 				     width={this.props.width}
-				     barheight={this.props.barheight}
+	                             barheight={this.props.barheight}
+	                             downloadfilename={this.props.gene + "_expression.svg"}
 				     format={format} />
 	    </div>
 	);

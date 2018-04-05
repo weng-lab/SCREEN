@@ -61,7 +61,7 @@ class RampagePlot extends React.Component {
             let data = keysAndData.tsss;
 	    
 	    if(0 === data.length) {
-		return <div><br />{"No RAMPAGE data found for this cRE"}</div>;
+		return <div><br />{"No RAMPAGE data found for this ccRE"}</div>;
 	    }
 	    
             return (
