@@ -20,7 +20,6 @@ from pgfantomcat import PGFantomCat
 AddPath(__file__, './rna_seq/')
 rna1 = import_module('01_json_import')
 rna2 = import_module('02_init')
-rna3 = import_module('03_genes')
 
 
 def run(args, DBCONN):
@@ -32,7 +31,6 @@ def run(args, DBCONN):
         args.assembly = assembly
         rna1.run(args, DBCONN)
         rna2.run(args, DBCONN)
-        rna3.run(args, DBCONN)
 
 
 def parse_args():
