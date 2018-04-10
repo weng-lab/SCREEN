@@ -176,11 +176,12 @@ class DataWebService():
                     result["other_names"] += ", ".join(result["aliases"].split("|"))
             return results
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat enhancers") as curs:
-            enhancers = [{"chr": a, "start": int(b), "stop": int(c)}
-                         for a, b, c in self.pgFantomCat.select_enhancers(accession, curs)]
+            enhancers = [{"chr": a, "start": int(b), "stop": int(c), "score": float(d)}
+                         for a, b, c, d in self.pgFantomCat.select_enhancers(accession, curs)]
         with getcursor(self.ps.DBCONN, "data_ws$DataWebService::fantom_cat CAGE") as curs:
-            cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d}
-                    for a, b, c, d in self.pgFantomCat.select_cage(accession, curs)]
+            cage = [{"chr": a, "start": int(b), "stop": int(c), "strand": d,
+                     "score": float(e), "tssstart": int(f), "tssstop": int(g)}
+                    for a, b, c, d, e, f, g in self.pgFantomCat.select_cage(accession, curs)]
         return {accession: {
             "fantom_cat": process("intersections"),
             "fantom_cat_twokb": process("twokb_intersections"),

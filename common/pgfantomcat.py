@@ -86,7 +86,7 @@ CREATE TABLE {enhancers} ({fields})"""
         return curs.fetchall()
 
     def select_cage(self, ccREacc, curs):
-        curs.execute("SELECT chrom, start, stop, score, strand, tssstart, tssstop FROM {cage} WHERE ccRE_acc = %(acc)s".format(cage = self._tables["cage"]),
+        curs.execute("SELECT chrom, start, stop, strand, score, tssstart, tssstop FROM {cage} WHERE ccRE_acc = %(acc)s".format(cage = self._tables["cage"]),
                      {"acc": ccREacc})
         return curs.fetchall()
 
