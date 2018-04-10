@@ -128,7 +128,7 @@ class paths(object):
 
     @staticmethod
     def geFnp(assembly):
-        return paths.path(assembly, "geneExp", "2017-11-04" + ".tsv.gz")
+        return paths.path(assembly, "geneExp", "2018-04-09" + ".tsv.gz")
 
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
