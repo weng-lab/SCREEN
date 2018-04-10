@@ -51,6 +51,7 @@ class LoadRNAseq:
         exp = Exp.fromJsonFile(encodeID)
         json = exp.getExpJson()
 
+        biosample = json["replicates"][0]["library"]["biosample"]
         organ = ""
         
         organ_slims = sorted(json["organ_slims"])
