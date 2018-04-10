@@ -35,7 +35,7 @@ class GeneExpWebService(object):
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
 
-        self.allBiosampleTypes = set(["immortalized cell line",
+        self.allBiosampleTypes = set(["cell line", "immortalized cell line",
                                       "induced pluripotent stem cell line",
                                       "in vitro differentiated cells", "primary cell",
                                       "stem cell", "tissue"])
@@ -56,7 +56,6 @@ class GeneExpWebService(object):
         compartments = j["compartments_selected"]
         assay_name = j["assay_name"] if "assay_name" in j else None
         biosample_types_selected = j["biosample_types_selected"]
-        biosample_types_selected = [ "immortalized cell line" if x == "cell line" else x for x in biosample_types_selected]
         
         if not biosample_types_selected:
             return abort("no biosample type selected")
