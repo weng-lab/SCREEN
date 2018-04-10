@@ -59,6 +59,14 @@ class LoadRNAseq:
         else:
             organ = organ_slims[0]
 
+        if biosample["biosample_term_name"] in lookup:
+            organ = lookup[biosample["biosample_term_name"]]
+            
+        if not organ or "na" == organ:
+            print("missing organ", "'" + biosample["biosample_term_name"] + "'")
+            organ = ""  # biosample["biosample_term_name"]
+
+            
 
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
@@ -97,6 +105,15 @@ class LoadRNAseq:
 
     def insertRNAs(self):
         tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
+        with open(tissueFixesFnp) as f:
+            rows = f.readlines()
+        lookup = {}
+        for idx, r in enumerate(rows):
+            toks = r.rstrip().split('%')
+            if len(toks) != 2:
+                raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
+                                -                                + r + "found " + str(len(toks)))
+            lookup[toks[0]] = toks[1].strip()
         printt("gettings datasets")
         self.curs.execute("select distinct(dataset) from r_expression_" + self.assembly)
         rows = self.curs.fetchall()
@@ -105,7 +122,7 @@ class LoadRNAseq:
         printt("loading metadata")
         outF = StringIO.StringIO()
         for row in rows:
-            self.processRow(row, outF, {})
+            self.processRow(row, outF, lookup)
         outF.seek(0)
 
         cols = ["encode_id", "cellType", "organ",
