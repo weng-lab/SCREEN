@@ -45,8 +45,8 @@ tpm NUMERIC NOT NULL);
     printt("importing", fnp)
     with gzip.open(fnp) as f:
         cur.copy_from(f, tableName, '\t',
-                      columns=("dataset", "fileID", "ensembl_id", "gene_name",
-                               "replicate", "tpm", "fpkm"))
+                      columns=("dataset", "replicate", "ensembl_id", "gene_name",
+                               "fileID", "tpm", "fpkm"))
 
 
 def doIndex(curs, assembly):
