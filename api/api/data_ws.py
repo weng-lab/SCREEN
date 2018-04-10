@@ -24,6 +24,7 @@ from cre_utils import checkChrom
 from config import Config
 from pgglobal import GlobalPG
 from pgfantomcat import PGFantomCat
+from pg_home import PGHome
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../metadata/utils"))
 from utils import Utils, Timer
@@ -66,7 +67,8 @@ class DataWebService():
                         "global_fantomcat": self.global_fantomcat,
                         "global_liftover": self.global_liftover,
                         "rampage": self.rampage,
-                        "gwas_json_download": self.gwas_json_download
+                        "gwas_json_download": self.gwas_json_download,
+                        "home_inputData": self.home_inputData
                         }
 
         self.reDetailActions = {
@@ -274,3 +276,7 @@ class DataWebService():
                                                     [accession])
         return {accession: {"rows": rows,
                             "accessions": accessions}}
+
+    def home_inputData(self, j, args):
+        home = PGHome(self.ps)
+        return home.inputData()
