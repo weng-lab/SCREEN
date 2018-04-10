@@ -77,7 +77,8 @@ class GeneExpWebService(object):
         strand = gi.strand
         
         cge = GeneExpression(self.ps, self.cache, self.assembly)
-        r = {"assembly": self.assembly}
+        r = {"assembly": self.assembly,
+             "gene": gene}
         for assay_name in ["total RNA-seq", "polyA RNA-seq", "all"]:
             single = cge.computeHorBars(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
             mean = cge.computeHorBarsMean(name, compartments, biosample_types_selected, assay_name if assay_name != "all" else None)
