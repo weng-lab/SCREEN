@@ -54,7 +54,7 @@ const BaseType = new GraphQLObjectType({
     fields: () => ({
         data: {
             description: 'Get cRE data',
-            type: new GraphQLNonNull(DataResponse),
+            type: DataResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 data: { type: CommonTypes.DataParameters },
@@ -64,7 +64,7 @@ const BaseType = new GraphQLObjectType({
         },
         search: {
             description: 'Perform a search. Returns a list of search tokens and their interpreted meaning.',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SearchToken))),
+            type: new GraphQLList(new GraphQLNonNull(SearchToken)),
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 search: { type: CommonTypes.SearchParameters },
@@ -73,12 +73,12 @@ const BaseType = new GraphQLObjectType({
         },
         globals: {
             description: 'Get global data',
-            type: new GraphQLNonNull(GlobalsResponse),
+            type: GlobalsResponse,
             resolve: resolve_globals
         },
         de_search: {
             description: 'Search differential expression data',
-            type: new GraphQLNonNull(DeResponse),
+            type: DeResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
@@ -89,7 +89,7 @@ const BaseType = new GraphQLObjectType({
         },
         geneexp_search: {
             description: 'Get gene expression data',
-            type: new GraphQLNonNull(GeneExpResponse),
+            type: GeneExpResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
@@ -100,7 +100,7 @@ const BaseType = new GraphQLObjectType({
         },
         suggestions: {
             description: 'Get suggestions for a partial query',
-            type: new GraphQLNonNull(SuggestionsResponse),
+            type: SuggestionsResponse,
             args: {
                 query: { type: new GraphQLNonNull(GraphQLString) },
                 assemblies: { type: new GraphQLList(CommonTypes.Assembly) }
@@ -109,7 +109,7 @@ const BaseType = new GraphQLObjectType({
         },
         gwas: {
             description: 'Get GWAS data',
-            type: new GraphQLNonNull(GwasResponse),
+            type: GwasResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) }
             },
@@ -117,7 +117,7 @@ const BaseType = new GraphQLObjectType({
         },
         get_cart: {
             description: 'Get the current cart',
-            type: new GraphQLNonNull(CartResponse),
+            type: CartResponse,
             args: {
                 uuid: { type: new GraphQLNonNull(UUID) },
             },
@@ -125,7 +125,7 @@ const BaseType = new GraphQLObjectType({
         },
         gb: {
             description: 'Get genome browser data',
-            type: new GraphQLNonNull(GbResponse),
+            type: GbResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
             },
@@ -133,7 +133,7 @@ const BaseType = new GraphQLObjectType({
         },
         ucsc_trackhub_url: {
             description: 'Get a UCSC trackhub url',
-            type: new GraphQLNonNull(UCSCTrackhubResponse),
+            type: UCSCTrackhubResponse,
             args: {
                 uuid: { type: new GraphQLNonNull(UUID) },
                 info: { type: new GraphQLNonNull(UCSCTrackhub.UCSCTrackhubInfo) }
@@ -142,15 +142,15 @@ const BaseType = new GraphQLObjectType({
         },
         credetails: {
             description: 'Get details for specific ccREs',
-            type: new GraphQLNonNull(new GraphQLList(CreDetailsResponse)),
+            type: new GraphQLList(new GraphQLNonNull(CreDetailsResponse)),
             args: {
-                accessions: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) }
+                accessions: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
             },
             resolve: resolve_credetails
         },
         rampage: {
             description: 'Get RAMPAGE data for a gene',
-            type: new GraphQLNonNull(RampageResponse),
+            type: RampageResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) }
@@ -159,7 +159,7 @@ const BaseType = new GraphQLObjectType({
         },
         bedupload: {
             description: 'Intersect a bed file with ccREs',
-            type: new GraphQLNonNull(BedUploadResponse),
+            type: BedUploadResponse,
             args: {
                 uuid: { type: new GraphQLNonNull(UUID) },
                 lines: {
@@ -172,7 +172,7 @@ const BaseType = new GraphQLObjectType({
         },
         genetop: {
             description: 'Get gene expression by biosample',
-            type: new GraphQLNonNull(GeneTopResponse),
+            type: GeneTopResponse,
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 biosample: { type: new GraphQLNonNull(GraphQLString) }
@@ -187,7 +187,7 @@ const BaseMutation = new GraphQLObjectType({
     fields: () => ({
         set_cart: {
             description: 'Set a cart to a specific set of accessions',
-            type: new GraphQLNonNull(CartResponse),
+            type: CartResponse,
             args: {
                 uuid: { type: new GraphQLNonNull(UUID) },
                 accessions: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }

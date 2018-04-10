@@ -11,7 +11,8 @@
   "googleAnalytics": false,
   "memcache": false,
   "cassandra": ["127.0.0.1"],
-  "redisHost": "127.0.0.1"
+  "redisHost": "127.0.0.1",
+  "downloadDir": "/tmp/intersect/"
  },
  "DB":
  {"database": "screenv11",

@@ -42,7 +42,8 @@ class LoadRNAseq:
     lab text,
     assay_term_name text,
     biosample_type text,
-    ageTitle text
+        ageTitle text,
+        assay_title text
     )""".format(tn=tableName))
 
     def processRow(self, row, outF, lookup):
@@ -50,24 +51,14 @@ class LoadRNAseq:
         exp = Exp.fromJsonFile(encodeID)
         json = exp.getExpJson()
 
-        biosample = json["replicates"][0]["library"]["biosample"]
-        try:
-            organ = biosample["organ_slims"]
-            if 1 == len(organ):
-                organ = organ[0]
-            elif len(organ) > 1:
-                #print("multiple", organ)
-                organ = organ[0]
-        except:
-            print("missing", encodeID, biosample["biosample_term_name"])
-            organ = ""
+        organ = ""
+        
+        organ_slims = sorted(json["organ_slims"])
+        if 0 == len(organ_slims):
+            print("missing organ_slims", encodeID)
+        else:
+            organ = organ_slims[0]
 
-        if biosample["biosample_term_name"] in lookup:
-            organ = lookup[biosample["biosample_term_name"]]
-
-        if not organ or "na" == organ:
-            print("missing organ", "'" + biosample["biosample_term_name"] + "'")
-            organ = ""  # biosample["biosample_term_name"]
 
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
@@ -99,24 +90,12 @@ class LoadRNAseq:
              exp.lab,
              exp.assay_term_name,
              exp.biosample_type,
-             ageTitle]
+             ageTitle,
+             exp.jsondata["assay_title"]]
         # print(a)
         outF.write('\t'.join(a) + '\n')
 
     def insertRNAs(self):
-        tissueFixesFnp = os.path.join(os.path.dirname(__file__),
-                                      "cellTypeFixesEncode.txt")
-        printt("reading", tissueFixesFnp)
-        with open(tissueFixesFnp) as f:
-            rows = f.readlines()
-        lookup = {}
-        for idx, r in enumerate(rows):
-            toks = r.rstrip().split('%')
-            if len(toks) != 2:
-                raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
-                                + r + "found " + str(len(toks)))
-            lookup[toks[0]] = toks[1].strip()
-
         printt("gettings datasets")
         self.curs.execute("select distinct(dataset) from r_expression_" + self.assembly)
         rows = self.curs.fetchall()
@@ -125,12 +104,12 @@ class LoadRNAseq:
         printt("loading metadata")
         outF = StringIO.StringIO()
         for row in rows:
-            self.processRow(row, outF, lookup)
+            self.processRow(row, outF, {})
         outF.seek(0)
 
         cols = ["encode_id", "cellType", "organ",
                 "cellCompartment", "target", "lab",
-                "assay_term_name", "biosample_type", "ageTitle"]
+                "assay_term_name", "biosample_type", "ageTitle", "assay_title"]
 
         tableName = "r_rnas_" + self.assembly
         self.curs.copy_from(outF, tableName, '\t', columns=cols)

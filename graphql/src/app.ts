@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 import schema from './schema/schema';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
+import { GraphQLError } from 'graphql';
 
 const Raven = require('raven');
 const {formatError} = require('graphql');
@@ -15,7 +16,7 @@ const logErrors = req => error => {
   const {originalError} = error;
   if (originalError && !originalError[IsUserError] ) {
     useRaven && Raven.captureException(originalError, { req, extra: { source: error.source, originalMessage: error.originalMessage } });
-  } else if (!originalError) {
+  } else if (!originalError && !(error instanceof GraphQLError)) {
     useRaven && Raven.captureException(error, { req, extra: { source: error.source} });
   }
   return data;

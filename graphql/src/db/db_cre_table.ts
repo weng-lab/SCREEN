@@ -225,10 +225,10 @@ export async function getCreTable(assembly: string, ctmap: object, j, pagination
         LIMIT ${limit}
     `;
 
-    // The default arrayparser for pg-types is slow comparatively
-    pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(parseFloat));
+    // 1021 is the oid for _float4 which is a float array
+    pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
+    pgp.pg.types.setTypeParser(1022, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
     const res = await db.any(query, params);
-    pgp.pg.types.setTypeParser(1021, 'text', undefined);
     let total = res.length;
     if (limit <= total || offset !== 0) {// reached query limit
         total = await creTableEstimate(table, where, params);

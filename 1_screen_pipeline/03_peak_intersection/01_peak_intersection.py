@@ -78,8 +78,8 @@ class PeakIntersection:
     def makeJobs(self):
         m = MetadataWS(Datasets.byAssembly(self.assembly))
 
-        allExps = [(m.chipseq_tfs_useful(self.assembly), "tf"),
-                   (m.chipseq_histones_useful(self.assembly), "histone")]
+        allExps = [(m.chipseq_tfs_useful(), "tf"),
+                   (m.chipseq_histones_useful(), "histone")]
         allExpsIndiv = []
         for exps, etype in allExps:
             print("found", len(exps), etype)
@@ -96,16 +96,15 @@ class PeakIntersection:
         for exp, etype in allExpsIndiv:
             i += 1
             try:
-                beds = exp.bedFilters(self.assembly)
-                if not beds:
+                bed = exp.getUsefulPeakFile(self.assembly)
+                if not bed:
                     print("missing", exp)
-                for bed in beds:
-                    jobs.append({"exp": exp,  # this is an Exp
-                                 "bed": bed,  # this is an ExpFile
-                                 "i": i,
-                                 "total": total,
-                                 "assembly": self.assembly,
-                                 "etype": etype})
+                jobs.append({"exp": exp,  # this is an Exp
+                             "bed": bed,  # this is an ExpFile
+                             "i": i,
+                             "total": total,
+                             "assembly": self.assembly,
+                             "etype": etype})
             except Exception, e:
                 print(str(e))
                 print("bad exp:", exp)

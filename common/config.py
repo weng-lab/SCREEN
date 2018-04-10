@@ -17,6 +17,7 @@ class Config:
         c = json.load(f)
 
     re = c["RE"]
+
     version = re["version"]
     db_host = re["db_host"]
     db_usr = re["db_usr"]
@@ -29,3 +30,6 @@ class Config:
     GoogleAnalytics = re["googleAnalytics"]
     memcache = re["memcache"]
     cassandra = re["cassandra"]
+    redisHost = re["redisHost"]
+    bedupload = c["bedupload"]
+    downloadDir = re["downloadDir"]
