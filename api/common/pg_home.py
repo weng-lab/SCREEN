@@ -28,6 +28,6 @@ class PGHome:
                 ORDER BY biosample_term_name
                 """.format(tableName = assembly + "_peakintersectionsmetadata"),
                              {"assembly": assembly})
-                ret += curs.fetchall()
+                ret += [r._asdict() for r in curs.fetchall()]
             
         return ret
