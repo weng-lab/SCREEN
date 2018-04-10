@@ -21,15 +21,15 @@ class PGFantomCat:
 
     ENHANCERCOLUMNS = [
         ("id", "serial PRIMARY KEY"),
-        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"),
+        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"), ("score", "FLOAT"),
         ("ccRE_acc", "TEXT")
     ]
     ENHANCERFIELDS = [x for x, _ in ENHANCERCOLUMNS]
 
     CAGECOLUMNS = [
         ("id", "serial PRIMARY KEY"),
-        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"), ("strand", "TEXT"),
-        ("ccRE_acc", "TEXT")
+        ("chrom", "TEXT"), ("start", "INT"), ("stop", "INT"), ("score", "FLOAT"), ("strand", "TEXT"),
+        ("tssstart", "INT"), ("tssstop", "INT"), ("ccRE_acc", "TEXT")
     ]
     CAGEFIELDS = [x for x, _ in CAGECOLUMNS]
     
@@ -81,12 +81,12 @@ CREATE TABLE {enhancers} ({fields})"""
             curs.copy_from(f, self._tables[key], columns=["geneid", "cre"])
 
     def select_enhancers(self, ccREacc, curs):
-        curs.execute("SELECT chrom, start, stop FROM {enhancers} WHERE ccRE_acc = %(acc)s".format(enhancers = self._tables["enhancers"]),
+        curs.execute("SELECT chrom, start, stop, score FROM {enhancers} WHERE ccRE_acc = %(acc)s".format(enhancers = self._tables["enhancers"]),
                      {"acc": ccREacc})
         return curs.fetchall()
 
     def select_cage(self, ccREacc, curs):
-        curs.execute("SELECT chrom, start, stop, strand FROM {cage} WHERE ccRE_acc = %(acc)s".format(cage = self._tables["cage"]),
+        curs.execute("SELECT chrom, start, stop, score, strand, tssstart, tssstop FROM {cage} WHERE ccRE_acc = %(acc)s".format(cage = self._tables["cage"]),
                      {"acc": ccREacc})
         return curs.fetchall()
 

@@ -19,7 +19,7 @@ class Intersector:
             subprocess.call(["bedtools", "intersect", "-wa", "-wb",
                              "-a", FCPaths.permissive_enhancers, "-b", FCPaths.cres], stdout=o)
         with open(FCPaths.enhancer_intersected, "wb") as o:
-            subprocess.call(["cut", "-f1-3,17", FCPaths.enhancer_intersected + ".tmp"], stdout=o)
+            subprocess.call(["cut", "-f1-4,17", FCPaths.enhancer_intersected + ".tmp"], stdout=o)
         os.remove(FCPaths.enhancer_intersected + ".tmp")
 
         # robust CAGE
@@ -27,7 +27,7 @@ class Intersector:
             subprocess.call(["bedtools", "intersect", "-wa", "-wb",
                              "-a", FCPaths.robust_CAGE, "-b", FCPaths.cres], stdout=o)
         with open(FCPaths.CAGE_intersected, "wb") as o:
-            subprocess.call(["cut", "-f1-3,6,17", FCPaths.CAGE_intersected + ".tmp"], stdout=o)
+            subprocess.call(["cut", "-f1-3,5-8,17", FCPaths.CAGE_intersected + ".tmp"], stdout=o)
         os.remove(FCPaths.CAGE_intersected + ".tmp")
 
 def main():
