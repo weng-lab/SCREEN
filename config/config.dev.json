@@ -3,6 +3,7 @@
 	"version": 10,
 	"db_host": "localhost",
 	"db_usr": "regElmViz_usr",
+	"db_port": 5432,
 	"db": "screenv11",
 	"assemblies": ["hg19", "mm10"],
 	"minipeaks_ver": 4,
