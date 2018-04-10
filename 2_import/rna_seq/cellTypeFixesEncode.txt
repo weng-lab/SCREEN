@@ -72,6 +72,15 @@ neural cell%brain
 neural progenitor cell%brain
 neural tube%brain
 neutrophil%blood
+neurosphere%brain
+neural stem progenitor cell%brain
+mesendoderm%embryo
+germinal matrix%embryo
+AG04450%lung
+CD4-positive, alpha-beta T cell%blood
+placental basal plate%extraembryonic component
+mammary stem cell%mammary gland
+fibroblast of breast%connective tissue
 occipital lobe%  brain
 omental fat pad%fat
 osteoblast%bone
