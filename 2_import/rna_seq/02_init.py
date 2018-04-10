@@ -96,6 +96,7 @@ class LoadRNAseq:
         outF.write('\t'.join(a) + '\n')
 
     def insertRNAs(self):
+        tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
         printt("gettings datasets")
         self.curs.execute("select distinct(dataset) from r_expression_" + self.assembly)
         rows = self.curs.fetchall()
