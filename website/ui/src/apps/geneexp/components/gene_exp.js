@@ -19,7 +19,7 @@ class GeneExp extends React.Component{
 	     sortOrder: "byTissueTPM",
 	     dataScale: "logTPM",
 	     polyA: "polyA RNA-seq"};
-    
+
     componentDidMount(){
 	this.updateWidth();
         this.loadGene(this.props);
@@ -36,7 +36,7 @@ class GeneExp extends React.Component{
 	    this.setState({width});
 	}
     }
-    
+
     makeKey(p){
 	return {assembly: p.assembly,
 		accession: p.cre_accession_detail,
@@ -44,7 +44,7 @@ class GeneExp extends React.Component{
 		compartments_selected: Array.from(p.compartments_selected),
                 biosample_types_selected: Array.from(p.biosample_types_selected)};
     }
-    
+
     loadGene = (p) => {
 	const q = this.makeKey(p);
         const jq = JSON.stringify(q);
@@ -114,7 +114,7 @@ class GeneExp extends React.Component{
 		     style={{height: "30px"}}/>
 	    </Button>);
     }
-    
+
     doRenderWrapper = () => {
 	const barheight = "15";
 	const q = this.makeKey(this.props);
@@ -136,10 +136,10 @@ class GeneExp extends React.Component{
     }
 
     render(){
-	const changeView = (isSingle, polyA, sortOrder, dataScale) => {
+        const changeView = (isSingle, polyA, sortOrder, dataScale) => {
 	    this.setState({isSingle, polyA, sortOrder, dataScale});
 	}
-	
+
         return (
 	    <div ref="box" style={{"width": "100%"}} >
 		<div>

@@ -58,12 +58,12 @@ class GeneExpPage  extends AppPageBase {
 	super(props, "/gews/search", GeneExpPageInner,
 	      {compartments_selected: ["cell"],
 	       biosample_types_selected: [
-		   "immortalized cell line",
+		   "cell line",
 		   "induced pluripotent stem cell line",
 		   "in vitro differentiated cells",
 		   "primary cell",
 		   "stem cell",
-		   "tissue"]}	      
+		   "tissue"]}
 	);
     }
 }
