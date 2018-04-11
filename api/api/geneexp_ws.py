@@ -35,8 +35,7 @@ class GeneExpWebService(object):
         self.assembly = assembly
         self.pgSearch = PGsearch(ps, assembly)
 
-        self.allBiosampleTypes = set(["cell line", "immortalized cell line",
-                                      "induced pluripotent stem cell line",
+        self.allBiosampleTypes = set(["cell line", "induced pluripotent stem cell line",
                                       "in vitro differentiated cells", "primary cell",
                                       "stem cell", "tissue"])
 

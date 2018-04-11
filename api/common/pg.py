@@ -648,7 +648,7 @@ WHERE approved_symbol = %(gene)s
 SELECT DISTINCT(biosample_type)
 FROM {tn}
 ORDER BY 1
-""".format(tn="r_rnas_" + self.assembly)
+""".format(tn=self.assembly + "_rnaseq_exps")
         with getcursor(self.pg.DBCONN, "pg::geBiosampleTypes") as curs:
             curs.execute(q)
             rows = curs.fetchall()
@@ -692,7 +692,7 @@ GROUP BY label
         with getcursor(self.pg.DBCONN, "geneExpressionTissues") as curs:
             curs.execute("""
 SELECT DISTINCT(organ)
-FROM r_rnas_{assembly}
+FROM {assembly}_rnaseq_exps
 """.format(assembly=self.assembly))
             return [r[0] for r in curs.fetchall()]
 
