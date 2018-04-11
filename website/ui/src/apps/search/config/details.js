@@ -176,7 +176,18 @@ class FantomCatTab extends ReTabBase {
     constructor(props) {
 	super(props, "fantom_cat");
 	this.doRender = (globals, assembly, data) => {
-	    return tabEles(globals, data, FantomCatTable(globals, assembly, this.props.actions), 1);
+	    return (
+		<div>
+		  <div style={{fontSize: '12pt', margin: '10px', backgroundColor: 'rgb(255,165,136)'}} className="interpretation panel">
+		    This tab displays the intersection between ccREs and external datasets produced by the <a href='http://fantom.gsc.riken.jp/' target='_blank'>FANTOM Consortium</a>.
+		    For more information on FANTOM data intersected below, see <a href='https://www.ncbi.nlm.nih.gov/pubmed/28241135' target='_blank'>PMID 28241135</a> for RNAs,&nbsp;
+		    <a href='https://www.ncbi.nlm.nih.gov/pubmed/24670763' target='_blank'>PMID 24670763</a> for enhancers,
+		    and <a href='https://www.ncbi.nlm.nih.gov/pubmed/24670764' target='_blank'>PMID 24670764</a> for CAGE peaks / promoters. The data used in this intersection
+		    and descriptions of the fields presented below are available at the <a href='http://fantom.gsc.riken.jp/5/data/' target='_blank'>FANTOM5 website</a>.
+		  </div>
+		  {tabEles(globals, data, FantomCatTable(globals, assembly, this.props.actions), 1)}
+		</div>
+	    );
 	}
     }
 }
