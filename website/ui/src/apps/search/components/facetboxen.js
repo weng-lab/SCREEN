@@ -108,6 +108,10 @@ const startEndBox = ({coord_chrom, coord_start, coord_end, actions, globals}) =>
     }
     var chromLen = globals.chromLens[coord_chrom];
     var histBins = globals.creHistBins[coord_chrom];
+    if (coord_end > chromLen) {
+	coord_end = chromLen;
+	if (coord_start > coord_end) { coord_start = coord_end - 1; }
+    }
     let title = coord_chrom + ":" + coord_start + "-" + coord_end;
     let box = (
 	<RangeFacet
