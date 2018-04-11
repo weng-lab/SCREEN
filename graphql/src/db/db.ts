@@ -1,12 +1,17 @@
 import { IDatabase } from 'pg-promise';
 
+const Raven = require('raven');
+
 const initOptions = {
     error(err, e) {
         if (e.cn) {
+            Raven.captureException(err);
             console.log('Connection error: ', err);
             return;
         }
         console.error('Error when executing query: ', e.query, e.params ? ' with params: ' : '', e.params ? e.params : '');
+        Raven.captureException(err, { extra: { query: e.query, params: e.params }});
+
     },
     query(e) {
         // console.log('QUERY:', e.query);
