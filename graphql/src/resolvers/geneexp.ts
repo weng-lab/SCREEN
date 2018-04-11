@@ -6,7 +6,7 @@ const { UserError } = require('graphql-errors');
 
 
 const allBiosampleTypes = [
-    'immortalized cell line', 'induced pluripotent stem cell line',
+    'cell line', 'induced pluripotent stem cell line',
     'in vitro differentiated cells', 'primary cell',
     'stem cell', 'tissue'];
 

@@ -141,7 +141,7 @@ export class GeneExpression {
                 'logTPM': doLog(row['tpm']),
                 'rawFPKM': parseFloat(row['fpkm']),
                 'logFPKM': doLog(row['fpkm']),
-                'expID': row['dataset'],
+                'expID': row['expid'],
                 'rep': row['replicate'],
                 'ageTitle': row['agetitle'],
                 'rID': row['id']
@@ -157,9 +157,9 @@ export class GeneExpression {
         const tableName = assembly + '_rnaseq_expression';
         const q = `
             SELECT r.tpm, ${assembly}_rnaseq_exps.organ, ${assembly}_rnaseq_exps.cellType,
-            r.dataset, r.replicate, r.fpkm, ${assembly}_rnaseq_exps.ageTitle, r.id
+            r.expid, r.replicate, r.fpkm, ${assembly}_rnaseq_exps.ageTitle, r.id
             FROM ${tableName} as r
-            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.encode_id = r.dataset
+            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.expid = r.expid
             WHERE gene_name = '${gene}'
             AND ${assembly}_rnaseq_exps.cellCompartment = ANY ($1)
             AND ${assembly}_rnaseq_exps.biosample_type = ANY ($2)
@@ -174,14 +174,14 @@ export class GeneExpression {
         const q = `
             SELECT avg(r.tpm) as tpm, ${assembly}_rnaseq_exps.organ,
 	    ${assembly}_rnaseq_exps.cellType,
-            r.dataset, 'mean' as replicate, avg(r.fpkm) as fpkm, ${assembly}_rnaseq_exps.ageTitle,
+            r.expid, 'mean' as replicate, avg(r.fpkm) as fpkm, ${assembly}_rnaseq_exps.ageTitle,
             array_to_string(array_agg(r.id), ',') as id
-            FROM r_expression_${assembly} AS r
-            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.encode_id = r.dataset
+            FROM ${assembly}_rnaseq_expression AS r
+            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.expid = r.expid
             WHERE gene_name = '${gene}'
             AND ${assembly}_rnaseq_exps.cellCompartment = ANY ($1)
             AND ${assembly}_rnaseq_exps.biosample_type = ANY ($2)
-            GROUP BY ${assembly}_rnaseq_exps.organ, ${assembly}_rnaseq_exps.cellType, r.dataset,
+            GROUP BY ${assembly}_rnaseq_exps.organ, ${assembly}_rnaseq_exps.cellType, r.expid,
 	    ${assembly}_rnaseq_exps.ageTitle
         `;
         const res = await db.any(q, [compartments, biosample_types]);
