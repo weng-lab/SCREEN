@@ -157,33 +157,34 @@ WHERE approved_symbol = %(gene)s
     def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND r_rnas_{assembly}.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = "AND {assembly}_rnaseq_exps.assay_title = %(an)s".format(assembly = self.assembly)
         q = """
-SELECT r.tpm, r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, r.replicate, r.fpkm, r_rnas_{assembly}.ageTitle, r.id
-FROM r_expression_{assembly} AS r
-INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+SELECT r.tpm, {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType,
+r.expid, r.replicate, r.fpkm, {assembly}_rnaseq_exps.ageTitle, r.id
+FROM {assembly}_rnaseq_expression AS r
+INNER JOIN {assembly}_rnaseq_exps ON {assembly}_rnaseq_exps.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
-AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
-AND r_rnas_{assembly}.biosample_type IN %(bts)s
+AND {assembly}_rnaseq_exps.cellCompartment IN %(compartments)s
+AND {assembly}_rnaseq_exps.biosample_type IN %(bts)s
 """.format(assembly=self.assembly, assayname = assayname)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
 
     def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND r_rnas_{assembly}.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = "AND {assembly}_rnaseq_exps.assay_title = %(an)s".format(assembly = self.assembly)
         q = """
-SELECT avg(r.tpm), r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType,
-r.dataset, 'mean' as replicate, avg(r.fpkm), r_rnas_{assembly}.ageTitle, 
+SELECT avg(r.tpm), {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType,
+r.expid, 'mean' as replicate, avg(r.fpkm), {assembly}_rnaseq_exps.ageTitle, 
 array_to_string(array_agg(r.id), ',')
-FROM r_expression_{assembly} AS r
-INNER JOIN r_rnas_{assembly} ON r_rnas_{assembly}.encode_id = r.dataset
+FROM {assembly}_rnaseq_expression AS r
+INNER JOIN {assembly}_rnaseq_exps ON {assembly}_rnaseq_exps.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
-AND r_rnas_{assembly}.cellCompartment IN %(compartments)s
-AND r_rnas_{assembly}.biosample_type IN %(bts)s
-GROUP BY r_rnas_{assembly}.organ, r_rnas_{assembly}.cellType, r.dataset, r_rnas_{assembly}.ageTitle
+AND {assembly}_rnaseq_exps.cellCompartment IN %(compartments)s
+AND {assembly}_rnaseq_exps.biosample_type IN %(bts)s
+GROUP BY {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType, r.expid, 
+{assembly}_rnaseq_exps.ageTitle
 """.format(assembly=self.assembly, assayname = assayname)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
