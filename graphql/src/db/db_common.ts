@@ -48,7 +48,7 @@ export async function tfHistoneDnaseList(assembly, eset) {
 }
 
 export async function geBiosampleTypes(assembly) {
-    const tableName = 'r_rnas_' + assembly;
+    const tableName =  assembly + '_rnaseq_exps';
     const q = `
         SELECT DISTINCT(biosample_type)
         FROM ${tableName}
@@ -59,7 +59,7 @@ export async function geBiosampleTypes(assembly) {
 }
 
 export async function geBiosamples(assembly) {
-    const tableName = 'r_rnas_' + assembly;
+    const tableName = assembly + '_rnaseq_exps';
     const q = `
         SELECT DISTINCT(celltype) as biosample
         FROM ${tableName}

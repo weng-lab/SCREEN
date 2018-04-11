@@ -25,7 +25,7 @@ from config import Config
 
 
 def setupAndCopy(cur, assembly, fnp):
-    tableName = "r_expression_" + assembly
+    tableName = assembly + "_rnaseq_expression"
 
     printt("dropping and creating", tableName)
     cur.execute("""
@@ -35,7 +35,7 @@ CREATE TABLE {tableName} (
 id serial PRIMARY KEY,
 ensembl_id VARCHAR(256) NOT NULL,
 gene_name VARCHAR(256) NOT NULL,
-dataset VARCHAR(256) NOT NULL,
+expID VARCHAR(256) NOT NULL,
 fileID VARCHAR(256) NOT NULL,
 replicate INT NOT NULL,
 fpkm NUMERIC NOT NULL,
@@ -45,12 +45,12 @@ tpm NUMERIC NOT NULL);
     printt("importing", fnp)
     with gzip.open(fnp) as f:
         cur.copy_from(f, tableName, '\t',
-                      columns=("dataset", "replicate", "ensembl_id", "gene_name",
+                      columns=("expID", "replicate", "ensembl_id", "gene_name",
                                "fileID", "tpm", "fpkm"))
 
 
 def doIndex(curs, assembly):
-    tableName = "r_expression_" + assembly
+    tableName = assembly + "_rnaseq_expression"
     makeIndex(curs, tableName, ["gene_name"])
 
 

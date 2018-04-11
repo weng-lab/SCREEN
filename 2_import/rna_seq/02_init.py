@@ -26,7 +26,7 @@ class LoadRNAseq:
         self.assembly = assembly
 
     def setupDB(self):
-        tableName = "r_rnas_" + self.assembly
+        tableName = self.assembly + "_rnaseq_exps"
         printt("dropping and creating", tableName)
 
         self.curs.execute("""
@@ -34,7 +34,8 @@ class LoadRNAseq:
 
     CREATE TABLE {tn}
     (id serial PRIMARY KEY,
-    encode_id text,
+    expID text,
+    fileID text,
     cellType text,
     organ text,
     cellCompartment text,
@@ -42,13 +43,15 @@ class LoadRNAseq:
     lab text,
     assay_term_name text,
     biosample_type text,
-        ageTitle text,
-        assay_title text
+    biosample_term_name text,
+    ageTitle text,
+    assay_title text
     )""".format(tn=tableName))
 
     def processRow(self, row, outF, lookup):
-        encodeID = row[0]
-        exp = Exp.fromJsonFile(encodeID)
+        expID = row[0]
+        fileID = row[1]
+        exp = Exp.fromJsonFile(expID)
         json = exp.getExpJson()
 
         biosample = json["replicates"][0]["library"]["biosample"]
@@ -56,7 +59,7 @@ class LoadRNAseq:
         
         organ_slims = sorted(json["organ_slims"])
         if 0 == len(organ_slims):
-            print("missing organ_slims", encodeID)
+            print("DCC needs to fix missing organ_slims JSON field for", expID)
         else:
             organ = organ_slims[0]
 
@@ -64,7 +67,7 @@ class LoadRNAseq:
             organ = lookup[biosample["biosample_term_name"]]
             
         if not organ or "na" == organ:
-            print("missing organ", "'" + biosample["biosample_term_name"] + "'")
+            print("POTENTIAL ERROR: missing organ", "'" + biosample["biosample_term_name"] + "'")
             organ = ""  # biosample["biosample_term_name"]
 
             
@@ -72,7 +75,7 @@ class LoadRNAseq:
         try:
             cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
         except:
-            #print(encodeID, "assuming cell compartment")
+            #print(expID, "assuming cell compartment")
             cellCompartment = "cell"
 
         ageTitle = ''
@@ -91,7 +94,8 @@ class LoadRNAseq:
             raise
             ageTitle = ''
 
-        a = [exp.encodeID,
+        a = [expID,
+             fileID,
              exp.biosample_term_name,
              organ,
              cellCompartment,
@@ -99,6 +103,7 @@ class LoadRNAseq:
              exp.lab,
              exp.assay_term_name,
              exp.biosample_type,
+             exp.biosample_term_name,
              ageTitle,
              exp.jsondata["assay_title"]]
         # print(a)
@@ -116,7 +121,8 @@ class LoadRNAseq:
                                 -                                + r + "found " + str(len(toks)))
             lookup[toks[0]] = toks[1].strip()
         printt("gettings datasets")
-        self.curs.execute("select distinct(dataset) from r_expression_" + self.assembly)
+        self.curs.execute("select distinct expID, fileID from {tableName}"
+                          .format(tableName = self.assembly + "_rnaseq_expression"))
         rows = self.curs.fetchall()
         printt("found", len(rows), "rows")
 
@@ -126,16 +132,17 @@ class LoadRNAseq:
             self.processRow(row, outF, lookup)
         outF.seek(0)
 
-        cols = ["encode_id", "cellType", "organ",
+        cols = ["expID", "fileID", "cellType", "organ",
                 "cellCompartment", "target", "lab",
-                "assay_term_name", "biosample_type", "ageTitle", "assay_title"]
+                "assay_term_name", "biosample_type", "biosample_term_name",
+                "ageTitle", "assay_title"]
 
-        tableName = "r_rnas_" + self.assembly
+        tableName = self.assembly + "_rnaseq_exps"
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
         printt("inserted", self.curs.rowcount)
 
     def doIndex(self):
-        tableName = "r_rnas_" + self.assembly
+        tableName = self.assembly + "_rnaseq_exps"
         makeIndexMultiCol(self.curs, tableName, ["cellCompartment", "biosample_type"])
 
 
