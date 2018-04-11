@@ -4,6 +4,9 @@ import sys
 import os
 import math
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
+from utils import Utils, printt
+
 
 class PGFantomCat:
 
@@ -32,7 +35,7 @@ class PGFantomCat:
         ("tssstart", "INT"), ("tssstop", "INT"), ("ccRE_acc", "TEXT")
     ]
     CAGEFIELDS = [x for x, _ in CAGECOLUMNS]
-    
+
     def __init__(self, assembly, tableprefix="fantomcat"):
         self._tables = {
             "genes": "_".join((assembly, tableprefix, "genes")),
@@ -67,18 +70,22 @@ CREATE TABLE {enhancers} ({fields})"""
     def import_enhancers_fromfile(self, fnp, curs):
         with open(fnp, 'r') as f:
             curs.copy_from(f, self._tables["enhancers"], columns = [x for x in PGFantomCat.ENHANCERFIELDS[1:]])
+        printt("copied in", curs.rowcount)
 
     def import_cage_fromfile(self, fnp, curs):
         with open(fnp, 'r') as f:
             curs.copy_from(f, self._tables["cage"], columns = [x for x in PGFantomCat.CAGEFIELDS[1:]])
-        
+        printt("copied in", curs.rowcount)
+
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables["genes"], columns=[x for x in PGFantomCat.GENEFIELDS[1:]])
+        printt("copied in", curs.rowcount)
 
     def import_intersections_fromfile(self, fnp, curs, key="intersections"):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables[key], columns=["geneid", "cre"])
+        printt("copied in", curs.rowcount)
 
     def select_enhancers(self, ccREacc, curs):
         curs.execute("SELECT chrom, start, stop, score FROM {enhancers} WHERE ccRE_acc = %(acc)s".format(enhancers = self._tables["enhancers"]),
