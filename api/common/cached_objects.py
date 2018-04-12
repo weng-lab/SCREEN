@@ -143,21 +143,35 @@ class CachedObjects:
         return ret
 
     def cellTypeInfoArr(self):
-        ret = []
-        for ctr in self.datasets.globalCellTypeInfoArr:
+        def getRNAseqFiles(biosample_summary):
             files = []
+
+            for rnaseq in self.rnaseq_exps[bs]:
+                fs = filter(lambda x: "signal of unique reads" == x["output_type"],
+                            rnaseq["signal_files"])
+                if not fs:
+                    fs = filter(lambda x:
+                                "plus strand signal of unique reads" == x["output_type"] or "minus strand signal of unique reads" == x["output_type"],
+                                rnaseq["signal_files"])
+                files += list(fs)
+            return files
+        
+        ret = []
+
+        self.cellTypeNameToRNAseqs = {}
+        
+        for ctr in self.datasets.globalCellTypeInfoArr:
             bs = ctr["biosample_summary"]
+            ctn = ctr["cellTypeName"]
+
+            files = []
             if bs in self.rnaseq_exps:
-                for rnaseq in self.rnaseq_exps[bs]:
-                    rnaseq_files = filter(lambda x: "signal of unique reads" == x["output_type"],
-                                          rnaseq["signal_files"])
-                    if not rnaseq_files:
-                        rnaseq_files = filter(lambda x:
-                                              "plus strand signal of unique reads" == x["output_type"] or "minus strand signal of unique reads" == x["output_type"],
-                                              rnaseq["signal_files"])
-                    files += list(rnaseq_files)
-            ctr["rnaseq"] = files
+                files = getRNAseqFiles(bs)
+            self.cellTypeNameToRNAseqs[ctn] = files
+                
+            ctr["rnaseq"] = len(files) > 0
             ctr["checked"] = False
+            
             ret.append(ctr)
         return ret
     

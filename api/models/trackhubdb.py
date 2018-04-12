@@ -315,13 +315,13 @@ longLabel {tct_long}
                    tct_long = Helpers.makeLongLabel(ct))]
 
     def _add_ct_rnaseq_bigWigs(self, ct, show5group, superTrackName):
-        # bigWig signal tracks
+        # rnaseq bigWig signal tracks
         ret = []
 
         cache = self.cacheW[self.assembly]
-        for expInfo in cache.datasets.byCellType[ct]:
-            t = BigWigTrack(self.assembly, expInfo["expID"], expInfo["fileID"],
-                            expInfo["assay"], superTrackName, True, ct).lines(self.priority)
+        for f in cache.cellTypeNameToRNAseqs[ct]:
+            t = BigWigTrack(self.assembly, f["expID"], f["fileID"],
+                            "RNA-seq", superTrackName, True, ct).lines(self.priority)
             self.priority += 1
             ret += [t]
         return ret
