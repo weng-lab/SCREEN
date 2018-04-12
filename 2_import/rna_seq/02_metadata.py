@@ -45,6 +45,7 @@ class LoadRNAseq:
     assay_term_name text,
     biosample_type text,
     biosample_term_name text,
+    biosample_summary text,
     ageTitle text,
     assay_title text,
     signal_files jsonb
@@ -105,7 +106,7 @@ class LoadRNAseq:
                 continue
             j = {"fileID": f.fileID,
                  "output_type": f.output_type,
-                 "url": f.url,
+                 "expID": exp.encodeID,
                  "replicate": replicate}
             ret.append(j)
         return ret                 
@@ -132,6 +133,7 @@ class LoadRNAseq:
              exp.assay_term_name,
              exp.biosample_type,
              exp.biosample_term_name,
+             exp.biosample_summary,
              ageTitle,
              j["assay_title"],
              str(replicate),
@@ -175,7 +177,7 @@ FROM {tableName}
         cols = ["expID", "fileID", "cellType", "organ",
                 "cellCompartment", "target", "lab",
                 "assay_term_name", "biosample_type", "biosample_term_name",
-                "ageTitle", "assay_title", "replicate", "signal_files"]
+                "biosample_summary", "ageTitle", "assay_title", "replicate", "signal_files"]
 
         tableName = self.assembly + "_rnaseq_exps"
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
