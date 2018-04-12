@@ -239,7 +239,7 @@ export const tabTitle = (c) => (
 export const upperCase = (d) => (d.toUpperCase())
 
 export const searchLink = (data, uuid) => (approved_symbol) => {
-    const d = {q: approved_symbol, 
+    const d = {q: approved_symbol,
 	       uuid,
 	       assembly: data.assembly};
     const params = toParams(d);
@@ -531,7 +531,10 @@ export const accSorter = (data) => {
     return e + p + c;
 }
 
-export const rnaseq = (data) => {
-    return (<span className="glyphicon glyphicon-ok"
-		  aria-hidden="true"></span>);
+export const rnaseq = (rnaexps) => {
+    if(rnaexps.length > 0){
+        return (<span className="glyphicon glyphicon-ok"
+		aria-hidden="true"></span>);
+    }
+    return <span></span>;
 }

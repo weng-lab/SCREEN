@@ -46,23 +46,6 @@ class ConfigureGenomeBrowser extends React.Component {
 	}
     }
 
-    // openGenomeBrowser(data, url){
-    // 	ApiClient.setByPost(data,
-    // 			    url,
-    // 			    (r) => {
-    // 				if ("err" in r) {
-    // 				    //$("#errMsg").text(r.err);
-    // 				    //$("#errBox").show()
-    // 				    return true;
-    // 				}
-    // 				console.log(r.url, r.trackhubUrl);
-    // 				window.open(r.url, '_blank');
-    // 			    },
-    // 			    (msg) =>{
-    // 				console.log(msg);
-    // 			    });
-    // }
-
     openGenomeBrowser = (data, url) => {
         $.ajax({
 	    type: "POST",
