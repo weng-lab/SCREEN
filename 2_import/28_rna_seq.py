@@ -18,8 +18,8 @@ from config import Config
 from pgfantomcat import PGFantomCat
 
 AddPath(__file__, './rna_seq/')
-rna1 = import_module('01_json_import')
-rna2 = import_module('02_init')
+rna1 = import_module('01_import_merged_tsv')
+rna2 = import_module('02_metadata')
 
 
 def run(args, DBCONN):

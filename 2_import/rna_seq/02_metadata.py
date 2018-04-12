@@ -36,6 +36,7 @@ class LoadRNAseq:
     (id serial PRIMARY KEY,
     expID text,
     fileID text,
+    replicate INT NOT NULL,
     cellType text,
     organ text,
     cellCompartment text,
@@ -45,21 +46,17 @@ class LoadRNAseq:
     biosample_type text,
     biosample_term_name text,
     ageTitle text,
-    assay_title text
+    assay_title text,
+    signal_files jsonb
     )""".format(tn=tableName))
 
-    def processRow(self, row, outF, lookup):
-        expID = row[0]
-        fileID = row[1]
-        exp = Exp.fromJsonFile(expID)
-        json = exp.getExpJson()
-
-        biosample = json["replicates"][0]["library"]["biosample"]
+    def _organ(self, exp, j, lookup):
+        biosample = j["replicates"][0]["library"]["biosample"]
         organ = ""
         
-        organ_slims = sorted(json["organ_slims"])
+        organ_slims = sorted(j["organ_slims"])
         if 0 == len(organ_slims):
-            print("DCC needs to fix missing organ_slims JSON field for", expID)
+            print("DCC needs to fix missing organ_slims JSON field for", exp.encodeID)
         else:
             organ = organ_slims[0]
 
@@ -70,18 +67,22 @@ class LoadRNAseq:
             print("POTENTIAL ERROR: missing organ", "'" + biosample["biosample_term_name"] + "'")
             organ = ""  # biosample["biosample_term_name"]
 
-            
+        return organ
 
+    def _cellCompartment(self, exp, j):
         try:
-            cellCompartment = json["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
+            cellCompartment = j["replicates"][0]["library"]["biosample"]["subcellular_fraction_term_name"]
         except:
             #print(expID, "assuming cell compartment")
             cellCompartment = "cell"
 
+        return cellCompartment
+
+    def _ageTitle(self, exp, j):
         ageTitle = ''
         try:
             if 'mm10' == self.assembly:
-                bs = exp.jsondata["replicates"][0]["library"]["biosample"]
+                bs = j["replicates"][0]["library"]["biosample"]
                 life_stage = bs.get("life_stage", "")
                 age_units = bs.get("age_units", "")
                 age = bs.get("age", "")
@@ -93,7 +94,34 @@ class LoadRNAseq:
         except:
             raise
             ageTitle = ''
+        return ageTitle
 
+    def _signalFiles(self, exp, replicate):
+        ret = []
+        for f in exp.files:
+            if not f.isBigWig():
+                continue
+            if not f.biological_replicates == [replicate]:
+                continue
+            j = {"fileID": f.fileID,
+                 "output_type": f.output_type,
+                 "url": f.url,
+                 "replicate": replicate}
+            ret.append(j)
+        return ret                 
+    
+    def processRow(self, row, outF, lookup):
+        expID = row[0]
+        fileID = row[1]
+        replicate = row[2]
+        exp = Exp.fromJsonFile(expID)
+        j = exp.getExpJson()
+
+        organ = self._organ(exp, j, lookup)
+        cellCompartment = self._cellCompartment(exp, j)
+        ageTitle = self._ageTitle(exp, j)
+        signalFiles = self._signalFiles(exp, replicate)
+        
         a = [expID,
              fileID,
              exp.biosample_term_name,
@@ -105,11 +133,14 @@ class LoadRNAseq:
              exp.biosample_type,
              exp.biosample_term_name,
              ageTitle,
-             exp.jsondata["assay_title"]]
+             j["assay_title"],
+             str(replicate),
+             json.dumps(signalFiles)
+        ]
         # print(a)
         outF.write('\t'.join(a) + '\n')
 
-    def insertRNAs(self):
+    def patchOrgan(self):
         tissueFixesFnp = os.path.join(os.path.dirname(__file__), "cellTypeFixesEncode.txt")
         with open(tissueFixesFnp) as f:
             rows = f.readlines()
@@ -120,12 +151,21 @@ class LoadRNAseq:
                 raise Exception("wrong number of tokens on line " + str(idx + 1) + ": "
                                 -                                + r + "found " + str(len(toks)))
             lookup[toks[0]] = toks[1].strip()
-        printt("gettings datasets")
-        self.curs.execute("select distinct expID, fileID from {tableName}"
-                          .format(tableName = self.assembly + "_rnaseq_expression"))
+        return lookup
+        
+    def insertRNAs(self):
+        printt("getting list of experiments")
+        q = """
+SELECT expID, fileID, replicate 
+FROM {tableName}
+""".format(tableName = self.assembly + "_rnaseq_expression_exps")
+        
+        self.curs.execute(q)
         rows = self.curs.fetchall()
         printt("found", len(rows), "rows")
 
+        lookup = self.patchOrgan()
+        
         printt("loading metadata")
         outF = StringIO.StringIO()
         for row in rows:
@@ -135,7 +175,7 @@ class LoadRNAseq:
         cols = ["expID", "fileID", "cellType", "organ",
                 "cellCompartment", "target", "lab",
                 "assay_term_name", "biosample_type", "biosample_term_name",
-                "ageTitle", "assay_title"]
+                "ageTitle", "assay_title", "replicate", "signal_files"]
 
         tableName = self.assembly + "_rnaseq_exps"
         self.curs.copy_from(outF, tableName, '\t', columns=cols)

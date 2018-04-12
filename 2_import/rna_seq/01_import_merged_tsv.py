@@ -24,11 +24,11 @@ from constants import chroms, paths, DB_COLS
 from config import Config
 
 
-def setupAndCopy(cur, assembly, fnp):
+def setupAndCopy(curs, assembly, fnp):
     tableName = assembly + "_rnaseq_expression"
 
     printt("dropping and creating", tableName)
-    cur.execute("""
+    curs.execute("""
 DROP TABLE IF EXISTS {tableName};
 
 CREATE TABLE {tableName} (
@@ -44,10 +44,22 @@ tpm NUMERIC NOT NULL);
 
     printt("importing", fnp)
     with gzip.open(fnp) as f:
-        cur.copy_from(f, tableName, '\t',
+        curs.copy_from(f, tableName, '\t',
                       columns=("expID", "replicate", "ensembl_id", "gene_name",
                                "fileID", "tpm", "fpkm"))
+    printt("copied in", curs.rowcount)
 
+def extractExpIDs(curs, assembly):
+    printt("extracting expIDs...")
+    curs.execute("""
+DROP TABLE IF EXISTS {tableNameExps};
+
+CREATE TABLE {tableNameExps} AS 
+SELECT DISTINCT expID, fileID, replicate 
+FROM {tableName}
+""".format(tableName = assembly + "_rnaseq_expression",
+           tableNameExps = assembly + "_rnaseq_expression_exps"))
+    printt("copied in", curs.rowcount)
 
 def doIndex(curs, assembly):
     tableName = assembly + "_rnaseq_expression"
@@ -68,6 +80,7 @@ def run(args, DBCONN):
             else:
                 print("using", fnp)
                 setupAndCopy(curs, assembly, fnp)
+                extractExpIDs(curs, assembly)
                 doIndex(curs, assembly)
 
 
