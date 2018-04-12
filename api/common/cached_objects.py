@@ -142,22 +142,39 @@ class CachedObjects:
                 ret["specific"].append(row)
         return ret
 
+    def cellTypeInfoArr(self):
+        ret = []
+        for ctr in self.datasets.globalCellTypeInfoArr:
+            files = []
+            bs = ctr["biosample_summary"]
+            if bs in self.rnaseq_exps:
+                for rnaseq in self.rnaseq_exps[bs]:
+                    rnaseq_files = filter(lambda x: "signal of unique reads" == x["output_type"],
+                                          rnaseq["signal_files"])
+                    if not rnaseq_files:
+                        rnaseq_files = filter(lambda x:
+                                              "plus strand signal of unique reads" == x["output_type"] or "minue strand signal of unique reads" == x["output_type"],
+                                              rnaseq["signal_files"])
+                    files += list(rnaseq_files)
+            ctr["rnaseq"] = files
+            ctr["checked"] = False
+            ret.append(ctr)
+        return ret
+    
     def global_data(self, ver):
-        datasets = self.datasets
         return {
             "tfs": self.tf_list,
             "cellCompartments": Compartments,
-            "cellTypeInfoArr": datasets.globalCellTypeInfoArr,
+            "cellTypeInfoArr": self.cellTypeInfoArr(),
             "chromCounts": self.chromCounts,
             "chromLens": chrom_lengths[self.assembly],
             "creHistBins": self.creHist,
-            "byCellType": datasets.byCellType,
+            "byCellType": self.datasets.byCellType,
             "geBiosampleTypes": self.geBiosampleTypes,
             "helpKeys": self.help_keys,
             "colors": self.colors,
             "creBigBedsByCellType": self.creBigBeds,
-            "creBedsByCellType": self.creBeds,
-            "rnaseq_exps": self.rnaseq_exps
+            "creBedsByCellType": self.creBeds
         }
 
 

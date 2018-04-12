@@ -57,10 +57,7 @@ const initialState = (search, globals) => {
 
       	configuregb_cre: accession,
       	configuregb_browser: null,
-      	configuregb_cts: globals.cellTypeInfoArr.map(x => ({
-      	    ...x,
-      	    checked: false
-      	})),
+      	configuregb_cts: globals.cellTypeInfoArr,
 
 	gb_cres: {}, // set of accessions to show in GB, and their metadata
 

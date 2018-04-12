@@ -16,7 +16,7 @@ class PGge(object):
 
     def rnaseq_exps(self):
         q = """
-SELECT biosample_term_name, expID, fileID, signal_files
+SELECT biosample_summary, expID, fileID, signal_files
 FROM {tn}
 """.format(
             tn=self.assembly + "_rnaseq_exps")
@@ -27,12 +27,12 @@ FROM {tn}
             
         ret = {}
         for r in rows:
-            biosample_term_name = r[0]
-            if biosample_term_name not in ret:
-                ret[biosample_term_name] = []
-            ret[biosample_term_name].append({"expID": r[1],
-                                             "fileID": r[2],
-                                             "signal_files": r[3]})
+            biosample_summary = r[0]
+            if biosample_summary not in ret:
+                ret[biosample_summary] = []
+            ret[biosample_summary].append({"expID": r[1],
+                                           "fileID": r[2],
+                                           "signal_files": r[3]})
         return ret
             
 
