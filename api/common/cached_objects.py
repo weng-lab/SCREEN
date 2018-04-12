@@ -153,7 +153,7 @@ class CachedObjects:
                                           rnaseq["signal_files"])
                     if not rnaseq_files:
                         rnaseq_files = filter(lambda x:
-                                              "plus strand signal of unique reads" == x["output_type"] or "minue strand signal of unique reads" == x["output_type"],
+                                              "plus strand signal of unique reads" == x["output_type"] or "minus strand signal of unique reads" == x["output_type"],
                                               rnaseq["signal_files"])
                     files += list(rnaseq_files)
             ctr["rnaseq"] = files

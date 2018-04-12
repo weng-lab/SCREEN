@@ -101,6 +101,8 @@ class ConfigureGenomeBrowser extends React.Component {
 	      className: "dcc",
 	      render: Render.assayIcon(this.props.globals),
 	      orderable: false },
+	    { title: "RNA-seq", data: "rnaseq",
+	      render: Render.rnaseq},
 	    { title: "synonyms", data: "synonyms", visible: false }
 	]
 

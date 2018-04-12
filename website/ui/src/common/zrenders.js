@@ -530,3 +530,8 @@ export const accSorter = (data) => {
     let c = Math.pow(2, col(data.ctcfmax));
     return e + p + c;
 }
+
+export const rnaseq = (data) => {
+    return (<span className="glyphicon glyphicon-ok"
+		  aria-hidden="true"></span>);
+}
