@@ -95,7 +95,10 @@ class Rampage extends React.Component {
 
 	const format = {
 	    value: rank_f,
-	    label: d => itemsByID[d].biosample_term_name + " (" + itemsByID[d].strand + ") strand",
+	    label: rid => {
+		const d = itemsByID[rid];
+		return d.expid + ' ' + d.biosample_term_name + " (" + d.strand + ") strand";
+	    },
 	    grouplabel: d => d.tissue
 	};
 	
