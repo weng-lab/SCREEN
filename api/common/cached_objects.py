@@ -178,7 +178,7 @@ class CachedObjects:
             ret.append(ctr)
 
         print("loaded", len(self.cellTypeNameToRNAseqs.keys()))
-        return ret
+        self.cellTypeInfoArr = ret
     
     def global_data(self, ver):
         return {
