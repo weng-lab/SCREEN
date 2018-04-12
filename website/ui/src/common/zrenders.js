@@ -532,7 +532,7 @@ export const accSorter = (data) => {
 }
 
 export const rnaseq = (rnaexps) => {
-    if(rnaexps.length > 0){
+    if(rnaexps){
         return (<span className="glyphicon glyphicon-ok"
 		aria-hidden="true"></span>);
     }
