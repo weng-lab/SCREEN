@@ -5,8 +5,6 @@ import SortCols from './sort_cols';
 import DataSource from './datasource';
 import { CSVLink } from 'react-csv';
 
-//const firstBy = require('thenby');
-
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
 	if("visible" in c){
@@ -197,7 +195,7 @@ class Ztable extends React.Component {
 		<SearchBox value={this.state.search}
 			   onChange={searchBoxChange} 
 	                   noSearchBox={this.props.noSearchBox}/>
-		{hasobj ? <span/> : <CSVLink data={rawData} >CSV</CSVLink>}
+		{hasobj ? <span/> : <CSVLink data={rawData} separator={"\t"}>TSV</CSVLink>}
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}

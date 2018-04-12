@@ -48,7 +48,7 @@ function tabEle(globals, data, key, table, numCols) {
     }
     return (<div className={"col-md-" + (12/numCols)} key={key}>
 	    <h4>{table.title} {helpicon}</h4>
-	    {table.csv ? <CSVLink data={data}>CSV</CSVLink> : null}
+	    {table.csv ? <CSVLink data={data} separator={"\t"}>TSV</CSVLink> : null}
 	    {makeTable(data, key, table)}<br/>
     </div>);
 }
