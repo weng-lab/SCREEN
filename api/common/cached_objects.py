@@ -11,6 +11,7 @@ from models.datasets import Datasets
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../common"))
 from constants import paths, PageTitle, chrom_lengths
 from pg import PGsearch
+from pg_ge import PGge
 from postgres_wrapper import PostgresWrapper
 from dbconnect import db_connect
 from config import Config
@@ -84,6 +85,8 @@ class CachedObjects:
         self.creBeds = self.pgSearch.creBeds()
         self.filesList2 = self.indexFilesTab2(self.creBeds)
 
+        self.rnaseq_exps = PGge(self.ps, self.assembly).rnaseq_exps()
+        
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
         strand = self.ensemblToStrand.get(s, '')
@@ -153,7 +156,8 @@ class CachedObjects:
             "helpKeys": self.help_keys,
             "colors": self.colors,
             "creBigBedsByCellType": self.creBigBeds,
-            "creBedsByCellType": self.creBeds
+            "creBedsByCellType": self.creBeds,
+            "rnaseq_exps": self.rnaseq_exps
         }
 
 
