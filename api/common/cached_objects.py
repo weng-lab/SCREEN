@@ -85,7 +85,9 @@ class CachedObjects:
         self.creBeds = self.pgSearch.creBeds()
         self.filesList2 = self.indexFilesTab2(self.creBeds)
 
+        self.cellTypeNameToRNAseqs = {}
         self.rnaseq_exps = PGge(self.ps, self.assembly).rnaseq_exps()
+        self.makeCellTypeInfoArr()
         
     def lookupEnsembleGene(self, s):
         name = self.ensemblToSymbol.get(s, '')
@@ -142,7 +144,10 @@ class CachedObjects:
                 ret["specific"].append(row)
         return ret
 
-    def cellTypeInfoArr(self):
+    def RNAseqFiles(self, ctn):
+        return self.cellTypeNameToRNAseqs[ctn]
+    
+    def makeCellTypeInfoArr(self):
         def getRNAseqFiles(biosample_summary):
             files = []
 
@@ -157,8 +162,6 @@ class CachedObjects:
             return files
         
         ret = []
-
-        self.cellTypeNameToRNAseqs = {}
         
         for ctr in self.datasets.globalCellTypeInfoArr:
             bs = ctr["biosample_summary"]
@@ -173,13 +176,15 @@ class CachedObjects:
             ctr["checked"] = False
             
             ret.append(ctr)
+
+        print("loaded", len(self.cellTypeNameToRNAseqs.keys()))
         return ret
     
     def global_data(self, ver):
         return {
             "tfs": self.tf_list,
             "cellCompartments": Compartments,
-            "cellTypeInfoArr": self.cellTypeInfoArr(),
+            "cellTypeInfoArr": self.cellTypeInfoArr,
             "chromCounts": self.chromCounts,
             "chromLens": chrom_lengths[self.assembly],
             "creHistBins": self.creHist,

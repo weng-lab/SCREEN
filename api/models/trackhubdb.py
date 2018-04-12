@@ -122,7 +122,7 @@ class BigWigTrack(object):
         self.parent = parent
         self.active = active
         self.ct = ct
-        self.p = self._init()
+        self.trackDesc = None
 
     def _init(self):
         p = OrderedDict()
@@ -141,9 +141,14 @@ class BigWigTrack(object):
         p["viewLimits"] = self._signalMax()
         return p
 
+    def setDesc(self, d):
+        self.trackDesc = d
+        
     def _desc(self):
+        if self.trackDesc:
+            return self.trackDesc
         return ' '.join([self.assay, "Signal in", self.ct, self.expID])
-    
+
     def _signalMax(self):
         if "DNase" == self.assay:
             return "0:150"
@@ -153,7 +158,8 @@ class BigWigTrack(object):
         return EncodeUrlBigWig(self.fileID)
     
     def lines(self, priority):
-        return ''.join([x for x in outputLines(self.p, 1, {"priority": priority})])
+        p = self._init()
+        return ''.join([x for x in outputLines(p, 1, {"priority": priority})])
 
 
 class TrackhubDb:
@@ -259,6 +265,7 @@ trackDb\t{assembly}/trackDb_{hubNum}.txt""".format(assembly=self.assembly,
         ret = self.makeSuperTrack(ct, superTrackName)
         ret += self._add_ct_cREs(ct, show5group, superTrackName)
         ret += self._add_ct_bigWigs(ct, show5group, superTrackName)
+        ret += self._add_ct_rnaseq_bigWigs(ct, show5group, superTrackName)
         return ret
 
     def _add_ct_cREs(self, ct, show5group, superTrackName):
@@ -314,14 +321,18 @@ longLabel {tct_long}
                    tct_short = Helpers.makeShortLabel(ct),
                    tct_long = Helpers.makeLongLabel(ct))]
 
-    def _add_ct_rnaseq_bigWigs(self, ct, show5group, superTrackName):
+    def _add_ct_rnaseq_bigWigs(self, ctn, show5group, superTrackName):
         # rnaseq bigWig signal tracks
         ret = []
 
         cache = self.cacheW[self.assembly]
-        for f in cache.cellTypeNameToRNAseqs[ct]:
-            t = BigWigTrack(self.assembly, f["expID"], f["fileID"],
-                            "RNA-seq", superTrackName, True, ct).lines(self.priority)
+        for f in cache.RNAseqFiles(ctn):
+            bwt = BigWigTrack(self.assembly, f["expID"], f["fileID"],
+                              "RNA-seq", superTrackName, True, ctn)
+            desc = ' '.join(["RNA-seq", f["output_type"], "rep", str(f["replicate"]),
+                             ctn, f["expID"], f["fileID"]])
+            bwt.setDesc(desc)
+            t = bwt.lines(self.priority)
             self.priority += 1
             ret += [t]
         return ret
