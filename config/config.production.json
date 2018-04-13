@@ -4,6 +4,7 @@
 	"db_host": "postgresql",
 	"db_usr": "regElmViz_usr",
 	"db": "screenv10",
+	"db_port": 5432,
 	"assemblies": ["hg19", "mm10"],
 	"minipeaks_ver": 3,
 	"minipeaks_nbins": 20,
@@ -11,7 +12,8 @@
 	"googleAnalytics": true,
 	"memcache": false,
 	"cassandra": ["cassandra"],
-	"redisHost": "redis"
+	"redisHost": "redis",
+	"downloadDir": "/tmp/intersect/"
     },
     "bedupload": {
 	"incomingDir": "/ccREs/intersect/incoming",
