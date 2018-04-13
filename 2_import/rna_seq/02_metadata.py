@@ -102,14 +102,16 @@ class LoadRNAseq:
         for f in exp.files:
             if not f.isBigWig():
                 continue
-            if not f.biological_replicates == [replicate]:
+            if f.biological_replicates != [replicate]:
+                continue
+            if f.assembly != self.assembly:
                 continue
             j = {"fileID": f.fileID,
                  "output_type": f.output_type,
                  "expID": exp.encodeID,
                  "replicate": replicate}
             ret.append(j)
-        return ret                 
+        return ret
     
     def processRow(self, row, outF, lookup):
         expID = row[0]
