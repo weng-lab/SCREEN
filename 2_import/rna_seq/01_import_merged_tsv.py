@@ -22,6 +22,7 @@ AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
+from table_names import GeData, GeMetadata
 
 class ImportRNAseq(object):
     def __init__(self, curs, assembly):
@@ -29,15 +30,10 @@ class ImportRNAseq(object):
         self.assembly = assembly
 
     def _tableNameData(self, isNormalized):
-        tableNameData = self.assembly + "_rnaseq_expression"
-        if isNormalized:
-            tableNameData += "_norm"
-        else:
-            tableNameData += "_unnorm"
-        return tableNameData
+        return GeData(self.assembly, isNormalized)
 
     def _tableNameMetadata(self):
-        return self.assembly + "_rnaseq_expression"
+        return GeMetadata(self.assembly)
 
     def run(self):
         for isNormalized in [True, False]:
