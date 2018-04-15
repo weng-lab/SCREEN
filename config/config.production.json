@@ -13,7 +13,8 @@
 	"memcache": false,
 	"cassandra": ["cassandra"],
 	"redisHost": "redis",
-	"downloadDir": "/tmp/intersect/"
+	"downloadDir": "/tmp/intersect/",
+        "rnaSeqIsNorm": false
     },
     "bedupload": {
 	"incomingDir": "/ccREs/intersect/incoming",
@@ -28,4 +29,3 @@
 	"overrides": {}
     }
 }
-
