@@ -72,13 +72,82 @@ class cRETrack(object):
         p["bigDataUrl"] = self._url()
         p["visibility"] = Helpers.viz("dense", self.active)
         p["type"] = "bigBed 9"
-        p["shortLabel"] = Helpers.makeShortLabel(self.exp.assay_term_name, self.exp.tf)
+
+        if 'general' == self.ct:
+            if self.show5group:
+                shortLabel = ["general 5g cREs"]
+                longLabel = ["general 5-group cREs"]
+            else:
+                shortLabel = ["9s", self.ct]
+                longLabel =  ["general cREs", "with high", self.assay, '(9 state)']
+        else:
+            if self.show5group:
+                shortLabel = ["5g", self.ct]
+                longLabel = ["cREs in", self.ct, '(5 group)']
+            else:
+                shortLabel = ["9s", self.assay, self.ct]
+                longLabel =  ["cREs in", self.ct, "with high", self.assay, '(9 state)']
+            
+        p["shortLabel"] = Helpers.makeShortLabel(*shortLabel)
+        p["longLabel"] = Helpers.makeLongLabel(*longLabel)
+        p["itemRgb"] = "On"
+        p["darkerLabels"] = "on"
+        return p
+
+    def _url(self):
+        return EncodeUrlBigBed(self.cREaccession)
+    
+    def lines(self, priority):
+        return ''.join([x for x in outputLines(self.p, 1, {"priority": priority})])
+        
+
+class BigWigTrack(object):
+    def __init__(self, assembly, expID, fileID, assay, parent, active, ct):
+        self.assembly = assembly
+        self.expID = expID
+        self.fileID = fileID
+        self.assay = assay
+        self.parent = parent
+        self.active = active
+        self.ct = ct
+        self.trackDesc = None
+
+    def _init(self):
+        p = OrderedDict()
+        p["track"] = Helpers.sanitize(self.expID + '_' + self.fileID)
+        p["parent"] = self.parent
+        p["bigDataUrl"] = self._url()
+        p["visibility"] = Helpers.viz("full", self.active)
+        p["type"] = "bigWig"
+        p["color"] = colorize(self.assay)
+        p["maxHeightPixels"] = "128:32:8"
+        p["shortLabel"] = Helpers.makeShortLabel(self.assay, self.ct)
         p["longLabel"] = Helpers.makeLongLabel(self._desc())
         p["itemRgb"] = "On"
         p["darkerLabels"] = "on"
         p["metadata"] = Helpers.unrollEquals(self._metadata())
         p["view"] = self.exp.encodeID
         return p
+
+    def setDesc(self, d):
+        self.trackDesc = d
+        
+    def _desc(self):
+        if self.trackDesc:
+            return self.trackDesc
+        return ' '.join([self.assay, "Signal in", self.ct, self.expID])
+
+    def _signalMax(self):
+        if "DNase" == self.assay:
+            return "0:150"
+        return "0:50"
+
+    def _url(self):
+        return EncodeUrlBigWig(self.fileID)
+    
+    def lines(self, priority):
+        p = self._init()
+        return ''.join([x for x in outputLines(p, 1, {"priority": priority})])
 
 
 class TrackhubDb:
@@ -301,6 +370,7 @@ longLabel {tct_long}
         ret = self.makeSuperTrack(ct, superTrackName)
         ret += self._add_ct_cREs(ct, show5group, superTrackName)
         ret += self._add_ct_bigWigs(ct, show5group, superTrackName)
+        ret += self._add_ct_rnaseq_bigWigs(ct, show5group, superTrackName)
         return ret
 
     def _add_ct_cREs(self, ct, show5group, superTrackName):
@@ -328,48 +398,19 @@ longLabel {tct_long}
     def makeTrackDb(self, accession, j):
         lines = self.getLines(accession, j)
 
-        f = StringIO.StringIO()
-        map(lambda line: f.write(line + "\n"), lines)
+    def _add_ct_rnaseq_bigWigs(self, ctn, show5group, superTrackName):
+        # rnaseq bigWig signal tracks
+        ret = []
 
-        return f.getvalue()
+        cache = self.cacheW[self.assembly]
+        for f in cache.RNAseqFiles(ctn):
+            bwt = BigWigTrack(self.assembly, f["expID"], f["fileID"],
+                              "RNA-seq", superTrackName, True, ctn)
+            desc = ' '.join(["RNA-seq", f["output_type"], "rep", str(f["replicate"]),
+                             ctn, f["expID"], f["fileID"]])
+            bwt.setDesc(desc)
+            t = bwt.lines(self.priority)
+            self.priority += 1
+            ret += [t]
+        return ret
 
-    def makePos(self, p):
-        halfWindow = 2500
-        start = str(max(1, p.start - halfWindow))
-        end = str(p.end + halfWindow)
-        return p.chrom + ':' + start + '-' + end
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--assembly", type=str, default="hg19")
-    return parser.parse_args()
-
-
-def main():
-    args = parse_args()
-
-    AddPath(__file__, '../../common/')
-    from dbconnect import db_connect
-    from postgres_wrapper import PostgresWrapper
-
-    AddPath(__file__, '../../website/common/')
-    from pg import PGsearch
-    from cached_objects import CachedObjects
-    from pg_common import PGcommon
-    from db_trackhub import DbTrackhub
-    from cached_objects import CachedObjectsWrapper
-
-    DBCONN = db_connect(os.path.realpath(__file__))
-
-    ps = PostgresWrapper(DBCONN)
-    cacheW = CachedObjectsWrapper(ps)
-    db = DbTrackhub(DBCONN)
-
-    tdb = TrackhubDb(ps, cacheW, db, UCSC)
-    for assembly in [args.assembly]:
-        tdb.makeAllTracks(assembly)
-
-
-if __name__ == '__main__':
-    main()
