@@ -23,48 +23,74 @@ from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
 
+class ImportRNAseq(object):
+    def __init__(self, curs, assembly):
+        self.curs = curs
+        self.assembly = assembly
 
-def setupAndCopy(curs, assembly, fnp):
-    tableName = assembly + "_rnaseq_expression"
+    def _tableNameData(self, isNormalized):
+        tableNameData = self.assembly + "_rnaseq_expression"
+        if isNormalized:
+            tableNameData += "_norm"
+        else:
+            tableNameData += "_unnorm"
+        return tableNameData
 
-    printt("dropping and creating", tableName)
-    curs.execute("""
-DROP TABLE IF EXISTS {tableName};
+    def _tableNameMetadata(self):
+        return self.assembly + "_rnaseq_expression"
 
-CREATE TABLE {tableName} (
-id serial PRIMARY KEY,
-ensembl_id VARCHAR(256) NOT NULL,
-gene_name VARCHAR(256) NOT NULL,
-expID VARCHAR(256) NOT NULL,
-fileID VARCHAR(256) NOT NULL,
-replicate INT NOT NULL,
-fpkm NUMERIC NOT NULL,
-tpm NUMERIC NOT NULL);
-    """.format(tableName=tableName))
+    def run(self):
+        for isNormalized in [True, False]:
+            tableNameData = self._tableNameData(isNormalized)
+            fnp = paths.geFnp(self.assembly, isNormalized)
+            self._setupAndCopy(tableNameData, fnp)
+            self._doIndexData(tableNameData)
 
-    printt("importing", fnp)
-    with gzip.open(fnp) as f:
-        curs.copy_from(f, tableName, '\t',
-                      columns=("expID", "replicate", "ensembl_id", "gene_name",
-                               "fileID", "tpm", "fpkm"))
-    printt("copied in", curs.rowcount)
+        # normalizaed and unnormalizaed tables should have same experiments!!
+        self._extractExpIDs(tableNameData, self._tableNameMetadata())
 
-def extractExpIDs(curs, assembly):
-    printt("extracting expIDs...")
-    curs.execute("""
-DROP TABLE IF EXISTS {tableNameExps};
+    def _setupAndCopy(self, tableNameData, fnp):
+        printt("dropping and creating", tableNameData)
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableName};
 
-CREATE TABLE {tableNameExps} AS 
-SELECT DISTINCT expID, fileID, replicate 
-FROM {tableName}
-""".format(tableName = assembly + "_rnaseq_expression",
-           tableNameExps = assembly + "_rnaseq_expression_exps"))
-    printt("copied in", curs.rowcount)
+    CREATE TABLE {tableName} (
+    id serial PRIMARY KEY,
+    ensembl_id VARCHAR(256) NOT NULL,
+    gene_name VARCHAR(256) NOT NULL,
+    expID VARCHAR(256) NOT NULL,
+    fileID VARCHAR(256) NOT NULL,
+    replicate INT NOT NULL,
+    fpkm NUMERIC NOT NULL,
+    tpm NUMERIC NOT NULL);
+        """.format(tableName=tableNameData))
 
-def doIndex(curs, assembly):
-    tableName = assembly + "_rnaseq_expression"
-    makeIndex(curs, tableName, ["gene_name"])
+        printt("importing", fnp)
+        with gzip.open(self.fnp) as f:
+            self.curs.copy_from(f, tableNameData, '\t',
+                                columns=("expID", "replicate", "ensembl_id", "gene_name",
+                                         "fileID", "tpm", "fpkm"))
+        printt("copied in", self.curs.rowcount)
 
+    def extractExpIDs(self, tableNameData, tableNameMetadata):
+        printt("extracting expIDs...")
+        self.curs.execute("""
+    DROP TABLE IF EXISTS {tableNameMetadata};
+
+    CREATE TABLE {tableNameMedata} AS
+    SELECT DISTINCT expID, fileID, replicate
+    FROM {tableNameData}
+    """.format(tableNameData = tableNameData,
+               tableNameMetadata = tableNameMetadata))
+        printt("copied in", self.curs.rowcount)
+
+    def _doIndexData(self, tableNameData):
+        printt("indexing", tableNameData, "...")
+        makeIndex(self.curs, tableNameData, ["gene_name"])
+
+    def doIndex(self):
+        for isNormalized in [True, False]:
+            self._doIndexData(self._tableNameData(isNormalized))
 
 def run(args, DBCONN):
     assemblies = Config.assemblies
@@ -72,16 +98,12 @@ def run(args, DBCONN):
         assemblies = [args.assembly]
 
     for assembly in assemblies:
-        fnp = paths.geFnp(assembly)
-
         with getcursor(DBCONN, "08_setup_log") as curs:
+            im = ImportRNAseq(curs, assembly, isNormalized)
             if args.index:
-                doIndex(curs, assembly)
+                im.doIndex()
             else:
-                print("using", fnp)
-                setupAndCopy(curs, assembly, fnp)
-                extractExpIDs(curs, assembly)
-                doIndex(curs, assembly)
+                im.run()
 
 
 def parse_args():
