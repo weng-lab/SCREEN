@@ -161,11 +161,15 @@ WHERE approved_symbol = %(gene)s
     def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND {tableNameMetadata}.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = """
+AND {tableNameMetadata}.assay_title = %(an)s
+""".format(assembly = self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly))
+            
         q = """
 SELECT r.tpm, {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
 r.expid, r.replicate, r.fpkm, {tableNameMetadata}.ageTitle, r.id
-FROM tableNameData AS r
+FROM {tableNameData} AS r
 INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
@@ -173,19 +177,24 @@ AND {tableNameMetadata}.cellCompartment IN %(compartments)s
 AND {tableNameMetadata}.biosample_type IN %(bts)s
 """.format(assembly=self.assembly,
            tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
-           tableNameMetadata = GeMetadata(self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly),
            assayname = assayname)
+        
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
 
     def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND {tableNameMetadata}.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = """
+AND {tableNameMetadata}.assay_title = %(an)s
+""".format(assembly = self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly))
+           
         q = """
 SELECT avg(r.tpm), {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
 r.expid, 'mean' as replicate, avg(r.fpkm), {tableNameMetadata}.ageTitle,
 array_to_string(array_agg(r.id), ',')
-FROM tableNameData AS r
+FROM {tableNameData} AS r
 INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
@@ -195,6 +204,6 @@ GROUP BY {tableNameMetadata}.organ, {tableNameMetadata}.cellType, r.expid,
 {tableNameMetadata}.ageTitle
 """.format(assembly=self.assembly,
            tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
-           tableNameMetadata = GeMetadata(self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly),
            assayname = assayname)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
