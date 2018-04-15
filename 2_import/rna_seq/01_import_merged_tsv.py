@@ -72,7 +72,7 @@ class ImportRNAseq(object):
                                          "fileID", "tpm", "fpkm"))
         importedNumRows(self.curs)
 
-    def extractExpIDs(self, tableNameData, tableNameMetadata):
+    def _extractExpIDs(self, tableNameData, tableNameMetadata):
         printt("extracting expIDs...")
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableNameMetadata};
