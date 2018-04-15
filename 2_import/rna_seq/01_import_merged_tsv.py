@@ -16,7 +16,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
 from files_and_paths import Dirs, Tools, Genome, Datasets
-from utils import AddPath, Utils, printt
+from utils import AddPath, Utils, printt, importedNumRows
 
 AddPath(__file__, '../../common/')
 from dbconnect import db_connect
@@ -70,7 +70,7 @@ class ImportRNAseq(object):
             self.curs.copy_from(f, tableNameData, '\t',
                                 columns=("expID", "replicate", "ensembl_id", "gene_name",
                                          "fileID", "tpm", "fpkm"))
-        printt("copied in", self.curs.rowcount)
+        importedNumRows(self.curs)
 
     def extractExpIDs(self, tableNameData, tableNameMetadata):
         printt("extracting expIDs...")
@@ -82,7 +82,7 @@ class ImportRNAseq(object):
     FROM {tableNameData}
     """.format(tableNameData = tableNameData,
                tableNameMetadata = tableNameMetadata))
-        printt("copied in", self.curs.rowcount)
+        importedNumRows(self.curs)
 
     def _doIndexData(self, tableNameData):
         printt("indexing", tableNameData, "...")

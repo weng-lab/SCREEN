@@ -5,7 +5,7 @@ import os
 import math
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils'))
-from utils import Utils, printt
+from utils import Utils, printt, importedNumRows
 
 
 class PGFantomCat:
@@ -70,22 +70,22 @@ CREATE TABLE {enhancers} ({fields})"""
     def import_enhancers_fromfile(self, fnp, curs):
         with open(fnp, 'r') as f:
             curs.copy_from(f, self._tables["enhancers"], columns = [x for x in PGFantomCat.ENHANCERFIELDS[1:]])
-        printt("copied in", curs.rowcount)
+        importedNumRows(curs)
 
     def import_cage_fromfile(self, fnp, curs):
         with open(fnp, 'r') as f:
             curs.copy_from(f, self._tables["cage"], columns = [x for x in PGFantomCat.CAGEFIELDS[1:]])
-        printt("copied in", curs.rowcount)
+        importedNumRows(curs)
 
     def import_genes_fromfile(self, fnp, curs):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables["genes"], columns=[x for x in PGFantomCat.GENEFIELDS[1:]])
-        printt("copied in", curs.rowcount)
+        importedNumRows(curs)
 
     def import_intersections_fromfile(self, fnp, curs, key="intersections"):
         with open(fnp, "r") as f:
             curs.copy_from(f, self._tables[key], columns=["geneid", "cre"])
-        printt("copied in", curs.rowcount)
+        importedNumRows(curs)
 
     def select_enhancers(self, ccREacc, curs):
         curs.execute("SELECT chrom, start, stop, score FROM {enhancers} WHERE ccRE_acc = %(acc)s".format(enhancers = self._tables["enhancers"]),
