@@ -77,7 +77,7 @@ class ImportRNAseq(object):
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableNameMetadata};
 
-    CREATE TABLE {tableNameMedata} AS
+    CREATE TABLE {tableNameMetadata} AS
     SELECT DISTINCT expID, fileID, replicate
     FROM {tableNameData}
     """.format(tableNameData = tableNameData,
