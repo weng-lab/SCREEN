@@ -66,7 +66,7 @@ class ImportRNAseq(object):
         """.format(tableName=tableNameData))
 
         printt("importing", fnp)
-        with gzip.open(self.fnp) as f:
+        with gzip.open(fnp) as f:
             self.curs.copy_from(f, tableNameData, '\t',
                                 columns=("expID", "replicate", "ensembl_id", "gene_name",
                                          "fileID", "tpm", "fpkm"))
@@ -99,7 +99,7 @@ def run(args, DBCONN):
 
     for assembly in assemblies:
         with getcursor(DBCONN, "08_setup_log") as curs:
-            im = ImportRNAseq(curs, assembly, isNormalized)
+            im = ImportRNAseq(curs, assembly)
             if args.index:
                 im.doIndex()
             else:
