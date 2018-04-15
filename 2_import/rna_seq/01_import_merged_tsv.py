@@ -48,9 +48,9 @@ class ImportRNAseq(object):
     def _setupAndCopy(self, tableNameData, fnp):
         printt("dropping and creating", tableNameData)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableName};
+    DROP TABLE IF EXISTS {tableNameData};
 
-    CREATE TABLE {tableName} (
+    CREATE TABLE {tableNameData} (
     id serial PRIMARY KEY,
     ensembl_id VARCHAR(256) NOT NULL,
     gene_name VARCHAR(256) NOT NULL,
@@ -59,7 +59,7 @@ class ImportRNAseq(object):
     replicate INT NOT NULL,
     fpkm NUMERIC NOT NULL,
     tpm NUMERIC NOT NULL);
-        """.format(tableName=tableNameData))
+        """.format(tableNameData=tableNameData))
 
         printt("importing", fnp)
         with gzip.open(fnp) as f:
@@ -73,7 +73,7 @@ class ImportRNAseq(object):
         self.curs.execute("""
     DROP TABLE IF EXISTS {tableNameMetadata};
 
-    CREATE TABLE {tableNameMedata} AS
+    CREATE TABLE {tableNameMetadata} AS
     SELECT DISTINCT expID, fileID, replicate
     FROM {tableNameData}
     """.format(tableNameData = tableNameData,
@@ -81,7 +81,7 @@ class ImportRNAseq(object):
         importedNumRows(self.curs)
 
     def _doIndexData(self, tableNameData):
-        printt("indexing", tableNameData, "...")
+        printt("creating indices in", tableNameData, "...")
         makeIndex(self.curs, tableNameData, ["gene_name"])
 
     def doIndex(self):
