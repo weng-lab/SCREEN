@@ -154,15 +154,16 @@ export class GeneExpression {
 
     async computeHorBars(gene, compartments, biosample_types) {
         const assembly = this.assembly;
-        const tableName = assembly + '_rnaseq_expression';
+        const tableNameData = assembly + '_rnaseq_expression_norm';
+	const tableNameMetadata = assembly + '_rnaseq_expression_metadata';
         const q = `
-            SELECT r.tpm, ${assembly}_rnaseq_exps.organ, ${assembly}_rnaseq_exps.cellType,
-            r.expid, r.replicate, r.fpkm, ${assembly}_rnaseq_exps.ageTitle, r.id
-            FROM ${tableName} as r
-            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.expid = r.expid
+            SELECT r.tpm, ${tableNameMetadata}.organ, ${tableNameMetadata}.cellType,
+            r.expid, r.replicate, r.fpkm, ${tableNameMetadata}.ageTitle, r.id
+            FROM ${tableNameData} as r
+            INNER JOIN ${tableNameMetadata} ON ${tableNameMetadata}.expid = r.expid
             WHERE gene_name = '${gene}'
-            AND ${assembly}_rnaseq_exps.cellCompartment = ANY ($1)
-            AND ${assembly}_rnaseq_exps.biosample_type = ANY ($2)
+            AND ${tableNameMetadata}.cellCompartment = ANY ($1)
+            AND ${tableNameMetadata}.biosample_type = ANY ($2)
         `;
         const res = await db.any(q, [compartments, biosample_types]);
         return this.doComputeHorBars(res, gene);
@@ -170,19 +171,20 @@ export class GeneExpression {
 
     async computeHorBarsMean(gene, compartments, biosample_types) {
         const assembly = this.assembly;
-        const tableName = assembly + '_rnaseq_expression';
+        const tableNameData = assembly + '_rnaseq_expression_norm';
+	const tableNameMetadata = assembly + '_rnaseq_expression_metadata';
         const q = `
-            SELECT avg(r.tpm) as tpm, ${assembly}_rnaseq_exps.organ,
-	    ${assembly}_rnaseq_exps.cellType,
-            r.expid, 'mean' as replicate, avg(r.fpkm) as fpkm, ${assembly}_rnaseq_exps.ageTitle,
+            SELECT avg(r.tpm) as tpm, ${tableNameMetadata}.organ,
+	    ${tableNameMetadata}.cellType,
+            r.expid, 'mean' as replicate, avg(r.fpkm) as fpkm, ${tableNameMetadata}.ageTitle,
             array_to_string(array_agg(r.id), ',') as id
             FROM ${assembly}_rnaseq_expression AS r
-            INNER JOIN ${assembly}_rnaseq_exps ON ${assembly}_rnaseq_exps.expid = r.expid
+            INNER JOIN ${tableNameMetadata} ON ${tableNameMetadata}.expid = r.expid
             WHERE gene_name = '${gene}'
-            AND ${assembly}_rnaseq_exps.cellCompartment = ANY ($1)
-            AND ${assembly}_rnaseq_exps.biosample_type = ANY ($2)
-            GROUP BY ${assembly}_rnaseq_exps.organ, ${assembly}_rnaseq_exps.cellType, r.expid,
-	    ${assembly}_rnaseq_exps.ageTitle
+            AND ${tableNameMetadata}.cellCompartment = ANY ($1)
+            AND ${tableNameMetadata}.biosample_type = ANY ($2)
+            GROUP BY ${tableNameMetadata}.organ, ${tableNameMetadata}.cellType, r.expid,
+	    ${tableNameMetadata}.ageTitle
         `;
         const res = await db.any(q, [compartments, biosample_types]);
         return this.doComputeHorBars(res, gene);
