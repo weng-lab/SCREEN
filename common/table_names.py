@@ -6,5 +6,8 @@ def GeData(assembly, isNormalized):
         tableNameData += "_unnorm"
     return tableNameData
 
+def GeExperimentList(assembly):
+    return assembly + "_rnaseq_experiment_list"
+
 def GeMetadata(assembly):
-    return assembly + "_rnaseq_expression"
+    return assembly + "_rnaseq_metadata"

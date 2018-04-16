@@ -11,7 +11,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 from config import Config
-from table_names import GeData, GeMetadata
+from table_names import GeData, GeExperimentList, GeMetadata
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
@@ -28,6 +28,9 @@ class LoadRNAseq:
 
     def _tableNameData(self, isNormalized):
         return GeData(self.assembly, isNormalized)
+
+    def _tableNameExperimentList(self):
+        return GeExperimentList(self.assembly)
 
     def _tableNameMetadata(self):
         return GeMetadata(self.assembly)
@@ -166,13 +169,10 @@ class LoadRNAseq:
 
     def insertRNAs(self):
         printt("getting list of experiments")
-
-        tableName = self.assembly + "_rnaseq_exps"
-
         q = """
 SELECT expID, fileID, replicate
 FROM {tableName}
-""".format(tableName = tableName)
+""".format(tableName = self._tableNameExperimentList())
 
         self.curs.execute(q)
         rows = self.curs.fetchall()
@@ -191,7 +191,7 @@ FROM {tableName}
                 "assay_term_name", "biosample_type", "biosample_term_name",
                 "biosample_summary", "ageTitle", "assay_title", "replicate", "signal_files"]
 
-        self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        self.curs.copy_from(outF, self._tableNameMetadata(), '\t', columns=cols)
         printt("inserted", self.curs.rowcount)
 
     def doIndex(self):

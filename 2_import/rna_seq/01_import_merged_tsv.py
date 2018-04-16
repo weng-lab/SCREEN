@@ -22,7 +22,7 @@ AddPath(__file__, '../../common/')
 from dbconnect import db_connect
 from constants import chroms, paths, DB_COLS
 from config import Config
-from table_names import GeData, GeMetadata
+from table_names import GeData, GeExperimentList
 
 class ImportRNAseq(object):
     def __init__(self, curs, assembly):
@@ -32,8 +32,8 @@ class ImportRNAseq(object):
     def _tableNameData(self, isNormalized):
         return GeData(self.assembly, isNormalized)
 
-    def _tableNameMetadata(self):
-        return GeMetadata(self.assembly)
+    def _tableNameExperimentList(self):
+        return GeExperimentList(self.assembly)
 
     def run(self):
         for isNormalized in [True, False]:
@@ -43,7 +43,7 @@ class ImportRNAseq(object):
             self._doIndexData(tableNameData)
 
         # normalizaed and unnormalizaed tables should have same experiments!!
-        self._extractExpIDs(tableNameData, self._tableNameMetadata())
+        self._extractExpIDs(tableNameData, self._tableNameExperimentList())
 
     def _setupAndCopy(self, tableNameData, fnp):
         printt("dropping and creating", tableNameData)
@@ -68,16 +68,16 @@ class ImportRNAseq(object):
                                          "fileID", "tpm", "fpkm"))
         importedNumRows(self.curs)
 
-    def _extractExpIDs(self, tableNameData, tableNameMetadata):
-        printt("extracting expIDs...")
+    def _extractExpIDs(self, tableNameData, tableNameExperimentList):
+        printt("dropping and creating", tableNameExperimentList)
         self.curs.execute("""
-    DROP TABLE IF EXISTS {tableNameMetadata};
+    DROP TABLE IF EXISTS {tableNameExperimentList};
 
-    CREATE TABLE {tableNameMetadata} AS
+    CREATE TABLE {tableNameExperimentList} AS
     SELECT DISTINCT expID, fileID, replicate
     FROM {tableNameData}
     """.format(tableNameData = tableNameData,
-               tableNameMetadata = tableNameMetadata))
+               tableNameExperimentList = tableNameExperimentList))
         importedNumRows(self.curs)
 
     def _doIndexData(self, tableNameData):
