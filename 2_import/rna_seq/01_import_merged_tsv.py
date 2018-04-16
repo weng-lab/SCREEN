@@ -82,7 +82,7 @@ class ImportRNAseq(object):
 
     def _doIndexData(self, tableNameData):
         printt("creating indices in", tableNameData, "...")
-        makeIndex(self.curs, tableNameData, ["gene_name"])
+        makeIndex(self.curs, tableNameData, ["gene_name", "tpm"])
 
     def doIndex(self):
         for isNormalized in [True, False]:

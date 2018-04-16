@@ -196,6 +196,7 @@ FROM {tableName}
 
     def doIndex(self):
         tableName = self._tableNameMetadata()
+        makeIndex(self.curs, tableName, ["expID", "celltype"])
         makeIndexMultiCol(self.curs, tableName, ["cellCompartment", "biosample_type"])
 
 
