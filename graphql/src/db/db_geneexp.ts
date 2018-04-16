@@ -155,7 +155,7 @@ export class GeneExpression {
     async computeHorBars(gene, compartments, biosample_types) {
         const assembly = this.assembly;
         const tableNameData = assembly + '_rnaseq_expression_norm';
-	const tableNameMetadata = assembly + '_rnaseq_expression_metadata';
+        const tableNameMetadata = assembly + '_rnaseq_metadata';
         const q = `
             SELECT r.tpm, ${tableNameMetadata}.organ, ${tableNameMetadata}.cellType,
             r.expid, r.replicate, r.fpkm, ${tableNameMetadata}.ageTitle, r.id
@@ -172,7 +172,7 @@ export class GeneExpression {
     async computeHorBarsMean(gene, compartments, biosample_types) {
         const assembly = this.assembly;
         const tableNameData = assembly + '_rnaseq_expression_norm';
-	const tableNameMetadata = assembly + '_rnaseq_expression_metadata';
+        const tableNameMetadata = assembly + '_rnaseq_metadata';
         const q = `
             SELECT avg(r.tpm) as tpm, ${tableNameMetadata}.organ,
 	    ${tableNameMetadata}.cellType,
