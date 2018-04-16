@@ -2,6 +2,19 @@ import React from 'react';
 import {ZHelpTooltip} from '../../../common/components/help_icon'
 import * as ZRender from '../../../common/zrenders'
 
+const vistalinks = x => {
+    if (x === null) { return '--'; }
+    let xx = x.split(',');
+    return (
+	<div>VISTA: {xx.map( (v, i) => <span>{vistalink(v)}{i < xx.length - 1 ? ", " : ""}</span>)}</div>
+    );
+};
+
+const vistalink = id => (
+    <a href={'https://enhancer.lbl.gov/cgi-bin/imagedb3.pl?form=presentation&show=1&experiment_id=' + id.substring(2) + '&organism_id=' + (id[0] == 'm' ? '2' : '1')}
+      target="_blank">{id}</a>
+);
+
 const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
     let accHelp = (
 	<span>
@@ -57,6 +70,9 @@ const TableColumns = ({globals, assembly, rfacets, uuid}, cts) => {
 	}, {
 	    title: "length", data: "len",
             render: ZRender.numWithCommas
+	}, {
+	    title: <span>experimental<br/>evidence</span>, data: "vistaids",
+	    render: vistalinks, className: "experimental"
 	}, {
             title: geneHelp, data: "genesallpc",
 	    className: "geneexp", render: ZRender.geneDeLinks(assembly, uuid),

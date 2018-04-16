@@ -39,6 +39,7 @@ class TableWithCart extends React.Component {
     	    actions.showGenomeBrowser(cre, "");
     	    return;
 	}
+	if (td.indexOf("experimental") !== -1) { return; }
         if (td.indexOf("geneexp") !== -1){
     	    return;
 	}

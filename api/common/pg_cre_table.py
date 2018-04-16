@@ -146,10 +146,6 @@ class PGcreTable(object):
         return result
 
     def creTable(self, j, chrom, start, stop):
-        if 0:
-            print(j, """TODO need more variables here:
-        gene_all_start, gene_all_end,
-        gene_pc_start, gene_pc_end""")
 
         """
         tfclause = "peakintersections.accession = cre.accession"
@@ -162,12 +158,13 @@ class PGcreTable(object):
         with getcursor(self.pg.DBCONN, "_cre_table") as curs:
             q = """
 SELECT JSON_AGG(r) from(
-SELECT {fields}
+SELECT {fields}, {vtn}.vistaids
 FROM {tn} AS cre
+LEFT JOIN {vtn} ON {vtn}.accession = cre.accession
 {whereClause}
 ORDER BY maxz DESC
 LIMIT 1000) r
-""".format(fields=fields, tn=self.tableName,
+""".format(fields=fields, tn=self.tableName, vtn = self.assembly + "_vista",
                 whereClause=whereClause)
 
             #print("\n", q, "\n")
@@ -195,7 +192,7 @@ LIMIT 1000) r
             accs = filter(lambda x: isaccession(x), accs)
             if accs:
                 accs = ["'%s'" % x.upper() for x in accs]
-                accsQuery = "accession IN (%s)" % ','.join(accs)
+                accsQuery = "cre.accession IN (%s)" % ','.join(accs)
                 self.whereClauses.append("(%s)" % accsQuery)
                 return True
         return False
