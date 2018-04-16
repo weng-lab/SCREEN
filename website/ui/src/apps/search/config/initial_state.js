@@ -11,12 +11,6 @@ const initialState = (search, globals) => {
         }
     }
     
-    /* globals.cellTypeInfoArr.forEach((e) => {
-       if(!e.name){
-       console.log(e)
-       }
-     * })*/
-    
     const parsedQuery = search.parsedQuery;
 
     let maintab = pmaintab || "results";
