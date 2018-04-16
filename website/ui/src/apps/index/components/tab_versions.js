@@ -3,10 +3,10 @@ import React from 'react';
 import {tabPanelize} from '../../../common/utility';
 
 //import TabDataCcREs from './tab_data_ccres';
-import TabDataScreen from './tab_data_screen';
+import TabDataScreen from './tab_versions_screen';
 
-class TabData extends React.Component {
-    key = "input_data";
+class TabVersions extends React.Component {
+    key = "versions";
 
     shouldComponentUpdate(nextProps, nextState) {
         return this.key === nextProps.maintabs_active;
@@ -24,4 +24,4 @@ class TabData extends React.Component {
     }
 }
 
-export default TabData;
+export default TabVersions;

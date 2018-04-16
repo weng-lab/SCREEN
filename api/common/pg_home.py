@@ -16,10 +16,16 @@ class PGHome:
         self.pg = pg
 
     def inputData(self):
-        ret = []
+        files = []
 
         with getcursor(self.pg.DBCONN, "intputData",
                        cursor_factory=psycopg2.extras.NamedTupleCursor) as curs:
+            curs.execute("""
+            SELECT runDate FROM {tableName}
+            """.format(tableName = "hg19_peakintersectionsmetadata_runDate"))
+            
+            version = curs.fetchall()[0][0]
+            
             for assembly in Config.assemblies:
                 curs.execute("""
                 SELECT %(assembly)s as assembly, biosample_term_name, array_agg(fileid) AS fileids
@@ -28,6 +34,7 @@ class PGHome:
                 ORDER BY biosample_term_name
                 """.format(tableName = assembly + "_peakintersectionsmetadata"),
                              {"assembly": assembly})
-                ret += [r._asdict() for r in curs.fetchall()]
+                files += [r._asdict() for r in curs.fetchall()]
             
-        return ret
+        return {"files": files,
+                "version": version}
