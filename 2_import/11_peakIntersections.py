@@ -85,6 +85,7 @@ biosample_term_name text
     cols = "expID fileID assay label biosample_term_name".split(' ')
 
     tableName = t + '_runDate'
+    printt("dropping and creating table", tableName)
     curs.execute("""
 DROP TABLE IF EXISTS {tn};
 CREATE TABLE {tn}(
