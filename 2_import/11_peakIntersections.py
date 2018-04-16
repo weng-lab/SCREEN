@@ -83,6 +83,22 @@ biosample_term_name text
                               ]) + '\n')
     outF.seek(0)
     cols = "expID fileID assay label biosample_term_name".split(' ')
+
+    tableName = t + '_runDate'
+    curs.execute("""
+DROP TABLE IF EXISTS {tn};
+CREATE TABLE {tn}(
+id serial PRIMARY KEY,
+runDate text
+)""".format(tn=tableName))
+    
+    curs.execute(""" 
+INSERT into {tn}
+(runDate)
+VALUES (%s)
+    """.format(tn=tableName), (runDate,))
+    importedNumRows(curs)
+    
     return (outF, cols, runDate)
 
 

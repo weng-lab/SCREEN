@@ -16,7 +16,7 @@ from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
 from exp import Exp
-from utils import Utils, printt, printWroteNumLines, cat
+from utils import Utils, printt, printWroteNumLines, cat, importedNumRows, updatedNumRows
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
 
@@ -78,7 +78,7 @@ class ImportGwas:
 
         cols = "chrom start stop snp taggedSNP r2 ldblock trait author pubmed authorPubmedTrait".split(' ')
         self.curs.copy_from(outF, self.tableNameGwas, '\t', columns=cols)
-        print("copied in", self.curs.rowcount)
+        importedNumRows(self.curs)
 
         makeIndex(self.curs, self.tableNameGwas,
                   ["chrom", "authorPubmedTrait", "ldblock"])
@@ -137,7 +137,7 @@ class ImportGwas:
 
         printt("import to db")
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
-        printt("\tcopied in", self.curs.rowcount)
+        importedNumRows(self.curs)
 
         self.curs.execute("""
         UPDATE {tne} as ge
@@ -146,7 +146,7 @@ class ImportGwas:
         from {tnd} as d
         where ge.expID = d.expID
         """.format(tne=tableName, tnd=self.tableNameDatasets))
-        printt("updated", self.curs.rowcount)
+        updatedNumRows(self.curs)
 
         return header
 
@@ -177,7 +177,7 @@ class ImportGwas:
     GROUP BY authorpubmedtrait, author, pubmed, trait
      """.format(tn=self.tableNameStudies,
                 gwasTn=self.tableNameGwas))
-        printt("inserted", self.curs.rowcount)
+        importedNumRows(self.curs)
 
         self.curs.execute("""
     SELECT authorpubmedtrait
@@ -249,7 +249,7 @@ class ImportGwas:
         printt("copying into DB...")
         cols = "authorPubmedTrait accession snp".split(' ')
         self.curs.copy_from(outF, self.tableNameOverlap, '\t', columns=cols)
-        printt("copied in", self.curs.rowcount)
+        importedNumRows(self.curs)
 
         makeIndex(self.curs, self.tableNameOverlap, ["authorPubmedTrait"])
 
