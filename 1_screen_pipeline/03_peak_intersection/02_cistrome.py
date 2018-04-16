@@ -59,7 +59,7 @@ def makeJobs(assembly, rootpath):
     for exp, etype in allExpsIndiv:
         i += 1
         fnp = os.path.join(rootpath, "_".join((emap[etype], species)), exp["fnp"])
-        if os.path.exists(fnp):
+        if True or os.path.exists(fnp):
             jobs.append({"bed": {"fnp": fnp, "fileID": exp["accession"]},
                          "i": i,
                          "celltype": exp["celltype"],
