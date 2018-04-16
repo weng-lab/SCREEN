@@ -25,7 +25,7 @@ class SingleStudy  extends React.Component {
 		}, {title: "Author", data: "author",
 		}, {title: "Pubmed", data: "pubmed",
 		    className: "pubmed", render: render_pubmed_link},
-		{title: <span>Cell Type<br/>Enrichment</span>, data: "hasenrichment",
+		{title: <span>Cell Type<br/>Enrichment</span>, data: "hasenrichment", sortDataF: x => (x ? 'a' : 'b'),
 		 render: x => (x ? <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> : null)}
 	    ]}
 	    friendlySelectionLookup={make_gwas_friendly(this.props.gwas)}
