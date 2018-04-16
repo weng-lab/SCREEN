@@ -45,6 +45,9 @@ class UTabTutorial extends React.Component {
 
 	        <h3>GWAS</h3>
 		{Iframe("https://www.youtube.com/embed/eunBo1-yF9M")}
+
+	        <h3>Mini-Peaks (ccRE signal profile)</h3>
+		{Iframe("https://www.youtube.com/embed/IMHOTf-rG1Q")}
 		
 	    </div>));
     }
