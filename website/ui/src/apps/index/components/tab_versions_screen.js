@@ -61,7 +61,9 @@ class TabDataScreen extends React.Component {
 	const jq = JSON.stringify({assembly: "hg19"});
 	ApiClient.getByPost(jq, "/dataws/home_inputData",
 			    (r) => {
-				this.setState({files: r, isFetching: false, isError: false});
+				this.setState({files: r.files,
+					       version: r.version,
+					       isFetching: false, isError: false});
 	    },
 	    (err) => {
 		console.log("err loading files");
@@ -75,7 +77,7 @@ class TabDataScreen extends React.Component {
 	    return (
 		<div>
                     <h3>ENCODE and Roadmap Experiments Used in SCREEN v4.10</h3>
-		    <h4>April 1, 2018</h4>
+		    <h4>{this.state.version}</h4>
                     <Ztable data={this.state.files} cols={CtsTableColumns()} />
 		</div>
             );

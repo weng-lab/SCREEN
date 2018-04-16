@@ -12,6 +12,8 @@ import loading from '../../../common/components/loading'
 import HelpIcon from '../../../common/components/help_icon';
 import ControlBar from './control_bar';
 
+import Config from '../../../config.json';
+
 class GeneExp extends React.Component{
     state = {jq: null, isFetching: true, isError: false,
 	     width: 0,
@@ -146,6 +148,10 @@ class GeneExp extends React.Component{
 		    <h4>
 			<em>{this.props.gene}</em>
 			{" Gene Expression Profiles by RNA-seq"}
+			<small>
+			    {Config.RE.rnaSeqIsNorm ? " (Normalized)" :
+			    " (Unnormalized)"}
+			</small>
 			<HelpIcon globals={this.props.globals}
 				  helpkey={"GeneExpression"} />
 			<span style={{paddingLeft: "20px"}}>

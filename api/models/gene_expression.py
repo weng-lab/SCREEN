@@ -11,6 +11,10 @@ import math
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from models.tissue_colors import TissueColors
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../common'))
+from table_names import GeData, GeMetadata
+from config import Config
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor
 
@@ -108,7 +112,7 @@ class GeneExpression:
 
     def doComputeHorBars(self, q, gene, compartments, biosample_types_selected, assay_name = None):
         a = """
-SELECT chrom, start, stop 
+SELECT chrom, start, stop
 FROM {assembly}_gene_info
 WHERE approved_symbol = %(gene)s
 """.format(assembly=self.assembly)
@@ -157,34 +161,49 @@ WHERE approved_symbol = %(gene)s
     def computeHorBars(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND {assembly}_rnaseq_exps.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = """
+AND {tableNameMetadata}.assay_title = %(an)s
+""".format(assembly = self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly))
+            
         q = """
-SELECT r.tpm, {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType,
-r.expid, r.replicate, r.fpkm, {assembly}_rnaseq_exps.ageTitle, r.id
-FROM {assembly}_rnaseq_expression AS r
-INNER JOIN {assembly}_rnaseq_exps ON {assembly}_rnaseq_exps.expid = r.expid
+SELECT r.tpm, {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
+r.expid, r.replicate, r.fpkm, {tableNameMetadata}.ageTitle, r.id
+FROM {tableNameData} AS r
+INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
-AND {assembly}_rnaseq_exps.cellCompartment IN %(compartments)s
-AND {assembly}_rnaseq_exps.biosample_type IN %(bts)s
-""".format(assembly=self.assembly, assayname = assayname)
+AND {tableNameMetadata}.cellCompartment IN %(compartments)s
+AND {tableNameMetadata}.biosample_type IN %(bts)s
+""".format(assembly=self.assembly,
+           tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
+           tableNameMetadata = GeMetadata(self.assembly),
+           assayname = assayname)
+        
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
 
     def computeHorBarsMean(self, gene, compartments, biosample_types_selected, assay_name = None):
         assayname = ""
         if assay_name is not None:
-            assayname = "AND {assembly}_rnaseq_exps.assay_title = %(an)s".format(assembly = self.assembly)
+            assayname = """
+AND {tableNameMetadata}.assay_title = %(an)s
+""".format(assembly = self.assembly,
+           tableNameMetadata = GeMetadata(self.assembly))
+           
         q = """
-SELECT avg(r.tpm), {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType,
-r.expid, 'mean' as replicate, avg(r.fpkm), {assembly}_rnaseq_exps.ageTitle, 
+SELECT avg(r.tpm), {tableNameMetadata}.organ, {tableNameMetadata}.cellType,
+r.expid, 'mean' as replicate, avg(r.fpkm), {tableNameMetadata}.ageTitle,
 array_to_string(array_agg(r.id), ',')
-FROM {assembly}_rnaseq_expression AS r
-INNER JOIN {assembly}_rnaseq_exps ON {assembly}_rnaseq_exps.expid = r.expid
+FROM {tableNameData} AS r
+INNER JOIN {tableNameMetadata} ON {tableNameMetadata}.expid = r.expid
 {assayname}
 WHERE gene_name = %(gene)s
-AND {assembly}_rnaseq_exps.cellCompartment IN %(compartments)s
-AND {assembly}_rnaseq_exps.biosample_type IN %(bts)s
-GROUP BY {assembly}_rnaseq_exps.organ, {assembly}_rnaseq_exps.cellType, r.expid, 
-{assembly}_rnaseq_exps.ageTitle
-""".format(assembly=self.assembly, assayname = assayname)
+AND {tableNameMetadata}.cellCompartment IN %(compartments)s
+AND {tableNameMetadata}.biosample_type IN %(bts)s
+GROUP BY {tableNameMetadata}.organ, {tableNameMetadata}.cellType, r.expid,
+{tableNameMetadata}.ageTitle
+""".format(assembly=self.assembly,
+           tableNameData = GeData(self.assembly, Config.rnaSeqIsNorm),
+           tableNameMetadata = GeMetadata(self.assembly),
+           assayname = assayname)
         return self.doComputeHorBars(q, gene, compartments, biosample_types_selected, assay_name)
