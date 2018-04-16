@@ -127,9 +127,11 @@ class paths(object):
                             "GWAS.v" + str(version) + fnBase)
 
     @staticmethod
-    def geFnp(assembly):
+    def geFnp(assembly, isNormalized):
+        if isNormalized:
+            return paths.path(assembly, "geneExp", "2018-04Apr-12/normalized/both.tsv.gz")
         return paths.path(assembly, "geneExp", "2018-04Apr-12/unnormalized/both.tsv.gz")
-    
+
     cytobands = {
         "hg19": os.path.join(v4d, "ucsc.hg19.cytoBand.txt.gz"),
         "mm10": os.path.join(v4d, "ucsc.mm10.cytoBand.txt.gz")}

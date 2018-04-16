@@ -11,6 +11,7 @@ import StringIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common/'))
 from dbconnect import db_connect
 from config import Config
+from table_names import GeData, GeExperimentList, GeMetadata
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../metadata/utils'))
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange, makeIndexMultiCol
@@ -25,8 +26,17 @@ class LoadRNAseq:
         self.curs = curs
         self.assembly = assembly
 
+    def _tableNameData(self, isNormalized):
+        return GeData(self.assembly, isNormalized)
+
+    def _tableNameExperimentList(self):
+        return GeExperimentList(self.assembly)
+
+    def _tableNameMetadata(self):
+        return GeMetadata(self.assembly)
+
     def setupDB(self):
-        tableName = self.assembly + "_rnaseq_exps"
+        tableName = self._tableNameMetadata()
         printt("dropping and creating", tableName)
 
         self.curs.execute("""
@@ -54,7 +64,7 @@ class LoadRNAseq:
     def _organ(self, exp, j, lookup):
         biosample = j["replicates"][0]["library"]["biosample"]
         organ = ""
-        
+
         organ_slims = sorted(j["organ_slims"])
         if 0 == len(organ_slims):
             print("DCC needs to fix missing organ_slims JSON field for", exp.encodeID)
@@ -63,7 +73,7 @@ class LoadRNAseq:
 
         if biosample["biosample_term_name"] in lookup:
             organ = lookup[biosample["biosample_term_name"]]
-            
+
         if not organ or "na" == organ:
             print("POTENTIAL ERROR: missing organ", "'" + biosample["biosample_term_name"] + "'")
             organ = ""  # biosample["biosample_term_name"]
@@ -112,7 +122,7 @@ class LoadRNAseq:
                  "replicate": replicate}
             ret.append(j)
         return ret
-    
+
     def processRow(self, row, outF, lookup):
         expID = row[0]
         fileID = row[1]
@@ -124,7 +134,7 @@ class LoadRNAseq:
         cellCompartment = self._cellCompartment(exp, j)
         ageTitle = self._ageTitle(exp, j)
         signalFiles = self._signalFiles(exp, replicate)
-        
+
         a = [expID,
              fileID,
              exp.biosample_term_name,
@@ -156,20 +166,20 @@ class LoadRNAseq:
                                 -                                + r + "found " + str(len(toks)))
             lookup[toks[0]] = toks[1].strip()
         return lookup
-        
+
     def insertRNAs(self):
         printt("getting list of experiments")
         q = """
-SELECT expID, fileID, replicate 
+SELECT expID, fileID, replicate
 FROM {tableName}
-""".format(tableName = self.assembly + "_rnaseq_expression_exps")
-        
+""".format(tableName = self._tableNameExperimentList())
+
         self.curs.execute(q)
         rows = self.curs.fetchall()
         printt("found", len(rows), "rows")
 
         lookup = self.patchOrgan()
-        
+
         printt("loading metadata")
         outF = StringIO.StringIO()
         for row in rows:
@@ -181,12 +191,12 @@ FROM {tableName}
                 "assay_term_name", "biosample_type", "biosample_term_name",
                 "biosample_summary", "ageTitle", "assay_title", "replicate", "signal_files"]
 
-        tableName = self.assembly + "_rnaseq_exps"
-        self.curs.copy_from(outF, tableName, '\t', columns=cols)
+        self.curs.copy_from(outF, self._tableNameMetadata(), '\t', columns=cols)
         printt("inserted", self.curs.rowcount)
 
     def doIndex(self):
-        tableName = self.assembly + "_rnaseq_exps"
+        tableName = self._tableNameMetadata()
+        makeIndex(self.curs, tableName, ["expID", "celltype"])
         makeIndexMultiCol(self.curs, tableName, ["cellCompartment", "biosample_type"])
 
 

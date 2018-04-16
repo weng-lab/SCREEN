@@ -13,7 +13,8 @@
 	"memcache": false,
 	"cassandra": ["pgs_cassandra"],
 	"redisHost": "127.0.0.1",
-	"downloadDir": "/app/downloads/"
+	"downloadDir": "/app/downloads/",
+        "rnaSeqIsNorm": true
     },
     "bedupload": {
 	"incomingDir": "/bed_intersect/incoming",
@@ -28,4 +29,3 @@
 	"overrides": {}
     }
 }
-

@@ -9,7 +9,7 @@ import json
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "../../metadata/utils"))
 from db_utils import getcursor
-from utils import AddPath, printt
+from utils import AddPath, printt, importedNumRows
 
 AddPath(__file__, '../common/')
 from dbconnect import db_connect
@@ -44,7 +44,7 @@ VALUES {}
 """.format(records_list_template)
 
         self.curs.execute(q, rows)
-        print("inserted", "{:,}".format(self.curs.rowcount), "help text items")
+        importedNumRows(self.curs)
 
     def _recreate_tables(self):
         self.curs.execute("""

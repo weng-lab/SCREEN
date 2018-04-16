@@ -44,7 +44,7 @@ tissue text
                               r["celltype"], r["tissue"]]) + "\n")
     outF.seek(0)
     cols = ["fileID", "assay", "label", "biosample_term_name", "tissue"]
-    return (outF, cols)
+    return (outF, cols, "")
 
 
 def run(args, DBCONN):
@@ -61,7 +61,8 @@ def run(args, DBCONN):
             PI.ImportPeakIntersections(curs, assembly, tsuffix).index()
         else:
             PI.ImportPeakIntersectionMetadata(curs, assembly, tsuffix, jobgen).run()
-            ipi = PI.ImportPeakIntersections(curs, assembly, tsuffix)
+            runDate = '2018-04-05/..' # TODO: date same as ENCODE peak intersections...
+            ipi = PI.ImportPeakIntersections(curs, assembly, tsuffix, runDate)
             ipi.run()
             ipi.index()
 
