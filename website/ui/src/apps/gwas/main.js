@@ -39,11 +39,11 @@ class GwasAppInner extends React.Component {
 
 		    <div className="container" style={{width: "100%"}}>
 			<div className="row" style={{width: "100%"}}>
-			    <div className="col-md-3 nopadding-right" id="facets-container">
+			    <div className="col-md-4 nopadding-right" id="facets-container">
                                 <FacetBoxen assembly={assembly}
 					    globals={this.props.globals} />
 			    </div>
-			    <div className="col-md-9 nopadding-left" id="tabs-container">
+			    <div className="col-md-8 nopadding-left" id="tabs-container">
                                 <MainTabs assembly={assembly}
 	    uuid={this.props.uuid}
 					  globals={this.props.globals}

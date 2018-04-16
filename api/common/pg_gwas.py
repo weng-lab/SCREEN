@@ -41,6 +41,13 @@ class PGgwas(object):
         self.ctmap = pg.makeCtMap()
         self.ctsTable = pg.makeCTStable()
 
+        with getcursor(self.pg.DBCONN, "__init__") as curs:
+            try:
+                curs.execute("SELECT * FROM {tn} LIMIT 0".format(tn = assembly + "_gwas_enrichment_fdr"))
+                self.wenrichment = { x[0]: True for x in curs.description }
+            except:
+                self.wenrichment = {}
+
     def gwasStudies(self):
         with getcursor(self.pg.DBCONN, "gwasStudies") as curs:
             q = """
@@ -50,7 +57,8 @@ ORDER BY trait
 """.format(tn=self.assembly + "_gwas_studies")
             curs.execute(q)
             rows = curs.fetchall()
-        keys = ["value", "author", "pubmed", "trait", "total_ldblocks"]
+        keys = ["value", "author", "pubmed", "trait", "total_ldblocks", "hasenrichment"]
+        rows = [ tuple(list(x) + [x[0].lower() in self.wenrichment]) for x in rows ]
         return [dict(zip(keys, r)) for r in rows]
 
     def gwasEnrichment(self, gwas_study):

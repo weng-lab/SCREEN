@@ -21,10 +21,12 @@ class SingleStudy  extends React.Component {
 	    <LongListFacet title={""}
 	    data={this.props.gwas.studies}
 	    cols={[
-		{ title: "Study", data: "trait"
+		{ title: "Study", data: "trait", width: "25%",
 		}, {title: "Author", data: "author",
 		}, {title: "Pubmed", data: "pubmed",
-		    className: "pubmed", render: render_pubmed_link}
+		    className: "pubmed", render: render_pubmed_link},
+		{title: <span>Cell Type<br/>Enrichment</span>, data: "hasenrichment",
+		 render: x => (x ? <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> : null)}
 	    ]}
 	    friendlySelectionLookup={make_gwas_friendly(this.props.gwas)}
 	    order={[[0, "asc"], [1, "asc"]]}
