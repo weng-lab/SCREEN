@@ -41,7 +41,7 @@ def getFileJson(exp, bed):
 emap = {"tf": "TF", "histone": "histone"}
 
 
-def makeJobs(assembly, rootpath):
+def makeJobs(assembly, rootpath, skipCheck = True):
     species = "human" if assembly == "hg19" else "mouse"
     m = CistromeWS(species, "http://bib7.umassmed.edu/ws/cistrome")
     allExps = [(m.chipseq_tfs(), "tf"),
@@ -59,7 +59,8 @@ def makeJobs(assembly, rootpath):
     for exp, etype in allExpsIndiv:
         i += 1
         fnp = os.path.join(rootpath, "_".join((emap[etype], species)), exp["fnp"])
-        if True or os.path.exists(fnp):
+        
+        if skipCheck or os.path.exists(fnp):
             jobs.append({"bed": {"fnp": fnp, "fileID": exp["accession"]},
                          "i": i,
                          "celltype": exp["celltype"],
@@ -69,7 +70,7 @@ def makeJobs(assembly, rootpath):
                          "assembly": assembly,
                          "etype": etype})
         else:
-            print("warning: file %s not found" % fnp)
+            print("warning: skipping file %s : not found" % fnp)
 
     print("will run %d jobs" % len(jobs), file=sys.stderr)
     return jobs
