@@ -18,7 +18,7 @@ from constants import chroms, chrom_lengths, paths
 from config import Config
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../metadata/utils/'))
-from utils import Utils, printt
+from utils import Utils, printt, importedNumRows
 from db_utils import getcursor, makeIndex, makeIndexRev, makeIndexArr, makeIndexIntRange
 from files_and_paths import Dirs
 
@@ -53,7 +53,7 @@ class ImportPeakIntersections:
         printt("copying in data", fnp)
         with gzip.open(fnp) as f:
             self.curs.copy_from(f, self.tableName, '\t', columns=cols)
-        printt("\tcopied in", fnp, self.curs.rowcount)
+        importedNumRows(self.curs)
 
     def index(self):
         makeIndex(self.curs, self.tableName, ["accession"])
@@ -72,7 +72,7 @@ label text,
 biosample_term_name text
 )""".format(tn=t))
     pi = peakIntersections.PeakIntersection({}, assembly)
-    jobs, runDate = pi.loadJobs()
+    jobs, runDate = pi.loadJobs(Config.peakIntersectionRunDate)
     outF = StringIO.StringIO()
     for r in jobs:
         outF.write('\t'.join([r["bed"]["expID"],
@@ -97,7 +97,7 @@ class ImportPeakIntersectionMetadata:
     def run(self):
         outF, cols, runDate = self._jobgen(self.assembly, self.tableName, self.curs)
         self.curs.copy_from(outF, self.tableName, '\t', columns=cols)
-        printt("\tcopied in", self.curs.rowcount)
+        importedNumRows(self.curs)
         makeIndex(self.curs, self.tableName, ["label", "fileID"])
         return runDate
 

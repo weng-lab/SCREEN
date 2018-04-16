@@ -126,12 +126,18 @@ class PeakIntersection:
         
         return jobs
 
-    def loadJobs(self):
-        printt("reading", self.jobsFnp)
-        with gzip.open(self.jobsFnp) as f:
+    def loadJobs(self, runDate = None):
+        if runDate:
+            fnp = paths.path(self.assembly, "extras", runDate, "jobs.json.gz")
+        else:
+            fnp = self.jobsFnp
+            runDate = self.runDate
+                        
+        printt("reading", fnp)
+        with gzip.open(fnp) as f:
             jobs = json.load(f)
         print("loaded", len(jobs))
-        return jobs, self.runDate
+        return jobs, runDate
     
     def computeIntersections(self):
         bedFnp = paths.path(self.assembly, "extras", "cREs.sorted.bed")
