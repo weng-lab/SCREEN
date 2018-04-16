@@ -76,17 +76,31 @@ class TabMain extends React.Component {
 	return (tabPanelize(
             <div>
 
-	        <div className={"row vertical-align"}>
-		    <div className={"col-xs-6"}>
+	        <div className={"row vertical-align hidden-sm hidden-xs"}>
+		    <div className={"col-md-6"}>
 		        {this.logo()}
 		    </div>
-		    <div className={"col-xs-6"}>
+		    <div className={"col-md-6"}>
 		        <div className={"jumbotron"} id={"mainDesc"}>
 		            {this.textBox()}
 		        </div>
 		    </div>
 	        </div>
 
+	    	<div className={"row vertical-align hidden-md hidden-lg hidden-xl"}>
+		    <div className={"col-xs-12"}>
+		        <div className={"jumbotron"} id={"mainDesc"}>
+		            {this.textBox()}
+		        </div>
+		    </div>
+	        </div>
+
+	    	<div className={"row vertical-align hidden-md hidden-lg hidden-xl"}>
+		    <div className={"col-xs-12"}>
+		        {this.logo()}
+	            </div>
+		</div>
+	    
 	        <div className={"row"}>
 		    <div className={"col-md-12 text-center"}>
 		        {this.searchBox()}
