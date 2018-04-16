@@ -77,10 +77,10 @@ class TabMain extends React.Component {
             <div>
 
 	        <div className={"row vertical-align"}>
-		    <div className={"col-md-6"}>
+		    <div className={"col-xs-6"}>
 		        {this.logo()}
 		    </div>
-		    <div className={"col-md-6"}>
+		    <div className={"col-xs-6"}>
 		        <div className={"jumbotron"} id={"mainDesc"}>
 		            {this.textBox()}
 		        </div>
