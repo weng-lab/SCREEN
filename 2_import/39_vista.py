@@ -44,7 +44,7 @@ class ImportVISTA:
         makeIndex(self.curs, self.tableName, ["accession"])
 
 def run(args, DBCONN):
-    assemblies = ["hg19", "mm10"]  # Config.assemblies
+    assemblies = Config.assemblies
     if args.assembly:
         assemblies = [args.assembly]
 
