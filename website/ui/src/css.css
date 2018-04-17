@@ -273,9 +273,10 @@ select.ui-toggle-switch { display: none; }
 
 /* de bars */
 .bar1 {
-    fill: steelblue;
+    fill: rgb(0,170,0);
     opacity: 0.5;
 }
+
 .ylabel {
     font-size: 12px;
 }
