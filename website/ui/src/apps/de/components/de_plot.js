@@ -258,7 +258,7 @@ class DePlot extends React.Component {
         let yAxis = d3.axisLeft().scale(y);
         svg.append("g")
             .attr("class", "y axis")
-            .style("fill", "steelblue")
+            .style("fill", "#00aa00")
             .call(yAxis)
             .append("text")
             .attr("class", "ylabel")

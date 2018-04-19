@@ -149,8 +149,8 @@ class GeneExp extends React.Component{
 			<em>{this.props.gene}</em>
 			{" Gene Expression Profiles by RNA-seq"}
 			<small>
-			    {Config.RE.rnaSeqIsNorm ? " (Normalized)" :
-			    " (Unnormalized)"}
+			    {Config.RE.rnaSeqIsNorm ? " (Scaled Values)" :
+			    " (Raw Values)"}
 			</small>
 			<HelpIcon globals={this.props.globals}
 				  helpkey={"GeneExpression"} />
