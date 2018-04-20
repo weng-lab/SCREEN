@@ -80,9 +80,9 @@ class GeneExp extends React.Component{
 		    const gbq = {
 			accession: [],
 			title: d.gene,
-			start: d.coords.start,
-			len: d.coords.stop - d.coords.start,
-			chrom: d.coords.chrom
+			start: d.all.coords.start,
+			len: d.all.coords.stop - d.all.coords.start,
+			chrom: d.all.coords.chrom
 		    };
 		    this.props.actions.showGenomeBrowser(gbq, gbName, "gene");
 		}
