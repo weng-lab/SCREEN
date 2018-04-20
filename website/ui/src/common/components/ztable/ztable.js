@@ -1,9 +1,15 @@
 import React from 'react';
+import os from 'os';
 import { Form, FormGroup, FormControl, Pagination, HelpBlock } from 'react-bootstrap';
 import SortOrder from './sort_order';
 import SortCols from './sort_cols';
 import DataSource from './datasource';
-import { CSVLink } from 'react-csv';
+
+const CSVLink = ({ rawData, separator, filename, children }) => {
+    if (!rawData) { return null; }
+    let data = rawData.map( x => ( x.join('\t') ) ).join(os.EOL);
+    return <a download={filename + ".tsv"} href={"data:text/tsv;charset=utf-8," + encodeURIComponent(data)}>{children}</a>;
+};
 
 const filterVisibleCols = (cols) => (
     cols.filter((c) => {
@@ -189,13 +195,12 @@ class Ztable extends React.Component {
 	    }
 	    return ret.replace(/,/g, ";");
 	})));
-
 	return (
 	    <div style={{width: "100%"}}>
 		<SearchBox value={this.state.search}
 			   onChange={searchBoxChange} 
 	                   noSearchBox={this.props.noSearchBox}/>
-		{hasobj ? <span/> : <CSVLink data={rawData} separator={"\t"}>TSV</CSVLink>}
+		{hasobj ? <span/> : <CSVLink rawData={rawData} filename="screen-tsv-download" separator={"\t"}>TSV</CSVLink>}
 		<table className={tableKlass}>
 		    <thead>
 			<Zheader colInfos={visibleCols}
