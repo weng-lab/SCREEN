@@ -27,7 +27,7 @@ import UCSCTrackhubSchema, * as UCSCTrackhub from './UCSCTrackhubSchema';
 import CreDetailsResponse from './CreDetailsResponse';
 import RampageResponse from './RampageResponse';
 import BedUploadResponse from './BedUploadResponse';
-import GeneTopResponse from './GeneTopResponse';
+import { TopGenesReplicateData } from './GeneTopResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -93,8 +93,18 @@ const BaseType = new GraphQLObjectType({
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 gene: { type: new GraphQLNonNull(GraphQLString) },
-                biosample_types: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
-                compartments: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
+                biosample_types: {
+                    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+                    description: 'A list of biosamples types to filter by. By default, will include all available biosample types. Available biosample types can be queried with {globals{byAssembly{geBiosampleTypes}}}'
+                },
+                compartments: {
+                    type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+                    description: 'A list of compartments to filter by. By default, will include all available compartments. Available compartments can be queried with {globals{byAssembly{cellCompartments}}}'
+                },
+                normalized: {
+                    type: GraphQLBoolean,
+                    description: 'Whether or not to return normalized RNA-seq data. Defaults to true.'
+                },
             },
             resolve: resolve_geneexp
         },
@@ -172,10 +182,14 @@ const BaseType = new GraphQLObjectType({
         },
         genetop: {
             description: 'Get gene expression by biosample',
-            type: GeneTopResponse,
+            type: new GraphQLList(new GraphQLNonNull(TopGenesReplicateData)),
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-                biosample: { type: new GraphQLNonNull(GraphQLString) }
+                biosample: { type: new GraphQLNonNull(GraphQLString) },
+                normalized: {
+                    type: GraphQLBoolean,
+                    description: 'Whether or not to return normalized RNA-seq data. Defaults to true.'
+                },
             },
             resolve: resolve_genetop
         },

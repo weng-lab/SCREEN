@@ -36,6 +36,30 @@ function indexFilesTab(datasets, rows, assembly) {
     return ret;
 }
 
+export type cache = {
+    chromCounts: Record<string, number>;
+    creHist: any;
+    tf_list: any;
+    datasets: any;
+    rankMethodToCellTypes: any;
+    rankMethodToIDxToCellType: any;
+    biosampleTypes: undefined;
+    assaymap: undefined;
+    ensemblToSymbol: any;
+    ensemblToStrand: any;
+    nineState: any;
+    filesList: any;
+    inputData: any;
+    moreTracks: undefined;
+    geBiosampleTypes: string[];
+    geBiosamples: any;
+    geneIDsToApprovedSymbol: Record<string, any>;
+    tfHistCounts: any;
+    creBigBeds: any;
+    ctmap: any;
+    ctsTable: any;
+}
+
 async function load(assembly) {
     const chromCounts = await Common.chromCounts(assembly);
     const creHist = await Common.creHist(assembly);
@@ -60,7 +84,7 @@ async function load(assembly) {
     const ctmap = await Common.makeCtMap(assembly);
     const ctsTable = await Common.makeCTStable(assembly);
 
-    const cache = {
+    const cache: cache = {
         chromCounts: chromCounts,
         creHist: creHist,
 
@@ -133,11 +157,11 @@ export async function loadCaches() {
     console.log('Cache loaded: ', Object.keys(caches));
 }
 
-export function cache(assembly) {
-    return caches[assembly] || {};
+export function cache(assembly): cache {
+    return caches[assembly] || {} as any;
 }
 
-const Compartments = [
+export const Compartments = [
     'cell', 'nucleoplasm', 'cytosol',
     'nucleus', 'membrane', 'chromatin',
     'nucleolus'];

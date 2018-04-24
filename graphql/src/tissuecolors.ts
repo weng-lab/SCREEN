@@ -1,7 +1,6 @@
 const global_data_global = require('./db/db_cache').global_data_global;
 
 export default class TissueColors {
-    static tissueColors;
     static pad = (n) => ('00' + n).substr(-2);
     static rand = () => Math.floor(Math.random() * 256);
     static randColorGen = () => TissueColors.pad(TissueColors.rand().toString(16));

@@ -48,7 +48,7 @@ export async function tfHistoneDnaseList(assembly, eset) {
 }
 
 export async function geBiosampleTypes(assembly) {
-    const tableName =  assembly + '_rnaseq_exps';
+    const tableName =  assembly + '_rnaseq_metadata';
     const q = `
         SELECT DISTINCT(biosample_type)
         FROM ${tableName}
@@ -59,7 +59,7 @@ export async function geBiosampleTypes(assembly) {
 }
 
 export async function geBiosamples(assembly) {
-    const tableName = assembly + '_rnaseq_exps';
+    const tableName = assembly + '_rnaseq_metadata';
     const q = `
         SELECT DISTINCT(celltype) as biosample
         FROM ${tableName}
@@ -430,7 +430,7 @@ export async function geneInfo(assembly, gene) {
         OR ensemblid = $1
         OR ensemblid_ver = $1
     `;
-    const res = await db.many(q, [gene]);
+    const res = await db.any(q, [gene]);
     return res;
 }
 
@@ -440,7 +440,7 @@ export async function loadNineStateGenomeBrowser(assembly) {
         SELECT cellTypeName, cellTypeDesc, dnase, h3k4me3, h3k27ac, ctcf, assembly, tissue
         FROM ${tableName}
     `;
-    const res = await db.many(q);
+    const res = await db.any(q);
     const ret: any = {};
 
     for (const r of res) {

@@ -1,20 +1,23 @@
 import {
-    GraphQLObjectType, GraphQLNonNull, GraphQLString,
+    GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLList,
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 const GraphQLJSON = require('graphql-type-json');
 
-export const GeneTopResponse = new GraphQLObjectType({
-    name: 'GeneTop',
-    description: 'Gene Top Expression data',
+export const TopGenesReplicateData = new GraphQLObjectType({
+    name: 'TopGenesReplicateData',
+    description: 'Gene exp data for a replicate in an experiment',
     fields: () => ({
-        biosample: { type: new GraphQLNonNull(GraphQLString) },
-        ensemblid_ver: { type: new GraphQLNonNull(GraphQLString) },
-        coords: { type: CommonTypes.ChromRange },
-        single: { type: GraphQLJSON },
-        mean: { type: GraphQLJSON },
-        itemsByRID: { type: GraphQLJSON },
+        tissue: { type: new GraphQLNonNull(GraphQLString) },
+        cellType: { type: new GraphQLNonNull(GraphQLString) },
+        gene_name: { type: new GraphQLNonNull(GraphQLString) },
+        expID: { type: new GraphQLNonNull(GraphQLString) },
+        ageTitle: { type: new GraphQLNonNull(GraphQLString) },
+        rID: { type: new GraphQLNonNull(GraphQLString) },
+        replicate: { type: new GraphQLNonNull(GraphQLString) },
+        rawTPM: { type: new GraphQLNonNull(GraphQLFloat) },
+        logTPM: { type: new GraphQLNonNull(GraphQLFloat) },
+        rawFPKM: { type: new GraphQLNonNull(GraphQLFloat) },
+        logFPKM: { type: new GraphQLNonNull(GraphQLFloat) },
     })
 });
-
-export default GeneTopResponse;

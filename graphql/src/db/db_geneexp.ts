@@ -15,178 +15,68 @@ const fixedmap = {
     'CMP': 'blood'
 };
 
-const tissueSort = (a, b) => a['tissue'].localeCompare(b['tissue']);
-const tpmSort = (skey) => (a, b) => b[skey] - a[skey];
+const doLog = (d) => {
+    return parseFloat(Math.log2(parseFloat(d) + 0.01).toFixed(2));
+};
 
-export class GeneExpression {
-    assembly; itemsByRID;
+const mapRep = (rep: { replicate: number; tpm: number; fpkm: number; id: string; }) => ({
+    replicate: rep.replicate,
+    rawTPM: rep.tpm,
+    logTPM: doLog(rep.tpm),
+    rawFPKM: rep.fpkm,
+    logFPKM: doLog(rep.fpkm),
+    rID: rep.id,
+});
 
-    constructor(assembly) {
-        this.assembly = assembly;
-        this.itemsByRID = {};
+const makeEntry = (row) => {
+    let tissue = row['organ'].trim();
+
+    if (tissue === '{}') {
+        tissue = row['cellType'] in fixedmap ? fixedmap[row['cellType']] : '';
     }
 
-    // TODO: use HelperGrouper
-    groupByTissue(rowsin, skey) {
-        const sorter = (a, b) => {
-            // sort by tissue, then TPM/FPKM descending
-            const first = tissueSort(a, b);
-            if (first !== 0) return first;
-            return tpmSort(skey)(a, b);
-        };
-        const rows = rowsin.slice().sort(sorter);
+    const reps = row.reps.map(mapRep);
+    const avgtpm = reps.map(r => r.rawTPM).reduce((a, b) => a + b) / reps.length;
+    const avgfpkm = reps.map(r => r.rawFPKM).reduce((a, b) => a + b) / reps.length;
+    reps.push({
+        replicate: 'mean',
+        rawTPM: avgtpm,
+        logTPM: doLog(avgtpm),
+        rawFPKM: avgfpkm,
+        logFPKM: doLog(avgfpkm),
+        rID: reps.map(r => r.rID).join(','),
+    });
+    return {
+        tissue: tissue,
+        cellType: row['celltype'],
+        expID: row['expid'],
+        ageTitle: row['agetitle'],
+        reps: reps,
+    };
+};
 
-        const ret = {};
-        for (const row of rows) {
-            if (!(row['rID'] in this.itemsByRID)) {
-                this.itemsByRID[row['rID']] = row;
-            }
-            const t = row['tissue'];
-            if (!(t in ret)) {
-                const c = TissueColors.getTissueColor(t);
-                ret[t] = {
-                    'name': t,
-                    'displayName': t,
-                    'color': c,
-                    'items': []
-                };
-            }
-            ret[t]['items'].push(row['rID']);
-        }
-        const sortedkeys = Object.keys(ret).sort(natsorter);
-        return sortedkeys.map(tissue => ret[tissue]);
-    }
 
-    groupByTissueMax(rowsin, skey) {
-        let rows = rowsin.slice().sort(tissueSort);
-
-        const ret = {};
-        for (const row of rows) {
-            if (!(row['rID'] in this.itemsByRID)) {
-                this.itemsByRID[row['rID']] = row;
-            }
-            const t = row['tissue'];
-            if (!(t in ret)) {
-                const c = TissueColors.getTissueColor(t);
-                ret[t] = {
-                    'name': t,
-                    'displayName': t,
-                    'color': c,
-                    'items': [row]
-                };
-            } else {
-                if (ret[t]['items'][0][skey] < row[skey]) {
-                    ret[t]['items'][0] = row;
-                }
-            }
-        }
-
-        rows = Object.keys(ret).map(k => ret[k]);
-
-        const sorter = (a, b) => b['items'][0][skey] - a['items'][0][skey];
-        rows.sort(sorter);
-        return rows.map(row => ({ ...row, items: row.items.map(x => x['rID']) }));
-    }
-
-    sortByExpression(rowsin, skey) {
-        return rowsin.slice().sort(tpmSort(skey)).map((row, idx) => {
-            if (!(row['rID'] in this.itemsByRID)) {
-                this.itemsByRID[row['rID']] = row;
-            }
-            const t = row['tissue'];
-            const c = TissueColors.getTissueColor(t);
-            return {
-                'name': t + idx,
-                'displayName': t,
-                'color': c,
-                'items': [row['rID']]
-            };
-        });
-    }
-
-    process(rows) {
-        return {
-            'byTissueTPM': this.groupByTissue(rows, 'rawTPM'),
-            'byTissueFPKM': this.groupByTissue(rows, 'rawFPKM'),
-            'byTissueMaxTPM': this.groupByTissueMax(rows, 'rawTPM'),
-            'byTissueMaxFPKM': this.groupByTissueMax(rows, 'rawFPKM'),
-            'byExpressionTPM': this.sortByExpression(rows, 'rawTPM'),
-            'byExpressionFPKM': this.sortByExpression(rows, 'rawFPKM')
-        };
-    }
-
-    async doComputeHorBars(rows, gene) {
-        const assembly = this.assembly;
-
-        if (rows.length === 0) {
-            return {};
-        }
-
-        const makeEntry = (row) => {
-            let tissue = row['organ'].trim();
-
-            const doLog = (d) => {
-                return parseFloat(Math.log2(parseFloat(d) + 0.01).toFixed(2));
-            };
-
-            if (tissue === '{}') {
-                tissue = row['cellType'] in fixedmap ? fixedmap[row['cellType']] : '';
-            }
-
-            // built-in JSON encoder missing Decimal type, so cast to float
-            return {
-                'tissue': tissue,
-                'cellType': row['celltype'],
-                'rawTPM': parseFloat(row['tpm']),
-                'logTPM': doLog(row['tpm']),
-                'rawFPKM': parseFloat(row['fpkm']),
-                'logFPKM': doLog(row['fpkm']),
-                'expID': row['expid'],
-                'rep': row['replicate'],
-                'ageTitle': row['agetitle'],
-                'rID': row['id']
-            };
-        };
-
-        const ret = this.process(rows.map(makeEntry));
-        return ret;
-    }
-
-    async computeHorBars(gene, compartments, biosample_types) {
-        const assembly = this.assembly;
-        const tableNameData = assembly + '_rnaseq_expression_norm';
-        const tableNameMetadata = assembly + '_rnaseq_metadata';
-        const q = `
-            SELECT r.tpm, ${tableNameMetadata}.organ, ${tableNameMetadata}.cellType,
-            r.expid, r.replicate, r.fpkm, ${tableNameMetadata}.ageTitle, r.id
-            FROM ${tableNameData} as r
-            INNER JOIN ${tableNameMetadata} ON ${tableNameMetadata}.expid = r.expid
-            WHERE gene_name = '${gene}'
-            AND ${tableNameMetadata}.cellCompartment = ANY ($1)
-            AND ${tableNameMetadata}.biosample_type = ANY ($2)
-        `;
-        const res = await db.any(q, [compartments, biosample_types]);
-        return this.doComputeHorBars(res, gene);
-    }
-
-    async computeHorBarsMean(gene, compartments, biosample_types) {
-        const assembly = this.assembly;
-        const tableNameData = assembly + '_rnaseq_expression_norm';
-        const tableNameMetadata = assembly + '_rnaseq_metadata';
-        const q = `
-            SELECT avg(r.tpm) as tpm, ${tableNameMetadata}.organ,
-	    ${tableNameMetadata}.cellType,
-            r.expid, 'mean' as replicate, avg(r.fpkm) as fpkm, ${tableNameMetadata}.ageTitle,
-            array_to_string(array_agg(r.id), ',') as id
-            FROM ${assembly}_rnaseq_expression AS r
-            INNER JOIN ${tableNameMetadata} ON ${tableNameMetadata}.expid = r.expid
-            WHERE gene_name = '${gene}'
-            AND ${tableNameMetadata}.cellCompartment = ANY ($1)
-            AND ${tableNameMetadata}.biosample_type = ANY ($2)
-            GROUP BY ${tableNameMetadata}.organ, ${tableNameMetadata}.cellType, r.expid,
-	    ${tableNameMetadata}.ageTitle
-        `;
-        const res = await db.any(q, [compartments, biosample_types]);
-        return this.doComputeHorBars(res, gene);
-    }
-}
+export const computeHorBarsAll = async (assembly, gene, compartments, biosample_types, normalized) => {
+    const tableNameData = assembly + (normalized ? '_rnaseq_expression_norm' : '_rnaseq_expression_unnorm');
+    const tableNameMetadata = assembly + '_rnaseq_metadata';
+    const q = `
+        SELECT
+        r.expid,
+        meta.organ,
+        meta.cellType,
+        meta.ageTitle,
+        json_agg(json_build_object('replicate', r.replicate, 'tpm', r.tpm, 'fpkm', r.fpkm, 'id', r.id)) as reps
+        FROM ${tableNameData} AS r
+        INNER JOIN ${tableNameMetadata} AS meta ON meta.expid = r.expid AND meta.replicate = r.replicate
+        WHERE gene_name = '${gene}'
+        AND meta.cellCompartment = ANY ($1)
+        AND meta.biosample_type = ANY ($2)
+        GROUP BY
+        meta.organ,
+        meta.cellType,
+        meta.ageTitle,
+        r.expid
+    `;
+    const res = await db.any(q, [compartments, biosample_types]);
+    return res.map(makeEntry);
+};

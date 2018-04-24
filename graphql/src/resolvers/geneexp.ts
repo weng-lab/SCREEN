@@ -1,56 +1,52 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
-import { GeneExpression } from '../db/db_geneexp';
+import * as DbGene from '../db/db_geneexp';
+
+import { cache, Compartments } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
 
+async function geneexp(assembly, gene, biosample_types, compartments, normalized) {
+    const c = cache(assembly);
 
-const allBiosampleTypes = [
-    'cell line', 'induced pluripotent stem cell line',
-    'in vitro differentiated cells', 'primary cell',
-    'stem cell', 'tissue'];
-
-async function geneexp(assembly, gene, biosample_types, compartments) {
-    // TODO: check for valid gene
-    if (biosample_types.length === 0) {
-        throw new UserError('no biosample type selected');
-    }
-    if (biosample_types.some(b => allBiosampleTypes.indexOf(b) === -1)) {
-        throw new UserError('invalid biosample type');
+    const available_biosamples = c.geBiosampleTypes;
+    if (!biosample_types) {
+        biosample_types = available_biosamples;
+    } else if (biosample_types.some(b => available_biosamples.indexOf(b) === -1)) {
+        throw new UserError('invalid biosample types: ' + biosample_types.filter(b => available_biosamples.indexOf(b) === -1).join(','));
     }
 
-    // TODO: check value of compartments
-    if (compartments.length === 0) {
-        throw new UserError('no compartments');
+    const available_compartments = Compartments;
+    if (!compartments) {
+        compartments = available_compartments;
+    } else if (compartments.some(b => available_compartments.indexOf(b) === -1)) {
+        throw new UserError('invalid biosample types: ' + compartments.filter(b => available_compartments.indexOf(b) === -1).join(','));
     }
 
     const rows = await Common.geneInfo(assembly, gene);
-    if (rows.length === 0) {
-        return { 'gene': gene };
+    let gene_info: any = Promise.resolve(new UserError(gene + ' is not a valid gene. This may not be an error if you are searching for a spike-in, for example.'));
+    let name = gene;
+    if (rows.length !== 0) {
+        const gi = rows[0];
+        const name = gi.approved_symbol;
+        const strand = gi.strand;
+        gene_info = {
+            gene: name,
+            ensemblid_ver: gi.ensemblid_ver,
+            coords: {
+                chrom: gi.chrom,
+                start: gi.start,
+                end: gi.stop,
+                strand: strand,
+            },
+        }
     }
-    const gi = rows[0];
 
-    const name = gi.approved_symbol;
-    const strand = gi.strand;
-
-    const cge = new GeneExpression(assembly);
-    const single = cge.computeHorBars(name, compartments, biosample_types);
-    const mean = cge.computeHorBarsMean(name, compartments, biosample_types);
-    const itemsByRID = cge.itemsByRID;
-    const r = {
-        'gene': name,
-        'ensemblid_ver': gi.ensemblid_ver,
-        'coords': {
-            'chrom': gi.chrom,
-            'start': gi.start,
-            'end': gi.stop,
-            'strand': strand
-        },
-        'single': single,
-        'mean': mean,
-        'itemsByRID': itemsByRID
+    const items = await DbGene.computeHorBarsAll(assembly, name, compartments, biosample_types, normalized);
+    return {
+        gene_info,
+        items,
     };
-    return r;
 }
 
 export const resolve_geneexp: GraphQLFieldResolver<any, any> = (source, args, context) => {
@@ -58,5 +54,6 @@ export const resolve_geneexp: GraphQLFieldResolver<any, any> = (source, args, co
     const gene = args.gene;
     const biosample_types = args.biosample_types;
     const compartments = args.compartments;
-    return geneexp(assembly, gene, biosample_types, compartments);
+    const normalized = (args.normalized !== null) ? args.normalized : true;
+    return geneexp(assembly, gene, biosample_types, compartments, normalized);
 };
