@@ -177,7 +177,7 @@ export const DataParameters = new GraphQLInputObjectType({
     fields: () => ({
         accessions: {
             description: 'A list of accessions to return',
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
         }, // TODO: special type
         range: {
             description: 'Only return ccREs that are within a range',
