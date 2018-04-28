@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 import schema from './schema/schema';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
-import { GraphQLError } from 'graphql';
+import { GraphQLError, printSchema } from 'graphql';
 
 const Raven = require('raven');
 const {formatError} = require('graphql');
@@ -45,12 +45,21 @@ const cors = function (req, res, next) {
 };
 
 useRaven && app.use(Raven.requestHandler());
+
 app.use('/graphql', cors);
 app.use('/graphql', graphqlHTTP(req => ({
   schema: schema,
   formatError: logErrors(req),
   graphiql: true
 })));
+
+app.use('/graphqlschema', cors);
+app.use('/graphqlschema', function (req, res, next) {
+  res.write(printSchema(schema));
+  res.end();
+});
+
 useRaven && app.use(Raven.errorHandler());
+
 
 app.listen(4000);

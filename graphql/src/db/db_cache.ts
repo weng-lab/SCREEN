@@ -58,7 +58,7 @@ export type cache = {
     creBigBeds: any;
     ctmap: any;
     ctsTable: any;
-}
+};
 
 async function load(assembly) {
     const chromCounts = await Common.chromCounts(assembly);

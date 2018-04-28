@@ -28,7 +28,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
     let name = gene;
     if (rows.length !== 0) {
         const gi = rows[0];
-        const name = gi.approved_symbol;
+        name = gi.approved_symbol;
         const strand = gi.strand;
         gene_info = {
             gene: name,
@@ -39,7 +39,7 @@ async function geneexp(assembly, gene, biosample_types, compartments, normalized
                 end: gi.stop,
                 strand: strand,
             },
-        }
+        };
     }
 
     const items = await DbGene.computeHorBarsAll(assembly, name, compartments, biosample_types, normalized);
