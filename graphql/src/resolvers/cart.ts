@@ -19,7 +19,7 @@ const getCres = async (cres) => {
     const hg19cres = getCresForAssembly('hg19', cres.filter(c => c.startsWith('EH37')));
     const mm10cres = getCresForAssembly('mm10', cres.filter(c => c.startsWith('EM10')));
     return {
-        cres: [].concat(await hg19cres, await mm10cres),
+        cres: ([] as any[]).concat(await hg19cres, await mm10cres),
     };
 }
 
