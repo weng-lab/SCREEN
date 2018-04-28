@@ -20,7 +20,7 @@ const makeEntry = (row) => ({
 const topGenes = async (assembly, biosample, normalized) => {
     const res = await DbGeneTop.topGenes(assembly, biosample, normalized);
     return res.map(makeEntry);
-}
+};
 
 export const resolve_genetop: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
     const assembly = args.assembly;
