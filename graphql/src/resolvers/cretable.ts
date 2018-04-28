@@ -4,6 +4,8 @@ import { parse } from './search';
 import { cache, global_data } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 
+const getCtData = (ctvalue, ctmap, r, ctmapkey, rkey) => ctvalue in ctmap[ctmapkey] ? r[rkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+
 export function mapcre(assembly, r, ctinfo, ctmap) {
     const geneIDsToApprovedSymbol = cache(assembly).geneIDsToApprovedSymbol;
     const all = r['gene_all_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
@@ -12,13 +14,20 @@ export function mapcre(assembly, r, ctinfo, ctmap) {
         'all': all,
         'pc': pc,
     };
-    const allct = ctinfo.map(ct => ({
-        ct: ct.value,
-        dnase_zscore: ct.value in ctmap.dnase ? r.dnase_zscore[ctmap.dnase[ct.value] - 1] : undefined,
-        promoter_zscore: ct.value in ctmap.promoter ? r.promoter_zscore[ctmap.promoter[ct.value] - 1] : undefined,
-        enhancer_zscore: ct.value in ctmap.enhancer ? r.enhancer_zscore[ctmap.enhancer[ct.value] - 1] : undefined,
-        ctcf_zscore: ct.value in ctmap.ctcf ? r.ctcf_zscore[ctmap.ctcf[ct.value] - 1] : undefined,
-    }));
+    const allct = ctinfo.map(ct => {
+        const dnase_zscore = getCtData(ct.value, ctmap, r, 'dnase', 'dnase_zscore');
+        const promoter_zscore = getCtData(ct.value, ctmap, r, 'promoter', 'promoter_zscore');
+        const enhancer_zscore = getCtData(ct.value, ctmap, r, 'enhancer', 'enhancer_zscore');
+        const ctcf_zscore = getCtData(ct.value, ctmap, r, 'ctcf', 'ctcf_zscore');
+        return ({
+            ct: ct.value,
+            dnase_zscore,
+            promoter_zscore,
+            enhancer_zscore,
+            ctcf_zscore,
+            maxz: Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11),
+        });
+    });
     return {
         assembly,
         ...r,

@@ -113,13 +113,13 @@ const where = (wheres, params, chrom, start, stop) => {
     }
 };
 
-export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined, start: string | undefined, stop: string | undefined, pagination: any) => {
+export const buildWhereStatement = (ctmap, j: any, chrom: string | undefined, start: string | undefined, stop: string | undefined, pagination: any) => {
     const wheres = [];
     const fields = [
         `cre.chrom as chrom`,
         `cre.start as start`,
         `cre.stop as end`,
-        'cre.maxZ',
+        'cre.maxz',
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
@@ -127,13 +127,13 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
         'cre.chrom',
         'cre.start',
         'cre.stop',
-        'cre.maxZ',
+        'cre.maxz',
         'cre.gene_all_id',
         'cre.gene_pc_id'
     ];
     const params: any = {};
     const useAccs = accessions(wheres, params, j);
-    const ct = j['cellType'];
+    const ct = j.ctexps && j.ctexps.cellType;
 
     const ctspecificobj = {};
     let orderBy;
@@ -151,7 +151,38 @@ export const buildWhereStatement = (ctmap, j: object, chrom: string | undefined,
                 break;
         }
     } else {
-        orderBy = pagination.orderBy || 'dnase_zscore';
+        let name;
+        let col;
+        switch (pagination.orderBy || 'maxz') {
+            case 'dnase_zscore':
+                name = 'dnase';
+                col = 'dnase_zscores';
+                break;
+            case 'promoter_zscore':
+                name = 'promoter';
+                col = 'h3k4me3_zscores';
+                break;
+            case 'enhancer_zscore':
+                name = 'enhancer';
+                col = 'h3k27ac_zscores';
+                break;
+            case 'ctcf_zscore':
+                name = 'ctcf';
+                col = 'ctcf_zscores';
+                break;
+            default:
+                name = undefined;
+                orderBy = pagination.orderBy || 'maxz';
+                break;
+        }
+        if (name) {
+            if (!(ct in ctmap[name])) {
+                orderBy = 'maxz';
+            } else {
+                const index = ctmap[name][ct];
+                orderBy = `${col}[${index}]`;
+            }
+        }
         ctSpecificRanks(wheres, fields, params, ct, j, ctmap);
     }
     for (const name of Object.keys(ctexps)) {

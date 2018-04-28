@@ -177,7 +177,7 @@ export const DataParameters = new GraphQLInputObjectType({
     fields: () => ({
         accessions: {
             description: 'A list of accessions to return',
-            type: new GraphQLList(GraphQLString)
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString))
         }, // TODO: special type
         range: {
             description: 'Only return ccREs that are within a range',
@@ -220,6 +220,7 @@ export const OrderBy = new GraphQLEnumType({
             description: '(DEFAULT)',
             value: 'maxz'
         },
+        // TODO: add maxz_ct and appropriate column in db
         dnasemax: {
             value: 'dnasemax'
         },
@@ -264,7 +265,7 @@ export const PaginationParameters = new GraphQLInputObjectType({
             type: GraphQLInt
         },
         orderBy: {
-            description: 'The field to order by.',
+            description: 'The field to order by. If an ct-specific orderby is passed, but is not applicable to the ct (i.e. no data), then maxz will be used instead.',
             type: OrderBy
         },
     })
@@ -309,6 +310,10 @@ export const ctSpecific = new GraphQLObjectType({
             description: 'Ctcf zscore in the celltype, or null if not available',
             type: GraphQLFloat
         },
+        maxz: {
+            description: 'The max z score of all ctspecific data',
+            type: new GraphQLNonNull(GraphQLFloat),
+        }
     }
 });
 

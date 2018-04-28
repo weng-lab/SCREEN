@@ -4,14 +4,15 @@ import {
     GraphQLList,
     GraphQLString
 } from 'graphql';
+import * as CommonTypes from './CommonSchema';
 
 
 export const CartResponse = new GraphQLObjectType({
     name: 'Cart',
     fields: () => ({
-        accessions: {
+        cres: {
             description: 'A list of accessions in the cart',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.cRE)))
         }
     })
 });
