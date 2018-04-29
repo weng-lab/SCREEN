@@ -13,15 +13,15 @@ const getCresForAssembly = async (assembly, accessions) => {
     }
     const results = await getCreTable(assembly, c.ctmap, { accessions }, {});
     return results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c.ctmap));
-}
+};
 
 const getCres = async (cres) => {
     const hg19cres = getCresForAssembly('hg19', cres.filter(c => c.startsWith('EH37')));
     const mm10cres = getCresForAssembly('mm10', cres.filter(c => c.startsWith('EM10')));
     return {
-        cres: [].concat(await hg19cres, await mm10cres),
+        cres: ([] as any[]).concat(await hg19cres, await mm10cres),
     };
-}
+};
 
 export async function resolve_cart_set(source, args, context) {
     const uuid = args.uuid;
