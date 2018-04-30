@@ -1,23 +1,183 @@
 import * as React from 'react';
-import * as RB from 'react-bootstrap';
 import { Grid, Row, Panel, Button } from 'react-bootstrap';
 
 const hostbase = 'http://api.wenglab.org/screenv10_graphql';
-const datarange = hostbase + '/graphql?operationName=rangeSearchAndData&query=query%20rangeSearchAndData(%24assembly%3A%20Assembly!%2C%20%24dataRange%3A%20DataParameters!%2C%20%24dataCellType%3A%20DataParameters!)%20%7B%0A%20%20dataSearch%3A%20data(assembly%3A%20%24assembly%2C%20data%3A%20%24dataRange)%20%7B%0A%20%20%20%20total%0A%20%20%20%20cres%20%7B%0A%20%20%20%20%20%20accession%0A%20%20%20%20%7D%0A%20%20%7D%0A%20%20dataSearchRefined%3A%20data(assembly%3A%20%24assembly%2C%20data%3A%20%24dataCellType)%20%7B%0A%20%20%20%20total%0A%20%20%20%20cres%20%7B%0A%20%20%20%20%20%20k4me3max%0A%20%20%20%20%20%20range%20%7B%0A%20%20%20%20%20%20%20%20chrom%0A%20%20%20%20%20%20%20%20start%0A%20%20%20%20%20%20%20%20end%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20ctspecific(cellType%3A%20"K562")%20%7B%0A%20%20%20%20%20%20%20%20ct%0A%20%20%20%20%20%20%20%20dnase_zscore%0A%20%20%20%20%20%20%20%20promoter_zscore%0A%20%20%20%20%20%20%20%20enhancer_zscore%0A%20%20%20%20%20%20%20%20ctcf_zscore%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A&variables=%7B%0A%20%20"assembly"%3A%20"hg19"%2C%0A%20%20"dataRange"%3A%20%7B%0A%20%20%20%20"range"%3A%20%7B%0A%20%20%20%20%20%20"chrom"%3A%20"chr1"%2C%0A%20%20%20%20%20%20"start"%3A%205%2C%0A%20%20%20%20%20%20"end"%3A%205000000%0A%20%20%20%20%7D%0A%20%20%7D%2C%0A%20%20"dataCellType"%3A%20%7B%0A%20%20%20%20"range"%3A%20%7B%0A%20%20%20%20%20%20"chrom"%3A%20"chr1"%2C%0A%20%20%20%20%20%20"start"%3A%205%2C%0A%20%20%20%20%20%20"end"%3A%205000000%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D';
-const credetails = hostbase + '/graphql?operationName=credetails&query=query%20credetails%20%7B%0A%20%20credetails(accessions%3A%20%5B"EH37E0321285"%5D)%20%7B%0A%20%20%20%20info%20%7B%0A%20%20%20%20%20%20range%20%7B%0A%20%20%20%20%20%20%20%20chrom%0A%20%20%20%20%20%20%20%20start%0A%20%20%20%20%20%20%20%20end%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20ctspecific(cellType%3A%20"K562")%20%7B%0A%20%20%20%20%20%20%20%20ct%0A%20%20%20%20%20%20%20%20dnase_zscore%0A%20%20%20%20%20%20%20%20promoter_zscore%0A%20%20%20%20%20%20%20%20enhancer_zscore%0A%20%20%20%20%20%20%20%20ctcf_zscore%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20topTissues%20%7B%0A%20%20%20%20%20%20dnase%20%7B%0A%20%20%20%20%20%20%20%20ct%20%7B%0A%20%20%20%20%20%20%20%20%20%20displayName%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20one%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20ctcf%20%7B%0A%20%20%20%20%20%20%20%20ct%20%7B%0A%20%20%20%20%20%20%20%20%20%20displayName%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20one%0A%20%20%20%20%20%20%20%20two%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20promoter%20%7B%0A%20%20%20%20%20%20%20%20ct%20%7B%0A%20%20%20%20%20%20%20%20%20%20displayName%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20one%0A%20%20%20%20%20%20%20%20two%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20enhancer%20%7B%0A%20%20%20%20%20%20%20%20ct%20%7B%0A%20%20%20%20%20%20%20%20%20%20displayName%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20one%0A%20%20%20%20%20%20%20%20two%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%20%20%20%20nearbyGenomic%0A%20%20%7D%0A%7D%0A';
-
 const host = hostbase + '/graphql';
 const schemaurl = hostbase + '/graphqlschema';
+
+const makelink = (query, variables) =>
+    variables
+        ? `${host}?query=${encodeURIComponent(query)}&variables=${encodeURIComponent(variables)}`
+        : `${host}?query=${encodeURIComponent(query)}`;
+
+const datarangeexample = `
+query rangeSearchAndData(
+    $assembly: Assembly!,
+    $dataRange: DataParameters!,
+    $dataCellType: DataParameters!,
+    $cellType: String!
+  ) {
+    # We can search by a range
+    dataSearch: data(
+                    assembly: $assembly,
+                    data: $dataRange) {
+      total,
+      cres {
+        accession
+      }
+    }
+    # Or, we can refine our search. In this case, by cell type "K562"
+    dataSearchRefined: data(
+                        assembly: $assembly,
+                        data: $dataCellType) {
+      total
+      cres {
+        k4me3max
+        range {
+          chrom,
+          start,
+          end
+        }
+        ctspecific(cellType: $cellType) {
+          ct
+          dnase_zscore
+          promoter_zscore
+          enhancer_zscore
+          ctcf_zscore
+        }
+      }
+    },
+  }
+`;
+const datarangevariables = `{
+    "assembly": "hg19",
+    "dataRange": {
+        "range": {
+            "chrom": "chr1",
+            "start": 5,
+            "end": 5000000
+        }
+    },
+    "dataCellType": {
+        "range": {
+            "chrom": "chr1",
+            "start": 5,
+            "end": 5000000
+        }
+    },
+    "cellType": "K562"
+}`;
+
+const credetailsexample = `
+query credetails {
+    credetails(accessions: ["EH37E0321285"]) {
+      info {
+        range {
+          chrom
+          start
+          end
+        }
+        ctspecific(cellType: "K562") {
+          ct
+          dnase_zscore
+          promoter_zscore
+          enhancer_zscore
+          ctcf_zscore
+        }
+      }
+      topTissues {
+        dnase { ct { displayName }, one },
+        ctcf { ct { displayName }, one, two },
+        promoter { ct { displayName }, one, two },
+        enhancer { ct { displayName }, one, two },
+      }
+      nearbyGenomic
+    }
+  }
+`;
+
+const gene_expexample = `
+query gene_exp {
+    geneexp_search(assembly: hg19, gene: "PTMA", biosample_types: ["cell line"], compartments: ["cell"], normalized: true) {
+      gene_info {
+        coords {
+          chrom
+          start
+          end
+          strand
+        }
+        gene
+        ensemblid_ver
+      }
+      items {
+        tissue
+        cellType
+        expID
+        reps {
+          replicate
+          rawTPM
+          rawFPKM
+        }
+      }
+    }
+}
+`;
+
+const spikein_expexample = `
+query spikein_exp {
+    spikein: geneexp_search(assembly: hg19, gene: "gSpikein_ERCC-00058", biosample_types: ["cell line"], compartments: ["cell"], normalized: true) {
+      gene_info {
+        gene
+      }
+      items {
+        tissue
+        reps {
+          replicate
+          rawTPM
+        }
+      }
+    }
+}
+`;
+const celltypes_examples = `
+query celltypes {
+    globals {
+      byAssembly(assembly: hg19) {
+        # Cell types with gene expression data
+        geBiosamples
+        # Cell types with ccRE data
+        cellTypeInfoArr {
+          name
+          value
+          tissue
+          displayName
+          assays {
+            assay
+            expid
+            fileid
+          }
+        }
+      }
+    }
+  }  
+`;
+
 class TabAPI extends React.Component {
     state = { schemaopen: false, schema: 'Loading' };
 
     componentDidMount() {
-        console.log(fetch(schemaurl));
         fetch(schemaurl).then(r => r.text()).then(r => this.setState({ schema: r })).catch(r => this.setState({ schema: 'Error' }));
     }
 
     render() {
-        console.log(RB);
+        const schematext = this.state.schema;
+        const schemaBlob = new Blob([schematext], { type: 'application/txt' });
+        const schemadownloadurl = URL.createObjectURL(schemaBlob);
+        const makelinkout = (title, query, variables) => (
+            <a href={makelink(query, variables)} target="_blank" rel="noopener noreferrer">
+                {title}
+            </a>
+        );
         return (
             <Grid>
                 <Row>
@@ -30,9 +190,40 @@ class TabAPI extends React.Component {
                     </p>
                     <br />
                     <p>
-                        All data used by the SCREEN site is available in the GraphQL API.
+                        The entire SCREEN site uses the GraphQL API for its backend, so you can have access to
+                        any data available on this site.
                         <br />
                         The current host of the GraphQL server is: <i>{host}</i>
+                    </p>
+                    <p>
+                        This page will always contain the latest host, as well as the current schema and
+                        examples (below).
+                    </p>
+                </Row>
+                <Row>
+                    <h2>Quick Start</h2>
+                </Row>
+                <Row>
+                    <p style={{ width: '100%' }}>
+                        The fastest way to begin to use the API is through the GraphiQL UI:
+                        {'  '}
+                        <a href={host} target="_blank" rel="noopener noreferrer">
+                            Graph<i>i</i>QL
+                        </a>
+                    </p>
+                    <p>
+                        For more advanced usage, a number of options exist.
+                        {'  '}
+                        <a
+                            href={
+                                'https://dev-blog.apollodata.com/4-simple-ways-to-call-a-graphql-api-a6807bcdb355'
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            This
+                        </a>{' '}
+                        blog post has a few useful examples.
                     </p>
                 </Row>
                 <Row>
@@ -43,27 +234,31 @@ class TabAPI extends React.Component {
                         {this.state.schemaopen ? 'Close schema' : 'Open schema'}
                     </Button>
                     <Panel expanded={this.state.schemaopen} collapsible={true}>
+                        <a href={schemadownloadurl} download={'schema.txt'}>
+                            Download
+                        </a>
                         <pre>
                             <code>{this.state.schema}</code>
                         </pre> 
                     </Panel>
                 </Row>
                 <Row>
-                    <a href={host} target="_blank" rel="noopener noreferrer">
-                        Graph<i>i</i>QL
-                    </a>
-                </Row>
-                <Row>
                     <h2>Examples</h2>
                 </Row>
                 <Row>
-                    <a href={datarange} target="_blank"  rel="noopener noreferrer">
-                        Search for ccREs by certain parameters
-                    </a>
+                    {makelinkout(
+                        'Search for ccREs by certain parameters',
+                        datarangeexample,
+                        datarangevariables
+                    )}
                     <br />
-                    <a href={credetails} target="_blank"  rel="noopener noreferrer">
-                        ccRE Details
-                    </a>
+                    {makelinkout('ccRE Details', credetailsexample)}
+                    <br />
+                    {makelinkout('Gene Expression Data', gene_expexample)}
+                    <br />
+                    {makelinkout('Spike-in Expression Data', spikein_expexample)}
+                    <br />
+                    {makelinkout('Available Cell Types for ccREs and Gene Expression', celltypes_examples)}
                 </Row>
             </Grid>
         );
