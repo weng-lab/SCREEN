@@ -1,13 +1,14 @@
 import { getCreTable } from '../db/db_cre_table';
 import { GraphQLFieldResolver } from 'graphql';
 import { parse } from './search';
-import { cache, global_data } from '../db/db_cache';
+import { cache } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 
 const getCtData = (ctvalue, ctmap, r, ctmapkey, rkey) => ctvalue in ctmap[ctmapkey] ? r[rkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
 
-export function mapcre(assembly, r, ctinfo, ctmap) {
-    const geneIDsToApprovedSymbol = cache(assembly).geneIDsToApprovedSymbol;
+export function mapcre(assembly, r, ctinfo, cache) {
+    const ctmap = cache.ctmap;
+    const geneIDsToApprovedSymbol = cache.geneIDsToApprovedSymbol;
     const all = r['gene_all_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     const pc = r['gene_pc_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     const nearbygenes = {
@@ -51,15 +52,15 @@ export function mapcre(assembly, r, ctinfo, ctmap) {
 }
 
 async function cre_table(data, assembly, pagination) {
-    const c = cache(assembly);
+    const c = await cache(assembly);
     const results = await getCreTable(assembly, c.ctmap, data, pagination);
-    results.cres = results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c.ctmap));
+    results.cres = results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c));
     results['ct'] = [];
     return results;
 }
 
 async function ctspecific(cre, ct) {
-    const c = cache(cre.assembly);
+    const c = await cache(cre.assembly);
     const ctdata = cre.allct.filter(obj => obj.ct === ct);
     if (ctdata.length == 0) {
         throw new UserError(ct, ' does not exist!');
@@ -77,7 +78,7 @@ export async function resolve_data(source, inargs, context, info) {
 export async function resolve_ctspecific(source, inargs) {
     const ct = inargs.cellType;
     if (ct === 'none') return undefined;
-    const c = cache(source.assembly);
+    const c = await cache(source.assembly);
     source.ct = source.ct || [];
     source.ct.push(c.datasets.byCellTypeValue[ct]);
     return ctspecific(source, ct);

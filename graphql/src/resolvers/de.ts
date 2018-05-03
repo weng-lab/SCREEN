@@ -1,10 +1,7 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as Common from '../db/db_common';
 import * as DbDe from '../db/db_de';
-
-const cache = require('../db/db_cache').cache;
-const lookupEnsembleGene = require('../db/db_cache').lookupEnsembleGene;
-
+import { cache, lookupEnsembleGene } from '../db/db_cache';
 
 class DE {
     assembly; gene;
@@ -65,7 +62,7 @@ class DE {
         const genes = await this.genesInRegion(Math.min(xdomain[0], cxdomain[0]),
                                     Math.max(xdomain[1], cxdomain[1]));
 
-        const ret = this.DEsForDisplay(nearbyDEs);
+        const ret = await this.DEsForDisplay(nearbyDEs);
 
         const ymin = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr < prev ? curr : prev));
         const ymax = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr > prev ? curr : prev));
@@ -85,9 +82,10 @@ class DE {
         return Common.genesInRegion(this.assembly, pos.chrom, start, stop);
     }
 
-    DEsForDisplay(nearbyDEs) {
+    async DEsForDisplay(nearbyDEs) {
+        const c = await cache(this.assembly);
         const ret = nearbyDEs.map(d => {
-            const { symbol: genename, strand } = lookupEnsembleGene(this.assembly, d['ensembl']);
+            const { symbol: genename, strand } = lookupEnsembleGene(c, d['ensembl']);
             return {
                 'fc': +(Math.round(+(d['log2foldchange'] + 'e+3'))  + 'e-3'),
                 'gene': genename,
@@ -116,7 +114,7 @@ class DE {
     }
 
     async nearbyPromoters() {
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         const rmLookup = c.rankMethodToIDxToCellType['H3K4me3'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
             return [];
@@ -138,7 +136,7 @@ class DE {
     }
 
     async nearbyEnhancers() {
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         const rmLookup = c.rankMethodToIDxToCellType['H3K27ac'];
         if (!(this.ct1 in rmLookup && this.ct2 in rmLookup)) {
             return [];
