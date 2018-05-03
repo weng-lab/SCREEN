@@ -1,4 +1,4 @@
-const global_data_global = require('./db/db_cache').global_data_global;
+import { global_data_global } from './db/db_cache';
 
 export default class TissueColors {
     static pad = (n) => ('00' + n).substr(-2);

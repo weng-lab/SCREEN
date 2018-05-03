@@ -192,19 +192,17 @@ class CRE {
 }
 
 export async function resolve_credetails(source, args, context, info) {
-    const accessions: string[] = args.accessions;
-    return accessions.map(async (accession) => {
-        const assembly = getAssemblyFromCre(accession);
-        if (!assembly) {
-            throw new UserError('Invalid accession: ' + accession);
-        }
-        const cre = new CRE(assembly, accession);
-        const coord = await cre.coord();
-        if (!coord) {
-            throw new UserError('Invalid accession: ' + accession);
-        }
-        return { cre };
-    });
+    const accession: string = args.accession;
+    const assembly = getAssemblyFromCre(accession);
+    if (!assembly) {
+        throw new UserError('Invalid accession: ' + accession);
+    }
+    const cre = new CRE(assembly, accession);
+    const coord = await cre.coord();
+    if (!coord) {
+        throw new UserError('Invalid accession: ' + accession);
+    }
+    return { cre };
 }
 
 export async function resolve_cre_info(source, args, context, info) {
