@@ -27,72 +27,27 @@ class CRE {
         return await this._coord;
     }
 
+    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) => ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+
     async topTissues() {
         const c = await cache(this.assembly);
-        // ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
-        const rmToCts = c.rankMethodToCellTypes;
-
         const coord = await this.coord();
         // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
-
-        const get_rank = (ct, d) => ct in d ? d[ct] : -11.0;
-
-        const arrToCtDict = (arr, cts) => {
-            if (arr.length != cts.length) {
-                console.log('****************************');
-                console.log('error in top tissues', arr.length, cts.length);
-                console.log('arr', arr);
-                console.log('cts', cts);
-                console.log('****************************');
-                console.assert(arr.length == cts.length);
-            }
-            const ret: any = {};
-            arr.forEach((v, idx) => {
-                ret[cts[idx]] = v;
-            });
-            return ret;
-        };
-
-        const ctToTissue = (ct) => {
-            const ctinfo = c.datasets.byCellTypeValue[ct];
-            return ctinfo ? ctinfo['tissue'] : '';
-        };
-
-        const makeArrRanks = (rm1) => {
-            const ret: Array<any> = [];
-            const oneAssay = arrToCtDict(ranks[rm1.toLowerCase()], rmToCts[rm1]);
-            for (const ct of Object.keys(oneAssay)) {
-                const v = oneAssay[ct];
-                const r = {'tissue': ctToTissue(ct), 'ct': c.datasets.byCellTypeValue[ct], 'one': v};
-                ret.push(r);
-            }
-            return ret;
-        };
-
-        const makeArrMulti = (rm1, rm2) => {
-            const ret: Array<any> = [];
-            const oneAssay = arrToCtDict(ranks[rm1.toLowerCase()], rmToCts[rm1]);
-            const multiAssay = arrToCtDict(ranks[rm2.toLowerCase()], rmToCts[rm2]);
-            for (const ct of Object.keys(oneAssay)) {
-                const v = oneAssay[ct];
-                const r = {
-                    'tissue': ctToTissue(ct),
-                    'ct': c.datasets.byCellTypeValue[ct],
-                    'one': v,
-                    'two': get_rank(ct, multiAssay)
-                };
-                ret.push(r);
-            }
-            return ret;
-        };
-
-        return {
-            'dnase': makeArrRanks('DNase'),
-            'promoter': makeArrMulti('H3K4me3', 'Promoter'),
-            'enhancer': makeArrMulti('H3K27ac', 'Enhancer'),
-            'ctcf': makeArrMulti('CTCF', 'Insulator')
-        };
+        const data = c.datasets.globalCellTypeInfoArr.map(ct => {
+            const dnase = CRE.getCtData(ct.value, c.ctmap, 'dnase', ranks, 'dnase');
+            const h3k4me3 = CRE.getCtData(ct.value, c.ctmap, 'h3k4me3', ranks, 'promoter');
+            const h3k27ac = CRE.getCtData(ct.value, c.ctmap, 'h3k27ac', ranks, 'enhancer');
+            const ctcf = CRE.getCtData(ct.value, c.ctmap, 'ctcf', ranks, 'ctcf');
+            return {
+                ct,
+                dnase,
+                h3k4me3,
+                h3k27ac,
+                ctcf,
+            };
+        });
+        return data;
     }
 
     async nearbyGenes() {

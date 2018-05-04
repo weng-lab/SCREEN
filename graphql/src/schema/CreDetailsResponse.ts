@@ -26,28 +26,27 @@ export const AssayValues = new GraphQLObjectType({
     })
 });
 
-export const TopTissuesResponse = new GraphQLObjectType({
-    name: 'TopTissuesResponse',
-    description: 'Gets all celltype-specific data for this ccRE',
+export const CTAssayData = new GraphQLObjectType({
+    name: 'CTAssayData',
+    description: 'The celltype-specific z-scores for this ccRE',
     fields: () => ({
-        ctcf: {
-            description: 'CTCF ChIP-seq data',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        ct: {
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo),
         },
         dnase: {
-            description: 'DNase data',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+            type: GraphQLFloat,
         },
-        promoter: {
-            description: 'H3K4me3 ChIP-seq data',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        h3k4me3: {
+            type: GraphQLFloat,
         },
-        enhancer: {
-            description: 'H3K27ac ChIP-seq data',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AssayValues)))
+        h3k27ac: {
+            type: GraphQLFloat,
         },
+        ctcf: {
+            type: GraphQLFloat,
+        }
     })
-});
+})
 
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
@@ -60,7 +59,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         topTissues: {
             description: 'Returns celltype-specific experiment data',
-            type: new GraphQLNonNull(TopTissuesResponse),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CTAssayData))),
             resolve: CreDetailsResolver.resolve_cre_topTissues
         },
         nearbyGenomic: {
