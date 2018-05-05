@@ -533,7 +533,7 @@ export async function getTadOfCRE(assembly, accession) {
         on ti.tadname = tads.tadname
         WHERE accession = $1
     `;
-    return db.one(gettadboundaries, [accession]);
+    return db.oneOrNone(gettadboundaries, [accession]);
 }
 
 export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {

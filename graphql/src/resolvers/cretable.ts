@@ -32,7 +32,7 @@ export async function resolve_data_nearbygenes(source, args, context) {
     const all = source['gene_all_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     const pc = source['gene_pc_id'].slice(0, 3).map(gid => geneIDsToApprovedSymbol[gid]);
     return {
-        'all`': all,
-        'pc': pc,
+        all,
+        pc,
     };
 }

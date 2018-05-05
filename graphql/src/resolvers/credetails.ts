@@ -96,7 +96,7 @@ class CRE {
     }
 
     async genesInTad(tadInfo) {
-        if ('mm10' == this.assembly) {
+        if ('mm10' == this.assembly || !tadInfo) {
             return [];
         }
         const coord = await this.coord();
@@ -114,7 +114,7 @@ class CRE {
     }
 
     async cresInTad(tadInfo) {
-        if ('mm10' == this.assembly) {
+        if ('mm10' == this.assembly || !tadInfo) {
             return [];
         }
         const coord = await this.coord();
