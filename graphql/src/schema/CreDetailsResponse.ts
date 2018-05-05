@@ -124,6 +124,29 @@ export const NearbyGenomic = new GraphQLObjectType({
     })
 });
 
+export const ChIPSeqIntersectionData = new GraphQLObjectType({
+    name: 'ChIPSeqIntersectionData',
+    fields: () => ({
+        name: { type :new GraphQLNonNull(GraphQLString) }, 
+        n: { type :new GraphQLNonNull(GraphQLInt) }, 
+        total: { type :new GraphQLNonNull(GraphQLInt) }, 
+    }),
+});
+
+export const ChIPSeqIntersections = new GraphQLObjectType({
+    name: 'ChIPSeqIntersections',
+    fields: () => ({
+        tf: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
+            description: 'ChIP-seq intersections with transcription factors',
+        },
+        histone: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
+            description: 'ChIP-seq intersections with histone marks',
+        },
+    }),
+});
+
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
@@ -155,7 +178,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         tfIntersection: {
             description: 'Returns intersection counts for transcription factor and histone modification ChIP-seq data',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(ChIPSeqIntersections),
             resolve: CreDetailsResolver.resolve_cre_tfIntersection
         },
         cistromeIntersection: {
