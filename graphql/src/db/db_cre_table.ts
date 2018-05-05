@@ -113,12 +113,11 @@ const where = (wheres, params, chrom, start, stop) => {
     }
 };
 
-export const buildWhereStatement = (ctmap, j: any, chrom: string | undefined, start: string | undefined, stop: string | undefined, pagination: any) => {
+export const buildWhereStatement = (assembly, ctmap, j: any, chrom: string | undefined, start: number | undefined, stop: number | undefined, pagination: any) => {
     const wheres = [];
     const fields = [
-        `cre.chrom as chrom`,
-        `cre.start as start`,
-        `cre.stop as end`,
+        `'${assembly}' as assembly`,
+        `jsonb_build_object('chrom', cre.chrom,'start', cre.start, 'end', cre.stop) as range`,
         'cre.maxz',
         'cre.gene_all_id',
         'cre.gene_pc_id'
@@ -135,7 +134,6 @@ export const buildWhereStatement = (ctmap, j: any, chrom: string | undefined, st
     const useAccs = accessions(wheres, params, j);
     const ct = j.ctexps && j.ctexps.cellType;
 
-    const ctspecificobj = {};
     let orderBy;
     notCtSpecificRanks(wheres, params, j);
     if (useAccs || !ct) {
@@ -185,17 +183,26 @@ export const buildWhereStatement = (ctmap, j: any, chrom: string | undefined, st
         }
         ctSpecificRanks(wheres, fields, params, ct, j, ctmap);
     }
-    for (const name of Object.keys(ctexps)) {
-        const exp = ctexps[name];
-        ctspecificobj[name + '_zscore'] = `cre.${exp}_zscores`;
-    }
+
     where(wheres, params, chrom, start, stop);
 
-    const ctspecificpairs: Array<string> = [];
-    for (const k of Object.keys(ctspecificobj)) {
-        fields.push(`${ctspecificobj[k]} as ${k}`);
-        groupBy.push(ctspecificobj[k]);
-    }
+    // Ctspecific data
+    const cts = j.ctspecifics || [];
+    const ctspecificsobjects: string[] = [];
+    cts.forEach((ct, idx) => {
+        const ctobj: any = {};
+        for (const name of Object.keys(ctexps)) {
+            if (!(ct in ctmap[name])) {
+                continue;
+            }
+            const ctindex = ctmap[name][ct];
+            const exp = ctexps[name];
+            ctobj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
+            groupBy.push(`cre.${exp}_zscores[${ctindex}]`);
+        }
+        ctspecificsobjects.push(`jsonb_build_object('ct', '${ct}'${Object.keys(ctobj).reduce((prev, curr) => prev + `, '${curr}', ${ctobj[curr]}`, '')})`);
+    });
+    fields.push(`jsonb_build_array(${ctspecificsobjects.join(', ')}) as ctspecific`);
 
     const infoFields = {
         'accession': 'cre.accession',
@@ -233,32 +240,23 @@ async function creTableEstimate(table, where, params) {
     return db.one(q, params, r => +(r.count));
 }
 
-export async function getCreTable(assembly: string, ctmap: object, j, pagination) {
+export async function getCreTable(assembly: string, cache, j, pagination) {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
     const table = assembly + '_cre_all';
-    const { fields, where, params, orderBy } = buildWhereStatement(ctmap, j, chrom, start, end, pagination);
-    const offset = pagination.offset || 0;
-    const limit = pagination.limit || 1000;
-    if (limit > 1000) {
-        throw new UserError('Cannot have a limit greater than 1000 in pagination parameters.');
-    }
-    if (offset + limit > 10000) {
-        throw new UserError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
-    }
+    const { fields, where, params, orderBy } = buildWhereStatement(assembly, cache.ctmap, j, chrom, start, end, pagination);
+    const offset = pagination.offset;
+    const limit = pagination.limit;
     const query = `
         SELECT ${fields}
         FROM ${table} AS cre
         ${where}
         ORDER BY ${orderBy} DESC
-        ${offset !== 0 ? `OFFSET ${offset}` : ''}
-        LIMIT ${limit}
+        ${offset && offset !== 0 ? `OFFSET ${offset}` : ''}
+        ${!!limit ? `LIMIT ${limit}` : ``}
     `;
 
-    // 1021 is the oid for _float4 which is a float array
-    pgp.pg.types.setTypeParser(1021, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
-    pgp.pg.types.setTypeParser(1022, 'text', val => val.split(/,/).map(n => parseFloat(n.replace(/[\{\[\]\}]/, ''))));
     const res = await db.any(query, params);
     let total = res.length;
     if (limit <= total || offset !== 0) {// reached query limit

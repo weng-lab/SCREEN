@@ -6,7 +6,9 @@ import {
 } from 'graphql';
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
-import { GraphQLFloat } from 'graphql/type/scalars';
+import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
+import { SNP, Gene } from './SearchResponse';
+import { GeneExpGene } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
 
@@ -46,7 +48,81 @@ export const CTAssayData = new GraphQLObjectType({
             type: GraphQLFloat,
         }
     })
-})
+});
+
+const NearbyGene = new GraphQLObjectType({
+    name: 'NearbyGene',
+    description: 'Distance and gene info for a nearby gene',
+    fields: () => ({
+        distance: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description: 'The distance to the ccRE',
+        },
+        gene: {
+            type: new GraphQLNonNull(GeneExpGene),
+            description: 'The gene'
+        },
+        pc: {
+            type: new GraphQLNonNull(GraphQLBoolean),
+            description: 'Whether or not this gene is protein coding',
+        },
+    })
+});
+
+const NearbyRE = new GraphQLObjectType({
+    name: 'NearbyRE',
+    description: 'A nearby ccRE',
+    fields: () => ({
+        distance: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description: 'The distance from the ccRE',
+        },
+        ccRE: {
+            type: new GraphQLNonNull(CommonTypes.cRE),
+        }
+    })
+});
+
+const NearbySNP = new GraphQLObjectType({
+    name: 'NearbySNP',
+    description: 'A nearby SNP',
+    fields: () => ({
+        distance: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description: 'The distance to the ccRE',
+        },
+        snp: {
+            type: new GraphQLNonNull(SNP),
+            description: 'The SNP',
+        },
+    })
+});
+
+export const NearbyGenomic = new GraphQLObjectType({
+    name: 'NearbyGenomic',
+    fields: () => ({
+        nearby_genes: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbyGene))),
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_nearbyGenes,
+        },
+        tads: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GeneExpGene))),
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_genesInTad,
+        },
+        re_tads: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbyRE))),
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_re_tads,
+        },
+        nearby_res: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbyRE))),
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_nearbyCREs,
+        },
+        overlapping_snps: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbySNP))),
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_snps,
+        },
+    })
+});
 
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
@@ -64,7 +140,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         nearbyGenomic: {
             description: 'Returns nearby genomic elements',
-            type: GraphQLJSON,
+            type: NearbyGenomic,
             resolve: CreDetailsResolver.resolve_cre_nearbyGenomic
         },
         fantom_cat: {

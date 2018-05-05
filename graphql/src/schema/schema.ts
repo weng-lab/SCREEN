@@ -58,7 +58,7 @@ const BaseType = new GraphQLObjectType({
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 data: { type: CommonTypes.DataParameters },
-                pagination: { type: CommonTypes.PaginationParameters }
+                pagination: { type: CommonTypes.PaginationParameters },
             },
             resolve: resolve_data
         },

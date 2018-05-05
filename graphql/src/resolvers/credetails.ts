@@ -1,7 +1,6 @@
 import * as DbCommon from '../db/db_common';
 import * as DbCreTable from '../db/db_cre_table';
 import * as DbCreDetails from '../db/db_credetails';
-import { mapcre } from './cretable';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
@@ -12,7 +11,7 @@ const { UserError } = require('graphql-errors');
 
 class CRE {
     assembly; accession;
-    _coord;
+    _coord: Promise<{ chrom: string; start: number; end: number; }>;
     genesAll; genesPC;
 
     constructor(assembly, accession) {
@@ -22,7 +21,7 @@ class CRE {
 
     async coord() {
         if (!this._coord) {
-            this._coord = DbCommon.crePos(this.assembly, this.accession);
+            this._coord = DbCommon.crePos(this.assembly, this.accession) as any;
         }
         return await this._coord;
     }
@@ -58,32 +57,21 @@ class CRE {
             this.genesPC = genesPC;
         }
         const pcGenes = this.genesPC.map(g => g['approved_symbol']);
-        const ret: Array<any> = [];
-        for (const g of this.genesPC) {
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        for (const g of this.genesAll) {
-            if (g['approved_symbol'] in pcGenes) {
-                continue;
-            }
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        ret.sort((a, b) => a['distance'] - b['distance']);
-        return ret;
+        return this.genesAll
+            .map(g => ({
+                    gene: {
+                        gene: g.approved_symbol,
+                        ensemblid_ver: g.ensemblid_ver,
+                        coords: {
+                            chrom: g.chrom,
+                            start: g.start,
+                            end: g.stop,
+                        },
+                    },
+                    distance: g.distance,
+                    pc: pcGenes.includes(g.approved_symbol),
+            }))
+            .sort((a, b) => a.distance - b.distance);
     }
 
     async nearbyPcGenes() {
@@ -107,29 +95,30 @@ class CRE {
         return ret;
     }
 
-    async genesInTad() {
+    async genesInTad(tadInfo) {
         if ('mm10' == this.assembly) {
             return [];
         }
         const coord = await this.coord();
-        const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom);
-        const c = await cache(this.assembly);
-        const lookup = c.geneIDsToApprovedSymbol;
-        const ret: Array<any> = [];
-        for (const r of rows) {
-            for (const g of r['geneids']) {
-                ret.push({'name': lookup[g]});
-            }
-        }
-        return ret;
+        const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom, tadInfo);
+        return rows
+            .map(g => ({
+                gene: g.approved_symbol,
+                ensemblid_ver: g.ensemblid_ver,
+                coords: {
+                    chrom: g.chrom,
+                    start: g.start,
+                    end: g.stop,
+                },
+            }));
     }
 
-    async cresInTad() {
+    async cresInTad(tadInfo) {
         if ('mm10' == this.assembly) {
             return [];
         }
         const coord = await this.coord();
-        return DbCommon.cresInTad(this.assembly, this.accession, coord.chrom, coord.start);
+        return DbCommon.cresInTad(this.assembly, this.accession, coord.chrom, coord.start, coord.end, tadInfo);
     }
 
     async intersectingSnps(halfWindow) {
@@ -143,6 +132,10 @@ class CRE {
     async peakIntersectCount(eset) {
         const c = await cache(this.assembly);
         return DbCommon.peakIntersectCount(this.assembly, this.accession, c.tfHistCounts[eset], eset);
+    }
+
+    async getTadInfo() {
+        return DbCommon.getTadOfCRE(this.assembly, this.accession);
     }
 }
 
@@ -163,9 +156,9 @@ export async function resolve_credetails(source, args, context, info) {
 export async function resolve_cre_info(source, args, context, info) {
     const cre: CRE = source.cre;
     const c = await cache(cre.assembly);
-    const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession]}, {});
+    const res = await DbCreTable.getCreTable(cre.assembly, c, {accessions: [cre.accession]}, {});
     if (res['total'] > 0) {
-        return mapcre(cre.assembly, res['cres'][0], c.datasets.globalCellTypeInfoArr, c);
+        return res.cres[0];
     }
     return {};
 }
@@ -179,21 +172,36 @@ export async function resolve_cre_nearbyGenomic(source, args, context, info) {
     const cre: CRE = source.cre;
     const accession = source.accession;
     const assembly = source.assembly;
-    const coord = source.coord;
 
-    const snps = await cre.intersectingSnps(10000);  // 10 KB
-    const nearbyCREs = await cre.distToNearbyCREs(1000000);  // 1 MB
-    const nearbyGenes = await cre.nearbyGenes();
-    const genesInTad = await cre.genesInTad();
-    const re_tads = await cre.cresInTad();
+    const tadInfo = assembly === 'mm10' ? {} : await cre.getTadInfo();
+    return { cre, tadInfo };
+}
 
-    return {
-        'nearby_genes': nearbyGenes,
-        'tads': genesInTad,
-        're_tads': re_tads,
-        'nearby_res': nearbyCREs,
-        'overlapping_snps': snps
-    };
+export async function resolve_cre_nearbyGenomic_snps(source, args) {
+    const cre: CRE = source.cre;
+    return cre.intersectingSnps(10000);  // 10 KB
+}
+
+export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args) {
+    const cre: CRE = source.cre;
+    return cre.distToNearbyCREs(1000000);  // 1 MB
+}
+
+export async function resolve_cre_nearbyGenomic_nearbyGenes(source, args) {
+    const cre: CRE = source.cre;
+    return cre.nearbyGenes();
+}
+
+export async function resolve_cre_nearbyGenomic_genesInTad(source, args) {
+    const cre: CRE = source.cre;
+    const tadInfo = source.tadInfo;
+    return cre.genesInTad(tadInfo);
+}
+
+export async function resolve_cre_nearbyGenomic_re_tads(source, args) {
+    const cre: CRE = source.cre;
+    const tadInfo = source.tadInfo;
+    return cre.cresInTad(tadInfo);
 }
 
 export async function resolve_cre_fantomCat(source, args, context, info) {

@@ -1,6 +1,8 @@
 import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
+import { getCreTable } from './db_cre_table';
+import { cache } from './db_cache';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -383,22 +385,10 @@ export async function genesInRegion(assembly, chrom, start, stop) {
 }
 
 export async function nearbyCREs(assembly, coord, halfWindow, cols, isProximalOrDistal) {
-    const c = CoordUtils.expanded(coord, halfWindow);
-    const tableName = assembly + '_cre_all';
-    let q = `
-        SELECT ${cols.join(',')}
-        FROM ${tableName}
-        WHERE chrom = $1
-        AND int4range(start, stop) && int4range($2, $3)
-    `;
-
-    if (typeof isProximalOrDistal != 'undefined') {
-        q += `
-        AND isProximal is ${isProximalOrDistal}
-        `;
-    }
-    const res = await db.many(q, [c.chrom, c.start, c.end]);
-    return res;
+    const expanded = CoordUtils.expanded(coord, halfWindow);
+    const c = await cache(assembly);
+    const cres = await getCreTable(assembly, c, { range: expanded }, {});
+    return cres.cres;
 }
 
 export async function genemap(assembly) {
@@ -532,46 +522,56 @@ export async function creGenes(assembly, accession, chrom) {
     };
 }
 
-export async function cresInTad(assembly, accession, chrom, start) {
+export async function getTadOfCRE(assembly, accession) {
     const tablecre = assembly + '_cre_all';
     const tableinfo = assembly + '_tads_info';
     const tabletads = assembly + '_tads';
-    const q = `
-        SELECT accession, abs($1 - start) AS distance
-        FROM ${tablecre}
-        WHERE chrom = $2
-        AND int4range(start, stop) && int4range(
-        (SELECT int4range(min(start), max(stop))
+    const gettadboundaries = `
+        SELECT tads.geneids, ti.start, ti.stop
         FROM ${tableinfo} ti
         inner join ${tabletads} tads
         on ti.tadname = tads.tadname
-        WHERE accession = $3))
-        AND abs($1 - start) < 100000
-        ORDER BY 2
-    `;
-    const res = await db.any(q, [start, chrom, accession]);
-    return res.filter(x => x['accession'] != accession);
-}
-
-export async function genesInTad(assembly, accession, chrom) {
-    const tableName = assembly + '_tads';
-    const q = `
-        SELECT geneIDs
-        FROM ${tableName}
         WHERE accession = $1
     `;
-    return db.any(q, [accession]);
+    return db.one(gettadboundaries, [accession]);
+}
+
+export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {
+    const c = await cache(assembly);
+    const cres = await getCreTable(assembly, c, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
+    return cres.cres
+        .map(cre => ({
+            distance: Math.min(Math.abs(end - cre.range.end), Math.abs(start - cre.range.start)),
+            ccRE: cre,
+        }))
+        .filter(cre => cre.distance < 100000)
+        .filter(cre => cre.ccRE.accession  !== accession)
+        .sort((a, b) => a.distance - b.distance);
+}
+
+
+export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
+    const tableName = assembly + '_tads';
+    const tableinfo = assembly + '_gene_info';
+    const q = `
+        SELECT gi.approved_symbol, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
+        FROM ${tableinfo} gi
+        WHERE gi.geneid = ANY($1)
+    `;
+    return db.any(q, [geneids]);
 }
 
 export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
-    const cols = ['start', 'stop', 'accession'];
-    const cres = await nearbyCREs(assembly, coord, halfWindow, cols, undefined);
-    return cres
-        .filter(c => c.accession !== accession)
-        .map(c => ({
-            'name': c.accession,
-            'distance': Math.min(Math.abs(coord.end - c.stop), Math.abs(coord.start - c.start))
-        }));
+    const expanded = CoordUtils.expanded(coord, halfWindow);
+    const c = await cache(assembly);
+    const cres = await getCreTable(assembly, c, { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } }, {});
+    return cres.cres
+        .filter(cre => cre.accession !== accession)
+        .map(cre => ({
+            ccRE: cre,
+            distance: Math.min(Math.abs(coord.end - cre.range.end), Math.abs(coord.start - cre.range.start))
+        }))
+        .sort((a, b) => a.distance - b.distance);
 }
 
 export async function intersectingSnps(assembly, accession, coord, halfWindow) {
@@ -584,16 +584,19 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
         AND int4range(start, stop) && int4range($2, $3)
     `;
     const snps = await db.any(q, [c.chrom, c.start, c.end]);
-    return snps.map(snp => ({
-        'chrom': c.chrom,
-        'cre_start': coord.start,
-        'cre_end': coord.end,
-        'accession': accession,
-        'snp_start': snp.start,
-        'snp_end': snp.stop,
-        'name': snp.snp,
-        'distance': Math.min(Math.abs(coord.end - snp.stop), Math.abs(coord.start - snp.start))
-    }));
+    return snps
+        .map(snp => ({
+            distance: Math.min(Math.abs(coord.end - snp.stop), Math.abs(coord.start - snp.start)),
+            snp: {
+                id: snp.snp,
+                range: {
+                    chrom: coord.chrom,
+                    start: snp.start,
+                    end: snp.stop,
+                },
+            },
+        }))
+        .sort((a, b) => a.distance - b.distance);
 }
 
 export async function peakIntersectCount(assembly, accession, totals, eset) {

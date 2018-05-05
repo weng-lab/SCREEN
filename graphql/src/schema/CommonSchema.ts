@@ -12,7 +12,7 @@ import {
     GraphQLEnumType
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { resolve_ctspecific } from '../resolvers/cretable';
+import { resolve_data_nearbygenes } from '../resolvers/cretable';
 
 
 export const Assembly = new GraphQLEnumType({
@@ -191,6 +191,10 @@ export const DataParameters = new GraphQLInputObjectType({
             description: 'Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type',
             type: InputCtExps
         },
+        ctspecifics: {
+            description: 'Cell types to get celltype-specific info for',
+            type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+        }
     })
 });
 
@@ -361,24 +365,14 @@ export const cRE = new GraphQLObjectType({
             description: 'Is ccRE +/- 2kb of TSS',
             type: new GraphQLNonNull(GraphQLBoolean),
         },
-        allct: {
-            description: 'All celltype-specific zscores. This should be used very sparingly.',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ctSpecific))),
-        },
         ctspecific: {
             description: 'celltype-specific zscores',
-            type: ctSpecific,
-            args: {
-                cellType: {
-                    description: 'The celltype to request zscores of. Can also be "none".',
-                    type: new GraphQLNonNull(GraphQLString),
-                },
-            },
-            resolve: resolve_ctspecific,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ctSpecific))),
         },
         nearbygenes: {
             description: 'Nearby genes',
-            type: new GraphQLNonNull(genes)
+            type: new GraphQLNonNull(genes),
+            resolve: resolve_data_nearbygenes,
         },
     })
 });
