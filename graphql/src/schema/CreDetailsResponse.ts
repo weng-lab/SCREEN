@@ -147,6 +147,67 @@ export const ChIPSeqIntersections = new GraphQLObjectType({
     }),
 });
 
+export const FantomCatData = new GraphQLObjectType({
+    name: 'FantomCatData',
+    fields: () => ({
+        id: {
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        range: {
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+        geneid: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        genename: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        aliases: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        geneclass: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        dhssupport: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        genecategory: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        tirconservation: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        exonconservation: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        traitdfr: {
+            type: GraphQLFloat,
+        },
+        eqtlcoexpr: {
+            type: GraphQLFloat,
+        },
+        dynamicexpr: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        other_names: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+    })
+});
+
+export const FantomCat = new GraphQLObjectType({
+    name: 'FantomCat',
+    fields: () => ({
+        fantom_cat: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(FantomCatData))),
+        },
+        fantom_cat_twokb: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(FantomCatData))),
+        },
+    }),
+});
+
+
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
@@ -163,12 +224,12 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         nearbyGenomic: {
             description: 'Returns nearby genomic elements',
-            type: NearbyGenomic,
+            type: new GraphQLNonNull(NearbyGenomic),
             resolve: CreDetailsResolver.resolve_cre_nearbyGenomic
         },
         fantom_cat: {
             description: 'Returns intersecting FANTOM CAT RNAs',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(FantomCat),
             resolve: CreDetailsResolver.resolve_cre_fantomCat
         },
         ortholog: {
