@@ -1,9 +1,9 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 import { mapcre, resolve_ctspecific } from './cretable';
+import { cache } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
-const cache = require('../db/db_cache').cache;
 
 class Gwas {
     assembly; studies; byStudy;
@@ -24,7 +24,7 @@ class Gwas {
     numLdBlocksOverlap = (gwas_study) => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = (gwas_study) => DbGwas.numCresOverlap(this.assembly, gwas_study);
     allCellTypes = async (gwas_study) => {
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         const cts = await DbGwas.gwasEnrichment(this.assembly, gwas_study);
         const ret = cts ? cts.map(ct => ({ ...ct, ct: c.datasets.byCellTypeValue[ct.ct] })) : undefined;
         return ret;
@@ -49,13 +49,13 @@ class Gwas {
     }
 
     async cres(gwas_study: string, ct: string | undefined) {
-        const acache = cache(this.assembly);
+        const acache = await cache(this.assembly);
         const ctmap = acache.ctmap;
         const ctsTable = acache.ctsTable;
         const { cres } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
 
         const activeCres = cres
-            .map(c => mapcre(this.assembly, c, acache.datasets.globalCellTypeInfoArr, acache.ctmap))
+            .map(c => mapcre(this.assembly, c, acache.datasets.globalCellTypeInfoArr, acache))
             .map(c => ({ ...c, ctspecific: resolve_ctspecific(c, { cellType: ct || 'none' }) }))
             .filter(a =>
                 !ct ||

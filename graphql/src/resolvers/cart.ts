@@ -7,12 +7,12 @@ import { getCreTable } from '../db/db_cre_table';
 const { UserError } = require('graphql-errors');
 
 const getCresForAssembly = async (assembly, accessions) => {
-    const c = cache(assembly);
+    const c = await cache(assembly);
     if (accessions.length === 0) {
         return [];
     }
     const results = await getCreTable(assembly, c.ctmap, { accessions }, {});
-    return results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c.ctmap));
+    return results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c));
 };
 
 const getCres = async (cres) => {

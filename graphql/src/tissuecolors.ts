@@ -6,8 +6,8 @@ export default class TissueColors {
     static randColorGen = () => TissueColors.pad(TissueColors.rand().toString(16));
     static randColor = () => `#${TissueColors.randColorGen()}${TissueColors.randColorGen()}${TissueColors.randColorGen()}`;
 
-    static getTissueColor(t) {
-        const tissueToColor = global_data_global().colors['tissues'];
+    static async getTissueColor(t) {
+        const tissueToColor = (await global_data_global()).colors['tissues'];
         if (!(t in tissueToColor)) {
             console.log('missing tissue color for', t);
             return TissueColors.randColor();

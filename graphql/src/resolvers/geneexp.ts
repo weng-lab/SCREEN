@@ -7,7 +7,7 @@ import { cache, Compartments } from '../db/db_cache';
 const { UserError } = require('graphql-errors');
 
 async function geneexp(assembly, gene, biosample_types, compartments, normalized) {
-    const c = cache(assembly);
+    const c = await cache(assembly);
 
     const available_biosamples = c.geBiosampleTypes;
     if (!biosample_types) {

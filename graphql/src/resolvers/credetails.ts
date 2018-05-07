@@ -5,10 +5,10 @@ import { mapcre } from './cretable';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
+import { cache } from '../db/db_cache';
 
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
-const cache = require('../db/db_cache').cache;
 
 class CRE {
     assembly; accession;
@@ -28,7 +28,7 @@ class CRE {
     }
 
     async topTissues() {
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         // ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
         const rmToCts = c.rankMethodToCellTypes;
 
@@ -158,7 +158,7 @@ class CRE {
         }
         const coord = await this.coord();
         const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom);
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         const lookup = c.geneIDsToApprovedSymbol;
         const ret: Array<any> = [];
         for (const r of rows) {
@@ -186,7 +186,7 @@ class CRE {
     }
 
     async peakIntersectCount(eset) {
-        const c = cache(this.assembly);
+        const c = await cache(this.assembly);
         return DbCommon.peakIntersectCount(this.assembly, this.accession, c.tfHistCounts[eset], eset);
     }
 }
@@ -209,10 +209,10 @@ export async function resolve_credetails(source, args, context, info) {
 
 export async function resolve_cre_info(source, args, context, info) {
     const cre: CRE = source.cre;
-    const c = cache(cre.assembly);
+    const c = await cache(cre.assembly);
     const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession]}, {});
     if (res['total'] > 0) {
-        return mapcre(cre.assembly, res['cres'][0], c.datasets.globalCellTypeInfoArr, c.ctmap);
+        return mapcre(cre.assembly, res['cres'][0], c.datasets.globalCellTypeInfoArr, c);
     }
     return {};
 }

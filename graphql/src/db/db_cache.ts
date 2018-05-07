@@ -1,6 +1,8 @@
 import * as Path from 'path';
 import * as Common from './db_common';
 
+const Raven = require('raven');
+
 function indexFilesTab(datasets, rows, assembly) {
     const ret: any = {
         agnostic: [],
@@ -121,14 +123,14 @@ async function load(assembly) {
     return cache;
 }
 
-async function loadGlobal() {
+async function loadGlobal(hg19, mm10) {
     const colors = require('./colors');
     const helpKeys = await Common.getHelpKeys();
     const files = {
-        agnostic: [].concat(cache('hg19').filesList.agnostic).concat(cache('mm10').filesList.agnostic),
-        specific: [].concat(cache('hg19').filesList.specific).concat(cache('mm10').filesList.specific),
+        agnostic: [].concat(hg19.filesList.agnostic).concat(mm10.filesList.agnostic),
+        specific: [].concat(hg19.filesList.specific).concat(mm10.filesList.specific),
     };
-    const inputData = [].concat(cache('hg19').inputData).concat(cache('mm10').inputData);
+    const inputData = [].concat(hg19.inputData).concat(mm10.inputData);
 
     const global_cache = {
         colors: colors,
@@ -139,26 +141,36 @@ async function loadGlobal() {
     return global_cache;
 }
 
-let caches: any = {};
-let globalcache: any = {};
-let loaded = false;
+let caches: any = undefined;
+let globalcache: any = undefined;
 export async function loadCaches() {
-    if (loaded) {
+    if (caches) {
         return;
     }
-    const hg19 = await load('hg19');
-    const mm10 = await load('mm10');
-    caches = {
-        'hg19': hg19,
-        'mm10': mm10,
-    };
-    globalcache = await loadGlobal();
-    loaded = true;
-    console.log('Cache loaded: ', Object.keys(caches));
+    try {
+        const hg19 = load('hg19');
+        const mm10 = load('mm10');
+        caches = {
+            'hg19': hg19,
+            'mm10': mm10,
+        };
+        const hg19cache = await hg19;
+        const mm10cache = await mm10;
+        globalcache = await loadGlobal(hg19cache, mm10cache);
+
+        console.log('Cache loaded: ', Object.keys(caches));
+    } catch (e) {
+        caches = undefined;
+        globalcache = undefined;
+        console.error('Error when loading cache.', e);
+        Raven.captureException(e);
+        throw new Error(e);
+    }
 }
 
-export function cache(assembly): cache {
-    return caches[assembly] || {} as any;
+export async function cache(assembly): Promise<cache> {
+    await loadCaches();
+    return caches[assembly];
 }
 
 export const Compartments = [
@@ -167,8 +179,8 @@ export const Compartments = [
     'nucleolus'];
 
 const chrom_lengths = require('../constants').chrom_lengths;
-export function global_data(assembly) {
-    const c = cache(assembly);
+export async function global_data(assembly) {
+    const c = await cache(assembly);
     const datasets = c.datasets;
     return {
         'tfs': c.tf_list,
@@ -185,26 +197,26 @@ export function global_data(assembly) {
     };
 }
 
-export function global_data_global() {
+export async function global_data_global() {
+    await loadCaches();
     return { ...globalcache };
 }
 
-export function lookupEnsembleGene(assembly, s) {
-    const c = cache(assembly);
-    let symbol = c.ensemblToSymbol[s];
-    let strand = c.ensemblToStrand[s];
+export function lookupEnsembleGene(cache, s) {
+    let symbol = cache.ensemblToSymbol[s];
+    let strand = cache.ensemblToStrand[s];
     if (strand) {
         return { symbol, strand };
     }
     const d = s.split('.')[0];
-    symbol = c.ensemblToSymbol[d];
-    strand = c.ensemblToStrand[d];
+    symbol = cache.ensemblToSymbol[d];
+    strand = cache.ensemblToStrand[d];
     if (strand) {
         return { symbol, strand };
     }
 
     if (symbol) {
-        return { symbol, name: '' };
+        return { symbol, strand: '' };
     }
     return { symbol: s, strand: '' };
 }
