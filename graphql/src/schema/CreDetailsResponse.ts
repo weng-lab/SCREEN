@@ -282,6 +282,21 @@ export const RampageTranscript = new GraphQLObjectType({
     }),
 });
 
+export const OrthologouscRE = new GraphQLObjectType({
+    name: 'OrthologouscRE',
+    fields: () => ({
+        accession: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        overlap: {
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        hg19range: {
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+    })
+});
+
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
@@ -308,7 +323,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         ortholog: {
             description: 'Returns orthologous ccREs',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrthologouscRE))),
             resolve: CreDetailsResolver.resolve_cre_ortholog
         },
         tfIntersection: {

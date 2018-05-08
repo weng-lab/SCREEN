@@ -232,7 +232,7 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
 export async function resolve_cre_ortholog(source, args, context, info) {
     const cre: CRE = source.cre;
     const ortholog = await DbCreDetails.orthologs(cre.assembly, cre.accession);
-    return { ortholog };
+    return ortholog;
 }
 
 export async function resolve_cre_tfIntersection(source, args, context, info) {
