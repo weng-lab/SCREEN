@@ -1,53 +1,33 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbCommon from '../db/db_common';
 import HelperGrouper from '../helpergrouper';
-import { natsort, getAssemblyFromCre } from '../utils';
+import { natsort, getAssemblyFromCre, natsorter } from '../utils';
 
+
+const sortTranscripts = (a, b) => natsorter(a.transcript, b.transcript);
+
+const _process = (transcript, ri) => {
+    const items = Object.keys(transcript.data).map(fileID => {
+        const val = transcript['data'][fileID];
+        fileID = fileID.toUpperCase();
+        return { ...ri[fileID], counts: val };
+    }).sort((a, b) => b.counts - a.counts);
+    return {
+        transcript: transcript.transcript,
+        range: transcript.coords,
+        geneinfo: transcript.geneinfo,
+        items,
+    }
+};
 
 export async function getByGene(assembly, gene) {
-    const ensemblid_ver = gene['ensemblid_ver'];
+    const ensemblid_ver = gene.gene.ensemblid_ver;
     const transcripts = await DbCommon.rampageByGene(assembly, ensemblid_ver);
-    if (!transcripts) {
-        return {
-            'sortedTranscripts': [],
-            'tsss': [],
-            'gene': ''
-        };
-    }
 
-    const _process = (transcript, ri) => {
-        const ret: any = {};
-        ret['transcript'] = transcript['transcript'];
-        ret['chrom'] = transcript['chrom'];
-        ret['start'] = transcript['start'];
-        ret['stop'] = transcript['stop'];
-        ret['strand'] = transcript['strand'];
-        ret['geneinfo'] = transcript['geneinfo'];
-
-        // fold actual data val into each "row"
-        const items: Array<any> = [];
-        for (let fileID of Object.keys(transcript['data'])) {
-            const val = transcript['data'][fileID];
-            fileID = fileID.toUpperCase();
-            const info = ri[fileID];
-            info['counts'] = +(Math.round(+(val + 'e+4'))  + 'e-4');
-            items.push(info);
-        }
-
-        const hg = new HelperGrouper(transcript, items);
-        ret['itemsByID'] = hg.byID;
-        ret['itemsGrouped'] = hg.getGroupedItems('counts');
-        return ret;
-    };
     const ri = await DbCommon.rampage_info(assembly);
-    const byTranscript: any = {};
-    for (const transcript of transcripts) {
-        const info = _process(transcript, ri);
-        byTranscript[transcript['transcript']] = info;
-    }
+    const transcripts_out = transcripts.map(t => _process(t, ri));
     return {
-        'sortedTranscripts': natsort(Object.keys(byTranscript)),
-        'tsss': byTranscript,
+        'transcripts': transcripts_out.sort(sortTranscripts),
         'gene': gene
     };
 }

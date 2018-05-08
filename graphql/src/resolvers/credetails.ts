@@ -49,13 +49,17 @@ class CRE {
         return data;
     }
 
-    async nearbyGenes() {
+    private async awaitGenes() {
         const coord = await this.coord();
         if (!this.genesAll || !this.genesPC) {
             const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
             this.genesAll = genesAll;
             this.genesPC = genesPC;
         }
+    }
+
+    async nearbyGenes() {
+        await this.awaitGenes();
         const pcGenes = this.genesPC.map(g => g['approved_symbol']);
         return this.genesAll
             .map(g => ({
@@ -75,24 +79,21 @@ class CRE {
     }
 
     async nearbyPcGenes() {
-        const coord = await this.coord();
-        if (!this.genesAll || !this.genesPC) {
-            const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
-            this.genesAll = genesAll;
-            this.genesPC = genesPC;
-        }
-        const ret: Array<any> = [];
-        for (const g of this.genesPC) {
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        return ret;
+        await this.awaitGenes();
+        return this.genesPC 
+            .map(g => ({
+                    gene: {
+                        gene: g.approved_symbol,
+                        ensemblid_ver: g.ensemblid_ver,
+                        coords: {
+                            chrom: g.chrom,
+                            start: g.start,
+                            end: g.stop,
+                        },
+                    },
+                    distance: g.distance,
+            }))
+        .sort((a, b) => a.distance - b.distance);
     }
 
     async genesInTad(tadInfo) {
@@ -246,8 +247,8 @@ export async function resolve_cre_cistromeIntersection(source, args, context, in
 
 export async function resolve_cre_rampage(source, args, context, info) {
     const cre: CRE = source.cre;
-    const nearbyGenes = await cre.nearbyPcGenes();
-    const nearest = nearbyGenes.reduce((prev, curr) => !prev ? curr : (curr.distance < prev.distance ? curr : prev));
+    const nearbyGenes = await cre.nearbyPcGenes(); // Sorted by distance
+    const nearest = nearbyGenes[0];
     return getByGene(cre.assembly, nearest);
 }
 

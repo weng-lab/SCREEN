@@ -207,6 +207,80 @@ export const FantomCat = new GraphQLObjectType({
     }),
 });
 
+const RampageGene = new GraphQLObjectType({
+    name: 'RampageGene',
+    description: 'Distance and gene info for a nearby gene',
+    fields: () => ({
+        distance: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description: 'The distance to the ccRE',
+        },
+        gene: {
+            type: new GraphQLNonNull(GeneExpGene),
+            description: 'The gene'
+        },
+    })
+});
+
+export const RampageGeneData = new GraphQLObjectType({
+    name: 'RampageGeneData',
+    fields: () => ({
+        transcripts: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscript))),
+        },
+        gene: {
+            type: new GraphQLNonNull(RampageGene),
+        },
+    })
+});
+
+export const RampageTranscriptData = new GraphQLObjectType({
+    name: 'RampageTranscriptData',
+    fields: () => ({
+        expid: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        fileid: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        biosample_term_name: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        biosample_type: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        biosample_summary: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        tissue: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        strand: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        counts: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+    }),
+});
+
+export const RampageTranscript = new GraphQLObjectType({
+    name: 'RampageTranscript',
+    fields: () => ({
+        transcript: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        range: {
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+        geneinfo: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        items: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscriptData)))
+        },
+    }),
+});
 
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
@@ -249,7 +323,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         rampage: {
             description: 'Returns RAMPAGE data of closest gene',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(RampageGeneData),
             resolve: CreDetailsResolver.resolve_cre_rampage
         },
         linkedGenes: {

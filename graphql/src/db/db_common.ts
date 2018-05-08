@@ -628,23 +628,21 @@ export async function rampageByGene(assembly, ensemblid_ver) {
     `;
     const rows = await db.any(q, [ensemblid_ver]);
 
-    const ret: Array<any> = [];
-    for (const dr of rows) {
-        const nr = {'data': {}};
-        for (const k of Object.keys(dr)) {
+    return rows.map(dr => 
+        Object.keys(dr).reduce((nr, k) => {
             const v = dr[k];
             if (k.startsWith('encff')) {
-                nr['data'][k] = v;
-                continue;
+                nr.data[k] = v;
+            } else if (k === 'chrom' || k === 'start' || k === 'strand') {
+                nr.coords[k] = v;
+            } else if (k === 'stop') {
+                nr.coords['end'] = v;
+            } else {
+                nr[k] = v;
             }
-            nr[k] = v;
-        }
-        if (!nr['data']) {
-            continue;
-        }
-        ret.push(nr);
-    }
-    return ret;
+            return nr;
+        }, { data: {}, coords: {} })
+    );
 }
 
 export async function rampage_info(assembly) {
