@@ -12,7 +12,9 @@ import {
     GraphQLEnumType
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
+import { CreDetailsResponse } from './CreDetailsResponse';
 import { resolve_data_nearbygenes } from '../resolvers/cretable';
+import { resolve_details } from '../resolvers/credetails';
 
 
 export const Assembly = new GraphQLEnumType({
@@ -323,7 +325,7 @@ export const ctSpecific = new GraphQLObjectType({
 
 export const cRE = new GraphQLObjectType({
     name: 'cRE',
-    description: 'All data related to ccRE.',
+    description: 'All data related to a ccRE.',
     fields: () => ({
         assembly: {
             description: 'Assembly the ccRE is defined of',
@@ -374,6 +376,11 @@ export const cRE = new GraphQLObjectType({
             type: new GraphQLNonNull(genes),
             resolve: resolve_data_nearbygenes,
         },
+        details: {
+            description: 'Get details about this ccRE',
+            type: new GraphQLNonNull(CreDetailsResponse),
+            resolve: resolve_details,
+        }
     })
 });
 

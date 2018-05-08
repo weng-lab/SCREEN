@@ -222,5 +222,5 @@ export function lookupEnsembleGene(cache, s) {
 }
 
 loadCaches().catch(e => {
-    console.log(e);
+    console.log('Cache load error on start.', e);
 });

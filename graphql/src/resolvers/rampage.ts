@@ -17,7 +17,7 @@ const _process = (transcript, ri) => {
         range: transcript.coords,
         geneinfo: transcript.geneinfo,
         items,
-    }
+    };
 };
 
 export async function getByGene(assembly, gene) {

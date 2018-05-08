@@ -628,7 +628,7 @@ export async function rampageByGene(assembly, ensemblid_ver) {
     `;
     const rows = await db.any(q, [ensemblid_ver]);
 
-    return rows.map(dr => 
+    return rows.map(dr =>
         Object.keys(dr).reduce((nr, k) => {
             const v = dr[k];
             if (k.startsWith('encff')) {

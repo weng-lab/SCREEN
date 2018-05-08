@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
-import schema from './schema/schema';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
 import { GraphQLError, printSchema } from 'graphql';
 
@@ -10,6 +9,10 @@ const {formatError} = require('graphql');
 const useRaven = process.env.NODE_ENV === 'production';
 
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
+
+// We have to manually force load order here because of double references to db_cache
+import './db/db_cache'; // Force db load
+import schema from './schema/schema'; // Import schema after
 
 const logErrors = req => error => {
   const data = formatError(error);

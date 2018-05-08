@@ -127,9 +127,9 @@ export const NearbyGenomic = new GraphQLObjectType({
 export const ChIPSeqIntersectionMetadata = new GraphQLObjectType({
     name: 'ChIPSeqIntersectionMetadata',
     fields: () => ({
-        name: { type: new GraphQLNonNull(GraphQLString) }, 
-        n: { type: new GraphQLNonNull(GraphQLInt) }, 
-        total: { type:new GraphQLNonNull(GraphQLInt) }, 
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        n: { type: new GraphQLNonNull(GraphQLInt) },
+        total: { type: new GraphQLNonNull(GraphQLInt) },
     }),
 });
 
@@ -325,17 +325,12 @@ export const ChIPSeqIntersectionData = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
         },
     })
-})
+});
 
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
     fields: () => ({
-        info: {
-            description: 'Gets the current ccRE data',
-            type: new GraphQLNonNull(CommonTypes.cRE),
-            resolve: CreDetailsResolver.resolve_cre_info
-        },
         topTissues: {
             description: 'Returns celltype-specific experiment data',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CTAssayData))),
