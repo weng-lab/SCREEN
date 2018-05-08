@@ -124,12 +124,12 @@ export const NearbyGenomic = new GraphQLObjectType({
     })
 });
 
-export const ChIPSeqIntersectionData = new GraphQLObjectType({
-    name: 'ChIPSeqIntersectionData',
+export const ChIPSeqIntersectionMetadata = new GraphQLObjectType({
+    name: 'ChIPSeqIntersectionMetadata',
     fields: () => ({
-        name: { type :new GraphQLNonNull(GraphQLString) }, 
-        n: { type :new GraphQLNonNull(GraphQLInt) }, 
-        total: { type :new GraphQLNonNull(GraphQLInt) }, 
+        name: { type: new GraphQLNonNull(GraphQLString) }, 
+        n: { type: new GraphQLNonNull(GraphQLInt) }, 
+        total: { type:new GraphQLNonNull(GraphQLInt) }, 
     }),
 });
 
@@ -137,11 +137,11 @@ export const ChIPSeqIntersections = new GraphQLObjectType({
     name: 'ChIPSeqIntersections',
     fields: () => ({
         tf: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionMetadata))),
             description: 'ChIP-seq intersections with transcription factors',
         },
         histone: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionMetadata))),
             description: 'ChIP-seq intersections with histone marks',
         },
     }),
@@ -297,6 +297,36 @@ export const OrthologouscRE = new GraphQLObjectType({
     })
 });
 
+export const LinkedGene = new GraphQLObjectType({
+    name: 'LinkedGenes',
+    fields: () => ({
+        gene: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        celltype: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        method: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        dccaccession: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+    })
+});
+
+export const ChIPSeqIntersectionData = new GraphQLObjectType({
+    name: 'ChIPSeqIntersectionData',
+    fields: () => ({
+        expID: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        biosample_term_name: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+    })
+})
+
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
@@ -333,7 +363,7 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         cistromeIntersection: {
             description: 'Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(ChIPSeqIntersections),
             resolve: CreDetailsResolver.resolve_cre_cistromeIntersection
         },
         rampage: {
@@ -343,24 +373,30 @@ export const CreDetailsResponse = new GraphQLObjectType({
         },
         linkedGenes: {
             description: 'Returns linked genes',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LinkedGene))),
             resolve: CreDetailsResolver.resolve_cre_linkedGenes
         },
         cre_tf_dcc: {
             description: 'Returns transcription factor intersections for a specific target',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
             args: {
                 target: { type: new GraphQLNonNull(GraphQLString) },
-                eset: { type: new GraphQLNonNull(GraphQLString) },
+                eset: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)'
+                },
             },
             resolve: CreDetailsResolver.resolve_cre_tf_dcc
         },
         cre_histone_dcc: {
             description: 'Returns histone intersections for a specific target',
-            type: GraphQLJSON,
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
             args: {
                 target: { type: new GraphQLNonNull(GraphQLString) },
-                eset: { type: new GraphQLNonNull(GraphQLString) },
+                eset: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)'
+                },
             },
             resolve: CreDetailsResolver.resolve_cre_histone_dcc
         },

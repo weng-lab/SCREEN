@@ -678,14 +678,14 @@ export async function linkedGenes(assembly, accession) {
     return db.any(q, [accession]);
 }
 
-export async function histoneTargetExps(assembly, accession, target, eset) {
+export async function targetExps(assembly, accession, target, eset: 'peak' | 'cistrome', type: 'tf' | 'histone') {
     const peakTn = assembly + '_' + _intersections_tablename(eset);
     const peakMetadataTn = assembly + '_' + _intersections_tablename(eset, true);
     const q = `
         SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name${eset === 'cistrome' ? ', tissue' : ''}
         FROM ${peakMetadataTn}
         WHERE fileID IN (
-        SELECT distinct(jsonb_array_elements_text(histone->$1))
+        SELECT distinct(jsonb_array_elements_text(${type}->$1))
         FROM ${peakTn}
         WHERE accession = $2
         )
@@ -698,24 +698,12 @@ export async function histoneTargetExps(assembly, accession, target, eset) {
     }));
 }
 
+export async function histoneTargetExps(assembly, accession, target, eset: 'peak' | 'cistrome') {
+    return targetExps(assembly, accession, target, eset, 'histone');
+}
+
 export async function tfTargetExps(assembly, accession, target, eset) {
-    const peakTn = assembly + '_' + _intersections_tablename(eset, false);
-    const peakMetadataTn = assembly + '_' + _intersections_tablename(eset, true);
-    const q = `
-        SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name
-        FROM ${peakMetadataTn}
-        WHERE fileID IN (
-        SELECT distinct(jsonb_array_elements_text(tf->$1))
-        FROM ${peakTn}
-        WHERE accession = $2
-        )
-        ORDER BY biosample_term_name
-    `;
-    const rows = await db.any(q, [target, accession]);
-    return rows.map(r => ({
-        'expID': eset === 'cistrome' ? r['fileid'] : (r['expid'] + ' / ' + r['fileid']),
-        'biosample_term_name': r['biosample_term_name']
-    }));
+    return targetExps(assembly, accession, target, eset, 'tf');
 }
 
 export async function tfHistCounts(assembly, eset) {

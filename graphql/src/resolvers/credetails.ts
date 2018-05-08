@@ -171,8 +171,8 @@ export async function resolve_cre_topTissues(source, args, context, info) {
 
 export async function resolve_cre_nearbyGenomic(source, args, context, info) {
     const cre: CRE = source.cre;
-    const accession = source.accession;
-    const assembly = source.assembly;
+    const accession = cre.accession;
+    const assembly = cre.assembly;
 
     const tadInfo = assembly === 'mm10' ? {} : await cre.getTadInfo();
     return { cre, tadInfo };
@@ -257,9 +257,7 @@ export async function resolve_cre_linkedGenes(source, args, context, info) {
     if ('mm10' === cre.assembly) {
         return [];
     }
-    return {
-        'linkedGenes': await DbCommon.linkedGenes(cre.assembly, cre.accession)
-    };
+    return await DbCommon.linkedGenes(cre.assembly, cre.accession);
 }
 
 export async function resolve_cre_tf_dcc(source, args, context, info) {
