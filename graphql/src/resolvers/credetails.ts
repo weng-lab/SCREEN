@@ -10,9 +10,11 @@ const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
 
 class CREDetails {
-    assembly; accession;
-    _coord: Promise<{ chrom: string; start: number; end: number; }>;
-    genesAll; genesPC;
+    assembly;
+    accession;
+    _coord: Promise<{ chrom: string; start: number; end: number }>;
+    genesAll;
+    genesPC;
 
     constructor(assembly, accession) {
         this.assembly = assembly;
@@ -26,7 +28,8 @@ class CREDetails {
         return await this._coord;
     }
 
-    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) => ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) =>
+        ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
 
     async topTissues() {
         const c = await cache(this.assembly);
@@ -63,17 +66,17 @@ class CREDetails {
         const pcGenes = this.genesPC.map(g => g['approved_symbol']);
         return this.genesAll
             .map(g => ({
-                    gene: {
-                        gene: g.approved_symbol,
-                        ensemblid_ver: g.ensemblid_ver,
-                        coords: {
-                            chrom: g.chrom,
-                            start: g.start,
-                            end: g.stop,
-                        },
+                gene: {
+                    gene: g.approved_symbol,
+                    ensemblid_ver: g.ensemblid_ver,
+                    coords: {
+                        chrom: g.chrom,
+                        start: g.start,
+                        end: g.stop,
                     },
-                    distance: g.distance,
-                    pc: pcGenes.includes(g.approved_symbol),
+                },
+                distance: g.distance,
+                pc: pcGenes.includes(g.approved_symbol),
             }))
             .sort((a, b) => a.distance - b.distance);
     }
@@ -82,18 +85,18 @@ class CREDetails {
         await this.awaitGenes();
         return this.genesPC
             .map(g => ({
-                    gene: {
-                        gene: g.approved_symbol,
-                        ensemblid_ver: g.ensemblid_ver,
-                        coords: {
-                            chrom: g.chrom,
-                            start: g.start,
-                            end: g.stop,
-                        },
+                gene: {
+                    gene: g.approved_symbol,
+                    ensemblid_ver: g.ensemblid_ver,
+                    coords: {
+                        chrom: g.chrom,
+                        start: g.start,
+                        end: g.stop,
                     },
-                    distance: g.distance,
+                },
+                distance: g.distance,
             }))
-        .sort((a, b) => a.distance - b.distance);
+            .sort((a, b) => a.distance - b.distance);
     }
 
     async genesInTad(tadInfo) {
@@ -102,16 +105,15 @@ class CREDetails {
         }
         const coord = await this.coord();
         const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom, tadInfo);
-        return rows
-            .map(g => ({
-                gene: g.approved_symbol,
-                ensemblid_ver: g.ensemblid_ver,
-                coords: {
-                    chrom: g.chrom,
-                    start: g.start,
-                    end: g.stop,
-                },
-            }));
+        return rows.map(g => ({
+            gene: g.approved_symbol,
+            ensemblid_ver: g.ensemblid_ver,
+            coords: {
+                chrom: g.chrom,
+                start: g.start,
+                end: g.stop,
+            },
+        }));
     }
 
     async cresInTad(tadInfo) {
@@ -148,7 +150,7 @@ export async function resolve_credetails(source, args, context, info) {
     }
 
     const c = await cache(assembly);
-    const res = await DbCreTable.getCreTable(assembly, c, {accessions: [accession]}, {});
+    const res = await DbCreTable.getCreTable(assembly, c, { accessions: [accession] }, {});
     if (res.total === 0) {
         throw new UserError('Invalid accession: ' + accession);
     }
@@ -159,7 +161,9 @@ export async function resolve_credetails(source, args, context, info) {
 function incrementAndCheckDetailsCount(context) {
     const count = context.detailsresolvecount || 0;
     if (count >= 5) {
-        throw new UserError('Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.');
+        throw new UserError(
+            'Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.'
+        );
     }
     context.detailsresolvecount = count + 1;
 }
@@ -188,12 +192,12 @@ export async function resolve_cre_nearbyGenomic(source, args, context, info) {
 
 export async function resolve_cre_nearbyGenomic_snps(source, args) {
     const cre: CREDetails = source.cre;
-    return cre.intersectingSnps(10000);  // 10 KB
+    return cre.intersectingSnps(10000); // 10 KB
 }
 
 export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args) {
     const cre: CREDetails = source.cre;
-    return cre.distToNearbyCREs(1000000);  // 1 MB
+    return cre.distToNearbyCREs(1000000); // 1 MB
 }
 
 export async function resolve_cre_nearbyGenomic_nearbyGenes(source, args) {
@@ -215,7 +219,7 @@ export async function resolve_cre_nearbyGenomic_re_tads(source, args) {
 
 export async function resolve_cre_fantomCat(source, args, context, info) {
     const cre: CREDetails = source.details;
-    const process = async (key) => {
+    const process = async key => {
         const results = await DbCreDetails.select_cre_intersections(cre.assembly, cre.accession, key);
         for (const result of results) {
             result['other_names'] = result['genename'] != result['geneid'] ? result['genename'] : '';
@@ -232,8 +236,8 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
         throw new UserError('mm10 does not have FANTOM CAT data available.');
     }
     return {
-        'fantom_cat': await process('intersection'),
-        'fantom_cat_twokb': await process('twokbintersection')
+        fantom_cat: await process('intersection'),
+        fantom_cat_twokb: await process('twokbintersection'),
     };
 }
 
@@ -295,7 +299,7 @@ export async function resolve_cre_miniPeaks(source, args, context, info) {
             accession,
             assembly,
         },
-        json: true
+        json: true,
     };
     const res = await request(options);
     return res[accession].rows;

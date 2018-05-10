@@ -1,10 +1,11 @@
 import { global_data_global } from './db/db_cache';
 
 export default class TissueColors {
-    static pad = (n) => ('00' + n).substr(-2);
+    static pad = n => ('00' + n).substr(-2);
     static rand = () => Math.floor(Math.random() * 256);
     static randColorGen = () => TissueColors.pad(TissueColors.rand().toString(16));
-    static randColor = () => `#${TissueColors.randColorGen()}${TissueColors.randColorGen()}${TissueColors.randColorGen()}`;
+    static randColor = () =>
+        `#${TissueColors.randColorGen()}${TissueColors.randColorGen()}${TissueColors.randColorGen()}`;
 
     static async getTissueColor(t) {
         const tissueToColor = (await global_data_global()).colors['tissues'];

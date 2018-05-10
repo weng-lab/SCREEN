@@ -20,12 +20,7 @@ async function ucsc_trackhub_url(uuid, info) {
     const j = { ...info, version: 2, uuid };
     const hubNum = await TrackhubsDb.insertOrUpdate(assembly, accession, uuid, j);
 
-    const trackhubUrl = [
-        host,
-        'ucsc_trackhub',
-        uuid,
-        'hub_' + hubNum + '.txt'
-    ].join('/');
+    const trackhubUrl = [host, 'ucsc_trackhub', uuid, 'hub_' + hubNum + '.txt'].join('/');
 
     let url = 'https://genome.ucsc.edu/cgi-bin/hgTracks?';
     url += 'db=' + assembly;
@@ -41,7 +36,7 @@ async function ucsc_trackhub_url(uuid, info) {
         // FIXME
     }
 
-    return {'url': url, 'trackhuburl': trackhubUrl};
+    return { url: url, trackhuburl: trackhubUrl };
 }
 
 export const resolve_ucsc_trackhub_url: GraphQLFieldResolver<any, any> = (source, args, context) => {

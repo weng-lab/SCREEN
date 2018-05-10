@@ -13,7 +13,7 @@ const getCresForAssembly = async (assembly, accessions) => {
     return getCreTable(assembly, c, { accessions }, {});
 };
 
-const getCres = async (cres) => {
+const getCres = async cres => {
     const hg19cres = getCresForAssembly('hg19', cres.filter(c => c.startsWith('EH37')));
     const mm10cres = getCresForAssembly('mm10', cres.filter(c => c.startsWith('EM10')));
     return {
@@ -31,7 +31,6 @@ export async function resolve_cart_set(source, args, context) {
     const cres = await Cart.set(uuid, accessions);
     return getCres(cres);
 }
-
 
 export async function resolve_cart_get(source, args, context) {
     const uuid = args.uuid;

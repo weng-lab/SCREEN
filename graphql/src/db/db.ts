@@ -9,13 +9,17 @@ const initOptions = {
             console.log('Connection error: ', err);
             return;
         }
-        console.error('Error when executing query: ', e.query, e.params ? ' with params: ' : '', e.params ? e.params : '');
-        Raven.captureException(err, { extra: { query: e.query, params: e.params }});
-
+        console.error(
+            'Error when executing query: ',
+            e.query,
+            e.params ? ' with params: ' : '',
+            e.params ? e.params : ''
+        );
+        Raven.captureException(err, { extra: { query: e.query, params: e.params } });
     },
     query(e) {
         // console.log('QUERY:', e.query);
-    }
+    },
 };
 
 const config = require('../config.json');

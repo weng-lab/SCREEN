@@ -21,17 +21,25 @@ async function intersect(uuid: string, assembly: string, lines: [string]) {
     stream.end();
 
     const cres = {
-        'hg19': hg19bed,
-        'mm10': mm10bed
+        hg19: hg19bed,
+        mm10: mm10bed,
     };
 
     const cmds = [
-        'cat', tempfile,
-        '|', 'sort -k1,1 -k2,2n',
-        '|', 'bedtools intersect -a ', cres[assembly], ' -b stdin',
-        '|', 'sort | uniq',
-        '|', 'head -n 1000',
-        '|', "awk '{ print $5 }'"
+        'cat',
+        tempfile,
+        '|',
+        'sort -k1,1 -k2,2n',
+        '|',
+        'bedtools intersect -a ',
+        cres[assembly],
+        ' -b stdin',
+        '|',
+        'sort | uniq',
+        '|',
+        'head -n 1000',
+        '|',
+        "awk '{ print $5 }'",
     ];
 
     const { stdout, stderr } = await exec(cmds.join(' '));
@@ -39,7 +47,10 @@ async function intersect(uuid: string, assembly: string, lines: [string]) {
         throw new Error(stderr);
     }
     fs.unlink(tempfile, () => {});
-    const accessions = stdout.trim().split('\n').map(a => a.trim());
+    const accessions = stdout
+        .trim()
+        .split('\n')
+        .map(a => a.trim());
     return accessions;
 }
 

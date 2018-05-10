@@ -8,11 +8,16 @@ export async function get_snpcoord(assembly, s) {
         FROM ${tableName}
         WHERE snp = $1
     `;
-    return await db.oneOrNone(q, [s], r => r && {
-        chrom: r['chrom'],
-        start: r['start'],
-        end: r['stop']
-    });
+    return await db.oneOrNone(
+        q,
+        [s],
+        r =>
+            r && {
+                chrom: r['chrom'],
+                start: r['start'],
+                end: r['stop'],
+            }
+    );
 }
 
 export async function has_overlap(assembly, coord) {
@@ -29,9 +34,15 @@ export async function has_overlap(assembly, coord) {
 }
 
 export class GeneParse {
-    assembly; s; useTss;
-    tssDist; oname; strand;
-    coord; approved_symbol; sm;
+    assembly;
+    s;
+    useTss;
+    tssDist;
+    oname;
+    strand;
+    coord;
+    approved_symbol;
+    sm;
 
     constructor(assembly, r, s, useTss, tssDist) {
         this.assembly = assembly;
@@ -44,12 +55,16 @@ export class GeneParse {
 
         if (useTss) {
             if ('+' == this.strand) {
-                this.coord = {chrom: r['altchrom'], start: Math.max(0, parseInt(r['altstart']) - tssDist), end: r['altstop']};
+                this.coord = {
+                    chrom: r['altchrom'],
+                    start: Math.max(0, parseInt(r['altstart']) - tssDist),
+                    end: r['altstop'],
+                };
             } else {
-                this.coord = {chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) + tssDist};
+                this.coord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) + tssDist };
             }
         } else {
-            this.coord = {chrom: r['chrom'], start: r['start'], end: r['stop']};
+            this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
         }
 
         this.approved_symbol = r['approved_symbol'];
@@ -58,15 +73,15 @@ export class GeneParse {
 
     toJson() {
         return {
-            'oname': this.oname,
-            'approved_symbol': this.approved_symbol,
-            'range': {
-                'chrom': this.coord.chrom,
-                'start': this.coord.start,
-                'end': this.coord.end,
-                'strand': this.strand,
+            oname: this.oname,
+            approved_symbol: this.approved_symbol,
+            range: {
+                chrom: this.coord.chrom,
+                start: this.coord.start,
+                end: this.coord.end,
+                strand: this.strand,
             },
-            'sm': this.sm,
+            sm: this.sm,
         };
     }
 
@@ -74,10 +89,10 @@ export class GeneParse {
         const gene = this.approved_symbol || this.oname;
 
         return {
-            'gene': gene,
-            'useTss': this.useTss,
-            'tssDist': this.tssDist,
-            'assembly': this.assembly,
+            gene: gene,
+            useTss: this.useTss,
+            tssDist: this.tssDist,
+            assembly: this.assembly,
         };
     }
 }
@@ -150,17 +165,25 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
             if (possible.length === 0) {
                 console.assert(i === 0);
                 unused_toks.unshift(s);
-                q = p.slice(0, -1 * (i + 1)).join(' ').trim();
+                q = p
+                    .slice(0, -1 * (i + 1))
+                    .join(' ')
+                    .trim();
             } else {
                 ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
                 possible.length = 0;
-                q = p.slice(0, -1 * i).join(' ').trim();
+                q = p
+                    .slice(0, -1 * i)
+                    .join(' ')
+                    .trim();
             }
             return q;
         }
         if (possible.length === 0) {
             // Remove duplicates
-            r.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+            r.forEach(
+                res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
+            );
         } else {
             const newcelltypes = r.map(c => c.celltype);
             // Only keep results in which the celltype was not previously there, or was there and similarity increased
@@ -177,12 +200,17 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
             if (moresimilar.length === 0) {
                 // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
                 ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
-                q = p.slice(0, -1 * i).join(' ').trim();
+                q = p
+                    .slice(0, -1 * i)
+                    .join(' ')
+                    .trim();
                 possible.length = 0;
                 return q;
             } else {
                 possible.length = 0;
-                moresimilar.forEach(res => (possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res));
+                moresimilar.forEach(
+                    res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
+                );
             }
         }
     }
@@ -192,7 +220,7 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
 export async function find_celltype(assembly, q, rev = false) {
     q = q.trim();
     if (q.length === 0) {
-        return {s: q, celltypes: {}};
+        return { s: q, celltypes: {} };
     }
     const tableName = assembly + '_rankCellTypeIndexex';
 
@@ -215,5 +243,5 @@ export async function find_celltype(assembly, q, rev = false) {
         }
     }
 
-    return {s: unused_toks.join(' '), celltypes: ret_celltypes};
+    return { s: unused_toks.join(' '), celltypes: ret_celltypes };
 }

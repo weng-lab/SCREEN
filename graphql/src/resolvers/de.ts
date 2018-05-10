@@ -4,10 +4,15 @@ import * as DbDe from '../db/db_de';
 import { cache, lookupEnsembleGene } from '../db/db_cache';
 
 class DE {
-    assembly; gene;
-    ct1; ct2;
-    pos; names;
-    halfWindow; thres; radiusScale;
+    assembly;
+    gene;
+    ct1;
+    ct2;
+    pos;
+    names;
+    halfWindow;
+    thres;
+    radiusScale;
 
     constructor(assembly, gene, ct1, ct2) {
         this.assembly = assembly;
@@ -34,46 +39,50 @@ class DE {
 
     async nearbyDEs() {
         // limb_14.5 from C57BL-6_limb_embryo_14.5_days
-        const ct1 = this.ct1.replace('C57BL/6_', '').replace('embryo_', '').replace('_days', '').replace('postnatal_', '');
-        const ct2 = this.ct2.replace('C57BL/6_', '').replace('embryo_', '').replace('_days', '').replace('postnatal_', '');
+        const ct1 = this.ct1
+            .replace('C57BL/6_', '')
+            .replace('embryo_', '')
+            .replace('_days', '')
+            .replace('postnatal_', '');
+        const ct2 = this.ct2
+            .replace('C57BL/6_', '')
+            .replace('embryo_', '')
+            .replace('_days', '')
+            .replace('postnatal_', '');
 
         const cd = await this.coord();
 
         const nearbyDEs = await DbDe.nearbyDEs(this.assembly, cd, this.halfWindow, ct1, ct2, 0.05);
 
         if (nearbyDEs.length === 0) {
-            return { 'data': undefined, 'xdomain': undefined };
+            return { data: undefined, xdomain: undefined };
         }
 
         // center on middle of DEs
         const cxdomain = [
             Math.max(0, Math.min(...nearbyDEs.map(d => d['start']))),
-            Math.max(...nearbyDEs.map(d => d['stop']))
+            Math.max(...nearbyDEs.map(d => d['stop'])),
         ];
         const center = Math.floor((cxdomain[1] - cxdomain[0]) / 2 + cxdomain[0]);
         const halfWindow = Math.floor(Math.max(this.halfWindow, (cxdomain[1] - cxdomain[0]) / 2));
 
         // widen each side
-        const xdomain = [
-            Math.max(0, center - halfWindow),
-            center + halfWindow
-        ];
+        const xdomain = [Math.max(0, center - halfWindow), center + halfWindow];
 
-        const genes = await this.genesInRegion(Math.min(xdomain[0], cxdomain[0]),
-                                    Math.max(xdomain[1], cxdomain[1]));
+        const genes = await this.genesInRegion(Math.min(xdomain[0], cxdomain[0]), Math.max(xdomain[1], cxdomain[1]));
 
         const ret = await this.DEsForDisplay(nearbyDEs);
 
-        const ymin = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr < prev ? curr : prev));
-        const ymax = ret.map(d => d['fc']).reduce((prev, curr) => !prev ? curr : (curr > prev ? curr : prev));
+        const ymin = ret.map(d => d['fc']).reduce((prev, curr) => (!prev ? curr : curr < prev ? curr : prev));
+        const ymax = ret.map(d => d['fc']).reduce((prev, curr) => (!prev ? curr : curr > prev ? curr : prev));
 
         return {
-            'names': this.names,
-            'data': ret,
-            'xdomain': xdomain,
-            'genes': genes,
-            'ymin': ymin,
-            'ymax': ymax,
+            names: this.names,
+            data: ret,
+            xdomain: xdomain,
+            genes: genes,
+            ymin: ymin,
+            ymax: ymax,
         };
     }
 
@@ -87,12 +96,12 @@ class DE {
         const ret = nearbyDEs.map(d => {
             const { symbol: genename, strand } = lookupEnsembleGene(c, d['ensembl']);
             return {
-                'fc': +(Math.round(+(d['log2foldchange'] + 'e+3'))  + 'e-3'),
-                'gene': genename,
-                'start': d['start'],
-                'stop': d['stop'],
-                'strand': strand,
-                'sstart': `${parseInt(d['start']).toLocaleString()} (${strand})`
+                fc: +(Math.round(+(d['log2foldchange'] + 'e+3')) + 'e-3'),
+                gene: genename,
+                start: d['start'],
+                stop: d['stop'],
+                strand: strand,
+                sstart: `${parseInt(d['start']).toLocaleString()} (${strand})`,
             };
         });
         return ret;
@@ -102,14 +111,14 @@ class DE {
         const { accession, start, stop, zscore_1, zscore_2 } = c;
         const radius = (stop - start) / 2;
         return {
-            'center': radius + start,
-            'value': +(Math.round(+(+(zscore_2 - zscore_1) + 'e+3'))  + 'e-3'),
-            'typ': typ,
-            'width': 4,
-            'accession': accession,
-            'start': start,
-            'stop': stop,
-            'len': stop - start
+            center: radius + start,
+            value: +(Math.round(+(+(zscore_2 - zscore_1) + 'e+3')) + 'e-3'),
+            typ: typ,
+            width: 4,
+            accession: accession,
+            start: start,
+            stop: stop,
+            len: stop - start,
         };
     }
 
@@ -123,15 +132,15 @@ class DE {
         const ct2PromoterIdx = rmLookup[this.ct2];
 
         const cols = [
-            'accession', 'start', 'stop',
+            'accession',
+            'start',
+            'stop',
             `h3k4me3_zscores[${ct1PromoterIdx}] as zscore_1`,
-            `h3k4me3_zscores[${ct2PromoterIdx}] as zscore_2`
+            `h3k4me3_zscores[${ct2PromoterIdx}] as zscore_2`,
         ];
         const cres = await Common.nearbyCREs(this.assembly, await this.coord(), 2 * this.halfWindow, cols, true);
         return cres
-            .filter(c =>
-                c['zscore_1'] > this.thres ||
-                c['zscore_2'] > this.thres)
+            .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
             .map(c => this.parseCE('promoter-like signature', c));
     }
 
@@ -145,16 +154,16 @@ class DE {
         const ct2EnhancerIdx = rmLookup[this.ct2];
 
         const cols = [
-            'accession', 'start', 'stop',
+            'accession',
+            'start',
+            'stop',
             `h3k27ac_zscores[${ct1EnhancerIdx}] as zscore_1`,
-            `h3k27ac_zscores[${ct2EnhancerIdx}] as zscore_2`
+            `h3k27ac_zscores[${ct2EnhancerIdx}] as zscore_2`,
         ];
         const cres = await Common.nearbyCREs(this.assembly, await this.coord(), 2 * this.halfWindow, cols, false);
         return cres
-        .filter(c =>
-            c['zscore_1'] > this.thres ||
-            c['zscore_2'] > this.thres)
-        .map(c => this.parseCE('enhancer-like signature', c));
+            .filter(c => c['zscore_1'] > this.thres || c['zscore_2'] > this.thres)
+            .map(c => this.parseCE('enhancer-like signature', c));
     }
 
     async diffCREs(xdomain) {
@@ -162,7 +171,7 @@ class DE {
         const xstop = xdomain[1];
         let ret = ([] as Array<any>).concat(await this.nearbyPromoters()).concat(await this.nearbyEnhancers());
         ret = ret.filter(x => x['start'] >= xstart && x['stop'] <= xstop);
-        return { 'data': ret };
+        return { data: ret };
     }
 }
 
@@ -176,10 +185,10 @@ async function de(assembly, gene, ct1, ct2) {
     }
 
     return {
-        'xdomain': nearbyDEs['xdomain'],
-        'coord': de.coord(),
-        'diffCREs': diffCREs,
-        'nearbyDEs': nearbyDEs
+        xdomain: nearbyDEs['xdomain'],
+        coord: de.coord(),
+        diffCREs: diffCREs,
+        nearbyDEs: nearbyDEs,
     };
 }
 

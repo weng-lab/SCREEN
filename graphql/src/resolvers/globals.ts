@@ -2,7 +2,6 @@ import { GraphQLFieldResolver } from 'graphql';
 import { global_data_global, global_data } from '../db/db_cache';
 import { UserError } from 'graphql-errors';
 
-
 export const resolve_globals: GraphQLFieldResolver<any, any> = async (source, args, context) => {
     return global_data_global();
 };

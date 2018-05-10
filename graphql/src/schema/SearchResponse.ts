@@ -9,7 +9,7 @@ import {
     GraphQLID,
     GraphQLNonNull,
     GraphQLUnionType,
-    GraphQLInterfaceType
+    GraphQLInterfaceType,
 } from 'graphql';
 
 import * as CommonTypes from './CommonSchema';
@@ -50,7 +50,7 @@ export const SearchToken = new GraphQLInterfaceType({
         input: {
             description: 'The input string that was interpreted',
             type: new GraphQLNonNull(GraphQLString),
-        }
+        },
     }),
     resolveType: resolveSearchToken,
 });
@@ -61,27 +61,28 @@ export const Gene = new GraphQLObjectType({
     fields: () => ({
         approved_symbol: {
             description: 'The approved_symbol for the gene',
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLString),
         },
         oname: {
             description: 'TODO',
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLString),
         },
         sm: {
             description: 'The similarity of this gene to the searched query',
-            type: new GraphQLNonNull(GraphQLFloat)
+            type: new GraphQLNonNull(GraphQLFloat),
         },
         range: {
             description: 'The range of this gene',
-            type: new GraphQLNonNull(CommonTypes.ChromRange)
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
-    })
+    }),
 });
 
 export const SingleGeneToken = new GraphQLObjectType({
     name: 'SingleGeneToken',
     interfaces: [SearchToken],
-    description: 'Will be returned when the token exactly matches a single gene. ' +
+    description:
+        'Will be returned when the token exactly matches a single gene. ' +
         'Note that this does not necessarily mean that there are not other gene search tokens. These are usually separated with a separate space.',
     fields: () => ({
         input: {
@@ -94,7 +95,8 @@ export const SingleGeneToken = new GraphQLObjectType({
 export const MultiGeneToken = new GraphQLObjectType({
     name: 'MultiGeneToken',
     interfaces: [SearchToken],
-    description: 'Will be returned when the token ambiguously matches multiple genes. ' +
+    description:
+        'Will be returned when the token ambiguously matches multiple genes. ' +
         'Note that this does not necessarily mean that there are multiple different gene searches.',
     fields: () => ({
         input: {
@@ -122,13 +124,13 @@ export const SNP = new GraphQLObjectType({
     fields: () => ({
         id: {
             description: 'The SNP id',
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLString),
         },
         range: {
             description: 'The range of this SNP',
-            type: new GraphQLNonNull(CommonTypes.ChromRange)
-        }
-    })
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+    }),
 });
 
 export const SNPToken = new GraphQLObjectType({
@@ -175,7 +177,7 @@ export const UnknownToken = new GraphQLObjectType({
         input: {
             type: new GraphQLNonNull(GraphQLString),
         },
-        failed: { type: new GraphQLNonNull(GraphQLBoolean) }
+        failed: { type: new GraphQLNonNull(GraphQLBoolean) },
     }),
 });
 

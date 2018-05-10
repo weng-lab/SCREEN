@@ -1,6 +1,6 @@
 import { chroms } from './constants';
 
-export const isaccession = (s: string)  => {
+export const isaccession = (s: string) => {
     if (s.length != 12) {
         return false;
     }
@@ -11,18 +11,18 @@ export const isaccession = (s: string)  => {
 
 export const isclose = (a, b) => Math.abs(a - b) < Number.EPSILON;
 
-const natsortcollator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+const natsortcollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 export const natsorter = natsortcollator.compare;
 
-export const natsort = (array) => {
+export const natsort = array => {
     return array.slice().sort(natsorter);
 };
 
 const assemblies = ['hg19', 'mm10'];
-export const checkAssembly = (j) => {
+export const checkAssembly = j => {
     const assembly = j['assembly'];
     if (!assembly) {
-      throw new Error('assembly not defined');
+        throw new Error('assembly not defined');
     }
     if (!(assembly in assemblies)) {
         throw new Error('invalid assembly ' + assembly);
@@ -32,14 +32,14 @@ export const checkAssembly = (j) => {
 
 export const checkCreAssembly = (assembly, accession) => {
     const starts = {
-        'mm10': 'em10e',
-        'hg19': 'eh37e',
-        'hg38': 'eh38e',
+        mm10: 'em10e',
+        hg19: 'eh37e',
+        hg38: 'eh38e',
     };
     return accession.startsWith(starts[assembly]);
 };
 
-export const getAssemblyFromCre = (accession) => {
+export const getAssemblyFromCre = accession => {
     const cre = accession.toLowerCase();
     if (cre.startsWith('eh37e')) {
         return 'hg19';
@@ -60,13 +60,15 @@ export const checkChrom = (assembly, chrom) => {
 };
 
 // from https://github.com/substack/deep-freeze
-export const deepFreeze = (o) => {
+export const deepFreeze = o => {
     Object.freeze(o);
     Object.getOwnPropertyNames(o).forEach(prop => {
-        if (o.hasOwnProperty(prop)
-            && o[prop] !== null
-            && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
-            && !Object.isFrozen(o[prop])) {
+        if (
+            o.hasOwnProperty(prop) &&
+            o[prop] !== null &&
+            (typeof o[prop] === 'object' || typeof o[prop] === 'function') &&
+            !Object.isFrozen(o[prop])
+        ) {
             deepFreeze(o[prop]);
         }
     });

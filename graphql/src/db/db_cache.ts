@@ -24,7 +24,7 @@ function indexFilesTab(datasets, rows, assembly) {
             '9state-H3K27ac': 'NA',
             '9state-H3K4me3': 'NA',
             '9state-CTCF': 'NA',
-            '9state-DNase': 'NA'
+            '9state-DNase': 'NA',
         };
         for (const [typ, acc] of Object.entries(typAcc)) {
             row[typ] = acc;
@@ -80,7 +80,7 @@ async function load(assembly) {
     const peak_tfHistCounts = await Common.tfHistCounts(assembly, 'peak');
     const tfHistCounts = {
         peak: peak_tfHistCounts,
-        cistrome: {}
+        cistrome: {},
     };
     const creBigBeds = await Common.creBigBeds(assembly);
     const ctmap = await Common.makeCtMap(assembly);
@@ -118,7 +118,7 @@ async function load(assembly) {
         creBigBeds: creBigBeds,
 
         ctmap: ctmap,
-        ctsTable: ctsTable
+        ctsTable: ctsTable,
     };
     return cache;
 }
@@ -151,8 +151,8 @@ export async function loadCaches() {
         const hg19 = load('hg19');
         const mm10 = load('mm10');
         caches = {
-            'hg19': hg19,
-            'mm10': mm10,
+            hg19: hg19,
+            mm10: mm10,
         };
         const hg19cache = await hg19;
         const mm10cache = await mm10;
@@ -173,27 +173,24 @@ export async function cache(assembly): Promise<cache> {
     return caches[assembly];
 }
 
-export const Compartments = [
-    'cell', 'nucleoplasm', 'cytosol',
-    'nucleus', 'membrane', 'chromatin',
-    'nucleolus'];
+export const Compartments = ['cell', 'nucleoplasm', 'cytosol', 'nucleus', 'membrane', 'chromatin', 'nucleolus'];
 
 const chrom_lengths = require('../constants').chrom_lengths;
 export async function global_data(assembly) {
     const c = await cache(assembly);
     const datasets = c.datasets;
     return {
-        'tfs': c.tf_list,
-        'cellCompartments': Compartments,
-        'cellTypeInfoArr': datasets.globalCellTypeInfoArr,
-        'chromCounts': c.chromCounts,
-        'chromLens': chrom_lengths[assembly],
-        'creHistBins': c.creHist,
-        'geBiosampleTypes': c.geBiosampleTypes,
-        'geBiosamples': c.geBiosamples,
-        'creBigBedsByCellType': c.creBigBeds,
-        'creFiles': c.filesList,
-        'inputData': c.inputData,
+        tfs: c.tf_list,
+        cellCompartments: Compartments,
+        cellTypeInfoArr: datasets.globalCellTypeInfoArr,
+        chromCounts: c.chromCounts,
+        chromLens: chrom_lengths[assembly],
+        creHistBins: c.creHist,
+        geBiosampleTypes: c.geBiosampleTypes,
+        geBiosamples: c.geBiosamples,
+        creBigBedsByCellType: c.creBigBeds,
+        creFiles: c.filesList,
+        inputData: c.inputData,
     };
 }
 

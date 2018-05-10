@@ -7,7 +7,7 @@ export async function get(uuid) {
         FROM ${tableName}
         WHERE uuid = $1
     `;
-    return db.oneOrNone(q, [uuid], r => r ? r.accessions : []);
+    return db.oneOrNone(q, [uuid], r => (r ? r.accessions : []));
 }
 
 export async function set(uuid, accessions) {

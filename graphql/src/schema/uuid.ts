@@ -4,7 +4,7 @@ import { GraphQLScalarType } from 'graphql';
 
 const validate = require('uuid-validate');
 
-const parse = (value) => {
+const parse = value => {
     if (!validate(value)) {
         throw new GraphQLError('Not a UUID: ' + value);
     }
@@ -24,5 +24,5 @@ export const UUID = new GraphQLScalarType({
             throw new GraphQLError('Not a string: ' + ast);
         }
         return parse(ast.value);
-    }
+    },
 });

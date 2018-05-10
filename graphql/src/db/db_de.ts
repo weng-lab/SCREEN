@@ -1,4 +1,4 @@
-import * as CoordUtils  from '../coord_utils';
+import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 
 export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
@@ -28,7 +28,7 @@ export async function nearbyDEs(assembly, coord, halfWindow, ct1, ct2, pval) {
     res = await db.any(q, [c.chrom, pval, c.start, c.end, ct2id, ct1id]);
     if (res.length === 0) {
         res = await db.any(q, [c.chrom, pval, c.start, c.end, ct1id, ct2id]);
-        res = res.map(d => ({...d, log2FoldChange: -1.0 * d['log2FoldChange']}));
+        res = res.map(d => ({ ...d, log2FoldChange: -1.0 * d['log2FoldChange'] }));
     }
     return res;
 }

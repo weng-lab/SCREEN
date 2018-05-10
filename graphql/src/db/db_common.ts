@@ -9,7 +9,7 @@ export async function chromCounts(assembly) {
     const q = `SELECT chrom, count from ${tableName}`;
     const res = await db.many(q);
     const ret = res.reduce((obj, e) => {
-        return {...obj, [e['chrom']]: +(e['count']) };
+        return { ...obj, [e['chrom']]: +e['count'] };
     }, {});
     return ret;
 }
@@ -18,14 +18,17 @@ export async function creHist(assembly) {
     const tableName = assembly + '_cre_bins';
     const q = `SELECT chrom, buckets, numBins, binMax from ${tableName}`;
     const res = await db.many(q);
-    return res.reduce((obj, e) => ({
-        ...obj,
-        [e['chrom']]: {
-            'bins': e['buckets'],
-            'numBins': e['numbins'],
-            'binMax': e['binmax']
-        }
-    }), {});
+    return res.reduce(
+        (obj, e) => ({
+            ...obj,
+            [e['chrom']]: {
+                bins: e['buckets'],
+                numBins: e['numbins'],
+                binMax: e['binmax'],
+            },
+        }),
+        {}
+    );
 }
 
 function _intersections_tablename(eset, metadata = false) {
@@ -46,11 +49,14 @@ export async function tfHistoneDnaseList(assembly, eset) {
         FROM ${tableName}
     `;
     const res = await db.many(q);
-    return res.map(r => r['label']).slice().sort();
+    return res
+        .map(r => r['label'])
+        .slice()
+        .sort();
 }
 
 export async function geBiosampleTypes(assembly) {
-    const tableName =  assembly + '_rnaseq_metadata';
+    const tableName = assembly + '_rnaseq_metadata';
     const q = `
         SELECT DISTINCT(biosample_type)
         FROM ${tableName}
@@ -79,7 +85,10 @@ export async function geneIDsToApprovedSymbol(assembly) {
         ORDER BY 1
     `;
     const res = await db.many(q);
-    return res.filter(o => o.geneid !== -1).reduce((obj, r) => { obj[r['geneid']] = r['approved_symbol']; return obj; }, {});
+    return res.filter(o => o.geneid !== -1).reduce((obj, r) => {
+        obj[r['geneid']] = r['approved_symbol'];
+        return obj;
+    }, {});
 }
 
 export async function getHelpKeys() {
@@ -88,13 +97,16 @@ export async function getHelpKeys() {
         FROM helpkeys
     `;
     const res = await db.many(q);
-    return res.reduce((obj, r) => ({
+    return res.reduce(
+        (obj, r) => ({
             ...obj,
             [r['key']]: {
-                'title': r['title'],
-                'summary': r['summary']
-            }
-        }), {});
+                title: r['title'],
+                summary: r['summary'],
+            },
+        }),
+        {}
+    );
 }
 
 export async function rankMethodToCellTypes(assembly) {
@@ -140,19 +152,24 @@ export async function rankMethodToIDxToCellType(assembly) {
 
 export async function makeCtMap(assembly) {
     const amap = {
-        'DNase': 'dnase',
-        'H3K4me3': 'promoter', // FIXME: this could be misleading
-        'H3K27ac': 'enhancer', // FIXME: this too
-        'CTCF': 'ctcf',
-        'Enhancer': 'Enhancer',
-        'Promoter': 'Promoter',
-        'Insulator': 'Insulator'
+        DNase: 'dnase',
+        H3K4me3: 'promoter', // FIXME: this could be misleading
+        H3K27ac: 'enhancer', // FIXME: this too
+        CTCF: 'ctcf',
+        Enhancer: 'Enhancer',
+        Promoter: 'Promoter',
+        Insulator: 'Insulator',
     };
     const rmInfo = await rankMethodToIDxToCellType(assembly);
-    return Object.keys(rmInfo).filter(k => k in amap).reduce((obj, k) => ({
-        ...obj,
-        [amap[k]]: rmInfo[k]
-    }), {});
+    return Object.keys(rmInfo)
+        .filter(k => k in amap)
+        .reduce(
+            (obj, k) => ({
+                ...obj,
+                [amap[k]]: rmInfo[k],
+            }),
+            {}
+        );
 }
 
 export async function makeCTStable(assembly) {
@@ -162,7 +179,7 @@ export async function makeCTStable(assembly) {
         FROM ${tableName}
     `;
     const res = await db.many(q);
-    return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx']}), {});
+    return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx'] }), {});
 }
 
 export async function genePos(assembly, gene) {
@@ -186,7 +203,7 @@ export async function genePos(assembly, gene) {
     }
     return {
         pos: { chrom: r['chrom'], start: r['start'], end: r['stop'] },
-        names: [r['approved_symbol'], r['ensemblid_ver']]
+        names: [r['approved_symbol'], r['ensemblid_ver']],
     };
 }
 
@@ -260,19 +277,25 @@ C57BL/6_stomach_embryo_15.5_days
 C57BL/6_stomach_embryo_16.5_days
 C57BL/6_stomach_postnatal_0_days`.split('\n');
 
-    const makeDataset = (r) => {
+    const makeDataset = r => {
         return {
             ...r,
             synonyms: r.synonyms || [],
-            'isde': (dects as any).includes(r['value']),
+            isde: (dects as any).includes(r['value']),
         };
     };
 
     const tableName = assembly + '_datasets';
     const cols = [
-        'assay', 'expid', 'fileid', 'tissue',
-        'biosample_summary', 'biosample_type', 'celltypename as value',
-        'celltypedesc as name', 'synonyms'
+        'assay',
+        'expid',
+        'fileid',
+        'tissue',
+        'biosample_summary',
+        'biosample_type',
+        'celltypename as value',
+        'celltypedesc as name',
+        'synonyms',
     ];
     const q = `
         SELECT ${cols.join(',')} FROM ${tableName}
@@ -335,7 +358,7 @@ export async function datasets(assembly) {
 
     // used by CellTypes facet
     ret.globalCellTypeInfoArr = (Object as any).values(byCellType).slice();
-    ret.globalCellTypeInfoArr.sort((a, b) => a['value'].localeCompare(b['value'], 'en', {'sensitivity': 'base'}));
+    ret.globalCellTypeInfoArr.sort((a, b) => a['value'].localeCompare(b['value'], 'en', { sensitivity: 'base' }));
 
     ret.biosample_types = Array.from(new Set(rows.map(b => b['biosample_type']))).sort();
 
@@ -349,7 +372,7 @@ async function beds(assembly, tableName) {
     `;
     const res = await db.many(q);
     const ret: any = {};
-    for (const {celltype: ct, dcc_accession: acc, typ: typ} of res) {
+    for (const { celltype: ct, dcc_accession: acc, typ: typ } of res) {
         (ret[ct] = ret[ct] || {})[typ] = acc;
     }
     return ret;
@@ -380,7 +403,7 @@ export async function genesInRegion(assembly, chrom, start, stop) {
         gene: r['approved_symbol'],
         start: r['start'],
         stop: r['stop'],
-        strand: r['strand']
+        strand: r['strand'],
     }));
 }
 
@@ -461,7 +484,7 @@ export async function crePos(assembly, accession) {
         console.log('ERROR: missing', accession);
         return undefined;
     }
-    return { chrom: r['chrom'], start: r['start'], end: r['stop']};
+    return { chrom: r['chrom'], start: r['start'], end: r['stop'] };
 }
 
 async function getColsForAccession(assembly, accession, cols) {
@@ -477,13 +500,13 @@ async function getColsForAccession(assembly, accession, cols) {
 export async function creRanksPromoter(assembly, accession) {
     const cols = ['promoter_zscores'];
     const r = await getColsForAccession(assembly, accession, cols);
-    return {'zscores': {'Promoter': r['promoter_zscores']}};
+    return { zscores: { Promoter: r['promoter_zscores'] } };
 }
 
 export async function creRanksEnhancer(assembly, accession) {
     const cols = ['enhancer_zscores'];
     const r = await getColsForAccession(assembly, accession, cols);
-    return {'zscores': {'Enhancer': r['enhancer_zscores']}};
+    return { zscores: { Enhancer: r['enhancer_zscores'] } };
 }
 
 export async function creRanks(assembly, accession) {
@@ -494,10 +517,12 @@ enhancer_zscores
 h3k27ac_zscores
 h3k4me3_zscores
 insulator_zscores
-promoter_zscores`.trim().split('\n');
+promoter_zscores`
+        .trim()
+        .split('\n');
 
     const r = await getColsForAccession(assembly, accession, cols);
-    return cols.reduce((obj, k) => ({ ...obj, [k.split('_')[0]]: r[k]}), {});
+    return cols.reduce((obj, k) => ({ ...obj, [k.split('_')[0]]: r[k] }), {});
 }
 
 async function getGenes(assembly, accession, allOrPc) {
@@ -518,7 +543,7 @@ async function getGenes(assembly, accession, allOrPc) {
 export async function creGenes(assembly, accession, chrom) {
     return {
         genesAll: await getGenes(assembly, accession, 'all'),
-        genesPC: await getGenes(assembly, accession, 'pc')
+        genesPC: await getGenes(assembly, accession, 'pc'),
     };
 }
 
@@ -545,10 +570,9 @@ export async function cresInTad(assembly, accession, chrom, start, end, tadInfo)
             ccRE: cre,
         }))
         .filter(cre => cre.distance < 100000)
-        .filter(cre => cre.ccRE.accession  !== accession)
+        .filter(cre => cre.ccRE.accession !== accession)
         .sort((a, b) => a.distance - b.distance);
 }
-
 
 export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
     const tableName = assembly + '_tads';
@@ -564,12 +588,17 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
 export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
     const expanded = CoordUtils.expanded(coord, halfWindow);
     const c = await cache(assembly);
-    const cres = await getCreTable(assembly, c, { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } }, {});
+    const cres = await getCreTable(
+        assembly,
+        c,
+        { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
+        {}
+    );
     return cres.cres
         .filter(cre => cre.accession !== accession)
         .map(cre => ({
             ccRE: cre,
-            distance: Math.min(Math.abs(coord.end - cre.range.end), Math.abs(coord.start - cre.range.start))
+            distance: Math.min(Math.abs(coord.end - cre.range.end), Math.abs(coord.start - cre.range.start)),
         }))
         .sort((a, b) => a.distance - b.distance);
 }
@@ -600,7 +629,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
 }
 
 export async function peakIntersectCount(assembly, accession, totals, eset) {
-const tableName = assembly + '_' + _intersections_tablename(eset);
+    const tableName = assembly + '_' + _intersections_tablename(eset);
     const q = `
         SELECT tf, histone
         FROM ${tableName}
@@ -608,15 +637,19 @@ const tableName = assembly + '_' + _intersections_tablename(eset);
     `;
     const res = await db.oneOrNone(q, [accession]);
     if (!res) {
-        return {'tfs': [], 'histone': []};
+        return { tfs: [], histone: [] };
     }
-    const tfs = Object
-        .keys(res['tf'])
-        .map(k => ({'name': k, 'n': Array.from(new Set(res['tf'][k])).length, 'total': totals[k] || -1}));
-    const histones = Object
-        .keys(res['histone'])
-        .map(k => ({'name': k, 'n': Array.from(new Set(res['histone'][k])).length, 'total': totals[k] || -1}));
-    return { 'tf': tfs, 'histone': histones };
+    const tfs = Object.keys(res['tf']).map(k => ({
+        name: k,
+        n: Array.from(new Set(res['tf'][k])).length,
+        total: totals[k] || -1,
+    }));
+    const histones = Object.keys(res['histone']).map(k => ({
+        name: k,
+        n: Array.from(new Set(res['histone'][k])).length,
+        total: totals[k] || -1,
+    }));
+    return { tf: tfs, histone: histones };
 }
 
 export async function rampageByGene(assembly, ensemblid_ver) {
@@ -629,19 +662,22 @@ export async function rampageByGene(assembly, ensemblid_ver) {
     const rows = await db.any(q, [ensemblid_ver]);
 
     return rows.map(dr =>
-        Object.keys(dr).reduce((nr, k) => {
-            const v = dr[k];
-            if (k.startsWith('encff')) {
-                nr.data[k] = v;
-            } else if (k === 'chrom' || k === 'start' || k === 'strand') {
-                nr.coords[k] = v;
-            } else if (k === 'stop') {
-                nr.coords['end'] = v;
-            } else {
-                nr[k] = v;
-            }
-            return nr;
-        }, { data: {}, coords: {} })
+        Object.keys(dr).reduce(
+            (nr, k) => {
+                const v = dr[k];
+                if (k.startsWith('encff')) {
+                    nr.data[k] = v;
+                } else if (k === 'chrom' || k === 'start' || k === 'strand') {
+                    nr.coords[k] = v;
+                } else if (k === 'stop') {
+                    nr.coords['end'] = v;
+                } else {
+                    nr[k] = v;
+                }
+                return nr;
+            },
+            { data: {}, coords: {} }
+        )
     );
 }
 
@@ -682,7 +718,9 @@ export async function targetExps(assembly, accession, target, eset: 'peak' | 'ci
     const peakTn = assembly + '_' + _intersections_tablename(eset);
     const peakMetadataTn = assembly + '_' + _intersections_tablename(eset, true);
     const q = `
-        SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name${eset === 'cistrome' ? ', tissue' : ''}
+        SELECT ${eset === 'cistrome' ? '' : 'expID, '}fileID, biosample_term_name${
+        eset === 'cistrome' ? ', tissue' : ''
+    }
         FROM ${peakMetadataTn}
         WHERE fileID IN (
         SELECT distinct(jsonb_array_elements_text(${type}->$1))
@@ -693,8 +731,8 @@ export async function targetExps(assembly, accession, target, eset: 'peak' | 'ci
     `;
     const rows = await db.any(q, [target, accession]);
     return rows.map(r => ({
-        'expID': eset === 'cistrome' ? r['fileid'] : (r['expid'] + ' / ' + r['fileid']),
-        'biosample_term_name': r['biosample_term_name']
+        expID: eset === 'cistrome' ? r['fileid'] : r['expid'] + ' / ' + r['fileid'],
+        biosample_term_name: r['biosample_term_name'],
     }));
 }
 
@@ -714,7 +752,7 @@ export async function tfHistCounts(assembly, eset) {
         GROUP BY label
     `;
     const rows = await db.any(q);
-    return rows.reduce((obj, r) => ({ ...obj, [r['label']]: +(r['count'])}), {});
+    return rows.reduce((obj, r) => ({ ...obj, [r['label']]: +r['count'] }), {});
 }
 
 export async function inputData(assembly) {

@@ -1,6 +1,4 @@
-import {
-    GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLList,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLFloat, GraphQLList } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 const GraphQLJSON = require('graphql-type-json');
 
@@ -19,5 +17,5 @@ export const TopGenesReplicateData = new GraphQLObjectType({
         logTPM: { type: new GraphQLNonNull(GraphQLFloat) },
         rawFPKM: { type: new GraphQLNonNull(GraphQLFloat) },
         logFPKM: { type: new GraphQLNonNull(GraphQLFloat) },
-    })
+    }),
 });

@@ -13,7 +13,7 @@ export async function select_cre_intersections(assembly, acc, key) {
 }
 
 export async function orthologs(assembly, accession) {
-    const currentspecies = assembly == 'mm10' ? 'mouse' : 'human' ;
+    const currentspecies = assembly == 'mm10' ? 'mouse' : 'human';
     const otherspecies = assembly != 'mm10' ? 'mouse' : 'human';
     const tablename = 'mm10_liftover';
     const q = `

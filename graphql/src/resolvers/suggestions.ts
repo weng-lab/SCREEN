@@ -10,7 +10,7 @@ async function suggestions(query, assemblies) {
         const suffix = p.slice(i, p.length).join(' ');
         if (suffix === '') continue;
         for (const assembly of assemblies) {
-            results.push(...await Suggestions.get_suggestions(assembly, suffix));
+            results.push(...(await Suggestions.get_suggestions(assembly, suffix)));
         }
         if (results.length > 0) {
             const pre = prefix === '' ? '' : prefix + ' ';
