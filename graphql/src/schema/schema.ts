@@ -58,7 +58,7 @@ const BaseType = new GraphQLObjectType({
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 data: { type: CommonTypes.DataParameters },
-                pagination: { type: CommonTypes.PaginationParameters }
+                pagination: { type: CommonTypes.PaginationParameters },
             },
             resolve: resolve_data
         },
@@ -152,9 +152,9 @@ const BaseType = new GraphQLObjectType({
         },
         credetails: {
             description: 'Get details for specific ccREs',
-            type: new GraphQLList(new GraphQLNonNull(CreDetailsResponse)),
+            type: CommonTypes.cRE,
             args: {
-                accessions: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
+                accession: { type: new GraphQLNonNull(GraphQLString) }
             },
             resolve: resolve_credetails
         },

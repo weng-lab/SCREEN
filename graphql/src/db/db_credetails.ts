@@ -5,7 +5,7 @@ export async function select_cre_intersections(assembly, acc, key) {
     const tableintersections = assembly + '_fantomcat_' + key;
     const tablegenes = assembly + '_fantomcat_genes';
     const q = `
-        SELECT g.*
+        SELECT g.*, jsonb_build_object('chrom', g.chrom, 'start', g.start, 'end', g.stop, 'strand', g.strand) as range
         FROM ${tablegenes} AS g, ${tableintersections} as i
         WHERE i.geneid = g.geneid AND i.cre = $1
     `;
@@ -17,7 +17,7 @@ export async function orthologs(assembly, accession) {
     const otherspecies = assembly != 'mm10' ? 'mouse' : 'human';
     const tablename = 'mm10_liftover';
     const q = `
-        SELECT chrom, start, stop, ${otherspecies}Accession as accession, overlap
+        SELECT jsonb_build_object('chrom', chrom, 'start', start, 'end', stop) as hg19range, ${otherspecies}Accession as accession, overlap
         FROM ${tablename}
         WHERE ${currentspecies}Accession = $1
     `;

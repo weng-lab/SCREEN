@@ -1,7 +1,6 @@
 import * as DbCommon from '../db/db_common';
 import * as DbCreTable from '../db/db_cre_table';
 import * as DbCreDetails from '../db/db_credetails';
-import { mapcre } from './cretable';
 import { natsort, getAssemblyFromCre } from '../utils';
 import HelperGrouper from '../helpergrouper';
 import { getByGene } from './rampage';
@@ -10,9 +9,9 @@ import { cache } from '../db/db_cache';
 const request = require('request-promise-native');
 const { UserError } = require('graphql-errors');
 
-class CRE {
+class CREDetails {
     assembly; accession;
-    _coord;
+    _coord: Promise<{ chrom: string; start: number; end: number; }>;
     genesAll; genesPC;
 
     constructor(assembly, accession) {
@@ -22,159 +21,105 @@ class CRE {
 
     async coord() {
         if (!this._coord) {
-            this._coord = DbCommon.crePos(this.assembly, this.accession);
+            this._coord = DbCommon.crePos(this.assembly, this.accession) as any;
         }
         return await this._coord;
     }
 
+    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) => ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+
     async topTissues() {
         const c = await cache(this.assembly);
-        // ['Enhancer', 'H3K4me3', 'H3K27ac', 'Promoter', 'DNase', 'Insulator', 'CTCF']
-        const rmToCts = c.rankMethodToCellTypes;
-
         const coord = await this.coord();
         // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
+        const data = c.datasets.globalCellTypeInfoArr.map(ct => {
+            const dnase = CREDetails.getCtData(ct.value, c.ctmap, 'dnase', ranks, 'dnase');
+            const h3k4me3 = CREDetails.getCtData(ct.value, c.ctmap, 'h3k4me3', ranks, 'promoter');
+            const h3k27ac = CREDetails.getCtData(ct.value, c.ctmap, 'h3k27ac', ranks, 'enhancer');
+            const ctcf = CREDetails.getCtData(ct.value, c.ctmap, 'ctcf', ranks, 'ctcf');
+            return {
+                ct,
+                dnase,
+                h3k4me3,
+                h3k27ac,
+                ctcf,
+            };
+        });
+        return data;
+    }
 
-        const get_rank = (ct, d) => ct in d ? d[ct] : -11.0;
-
-        const arrToCtDict = (arr, cts) => {
-            if (arr.length != cts.length) {
-                console.log('****************************');
-                console.log('error in top tissues', arr.length, cts.length);
-                console.log('arr', arr);
-                console.log('cts', cts);
-                console.log('****************************');
-                console.assert(arr.length == cts.length);
-            }
-            const ret: any = {};
-            arr.forEach((v, idx) => {
-                ret[cts[idx]] = v;
-            });
-            return ret;
-        };
-
-        const ctToTissue = (ct) => {
-            const ctinfo = c.datasets.byCellTypeValue[ct];
-            return ctinfo ? ctinfo['tissue'] : '';
-        };
-
-        const makeArrRanks = (rm1) => {
-            const ret: Array<any> = [];
-            const oneAssay = arrToCtDict(ranks[rm1.toLowerCase()], rmToCts[rm1]);
-            for (const ct of Object.keys(oneAssay)) {
-                const v = oneAssay[ct];
-                const r = {'tissue': ctToTissue(ct), 'ct': c.datasets.byCellTypeValue[ct], 'one': v};
-                ret.push(r);
-            }
-            return ret;
-        };
-
-        const makeArrMulti = (rm1, rm2) => {
-            const ret: Array<any> = [];
-            const oneAssay = arrToCtDict(ranks[rm1.toLowerCase()], rmToCts[rm1]);
-            const multiAssay = arrToCtDict(ranks[rm2.toLowerCase()], rmToCts[rm2]);
-            for (const ct of Object.keys(oneAssay)) {
-                const v = oneAssay[ct];
-                const r = {
-                    'tissue': ctToTissue(ct),
-                    'ct': c.datasets.byCellTypeValue[ct],
-                    'one': v,
-                    'two': get_rank(ct, multiAssay)
-                };
-                ret.push(r);
-            }
-            return ret;
-        };
-
-        return {
-            'dnase': makeArrRanks('DNase'),
-            'promoter': makeArrMulti('H3K4me3', 'Promoter'),
-            'enhancer': makeArrMulti('H3K27ac', 'Enhancer'),
-            'ctcf': makeArrMulti('CTCF', 'Insulator')
-        };
+    private async awaitGenes() {
+        const coord = await this.coord();
+        if (!this.genesAll || !this.genesPC) {
+            const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
+            this.genesAll = genesAll;
+            this.genesPC = genesPC;
+        }
     }
 
     async nearbyGenes() {
-        const coord = await this.coord();
-        if (!this.genesAll || !this.genesPC) {
-            const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
-            this.genesAll = genesAll;
-            this.genesPC = genesPC;
-        }
+        await this.awaitGenes();
         const pcGenes = this.genesPC.map(g => g['approved_symbol']);
-        const ret: Array<any> = [];
-        for (const g of this.genesPC) {
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        for (const g of this.genesAll) {
-            if (g['approved_symbol'] in pcGenes) {
-                continue;
-            }
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        ret.sort((a, b) => a['distance'] - b['distance']);
-        return ret;
+        return this.genesAll
+            .map(g => ({
+                    gene: {
+                        gene: g.approved_symbol,
+                        ensemblid_ver: g.ensemblid_ver,
+                        coords: {
+                            chrom: g.chrom,
+                            start: g.start,
+                            end: g.stop,
+                        },
+                    },
+                    distance: g.distance,
+                    pc: pcGenes.includes(g.approved_symbol),
+            }))
+            .sort((a, b) => a.distance - b.distance);
     }
 
     async nearbyPcGenes() {
-        const coord = await this.coord();
-        if (!this.genesAll || !this.genesPC) {
-            const { genesAll, genesPC } = await DbCommon.creGenes(this.assembly, this.accession, coord.chrom);
-            this.genesAll = genesAll;
-            this.genesPC = genesPC;
-        }
-        const ret: Array<any> = [];
-        for (const g of this.genesPC) {
-            ret.push({
-                'name': g['approved_symbol'],
-                'distance': g['distance'],
-                'ensemblid_ver': g['ensemblid_ver'],
-                'chrom': g['chrom'],
-                'start': g['start'],
-                'stop': g['stop']
-            });
-        }
-        return ret;
+        await this.awaitGenes();
+        return this.genesPC
+            .map(g => ({
+                    gene: {
+                        gene: g.approved_symbol,
+                        ensemblid_ver: g.ensemblid_ver,
+                        coords: {
+                            chrom: g.chrom,
+                            start: g.start,
+                            end: g.stop,
+                        },
+                    },
+                    distance: g.distance,
+            }))
+        .sort((a, b) => a.distance - b.distance);
     }
 
-    async genesInTad() {
-        if ('mm10' == this.assembly) {
+    async genesInTad(tadInfo) {
+        if ('mm10' == this.assembly || !tadInfo) {
             return [];
         }
         const coord = await this.coord();
-        const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom);
-        const c = await cache(this.assembly);
-        const lookup = c.geneIDsToApprovedSymbol;
-        const ret: Array<any> = [];
-        for (const r of rows) {
-            for (const g of r['geneids']) {
-                ret.push({'name': lookup[g]});
-            }
-        }
-        return ret;
+        const rows = await DbCommon.genesInTad(this.assembly, this.accession, coord.chrom, tadInfo);
+        return rows
+            .map(g => ({
+                gene: g.approved_symbol,
+                ensemblid_ver: g.ensemblid_ver,
+                coords: {
+                    chrom: g.chrom,
+                    start: g.start,
+                    end: g.stop,
+                },
+            }));
     }
 
-    async cresInTad() {
-        if ('mm10' == this.assembly) {
+    async cresInTad(tadInfo) {
+        if ('mm10' == this.assembly || !tadInfo) {
             return [];
         }
         const coord = await this.coord();
-        return DbCommon.cresInTad(this.assembly, this.accession, coord.chrom, coord.start);
+        return DbCommon.cresInTad(this.assembly, this.accession, coord.chrom, coord.start, coord.end, tadInfo);
     }
 
     async intersectingSnps(halfWindow) {
@@ -189,62 +134,87 @@ class CRE {
         const c = await cache(this.assembly);
         return DbCommon.peakIntersectCount(this.assembly, this.accession, c.tfHistCounts[eset], eset);
     }
+
+    async getTadInfo() {
+        return DbCommon.getTadOfCRE(this.assembly, this.accession);
+    }
 }
 
 export async function resolve_credetails(source, args, context, info) {
-    const accessions: string[] = args.accessions;
-    return accessions.map(async (accession) => {
-        const assembly = getAssemblyFromCre(accession);
-        if (!assembly) {
-            throw new UserError('Invalid accession: ' + accession);
-        }
-        const cre = new CRE(assembly, accession);
-        const coord = await cre.coord();
-        if (!coord) {
-            throw new UserError('Invalid accession: ' + accession);
-        }
-        return { cre };
-    });
+    const accession: string = args.accession;
+    const assembly = getAssemblyFromCre(accession);
+    if (!assembly) {
+        throw new UserError('Invalid accession: ' + accession);
+    }
+
+    const c = await cache(assembly);
+    const res = await DbCreTable.getCreTable(assembly, c, {accessions: [accession]}, {});
+    if (res.total === 0) {
+        throw new UserError('Invalid accession: ' + accession);
+    }
+
+    return res.cres[0];
 }
 
-export async function resolve_cre_info(source, args, context, info) {
-    const cre: CRE = source.cre;
-    const c = await cache(cre.assembly);
-    const res = await DbCreTable.getCreTable(cre.assembly, c.ctmap, {accessions: [cre.accession]}, {});
-    if (res['total'] > 0) {
-        return mapcre(cre.assembly, res['cres'][0], c.datasets.globalCellTypeInfoArr, c);
+function incrementAndCheckDetailsCount(context) {
+    const count = context.detailsresolvecount || 0;
+    if (count >= 5) {
+        throw new UserError('Requesting details of a ccRE is only allowed for a maximum of 5 ccREs per query, for performance.');
     }
-    return {};
+    context.detailsresolvecount = count + 1;
+}
+
+export async function resolve_details(source, args, context, info) {
+    incrementAndCheckDetailsCount(context);
+    const accession: string = source.accession;
+    const assembly = source.assembly;
+    const details = new CREDetails(assembly, accession);
+    return { details };
 }
 
 export async function resolve_cre_topTissues(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     return cre.topTissues();
 }
 
 export async function resolve_cre_nearbyGenomic(source, args, context, info) {
-    const cre: CRE = source.cre;
-    const accession = source.accession;
-    const assembly = source.assembly;
-    const coord = source.coord;
+    const cre: CREDetails = source.details;
+    const accession = cre.accession;
+    const assembly = cre.assembly;
 
-    const snps = await cre.intersectingSnps(10000);  // 10 KB
-    const nearbyCREs = await cre.distToNearbyCREs(1000000);  // 1 MB
-    const nearbyGenes = await cre.nearbyGenes();
-    const genesInTad = await cre.genesInTad();
-    const re_tads = await cre.cresInTad();
+    const tadInfo = assembly === 'mm10' ? {} : await cre.getTadInfo();
+    return { cre, tadInfo };
+}
 
-    return {
-        'nearby_genes': nearbyGenes,
-        'tads': genesInTad,
-        're_tads': re_tads,
-        'nearby_res': nearbyCREs,
-        'overlapping_snps': snps
-    };
+export async function resolve_cre_nearbyGenomic_snps(source, args) {
+    const cre: CREDetails = source.cre;
+    return cre.intersectingSnps(10000);  // 10 KB
+}
+
+export async function resolve_cre_nearbyGenomic_nearbyCREs(source, args) {
+    const cre: CREDetails = source.cre;
+    return cre.distToNearbyCREs(1000000);  // 1 MB
+}
+
+export async function resolve_cre_nearbyGenomic_nearbyGenes(source, args) {
+    const cre: CREDetails = source.cre;
+    return cre.nearbyGenes();
+}
+
+export async function resolve_cre_nearbyGenomic_genesInTad(source, args) {
+    const cre: CREDetails = source.cre;
+    const tadInfo = source.tadInfo;
+    return cre.genesInTad(tadInfo);
+}
+
+export async function resolve_cre_nearbyGenomic_re_tads(source, args) {
+    const cre: CREDetails = source.cre;
+    const tadInfo = source.tadInfo;
+    return cre.cresInTad(tadInfo);
 }
 
 export async function resolve_cre_fantomCat(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     const process = async (key) => {
         const results = await DbCreDetails.select_cre_intersections(cre.assembly, cre.accession, key);
         for (const result of results) {
@@ -268,47 +238,45 @@ export async function resolve_cre_fantomCat(source, args, context, info) {
 }
 
 export async function resolve_cre_ortholog(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     const ortholog = await DbCreDetails.orthologs(cre.assembly, cre.accession);
-    return { ortholog };
+    return ortholog;
 }
 
 export async function resolve_cre_tfIntersection(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('peak');
 }
 
 export async function resolve_cre_cistromeIntersection(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     return await cre.peakIntersectCount('cistrome');
 }
 
 export async function resolve_cre_rampage(source, args, context, info) {
-    const cre: CRE = source.cre;
-    const nearbyGenes = await cre.nearbyPcGenes();
-    const nearest = nearbyGenes.reduce((prev, curr) => !prev ? curr : (curr.distance < prev.distance ? curr : prev));
+    const cre: CREDetails = source.details;
+    const nearbyGenes = await cre.nearbyPcGenes(); // Sorted by distance
+    const nearest = nearbyGenes[0];
     return getByGene(cre.assembly, nearest);
 }
 
 export async function resolve_cre_linkedGenes(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     if ('mm10' === cre.assembly) {
         return [];
     }
-    return {
-        'linkedGenes': await DbCommon.linkedGenes(cre.assembly, cre.accession)
-    };
+    return await DbCommon.linkedGenes(cre.assembly, cre.accession);
 }
 
 export async function resolve_cre_tf_dcc(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     const target = args.target;
     const eset = args.eset;
     return await DbCommon.tfTargetExps(cre.assembly, cre.accession, target, eset);
 }
 
 export async function resolve_cre_histone_dcc(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     const target = args.target;
     const eset = args.eset;
     return await DbCommon.histoneTargetExps(cre.assembly, cre.accession, target, eset);
@@ -317,7 +285,7 @@ export async function resolve_cre_histone_dcc(source, args, context, info) {
 const minipeaks_host = 'http://screen.encodeproject.org/api/dataws/re_detail/miniPeaks';
 // const minipeaks_host = 'http://screen.encodeproject.org/api/crews/re_detail/miniPeaks';
 export async function resolve_cre_miniPeaks(source, args, context, info) {
-    const cre: CRE = source.cre;
+    const cre: CREDetails = source.details;
     const accession = cre.accession;
     const assembly = cre.assembly;
     const options = {

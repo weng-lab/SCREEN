@@ -1,6 +1,5 @@
 import * as Cart from '../db/db_cart';
 import * as Utils from '../utils';
-import { mapcre } from './cretable';
 import { cache } from '../db/db_cache';
 import { getCreTable } from '../db/db_cre_table';
 
@@ -11,8 +10,7 @@ const getCresForAssembly = async (assembly, accessions) => {
     if (accessions.length === 0) {
         return [];
     }
-    const results = await getCreTable(assembly, c.ctmap, { accessions }, {});
-    return results.cres.map(r => mapcre(assembly, r, c.datasets.globalCellTypeInfoArr, c));
+    return getCreTable(assembly, c, { accessions }, {});
 };
 
 const getCres = async (cres) => {

@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 
-const GeneExpGene = new GraphQLObjectType({
+export const GeneExpGene = new GraphQLObjectType({
     name: 'GeneExpGene',
     description: 'Gene info for gene expression',
     fields: () => ({

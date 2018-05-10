@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
-import { mapcre, resolve_ctspecific } from './cretable';
 import { cache } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
@@ -52,11 +51,9 @@ class Gwas {
         const acache = await cache(this.assembly);
         const ctmap = acache.ctmap;
         const ctsTable = acache.ctsTable;
-        const { cres } = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct, ctmap, ctsTable);
+        const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct !== 'none' ? ct : undefined, acache);
 
         const activeCres = cres
-            .map(c => mapcre(this.assembly, c, acache.datasets.globalCellTypeInfoArr, acache))
-            .map(c => ({ ...c, ctspecific: resolve_ctspecific(c, { cellType: ct || 'none' }) }))
             .filter(a =>
                 !ct ||
                 (a.ctspecific['promoter_zscore'] || 0) > 1.64 ||
