@@ -272,18 +272,12 @@ export async function resolve_cre_linkedGenes(source, args, context, info) {
     return await DbCommon.linkedGenes(cre.assembly, cre.accession);
 }
 
-export async function resolve_cre_tf_dcc(source, args, context, info) {
+export async function resolve_cre_target_data(source, args, context, info) {
     const cre: CREDetails = source.details;
     const target = args.target;
     const eset = args.eset;
-    return await DbCommon.tfTargetExps(cre.assembly, cre.accession, target, eset);
-}
-
-export async function resolve_cre_histone_dcc(source, args, context, info) {
-    const cre: CREDetails = source.details;
-    const target = args.target;
-    const eset = args.eset;
-    return await DbCommon.histoneTargetExps(cre.assembly, cre.accession, target, eset);
+    const type = args.target_type;
+    return await DbCommon.targetExps(cre.assembly, cre.accession, target, eset, type);
 }
 
 const minipeaks_host = 'http://screen.encodeproject.org/api/dataws/re_detail/miniPeaks';

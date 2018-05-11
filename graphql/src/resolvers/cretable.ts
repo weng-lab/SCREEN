@@ -24,7 +24,7 @@ export async function resolve_data(source, inargs, context, info) {
     if (limit < 0 || offset < 0) {
         throw new UserError('Offset and limit must both be greater than or equal to 0.');
     }
-    const results = cre_table(data, assembly, { limit, offset });
+    const results = cre_table(data, assembly, { ...(inargs.pagination || {}), limit, offset });
     return results;
 }
 

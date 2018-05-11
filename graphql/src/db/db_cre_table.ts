@@ -205,7 +205,7 @@ export const buildWhereStatement = (
         ctspecificsobjects.push(
             `jsonb_build_object('ct', '${ct}'${Object.keys(ctobj).reduce(
                 (prev, curr) => prev + `, '${curr}', ${ctobj[curr]}`,
-                ''
+                `, 'maxz', GREATEST(${Object.values(ctobj).join(',')})`
             )})`
         );
     });
