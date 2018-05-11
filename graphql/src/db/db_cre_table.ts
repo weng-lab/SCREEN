@@ -4,7 +4,7 @@ import { db, pgp } from './db';
 
 const { UserError } = require('graphql-errors');
 
-const accessions = (wheres, params, j: {accessions?: string[]}) => {
+const accessions = (wheres, params, j: { accessions?: string[] }) => {
     const accs: Array<string> = j['accessions'] || [];
     if (0 == accs.length) {
         return false;
@@ -19,16 +19,16 @@ const notCtSpecificRanks = (wheres, params, j) => {
     j = j.ctexps || {};
     // use max zscores
     const map = {
-        'dnase': 'dnase_max',
-        'promoter': 'h3k4me3_max',
-        'enhancer': 'h3k27ac_max',
-        'ctcf': 'ctcf_max'
+        dnase: 'dnase_max',
+        promoter: 'h3k4me3_max',
+        enhancer: 'h3k27ac_max',
+        ctcf: 'ctcf_max',
     };
     for (const name of Object.keys(map)) {
         const exp = map[name];
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0;  // must match slider default
+            const maxDefault = 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
@@ -52,17 +52,18 @@ const notCtSpecificRanks = (wheres, params, j) => {
     }
 };
 
-const getCtSpecificOrderBy = (exp, ctindex) => ({
-    dnase: `cre.${exp}_zscores[${ctindex}] as dnase_zscore`,
-    h3k4me3: `cre.${exp}_zscores[${ctindex}] as promoter_zscore`,
-    h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
-    ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
-}[exp]);
+const getCtSpecificOrderBy = (exp, ctindex) =>
+    ({
+        dnase: `cre.${exp}_zscores[${ctindex}] as dnase_zscore`,
+        h3k4me3: `cre.${exp}_zscores[${ctindex}] as promoter_zscore`,
+        h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
+        ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
+    }[exp]);
 const ctexps = {
-    'dnase': 'dnase',
-    'promoter': 'h3k4me3',
-    'enhancer': 'h3k27ac',
-    'ctcf': 'ctcf',
+    dnase: 'dnase',
+    promoter: 'h3k4me3',
+    enhancer: 'h3k27ac',
+    ctcf: 'ctcf',
 };
 const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
     j = j.ctexps || {};
@@ -77,7 +78,7 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0;  // must match slider default
+            const maxDefault = 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
@@ -113,23 +114,24 @@ const where = (wheres, params, chrom, start, stop) => {
     }
 };
 
-export const buildWhereStatement = (assembly, ctmap, j: any, chrom: string | undefined, start: number | undefined, stop: number | undefined, pagination: any) => {
+export const buildWhereStatement = (
+    assembly,
+    ctmap,
+    j: any,
+    chrom: string | undefined,
+    start: number | undefined,
+    stop: number | undefined,
+    pagination: any
+) => {
     const wheres = [];
     const fields = [
         `'${assembly}' as assembly`,
         `jsonb_build_object('chrom', cre.chrom,'start', cre.start, 'end', cre.stop) as range`,
         'cre.maxz',
         'cre.gene_all_id',
-        'cre.gene_pc_id'
+        'cre.gene_pc_id',
     ];
-    const groupBy = [
-        'cre.chrom',
-        'cre.start',
-        'cre.stop',
-        'cre.maxz',
-        'cre.gene_all_id',
-        'cre.gene_pc_id'
-    ];
+    const groupBy = ['cre.chrom', 'cre.start', 'cre.stop', 'cre.maxz', 'cre.gene_all_id', 'cre.gene_pc_id'];
     const params: any = {};
     const useAccs = accessions(wheres, params, j);
     const ct = j.ctexps && j.ctexps.cellType;
@@ -200,18 +202,23 @@ export const buildWhereStatement = (assembly, ctmap, j: any, chrom: string | und
             ctobj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
             groupBy.push(`cre.${exp}_zscores[${ctindex}]`);
         }
-        ctspecificsobjects.push(`jsonb_build_object('ct', '${ct}'${Object.keys(ctobj).reduce((prev, curr) => prev + `, '${curr}', ${ctobj[curr]}`, '')})`);
+        ctspecificsobjects.push(
+            `jsonb_build_object('ct', '${ct}'${Object.keys(ctobj).reduce(
+                (prev, curr) => prev + `, '${curr}', ${ctobj[curr]}`,
+                ''
+            )})`
+        );
     });
     fields.push(`jsonb_build_array(${ctspecificsobjects.join(', ')}) as ctspecific`);
 
     const infoFields = {
-        'accession': 'cre.accession',
-        'isproximal': 'cre.isproximal',
-        'dnasemax': 'cre.dnase_max',
-        'k4me3max': 'cre.h3k4me3_max',
-        'k27acmax': 'cre.h3k27ac_max',
-        'ctcfmax': 'cre.ctcf_max',
-        'concordant': 'cre.concordant'
+        accession: 'cre.accession',
+        isproximal: 'cre.isproximal',
+        dnasemax: 'cre.dnase_max',
+        k4me3max: 'cre.h3k4me3_max',
+        k27acmax: 'cre.h3k27ac_max',
+        ctcfmax: 'cre.ctcf_max',
+        concordant: 'cre.concordant',
     };
     for (const k of Object.keys(infoFields)) {
         fields.push(`${infoFields[k]} as ${k}`);
@@ -226,7 +233,6 @@ export const buildWhereStatement = (assembly, ctmap, j: any, chrom: string | und
     return { fields: retfields, groupBy: groupBy.join(', '), where: retwhere, params, orderBy };
 };
 
-
 async function creTableEstimate(table, where, params) {
     // estimate count
     // from https://wiki.postgresql.org/wiki/Count_estimate
@@ -237,7 +243,7 @@ async function creTableEstimate(table, where, params) {
         LIMIT 1
     `;
 
-    return db.one(q, params, r => +(r.count));
+    return db.one(q, params, r => +r.count);
 }
 
 export async function getCreTable(assembly: string, cache, j, pagination) {
@@ -245,7 +251,15 @@ export async function getCreTable(assembly: string, cache, j, pagination) {
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
     const table = assembly + '_cre_all';
-    const { fields, where, params, orderBy } = buildWhereStatement(assembly, cache.ctmap, j, chrom, start, end, pagination);
+    const { fields, where, params, orderBy } = buildWhereStatement(
+        assembly,
+        cache.ctmap,
+        j,
+        chrom,
+        start,
+        end,
+        pagination
+    );
     const offset = pagination.offset;
     const limit = pagination.limit;
     const query = `
@@ -259,8 +273,9 @@ export async function getCreTable(assembly: string, cache, j, pagination) {
 
     const res = await db.any(query, params);
     let total = res.length;
-    if (limit <= total || offset !== 0) {// reached query limit
+    if (limit <= total || offset !== 0) {
+        // reached query limit
         total = await creTableEstimate(table, where, params);
     }
-    return {'cres': res, 'total': total};
+    return { cres: res, total: total };
 }

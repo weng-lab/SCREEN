@@ -25,7 +25,7 @@ export async function numLdBlocksOverlap(assembly, gwas_study) {
         AND int4range(gwas.start, gwas.stop) && int4range(cre.start, cre.stop)
         AND gwas.authorPubmedTrait = $1
     `;
-    return await db.oneOrNone(q, [gwas_study], r => r ? +r.count : 0);
+    return await db.oneOrNone(q, [gwas_study], r => (r ? +r.count : 0));
 }
 
 export async function numCresOverlap(assembly, gwas_study) {
@@ -35,7 +35,7 @@ export async function numCresOverlap(assembly, gwas_study) {
         FROM ${tableName}
         where authorPubmedTrait = $1
     `;
-    return await db.oneOrNone(q, [gwas_study], r => r ? +r.count : 0);
+    return await db.oneOrNone(q, [gwas_study], r => (r ? +r.count : 0));
 }
 
 export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: string]: any } | undefined> {
@@ -70,13 +70,13 @@ export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: stri
 }
 
 const infoFields = {
-    'accession': 'cre.accession',
-    'isproximal': 'cre.isproximal',
-    'dnasemax': 'cre.dnase_max',
-    'k4me3max': 'cre.h3k4me3_max',
-    'k27acmax': 'cre.h3k27ac_max',
-    'ctcfmax': 'cre.ctcf_max',
-    'concordant': 'cre.concordant'
+    accession: 'cre.accession',
+    isproximal: 'cre.isproximal',
+    dnasemax: 'cre.dnase_max',
+    k4me3max: 'cre.h3k4me3_max',
+    k27acmax: 'cre.h3k27ac_max',
+    ctcfmax: 'cre.ctcf_max',
+    concordant: 'cre.concordant',
 };
 
 function getInfo(fields) {
@@ -86,7 +86,15 @@ function getInfo(fields) {
 }
 
 export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, cache) {
-    const { fields, groupBy, where, params } = buildWhereStatement(assembly, cache.ctmap, { ctspecifics: ct ? [ct] : [] }, undefined, undefined, undefined, {});
+    const { fields, groupBy, where, params } = buildWhereStatement(
+        assembly,
+        cache.ctmap,
+        { ctspecifics: ct ? [ct] : [] },
+        undefined,
+        undefined,
+        undefined,
+        {}
+    );
     const q = `
         SELECT ${fields}, array_agg(snp) as snps, infoAll.approved_symbol AS geneid
         FROM ${assembly}_cre_all as cre,

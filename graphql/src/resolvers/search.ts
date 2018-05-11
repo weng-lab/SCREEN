@@ -20,7 +20,9 @@ function checkCoords(assembly, coord) {
     }
     const chrom_end = chrom_lengths[assembly][coord.chrom];
     if (coord.end > chrom_end) {
-        throw new UserError('Invalid end position (' + coord.end + '). End of chromosome (' + coord.chrom + ') is ' + chrom_end);
+        throw new UserError(
+            'Invalid end position (' + coord.end + '). End of chromosome (' + coord.chrom + ') is ' + chrom_end
+        );
     }
 }
 
@@ -35,11 +37,16 @@ export function find_coords(assembly, s: string) {
 
         const range = re_range.exec(s);
         if (range) {
-            const p = range[0].replace('-', ' ').replace(':', ' ').replace(',', '').replace('.', '').split(' ');
+            const p = range[0]
+                .replace('-', ' ')
+                .replace(':', ' ')
+                .replace(',', '')
+                .replace('.', '')
+                .split(' ');
             const coord = {
                 chrom: p[0].replace('x', 'X').replace('y', 'Y'),
                 start: parseInt(p[1]),
-                end: parseInt(p[2])
+                end: parseInt(p[2]),
             };
             coords[range[0]] = coord;
             s = s.replace(range[0], '').trim();
@@ -49,11 +56,16 @@ export function find_coords(assembly, s: string) {
 
         const base = re_base.exec(s);
         if (base) {
-            const p = base[0].replace('-', ' ').replace(':', ' ').replace(',', '').replace('.', '').split(' ');
+            const p = base[0]
+                .replace('-', ' ')
+                .replace(':', ' ')
+                .replace(',', '')
+                .replace('.', '')
+                .split(' ');
             const coord = {
                 chrom: p[0].replace('x', 'X').replace('y', 'Y'),
                 start: parseInt(p[1]),
-                end: parseInt(p[1]) + 1
+                end: parseInt(p[1]) + 1,
             };
             coords[base[0]] = coord;
             s = s.replace(base[0], '').trim();
@@ -66,7 +78,7 @@ export function find_coords(assembly, s: string) {
             const coord = {
                 chrom: chrom[0],
                 start: 1,
-                end: chrom_lengths[assembly][chrom[0]]
+                end: chrom_lengths[assembly][chrom[0]],
             };
             coords[chrom[0]] = coord;
             s = s.replace(chrom[0], '').trim();
@@ -79,10 +91,8 @@ export function find_coords(assembly, s: string) {
         unusedtoks.push(unused);
     }
 
-    return {s: unusedtoks.join(' '), coords: coords};
+    return { s: unusedtoks.join(' '), coords: coords };
 }
-
-
 
 function sanitize(q: string) {
     return q.substr(0, 2048);
@@ -93,7 +103,7 @@ export async function parse(assembly, args) {
     const s1 = sanitize(q).trim();
 
     const rettoks: Array<any> = [];
-    const {s: s2, coords} = find_coords(assembly, s1);
+    const { s: s2, coords } = find_coords(assembly, s1);
     Object.keys(coords).forEach(input => rettoks.push({ input, range: coords[input] }));
     let s = s2;
     const toks = s.split(' ').filter(str => str.length !== 0);

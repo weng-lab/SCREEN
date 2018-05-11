@@ -21,6 +21,9 @@ export async function resolve_data(source, inargs, context, info) {
     if (offset + limit > 10000) {
         throw new UserError('Offset + limit cannot be greater than 10000. Refine your search for more data.');
     }
+    if (limit < 0 || offset < 0) {
+        throw new UserError('Offset and limit must both be greater than or equal to 0.');
+    }
     const results = cre_table(data, assembly, { limit, offset });
     return results;
 }

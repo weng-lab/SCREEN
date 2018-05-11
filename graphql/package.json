@@ -15,7 +15,8 @@
     "debug": "npm run build && npm run watch-debug",
     "serve-debug": "nodemon --inspect dist/app.js",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
-    "copy-static": "node copyStatic.js"
+    "copy-static": "node copyStatic.js",
+    "prettier": "./node_modules/.bin/prettier --write \"./src/**/*.{js,jsx,ts*}\""
   },
   "jest": {
     "globals": {
@@ -56,9 +57,21 @@
     "concurrently": "^3.4.0",
     "jest": "^21.2.1",
     "nodemon": "^1.11.0",
+    "prettier": "^1.12.1",
     "shelljs": "^0.7.7",
     "ts-jest": "^21.1.4",
     "tslint": "^5.8.0",
     "typescript": "^2.4.0"
+  },
+  "peerDependencies": {
+    "uuid": "^3.2.1"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "es5",
+    "parser": "typescript"
   }
 }

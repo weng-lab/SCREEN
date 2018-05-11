@@ -1,10 +1,5 @@
-import {
-    GraphQLString,
-    GraphQLObjectType,
-    GraphQLNonNull,
-    GraphQLList,
-} from 'graphql';
-import { Assembly } from '../schema/CommonSchema';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList } from 'graphql';
+import { Assembly, cRE } from '../schema/CommonSchema';
 
 const GraphQLJSON = require('graphql-type-json');
 
@@ -12,9 +7,13 @@ export const BedUploadResponse = new GraphQLObjectType({
     name: 'BedUploadResponse',
     description: 'Bed intersections',
     fields: () => ({
-        'assembly': { type: new GraphQLNonNull(Assembly)},
-        'accessions': { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
-    })
+        bedname: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'The passed bed name, or a random uuid if no bed name was passed',
+        },
+        assembly: { type: new GraphQLNonNull(Assembly) },
+        ccREs: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(cRE))) },
+    }),
 });
 
 export default BedUploadResponse;

@@ -3,23 +3,23 @@ import TissueColors from '../tissuecolors';
 import { natsorter } from '../utils';
 
 const fixedmap = {
-    'limb': 'limb',
+    limb: 'limb',
     'embryonic facial prominence': 'embryonic structure',
     'CH12.LX': 'blood',
     'neural tube': 'neural tube',
-    'intestine': 'intestine',
+    intestine: 'intestine',
     'hematopoietic stem cell': 'blood',
-    'G1E': 'embryonic stem cell',
-    'MEP': 'blood',
+    G1E: 'embryonic stem cell',
+    MEP: 'blood',
     'G1E-ER4': 'embryonic stem cell',
-    'CMP': 'blood'
+    CMP: 'blood',
 };
 
-const doLog = (d) => {
+const doLog = d => {
     return parseFloat(Math.log2(parseFloat(d) + 0.01).toFixed(2));
 };
 
-const mapRep = (rep: { replicate: number; tpm: number; fpkm: number; id: string; }) => ({
+const mapRep = (rep: { replicate: number; tpm: number; fpkm: number; id: string }) => ({
     replicate: rep.replicate,
     rawTPM: rep.tpm,
     logTPM: doLog(rep.tpm),
@@ -28,7 +28,7 @@ const mapRep = (rep: { replicate: number; tpm: number; fpkm: number; id: string;
     rID: rep.id,
 });
 
-const makeEntry = (row) => {
+const makeEntry = row => {
     let tissue = row['organ'].trim();
 
     if (tissue === '{}') {
@@ -54,7 +54,6 @@ const makeEntry = (row) => {
         reps: reps,
     };
 };
-
 
 export const computeHorBarsAll = async (assembly, gene, compartments, biosample_types, normalized) => {
     const tableNameData = assembly + (normalized ? '_rnaseq_expression_norm' : '_rnaseq_expression_unnorm');

@@ -1,9 +1,4 @@
-import {
-    GraphQLObjectType,
-    GraphQLList,
-    GraphQLString,
-    GraphQLNonNull
-} from 'graphql';
+import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
@@ -11,21 +6,20 @@ import { SNP, Gene } from './SearchResponse';
 import { GeneExpGene } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
-
 export const AssayValues = new GraphQLObjectType({
     name: 'AssayValues',
     description: 'Gets specific values for an assay',
     fields: () => ({
         ct: {
-            type: new GraphQLNonNull(CommonTypes.CellTypeInfo)
+            type: new GraphQLNonNull(CommonTypes.CellTypeInfo),
         },
         one: {
-            type: GraphQLFloat
+            type: GraphQLFloat,
         },
         two: {
-            type: GraphQLFloat
-        }
-    })
+            type: GraphQLFloat,
+        },
+    }),
 });
 
 export const CTAssayData = new GraphQLObjectType({
@@ -46,8 +40,8 @@ export const CTAssayData = new GraphQLObjectType({
         },
         ctcf: {
             type: GraphQLFloat,
-        }
-    })
+        },
+    }),
 });
 
 const NearbyGene = new GraphQLObjectType({
@@ -60,13 +54,13 @@ const NearbyGene = new GraphQLObjectType({
         },
         gene: {
             type: new GraphQLNonNull(GeneExpGene),
-            description: 'The gene'
+            description: 'The gene',
         },
         pc: {
             type: new GraphQLNonNull(GraphQLBoolean),
             description: 'Whether or not this gene is protein coding',
         },
-    })
+    }),
 });
 
 const NearbyRE = new GraphQLObjectType({
@@ -79,8 +73,8 @@ const NearbyRE = new GraphQLObjectType({
         },
         ccRE: {
             type: new GraphQLNonNull(CommonTypes.cRE),
-        }
-    })
+        },
+    }),
 });
 
 const NearbySNP = new GraphQLObjectType({
@@ -95,7 +89,7 @@ const NearbySNP = new GraphQLObjectType({
             type: new GraphQLNonNull(SNP),
             description: 'The SNP',
         },
-    })
+    }),
 });
 
 export const NearbyGenomic = new GraphQLObjectType({
@@ -121,7 +115,7 @@ export const NearbyGenomic = new GraphQLObjectType({
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NearbySNP))),
             resolve: CreDetailsResolver.resolve_cre_nearbyGenomic_snps,
         },
-    })
+    }),
 });
 
 export const ChIPSeqIntersectionMetadata = new GraphQLObjectType({
@@ -175,10 +169,10 @@ export const FantomCatData = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
         },
         tirconservation: {
-            type: new GraphQLNonNull(GraphQLFloat),
+            type: GraphQLFloat,
         },
         exonconservation: {
-            type: new GraphQLNonNull(GraphQLFloat),
+            type: GraphQLFloat,
         },
         traitdfr: {
             type: GraphQLFloat,
@@ -192,7 +186,7 @@ export const FantomCatData = new GraphQLObjectType({
         other_names: {
             type: new GraphQLNonNull(GraphQLString),
         },
-    })
+    }),
 });
 
 export const FantomCat = new GraphQLObjectType({
@@ -217,9 +211,9 @@ const RampageGene = new GraphQLObjectType({
         },
         gene: {
             type: new GraphQLNonNull(GeneExpGene),
-            description: 'The gene'
+            description: 'The gene',
         },
-    })
+    }),
 });
 
 export const RampageGeneData = new GraphQLObjectType({
@@ -231,7 +225,7 @@ export const RampageGeneData = new GraphQLObjectType({
         gene: {
             type: new GraphQLNonNull(RampageGene),
         },
-    })
+    }),
 });
 
 export const RampageTranscriptData = new GraphQLObjectType({
@@ -277,7 +271,7 @@ export const RampageTranscript = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
         },
         items: {
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscriptData)))
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RampageTranscriptData))),
         },
     }),
 });
@@ -294,7 +288,7 @@ export const OrthologouscRE = new GraphQLObjectType({
         hg19range: {
             type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
-    })
+    }),
 });
 
 export const LinkedGene = new GraphQLObjectType({
@@ -312,7 +306,7 @@ export const LinkedGene = new GraphQLObjectType({
         dccaccession: {
             type: new GraphQLNonNull(GraphQLString),
         },
-    })
+    }),
 });
 
 export const ChIPSeqIntersectionData = new GraphQLObjectType({
@@ -324,7 +318,7 @@ export const ChIPSeqIntersectionData = new GraphQLObjectType({
         biosample_term_name: {
             type: new GraphQLNonNull(GraphQLString),
         },
-    })
+    }),
 });
 
 export const CreDetailsResponse = new GraphQLObjectType({
@@ -334,42 +328,43 @@ export const CreDetailsResponse = new GraphQLObjectType({
         topTissues: {
             description: 'Returns celltype-specific experiment data',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CTAssayData))),
-            resolve: CreDetailsResolver.resolve_cre_topTissues
+            resolve: CreDetailsResolver.resolve_cre_topTissues,
         },
         nearbyGenomic: {
             description: 'Returns nearby genomic elements',
             type: new GraphQLNonNull(NearbyGenomic),
-            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic
+            resolve: CreDetailsResolver.resolve_cre_nearbyGenomic,
         },
         fantom_cat: {
             description: 'Returns intersecting FANTOM CAT RNAs',
             type: new GraphQLNonNull(FantomCat),
-            resolve: CreDetailsResolver.resolve_cre_fantomCat
+            resolve: CreDetailsResolver.resolve_cre_fantomCat,
         },
         ortholog: {
             description: 'Returns orthologous ccREs',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrthologouscRE))),
-            resolve: CreDetailsResolver.resolve_cre_ortholog
+            resolve: CreDetailsResolver.resolve_cre_ortholog,
         },
         tfIntersection: {
             description: 'Returns intersection counts for transcription factor and histone modification ChIP-seq data',
             type: new GraphQLNonNull(ChIPSeqIntersections),
-            resolve: CreDetailsResolver.resolve_cre_tfIntersection
+            resolve: CreDetailsResolver.resolve_cre_tfIntersection,
         },
         cistromeIntersection: {
-            description: 'Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data',
+            description:
+                'Returns intersection counts for cistrome transcription factor and histone modification ChIP-seq data',
             type: new GraphQLNonNull(ChIPSeqIntersections),
-            resolve: CreDetailsResolver.resolve_cre_cistromeIntersection
+            resolve: CreDetailsResolver.resolve_cre_cistromeIntersection,
         },
         rampage: {
             description: 'Returns RAMPAGE data of closest gene',
             type: new GraphQLNonNull(RampageGeneData),
-            resolve: CreDetailsResolver.resolve_cre_rampage
+            resolve: CreDetailsResolver.resolve_cre_rampage,
         },
         linkedGenes: {
             description: 'Returns linked genes',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LinkedGene))),
-            resolve: CreDetailsResolver.resolve_cre_linkedGenes
+            resolve: CreDetailsResolver.resolve_cre_linkedGenes,
         },
         cre_tf_dcc: {
             description: 'Returns transcription factor intersections for a specific target',
@@ -378,10 +373,10 @@ export const CreDetailsResponse = new GraphQLObjectType({
                 target: { type: new GraphQLNonNull(GraphQLString) },
                 eset: {
                     type: new GraphQLNonNull(GraphQLString),
-                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)'
+                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)',
                 },
             },
-            resolve: CreDetailsResolver.resolve_cre_tf_dcc
+            resolve: CreDetailsResolver.resolve_cre_tf_dcc,
         },
         cre_histone_dcc: {
             description: 'Returns histone intersections for a specific target',
@@ -390,15 +385,15 @@ export const CreDetailsResponse = new GraphQLObjectType({
                 target: { type: new GraphQLNonNull(GraphQLString) },
                 eset: {
                     type: new GraphQLNonNull(GraphQLString),
-                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)'
+                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)',
                 },
             },
-            resolve: CreDetailsResolver.resolve_cre_histone_dcc
+            resolve: CreDetailsResolver.resolve_cre_histone_dcc,
         },
         miniPeaks: {
             description: 'Returns signal profile data',
             type: GraphQLJSON,
-            resolve: CreDetailsResolver.resolve_cre_miniPeaks
+            resolve: CreDetailsResolver.resolve_cre_miniPeaks,
         },
     }),
 });
