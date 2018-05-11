@@ -1,5 +1,9 @@
 import * as util from 'util';
 import * as fs from 'fs';
+import { cache } from '../db/db_cache';
+import { getCreTable } from '../db/db_cre_table';
+
+const uuidv4 = require('uuid/v4');
 
 const exec = util.promisify(require('child_process').exec);
 const config = require('../config.json');
@@ -54,9 +58,12 @@ async function intersect(uuid: string, assembly: string, lines: [string]) {
     return accessions;
 }
 
-export function resolve_bedupload(source, args, context, info) {
+export async function resolve_bedupload(source, args, context, info) {
     const uuid: string = args.uuid;
     const assembly: string = args.assembly;
     const lines: [string] = args.lines;
-    return { assembly, accessions: intersect(uuid, assembly, lines) };
+    const accessions = await intersect(uuid, assembly, lines);
+    const c = await cache(assembly);
+    const results = await getCreTable(assembly, c, { accessions }, {});
+    return { bedname: args.bedname || uuidv4(), assembly, ccREs: results.cres };
 }

@@ -63,6 +63,9 @@
     "tslint": "^5.8.0",
     "typescript": "^2.4.0"
   },
+  "peerDependencies": {
+    "uuid": "^3.2.1"
+  },
   "prettier": {
     "printWidth": 120,
     "tabWidth": 4,

@@ -173,6 +173,7 @@ const BaseType = new GraphQLObjectType({
             type: BedUploadResponse,
             args: {
                 uuid: { type: new GraphQLNonNull(UUID) },
+                bedname: { type: GraphQLString },
                 lines: {
                     description: 'The lines of a bed file',
                     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
