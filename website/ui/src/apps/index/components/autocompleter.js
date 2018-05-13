@@ -67,6 +67,9 @@ class Autocompleter extends React.Component {
     }
 
     onEnter(){
+	if (this.state.value.includes("mouse") || this.state.value.includes("mm10")) {
+	    return this.loadSearch("mm10");
+	}
  	this.loadSearch("hg19");
     }
 
@@ -80,7 +83,7 @@ class Autocompleter extends React.Component {
 				     size={this.props.size}
     				     className={this.props.className}
 				     onChange={this.onChange}
- 				     onEnter={this.searchHg19}
+ 				     onEnter={this.onEnter}
              theme={{
   container:                'react-autosuggest__container',
   containerOpen:            'react-autosuggest__container--open',
