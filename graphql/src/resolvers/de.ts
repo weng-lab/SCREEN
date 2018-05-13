@@ -57,7 +57,7 @@ class DE {
 
         const nearbyDEs = await DbDe.nearbyDEs(this.assembly, this.range, ct1, ct2, 0.05, c.de_ctidmap);
         if (nearbyDEs.length === 0) {
-            return null;
+            return undefined;
         }
         const degenes = nearbyDEs.reduce((prev, d) => {
             prev[d.ensembl] = +(Math.round(+(d['log2foldchange'] + 'e+3')) + 'e-3');
