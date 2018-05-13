@@ -36,8 +36,11 @@ class Autocompleter extends React.Component {
  	ApiClient.autocompleteBox(JSON.stringify(q),
  				  (r) => {
  				      if(r.failed){
- 					  this.setState({userQueryErr});
- 					  return;
+					  if (assembly === "hg19") {
+					      return this.loadSearch("mm10");
+					  } else {
+ 					      this.setState({userQueryErr});
+					  }
  				      }
 
  				      if(r.multipleGenes){
