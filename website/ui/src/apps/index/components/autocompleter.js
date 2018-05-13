@@ -40,6 +40,7 @@ class Autocompleter extends React.Component {
 					      return this.loadSearch("mm10");
 					  } else {
  					      this.setState({userQueryErr});
+					      return;
 					  }
  				      }
 
