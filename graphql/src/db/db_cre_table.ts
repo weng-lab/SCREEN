@@ -121,9 +121,10 @@ export const buildWhereStatement = (
     chrom: string | undefined,
     start: number | undefined,
     stop: number | undefined,
-    pagination: any
+    pagination: any,
+    extra?: { wheres: string[]; fields: string[] }
 ) => {
-    const wheres = [];
+    const wheres = extra ? extra.wheres : [];
     const fields = [
         `'${assembly}' as assembly`,
         `jsonb_build_object('chrom', cre.chrom,'start', cre.start, 'end', cre.stop) as range`,
@@ -131,6 +132,7 @@ export const buildWhereStatement = (
         'cre.gene_all_id',
         'cre.gene_pc_id',
     ];
+    extra && fields.push(...extra.fields);
     const groupBy = ['cre.chrom', 'cre.start', 'cre.stop', 'cre.maxz', 'cre.gene_all_id', 'cre.gene_pc_id'];
     const params: any = {};
     const useAccs = accessions(wheres, params, j);
@@ -246,7 +248,13 @@ async function creTableEstimate(table, where, params) {
     return db.one(q, params, r => +r.count);
 }
 
-export async function getCreTable(assembly: string, cache, j, pagination) {
+export async function getCreTable(
+    assembly: string,
+    cache,
+    j,
+    pagination,
+    extra?: { wheres: string[]; fields: string[] }
+) {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
@@ -258,7 +266,8 @@ export async function getCreTable(assembly: string, cache, j, pagination) {
         chrom,
         start,
         end,
-        pagination
+        pagination,
+        extra
     );
     const offset = pagination.offset;
     const limit = pagination.limit;
@@ -273,7 +282,7 @@ export async function getCreTable(assembly: string, cache, j, pagination) {
 
     const res = await db.any(query, params);
     let total = res.length;
-    if (limit <= total || offset !== 0) {
+    if ((limit && 1000 <= total) || (offset || 0) !== 0) {
         // reached query limit
         total = await creTableEstimate(table, where, params);
     }
