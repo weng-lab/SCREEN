@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
-import { GraphQLError, printSchema } from 'graphql';
+import { GraphQLError, printSchema, graphql, parse, introspectionQuery } from 'graphql';
 
 const Raven = require('raven');
 const { formatError } = require('graphql');
@@ -38,6 +38,14 @@ setDefaultHandler(err => {
 });
 maskErrors(schema);
 
+let schemajson = '';
+graphql(schema, introspectionQuery).then(r => {
+    const filteredData = (r.data as any).__schema.types.filter(type => null !== type.possibleTypes);
+    const introspectionQueryResultData = { __schema: { types: filteredData } };
+    const schema = JSON.stringify(introspectionQueryResultData, null, '  ');
+    schemajson = schema;
+})
+
 const app = express();
 
 const cors = function(req, res, next) {
@@ -68,6 +76,13 @@ app.use('/graphqlschema', function(req, res, next) {
     res.write(printSchema(schema));
     res.end();
 });
+
+app.use('/graphqlschemajson', cors);
+app.use('/graphqlschemajson', function(req, res, next) {
+    res.write(schemajson);
+    res.end();
+});
+
 
 useRaven && app.use(Raven.errorHandler());
 
