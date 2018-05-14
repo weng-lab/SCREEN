@@ -1,6 +1,8 @@
 import * as Path from 'path';
 import * as Common from './db_common';
 import * as De from './db_de';
+import * as Gwas from './db_gwas';
+import { GwasCellType } from '../schema/GwasResponse';
 
 const Raven = require('raven');
 
@@ -74,6 +76,7 @@ export type cache = {
     ctmap: any;
     ctsTable: any;
     de_ctidmap: any;
+    gwas_studies: any;
 };
 
 async function load(assembly) {
@@ -103,6 +106,11 @@ async function load(assembly) {
     let de_ctidmap;
     if (assembly === 'mm10') {
         de_ctidmap = await De.getCtMap(assembly);
+    }
+
+    let gwas_studies;
+    if (assembly === 'hg19') {
+        gwas_studies = await Gwas.gwasStudies(assembly);
     }
 
     const cache: cache = {
@@ -139,6 +147,8 @@ async function load(assembly) {
         ctsTable: ctsTable,
 
         de_ctidmap: de_ctidmap,
+
+        gwas_studies: gwas_studies,
     };
     return cache;
 }

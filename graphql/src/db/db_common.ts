@@ -534,7 +534,7 @@ export async function cresInTad(assembly, accession, chrom, start, end, tadInfo)
     const cres = await getCreTable(assembly, c, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
     return cres.cres
         .map(cre => ({
-            distance: Math.min(Math.abs(end - cre.range.end), Math.abs(start - cre.range.start)),
+            distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
             ccRE: cre,
         }))
         .filter(cre => cre.distance < 100000)
@@ -566,7 +566,7 @@ export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
         .filter(cre => cre.accession !== accession)
         .map(cre => ({
             ccRE: cre,
-            distance: Math.min(Math.abs(coord.end - cre.range.end), Math.abs(coord.start - cre.range.start)),
+            distance: Math.min(Math.abs(coord.end - cre.end), Math.abs(coord.start - cre.start)),
         }))
         .sort((a, b) => a.distance - b.distance);
 }

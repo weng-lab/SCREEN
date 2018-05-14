@@ -13,9 +13,13 @@ class Gwas {
     }
 
     async awaitStudies() {
+        const c = await cache(this.assembly);
         if (!this.studies) {
-            this.studies = await DbGwas.gwasStudies(this.assembly);
-            this.byStudy = this.studies.reduce((obj, r) => ({ ...obj, [r['value']]: r }), {});
+            this.studies = c.gwas_studies;
+            this.byStudy = this.studies.reduce((obj, r) => {
+                obj[r.value] = r;
+                return obj;
+            }, {});
         }
     }
 
@@ -62,9 +66,9 @@ class Gwas {
         const activeCres = cres.filter(
             a =>
                 !ct ||
-                (a.ctspecific['promoter_zscore'] || 0) > 1.64 ||
-                (a.ctspecific['enhancer_zscore'] || 0) > 1.64 ||
-                (a.ctspecific['dnase_zscore'] || 0) > 1.64
+                (a.promoter_zscore || 0) > 1.64 ||
+                (a.enhancer_zscore || 0) > 1.64 ||
+                (a.dnase_zscore || 0) > 1.64
         );
 
         // accession, snp, geneid, zscores
@@ -105,7 +109,7 @@ export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source,
     return { ...(await study(g, studyarg)), study: studyarg, gwas_obj: g };
 };
 
-export const resolve_gwas_cres: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
+export const resolve_gwas_cres: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const g = source.gwas_obj;
     const study = source.study;
     const cellType = args.cellType;

@@ -39,3 +39,28 @@ export async function resolve_data_nearbygenes(source, args, context) {
         pc,
     };
 }
+
+export function resolve_data_range(source) {
+    const { chrom, start, end } = source;
+    return {
+        chrom,
+        start,
+        end,
+    };
+}
+
+export function resolve_data_ctspecific(source) {
+    const { ct, dnase_zscore, promoter_zscore, enhancer_zscore, ctcf_zscore } = source;
+    if (!ct) {
+        return null;
+    }
+    const maxz = Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11);
+    return {
+        ct,
+        dnase_zscore,
+        promoter_zscore,
+        enhancer_zscore,
+        ctcf_zscore,
+        maxz,
+    };
+}

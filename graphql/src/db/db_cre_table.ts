@@ -74,7 +74,7 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
             continue;
         }
         const ctindex = ctmap[name][ct];
-        fields.push(getCtSpecificOrderBy(exp, ctindex));
+        //fields.push(getCtSpecificOrderBy(exp, ctindex));
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
@@ -127,7 +127,9 @@ export const buildWhereStatement = (
     const wheres = extra ? extra.wheres : [];
     const fields = [
         `'${assembly}' as assembly`,
-        `jsonb_build_object('chrom', cre.chrom,'start', cre.start, 'end', cre.stop) as range`,
+        `cre.chrom as chrom`,
+        `cre.start as start`,
+        `cre.stop as end`,
         'cre.maxz',
         'cre.gene_all_id',
         'cre.gene_pc_id',
@@ -136,11 +138,11 @@ export const buildWhereStatement = (
     const groupBy = ['cre.chrom', 'cre.start', 'cre.stop', 'cre.maxz', 'cre.gene_all_id', 'cre.gene_pc_id'];
     const params: any = {};
     const useAccs = accessions(wheres, params, j);
-    const ct = j.ctexps && j.ctexps.cellType;
+    const ctexp = j.ctexps && j.ctexps.cellType;
 
     let orderBy;
     notCtSpecificRanks(wheres, params, j);
-    if (useAccs || !ct) {
+    if (useAccs || !ctexp) {
         switch (pagination.orderBy || 'maxz') {
             case 'dnase_zscore':
             case 'promoter_zscore':
@@ -178,40 +180,34 @@ export const buildWhereStatement = (
                 break;
         }
         if (name) {
-            if (!(ct in ctmap[name])) {
+            if (!(ctexp in ctmap[name])) {
                 orderBy = 'maxz';
             } else {
-                const index = ctmap[name][ct];
+                const index = ctmap[name][ctexp];
                 orderBy = `${col}[${index}]`;
             }
         }
-        ctSpecificRanks(wheres, fields, params, ct, j, ctmap);
+        ctSpecificRanks(wheres, fields, params, ctexp, j, ctmap);
     }
 
     where(wheres, params, chrom, start, stop);
 
+    const ct = j.ctspecific;
     // Ctspecific data
-    const cts = j.ctspecifics || [];
-    const ctspecificsobjects: string[] = [];
-    cts.forEach((ct, idx) => {
-        const ctobj: any = {};
+    if (ct) {
+        const ctspecificfields: any[] = [];
         for (const name of Object.keys(ctexps)) {
             if (!(ct in ctmap[name])) {
                 continue;
             }
             const ctindex = ctmap[name][ct];
             const exp = ctexps[name];
-            ctobj[name + '_zscore'] = `cre.${exp}_zscores[${ctindex}]`;
+            fields.push(`cre.${exp}_zscores[${ctindex}] as ${name + '_zscore'}`);
+            ctspecificfields.push(`cre.${exp}_zscores[${ctindex}]`);
             groupBy.push(`cre.${exp}_zscores[${ctindex}]`);
         }
-        ctspecificsobjects.push(
-            `jsonb_build_object('ct', '${ct}'${Object.keys(ctobj).reduce(
-                (prev, curr) => prev + `, '${curr}', ${ctobj[curr]}`,
-                `, 'maxz', GREATEST(${Object.values(ctobj).join(',')})`
-            )})`
-        );
-    });
-    fields.push(`jsonb_build_array(${ctspecificsobjects.join(', ')}) as ctspecific`);
+        fields.push(`'${ct}' as ct`);
+    }
 
     const infoFields = {
         accession: 'cre.accession',
@@ -248,13 +244,35 @@ async function creTableEstimate(table, where, params) {
     return db.one(q, params, r => +r.count);
 }
 
+export type dbcre = {
+    assembly: string;
+    chrom: string;
+    start: number;
+    end: number;
+    maxz: number;
+    gene_all_id: number[];
+    gene_pc_id: number[];
+    ct: string;
+    dnase_zscore?: number;
+    promoter_zscore?: number;
+    enhancer_zscore?: number;
+    ctcf_zscore?: number;
+    accession: string;
+    isproximal: boolean;
+    concordant: boolean;
+    dnasemax?: number;
+    k4me3max?: number;
+    k27acmax?: number;
+    ctcfmax?: number;
+};
+
 export async function getCreTable(
     assembly: string,
     cache,
     j,
     pagination,
     extra?: { wheres: string[]; fields: string[] }
-) {
+): Promise<{ total: number; cres: dbcre[] }> {
     const chrom = j.range && checkChrom(assembly, j.range.chrom);
     const start = j.range && j.range.start;
     const end = j.range && j.range.end;
