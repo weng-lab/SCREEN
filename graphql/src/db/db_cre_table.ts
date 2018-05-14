@@ -282,7 +282,7 @@ export async function getCreTable(
 
     const res = await db.any(query, params);
     let total = res.length;
-    if ((limit && 1000 <= total) || (offset || 0) !== 0) {
+    if ((limit && limit <= total) || (offset || 0) !== 0) {
         // reached query limit
         total = await creTableEstimate(table, where, params);
     }
