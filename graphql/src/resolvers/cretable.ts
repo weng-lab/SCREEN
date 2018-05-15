@@ -52,7 +52,7 @@ export function resolve_data_range(source) {
 export function resolve_data_ctspecific(source) {
     const { ct, dnase_zscore, promoter_zscore, enhancer_zscore, ctcf_zscore } = source;
     if (!ct) {
-        return null;
+        return undefined;
     }
     const maxz = Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11);
     return {

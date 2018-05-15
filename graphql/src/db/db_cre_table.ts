@@ -74,7 +74,7 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
             continue;
         }
         const ctindex = ctmap[name][ct];
-        //fields.push(getCtSpecificOrderBy(exp, ctindex));
+        // fields.push(getCtSpecificOrderBy(exp, ctindex));
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default

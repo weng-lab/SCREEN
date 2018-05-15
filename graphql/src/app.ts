@@ -42,9 +42,9 @@ let schemajson = '';
 graphql(schema, introspectionQuery).then(r => {
     const filteredData = (r.data as any).__schema.types.filter(type => null !== type.possibleTypes);
     const introspectionQueryResultData = { __schema: { types: filteredData } };
-    const schema = JSON.stringify(introspectionQueryResultData, null, '  ');
+    const schema = JSON.stringify(introspectionQueryResultData, undefined, '  ');
     schemajson = schema;
-})
+});
 
 const app = express();
 
@@ -82,7 +82,6 @@ app.use('/graphqlschemajson', function(req, res, next) {
     res.write(schemajson);
     res.end();
 });
-
 
 useRaven && app.use(Raven.errorHandler());
 
