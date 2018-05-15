@@ -26,11 +26,17 @@ class CreateIndices:
         self.chroms = chroms[assembly]
         self.tableName = assembly + "_cre_all"
         self.all_cols = DB_COLS
-        self.zscore_cols = [x for x in self.all_cols if x.endswith("_zscore")]
+        self.zscore_cols = [
+            "dnase_zscores",
+            "h3k4me3_zscores",
+            "h3k27ac_zscores",
+            "ctcf_zscores",
+        ]
+        # self.zscore_cols = [x for x in self.all_cols if x.endswith("_zscores")]
 
     def vac(self):
         with db_connect_single(os.path.realpath(__file__)) as conn:
-            vacumnAnalyze(conn, self.tableName, [])
+            vacumnAnalyze(conn, self.tableName)
 
     def run(self):
         tn = self.tableName
@@ -42,9 +48,8 @@ class CreateIndices:
                                         "h3k4me3_max", "h3k27ac_max",
                                         "ctcf_max"])
                 conn.commit()
-                if 0:
-                    for col in self.zscore_cols:
-                        makeIndexArr(curs, tn, col, conn)
+                for col in self.zscore_cols:
+                    makeIndexArr(curs, tn, col, conn)
 
 
 def run(args, DBCONN):
