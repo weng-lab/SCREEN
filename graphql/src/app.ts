@@ -1,5 +1,7 @@
 import * as express from 'express';
 import * as graphqlHTTP from 'express-graphql';
+import * as bodyParser from 'body-parser';
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
 import { GraphQLError, printSchema, graphql, parse, introspectionQuery } from 'graphql';
 
@@ -61,15 +63,19 @@ const cors = function(req, res, next) {
 
 useRaven && app.use(Raven.requestHandler());
 
+app.get('/graphql', graphiqlExpress({ endpointURL: '/graphql' }));
+
 app.use('/graphql', cors);
 app.use(
     '/graphql',
-    graphqlHTTP(req => ({
+    bodyParser.json(),
+    graphqlExpress(req => ({
         schema: schema,
         formatError: logErrors(req),
         graphiql: true,
     }))
 );
+
 
 app.use('/graphqlschema', cors);
 app.use('/graphqlschema', function(req, res, next) {

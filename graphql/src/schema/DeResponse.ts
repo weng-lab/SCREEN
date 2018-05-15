@@ -32,7 +32,7 @@ export const DeGene = new GraphQLObjectType({
 export const DiffCRE = new GraphQLObjectType({
     name: 'DiffCRE',
     fields: () => ({
-        center: { type: new GraphQLNonNull(GraphQLInt) },
+        center: { type: new GraphQLNonNull(GraphQLFloat) },
         value: { type: new GraphQLNonNull(GraphQLFloat) },
         typ: { type: new GraphQLNonNull(GraphQLString) },
         ccRE: { type: new GraphQLNonNull(CommonTypes.cRE) },

@@ -3,6 +3,7 @@ import * as Common from '../db/db_common';
 import * as DbDe from '../db/db_de';
 import { cache } from '../db/db_cache';
 import * as CoordUtils from '../coord_utils';
+import { dbcre } from '../db/db_cre_table';
 
 class DE {
     assembly;
@@ -77,10 +78,10 @@ class DE {
         });
     }
 
-    parseCE(typ, c) {
-        const radius = (c.range.end - c.range.start) / 2;
+    parseCE(typ, c: dbcre & { zscore_1: number; zscore_2: number; }) {
+        const radius = (c.end - c.start) / 2;
         return {
-            center: radius + c.range.start,
+            center: radius + c.start,
             value: +(Math.round(+(+(c.zscore_2 - c.zscore_1) + 'e+3')) + 'e-3'),
             typ: typ,
             ccRE: c,
