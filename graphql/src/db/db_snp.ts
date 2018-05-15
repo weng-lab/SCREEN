@@ -1,9 +1,9 @@
-
 import { db } from './db';
 
 export async function snptable(assembly, range, id) {
     const tableName = assembly + '_snps';
-    const wherecond: any[] = [],params: any = {};
+    const wherecond: any[] = [],
+        params: any = {};
 
     if (range) {
         wherecond.push(`chrom=$<chrom> AND start>=$<start> AND stop<=$<end>`);
@@ -15,7 +15,7 @@ export async function snptable(assembly, range, id) {
         wherecond.push(`snp = $<id>`);
         params.id = id;
     }
-    let retwhere ='';
+    let retwhere = '';
     if (0 < wherecond.length) {
         retwhere = 'WHERE ' + wherecond.join(' and ');
     }
@@ -31,7 +31,7 @@ export async function snptable(assembly, range, id) {
             chrom: row['chrom'],
             start: row['start'],
             end: row['stop'],
-        }
+        },
     }));
 
     return response;

@@ -205,8 +205,8 @@ const BaseType = new GraphQLObjectType({
                 range: { type: CommonTypes.InputChromRange },
             },
             resolve: resolve_snps,
-        }   
-    }),    
+        },
+    }),
 });
 
 const BaseMutation = new GraphQLObjectType({
