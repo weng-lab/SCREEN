@@ -1,6 +1,6 @@
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
-import { getCreTable } from './db_cre_table';
+import { getCreTable, dbcre } from './db_cre_table';
 import { cache } from './db_cache';
 
 export async function getCtMap(assembly) {
@@ -48,9 +48,9 @@ export async function genesInRegion(assembly, chrom, start, stop) {
     return db.many(q, [chrom, start, stop]);
 }
 
-export async function nearbyCREs(assembly, range, cols, isProximalOrDistal) {
+export async function nearbyCREs(assembly, range, cols, isProximalOrDistal): Promise<Array<dbcre & { zscore_1: number; zscore_2: number; }>> {
     const c = await cache(assembly);
     const wheres = [`isProximal is ${isProximalOrDistal}`];
     const cres = await getCreTable(assembly, c, { range }, {}, { fields: cols, wheres });
-    return cres.cres;
+    return cres.cres as any[];
 }
