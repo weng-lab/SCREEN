@@ -18,6 +18,8 @@ export async function snptable(assembly, range, id) {
     let retwhere = '';
     if (0 < wherecond.length) {
         retwhere = 'WHERE ' + wherecond.join(' and ');
+    } else {
+        retwhere = 'LIMIT 50';
     }
     const q = `
         SELECT snp,chrom,start,stop
