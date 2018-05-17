@@ -13,7 +13,7 @@ import {
 } from 'graphql';
 import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse } from './CreDetailsResponse';
-import { resolve_data_nearbygenes } from '../resolvers/cretable';
+import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
 
 export const Assembly = new GraphQLEnumType({
@@ -195,9 +195,9 @@ export const DataParameters = new GraphQLInputObjectType({
                 'Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type',
             type: InputCtExps,
         },
-        ctspecifics: {
-            description: 'Cell types to get celltype-specific info for',
-            type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+        ctspecific: {
+            description: 'Cell type to get celltype-specific info for',
+            type: GraphQLString,
         },
     }),
 });
@@ -343,6 +343,7 @@ export const cRE = new GraphQLObjectType({
         range: {
             description: 'The range of the ccRE',
             type: new GraphQLNonNull(CommonTypes.ChromRange),
+            resolve: resolve_data_range,
         },
         maxz: {
             description: 'The max zscore from any experiment in any celltype',
@@ -374,7 +375,8 @@ export const cRE = new GraphQLObjectType({
         },
         ctspecific: {
             description: 'celltype-specific zscores',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ctSpecific))),
+            type: ctSpecific,
+            resolve: resolve_data_ctspecific,
         },
         nearbygenes: {
             description: 'Nearby genes',

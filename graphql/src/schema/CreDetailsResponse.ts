@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
+import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLEnumType } from 'graphql';
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
@@ -181,7 +181,7 @@ export const FantomCatData = new GraphQLObjectType({
             type: GraphQLFloat,
         },
         dynamicexpr: {
-            type: new GraphQLNonNull(GraphQLFloat),
+            type: GraphQLFloat,
         },
         other_names: {
             type: new GraphQLNonNull(GraphQLString),
@@ -321,6 +321,30 @@ export const ChIPSeqIntersectionData = new GraphQLObjectType({
     }),
 });
 
+export const IntersectionSource = new GraphQLEnumType({
+    name: 'IntersectionSource',
+    values: {
+        encode: {
+            value: 'peak',
+        },
+        cistrome: {
+            value: 'cistrome',
+        },
+    },
+});
+
+export const ChIPSeqTargetType = new GraphQLEnumType({
+    name: 'ChIPSeqTargetType',
+    values: {
+        tf: {
+            value: 'tf',
+        },
+        histone: {
+            value: 'histone',
+        },
+    },
+});
+
 export const CreDetailsResponse = new GraphQLObjectType({
     name: 'CreDetails',
     description: 'Get details of various experiments related to this ccRE.',
@@ -366,29 +390,15 @@ export const CreDetailsResponse = new GraphQLObjectType({
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LinkedGene))),
             resolve: CreDetailsResolver.resolve_cre_linkedGenes,
         },
-        cre_tf_dcc: {
-            description: 'Returns transcription factor intersections for a specific target',
+        cre_target_data: {
+            description: 'Returns the intersection data that supports a specific target',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
             args: {
                 target: { type: new GraphQLNonNull(GraphQLString) },
-                eset: {
-                    type: new GraphQLNonNull(GraphQLString),
-                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)',
-                },
+                target_type: { type: new GraphQLNonNull(ChIPSeqTargetType) },
+                eset: { type: new GraphQLNonNull(IntersectionSource) },
             },
-            resolve: CreDetailsResolver.resolve_cre_tf_dcc,
-        },
-        cre_histone_dcc: {
-            description: 'Returns histone intersections for a specific target',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChIPSeqIntersectionData))),
-            args: {
-                target: { type: new GraphQLNonNull(GraphQLString) },
-                eset: {
-                    type: new GraphQLNonNull(GraphQLString),
-                    description: 'Either peak (for ENCODE data) or cistrome (for mm10)',
-                },
-            },
-            resolve: CreDetailsResolver.resolve_cre_histone_dcc,
+            resolve: CreDetailsResolver.resolve_cre_target_data,
         },
         miniPeaks: {
             description: 'Returns signal profile data',

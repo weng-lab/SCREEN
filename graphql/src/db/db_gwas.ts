@@ -1,6 +1,6 @@
 import * as Common from './db_common';
 import { db } from './db';
-import { buildWhereStatement } from './db_cre_table';
+import { buildWhereStatement, dbcre } from './db_cre_table';
 
 export async function gwasStudies(assembly) {
     const tableName = assembly + '_gwas_studies';
@@ -85,11 +85,16 @@ function getInfo(fields) {
     }
 }
 
-export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, cache) {
+export type gwascre = dbcre & {
+    snps: string[];
+    geneid: string;
+};
+
+export async function gwasPercentActive(assembly, gwas_study, ct: string | undefined, cache): Promise<gwascre[]> {
     const { fields, groupBy, where, params } = buildWhereStatement(
         assembly,
         cache.ctmap,
-        { ctspecifics: ct ? [ct] : [] },
+        { ctspecific: ct },
         undefined,
         undefined,
         undefined,

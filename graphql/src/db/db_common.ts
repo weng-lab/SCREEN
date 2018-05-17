@@ -388,50 +388,18 @@ export async function creBeds(assembly) {
     return beds(assembly, tableName);
 }
 
-export async function genesInRegion(assembly, chrom, start, stop) {
-    const tableName = assembly + '_gene_info';
-    const q = `
-        SELECT approved_symbol,start,stop,strand
-        FROM ${tableName}
-        WHERE chrom = $1
-        AND int4range(start, stop) && int4range($2, $3)
-        ORDER BY start
-    `;
-
-    const res = await db.many(q, [chrom, start, stop]);
-    return res.map(r => ({
-        gene: r['approved_symbol'],
-        start: r['start'],
-        stop: r['stop'],
-        strand: r['strand'],
-    }));
-}
-
-export async function nearbyCREs(assembly, coord, halfWindow, cols, isProximalOrDistal) {
-    const expanded = CoordUtils.expanded(coord, halfWindow);
-    const c = await cache(assembly);
-    const cres = await getCreTable(assembly, c, { range: expanded }, {});
-    return cres.cres;
-}
-
 export async function genemap(assembly) {
     const tableName = assembly + '_gene_info';
     const q = `
-        SELECT ensemblid, ensemblid_ver, approved_symbol, strand
+        SELECT ensemblid, ensemblid_ver, approved_symbol, approved_symbol as gene, jsonb_build_object('chrom', chrom, 'start', start, 'end', stop, 'strand', strand) as coords
         FROM ${tableName}
-        WHERE strand != ''
     `;
     const res = await db.many(q);
-    const toSymbol = {};
-    const toStrand = {};
-    res.forEach(r => {
-        toSymbol[r['ensemblid']] = r['approved_symbol'];
-        toStrand[r['ensemblid']] = r['strand'];
-
-        toSymbol[r['ensemblid_ver']] = r['approved_symbol'];
-        toStrand[r['ensemblid_ver']] = r['strand'];
-    });
-    return { toSymbol, toStrand };
+    return res.reduce((prev, curr) => {
+        prev[curr.ensemblid] = curr;
+        prev[curr.ensemblid_ver] = curr;
+        return prev;
+    }, {});
 }
 
 export async function geneInfo(assembly, gene) {
@@ -566,7 +534,7 @@ export async function cresInTad(assembly, accession, chrom, start, end, tadInfo)
     const cres = await getCreTable(assembly, c, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
     return cres.cres
         .map(cre => ({
-            distance: Math.min(Math.abs(end - cre.range.end), Math.abs(start - cre.range.start)),
+            distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
             ccRE: cre,
         }))
         .filter(cre => cre.distance < 100000)
@@ -598,7 +566,7 @@ export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
         .filter(cre => cre.accession !== accession)
         .map(cre => ({
             ccRE: cre,
-            distance: Math.min(Math.abs(coord.end - cre.range.end), Math.abs(coord.start - cre.range.start)),
+            distance: Math.min(Math.abs(coord.end - cre.end), Math.abs(coord.start - cre.start)),
         }))
         .sort((a, b) => a.distance - b.distance);
 }

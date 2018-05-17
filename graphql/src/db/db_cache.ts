@@ -1,5 +1,8 @@
 import * as Path from 'path';
 import * as Common from './db_common';
+import * as De from './db_de';
+import * as Gwas from './db_gwas';
+import { GwasCellType } from '../schema/GwasResponse';
 
 const Raven = require('raven');
 
@@ -47,8 +50,20 @@ export type cache = {
     rankMethodToIDxToCellType: any;
     biosampleTypes: undefined;
     assaymap: undefined;
-    ensemblToSymbol: any;
-    ensemblToStrand: any;
+    ensemblToGene: Record<
+        string,
+        {
+            approved_symbol: string;
+            ensemblid: string;
+            ensemblid_ver: string;
+            coords: {
+                chrom: string;
+                start: number;
+                end: number;
+                strand: string;
+            };
+        }
+    >;
     nineState: any;
     filesList: any;
     inputData: any;
@@ -60,6 +75,8 @@ export type cache = {
     creBigBeds: any;
     ctmap: any;
     ctsTable: any;
+    de_ctidmap: any;
+    gwas_studies: any;
 };
 
 async function load(assembly) {
@@ -69,7 +86,7 @@ async function load(assembly) {
     const datasets = await Common.datasets(assembly);
     const rankMethodToCellTypes = await Common.rankMethodToCellTypes(assembly);
     const rankMethodToIDxToCellType = await Common.rankMethodToIDxToCellType(assembly);
-    const { toSymbol, toStrand } = await Common.genemap(assembly);
+    const ensemblToGene = await Common.genemap(assembly);
     const nineState = await Common.loadNineStateGenomeBrowser(assembly);
     const creBeds = await Common.creBeds(assembly);
     const filesList = indexFilesTab(datasets, creBeds, assembly);
@@ -86,6 +103,16 @@ async function load(assembly) {
     const ctmap = await Common.makeCtMap(assembly);
     const ctsTable = await Common.makeCTStable(assembly);
 
+    let de_ctidmap;
+    if (assembly === 'mm10') {
+        de_ctidmap = await De.getCtMap(assembly);
+    }
+
+    let gwas_studies;
+    if (assembly === 'hg19') {
+        gwas_studies = await Gwas.gwasStudies(assembly);
+    }
+
     const cache: cache = {
         chromCounts: chromCounts,
         creHist: creHist,
@@ -99,8 +126,7 @@ async function load(assembly) {
 
         biosampleTypes: undefined,
         assaymap: undefined,
-        ensemblToSymbol: toSymbol,
-        ensemblToStrand: toStrand,
+        ensemblToGene: ensemblToGene,
 
         nineState: nineState,
         filesList: filesList,
@@ -119,6 +145,10 @@ async function load(assembly) {
 
         ctmap: ctmap,
         ctsTable: ctsTable,
+
+        de_ctidmap: de_ctidmap,
+
+        gwas_studies: gwas_studies,
     };
     return cache;
 }
@@ -197,25 +227,6 @@ export async function global_data(assembly) {
 export async function global_data_global() {
     await loadCaches();
     return { ...globalcache };
-}
-
-export function lookupEnsembleGene(cache, s) {
-    let symbol = cache.ensemblToSymbol[s];
-    let strand = cache.ensemblToStrand[s];
-    if (strand) {
-        return { symbol, strand };
-    }
-    const d = s.split('.')[0];
-    symbol = cache.ensemblToSymbol[d];
-    strand = cache.ensemblToStrand[d];
-    if (strand) {
-        return { symbol, strand };
-    }
-
-    if (symbol) {
-        return { symbol, strand: '' };
-    }
-    return { symbol: s, strand: '' };
 }
 
 loadCaches().catch(e => {

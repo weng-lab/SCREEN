@@ -24,7 +24,7 @@ export async function resolve_data(source, inargs, context, info) {
     if (limit < 0 || offset < 0) {
         throw new UserError('Offset and limit must both be greater than or equal to 0.');
     }
-    const results = cre_table(data, assembly, { limit, offset });
+    const results = cre_table(data, assembly, { ...(inargs.pagination || {}), limit, offset });
     return results;
 }
 
@@ -37,5 +37,30 @@ export async function resolve_data_nearbygenes(source, args, context) {
     return {
         all,
         pc,
+    };
+}
+
+export function resolve_data_range(source) {
+    const { chrom, start, end } = source;
+    return {
+        chrom,
+        start,
+        end,
+    };
+}
+
+export function resolve_data_ctspecific(source) {
+    const { ct, dnase_zscore, promoter_zscore, enhancer_zscore, ctcf_zscore } = source;
+    if (!ct) {
+        return undefined;
+    }
+    const maxz = Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11);
+    return {
+        ct,
+        dnase_zscore,
+        promoter_zscore,
+        enhancer_zscore,
+        ctcf_zscore,
+        maxz,
     };
 }
