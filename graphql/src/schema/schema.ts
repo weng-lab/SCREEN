@@ -28,6 +28,7 @@ import CreDetailsResponse from './CreDetailsResponse';
 import RampageResponse from './RampageResponse';
 import BedUploadResponse from './BedUploadResponse';
 import { TopGenesReplicateData } from './GeneTopResponse';
+import { SNP } from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search } from '../resolvers/search';
@@ -43,6 +44,7 @@ import { resolve_credetails } from '../resolvers/credetails';
 import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
+import { resolve_snps } from '../resolvers/snp';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -194,6 +196,15 @@ const BaseType = new GraphQLObjectType({
                 },
             },
             resolve: resolve_genetop,
+        },
+        snps: {
+            type: new GraphQLList(new GraphQLNonNull(SNP)),
+            args: {
+                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                id: { type: GraphQLString },
+                range: { type: CommonTypes.InputChromRange },
+            },
+            resolve: resolve_snps,
         },
     }),
 });
