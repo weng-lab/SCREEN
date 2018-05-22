@@ -32,7 +32,6 @@ import { SNP } from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_search, resolve_suggestions } from '../resolvers/search';
-import { resolve_globals } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
 import { resolve_gwas } from '../resolvers/gwas';
@@ -44,6 +43,7 @@ import { resolve_rampage } from '../resolvers/rampage';
 import { resolve_bedupload } from '../resolvers/bedupload';
 import { resolve_genetop } from '../resolvers/genetop';
 import { resolve_snps } from '../resolvers/snp';
+import { resolve_globals } from '../resolvers/globals';
 
 const json = require('../../data.json');
 const search_json = require('../../search.json');
@@ -229,6 +229,7 @@ const schema = new GraphQLSchema({
         UUID,
         SearchResponseTypes.AccessionToken,
         SearchResponseTypes.CellTypeToken,
+        SearchResponseTypes.GeCellTypeToken,
         SearchResponseTypes.MultiGeneToken,
         SearchResponseTypes.SingleGeneToken,
         SearchResponseTypes.SNPToken,

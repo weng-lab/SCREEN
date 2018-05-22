@@ -21,6 +21,7 @@ const resolveSearchToken = d => {
     const accession = d.accession;
     const snp = d.snp;
     const celltype = d.celltype;
+    const gecelltype = d.gecelltype;
     const range = d.range;
     if (gene) {
         return SingleGeneToken;
@@ -36,6 +37,9 @@ const resolveSearchToken = d => {
     }
     if (celltype) {
         return CellTypeToken;
+    }
+    if (gecelltype) {
+        return GeCellTypeToken;
     }
     if (range) {
         return RangeToken;
@@ -176,6 +180,20 @@ export const CellTypeToken = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
         celltype: { type: new GraphQLNonNull(GraphQLString) },
+    }),
+});
+
+export const GeCellTypeToken = new GraphQLObjectType({
+    name: 'GeCellTypeToken',
+    interfaces: [SearchToken],
+    description: 'Will be returned when the token matches a celltype from ge',
+    fields: () => ({
+        input: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+        sm: { type: new GraphQLNonNull(GraphQLFloat) },
+        gecelltype: { type: new GraphQLNonNull(GraphQLString) },
     }),
 });
 

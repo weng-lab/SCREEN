@@ -14,6 +14,9 @@ const assemblies: Assembly[] = ['hg19', 'mm10'];
 const cacheLoader = (cacheMap: loadablecache) =>
     new DataLoader<keyof cache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
 
+const globalcacheLoader = (cacheMap: loadableglobalcache) =>
+    new DataLoader<keyof globalcache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
+
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);
     const creBeds = await Common.creBeds(assembly);
@@ -54,7 +57,10 @@ async function indexFilesTab(assembly) {
 export type Promisify<T> = { [P in keyof T]: Promise<T[P]> };
 export type ByFunction<T> = { [P in keyof T]: () => T[P] };
 
-export const cacheKeys = [
+export type loadablecache = ByFunction<Promisify<cache>>;
+export type loadableglobalcache = ByFunction<Promisify<globalcache>>;
+
+const cacheKeys: Array<keyof cache> = [
     'chromCounts',
     'creHist',
     'tf_list',
@@ -75,9 +81,6 @@ export const cacheKeys = [
     'de_ctidmap',
     'gwas_studies',
 ];
-
-export type loadablecache = ByFunction<Promisify<cache>>;
-export type loadableglobalcache = ByFunction<Promisify<globalcache>>;
 
 export type cache = {
     chromCounts: Record<string, number>;
@@ -112,13 +115,6 @@ export type cache = {
     ctsTable: any;
     de_ctidmap: any;
     gwas_studies: any;
-};
-
-export type globalcache = {
-    colors: any;
-    helpKeys: { all: any };
-    files: any;
-    inputData: any;
 };
 
 function getCacheMap(assembly): loadablecache {
@@ -163,15 +159,20 @@ function getCacheMap(assembly): loadablecache {
     };
 }
 
-function getCache(assembly, cacheLoader: DataLoader<string, any>): loadablecache {
-    return cacheKeys.reduce(
-        (prev, key) => {
-            prev[key] = () => cacheLoader.load(key);
-            return prev;
-        },
-        {} as loadablecache
-    );
-}
+
+const globalcacheKeys: Array<keyof globalcache> = [
+    'colors',
+    'helpKeys',
+    'files',
+    'inputData',
+];
+
+export type globalcache = {
+    colors: any;
+    helpKeys: { all: any };
+    files: any;
+    inputData: any;
+};
 
 function getGlobalCacheMap(): loadableglobalcache {
     return {
@@ -204,7 +205,16 @@ function getGlobalCacheMap(): loadableglobalcache {
     };
 }
 
-let cacheLoaders: Record<Assembly, DataLoader<string, any>> = undefined as any;
+function getCache<C>(cacheKeys: Array<keyof C>, cacheLoader: DataLoader<keyof C, any>): ByFunction<Promisify<Record<keyof C, any>>> {
+    return cacheKeys.reduce(
+        (prev, key) => {
+            prev[key] = () => cacheLoader.load(key);
+            return prev;
+        },
+        {} as ByFunction<Promisify<Record<keyof C, any>>>,
+    );
+}
+
 let caches: Record<Assembly, loadablecache> = undefined as any;
 let globalcache: loadableglobalcache = undefined as any;
 export function prepareCache() {
@@ -212,21 +222,16 @@ export function prepareCache() {
         return;
     }
     try {
-        cacheLoaders = {
-            hg19: cacheLoader(getCacheMap('hg19')),
-            mm10: cacheLoader(getCacheMap('mm10')),
-        };
-        const hg19 = getCache('hg19', cacheLoaders.hg19);
-        const mm10 = getCache('mm10', cacheLoaders.mm10);
+        const hg19 = getCache<loadablecache>(cacheKeys, cacheLoader(getCacheMap('hg19')));
+        const mm10 = getCache<loadablecache>(cacheKeys, cacheLoader(getCacheMap('mm10')));
         caches = {
             hg19: hg19,
             mm10: mm10,
         };
-        globalcache = getGlobalCacheMap();
+        globalcache = getCache<loadableglobalcache>(globalcacheKeys, globalcacheLoader(getGlobalCacheMap()));
 
         console.log('Cache functions loaded: ', Object.keys(caches));
     } catch (e) {
-        cacheLoaders = undefined as any;
         caches = undefined as any;
         globalcache = undefined as any;
         console.error('Error when loading cache.', e);
@@ -239,6 +244,10 @@ export function loadCache(assembly: Assembly): loadablecache {
     return caches[assembly];
 }
 
+export function loadGlobalCache(): loadableglobalcache {
+    return globalcache;
+}
+
 export const Compartments = Promise.resolve([
     'cell',
     'nucleoplasm',
@@ -248,39 +257,5 @@ export const Compartments = Promise.resolve([
     'chromatin',
     'nucleolus',
 ]);
-
-const chrom_lengths = require('../constants').chrom_lengths;
-export function global_data(assembly): Record<string, Promise<any>> {
-    const c = loadCache(assembly);
-    const datasets = c.datasets;
-    return {
-        tfs: c.tf_list(),
-        cellCompartments: Compartments,
-        cellTypeInfoArr: datasets().then(d => d.globalCellTypeInfoArr),
-        chromCounts: c.chromCounts(),
-        chromLens: chrom_lengths[assembly],
-        creHistBins: c.creHist(),
-        geBiosampleTypes: c.geBiosampleTypes(),
-        geBiosamples: c.geBiosamples(),
-        creBigBedsByCellType: c.creBigBeds(),
-        creFiles: c.filesList(),
-        inputData: c.inputData(),
-    };
-}
-
-let globaldata: Promisify<globalcache> = undefined as any;
-export function global_data_global() {
-    if (globaldata) {
-        return globaldata;
-    }
-    globaldata = Object.keys(globalcache).reduce(
-        (obj, key) => {
-            obj[key] = globalcache[key]();
-            return obj;
-        },
-        {} as Promisify<globalcache>
-    );
-    return globaldata;
-}
 
 prepareCache();

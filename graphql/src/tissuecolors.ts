@@ -1,4 +1,4 @@
-import { global_data_global } from './db/db_cache';
+import { loadGlobalCache } from './db/db_cache';
 
 export default class TissueColors {
     static pad = n => ('00' + n).substr(-2);
@@ -8,7 +8,7 @@ export default class TissueColors {
         `#${TissueColors.randColorGen()}${TissueColors.randColorGen()}${TissueColors.randColorGen()}`;
 
     static async getTissueColor(t) {
-        const colors = await global_data_global().colors;
+        const colors = await loadGlobalCache().colors();
         const tissueToColor = colors['tissues'];
         if (!(t in tissueToColor)) {
             console.log('missing tissue color for', t);

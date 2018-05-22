@@ -150,16 +150,9 @@ export async function try_find_gene(assembly, s) {
     return genes;
 }
 
-async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible) {
+async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltypes, possible) {
     for (const i of Array(p.length).keys()) {
         const s = p.slice(-1 * (i + 1)).join(' ');
-        const query = `
-            SELECT DISTINCT cellType, similarity(LOWER(cellType), '${s}') AS sm
-            FROM ${tableName}
-            WHERE LOWER(cellType) % $1
-            ORDER BY sm DESC
-            LIMIT 10
-        `;
         const r = await db.any(query, [s]);
         if (r.length === 0) {
             if (possible.length === 0) {
@@ -217,12 +210,28 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
     return false;
 }
 
-export async function find_celltype(assembly, q, rev = false) {
+export async function find_celltype(assembly, q, type: 'ccre' | 'ge',  partial = false) {
     q = q.trim();
+    const s_in = q;
     if (q.length === 0) {
         return { s: q, celltypes: {} };
     }
-    const tableName = assembly + '_rankCellTypeIndexex';
+    const tableName = type === 'ccre' ? assembly + '_rankCellTypeIndexex' : assembly + '_rnaseq_metadata';
+    const query = `
+        SELECT DISTINCT cellType, similarity(LOWER(cellType), '${q}') AS sm
+        FROM ${tableName}
+        WHERE LOWER(cellType) % $1 OR LOWER(cellType) ~* $1
+        ORDER BY sm DESC
+        LIMIT 10
+    `;
+    if (partial) {
+        const r = await db.any(query, [q]);
+        const ret_celltypes = [];
+        r.forEach(ret => {
+            ret_celltypes.push({ input: q, sm: ret.sm, assembly, gecelltype: ret.celltype });
+        })
+        return { s: s_in, celltypes: ret_celltypes };
+    }
 
     const unused_toks: Array<any> = [];
     const ret_celltypes = {};
@@ -232,7 +241,7 @@ export async function find_celltype(assembly, q, rev = false) {
             break;
         }
         const p = q.trim().split(' ');
-        q = await do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, possible);
+        q = await do_find_celltype(tableName, query, p, q, unused_toks, ret_celltypes, possible);
 
         if (!q) {
             if (possible[0]) {
@@ -243,5 +252,9 @@ export async function find_celltype(assembly, q, rev = false) {
         }
     }
 
-    return { s: unused_toks.join(' '), celltypes: ret_celltypes };
+    const rettokens = [];
+    Object.keys(ret_celltypes).forEach(input => {
+        rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, gecelltype: ret_celltypes[input].celltype });
+    })
+    return { s: unused_toks.join(' '), celltypes: rettokens };
 }
