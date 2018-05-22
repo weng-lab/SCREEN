@@ -1,11 +1,24 @@
 import { chroms } from './constants';
 
+const starts = {
+    mm10: 'em10e',
+    hg19: 'eh37e',
+    hg38: 'eh38e',
+};
 export const isaccession = (s: string) => {
     if (s.length != 12) {
         return false;
     }
     s = s.toLowerCase();
     // TODO: double check using regex
+    return s.startsWith('eh37e') || s.startsWith('em10e') || s.startsWith('eh38e');
+};
+
+export const maybeacceession = (s: string) => {
+    if (s.length < 9) {
+        return false;
+    }
+    s = s.toLowerCase();
     return s.startsWith('eh37e') || s.startsWith('em10e') || s.startsWith('eh38e');
 };
 
@@ -30,14 +43,7 @@ export const checkAssembly = j => {
     return assembly;
 };
 
-export const checkCreAssembly = (assembly, accession) => {
-    const starts = {
-        mm10: 'em10e',
-        hg19: 'eh37e',
-        hg38: 'eh38e',
-    };
-    return accession.startsWith(starts[assembly]);
-};
+export const checkCreAssembly = (assembly, accession) => accession.startsWith(starts[assembly]);
 
 export const getAssemblyFromCre = accession => {
     const cre = accession.toLowerCase();

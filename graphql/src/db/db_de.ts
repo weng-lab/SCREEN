@@ -1,7 +1,7 @@
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable, dbcre } from './db_cre_table';
-import { cache } from './db_cache';
+import { loadCache } from './db_cache';
 
 export async function getCtMap(assembly) {
     const tableName = assembly + '_de_cts';
@@ -54,8 +54,8 @@ export async function nearbyCREs(
     cols,
     isProximalOrDistal
 ): Promise<Array<dbcre & { zscore_1: number; zscore_2: number }>> {
-    const c = await cache(assembly);
+    const ctmap = await loadCache(assembly).ctmap();
     const wheres = [`isProximal is ${isProximalOrDistal}`];
-    const cres = await getCreTable(assembly, c, { range }, {}, { fields: cols, wheres });
+    const cres = await getCreTable(assembly, ctmap, { range }, {}, { fields: cols, wheres });
     return cres.cres as any[];
 }

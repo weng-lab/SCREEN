@@ -2,7 +2,7 @@ import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
-import { cache } from './db_cache';
+import { loadCache } from './db_cache';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -496,14 +496,17 @@ promoter_zscores`
 async function getGenes(assembly, accession, allOrPc) {
     const tableall = assembly + '_cre_all';
     const tableinfo = assembly + '_gene_info';
+    const tableTss = assembly + '_tss_info';
     const q = `
-        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop
+        SELECT gi.approved_symbol, g.distance, gi.ensemblid_ver, gi.chrom, gi.start, gi.stop, gi.strand, tss.chrom as tss_chrom, tss.start as tss_start, tss.stop as tss_stop
         FROM
         (SELECT UNNEST(gene_${allOrPc}_id) geneid,
         UNNEST(gene_${allOrPc}_distance) distance
         FROM ${tableall} WHERE accession = $1) AS g
         INNER JOIN ${tableinfo} AS gi
         ON g.geneid = gi.geneid
+        INNER JOIN ${tableTss} as tss
+        ON gi.ensemblid_ver = tss.ensemblid_ver
     `;
     return db.any(q, [accession]);
 }
@@ -530,8 +533,8 @@ export async function getTadOfCRE(assembly, accession) {
 }
 
 export async function cresInTad(assembly, accession, chrom, start, end, tadInfo) {
-    const c = await cache(assembly);
-    const cres = await getCreTable(assembly, c, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
+    const ctmap = loadCache(assembly).ctmap();
+    const cres = await getCreTable(assembly, ctmap, { range: { chrom, start: tadInfo.start, end: tadInfo.stop } }, {});
     return cres.cres
         .map(cre => ({
             distance: Math.min(Math.abs(end - cre.end), Math.abs(start - cre.start)),
@@ -555,10 +558,10 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
 
 export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
     const expanded = CoordUtils.expanded(coord, halfWindow);
-    const c = await cache(assembly);
+    const ctmap = loadCache(assembly).ctmap();
     const cres = await getCreTable(
         assembly,
-        c,
+        ctmap,
         { range: { chrom: expanded.chrom, start: expanded.start, end: expanded.end } },
         {}
     );

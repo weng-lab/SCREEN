@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
 import { db, pgp } from './db';
+import { loadablecache } from './db_cache';
 
 const { UserError } = require('graphql-errors');
 
@@ -148,6 +149,7 @@ export const buildWhereStatement = (
             case 'promoter_zscore':
             case 'enhancer_zscore':
             case 'ctcf_zscore':
+            case 'maxz_ct':
                 orderBy = 'maxz';
                 break;
             default:
@@ -174,17 +176,27 @@ export const buildWhereStatement = (
                 name = 'ctcf';
                 col = 'ctcf_zscores';
                 break;
+            case 'maxz_ct':
+                name = 'maxz_ct';
+                col = undefined;
+                break;
             default:
                 name = undefined;
                 orderBy = pagination.orderBy || 'maxz';
                 break;
         }
         if (name) {
-            if (!(ctexp in ctmap[name])) {
+            if (name === 'maxz_ct') {
+                // const index = ctmap['maxz_ct'][ctexp];
+                // orderBy = `maxz_ct[${index}]`;
                 orderBy = 'maxz';
             } else {
-                const index = ctmap[name][ctexp];
-                orderBy = `${col}[${index}]`;
+                if (!(ctexp in ctmap[name])) {
+                    orderBy = 'maxz';
+                } else {
+                    const index = ctmap[name][ctexp];
+                    orderBy = `${col}[${index}]`;
+                }
             }
         }
         ctSpecificRanks(wheres, fields, params, ctexp, j, ctmap);
@@ -268,7 +280,7 @@ export type dbcre = {
 
 export async function getCreTable(
     assembly: string,
-    cache,
+    ctmap: any,
     j,
     pagination,
     extra?: { wheres: string[]; fields: string[] }
@@ -279,7 +291,7 @@ export async function getCreTable(
     const table = assembly + '_cre_all';
     const { fields, where, params, orderBy } = buildWhereStatement(
         assembly,
-        cache.ctmap,
+        ctmap,
         j,
         chrom,
         start,

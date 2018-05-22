@@ -1,88 +1,135 @@
-import { checkChrom, isaccession, checkCreAssembly } from '../utils';
+import { checkChrom, isaccession, checkCreAssembly, maybeacceession } from '../utils';
 import { GraphQLFieldResolver } from 'graphql';
 import { UserError } from 'graphql-errors';
 import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
+import { getAccessions, getSNPs } from '../db/db_suggestions';
+import { Assembly } from '../db/db_cache';
 
-const re_range = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:]?[\s]*[0-9,\.]+[\s\-]+[0-9,\.]+/;
-const re_base = /^[cC][hH][rR][0-9XYxy][0-9]?[\s]*[\:\s][\s]*[0-9,\.]+/;
-const re_chrom = /^[cC][hH][rR][0-9XxYy][0-9]?/;
+const re_fullrange = /^(chr[\dxy]\d?)[\s]*[\:]?[\s]*([0-9,\.]+)?[\s\-]*([0-9,\.]+)?/i;
+const re_chr_only = /^chr/i;
+// an alternative with lookbehind
+// const re_fullrange_partial = /^(chr[\dxy]?\d?)(?:(?<=[\dxy]\d?)(?:[\s]*[\:]?[\s]*)([0-9,\.]+)?[\s\-]*([0-9,\.]+)?)?/i
+const re_accession = /^(eh37e|eh38e|em10e)\d{7}/i;
+const re_accession_partial = /^(?:eh37|eh38|em10)(?:e\d{0,7})?/i;
+const re_snp = /^rs[\d]+/;
+const re_snp_partial = /^rs[\d]*/;
 
 const chrom_lengths = require('../constants').chrom_lengths;
 
-function checkCoords(assembly, coord) {
+function falseOrError(shouldError, errorMessage): false {
+    if (shouldError) {
+        throw new UserError(errorMessage);
+    }
+    return false;
+}
+
+function checkCoords(assembly: Assembly, coord, shouldError: boolean): boolean {
     if (!(coord.chrom in chrom_lengths[assembly])) {
-        throw new UserError('Invalid chromosome ' + coord.chrom);
+        return falseOrError(shouldError, 'Invalid chromosome ' + coord.chrom);
     }
     if (coord.start < 1) {
         // This won't happen currently because of the regex
-        throw new UserError('Invalid start position. Should be >=1.');
+        return falseOrError(shouldError, 'Invalid start position. Should be >=1.');
     }
     const chrom_end = chrom_lengths[assembly][coord.chrom];
     if (coord.end > chrom_end) {
-        throw new UserError(
-            'Invalid end position (' + coord.end + '). End of chromosome (' + coord.chrom + ') is ' + chrom_end
+        return falseOrError(
+            shouldError,
+            `Invalid end position (${coord.end}). End of chromosome (${coord.chrom}) is ${chrom_end}`
         );
     }
+    return true;
 }
 
-export function find_coords(assembly, s: string) {
-    const coords = {};
-    const unusedtoks: Array<any> = [];
+export function find_coords(assembly, s: string, shouldError: boolean = true, partial: boolean = false) {
+    const s_in = s;
+    const coords: Token[] = [];
+    const unusedtoks: string[] = [];
     while (true) {
         if (s.length === 0) {
             break;
         }
-        const _p = s.split(' ');
 
-        const range = re_range.exec(s);
-        if (range) {
-            const p = range[0]
-                .replace('-', ' ')
-                .replace(':', ' ')
-                .replace(',', '')
-                .replace('.', '')
-                .split(' ');
+        const match_fullrange = re_fullrange.exec(s);
+        if (match_fullrange) {
+            const start = +match_fullrange[2] || 1;
+
             const coord = {
-                chrom: p[0].replace('x', 'X').replace('y', 'Y'),
-                start: parseInt(p[1]),
-                end: parseInt(p[2]),
+                chrom: match_fullrange[1],
+                start: start,
+                end:
+                    +match_fullrange[3] ||
+                    (match_fullrange[2] ? start + 1 : chrom_lengths[assembly][match_fullrange[1]]),
             };
-            coords[range[0]] = coord;
-            s = s.replace(range[0], '').trim();
-            checkCoords(assembly, coord);
+            s = s.replace(match_fullrange[0].trim(), '').trim();
+            if (checkCoords(assembly, coord, shouldError)) {
+                coords.push({ input: match_fullrange[0].trim(), sm: 1, assembly, range: coord });
+            }
             continue;
         }
 
-        const base = re_base.exec(s);
-        if (base) {
-            const p = base[0]
-                .replace('-', ' ')
-                .replace(':', ' ')
-                .replace(',', '')
-                .replace('.', '')
-                .split(' ');
-            const coord = {
-                chrom: p[0].replace('x', 'X').replace('y', 'Y'),
-                start: parseInt(p[1]),
-                end: parseInt(p[1]) + 1,
-            };
-            coords[base[0]] = coord;
-            s = s.replace(base[0], '').trim();
-            checkCoords(assembly, coord);
-            continue;
+        if (partial) {
+            const match_chr = re_chr_only.exec(s);
+            if (match_chr) {
+                for (const chrom of Object.keys(chrom_lengths[assembly])) {
+                    const coord = {
+                        chrom: chrom,
+                        start: 1,
+                        end: chrom_lengths[assembly][chrom],
+                    };
+                    coords.push({ input: match_chr[0].trim(), sm: 1, assembly, range: coord });
+                    s = s.replace(match_chr[0], '').trim();
+                }
+                continue;
+            }
         }
 
-        const chrom = re_chrom.exec(s);
-        if (chrom) {
-            const coord = {
-                chrom: chrom[0],
-                start: 1,
-                end: chrom_lengths[assembly][chrom[0]],
-            };
-            coords[chrom[0]] = coord;
-            s = s.replace(chrom[0], '').trim();
-            checkCoords(assembly, coord);
+        const [unused, ...rest] = s.split(' ');
+        s = rest.join(' ').trim();
+        unusedtoks.push(unused);
+    }
+
+    return { s: !partial ? unusedtoks.join(' ') : s_in, coords };
+}
+
+export async function find_accessions(assembly, s: string, shouldError: boolean = true, partial: boolean = false) {
+    const s_in = s;
+    const accessions: Token[] = [];
+    const unusedtoks: string[] = [];
+    while (true) {
+        if (s.length === 0) {
+            break;
+        }
+        if (partial) {
+            const match_accession_partial = re_accession_partial.exec(s);
+            if (match_accession_partial) {
+                const accession = match_accession_partial[0];
+                if (maybeacceession(accession) && checkCreAssembly(assembly, accession.toLowerCase())) {
+                    const accessions_suggestions = await getAccessions(assembly, accession);
+                    accessions_suggestions.forEach(suggestion => {
+                        accessions.push({
+                            input: accession,
+                            assembly,
+                            accession: suggestion.accession,
+                            sm: suggestion.sm,
+                        });
+                    });
+                    s = s.replace(accession, '').trim();
+                    continue;
+                }
+            }
+        }
+
+        const match_accession = re_accession.exec(s);
+        if (match_accession) {
+            const accession = match_accession[0];
+            if (!checkCreAssembly(assembly, accession.toLowerCase())) {
+                falseOrError(shouldError, 'mismatch assembly for accession ' + accession);
+            } else {
+                accessions.push({ input: accession, sm: 1, assembly, accession: accession.toUpperCase() });
+            }
+            s = s.replace(accession, '').trim();
             continue;
         }
 
@@ -91,71 +138,152 @@ export function find_coords(assembly, s: string) {
         unusedtoks.push(unused);
     }
 
-    return { s: unusedtoks.join(' '), coords: coords };
+    return { s: !partial ? unusedtoks.join(' ') : s_in, accessions };
+}
+
+export async function find_snps(assembly, s: string, shouldError: boolean = true, partial: boolean = false) {
+    const s_in = s;
+    const snps: Token[] = [];
+    const unusedtoks: string[] = [];
+    while (true) {
+        if (s.length === 0) {
+            break;
+        }
+
+        if (partial) {
+            const match_snp_partial = re_snp.exec(s);
+            if (match_snp_partial) {
+                const snp = match_snp_partial[0];
+                const snp_suggestions = await getSNPs(assembly, snp);
+                snp_suggestions.forEach(suggestion => {
+                    const range = {
+                        chrom: suggestion.chrom,
+                        start: suggestion.start,
+                        end: suggestion.stop,
+                    };
+                    snps.push({ input: snp, assembly, snp: { id: suggestion.snp, range }, sm: suggestion.sm });
+                });
+                s = s.replace(snp, '').trim();
+                continue;
+            }
+        }
+
+        const match_snp = re_snp.exec(s);
+        if (match_snp) {
+            const snp = match_snp[0];
+            const coord = await Parse.get_snpcoord(assembly, snp.toLowerCase());
+            if (!coord) {
+                falseOrError(shouldError, 'Invalid snp ' + snp);
+            } else {
+                snps.push({ input: snp, sm: 1, assembly, snp: { id: snp.toLowerCase(), range: coord } });
+            }
+            s = s.replace(snp, '').trim();
+            continue;
+        }
+
+        const [unused, ...rest] = s.split(' ');
+        s = rest.join(' ').trim();
+        unusedtoks.push(unused);
+    }
+
+    return { s: !partial ? unusedtoks.join(' ') : s_in, snps };
+}
+
+export async function find_genes(assembly, s: string, partial: boolean = false) {
+    const s_in = s;
+    const genetokens: Token[] = [];
+    const toks = s.split(' ').filter(str => str.length !== 0);
+
+    for (const t of toks) {
+        const genes = await Parse.try_find_gene(assembly, t);
+        if (genes.length > 1) {
+            const mapped = genes.map(g => g.toJson());
+            genetokens.push({ input: t, sm: mapped[0].sm, assembly, genes: mapped });
+            s = s.replace(t, '').trim();
+        } else if (genes.length === 1) {
+            genetokens.push({ input: t, sm: genes[0].sm, assembly, gene: genes[0].toJson() });
+            s = s.replace(t, '').trim();
+        }
+    }
+    return { s: !partial ? s : s_in, genetokens };
 }
 
 function sanitize(q: string) {
-    return q.substr(0, 2048);
+    return q
+        .substr(0, 2048)
+        .replace('\\', '')
+        .replace("'", '');
 }
 
-export async function parse(assembly, args) {
-    const q = args.q || '';
-    const s1 = sanitize(q).trim();
+type Token = { input: string; assembly: Assembly; sm: number; [other: string]: any };
+const allAssemblies = ['hg19', 'mm10'] as Assembly[];
+export async function parse(assembly: Assembly, q: string, shouldError: boolean, partial: boolean): Promise<Token[]> {
+    const rettoks: Token[] = [];
 
-    const rettoks: Array<any> = [];
-    const { s: s2, coords } = find_coords(assembly, s1);
-    Object.keys(coords).forEach(input => rettoks.push({ input, range: coords[input] }));
-    let s = s2;
-    const toks = s.split(' ').filter(str => str.length !== 0);
-    const useTss = args['tss'] || 'tssDist' in args;
-    let tssDist = 0;
-    if ('tssDist' in args) {
-        tssDist = args['tssDist'];
-    }
+    // We allow explicit separation with a comma
+    for (const s1 of sanitize(q)
+        .trim()
+        .split(',')) {
+        let s = s1;
 
-    for (const t of toks) {
-        const lowert = t.toLocaleLowerCase();
-        try {
-            if (isaccession(t)) {
-                if (!checkCreAssembly(assembly, lowert)) {
-                    console.log('assembly mismatch', assembly, t);
-                    throw new Error('mismatch assembly for accession ' + t);
-                }
-                rettoks.push({ input: t, accession: t });
-                s = s.replace(t, '').trim();
-            } else if (lowert.startsWith('rs')) {
-                const coord = await Parse.get_snpcoord(assembly, lowert);
-                rettoks.push({ input: t, snp: { id: lowert, range: coord } });
-                s = s.replace(t, '').trim();
-            } else {
-                const genes = await Parse.try_find_gene(assembly, t, useTss, tssDist);
-                if (genes.length > 1) {
-                    rettoks.push({ input: t, genes: genes.map(g => g.toJson()) });
-                    s = s.replace(t, '').trim();
-                } else if (genes.length === 1) {
-                    rettoks.push({ input: t, gene: genes[0].toJson() });
-                    s = s.replace(t, '').trim();
-                }
-            }
-        } catch (e) {
-            console.log('could not parse ' + t, e);
+        // Start with coords because we can use regex
+        const found_coords = find_coords(assembly, s.trim(), shouldError, partial);
+        s = found_coords.s;
+        Object.values(found_coords.coords).forEach(token => rettoks.push(token));
+
+        const found_accessions = await find_accessions(assembly, s.trim(), shouldError, partial);
+        s = found_accessions.s;
+        Object.values(found_accessions.accessions).forEach(token => rettoks.push(token));
+
+        const found_snps = await find_snps(assembly, s.trim(), shouldError, partial);
+        s = found_snps.s;
+        Object.values(found_snps.snps).forEach(token => rettoks.push(token));
+
+        const found_genes = await find_genes(assembly, s.trim());
+        s = found_genes.s;
+        Object.values(found_genes.genetokens).forEach(token => rettoks.push(token), partial);
+
+        const found_celltypes = await Parse.find_celltype(assembly, s, true);
+        s = found_celltypes.s;
+        const celltypes = found_celltypes.celltypes;
+        Object.keys(celltypes).forEach(input =>
+            rettoks.push({ input, sm: celltypes[input].sm, assembly, celltype: celltypes[input].celltype })
+        );
+
+        if (s.length !== 0 && !partial) {
+            s.split(' ').forEach(input => rettoks.push({ input, sm: 1, assembly, failed: true }));
         }
-    }
-
-    const findCellType = await Parse.find_celltype(assembly, s, true);
-    s = findCellType.s;
-    const celltypes = findCellType.celltypes;
-    Object.keys(celltypes).forEach(input => rettoks.push({ input, celltype: celltypes[input].celltype }));
-
-    if (s.length !== 0) {
-        s.split(' ').forEach(input => rettoks.push({ input, failed: true }));
     }
 
     return rettoks;
 }
 
-export const resolve_search: GraphQLFieldResolver<any, any> = (source, args, context) => {
+export const resolve_search = async (source, args, context) => {
+    const search = args.search.q || '';
     const assembly = args.assembly;
-    const results = parse(assembly, args.search);
+    if (assembly) {
+        return parse(assembly, search, true, false);
+    } else {
+        let results = [] as Token[];
+        for (const assembly of allAssemblies) {
+            results = results.concat(await parse(assembly, search, false, false));
+        }
+        return results;
+    }
+};
+
+async function suggestions(query, assemblies) {
+    assemblies = assemblies || ['hg19', 'mm10'];
+    let results: Token[] = [];
+    for (const assembly of assemblies) {
+        results = results.concat(await parse(assembly, query, false, true));
+    }
+    results.sort((a, b) => b.sm - a.sm);
     return results;
+}
+
+export const resolve_suggestions = (source, args, context) => {
+    const query = args.query;
+    const assemblies = args.assemblies;
+    return suggestions(query, assemblies);
 };

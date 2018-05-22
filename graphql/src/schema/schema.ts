@@ -17,7 +17,7 @@ import SearchToken from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
 import DeResponse from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
-import SuggestionsResponse from './SuggestionsResponse';
+import { Suggestion } from './SuggestionsResponse';
 import GwasResponse from './GwasResponse';
 import CartResponse from './CartResponse';
 import GbResponse from './GbResponse';
@@ -31,11 +31,10 @@ import { TopGenesReplicateData } from './GeneTopResponse';
 import { SNP } from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
-import { resolve_search } from '../resolvers/search';
+import { resolve_search, resolve_suggestions } from '../resolvers/search';
 import { resolve_globals } from '../resolvers/globals';
 import { resolve_de } from '../resolvers/de';
 import { resolve_geneexp } from '../resolvers/geneexp';
-import { resolve_suggestions } from '../resolvers/suggestions';
 import { resolve_gwas } from '../resolvers/gwas';
 import { resolve_cart_set, resolve_cart_get } from '../resolvers/cart';
 import { resolve_gb } from '../resolvers/gb';
@@ -67,7 +66,7 @@ const BaseType = new GraphQLObjectType({
             description: 'Perform a search. Returns a list of search tokens and their interpreted meaning.',
             type: new GraphQLList(new GraphQLNonNull(SearchToken)),
             args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                assembly: { type: CommonTypes.Assembly },
                 search: { type: CommonTypes.SearchParameters },
             },
             resolve: resolve_search,
@@ -113,7 +112,7 @@ const BaseType = new GraphQLObjectType({
         },
         suggestions: {
             description: 'Get suggestions for a partial query',
-            type: SuggestionsResponse,
+            type: new GraphQLList(new GraphQLNonNull(SearchToken)),
             args: {
                 query: { type: new GraphQLNonNull(GraphQLString) },
                 assemblies: { type: new GraphQLList(CommonTypes.Assembly) },

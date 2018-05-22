@@ -130,6 +130,7 @@ class GeneRow:
         self.start = info.get("start", 0)
         self.stop = info.get("stop", 0)
         self.strand = info.get('strand', '')
+        self.gene_type = info.get("gene_type", "")
 
         keysToRemove = ['chr', 'start', 'stop', "gene_name",
                         "gene_id", "ensembl_gene_id", "ID",
@@ -147,7 +148,7 @@ class GeneRow:
         return '\t'.join([str(self.dbID), self.ensemblid, self.ver,
                           self.ensemblid_ver, self.approved_symbol,
                           self.chrom, str(self.start), str(self.stop),
-                          self.strand, json.dumps(self.info)])
+                          self.strand, self.gene_type, json.dumps(self.info)])
 
 
 def loadGidsToDbIds(assembly):
@@ -208,12 +209,13 @@ chrom text,
 start integer,
 stop integer,
 strand varchar(1),
+gene_type text,
 info jsonb);
 """.format(tableName=tableName))
 
         cols = ["geneid", "ensemblid", "ver", "ensemblid_ver",
                 "approved_symbol", "chrom", "start", "stop",
-                "strand", "info"]
+                "strand", "gene_type", "info"]
 
         outF = StringIO.StringIO()
         for r in ret:
@@ -222,7 +224,7 @@ info jsonb);
         self.curs.copy_from(outF, tableName, '\t', columns=cols)
         print("updated", tableName, self.curs.rowcount)
 
-        makeIndex(self.curs, tableName, ["geneid"])
+        makeIndex(self.curs, tableName, ["geneid", "ensemblid_ver", "ensemblid", "approved_symbol"])
 
 
 def makeMV(curs, assembly):

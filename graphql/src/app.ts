@@ -12,8 +12,6 @@ const useRaven = process.env.NODE_ENV === 'production';
 
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
-// We have to manually force load order here because of double references to db_cache
-import './db/db_cache'; // Force db load
 import schema from './schema/schema'; // Import schema after
 
 const logErrors = req => error => {

@@ -211,14 +211,6 @@ export const SearchParameters = new GraphQLInputObjectType({
                 'Search query. Valid queries include (but may not be limited to): ranges, genes, snps, ccRE accessions, cell types',
             type: new GraphQLNonNull(GraphQLString),
         },
-        tss: {
-            description: 'Get coords between first and last transcription start sites, if response is a gene',
-            type: GraphQLBoolean,
-        },
-        tssDist: {
-            description: 'Extend coords this many bp upstream of the tss, if response is a gene',
-            type: GraphQLInt,
-        },
     }),
 });
 
@@ -229,7 +221,10 @@ export const OrderBy = new GraphQLEnumType({
             description: '(DEFAULT)',
             value: 'maxz',
         },
-        // TODO: add maxz_ct and appropriate column in db
+        maxz_ct: {
+            description: 'UNIMPLEMENTED. Just returns maxz',
+            value: 'maxz_ct',
+        },
         dnasemax: {
             value: 'dnasemax',
         },

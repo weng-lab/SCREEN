@@ -1,11 +1,17 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
+import { Assembly } from './CommonSchema';
 
-export const SuggestionsResponse = new GraphQLObjectType({
-    name: 'Suggestions',
-    description: 'Get suggestions for a partial query',
+export const Suggestion = new GraphQLObjectType({
+    name: 'Suggestion',
     fields: () => ({
-        suggestions: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
+        assembly: {
+            type: new GraphQLNonNull(Assembly),
+        },
+        suggestion: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        type: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
     }),
 });
-
-export default SuggestionsResponse;

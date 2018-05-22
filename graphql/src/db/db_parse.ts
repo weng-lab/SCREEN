@@ -41,31 +41,27 @@ export class GeneParse {
     oname;
     strand;
     coord;
+    tsscoord;
     approved_symbol;
     sm;
 
-    constructor(assembly, r, s, useTss, tssDist) {
+    constructor(assembly, r, s) {
         this.assembly = assembly;
         this.s = s;
-        this.useTss = useTss;
-        this.tssDist = tssDist;
 
         this.oname = r['oname'];
         this.strand = r['strand'];
 
-        if (useTss) {
-            if ('+' == this.strand) {
-                this.coord = {
-                    chrom: r['altchrom'],
-                    start: Math.max(0, parseInt(r['altstart']) - tssDist),
-                    end: r['altstop'],
-                };
-            } else {
-                this.coord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) + tssDist };
-            }
+        if ('+' == this.strand) {
+            this.tsscoord = {
+                chrom: r['altchrom'],
+                start: Math.max(0, parseInt(r['altstart'])),
+                end: r['altstop'],
+            };
         } else {
-            this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
+            this.tsscoord = { chrom: r['altchrom'], start: r['altstart'], end: parseInt(r['altstop']) };
         }
+        this.coord = { chrom: r['chrom'], start: r['start'], end: r['stop'] };
 
         this.approved_symbol = r['approved_symbol'];
         this.sm = r['sm'];
@@ -81,6 +77,12 @@ export class GeneParse {
                 end: this.coord.end,
                 strand: this.strand,
             },
+            tssrange: {
+                chrom: this.tsscoord.chrom,
+                start: this.tsscoord.start,
+                end: this.tsscoord.end,
+                strand: this.strand,
+            },
             sm: this.sm,
         };
     }
@@ -90,14 +92,12 @@ export class GeneParse {
 
         return {
             gene: gene,
-            useTss: this.useTss,
-            tssDist: this.tssDist,
             assembly: this.assembly,
         };
     }
 }
 
-async function exactGeneMatch(assembly, s, usetss, tssDist) {
+async function exactGeneMatch(assembly, s) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
     const infoTableName = assembly + '_gene_info';
@@ -116,12 +116,12 @@ async function exactGeneMatch(assembly, s, usetss, tssDist) {
     `;
     const rows = await db.any(q, [slo, s]);
     if (rows.length > 0 && isclose(1, rows[0]['sm'])) {
-        return [new GeneParse(assembly, rows[0], s, usetss, tssDist)];
+        return [new GeneParse(assembly, rows[0], s)];
     }
-    return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
+    return rows.map(r => new GeneParse(assembly, r, s));
 }
 
-async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
+async function fuzzyGeneMatch(assembly, s) {
     const slo = s.toLowerCase().trim();
     const searchTableName = assembly + '_gene_search';
     const infoTableName = assembly + '_gene_info';
@@ -139,13 +139,13 @@ async function fuzzyGeneMatch(assembly, s, usetss, tssDist) {
         LIMIT 50
     `;
     const rows = await db.any(q, [slo, slo]);
-    return rows.map(r => new GeneParse(assembly, r, s, usetss, tssDist));
+    return rows.map(r => new GeneParse(assembly, r, s));
 }
 
-export async function try_find_gene(assembly, s, usetss, tssDist) {
-    let genes = await exactGeneMatch(assembly, s, usetss, tssDist);
+export async function try_find_gene(assembly, s) {
+    let genes = await exactGeneMatch(assembly, s);
     if (genes.length === 0) {
-        genes = await fuzzyGeneMatch(assembly, s, usetss, tssDist);
+        genes = await fuzzyGeneMatch(assembly, s);
     }
     return genes;
 }
@@ -154,7 +154,7 @@ async function do_find_celltype(tableName, p, q, unused_toks, ret_celltypes, pos
     for (const i of Array(p.length).keys()) {
         const s = p.slice(-1 * (i + 1)).join(' ');
         const query = `
-            SELECT cellType, similarity(LOWER(cellType), '${s}') AS sm
+            SELECT DISTINCT cellType, similarity(LOWER(cellType), '${s}') AS sm
             FROM ${tableName}
             WHERE LOWER(cellType) % $1
             ORDER BY sm DESC
