@@ -159,13 +159,7 @@ function getCacheMap(assembly): loadablecache {
     };
 }
 
-
-const globalcacheKeys: Array<keyof globalcache> = [
-    'colors',
-    'helpKeys',
-    'files',
-    'inputData',
-];
+const globalcacheKeys: Array<keyof globalcache> = ['colors', 'helpKeys', 'files', 'inputData'];
 
 export type globalcache = {
     colors: any;
@@ -205,13 +199,16 @@ function getGlobalCacheMap(): loadableglobalcache {
     };
 }
 
-function getCache<C>(cacheKeys: Array<keyof C>, cacheLoader: DataLoader<keyof C, any>): ByFunction<Promisify<Record<keyof C, any>>> {
+function getCache<C>(
+    cacheKeys: Array<keyof C>,
+    cacheLoader: DataLoader<keyof C, any>
+): ByFunction<Promisify<Record<keyof C, any>>> {
     return cacheKeys.reduce(
         (prev, key) => {
             prev[key] = () => cacheLoader.load(key);
             return prev;
         },
-        {} as ByFunction<Promisify<Record<keyof C, any>>>,
+        {} as ByFunction<Promisify<Record<keyof C, any>>>
     );
 }
 

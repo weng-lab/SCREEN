@@ -17,7 +17,6 @@ import SearchToken from './SearchResponse';
 import GlobalsResponse from './GlobalsResponse';
 import DeResponse from './DeResponse';
 import GeneExpResponse from './GeneExpResponse';
-import { Suggestion } from './SuggestionsResponse';
 import GwasResponse from './GwasResponse';
 import CartResponse from './CartResponse';
 import GbResponse from './GbResponse';

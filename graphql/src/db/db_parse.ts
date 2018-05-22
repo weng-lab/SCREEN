@@ -210,7 +210,7 @@ async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltyp
     return false;
 }
 
-export async function find_celltype(assembly, q, type: 'ccre' | 'ge',  partial = false) {
+export async function find_celltype(assembly, q, type: 'ccre' | 'ge', partial = false) {
     q = q.trim();
     const s_in = q;
     if (q.length === 0) {
@@ -226,10 +226,10 @@ export async function find_celltype(assembly, q, type: 'ccre' | 'ge',  partial =
     `;
     if (partial) {
         const r = await db.any(query, [q]);
-        const ret_celltypes = [];
+        const ret_celltypes: any[] = [];
         r.forEach(ret => {
             ret_celltypes.push({ input: q, sm: ret.sm, assembly, gecelltype: ret.celltype });
-        })
+        });
         return { s: s_in, celltypes: ret_celltypes };
     }
 
@@ -252,9 +252,9 @@ export async function find_celltype(assembly, q, type: 'ccre' | 'ge',  partial =
         }
     }
 
-    const rettokens = [];
+    const rettokens: any[] = [];
     Object.keys(ret_celltypes).forEach(input => {
         rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, gecelltype: ret_celltypes[input].celltype });
-    })
+    });
     return { s: unused_toks.join(' '), celltypes: rettokens };
 }

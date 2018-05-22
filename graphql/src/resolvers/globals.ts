@@ -19,27 +19,30 @@ export const resolve_globals_assembly: GraphQLFieldResolver<any, any> = (source,
     };
 };
 
-export const resolve_globals_assembly_tfs = (source) => loadCache(source.assembly).tf_list();
+export const resolve_globals_assembly_tfs = source => loadCache(source.assembly).tf_list();
 
-export const resolve_globals_assembly_cellCompartments = (source) => Compartments;
+export const resolve_globals_assembly_cellCompartments = source => Compartments;
 
-export const resolve_globals_assembly_cellTypeInfoArr = (source) => loadCache(source.assembly).datasets().then(d => d.globalCellTypeInfoArr);
+export const resolve_globals_assembly_cellTypeInfoArr = source =>
+    loadCache(source.assembly)
+        .datasets()
+        .then(d => d.globalCellTypeInfoArr);
 
-export const resolve_globals_assembly_chromCounts = (source) => loadCache(source.assembly).chromCounts();
+export const resolve_globals_assembly_chromCounts = source => loadCache(source.assembly).chromCounts();
 
-export const resolve_globals_assembly_chromLens = (source) => chrom_lengths[source.assembly];
+export const resolve_globals_assembly_chromLens = source => chrom_lengths[source.assembly];
 
-export const resolve_globals_assembly_creHistBins = (source) => loadCache(source.assembly).creHist();
+export const resolve_globals_assembly_creHistBins = source => loadCache(source.assembly).creHist();
 
-export const resolve_globals_assembly_geBiosampleTypes = (source) => loadCache(source.assembly).geBiosampleTypes();
+export const resolve_globals_assembly_geBiosampleTypes = source => loadCache(source.assembly).geBiosampleTypes();
 
-export const resolve_globals_assembly_geBiosamples = (source) => loadCache(source.assembly).geBiosamples();
+export const resolve_globals_assembly_geBiosamples = source => loadCache(source.assembly).geBiosamples();
 
-export const resolve_globals_assembly_creBigBedsByCellType = (source) => loadCache(source.assembly).creBigBeds();
+export const resolve_globals_assembly_creBigBedsByCellType = source => loadCache(source.assembly).creBigBeds();
 
-export const resolve_globals_assembly_creFiles = (source) => loadCache(source.assembly).filesList();
+export const resolve_globals_assembly_creFiles = source => loadCache(source.assembly).filesList();
 
-export const resolve_globals_assembly_inputData = (source) => loadCache(source.assembly).inputData();
+export const resolve_globals_assembly_inputData = source => loadCache(source.assembly).inputData();
 
 export const resolve_help_key: GraphQLFieldResolver<any, any> = async (source, args, context) => {
     const key = args.key;

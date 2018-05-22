@@ -1,6 +1,25 @@
 import { GraphQLBoolean, GraphQLString, GraphQLList, GraphQLObjectType, GraphQLNonNull } from 'graphql';
 import * as CommonTypes from './CommonSchema';
-import { resolve_globals_assembly, resolve_help_key, resolve_ctinfo, resolve_globals_assembly_tfs, resolve_globals_assembly_cellCompartments, resolve_globals_assembly_cellTypeInfoArr, resolve_globals_assembly_chromCounts, resolve_globals_assembly_chromLens, resolve_globals_assembly_creHistBins, resolve_globals_assembly_geBiosampleTypes, resolve_globals_assembly_geBiosamples, resolve_globals_assembly_creBigBedsByCellType, resolve_globals_assembly_creFiles, resolve_globals_assembly_inputData, resolve_globals_helpKeys, resolve_globals_colors, resolve_globals_files, resolve_globals_inputData } from '../resolvers/globals';
+import {
+    resolve_globals_assembly,
+    resolve_help_key,
+    resolve_ctinfo,
+    resolve_globals_assembly_tfs,
+    resolve_globals_assembly_cellCompartments,
+    resolve_globals_assembly_cellTypeInfoArr,
+    resolve_globals_assembly_chromCounts,
+    resolve_globals_assembly_chromLens,
+    resolve_globals_assembly_creHistBins,
+    resolve_globals_assembly_geBiosampleTypes,
+    resolve_globals_assembly_geBiosamples,
+    resolve_globals_assembly_creBigBedsByCellType,
+    resolve_globals_assembly_creFiles,
+    resolve_globals_assembly_inputData,
+    resolve_globals_helpKeys,
+    resolve_globals_colors,
+    resolve_globals_files,
+    resolve_globals_inputData,
+} from '../resolvers/globals';
 const GraphQLJSON = require('graphql-type-json');
 
 export const AssemblySpecificGlobalsResponse = new GraphQLObjectType({
@@ -108,7 +127,8 @@ export const GlobalsResponse = new GraphQLObjectType({
             type: new GraphQLNonNull(HelpKeys),
             resolve: resolve_globals_helpKeys,
         },
-        colors: {type: new GraphQLNonNull(GraphQLJSON),
+        colors: {
+            type: new GraphQLNonNull(GraphQLJSON),
             resolve: resolve_globals_colors,
         },
         files: {
