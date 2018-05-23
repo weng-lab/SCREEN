@@ -228,7 +228,9 @@ export async function find_celltype(assembly, q, type: 'ccre' | 'ge', partial = 
         const r = await db.any(query, [q]);
         const ret_celltypes: any[] = [];
         r.forEach(ret => {
-            ret_celltypes.push({ input: q, sm: ret.sm, assembly, gecelltype: ret.celltype });
+            type === 'ccre'
+                ? ret_celltypes.push({ input: q, sm: ret.sm, assembly, celltype: ret.celltype })
+                : ret_celltypes.push({ input: q, sm: ret.sm, assembly, gecelltype: ret.celltype });
         });
         return { s: s_in, celltypes: ret_celltypes };
     }
@@ -254,7 +256,9 @@ export async function find_celltype(assembly, q, type: 'ccre' | 'ge', partial = 
 
     const rettokens: any[] = [];
     Object.keys(ret_celltypes).forEach(input => {
-        rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, gecelltype: ret_celltypes[input].celltype });
+        type === 'ccre'
+        ? rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, celltype: ret_celltypes[input].celltype })
+        : rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, gecelltype: ret_celltypes[input].celltype });
     });
     return { s: unused_toks.join(' '), celltypes: rettokens };
 }
