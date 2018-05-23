@@ -144,7 +144,7 @@ function getCacheMap(assembly): loadablecache {
             new Promise(async resolve => {
                 resolve({
                     peak: await Common.tfHistCounts(assembly, 'peak'),
-                    cistrome: {},
+                    cistrome: await Common.tfHistCounts(assembly, 'cistrome'),
                 });
             }),
 
