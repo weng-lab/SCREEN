@@ -49,16 +49,16 @@ export function resolve_data_range(source) {
 }
 
 export function resolve_data_ctspecific(source) {
-    const { ct, dnase_zscore, promoter_zscore, enhancer_zscore, ctcf_zscore } = source;
+    const { ct, dnase_zscore, h3k4me3_zscore, h3k27ac_zscore, ctcf_zscore } = source;
     if (!ct) {
         return undefined;
     }
-    const maxz = Math.max(dnase_zscore || -11, promoter_zscore || -11, enhancer_zscore || -11, ctcf_zscore || -11);
+    const maxz = Math.max(dnase_zscore || -11, h3k4me3_zscore || -11, h3k27ac_zscore || -11, ctcf_zscore || -11);
     return {
         ct,
         dnase_zscore,
-        promoter_zscore,
-        enhancer_zscore,
+        h3k4me3_zscore,
+        h3k27ac_zscore,
         ctcf_zscore,
         maxz,
     };

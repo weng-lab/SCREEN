@@ -60,16 +60,10 @@ const getCtSpecificOrderBy = (exp, ctindex) =>
         h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
         ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
     }[exp]);
-const ctexps = {
-    dnase: 'dnase',
-    promoter: 'h3k4me3',
-    enhancer: 'h3k27ac',
-    ctcf: 'ctcf',
-};
+const ctexps = ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf'];
 const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
     j = j.ctexps || {};
-    for (const name of Object.keys(ctexps)) {
-        const exp = ctexps[name];
+    for (const name of ctexps) {
         if (!(ct in ctmap[name])) {
             console.log(ct, 'not in ctmap ', name);
             continue;
@@ -85,12 +79,12 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
             let startWhere;
             let endWhere;
             if (!isclose(start, minDefault)) {
-                startWhere = `cre.${exp}_zscores[${ctindex}] >= $<${exp}_zscores_${ctindex}_start>`;
-                params[`${exp}_zscores_${ctindex}_start`] = start;
+                startWhere = `cre.${name}_zscores[${ctindex}] >= $<${name}_zscores_${ctindex}_start>`;
+                params[`${name}_zscores_${ctindex}_start`] = start;
             }
             if (!isclose(end, maxDefault)) {
-                endWhere = `cre.${exp}_zscores[${ctindex}] <= $<${exp}_zscores_${ctindex}_end>`;
-                params[`${exp}_zscores_${ctindex}_end`] = end;
+                endWhere = `cre.${name}_zscores[${ctindex}] <= $<${name}_zscores_${ctindex}_end>`;
+                params[`${name}_zscores_${ctindex}_end`] = end;
             }
             if (startWhere && endWhere) {
                 wheres.push(`(${startWhere} and ${endWhere}`);
@@ -165,11 +159,11 @@ export const buildWhereStatement = (
                 col = 'dnase_zscores';
                 break;
             case 'promoter_zscore':
-                name = 'promoter';
+                name = 'h3k4me3';
                 col = 'h3k4me3_zscores';
                 break;
             case 'enhancer_zscore':
-                name = 'enhancer';
+                name = 'h3k27ac';
                 col = 'h3k27ac_zscores';
                 break;
             case 'ctcf_zscore':
@@ -208,15 +202,14 @@ export const buildWhereStatement = (
     // Ctspecific data
     if (ct) {
         const ctspecificfields: any[] = [];
-        for (const name of Object.keys(ctexps)) {
+        for (const name of ctexps) {
             if (!(ct in ctmap[name])) {
                 continue;
             }
             const ctindex = ctmap[name][ct];
-            const exp = ctexps[name];
-            fields.push(`cre.${exp}_zscores[${ctindex}] as ${name + '_zscore'}`);
-            ctspecificfields.push(`cre.${exp}_zscores[${ctindex}]`);
-            groupBy.push(`cre.${exp}_zscores[${ctindex}]`);
+            fields.push(`cre.${name}_zscores[${ctindex}] as ${name + '_zscore'}`);
+            ctspecificfields.push(`cre.${name}_zscores[${ctindex}]`);
+            groupBy.push(`cre.${name}_zscores[${ctindex}]`);
         }
         fields.push(`'${ct}' as ct`);
     }
@@ -266,8 +259,8 @@ export type dbcre = {
     gene_pc_id: number[];
     ct: string;
     dnase_zscore?: number;
-    promoter_zscore?: number;
-    enhancer_zscore?: number;
+    h3k4me3_zscore?: number;
+    h3k27ac_zscore?: number;
     ctcf_zscore?: number;
     accession: string;
     isproximal: boolean;

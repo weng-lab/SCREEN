@@ -28,21 +28,21 @@ class CREDetails {
         return await this._coord;
     }
 
-    static getCtData = (ctvalue, ctmap, rankkey, ranks, ctmapkey) =>
-        ctvalue in ctmap[ctmapkey] ? ranks[rankkey][ctmap[ctmapkey][ctvalue] - 1] : undefined;
+    static getCtData = (ctvalue, ctmap, key, ranks) =>
+        ctvalue in ctmap[key] ? ranks[key][ctmap[key][ctvalue] - 1] : undefined;
 
     async topTissues() {
         const c = loadCache(this.assembly);
         const ctmap = await c.ctmap();
         const datasets = await c.datasets();
         const coord = await this.coord();
-        // ['enhancer', 'h3k4me3', 'h3k27ac', 'promoter', 'dnase', 'insulator', 'ctcf']
+        // ['h3k4me3', 'h3k27ac', 'dnase', 'ctcf']
         const ranks = await DbCommon.creRanks(this.assembly, this.accession);
         const data = datasets.globalCellTypeInfoArr.map(ct => {
-            const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks, 'dnase');
-            const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks, 'promoter');
-            const h3k27ac = CREDetails.getCtData(ct.value, ctmap, 'h3k27ac', ranks, 'enhancer');
-            const ctcf = CREDetails.getCtData(ct.value, ctmap, 'ctcf', ranks, 'ctcf');
+            const dnase = CREDetails.getCtData(ct.value, ctmap, 'dnase', ranks);
+            const h3k4me3 = CREDetails.getCtData(ct.value, ctmap, 'h3k4me3', ranks);
+            const h3k27ac = CREDetails.getCtData(ct.value, ctmap, 'h3k27ac', ranks);
+            const ctcf = CREDetails.getCtData(ct.value, ctmap, 'ctcf', ranks);
             return {
                 ct,
                 dnase,

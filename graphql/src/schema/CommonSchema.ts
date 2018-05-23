@@ -304,12 +304,12 @@ export const ctSpecific = new GraphQLObjectType({
             description: 'Dnase zscore in the celltype, or null if not available',
             type: GraphQLFloat,
         },
-        promoter_zscore: {
-            description: 'Promoter zscore in the celltype, or null if not available',
+        h3k4me3_zscore: {
+            description: 'h3k4me3 zscore in the celltype, or null if not available',
             type: GraphQLFloat,
         },
-        enhancer_zscore: {
-            description: 'Enhancer zscore in the celltype, or null if not available',
+        h3k27ac_zscore: {
+            description: 'h3k27ac zscore in the celltype, or null if not available',
             type: GraphQLFloat,
         },
         ctcf_zscore: {

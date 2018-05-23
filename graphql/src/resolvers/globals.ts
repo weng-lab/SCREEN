@@ -57,7 +57,8 @@ export const resolve_help_key: GraphQLFieldResolver<any, any> = async (source, a
 export const resolve_ctinfo: GraphQLFieldResolver<any, any> = async (source, args) => {
     const cellType = args.cellType;
     if (cellType === 'none') return undefined;
-    const result = (await source.cellTypeInfoArr).filter(ct => ct.value === cellType);
+    const cellTypeInfoArr = await loadCache(source.assembly).datasets().then(d => d.globalCellTypeInfoArr)
+    const result = cellTypeInfoArr.filter(ct => ct.value === cellType);
     if (result.length == 0) {
         throw new UserError(cellType, ' does not exist!');
     }
