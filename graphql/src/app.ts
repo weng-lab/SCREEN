@@ -63,7 +63,7 @@ const cors = function(req, res, next) {
 
 useRaven && app.use(Raven.requestHandler());
 
-app.get('/graphql', graphiqlExpress(req => ({ endpointURL: req.originalUrl.split('?')[0] })));
+app.get('/graphql', graphiqlExpress(req => ({ endpointURL: (req && req.originalUrl ? req.originalUrl.split('?')[0] : '/graphql') })));
 
 app.use('/graphql', cors);
 app.use(
