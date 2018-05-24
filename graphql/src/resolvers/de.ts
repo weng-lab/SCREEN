@@ -78,7 +78,7 @@ class DE {
         });
     }
 
-    parseCE(typ, c: dbcre & { zscore_1: number; zscore_2: number; }) {
+    parseCE(typ, c: dbcre & { zscore_1: number; zscore_2: number }) {
         const radius = (c.end - c.start) / 2;
         return {
             center: radius + c.start,
