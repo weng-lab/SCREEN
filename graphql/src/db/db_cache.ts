@@ -60,28 +60,15 @@ export type ByFunction<T> = { [P in keyof T]: () => T[P] };
 export type loadablecache = ByFunction<Promisify<cache>>;
 export type loadableglobalcache = ByFunction<Promisify<globalcache>>;
 
-const cacheKeys: Array<keyof cache> = [
-    'chromCounts',
-    'creHist',
-    'tf_list',
-    'datasets',
-    'rankMethodToCellTypes',
-    'rankMethodToIDxToCellType',
-    'ensemblToGene',
-    'nineState',
-    'filesList',
-    'inputData',
-    'geBiosampleTypes',
-    'geBiosamples',
-    'geneIDsToApprovedSymbol',
-    'tfHistCounts',
-    'creBigBeds',
-    'ctmap',
-    'ctsTable',
-    'de_ctidmap',
-    'gwas_studies',
-];
-
+export type Biosample = {
+    name: string;
+    celltypevalue: string;
+    count: number;
+    is_ninestate: boolean;
+    is_intersection_peak: boolean;
+    is_intersection_cistrome: boolean;
+    is_rnaseq: boolean;
+};
 export type cache = {
     chromCounts: Record<string, number>;
     creHist: any;
@@ -113,6 +100,7 @@ export type cache = {
     creBigBeds: any;
     ctmap: any;
     ctsTable: any;
+    biosamples: Record<string, Biosample>;
     de_ctidmap: any;
     gwas_studies: any;
 };
@@ -153,13 +141,13 @@ function getCacheMap(assembly): loadablecache {
         ctmap: () => Common.makeCtMap(assembly),
         ctsTable: () => Common.makeCTStable(assembly),
 
+        biosamples: () => Common.makeBiosamplesMap(assembly),
+
         de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
 
         gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve(undefined),
     };
 }
-
-const globalcacheKeys: Array<keyof globalcache> = ['colors', 'helpKeys', 'files', 'inputData'];
 
 export type globalcache = {
     colors: any;
@@ -219,13 +207,19 @@ export function prepareCache() {
         return;
     }
     try {
-        const hg19 = getCache<loadablecache>(cacheKeys, cacheLoader(getCacheMap('hg19')));
-        const mm10 = getCache<loadablecache>(cacheKeys, cacheLoader(getCacheMap('mm10')));
+        const hg19map = getCacheMap('hg19');
+        const mm10map = getCacheMap('mm10');
+        const hg19 = getCache<loadablecache>(Object.keys(hg19map) as (keyof cache)[], cacheLoader(hg19map));
+        const mm10 = getCache<loadablecache>(Object.keys(mm10map) as (keyof cache)[], cacheLoader(mm10map));
         caches = {
             hg19: hg19,
             mm10: mm10,
         };
-        globalcache = getCache<loadableglobalcache>(globalcacheKeys, globalcacheLoader(getGlobalCacheMap()));
+        const globalmap = getGlobalCacheMap();
+        globalcache = getCache<loadableglobalcache>(
+            Object.keys(globalmap) as (keyof globalcache)[],
+            globalcacheLoader(globalmap)
+        );
 
         console.log('Cache functions loaded: ', Object.keys(caches));
     } catch (e) {

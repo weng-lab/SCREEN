@@ -64,11 +64,7 @@ class Gwas {
         const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct !== 'none' ? ct : undefined, ctmap);
 
         const activeCres = cres.filter(
-            a =>
-                !ct ||
-                (a.promoter_zscore || 0) > 1.64 ||
-                (a.enhancer_zscore || 0) > 1.64 ||
-                (a.dnase_zscore || 0) > 1.64
+            a => !ct || (a.h3k4me3_zscore || 0) > 1.64 || (a.h3k27ac_zscore || 0) > 1.64 || (a.dnase_zscore || 0) > 1.64
         );
 
         // accession, snp, geneid, zscores

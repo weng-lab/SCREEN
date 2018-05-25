@@ -4,7 +4,7 @@ import { UserError } from 'graphql-errors';
 import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
 import { getAccessions, getSNPs } from '../db/db_suggestions';
-import { Assembly } from '../db/db_cache';
+import { Assembly, loadCache } from '../db/db_cache';
 
 const re_fullrange = /^(chr[\dxy]\d?)[\s]*[\:]?[\s]*([0-9,\.]+)?[\s\-]*([0-9,\.]+)?/i;
 const re_chr_only = /^chr/i;
@@ -239,17 +239,13 @@ export async function parse(assembly: Assembly, q: string, shouldError: boolean,
         s = found_snps.s;
         Object.values(found_snps.snps).forEach(token => rettoks.push(token));
 
-        const found_genes = await find_genes(assembly, s.trim(), partial);
-        s = found_genes.s;
-        Object.values(found_genes.genetokens).forEach(token => rettoks.push(token));
-
-        const found_celltypes_ccre = await Parse.find_celltype(assembly, s, 'ccre', partial);
+        const found_celltypes_ccre = await Parse.find_celltype(assembly, s, partial);
         s = found_celltypes_ccre.s;
         Object.values(found_celltypes_ccre.celltypes).forEach(token => rettoks.push(token));
 
-        const found_celltypes_ge = await Parse.find_celltype(assembly, s, 'ge', partial);
-        s = found_celltypes_ge.s;
-        Object.values(found_celltypes_ge.celltypes).forEach(token => rettoks.push(token));
+        const found_genes = await find_genes(assembly, s.trim(), partial);
+        s = found_genes.s;
+        Object.values(found_genes.genetokens).forEach(token => rettoks.push(token));
 
         if (s.length !== 0 && !partial) {
             s.split(' ').forEach(input => rettoks.push({ input, sm: 1, assembly, failed: true }));

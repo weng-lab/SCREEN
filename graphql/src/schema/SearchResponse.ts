@@ -21,7 +21,6 @@ const resolveSearchToken = d => {
     const accession = d.accession;
     const snp = d.snp;
     const celltype = d.celltype;
-    const gecelltype = d.gecelltype;
     const range = d.range;
     if (gene) {
         return SingleGeneToken;
@@ -36,10 +35,7 @@ const resolveSearchToken = d => {
         return SNPToken;
     }
     if (celltype) {
-        return CellTypeToken;
-    }
-    if (gecelltype) {
-        return GeCellTypeToken;
+        return BiosampleToken;
     }
     if (range) {
         return RangeToken;
@@ -169,10 +165,10 @@ export const SNPToken = new GraphQLObjectType({
     }),
 });
 
-export const CellTypeToken = new GraphQLObjectType({
-    name: 'CellTypeToken',
+export const BiosampleToken = new GraphQLObjectType({
+    name: 'BiosampleToken',
     interfaces: [SearchToken],
-    description: 'Will be returned when the token matches a celltype',
+    description: 'Will be returned when the token matches a biosample',
     fields: () => ({
         input: {
             type: new GraphQLNonNull(GraphQLString),
@@ -180,20 +176,11 @@ export const CellTypeToken = new GraphQLObjectType({
         assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
         sm: { type: new GraphQLNonNull(GraphQLFloat) },
         celltype: { type: new GraphQLNonNull(GraphQLString) },
-    }),
-});
-
-export const GeCellTypeToken = new GraphQLObjectType({
-    name: 'GeCellTypeToken',
-    interfaces: [SearchToken],
-    description: 'Will be returned when the token matches a celltype from ge',
-    fields: () => ({
-        input: {
-            type: new GraphQLNonNull(GraphQLString),
-        },
-        assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
-        sm: { type: new GraphQLNonNull(GraphQLFloat) },
-        gecelltype: { type: new GraphQLNonNull(GraphQLString) },
+        celltypevalue: { type: new GraphQLNonNull(GraphQLString) },
+        is_ninestate: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_intersection_cistrome: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_intersection_peak: { type: new GraphQLNonNull(GraphQLBoolean) },
+        is_rnaseq: { type: new GraphQLNonNull(GraphQLBoolean) },
     }),
 });
 

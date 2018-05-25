@@ -1,5 +1,7 @@
 import { isclose } from '../utils';
 import { db } from './db';
+import { Assembly, Biosample, loadCache } from './db_cache';
+import { biosamplesQuery } from './db_common';
 
 export async function get_snpcoord(assembly, s) {
     const tableName = assembly + '_snps';
@@ -150,10 +152,17 @@ export async function try_find_gene(assembly, s) {
     return genes;
 }
 
-async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltypes, possible) {
+async function do_find_celltype(
+    query: string,
+    p: string[],
+    q: string,
+    unused_toks: string[],
+    ret_celltypes: Record<string, queryResult>,
+    possible: queryResult[]
+) {
     for (const i of Array(p.length).keys()) {
         const s = p.slice(-1 * (i + 1)).join(' ');
-        const r = await db.any(query, [s]);
+        const r = await db.any<queryResult>(query, [s]);
         if (r.length === 0) {
             if (possible.length === 0) {
                 console.assert(i === 0);
@@ -175,13 +184,16 @@ async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltyp
         if (possible.length === 0) {
             // Remove duplicates
             r.forEach(
-                res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
+                res =>
+                    (possible.map(c => c.biosample_term_name) as any).includes(res.biosample_term_name)
+                        ? true
+                        : possible.push(res)
             );
         } else {
-            const newcelltypes = r.map(c => c.celltype);
+            const newcelltypes = r.map(c => c.biosample_term_name);
             // Only keep results in which the celltype was not previously there, or was there and similarity increased
             const moresimilar = r.filter(res => {
-                const oldres = possible.filter(old => res.celltype == old.celltype);
+                const oldres = possible.filter(old => res.biosample_term_name == old.biosample_term_name);
                 if (oldres.length !== 0) {
                     // The old results contained this celltype, must make sure prob increased
                     return res.sm >= oldres[0].sm;
@@ -202,7 +214,10 @@ async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltyp
             } else {
                 possible.length = 0;
                 moresimilar.forEach(
-                    res => ((possible.map(c => c.celltype) as any).includes(res.celltype) ? true : possible.push(res))
+                    res =>
+                        possible.map(c => c.biosample_term_name).includes(res.biosample_term_name)
+                            ? true
+                            : possible.push(res)
                 );
             }
         }
@@ -210,40 +225,52 @@ async function do_find_celltype(tableName, query, p, q, unused_toks, ret_celltyp
     return false;
 }
 
-export async function find_celltype(assembly, q, type: 'ccre' | 'ge', partial = false) {
+type queryResult = {
+    biosample_term_name: string;
+    count: number;
+    id: string[];
+    type: string[];
+    synonyms: string[][];
+} & { sm: number };
+type celltypeResult = { input: string; assembly: Assembly; sm: number; celltype: string } & Biosample;
+export async function find_celltype(assembly, q, partial = false): Promise<{ s: string; celltypes: celltypeResult[] }> {
     q = q.trim();
     const s_in = q;
     if (q.length === 0) {
-        return { s: q, celltypes: {} };
+        return { s: q, celltypes: [] };
     }
-    const tableName = type === 'ccre' ? assembly + '_rankCellTypeIndexex' : assembly + '_rnaseq_metadata';
-    const query = `
-        SELECT DISTINCT cellType, similarity(LOWER(cellType), '${q}') AS sm
-        FROM ${tableName}
-        WHERE LOWER(cellType) % $1 OR LOWER(cellType) ~* $1
-        ORDER BY sm DESC
-        LIMIT 10
-    `;
+    const query = biosamplesQuery(
+        assembly,
+        'WHERE LOWER(biosample_term_name) % $1 OR LOWER(biosample_term_name) ~* $1',
+        [`similarity(LOWER(biosample_term_name), '${q}') AS sm`],
+        'ORDER BY sm DESC',
+        10
+    );
+    const rettokens: celltypeResult[] = [];
+    const allbiosamples = await loadCache(assembly).biosamples();
     if (partial) {
-        const r = await db.any(query, [q]);
-        const ret_celltypes: any[] = [];
+        const r = await db.any<queryResult>(query, [q]);
         r.forEach(ret => {
-            type === 'ccre'
-                ? ret_celltypes.push({ input: q, sm: ret.sm, assembly, celltype: ret.celltype })
-                : ret_celltypes.push({ input: q, sm: ret.sm, assembly, gecelltype: ret.celltype });
+            rettokens.push({
+                input: q,
+                assembly,
+                sm: ret.sm,
+                celltype: ret.biosample_term_name,
+                ...allbiosamples[ret.biosample_term_name],
+            });
         });
-        return { s: s_in, celltypes: ret_celltypes };
+        return { s: s_in, celltypes: rettokens };
     }
 
-    const unused_toks: Array<any> = [];
-    const ret_celltypes = {};
-    const possible: Array<any> = [];
+    const unused_toks: string[] = [];
+    const ret_celltypes: Record<string, queryResult> = {};
+    const possible: queryResult[] = [];
     while (true) {
         if (q.length == 0) {
             break;
         }
         const p = q.trim().split(' ');
-        q = await do_find_celltype(tableName, query, p, q, unused_toks, ret_celltypes, possible);
+        q = await do_find_celltype(query, p, q, unused_toks, ret_celltypes, possible);
 
         if (!q) {
             if (possible[0]) {
@@ -254,11 +281,15 @@ export async function find_celltype(assembly, q, type: 'ccre' | 'ge', partial = 
         }
     }
 
-    const rettokens: any[] = [];
     Object.keys(ret_celltypes).forEach(input => {
-        type === 'ccre'
-        ? rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, celltype: ret_celltypes[input].celltype })
-        : rettokens.push({ input, sm: ret_celltypes[input].sm, assembly, gecelltype: ret_celltypes[input].celltype });
+        const res = ret_celltypes[input];
+        rettokens.push({
+            input,
+            assembly,
+            sm: res.sm,
+            celltype: res.biosample_term_name,
+            ...allbiosamples[res.biosample_term_name],
+        });
     });
     return { s: unused_toks.join(' '), celltypes: rettokens };
 }

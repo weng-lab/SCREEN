@@ -2,7 +2,7 @@ import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
-import { loadCache } from './db_cache';
+import { loadCache, Biosample, Assembly } from './db_cache';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -140,7 +140,7 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
             FROM ${table}
         `;
 
-    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod; }> = await db.many(q);
+    const res: Array<{ idx: number; celltype: string; rankmethod: RankMethod }> = await db.many(q);
     const ret = {} as Record<RankMethod, Record<celltype, ctindex>>;
     for (const r of res) {
         const rank_method = r.rankmethod;
@@ -152,7 +152,7 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
 
 export type assaytype = 'dnase' | 'h3k4me3' | 'h3k27ac' | 'ctcf';
 export async function makeCtMap(assembly): Promise<Record<assaytype, Record<celltype, ctindex>>> {
-    const amap: Partial<Record<RankMethod, assaytype>>  = {
+    const amap: Partial<Record<RankMethod, assaytype>> = {
         DNase: 'dnase',
         H3K4me3: 'h3k4me3',
         H3K27ac: 'h3k27ac',
@@ -161,10 +161,13 @@ export async function makeCtMap(assembly): Promise<Record<assaytype, Record<cell
     const rmInfo = await rankMethodToIDxToCellType(assembly);
     const ret = Object.keys(rmInfo)
         .filter(k => k in amap)
-        .reduce((obj, k) => {
-            obj[amap[k]] = rmInfo[k];
-            return obj;
-        }, {} as Record<assaytype, Record<celltype, ctindex>>);
+        .reduce(
+            (obj, k) => {
+                obj[amap[k]] = rmInfo[k];
+                return obj;
+            },
+            {} as Record<assaytype, Record<celltype, ctindex>>
+        );
     return ret;
 }
 
@@ -176,6 +179,90 @@ export async function makeCTStable(assembly) {
     `;
     const res = await db.many(q);
     return res.reduce((obj, r) => ({ ...obj, [r['celltypename']]: r['pgidx'] }), {});
+}
+// TODO: add de
+// Need to resolve cistrome metadata problems
+// Example: GSM1003744; Labeled as K562, but mouse
+/*
+export const biosamplesQuery = (assembly: Assembly, where?: string, fields?: string[], orderby?: string, limit?: number): string => {
+    const q = `
+        SELECT DISTINCT biosample_term_name, value, count(*), array_agg(t) as type, array_agg(id) as id, jsonb_agg(synonyms) as synonyms${fields ? ', ' + fields.join(', ') : ''}
+        FROM (
+            SELECT biosample_term_name, biosample_term_name as value, 'peak' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_peakintersectionsmetadata
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'cistrome' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_cistromeintersectionsmetadata
+            UNION ALL
+            SELECT celltypedesc as biosample_term_name, celltypename as value, 'ninestate' as t, fileid as id, synonyms as synonyms
+            FROM ${assembly}_datasets
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'rnaseq' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_rnaseq_metadata
+        ) cts
+        ${where || ''}
+        GROUP BY biosample_term_name
+        ${orderby || ''}
+        ${limit ? 'LIMIT ' + limit : ''}
+    `;
+    return q;
+};
+*/
+export const biosamplesQuery = (
+    assembly: Assembly,
+    where?: string,
+    fields?: string[],
+    orderby?: string,
+    limit?: number
+): string => {
+    const q = `
+        SELECT DISTINCT biosample_term_name, array_agg(value) as values, count(*), array_agg(t) as type, array_agg(id) as id, jsonb_agg(synonyms) as synonyms${
+            fields ? ', ' + fields.join(', ') : ''
+        }
+        FROM (
+            SELECT biosample_term_name, biosample_term_name as value, 'peak' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_peakintersectionsmetadata
+            UNION ALL
+            SELECT celltypedesc as biosample_term_name, celltypename as value, 'ninestate' as t, fileid as id, synonyms as synonyms
+            FROM ${assembly}_datasets
+            UNION ALL
+            SELECT biosample_term_name, biosample_term_name as value, 'rnaseq' as t, fileid as id, null::jsonb as synonyms
+            FROM ${assembly}_rnaseq_metadata
+        ) cts
+        ${where || ''}
+        GROUP BY biosample_term_name
+        ${orderby || ''}
+        ${limit ? 'LIMIT ' + limit : ''}
+    `;
+    return q;
+};
+
+export async function makeBiosamplesMap(assembly): Promise<Record<string, Biosample>> {
+    const q = biosamplesQuery(assembly);
+    const res = await db.any<{
+        biosample_term_name: string;
+        values: string[];
+        count: number;
+        type: string[];
+        id: string[];
+        synonyms: string[][];
+    }>(q);
+    const ret = res.reduce(
+        (prev, curr) => {
+            prev[curr.biosample_term_name] = {
+                name: curr.biosample_term_name,
+                celltypevalue: curr.values.filter(v => !!v)[0] || curr.biosample_term_name,
+                count: curr.count,
+                is_ninestate: curr.type.includes('ninestate'),
+                is_intersection_peak: curr.type.includes('peak'),
+                is_intersection_cistrome: curr.type.includes('cistrome'),
+                is_rnaseq: curr.type.includes('rnaseq'),
+            };
+            return prev;
+        },
+        {} as Record<string, Biosample>
+    );
+    return ret;
 }
 
 export async function genePos(assembly, gene) {
@@ -204,11 +291,12 @@ export async function genePos(assembly, gene) {
 }
 
 async function allDatasets(assembly, dectmap) {
-    const todect = s => s
-        .replace('C57BL/6_', '')
-        .replace('embryo_', '')
-        .replace('_days', '')
-        .replace('postnatal_', '');
+    const todect = s =>
+        s
+            .replace('C57BL/6_', '')
+            .replace('embryo_', '')
+            .replace('_days', '')
+            .replace('postnatal_', '');
 
     const makeDataset = r => {
         return {
