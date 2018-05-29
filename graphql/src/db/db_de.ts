@@ -48,7 +48,12 @@ export async function genesInRegion(assembly, chrom, start, stop) {
     return db.many(q, [chrom, start, stop]);
 }
 
-export async function nearbyCREs(assembly, range, cols, isProximalOrDistal): Promise<Array<dbcre & { zscore_1: number; zscore_2: number; }>> {
+export async function nearbyCREs(
+    assembly,
+    range,
+    cols,
+    isProximalOrDistal
+): Promise<Array<dbcre & { zscore_1: number; zscore_2: number }>> {
     const c = await cache(assembly);
     const wheres = [`isProximal is ${isProximalOrDistal}`];
     const cres = await getCreTable(assembly, c, { range }, {}, { fields: cols, wheres });
