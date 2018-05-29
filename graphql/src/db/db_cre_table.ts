@@ -29,7 +29,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
         const exp = map[name];
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0; // must match slider default
+            const maxDefault = name === 'dnase' ? 15.0 : 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
@@ -43,7 +43,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
                 params[`rank_${name}_end`] = end;
             }
             if (startWhere && endWhere) {
-                wheres.push(`(${startWhere} and ${endWhere}`);
+                wheres.push(`(${startWhere} and ${endWhere})`);
             } else if (startWhere) {
                 wheres.push(`(${startWhere})`);
             } else if (endWhere) {
@@ -53,13 +53,6 @@ const notCtSpecificRanks = (wheres, params, j) => {
     }
 };
 
-const getCtSpecificOrderBy = (exp, ctindex) =>
-    ({
-        dnase: `cre.${exp}_zscores[${ctindex}] as dnase_zscore`,
-        h3k4me3: `cre.${exp}_zscores[${ctindex}] as promoter_zscore`,
-        h3k27ac: `cre.${exp}_zscores[${ctindex}] as enhancer_zscore`,
-        ctcf: `cre.${exp}_zscores[${ctindex}] as ctcf_zscore`,
-    }[exp]);
 const ctexps = ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf'];
 const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
     j = j.ctexps || {};
@@ -69,11 +62,10 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
             continue;
         }
         const ctindex = ctmap[name][ct];
-        // fields.push(getCtSpecificOrderBy(exp, ctindex));
 
         if (`rank_${name}_start` in j || `rank_${name}_end` in j) {
             const minDefault = -10.0; // must match slider default
-            const maxDefault = 10.0; // must match slider default
+            const maxDefault = name === 'dnase' ? 15.0 : 10.0; // must match slider default
             const start = j[`rank_${name}_start`] || minDefault;
             const end = j[`rank_${name}_end`] || maxDefault;
             let startWhere;
@@ -87,7 +79,7 @@ const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
                 params[`${name}_zscores_${ctindex}_end`] = end;
             }
             if (startWhere && endWhere) {
-                wheres.push(`(${startWhere} and ${endWhere}`);
+                wheres.push(`(${startWhere} and ${endWhere})`);
             } else if (startWhere) {
                 wheres.push(`(${startWhere})`);
             } else if (endWhere) {
