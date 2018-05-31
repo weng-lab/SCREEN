@@ -14,8 +14,7 @@ const datarangeexample = `
 query rangeSearchAndData(
     $assembly: Assembly!,
     $dataRange: DataParameters!,
-    $dataCellType: DataParameters!,
-    $cellType: String!
+    $dataCellType: DataParameters!
   ) {
     # We can search by a range
     dataSearch: data(
@@ -38,7 +37,7 @@ query rangeSearchAndData(
           start,
           end
         }
-        ctspecific(cellType: $cellType) {
+        ctspecific {
           ct
           dnase_zscore
           promoter_zscore
@@ -52,46 +51,51 @@ query rangeSearchAndData(
 const datarangevariables = `{
     "assembly": "hg19",
     "dataRange": {
-        "range": {
-            "chrom": "chr1",
-            "start": 5,
-            "end": 5000000
-        }
+      "range": {
+        "chrom": "chr1",
+        "start": 5,
+        "end": 5000000
+      }
     },
     "dataCellType": {
-        "range": {
-            "chrom": "chr1",
-            "start": 5,
-            "end": 5000000
-        }
-    },
-    "cellType": "K562"
+      "range": {
+        "chrom": "chr1",
+        "start": 5,
+        "end": 5000000
+      },
+      "ctspecific": "K562"
+    }
 }`;
 
 const credetailsexample = `
 query credetails {
-    credetails(accessions: ["EH37E0321285"]) {
-      info {
-        range {
-          chrom
-          start
-          end
+    credetails(accession: "EH37E0321285") {
+      range {
+        chrom
+        start
+        end
+      }
+     	details {
+        topTissues {
+          ct {
+            value
+            displayName
+          }
+          dnase
+          h3k4me3
+          h3k27ac
+          ctcf
         }
-        ctspecific(cellType: "K562") {
-          ct
-          dnase_zscore
-          promoter_zscore
-          enhancer_zscore
-          ctcf_zscore
+        nearbyGenomic {
+          nearby_genes {
+            distance
+            gene {
+              gene
+            }
+            pc
+          }
         }
       }
-      topTissues {
-        dnase { ct { displayName }, one },
-        ctcf { ct { displayName }, one, two },
-        promoter { ct { displayName }, one, two },
-        enhancer { ct { displayName }, one, two },
-      }
-      nearbyGenomic
     }
   }
 `;
