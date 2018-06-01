@@ -112,8 +112,11 @@ where authorPubmedTrait = %s
         with getcursor(self.pg.DBCONN, "gwas") as curs:
             q = """
 SELECT count(0)
+FROM (
+SELECT DISTINCT ACCESSION
 FROM {tn}
 where authorPubmedTrait = %s
+) accessions
 """.format(tn=self.assembly + "_gwas_overlap")
             curs.execute(q, (gwas_study, ))
             return [r[0] for r in curs.fetchall()]
