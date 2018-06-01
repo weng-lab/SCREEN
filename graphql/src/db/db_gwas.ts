@@ -32,8 +32,11 @@ export async function numCresOverlap(assembly, gwas_study) {
     const tableName = assembly + '_gwas_overlap';
     const q = `
         SELECT count(0)
-        FROM ${tableName}
-        where authorPubmedTrait = $1
+        FROM (
+            SELECT DISTINCT accession
+            FROM ${tableName}
+            where authorPubmedTrait = $1
+        ) accessions
     `;
     return await db.oneOrNone(q, [gwas_study], r => (r ? +r.count : 0));
 }
