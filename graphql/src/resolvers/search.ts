@@ -1,4 +1,4 @@
-import { checkChrom, isaccession, checkCreAssembly, maybeacceession } from '../utils';
+import { checkChrom, checkCreAssembly } from '../utils';
 import { GraphQLFieldResolver } from 'graphql';
 import { UserError } from 'graphql-errors';
 import * as Parse from '../db/db_parse';
@@ -105,7 +105,7 @@ export async function find_accessions(assembly, s: string, shouldError: boolean 
             const match_accession_partial = re_accession_partial.exec(s);
             if (match_accession_partial) {
                 const accession = match_accession_partial[0];
-                if (maybeacceession(accession) && checkCreAssembly(assembly, accession.toLowerCase())) {
+                if (checkCreAssembly(assembly, accession.toLowerCase())) {
                     const accessions_suggestions = await getAccessions(assembly, accession);
                     accessions_suggestions.forEach(suggestion => {
                         accessions.push({

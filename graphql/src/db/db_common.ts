@@ -565,7 +565,7 @@ export async function genesInTad(assembly, accession, allOrPc, { geneids }) {
 
 export async function distToNearbyCREs(assembly, accession, coord, halfWindow) {
     const expanded = CoordUtils.expanded(coord, halfWindow);
-    const ctmap = loadCache(assembly).ctmap();
+    const ctmap = await loadCache(assembly).ctmap();
     const cres = await getCreTable(
         assembly,
         ctmap,

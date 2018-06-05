@@ -14,14 +14,6 @@ export const isaccession = (s: string) => {
     return s.startsWith('eh37e') || s.startsWith('em10e') || s.startsWith('eh38e');
 };
 
-export const maybeacceession = (s: string) => {
-    if (s.length < 9) {
-        return false;
-    }
-    s = s.toLowerCase();
-    return s.startsWith('eh37e') || s.startsWith('em10e') || s.startsWith('eh38e');
-};
-
 export const isclose = (a, b) => Math.abs(a - b) < Number.EPSILON;
 
 const natsortcollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });

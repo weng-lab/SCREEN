@@ -98,7 +98,7 @@ export type cache = {
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;
-    ctmap: any;
+    ctmap: Record<string, any>;
     ctsTable: any;
     biosamples: Record<string, Biosample>;
     de_ctidmap: any;

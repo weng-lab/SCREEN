@@ -103,7 +103,7 @@ const where = (wheres, params, chrom, start, stop) => {
 
 export const buildWhereStatement = (
     assembly,
-    ctmap,
+    ctmap: Record<string, any>,
     j: any,
     chrom: string | undefined,
     start: number | undefined,
@@ -265,7 +265,7 @@ export type dbcre = {
 
 export async function getCreTable(
     assembly: string,
-    ctmap: any,
+    ctmap: Record<string, any>,
     j,
     pagination,
     extra?: { wheres: string[]; fields: string[] }

@@ -242,25 +242,12 @@ export async function find_celltype(assembly, q, partial = false): Promise<{ s: 
     const query = biosamplesQuery(
         assembly,
         'WHERE LOWER(biosample_term_name) % $1 OR LOWER(biosample_term_name) ~* $1',
-        [`similarity(LOWER(biosample_term_name), '${q}') AS sm`],
+        [`similarity(LOWER(biosample_term_name), $1) AS sm`],
         'ORDER BY sm DESC',
         10
     );
     const rettokens: celltypeResult[] = [];
     const allbiosamples = await loadCache(assembly).biosamples();
-    if (partial) {
-        const r = await db.any<queryResult>(query, [q]);
-        r.forEach(ret => {
-            rettokens.push({
-                input: q,
-                assembly,
-                sm: ret.sm,
-                celltype: ret.biosample_term_name,
-                ...allbiosamples[ret.biosample_term_name],
-            });
-        });
-        return { s: s_in, celltypes: rettokens };
-    }
 
     const unused_toks: string[] = [];
     const ret_celltypes: Record<string, queryResult> = {};
@@ -291,5 +278,5 @@ export async function find_celltype(assembly, q, partial = false): Promise<{ s: 
             ...allbiosamples[res.biosample_term_name],
         });
     });
-    return { s: unused_toks.join(' '), celltypes: rettokens };
+    return { s: !partial ? unused_toks.join(' ') : q, celltypes: rettokens };
 }
