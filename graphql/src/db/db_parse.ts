@@ -1,4 +1,4 @@
-import { isclose } from '../utils';
+import { isclose, escapeRegExp } from '../utils';
 import { db } from './db';
 import { Assembly, Biosample, loadCache } from './db_cache';
 import { biosamplesQuery } from './db_common';
@@ -157,12 +157,14 @@ async function do_find_celltype(
     p: string[],
     q: string,
     unused_toks: string[],
-    ret_celltypes: Record<string, queryResult>,
-    possible: queryResult[]
+    ret_celltypes: celltypeResult[],
+    possible: queryResult[],
+    assembly: Assembly,
+    allbiosamples: Record<string, Biosample>
 ) {
     for (const i of Array(p.length).keys()) {
         const s = p.slice(-1 * (i + 1)).join(' ');
-        const r = await db.any<queryResult>(query, [s]);
+        const r = await db.any<queryResult>(query, [escapeRegExp(s)]);
         if (r.length === 0) {
             if (possible.length === 0) {
                 console.assert(i === 0);
@@ -172,8 +174,16 @@ async function do_find_celltype(
                     .join(' ')
                     .trim();
             } else {
-                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
-                possible.length = 0;
+                for (const po of possible) {
+                    ret_celltypes.push({
+                        input: p.slice(-1 * i).join(' '),
+                        assembly,
+                        sm: po.sm,
+                        celltype: po.biosample_term_name,
+                        ...allbiosamples[po.biosample_term_name],
+                    });
+                }
+                possible.length = 0; // Reset possible
                 q = p
                     .slice(0, -1 * i)
                     .join(' ')
@@ -182,13 +192,9 @@ async function do_find_celltype(
             return q;
         }
         if (possible.length === 0) {
-            // Remove duplicates
-            r.forEach(
-                res =>
-                    (possible.map(c => c.biosample_term_name) as any).includes(res.biosample_term_name)
-                        ? true
-                        : possible.push(res)
-            );
+            // If we didn't have any before, short-circuit just adding all
+            console.assert(new Set(r.map(res => res.biosample_term_name)).size === r.length); // No duplicates
+            possible.push(...r);
         } else {
             const newcelltypes = r.map(c => c.biosample_term_name);
             // Only keep results in which the celltype was not previously there, or was there and similarity increased
@@ -204,7 +210,15 @@ async function do_find_celltype(
             });
             if (moresimilar.length === 0) {
                 // If all existing cell types reduced in similiarity and no new celltypes emerged, then adding this token does nothing helpful
-                ret_celltypes[p.slice(-1 * i).join(' ')] = possible[0];
+                for (const po of possible) {
+                    ret_celltypes.push({
+                        input: p.slice(-1 * i).join(' '),
+                        assembly,
+                        sm: po.sm,
+                        celltype: po.biosample_term_name,
+                        ...allbiosamples[po.biosample_term_name],
+                    });
+                }
                 q = p
                     .slice(0, -1 * i)
                     .join(' ')
@@ -250,33 +264,27 @@ export async function find_celltype(assembly, q, partial = false): Promise<{ s: 
     const allbiosamples = await loadCache(assembly).biosamples();
 
     const unused_toks: string[] = [];
-    const ret_celltypes: Record<string, queryResult> = {};
     const possible: queryResult[] = [];
     while (true) {
         if (q.length == 0) {
             break;
         }
         const p = q.trim().split(' ');
-        q = await do_find_celltype(query, p, q, unused_toks, ret_celltypes, possible);
+        q = await do_find_celltype(query, p, q, unused_toks, rettokens, possible, assembly, allbiosamples);
 
         if (!q) {
-            if (possible[0]) {
-                // We fell off the end, but know we have possibles
-                ret_celltypes[p.join(' ')] = possible[0];
+            for (const po of possible) {
+                rettokens.push({
+                    input: p.join(' '),
+                    assembly,
+                    sm: po.sm,
+                    celltype: po.biosample_term_name,
+                    ...allbiosamples[po.biosample_term_name],
+                });
             }
             break;
         }
     }
 
-    Object.keys(ret_celltypes).forEach(input => {
-        const res = ret_celltypes[input];
-        rettokens.push({
-            input,
-            assembly,
-            sm: res.sm,
-            celltype: res.biosample_term_name,
-            ...allbiosamples[res.biosample_term_name],
-        });
-    });
-    return { s: !partial ? unused_toks.join(' ') : q, celltypes: rettokens };
+    return { s: !partial ? unused_toks.join(' ') : s_in, celltypes: rettokens };
 }

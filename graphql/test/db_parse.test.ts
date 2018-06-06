@@ -26,6 +26,8 @@ test('two tokens', async () => {
         s: '',
         celltypes: [
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549', input: 'A549', sm: 1 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'A549', sm: 0.192308 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with dexamethasone', input: 'A549', sm: 0.15625 }),
             expect.objectContaining({ assembly: 'hg19', celltype: 'K562', input: 'K562', sm: 1 }),
         ],
     };
@@ -41,6 +43,7 @@ test('two token cell type', async () => {
         s: '',
         celltypes: [
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'A549 ethanol', sm: .5 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549', input: 'A549 ethanol', sm: .384615 }),
         ]
     };
     expect(Object.keys(data)).toEqual(Object.keys(expected));
@@ -72,6 +75,7 @@ test('two cell types multiple tokens', async () => {
         s: '',
         celltypes: [
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'A549 ethanol', sm: .5 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549', input: 'A549 ethanol', sm: .384615 }),
             expect.objectContaining({ assembly: 'hg19', celltype: 'K562', input: 'K562', sm: 1 }),
         ]
     };
@@ -88,6 +92,7 @@ test('two cell types multiple tokens extra', async () => {
         s: '100',
         celltypes: [
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'A549 ethanol', sm: .5 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549', input: 'A549 ethanol', sm: .384615 }),
             expect.objectContaining({ assembly: 'hg19', celltype: 'K562', input: 'K562', sm: 1 }),
         ]
     };
@@ -105,6 +110,8 @@ test('two cell types multiple tokens interrupted', async () => {
         celltypes: [
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'ethanol', sm: .307692 }),
             expect.objectContaining({ assembly: 'hg19', celltype: 'A549', input: 'A549', sm: 1 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with ethanol', input: 'A549', sm: .192308 }),
+            expect.objectContaining({ assembly: 'hg19', celltype: 'A549 treated with dexamethasone', input: 'A549', sm: .15625 }),
             expect.objectContaining({ assembly: 'hg19', celltype: 'K562', input: 'K562', sm: 1 }),
         ]
     };

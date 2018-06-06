@@ -72,3 +72,5 @@ export const deepFreeze = o => {
     });
     return o;
 };
+
+export const escapeRegExp = str => str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
