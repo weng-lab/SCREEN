@@ -1,7 +1,8 @@
 import { isclose, escapeRegExp } from '../utils';
 import { db } from './db';
-import { Assembly, Biosample, loadCache } from './db_cache';
+import { Biosample, loadCache } from './db_cache';
 import { biosamplesQuery } from './db_common';
+import { Assembly } from '../types';
 
 export async function get_snpcoord(assembly, s) {
     const tableName = assembly + '_snps';

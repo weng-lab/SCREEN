@@ -27,7 +27,6 @@ import CreDetailsResponse from './CreDetailsResponse';
 import RampageResponse from './RampageResponse';
 import BedUploadResponse from './BedUploadResponse';
 import { TopGenesReplicateData } from './GeneTopResponse';
-import { SNP } from './SearchResponse';
 
 import { resolve_data } from '../resolvers/cretable';
 import { resolve_globals } from '../resolvers/globals';
@@ -196,7 +195,7 @@ const BaseType = new GraphQLObjectType({
             resolve: resolve_genetop,
         },
         snps: {
-            type: new GraphQLList(new GraphQLNonNull(SNP)),
+            type: new GraphQLList(new GraphQLNonNull(CommonTypes.SNP)),
             args: {
                 assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
                 id: { type: GraphQLString },

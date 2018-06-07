@@ -1,6 +1,7 @@
 import * as Common from './db_common';
 import { db } from './db';
 import { buildWhereStatement, dbcre } from './db_cre_table';
+import { Assembly } from '../types';
 
 export async function gwasStudies(assembly) {
     const tableName = assembly + '_gwas_studies';
@@ -65,7 +66,7 @@ export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: stri
         FROM ${tableNamefdr} fdr
         INNER JOIN ${tableNamepval} pval
         ON fdr.expid = pval.expid
-        ORDER BY fdr DESC, pval
+        ORDER BY fdr ASC, pval
     `;
     const res = await db.any(q);
     const cols = ['expID', 'ct', 'biosample_summary', 'fdr', 'pval'];
@@ -115,4 +116,15 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     `;
 
     return db.any(q, [gwas_study]);
+}
+
+export async function gwasStudiesBySNP(assembly: Assembly, snp_id: string): Promise<string[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT authorpubmedtrait
+FROM ${tableName}
+WHERE snp = $1
+    `;
+
+    return db.map<string>(q, [snp_id], r => r.authorpubmedtrait);
 }

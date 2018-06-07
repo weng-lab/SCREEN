@@ -15,6 +15,8 @@ import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
+import { resolve_snps_relatedstudies } from '../resolvers/snp';
+import { GwasStudyResponse } from './GwasResponse';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -411,5 +413,29 @@ export const CellTypeInfo = new GraphQLObjectType({
         isde: { type: new GraphQLNonNull(GraphQLBoolean) },
         synonyms: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
         assays: { type: new GraphQLList(new GraphQLNonNull(CellTypeAssay)) },
+    }),
+});
+
+export const SNP = new GraphQLObjectType({
+    name: 'SNP',
+    description: 'A SNP',
+    fields: () => ({
+        assembly: {
+            description: 'The SNP assembly',
+            type: new GraphQLNonNull(Assembly),
+        },
+        id: {
+            description: 'The SNP id',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        range: {
+            description: 'The range of this SNP',
+            type: new GraphQLNonNull(CommonTypes.ChromRange),
+        },
+        related_studies: {
+            description: 'GWAS studies containing this SNP',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudyResponse))),
+            resolve: resolve_snps_relatedstudies,
+        },
     }),
 });

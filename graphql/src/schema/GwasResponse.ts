@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLNonNull } from 'graphql';
+import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLNonNull, GraphQLInt } from 'graphql';
 import { resolve_gwas_gwas, resolve_gwas_study, resolve_gwas_cres } from '../resolvers/gwas';
 import * as CommonTypes from './CommonSchema';
 const GraphQLJSON = require('graphql-type-json');
@@ -41,15 +41,47 @@ export const GwasCRE = new GraphQLObjectType({
     }),
 });
 
+export const GwasStudyInfo = new GraphQLObjectType({
+    name: 'GwasStudyInfo',
+    description: 'GWAS study info',
+    fields: () => ({
+        value: {
+            description: 'Study value',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        author: {
+            description: 'Study author',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        pubmed: {
+            description: 'Pubmed id',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        trait: {
+            description: 'Study trait',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        totalLDblocks: {
+            description: 'Total number of LD blocks',
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        numLdBlocksOverlap: {
+            description: 'Total number of LD blocks that overlap ccREs',
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        numCresOverlap: {
+            description: 'Total number of ccRE that overlap',
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+    }),
+});
+
 export const GwasStudyResponse = new GraphQLObjectType({
     name: 'GwasStudy',
     description: 'GWAS study data',
     fields: () => ({
         gwas_study: {
-            type: new GraphQLNonNull(GraphQLJSON),
-        },
-        mainTable: {
-            type: new GraphQLNonNull(GraphQLJSON),
+            type: new GraphQLNonNull(GwasStudyInfo),
         },
         topCellTypes: {
             type: new GraphQLList(new GraphQLNonNull(GwasCellType)),

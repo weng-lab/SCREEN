@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLE
 import * as CreDetailsResolver from '../resolvers/credetails';
 import * as CommonTypes from './CommonSchema';
 import { GraphQLFloat, GraphQLInt, GraphQLBoolean } from 'graphql/type/scalars';
-import { SNP, Gene } from './SearchResponse';
+import { Gene } from './SearchResponse';
 import { GeneExpGene } from './GeneExpResponse';
 const GraphQLJSON = require('graphql-type-json');
 
@@ -86,7 +86,7 @@ const NearbySNP = new GraphQLObjectType({
             description: 'The distance to the ccRE',
         },
         snp: {
-            type: new GraphQLNonNull(SNP),
+            type: new GraphQLNonNull(CommonTypes.SNP),
             description: 'The SNP',
         },
     }),

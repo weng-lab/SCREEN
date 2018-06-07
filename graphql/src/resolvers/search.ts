@@ -4,7 +4,8 @@ import { UserError } from 'graphql-errors';
 import * as Parse from '../db/db_parse';
 import { GeneParse } from '../db/db_parse';
 import { getAccessions, getSNPs } from '../db/db_suggestions';
-import { Assembly, loadCache } from '../db/db_cache';
+import { loadCache } from '../db/db_cache';
+import { Assembly } from '../types';
 
 const re_fullrange = /^(chr[\dxy]\d?)[\s]*[\:]?[\s]*([0-9,\.]+)?[\s\-]*([0-9,\.]+)?/i;
 const re_chr_only = /^chr/i;
@@ -161,7 +162,12 @@ export async function find_snps(assembly, s: string, shouldError: boolean = true
                         start: suggestion.start,
                         end: suggestion.stop,
                     };
-                    snps.push({ input: snp, assembly, snp: { id: suggestion.snp, range }, sm: suggestion.sm });
+                    snps.push({
+                        input: snp,
+                        assembly,
+                        snp: { assembly, id: suggestion.snp, range },
+                        sm: suggestion.sm,
+                    });
                 });
                 s = s.replace(snp, '').trim();
                 continue;

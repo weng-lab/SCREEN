@@ -5,10 +5,10 @@ import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
 import * as DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
+import { Assembly } from '../types';
 
 const Raven = require('raven');
 
-export type Assembly = 'hg19' | 'mm10';
 const assemblies: Assembly[] = ['hg19', 'mm10'];
 
 const cacheLoader = (cacheMap: loadablecache) =>

@@ -4,7 +4,7 @@ import { loadCache } from '../db/db_cache';
 
 const { UserError } = require('graphql-errors');
 
-class Gwas {
+export class Gwas {
     assembly;
     studies;
     byStudy;
@@ -23,7 +23,7 @@ class Gwas {
         }
     }
 
-    checkStudy = study => study in this.byStudy;
+    checkStudy = (study: string) => study in this.byStudy;
     totalLDblocks = gwas_study => this.byStudy[gwas_study]['total_ldblocks'];
 
     numLdBlocksOverlap = gwas_study => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
@@ -35,24 +35,14 @@ class Gwas {
         return ret;
     };
 
-    async mainTableInfo(gwas_study) {
-        const total = await this.totalLDblocks(gwas_study);
-        const overlap = await this.numLdBlocksOverlap(gwas_study);
-        const overlapStr = `${overlap} (${Math.round(overlap / total * 100.0)}%)`;
-        return [
-            {
-                totalLDblocks: total,
-                numLdBlocksOverlap: overlap,
-                numLdBlocksOverlapFormat: overlapStr,
-                numCresOverlap: await this.numCresOverlap(gwas_study),
-            },
-        ];
-    }
-
     async mainTable(study) {
         return {
-            gwas_study: this.byStudy[study],
-            mainTable: await this.mainTableInfo(study),
+            gwas_study: {
+                ...this.byStudy[study],
+                totalLDblocks: await this.totalLDblocks(study),
+                numLdBlocksOverlap: await this.numLdBlocksOverlap(study),
+                numCresOverlap: await this.numCresOverlap(study),
+            },
             topCellTypes: await this.allCellTypes(study),
         };
     }
@@ -79,7 +69,7 @@ async function gwas(g) {
     };
 }
 
-async function study(g: Gwas, study) {
+export async function study(g: Gwas, study: string) {
     if (!g.checkStudy(study)) {
         throw new UserError('invalid gwas study');
     }

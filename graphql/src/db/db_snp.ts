@@ -1,9 +1,10 @@
 import { db } from './db';
+import { Assembly, ChromRange } from '../types';
 
-export async function snptable(assembly, range, id) {
+export async function snptable(assembly: Assembly, range: ChromRange | undefined, id: string | undefined) {
     const tableName = assembly + '_snps';
-    const wherecond: any[] = [],
-        params: any = {};
+    const wherecond: string[] = [];
+    const params: Record<string, any> = {};
 
     if (range) {
         wherecond.push(`chrom=$<chrom> AND start>=$<start> AND stop<=$<end>`);
@@ -28,6 +29,7 @@ export async function snptable(assembly, range, id) {
     `;
     const res = await db.any(q, params);
     const response = res.map(row => ({
+        assembly,
         id: row['snp'],
         range: {
             chrom: row['chrom'],

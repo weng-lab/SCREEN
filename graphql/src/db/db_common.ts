@@ -2,7 +2,8 @@ import { natsort } from '../utils';
 import * as CoordUtils from '../coord_utils';
 import { db } from './db';
 import { getCreTable } from './db_cre_table';
-import { loadCache, Biosample, Assembly } from './db_cache';
+import { loadCache, Biosample } from './db_cache';
+import { Assembly, assaytype } from '../types';
 
 export async function chromCounts(assembly) {
     const tableName = assembly + '_cre_all_nums';
@@ -150,7 +151,6 @@ export async function rankMethodToIDxToCellType(assembly): Promise<Record<RankMe
     return ret;
 }
 
-export type assaytype = 'dnase' | 'h3k4me3' | 'h3k27ac' | 'ctcf';
 export async function makeCtMap(assembly): Promise<Record<assaytype, Record<celltype, ctindex>>> {
     const amap: Partial<Record<RankMethod, assaytype>> = {
         DNase: 'dnase',
@@ -595,6 +595,7 @@ export async function intersectingSnps(assembly, accession, coord, halfWindow) {
         .map(snp => ({
             distance: Math.min(Math.abs(coord.end - snp.stop), Math.abs(coord.start - snp.start)),
             snp: {
+                assembly,
                 id: snp.snp,
                 range: {
                     chrom: coord.chrom,
