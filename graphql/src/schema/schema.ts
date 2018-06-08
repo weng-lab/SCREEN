@@ -197,7 +197,7 @@ const BaseType = new GraphQLObjectType({
         snps: {
             type: new GraphQLList(new GraphQLNonNull(CommonTypes.SNP)),
             args: {
-                assembly: { type: new GraphQLNonNull(CommonTypes.Assembly) },
+                assembly: { type: CommonTypes.Assembly },
                 id: { type: GraphQLString },
                 range: { type: CommonTypes.InputChromRange },
             },

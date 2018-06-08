@@ -15,8 +15,8 @@ import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
-import { resolve_snps_relatedstudies } from '../resolvers/snp';
-import { GwasStudyResponse } from './GwasResponse';
+import { resolve_snps_relatedstudies, resolve_snps_ldblocks } from '../resolvers/snp';
+import { GwasStudy, LDBlock, LDBlockSNP } from './GwasResponse';
 
 export const Assembly = new GraphQLEnumType({
     name: 'Assembly',
@@ -432,9 +432,14 @@ export const SNP = new GraphQLObjectType({
             description: 'The range of this SNP',
             type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
+        ldblocks: {
+            description: 'Data related to LD blocks that this SNP belongs to',
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LDBlockSNP))),
+            resolve: resolve_snps_ldblocks,
+        },
         related_studies: {
             description: 'GWAS studies containing this SNP',
-            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudyResponse))),
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudy))),
             resolve: resolve_snps_relatedstudies,
         },
     }),

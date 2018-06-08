@@ -1,6 +1,13 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLNonNull, GraphQLInt } from 'graphql';
-import { resolve_gwas_gwas, resolve_gwas_study, resolve_gwas_cres } from '../resolvers/gwas';
+import {
+    resolve_gwas_gwas,
+    resolve_gwas_study,
+    resolve_gwas_study_cres,
+    resolve_gwas_study_info,
+    resolve_gwas_study_topCellTypes,
+} from '../resolvers/gwas';
 import * as CommonTypes from './CommonSchema';
+import { resolve_gwas_ldblock_leadsnp, resolve_gwas_ldblock_snps } from '../resolvers/snp';
 const GraphQLJSON = require('graphql-type-json');
 
 export const GwasCellType = new GraphQLObjectType({
@@ -76,15 +83,54 @@ export const GwasStudyInfo = new GraphQLObjectType({
     }),
 });
 
-export const GwasStudyResponse = new GraphQLObjectType({
+export const LDBlock = new GraphQLObjectType({
+    name: 'LDBlock',
+    description: 'A single LD Block from a study',
+    fields: () => ({
+        name: {
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        study: {
+            type: new GraphQLNonNull(GwasStudy),
+        },
+        leadsnp: {
+            type: new GraphQLNonNull(CommonTypes.SNP),
+            resolve: resolve_gwas_ldblock_leadsnp,
+        },
+        snps: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LDBlockSNP))),
+            resolve: resolve_gwas_ldblock_snps,
+        },
+    }),
+});
+
+export const LDBlockSNP = new GraphQLObjectType({
+    name: 'LDBlockSNP',
+    description: 'A SNP in an LD Block in a study',
+    fields: () => ({
+        snp: {
+            type: new GraphQLNonNull(CommonTypes.SNP),
+        },
+        r2: {
+            type: new GraphQLNonNull(GraphQLFloat),
+        },
+        ldblock: {
+            type: new GraphQLNonNull(LDBlock),
+        },
+    }),
+});
+
+export const GwasStudy = new GraphQLObjectType({
     name: 'GwasStudy',
     description: 'GWAS study data',
     fields: () => ({
-        gwas_study: {
+        info: {
             type: new GraphQLNonNull(GwasStudyInfo),
+            resolve: resolve_gwas_study_info,
         },
         topCellTypes: {
             type: new GraphQLList(new GraphQLNonNull(GwasCellType)),
+            resolve: resolve_gwas_study_topCellTypes,
         },
         cres: {
             args: {
@@ -94,7 +140,7 @@ export const GwasStudyResponse = new GraphQLObjectType({
                 },
             },
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasCRE))),
-            resolve: resolve_gwas_cres,
+            resolve: resolve_gwas_study_cres,
         },
     }),
 });
@@ -111,7 +157,7 @@ export const GwasResponse = new GraphQLObjectType({
             args: {
                 study: { type: new GraphQLNonNull(GraphQLString) },
             },
-            type: new GraphQLNonNull(GwasStudyResponse),
+            type: new GraphQLNonNull(GwasStudy),
             resolve: resolve_gwas_study,
         },
     }),

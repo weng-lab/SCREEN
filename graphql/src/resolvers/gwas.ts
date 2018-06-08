@@ -35,18 +35,6 @@ export class Gwas {
         return ret;
     };
 
-    async mainTable(study) {
-        return {
-            gwas_study: {
-                ...this.byStudy[study],
-                totalLDblocks: await this.totalLDblocks(study),
-                numLdBlocksOverlap: await this.numLdBlocksOverlap(study),
-                numCresOverlap: await this.numCresOverlap(study),
-            },
-            topCellTypes: await this.allCellTypes(study),
-        };
-    }
-
     async cres(gwas_study: string, ct: string | undefined) {
         const acache = loadCache(this.assembly);
         const ctmap = await acache.ctmap();
@@ -62,44 +50,49 @@ export class Gwas {
     }
 }
 
-async function gwas(g) {
+export const resolve_gwas_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
+    const g = source.gwas_obj;
     return {
         studies: g.studies,
         byStudy: g.byStudy,
     };
-}
-
-export async function study(g: Gwas, study: string) {
-    if (!g.checkStudy(study)) {
-        throw new UserError('invalid gwas study');
-    }
-    return g.mainTable(study);
-}
-
-async function cres(g: Gwas, study, cellType) {
-    if (!g.checkStudy(study)) {
-        throw new UserError('invalid gwas study');
-    }
-    // TODO: check ct!
-    return g.cres(study, cellType);
-}
-
-export const resolve_gwas_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
-    const g = source.gwas_obj;
-    return gwas(g);
 };
 
 export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const g = source.gwas_obj;
     const studyarg = args.study;
-    return { ...(await study(g, studyarg)), study: studyarg, gwas_obj: g };
+    if (!g.checkStudy(studyarg)) {
+        throw new UserError('invalid gwas study');
+    }
+    return {
+        study_name: studyarg,
+        gwas_obj: g,
+    };
 };
 
-export const resolve_gwas_cres: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
+export const resolve_gwas_study_info = async source => {
     const g = source.gwas_obj;
-    const study = source.study;
+    const study_name = source.study_name;
+    return {
+        ...g.byStudy[study_name],
+        totalLDblocks: await g.totalLDblocks(study_name),
+        numLdBlocksOverlap: await g.numLdBlocksOverlap(study_name),
+        numCresOverlap: await g.numCresOverlap(study_name),
+    };
+};
+
+export const resolve_gwas_study_topCellTypes = async source => {
+    const g = source.gwas_obj;
+    const study_name = source.study_name;
+    return g.allCellTypes(study_name);
+};
+
+export const resolve_gwas_study_cres: GraphQLFieldResolver<any, any> = async (source, args) => {
+    const g = source.gwas_obj;
+    const study_name = source.study_name;
     const cellType = args.cellType;
-    return cres(g, study, cellType);
+    // TODO: check ct!
+    return g.cres(study_name, cellType);
 };
 
 export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {

@@ -1,7 +1,7 @@
 import * as Common from './db_common';
 import { db } from './db';
 import { buildWhereStatement, dbcre } from './db_cre_table';
-import { Assembly } from '../types';
+import { Assembly, SNP } from '../types';
 
 export async function gwasStudies(assembly) {
     const tableName = assembly + '_gwas_studies';
@@ -118,13 +118,44 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     return db.any(q, [gwas_study]);
 }
 
-export async function gwasStudiesBySNP(assembly: Assembly, snp_id: string): Promise<string[]> {
+export type LDBlock = {
+    authorpubmedtrait: string;
+    snp: string;
+    chrom: string;
+    start: number;
+    stop: number;
+    taggedsnp: string;
+    r2: number[];
+    ldblock: string;
+};
+export async function gwasLDBlockSNPBySNP(assembly: Assembly, snp_id: string): Promise<LDBlock[]> {
     const tableName = `${assembly}_gwas`;
     const q = `
-SELECT authorpubmedtrait
+SELECT authorpubmedtrait, snp, chrom, start, stop, taggedsnp, r2, ldblock
 FROM ${tableName}
 WHERE snp = $1
     `;
 
-    return db.map<string>(q, [snp_id], r => r.authorpubmedtrait);
+    return db.any<LDBlock>(q, [snp_id]);
+}
+
+export async function SNPsInLDBlock(assembly: Assembly, ldblock_name: string): Promise<{ r2: number; snp: SNP }[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT DISTINCT snp, chrom, start, stop, r2
+FROM ${tableName}
+WHERE ldblock = $1
+    `;
+    return db.map<{ r2: number; snp: SNP }>(q, [ldblock_name], row => ({
+        r2: row.r2[0],
+        snp: {
+            assembly,
+            id: row.snp,
+            range: {
+                chrom: row.chrom,
+                start: row.start,
+                end: row.stop,
+            },
+        },
+    }));
 }
