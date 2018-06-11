@@ -487,7 +487,7 @@ async function getColsForAccession(assembly, accession, cols) {
     return db.oneOrNone(q, [accession]);
 }
 
-export async function creRanks(assembly, accession) {
+export async function creRanks(assembly, accession): Promise<Record<assaytype, number[]>> {
     const cols = `
 dnase_zscores
 ctcf_zscores
@@ -497,7 +497,14 @@ h3k4me3_zscores`
         .split('\n');
 
     const r = await getColsForAccession(assembly, accession, cols);
-    return cols.reduce((obj, k) => ({ ...obj, [k.split('_')[0]]: r[k] }), {});
+    return cols.reduce(
+        (obj, k) => {
+            const assay = k.split('_')[0];
+            obj[assay] = r[k];
+            return obj;
+        },
+        {} as Record<assaytype, number[]>
+    );
 }
 
 async function getGenes(assembly, accession, allOrPc) {
@@ -743,4 +750,29 @@ export async function inputData(assembly) {
         ORDER BY biosample_term_name
     `;
     return await db.any(q, [assembly]);
+}
+
+// Almost like topTissues except filter by a threshold
+// TODO: add a threshold param to topTissues
+export async function activeCts(
+    assembly: Assembly,
+    accession: string,
+    assays: assaytype[],
+    threshold: number = 1.64
+): Promise<string[]> {
+    const ranks = await creRanks(assembly, accession);
+    const ctmap = await loadCache(assembly).ctmap();
+    let active = new Set<string>();
+    for (const assay of assays) {
+        const cts = ctmap[assay];
+        const ctranks = ranks[assay];
+        Object.keys(cts).forEach(ct => {
+            const index = cts[ct];
+            const value = ctranks[index];
+            if (value >= threshold) {
+                active.add(ct);
+            }
+        });
+    }
+    return Array.from(active);
 }

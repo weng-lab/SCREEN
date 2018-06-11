@@ -2,6 +2,7 @@ import { Client } from 'pg';
 import { checkChrom, isaccession, isclose } from '../utils';
 import { db, pgp } from './db';
 import { loadablecache } from './db_cache';
+import { ChromRange } from '../types';
 
 const { UserError } = require('graphql-errors');
 
@@ -16,7 +17,7 @@ const accessions = (wheres, params, j: { accessions?: string[] }) => {
     return true;
 };
 
-const notCtSpecificRanks = (wheres, params, j) => {
+const notCtSpecificRanks = (wheres, params, j: { ctexps?: any }) => {
     j = j.ctexps || {};
     // use max zscores
     const map = {
@@ -54,7 +55,7 @@ const notCtSpecificRanks = (wheres, params, j) => {
 };
 
 const ctexps = ['dnase', 'h3k4me3', 'h3k27ac', 'ctcf'];
-const ctSpecificRanks = (wheres, fields, params, ct, j, ctmap) => {
+const ctSpecificRanks = (wheres, fields, params, ct, j: { ctexps?: any }, ctmap) => {
     j = j.ctexps || {};
     for (const name of ctexps) {
         if (!(ct in ctmap[name])) {
@@ -104,7 +105,7 @@ const where = (wheres, params, chrom, start, stop) => {
 export const buildWhereStatement = (
     assembly,
     ctmap: Record<string, any>,
-    j: any,
+    j: { ctexps?: any; ctspecific?: string; accessions?: string[] },
     chrom: string | undefined,
     start: number | undefined,
     stop: number | undefined,
@@ -266,7 +267,7 @@ export type dbcre = {
 export async function getCreTable(
     assembly: string,
     ctmap: Record<string, any>,
-    j,
+    j: { ctexps?: any; ctspecific?: string; accessions?: string[]; range?: Partial<ChromRange> },
     pagination,
     extra?: { wheres: string[]; fields: string[] }
 ): Promise<{ total: number; cres: dbcre[] }> {

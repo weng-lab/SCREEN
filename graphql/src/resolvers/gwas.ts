@@ -82,13 +82,13 @@ export const resolve_gwas_study_info = async source => {
 };
 
 export const resolve_gwas_study_topCellTypes = async source => {
-    const g = source.gwas_obj;
+    const g: Gwas = source.gwas_obj;
     const study_name = source.study_name;
     return g.allCellTypes(study_name);
 };
 
 export const resolve_gwas_study_cres: GraphQLFieldResolver<any, any> = async (source, args) => {
-    const g = source.gwas_obj;
+    const g: Gwas = source.gwas_obj;
     const study_name = source.study_name;
     const cellType = args.cellType;
     // TODO: check ct!

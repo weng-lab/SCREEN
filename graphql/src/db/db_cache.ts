@@ -5,7 +5,7 @@ import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
 import * as DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
-import { Assembly } from '../types';
+import { Assembly, assaytype } from '../types';
 
 const Raven = require('raven');
 
@@ -98,7 +98,7 @@ export type cache = {
     geneIDsToApprovedSymbol: Record<string, any>;
     tfHistCounts: any;
     creBigBeds: any;
-    ctmap: Record<string, any>;
+    ctmap: Record<assaytype, Record<Common.celltype, Common.ctindex>>;
     ctsTable: any;
     biosamples: Record<string, Biosample>;
     de_ctidmap: any;

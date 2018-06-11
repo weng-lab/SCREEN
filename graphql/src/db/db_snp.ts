@@ -1,7 +1,11 @@
 import { db } from './db';
-import { Assembly, ChromRange } from '../types';
+import { Assembly, ChromRange, SNP } from '../types';
 
-export async function snptable(assembly: Assembly, range: ChromRange | undefined, id: string | undefined) {
+export async function snptable(
+    assembly: Assembly,
+    range: ChromRange | undefined,
+    id: string | undefined
+): Promise<SNP[]> {
     const tableName = assembly + '_snps';
     const wherecond: string[] = [];
     const params: Record<string, any> = {};
