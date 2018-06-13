@@ -21,6 +21,7 @@
 	"hg19bed": "/bed_intersect/hg19.sorted.bed",
 	"mm10bed": "/bed_intersect/mm10.sorted.bed"
     },
+    "apolloengine_APIkey": "service:SCREENapi-production:D8zbl1MZUcKhRYI4tALZlg",
     "UI": {
 	"apiServer": "https://api.wenglab.org/screenv10_python_beta",
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",

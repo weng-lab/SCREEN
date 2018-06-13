@@ -28,6 +28,7 @@
 "trackhubs": {
     "host": "https://api.wenglab.org"
 },
+"apolloengine_APIkey":"service:SCREENapi-dev:h812VfP41raFyE3qakHGXg",
  "UI":
  {"_apiServer": "http://megatux.purcaro.com:9006",
   "apiServer": "https://api.wenglab.org/screen/v10",

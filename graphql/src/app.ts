@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { maskErrors, IsUserError, setDefaultHandler, defaultHandler } from 'graphql-errors';
 import { GraphQLError, printSchema, graphql, parse, introspectionQuery } from 'graphql';
+import { ApolloEngine } from 'apollo-engine';
 
 const Raven = require('raven');
 const { formatError } = require('graphql');
@@ -77,6 +78,8 @@ app.use(
         schema: schema,
         formatError: logErrors(req),
         graphiql: true,
+        tracing: true,
+        cacheControl: true,
     }))
 );
 
@@ -94,4 +97,18 @@ app.use('/graphqlschemajson', function(req, res, next) {
 
 useRaven && app.use(Raven.errorHandler());
 
-app.listen(4000);
+
+// Initialize engine with your API key. Alternatively,
+// set the ENGINE_API_KEY environment variable when you
+// run your program.
+const engine = new ApolloEngine({
+    apiKey: 'service:screenapi-testing:FwZ84HFdlTuZpgiuDM2hbg'
+});
+
+// Call engine.listen instead of app.listen(port)
+engine.listen({
+    port: 4000,
+    expressApp: app,
+});
+
+// app.listen(4000);

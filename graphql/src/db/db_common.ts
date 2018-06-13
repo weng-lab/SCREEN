@@ -762,7 +762,7 @@ export async function activeCts(
 ): Promise<string[]> {
     const ranks = await creRanks(assembly, accession);
     const ctmap = await loadCache(assembly).ctmap();
-    let active = new Set<string>();
+    const active = new Set<string>();
     for (const assay of assays) {
         const cts = ctmap[assay];
         const ctranks = ranks[assay];

@@ -21,6 +21,7 @@
 	"hg19bed": "/ccREs/hg19.sorted.bed",
 	"mm10bed": "/ccREs/mm10.sorted.bed"
     },
+    "apolloenegine_APIkey": "service:SCREENapi-production:D8zbl1MZUcKhRYI4tALZlg",
     "UI": {
 	"apiServer": "http://screen.encodeproject.org/api",
 	"minipeakServer": "http://screen.encodeproject.org/api/dataws/re_detail/",
