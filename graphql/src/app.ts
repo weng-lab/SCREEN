@@ -11,6 +11,8 @@ const { formatError } = require('graphql');
 
 const useRaven = process.env.NODE_ENV === 'production';
 
+const config = require('./config.json');
+
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
 import schema from './schema/schema'; // Import schema after
@@ -79,7 +81,7 @@ app.use(
         formatError: logErrors(req),
         graphiql: true,
         tracing: true,
-        cacheControl: true,
+        cacheControl: false,
     }))
 );
 
@@ -97,12 +99,11 @@ app.use('/graphqlschemajson', function(req, res, next) {
 
 useRaven && app.use(Raven.errorHandler());
 
-
 // Initialize engine with your API key. Alternatively,
 // set the ENGINE_API_KEY environment variable when you
 // run your program.
 const engine = new ApolloEngine({
-    apiKey: 'service:screenapi-testing:FwZ84HFdlTuZpgiuDM2hbg'
+    apiKey: config.apolloengine_APIkey,
 });
 
 // Call engine.listen instead of app.listen(port)

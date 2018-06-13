@@ -5,7 +5,9 @@ import * as Gwas from './db_gwas';
 import { GwasCellType } from '../schema/GwasResponse';
 import * as DataLoader from 'dataloader';
 import { TypeMap } from 'mime';
-import { Assembly, assaytype } from '../types';
+import { Assembly, assaytype, ctspecificdata } from '../types';
+import { getCtSpecificData } from './db_cre_table';
+import { reduceAsKeys } from '../utils';
 
 const Raven = require('raven');
 
@@ -16,6 +18,10 @@ const cacheLoader = (cacheMap: loadablecache) =>
 
 const globalcacheLoader = (cacheMap: loadableglobalcache) =>
     new DataLoader<keyof globalcache, any>(keys => Promise.all(keys.map(key => cacheMap[key]())));
+
+const ccRECtspecificLoader = (assembly: Assembly) =>
+    new DataLoader<string, ctspecificdata>(keys => getCtSpecificData(assembly, keys));
+export const ccRECtspecificLoaders = reduceAsKeys(assemblies, ccRECtspecificLoader);
 
 async function indexFilesTab(assembly) {
     const datasets = await Common.datasets(assembly);

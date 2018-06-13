@@ -197,10 +197,6 @@ export const DataParameters = new GraphQLInputObjectType({
                 'Only return ccREs with zscores for all available experiments that fall within specific ranges for the specified cell type',
             type: InputCtExps,
         },
-        ctspecific: {
-            description: 'Cell type to get celltype-specific info for',
-            type: GraphQLString,
-        },
     }),
 });
 
@@ -373,6 +369,11 @@ export const cRE = new GraphQLObjectType({
         ctspecific: {
             description: 'celltype-specific zscores',
             type: ctSpecific,
+            args: {
+                ct: {
+                    type: new GraphQLNonNull(GraphQLString),
+                },
+            },
             resolve: resolve_data_ctspecific,
         },
         nearbygenes: {

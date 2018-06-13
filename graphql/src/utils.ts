@@ -74,3 +74,13 @@ export const deepFreeze = o => {
 };
 
 export const escapeRegExp = str => str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+
+export const reduceAsKeys = <T extends string = string, V = any>(array: T[], mapper: (key: T) => V): Record<T, V> => {
+    return array.reduce(
+        (prev, key) => {
+            prev[key] = mapper(key);
+            return prev;
+        },
+        {} as Record<T, V>
+    );
+};

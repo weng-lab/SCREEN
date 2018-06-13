@@ -15,3 +15,11 @@ export type LDBlock = {
 };
 export type LDBlockSNP = { r2: number; snp: SNP; ldblock: LDBlock };
 export type assaytype = 'dnase' | 'h3k4me3' | 'h3k27ac' | 'ctcf';
+export type ctspecificdata = {
+    ct: string;
+    dnase_zscore: number;
+    h3k4me3_zscore: number;
+    h3k27ac_zscore: number;
+    ctcf_zscore: number;
+    maxz: number;
+};

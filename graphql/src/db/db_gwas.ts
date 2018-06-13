@@ -99,7 +99,7 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     const { fields, groupBy, where, params } = buildWhereStatement(
         assembly,
         ctmap,
-        { ctspecific: ct },
+        {},
         undefined,
         undefined,
         undefined,

@@ -1,12 +1,13 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
-import { loadCache } from '../db/db_cache';
+import { loadCache, ccRECtspecificLoaders } from '../db/db_cache';
 import { getSNPs } from '../db/db_suggestions';
+import { Assembly } from '../types';
 
 const { UserError } = require('graphql-errors');
 
 export class Gwas {
-    assembly;
+    assembly: Assembly;
     studies: DbGwas.DBGwasStudy[];
     byStudy: Record<string, DbGwas.DBGwasStudy>;
     constructor(assembly) {
@@ -39,11 +40,26 @@ export class Gwas {
         const acache = loadCache(this.assembly);
         const ctmap = await acache.ctmap();
         const ctsTable = await acache.ctsTable();
-        const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, ct !== 'none' ? ct : undefined, ctmap);
-
-        const activeCres = cres.filter(
-            a => !ct || (a.h3k4me3_zscore || 0) > 1.64 || (a.h3k27ac_zscore || 0) > 1.64 || (a.dnase_zscore || 0) > 1.64
-        );
+        const celltype = ct !== 'none' ? ct : undefined;
+        const cres = await DbGwas.gwasPercentActive(this.assembly, gwas_study, celltype, ctmap);
+        let activeCres: DbGwas.gwascre[] = [];
+        if (celltype) {
+            const ctspecific = await ccRECtspecificLoaders[this.assembly].loadMany(
+                cres.map(c => `${c.accession}::${celltype}`)
+            );
+            cres.forEach((cre, index) => {
+                const cts = ctspecific[index];
+                if (
+                    (cts.h3k4me3_zscore || 0) > 1.64 ||
+                    (cts.h3k27ac_zscore || 0) > 1.64 ||
+                    (cts.dnase_zscore || 0) > 1.64
+                ) {
+                    activeCres.push(cre);
+                }
+            });
+        } else {
+            activeCres = cres;
+        }
 
         // accession, snp, geneid, zscores
         return activeCres.map(c => ({ cRE: c, geneid: c.geneid, snps: c.snps }));
