@@ -13,14 +13,16 @@ LIMIT 10
 
 export async function getSNPs(
     assembly,
-    snpPartial
+    snpPartial,
+    partial: boolean = true
 ): Promise<Array<{ snp: string; chrom: string; start: number; stop: number; sm: number }>> {
     const tableName = assembly + '_snps';
     const q = `
-SELECT snp, chrom, start, stop, similarity(snp, $1) as sm
+SELECT snp, chrom, start, stop, similarity(snp, '${snpPartial}') as sm
 FROM ${tableName}
-WHERE snp % $1
+WHERE snp LIKE '${snpPartial}${partial ? '%' : ''}'
+ORDER BY sm DESC
 LIMIT 10
     `;
-    return db.any(q, [snpPartial]);
+    return db.any(q);
 }

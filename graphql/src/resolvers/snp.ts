@@ -30,41 +30,12 @@ export const resolve_snps: GraphQLFieldResolver<any, any> = async (source, args,
 export const resolve_snps_ldblocks: GraphQLFieldResolver<any, {}> = async source => {
     const assembly = source.assembly;
     if (assembly !== 'hg19') {
-        throw new UserError(`${assembly} does not have GWAS data.`);
+        return [];
     }
     const id = source.id;
-    const ldblocks = await gwasLDBlockSNPBySNP(assembly, id);
     const g = new Gwas(assembly);
     await g.awaitStudies();
-    return Promise.all(
-        ldblocks.map(async ldblock => {
-            const studyarg = ldblock.authorpubmedtrait;
-            if (!g.checkStudy(studyarg)) {
-                throw new UserError('invalid gwas study');
-            }
-            return {
-                snp: {
-                    assembly,
-                    id: ldblock.snp,
-                    range: {
-                        chrom: ldblock.chrom,
-                        start: ldblock.start,
-                        end: ldblock.stop,
-                    },
-                },
-                r2: ldblock.r2,
-                ldblock: {
-                    assembly,
-                    name: ldblock.ldblock,
-                    study: {
-                        study_name: studyarg,
-                        gwas_obj: g,
-                    },
-                    taggedsnp: ldblock.taggedsnp,
-                },
-            };
-        })
-    );
+    return gwasLDBlockSNPBySNP(assembly, id, g);
 };
 
 export const resolve_gwas_ldblock_leadsnp: GraphQLFieldResolver<any, {}> = async source => {
@@ -77,7 +48,8 @@ export const resolve_gwas_ldblock_leadsnp: GraphQLFieldResolver<any, {}> = async
 export const resolve_gwas_ldblock_snps: GraphQLFieldResolver<any, {}> = async source => {
     const assembly = source.assembly;
     const ldblock_name = source.name;
-    return SNPsInLDBlock(assembly, ldblock_name);
+    const gwas_obj: Gwas = source.study.gwas_obj;
+    return SNPsInLDBlock(assembly, ldblock_name, gwas_obj);
 };
 
 export const resolve_snps_relatedstudies: GraphQLFieldResolver<SNP, {}> = async (source, args, context, info) => {

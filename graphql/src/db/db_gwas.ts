@@ -1,18 +1,19 @@
 import * as Common from './db_common';
 import { db } from './db';
 import { buildWhereStatement, dbcre } from './db_cre_table';
-import { Assembly, SNP } from '../types';
+import { Assembly, SNP, LDBlockSNP } from '../types';
+import { LDBlock } from '../schema/GwasResponse';
+import { Gwas } from '../resolvers/gwas';
 
-export async function gwasStudies(assembly) {
+export type DBGwasStudy = { name: string; author: string; pubmed: string; trait: string; totalLDblocks: number };
+export async function gwasStudies(assembly): Promise<DBGwasStudy[]> {
     const tableName = assembly + '_gwas_studies';
     const q = `
-        SELECT authorpubmedtrait as value, author, pubmed, trait, numLDblocks as total_ldblocks
+        SELECT authorpubmedtrait as name, author, pubmed, trait, numLDblocks as totalLDblocks
         FROM ${tableName}
         ORDER BY trait
     `;
-    const res = await db.any(q);
-    const keys = ['value', 'author', 'pubmed', 'trait', 'total_ldblocks'];
-    return res.map(r => keys.reduce((obj, key) => ({ ...obj, [key]: r[key] }), {}));
+    return db.map<DBGwasStudy>(q, [], row => ({ ...row, totalLDblocks: row.totalldblocks }));
 }
 
 export async function numLdBlocksOverlap(assembly, gwas_study) {
@@ -118,7 +119,7 @@ export async function gwasPercentActive(assembly, gwas_study, ct: string | undef
     return db.any(q, [gwas_study]);
 }
 
-export type LDBlock = {
+export type DBLDBlockSNP = {
     authorpubmedtrait: string;
     snp: string;
     chrom: string;
@@ -128,7 +129,7 @@ export type LDBlock = {
     r2: number[];
     ldblock: string;
 };
-export async function gwasLDBlockSNPBySNP(assembly: Assembly, snp_id: string): Promise<LDBlock[]> {
+export async function gwasLDBlockSNPBySNP(assembly: Assembly, snp_id: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
     const tableName = `${assembly}_gwas`;
     const q = `
 SELECT authorpubmedtrait, snp, chrom, start, stop, taggedsnp, r2, ldblock
@@ -136,18 +137,13 @@ FROM ${tableName}
 WHERE snp = $1
     `;
 
-    return db.any<LDBlock>(q, [snp_id]);
+    const res = await db.any(q, [snp_id]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
 }
 
-export async function SNPsInLDBlock(assembly: Assembly, ldblock_name: string): Promise<{ r2: number; snp: SNP }[]> {
-    const tableName = `${assembly}_gwas`;
-    const q = `
-SELECT DISTINCT snp, chrom, start, stop, r2
-FROM ${tableName}
-WHERE ldblock = $1
-    `;
-    return db.map<{ r2: number; snp: SNP }>(q, [ldblock_name], row => ({
-        r2: row.r2[0],
+const mapldblocksnps = (assembly: Assembly, gwas_obj: Gwas) => (rows: DBLDBlockSNP[]): LDBlockSNP[] => {
+    const map = (row, tagged, r2): LDBlockSNP => ({
+        r2: r2,
         snp: {
             assembly,
             id: row.snp,
@@ -156,6 +152,66 @@ WHERE ldblock = $1
                 start: row.start,
                 end: row.stop,
             },
+        },
+        ldblock: {
+            assembly,
+            name: row.ldblock,
+            study: {
+                study_name: row.authorpubmedtrait,
+                gwas_obj,
+                ...gwas_obj.byStudy[row.authorpubmedtrait],
+            },
+            taggedsnp: tagged,
+        },
+    });
+    const snps: LDBlockSNP[] = [];
+    rows.forEach(row => {
+        row.taggedsnp.split(',').forEach((tagged, index) => {
+            const mapped = map(row, tagged, row.r2[index]);
+            snps.push(mapped);
+        });
+    });
+    return snps;
+};
+
+export async function SNPsInLDBlock(assembly: Assembly, ldblock_name: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT DISTINCT snp, authorpubmedtrait, chrom, start, stop, taggedsnp, r2, ldblock
+FROM ${tableName}
+WHERE ldblock = $1
+    `;
+    const res = await db.any(q, [ldblock_name]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
+}
+
+export async function allSNPsInStudy(assembly: Assembly, study_name: string, gwas_obj: Gwas): Promise<LDBlockSNP[]> {
+    const tableName = `${assembly}_gwas`;
+    const q = `
+SELECT DISTINCT snp, authorpubmedtrait, chrom, start, stop, taggedsnp, r2, ldblock
+FROM ${tableName}
+WHERE authorPubmedTrait = $1
+    `;
+    const res = await db.any(q, [study_name]);
+    return mapldblocksnps(assembly, gwas_obj)(res);
+}
+
+export async function searchSNPs(assembly: Assembly, snpPartial: string): Promise<SNP[]> {
+    const tableName = assembly + '_gwas';
+    const q = `
+SELECT DISTINCT snp, chrom, start, stop, similarity(snp, '${snpPartial}') as sm
+FROM ${tableName}
+WHERE snp LIKE '${snpPartial}%'
+ORDER BY sm DESC
+LIMIT 10
+    `;
+    return db.map<SNP>(q, [], snp => ({
+        assembly,
+        id: snp.snp,
+        range: {
+            chrom: snp.chrom,
+            start: snp.start,
+            end: snp.stop,
         },
     }));
 }

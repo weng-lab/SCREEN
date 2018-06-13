@@ -1,13 +1,14 @@
 import { GraphQLFieldResolver } from 'graphql';
 import * as DbGwas from '../db/db_gwas';
 import { loadCache } from '../db/db_cache';
+import { getSNPs } from '../db/db_suggestions';
 
 const { UserError } = require('graphql-errors');
 
 export class Gwas {
     assembly;
-    studies;
-    byStudy;
+    studies: DbGwas.DBGwasStudy[];
+    byStudy: Record<string, DbGwas.DBGwasStudy>;
     constructor(assembly) {
         this.assembly = assembly;
     }
@@ -17,14 +18,13 @@ export class Gwas {
         if (!this.studies) {
             this.studies = gwas_studies;
             this.byStudy = this.studies.reduce((obj, r) => {
-                obj[r.value] = r;
+                obj[r.name] = r;
                 return obj;
             }, {});
         }
     }
 
     checkStudy = (study: string) => study in this.byStudy;
-    totalLDblocks = gwas_study => this.byStudy[gwas_study]['total_ldblocks'];
 
     numLdBlocksOverlap = gwas_study => DbGwas.numLdBlocksOverlap(this.assembly, gwas_study);
     numCresOverlap = gwas_study => DbGwas.numCresOverlap(this.assembly, gwas_study);
@@ -50,16 +50,17 @@ export class Gwas {
     }
 }
 
-export const resolve_gwas_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {
-    const g = source.gwas_obj;
-    return {
-        studies: g.studies,
-        byStudy: g.byStudy,
-    };
+export const resolve_gwas_studies: GraphQLFieldResolver<any, any> = source => {
+    const g: Gwas = source.gwas_obj;
+    return g.studies.map(study => ({
+        study_name: study.name,
+        gwas_obj: g,
+        ...g.byStudy[study.name],
+    }));
 };
 
-export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
-    const g = source.gwas_obj;
+export const resolve_gwas_study: GraphQLFieldResolver<any, any> = (source, args) => {
+    const g: Gwas = source.gwas_obj;
     const studyarg = args.study;
     if (!g.checkStudy(studyarg)) {
         throw new UserError('invalid gwas study');
@@ -67,18 +68,27 @@ export const resolve_gwas_study: GraphQLFieldResolver<any, any> = async (source,
     return {
         study_name: studyarg,
         gwas_obj: g,
+        ...g.byStudy[studyarg],
     };
 };
 
-export const resolve_gwas_study_info = async source => {
-    const g = source.gwas_obj;
+export const resolve_gwas_study_numLdBlocksOverlap = async source => {
+    const g: Gwas = source.gwas_obj;
     const study_name = source.study_name;
-    return {
-        ...g.byStudy[study_name],
-        totalLDblocks: await g.totalLDblocks(study_name),
-        numLdBlocksOverlap: await g.numLdBlocksOverlap(study_name),
-        numCresOverlap: await g.numCresOverlap(study_name),
-    };
+    return g.numLdBlocksOverlap(study_name);
+};
+
+export const resolve_gwas_study_numCresOverlap = async source => {
+    const g: Gwas = source.gwas_obj;
+    const study_name = source.study_name;
+    return g.numCresOverlap(study_name);
+};
+
+export const resolve_gwas_study_allSNPs = async source => {
+    const g: Gwas = source.gwas_obj;
+    const study_name = source.study_name;
+    const snps = await DbGwas.allSNPsInStudy(g.assembly, study_name, g);
+    return snps;
 };
 
 export const resolve_gwas_study_topCellTypes = async source => {
@@ -93,6 +103,13 @@ export const resolve_gwas_study_cres: GraphQLFieldResolver<any, any> = async (so
     const cellType = args.cellType;
     // TODO: check ct!
     return g.cres(study_name, cellType);
+};
+
+export const resolve_gwas_snps: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
+    const g: Gwas = source.gwas_obj;
+    const assembly = g.assembly;
+    const search: string = args.search;
+    return DbGwas.searchSNPs(assembly, search);
 };
 
 export const resolve_gwas: GraphQLFieldResolver<any, any> = (source, args, context, info) => {

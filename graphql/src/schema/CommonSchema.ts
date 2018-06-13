@@ -433,12 +433,14 @@ export const SNP = new GraphQLObjectType({
             type: new GraphQLNonNull(CommonTypes.ChromRange),
         },
         ldblocks: {
-            description: 'Data related to LD blocks that this SNP belongs to',
+            description:
+                'Data related to LD blocks that this SNP belongs to. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array.',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LDBlockSNP))),
             resolve: resolve_snps_ldblocks,
         },
         related_studies: {
-            description: 'GWAS studies containing this SNP',
+            description:
+                'GWAS studies containing this SNP. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array.',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudy))),
             resolve: resolve_snps_relatedstudies,
         },

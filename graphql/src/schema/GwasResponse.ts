@@ -1,10 +1,13 @@
 import { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLFloat, GraphQLNonNull, GraphQLInt } from 'graphql';
 import {
-    resolve_gwas_gwas,
     resolve_gwas_study,
     resolve_gwas_study_cres,
-    resolve_gwas_study_info,
     resolve_gwas_study_topCellTypes,
+    resolve_gwas_study_allSNPs,
+    resolve_gwas_studies,
+    resolve_gwas_study_numLdBlocksOverlap,
+    resolve_gwas_study_numCresOverlap,
+    resolve_gwas_snps,
 } from '../resolvers/gwas';
 import * as CommonTypes from './CommonSchema';
 import { resolve_gwas_ldblock_leadsnp, resolve_gwas_ldblock_snps } from '../resolvers/snp';
@@ -124,9 +127,39 @@ export const GwasStudy = new GraphQLObjectType({
     name: 'GwasStudy',
     description: 'GWAS study data',
     fields: () => ({
-        info: {
-            type: new GraphQLNonNull(GwasStudyInfo),
-            resolve: resolve_gwas_study_info,
+        name: {
+            description: 'Study name',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        author: {
+            description: 'Study author',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        pubmed: {
+            description: 'Pubmed id',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        trait: {
+            description: 'Study trait',
+            type: new GraphQLNonNull(GraphQLString),
+        },
+        totalLDblocks: {
+            description: 'Total number of LD blocks',
+            type: new GraphQLNonNull(GraphQLInt),
+        },
+        numLdBlocksOverlap: {
+            description: 'Total number of LD blocks that overlap ccREs',
+            type: new GraphQLNonNull(GraphQLInt),
+            resolve: resolve_gwas_study_numLdBlocksOverlap,
+        },
+        numCresOverlap: {
+            description: 'Total number of ccRE that overlap',
+            type: new GraphQLNonNull(GraphQLInt),
+            resolve: resolve_gwas_study_numCresOverlap,
+        },
+        allSNPs: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(LDBlockSNP))),
+            resolve: resolve_gwas_study_allSNPs,
         },
         topCellTypes: {
             type: new GraphQLList(new GraphQLNonNull(GwasCellType)),
@@ -149,9 +182,9 @@ export const GwasResponse = new GraphQLObjectType({
     name: 'Gwas',
     description: 'GWAS data',
     fields: () => ({
-        gwas: {
-            type: new GraphQLNonNull(GraphQLJSON),
-            resolve: resolve_gwas_gwas,
+        studies: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudy))),
+            resolve: resolve_gwas_studies,
         },
         study: {
             args: {
@@ -159,6 +192,13 @@ export const GwasResponse = new GraphQLObjectType({
             },
             type: new GraphQLNonNull(GwasStudy),
             resolve: resolve_gwas_study,
+        },
+        snps: {
+            args: {
+                search: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommonTypes.SNP))),
+            resolve: resolve_gwas_snps,
         },
     }),
 });

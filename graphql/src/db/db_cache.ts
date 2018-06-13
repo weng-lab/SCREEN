@@ -102,7 +102,7 @@ export type cache = {
     ctsTable: any;
     biosamples: Record<string, Biosample>;
     de_ctidmap: any;
-    gwas_studies: any;
+    gwas_studies: Gwas.DBGwasStudy[];
 };
 
 function getCacheMap(assembly): loadablecache {
@@ -145,7 +145,7 @@ function getCacheMap(assembly): loadablecache {
 
         de_ctidmap: assembly === 'mm10' ? () => De.getCtMap(assembly) : () => Promise.resolve(undefined),
 
-        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve(undefined),
+        gwas_studies: assembly === 'hg19' ? () => Gwas.gwasStudies(assembly) : () => Promise.resolve([]),
     };
 }
 
