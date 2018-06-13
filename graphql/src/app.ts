@@ -11,8 +11,6 @@ const { formatError } = require('graphql');
 
 const useRaven = process.env.NODE_ENV === 'production';
 
-const config = require('./config.json');
-
 useRaven && Raven.config('https://e43513f517284972b15c8770e626f645@sentry.io/676439').install();
 
 import schema from './schema/schema'; // Import schema after
