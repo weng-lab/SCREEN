@@ -4,6 +4,8 @@ import { SNP, Assembly } from '../types';
 import { gwasLDBlockSNPBySNP, SNPsInLDBlock } from '../db/db_gwas';
 import { Gwas } from './gwas';
 import { UserError } from 'graphql-errors';
+import { getCreTable } from '../db/db_cre_table';
+import { loadCache } from '../db/db_cache';
 
 export const resolve_snps: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const assembly = args.assembly;
@@ -55,4 +57,12 @@ export const resolve_gwas_ldblock_snps: GraphQLFieldResolver<any, {}> = async so
 export const resolve_snps_relatedstudies: GraphQLFieldResolver<SNP, {}> = async (source, args, context, info) => {
     const ldblocks = await resolve_snps_ldblocks(source, args, context, info);
     return ldblocks.map(block => block.ldblock.study);
+};
+
+export const resolve_snps_overlapping_ccRE: GraphQLFieldResolver<SNP, {}> = async source => {
+    const assembly: Assembly = source.assembly;
+    const snp: string = source.id;
+    const ctmap = await loadCache(assembly).ctmap();
+    const ctable = await getCreTable(assembly, ctmap, { range: source.range }, {});
+    return ctable.cres[0];
 };

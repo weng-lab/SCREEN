@@ -497,6 +497,9 @@ h3k4me3_zscores`
         .split('\n');
 
     const r = await getColsForAccession(assembly, accession, cols);
+    if (!r) {
+        throw new Error('Invalid accession.');
+    }
     return cols.reduce(
         (obj, k) => {
             const assay = k.split('_')[0];

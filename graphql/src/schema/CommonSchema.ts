@@ -15,7 +15,7 @@ import * as CommonTypes from './CommonSchema';
 import { CreDetailsResponse } from './CreDetailsResponse';
 import { resolve_data_nearbygenes, resolve_data_range, resolve_data_ctspecific } from '../resolvers/cretable';
 import { resolve_details } from '../resolvers/credetails';
-import { resolve_snps_relatedstudies, resolve_snps_ldblocks } from '../resolvers/snp';
+import { resolve_snps_relatedstudies, resolve_snps_ldblocks, resolve_snps_overlapping_ccRE } from '../resolvers/snp';
 import { GwasStudy, LDBlock, LDBlockSNP } from './GwasResponse';
 
 export const Assembly = new GraphQLEnumType({
@@ -444,6 +444,11 @@ export const SNP = new GraphQLObjectType({
                 'GWAS studies containing this SNP. If no GWAS data is available for the SNP assembly or no related GWAS data is available, this is an empty array.',
             type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GwasStudy))),
             resolve: resolve_snps_relatedstudies,
+        },
+        overlapping_ccRE: {
+            description: 'Returns the ccRE that overlaps this SNP, if one exists',
+            type: cRE,
+            resolve: resolve_snps_overlapping_ccRE,
         },
     }),
 });

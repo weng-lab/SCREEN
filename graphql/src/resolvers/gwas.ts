@@ -121,6 +121,13 @@ export const resolve_gwas_study_cres: GraphQLFieldResolver<any, any> = async (so
     return g.cres(study_name, cellType);
 };
 
+export const resolve_gwas_study_activeBiosamples: GraphQLFieldResolver<any, any> = async (source, args) => {
+    const g: Gwas = source.gwas_obj;
+    const study_name: string = source.study_name;
+    const snp: string = args.snp;
+    return DbGwas.activeBiosamples(g.assembly, snp, study_name);
+};
+
 export const resolve_gwas_snps: GraphQLFieldResolver<any, any> = async (source, args, context, info) => {
     const g: Gwas = source.gwas_obj;
     const assembly = g.assembly;

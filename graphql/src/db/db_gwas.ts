@@ -1,9 +1,11 @@
 import * as Common from './db_common';
 import { db } from './db';
-import { buildWhereStatement, dbcre } from './db_cre_table';
+import { buildWhereStatement, dbcre, getCreTable } from './db_cre_table';
 import { Assembly, SNP, LDBlockSNP } from '../types';
 import { LDBlock } from '../schema/GwasResponse';
 import { Gwas } from '../resolvers/gwas';
+import { loadCache, ccRECtspecificLoaders } from './db_cache';
+import { snptable } from './db_snp';
 
 export type DBGwasStudy = { name: string; author: string; pubmed: string; trait: string; totalLDblocks: number };
 export async function gwasStudies(assembly): Promise<DBGwasStudy[]> {
@@ -43,7 +45,10 @@ export async function numCresOverlap(assembly, gwas_study) {
     return await db.oneOrNone(q, [gwas_study], r => (r ? +r.count : 0));
 }
 
-export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: string]: any } | undefined> {
+export async function gwasEnrichment(
+    assembly,
+    gwas_study
+): Promise<{ expID: string; ct: string; biosample_summary: string; fdr: number; pval: number }[] | undefined> {
     const tableNamefdr = assembly + '_gwas_enrichment_fdr';
     const tableNamepval = assembly + '_gwas_enrichment_pval';
     const column_check = `
@@ -71,7 +76,7 @@ export async function gwasEnrichment(assembly, gwas_study): Promise<{ [col: stri
     `;
     const res = await db.any(q);
     const cols = ['expID', 'ct', 'biosample_summary', 'fdr', 'pval'];
-    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {}));
+    return res.map(r => cols.reduce((obj, key) => ({ ...obj, [key]: r[key.toLowerCase()] }), {} as any));
 }
 
 const infoFields = {
@@ -214,4 +219,29 @@ LIMIT 10
             end: snp.stop,
         },
     }));
+}
+
+export async function activeBiosamples(assembly: Assembly, snp: string, study: string) {
+    const enrichedbiosamples = await gwasEnrichment(assembly, study);
+    if (!enrichedbiosamples) {
+        return undefined;
+    }
+    const ctmap = await loadCache(assembly).ctmap();
+    const intersectq = `
+SELECT DISTINCT accession
+FROM ${assembly}_gwas_overlap
+WHERE snp = $1
+    `;
+    const intersectingccres = await db.map<string>(intersectq, [snp], row => row.accession);
+    const allactivects = new Set<string>();
+    for (const ccre of intersectingccres) {
+        const cts = await Common.activeCts(assembly, ccre, ['dnase', 'h3k4me3', 'h3k27ac']);
+        for (const ct of cts) {
+            allactivects.add(ct);
+        }
+    }
+
+    const enrichedandactive = enrichedbiosamples.filter(biosample => allactivects.has(biosample.ct));
+    const datasets = await loadCache(assembly).datasets();
+    return enrichedandactive.map(ct => ({ ...ct, ct: datasets.byCellTypeValue[ct.ct] }));
 }
